@@ -235,3 +235,5 @@ process {
 }
 
 }
+
+Get-OfficeVersion
