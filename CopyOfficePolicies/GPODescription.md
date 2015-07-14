@@ -1,6 +1,6 @@
 #**Duplicate GPO settings from Office 2013 to Office 2016**
 
-In this scenario, we want to automate the process of moving from Office 2013 to Office 2016 while retaining the current set of group policies.  The script will migrate the Office 15 group policies and convert them to Office 16 group policies. 
+In this scenario, we want to automate the process of moving from Office 2013 to Office 2016 while retaining the current set of group policies.  The script will pull the policy file paths of the GPO name, GUID, domain, user and machine registry.pol files, and the PolicyDefinitions. It pulls a list of the Office target version admx files and the definitions of the admx files. It will then copy the policy information if the keypath exists in the target version which is checked against the definitions pulled from the admx files.  
 
 ###**Pre-requisites**
 
