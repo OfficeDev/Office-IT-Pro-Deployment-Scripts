@@ -52,7 +52,7 @@ To simulate the Office 2016 admx files make copies of the 2015 admx files for Of
 	
 3. Enter a GPO name.
 	
-		SourceGPOName: Default Domain Policy
+		SourceGPOName: "Office Group Policy"
 
 4. Validate the .pol files and Administrative Templates. 
 	
