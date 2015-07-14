@@ -4,9 +4,9 @@ This PowerShell Function will query the local or remote workstations to find the
 
 ###**Pre-requisites**
 
-1. Remote Windows Management Instrumentation (WMI) connectivity and permissions to any remote computers you are querying
+1. Remote Windows Management Instrumentation (WMI) connectivity and permissions to any remote computers you are querying. 
 
-###**Running the script**
+###**Examples**
 
 1. Open a PowerShell console.
 
@@ -23,7 +23,11 @@ This PowerShell Function will query the local or remote workstations to find the
 	
 3. Run the Script against a remote computer. 
 
-		Run the PowerShell script Get-OfficeVersion.ps1 -ComputerName Client01
+		Type .\Get-OfficeVersion.ps1 -ComputerName Client01
+
+4. Run the Script against multiple remote computers. 
+
+		Type .\Get-OfficeVersion.ps1 -ComputerName Client01,Client02
 	
 
 	
