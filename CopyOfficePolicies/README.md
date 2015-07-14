@@ -31,8 +31,8 @@ Before running the script, you will need at least the following configuration:
 
 4. Validate the .pol files and Administrative Templates. 
 	
-		○ The .pol files are located at %systemroot%\sysvol\sysvol\domain\Policies\GUID\_ser or Machine\.
+		○ The .pol files are located at %windir%\sysvol\sysvol\domain\Policies\GUID\User or Machine\.
 
-		○ Open Group Policy Management Editor. The Administrative Templates will have a SourceVersion copy and a TargetVersion copy. 
+		○ Open Group Policy Management Editor. The Administrative Templates will have a SourceVersion copy and a TargetVersion copy. Verify the settings from the SourceVersion are now set in the TargetVersion.
 
 	
