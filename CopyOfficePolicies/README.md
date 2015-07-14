@@ -33,6 +33,6 @@ Before running the script, you will need at least the following configuration:
 	
 		○ The .pol files are located at %systemroot%\sysvol\sysvol\*domain*\Policies\*GUID*\*User or Machine*\.
 
-		○ Open Group Policy Management Editor. The Administrative Templates will have a SourceVersion copy and a 			TargetVersion copy. 
+		○ Open Group Policy Management Editor. The Administrative Templates will have a SourceVersion copy and a TargetVersion copy. 
 
 	
