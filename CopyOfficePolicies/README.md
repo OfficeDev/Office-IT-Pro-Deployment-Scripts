@@ -18,7 +18,7 @@ Before running the script, you will need at least the following configuration:
 		Import-Module ServerManager
 		Add-WindowsFeature GPMC
 	
-2. Run the script.
+2. Run the Copy-OfficePolicies.ps1 script.
 
 		PS C:\> C:\Users\Labadmin\Downloads\Copy-OfficePolicies.ps1
 		cmdlet Copy-OfficePolicies.ps1 at command pipeline position 1
