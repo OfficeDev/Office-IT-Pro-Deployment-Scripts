@@ -8,18 +8,18 @@ This function will query the local or a remote computer and return the informati
 
 .NOTES   
 Name: Get-OfficeVersion
-Version: 1.0.0
+Version: 1.0.1
 DateCreated: 2015-07-01
 DateUpdated: 2015-07-14
 
 .LINK
-http://
+https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
 
 .PARAMETER ComputerName
-The computer to which query
+The computer or list of computers from which to query 
 
 .PARAMETER ShowAllInstalledProducts
-Will expand the output to include all installed Office Products
+Will expand the output to include all installed Office products
 
 .EXAMPLE
 Get-OfficeVersion
@@ -28,10 +28,10 @@ Description:
 Will return the locally installed Office product
 
 .EXAMPLE
-Get-OfficeVersion -ComputerName client01
+Get-OfficeVersion -ComputerName client01,client02
 
 Description:
-Will return the installed Office product on the remote computer
+Will return the installed Office product on the remote computers
 
 .EXAMPLE
 Get-RemoteProgram | select *
@@ -65,7 +65,7 @@ begin {
     $officeKeys = 'SOFTWARE\Microsoft\Office',
                   'SOFTWARE\Wow6432Node\Microsoft\Office'
 
-    $defaultDisplaySet = 'DisplayName','Version'
+    $defaultDisplaySet = 'DisplayName','Version', 'ComputerName'
 
     $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet(‘DefaultDisplayPropertySet’,[string[]]$defaultDisplaySet)
     $PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultDisplayPropertySet)
@@ -74,13 +74,14 @@ begin {
 
 process {
 
+ foreach ($computer in $ComputerName) {
     $os=Get-WMIObject win32_operatingsystem
     $osArchitecture = $os.OSArchitecture
 
     if ($Credentials) {
-       $regProv = Get-Wmiobject -list "StdRegProv" -namespace root\default -computername $ComputerName -Credential $Credentials
+       $regProv = Get-Wmiobject -list "StdRegProv" -namespace root\default -computername $computer -Credential $Credentials
     } else {
-       $regProv = Get-Wmiobject -list "StdRegProv" -namespace root\default -computername $ComputerName
+       $regProv = Get-Wmiobject -list "StdRegProv" -namespace root\default -computername $computer
     }
 
     $VersionList = New-Object -TypeName System.Collections.ArrayList
@@ -220,7 +221,7 @@ process {
               }
            }
 
-           $object = [pscustomobject]@{DisplayName = $name; Version = $version; InstallPath = $installPath; ClickToRun = $clickToRun; Bitness =  $buildType }
+           $object = [pscustomobject]@{DisplayName = $name; Version = $version; InstallPath = $installPath; ClickToRun = $clickToRun; Bitness=$buildType; ComputerName=$computer }
            $object.PSObject.TypeNames.Insert(0,'Office.Information')
            $object | Add-Member MemberSet PSStandardMembers $PSStandardMembers
 
@@ -228,6 +229,8 @@ process {
 
         }
     }
+
+  }
 
 }
 
