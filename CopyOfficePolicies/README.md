@@ -11,9 +11,13 @@ Before running the script, you will need at least the following configuration:
 3. Group Policies from the SourceTarget version deployed.
 3. TargetVersion Administrative templates installed.
 
-###**Test the script**
+###**Running the script**
 
-1. Import the PowerShell module.
+1. Open a PowerShell console:
+
+		From the Run dialog type PowerShell.
+
+2. Import the ServerManager PowerShell module:
 
 		Import-Module ServerManager
 		Add-WindowsFeature GPMC
