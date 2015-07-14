@@ -6,10 +6,10 @@ In this scenario, we want to automate the process of moving from an existing ver
 
 Before running the script, you will need at least the following configuration:
 
-1. A domain controller managing the Group Policies
-2. SourceVersion Administrative templates installed
+1. A domain controller managing the Group Policies.
+2. SourceVersion Administrative templates installed.
 3. Group Policies from the SourceTarget version deployed.
-3. TargetVersion Administrative templates installed
+3. TargetVersion Administrative templates installed.
 
 ###**Test the script**
 
