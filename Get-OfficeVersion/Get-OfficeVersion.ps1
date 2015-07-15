@@ -75,7 +75,12 @@ begin {
 process {
 
  foreach ($computer in $ComputerName) {
-    $os=Get-WMIObject win32_operatingsystem
+    if ($Credentials) {
+       $os=Get-WMIObject win32_operatingsystem -computername $computer -Credential $Credentials
+    } else {
+       $os=Get-WMIObject win32_operatingsystem -computername $computer
+    }
+
     $osArchitecture = $os.OSArchitecture
 
     if ($Credentials) {
@@ -155,13 +160,8 @@ process {
 
         foreach ($key in $keys.sNames) {
            $path = join-path $regKey $key
-           $name = $regProv.GetStringValue($HKLM, $path, "DisplayName").sValue
-           $version = $regProv.GetStringValue($HKLM, $path, "DisplayVersion").sValue
-           $installPath = $regProv.GetStringValue($HKLM, $path, "InstallLocation").sValue 
-           $size = $regProv.GetDwordValue($HKLM, $path, "EstimatedSize").uValue 
-           $modifyPath = $regProv.GetStringValue($HKLM, $path, "ModifyPath").sValue 
+           $installPath = $regProv.GetStringValue($HKLM, $path, "InstallLocation").sValue
            if ($installPath.Length -eq 0) { continue }
-           
 
            $buildType = "64-Bit"
            if ($osArchitecture -eq "32-bit") {
@@ -202,10 +202,15 @@ process {
            }
 
            if (!$officeProduct) { continue };
-            
+           
+           $name = $regProv.GetStringValue($HKLM, $path, "DisplayName").sValue          
+
            if ($ConfigItemList.Contains($key.ToUpper()) -and $name.ToUpper().Contains("MICROSOFT OFFICE")) {
               $primaryOfficeProduct = $true
            }
+
+           $version = $regProv.GetStringValue($HKLM, $path, "DisplayVersion").sValue
+           $modifyPath = $regProv.GetStringValue($HKLM, $path, "ModifyPath").sValue 
 
            [string]$clickToRun = $false
            if ($ClickToRunPathList.Contains($installPath.ToUpper())) {
