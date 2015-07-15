@@ -1,3 +1,11 @@
+param(
+    [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
+    [string[]]$ComputerName = $env:COMPUTERNAME,
+    [Parameter(Position=0)]
+    [switch]$ShowAllInstalledProducts,
+    [System.Management.Automation.PSCredential]$Credentials
+)
+
 Function Get-OfficeVersion {
 <#
 .Synopsis
@@ -47,7 +55,6 @@ param(
         Position=0)]
     [string[]]$ComputerName = $env:COMPUTERNAME,
     [Parameter(Position=0)]
-    [string[]]$Property,
     [switch]$ShowAllInstalledProducts,
     [System.Management.Automation.PSCredential]$Credentials
 )
@@ -241,4 +248,16 @@ process {
 
 }
 
-Get-OfficeVersion
+if ($ShowAllInstalledProducts) {
+   if ($Credentials) {
+     Get-OfficeVersion -ComputerName $ComputerName -ShowAllInstalledProducts -Credentials $Credentials
+   } else {
+     Get-OfficeVersion -ComputerName $ComputerName -ShowAllInstalledProducts
+   }
+} else {
+   if ($Credentials) {
+     Get-OfficeVersion -ComputerName $ComputerName -Credentials
+   } else {
+     Get-OfficeVersion -ComputerName $ComputerName
+   }
+}
