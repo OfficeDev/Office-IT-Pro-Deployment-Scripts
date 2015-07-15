@@ -1,6 +1,6 @@
 #Check for Modern Apps
 
-The purpose of this script is to remotely verify the modern apps installed on computers in a domain.
+Remotely verify the modern apps installed on computers in a domain.
 
 ###Examples
 
