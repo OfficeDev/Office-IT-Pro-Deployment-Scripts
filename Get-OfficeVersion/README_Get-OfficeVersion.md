@@ -18,16 +18,16 @@ This PowerShell Function will query the local or remote workstations to find the
 		
 2. Run the Script. With no parameters specified the script will return the locally installed Office Version.
 
-		Type .\Get-OfficeVersion.ps1
-		Press Enter and then if Microsoft Office is installed locally it should display
+		Type . .\Get-OfficeVersion.ps1
+		Press Enter and then if Microsoft Office is installed locally it should display. By including the additional 		period before the relative script path you are 'Dot-Sourcing' the PowerShell function in the script into your 				PowerShell session which will allow you to run the function from the console.
 	
 3. Run the Script against a remote computer. 
 
-		Type .\Get-OfficeVersion.ps1 -ComputerName Client01
+		Type Get-OfficeVersion -ComputerName Client01
 
 4. Run the Script against multiple remote computers. 
 
-		Type .\Get-OfficeVersion.ps1 -ComputerName Client01,Client02
+		Type Get-OfficeVersion -ComputerName Client01,Client02
 	
 
 	
