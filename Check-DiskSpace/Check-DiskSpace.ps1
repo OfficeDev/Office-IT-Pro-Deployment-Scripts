@@ -59,7 +59,7 @@ function Get-DirectorySize
         {
             try
             {
-                $tmpDirectorySize = Get-DirectorySize -dInfo $directory, -parentInfo $mainFolderTracker.Id
+                $tmpDirectorySize = Get-DirectorySize -dInfo $directory -parentId $mainFolderTracker.Id
 
                 $subDirectoriesSize += $tmpDirectorySize;
                 $totalSize += $tmpDirectorySize;
