@@ -1,8 +1,9 @@
 param(
     [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
     [string[]]$ComputerName = $env:COMPUTERNAME,
-    [Parameter(Position=0)]
+    [Parameter(Position=1)]
     [switch]$ShowAllInstalledProducts,
+    [Parameter(Position=2)]
     [System.Management.Automation.PSCredential]$Credentials
 )
 
@@ -54,8 +55,9 @@ param(
         ValueFromPipelineByPropertyName=$true,
         Position=0)]
     [string[]]$ComputerName = $env:COMPUTERNAME,
-    [Parameter(Position=0)]
+    [Parameter(Position=1)]
     [switch]$ShowAllInstalledProducts,
+    [Parameter(Position=2)]
     [System.Management.Automation.PSCredential]$Credentials
 )
 
@@ -249,15 +251,7 @@ process {
 }
 
 if ($ShowAllInstalledProducts) {
-   if ($Credentials) {
-     Get-OfficeVersion -ComputerName $ComputerName -ShowAllInstalledProducts -Credentials $Credentials
-   } else {
-     Get-OfficeVersion -ComputerName $ComputerName -ShowAllInstalledProducts
-   }
+    Get-OfficeVersion -ComputerName $ComputerName -ShowAllInstalledProducts -Credentials $Credentials
 } else {
-   if ($Credentials) {
-     Get-OfficeVersion -ComputerName $ComputerName -Credentials
-   } else {
-     Get-OfficeVersion -ComputerName $ComputerName
-   }
+    Get-OfficeVersion -ComputerName $ComputerName -Credentials $Credentials
 }
