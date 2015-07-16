@@ -44,16 +44,6 @@ namespace DiskSpaceChecker
             // Enumerate all the files
             long totalSize = 0;
             long fileCount = 0;
-
-            //if (dInfo.Parent != null)
-            //{
-            //    var parentTracker = IdTrackers.FirstOrDefault(f => f.Path.ToLower() == dInfo.Parent.FullName.ToLower());
-            //    parentId = parentTracker.Id;
-            //}
-            //else
-            //{
-            //    parentId = 0;
-            //}
             
 
             var mainFolderTracker = new IdTracking()
@@ -61,7 +51,6 @@ namespace DiskSpaceChecker
                 Path = dInfo.FullName,
                 ParentId = parentId
             };
-            //IdTrackers.Add(mainFolderTracker);
 
             foreach (var file in dInfo.EnumerateFiles())
             {
@@ -102,11 +91,6 @@ namespace DiskSpaceChecker
                     {
 
                     }
-                }
-
-                if (fileTracker != null)
-                {
-                    //IdTrackers.Add(fileTracker);
                 }
 
                 fileCount += 1;
