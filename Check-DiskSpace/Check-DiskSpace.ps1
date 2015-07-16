@@ -1,210 +1,270 @@
-﻿#Global Variables
-[int] $global:IdTrackerNum = 0;
-$global:directorySizeInfos = New-Object PSObject[] 1
-#functions
-function Get-DirectorySize
+﻿<#
+.SYNOPSIS
+Checks the space of a disk storing the results in a file
+
+.PARAMETER DirectoryPath
+Path of the Directory space you would like to measure. Defaults to C:\
+
+.PARAMETER ResultFilePath
+Path of the file you would like to store the results in. Defaults to CurrentDirectory\FolderData.txt
+
+.Example
+./Check-DiskSpace.ps1
+Checks the disk space of C drive and stores the result in CurrentDirectory\FolderData.txt
+
+
+#>
+[CmdletBinding()]
+Param(
+    [Parameter()]
+    [String] $DirectoryPath = "C:\",
+
+    [Parameter()]
+    [String] $ResultFilePath = "$((Get-Location).Path)\FolderData.txt"
+)
+
+Begin{
+$assemblies = ('System', 'mscorlib', 'System.IO');
+$sourceCode = @'
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace DiskSpaceChecker
 {
-    Param(
-    [Parameter()]
-    [System.IO.DirectoryInfo] $dInfo, 
-        
-    [Parameter()]
-    [int] $parentId
-    )
-        [long] $totalSize = 0;
-        [long] $fileCount = 0;
+    public class DiskChecker
+    {
+
+        public long DirectorySize(DirectoryInfo dInfo, int parentId)
+        {
+            // Enumerate all the files
+            long totalSize = 0;
+            long fileCount = 0;
+
+            //if (dInfo.Parent != null)
+            //{
+            //    var parentTracker = IdTrackers.FirstOrDefault(f => f.Path.ToLower() == dInfo.Parent.FullName.ToLower());
+            //    parentId = parentTracker.Id;
+            //}
+            //else
+            //{
+            //    parentId = 0;
+            //}
             
 
-        $mainFolderTracker = New-IdTracker -Path $dInfo.FullName -ParentId $parentId
-
-        foreach ($file in $dInfo.EnumerateFiles())
-        {
-            $fileTracker = $null;
-
-            try
+            var mainFolderTracker = new IdTracking()
             {
-                $totalSize += $file.Length;
-                [long] $sizeCompare = 1048576 * 100;
+                Path = dInfo.FullName,
+                ParentId = parentId
+            };
+            //IdTrackers.Add(mainFolderTracker);
 
-                if ($file.Length -ge ($sizeCompare))
+            foreach (var file in dInfo.EnumerateFiles())
+            {
+                IdTracking fileTracker = null;
+
+                try
                 {
-                    $fileTracker = New-IdTracker -Path $file.FullName -ParentId $mainFolderTracker.Id
+                    totalSize += file.Length;
+                    const long sizeCompare = 1048576 * 100;
 
-                    Record-Data -Id $fileTracker.Id -ParentId $mainFolderTracker.Id -Name $file.Name -Path $file.FullName -Type "File" -TotalSize $file.Length -DirectorySize 0 -FileCount 0 -AccessAllowed $true
+                    if (file.Length >= (sizeCompare))
+                    {
+                        fileTracker = new IdTracking()
+                        {
+                            Path = file.FullName,
+                            ParentId = mainFolderTracker.Id
+                        };
+
+                        RecordData(fileTracker.Id, mainFolderTracker.Id, file.Name, file.FullName, "File", file.Length, 0, 0, true);
+                    }
                 }
+                catch (Exception)
+                {
+                    try
+                    {
+                        if (fileTracker == null)
+                        {
+                            fileTracker = new IdTracking()
+                            {
+                                Path = file.FullName,
+                                ParentId = mainFolderTracker.Id
+                            };
+                        }
+
+                        RecordData(fileTracker.Id, mainFolderTracker.Id, file.Name, file.FullName, "File", 0, 0, 0, false);
+                    }
+                    catch (Exception)
+                    {
+
+                    }
+                }
+
+                if (fileTracker != null)
+                {
+                    //IdTrackers.Add(fileTracker);
+                }
+
+                fileCount += 1;
             }
-            catch
+
+            var tmpTotalSize = totalSize;
+            long subDirectoriesSize = 0;
+
+            foreach (var directory in dInfo.EnumerateDirectories())
             {
                 try
                 {
-                    if ($fileTracker -eq $null)
-                    {
-                        $fileTracker = New-IdTracker -Path $file.FullName -ParentId $mainFolderTracker.Id
-                    }
-                    Record-Data -Id $fileTracker.Id -ParentId $mainFolderTracker.Id -Name $file.Name -Path $file.FullName -Type "File" -TotalSize 0 -DirectorySize 0 -FileCount 0 -AccessAllowed $false
+                    var tmpDirectorySize = DirectorySize(directory, mainFolderTracker.Id);
+
+                    subDirectoriesSize += tmpDirectorySize;
+                    totalSize += tmpDirectorySize;
                 }
-                catch
+                catch (Exception)
                 {
+                    var folderTracker = new IdTracking()
+                    {
+                        Path = directory.FullName,
+                        ParentId = mainFolderTracker.Id
+                    };
 
+                    RecordData(folderTracker.Id, folderTracker.ParentId, directory.Name, directory.FullName, "Folder", 0, 0, 0, false);
                 }
             }
 
-            $fileCount += 1;
+            RecordData(mainFolderTracker.Id, mainFolderTracker.ParentId, dInfo.Name, dInfo.FullName, "Folder", tmpTotalSize, subDirectoriesSize, fileCount, true);
+
+            return totalSize;
         }
 
-        $tmpTotalSize = $totalSize;
-        [long] $subDirectoriesSize = 0;
-
-        foreach ($directory in $dInfo.EnumerateDirectories())
+        private void RecordData(int id, int? parentId, string name, string path, string type, long totalSize, long directorySize, long fileCount, bool accessAllowed)
         {
-            try
+            var dirSizeInfo = new DirectorySizeInfo()
             {
-                $tmpDirectorySize = Get-DirectorySize -dInfo $directory -parentId $mainFolderTracker.Id
+                Id = id,
+                ParentId = parentId,
+                Name = name,
+                Path = path,
+                Type = type,
+                FileSize = totalSize,
+                FileCount = fileCount,
+                DirectorySize = directorySize,
+                AccessAllowed = accessAllowed
+            };
 
-                $subDirectoriesSize += $tmpDirectorySize;
-                $totalSize += $tmpDirectorySize;
-            }
-            catch
-            {
-                $folderTracker = New-IdTracker -ParentId $mainFolderTracker.Id -Path $directory.FullName
-
-                Record-Data -Id $folderTracker.Id -ParentId $folderTracker.ParentId -Name $directory.Name -Path $directory.FullName -Type "Folder" -TotalSize 0 -DirectorySize 0 -FileCount 0 -AccessAllowed $false
-            }
+            DirectorySizeInfos.Add(dirSizeInfo);
         }
-        Record-Data -Id $mainFolderTracker.Id -ParentId $mainFolderTracker.ParentId -Name $dInfo.Name -Path $dInfo.FullName -Type "Folder" -TotalSize $tmpTotalSize -DirectorySize $subDirectoriesSize -FileCount $fileCount -AccessAllowed $true
 
-        return $totalSize;
-}
-
-function Record-Data
-{
-    Param(
-
-    [Parameter()]
-    [int] $Id,
-
-    [Parameter()]
-    [int] $ParentId,
-
-    [Parameter()]
-    [string] $Name,
-
-    [Parameter()]
-    [string] $Path,
-
-    [Parameter()]
-    [string] $Type,
-
-    [Parameter()]
-    [long] $TotalSize,
-
-    [Parameter()]
-    [long] $DirectorySize,
-
-    [Parameter()]
-    [long] $FileCount,
-
-    [Parameter()]
-    [bool] $AccessAllowed
-
-    )
-    Process
-    {
-        $dirSizeInfo = New-Object PSObject -Property @{Id = $Id;
-                ParentId = $ParentId;
-                Name = $Name;
-                Path = $Path;
-                Type = $Type;
-                FileSize = $TotalSize;
-                FileCount = $FileCount;
-                DirectorySize = $DirectorySize;
-                AccessAllowed = $AccessAllowed}
-
-        if($global:directorySizeInfos -ne $null){
-            $global:directorySizeInfos += $dirSizeInfo;
-        }else{
-            $global:directorySizeInfos[0] = $dirSizeInfo; 
-        }
-    }
-}
-
-function New-IdTracker
-{
-    Param(
-
-    [Parameter()]
-    [int] $ParentId,
-
-    [Parameter()]
-    [string] $Path
-
-    )
-
-    Process
-    {
-        $global:IdTrackerNum += 1;
-        return New-Object PSObject -Property @{ Id=$global:IdTrackerNum; ParentId=$ParentId; Path=$Path }; 
-    }
-}
-
-function Write-Data
-{
-    Process
-    {
-        $drvSpace = Get-TotalFreeSpace -DriveName "C:\\"
-        try{
-            $loc = Get-Location
-            $locPath = $loc.Path;
-            $sw = New-Object System.IO.StreamWriter -ArgumentList "$locPath\FolderData.txt"
-            $drvEntry = $global:directorySizeInfos | ? {([string]($_.Name)).ToUpper() -eq "C:\" };
-
-            $sw.WriteLine("Id\tParentId\tName\tType\tPath\tFileCount\tFilesSize\tSubDirectorySize\tTotalSize\tFreeSpace\tAccessAllowed");
-
-            if ($drvEntry -ne $null)
-            {
-                $sw.WriteLine("$($drvEntry.Id)\t$($drvEntry.ParentId)\t$($drvEntry.Name)\tDrive\t$($drvEntry.Path)\t$($drvEntry.FileCount)\t$($drvEntry.FileSize)\t$($drvEntry.DirectorySize)\t$($drvSpace.TotalSize)\t$($drvSpace.TotalFreeSpace)\ttrue");
-            }
-            $drvEntrys = $global:directorySizeInfos | ? {$_.Name.ToUpper() -ne "C:\" };
-            foreach ($d in $drvEntrys)
-            {
-                $sw.WriteLine("$($d.Id)\t$($d.ParentId)\t$($d.Name)\t$($d.Type)\t$($d.Path)\t$($d.FileCount)\t$($d.FileSize)\t$($d.DirectorySize)\t$($d.FileSize + $d.DirectorySize)\t0\t$($d.AccessAllowed)");
-                [System.Threading.Thread]::Sleep(1);
-            }
-
-            $sw.Flush();
-            $sw.Close();
-        }
-        finally{
-            $sw.Dispose();
-        }
-    }
-}
-
-function Get-TotalFreeSpace
-{
-
-    Param(
-
-    [Parameter()]
-    [string] $DriveName
-
-    )
-
-    Process
-    {
-        foreach($drive in [System.IO.DriveInfo]::GetDrives())
+        public void WriteData(string fullFilePath)
         {
-            if($drive.IsReady -and ($drive.Name -eq $DriveName))
+            var drvSpace = GetTotalFreeSpace("C:\\");
+
+            using (var sw = new StreamWriter(fullFilePath))
             {
-                return $drive;
+                var drvEntrys = DirectorySizeInfos.Where(d => d.Name.ToUpper() == "C:\\");
+                var drvEntry = drvEntrys.FirstOrDefault();
+
+                sw.WriteLine("Id\tParentId\tName\tType\tPath\tFileCount\tFilesSize\tSubDirectorySize\tTotalSize\tFreeSpace\tAccessAllowed");
+
+                if (drvEntry != null)
+                {
+                    sw.WriteLine(drvEntry.Id + "\t" + drvEntry.ParentId + "\t" + drvEntry.Name + "\t" + "Drive" + "\t" +
+                                 drvEntry.Path + "\t" +
+                                 drvEntry.FileCount + "\t" + drvEntry.FileSize + "\t" + drvEntry.DirectorySize + "\t" +
+                                 drvSpace.TotalSize + "\t" + drvSpace.TotalFreeSpace + "\t" + "true");
+                }
+
+                foreach (var d in DirectorySizeInfos.Where(d => d.Name.ToUpper() != "C:\\"))
+                {
+                    sw.WriteLine(d.Id + "\t" + d.ParentId + "\t" + d.Name + "\t" + d.Type + "\t" + d.Path + "\t" +
+                        d.FileCount + "\t" + d.FileSize + "\t" + d.DirectorySize + "\t" + (d.FileSize + d.DirectorySize) + "\t0\t" + d.AccessAllowed);
+                }
+
+                sw.Flush();
+                sw.Close();
             }
         }
-        return $null;
+
+        private DriveInfo GetTotalFreeSpace(string driveName)
+        {
+            foreach (var drive in DriveInfo.GetDrives())
+            {
+                if (drive.IsReady && drive.Name == driveName)
+                {
+                    return drive;
+                }
+            }
+            return null;
+        }
+
+        public List<DirectorySizeInfo> DirectorySizeInfos = new List<DirectorySizeInfo>();
+
+        
+        public class IdTracking
+        {
+            public IdTracking()
+            {
+                IdTracker++;
+                Id = IdTracker;
+            }
+
+            public string Path { get; set; }
+
+            public int Id { get; set; }
+
+            public int ParentId { get; set; }
+        }
+
+        public static int IdTracker = 0;
+
+        public List<IdTracking> IdTrackers = new List<IdTracking>();
     }
 
+
+    public class DriveSpace
+    {
+        public long TotalSpace { get; set; }
+
+        public long FreeSpace { get; set; }
+    }
+
+    public class DirectorySizeInfo
+    {
+        public int Id { get; set; }
+
+        public int? ParentId { get; set; }
+
+        public bool AccessAllowed { get; set; }
+
+        public string Name { get; set; }
+
+        public string Type { get; set; }
+
+        public string Path { get; set; }
+
+        public long FileSize { get; set; }
+
+        public long TotalSize { get; set; }
+
+        public long DirectorySize { get; set; }
+
+        public long FileCount { get; set; }
+    }
+
+    
+}
+'@
 }
 
-$dInfo = New-Object System.IO.DirectoryInfo "C:\"
-$sizeOfDir = Get-DirectorySize -dInfo $dInfo -parentId 0;
+Process{
 
-Write-Data;
+	Add-Type -TypeDefinition $sourceCode -ReferencedAssemblies $assemblies -ErrorAction STOP;
+    $checker = New-Object DiskSpaceChecker.DiskChecker
+    $dInfo = New-Object System.IO.DirectoryInfo $DirectoryPath
+    $checker.DirectorySize($dInfo, 0);
+    $checker.WriteData($ResultFilePath);
+}
