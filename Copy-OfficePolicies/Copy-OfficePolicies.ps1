@@ -779,7 +779,8 @@ Process
 	$GPO = Get-GPO -Name $SourceGPOName;
 	$ID = $GPO.Id;
 	$domain = [string]($GPO.DomainName);
-	$Paths = [string]"$env:windir\SYSVOL\Sysvol\$domain\Policies\{$ID}\User\Registry.pol", "$env:windir\SYSVOL\Sysvol\$domain\Policies\{$ID}\Machine\Registry.pol";
+	$Paths = [string]"$env:windir\SYSVOL\Sysvol\$domain\Policies\{$ID}\User\Registry.pol", 
+                     "$env:windir\SYSVOL\Sysvol\$domain\Policies\{$ID}\Machine\Registry.pol";
 	$PolicyDefinitionDirectory = "$env:windir\PolicyDefinitions"
 
 	#Get all the admx files associated with the target version
@@ -801,8 +802,16 @@ Process
 	Add-Type -TypeDefinition $sourceCode -ReferencedAssemblies $assemblies -ErrorAction STOP;
 
 	foreach($PolFilePath in $Paths)
-	{
+ 	{
+        $ConfigType = "Machine"
+        if ($PolFilePath -match '\\User\\') {
+           $ConfigType = "User"
+        }
 
+        $results = new-object PSObject[] 0
+
+        $fileExists = Test-Path -Path $PolFilePath
+        if (!$fileExists) { continue }
 		try 
 		{ 
 	        $pf = New-Object TJX.PolFileEditor.PolFile;
@@ -815,6 +824,8 @@ Process
 
 		$entries = [TJX.PolFileEditor.PolEntry[]] $pf.Entries.ToArray();
 
+        $totalSettings = $pf.Entries.ToArray().Count;
+
 		#create regex patterns from inputs
 		$SourceMatch = "office\\$SourceVersion";
 		$SourceMatch = $SourceMatch -replace "\.", "\.";
@@ -826,17 +837,18 @@ Process
 
 		[TJX.PolFileEditor.PolEntry[]]$entries_16 = @($entries | where {$_.KeyName -match $TargetMatch} );
 
+        $i=0
+         Write-Progress -Activity "Checking Group Policy Settings: $ConfigType" -status "Copying Settings..." -percentComplete ($i / $totalSettings*100)
 		#Find and copy each Policy but only if it doesn't already exist in the target location
 		foreach($entry in $entries_15) 
 		{
 			if($entry.KeyName -match $SourceMatch)
 			{
 				$keyName = [string]$entry.KeyName;
-
 				$newKeyName = $keyName.Replace($SourceVersion, $TargetVersion);
 
-				[string]$key;
-				[string]$compareClass;
+				[string]$key = "";
+				[string]$compareClass = "";
 
 				if($PolFilePath.Contains("Machine"))
 				{
@@ -850,15 +862,10 @@ Process
 				}       
 
 				$valueName = $entry.ValueName;
-        
-				$result = Get-GPRegistryValue -Name $SourceGpoName -Domain $domain -Key $key -ValueName $valueName;
-
+        		$result = Get-GPRegistryValue -Name $SourceGpoName -Domain $domain -Key $key -ValueName $valueName;
 				$hasValue = [System.Convert]::ToBoolean($result.HasValue);
-
 				$type = [string]$result.Type.ToString();
-
 				$newKey = $key.Replace($SourceVersion, $TargetVersion);
-
 
                 #get value to compare if exists in admx files
                 $compareKey = $newkey.Substring(5);
@@ -866,16 +873,16 @@ Process
                 $exists = $ExistingKeys | ? key -like $compareKey;
 
                 if($exists -ne $null){
-
 				    $alreadySet = $false;
-
 				    try
 				    {
 					    $existingKey = Get-GPRegistryValue -Name $SourceGpoName -Domain $domain -Key $newKey -ValueName $valueName -erroraction 'silentlycontinue';
-
+                        $object =  New-Object PSObject -Property @{GroupPolicy = $TargetGpoName; Key = $newKey; ValueName = $valueName; Type = $type; Value = $result.Value }
+                       $Results += $object
 					    if($existingKey.Value -eq $result.Value)
 					    {
 						    $alreadySet = $true;
+                            Write-Progress -Activity "Checking Group Policy Settings: $ConfigType" -status "Setting Already Exists" -percentComplete ($i / $totalSettings*100)
 					    }
 				    }
 				    catch
@@ -885,18 +892,31 @@ Process
 
 				    if(!$alreadySet)
 				    {
+                        Write-Progress -Activity "Checking Group Policy Settings: $ConfigType" -status "Copying Setting: $newKey\$valueName" -percentComplete ($i / $totalSettings*100)
+
 					    if($hasValue)
 					    {
-						    Set-GPRegistryValue -Name $TargetGpoName -Domain $domain -Key $newKey -ValueName $valueName -Type $type -Value $result.Value;
+						   $SetValue = Set-GPRegistryValue -Name $TargetGpoName -Domain $domain -Key $newKey -ValueName $valueName -Type $type -Value $result.Value;
+                           $object =  New-Object PSObject -Property @{GroupPolicy = $TargetGpoName; Key = $newKey; ValueName = $valueName; Type = $type; Value = $result.Value; Configuration = $ConfigType }
+                           $Results += $object
 					    }
 					    else
 					    {
-						    Set-GPRegistryValue -Name $TargetGpoName -Domain $domain -Key $newKey -ValueName $valueName -Type $type;
+						   $SetValue = Set-GPRegistryValue -Name $TargetGpoName -Domain $domain -Key $newKey -ValueName $valueName -Type $type;
+                           $object =  New-Object PSObject -Property @{GroupPolicy = $TargetGpoName; Key = $newKey; ValueName = $valueName; Type = $type; Configuration = $ConfigType }
+                           $Results += $object
 					    }
 				    }
+
+
                 }
 			}    
-   
+          $i++
 		}
+
+        $Results
 	}
+
+
+
 }
