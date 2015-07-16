@@ -1,0 +1,12 @@
+<Configuration>
+	<Add SourcePath="*SHARE*" OfficeClientEdition="*BITNESS*" Version="*VERSION*" >
+		<Product ID="O365ProPlusRetail">
+			<Language ID="en-us" />
+		</Product>    
+	</Add> 
+	<Updates Enabled="TRUE" UpdatePath="*SHARE*" TargetVersion="*VERSION*" />
+	<Display Level="None" AcceptEULA="TRUE" /> 
+	<Logging Path="%temp%" /> 
+	<Property Name="AUTOACTIVATE" Value="1" />
+	<Property Name="FORCEAPPSHUTDOWN" Value="TRUE" />
+</Configuration>
