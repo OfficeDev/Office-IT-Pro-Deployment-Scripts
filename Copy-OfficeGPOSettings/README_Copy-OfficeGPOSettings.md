@@ -16,7 +16,11 @@ Before running the script, you will need at least the following requirements
 
 		From the Run dialog type PowerShell.
 	
-2. Run the Copy-OfficeGPOSettings.ps1 script.
+2. Change directory to the location where the PowerShell Script is saved.
+
+		Example: cd C:\PowerShellScripts
+	
+3. Run the Copy-OfficeGPOSettings.ps1 script.
 
 		Type . .\Copy-OfficeGPOSettings.ps1 -SourceGPOName "Office Group Policy Name"
 
