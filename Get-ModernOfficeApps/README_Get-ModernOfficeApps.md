@@ -8,7 +8,7 @@ Remotely verify the modern apps installed on computers in a domain.
 
 ###Examples
 
-####Check for modern apps installed on specified computers:
+####Check for modern apps installed on remote computers:
 
 1. Open a PowerShell console.
 
