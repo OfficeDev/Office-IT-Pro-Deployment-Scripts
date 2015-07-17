@@ -1,6 +1,6 @@
-#Check for Modern Apps
+#Check for Modern Office Apps
 
-Remotely verify the modern apps installed on computers in a domain.
+List the Modern Office apps installed on the local or remote computers
 
 ###**Pre-requisites**
 
