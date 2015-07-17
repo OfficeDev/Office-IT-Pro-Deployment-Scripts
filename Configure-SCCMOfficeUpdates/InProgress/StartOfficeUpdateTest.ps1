@@ -38,6 +38,10 @@ New-CMProgram -PackageName "O365Update" -StandardProgramName "Office Updater" -C
 
 $program = Get-CMProgram -PackageName "O365Update" -ProgramName "Office Updater"
 $program.SupportedOperatingSystems = GetSupportedPlatforms
+# Set to use specified client platforms, See - https://msdn.microsoft.com/en-us/library/hh949572.aspx, ProgramFlags
+$anyPlatform = 0x08000000 #Define the flag as a Constant since we can't find an enum for it.
+$newFlags = $program.ProgramFlags -band (-bnot $anyPlatform) 
+$program.ProgramFlags = $newFlags
 $program.Put()
 
 Start-CMContentDistribution -PackageName "O365Update" -CollectionName "TestCollection" -DistributionPointGroupName "TestDPGroup" 
