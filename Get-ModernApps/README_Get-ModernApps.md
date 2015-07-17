@@ -28,14 +28,10 @@ Remotely verify the modern apps installed on computers in a domain.
 
             Example: cd C:\PowerShellScripts
             
-3. Create a variable for an array of computers
+3. Run the script for specified computers or against an array you have created.
 
-            Example: $myarr = ("Computer1","Computer2")
+            Example: .\Get-ModernAppsRemotely.ps1 -ComputerNames ( $myArray )
             
-4. Run the script against the new array
-
-            Example: .\Get-ModernAppsRemotely.ps1 -ComputerNames ( $myarray )
-            
-5. Enter the credentials of an administrator account.
+4. Enter the credentials of an administrator account if requested.
 
 
