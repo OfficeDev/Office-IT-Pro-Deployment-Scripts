@@ -10,7 +10,7 @@ Query a local or remote workstations to find the version of Office that is insta
 ### Copy-OfficeGPOSettings
 Automate the process of moving from an existing version of Office to a newer version while retaining the current set of group policies. 
 
-### Get-OfficeModernApps (In-Development)
+### Get-OfficeModernApps
 Remotely verify the modern apps installed on client machines across a domain.
 
 ## New to PowerShell and Office 365?
