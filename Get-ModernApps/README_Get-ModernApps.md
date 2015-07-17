@@ -14,7 +14,7 @@ Remotely verify the modern apps installed on computers in a domain.
 
             Example: cd C:\PowerShellScripts
             
-3. Type Get-ModernAppsRemotely.ps1 and press Enter.
+3. Type .\Get-ModernAppsRemotely.ps1 and press Enter.
 
 4. Enter the credentials of an administrator account.
 
