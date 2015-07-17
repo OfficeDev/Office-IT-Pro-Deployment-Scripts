@@ -4,13 +4,13 @@ This repo is a collection of useful PowerShell scripts to make deploying Office 
 ## Scripts
 For more detailed documentation of each script, check the readme file in the corresponding folder
 
-### CheckOfficeVersion
+### Get-OfficeVersion
 Query a local or remote workstations to find the version of Office that is installed.
 
-### CheckModernApps
+### Get-ModernApps
 Remotely verify the modern apps installed on client machines across a domain.
 
-### CopyOfficePolicies
+### Copy-OfficePolicies
 Automate the process of moving from an existing version of Office to a newer version while retaining the current set of group policies. 
 
 ## New to PowerShell and Office 365?
