@@ -20,11 +20,11 @@ Remotely verify the modern apps installed on computers in a domain.
             
 2. Run the Script. With no parameters specified the script will return the locally installed Office Version.
 
-	Type . .\Get-ModernOfficeApps.ps1
+           Type . .\Get-ModernOfficeApps.ps1
 
-	By including the additional period before the relative script path you are 'Dot-Sourcing' 
-	the PowerShell function in the script into your PowerShell session which will allow you to 
-	run the function 'Get-ModernOfficeApps' from the console.
+           By including the additional period before the relative script path you are 'Dot-Sourcing' 
+           the PowerShell function in the script into your PowerShell session which will allow you to 
+           run the function 'Get-ModernOfficeApps' from the console.
 	
 3. Run the script for specified computers or against an array you have created.
 
