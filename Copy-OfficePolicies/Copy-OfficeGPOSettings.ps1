@@ -1,16 +1,35 @@
-﻿<#
+﻿[CmdletBinding(SupportsShouldProcess=$true)]
+Param
+(
+
+    [Parameter(Mandatory=$True)]
+    [string] $SourceGPOName,
+
+	[Parameter()]
+	[string] $TargetGPOName = $SourceGPOName,
+
+    [Parameter()]
+    [string] $SourceVersion = "15.0",
+
+	[Parameter()]
+	[string] $TargetVersion ="16.0"
+
+)
+
+function Copy-OfficeGPOSettings {
+<#
 .SYNOPSIS
-Copies Group Policies between Office Versions. Defaults to: 15 to 16
+Copies Group Policies between Office Versions. Defaults to: 15 (Office 2013) to 16 (Office 2016)
 
 .DESCRIPTION
 Given a source, target, and the filepath to C# support file, this cmdlet finds all the office 15 policies
 in the source that are associated with the source and copies them over to the target as office 16 policies.
 
 .PARAMETER SourceGPOName
-The Name of the GPO that you wish to transfer office policies from. Defaults to 15.0
+The Name of the GPO that you wish to transfer office policies from. Defaults to 15.0 (Office 2013)
 
 .PARAMETER TargetGPOName
-The Name of the GPO that you wish to transfer office policies to. Defaults to 16.0
+The Name of the GPO that you wish to transfer office policies to. Defaults to 16.0 (Office 2016)
 
 .PARAMETER SourceVersion
 The version number of the office settings to copy
@@ -19,12 +38,12 @@ The version number of the office settings to copy
 THe version number of the office settings to set
 
 .Example
-./Copy-OfficePolicies -SourceGPOName "myGPO"
-Default copy the office 15.0 (2013) policies within myGPO to office 16.0 (2016) policies within myGPO
+./Copy-OfficePolicies -SourceGPOName "Office Settings"
+Default copy the office 15.0 (2013) policies within 'Office Settings' to office 16.0 (2016) policies within 'Office Settings'
 
 .Example
-./Copy-OfficePolicies -SourceGPOName "myGPO" -SourceVersion "14.0" -TargetVersion "15.0"
-Copy the office 14.0 (2010) policies within myGPO to office 15.0 (2013) policies within myGPO
+./Copy-OfficePolicies -SourceGPOName "Office Settings" -SourceVersion "14.0" -TargetVersion "15.0"
+Copy the office 14.0 (2010) policies within 'Office Settings' to office 15.0 (2013) policies within 'Office Settings'
 
 .Inputs
 System.String
@@ -59,6 +78,11 @@ Param
 
 )
 Begin{
+    $defaultDisplaySet = 'GroupPolicy','Key', 'ValueName', 'Type', 'Value', 'Configuration'
+
+    $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet(‘DefaultDisplayPropertySet’,[string[]]$defaultDisplaySet)
+    $PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultDisplayPropertySet)
+
 	$assemblies = ('System', 'mscorlib', 'System.IO');
 	$sourceCode = @'
 	// FROM: https://gallery.technet.microsoft.com/Read-or-modify-Registrypol-778fed6e
@@ -773,8 +797,13 @@ namespace TJX.PolFileEditor
 }
 '@;
 }
+
+
+
 Process
 {
+    Import-Module ServerManager
+
 	#Get Policy file paths both machine and user
 	$GPO = Get-GPO -Name $SourceGPOName;
 	$ID = $GPO.Id;
@@ -801,14 +830,16 @@ Process
 	#Get Policy File reader object
 	Add-Type -TypeDefinition $sourceCode -ReferencedAssemblies $assemblies -ErrorAction STOP;
 
+    $sourceCount=0;
+    $targetCount=0;
+    $results = new-object PSObject[] 0
+
 	foreach($PolFilePath in $Paths)
  	{
         $ConfigType = "Machine"
         if ($PolFilePath -match '\\User\\') {
            $ConfigType = "User"
         }
-
-        $results = new-object PSObject[] 0
 
         $fileExists = Test-Path -Path $PolFilePath
         if (!$fileExists) { continue }
@@ -824,8 +855,6 @@ Process
 
 		$entries = [TJX.PolFileEditor.PolEntry[]] $pf.Entries.ToArray();
 
-        $totalSettings = $pf.Entries.ToArray().Count;
-
 		#create regex patterns from inputs
 		$SourceMatch = "office\\$SourceVersion";
 		$SourceMatch = $SourceMatch -replace "\.", "\.";
@@ -833,13 +862,19 @@ Process
 		$TargetMatch = $TargetMatch -replace "\.", "\.";
 
 		#Get entries corresponding to source and target locations
-		[TJX.PolFileEditor.PolEntry[]]$entries_15 = @($entries | where {$_.KeyName -match $SourceMatch} );
-
+		[TJX.PolFileEditor.PolEntry[]]$entries_15 = @($entries | where {$_.KeyName -match $SourceMatch} )
 		[TJX.PolFileEditor.PolEntry[]]$entries_16 = @($entries | where {$_.KeyName -match $TargetMatch} );
+
+
+        if ($entries_15) { $sourceCount += $entries_15.Count; }
+        if ($entries_16) { $targetCount += $entries_16.Count; }
 
         $i=0
          Write-Progress -Activity "Checking Group Policy Settings: $ConfigType" -status "Copying Settings..." -percentComplete ($i / $totalSettings*100)
 		#Find and copy each Policy but only if it doesn't already exist in the target location
+
+        $totalSettings = $entries_15.Count;
+
 		foreach($entry in $entries_15) 
 		{
 			if($entry.KeyName -match $SourceMatch)
@@ -877,12 +912,14 @@ Process
 				    try
 				    {
 					    $existingKey = Get-GPRegistryValue -Name $SourceGpoName -Domain $domain -Key $newKey -ValueName $valueName -erroraction 'silentlycontinue';
-                        $object =  New-Object PSObject -Property @{GroupPolicy = $TargetGpoName; Key = $newKey; ValueName = $valueName; Type = $type; Value = $result.Value }
-                       $Results += $object
+                        $object =  New-Object PSObject -Property @{GroupPolicy = $TargetGpoName; Key = $newKey; ValueName = $valueName; Type = $type; Value = $result.Value; Configuration = $ConfigType }
+
+                        $object | Add-Member MemberSet PSStandardMembers $PSStandardMembers
+
 					    if($existingKey.Value -eq $result.Value)
 					    {
 						    $alreadySet = $true;
-                            Write-Progress -Activity "Checking Group Policy Settings: $ConfigType" -status "Setting Already Exists" -percentComplete ($i / $totalSettings*100)
+                            Write-Progress -Activity "Checking Group Policy Settings: $ConfigType" -status "Setting Already Exists: $newKey\$valueName" -percentComplete ($i / $totalSettings*100)
 					    }
 				    }
 				    catch
@@ -898,14 +935,15 @@ Process
 					    {
 						   $SetValue = Set-GPRegistryValue -Name $TargetGpoName -Domain $domain -Key $newKey -ValueName $valueName -Type $type -Value $result.Value;
                            $object =  New-Object PSObject -Property @{GroupPolicy = $TargetGpoName; Key = $newKey; ValueName = $valueName; Type = $type; Value = $result.Value; Configuration = $ConfigType }
-                           $Results += $object
 					    }
 					    else
 					    {
 						   $SetValue = Set-GPRegistryValue -Name $TargetGpoName -Domain $domain -Key $newKey -ValueName $valueName -Type $type;
                            $object =  New-Object PSObject -Property @{GroupPolicy = $TargetGpoName; Key = $newKey; ValueName = $valueName; Type = $type; Configuration = $ConfigType }
-                           $Results += $object
 					    }
+
+                        $object | Add-Member MemberSet PSStandardMembers $PSStandardMembers
+                        $Results += $object
 				    }
 
 
@@ -913,10 +951,24 @@ Process
 			}    
           $i++
 		}
-
-        $Results
+        
 	}
 
+    Write-Host
 
+    if ($sourceCount -eq 0 -and $targetCount -eq 0) {
+        Write-Host "No Office settings are configured in the source Group Policy Object"
+    } else {
+        if ($Results.Count -eq 0) {
+            Write-Host "All Office settings have already been copied"
+        }
+    }
+
+    $Results
 
 }
+
+}
+
+Copy-OfficeGPOSettings -SourceGPOName $SourceGPOName -TargetGPOName $TargetGPOName -SourceVersion $SourceVersion -TargetVersion $TargetVersion
+
