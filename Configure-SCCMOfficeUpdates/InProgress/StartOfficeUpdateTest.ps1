@@ -6,7 +6,7 @@ function GetSupportedPlatforms
 
     $requiredPlatformNames = @("All x86 Windows 7 Client", "All x64 Windows 7 Client", "All x86 Windows 8 Client", "All x64 Windows 8 Client", "All Windows 10 Professional/Enterprise and higher (32-bit) Client", "All Windows 10 Professional/Enterprise and higher (64-bit) Client")
 
-    $filteredPlatforms = Get-WmiObject -ComputerName $computerName -Class SMS_SupportedPlatforms -Namespace "root\sms\site_$siteCode" | Where-Object {$_.IsSupported -eq $true -and  $_.OSName -like 'Win NT' -and ($_.OSMinVersion -match "6\.[0-9]{1,2}\.[0-9]{1,4}\.[0-9]{1,4}" -or $_.OSMinVersion -match "10\.[0-9]{1,2}\.[0-9]{1,4}\.[0-9]{1,4}" ) -and ($_.OSPlatform -like 'I386' -or $_.OSPlatform -like 'x64' )}
+    $filteredPlatforms = Get-WmiObject -ComputerName $computerName -Class SMS_SupportedPlatforms -Namespace "root\sms\site_$siteCode" | Where-Object {$_.IsSupported -eq $true -and  $_.OSName -like 'Win NT' -and ($_.OSMinVersion -match "6\.[0-9]{1,2}\.[0-9]{1,4}\.[0-9]{1,4}" -or $_.OSMinVersion -match "10\.[0-9]{1,2}\.[0-9]{1,4}\.[0-9]{1,4}") -and ($_.OSPlatform -like 'I386' -or $_.OSPlatform -like 'x64')}
 
     $requiredPlatforms = $filteredPlatforms| Where-Object {$requiredPlatformNames.Contains($_.DisplayText) } #| Select DisplayText, OSMaxVersion, OSMinVersion, OSName, OSPlatform | Out-GridView
 
@@ -28,11 +28,11 @@ function GetSupportedPlatforms
     $supportedPlatforms
 }
 
-New-CMPackage -Name "O365Update" -Path "\\officeautosc-dc\Shares\Office"
+New-CMPackage -Name "O365Update" -Path "\\officeautosc-dc\Shares\Office" #Path - Make Parameter 
 
 $package = Get-CMPackage -Name "O365Update"
 
-Set-CMPackage -Name "O365Update" -Priority High -EnableBinaryDeltaReplication $true
+Set-CMPackage -Name "O365Update" -Priority High -EnableBinaryDeltaReplication $true #EnableBinaryDeltaReplication - Make Parameter
 
 New-CMProgram -PackageName "O365Update" -StandardProgramName "Office Updater" -CommandLine 'SCO365PPTrigger.exe -EnableLogging true -C2RArgs "Setup.exe /Configure confguration.xml"' -ProgramRunType WhetherOrNotUserIsLoggedOn -RunMode RunWithAdministrativeRights -UserInteraction $false -RunType Hidden -WorkingDirectory "\\officeautosc-dc\shares\office"
 
