@@ -156,7 +156,7 @@ namespace DiskSpaceChecker
             {
                 if (dre.Name.ToUpper() == "C:\\")
                 {
-                    dre.FreeSpace = drvSpace.TotalFreeSpace;
+                    dre.FreeSpace = drvSpace.AvailableFreeSpace;
                     break;
                 }
             }
@@ -164,7 +164,7 @@ namespace DiskSpaceChecker
             var xlWorkBook = xlApp.Workbooks.Open(SourceFilePath);
             var csvBook = xlApp.Workbooks.Open(csvPath);
             csvBook.SaveAs("C:\\Users\\Public\\Documents\\csvTemp.xlsx", XlFileFormat.xlOpenXMLWorkbook, Type.Missing, Type.Missing, false, false, XlSaveAsAccessMode.xlNoChange, XlSaveConflictResolution.xlLocalSessionChanges, Type.Missing, Type.Missing); 
-            csvBook.Close();
+            csvBook.Close();;
             var csvBook2 = xlApp.Workbooks.Open("C:\\Users\\Public\\Documents\\csvTemp.xlsx");
             var csvSheet = (Microsoft.Office.Interop.Excel.Worksheet)(csvBook2.Worksheets.get_Item(1));
             var dataSheet = (Microsoft.Office.Interop.Excel.Worksheet)(xlWorkBook.Worksheets.get_Item(3));
@@ -172,6 +172,8 @@ namespace DiskSpaceChecker
             try
             {
                 xlWorkBook.SaveAs(DestinationFilePath, XlFileFormat.xlOpenXMLWorkbook, Type.Missing, Type.Missing, false, false, XlSaveAsAccessMode.xlNoChange, XlSaveConflictResolution.xlLocalSessionChanges, Type.Missing, Type.Missing); 
+                xlWorkBook.Close();
+                csvBook2.Close();
             }
             catch
             {
@@ -179,8 +181,6 @@ namespace DiskSpaceChecker
             }
             finally
             {
-                xlWorkBook.Close();
-                csvBook.Close();
                 xlApp.Quit();
             }
         }
@@ -267,6 +267,7 @@ namespace DiskSpaceChecker
 
 Process{
     $csvTempPath = "C:\Users\Public\Documents\test.csv"
+    New-Item -Path "C:\Users\Public\Documents\csvTemp.xlsx" -type file
 	Add-Type -TypeDefinition $sourceCode -ReferencedAssemblies $assemblies -ErrorAction STOP;
     $checker = New-Object DiskSpaceChecker.DiskChecker
     $dInfo = New-Object System.IO.DirectoryInfo $DirectoryPath
