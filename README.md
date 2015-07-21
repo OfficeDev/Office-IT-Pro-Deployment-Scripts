@@ -13,6 +13,11 @@ Remotely verify the modern apps installed on client machines across a domain.
 ### Copy-OfficePolicies
 Automate the process of moving from an existing version of Office to a newer version while retaining the current set of group policies. 
 
+### Check-DiskSpace
+Checks the space of a disk storing the results in a file
+
+### Configure-SCCMOfficeUpdates
+
 ## New to PowerShell and Office 365?
 Check out [PowerShell for Office 365](https://poweshell.office.com) for advice on getting started, key scenarios and script samples.  
 
@@ -31,4 +36,9 @@ This is high level plan for contributing and the structure that we have in place
 <LI>Pull requests should only be made from the feature branch after the script is tested and useable
 <LI>After the code review is complete a pull request will be made from the development branch into the master branch
 <LI>Changes to scripts (new functionality or bug fix) should be done at the thrid level (feature branches) by cloning the development branch using the naming conventions above
+<LI>Requests for changes to scripts can be made by submitting an issue and using the appropriate tag
+<UL>
+<LI>For additional features to an existing script, use the label "enhancement"
+<LI>For bugs, use the label "bug"
+<LI>All issues will be reviewed and prioritized each day as we work to add new scripts and improve existing ones</UL>
 </UL>
