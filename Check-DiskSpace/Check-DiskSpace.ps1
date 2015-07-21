@@ -141,67 +141,48 @@ namespace DiskSpaceChecker
                 FileSize = totalSize,
                 FileCount = fileCount,
                 DirectorySize = directorySize,
+                FreeSpace = 0,
                 AccessAllowed = accessAllowed
             };
 
             DirectorySizeInfos.Add(dirSizeInfo);
         }
 
-        public void WriteData(string DestinationFilePath, string SourceFilePath)
+        public void WriteData(string DestinationFilePath, string SourceFilePath, string csvPath)
         {
+
             var drvSpace = GetTotalFreeSpace("C:\\");
+            foreach (DirectorySizeInfo dre in DirectorySizeInfos)
+            {
+                if (dre.Name.ToUpper() == "C:\\")
+                {
+                    dre.FreeSpace = drvSpace.TotalFreeSpace;
+                    break;
+                }
+            }
             var xlApp = new Microsoft.Office.Interop.Excel.Application();
             var xlWorkBook = xlApp.Workbooks.Open(SourceFilePath);
-            var dataSheet = (Microsoft.Office.Interop.Excel.Worksheet)(xlWorkBook.Worksheets.get_Item(4));
-            dataSheet.Cells.Clear();
-            var drvEntrys = DirectorySizeInfos.Where(d => d.Name.ToUpper() == "C:\\");
-            var drvEntry = drvEntrys.FirstOrDefault();
-            //first line entry
-            dataSheet.Cells[1, 1] = "Id";
-            dataSheet.Cells[1, 2] = "ParentId";
-            dataSheet.Cells[1, 3] = "Name";
-            dataSheet.Cells[1, 4] = "Type";
-            dataSheet.Cells[1, 5] = "Path";
-            dataSheet.Cells[1, 6] = "FileCount";
-            dataSheet.Cells[1, 7] = "FileSize";
-            dataSheet.Cells[1, 8] = "SubDirectorySize";
-            dataSheet.Cells[1, 9] = "TotalSize";
-            dataSheet.Cells[1, 10] = "FreeSpace";
-            dataSheet.Cells[1, 11] = "AccessAllowed";
-            if (drvEntry != null)
+            var csvBook = xlApp.Workbooks.Open(csvPath);
+            csvBook.SaveAs("C:\\Users\\Public\\Documents\\csvTemp.xlsx", XlFileFormat.xlOpenXMLWorkbook, Type.Missing, Type.Missing, false, false, XlSaveAsAccessMode.xlNoChange, XlSaveConflictResolution.xlLocalSessionChanges, Type.Missing, Type.Missing); 
+            csvBook.Close();
+            var csvBook2 = xlApp.Workbooks.Open("C:\\Users\\Public\\Documents\\csvTemp.xlsx");
+            var csvSheet = (Microsoft.Office.Interop.Excel.Worksheet)(csvBook2.Worksheets.get_Item(1));
+            var dataSheet = (Microsoft.Office.Interop.Excel.Worksheet)(xlWorkBook.Worksheets.get_Item(3));
+            csvSheet.Copy(Type.Missing, dataSheet);
+            try
             {
-                dataSheet.Cells[2, 1] = drvEntry.Id;
-                dataSheet.Cells[2, 2] = drvEntry.ParentId;
-                dataSheet.Cells[2, 3] = drvEntry.Name;
-                dataSheet.Cells[2, 4] = "Drive";
-                dataSheet.Cells[2, 5] = drvEntry.Path;
-                dataSheet.Cells[2, 6] = drvEntry.FileCount;
-                dataSheet.Cells[2, 7] = drvEntry.FileSize;
-                dataSheet.Cells[2, 8] = drvEntry.DirectorySize;
-                dataSheet.Cells[2, 9] = drvSpace.TotalSize;
-                dataSheet.Cells[2, 10] = drvSpace.TotalFreeSpace;
-                dataSheet.Cells[2, 11] = "true";
+                xlWorkBook.SaveAs(DestinationFilePath, XlFileFormat.xlOpenXMLWorkbook, Type.Missing, Type.Missing, false, false, XlSaveAsAccessMode.xlNoChange, XlSaveConflictResolution.xlLocalSessionChanges, Type.Missing, Type.Missing); 
             }
+            catch
+            {
 
-            long row = 3;
-            foreach (var d in DirectorySizeInfos.Where(d => d.Name.ToUpper() != "C:\\"))
-            {
-                dataSheet.Cells[row, 1] = d.Id;
-                dataSheet.Cells[row, 2] = d.ParentId;
-                dataSheet.Cells[row, 3] = d.Name;
-                dataSheet.Cells[row, 4] = d.Type;
-                dataSheet.Cells[row, 5] = d.Path;
-                dataSheet.Cells[row, 6] = d.FileCount;
-                dataSheet.Cells[row, 7] = d.FileSize;
-                dataSheet.Cells[row, 8] = d.DirectorySize;
-                dataSheet.Cells[row, 9] = (d.FileSize + d.DirectorySize);
-                dataSheet.Cells[row, 10] = 0;
-                dataSheet.Cells[row, 11] = d.AccessAllowed;
-                row++;
             }
-            xlWorkBook.SaveAs(DestinationFilePath);
-            xlWorkBook.Close();
-            xlApp.Quit();
+            finally
+            {
+                xlWorkBook.Close();
+                csvBook.Close();
+                xlApp.Quit();
+            }
         }
 
         private DriveInfo GetTotalFreeSpace(string driveName)
@@ -214,6 +195,13 @@ namespace DiskSpaceChecker
                 }
             }
             return null;
+        }
+
+        public void Reset()
+        {
+            DirectorySizeInfos = new List<DirectorySizeInfo>();
+            IdTracker = 0;
+            IdTrackers = new List<IdTracking>();
         }
 
         public List<DirectorySizeInfo> DirectorySizeInfos = new List<DirectorySizeInfo>();
@@ -267,6 +255,8 @@ namespace DiskSpaceChecker
 
         public long DirectorySize { get; set; }
 
+        public long FreeSpace { get; set; }
+
         public long FileCount { get; set; }
     }
 
@@ -276,10 +266,12 @@ namespace DiskSpaceChecker
 }
 
 Process{
-
+    $csvTempPath = "C:\Users\Public\Documents\test.csv"
 	Add-Type -TypeDefinition $sourceCode -ReferencedAssemblies $assemblies -ErrorAction STOP;
     $checker = New-Object DiskSpaceChecker.DiskChecker
     $dInfo = New-Object System.IO.DirectoryInfo $DirectoryPath
     $checker.DirectorySize($dInfo, 0);
-    $checker.WriteData($ResultFilePath, $ExcelSourcePath);
+    $checker.DirectorySizeInfos | Export-Csv $csvTempPath
+    $checker.WriteData($ResultFilePath, $ExcelSourcePath, $csvTempPath);
+    $checker.Reset();
 }
