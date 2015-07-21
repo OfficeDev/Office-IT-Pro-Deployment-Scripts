@@ -1,17 +1,11 @@
 <Configuration>
-
-   <Add OfficeClientEdition="64">
+  <Add OfficeClientEdition="64" Version="15.0.4737.1003">
     <Product ID="O365ProPlusRetail">
       <Language ID="en-us" />
-    </Product>    
-  </Add> 
-
+    </Product>
+  </Add>
   <!--  <Updates Enabled="TRUE" UpdatePath="\\Server\Share\" /> -->
-
   <!--  <Display Level="None" AcceptEULA="TRUE" />  -->
-
   <!--  <Logging Path="%temp%" />  -->
-
   <!--  <Property Name="AUTOACTIVATE" Value="1" />  -->
-
 </Configuration>
