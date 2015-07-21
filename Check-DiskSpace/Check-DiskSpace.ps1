@@ -6,11 +6,18 @@ Checks the space of a disk storing the results in a file
 Path of the Directory space you would like to measure. Defaults to C:\
 
 .PARAMETER ResultFilePath
-Path of the file you would like to store the results in. Defaults to CurrentDirectory\FolderData.txt
+Path of the file you would like to store the results in. Defaults to Public\Documents\FolderData.xlsx
+
+.PARAMETER ExcelSourcePath
+Path of the template file that the result file will be based off of (raw results always placed in 4th spreadsheet). Defaults to Public\Documents\ExcelTemplate.xlsx
 
 .Example
 ./Check-DiskSpace.ps1
-Checks the disk space of C drive and stores the result in CurrentDirectory\FolderData.txt
+Checks the disk space of C drive and stores the result in Public\Documents\FolderData.xlsx based on the file Public\Documents\ExcelTemplate.xlsx
+
+.Notes
+There is a bug in the excel file conversions so as a workaround a dummy file had to be created.
+The user will have to accept the overwrite of this dummy file to continue.
 
 
 #>
