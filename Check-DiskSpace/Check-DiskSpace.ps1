@@ -15,10 +15,6 @@ Path of the template file that the result file will be based off of (raw results
 ./Check-DiskSpace.ps1
 Checks the disk space of C drive and stores the result in Public\Documents\FolderData.xlsx based on the file Public\Documents\ExcelTemplate.xlsx
 
-.Notes
-There is a bug in the excel file conversions so as a workaround a dummy file had to be created.
-The user will have to accept the overwrite of this dummy file to continue.
-
 
 #>
 [CmdletBinding()]
@@ -168,6 +164,7 @@ namespace DiskSpaceChecker
                 }
             }
             var xlApp = new Microsoft.Office.Interop.Excel.Application();
+	    xlApp.DisplayAlerts = false;
             var xlWorkBook = xlApp.Workbooks.Open(SourceFilePath);
             var csvBook = xlApp.Workbooks.Open(csvPath);
             csvBook.SaveAs("C:\\Users\\Public\\Documents\\csvTemp.xlsx", XlFileFormat.xlOpenXMLWorkbook, Type.Missing, Type.Missing, false, false, XlSaveAsAccessMode.xlNoChange, XlSaveConflictResolution.xlLocalSessionChanges, Type.Missing, Type.Missing); 
@@ -178,9 +175,8 @@ namespace DiskSpaceChecker
             csvSheet.Copy(Type.Missing, dataSheet);
             try
             {
-                xlWorkBook.SaveAs(DestinationFilePath, XlFileFormat.xlOpenXMLWorkbook, Type.Missing, Type.Missing, false, false, XlSaveAsAccessMode.xlNoChange, XlSaveConflictResolution.xlLocalSessionChanges, Type.Missing, Type.Missing); 
-                xlWorkBook.Close();
-                csvBook2.Close();
+                xlWorkBook.Close(true, DestinationFilePath);
+                csvBook2.Close(false);
             }
             catch
             {
@@ -274,7 +270,6 @@ namespace DiskSpaceChecker
 
 Process{
     $csvTempPath = "C:\Users\Public\Documents\test.csv"
-    New-Item -Path "C:\Users\Public\Documents\csvTemp.xlsx" -type file
 	Add-Type -TypeDefinition $sourceCode -ReferencedAssemblies $assemblies -ErrorAction STOP;
     $checker = New-Object DiskSpaceChecker.DiskChecker
     $dInfo = New-Object System.IO.DirectoryInfo $DirectoryPath
