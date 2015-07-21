@@ -1,9 +1,7 @@
+[CmdletBinding(SupportsShouldProcess=$true)]
 param(
-    [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
     [string[]]$ComputerName = $env:COMPUTERNAME,
-    [Parameter(Position=1)]
     [switch]$ShowAllInstalledProducts,
-    [Parameter(Position=2)]
     [System.Management.Automation.PSCredential]$Credentials
 )
 
@@ -43,7 +41,7 @@ Description:
 Will return the installed Office product on the remote computers
 
 .EXAMPLE
-Get-RemoteProgram | select *
+Get-OfficeVersion | select *
 
 Description:
 Will return the locally installed Office product with all of the available properties
@@ -51,13 +49,9 @@ Will return the locally installed Office product with all of the available prope
 #>
 [CmdletBinding(SupportsShouldProcess=$true)]
 param(
-    [Parameter(ValueFromPipeline=$true,
-        ValueFromPipelineByPropertyName=$true,
-        Position=0)]
+    [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
     [string[]]$ComputerName = $env:COMPUTERNAME,
-    [Parameter(Position=1)]
     [switch]$ShowAllInstalledProducts,
-    [Parameter(Position=2)]
     [System.Management.Automation.PSCredential]$Credentials
 )
 
@@ -83,6 +77,8 @@ begin {
 
 process {
 
+ $results = new-object PSObject[] 0;
+
  foreach ($computer in $ComputerName) {
     if ($Credentials) {
        $os=Get-WMIObject win32_operatingsystem -computername $computer -Credential $Credentials
@@ -103,6 +99,7 @@ process {
     $PackageList = New-Object -TypeName System.Collections.ArrayList
     $ClickToRunPathList = New-Object -TypeName System.Collections.ArrayList
     $ConfigItemList = New-Object -TypeName System.Collections.ArrayList
+    $ClickToRunList = new-object PSObject[] 0;
 
     foreach ($regKey in $officeKeys) {
        $officeVersion = $regProv.EnumKey($HKLM, $regKey)
@@ -120,21 +117,37 @@ process {
                $Add = $ConfigItemList.Add($configId.ToUpper())
             }
 
+            $cltr = New-Object -TypeName PSObject
+            $cltr | Add-Member -MemberType NoteProperty -Name InstallPath -Value ""
+            $cltr | Add-Member -MemberType NoteProperty -Name UpdatesEnabled -Value $false
+            $cltr | Add-Member -MemberType NoteProperty -Name UpdateUrl -Value ""
+            $cltr | Add-Member -MemberType NoteProperty -Name StreamingFinished -Value $false
+            $cltr | Add-Member -MemberType NoteProperty -Name Platform -Value ""
+            $cltr | Add-Member -MemberType NoteProperty -Name ClientCulture -Value ""
+            
             $packagePath = join-path $path "Common\InstalledPackages"
             $clickToRunPath = join-path $path "ClickToRun\Configuration"
             $virtualInstallPath = $regProv.GetStringValue($HKLM, $clickToRunPath, "InstallationPath").sValue
+
             if ($virtualInstallPath) {
-              if (!$ClickToRunPathList.Contains($virtualInstallPath.ToUpper())) {
-                  $AddItem = $ClickToRunPathList.Add($virtualInstallPath.ToUpper())
-              }
+
             } else {
               $clickToRunPath = join-path $regKey "ClickToRun\Configuration"
               $virtualInstallPath = $regProv.GetStringValue($HKLM, $clickToRunPath, "InstallationPath").sValue
-              if ($virtualInstallPath) {
-                if (!$ClickToRunPathList.Contains($virtualInstallPath.ToUpper())) {
-                    $AddItem = $ClickToRunPathList.Add($virtualInstallPath.ToUpper())
-                }
-              }
+            }
+
+            if ($virtualInstallPath) {
+               if (!$ClickToRunPathList.Contains($virtualInstallPath.ToUpper())) {
+                  $AddItem = $ClickToRunPathList.Add($virtualInstallPath.ToUpper())
+               }
+
+               $cltr.InstallPath = $virtualInstallPath
+               $cltr.StreamingFinished = $regProv.GetStringValue($HKLM, $clickToRunPath, "StreamingFinished").sValue
+               $cltr.UpdatesEnabled = $regProv.GetStringValue($HKLM, $clickToRunPath, "UpdatesEnabled").sValue
+               $cltr.UpdateUrl = $regProv.GetStringValue($HKLM, $clickToRunPath, "UpdateUrl").sValue
+               $cltr.Platform = $regProv.GetStringValue($HKLM, $clickToRunPath, "Platform").sValue
+               $cltr.ClientCulture = $regProv.GetStringValue($HKLM, $clickToRunPath, "ClientCulture").sValue
+               $ClickToRunList += $cltr
             }
 
             $packageItems = $regProv.EnumKey($HKLM, $packagePath)
@@ -162,6 +175,8 @@ process {
           }
        }
     }
+
+    
 
     foreach ($regKey in $installKeys) {
         $keyList = new-object System.Collections.ArrayList
@@ -221,11 +236,31 @@ process {
            $version = $regProv.GetStringValue($HKLM, $path, "DisplayVersion").sValue
            $modifyPath = $regProv.GetStringValue($HKLM, $path, "ModifyPath").sValue 
 
+           $cltrUpdatedEnabled = $NULL
+           $cltrUpdateUrl = $NULL
+           $clientCulture = $NULL;
+
            [string]$clickToRun = $false
            if ($ClickToRunPathList.Contains($installPath.ToUpper())) {
                $clickToRun = $true
                if ($name.ToUpper().Contains("MICROSOFT OFFICE")) {
                   $primaryOfficeProduct = $true
+               }
+
+               foreach ($cltr in $ClickToRunList) {
+                 if ($cltr.InstallPath) {
+                   if ($cltr.InstallPath.ToUpper() -eq $installPath.ToUpper()) {
+                       $cltrUpdatedEnabled = $cltr.UpdatesEnabled
+                       $cltrUpdateUrl = $cltr.UpdateUrl
+                       if ($cltr.Platform -eq 'x64') {
+                           $buildType = "64-Bit" 
+                       }
+                       if ($cltr.Platform -eq 'x86') {
+                           $buildType = "32-Bit" 
+                       }
+                       $clientCulture = $cltr.ClientCulture
+                   }
+                 }
                }
            }
            
@@ -235,17 +270,18 @@ process {
               }
            }
 
-           $object = [pscustomobject]@{DisplayName = $name; Version = $version; InstallPath = $installPath; ClickToRun = $clickToRun; Bitness=$buildType; ComputerName=$computer }
-           $object.PSObject.TypeNames.Insert(0,'Office.Information')
+           $object = New-Object PSObject -Property @{DisplayName = $name; Version = $version; InstallPath = $installPath; ClickToRun = $clickToRun; 
+                     Bitness=$buildType; ComputerName=$computer; ClickToRunUpdatesEnabled=$cltrUpdatedEnabled; ClickToRunUpdateUrl=$cltrUpdateUrl;
+                     ClientCulture=$clientCulture }
            $object | Add-Member MemberSet PSStandardMembers $PSStandardMembers
-
-           $object
+           $results += $object
 
         }
     }
 
   }
 
+  return $results;
 }
 
 }
