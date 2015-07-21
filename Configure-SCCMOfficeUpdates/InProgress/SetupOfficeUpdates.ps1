@@ -27,7 +27,8 @@ function GetSupportedPlatforms([String[]] $requiredPlatformNames)
 
 function SetupOfficeUpdates
 {
-	Param
+    [CmdletBinding()]	
+    Param
 	(
 		[Parameter()]
 		[String]$packageName = "O365Update",
@@ -54,29 +55,48 @@ function SetupOfficeUpdates
 		[string]$distributionPointGroupName,
 
 		[Parameter()]
-		[uint16]$deploymentExpiryDuration = 15
-	)
+		[uint16]$deploymentExpiryDurationInDays = 15
+	) 
+  
+    $package = Get-CMPackage -Name $packageName
 
-    New-CMPackage -Name $packageName -Path $path
-	
-	$package = Get-CMPackage -Name $packageName
-	
+    if($package -eq $null -or !$package)
+    {
+        Write-Host 'Creating Package'
+        $package = New-CMPackage -Name $packageName -Path $path
+    }
+		
+    Write-Host 'Setting Package Properties'
+
 	Set-CMPackage -Name $packageName -Priority High -EnableBinaryDeltaReplication $UpdateOnlyChangedBits
+
+    $program = Get-CMProgram -PackageName $packageName -ProgramName $programName
+
+    $commandLine = "SCO365PPTrigger.exe -EnableLogging true -C2RArgs `"Setup.exe /Configure $configFileName`""
+
+    if($program -eq $null -or !$program)
+    {
+        Write-Host 'Creating Program'	        
+	    $program = New-CMProgram -PackageName $packageName -StandardProgramName $programName -CommandLine $commandLine -ProgramRunType WhetherOrNotUserIsLoggedOn -RunMode RunWithAdministrativeRights -UserInteraction $false -RunType Hidden -WorkingDirectory $path
+    }
 	
-	New-CMProgram -PackageName $packageName -StandardProgramName $programName -CommandLine 'SCO365PPTrigger.exe -EnableLogging true -C2RArgs "Setup.exe /Configure $configFileName"' -ProgramRunType WhetherOrNotUserIsLoggedOn -RunMode RunWithAdministrativeRights -UserInteraction $false -RunType Hidden -WorkingDirectory $path
-	
-	$program = Get-CMProgram -PackageName $packageName -ProgramName $programName
-	
+    Write-Host 'Setting Program Properties'
+
+    $program.CommandLine = $commandLine    
 	$program.SupportedOperatingSystems = GetSupportedPlatforms -requiredPlatformNames $requiredPlatformNames
 	# Set to use specified client platforms, See - https://msdn.microsoft.com/en-us/library/hh949572.aspx, ProgramFlags
 	$anyPlatform = 0x08000000 #Define the flag as a Constant since we can't find an enum for it.
 	$newFlags = $program.ProgramFlags -band (-bnot $anyPlatform) 
 	$program.ProgramFlags = $newFlags
 	$program.Put()
-	
+
+    Write-Host 'Starting Content Distribution'	
+
 	Start-CMContentDistribution -PackageName $packageName -CollectionName $collectionToUse -DistributionPointGroupName $distributionPointGroupName
+
+    Write-Host 'Starting Deployment'	
 	
-	Start-CMPackageDeployment -CollectionName $collectionToUse -PackageName $packageName -ProgramName $programName -StandardProgram -DeploymentAvailableDateTime ([datetime]::Now.ToString()) -DeploymentExpireDateTime ([datetime]::Now.AddDays($deploymentExpiryDuration)).ToString() -DeployPurpose Required -FastNetworkOption DownloadContentFromDistributionPointAndRunLocally -RerunBehavior RerunIfFailedPreviousAttempt -ScheduleEvent AsSoonAsPossible -SlowNetworkOption DoNotRunProgram -SoftwareInstallation $True -SystemRestart $True
+	Start-CMPackageDeployment -CollectionName $collectionToUse -PackageName $packageName -ProgramName $programName -StandardProgram -DeploymentAvailableDateTime ([datetime]::Now.ToString()) -DeploymentExpireDateTime ([datetime]::Now.AddDays($deploymentExpiryDurationInDays)).ToString() -DeployPurpose Required -FastNetworkOption DownloadContentFromDistributionPointAndRunLocally -RerunBehavior RerunIfFailedPreviousAttempt -ScheduleEvent AsSoonAsPossible -SlowNetworkOption DoNotRunProgram -SoftwareInstallation $True -SystemRestart $True
 
 }
 
