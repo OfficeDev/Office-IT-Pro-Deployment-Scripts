@@ -50,6 +50,7 @@ Before running this script, the following conditions have to be met
 		Example: cd C:\PowerShellScripts
 
 3. Type the following in the elevated PowerShell Session
+
 		 . .\SetupOfficeUpdatesSCCM.ps1 -version "Version" -path "Share" -siteId "SiteId"
 
 4. Monitor the Content Distribution, and the Deployment for status.
