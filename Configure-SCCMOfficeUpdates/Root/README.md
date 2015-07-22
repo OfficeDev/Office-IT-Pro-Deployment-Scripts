@@ -11,7 +11,7 @@ Before running this script, the following conditions have to be met
 3. Office 15 or Office 16 is already installed on client machines. 
 4. Office Auto Updates have been Disabled on the client machines preferably via Group Policy
 
-###**Assumptions:
+###**Assumptions:**
 
 1. It is assumed that for this scenario, the client machines will have one of the following OSs - Windows 7, Windows 8, Windows 8.1, Windows 10.
 2. The script defaults to use 64 bit version of Office, this can be changed by using the appropriate optional parameter. 
@@ -43,14 +43,19 @@ Before running this script, the following conditions have to be met
 
 1. Open a Elevated PowerShell Console(see, [Starting Windows PowerShell](https://technet.microsoft.com/en-us/library/hh857343.aspx)):
 
-		From the Run dialog type PowerShell.
-	
-2. Change directory to the location where the PowerShell Script is saved.
+	```
+	From the Run dialog type PowerShell.
+	```
 
+2. Change directory to the location where the PowerShell Script is saved.
+```
 		Example: cd C:\PowerShellScripts
+```
    This directory must contain all the *configuration_UpdateSource.xml*, *configuration_UpdateTestGroup.xml* files mentioned above, along with *setup.exe*, and both the *.ps1* files.
 
 3. Run the following in an elevated PowerShell Session
-
-		Type . .\SetupOfficeUpdatesSCCM.ps1 -version "Version" -path "Share" -siteId "SiteId"
+4. Type
+```PowerShell
+		 . .\SetupOfficeUpdatesSCCM.ps1 -version "Version" -path "Share" -siteId "SiteId"
+```
 4. Monitor the Content Distribution, and the Deployment for status.
