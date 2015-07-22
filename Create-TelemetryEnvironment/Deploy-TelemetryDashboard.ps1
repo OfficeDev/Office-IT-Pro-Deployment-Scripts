@@ -249,27 +249,6 @@ function Get-OfficeVersion
     return $version
 }
 
-# Return the LCID of the installed Office.
-function Get-Lcid([string] $officeSharedDirectory)
-{
-    [Object[]] $subDirectoryArray = `
-        dir $officeSharedDirectory | where {$_.mode -match "d"}
-    [bool] $lcidFound = $false    
-    foreach ($subDirectory in $subDirectoryArray)
-    {
-        if ($subDirectory.Name.trim() -match "^\d+$")
-        {            
-            [string] $lcid = $subDirectory.Name.trim()
-
-            return $lcid
-        }
-    }
-    if (-not $lcidFound)
-    {
-        throw $ErrorLCIDNotFound
-    }
-}
-
 # Execute an SQL query.
 function Run-SqlQuery([string] $database, [string] $query)
 {
@@ -528,264 +507,40 @@ function New-TemporaryRegistryKey([string] $folderName)
     Add-RegistryKey $key "FileShareLocationTemp" $fileShareLocation "String"
 }
 
-# A function that gives the user instructions for installing
-# Telemetry Processor.
-function Run-TelemetryProcessorInstaller( `
-    [string] $telemetryProcessorInstallerPath, `
-    [string] $telemetryProcessorName, `
-    [string] $folderName, `
-    [string] $folder)
+
+# Install the Telemetry Processor
+function Install-TelemetryProcessor
 {
-    write-host $UiMessage_StartTelemetryProcessorSetup
-    [Object[]] $version = Get-InstallerVersion $telemetryProcessorInstallerPath
-    if ($version.Length -ne 2)
-    {
-        throw
-    }
-    [string] $installerVersion = $version[1]
-    [wmi[]] $wmiObjectArray = Get-WmiObject -class Win32_Product
-    [bool] $telemetryProcessorInstalled = $false
-    [bool] $is64BitOS = Test-64bitOS
-    [string] $copyToPath = $ScriptDirectory + "\osmdp32.msi"
-    if ($is64BitOS)
-    {
-        $copyToPath = $ScriptDirectory + "\osmdp64.msi"
-    }
-    foreach ($wmiObject in $wmiObjectArray)
-    {
-        if ($wmiObject.name -match $telemetryProcessorName)
-        {
-            $telemetryProcessorInstalled = $true
-            if ($wmiObject.version -eq $installerVersion)
-            {
-                Read-UserResponse $UiMessage_SameVersionInstalled
-                copy $telemetryProcessorInstallerPath $copyToPath
-                try
-                {                
-                    Start-Process "msiexec" -ArgumentList "/f $copyToPath" -Wait
-                }
-                catch
-                {
-                    del $copyToPath
-                    throw
-                }
-                del $copyToPath
-            }
-            else
-            {                
-                Read-UserResponse $UiMessage_PreviousVersionInstalled
-                $wmiObject.uninstall() | Out-Null
-                
-                Write-Host $UiMessage_InstallationInstruction
-                copy $telemetryProcessorInstallerPath $copyToPath
-                try
-                {
-                    Start-Process "msiexec" -ArgumentList "/i $copyToPath /q" -Wait
-                    Write-Host $UiMessage_CompleteTelemetryProcessorSetup
-                }
-                catch
-                {
-                    del $copyToPath
-                    throw
-                }              
-                del $copyToPath                
-            }
-            break
-        }
-    }
-    if (-not $telemetryProcessorInstalled)
-    {
-        Write-Host $UiMessage_InstallationInstruction
-        copy $telemetryProcessorInstallerPath $copyToPath        
-        try
-        {        
-            Start-Process "msiexec" -ArgumentList "/i $copyToPath /q" -Wait
-            Write-Host $UiMessage_CompleteTelemetryProcessorSetup            
-        }
-        catch
-        {
-            del $copyToPath
-            throw
-        }
-        del $copyToPath
-    }
-    [bool] $isWorkGroupAccount = Test-WorkgroupAccount
-    [Hashtable] $userInput = $null
-    if (-not ($isWorkGroupAccount))
-    {
-        New-TemporaryRegistryKey $folderName
-
-        Write-Host $UiMessage_DpconfigFull
-        [string] $dpconfigFilePath = Get-DpconfigPath
-        Start-Process $dpconfigFilePath -Wait
-        
-        $userInput = Read-DataProcessorRegistry
-    }
-    else
-    {
-        $userInput = New-Database
-
-        Grant-SharedFolderPermission $SharedFolderName $SharedFolder
-    }
-    return $userInput
-}
-
-# Return the Telemetry Processor installer path when the installer
-# is under the common file.
-function Get-MsiFromCommonFile([string] $commonFilePath)
-{
-    [bool] $is64BitOS = Test-64BitOS
-    [string] $installerName = "osmdp32.msi"
-    if ($is64BitOS)
-    {
-        $installerName = "osmdp64.msi"
-    }
-
-    [string] $officeSharedDirectory `
-        = $commonFilePath + "\Microsoft Shared\OFFICE15"
-    [string] $lcid = Get-Lcid $officeSharedDirectory 
+    [string[]] $msiPath = ("C:\Program Files\Common Files\microsoft shared\OFFICE16\osmdp64.msi" `
+    ,"C:\Program Files\Microsoft Office\root\VFS\ProgramFilesCommonX64\Microsoft Shared\OFFICE16\1033\osmdp64.msi" `
+    ,"C:\Program Files\Common Files\microsoft shared\OFFICE16\osmdp32.msi" `
+    ,"C:\Program Files\Microsoft Office\root\VFS\ProgramFilesCommonX64\Microsoft Shared\OFFICE16\1033\osmdp32.msi")
     
-    [string] $msiPath = $officeSharedDirectory + "\$lcid\$installerName"
-    return $msiPath
-}
-
-# Return the Telemetry Processor installer path when the installer
-# is under the VFS directory.
-function Get-MsiFromVFSDirectory( `
-    [string] $officePath, `
-    [bool] $installed64BitOffice)
-{
-    [bool] $is64BitOS = Test-64BitOS
-    [string] $installerName = "osmdp32.msi"
-    if ($is64BitOS)
+    if (Test-64BitOS)
     {
-        $installerName = "osmdp64.msi"
-    }
-    [string] $vfsDirectory = "\root\vfs\ProgramFilesCommonX86\"
-    if ($installed64BitOffice)
-    {
-        $vfsDirectory = "\root\vfs\ProgramFilesCommonX64\"
-    }  
-    [string] $officeSharedDirectory `
-        = $officePath + $vfsDirectory + "Microsoft Shared\OFFICE15\"
-    [string] $lcid = Get-Lcid $officeSharedDirectory
-    
-    [string] $msiPath = $officeSharedDirectory + "$lcid\$installerName"
-    return $msiPath
-}
-
-# Install 32/64-bit Telemetry Processor based on the 
-# processor architecture.
-function Install-TelemetryProcessor([string] $folderName, [string] $folder)
-{
-    [bool] $is64BitOS = Test-64BitOS
-    [string] $telemetryProcessorName = $String.Empty
-    if ($is64BitOS)
-    {
-        $telemetryProcessorName = "Microsoft Office.+(x64)"
-        if (-not ($OfficeInstallInformation.Installed64BitOffice))
+        if (Test-Path $msiPath[0])
         {
-            
-            $commonFilePath = ${env:CommonProgramFiles(x86)}
-            [string] $telemetryProcessorInstallerPath = Get-MsiFromCommonFile `
-                $commonFilePath
-            if (Test-Path $telemetryProcessorInstallerPath)
-            {
-                break;
-            }
-            else
-            {
-                [string] $telemetryProcessorInstallerPath = Get-MsiFromVFSDirectory `
-                    $OfficeInstallInformation.OfficePath `
-                    $OfficeInstallInformation.Installed64BitOffice
-            }
+        Start-Process $msiPath[0] /qn -wait
         }
-        else
+        elseif (Test-Path $msiPath[1])
         {
-            
-            $commonFilePath = $env:CommonProgramFiles
-            [string] $telemetryProcessorInstallerPath = Get-MsiFromCommonFile `
-                $commonFilePath
-            if (Test-Path $telemetryProcessorInstallerPath)
-            {
-                break;
-            }
-            else
-            {
-                [string] $telemetryProcessorInstallerPath = Get-MsiFromVFSDirectory `
-                    $OfficeInstallInformation.OfficePath `
-                    $OfficeInstallInformation.Installed64BitOffice
-            }
-        }
-    }
-    else
-    {
-        $telemetryProcessorName = "Microsoft Office.+(x86)"
-
-        $commonFilePath = $env:CommonProgramFiles
-        [string] $telemetryProcessorInstallerPath = Get-MsiFromCommonFile `
-            $commonFilePath   
-        if (Test-Path $telemetryProcessorInstallerPath)
-        { 
-            break;
-        }
-        else
+        Start-Process $msiPath[1] /qn -wait  
+        } 
+     }
+     else
+     {
+        if (Test-Path $msiPath[2])
         {
-            [string] $telemetryProcessorInstallerPath = Get-MsiFromVFSDirectory `
-                $OfficeInstallInformation.OfficePath `
-                $OfficeInstallInformation.Installed64BitOffice
+        Start-Process $msiPath[2] /qn -wait
         }
-    }
-    return Run-TelemetryProcessorInstaller `
-        $telemetryProcessorInstallerPath `
-        $telemetryProcessorName `
-        $folderName `
-        $folder
-}
+        elseif (Test-Path $msiPath[3])
+        {
+        Start-Process $msiPath[3] /qn -wait  
+        } 
+     }
+ } 
 
-# Get the Telemetry Processor installer MSI version.
-function Get-InstallerVersion([string] $MsiPath)
-{
-    [System.__ComObject] $installerComObject `
-        = New-Object -comObject WindowsInstaller.Installer
-
-    [System.__ComObject] $msiDatabase = `
-        $installerComObject.GetType().InvokeMember("OpenDatabase", `
-        [System.Reflection.BindingFlags]::InvokeMethod, `
-        $null, `
-        $installerComObject, `
-        ($MsiPath, 0))
-    
-    [System.__ComObject] $dbView = `
-        $msiDatabase.GetType().InvokeMember("OpenView", `
-        [System.Reflection.BindingFlags]::InvokeMethod, `
-        $null, `
-        $msiDatabase, `
-        "SELECT `Value` FROM `Property` WHERE `Property` = 'ProductVersion'")
-    
-    $dbView.GetType().InvokeMember("Execute", `
-        [System.Reflection.BindingFlags]::InvokeMethod, `
-        $null, `
-        $dbView, `
-        $null)
-        
-    [System.__ComObject] $record = `
-        $dbView.GetType().InvokeMember("Fetch", `
-        [System.Reflection.BindingFlags]::InvokeMethod, `
-        $null, `
-        $dbView, `
-        $null)
-        
-    [string] $productVersion = `
-        $record.GetType().InvokeMember("StringData", `
-        [System.Reflection.BindingFlags]::GetProperty, `
-        $null, `
-        $record, `
-        1)
-
-    return $productVersion
-}
-
+ 
 # Create a shared folder to store Office document data for
 # the client machines.
 function New-SharedFolder([string] $sharedFolder)
@@ -877,23 +632,24 @@ function Get-SqlDataRootDirectory([string] $sqlInstance)
     [bool] $is64BitOS = Test-64BitOS
     [string] $key = $String.Empty
     [string] $value = "SQLDataRoot"
+    [string] $sqlInstance = Get-SqlInstanceName
     [string] $dataRootDirectory = $String.Empty    
     if ($is64BitOS)
     {
         try
         {
-            $key = "HKLM:\Software\Wow6432Node\Microsoft\Microsoft SQL Server\MSSQL11.$sqlInstance\Setup"
+            $key = "HKLM:\Software\Wow6432Node\Microsoft\Microsoft SQL Server\MSSQL12.$sqlInstance\Setup"
             $dataRootDirectory = Read-RegistryValue $key $value
         }
         catch
         {
-            $key = "HKLM:\Software\Microsoft\Microsoft SQL Server\MSSQL11.$sqlInstance\Setup"
+            $key = "HKLM:\Software\Microsoft\Microsoft SQL Server\MSSQL12.$sqlInstance\Setup"
             $dataRootDirectory = Read-RegistryValue $key $value
         }
     }
     else
     {
-        $key = "HKLM:\Software\Microsoft\Microsoft SQL Server\MSSQL11.$sqlInstance\Setup"
+        $key = "HKLM:\Software\Microsoft\Microsoft SQL Server\MSSQL12.$sqlInstance\Setup"
         $dataRootDirectory = Read-RegistryValue $key $value
     }
     $dataRootDirectory = $dataRootDirectory + "\DATA\"
@@ -956,7 +712,7 @@ function Get-InstanceNameFromRegistryEntry([string] $registryKey)
     if ($registryEntry.GetType().name -eq "String")
     {
         [string] $property = $registryEntry.GetValue($registryEntry.Property)  
-        if ($property -match "^MSSQL11\..+") 
+        if ($property -match "^MSSQL12\..+") 
         {
             return $registryEntry.Property
         }
@@ -969,7 +725,7 @@ function Get-InstanceNameFromRegistryEntry([string] $registryKey)
         for ($i = 0; $i -le $total - 1; $i++) 
         { 
             [string] $property = $registryEntry.GetValue($subkeys[$i]) 
-            if ($property -match "^MSSQL11\..+") 
+            if ($property -match "^MSSQL12\..+") 
             {
                 $sqlInstanceName = $subkeys[$i]
                 break
@@ -1022,49 +778,13 @@ function Get-SqlInstanceName
     }
 }
 
-# Create a database by restoring an existing one or by using dpconfig.exe
-# to help the user create a new one.
-function New-Database
-{
-    [bool] $isBeta2User = Test-Beta2User
-    if ($isBeta2User)
-    {
-        [string] $databaseBakFilePath = `
-            Read-Host $UiMessage_AskForBakFilePath
-
-        while (-not ($databaseBakFilePath -match "\.bak$") -or `
-            (-not (Test-Path $databaseBakFilePath)))
-        {
-            Write-Host $UiMessage_AskForBakFileAgain
-            $databaseBakFilePath = Read-Host $UiMessage_AskForBakFilePath
-        }
-
-        [string] $sqlInstanceName = Get-SqlInstanceName
-        [string] $databaseServer = Restore-Database $databaseBakFilePath $SourceDatabase $sqlInstanceName
-       
-        return @{ 
-            DatabaseServer = $databaseServer;
-            DatabaseName = $RestoredDatabaseName;
-        }
-    }
-    else
-    {
-        Write-Host $UiMessage_DpconfigCreateDatabase
-        [string] $dpconfigFilePath = Get-DpconfigPath
-        [string] $argument = "-createdatabase"
-
-        Start-Process $dpconfigFilePath -ArgumentList $argument -Wait
-        
-        return Read-DataProcessorRegistry
-    }
-}
 
 # Return the path of dpconfig.exe.
 function Get-DpconfigPath
 {
     [string] $commonFilePath = $env:CommonProgramFiles
     [string] $filePath = $commonFilePath + "\" `
-        + "microsoft shared\OFFICE15\dpconfig.exe"
+        + "microsoft shared\OFFICE16\dpconfig.exe"
 
     [bool] $fileExists = Test-Path -path $filePath
     if ($fileExists)
@@ -1073,6 +793,21 @@ function Get-DpconfigPath
     }
     throw $ErrorDpconfigNotExist
 }
+
+# Create a database by restoring an existing one or by using dpconfig.exe
+# to help the user create a new one.
+function New-Database
+{
+        Write-Host $UiMessage_DpconfigCreateDatabase
+        [string] $dpconfigFilePath = Get-DpconfigPath
+        [string] $argument = "-createdatabase"
+
+        Start-Process $dpconfigFilePath -ArgumentList $argument -Wait
+        
+        return Read-DataProcessorRegistry
+    
+}
+
 
 # Set permissions that allow SQL Server to get document data
 # for the Office client.
@@ -1129,7 +864,7 @@ function Start-WindowService([string] $serviceName)
 # Configure the Windows service of Telemetry Processor.
 function Configure-TelemetryProcessorService([string] $database, [string] $folderName)
 {
-    [string] $key = "HKLM:\SOFTWARE\Microsoft\Office\15.0\OSM\DataProcessor"
+    [string] $key = "HKLM:\SOFTWARE\Microsoft\Office\16.0\OSM\DataProcessor"
     [string] $sqlServerName = Get-SqlServerName
     Add-RegistryKey $key "DatabaseServer" $sqlServerName "String"
 
@@ -1205,27 +940,6 @@ function Get-IsDataUploaded([string] $database)
     return $false
 }
 
-# Set the registry values to enable Telemetry Agent to upload data.
-function Configure-TelemetryAgent([string] $database, [string] $folderName)
-{
-    [string] $key = "HKCU:\Software\Policies\Microsoft\Office\15.0\osm"
-    [string] $commonFileShare = Build-FileSharePath $folderName
-    Add-RegistryKey $key "CommonFileShare" $commonFileShare  "String"
-
-    Add-RegistryKey $key "Tag1" "TAG1" "String"
-    Add-RegistryKey $key "Tag2" "TAG2" "String"
-    Add-RegistryKey $key "Tag3" "TAG3" "String"
-    Add-RegistryKey $key "Tag4" "TAG4" "String"
-
-    Add-RegistryKey $key "AgentInitWait" "1" "DWord"
-    Add-RegistryKey $key "Enablelogging" "1" "DWord"
-    Add-RegistryKey $key "EnableUpload" "1" "DWord"
-    Add-RegistryKey $key "EnableFileObfuscation" "0" "DWord"
-    Add-RegistryKey $key "AgentRandomDelay" "0" "DWord"
-    
-    Run-TelemetryAgentTask $database
-}
-
 # Display instructions to the user about how to use Telemetry Dashboard.
 function Show-TelemetryDashboard
 {
@@ -1291,7 +1005,7 @@ function Write-RegFile([string] $folderName)
     
     $stream.WriteLine("Windows Registry Editor Version 5.00")
     $stream.WriteLine("")
-    $stream.WriteLine("[HKEY_CURRENT_USER\Software\Policies\Microsoft\Office\15.0\osm]")
+    $stream.WriteLine("[HKEY_CURRENT_USER\Software\Policies\Microsoft\Office\16.0\osm]")
     $stream.WriteLine("`"CommonFileShare`"=`"$commonFileShare`"")
     $stream.WriteLine("`"Tag1`"=`"$commonFileShare`"")
     $stream.WriteLine("`"Tag2`"=`"$commonFileShare`"")
