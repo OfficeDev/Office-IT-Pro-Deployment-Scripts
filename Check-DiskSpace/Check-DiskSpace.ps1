@@ -230,6 +230,6 @@ Process{
     $checker = New-Object DiskSpaceChecker.DiskChecker
     $dInfo = New-Object System.IO.DirectoryInfo $DirectoryPath
     $checker.DirectorySize($dInfo, 0);
-    $checker.DirectorySizeInfos | Export-Csv $ResultFilePath
+    $checker.DirectorySizeInfos | Export-Csv $ResultFilePath -NoTypeInformation
     $checker.Reset();
 }
