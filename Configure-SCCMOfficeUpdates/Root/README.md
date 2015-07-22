@@ -44,7 +44,7 @@ Before running this script, the following conditions have to be met
 1. Open a Elevated PowerShell Console(see, [Starting Windows PowerShell](https://technet.microsoft.com/en-us/library/hh857343.aspx)):
 
 	```
-	From the Run dialog type PowerShell.
+		From the Run dialog type PowerShell.
 	```
 
 2. Change directory to the location where the PowerShell Script is saved.   This directory must contain all the *configuration_UpdateSource.xml*, *configuration_UpdateTestGroup.xml* files mentioned above, along with *setup.exe*, and both the *.ps1* files.
@@ -56,5 +56,4 @@ Before running this script, the following conditions have to be met
 ```PowerShell
 		 . .\SetupOfficeUpdatesSCCM.ps1 -version "Version" -path "Share" -siteId "SiteId"
 ```
-
 4. Monitor the Content Distribution, and the Deployment for status.
