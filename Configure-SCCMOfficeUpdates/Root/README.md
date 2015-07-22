@@ -47,14 +47,12 @@ Before running this script, the following conditions have to be met
 	From the Run dialog type PowerShell.
 	```
 
-2. Change directory to the location where the PowerShell Script is saved.
+2. Change directory to the location where the PowerShell Script is saved.   This directory must contain all the *configuration_UpdateSource.xml*, *configuration_UpdateTestGroup.xml* files mentioned above, along with *setup.exe*, and both the *.ps1* files.
 ```
 		Example: cd C:\PowerShellScripts
 ```
-   This directory must contain all the *configuration_UpdateSource.xml*, *configuration_UpdateTestGroup.xml* files mentioned above, along with *setup.exe*, and both the *.ps1* files.
 
 3. Type the following in the elevated PowerShell Session
-
 ```PowerShell
 		 . .\SetupOfficeUpdatesSCCM.ps1 -version "Version" -path "Share" -siteId "SiteId"
 ```
