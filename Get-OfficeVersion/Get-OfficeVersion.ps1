@@ -15,9 +15,9 @@ This function will query the local or a remote computer and return the informati
 
 .NOTES   
 Name: Get-OfficeVersion
-Version: 1.0.1
+Version: 1.0.3
 DateCreated: 2015-07-01
-DateUpdated: 2015-07-14
+DateUpdated: 2015-07-21
 
 .LINK
 https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
