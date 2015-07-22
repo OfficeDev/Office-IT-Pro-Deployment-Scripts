@@ -6,14 +6,11 @@ Checks the space of a disk storing the results in a file
 Path of the Directory space you would like to measure. Defaults to C:\
 
 .PARAMETER ResultFilePath
-Path of the file you would like to store the results in. Defaults to Public\Documents\FolderData.xlsx
-
-.PARAMETER ExcelSourcePath
-Path of the template file that the result file will be based off of (raw results always placed in 4th spreadsheet). Defaults to Public\Documents\ExcelTemplate.xlsx
+Path of the file you would like to store the results in. Defaults to Public\Documents\FolderData.csv
 
 .Example
 ./Check-DiskSpace.ps1
-Checks the disk space of C drive and stores the result in Public\Documents\FolderData.xlsx based on the file Public\Documents\ExcelTemplate.xlsx
+Checks the disk space of C drive and stores the result in Public\Documents\FolderData.csv
 
 
 #>
@@ -23,14 +20,11 @@ Param(
     [String] $DirectoryPath = "C:\",
 
     [Parameter()]
-    [String] $ResultFilePath = "$env:PUBLIC\Documents\FolderData.xlsx",
-
-    [Parameter()]
-    [String] $ExcelSourcePath = "$env:PUBLIC\Documents\ExcelTemplate.xlsx"
+    [String] $ResultFilePath = "$env:PUBLIC\Documents\FolderData.csv"
 )
 
 Begin{
-$assemblies = ('System', 'mscorlib', 'System.IO', 'Microsoft.Office.Interop.Excel');
+$assemblies = ('System', 'mscorlib', 'System.IO');
 $sourceCode = @'
 using System;
 using System.Collections.Generic;
@@ -39,7 +33,6 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Office.Interop.Excel;
 
 namespace DiskSpaceChecker
 {
@@ -151,43 +144,6 @@ namespace DiskSpaceChecker
             DirectorySizeInfos.Add(dirSizeInfo);
         }
 
-        public void WriteData(string DestinationFilePath, string SourceFilePath, string csvPath)
-        {
-
-            var drvSpace = GetTotalFreeSpace("C:\\");
-            foreach (DirectorySizeInfo dre in DirectorySizeInfos)
-            {
-                if (dre.Name.ToUpper() == "C:\\")
-                {
-                    dre.FreeSpace = drvSpace.AvailableFreeSpace;
-                    break;
-                }
-            }
-            var xlApp = new Microsoft.Office.Interop.Excel.Application();
-	    xlApp.DisplayAlerts = false;
-            var xlWorkBook = xlApp.Workbooks.Open(SourceFilePath);
-            var csvBook = xlApp.Workbooks.Open(csvPath);
-            csvBook.SaveAs("C:\\Users\\Public\\Documents\\csvTemp.xlsx", XlFileFormat.xlOpenXMLWorkbook, Type.Missing, Type.Missing, false, false, XlSaveAsAccessMode.xlNoChange, XlSaveConflictResolution.xlLocalSessionChanges, Type.Missing, Type.Missing); 
-            csvBook.Close();;
-            var csvBook2 = xlApp.Workbooks.Open("C:\\Users\\Public\\Documents\\csvTemp.xlsx");
-            var csvSheet = (Microsoft.Office.Interop.Excel.Worksheet)(csvBook2.Worksheets.get_Item(1));
-            var dataSheet = (Microsoft.Office.Interop.Excel.Worksheet)(xlWorkBook.Worksheets.get_Item(3));
-            csvSheet.Copy(Type.Missing, dataSheet);
-            try
-            {
-                xlWorkBook.Close(true, DestinationFilePath);
-                csvBook2.Close(false);
-            }
-            catch
-            {
-
-            }
-            finally
-            {
-                xlApp.Quit();
-            }
-        }
-
         private DriveInfo GetTotalFreeSpace(string driveName)
         {
             foreach (var drive in DriveInfo.GetDrives())
@@ -274,7 +230,6 @@ Process{
     $checker = New-Object DiskSpaceChecker.DiskChecker
     $dInfo = New-Object System.IO.DirectoryInfo $DirectoryPath
     $checker.DirectorySize($dInfo, 0);
-    $checker.DirectorySizeInfos | Export-Csv $csvTempPath
-    $checker.WriteData($ResultFilePath, $ExcelSourcePath, $csvTempPath);
+    $checker.DirectorySizeInfos | Export-Csv $ResultFilePath
     $checker.Reset();
 }
