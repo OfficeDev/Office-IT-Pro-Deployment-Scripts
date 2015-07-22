@@ -1340,11 +1340,12 @@ Confirm-ConsoleBitness
 [string] $ScriptDirectory = split-path $MyInvocation.MyCommand.Path
 
 Print-CopyrightDisclaimer
+
 Check-Elevated
 
 New-Groups
 
-Install-SqlServer
+Install-SQLwithIni
 
 New-SharedFolder $SharedFolder
 
