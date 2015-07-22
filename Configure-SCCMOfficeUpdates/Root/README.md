@@ -53,9 +53,10 @@ Before running this script, the following conditions have to be met
 ```
    This directory must contain all the *configuration_UpdateSource.xml*, *configuration_UpdateTestGroup.xml* files mentioned above, along with *setup.exe*, and both the *.ps1* files.
 
-3. Run the following in an elevated PowerShell Session
-Type
+3. Type the following in the elevated PowerShell Session
+
 ```PowerShell
 		 . .\SetupOfficeUpdatesSCCM.ps1 -version "Version" -path "Share" -siteId "SiteId"
 ```
+
 4. Monitor the Content Distribution, and the Deployment for status.
