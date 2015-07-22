@@ -44,7 +44,7 @@
 [string]$ConfigurationFile="$ConfigurationPath\ConfigurationFile.ini"
 
 #Detect if SQL Server 2014 Express Edition is present.
-Function Check-SQLInstall
+function Check-SQLInstall
 {
     [bool] $sqlServer2014Installed = $false
     [bool] $sqlServer2012Installed = $false
@@ -91,7 +91,7 @@ Function Check-SQLInstall
 }
 
 #Download Microsoft SQL Server 2014 Express Edition and install.
-Function Run-SqlServerInstaller
+function Run-SqlServerInstaller
 {
     write-host $UiMessage_StartSQLInstall
     
@@ -115,7 +115,7 @@ Function Run-SqlServerInstaller
 }
 
 #Create a configuration file
-Function Create-ConfigurationFile {
+function Create-ConfigurationFile {
 
 $CreateIni = @"
 [Options]
@@ -161,7 +161,7 @@ New-Item $ConfigurationFile -type file -force -value $CreateIni
 
 #Download SQL 2014 Express server, create the configuration file
 #and install the SQL server
-Function Install-SQLwithIni
+function Install-SQLwithIni
 {
     Run-SqlServerInstaller -wait
     
@@ -191,7 +191,7 @@ Function Install-SQLwithIni
 }
 
 #Clean up files written to the client machine.
-Function Clear-Files
+function Clear-Files
 {
     [string] $installerPath = $env:temp + "\\" + $InstallerFileName
     if (Test-Path -Path $installerPath)
