@@ -56,6 +56,6 @@ Before running this script, the following conditions have to be met
 3. Run the following in an elevated PowerShell Session
 4. Type
 ```PowerShell
-		 . .\SetupOfficeUpdatesSCCM.ps1 -version "Version" -path "Share" -siteId "SiteId"
+		 . .\SetupOfficeUpdatesSCCM.ps1 -version "*Version*" -path "Share" -siteId "SiteId"
 ```
 4. Monitor the Content Distribution, and the Deployment for status.
