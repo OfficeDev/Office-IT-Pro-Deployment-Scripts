@@ -1,5 +1,37 @@
 <#
-
+.SYNOPSIS
+Automates download and update of Office 2013 or Office 2016 Installation. 
+.DESCRIPTION
+Given an Office Build Version, UNC Path, and the site id, this cmdlet donwloads the bits for the Office Build, and creates SCCM Package Deployment to update Target Machines.
+.PARAMETER version
+The version of Office 2013 or Office 2016 you wish to update to. E.g. 15.0.4737.1003
+.PARAMETER path
+The UNC Path where the downloaded bits will be stored for updating the target machines.
+.PARAMETER bitness
+Specifies if the target installation is 32 bit or 64 bit. Defaults to 64 bit.
+.PARAMETER siteId
+The 3 Letter Site ID
+.PARAMETER UpdateSourceConfigFileName
+The config file that is used to download the bits for the intended version.
+.PARAMETER UpdateTestGroupConfigFileName
+The config file that is used to update the target machines to the intended version.
+.Example
+.\SetupOfficeUpdatesSCCM.ps1 -version "15.0.4737.1003" -path "\\OfficeShare" -siteId "ABC"
+Default update Office 2013 to version 15.0.4737.1003
+.Example
+.\SetupOfficeUpdatesSCCM.ps1 -version "15.0.4737.1003" -path "\\OfficeShare" -bitness "32" -siteId "ABC" -UpdateSourceConfigFileName "SourceConfig.xml" -UpdateTestGroupConfigFileName "TargetConfig.xml" 
+Update Office 2013 to version 15.0.4737.1003 for 32 bit clients
+.Inputs
+System.String
+System.String
+System.String
+System.String
+System.String
+System.String
+.Notes
+Additional explaination. Long and indepth examples should also go here.
+.Link
+Add link here
 #>
 
 [CmdletBinding(SupportsShouldProcess=$true)]
@@ -16,9 +48,6 @@ Param
 
 	[Parameter(Mandatory=$True)]
 	[String]$siteId,
-
-	<#[Parameter(Mandatory=$True)]
-	[PSCredential]$credential,	#>
 	
 	[Parameter()]
 	[String]$UpdateSourceConfigFileName = 'Configuration_UpdateSource.xml',
