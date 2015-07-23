@@ -300,7 +300,7 @@ function Build-FileSharePath([string] $folderName)
     [bool] $isWorkgroupAccount = Test-WorkgroupAccount   
     if (-not $isWorkgroupAccount)
     {
-        [string] $dataProcessorKey = "HKLM:\SOFTWARE\Microsoft\Office\15.0\OSM\DataProcessor"
+        [string] $dataProcessorKey = "HKLM:\SOFTWARE\Microsoft\Office\16.0\OSM\DataProcessor"
         [string] $value = "FileShareLocation"
         $fileSharePath = Read-RegistryValue $dataProcessorKey $value
     }    
@@ -417,7 +417,8 @@ function Create-ConfigurationFile {
 $CreateIni = @"
 [Options]
 Action="Install" `
-ROLE="AllFeatures_WithDefaults" `
+ROLE="All Features With Defaults" `
+UpdateEnabled="True" `
 ENU="TRUE" `
 QUIET="False" `
 QUIETSIMPLE="True" `
@@ -430,14 +431,11 @@ UpdateSource="MU" `
 HELP="False" `
 INDICATEPROGRESS="False" `
 X86="False" `
-INSTALLSHAREDDIR="C:\Program Files\Microsoft SQL Server" `
-INSTALLSHAREDWOWDIR="C:\Program Files (x86)\Microsoft SQL Server" `
 INSTANCENAME="TDSQLEXPRESS" `
 SQMREPORTING="False" `
 INSTANCEID="TDSQLEXPRESS" `
-INSTANCEDIR="C:\Program Files\Microsoft SQL Server" `
 AGTSVCACCOUNT="NT AUTHORITY\NETWORK SERVICE" `
-AGTSVCSTARTUPTYPE="Enabled" `
+AGTSVCSTARTUPTYPE="Automatic" `
 COMMFABRICPORT="0" `
 COMMFABRICNETWORKLEVEL="0" `
 COMMFABRICENCRYPTION="0" `
@@ -447,10 +445,9 @@ FILESTREAMLEVEL="0" `
 ENABLERANU="True" `
 SQLCOLLATION="SQL_Latin1_General_CP1_CI_AS" `
 SQLSVCACCOUNT="NT Service\MSSQL`$TDSQLEXPRESS" `
-ADDCURRENTUSERASSQLADMIN="True" `
 TCPENABLED="1" `
-NPENABLED="1" `
-BROWSERSVCSTARTUPTYPE="Automatic"
+NPENABLED="0" `
+BROWSERSVCSTARTUPTYPE="Disabled"
 "@
 
 New-Item $ConfigurationFile -type file -force -value $CreateIni
@@ -502,23 +499,33 @@ function Clear-Files
 #Enable TCP/IP and set the port
 function Set-TcpPort
 {
-    $RegKeyIPAll = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSSQL12.TDSQLEXPRESS\MSSQLServer\SuperSocketNetLib\Tcp\IPAll"
-    Set-ItemProperty -Path $RegKeyIPAll -Name TcpPort -Value 1433
-
+    
+    $TCPKey = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSSQL12.TDSQLEXPRESS\MSSQLServer\SuperSocketNetLib\Tcp"
     $RegKeyIP2 = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSSQL12.TDSQLEXPRESS\MSSQLServer\SuperSocketNetLib\Tcp\IP2"
+
+    Set-ItemProperty -Path $TCPKey -Name Enabled -Value 1    
     Set-ItemProperty -Path $RegKeyIP2 -Name Enabled -Value 1
+    Set-ItemProperty -Path $RegKeyIP2 -Name TcpPort -Value 1433 -wait
+
+    Restart-Service "SQL Server (TDSQLEXPRESS)"
     
 }
 
 
-# Write the folder name to the registry so that dpconfig.exe can pick
-# it up later.
-function New-TemporaryRegistryKey([string] $folderName)
+#Create the DataProcessor reg values
+function Create-DataProcessor
 {
-    [string] $key = "HKLM:\SOFTWARE\Microsoft\Office\16.0\OSM\DataProcessor"
+    $DatabaseName = "TDDB"
+    $folderBaseName = "TDShared"
+    $OSMPath = "HKLM:\SOFTWARE\Microsoft\Office\16.0"
+    $DataProcessorPath = "HKLM:\SOFTWARE\Microsoft\Office\16.0\OSM"
 
-    $fileShareLocation = $env:systemdrive + "\" + $folderName
-    Add-RegistryKey $key "FileShareLocationTemp" $fileShareLocation "String"
+    New-Item -Path $OSMPath -Name OSM
+    New-Item -Path $DataProcessorPath -Name DataProcessor
+    New-ItemProperty -Path "$DataProcessorPath\DataProcessor" -Name DatabaseName -Value "TDDB"
+    New-ItemProperty -Path "$DataProcessorPath\DataProcessor" -Name DatabaseServer -Value "$env:ComputerName\$DatabaseName"
+    New-ItemProperty -Path "$DataProcessorPath\DataProcessor" -Name FileShareLocation -Value "$env:ComputerName\$folderBaseName"
+
 }
 
 
