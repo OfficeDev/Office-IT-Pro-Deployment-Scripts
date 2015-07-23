@@ -6,10 +6,55 @@ Short Description
 Long Description
 
 .PARAMETER ProductId
-Explaination of myParam1
+Explaination of ProductId
 
 .PARAMETER AddLanguageOptions
-Explaination of myParam2
+Explaination of AddLanguageOptions
+
+.PARAMETER ARPOptions
+Explaination of ARPOptions
+
+.PARAMETER CommandOptions
+Explaination of CommandOptions
+
+.PARAMETER CompanyName
+Explaination of CompanyName
+
+.PARAMETER DisplayOptions
+Explaination of DisplayOptions
+
+.PARAMETER DistributionPointPath
+Explaination of DistributionPointPath
+
+.PARAMETER InstallLocation
+Explaination of InstallLocation
+
+.PARAMETER LISOptions
+Explaination of LISOptions
+
+.PARAMETER LoggingOptions
+Explaination of LoggingOptions
+
+.PARAMETER OptionStateList
+Explaination of OptionStateList
+
+.PARAMETER PIDKEY
+Explaination of PIDKEY
+
+.PARAMETER RemoveLanguageOptions
+Explaination of RemoveLanguageOptions
+
+.PARAMETER SettingOptions
+Explaination of SettingOptions
+
+.PARAMETER SetupUpdatesOptions
+Explaination of SetupUpdatesOptions
+
+.PARAMETER UserInitials
+Explaination of UserInitials
+
+.PARAMETER Username
+Explaination of Username
 
 .Example
 ./Skeleton.ps1 -myParam1 "Value1" -myParam2 "Value2"
