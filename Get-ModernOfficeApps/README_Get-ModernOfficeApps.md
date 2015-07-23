@@ -18,7 +18,7 @@ List the Modern Office apps installed on the local or remote computers
 
             Example: cd C:\PowerShellScripts
             
-2. Run the Script. With no parameters specified the script will return the locally installed Office Version.
+3. Run the Script. With no parameters specified the script will return the locally installed Office Version.
 
            Type . .\Get-ModernOfficeApps.ps1
 
@@ -26,7 +26,7 @@ List the Modern Office apps installed on the local or remote computers
            the PowerShell function in the script into your PowerShell session which will allow you to 
            run the function 'Get-ModernOfficeApps' from the console.
 	
-3. Run the script for specified computers or against an array you have created.
+4. Run the script for specified computers or against an array you have created.
 
             Example: .\Get-ModernOfficeApps.ps1 -ComputerName Client1,Client2
             
