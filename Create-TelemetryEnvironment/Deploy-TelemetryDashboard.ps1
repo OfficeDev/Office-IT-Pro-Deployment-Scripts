@@ -311,7 +311,7 @@ function Build-FileSharePath([string] $folderName)
 function Read-DataProcessorRegistry
 {
     [string] $dataProcessorRegistryKey = `
-        "HKLM:\SOFTWARE\Microsoft\Office\15.0\OSM\DataProcessor"
+        "HKLM:\SOFTWARE\Microsoft\Office\16.0\OSM\DataProcessor"
     [string] $databaseServer = `
         Read-RegistryValue $dataProcessorRegistryKey "DatabaseServer"
     [string] $databaseName = `
@@ -417,25 +417,27 @@ function Create-ConfigurationFile {
 $CreateIni = @"
 [Options]
 Action="Install" `
+ROLE="AllFeatures_WithDefaults" `
 ENU="TRUE" `
 QUIET="False" `
 QUIETSIMPLE="True" `
 IAcceptSQLServerLicenseTerms="True" `
 UpdateEnabled="True" `
-ROLE="All Features With Defaults" `
 ERRORREPORTING="False" `
 USEMICROSOFTUPDATE="True" `
+FEATURES="SQLENGINE,REPLICATION" `
 UpdateSource="MU" `
 HELP="False" `
 INDICATEPROGRESS="False" `
 X86="False" `
 INSTALLSHAREDDIR="C:\Program Files\Microsoft SQL Server" `
+INSTALLSHAREDWOWDIR="C:\Program Files (x86)\Microsoft SQL Server" `
 INSTANCENAME="TDSQLEXPRESS" `
 SQMREPORTING="False" `
 INSTANCEID="TDSQLEXPRESS" `
 INSTANCEDIR="C:\Program Files\Microsoft SQL Server" `
 AGTSVCACCOUNT="NT AUTHORITY\NETWORK SERVICE" `
-AGTSVCSTARTUPTYPE="Disabled" `
+AGTSVCSTARTUPTYPE="Enabled" `
 COMMFABRICPORT="0" `
 COMMFABRICNETWORKLEVEL="0" `
 COMMFABRICENCRYPTION="0" `
@@ -447,8 +449,8 @@ SQLCOLLATION="SQL_Latin1_General_CP1_CI_AS" `
 SQLSVCACCOUNT="NT Service\MSSQL`$TDSQLEXPRESS" `
 ADDCURRENTUSERASSQLADMIN="True" `
 TCPENABLED="1" `
-NPENABLED="0" `
-BROWSERSVCSTARTUPTYPE="Disabled
+NPENABLED="1" `
+BROWSERSVCSTARTUPTYPE="Automatic"
 "@
 
 New-Item $ConfigurationFile -type file -force -value $CreateIni
@@ -497,11 +499,23 @@ function Clear-Files
     }
 }
 
+#Enable TCP/IP and set the port
+function Set-TcpPort
+{
+    $RegKeyIPAll = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSSQL12.TDSQLEXPRESS\MSSQLServer\SuperSocketNetLib\Tcp\IPAll"
+    Set-ItemProperty -Path $RegKeyIPAll -Name TcpPort -Value 1433
+
+    $RegKeyIP2 = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSSQL12.TDSQLEXPRESS\MSSQLServer\SuperSocketNetLib\Tcp\IP2"
+    Set-ItemProperty -Path $RegKeyIP2 -Name Enabled -Value 1
+    
+}
+
+
 # Write the folder name to the registry so that dpconfig.exe can pick
 # it up later.
 function New-TemporaryRegistryKey([string] $folderName)
 {
-    [string] $key = "HKLM:\SOFTWARE\Microsoft\Office\15.0\OSM\DataProcessor"
+    [string] $key = "HKLM:\SOFTWARE\Microsoft\Office\16.0\OSM\DataProcessor"
 
     $fileShareLocation = $env:systemdrive + "\" + $folderName
     Add-RegistryKey $key "FileShareLocationTemp" $fileShareLocation "String"
@@ -569,26 +583,6 @@ function Grant-SharedFolderPermission([string] $folderName, [string] $folder)
 
     Set-Acl -Path $folder -AclObject $acl
     
-    [bool] $isWorkgroupAccount = Test-WorkgroupAccount
-    if ($isWorkgroupAccount)
-    {
-        [string] $hostname = hostname
-        
-        Grant-CreateFileDirectoryPermission "$hostname\$GroupAgent" $folder
-                
-        [string] $networkService = "NETWORK SERVICE" 
-        [string] $fullPermission = "FULL"
-        [string] $currentUser = whoami
-        [string] $changePermission = "CHANGE"
-
-        [string] $command = "net.exe"
-        [string] $arguments = "SHARE "
-        $arguments = $arguments + "$folderName=$folder"
-        $arguments = $arguments + ' "' + "/GRANT:$networkService,$fullPermission" + '"'
-        $arguments = $arguments + ' "' + "/GRANT:$currentUser,$changePermission" + '"'
-    }
-    else
-    {
         Grant-CreateFileDirectoryPermission "NT AUTHORITY\Authenticated Users" $folder
 
         $user = "NT AUTHORITY\Authenticated Users" 
@@ -598,7 +592,7 @@ function Grant-SharedFolderPermission([string] $folderName, [string] $folder)
         [string] $arguments = "SHARE "
         $arguments = $arguments + "$folderName=$folder"
         $arguments = $arguments + ' "' + "/GRANT:$user,$permission" + '"'
-    }
+    
     Start-Process -FilePath $command -ArgumentList $arguments
 }
 
