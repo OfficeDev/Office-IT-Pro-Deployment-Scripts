@@ -80,7 +80,7 @@ Param(
 #
 
 [string] $UiMessage_Copyright `
-    = "Copyright (c) 2012 Microsoft Corporation. All rights reserved."
+    = "Copyright (c) 2015 Microsoft Corporation. All rights reserved."
 [string] $UiMessage_Disclaimer `
     = "THIS CODE AND ANY ASSOCIATED INFORMATION ARE PROVIDED `"AS IS`" WITHOUT " `
     + "WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT " `
@@ -219,73 +219,175 @@ function Test-64BitOS
     return $false
 }
 
-# Return the build number of the Office version 
-# in w.x.y.z format.
-function Get-OfficeVersion
+# Tell the user to run the script in a 64-bit console
+# if it is run in a 32-bit console.
+function Confirm-ConsoleBitness
 {
-    [wmi[]] $wmiObjectArray = Get-WmiObject -class Win32_Product
-    [Object] $version = 10000
-    [Object[]] $o15VersionArray
-    foreach ($wmiObject in $wmiObjectArray)
+    [bool] $is64BitOS = Test-64BitOS
+    
+    if ($is64BitOS)
     {
-        if ($wmiObject.name -match "Office 15" -or `
-                $wmiObject.name -match "Office.+2013")
+        if ($PSHOME -match "SysWOW64")
         {
-            $o15VersionArray = $wmiObject.Version.Split(".")
-            if ($o15VersionArray.Length -ne 4)
-            {
-                continue
-            }
-            if ($version -ge $o15VersionArray[2])
-            {
-                $version = $o15VersionArray[2]                
-            }
+            write-host $Error32BitPowerShell64BitOS
+            exit        
         }
     }
-    if ($version -eq 10000)
-    {
-        throw $ErrorOfficeNotFound
-    }
-    return $version
 }
 
-# Execute an SQL query.
-function Run-SqlQuery([string] $database, [string] $query)
+#Enable .NET
+function Enable-DOTNET3
 {
-    [string] $sqlServerName = Get-SqlServerName
-    $env:path = [System.Environment]::GetEnvironmentVariable("PATH", "Machine")
-    [string] $command = "osql.exe"
-    [string] $argument = "-E -S $sqlServerName -d $database -Q " `
-        + '"' + $query + '"'
-
-    Start-Process -FilePath $command -ArgumentList $argument -Wait
+    #Enable .NET 3.5 if not enabled
+    $feature = Get-WindowsOptionalFeature -online -FeatureName NetFx3
+    if($feature.State -eq "Disabled"){
+        Enable-WindowsOptionalFeature -FeatureName NetFx3 -NoRestart
+    }
 }
 
-# Return the SQL Server name used in an SQL query.
+# Ask the user to answer the message again if
+# the answer is not 'Y' or 'N'.
+function Test-EnteredKey([string] $message)
+{
+    [string] $answer = $String.Empty
+    do
+    {
+        $answer = Read-Host $message
+        if ($answer -eq "Y" -or $answer -eq "N")
+        {
+            break
+        }
+        Write-Host $UiMessage_AskForReentry
+        
+    } while ($true)
+
+    return $answer
+}
+
+# Inform the current status to user and continue the
+# script or not based on the response.
+function Read-UserResponse([string] $message)
+{
+    [string] $answer = Test-EnteredKey $message
+    if ($answer -eq "N" -or $answer -eq "n")
+    {
+        Exit
+    }
+}
+
+#Get existing SQL information
+function Get-SqlInstance
+{  
+
+    [cmdletbinding()] 
+    Param (
+        [parameter(ValueFromPipeline=$True,ValueFromPipelineByPropertyName=$True)]
+        [Alias('__Server','DNSHostName','IPAddress')]
+        [string[]]$ComputerName = $env:COMPUTERNAME
+    ) 
+    Process {
+        ForEach ($Computer in $Computername) {
+            $Computer = $computer -replace '(.*?)\..+','$1'
+            Write-Verbose ("Checking {0}" -f $Computer)
+            Try { 
+                $reg = [Microsoft.Win32.RegistryKey]::OpenRemoteBaseKey('LocalMachine', $Computer) 
+                $baseKeys = "SOFTWARE\\Microsoft\\Microsoft SQL Server",
+                "SOFTWARE\\Wow6432Node\\Microsoft\\Microsoft SQL Server"
+                If ($reg.OpenSubKey($basekeys[0])) {
+                    $regPath = $basekeys[0]
+                } ElseIf ($reg.OpenSubKey($basekeys[1])) {
+                    $regPath = $basekeys[1]
+                } Else {
+                    Continue
+                }
+                $regKey= $reg.OpenSubKey("$regPath")
+                If ($regKey.GetSubKeyNames() -contains "Instance Names") {
+                    $regKey= $reg.OpenSubKey("$regpath\\Instance Names\\SQL" ) 
+                    $instances = @($regkey.GetValueNames())
+                } ElseIf ($regKey.GetValueNames() -contains 'InstalledInstances') {
+                    $isCluster = $False
+                    $instances = $regKey.GetValue('InstalledInstances')
+                } Else {
+                    Continue
+                }
+                If ($instances.count -gt 0) { 
+                    ForEach ($instance in $instances) {
+                        $nodes = New-Object System.Collections.Arraylist
+                        $clusterName = $Null
+                        $isCluster = $False
+                        $instanceValue = $regKey.GetValue($instance)
+                        $instanceReg = $reg.OpenSubKey("$regpath\\$instanceValue")
+                        If ($instanceReg.GetSubKeyNames() -contains "Cluster") {
+                            $isCluster = $True
+                            $instanceRegCluster = $instanceReg.OpenSubKey('Cluster')
+                            $clusterName = $instanceRegCluster.GetValue('ClusterName')
+                            $clusterReg = $reg.OpenSubKey("Cluster\\Nodes")                            
+                            $clusterReg.GetSubKeyNames() | ForEach {
+                                $null = $nodes.Add($clusterReg.OpenSubKey($_).GetValue('NodeName'))
+                            }
+                        }
+                        $instanceRegSetup = $instanceReg.OpenSubKey("Setup")
+                        Try {
+                            $edition = $instanceRegSetup.GetValue('Edition')
+                        } Catch {
+                            $edition = $Null
+                        }
+                        Try {
+                            $ErrorActionPreference = 'Stop'
+                            #Get from filename to determine version
+                            $servicesReg = $reg.OpenSubKey("SYSTEM\\CurrentControlSet\\Services")
+                            $serviceKey = $servicesReg.GetSubKeyNames() | Where {
+                                $_ -match "$instance"
+                            } | Select -First 1
+                            $service = $servicesReg.OpenSubKey($serviceKey).GetValue('ImagePath')
+                            $file = $service -replace '^.*(\w:\\.*\\sqlservr.exe).*','$1'
+                            $version = (Get-Item ("\\$Computer\$($file -replace ":","$")")).VersionInfo.ProductVersion
+                        } Catch {
+                            #Use potentially less accurate version from registry
+                            $Version = $instanceRegSetup.GetValue('Version')
+                        } Finally {
+                            $ErrorActionPreference = 'Continue'
+                        }
+                        New-Object PSObject -Property @{
+                            Computername = $Computer
+                            SQLInstance = $instance
+                            Edition = $edition
+                            Version = $version
+                            Caption = {Switch -Regex ($version) {
+                                "^14" {'SQL Server 2014';Break}
+                                "^11" {'SQL Server 2012';Break}
+                                "^10\.5" {'SQL Server 2008 R2';Break}
+                                "^10" {'SQL Server 2008';Break}
+                                "^9"  {'SQL Server 2005';Break}
+                                "^8"  {'SQL Server 2000';Break}
+                                Default {'Unknown'}
+                            }}.InvokeReturnAsIs()
+                            isCluster = $isCluster
+                            isClusterNode = ($nodes -contains $Computer)
+                            ClusterName = $clusterName
+                            ClusterNodes = ($nodes -ne $Computer)
+                            FullName = {
+                                If ($Instance -eq 'MSSQLSERVER') {
+                                    $Computer
+                                } Else {
+                                    "$($Computer)\$($instance)"
+                                }
+                            }.InvokeReturnAsIs()
+                        }
+                    }
+                }
+            } Catch { 
+                Write-Warning ("{0}: {1}" -f $Computer,$_.Exception.Message)
+            }  
+        }
+      }
+    
+}
+
+#Get the SQL Server name
 function Get-SqlServerName
 {
-    [string] $server = $DatabaseInformation.DatabaseServer
-    [string] $hostname = hostname
-    if ($server -match "\\MSSQLServer$")
-    {
-        return $hostname
-    }
-    $server = $server.replace("(local)", $hostname)
-    return $server
-}
-
-# Add a registry key given its name, value and type.
-function Add-RegistryKey( `
-    [string] $key, `
-    [string] $name, `
-    [string] $value, `
-    [string] $type)
-{
-    if (-not (Test-Path $key))
-    {
-        New-Item $key -Force | Out-Null
-    }
-    New-ItemProperty $key -Name $name -Value $value -PropertyType $type -Force | Out-Null
+Get-SqlInstance | foreach {$_.FullName}
 }
 
 # Build the shared folder path.
@@ -297,25 +399,19 @@ function Build-FileSharePath([string] $folderName)
     [string] $hostname = hostname
     [string] $fileSharePath = "\\" + $hostname + "\" + $folderName
     
-    [bool] $isWorkgroupAccount = Test-WorkgroupAccount   
-    if (-not $isWorkgroupAccount)
-    {
         [string] $dataProcessorKey = "HKLM:\SOFTWARE\Microsoft\Office\16.0\OSM\DataProcessor"
         [string] $value = "FileShareLocation"
         $fileSharePath = Read-RegistryValue $dataProcessorKey $value
-    }    
+       
     return $fileSharePath
 }
 
 # Return the database information stored in the data processor registry.
 function Read-DataProcessorRegistry
 {
-    [string] $dataProcessorRegistryKey = `
-        "HKLM:\SOFTWARE\Microsoft\Office\16.0\OSM\DataProcessor"
-    [string] $databaseServer = `
-        Read-RegistryValue $dataProcessorRegistryKey "DatabaseServer"
-    [string] $databaseName = `
-        Read-RegistryValue $dataProcessorRegistryKey "DatabaseName"
+    [string] $dataProcessorRegistryKey = "HKLM:\SOFTWARE\Microsoft\Office\16.0\OSM\DataProcessor"
+    [string] $databaseServer = Read-RegistryValue $dataProcessorRegistryKey "DatabaseServer"
+    [string] $databaseName = Read-RegistryValue $dataProcessorRegistryKey "DatabaseName"
         
     return @{ 
         DatabaseServer = $databaseServer;
@@ -341,7 +437,7 @@ function Check-Elevated
 }
 
 #Detect if SQL Server 2014 Express Edition is present.
-function Check-SQLInstall
+function Check-SqlInstall
 {
     [bool] $sqlServer2014Installed = $false
     [bool] $sqlServer2012Installed = $false
@@ -354,18 +450,17 @@ function Check-SQLInstall
         if ($wmiObject.name -match "SQL Server 2014.+Database Engine Services")
         {
             $sqlServer2014Installed = $true
-            break
+            
         }
-        elseif ($wmiObject.name -match `
-                    "SQL Server 2012.+Database Engine Services")
+        elseif ($wmiObject.name -match "SQL Server 2012.+Database Engine Services")
         {
             $sqlServer2012Installed = $true
-        elseif ($wmiObject.name -match `
-                    "SQL Server 2008.+Database Engine Services")
+        }
+        elseif ($wmiObject.name -match "SQL Server 2008.+Database Engine Services")
         {
             $sqlServer2008Installed = $true
         }
-        elseif ($wmiObject.name -match "SQL Server 2005.+")
+        elseif ($wmiObject.name -match "SQL Server 2005.+Database Engine Services")
         {
             $sqlServer2005Installed = $true
         }
@@ -378,13 +473,8 @@ function Check-SQLInstall
     {
         Read-UserResponse $UiMessage_SqlServerOtherExists
 
-        Check-SQLInstall
     }
-    else
-    {
-        Check-SQLInstall
-    }
-}
+    
 }
 
 #Download Microsoft SQL Server 2014 Express Edition and install.
@@ -454,10 +544,19 @@ New-Item $ConfigurationFile -type file -force -value $CreateIni
 
 }
 
+#Clean up files written to the client machine.
+function Clear-Files
+{
+    [string] $installerPath = $env:temp + "\\" + $InstallerFileName
+    if (Test-Path -Path $installerPath)
+    {
+        Remove-Item $installerPath
+    }
+}
 
 #Download SQL 2014 Express server, create the configuration file
 #and install the SQL server
-function Install-SQLwithIni
+function Install-SqlwithIni
 {
     Run-SqlServerInstaller -wait
     
@@ -486,15 +585,7 @@ function Install-SQLwithIni
         Clear-Files
 }
 
-#Clean up files written to the client machine.
-function Clear-Files
-{
-    [string] $installerPath = $env:temp + "\\" + $InstallerFileName
-    if (Test-Path -Path $installerPath)
-    {
-        Remove-Item $installerPath
-    }
-}
+
 
 #Enable TCP/IP and set the port
 function Set-TcpPort
@@ -505,27 +596,33 @@ function Set-TcpPort
 
     Set-ItemProperty -Path $TCPKey -Name Enabled -Value 1    
     Set-ItemProperty -Path $RegKeyIP2 -Name Enabled -Value 1
-    Set-ItemProperty -Path $RegKeyIP2 -Name TcpPort -Value 1433 -wait
+    Set-ItemProperty -Path $RegKeyIP2 -Name TcpPort -Value 1433
 
     Restart-Service "SQL Server (TDSQLEXPRESS)"
     
 }
 
-
-#Create the DataProcessor reg values
-function Create-DataProcessor
+# Create a shared folder and set the permissions
+function New-SharedFolder
 {
-    $DatabaseName = "TDDB"
-    $folderBaseName = "TDShared"
-    $OSMPath = "HKLM:\SOFTWARE\Microsoft\Office\16.0"
-    $DataProcessorPath = "HKLM:\SOFTWARE\Microsoft\Office\16.0\OSM"
+    write-host $UiMessage_CreateFolder
 
-    New-Item -Path $OSMPath -Name OSM
-    New-Item -Path $DataProcessorPath -Name DataProcessor
-    New-ItemProperty -Path "$DataProcessorPath\DataProcessor" -Name DatabaseName -Value "TDDB"
-    New-ItemProperty -Path "$DataProcessorPath\DataProcessor" -Name DatabaseServer -Value "$env:ComputerName\$DatabaseName"
-    New-ItemProperty -Path "$DataProcessorPath\DataProcessor" -Name FileShareLocation -Value "$env:ComputerName\$folderBaseName"
+    $ShareName = "TDShared"
+    $SharedFolderPath = "$env:SystemDrive"
+    
+    
+   if (!(Test-Path $SharedFolderPath\$ShareName))
+        {
+        New-Item "$env:SystemDrive\TDShared" -Type Directory
+        }
 
+   New-SMBShare –Name “Shared” –Path “$SharedFolderPath\$ShareName”
+      
+    $acl = Get-Acl "$SharedFolderPath\$ShareName"
+    $permission = "NT AUTHORITY\NETWORK SERVICE","FullControl","ContainerInherit,ObjectInherit","None","Allow"
+    $accessRule = New-Object System.Security.AccessControl.FileSystemAccessRule $permission
+    $acl.SetAccessRule($accessRule)
+    $acl | Set-Acl "$SharedFolderPath\$ShareName"
 }
 
 
@@ -561,72 +658,37 @@ function Install-TelemetryProcessor
      }
  } 
 
+#Create the DataProcessor reg values
+function Create-ProcessorRegData
+{
+    $DatabaseName = "TDDB"
+    $ShareName = "TDShared"
+    $OSMPath = "HKLM:\SOFTWARE\Microsoft\Office\16.0"
+    $DataProcessorPath = "HKLM:\SOFTWARE\Microsoft\Office\16.0\OSM"
+
+    New-Item -Path $OSMPath -Name OSM
+    New-Item -Path $DataProcessorPath -Name DataProcessor
+    New-ItemProperty -Path "$DataProcessorPath\DataProcessor" -Name DatabaseName -Value "TDDB"
+    New-ItemProperty -Path "$DataProcessorPath\DataProcessor" -Name DatabaseServer -Value "$env:ComputerName\$DatabaseName"
+    New-ItemProperty -Path "$DataProcessorPath\DataProcessor" -Name FileShareLocation -Value "$env:ComputerName\$ShareName"
+
+}
+
+# Change a Windows service startup type to "Automatic".
+function Set-WindowServiceToAutomatic([string] $serviceName)
+{
+    [Object] $service = Get-Service $serviceName
+    Set-Service -InputObject $service -StartupType automatic
+}
+
+
+# Configure the Windows service of Telemetry Processor.
+function Configure-TelemetryProcessorService([string] $database, [string] $folderName)
+{
+    Start-Service $TelemetryProcessorServiceName
+    Set-WindowServiceToAutomatic $TelemetryProcessorServiceName
+}
  
-# Create a shared folder to store Office document data for
-# the client machines.
-function New-SharedFolder([string] $sharedFolder)
-{
-    write-host $UiMessage_CreateFolder
-    
-    [bool] $folderExists = Test-Path -path $sharedFolder
-    if (-not $folderExists)
-    {
-        New-Item $sharedFolder -type directory | Out-Null
-    }
-}
-
-# Set permission for the shared folder.
-function Grant-SharedFolderPermission([string] $folderName, [string] $folder)
-{
-    [Security.AccessControl.FileSystemSecurity] $acl = `
-        get-acl $folder
-    
-    [Object[]] $permissionFull = `
-        "NT AUTHORITY\NETWORK SERVICE", "FullControl", "Allow"
-    [Security.AccessControl.AccessRule] $ruleFullControl = new-object `
-        system.security.accesscontrol.filesystemaccessrule `
-        $permissionFull
-    $acl.AddAccessRule($ruleFullControl)
-
-    Set-Acl -Path $folder -AclObject $acl
-    
-        Grant-CreateFileDirectoryPermission "NT AUTHORITY\Authenticated Users" $folder
-
-        $user = "NT AUTHORITY\Authenticated Users" 
-        $permission = "CHANGE"
-
-        [string] $command = "net.exe"
-        [string] $arguments = "SHARE "
-        $arguments = $arguments + "$folderName=$folder"
-        $arguments = $arguments + ' "' + "/GRANT:$user,$permission" + '"'
-    
-    Start-Process -FilePath $command -ArgumentList $arguments
-}
-
-# Set permissions for a specified user/group to create files/directories 
-# in the shared folder.
-function Grant-CreateFileDirectoryPermission([string] $user, [string] $folder)
-{
-    [Security.AccessControl.FileSystemSecurity] $acl `
-        = get-acl $folder
-
-    [Object[]] $permissionWriteFile = `
-        "$user", "CreateFiles, WriteData", "Allow"
-    [Security.AccessControl.AccessRule] $ruleWriteFile = new-object `
-        system.security.accesscontrol.filesystemaccessrule `
-        $permissionWriteFile
-    $acl.AddAccessRule($ruleWriteFile)
-        
-    [Object[]] $permissionWriteDirectory = `
-        "$user", "CreateDirectories, AppendData", "Allow"
-    [Security.AccessControl.AccessRule] $ruleWriteDirectory = new-object `
-        system.security.accesscontrol.filesystemaccessrule `
-        $permissionWriteDirectory
-    $acl.AddAccessRule($ruleWriteDirectory)    
- 
-    Set-Acl -Path $folder -AclObject $acl
-}
-
 # Return the sql data root directory gotten from the registry.
 function Get-SqlDataRootDirectory([string] $sqlInstance)
 {
@@ -658,38 +720,6 @@ function Get-SqlDataRootDirectory([string] $sqlInstance)
     return $dataRootDirectory
 }
 
-# Use SQL utility to restore the database.
-function Restore-Database( `
-    [string] $bakFilePath, `
-    [string] $backupDatabaseName, `
-    [string] $databaseInstanceName)
-{
-    write-host $UiMessage_RestoreDatabase
-
-    [string] $server = hostname
-    if ($databaseInstanceName -ne "MSSQLServer")
-    {
-        $server = $server + "\" + $databaseInstanceName
-    }      
-    [string] $sqlDataRootDirectory = Get-SqlDataRootDirectory $databaseInstanceName
-    [string] $dataFilePath = `
-        $sqlDataRootDirectory + "\" + $RestoredDatabaseName + ".mdf"
-    [string] $logFilePath = `
-        $sqlDataRootDirectory + "\" + $RestoredDatabaseName + "_log.ldf"
-
-    $env:path = [System.Environment]::GetEnvironmentVariable("PATH", "Machine")
-    [string] $command = "sqlcmd.exe"
-    [string] $arguments = " -E -S " + '"' + $server + '"' `
-        + " -Q " + '"' + "restore database " + $RestoredDatabaseName + " " `
-        + "from disk = '$bakFilePath' with move '$backupDatabaseName' " `
-        + "to '$dataFilePath', move '$backupDatabaseName" + "_log' to " `
-        + "'$logFilePath'" + '"'
-
-    Start-Process $command -ArgumentList $arguments -Wait
-    
-    return $server
-}
-
 # Read a registry value. In a 64-bit OS, read it regardless of 
 # the bitness of the PowerShell console.
 # Throw an exception if the value fails to be read.
@@ -700,78 +730,13 @@ function Read-RegistryValue([string] $key, [string] $value)
     return $registryValue
 }
 
-# Try to get the SQL server instance name from the registry.
-# Throw an error if it is not found in registry.
-function Get-InstanceNameFromRegistryEntry([string] $registryKey)
-{
-    if (-not (test-path $registryKey))
-    {
-        throw
-    }
-    $registryEntry = Get-Item -Path $registryKey
-
-    if ($registryEntry.GetType().name -eq "String")
-    {
-        [string] $property = $registryEntry.GetValue($registryEntry.Property)  
-        if ($property -match "^MSSQL12\..+") 
-        {
-            return $registryEntry.Property
-        }
-    }
-    else 
-    { 
-        [int] $total = $registryEntry.ValueCount 
-        [string[]] $subkeys = $registryEntry.GetValueNames()
-        [string] $sqlInstanceName = $String.Empty
-        for ($i = 0; $i -le $total - 1; $i++) 
-        { 
-            [string] $property = $registryEntry.GetValue($subkeys[$i]) 
-            if ($property -match "^MSSQL12\..+") 
-            {
-                $sqlInstanceName = $subkeys[$i]
-                break
-            }
-        }
-        if (-not ([String]::IsNullOrEmpty($sqlInstanceName)))
-        {
-            return $sqlInstanceName
-        }
-    }
-    throw
-}
-
-# Get the instance name of SQL Server 2014 if it is present in the registry. 
-function Get-SqlServer2014InstanceName
-{
-    [bool] $is64BitOS = Test-64BitOS
-    if ($is64BitOS)
-    {
-        try
-        {
-            return Get-InstanceNameFromRegistryEntry `
-                "HKLM:\software\wow6432node\microsoft\microsoft sql server\instance names\sql"
-        }
-        catch
-        {
-            return Get-InstanceNameFromRegistryEntry `
-                "HKLM:\software\microsoft\microsoft sql server\instance names\sql"
-        }
-    }
-    else
-    {
-        return Get-InstanceNameFromRegistryEntry `
-            "HKLM:\software\microsoft\microsoft sql server\instance names\sql"
-    }
-}
-
-
 # Return the target instance name of the SQL server to be
 # used in this script.
 function Get-SqlInstanceName
 {
     try
     {
-        return Get-SqlServer2014InstanceName
+        Get-SQLInstance | foreach { $_.SQLInstance }
     }
     catch
     {
@@ -831,114 +796,10 @@ function Configure-Database([string] $database)
 
 }
 
-# Change a Windows service startup type to "Automatic".
-function Set-WindowServiceToAutomatic([string] $serviceName)
-{
-    [Object] $service = Get-Service $serviceName
-    Set-Service -InputObject $service -StartupType automatic
-}
-
-# Start a Windows service. This function does not restart it
-# if it has already been started. 
-function Start-WindowService([string] $serviceName)
-{
-    [bool] $isWorkgroupAccount = Test-WorkgroupAccount
-    if (-not ($isWorkgroupAccount))
-    {
-        return
-    }
-    [Object] $service = Get-Service $serviceName
-    try
-    {
-        $service.Start()
-    }
-    catch
-    {
-        # Eat error if the service has already started
-        if (-not ($_.Exception -match "cannot start service MSDPSVC"))
-        {
-            throw
-        }
-    }
-}
-
-# Configure the Windows service of Telemetry Processor.
-function Configure-TelemetryProcessorService([string] $database, [string] $folderName)
-{
-    [string] $key = "HKLM:\SOFTWARE\Microsoft\Office\16.0\OSM\DataProcessor"
-    [string] $sqlServerName = Get-SqlServerName
-    Add-RegistryKey $key "DatabaseServer" $sqlServerName "String"
-
-    Add-RegistryKey $key "DatabaseName" $database "String"
-    
-    $fileShareLocation = Build-FileSharePath $folderName
-    Add-RegistryKey $key "FileShareLocation" $fileShareLocation "String"
-    
-    Start-WindowService $TelemetryProcessorServiceName
-    Set-WindowServiceToAutomatic $TelemetryProcessorServiceName
-}
-
 # Run the task to let Telemetry Agent write data to the shared folder.
-function Run-TelemetryAgentTask([string] $database)
+function Run-TelemetryAgentTask
 {
-    [string] $logOnTaskName = "\Microsoft\Office\OfficeTelemetryAgentLogOn"
-    schtasks /End /TN $logOnTaskName | Out-Null
-    schtasks /Run /TN $logOnTaskName | Out-Null
-
-    [bool] $isDataUploaded = $false
-    [int] $confirm = 1
-    while ((-not $isDataUploaded) -and ($confirm -le 15))
-    {
-        write-host $UiMessage_UploadData
-            
-        Start-Sleep -S 60
-
-        $isDataUploaded = Get-IsDataUploaded $database
-        
-        if ((-not $isDataUploaded -and $confirm -eq 1))
-        {
-            # When a laptop is powered by the battery,
-            # OfficeTelemetryAgentLogOn cannot start up.
-            # Upload data from OfficeTelemetryAgentFallBack
-            [string] $fallbackTaskName = "\Microsoft\Office\OfficeTelemetryAgentFallBack"
-            schtasks /Run /TN $fallbackTaskName | Out-Null
-        }
-        $confirm++
-    }
-}
-
-# Return true if the data has been uploaded to the database
-# by the Telemetry Processor service.
-function Get-IsDataUploaded([string] $database)
-{
-    [string] $serverName = Get-SqlServerName
-    $env:path = [System.Environment]::GetEnvironmentVariable("PATH", "Machine") 
-    [string] $query = "osql.exe -E -S " + $serverName + " " `
-        + "-d " + $database + " -Q " `
-        + '"' + "select max(LastUpdatedTime) from dbo.UsersOnComputers" + '"'
-   
-    [string] $retval = Invoke-Expression $query
-    [string] $lastUpdated = $String.Empty
-    if ($retval -match "(\d\d\d\d-\d\d-\d\d)")
-    {
-        if ($matches.count -ne 2)
-        {
-            throw
-        }
-        $lastUpdated = $matches[1]
-    }
-    else
-    {
-        return $false
-    }
-    [datetime] $lastUpdatedDate = Get-Date $lastUpdated
-    [datetime] $today = [System.DateTime]::UtcNow
-    [int] $difference = ($lastUpdatedDate - $today).Days
-    if ([Math]::abs($difference) -le 1)
-    {
-        return $true
-    }    
-    return $false
+    Start-ScheduledTask OfficeTelemetryAgentLogOn2016 \Microsoft\Office         
 }
 
 # Display instructions to the user about how to use Telemetry Dashboard.
@@ -946,8 +807,7 @@ function Show-TelemetryDashboard
 {
     [string] $dashboardPath = $String.Empty
 
-        $dashboardPath = $OfficeInstallInformation.OfficePath `
-            + "\msotd.exe"  
+        $dashboardPath = "$OfficeInstallInformation.OfficePath\msotd.exe" 
     Write-Host $UiMessage_HowToUseDashboard
     if (Test-Path $dashboardPath)
     {      
@@ -955,43 +815,45 @@ function Show-TelemetryDashboard
     }
     else
     {
-        $dashboardPath = $OfficeInstallInformation.OfficePath `
-            + "\root\office15\msotd.exe"
+        $dashboardPath = "$OfficeInstallInformation.OfficePath\root\office16\msotd.exe"
         Start-Process -FilePath $dashboardPath
     }
     
 }
 
-# Configure database, Telemetry Processor service and Telemetry Agent
-# using the target database.
-function Configure-DashboardComponents([string] $folderName)
+# Add a registry key given its name, value and type.
+function Add-RegistryKey( `
+    [string] $key, `
+    [string] $name, `
+    [string] $value, `
+    [string] $type)
 {
-    [string] $configuredDatabase = $DatabaseInformation.DatabaseName
-    [bool] $isWorkgroupAccount = Test-WorkgroupAccount
-    if ($isWorkgroupAccount)
+    if (-not (Test-Path $key))
     {
-        Configure-Database $configuredDatabase
-        
-        Configure-TelemetryProcessorService $configuredDatabase $folderName
+        New-Item $key -Force | Out-Null
     }
-    Configure-TelemetryAgent $configuredDatabase $folderName
+    New-ItemProperty $key -Name $name -Value $value -PropertyType $type -Force | Out-Null
 }
 
-# Create a new shared folder to be used by the script.
-function Get-SharedFolder
+# Set the registry values to enable Telemetry Agent to upload data.
+function Configure-TelemetryAgent([string] $database, [string] $folderName)
 {
-    [string] $folderBaseName = "TDShared"
-    [string] $folderName = $folderBaseName
-    [string] $folderPath = "$env:SystemDrive\$folderName"
-    [int] $i = 1       
+    [string] $key = "HKCU:\Software\Policies\Microsoft\Office\16.0\osm"
+    [string] $commonFileShare = Build-FileSharePath $folderName
+    Add-RegistryKey $key "CommonFileShare" $commonFileShare  "String"
+
+    Add-RegistryKey $key "Tag1" "TAG1" "String"
+    Add-RegistryKey $key "Tag2" "TAG2" "String"
+    Add-RegistryKey $key "Tag3" "TAG3" "String"
+    Add-RegistryKey $key "Tag4" "TAG4" "String"
+
+    Add-RegistryKey $key "AgentInitWait" "1" "DWord"
+    Add-RegistryKey $key "Enablelogging" "1" "DWord"
+    Add-RegistryKey $key "EnableUpload" "1" "DWord"
+    Add-RegistryKey $key "EnableFileObfuscation" "0" "DWord"
+    Add-RegistryKey $key "AgentRandomDelay" "0" "DWord"
     
-    while (Test-Path $folderPath)
-    {
-        $folderName = $folderBaseName + $i
-        $folderPath = "$env:SystemDrive\$folderName"
-        $i++
-    }
-    return $folderName
+    Run-TelemetryAgentTask $database
 }
 
 # Give the user an option to write the .reg file.
@@ -1023,21 +885,16 @@ function Write-RegFile([string] $folderName)
     regedit /s $outPath
 }
 
-# Tell the user to run the script in a 64-bit console
-# if it is run in a 32-bit console.
-function Confirm-ConsoleBitness
+# Configure database, Telemetry Processor service and Telemetry Agent
+# using the target database.
+function Configure-DashboardComponents([string] $folderName)
 {
-    [bool] $is64BitOS = Test-64BitOS
-    
-    if ($is64BitOS)
-    {
-        if ($PSHOME -match "SysWOW64")
-        {
-            write-host $Error32BitPowerShell64BitOS
-            exit        
-        }
-    }
+    Configure-Database
+    Configure-TelemetryProcessorService
+    Configure-TelemetryAgent
 }
+
+
 
 #
 # Main script flow
@@ -1058,27 +915,28 @@ Print-CopyrightDisclaimer
 
 Check-Elevated
 
-New-Groups
+Enable-DOTNET3
+
+Check-SQLInstall
 
 Install-SQLwithIni
 
-New-SharedFolder $SharedFolder
+Set-TcpPort
 
-[Hashtable] $DatabaseInformation = `
-    Install-TelemetryProcessor $SharedFolderName $SharedFolder
+New-SharedFolder
+
+Install-TelemetryProcessor
+
+Create-ProcessorRegData
+
+New-Database
 
 Configure-DashboardComponents $SharedFolderName
+
 Show-TelemetryDashboard
 
 Write-RegFile $SharedFolderName
-#other scratch code:
-function Enable-DOTNET3{
-    #Enable .NET 3.5 if not enabled
-    $feature = Get-WindowsOptionalFeature -online -FeatureName NetFx3
-    if($feature.State -eq "Disabled"){
-        Enable-WindowsOptionalFeature -FeatureName NetFx3 -NoRestart
-    }
-}
+
 
 # SIG # Begin signature block
 # MIIagAYJKoZIhvcNAQcCoIIacTCCGm0CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
