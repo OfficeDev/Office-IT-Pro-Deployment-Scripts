@@ -1,6 +1,66 @@
 ﻿
 Function New-OfficeConfiguration{
-    [OutputType([string])]
+<#
+.SYNOPSIS
+Creates a simple Office configuration file and outputs a 
+string that is the path of the file
+
+.DESCRIPTION
+Given at least the bitness of the office version, the product id, and 
+the file path of the output file, this function creates an xml file with
+the bare minimum values to be usable. A configuration root, an add element,
+a product element, and a language element (nested one after the other).
+The output is the file path of the file so that this function can easily
+be piped into the other associated functions. 
+
+.PARAMETER Bitness
+Possible values are '32' or '64'
+Required. Specifies the edition of Click-to-Run for Office 365 product 
+to use: 32- or 64-bit. The action fails if OfficeClientEdition is not 
+set to a valid value.
+
+A configure mode action may fail if OfficeClientEdition is set incorrectly. 
+For example, if you attempt to install a 64-bit edition of a Click-to-Run 
+for Office 365 product on a computer that is running a 32-bit Windows 
+operating system, or if you try to install a 32-bit Click-to-Run for Office 
+365 product on a computer that has a 64-bit edition of Office installed.
+
+.PARAMETER ProductId
+Required. ID must be set to a valid ProductRelease ID.
+See https://support.microsoft.com/en-us/kb/2842297 for valid ids.
+
+.PARAMETER LanguageId
+Possible values match 'll-cc' pattern (Microsoft Language ids)
+The ID value can be set to a valid Office culture language (such as en-us 
+for English US or ja-jp for Japanese). The ll-cc value is the language 
+identifier.
+Defaults to the language from Get-Culture
+
+.PARAMETER OutPath
+Full file path for the file to be output to.
+
+.Example
+New-OfficeConfiguration -Bitness "64" -ProductId "O365ProPlusRetail" -OutPath "$env:Public/Documents/config.xml"
+Creates a config.xml file in public documents for installing the 64bit 
+Office 365 ProPlus and sets the language to match the value in Get-Culture
+
+.Example
+New-OfficeConfiguration -Bitness "64" -ProductId "O365ProPlusRetail" -OutPath "$env:Public/Documents/config.xml" -LanguageId "es-es"
+Creates a config.xml file in public documents for installing the 64bit 
+Office 365 ProPlus and sets the language to Spanish
+
+.Notes
+Here is what the configuration file looks like when created from this function:
+
+<Configuration>
+  <Add OfficeClientEdition="64">
+    <Product ID="O365ProPlusRetail">
+      <Language ID="en-US" />
+    </Product>
+  </Add>
+</Configuration>
+
+#>
     Param(
 
     [Parameter(Mandatory=$true)]
@@ -12,7 +72,7 @@ Function New-OfficeConfiguration{
     [Parameter()]
     [string] $LanguageId = (Get-Culture | %{$_.Name}),
 
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
     [string] $OutPath
 
     )
@@ -44,7 +104,55 @@ Function New-OfficeConfiguration{
 }
 
 Function Remove-Product{
+<#
+.SYNOPSIS
+Modifies an existing configuration xml file to remove all or particular
+click to run products.
 
+.PARAMETER All
+Set this switch to remove all click to run products
+
+.PARAMETER ProductId
+Required. ID must be set to a valid ProductRelease ID.
+See https://support.microsoft.com/en-us/kb/2842297 for valid ids.
+
+.PARAMETER LanguageIds
+Possible values match 'll-cc' pattern (Microsoft Language ids)
+The ID value can be set to a valid Office culture language (such as en-us 
+for English US or ja-jp for Japanese). The ll-cc value is the language 
+identifier.
+
+.PARAMETER ConfigPath
+Full file path for the file to be modified and be output to.
+
+.Example
+Remove-Product -All -ConfigPath "$env:Public/Documents/config.xml"
+Sets config to remove all click to run products
+
+.Example
+Remove-Product -ProductId "O365ProPlusRetail" -LanguageId "en-US" -ConfigPath "$env:Public/Documents/config.xml"
+Sets config to remove the english version of office 365 ProPlus
+
+.Notes
+Here is what the portion of configuration file looks like when modified by this function:
+
+<Configuration>
+...
+  <Remove>
+    <Product ID="O365ProPlusRetail">
+        <Language ID="en-US"
+    </Product>
+  </Remove>
+</Configuration>
+
+-or-
+
+<Configuration>
+...
+  <Remove All="TRUE" />
+</Configuration>
+
+#>
     Param(
 
         [Parameter()]
@@ -56,7 +164,7 @@ Function Remove-Product{
         [Parameter()]
         [string[]] $LanguageIds,
 
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
         [string] $ConfigPath
 
     )
@@ -69,22 +177,22 @@ Function Remove-Product{
         if($configFile.Configuration -eq $null){
             throw $NoConfigurationElement
         }
-
-        if($configFile.COnfiguration.Remove -eq $null){
+        [System.XML.XMLElement]$RemoveElement = $configFile.Configuration.GetElementsByTagName("Remove").Item(0)
+        if($configFile.Configuration.Remove -eq $null){
             [System.XML.XMLElement]$RemoveElement=$configFile.CreateElement("Remove")
-            $configFile.COnfiguration.appendChild($RemoveElement) | Out-Null
+            $configFile.Configuration.appendChild($RemoveElement) | Out-Null
         }
         if($All){
-            $configFile.COnfiguration.Remove.SetAttribute("All", "True") | Out-Null
+             $RemoveElement.SetAttribute("All", "True") | Out-Null
         }else{
-            [System.XML.XMLElement]$ProductElement = $configFile.Configuration.Remove.Product | ?  ID -eq $ProductId
+            [System.XML.XMLElement]$ProductElement = $RemoveElement.Product | ?  ID -eq $ProductId
             if($ProductElement -eq $null){
                 [System.XML.XMLElement]$ProductElement=$configFile.CreateElement("Product")
-                $configFile.COnfiguration.Remove.appendChild($ProductElement) | Out-Null
+                $RemoveElement.appendChild($ProductElement) | Out-Null
                 $ProductElement.SetAttribute("ID", $ProductId) | Out-Null
             }
             foreach($LanguageId in $LanguageIds){
-                [System.XML.XMLElement]$LanguageElement = $configFile.Configuration.Remove.Product.Language | ?  ID -eq $LanguageId
+                [System.XML.XMLElement]$LanguageElement = $RemoveElement.Product.Language | ?  ID -eq $LanguageId
                 if($LanguageElement -eq $null){
                     [System.XML.XMLElement]$LanguageElement=$configFile.CreateElement("Language")
                     $ProductElement.appendChild($LanguageElement) | Out-Null
@@ -101,19 +209,64 @@ Function Remove-Product{
 }
 
 Function Add-Product{
+<#
+.SYNOPSIS
+Modifies an existing configuration xml file to remove all or particular
+click to run products.
 
+.PARAMETER ExcludeApps
+Array of IDs of Apps to exclude from install
+
+.PARAMETER ProductId
+Required. ID must be set to a valid ProductRelease ID.
+See https://support.microsoft.com/en-us/kb/2842297 for valid ids.
+
+.PARAMETER LanguageIds
+Possible values match 'll-cc' pattern (Microsoft Language ids)
+The ID value can be set to a valid Office culture language (such as en-us 
+for English US or ja-jp for Japanese). The ll-cc value is the language 
+identifier.
+
+.PARAMETER ConfigPath
+Full file path for the file to be modified and be output to.
+
+.Example
+Add-Product -ProductId "O365ProPlusRetail" -LanguageId ("en-US", "es-es") -ConfigPath "$env:Public/Documents/config.xml" -ExcludeApps ("Access", "InfoPath")
+Sets config to add the English and Spanish version of office 365 ProPlus
+excluding Access and InfoPath
+
+.Example
+Add-Product -ProductId "O365ProPlusRetail" -LanguageId ("en-US", "es-es) -ConfigPath "$env:Public/Documents/config.xml"
+Sets config to add the English and Spanish version of office 365 ProPlus
+
+.Notes
+Here is what the portion of configuration file looks like when modified by this function:
+
+<Configuration>
+  <Add OfficeClientEdition="64" >
+    <Product ID="O365ProPlusRetail">
+      <Language ID="en-US" />
+      <Language ID="es-es" />
+      <ExcludeApp ID="Access">
+      <ExcludeApp ID="InfoPath">
+    </Product>
+  </Add>
+  ...
+</Configuration>
+
+#>
     Param(
 
-        [Parameter()]
+        [Parameter(Mandatory=$true)]
         [string] $ProductId,
 
-        [Parameter()]
+        [Parameter(Mandatory=$true)]
         [string[]] $LanguageIds,
 
         [Parameter()]
         [string[]] $ExcludeApps,
 
-        [Parameter(Mandatory=$true)]
+        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
         [string] $ConfigPath
 
     )
@@ -127,14 +280,14 @@ Function Add-Product{
             throw $NoConfigurationElement
         }
 
-        if($configFile.COnfiguration.Add -eq $null){
+        if($configFile.Configuration.Add -eq $null){
             throw $NoAddElement
         }
 
         [System.XML.XMLElement]$ProductElement = $configFile.Configuration.Add.Product | ?  ID -eq $ProductId
         if($ProductElement -eq $null){
             [System.XML.XMLElement]$ProductElement=$configFile.CreateElement("Product")
-            $configFile.COnfiguration.Remove.appendChild($ProductElement) | Out-Null
+            $configFile.Configuration.Remove.appendChild($ProductElement) | Out-Null
             $ProductElement.SetAttribute("Id", $ProductId) | Out-Null
         }
 
@@ -165,7 +318,59 @@ Function Add-Product{
 }
 
 Function Set-Updates{
+<#
+.SYNOPSIS
+Modifies an existing configuration xml file to enable/disable updates
 
+.PARAMETER Enabled
+Optional. If Enabled is set to TRUE, the Click-to-Run update system will 
+check for updates. If it is set to FALSE, the Click-to-Run update system 
+is dormant.
+
+.PARAMETER UpdatePath
+Optional. If UpdatePath is not set, Click-to-Run installations obtain updates 
+from the Microsoft Click-to-Run source (Content Delivery Network or CDN). This is by default.
+UpdatePath can specify a network, local, or HTTP path of a Click-to-Run source.
+Environment variables can be used for network or local paths.
+
+.PARAMETER TargetVersion
+Optional. If TargetVersion is not set, Click-to-Run updates to the most 
+recent version from the Microsoft Click-to-Run source. If TargetVersion 
+is set to empty (""), Click-to-Run updates to the latest version from the 
+Microsoft Click-to-Run source. TargetVersion can be set to an Office build number,
+for example, 15.1.2.3. When the version is set, Office attempts to transition to
+the specified version in the next update cycle.
+
+.PARAMETER Deadline
+Optional. Sets a deadline by when updates to Office must be applied. 
+The deadline is specified in Coordinated Universal Time (UTC).
+You can use Deadline with Target Version to make sure that Office is 
+updated to a particular version by a particular date. We recommend that 
+you set the deadline at least a week in the future to allow users time 
+to install the updates.
+
+.PARAMETER ConfigPath
+Full file path for the file to be modified and be output to.
+
+.Example
+Set-Updates -Enabled "False" -ConfigPath "$env:Public/Documents/config.xml"
+Sets config to disable updates
+
+.Example
+Set-Updates -Enabled "True" -UpdatePath "\\Server\share\" -ConfigPath "$env:Public/Documents/config.xml" -Deadline "05/16/2014 18:30" -TargetVersion "15.1.2.3"
+Office updates are enabled, update path is \\Server\share\, the product 
+version is set to 15.1.2.3, and the deadline is set to May 16, 2014 at 6:30 PM UTC.
+
+.Notes
+Here is what the portion of configuration file looks like when modified by this function:
+
+<Configuration>
+  ...
+  <Updates Enabled="TRUE" UpdatePath="\\Server\share\" TargetVersion="15.1.2.3" Deadline="05/16/2014 18:30"/>
+  ...
+</Configuration>
+
+#>
     Param(
 
         [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
@@ -194,22 +399,23 @@ Function Set-Updates{
             throw $NoConfigurationElement
         }
 
-        if($configFile.COnfiguration.Updates -eq $null){
+        [System.XML.XMLElement]$UpdateElement = $configFile.Configuration.GetElementsByTagName("Updates").Item(0)
+        if($configFile.Configuration.Updates -eq $null){
             [System.XML.XMLElement]$UpdateElement=$configFile.CreateElement("Updates")
-            $configFile.COnfiguration.appendChild($UpdateElement) | Out-Null
+            $configFile.Configuration.appendChild($UpdateElement) | Out-Null
         }
 
         if([string]::IsNullOrWhiteSpace($Enabled) -eq $false){
-            $configFile.COnfiguration.Updates.SetAttribute("Enabled", $Enabled) | Out-Null
+            $UpdateElement.SetAttribute("Enabled", $Enabled) | Out-Null
         }
         if([string]::IsNullOrWhiteSpace($UpdatePath) -eq $false){
-            $configFile.COnfiguration.Updates.SetAttribute("UpdatePath", $UpdatePath) | Out-Null
+            $UpdateElement.SetAttribute("UpdatePath", $UpdatePath) | Out-Null
         }
         if([string]::IsNullOrWhiteSpace($TargetVersion) -eq $false){
-            $configFile.COnfiguration.Updates.SetAttribute("TargetVersion", $TargetVersion) | Out-Null
+            $UpdateElement.SetAttribute("TargetVersion", $TargetVersion) | Out-Null
         }
         if([string]::IsNullOrWhiteSpace($Deadline) -eq $false){
-            $configFile.COnfiguration.Updates.SetAttribute("Deadline", $Deadline) | Out-Null
+            $UpdateElement.SetAttribute("Deadline", $Deadline) | Out-Null
         }
 
         $configFile.Save($ConfigPath) | Out-Null
@@ -219,7 +425,59 @@ Function Set-Updates{
 }
 
 Function Set-ConfigProperties{
+<#
+.SYNOPSIS
+Modifies an existing configuration xml file to enable/disable updates
 
+.PARAMETER AutoActivate
+If AUTOACTIVATE is set to 1, the specified products will attempt to activate automatically. 
+If AUTOACTIVATE is not set, the user may see the Activation Wizard UI.
+You must not set AUTOACTIVATE for Office 365 Click-to-Run products. 
+
+.PARAMETER ForceAppShutDown
+An installation or removal action may be blocked if Office applications are running. 
+Normally, such cases would start a process killer UI. Administrators can set 
+FORCEAPPSHUTDOWN value to TRUE to prevent dependence on user interaction. When 
+FORCEAPPSHUTDOWN is set to TRUE, any applications that block the action will be shut 
+down. Data loss may occur. When FORCEAPPSHUTDOWN is set to FALSE (default), the 
+action may fail if Office applications are running.
+
+.PARAMETER PackageGUID
+Optional. By default, all Office 2013 App-V packages created by using the Office 
+Deployment Tool share the same App-V Package ID. Administrators can use PACKAGEGUID 
+to specify a different Package ID. Also, PACKAGEGUID needs to be at least 25 
+characters in length and be separated into 5 sections, with each section separated by 
+a dash. The sections need to have the following number of characters: 8, 4, 4, 4, and 12. 
+
+.PARAMETER SharedComputerLicensing
+Optional. Set SharedComputerLicensing to 1 if you deploy Office 365 ProPlus to shared 
+computers by using Remote Desktop Services.
+
+.PARAMETER ConfigPath
+Full file path for the file to be modified and be output to.
+
+.Example
+Set-ConfigProperties -AutoActivate "1" -ConfigPath "$env:Public/Documents/config.xml"
+Sets config to automatically activate the products
+
+.Example
+Set-ConfigProperties -ForceAppShutDown "True" -PackageGUID "12345678-ABCD-1234-ABCD-1234567890AB" -ConfigPath "$env:Public/Documents/config.xml"
+Sets the config so that apps are forced to shutdown during install and the package guid
+to "12345678-ABCD-1234-ABCD-1234567890AB"
+
+.Notes
+Here is what the portion of configuration file looks like when modified by this function:
+
+<Configuration>
+  ...
+  <Property Name="AUTOACTIVATE" Value="1" />
+  <Property Name="FORCEAPPSHUTDOWN" Value="TRUE" />
+  <Property Name="PACKAGEGUID" Value="12345678-ABCD-1234-ABCD-1234567890AB" />
+  <Property Name="SharedComputerLicensing" Value="0" />
+  ...
+</Configuration>
+
+#>
     Param(
         
         [Parameter()]
@@ -234,7 +492,7 @@ Function Set-ConfigProperties{
         [Parameter()]
         [string] $SharedComputerLicensing,
 
-        [Parameter()]
+        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
         [string] $ConfigPath
     )
 
@@ -252,7 +510,7 @@ Function Set-ConfigProperties{
                 [System.XML.XMLElement]$AutoActivateElement=$configFile.CreateElement("Property")
             }
                 
-            $configFile.COnfiguration.appendChild($AutoActivateElement) | Out-Null
+            $configFile.Configuration.appendChild($AutoActivateElement) | Out-Null
             $AutoActivateElement.SetAttribute("Name", "AUTOACTIVATE") | Out-Null
             $AutoActivateElement.SetAttribute("Value", $AutoActivate) | Out-Null
         }
@@ -263,7 +521,7 @@ Function Set-ConfigProperties{
                 [System.XML.XMLElement]$ForceAppShutDownElement=$configFile.CreateElement("Property")
             }
                 
-            $configFile.COnfiguration.appendChild($ForceAppShutDownElement) | Out-Null
+            $configFile.Configuration.appendChild($ForceAppShutDownElement) | Out-Null
             $ForceAppShutDownElement.SetAttribute("Name", "FORCEAPPSHUTDOWN") | Out-Null
             $ForceAppShutDownElement.SetAttribute("Value", $ForceAppShutDownElement) | Out-Null
         }
@@ -274,7 +532,7 @@ Function Set-ConfigProperties{
                 [System.XML.XMLElement]$PackageGUIDElement=$configFile.CreateElement("Property")
             }
                 
-            $configFile.COnfiguration.appendChild($PackageGUIDElement) | Out-Null
+            $configFile.Configuration.appendChild($PackageGUIDElement) | Out-Null
             $PackageGUIDElement.SetAttribute("Name", "PACKAGEGUID") | Out-Null
             $PackageGUIDElement.SetAttribute("Value", $PackageGUID) | Out-Null
         }
@@ -285,7 +543,7 @@ Function Set-ConfigProperties{
                 [System.XML.XMLElement]$SharedComputerLicensingElement=$configFile.CreateElement("Property")
             }
                 
-            $configFile.COnfiguration.appendChild($SharedComputerLicensingElement) | Out-Null
+            $configFile.Configuration.appendChild($SharedComputerLicensingElement) | Out-Null
             $SharedComputerLicensingElement.SetAttribute("Name", "SharedComputerLicensing") | Out-Null
             $SharedComputerLicensingElement.SetAttribute("Value", $SharedComputerLicensing) | Out-Null
         }
@@ -297,7 +555,58 @@ Function Set-ConfigProperties{
 }
 
 Function Set-Add{
+<#
+.SYNOPSIS
+Modifies an existing configuration xml file to enable/disable updates
 
+.PARAMETER SourcePath
+Optional.
+The SourcePath value can be set to a network, local, or HTTP path that contains a 
+Click-to-Run source. Environment variables can be used for network or local paths.
+SourcePath indicates the location to save the Click-to-Run installation source 
+when you run the Office Deployment Tool in download mode.
+SourcePath indicates the installation source path from which to install Office 
+when you run the Office Deployment Tool in configure mode. If you don’t specify 
+SourcePath in configure mode, Setup will look in the current folder for the Office 
+source files. If the Office source files aren’t found in the current folder, Setup 
+will look on Office 365 for them.
+SourcePath specifies the path of the Click-to-Run Office source from which the 
+App-V package will be made when you run the Office Deployment Tool in packager mode.
+If you do not specify SourcePath, Setup will attempt to create an \Office\Data\... 
+folder structure in the working directory from which you are running setup.exe.
+
+.PARAMETER Version
+Optional. If a Version value is not set, the Click-to-Run product installation streams 
+the latest available version from the source. The default is to use the most recently 
+advertised build (as defined in v32.CAB or v64.CAB at the Click-to-Run Office installation source).
+Version can be set to an Office 2013 build number by using this format: X.X.X.X
+
+.PARAMETER Bitness
+Required. Specifies the edition of Click-to-Run for Office 365 product to use: 32- or 64-bit.
+
+.PARAMETER ConfigPath
+Full file path for the file to be modified and be output to.
+
+.Example
+Set-Add -SourcePath "C:\Preload\Office" -ConfigPath "$env:Public/Documents/config.xml"
+Sets config SourcePath property of the add element to C:\Preload\Office
+
+.Example
+Set-Add -SourcePath "C:\Preload\Office" -Version "15.1.2.3" -ConfigPath "$env:Public/Documents/config.xml"
+Sets config SourcePath property of the add element to C:\Preload\Office and version to 15.1.2.3
+
+.Notes
+Here is what the portion of configuration file looks like when modified by this function:
+
+<Configuration>
+  ...
+  <Add SourcePath="\\server\share\" Version="15.1.2.3" OfficeClientEdition="32"> 
+      ...
+  </Add>
+  ...
+</Configuration>
+
+#>
     Param(
 
         [Parameter()]
@@ -309,7 +618,7 @@ Function Set-Add{
         [Parameter()]
         [string] $Bitness,
 
-        [Parameter()]
+        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
         [string] $ConfigPath
 
     )
@@ -323,19 +632,19 @@ Function Set-Add{
             throw $NoConfigurationElement
         }
 
-        if($configFile.COnfiguration.Add -eq $null){
+        if($configFile.Configuration.Add -eq $null){
             [System.XML.XMLElement]$AddElement=$configFile.CreateElement("Add")
-            $configFile.COnfiguration.appendChild($AddElement) | Out-Null
+            $configFile.Configuration.appendChild($AddElement) | Out-Null
         }
 
         if([string]::IsNullOrWhiteSpace($SourcePath) -eq $false){
-            $configFile.COnfiguration.Add.SetAttribute("SourcePath", $SourcePath) | Out-Null
+            $configFile.Configuration.Add.SetAttribute("SourcePath", $SourcePath) | Out-Null
         }
         if([string]::IsNullOrWhiteSpace($Version) -eq $false){
-            $configFile.COnfiguration.Add.SetAttribute("Version", $Version) | Out-Null
+            $configFile.Configuration.Add.SetAttribute("Version", $Version) | Out-Null
         }
         if([string]::IsNullOrWhiteSpace($Bitness) -eq $false){
-            $configFile.COnfiguration.Add.SetAttribute("OfficeClientEdition", $Bitness) | Out-Null
+            $configFile.Configuration.Add.SetAttribute("OfficeClientEdition", $Bitness) | Out-Null
         }
 
         $configFile.Save($ConfigPath) | Out-Null
@@ -347,7 +656,39 @@ Function Set-Add{
 }
 
 Function Set-Logging{
-    
+<#
+.SYNOPSIS
+Modifies an existing configuration xml file to enable/disable updates
+
+.PARAMETER Level
+Optional. Specifies options for the logging that Click-to-Run Setup 
+performs. The default level is Standard.
+
+.PARAMETER Path
+Optional. Specifies the fully qualified path of the folder that is 
+used for the log file. You can use environment variables. The default is %temp%.
+
+.PARAMETER ConfigPath
+Full file path for the file to be modified and be output to.
+
+.Example
+Set-Logging -Level "Off" -ConfigPath "$env:Public/Documents/config.xml"
+Sets config to turn off logging
+
+.Example
+Set-Logging -Level "Standard" -Path "%temp%" -ConfigPath "$env:Public/Documents/config.xml"
+Sets config to turn logging on and store the logs in the temp folder
+
+.Notes
+Here is what the portion of configuration file looks like when modified by this function:
+
+<Configuration>
+  ...
+  <Logging Level="Standard" Path="%temp%" />
+  ...
+</Configuration>
+
+#>
     Param(
 
         [Parameter()]
@@ -356,7 +697,7 @@ Function Set-Logging{
         [Parameter()]
         [string] $Path,
 
-        [Paramter()]
+        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
         [string] $ConfigPath
 
     )
@@ -370,16 +711,17 @@ Function Set-Logging{
             throw $NoConfigurationElement
         }
 
-        if($configFile.COnfiguration.Logging -eq $null){
+        [System.XML.XMLElement]$LoggingElement = $configFile.Configuration.GetElementsByTagName("Logging").Item(0)
+        if($configFile.Configuration.Logging -eq $null){
             [System.XML.XMLElement]$LoggingElement=$configFile.CreateElement("Logging")
-            $configFile.COnfiguration.appendChild($LoggingElement) | Out-Null
+            $configFile.Configuration.appendChild($LoggingElement) | Out-Null
         }
 
         if([string]::IsNullOrWhiteSpace($Level) -eq $false){
-            $configFile.COnfiguration.Logging.SetAttribute("Level", $Level) | Out-Null
+            $LoggingElement.SetAttribute("Level", $Level) | Out-Null
         }
         if([string]::IsNullOrWhiteSpace($Path) -eq $false){
-            $configFile.COnfiguration.Logging.SetAttribute("Path", $Path) | Out-Null
+            $LoggingElement.SetAttribute("Path", $Path) | Out-Null
         }
 
         $configFile.Save($ConfigPath) | Out-Null
@@ -390,7 +732,44 @@ Function Set-Logging{
 }
 
 Function Set-Display{
+<#
+.SYNOPSIS
+Modifies an existing configuration xml file to enable/disable updates
 
+.PARAMETER Level
+Optional. Determines the user interface that the user sees when the 
+operation is performed. If Level is set to None, the user sees no UI. 
+No progress UI, completion screen, error dialog boxes, or first run 
+automatic start UI are displayed. If Level is set to Full, the user 
+sees the normal Click-to-Run user interface: Automatic start, 
+application splash screen, and error dialog boxes.
+
+.PARAMETER AcceptEULA
+If this attribute is set to TRUE, the user does not see a Microsoft 
+Software License Terms dialog box. If this attribute is set to FALSE 
+or is not set, the user may see a Microsoft Software License Terms dialog box.
+
+.PARAMETER ConfigPath
+Full file path for the file to be modified and be output to.
+
+.Example
+Set-Logging -Level "Full" -ConfigPath "$env:Public/Documents/config.xml"
+Sets config show the UI during install
+
+.Example
+Set-Display -Level "none" -AcceptEULA "True" -ConfigPath "$env:Public/Documents/config.xml"
+Sets config to hide UI and automatically accept EULA during install
+
+.Notes
+Here is what the portion of configuration file looks like when modified by this function:
+
+<Configuration>
+  ...
+  <Display Level="None" AcceptEULA="TRUE" />
+  ...
+</Configuration>
+
+#>
     Param(
 
         [Parameter()]
@@ -399,7 +778,7 @@ Function Set-Display{
         [Parameter()]
         [string] $AcceptEULA,
 
-        [Parameter()]
+        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
         [string] $ConfigPath
 
     )
@@ -413,16 +792,17 @@ Function Set-Display{
             throw $NoConfigurationElement
         }
 
-        if($configFile.COnfiguration.Display -eq $null){
+        [System.XML.XMLElement]$DisplayElement = $configFile.Configuration.GetElementsByTagName("Display").Item(0)
+        if($configFile.Configuration.Display -eq $null){
             [System.XML.XMLElement]$DisplayElement=$configFile.CreateElement("Display")
-            $configFile.COnfiguration.appendChild($DisplayElement) | Out-Null
+            $configFile.Configuration.appendChild($DisplayElement) | Out-Null
         }
 
         if([string]::IsNullOrWhiteSpace($Level) -eq $false){
-            $configFile.COnfiguration.Display.SetAttribute("Level", $Level) | Out-Null
+            $DisplayElement.SetAttribute("Level", $Level) | Out-Null
         }
         if([string]::IsNullOrWhiteSpace($Path) -eq $AcceptEULA){
-            $configFile.COnfiguration.Display.SetAttribute("AcceptEULA", $AcceptEULA) | Out-Null
+            $DisplayElement.SetAttribute("AcceptEULA", $AcceptEULA) | Out-Null
         }
 
         $configFile.Save($ConfigPath) | Out-Null
