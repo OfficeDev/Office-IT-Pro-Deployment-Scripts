@@ -59,6 +59,9 @@ Process
 		$baseContent = $baseContent + "[Startup]"
 		
 		$baseContent | Out-File -FilePath $psScriptsFilePath -Encoding unicode -Force
+		
+		$file = Get-ChildItem -Path $psScriptsFilePath
+		$file.Attributes = $file.Attributes -bor ([System.IO.FileAttributes]::Hidden).value__
 	}
 	
 	$content = Get-Content -Encoding $encoding -Path $psScriptsFilePath
