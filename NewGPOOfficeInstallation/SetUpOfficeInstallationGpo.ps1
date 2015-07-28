@@ -52,10 +52,8 @@ Process
 
 	if(!(Test-Path $psScriptsFilePath))
 	{
-		$baseContent = @()		
-		$baseContent = $baseContent + "[ScriptsConfig]"
-		$baseContent = $baseContent + "StartExecutePSFirst=true"
-		$baseContent = $baseContent + "[Startup]"
+		
+		$baseContent = "`r`n[ScriptsConfig]`r`nStartExecutePSFirst=true`r`n[Startup]"
 		
 		$baseContent | Out-File -FilePath $psScriptsFilePath -Encoding unicode -Force
 		
