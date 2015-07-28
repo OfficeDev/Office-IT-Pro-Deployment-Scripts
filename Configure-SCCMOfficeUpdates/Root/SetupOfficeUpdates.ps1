@@ -114,7 +114,6 @@ function SetupOfficeUpdates
     Write-Host 'Starting Deployment'	
 	
 	Start-CMPackageDeployment -CollectionName $collectionToUse -PackageName $packageName -ProgramName $programName -StandardProgram -DeploymentAvailableDateTime ([datetime]::Now.ToString()) -DeploymentExpireDateTime ([datetime]::Now.AddDays($deploymentExpiryDurationInDays)).ToString() -DeployPurpose Required -FastNetworkOption RunProgramFromDistributionPoint -RerunBehavior RerunIfFailedPreviousAttempt -ScheduleEvent AsSoonAsPossible -SlowNetworkOption DoNotRunProgram -SoftwareInstallation $True -SystemRestart $True
-
 }
 
 function GetSupportedPlatforms([String[]] $requiredPlatformNames)
@@ -131,7 +130,6 @@ function GetSupportedPlatforms([String[]] $requiredPlatformNames)
     {
         $osDetail = ([WmiClass]("\\$computerName\root\sms\site_$siteCode`:SMS_OS_Details")).CreateInstance()    
               
-
         $osDetail.MaxVersion = $p.OSMaxVersion
         $osDetail.MinVersion = $p.OSMinVersion
         $osDetail.Name = $p.OSName
