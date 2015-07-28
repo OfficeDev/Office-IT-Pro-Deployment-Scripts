@@ -1,0 +1,9 @@
+<Configuration>
+
+   <Add OfficeClientEdition="*BITNESS*">
+    <Product ID="O365ProPlusRetail">
+      <Language ID="en-us" />
+    </Product>    
+  </Add>   
+
+</Configuration>
