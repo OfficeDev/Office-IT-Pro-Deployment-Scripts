@@ -5,7 +5,7 @@ Param
 	[String]$UncPath,
 	
 	[Parameter()]
-	[String]$Bitness = '64'
+	[String]$Bitness = '32'
 )
 Begin
 {
@@ -21,13 +21,15 @@ Process
 	$localSetupFilePath = ".\$setupFileName"
 	$setupFilePath = "$UncPath\$localSetupFilePath"
 	
+	Copy-Item -Path $localSetupFilePath -Destination $UncPath -Force
+	
 	$downloadConfigFileName = 'Configure_Download.xml'
 	$downloadConfigFilePath = "$UncPath\$downloadConfigFileName"
 	$localDownloadConfigFilePath = ".\$downloadConfigFileName"
 	
 	$installConfigFileName = 'Configuration_InstallLocally.xml'
 	$installConfigFilePath = "$UncPath\$installConfigFileName"
-	$localInstalllConfigFilePath = ".\$installConfigFileName"
+	$localInstallConfigFilePath = ".\$installConfigFileName"
 	
 	$content = [Xml](Get-Content $localDownloadConfigFilePath)
 	$addNode = $content.Configuration.Add
@@ -35,7 +37,7 @@ Process
 	Write-Host 'Saving Download Configuration XML'	
 	$content.Save($downloadConfigFilePath)
 	
-	$content = [Xml](Get-Content $localInstalllConfigFilePath)
+	$content = [Xml](Get-Content $localInstallConfigFilePath)
 	$addNode = $content.Configuration.Add
 	$addNode.OfficeClientEdition = $Bitness
 	$addNode.SourcePath = $UncPath
