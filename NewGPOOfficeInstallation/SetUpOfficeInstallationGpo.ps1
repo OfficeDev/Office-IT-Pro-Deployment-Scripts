@@ -114,6 +114,7 @@ Process
 	else
 	{
 		$lastScriptIndex = 0
+		$nextScriptIndex = 0
 	}
 	
 	if($lastScriptIndex -gt 0)
