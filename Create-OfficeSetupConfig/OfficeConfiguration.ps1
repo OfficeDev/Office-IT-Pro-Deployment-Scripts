@@ -79,25 +79,25 @@ Here is what the configuration file looks like when created from this function:
 
     Process{
         #Create Document and Add root Configuration Element
-        [System.XML.XMLDocument]$configFile = New-Object System.XML.XMLDocument
-        [System.XML.XMLElement]$ConfigurationRoot=$configFile.CreateElement("Configuration")
-        $configFile.appendChild($ConfigurationRoot) | Out-Null
+        [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
+        [System.XML.XMLElement]$ConfigurationRoot=$ConfigFile.CreateElement("Configuration")
+        $ConfigFile.appendChild($ConfigurationRoot) | Out-Null
 
         #Add the Add Element under Configuration and set the Bitness
-        [System.XML.XMLElement]$AddElement=$configFile.CreateElement("Add")
+        [System.XML.XMLElement]$AddElement=$ConfigFile.CreateElement("Add")
         $ConfigurationRoot.appendChild($AddElement) | Out-Null
         $AddElement.SetAttribute("OfficeClientEdition",$Bitness) | Out-Null
 
         #Add the Product Element under Add and set the ID
-        [System.XML.XMLElement]$ProductElement=$configFile.CreateElement("Product")
+        [System.XML.XMLElement]$ProductElement=$ConfigFile.CreateElement("Product")
         $AddElement.appendChild($ProductElement) | Out-Null
         $ProductElement.SetAttribute("ID",$ProductId) | Out-Null
 
         #Add the Language Element under Product and set the ID
-        [System.XML.XMLElement]$LanguageElement=$configFile.CreateElement("Language")
+        [System.XML.XMLElement]$LanguageElement=$ConfigFile.CreateElement("Language")
         $ProductElement.appendChild($LanguageElement) | Out-Null
         $LanguageElement.SetAttribute("ID",$LanguageId) | Out-Null
-        $configFile.Save($OutPath) | Out-Null
+        $ConfigFile.Save($OutPath) | Out-Null
 
         return $OutPath;
     }
@@ -170,38 +170,44 @@ Here is what the portion of configuration file looks like when modified by this 
     )
 
     Process{
+        #Load file from path
+        [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
+        $ConfigFile.Load($ConfigPath) | Out-Null
 
-        [System.XML.XMLDocument]$configFile = New-Object System.XML.XMLDocument
-        $configFile.Load($ConfigPath) | Out-Null
-
-        if($configFile.Configuration -eq $null){
+        #Check to see if it has the proper root element
+        if($ConfigFile.Configuration -eq $null){
             throw $NoConfigurationElement
         }
-        [System.XML.XMLElement]$RemoveElement = $configFile.Configuration.GetElementsByTagName("Remove").Item(0)
-        if($configFile.Configuration.Remove -eq $null){
-            [System.XML.XMLElement]$RemoveElement=$configFile.CreateElement("Remove")
-            $configFile.Configuration.appendChild($RemoveElement) | Out-Null
+
+        #Get the Remove element if it exists
+        [System.XML.XMLElement]$RemoveElement = $ConfigFile.Configuration.GetElementsByTagName("Remove").Item(0)
+        if($ConfigFile.Configuration.Remove -eq $null){
+            [System.XML.XMLElement]$RemoveElement=$ConfigFile.CreateElement("Remove")
+            $ConfigFile.Configuration.appendChild($RemoveElement) | Out-Null
         }
+
+        #Set the desired values
         if($All){
              $RemoveElement.SetAttribute("All", "True") | Out-Null
         }else{
             [System.XML.XMLElement]$ProductElement = $RemoveElement.Product | ?  ID -eq $ProductId
             if($ProductElement -eq $null){
-                [System.XML.XMLElement]$ProductElement=$configFile.CreateElement("Product")
+                [System.XML.XMLElement]$ProductElement=$ConfigFile.CreateElement("Product")
                 $RemoveElement.appendChild($ProductElement) | Out-Null
                 $ProductElement.SetAttribute("ID", $ProductId) | Out-Null
             }
             foreach($LanguageId in $LanguageIds){
                 [System.XML.XMLElement]$LanguageElement = $RemoveElement.Product.Language | ?  ID -eq $LanguageId
                 if($LanguageElement -eq $null){
-                    [System.XML.XMLElement]$LanguageElement=$configFile.CreateElement("Language")
+                    [System.XML.XMLElement]$LanguageElement=$ConfigFile.CreateElement("Language")
                     $ProductElement.appendChild($LanguageElement) | Out-Null
                     $LanguageElement.SetAttribute("ID", $LanguageId) | Out-Null
                 }
             }
         }
 
-        $configFile.Save($ConfigPath) | Out-Null
+        #Save the file
+        $ConfigFile.Save($ConfigPath) | Out-Null
 
         return $ConfigPath
     }
@@ -272,45 +278,47 @@ Here is what the portion of configuration file looks like when modified by this 
     )
 
     Process{
+        #Load the file
+        [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
+        $ConfigFile.Load($ConfigPath) | Out-Null
 
-        [System.XML.XMLDocument]$configFile = New-Object System.XML.XMLDocument
-        $configFile.Load($ConfigPath) | Out-Null
-
-        if($configFile.Configuration -eq $null){
+        #Check that the file is properly formatted
+        if($ConfigFile.Configuration -eq $null){
             throw $NoConfigurationElement
         }
 
-        if($configFile.Configuration.Add -eq $null){
+        if($ConfigFile.Configuration.Add -eq $null){
             throw $NoAddElement
         }
 
-        [System.XML.XMLElement]$ProductElement = $configFile.Configuration.Add.Product | ?  ID -eq $ProductId
+        #Set the desired values
+        [System.XML.XMLElement]$ProductElement = $ConfigFile.Configuration.Add.Product | ?  ID -eq $ProductId
         if($ProductElement -eq $null){
-            [System.XML.XMLElement]$ProductElement=$configFile.CreateElement("Product")
-            $configFile.Configuration.Remove.appendChild($ProductElement) | Out-Null
+            [System.XML.XMLElement]$ProductElement=$ConfigFile.CreateElement("Product")
+            $ConfigFile.Configuration.Remove.appendChild($ProductElement) | Out-Null
             $ProductElement.SetAttribute("Id", $ProductId) | Out-Null
         }
 
 
         foreach($LanguageId in $LanguageIds){
-            [System.XML.XMLElement]$LanguageElement = $configFile.Configuration.Add.Product.Language | ?  ID -eq $LanguageId
+            [System.XML.XMLElement]$LanguageElement = $ConfigFile.Configuration.Add.Product.Language | ?  ID -eq $LanguageId
             if($LanguageElement -eq $null){
-                [System.XML.XMLElement]$LanguageElement=$configFile.CreateElement("Language")
+                [System.XML.XMLElement]$LanguageElement=$ConfigFile.CreateElement("Language")
                 $ProductElement.appendChild($LanguageElement) | Out-Null
                 $LanguageElement.SetAttribute("ID", $LanguageId) | Out-Null
             }
         }
 
         foreach($ExcludeApp in $ExcludeApps){
-            [System.XML.XMLElement]$ExcludeAppElement = $configFile.Configuration.Add.Product.ExcludeApp | ?  ID -eq $ExcludeApp
+            [System.XML.XMLElement]$ExcludeAppElement = $ConfigFile.Configuration.Add.Product.ExcludeApp | ?  ID -eq $ExcludeApp
             if($ExcludeAppElement -eq $null){
-                [System.XML.XMLElement]$ExcludeAppElement=$configFile.CreateElement("ExcludeApp")
+                [System.XML.XMLElement]$ExcludeAppElement=$ConfigFile.CreateElement("ExcludeApp")
                 $ProductElement.appendChild($ExcludeAppElement) | Out-Null
                 $ExcludeAppElement.SetAttribute("ID", $ExcludeApp) | Out-Null
             }
         }
 
-        $configFile.Save($ConfigPath) | Out-Null
+        $ConfigFile.Save($ConfigPath) | Out-Null
 
         return $ConfigPath
     }
@@ -391,20 +399,23 @@ Here is what the portion of configuration file looks like when modified by this 
     )
 
     Process{
+        #Load the file
+        [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
+        $ConfigFile.Load($ConfigPath) | Out-Null
 
-        [System.XML.XMLDocument]$configFile = New-Object System.XML.XMLDocument
-        $configFile.Load($ConfigPath) | Out-Null
-
-        if($configFile.Configuration -eq $null){
+        #Check to make sure the correct root element exists
+        if($ConfigFile.Configuration -eq $null){
             throw $NoConfigurationElement
         }
 
-        [System.XML.XMLElement]$UpdateElement = $configFile.Configuration.GetElementsByTagName("Updates").Item(0)
-        if($configFile.Configuration.Updates -eq $null){
-            [System.XML.XMLElement]$UpdateElement=$configFile.CreateElement("Updates")
-            $configFile.Configuration.appendChild($UpdateElement) | Out-Null
+        #Get the Updates Element if it exists
+        [System.XML.XMLElement]$UpdateElement = $ConfigFile.Configuration.GetElementsByTagName("Updates").Item(0)
+        if($ConfigFile.Configuration.Updates -eq $null){
+            [System.XML.XMLElement]$UpdateElement=$ConfigFile.CreateElement("Updates")
+            $ConfigFile.Configuration.appendChild($UpdateElement) | Out-Null
         }
 
+        #Set the desired values
         if([string]::IsNullOrWhiteSpace($Enabled) -eq $false){
             $UpdateElement.SetAttribute("Enabled", $Enabled) | Out-Null
         }
@@ -418,7 +429,7 @@ Here is what the portion of configuration file looks like when modified by this 
             $UpdateElement.SetAttribute("Deadline", $Deadline) | Out-Null
         }
 
-        $configFile.Save($ConfigPath) | Out-Null
+        $ConfigFile.Save($ConfigPath) | Out-Null
 
         return $ConfigPath
     }
@@ -497,58 +508,61 @@ Here is what the portion of configuration file looks like when modified by this 
     )
 
     Process{
-        [System.XML.XMLDocument]$configFile = New-Object System.XML.XMLDocument
-        $configFile.Load($ConfigPath) | Out-Null
+        #Load file
+        [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
+        $ConfigFile.Load($ConfigPath) | Out-Null
 
-        if($configFile.Configuration -eq $null){
+        #Check for proper root element
+        if($ConfigFile.Configuration -eq $null){
             throw $NoConfigurationElement
         }
 
+        #Set each property as desired
         if([string]::IsNullOrWhiteSpace($AutoActivate) -eq $false){
-            [System.XML.XMLElement]$AutoActivateElement = $configFile.Configuration.Property | ?  Name -eq "AUTOACTIVATE"
+            [System.XML.XMLElement]$AutoActivateElement = $ConfigFile.Configuration.Property | ?  Name -eq "AUTOACTIVATE"
             if($AutoActivateElement -eq $null){
-                [System.XML.XMLElement]$AutoActivateElement=$configFile.CreateElement("Property")
+                [System.XML.XMLElement]$AutoActivateElement=$ConfigFile.CreateElement("Property")
             }
                 
-            $configFile.Configuration.appendChild($AutoActivateElement) | Out-Null
+            $ConfigFile.Configuration.appendChild($AutoActivateElement) | Out-Null
             $AutoActivateElement.SetAttribute("Name", "AUTOACTIVATE") | Out-Null
             $AutoActivateElement.SetAttribute("Value", $AutoActivate) | Out-Null
         }
 
         if([string]::IsNullOrWhiteSpace($ForceAppShutDown) -eq $false){
-            [System.XML.XMLElement]$ForceAppShutDownElement = $configFile.Configuration.Property | ?  Name -eq "FORCEAPPSHUTDOWN"
+            [System.XML.XMLElement]$ForceAppShutDownElement = $ConfigFile.Configuration.Property | ?  Name -eq "FORCEAPPSHUTDOWN"
             if($ForceAppShutDownElement -eq $null){
-                [System.XML.XMLElement]$ForceAppShutDownElement=$configFile.CreateElement("Property")
+                [System.XML.XMLElement]$ForceAppShutDownElement=$ConfigFile.CreateElement("Property")
             }
                 
-            $configFile.Configuration.appendChild($ForceAppShutDownElement) | Out-Null
+            $ConfigFile.Configuration.appendChild($ForceAppShutDownElement) | Out-Null
             $ForceAppShutDownElement.SetAttribute("Name", "FORCEAPPSHUTDOWN") | Out-Null
             $ForceAppShutDownElement.SetAttribute("Value", $ForceAppShutDownElement) | Out-Null
         }
 
         if([string]::IsNullOrWhiteSpace($PackageGUID) -eq $false){
-            [System.XML.XMLElement]$PackageGUIDElement = $configFile.Configuration.Property | ?  Name -eq "PACKAGEGUID"
+            [System.XML.XMLElement]$PackageGUIDElement = $ConfigFile.Configuration.Property | ?  Name -eq "PACKAGEGUID"
             if($PackageGUIDElement -eq $null){
-                [System.XML.XMLElement]$PackageGUIDElement=$configFile.CreateElement("Property")
+                [System.XML.XMLElement]$PackageGUIDElement=$ConfigFile.CreateElement("Property")
             }
                 
-            $configFile.Configuration.appendChild($PackageGUIDElement) | Out-Null
+            $ConfigFile.Configuration.appendChild($PackageGUIDElement) | Out-Null
             $PackageGUIDElement.SetAttribute("Name", "PACKAGEGUID") | Out-Null
             $PackageGUIDElement.SetAttribute("Value", $PackageGUID) | Out-Null
         }
 
         if([string]::IsNullOrWhiteSpace($SharedComputerLicensing) -eq $false){
-            [System.XML.XMLElement]$SharedComputerLicensingElement = $configFile.Configuration.Property | ?  Name -eq "SharedComputerLicensing"
+            [System.XML.XMLElement]$SharedComputerLicensingElement = $ConfigFile.Configuration.Property | ?  Name -eq "SharedComputerLicensing"
             if($SharedComputerLicensingElement -eq $null){
-                [System.XML.XMLElement]$SharedComputerLicensingElement=$configFile.CreateElement("Property")
+                [System.XML.XMLElement]$SharedComputerLicensingElement=$ConfigFile.CreateElement("Property")
             }
                 
-            $configFile.Configuration.appendChild($SharedComputerLicensingElement) | Out-Null
+            $ConfigFile.Configuration.appendChild($SharedComputerLicensingElement) | Out-Null
             $SharedComputerLicensingElement.SetAttribute("Name", "SharedComputerLicensing") | Out-Null
             $SharedComputerLicensingElement.SetAttribute("Value", $SharedComputerLicensing) | Out-Null
         }
 
-        $configFile.Save($ConfigPath) | Out-Null
+        $ConfigFile.Save($ConfigPath) | Out-Null
         return $ConfigPath
         
     }
@@ -624,30 +638,33 @@ Here is what the portion of configuration file looks like when modified by this 
     )
 
     Process{
+        #Load file
+        [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
+        $ConfigFile.Load($ConfigPath) | Out-Null
 
-        [System.XML.XMLDocument]$configFile = New-Object System.XML.XMLDocument
-        $configFile.Load($ConfigPath) | Out-Null
-
-        if($configFile.Configuration -eq $null){
+        #Check for proper root element
+        if($ConfigFile.Configuration -eq $null){
             throw $NoConfigurationElement
         }
 
-        if($configFile.Configuration.Add -eq $null){
-            [System.XML.XMLElement]$AddElement=$configFile.CreateElement("Add")
-            $configFile.Configuration.appendChild($AddElement) | Out-Null
+        #Get Add element if it exists
+        if($ConfigFile.Configuration.Add -eq $null){
+            [System.XML.XMLElement]$AddElement=$ConfigFile.CreateElement("Add")
+            $ConfigFile.Configuration.appendChild($AddElement) | Out-Null
         }
 
+        #Set values as desired
         if([string]::IsNullOrWhiteSpace($SourcePath) -eq $false){
-            $configFile.Configuration.Add.SetAttribute("SourcePath", $SourcePath) | Out-Null
+            $ConfigFile.Configuration.Add.SetAttribute("SourcePath", $SourcePath) | Out-Null
         }
         if([string]::IsNullOrWhiteSpace($Version) -eq $false){
-            $configFile.Configuration.Add.SetAttribute("Version", $Version) | Out-Null
+            $ConfigFile.Configuration.Add.SetAttribute("Version", $Version) | Out-Null
         }
         if([string]::IsNullOrWhiteSpace($Bitness) -eq $false){
-            $configFile.Configuration.Add.SetAttribute("OfficeClientEdition", $Bitness) | Out-Null
+            $ConfigFile.Configuration.Add.SetAttribute("OfficeClientEdition", $Bitness) | Out-Null
         }
 
-        $configFile.Save($ConfigPath) | Out-Null
+        $ConfigFile.Save($ConfigPath) | Out-Null
 
         return $ConfigPath
 
@@ -703,20 +720,23 @@ Here is what the portion of configuration file looks like when modified by this 
     )
 
     Process{
+        #Load file
+        [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
+        $ConfigFile.Load($ConfigPath) | Out-Null
 
-        [System.XML.XMLDocument]$configFile = New-Object System.XML.XMLDocument
-        $configFile.Load($ConfigPath) | Out-Null
-
-        if($configFile.Configuration -eq $null){
+        #Check for proper root element
+        if($ConfigFile.Configuration -eq $null){
             throw $NoConfigurationElement
         }
 
-        [System.XML.XMLElement]$LoggingElement = $configFile.Configuration.GetElementsByTagName("Logging").Item(0)
-        if($configFile.Configuration.Logging -eq $null){
-            [System.XML.XMLElement]$LoggingElement=$configFile.CreateElement("Logging")
-            $configFile.Configuration.appendChild($LoggingElement) | Out-Null
+        #Get logging element if it exists
+        [System.XML.XMLElement]$LoggingElement = $ConfigFile.Configuration.GetElementsByTagName("Logging").Item(0)
+        if($ConfigFile.Configuration.Logging -eq $null){
+            [System.XML.XMLElement]$LoggingElement=$ConfigFile.CreateElement("Logging")
+            $ConfigFile.Configuration.appendChild($LoggingElement) | Out-Null
         }
 
+        #Set values
         if([string]::IsNullOrWhiteSpace($Level) -eq $false){
             $LoggingElement.SetAttribute("Level", $Level) | Out-Null
         }
@@ -724,7 +744,7 @@ Here is what the portion of configuration file looks like when modified by this 
             $LoggingElement.SetAttribute("Path", $Path) | Out-Null
         }
 
-        $configFile.Save($ConfigPath) | Out-Null
+        $ConfigFile.Save($ConfigPath) | Out-Null
 
         return $ConfigPath
 
@@ -784,20 +804,23 @@ Here is what the portion of configuration file looks like when modified by this 
     )
 
     Process{
+        #Load file
+        [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
+        $ConfigFile.Load($ConfigPath) | Out-Null
 
-        [System.XML.XMLDocument]$configFile = New-Object System.XML.XMLDocument
-        $configFile.Load($ConfigPath) | Out-Null
-
-        if($configFile.Configuration -eq $null){
+        #Check for proper root element
+        if($ConfigFile.Configuration -eq $null){
             throw $NoConfigurationElement
         }
 
-        [System.XML.XMLElement]$DisplayElement = $configFile.Configuration.GetElementsByTagName("Display").Item(0)
-        if($configFile.Configuration.Display -eq $null){
-            [System.XML.XMLElement]$DisplayElement=$configFile.CreateElement("Display")
-            $configFile.Configuration.appendChild($DisplayElement) | Out-Null
+        #Get display element if it exists
+        [System.XML.XMLElement]$DisplayElement = $ConfigFile.Configuration.GetElementsByTagName("Display").Item(0)
+        if($ConfigFile.Configuration.Display -eq $null){
+            [System.XML.XMLElement]$DisplayElement=$ConfigFile.CreateElement("Display")
+            $ConfigFile.Configuration.appendChild($DisplayElement) | Out-Null
         }
 
+        #Set values
         if([string]::IsNullOrWhiteSpace($Level) -eq $false){
             $DisplayElement.SetAttribute("Level", $Level) | Out-Null
         }
@@ -805,7 +828,7 @@ Here is what the portion of configuration file looks like when modified by this 
             $DisplayElement.SetAttribute("AcceptEULA", $AcceptEULA) | Out-Null
         }
 
-        $configFile.Save($ConfigPath) | Out-Null
+        $ConfigFile.Save($ConfigPath) | Out-Null
 
         return $ConfigPath
 

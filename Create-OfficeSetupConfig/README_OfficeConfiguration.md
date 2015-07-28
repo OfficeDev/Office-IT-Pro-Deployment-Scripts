@@ -1,6 +1,15 @@
 #Office Configuration XML Builder
 
 Functions for building the configuration xml file for click to run office products
+Functions included:
+	New-OfficeConfiguration
+	Add-Product
+	Remove-Product
+	Set-Updates
+	Set-ConfigProperties
+	Set-Add
+	Set-Logging
+	Set-Display
 
 ###Examples
 
