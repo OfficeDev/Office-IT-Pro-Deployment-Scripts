@@ -1,0 +1,9 @@
+E:\Projects\Office ClickToRun Update Trigger\SCO365PPTrigger\bin\Debug\SCO365PPTrigger.exe.config
+E:\Projects\Office ClickToRun Update Trigger\SCO365PPTrigger\bin\Debug\SCO365PPTrigger.exe
+E:\Projects\Office ClickToRun Update Trigger\SCO365PPTrigger\bin\Debug\SCO365PPTrigger.pdb
+E:\Projects\Office ClickToRun Update Trigger\SCO365PPTrigger\obj\Debug\SCO365PPTrigger.csprojResolveAssemblyReference.cache
+E:\Projects\Office ClickToRun Update Trigger\SCO365PPTrigger\obj\Debug\SCO365PPTrigger.exe
+E:\Projects\Office ClickToRun Update Trigger\SCO365PPTrigger\obj\Debug\SCO365PPTrigger.pdb
+D:\Office-IT-Pro-Deployment-Scripts\SCCMOfficeUpdateTrigger\SCO365PPTrigger\bin\Debug\SCO365PPTrigger.exe.config
+D:\Office-IT-Pro-Deployment-Scripts\SCCMOfficeUpdateTrigger\SCO365PPTrigger\obj\Debug\SCO365PPTrigger.exe
+D:\Office-IT-Pro-Deployment-Scripts\SCCMOfficeUpdateTrigger\SCO365PPTrigger\obj\Debug\SCO365PPTrigger.pdb
