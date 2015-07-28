@@ -1,53 +1,17 @@
-#Modified Deplay-TelemetryDashboard script
+<#
+.Synopsis
+Deploys the Office Telemetry Dashboard and its components
 
-Param(
-    [Parameter()]
-    [bool] $is64BitOffice = $true,
+.Description
+Checks for SQL installation and if not installed SQL 2014 Express
+will be installed and configured. A shared folder will be created, the
+telemetry processor will be installed, a new SQL database will be created,
+and the telemetry agent will be configured.
 
-    [Parameter()]
-    [string] $officePath = "C:\Program Files\Microsoft Office\Root\Office16\"
-)
+.Example
+./Deploy-TelemetryDashboard
 
-
-# Copyright (c) 2012 Microsoft Corporation. All rights reserved.
-#
-# THIS CODE AND ANY ASSOCIATED INFORMATION ARE PROVIDED "AS IS" WITHOUT 
-# WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT 
-# LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS 
-# FOR A PARTICULAR PURPOSE. 
-#
-# THE ENTIRE RISK OF USE, INABILITY TO USE, OR RESULTS FROM THE USE OF 
-# THIS CODE REMAINS WITH THE USER. 
-
-#
-# Deploy-TelemetryDashboard.ps1
-#   Set up Telemetry Dashboard on a single computer
-#
-#   Global data sections:
-#   # Error messages
-#   # Other UI messages
-#   # Global variables
-#
-#   Code sections:
-#   # Utility functions
-#   # Main script flow
-#     # Print copyright and disclaimer
-#     # Check to see if the prompt is elevated
-#     # Install SQL Server if it is absent
-#     # Install Telemetry Processor
-#     # Create local groups in a workgroup environment
-#     # Create and configure the database
-#     # Create and configure the shared folder
-#     # Configure the Telemetry Processor service
-#     # Configure Telemetry Agent
-#     # Open Telemetry Dashboard
-#     # Ask the user if he/she wants to write the .reg file
-#
-
-#
-# Error messages
-#
-
+#>
 [string] $ErrorElevated = `
     "The script failed to run. Open an elevated command prompt window " `
     + "and try running the script again."
@@ -74,11 +38,6 @@ Param(
 [string] $Error32BitPowerShell64BitOS = `
     "The script failed to run. Open 64 bit version of PowerShell " `
     + "window and try running the script again."
-
-#
-# Other UI Messages
-#
-
 [string] $UiMessage_Copyright `
     = "Copyright (c) 2015 Microsoft Corporation. All rights reserved."
 [string] $UiMessage_Disclaimer `
@@ -181,18 +140,14 @@ Param(
 #
 
 # SQL Server 2014 Express Edition download path
-[string] $InstallerUrl = "http://download.microsoft.com/download/E" `
-+ "/A/E/EAE6F7FC-767A-4038-A954-49B8B05D04EB/Express%2064BIT/SQLEXPR_x64_ENU.exe"
+[string] $InstallerUrl = "http://download.microsoft.com/download/E/A/E" `
++ "/EAE6F7FC-767A-4038-A954-49B8B05D04EB/ExpressAndTools%2064BIT/SQLEXPRWT_x64_ENU.exe"
 # Name of the executable to save to the local machine
-[string] $InstallerFileName = "SQLEXPR_x64_ENU.exe"
-# Name of the group that will upload data to the shared folder
-[string] $GroupAgent = "TDAgent"
-# Name of the group that will read from the database
-[string] $GroupDatabase = "TDDatabase"
+[string] $InstallerFileName = "SQLEXPRWT_x64_ENU.exe"
 # Name of the database restored from the backup database file
 [string] $RestoredDatabaseName = "TDDB"
 # Name of the source database in the backup database file
-[string] $SourceDatabase = "TDDB"
+[string] $DatabaseName = "TDDB"
 # Window service name of Telemetry Processor
 [string] $TelemetryProcessorServiceName = "MSDPSVC"
 # Instance name used for the SQL Server installation
@@ -203,6 +158,10 @@ Param(
 [string] $ConfigurationPath=$env:TEMP
 # Actual configuration ini file
 [string] $ConfigurationFile="$ConfigurationPath\ConfigurationFile.ini"
+# Office Test value
+[string] $officeTest = Get-OfficeVersion
+# Get the SQL Server name
+[string] $SqlServerName = Get-SqlServerName
 
 #
 # Utility functions
@@ -217,6 +176,13 @@ function Test-64BitOS
         return $true
     }
     return $false
+}
+
+# Returns the version of Office
+function Get-OfficeVersion
+{
+$objExcel = New-Object -ComObject Excel.Application
+return $objExcel.Version
 }
 
 # Tell the user to run the script in a 64-bit console
@@ -398,17 +364,32 @@ function Build-FileSharePath([string] $folderName)
 {
     [string] $hostname = hostname
     [string] $fileSharePath = "\\" + $hostname + "\" + $folderName
+    $officeTest = Get-OfficeVersion
     
+    if ($officeTest -eq "16.0")
+    {
         [string] $dataProcessorKey = "HKLM:\SOFTWARE\Microsoft\Office\16.0\OSM\DataProcessor"
         [string] $value = "FileShareLocation"
         $fileSharePath = Read-RegistryValue $dataProcessorKey $value
        
     return $fileSharePath
+    }
+    else
+    {
+        [string] $dataProcessorKey = "HKLM:\SOFTWARE\Microsoft\Office\15.0\OSM\DataProcessor"
+        [string] $value = "FileShareLocation"
+        $fileSharePath = Read-RegistryValue $dataProcessorKey $value
+       
+    return $fileSharePath
+    }
+        
 }
 
 # Return the database information stored in the data processor registry.
 function Read-DataProcessorRegistry
 {
+    if ($officeTest -eq "16.0")
+    {
     [string] $dataProcessorRegistryKey = "HKLM:\SOFTWARE\Microsoft\Office\16.0\OSM\DataProcessor"
     [string] $databaseServer = Read-RegistryValue $dataProcessorRegistryKey "DatabaseServer"
     [string] $databaseName = Read-RegistryValue $dataProcessorRegistryKey "DatabaseName"
@@ -416,6 +397,18 @@ function Read-DataProcessorRegistry
     return @{ 
         DatabaseServer = $databaseServer;
         DatabaseName = $databaseName;
+            }
+    }
+    else
+    {
+    [string] $dataProcessorRegistryKey = "HKLM:\SOFTWARE\Microsoft\Office\15.0\OSM\DataProcessor"
+    [string] $databaseServer = Read-RegistryValue $dataProcessorRegistryKey "DatabaseServer"
+    [string] $databaseName = Read-RegistryValue $dataProcessorRegistryKey "DatabaseName"
+        
+    return @{ 
+        DatabaseServer = $databaseServer;
+        DatabaseName = $databaseName;
+            }
     }
 }
 
@@ -536,7 +529,7 @@ ENABLERANU="True" `
 SQLCOLLATION="SQL_Latin1_General_CP1_CI_AS" `
 SQLSVCACCOUNT="NT Service\MSSQL`$TDSQLEXPRESS" `
 TCPENABLED="1" `
-NPENABLED="0" `
+NPENABLED="1" `
 BROWSERSVCSTARTUPTYPE="Disabled"
 "@
 
@@ -593,10 +586,12 @@ function Set-TcpPort
     
     $TCPKey = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSSQL12.TDSQLEXPRESS\MSSQLServer\SuperSocketNetLib\Tcp"
     $RegKeyIP2 = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSSQL12.TDSQLEXPRESS\MSSQLServer\SuperSocketNetLib\Tcp\IP2"
+    $RegKeyIPAll = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSSQL12.TDSQLEXPRESS\MSSQLServer\SuperSocketNetLib\Tcp\IPAll"
 
     Set-ItemProperty -Path $TCPKey -Name Enabled -Value 1    
     Set-ItemProperty -Path $RegKeyIP2 -Name Enabled -Value 1
     Set-ItemProperty -Path $RegKeyIP2 -Name TcpPort -Value 1433
+    Set-ItemProperty -Path $RegKeyIPAll -Name TcpPort -Value 1433
 
     Restart-Service "SQL Server (TDSQLEXPRESS)"
     
@@ -613,16 +608,17 @@ function New-SharedFolder
     
    if (!(Test-Path $SharedFolderPath\$ShareName))
         {
-        New-Item "$env:SystemDrive\TDShared" -Type Directory
-        }
+        New-Item "$env:SystemDrive\$ShareName" -Type Directory
+        
 
-   New-SMBShare –Name “Shared” –Path “$SharedFolderPath\$ShareName”
+        New-SMBShare –Name “TDShared” –Path “$SharedFolderPath\$ShareName”
       
-    $acl = Get-Acl "$SharedFolderPath\$ShareName"
-    $permission = "NT AUTHORITY\NETWORK SERVICE","FullControl","ContainerInherit,ObjectInherit","None","Allow"
-    $accessRule = New-Object System.Security.AccessControl.FileSystemAccessRule $permission
-    $acl.SetAccessRule($accessRule)
-    $acl | Set-Acl "$SharedFolderPath\$ShareName"
+        $acl = Get-Acl "$SharedFolderPath\$ShareName"
+        $permission = "NT AUTHORITY\NETWORK SERVICE","FullControl","ContainerInherit,ObjectInherit","None","Allow"
+        $accessRule = New-Object System.Security.AccessControl.FileSystemAccessRule $permission
+        $acl.SetAccessRule($accessRule)
+        $acl | Set-Acl "$SharedFolderPath\$ShareName"
+        }
 }
 
 
@@ -661,17 +657,31 @@ function Install-TelemetryProcessor
 #Create the DataProcessor reg values
 function Create-ProcessorRegData
 {
-    $DatabaseName = "TDDB"
     $ShareName = "TDShared"
-    $OSMPath = "HKLM:\SOFTWARE\Microsoft\Office\16.0"
-    $DataProcessorPath = "HKLM:\SOFTWARE\Microsoft\Office\16.0\OSM"
+    $databaseServer = "TDSQLEXPRESS"
+    [string[]] $OSMPath = ("HKLM:\SOFTWARE\Microsoft\Office\15.0" `
+    ,"HKLM:\SOFTWARE\Microsoft\Office\16.0")
+    [string[]] $DataProcessorPath = ("HKLM:\SOFTWARE\Microsoft\Office\15.0\OSM" `
+    ,"HKLM:\SOFTWARE\Microsoft\Office\16.0\OSM")
+    $officeTest = Get-OfficeVersion
+    
 
-    New-Item -Path $OSMPath -Name OSM
-    New-Item -Path $DataProcessorPath -Name DataProcessor
-    New-ItemProperty -Path "$DataProcessorPath\DataProcessor" -Name DatabaseName -Value "TDDB"
-    New-ItemProperty -Path "$DataProcessorPath\DataProcessor" -Name DatabaseServer -Value "$env:ComputerName\$DatabaseName"
-    New-ItemProperty -Path "$DataProcessorPath\DataProcessor" -Name FileShareLocation -Value "$env:ComputerName\$ShareName"
-
+    if ($officeTest -eq "15.0")
+    {
+        New-Item -Path $OSMPath[0] -Name OSM
+        New-Item -Path $DataProcessorPath[0] -Name DataProcessor
+        New-ItemProperty -Path "$($DataProcessorPath[0])\DataProcessor" -Name DatabaseName -Value $DatabaseName
+        New-ItemProperty -Path "$($DataProcessorPath[0])\DataProcessor" -Name DatabaseServer -Value "$env:ComputerName\$databaseServer"
+        New-ItemProperty -Path "$($DataProcessorPath[0])\DataProcessor" -Name FileShareLocation -Value "$env:ComputerName\$ShareName"
+    }
+    else
+    {
+        New-Item -Path $OSMPath[1] -Name OSM
+        New-Item -Path $DataProcessorPath[1] -Name DataProcessor
+        New-ItemProperty -Path "$($DataProcessorPath[1])\DataProcessor" -Name DatabaseName -Value $DatabaseName
+        New-ItemProperty -Path "$($DataProcessorPath[1])\DataProcessor" -Name DatabaseServer -Value "$env:ComputerName\$databaseServer"
+        New-ItemProperty -Path "$($DataProcessorPath[1])\DataProcessor" -Name FileShareLocation -Value "$env:ComputerName\$ShareName"
+    }
 }
 
 # Change a Windows service startup type to "Automatic".
@@ -755,35 +765,52 @@ function Get-DpconfigPath
     [bool] $fileExists = Test-Path -path $filePath
     if ($fileExists)
     {
-        return $filePath
+        return $filePath;
     }
     throw $ErrorDpconfigNotExist
 }
 
-# Create a database by restoring an existing one or by using dpconfig.exe
-# to help the user create a new one.
-function New-Database
+#Creates the database in the server instance
+function Create-DataBase
 {
-        Write-Host $UiMessage_DpconfigCreateDatabase
-        [string] $dpconfigFilePath = Get-DpconfigPath
-        [string] $argument = "-createdatabase"
+Import-Module SQLPS
+$srv = new-Object Microsoft.SqlServer.Management.Smo.Server("(local)")
+$db = New-Object Microsoft.SqlServer.Management.Smo.Database($srv, "TDDB")
+$db.Create()
 
-        Start-Process $dpconfigFilePath -ArgumentList $argument -Wait
-        
-        return Read-DataProcessorRegistry
-    
+Configure-Database
+
+Write-Host $db.CreateDate
+}
+
+#Applies the Office Telemetry settings to the database
+function Configure-Database
+{
+Invoke-Sqlcmd -ServerInstance $SqlServerName -InputFile "C:\PowerShellScripts\OfficeTelemetryDatabase.sql" -Database $DatabaseName
 }
 
 
-# Set permissions that allow SQL Server to get document data
+# Execute an SQL query.
+function Run-SqlQuery([string] $database, [string] $query)
+{
+    [string] $sqlServerName = Get-SqlServerName
+    $env:path = [System.Environment]::GetEnvironmentVariable("PATH", "Machine")
+    [string] $command = "osql.exe"
+    [string] $argument = "-E -S $sqlServerName -d $database -Q " `
+        + '"' + $query + '"'
+
+    Start-Process -FilePath $command -ArgumentList $argument -Wait
+}
+
+# Set permissions that allow SQL Serveer to get document data
 # for the Office client.
 function Configure-Database([string] $database)
 {
     write-host $UiMessage_ConfigureDatabase
     
     [string] $hostname = hostname
-    [string] $query = `
-        "CREATE LOGIN [NT AUTHORITY\NETWORK SERVICE] FROM WINDOWS"
+    [string] $query = "CREATE LOGIN [NT AUTHORITY\NETWORK SERVICE] FROM WINDOWS"
+
     Run-SqlQuery $database $query
 
     $query = "CREATE USER [NT AUTHORITY\NETWORK SERVICE] FOR LOGIN " `
@@ -805,20 +832,32 @@ function Run-TelemetryAgentTask
 # Display instructions to the user about how to use Telemetry Dashboard.
 function Show-TelemetryDashboard
 {
-    [string] $dashboardPath = $String.Empty
+   [string[]] $dashboardPath = ("C:\Program Files\Microsoft Office\Root\Office15\msotd.exe" `
+    ,"C:\Program Files\Microsoft Office\Root\Office16\msotd.exe" `
+    ,"C:\Program Files\Microsoft Office 15\root\office15\msotd.exe" `
+    ,"C:\Program Files\Microsoft Office 16\root\office16\msotd.exe")
 
-        $dashboardPath = "$OfficeInstallInformation.OfficePath\msotd.exe" 
     Write-Host $UiMessage_HowToUseDashboard
-    if (Test-Path $dashboardPath)
+    if (Test-Path $dashboardPath[0])
     {      
-        Start-Process -FilePath $dashboardPath
+        Start-Process -FilePath $dashboardPath[0] /qn -Wait
     }
-    else
+
+    elseif (Test-Path $dashboardPath[1])
     {
-        $dashboardPath = "$OfficeInstallInformation.OfficePath\root\office16\msotd.exe"
-        Start-Process -FilePath $dashboardPath
+        Start-Process -FilePath $dashboardPath[1] /qn -wait
+        
     }
-    
+    elseif (Test-Path $dashboardPath[2])
+    {
+        Start-Process -FilePath $dashboardPath[2] /qn -wait
+        
+    }
+    elseif (Test-Path $dashboardPath[3])
+    {
+        Start-Process -FilePath $dashboardPath[3] /qn -wait
+        
+    }
 }
 
 # Add a registry key given its name, value and type.
@@ -866,6 +905,8 @@ function Write-RegFile([string] $folderName)
     [string] $commonFileShare = Build-FileSharePath $folderName
     $commonFileShare = $commonFileShare.replace("\", "\\")
     
+    if ($officeTest -eq "16.0")
+    {
     $stream.WriteLine("Windows Registry Editor Version 5.00")
     $stream.WriteLine("")
     $stream.WriteLine("[HKEY_CURRENT_USER\Software\Policies\Microsoft\Office\16.0\osm]")
@@ -880,6 +921,24 @@ function Write-RegFile([string] $folderName)
     $stream.WriteLine("`"EnableFileObfuscation`"=dword:00000000")
     $stream.WriteLine("`"AgentRandomDelay`"=dword:00000000")   
     $stream.Close()
+    }
+    else
+    {
+    $stream.WriteLine("Windows Registry Editor Version 5.00")
+    $stream.WriteLine("")
+    $stream.WriteLine("[HKEY_CURRENT_USER\Software\Policies\Microsoft\Office\15.0\osm]")
+    $stream.WriteLine("`"CommonFileShare`"=`"$commonFileShare`"")
+    $stream.WriteLine("`"Tag1`"=`"$commonFileShare`"")
+    $stream.WriteLine("`"Tag2`"=`"$commonFileShare`"")
+    $stream.WriteLine("`"Tag3`"=`"$commonFileShare`"")
+    $stream.WriteLine("`"Tag4`"=`"$commonFileShare`"")        
+    $stream.WriteLine("`"AgentInitWait`"=dword:00000001")
+    $stream.WriteLine("`"Enablelogging`"=dword:00000001")
+    $stream.WriteLine("`"EnableUpload`"=dword:00000001")
+    $stream.WriteLine("`"EnableFileObfuscation`"=dword:00000000")
+    $stream.WriteLine("`"AgentRandomDelay`"=dword:00000000")   
+    $stream.Close()
+    }
     
     Write-Host "The .reg file has been written to $outPath"
     regedit /s $outPath
@@ -887,55 +946,64 @@ function Write-RegFile([string] $folderName)
 
 # Configure database, Telemetry Processor service and Telemetry Agent
 # using the target database.
-function Configure-DashboardComponents([string] $folderName)
+function Configure-DashboardComponents
 {
-    Configure-Database
+    Create-Database
+    Configure-Database $DatabaseName
     Configure-TelemetryProcessorService
     Configure-TelemetryAgent
 }
 
 
 
-#
+
 # Main script flow
-#
+function Deploy-TelemetryDashboard
+{
 
-Confirm-ConsoleBitness
+    Confirm-ConsoleBitness
 
-[string] $SharedFolderName = Get-SharedFolder
-[string] $SharedFolder = "$env:SystemDrive\$sharedFolderName"
-[Hashtable] $OfficeInstallInformation = @{
-        OfficePath = $OfficePath;
-        Installed64BitOffice = $is64BitOffice;
+    Print-CopyrightDisclaimer
+
+    Check-Elevated
+
+    Enable-DOTNET3
+
+    Check-SQLInstall
+
+    if($SqlServerName -eq $Null)
+    {
+        Install-SQLwithIni
+
+        Set-TcpPort
+
+        New-SharedFolder
+
+        Install-TelemetryProcessor
+
+        Create-ProcessorRegData
+
+        Configure-DashboardComponents
+
+        Show-TelemetryDashboard
+
+        Write-RegFile $folderName
     }
+    else
+    {
+        New-SharedFolder
 
-[string] $ScriptDirectory = split-path $MyInvocation.MyCommand.Path
+        Install-TelemetryProcessor
 
-Print-CopyrightDisclaimer
+        Create-ProcessorRegData
 
-Check-Elevated
+        Configure-DashboardComponents
 
-Enable-DOTNET3
+        Show-TelemetryDashboard
 
-Check-SQLInstall
-
-Install-SQLwithIni
-
-Set-TcpPort
-
-New-SharedFolder
-
-Install-TelemetryProcessor
-
-Create-ProcessorRegData
-
-New-Database
-
-Configure-DashboardComponents $SharedFolderName
-
-Show-TelemetryDashboard
-
-Write-RegFile $SharedFolderName
+        Write-RegFile $folderName
+    }
+}
 
 
 # SIG # Begin signature block
