@@ -106,10 +106,20 @@ Process
 	$lastEntry = [string]$content[$nextIndex]
 
 	$num = [regex]::Matches($lastEntry, "\d+")[0].Value   
-
-	$lastScriptIndex = [Convert]::ToInt32($num)
-
-	$nextScriptIndex = $lastScriptIndex + 1
+	
+	if($num)
+	{
+		$lastScriptIndex = [Convert]::ToInt32($num)
+	}
+	else
+	{
+		$lastScriptIndex = 0
+	}
+	
+	if($lastScriptIndex -gt 0)
+	{
+		$nextScriptIndex = $lastScriptIndex + 1
+	}
 
 	for($i=0; $i -le $nextIndex; $i++)
 	{
