@@ -52,7 +52,13 @@ Process
 
 	if(!(Test-Path $psScriptsFilePath))
 	{
-		Out-File -FilePath $psScriptsFilePath -Encoding unicode -Force
+		$baseContent = @()
+		$baseContent = $baseContent + " `r`n"
+		$baseContent = $baseContent + "[ScriptsConfig]"
+		$baseContent = $baseContent + "StartExecutePSFirst=true"
+		$baseContent = $baseContent + "[Startup]"
+		
+		$baseContent | Out-File -FilePath $psScriptsFilePath -Encoding unicode -Force
 	}
 	
 	$content = Get-Content -Encoding $encoding -Path $psScriptsFilePath
