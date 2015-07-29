@@ -239,11 +239,11 @@ Process
 
     $packageDeploy = Get-CMDeployment | where {$_.PackageId  -eq $package.PackageId }
     if ($packageDeploy.Count -eq 0) {
-        Write-Host "Creating Package Deployment"
+        Write-Host "Creating Package Deployment for: $packageName"
 
      	Start-CMPackageDeployment -CollectionName $Collection -PackageName $PackageName -ProgramName $ProgramName -StandardProgram -DeployPurpose Required -FastNetworkOption RunProgramFromDistributionPoint -RerunBehavior RerunIfFailedPreviousAttempt -ScheduleEvent AsSoonAsPossible -SlowNetworkOption DoNotRunProgram -SoftwareInstallation $True -SystemRestart $False
     } else {
-        Write-Host "Package Deployment Already Exists"
+        Write-Host "Package Deployment Already Exists for: $packageName"
     }
 }
 }
