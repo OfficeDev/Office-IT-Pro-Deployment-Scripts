@@ -530,7 +530,7 @@ SQLCOLLATION="SQL_Latin1_General_CP1_CI_AS" `
 SQLSVCACCOUNT="NT Service\MSSQL`$TDSQLEXPRESS" `
 TCPENABLED="1" `
 NPENABLED="1" `
-BROWSERSVCSTARTUPTYPE="Disabled"
+BROWSERSVCSTARTUPTYPE="Automatic"
 "@
 
 New-Item $ConfigurationFile -type file -force -value $CreateIni
@@ -773,20 +773,28 @@ function Get-DpconfigPath
 #Creates the database in the server instance
 function Create-DataBase
 {
-Import-Module SQLPS
-$srv = new-Object Microsoft.SqlServer.Management.Smo.Server("(local)")
-$db = New-Object Microsoft.SqlServer.Management.Smo.Database($srv, "TDDB")
-$db.Create()
+    [System.Reflection.Assembly]::LoadWithPartialName('Microsoft.SqlServer.SMO')
+    
+    $srv = new-Object Microsoft.SqlServer.Management.Smo.Server("(local)")
+    $tddb = $srv.Databases | where {$_.Name -eq 'TDDB'} 
+    if (!($tddb)) 
+    {
+        $db = New-Object Microsoft.SqlServer.Management.Smo.Database($srv, "TDDB")
+        $db.Create()  
+    } 
 
 Configure-Database
 
 Write-Host $db.CreateDate
 }
 
+
 #Applies the Office Telemetry settings to the database
 function Configure-Database
 {
-Invoke-Sqlcmd -ServerInstance $SqlServerName -InputFile "C:\PowerShellScripts\OfficeTelemetryDatabase.sql" -Database $DatabaseName
+    #Import-Module SQLPS -DisableNameChecking
+    Copy-Item -Path "C:\Program Files (x86)\Microsoft SQL Server\120\Tools\PowerShell\Modules\SQLPS" -Destination "C:\Windows\System32\WindowsPowerShell\v1.0\Modules"
+    Invoke-Sqlcmd -ServerInstance $SqlServerName -InputFile "C:\PowerShellScripts\OfficeTelemetryDatabase.sql" -Database $DatabaseName
 }
 
 
@@ -804,7 +812,7 @@ function Run-SqlQuery([string] $database, [string] $query)
 
 # Set permissions that allow SQL Serveer to get document data
 # for the Office client.
-function Configure-Database([string] $database)
+function Configure-DatabasePermissions([string] $database)
 {
     write-host $UiMessage_ConfigureDatabase
     
