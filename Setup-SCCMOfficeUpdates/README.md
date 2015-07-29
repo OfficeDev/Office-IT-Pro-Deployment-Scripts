@@ -11,11 +11,6 @@ Before running this script, the following conditions have to be met
 3. Office 2013 or Office 2016 is already installed on client machines. 
 4. Office Auto Updates have been Disabled on the client machines preferably via Group Policy
 
-###**Assumptions:**
-
-1. It is assumed that for this scenario, the client machines will have one of the following OSs - Windows 7, Windows 8, Windows 8.1, Windows 10.
-2. The script defaults to use 64 bit version of Office, this can be changed by using the appropriate optional parameter. 
-
 ###**Terms:**
 
 1. *Version* - Office Monthly build version number e.g. "15.0.4727.1003" to which you wish to update.
