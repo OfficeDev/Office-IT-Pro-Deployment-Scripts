@@ -1,6 +1,6 @@
 ##**Update Office 2013 or Office 2016 using SCCM**
 
-Automates the process of updating an existing Office 2013 or Office 2016 installation controlled through SCCM
+The script automates the configuration  updating of Office 365 Pro Plus through Microsoft System Center Configuration Manager (SCCM) and ensure the PC where Office 365 Pro Plus is installed gets Office 365 Pro Plus updates from the closest SCCM Distribution Point (DP).
 
 ###**Pre-Requisites:**
 
@@ -10,12 +10,6 @@ Before running this script, the following conditions have to be met
 2. A operational SCCM environment.
 3. Office 2013 or Office 2016 is already installed on client machines. 
 4. Office Auto Updates have been Disabled on the client machines preferably via Group Policy
-
-###**Terms:**
-
-1. *Version* - Office Monthly build version number e.g. "15.0.4727.1003" to which you wish to update.
-2. *Share* - A UNC path where the office update bits will be stored, this is where the target clients will pull the data to update
-3. *SiteId* - The 3 Letter Site ID, used to connect the SCCM PowerShell Session.
 
 ###**Files:**
 
