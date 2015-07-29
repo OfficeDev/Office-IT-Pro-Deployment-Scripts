@@ -304,7 +304,7 @@ function CreateSCCMProgram() {
 
     $program = Get-CMProgram -PackageName $PackageName -ProgramName $Name
 
-    $commandLine = "SCO365PPTrigger.exe -EnableLogging true -C2RArgs `"updatepromptuser=false forceappshutdown=true displaylevel=false`""
+    $commandLine = "SCO365PPTrigger.exe -EnableLogging true -C2RArgs `"updatepromptuser=false forceappshutdown=false displaylevel=false`""
 
     Write-Host "`tProgram: $Name"
 
