@@ -7,8 +7,8 @@ Automates the process of updating an existing Office 2013 or Office 2016 install
 Before running this script, the following conditions have to be met
 
 1. .Net Framework 3.5 SP1 must be installed on client machines.
-2. A functioning SCCM environment.
-3. Office 15 or Office 16 is already installed on client machines. 
+2. A operational SCCM environment.
+3. Office 2013 or Office 2016 is already installed on client machines. 
 4. Office Auto Updates have been Disabled on the client machines preferably via Group Policy
 
 ###**Assumptions:**
