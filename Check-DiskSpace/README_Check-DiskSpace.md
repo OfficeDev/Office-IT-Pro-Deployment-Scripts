@@ -14,7 +14,7 @@ Excel 2016
 
 2. Open a PowerShell console.
 
-          From the Run dialog type PowerShell
+          From the Run dialog type PowerShell and press Enter.
   
 3. Change the directory to the location where the PowerShell Script is saved.
 
