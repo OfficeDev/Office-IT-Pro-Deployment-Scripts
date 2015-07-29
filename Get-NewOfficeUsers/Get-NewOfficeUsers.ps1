@@ -46,48 +46,54 @@ function Update-UserLicenseData{
     Process{
 
         Connect-MsolService -Credential $Credentials
-        $LicensedUsers = Get-MsolUser | ? IsLicensed -eq $True | Select DisplayName, Licenses, LiveId, ObjectId, SignInName 
-        $O365Users = new-object PSObject[] 1;
-        foreach($User in $LicensedUsers){
+        $Users = Get-MsolUser | ? IsLicensed -eq $True | Select DisplayName, Licenses, LiveId, ObjectId, SignInName 
+
+        #Get list of users with the correct service plan
+        $LicensedUsers = new-object PSObject[] 1;
+        foreach($User in $Users){
             :LicenseLoop foreach($License in $User.Licenses){
                 foreach($ServiceStatus in $License.ServiceStatus){
                     if($ServiceStatus.ServicePlan.ServiceName -eq $ServiceName){
-                        $O365Users += $User
+                        $LicensedUsers += $User
                         break LicenseLoop
                     }
                 }
             }
         }
         
-        foreach($User in $O365Users){
+        #Add tracking properties
+        foreach($User in $LicensedUsers){
             if($User -ne $Null){
                 Add-Member -InputObject $User -MemberType NoteProperty -Name LicensedAsOf -Value "$(Get-Date -Format "yyyy-MM-dd hh:mm")"
                 Add-Member -InputObject $User -MemberType NoteProperty -Name DelicensedAsOf -Value "-"
             }
         }
 
+        #Check if CSV exists
         if(Test-Path $CSVPath){
+            #if CSV exists, import it and compare and update values
             $ImportedCSV = Import-Csv $CSVPath
         
 
             Foreach($importedUser in $ImportedCSV){
-                $test123 = $O365Users | ? ObjectId -eq $importedUser.ObjectId
+                $test123 = $LicensedUsers | ? ObjectId -eq $importedUser.ObjectId
                 if($test123 -eq $null){
                     $importedUser.DelicensedAsOf = "$(Get-Date -Format "yyyy-MM-dd hh:mm")"
                 }
             }
 
-            Foreach($O365User in $O365Users){
-                $test123 = $ImportedCSV | ? ObjectId -eq $O365User.ObjectId
+            Foreach($LicensedUser in $LicensedUsers){
+                $test123 = $ImportedCSV | ? ObjectId -eq $LicensedUser.ObjectId
                 if($test123 -eq $Null){
-                    if($O365User -ne $Null){
-                        $ImportedCSV += $O365User
+                    if($LicensedUser -ne $Null){
+                        $ImportedCSV += $LicensedUser
                     }
                 }
             }
             $ImportedCSV | Export-Csv $CSVPath -NoTypeInformation
         }else{
-            $O365Users | ? ObjectId -ne $Null | Export-Csv $CSVPath -NoTypeInformation
+            #If csv does not exist, export data
+            $LicensedUsers | ? ObjectId -ne $Null | Export-Csv $CSVPath -NoTypeInformation
         }
     }
 }
