@@ -226,6 +226,111 @@ Here is what the portion of configuration file looks like when modified by this 
 
 }
 
+Function Get-ODTProduct{
+<#
+.SYNOPSIS
+Modifies an existing configuration xml file to remove all or particular
+click to run products.
+
+.PARAMETER ExcludeApps
+Array of IDs of Apps to exclude from install
+
+.PARAMETER ProductId
+Required. ID must be set to a valid ProductRelease ID.
+See https://support.microsoft.com/en-us/kb/2842297 for valid ids.
+
+.PARAMETER LanguageIds
+Possible values match 'll-cc' pattern (Microsoft Language ids)
+The ID value can be set to a valid Office culture language (such as en-us 
+for English US or ja-jp for Japanese). The ll-cc value is the language 
+identifier.
+
+.PARAMETER ConfigPath
+Full file path for the file to be modified and be output to.
+
+.Example
+Add-ODTProduct -ProductId "O365ProPlusRetail" -LanguageId ("en-US", "es-es") -ConfigPath "$env:Public/Documents/config.xml" -ExcludeApps ("Access", "InfoPath")
+Sets config to add the English and Spanish version of office 365 ProPlus
+excluding Access and InfoPath
+
+.Example
+Add-ODTProduct -ProductId "O365ProPlusRetail" -LanguageId ("en-US", "es-es) -ConfigPath "$env:Public/Documents/config.xml"
+Sets config to add the English and Spanish version of office 365 ProPlus
+
+.Notes
+Here is what the portion of configuration file looks like when modified by this function:
+
+<Configuration>
+  <Add OfficeClientEdition="64" >
+    <Product ID="O365ProPlusRetail">
+      <Language ID="en-US" />
+      <Language ID="es-es" />
+      <ExcludeApp ID="Access">
+      <ExcludeApp ID="InfoPath">
+    </Product>
+  </Add>
+  ...
+</Configuration>
+
+#>
+    Param(
+
+        [Parameter(ParameterSetName="Id",Mandatory=$true)]
+        [string] $ProductId,
+
+        [Parameter(ParameterSetName="All",Mandatory=$true)]
+        [switch] $All,
+
+        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+        [string] $TargetFilePath
+
+    )
+
+    Process{
+        #Load the file
+        [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
+        $ConfigFile.Load($TargetFilePath) | Out-Null
+
+        #Check that the file is properly formatted
+        if($ConfigFile.Configuration -eq $null){
+            throw $NoConfigurationElement
+        }
+
+        if($ConfigFile.Configuration.Add -eq $null){
+            throw $NoAddElement
+        }
+
+        if($PSCmdlet.ParameterSetName -eq "All"){
+            foreach($ProductElement in $ConfigFile.Configuration.Add.Product){
+                $Result = New-Object –TypeName PSObject 
+                Add-Member -InputObject $Result -MemberType NoteProperty -Name "ProductId" -Value ($ProductElement.GetAttribute("Id"))
+                if($ProductElement.Language -ne $null){
+                    Add-Member -InputObject $Result -MemberType NoteProperty -Name "Languages" -Value ($ProductElement.Language.GetAttribute("ID"))
+                }
+
+                if($ProductElement.ExcludeApp -ne $null){
+                    Add-Member -InputObject $Result -MemberType NoteProperty -Name "ExcludedApps" -Value ($ProductElement.ExcludeApp.GetAttribute("ID"))
+                }
+                $Result
+            }
+        }else{
+            [System.XML.XMLElement]$ProductElement = $ConfigFile.Configuration.Add.Product | ?  ID -eq $ProductId
+            $Result = New-Object –TypeName PSObject 
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "ProductId" -Value ($ProductElement.GetAttribute("Id"))
+            if($ProductElement.Language -ne $null){
+                Add-Member -InputObject $Result -MemberType NoteProperty -Name "Languages" -Value ($ProductElement.Language.GetAttribute("ID"))
+            }
+
+            if($ProductElement.ExcludeApp -ne $null){
+                Add-Member -InputObject $Result -MemberType NoteProperty -Name "ExcludedApps" -Value ($ProductElement.ExcludeApp.GetAttribute("ID"))
+            }
+            $Result
+        }
+
+    }
+
+}
+
 Function Remove-ODTProduct{
 <#
 .SYNOPSIS
