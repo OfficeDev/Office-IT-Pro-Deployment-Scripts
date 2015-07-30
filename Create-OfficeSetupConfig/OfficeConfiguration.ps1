@@ -203,7 +203,7 @@ Here is what the portion of configuration file looks like when modified by this 
                 $ProductElement.SetAttribute("ID", $ProductId) | Out-Null
             }
             foreach($LanguageId in $LanguageIds){
-                [System.XML.XMLElement]$LanguageElement = $RemoveElement.Product.Language | ?  ID -eq $LanguageId
+                [System.XML.XMLElement]$LanguageElement = $ProductElement.Language | ?  ID -eq $LanguageId
                 if($LanguageElement -eq $null){
                     [System.XML.XMLElement]$LanguageElement=$ConfigFile.CreateElement("Language")
                     $ProductElement.appendChild($LanguageElement) | Out-Null
@@ -307,7 +307,7 @@ Here is what the portion of configuration file looks like when modified by this 
 
 
         foreach($LanguageId in $LanguageIds){
-            [System.XML.XMLElement]$LanguageElement = $ConfigFile.Configuration.Add.Product.Language | ?  ID -eq $LanguageId
+            [System.XML.XMLElement]$LanguageElement = $ProductElement.Language | ?  ID -eq $LanguageId
             if($LanguageElement -eq $null){
                 [System.XML.XMLElement]$LanguageElement=$ConfigFile.CreateElement("Language")
                 $ProductElement.appendChild($LanguageElement) | Out-Null
@@ -316,7 +316,7 @@ Here is what the portion of configuration file looks like when modified by this 
         }
 
         foreach($ExcludeApp in $ExcludeApps){
-            [System.XML.XMLElement]$ExcludeAppElement = $ConfigFile.Configuration.Add.Product.ExcludeApp | ?  ID -eq $ExcludeApp
+            [System.XML.XMLElement]$ExcludeAppElement = $ProductElement.ExcludeApp | ?  ID -eq $ExcludeApp
             if($ExcludeAppElement -eq $null){
                 [System.XML.XMLElement]$ExcludeAppElement=$ConfigFile.CreateElement("ExcludeApp")
                 $ProductElement.appendChild($ExcludeAppElement) | Out-Null
