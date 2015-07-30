@@ -2,14 +2,14 @@
 
 Functions for building the configuration xml file for click to run office products
 Functions included:
-	New-OfficeConfiguration
-	Add-Product
-	Remove-Product
-	Set-Updates
-	Set-ConfigProperties
-	Set-Add
-	Set-Logging
-	Set-Display
+	New-ODTConfiguration
+	Add-ODTProduct
+	Remove-ODTProduct
+	Set-ODTUpdates
+	Set-ODTConfigProperties
+	Set-ODTAdd
+	Set-ODTLogging
+	Set-ODTDisplay
 
 ###Examples
 
@@ -34,14 +34,14 @@ Functions included:
 4. Run the commands (All commands are able to be piped into each other except New-OfficeConfiguration needs to be first.
 
             Example: 
-			New-OfficeConfiguration -Bitness "64" -ProductId "O365ProPlusRetail" -OutPath "$env:Public/Documents/config.xml" | 
-			Remove-Product -All | 
-			Add-Product -ProductId "O365ProPlusRetail" -LanguageId ("en-US", "es-es") -ExcludeApps ("Access", "InfoPath") | 
-			Set-Updates -Enabled "True" -UpdatePath "\\Server\share\" -Deadline "05/16/2014 18:30" -TargetVersion "15.1.2.3" | 
-			Set-ConfigProperties -ForceAppShutDown "True" -PackageGUID "12345678-ABCD-1234-ABCD-1234567890AB" | 
-			Set-Add -SourcePath "C:\Preload\Office" -Version "15.1.2.3" | 
-			Set-Logging -Level "Standard" -Path "%temp%" | 
-			Set-Display -Level "none" -AcceptEULA "True"
+			New-ODTConfiguration -Bitness "64" -ProductId "O365ProPlusRetail" -OutPath "$env:Public/Documents/config.xml" | 
+			Remove-ODTProduct -All | 
+			Add-ODTProduct -ProductId "O365ProPlusRetail" -LanguageId ("en-US", "es-es") -ExcludeApps ("Access", "InfoPath") | 
+			Set-ODTUpdates -Enabled "True" -UpdatePath "\\Server\share\" -Deadline "05/16/2014 18:30" -TargetVersion "15.1.2.3" | 
+			Set-ODTConfigProperties -ForceAppShutDown "True" -PackageGUID "12345678-ABCD-1234-ABCD-1234567890AB" | 
+			Set-ODTAdd -SourcePath "C:\Preload\Office" -Version "15.1.2.3" | 
+			Set-ODTLogging -Level "Standard" -Path "%temp%" | 
+			Set-ODTDisplay -Level "none" -AcceptEULA "True"
             
 
 

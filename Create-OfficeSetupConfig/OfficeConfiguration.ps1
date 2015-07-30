@@ -1,5 +1,7 @@
 ﻿
-Function New-OfficeConfiguration{
+$validProductIds = @("O365ProPlusRetail","O365BusinessRetail","VisioProRetail","ProjectProRetail", "SPDRetail")
+
+Function New-ODTConfiguration{
 <#
 .SYNOPSIS
 Creates a simple Office configuration file and outputs a 
@@ -40,12 +42,12 @@ Defaults to the language from Get-Culture
 Full file path for the file to be output to.
 
 .Example
-New-OfficeConfiguration -Bitness "64" -ProductId "O365ProPlusRetail" -TargetFilePath "$env:Public/Documents/config.xml"
+New-ODTConfiguration -Bitness "64" -ProductId "O365ProPlusRetail" -TargetFilePath "$env:Public/Documents/config.xml"
 Creates a config.xml file in public documents for installing the 64bit 
 Office 365 ProPlus and sets the language to match the value in Get-Culture
 
 .Example
-New-OfficeConfiguration -Bitness "64" -ProductId "O365ProPlusRetail" -TargetFilePath "$env:Public/Documents/config.xml" -LanguageId "es-es"
+New-ODTConfiguration -Bitness "64" -ProductId "O365ProPlusRetail" -TargetFilePath "$env:Public/Documents/config.xml" -LanguageId "es-es"
 Creates a config.xml file in public documents for installing the 64bit 
 Office 365 ProPlus and sets the language to Spanish
 
@@ -78,8 +80,11 @@ Here is what the configuration file looks like when created from this function:
     )
 
     Process{
+        if (!$validProductIds.Contains($ProductId)) {
+           throw "Invalid or Unsupported Product Id"
+        }
+        
         $pathSplit = Split-Path -Path $TargetFilePath
-
         $createDir = [system.io.directory]::CreateDirectory($pathSplit)
 
         #Create Document and Add root Configuration Element
@@ -109,118 +114,7 @@ Here is what the configuration file looks like when created from this function:
     }
 }
 
-Function Remove-Product{
-<#
-.SYNOPSIS
-Modifies an existing configuration xml file to remove all or particular
-click to run products.
-
-.PARAMETER All
-Set this switch to remove all click to run products
-
-.PARAMETER ProductId
-Required. ID must be set to a valid ProductRelease ID.
-See https://support.microsoft.com/en-us/kb/2842297 for valid ids.
-
-.PARAMETER LanguageIds
-Possible values match 'll-cc' pattern (Microsoft Language ids)
-The ID value can be set to a valid Office culture language (such as en-us 
-for English US or ja-jp for Japanese). The ll-cc value is the language 
-identifier.
-
-.PARAMETER ConfigPath
-Full file path for the file to be modified and be output to.
-
-.Example
-Remove-Product -All -ConfigPath "$env:Public/Documents/config.xml"
-Sets config to remove all click to run products
-
-.Example
-Remove-Product -ProductId "O365ProPlusRetail" -LanguageId "en-US" -ConfigPath "$env:Public/Documents/config.xml"
-Sets config to remove the english version of office 365 ProPlus
-
-.Notes
-Here is what the portion of configuration file looks like when modified by this function:
-
-<Configuration>
-...
-  <Remove>
-    <Product ID="O365ProPlusRetail">
-        <Language ID="en-US"
-    </Product>
-  </Remove>
-</Configuration>
-
--or-
-
-<Configuration>
-...
-  <Remove All="TRUE" />
-</Configuration>
-
-#>
-    Param(
-
-        [Parameter()]
-        [switch] $All,
-
-        [Parameter()]
-        [string] $ProductId,
-
-        [Parameter()]
-        [string[]] $LanguageIds,
-
-        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
-        [string] $TargetFilePath
-
-    )
-
-    Process{
-        #Load file from path
-        [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
-        $ConfigFile.Load($TargetFilePath) | Out-Null
-
-        #Check to see if it has the proper root element
-        if($ConfigFile.Configuration -eq $null){
-            throw $NoConfigurationElement
-        }
-
-        #Get the Remove element if it exists
-        [System.XML.XMLElement]$RemoveElement = $ConfigFile.Configuration.GetElementsByTagName("Remove").Item(0)
-        if($ConfigFile.Configuration.Remove -eq $null){
-            [System.XML.XMLElement]$RemoveElement=$ConfigFile.CreateElement("Remove")
-            $ConfigFile.Configuration.appendChild($RemoveElement) | Out-Null
-        }
-
-        #Set the desired values
-        if($All){
-             $RemoveElement.SetAttribute("All", "True") | Out-Null
-        }else{
-            [System.XML.XMLElement]$ProductElement = $RemoveElement.Product | ?  ID -eq $ProductId
-            if($ProductElement -eq $null){
-                [System.XML.XMLElement]$ProductElement=$ConfigFile.CreateElement("Product")
-                $RemoveElement.appendChild($ProductElement) | Out-Null
-                $ProductElement.SetAttribute("ID", $ProductId) | Out-Null
-            }
-            foreach($LanguageId in $LanguageIds){
-                [System.XML.XMLElement]$LanguageElement = $ProductElement.Language | ?  ID -eq $LanguageId
-                if($LanguageElement -eq $null){
-                    [System.XML.XMLElement]$LanguageElement=$ConfigFile.CreateElement("Language")
-                    $ProductElement.appendChild($LanguageElement) | Out-Null
-                    $LanguageElement.SetAttribute("ID", $LanguageId) | Out-Null
-                }
-            }
-        }
-
-        #Save the file
-        $ConfigFile.Save($TargetFilePath) | Out-Null
-
-        return $TargetFilePath
-    }
-
-}
-
-Function Add-Product{
+Function Add-ODTProduct{
 <#
 .SYNOPSIS
 Modifies an existing configuration xml file to remove all or particular
@@ -243,12 +137,12 @@ identifier.
 Full file path for the file to be modified and be output to.
 
 .Example
-Add-Product -ProductId "O365ProPlusRetail" -LanguageId ("en-US", "es-es") -ConfigPath "$env:Public/Documents/config.xml" -ExcludeApps ("Access", "InfoPath")
+Add-ODTProduct -ProductId "O365ProPlusRetail" -LanguageId ("en-US", "es-es") -ConfigPath "$env:Public/Documents/config.xml" -ExcludeApps ("Access", "InfoPath")
 Sets config to add the English and Spanish version of office 365 ProPlus
 excluding Access and InfoPath
 
 .Example
-Add-Product -ProductId "O365ProPlusRetail" -LanguageId ("en-US", "es-es) -ConfigPath "$env:Public/Documents/config.xml"
+Add-ODTProduct -ProductId "O365ProPlusRetail" -LanguageId ("en-US", "es-es) -ConfigPath "$env:Public/Documents/config.xml"
 Sets config to add the English and Spanish version of office 365 ProPlus
 
 .Notes
@@ -332,7 +226,119 @@ Here is what the portion of configuration file looks like when modified by this 
 
 }
 
-Function Set-Updates{
+Function Remove-ODTProduct{
+<#
+.SYNOPSIS
+Modifies an existing configuration xml file to remove all or particular
+click to run products.
+
+.PARAMETER All
+Set this switch to remove all click to run products
+
+.PARAMETER ProductId
+Required. ID must be set to a valid ProductRelease ID.
+See https://support.microsoft.com/en-us/kb/2842297 for valid ids.
+
+.PARAMETER LanguageIds
+Possible values match 'll-cc' pattern (Microsoft Language ids)
+The ID value can be set to a valid Office culture language (such as en-us 
+for English US or ja-jp for Japanese). The ll-cc value is the language 
+identifier.
+
+.PARAMETER ConfigPath
+Full file path for the file to be modified and be output to.
+
+.Example
+Remove-ODTProduct -All -ConfigPath "$env:Public/Documents/config.xml"
+Sets config to remove all click to run products
+
+.Example
+Remove-ODTProduct -ProductId "O365ProPlusRetail" -LanguageId "en-US" -ConfigPath "$env:Public/Documents/config.xml"
+Sets config to remove the english version of office 365 ProPlus
+
+.Notes
+Here is what the portion of configuration file looks like when modified by this function:
+
+<Configuration>
+...
+  <Remove>
+    <Product ID="O365ProPlusRetail">
+        <Language ID="en-US"
+    </Product>
+  </Remove>
+</Configuration>
+
+-or-
+
+<Configuration>
+...
+  <Remove All="TRUE" />
+</Configuration>
+
+#>
+    Param(
+
+        [Parameter()]
+        [switch] $All,
+
+        [Parameter()]
+        [string] $ProductId,
+
+        [Parameter()]
+        [string[]] $LanguageIds,
+
+        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+        [string] $TargetFilePath
+
+    )
+
+    Process{
+        #Load file from path
+        [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
+        $ConfigFile.Load($TargetFilePath) | Out-Null
+
+        #Check to see if it has the proper root element
+        if($ConfigFile.Configuration -eq $null){
+            throw $NoConfigurationElement
+        }
+
+        #Get the Remove element if it exists
+        [System.XML.XMLElement]$RemoveElement = $ConfigFile.Configuration.GetElementsByTagName("Remove").Item(0)
+        if($ConfigFile.Configuration.Remove -eq $null){
+            [System.XML.XMLElement]$RemoveElement=$ConfigFile.CreateElement("Remove")
+            $ConfigFile.Configuration.appendChild($RemoveElement) | Out-Null
+        }
+
+        #Set the desired values
+        if($All){
+             $RemoveElement.SetAttribute("All", "True") | Out-Null
+        }else{
+            [System.XML.XMLElement]$ProductElement = $RemoveElement.Product | ?  ID -eq $ProductId
+            if($ProductElement -eq $null){
+                [System.XML.XMLElement]$ProductElement=$ConfigFile.CreateElement("Product")
+                $RemoveElement.appendChild($ProductElement) | Out-Null
+                $ProductElement.SetAttribute("ID", $ProductId) | Out-Null
+            }
+            foreach($LanguageId in $LanguageIds){
+                [System.XML.XMLElement]$LanguageElement = $ProductElement.Language | ?  ID -eq $LanguageId
+                if($LanguageElement -eq $null){
+                    [System.XML.XMLElement]$LanguageElement=$ConfigFile.CreateElement("Language")
+                    $ProductElement.appendChild($LanguageElement) | Out-Null
+                    $LanguageElement.SetAttribute("ID", $LanguageId) | Out-Null
+                }
+            }
+        }
+
+        #Save the file
+        $ConfigFile.Save($TargetFilePath) | Out-Null
+
+        Write-Host
+        Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+    }
+
+}
+
+Function Set-ODTUpdates{
 <#
 .SYNOPSIS
 Modifies an existing configuration xml file to enable/disable updates
@@ -368,11 +374,11 @@ to install the updates.
 Full file path for the file to be modified and be output to.
 
 .Example
-Set-Updates -Enabled "False" -ConfigPath "$env:Public/Documents/config.xml"
+Set-ODTUpdates -Enabled "False" -ConfigPath "$env:Public/Documents/config.xml"
 Sets config to disable updates
 
 .Example
-Set-Updates -Enabled "True" -UpdatePath "\\Server\share\" -ConfigPath "$env:Public/Documents/config.xml" -Deadline "05/16/2014 18:30" -TargetVersion "15.1.2.3"
+Set-ODTUpdates -Enabled "True" -UpdatePath "\\Server\share\" -ConfigPath "$env:Public/Documents/config.xml" -Deadline "05/16/2014 18:30" -TargetVersion "15.1.2.3"
 Office updates are enabled, update path is \\Server\share\, the product 
 version is set to 15.1.2.3, and the deadline is set to May 16, 2014 at 6:30 PM UTC.
 
@@ -442,7 +448,7 @@ Here is what the portion of configuration file looks like when modified by this 
     }
 }
 
-Function Set-ConfigProperties{
+Function Set-ODTConfigProperties{
 <#
 .SYNOPSIS
 Modifies an existing configuration xml file to enable/disable updates
@@ -475,11 +481,11 @@ computers by using Remote Desktop Services.
 Full file path for the file to be modified and be output to.
 
 .Example
-Set-ConfigProperties -AutoActivate "1" -ConfigPath "$env:Public/Documents/config.xml"
+Set-ODTConfigProperties -AutoActivate "1" -ConfigPath "$env:Public/Documents/config.xml"
 Sets config to automatically activate the products
 
 .Example
-Set-ConfigProperties -ForceAppShutDown "True" -PackageGUID "12345678-ABCD-1234-ABCD-1234567890AB" -ConfigPath "$env:Public/Documents/config.xml"
+Set-ODTConfigProperties -ForceAppShutDown "True" -PackageGUID "12345678-ABCD-1234-ABCD-1234567890AB" -ConfigPath "$env:Public/Documents/config.xml"
 Sets the config so that apps are forced to shutdown during install and the package guid
 to "12345678-ABCD-1234-ABCD-1234567890AB"
 
@@ -575,7 +581,7 @@ Here is what the portion of configuration file looks like when modified by this 
     }
 }
 
-Function Set-Add{
+Function Set-ODTAdd{
 <#
 .SYNOPSIS
 Modifies an existing configuration xml file to enable/disable updates
@@ -609,11 +615,11 @@ Required. Specifies the edition of Click-to-Run for Office 365 product to use: 3
 Full file path for the file to be modified and be output to.
 
 .Example
-Set-Add -SourcePath "C:\Preload\Office" -ConfigPath "$env:Public/Documents/config.xml"
+Set-ODTAdd -SourcePath "C:\Preload\Office" -ConfigPath "$env:Public/Documents/config.xml"
 Sets config SourcePath property of the add element to C:\Preload\Office
 
 .Example
-Set-Add -SourcePath "C:\Preload\Office" -Version "15.1.2.3" -ConfigPath "$env:Public/Documents/config.xml"
+Set-ODTAdd -SourcePath "C:\Preload\Office" -Version "15.1.2.3" -ConfigPath "$env:Public/Documents/config.xml"
 Sets config SourcePath property of the add element to C:\Preload\Office and version to 15.1.2.3
 
 .Notes
@@ -679,7 +685,7 @@ Here is what the portion of configuration file looks like when modified by this 
 
 }
 
-Function Set-Logging{
+Function Set-ODTLogging{
 <#
 .SYNOPSIS
 Modifies an existing configuration xml file to enable/disable updates
@@ -696,11 +702,11 @@ used for the log file. You can use environment variables. The default is %temp%.
 Full file path for the file to be modified and be output to.
 
 .Example
-Set-Logging -Level "Off" -ConfigPath "$env:Public/Documents/config.xml"
+Set-ODTLogging -Level "Off" -ConfigPath "$env:Public/Documents/config.xml"
 Sets config to turn off logging
 
 .Example
-Set-Logging -Level "Standard" -Path "%temp%" -ConfigPath "$env:Public/Documents/config.xml"
+Set-ODTLogging -Level "Standard" -Path "%temp%" -ConfigPath "$env:Public/Documents/config.xml"
 Sets config to turn logging on and store the logs in the temp folder
 
 .Notes
@@ -758,7 +764,7 @@ Here is what the portion of configuration file looks like when modified by this 
     }
 }
 
-Function Set-Display{
+Function Set-ODTDisplay{
 <#
 .SYNOPSIS
 Modifies an existing configuration xml file to enable/disable updates
@@ -780,11 +786,11 @@ or is not set, the user may see a Microsoft Software License Terms dialog box.
 Full file path for the file to be modified and be output to.
 
 .Example
-Set-Logging -Level "Full" -ConfigPath "$env:Public/Documents/config.xml"
+Set-ODTLogging -Level "Full" -ConfigPath "$env:Public/Documents/config.xml"
 Sets config show the UI during install
 
 .Example
-Set-Display -Level "none" -AcceptEULA "True" -ConfigPath "$env:Public/Documents/config.xml"
+Set-ODTDisplay -Level "none" -AcceptEULA "True" -ConfigPath "$env:Public/Documents/config.xml"
 Sets config to hide UI and automatically accept EULA during install
 
 .Notes
