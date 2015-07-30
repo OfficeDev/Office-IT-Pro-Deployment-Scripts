@@ -36,16 +36,16 @@ for English US or ja-jp for Japanese). The ll-cc value is the language
 identifier.
 Defaults to the language from Get-Culture
 
-.PARAMETER OutPath
+.PARAMETER TargetFilePath
 Full file path for the file to be output to.
 
 .Example
-New-OfficeConfiguration -Bitness "64" -ProductId "O365ProPlusRetail" -OutPath "$env:Public/Documents/config.xml"
+New-OfficeConfiguration -Bitness "64" -ProductId "O365ProPlusRetail" -TargetFilePath "$env:Public/Documents/config.xml"
 Creates a config.xml file in public documents for installing the 64bit 
 Office 365 ProPlus and sets the language to match the value in Get-Culture
 
 .Example
-New-OfficeConfiguration -Bitness "64" -ProductId "O365ProPlusRetail" -OutPath "$env:Public/Documents/config.xml" -LanguageId "es-es"
+New-OfficeConfiguration -Bitness "64" -ProductId "O365ProPlusRetail" -TargetFilePath "$env:Public/Documents/config.xml" -LanguageId "es-es"
 Creates a config.xml file in public documents for installing the 64bit 
 Office 365 ProPlus and sets the language to Spanish
 
@@ -66,18 +66,22 @@ Here is what the configuration file looks like when created from this function:
     [Parameter(Mandatory=$true)]
     [string] $Bitness,
 
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory=$true, HelpMessage="Example: O365ProPlusRetail")]
     [string] $ProductId,
 
     [Parameter()]
     [string] $LanguageId = (Get-Culture | %{$_.Name}),
 
     [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
-    [string] $OutPath
+    [string] $TargetFilePath
 
     )
 
     Process{
+        $pathSplit = Split-Path -Path $TargetFilePath
+
+        $createDir = [system.io.directory]::CreateDirectory($pathSplit)
+
         #Create Document and Add root Configuration Element
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
         [System.XML.XMLElement]$ConfigurationRoot=$ConfigFile.CreateElement("Configuration")
@@ -97,9 +101,11 @@ Here is what the configuration file looks like when created from this function:
         [System.XML.XMLElement]$LanguageElement=$ConfigFile.CreateElement("Language")
         $ProductElement.appendChild($LanguageElement) | Out-Null
         $LanguageElement.SetAttribute("ID",$LanguageId) | Out-Null
-        $ConfigFile.Save($OutPath) | Out-Null
+        $ConfigFile.Save($TargetFilePath) | Out-Null
 
-        return $OutPath;
+        Write-Host
+        Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+         
     }
 }
 
@@ -165,14 +171,14 @@ Here is what the portion of configuration file looks like when modified by this 
         [string[]] $LanguageIds,
 
         [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
-        [string] $ConfigPath
+        [string] $TargetFilePath
 
     )
 
     Process{
         #Load file from path
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
-        $ConfigFile.Load($ConfigPath) | Out-Null
+        $ConfigFile.Load($TargetFilePath) | Out-Null
 
         #Check to see if it has the proper root element
         if($ConfigFile.Configuration -eq $null){
@@ -207,9 +213,9 @@ Here is what the portion of configuration file looks like when modified by this 
         }
 
         #Save the file
-        $ConfigFile.Save($ConfigPath) | Out-Null
+        $ConfigFile.Save($TargetFilePath) | Out-Null
 
-        return $ConfigPath
+        return $TargetFilePath
     }
 
 }
@@ -273,14 +279,14 @@ Here is what the portion of configuration file looks like when modified by this 
         [string[]] $ExcludeApps,
 
         [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
-        [string] $ConfigPath
+        [string] $TargetFilePath
 
     )
 
     Process{
         #Load the file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
-        $ConfigFile.Load($ConfigPath) | Out-Null
+        $ConfigFile.Load($TargetFilePath) | Out-Null
 
         #Check that the file is properly formatted
         if($ConfigFile.Configuration -eq $null){
@@ -295,7 +301,7 @@ Here is what the portion of configuration file looks like when modified by this 
         [System.XML.XMLElement]$ProductElement = $ConfigFile.Configuration.Add.Product | ?  ID -eq $ProductId
         if($ProductElement -eq $null){
             [System.XML.XMLElement]$ProductElement=$ConfigFile.CreateElement("Product")
-            $ConfigFile.Configuration.Remove.appendChild($ProductElement) | Out-Null
+            $ConfigFile.Configuration.Add.appendChild($ProductElement) | Out-Null
             $ProductElement.SetAttribute("Id", $ProductId) | Out-Null
         }
 
@@ -318,9 +324,10 @@ Here is what the portion of configuration file looks like when modified by this 
             }
         }
 
-        $ConfigFile.Save($ConfigPath) | Out-Null
+        $ConfigFile.Save($TargetFilePath) | Out-Null
 
-        return $ConfigPath
+        Write-Host
+        Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
     }
 
 }
@@ -382,7 +389,7 @@ Here is what the portion of configuration file looks like when modified by this 
     Param(
 
         [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
-        [string] $ConfigPath,
+        [string] $TargetFilePath,
         
         [Parameter()]
         [string] $Enabled,
@@ -401,7 +408,7 @@ Here is what the portion of configuration file looks like when modified by this 
     Process{
         #Load the file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
-        $ConfigFile.Load($ConfigPath) | Out-Null
+        $ConfigFile.Load($TargetFilePath) | Out-Null
 
         #Check to make sure the correct root element exists
         if($ConfigFile.Configuration -eq $null){
@@ -429,9 +436,9 @@ Here is what the portion of configuration file looks like when modified by this 
             $UpdateElement.SetAttribute("Deadline", $Deadline) | Out-Null
         }
 
-        $ConfigFile.Save($ConfigPath) | Out-Null
+        $ConfigFile.Save($TargetFilePath) | Out-Null
 
-        return $ConfigPath
+        return $TargetFilePath
     }
 }
 
@@ -504,13 +511,13 @@ Here is what the portion of configuration file looks like when modified by this 
         [string] $SharedComputerLicensing,
 
         [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
-        [string] $ConfigPath
+        [string] $TargetFilePath
     )
 
     Process{
         #Load file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
-        $ConfigFile.Load($ConfigPath) | Out-Null
+        $ConfigFile.Load($TargetFilePath) | Out-Null
 
         #Check for proper root element
         if($ConfigFile.Configuration -eq $null){
@@ -562,8 +569,8 @@ Here is what the portion of configuration file looks like when modified by this 
             $SharedComputerLicensingElement.SetAttribute("Value", $SharedComputerLicensing) | Out-Null
         }
 
-        $ConfigFile.Save($ConfigPath) | Out-Null
-        return $ConfigPath
+        $ConfigFile.Save($TargetFilePath) | Out-Null
+        return $TargetFilePath
         
     }
 }
@@ -633,14 +640,14 @@ Here is what the portion of configuration file looks like when modified by this 
         [string] $Bitness,
 
         [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
-        [string] $ConfigPath
+        [string] $TargetFilePath
 
     )
 
     Process{
         #Load file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
-        $ConfigFile.Load($ConfigPath) | Out-Null
+        $ConfigFile.Load($TargetFilePath) | Out-Null
 
         #Check for proper root element
         if($ConfigFile.Configuration -eq $null){
@@ -664,9 +671,9 @@ Here is what the portion of configuration file looks like when modified by this 
             $ConfigFile.Configuration.Add.SetAttribute("OfficeClientEdition", $Bitness) | Out-Null
         }
 
-        $ConfigFile.Save($ConfigPath) | Out-Null
+        $ConfigFile.Save($TargetFilePath) | Out-Null
 
-        return $ConfigPath
+        return $TargetFilePath
 
     }
 
@@ -715,14 +722,14 @@ Here is what the portion of configuration file looks like when modified by this 
         [string] $Path,
 
         [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
-        [string] $ConfigPath
+        [string] $TargetFilePath
 
     )
 
     Process{
         #Load file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
-        $ConfigFile.Load($ConfigPath) | Out-Null
+        $ConfigFile.Load($TargetFilePath) | Out-Null
 
         #Check for proper root element
         if($ConfigFile.Configuration -eq $null){
@@ -744,9 +751,9 @@ Here is what the portion of configuration file looks like when modified by this 
             $LoggingElement.SetAttribute("Path", $Path) | Out-Null
         }
 
-        $ConfigFile.Save($ConfigPath) | Out-Null
+        $ConfigFile.Save($TargetFilePath) | Out-Null
 
-        return $ConfigPath
+        return $TargetFilePath
 
     }
 }
@@ -799,14 +806,14 @@ Here is what the portion of configuration file looks like when modified by this 
         [string] $AcceptEULA,
 
         [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
-        [string] $ConfigPath
+        [string] $TargetFilePath
 
     )
 
     Process{
         #Load file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
-        $ConfigFile.Load($ConfigPath) | Out-Null
+        $ConfigFile.Load($TargetFilePath) | Out-Null
 
         #Check for proper root element
         if($ConfigFile.Configuration -eq $null){
@@ -828,9 +835,9 @@ Here is what the portion of configuration file looks like when modified by this 
             $DisplayElement.SetAttribute("AcceptEULA", $AcceptEULA) | Out-Null
         }
 
-        $ConfigFile.Save($ConfigPath) | Out-Null
+        $ConfigFile.Save($TargetFilePath) | Out-Null
 
-        return $ConfigPath
+        return $TargetFilePath
 
     }
 
