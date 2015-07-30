@@ -1,4 +1,4 @@
-##**Update Office 2013 or Office 2016 using SCCM**
+##**Update Office 2013 using SCCM**
 
 The script automates the configuration  updating of Office 365 Pro Plus through Microsoft System Center Configuration Manager (SCCM) and ensure the PC where Office 365 Pro Plus is installed gets Office 365 Pro Plus updates from the closest SCCM Distribution Point (DP).
 
