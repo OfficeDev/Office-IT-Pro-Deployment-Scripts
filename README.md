@@ -4,6 +4,9 @@ This repo is a collection of useful PowerShell scripts to make deploying Office 
 ## Scripts
 For more detailed documentation of each script, check the readme file in the corresponding folder
 
+### Setup-SCCMOfficeUpdates
+Configures System Center Configuration Manager (SCCM) to configure Office Click-To-Run clients to use their closest Distribution Point (DP) for Office Updates.
+
 ### Get-OfficeVersion
 Query a local or remote workstations to find the version of Office that is installed.
 
