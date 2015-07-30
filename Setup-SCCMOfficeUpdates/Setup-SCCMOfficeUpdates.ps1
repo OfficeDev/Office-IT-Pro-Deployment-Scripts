@@ -1,5 +1,25 @@
 function Download-OfficeUpdates {
-
+<#
+.SYNOPSIS
+This method will download the Office updates to a share
+.DESCRIPTION
+This method is used to download the updates for Office Click-to-Run to a netork share.  This network share could then either be used as a update source for Office Click-to-Run or it could be used as a package source for SCCM.
+.PARAMETER Path
+The path to the UNC share to download the Office updates to
+.PARAMETER Version
+The version of Office 2013 you wish to update to. E.g. 15.0.4737.1003
+.PARAMETER Bitness
+Specifies if the target installation is 32 bit or 64 bit. Defaults to 64 bit.
+.Example
+Download-OfficeUpdates 
+Default without parameters specified this will create a local folder named 'OfficeUpdates' on the system drive and then create a hidden share named 'OfficeUpdates$'. It will then download the latest Office update to that folder.
+.Example
+Download-OfficeUpdates -Path "\\Server\OfficeShare"
+If you do not want to host the update files on the local server you can specify a UNC share path. The script must be run with a user account that has Read/Write permissions to the share. 
+.Example
+Download-OfficeUpdates -Path "\\Server\OfficeShare" -Version "15.0.4737.1003" 
+If you specify a Version then the script will download that version.  You can see the version history at https://support.microsoft.com/en-us/gp/office-2013-365-update
+#>
     [CmdletBinding(SupportsShouldProcess=$true)]
     Param
     (
@@ -32,7 +52,12 @@ function Download-OfficeUpdates {
 
         Set-Location $PSScriptRoot
 
-        Copy-Item -Path ".\$c2rFileName" -Destination $Path
+        if (!(Test-Path -Path "$Path\$c2rFileName")) {
+              Copy-Item -Path ".\$c2rFileName" -Destination $Path
+        }
+        if (!(Test-Path -Path "$Path\SCO365PPTrigger.exe")) {
+              Copy-Item -Path ".\SCO365PPTrigger.exe" -Destination $Path
+        }
 
 	    #Connect PowerShell to Share location	
 	    Set-Location $path
@@ -47,7 +72,7 @@ function Download-OfficeUpdates {
             Write-Host "`tStarting Download of Office Update 32-Bit..." -NoNewline
 
 	        #run the executable, this will trigger the download of bits to \\ShareName\Office\Data\
-	        #& $app @arguments
+	        & $app @arguments
 
             Write-Host "`tComplete"
         }
@@ -59,7 +84,7 @@ function Download-OfficeUpdates {
             Write-Host "`tStarting Download of Office Update 64-Bit..."  -NoNewline
 
 	        #run the executable, this will trigger the download of bits to \\ShareName\Office\Data\
-	        #& $app @arguments
+	        & $app @arguments
 
             Write-Host "`tComplete"
         }
@@ -73,11 +98,11 @@ function Download-OfficeUpdates {
 function Setup-SCCMOfficeUpdates {
 <#
 .SYNOPSIS
-Automates download and update of Office 2013 or Office 2016 Installation. 
+Automates the configuration of System Center Configuration Manager (SCCM) to configure Office Click-To-Run 
 .DESCRIPTION
-Given an Office Build Version, UNC Path, and the site id, this cmdlet donwloads the bits for the Office Build, and creates SCCM Package Deployment to update Target Machines.
+
 .PARAMETER version
-The version of Office 2013 or Office 2016 you wish to update to. E.g. 15.0.4737.1003
+The version of Office 2013 you wish to update to. E.g. 15.0.4737.1003
 .PARAMETER path
 The UNC Path where the downloaded bits will be stored for updating the target machines.
 .PARAMETER bitness
@@ -94,17 +119,6 @@ Default update Office 2013 to version 15.0.4737.1003
 .Example
 .\SetupOfficeUpdatesSCCM.ps1 -version "15.0.4737.1003" -path "\\OfficeShare" -bitness "32" -siteId "ABC" -UpdateSourceConfigFileName "SourceConfig.xml" -UpdateTestGroupConfigFileName "TargetConfig.xml" 
 Update Office 2013 to version 15.0.4737.1003 for 32 bit clients
-.Inputs
-System.String
-System.String
-System.String
-System.String
-System.String
-System.String
-.Notes
-Additional explaination. Long and indepth examples should also go here.
-.Link
-Add link here
 #>
 
 [CmdletBinding(SupportsShouldProcess=$true)]
@@ -235,15 +249,41 @@ Begin
 }
 Process
 {
-    $package = Get-CMPackage -Name $packageName
+    $sccmModulePath = "$env:ProgramFiles\Microsoft Configuration Manager\AdminConsole\bin\ConfigurationManager.psd1"
+    [bool]$pathExists = Test-Path -Path $sccmModulePath
+    if (!$pathExists) {
+       $sccmModulePath = "${env:ProgramFiles(x86)}\Microsoft Configuration Manager\AdminConsole\bin\ConfigurationManager.psd1"
+       $pathExists = Test-Path -Path $sccmModulePath
+    }
+    
+    if ($pathExists) {
+        Import-Module $sccmModulePath
 
-    $packageDeploy = Get-CMDeployment | where {$_.PackageId  -eq $package.PackageId }
-    if ($packageDeploy.Count -eq 0) {
-        Write-Host "Creating Package Deployment for: $packageName"
+        if (!$SiteCode) {
+            $SiteCode = (Get-ItemProperty -Path "hklm:\SOFTWARE\Microsoft\SMS\Identification" -Name "Site Code").'Site Code'
+        }
 
-     	Start-CMPackageDeployment -CollectionName $Collection -PackageName $PackageName -ProgramName $ProgramName -StandardProgram -DeployPurpose Required -FastNetworkOption RunProgramFromDistributionPoint -RerunBehavior RerunIfFailedPreviousAttempt -ScheduleEvent AsSoonAsPossible -SlowNetworkOption DoNotRunProgram -SoftwareInstallation $True -SystemRestart $False
-    } else {
-        Write-Host "Package Deployment Already Exists for: $packageName"
+	    Set-Location "$SiteCode`:"	
+
+        $package = Get-CMPackage -Name $packageName
+
+        $packageDeploy = Get-CMDeployment | where {$_.PackageId  -eq $package.PackageId }
+        if ($packageDeploy.Count -eq 0) {
+            Write-Host "Creating Package Deployment for: $packageName"
+
+            $dtNow = [datetime]::Now
+            $dtNow = $dtNow.AddDays(-1)
+            $start = Get-Date -Year $dtNow.Year -Month $dtNow.Month -Day $dtNow.Day -Hour 12 -Minute 0
+
+            $schedule = New-CMSchedule -Start $start -RecurInterval Days -RecurCount 7
+
+     	    Start-CMPackageDeployment -CollectionName $Collection -PackageName $PackageName -ProgramName $ProgramName -StandardProgram  -DeployPurpose Required `
+                                      -FastNetworkOption RunProgramFromDistributionPoint -RerunBehavior AlwaysRerunProgram -ScheduleEvent AsSoonAsPossible `
+                                      -SlowNetworkOption DoNotRunProgram -SoftwareInstallation $True -SystemRestart $False -Schedule $schedule
+
+        } else {
+            Write-Host "Package Deployment Already Exists for: $packageName"
+        }
     }
 }
 }
@@ -538,4 +578,3 @@ function Create-FileShare() {
           default {Write-Host "Share:$name Path:$path Result:*** Unknown Error ***" -foregroundcolor red -backgroundcolor yellow;break}
      }
 }
-
