@@ -226,51 +226,30 @@ Here is what the portion of configuration file looks like when modified by this 
 
 }
 
-Function Get-ODTProduct{
+Function Get-ODTProductToAdd{
 <#
 .SYNOPSIS
-Modifies an existing configuration xml file to remove all or particular
-click to run products.
+Gets list of Products and the corresponding language and exlcudeapp values
+from the specified configuration file
 
-.PARAMETER ExcludeApps
-Array of IDs of Apps to exclude from install
+.PARAMETER All
+Switch to return All Products
 
 .PARAMETER ProductId
-Required. ID must be set to a valid ProductRelease ID.
-See https://support.microsoft.com/en-us/kb/2842297 for valid ids.
+Id of Product that you want to pull from the configuration file
 
-.PARAMETER LanguageIds
-Possible values match 'll-cc' pattern (Microsoft Language ids)
-The ID value can be set to a valid Office culture language (such as en-us 
-for English US or ja-jp for Japanese). The ll-cc value is the language 
-identifier.
-
-.PARAMETER ConfigPath
-Full file path for the file to be modified and be output to.
+.PARAMETER TargetFilePath
+Required. Full file path for the file.
 
 .Example
-Add-ODTProduct -ProductId "O365ProPlusRetail" -LanguageId ("en-US", "es-es") -ConfigPath "$env:Public/Documents/config.xml" -ExcludeApps ("Access", "InfoPath")
-Sets config to add the English and Spanish version of office 365 ProPlus
-excluding Access and InfoPath
+Get-ODTProductToAdd -All -TargetFilePath "$env:Public\Documents\config.xml"
+Returns all Products and their corresponding Language and Exclude values
+if they have them 
 
 .Example
-Add-ODTProduct -ProductId "O365ProPlusRetail" -LanguageId ("en-US", "es-es) -ConfigPath "$env:Public/Documents/config.xml"
-Sets config to add the English and Spanish version of office 365 ProPlus
-
-.Notes
-Here is what the portion of configuration file looks like when modified by this function:
-
-<Configuration>
-  <Add OfficeClientEdition="64" >
-    <Product ID="O365ProPlusRetail">
-      <Language ID="en-US" />
-      <Language ID="es-es" />
-      <ExcludeApp ID="Access">
-      <ExcludeApp ID="InfoPath">
-    </Product>
-  </Add>
-  ...
-</Configuration>
+Get-ODTProductToAdd -ProductId "O365ProPlusRetail" -TargetFilePath "$env:Public\Documents\config.xml"
+Returns the Product with the O365ProPlusRetail Id and its corresponding
+Language and Exclude values
 
 #>
     Param(
@@ -443,6 +422,86 @@ Here is what the portion of configuration file looks like when modified by this 
 
 }
 
+Function Get-ODTProductToRemove{
+<#
+.SYNOPSIS
+Gets list of Products and the corresponding language values
+from the specified configuration file
+
+.PARAMETER All
+Switch to return All Products
+
+.PARAMETER ProductId
+Id of Product that you want to pull from the configuration file
+
+.PARAMETER TargetFilePath
+Required. Full file path for the file.
+
+.Example
+Get-ODTProductToRemove -All -TargetFilePath "$env:Public\Documents\config.xml"
+Returns all Products and their corresponding Language and Exclude values
+if they have them 
+
+.Example
+Get-ODTProductToRemove -ProductId "O365ProPlusRetail" -TargetFilePath "$env:Public\Documents\config.xml"
+Returns the Product with the O365ProPlusRetail Id and its corresponding
+Language and Exclude values
+
+#>
+    Param(
+
+        [Parameter(ParameterSetName="Id",Mandatory=$true)]
+        [string] $ProductId,
+
+        [Parameter(ParameterSetName="All",Mandatory=$true)]
+        [switch] $All,
+
+        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+        [string] $TargetFilePath
+
+    )
+
+    Process{
+        #Load the file
+        [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
+        $ConfigFile.Load($TargetFilePath) | Out-Null
+
+        #Check that the file is properly formatted
+        if($ConfigFile.Configuration -eq $null){
+            throw $NoConfigurationElement
+        }
+
+        if($ConfigFile.Configuration.Remove -eq $null){
+            throw $NoAddElement
+        }
+
+        if($PSCmdlet.ParameterSetName -eq "All"){
+            foreach($ProductElement in $ConfigFile.Configuration.Remove.Product){
+                $Result = New-Object –TypeName PSObject 
+                Add-Member -InputObject $Result -MemberType NoteProperty -Name "ProductId" -Value ($ProductElement.GetAttribute("Id"))
+                if($ProductElement.Language -ne $null){
+                    Add-Member -InputObject $Result -MemberType NoteProperty -Name "Languages" -Value ($ProductElement.Language.GetAttribute("ID"))
+                }
+
+                if($ProductElement.ExcludeApp -ne $null){
+                    Add-Member -InputObject $Result -MemberType NoteProperty -Name "ExcludedApps" -Value ($ProductElement.ExcludeApp.GetAttribute("ID"))
+                }
+                $Result
+            }
+        }else{
+            [System.XML.XMLElement]$ProductElement = $ConfigFile.Configuration.Remove.Product | ?  ID -eq $ProductId
+            $Result = New-Object –TypeName PSObject 
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "ProductId" -Value ($ProductElement.GetAttribute("Id"))
+            if($ProductElement.Language -ne $null){
+                Add-Member -InputObject $Result -MemberType NoteProperty -Name "Languages" -Value ($ProductElement.Language.GetAttribute("ID"))
+            }
+            $Result
+        }
+
+    }
+
+}
+
 Function Set-ODTUpdates{
 <#
 .SYNOPSIS
@@ -553,6 +612,42 @@ Here is what the portion of configuration file looks like when modified by this 
     }
 }
 
+Function Get-ODTUpdates{
+<#
+.SYNOPSIS
+Gets the value of the Updates section in the configuration file
+
+.PARAMETER TargetFilePath
+Required. Full file path for the file.
+
+.Example
+Get-ODTUpdates -TargetFilePath "$env:Public\Documents\config.xml"
+Returns the value of the Updates section if it exists in the specified
+file. 
+
+#>
+    Param(
+
+        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+        [string] $TargetFilePath
+
+    )
+
+    Process{
+        #Load the file
+        [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
+        $ConfigFile.Load($TargetFilePath) | Out-Null
+
+        #Check that the file is properly formatted
+        if($ConfigFile.Configuration -eq $null){
+            throw $NoConfigurationElement
+        }
+        
+        $ConfigFile.Configuration.GetElementsByTagName("Updates");
+    }
+
+}
+
 Function Set-ODTConfigProperties{
 <#
 .SYNOPSIS
@@ -655,7 +750,7 @@ Here is what the portion of configuration file looks like when modified by this 
                 
             $ConfigFile.Configuration.appendChild($ForceAppShutDownElement) | Out-Null
             $ForceAppShutDownElement.SetAttribute("Name", "FORCEAPPSHUTDOWN") | Out-Null
-            $ForceAppShutDownElement.SetAttribute("Value", $ForceAppShutDownElement) | Out-Null
+            $ForceAppShutDownElement.SetAttribute("Value", $ForceAppShutDown) | Out-Null
         }
 
         if([string]::IsNullOrWhiteSpace($PackageGUID) -eq $false){
@@ -684,6 +779,42 @@ Here is what the portion of configuration file looks like when modified by this 
         return $TargetFilePath
         
     }
+}
+
+Function Get-ODTConfigProperties{
+<#
+.SYNOPSIS
+Gets the value of the ODTConfigProperties in the configuration file
+
+.PARAMETER TargetFilePath
+Required. Full file path for the file.
+
+.Example
+Get-ODTConfigProperties -TargetFilePath "$env:Public\Documents\config.xml"
+Returns the value of the Properties if they exists in the specified
+file. 
+
+#>
+    Param(
+
+        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+        [string] $TargetFilePath
+
+    )
+
+    Process{
+        #Load the file
+        [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
+        $ConfigFile.Load($TargetFilePath) | Out-Null
+
+        #Check that the file is properly formatted
+        if($ConfigFile.Configuration -eq $null){
+            throw $NoConfigurationElement
+        }
+        
+        $ConfigFile.Configuration.GetElementsByTagName("Property")
+    }
+
 }
 
 Function Set-ODTAdd{
@@ -790,6 +921,42 @@ Here is what the portion of configuration file looks like when modified by this 
 
 }
 
+Function Get-ODTAdd{
+<#
+.SYNOPSIS
+Gets the value of the Add section in the configuration file
+
+.PARAMETER TargetFilePath
+Required. Full file path for the file.
+
+.Example
+Get-ODTAdd -TargetFilePath "$env:Public\Documents\config.xml"
+Returns the value of the Add section if it exists in the specified
+file. 
+
+#>
+    Param(
+
+        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+        [string] $TargetFilePath
+
+    )
+
+    Process{
+        #Load the file
+        [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
+        $ConfigFile.Load($TargetFilePath) | Out-Null
+
+        #Check that the file is properly formatted
+        if($ConfigFile.Configuration -eq $null){
+            throw $NoConfigurationElement
+        }
+        
+        $ConfigFile.Configuration.GetElementsByTagName("Add") | Select OfficeClientEdition, SourcePath, Version
+    }
+
+}
+
 Function Set-ODTLogging{
 <#
 .SYNOPSIS
@@ -867,6 +1034,42 @@ Here is what the portion of configuration file looks like when modified by this 
         return $TargetFilePath
 
     }
+}
+
+Function Get-ODTLogging{
+<#
+.SYNOPSIS
+Gets the value of the Logging section in the configuration file
+
+.PARAMETER TargetFilePath
+Required. Full file path for the file.
+
+.Example
+Get-ODTLogging -TargetFilePath "$env:Public\Documents\config.xml"
+Returns the value of the Logging section if it exists in the specified
+file. 
+
+#>
+    Param(
+
+        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+        [string] $TargetFilePath
+
+    )
+
+    Process{
+        #Load the file
+        [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
+        $ConfigFile.Load($TargetFilePath) | Out-Null
+
+        #Check that the file is properly formatted
+        if($ConfigFile.Configuration -eq $null){
+            throw $NoConfigurationElement
+        }
+        
+        $ConfigFile.Configuration.GetElementsByTagName("Logging") | Select Level, Path
+    }
+
 }
 
 Function Set-ODTDisplay{
@@ -950,6 +1153,42 @@ Here is what the portion of configuration file looks like when modified by this 
 
         return $TargetFilePath
 
+    }
+
+}
+
+Function Get-ODTDisplay{
+<#
+.SYNOPSIS
+Gets the value of the Display section in the configuration file
+
+.PARAMETER TargetFilePath
+Required. Full file path for the file.
+
+.Example
+Get-ODTDisplay -TargetFilePath "$env:Public\Documents\config.xml"
+Returns the value of the Display section if it exists in the specified
+file. 
+
+#>
+    Param(
+
+        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+        [string] $TargetFilePath
+
+    )
+
+    Process{
+        #Load the file
+        [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
+        $ConfigFile.Load($TargetFilePath) | Out-Null
+
+        #Check that the file is properly formatted
+        if($ConfigFile.Configuration -eq $null){
+            throw $NoConfigurationElement
+        }
+        
+        $ConfigFile.Configuration.GetElementsByTagName("Display") | Select Level, AcceptEULA
     }
 
 }
