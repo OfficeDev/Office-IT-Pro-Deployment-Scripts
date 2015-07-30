@@ -34,9 +34,9 @@ Process{
 
     $ImportedCSV = Import-Csv $CSVPath
 
-    foreach($user in $importedCSV){
+    foreach($User in $ImportedCSV){
         if($CutOffDate.CompareTo((Get-Date($user.LicensedAsOf))) -lt 0){
-            $NewUsers += $user
+            $NewUsers += $User
         }
     }
 

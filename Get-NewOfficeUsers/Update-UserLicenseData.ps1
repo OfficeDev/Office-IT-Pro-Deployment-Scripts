@@ -137,16 +137,16 @@ Process{
         $ImportedCSV = Import-Csv $CSVPath
         
 
-        Foreach($importedUser in $ImportedCSV){
-            $test123 = $LicensedUsers | ? ObjectId -eq $importedUser.ObjectId
-            if($test123 -eq $null){
-                $importedUser.DelicensedAsOf = "$(Get-Date -Format "yyyy-MM-dd hh:mm")"
+        Foreach($ImportedUser in $ImportedCSV){
+            $CheckUser = $LicensedUsers | ? ObjectId -eq $ImportedUser.ObjectId
+            if($CheckUser -eq $Null){
+                $ImportedUser.DelicensedAsOf = "$(Get-Date -Format "yyyy-MM-dd hh:mm")"
             }
         }
 
         Foreach($LicensedUser in $LicensedUsers){
-            $test123 = $ImportedCSV | ? ObjectId -eq $LicensedUser.ObjectId
-            if($test123 -eq $Null){
+            $CheckUser = $ImportedCSV | ? ObjectId -eq $LicensedUser.ObjectId
+            if($CheckUser -eq $Null){
                 if($LicensedUser -ne $Null){
                     $ImportedCSV += $LicensedUser
                 }
