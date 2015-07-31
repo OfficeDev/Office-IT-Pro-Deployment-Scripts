@@ -143,7 +143,9 @@ and the telemetry agent will be configured.
 [string] $InstallerUrl = "http://download.microsoft.com/download/E/A/E" `
 + "/EAE6F7FC-767A-4038-A954-49B8B05D04EB/ExpressAndTools%2064BIT/SQLEXPRWT_x64_ENU.exe"
 # Name of the executable to save to the local machine
-[string] $InstallerFileName = "SQLEXPRWT_x64_ENU.exe"
+[string] $InstallerFileName = "SQLEXPRWT_x64_ENU.EXE"
+#Setup exe path
+[string] $SetupExe = "$env:TEMP\SQLEXPRWT_x64_ENU\Setup.exe"
 # Name of the database restored from the backup database file
 [string] $RestoredDatabaseName = "TDDB"
 # Name of the source database in the backup database file
@@ -152,8 +154,6 @@ and the telemetry agent will be configured.
 [string] $TelemetryProcessorServiceName = "MSDPSVC"
 # Instance name used for the SQL Server installation
 [string] $SuggestedInstanceName = "TDSQLEXPRESS"
-# Install path
-[string] $installerLocalPath=$env:TEMP + "\\" + $InstallerFileName
 # Configuration file path
 [string] $ConfigurationPath=$env:TEMP
 # Actual configuration ini file
@@ -551,8 +551,12 @@ function Install-SqlwithIni
     Run-SqlServerInstaller -wait
     
     Create-ConfigurationFile
+
+    Push-location $env:TEMP
+    .\SQLEXPRWT_x64_ENU.exe /Q | Out-Null
+    Pop-Location
     
-    Start-Process -FilePath $installerLocalPath /ConfigurationFile=$ConfigurationFile -Wait
+    Start-Process -FilePath $SetupExe /ConfigurationFile=$ConfigurationFile -Wait
 
     [bool] $sqlServer2014Installed = $false
         [wmi[]] $wmiObjectArray = Get-WmiObject -class Win32_Product
@@ -590,7 +594,9 @@ function Set-TcpPort
     Set-ItemProperty -Path $RegKeyIP2 -Name TcpPort -Value 1433
     Set-ItemProperty -Path $RegKeyIPAll -Name TcpPort -Value 1433
 
-    Restart-Service "SQL Server (TDSQLEXPRESS)" -WarningAction SilentlyContinue
+    Import-Module SQLPS -DisableNameChecking
+
+    Restart-Service -Name "MSSQL`$$InstanceName" -WarningAction SilentlyContinue
     
 }
 
@@ -616,6 +622,11 @@ function New-SharedFolder
         $acl.SetAccessRule($accessRule)
         $acl | Set-Acl "$SharedFolderPath\$ShareName"
         }
+
+    #Revoke Everyone access from Shared permissions and add Authenticated users
+
+    Revoke-SmbShareAccess -name $ShareName -CimSession "$env:COMPUTERNAME" -AccountName Everyone -Force
+    Grant-SmbShareAccess -name $ShareName -CimSession "$env:COMPUTERNAME" -AccountName "NT Authority\Authenticated Users" -AccessRight Change –Force
 }
 
 
@@ -669,7 +680,7 @@ function Create-ProcessorRegData
         New-Item -Path $DataProcessorPath[0] -Name DataProcessor
         New-ItemProperty -Path "$($DataProcessorPath[0])\DataProcessor" -Name DatabaseName -Value $DatabaseName
         New-ItemProperty -Path "$($DataProcessorPath[0])\DataProcessor" -Name DatabaseServer -Value "$env:ComputerName\$databaseServer"
-        New-ItemProperty -Path "$($DataProcessorPath[0])\DataProcessor" -Name FileShareLocation -Value "$env:ComputerName\$ShareName"
+        New-ItemProperty -Path "$($DataProcessorPath[0])\DataProcessor" -Name FileShareLocation -Value "\\$env:ComputerName\$ShareName"
     }
     else
     {
@@ -677,7 +688,7 @@ function Create-ProcessorRegData
         New-Item -Path $DataProcessorPath[1] -Name DataProcessor
         New-ItemProperty -Path "$($DataProcessorPath[1])\DataProcessor" -Name DatabaseName -Value $DatabaseName
         New-ItemProperty -Path "$($DataProcessorPath[1])\DataProcessor" -Name DatabaseServer -Value "$env:ComputerName\$databaseServer"
-        New-ItemProperty -Path "$($DataProcessorPath[1])\DataProcessor" -Name FileShareLocation -Value "$env:ComputerName\$ShareName"
+        New-ItemProperty -Path "$($DataProcessorPath[1])\DataProcessor" -Name FileShareLocation -Value "\\$env:ComputerName\$ShareName"
     }
 }
 
@@ -901,10 +912,10 @@ function Configure-TelemetryAgent([string] $database, [string] $folderName)
     [string] $commonFileShare = Build-FileSharePath $folderName
     Add-RegistryKey $key "CommonFileShare" $commonFileShare  "String"
 
-    Add-RegistryKey $key "Tag1" "TAG1" "String"
-    Add-RegistryKey $key "Tag2" "TAG2" "String"
-    Add-RegistryKey $key "Tag3" "TAG3" "String"
-    Add-RegistryKey $key "Tag4" "TAG4" "String"
+    Add-RegistryKey $key "Tag1" "$commonFileShare" "String"
+    Add-RegistryKey $key "Tag2" "$commonFileShare" "String"
+    Add-RegistryKey $key "Tag3" "$commonFileShare" "String"
+    Add-RegistryKey $key "Tag4" "$commonFileShare" "String"
 
     Add-RegistryKey $key "AgentInitWait" "1" "DWord"
     Add-RegistryKey $key "Enablelogging" "1" "DWord"
