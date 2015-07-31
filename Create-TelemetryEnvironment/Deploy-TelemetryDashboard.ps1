@@ -158,10 +158,7 @@ and the telemetry agent will be configured.
 [string] $ConfigurationPath=$env:TEMP
 # Actual configuration ini file
 [string] $ConfigurationFile="$ConfigurationPath\ConfigurationFile.ini"
-# Office Test value
-[string] $officeTest = Get-OfficeVersion
-# Get the SQL Server name
-[string] $SqlServerName = Get-SqlServerName
+
 
 #
 # Utility functions
@@ -593,7 +590,7 @@ function Set-TcpPort
     Set-ItemProperty -Path $RegKeyIP2 -Name TcpPort -Value 1433
     Set-ItemProperty -Path $RegKeyIPAll -Name TcpPort -Value 1433
 
-    Restart-Service "SQL Server (TDSQLEXPRESS)"
+    Restart-Service "SQL Server (TDSQLEXPRESS)" -WarningAction SilentlyContinue
     
 }
 
@@ -770,30 +767,45 @@ function Get-DpconfigPath
     throw $ErrorDpconfigNotExist
 }
 
+#Copy the SQLPS folder
+function Copy-Sqlps
+{
+    $sqlpsPath = "C:\Program Files (x86)\Microsoft SQL Server\120\Tools\PowerShell\Modules\SQLPS\*"
+    $destinationPath = "$env:windir\System32\WindowsPowerShell\v1.0\Modules\SQLPS"
+
+    if(!(Test-Path -Path $destinationPath))
+    {
+        Copy-Item -Path $sqlpsPath -Destination $destinationPath
+    }
+}
+
 #Creates the database in the server instance
 function Create-DataBase
 {
-    [System.Reflection.Assembly]::LoadWithPartialName('Microsoft.SqlServer.SMO')
+    Import-Module SQLPS -DisableNameChecking
     
     $srv = new-Object Microsoft.SqlServer.Management.Smo.Server("(local)")
     $tddb = $srv.Databases | where {$_.Name -eq 'TDDB'} 
+
     if (!($tddb)) 
     {
         $db = New-Object Microsoft.SqlServer.Management.Smo.Database($srv, "TDDB")
         $db.Create()  
-    } 
+    }
 
-Configure-Database
+    Configure-Database
 
-Write-Host $db.CreateDate
+    Configure-DatabasePermissions 'TDDB'
+
+    Set-Location $env:SystemDrive
+
+    Write-Host $db.CreateDate
 }
 
 
 #Applies the Office Telemetry settings to the database
 function Configure-Database
-{
-    #Import-Module SQLPS -DisableNameChecking
-    Copy-Item -Path "C:\Program Files (x86)\Microsoft SQL Server\120\Tools\PowerShell\Modules\SQLPS" -Destination "C:\Windows\System32\WindowsPowerShell\v1.0\Modules"
+{    
     Invoke-Sqlcmd -ServerInstance $SqlServerName -InputFile "C:\PowerShellScripts\OfficeTelemetryDatabase.sql" -Database $DatabaseName
 }
 
@@ -956,9 +968,12 @@ function Write-RegFile([string] $folderName)
 # using the target database.
 function Configure-DashboardComponents
 {
+    Copy-Sqlps
+    
     Create-Database
-    Configure-Database $DatabaseName
+
     Configure-TelemetryProcessorService
+
     Configure-TelemetryAgent
 }
 
