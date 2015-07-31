@@ -42,6 +42,8 @@ $validLanguages = @(
 "Turkish|tr-tr",
 "Ukrainian|uk-ua")
 
+[String]$global:saveLastConfigFile = $NULL
+[String]$global:saveLastFilePath = $NULL
 
 Function New-ODTConfiguration{
 <#
@@ -156,11 +158,35 @@ Here is what the configuration file looks like when created from this function:
         [System.XML.XMLElement]$LanguageElement=$ConfigFile.CreateElement("Language")
         $ProductElement.appendChild($LanguageElement) | Out-Null
         $LanguageElement.SetAttribute("ID",$LanguageId) | Out-Null
+
         $ConfigFile.Save($TargetFilePath) | Out-Null
+
+        Write-Host
+
+        Format-XML ([xml](cat $TargetFilePath)) -indent 4
 
         Write-Host
         Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
          
+    }
+}
+
+Function Undo-ODTLastChange {
+
+    Process{
+        if ($global:saveLastConfigFile -and $global:saveLastFilePath) {
+            [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
+
+            $ConfigFile.LoadXml($global:saveLastConfigFile) | Out-Null
+            $ConfigFile.Save($global:saveLastFilePath) | Out-Null
+
+            Write-Host
+
+            Format-XML ([xml](cat $global:saveLastFilePath)) -indent 4
+
+            Write-Host
+            Write-Host "The Office XML Configuration file has been saved to: $global:saveLastFilePath"
+        }
     }
 }
 
@@ -238,6 +264,8 @@ Here is what the portion of configuration file looks like when modified by this 
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
         $ConfigFile.Load($TargetFilePath) | Out-Null
 
+        $global:saveLastConfigFile = $ConfigFile.OuterXml
+
         #Check that the file is properly formatted
         if($ConfigFile.Configuration -eq $null){
             throw $NoConfigurationElement
@@ -275,6 +303,11 @@ Here is what the portion of configuration file looks like when modified by this 
         }
 
         $ConfigFile.Save($TargetFilePath) | Out-Null
+        $global:saveLastFilePath = $TargetFilePath
+
+        Write-Host
+
+        Format-XML ([xml](cat $TargetFilePath)) -indent 4
 
         Write-Host
         Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
@@ -399,6 +432,8 @@ Removes the ProductToAdd with the ProductId 'O365ProPlusRetail' from the XML Con
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
         $ConfigFile.Load($TargetFilePath) | Out-Null
 
+        $global:saveLastConfigFile = $ConfigFile.OuterXml
+
         #Check that the file is properly formatted
         if($ConfigFile.Configuration -eq $null){
             throw $NoConfigurationElement
@@ -415,6 +450,11 @@ Removes the ProductToAdd with the ProductId 'O365ProPlusRetail' from the XML Con
         }
 
         $ConfigFile.Save($TargetFilePath) | Out-Null
+        $global:saveLastFilePath = $TargetFilePath
+
+        Write-Host
+
+        Format-XML ([xml](cat $TargetFilePath)) -indent 4
 
         Write-Host
         Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
@@ -494,6 +534,8 @@ Here is what the portion of configuration file looks like when modified by this 
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
         $ConfigFile.Load($TargetFilePath) | Out-Null
 
+        $global:saveLastConfigFile = $ConfigFile.OuterXml
+
         #Check to see if it has the proper root element
         if($ConfigFile.Configuration -eq $null){
             throw $NoConfigurationElement
@@ -528,6 +570,12 @@ Here is what the portion of configuration file looks like when modified by this 
 
         #Save the file
         $ConfigFile.Save($TargetFilePath) | Out-Null
+
+        $global:saveLastFilePath = $TargetFilePath
+
+        Write-Host
+
+        Format-XML ([xml](cat $TargetFilePath)) -indent 4
 
         Write-Host
         Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
@@ -647,6 +695,8 @@ Removes the ProductToRemove with the ProductId 'O365ProPlusRetail' from the XML 
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
         $ConfigFile.Load($TargetFilePath) | Out-Null
 
+        $global:saveLastConfigFile = $ConfigFile.OuterXml
+
         #Check that the file is properly formatted
         if($ConfigFile.Configuration -eq $null){
             throw $NoConfigurationElement
@@ -663,6 +713,11 @@ Removes the ProductToRemove with the ProductId 'O365ProPlusRetail' from the XML 
         }
 
         $ConfigFile.Save($TargetFilePath) | Out-Null
+        $global:saveLastFilePath = $TargetFilePath
+
+        Write-Host
+
+        Format-XML ([xml](cat $TargetFilePath)) -indent 4
 
         Write-Host
         Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
@@ -749,6 +804,8 @@ Here is what the portion of configuration file looks like when modified by this 
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
         $ConfigFile.Load($TargetFilePath) | Out-Null
 
+        $global:saveLastConfigFile = $ConfigFile.OuterXml
+
         #Check to make sure the correct root element exists
         if($ConfigFile.Configuration -eq $null){
             throw $NoConfigurationElement
@@ -776,8 +833,14 @@ Here is what the portion of configuration file looks like when modified by this 
         }
 
         $ConfigFile.Save($TargetFilePath) | Out-Null
+        $global:saveLastFilePath = $TargetFilePath
 
-        return $TargetFilePath
+        Write-Host
+
+        Format-XML ([xml](cat $TargetFilePath)) -indent 4
+
+        Write-Host
+        Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
     }
 }
 
@@ -816,6 +879,63 @@ file.
     }
 
 }
+
+Function Remove-ODTUpdates{
+<#
+.SYNOPSIS
+Removes the update section from an existing configuration xml file
+
+.PARAMETER TargetFilePath
+Full file path for the file to be modified and be output to.
+
+.Example
+Set-ODTUpdates -TargetFilePath "$env:Public/Documents/config.xml"
+
+.Notes
+This is the section that would be removed when running this function
+
+<Configuration>
+  ...
+  <Updates Enabled="TRUE" UpdatePath="\\Server\share\" TargetVersion="15.1.2.3" Deadline="05/16/2014 18:30"/>
+  ...
+</Configuration>
+
+#>
+    Param(
+        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+        [string] $TargetFilePath
+    )
+
+    Process{
+        #Load the file
+        [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
+        $ConfigFile.Load($TargetFilePath) | Out-Null
+
+        $global:saveLastConfigFile = $ConfigFile.OuterXml
+
+        #Check to make sure the correct root element exists
+        if($ConfigFile.Configuration -eq $null){
+            throw $NoConfigurationElement
+        }
+
+        #Get the Updates Element if it exists
+        [System.XML.XMLElement]$UpdateElement = $ConfigFile.Configuration.GetElementsByTagName("Updates").Item(0)
+        if($ConfigFile.Configuration.Updates -ne $null){
+            $ConfigFile.Configuration.removeChild($UpdateElement) | Out-Null
+        }
+
+        $ConfigFile.Save($TargetFilePath) | Out-Null
+        $global:saveLastFilePath = $TargetFilePath
+
+        Write-Host
+
+        Format-XML ([xml](cat $TargetFilePath)) -indent 4
+
+        Write-Host
+        Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+    }
+}
+
 
 Function Set-ODTConfigProperties{
 <#
@@ -894,6 +1014,8 @@ Here is what the portion of configuration file looks like when modified by this 
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
         $ConfigFile.Load($TargetFilePath) | Out-Null
 
+        $global:saveLastConfigFile = $ConfigFile.OuterXml
+
         #Check for proper root element
         if($ConfigFile.Configuration -eq $null){
             throw $NoConfigurationElement
@@ -945,8 +1067,14 @@ Here is what the portion of configuration file looks like when modified by this 
         }
 
         $ConfigFile.Save($TargetFilePath) | Out-Null
-        return $TargetFilePath
-        
+        $global:saveLastFilePath = $TargetFilePath
+
+        Write-Host
+
+        Format-XML ([xml](cat $TargetFilePath)) -indent 4
+
+        Write-Host
+        Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
     }
 }
 
@@ -985,6 +1113,80 @@ file.
     }
 
 }
+
+Function Remove-ODTConfigProperties{
+<#
+.SYNOPSIS
+Removes the property items from an existing configuration xml file
+
+.PARAMETER TargetFilePath
+Full file path for the file to be modified and be output to.
+
+.PARAMETER Name
+Name of the property to remove
+
+.Example
+Remove-ODTConfigProperties -TargetFilePath "$env:Public/Documents/config.xml"
+Removes all of the poperty items form the existing configuration xml file
+
+.Notes
+Here is what the portion of configuration file that would be removed by this function:
+
+<Configuration>
+  ...
+  <Property Name="AUTOACTIVATE" Value="1" />
+  <Property Name="FORCEAPPSHUTDOWN" Value="TRUE" />
+  <Property Name="PACKAGEGUID" Value="12345678-ABCD-1234-ABCD-1234567890AB" />
+  <Property Name="SharedComputerLicensing" Value="0" />
+  ...
+</Configuration>
+
+#>
+    Param(
+        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+        [string] $TargetFilePath,
+
+        [Parameter(ValueFromPipeline=$true)]
+        [string] $Name = $NULL
+    )
+
+    Process{
+        #Load file
+        [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
+        $ConfigFile.Load($TargetFilePath) | Out-Null
+
+        $global:saveLastConfigFile = $ConfigFile.OuterXml
+
+        #Check for proper root element
+        if($ConfigFile.Configuration -eq $null){
+            throw $NoConfigurationElement
+        }
+
+        if ($Name) {
+          [System.XML.XMLElement]$ForceAppShutDownElement = $ConfigFile.Configuration.Property | ?  Name -eq $Name.ToUpper()
+          if ($ForceAppShutDownElement) {
+              $removeNode = $ConfigFile.Configuration.removeChild($ForceAppShutDownElement)
+          }
+        } else {
+          Write-Host "Confirm: Remove all 'Add' Nodes? (Y/N)" -NoNewline
+          $confirm = Read-Host
+          if ($confirm.ToUpper() -eq "Y") {
+              $removeAll = $ConfigFile.Configuration.Property.RemoveAll()
+          }
+        }
+        
+        $ConfigFile.Save($TargetFilePath) | Out-Null
+        $global:saveLastFilePath = $TargetFilePath
+
+        Write-Host
+
+        Format-XML ([xml](cat $TargetFilePath)) -indent 4
+
+        Write-Host
+        Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+    }
+}
+
 
 Function Set-ODTAdd{
 <#
@@ -1060,6 +1262,8 @@ Here is what the portion of configuration file looks like when modified by this 
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
         $ConfigFile.Load($TargetFilePath) | Out-Null
 
+        $global:saveLastConfigFile = $ConfigFile.OuterXml
+
         #Check for proper root element
         if($ConfigFile.Configuration -eq $null){
             throw $NoConfigurationElement
@@ -1083,9 +1287,14 @@ Here is what the portion of configuration file looks like when modified by this 
         }
 
         $ConfigFile.Save($TargetFilePath) | Out-Null
+        $global:saveLastFilePath = $TargetFilePath
 
-        return $TargetFilePath
+        Write-Host
 
+        Format-XML ([xml](cat $TargetFilePath)) -indent 4
+
+        Write-Host
+        Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
     }
 
 }
@@ -1125,6 +1334,126 @@ file.
     }
 
 }
+
+Function Remove-ODTAdd{
+<#
+.SYNOPSIS
+Modifies an existing configuration xml file to enable/disable updates
+
+.PARAMETER SourcePath
+Optional.
+The SourcePath value can be set to a network, local, or HTTP path that contains a 
+Click-to-Run source. Environment variables can be used for network or local paths.
+SourcePath indicates the location to save the Click-to-Run installation source 
+when you run the Office Deployment Tool in download mode.
+SourcePath indicates the installation source path from which to install Office 
+when you run the Office Deployment Tool in configure mode. If you don’t specify 
+SourcePath in configure mode, Setup will look in the current folder for the Office 
+source files. If the Office source files aren’t found in the current folder, Setup 
+will look on Office 365 for them.
+SourcePath specifies the path of the Click-to-Run Office source from which the 
+App-V package will be made when you run the Office Deployment Tool in packager mode.
+If you do not specify SourcePath, Setup will attempt to create an \Office\Data\... 
+folder structure in the working directory from which you are running setup.exe.
+
+.PARAMETER Version
+Optional. If a Version value is not set, the Click-to-Run product installation streams 
+the latest available version from the source. The default is to use the most recently 
+advertised build (as defined in v32.CAB or v64.CAB at the Click-to-Run Office installation source).
+Version can be set to an Office 2013 build number by using this format: X.X.X.X
+
+.PARAMETER Bitness
+Required. Specifies the edition of Click-to-Run for Office 365 product to use: 32- or 64-bit.
+
+.PARAMETER ConfigPath
+Full file path for the file to be modified and be output to.
+
+.Example
+Set-ODTAdd -SourcePath "C:\Preload\Office" -ConfigPath "$env:Public/Documents/config.xml"
+Sets config SourcePath property of the add element to C:\Preload\Office
+
+.Example
+Set-ODTAdd -SourcePath "C:\Preload\Office" -Version "15.1.2.3" -ConfigPath "$env:Public/Documents/config.xml"
+Sets config SourcePath property of the add element to C:\Preload\Office and version to 15.1.2.3
+
+.Notes
+Here is what the portion of configuration file looks like when modified by this function:
+
+<Configuration>
+  ...
+  <Add SourcePath="\\server\share\" Version="15.1.2.3" OfficeClientEdition="32"> 
+      ...
+  </Add>
+  ...
+</Configuration>
+
+#>
+    Param(
+
+        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+        [string] $TargetFilePath,
+
+        [Parameter(ValueFromPipeline=$true)]
+        [string] $Name = $NULL
+
+    )
+
+    Process{
+        #Load file
+        [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
+        $ConfigFile.Load($TargetFilePath) | Out-Null
+
+        $global:saveLastConfigFile = $ConfigFile.OuterXml
+
+        #Check for proper root element
+        if($ConfigFile.Configuration -eq $null){
+            throw $NoConfigurationElement
+        }
+
+        #Get Add element if it exists
+        if($ConfigFile.Configuration.Add -eq $null){
+            [System.XML.XMLElement]$AddElement=$ConfigFile.CreateElement("Add")
+            $ConfigFile.Configuration.appendChild($AddElement) | Out-Null
+        }
+
+        #Set values as desired
+        if([string]::IsNullOrWhiteSpace($SourcePath) -eq $false){
+            $ConfigFile.Configuration.Add.SetAttribute("SourcePath", $SourcePath) | Out-Null
+        }
+        if([string]::IsNullOrWhiteSpace($Version) -eq $false){
+            $ConfigFile.Configuration.Add.SetAttribute("Version", $Version) | Out-Null
+        }
+        if([string]::IsNullOrWhiteSpace($Bitness) -eq $false){
+            $ConfigFile.Configuration.Add.SetAttribute("OfficeClientEdition", $Bitness) | Out-Null
+        }
+
+
+        if ($Name) {
+          [System.XML.XMLElement]$addItem = $ConfigFile.Configuration.Add | ?  Name -eq $Name.ToUpper()
+          if ($addItem) {
+              $removeNode = $ConfigFile.Configuration.removeChild($addItem)
+          }
+        } else {
+          Write-Host "Confirm: Remove all 'Add' Nodes? (Y/N)" -NoNewline
+          $confirm = Read-Host
+          if ($confirm.ToUpper() -eq "Y") {
+              $removeAll = $ConfigFile.Configuration.Add.RemoveAll()
+          }
+        }
+
+        $ConfigFile.Save($TargetFilePath) | Out-Null
+        $global:saveLastFilePath = $TargetFilePath
+
+        Write-Host
+
+        Format-XML ([xml](cat $TargetFilePath)) -indent 4
+
+        Write-Host
+        Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+    }
+
+}
+
 
 Function Set-ODTLogging{
 <#
@@ -1178,6 +1507,8 @@ Here is what the portion of configuration file looks like when modified by this 
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
         $ConfigFile.Load($TargetFilePath) | Out-Null
 
+        $global:saveLastConfigFile = $ConfigFile.OuterXml
+
         #Check for proper root element
         if($ConfigFile.Configuration -eq $null){
             throw $NoConfigurationElement
@@ -1199,9 +1530,14 @@ Here is what the portion of configuration file looks like when modified by this 
         }
 
         $ConfigFile.Save($TargetFilePath) | Out-Null
+        $global:saveLastFilePath = $TargetFilePath
 
-        return $TargetFilePath
+        Write-Host
 
+        Format-XML ([xml](cat $TargetFilePath)) -indent 4
+
+        Write-Host
+        Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
     }
 }
 
@@ -1240,6 +1576,66 @@ file.
     }
 
 }
+
+Function Remove-ODTLogging{
+<#
+.SYNOPSIS
+Removes the Logging item from configuration xml file
+
+.PARAMETER TargetFilePath
+Full file path for the file to be modified and be output to.
+
+.Example
+Remove-ODTLogging -TargetFilePath "$env:Public/Documents/config.xml"
+Remove the Logging node from the Target File
+
+.Notes
+Here is what the portion of configuration file that will be removed by this function:
+
+<Configuration>
+  ...
+  <Logging Level="Standard" Path="%temp%" />
+  ...
+</Configuration>
+
+#>
+    Param(
+
+        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+        [string] $TargetFilePath
+
+    )
+
+    Process{
+        #Load file
+        [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
+        $ConfigFile.Load($TargetFilePath) | Out-Null
+
+        $global:saveLastConfigFile = $ConfigFile.OuterXml
+
+        #Check for proper root element
+        if($ConfigFile.Configuration -eq $null){
+            throw $NoConfigurationElement
+        }
+
+        #Get logging element if it exists
+        [System.XML.XMLElement]$LoggingElement = $ConfigFile.Configuration.GetElementsByTagName("Logging").Item(0)
+        if($ConfigFile.Configuration.Logging -ne $null){
+            $ConfigFile.Configuration.removeChild($LoggingElement) | Out-Null
+        }
+
+        $ConfigFile.Save($TargetFilePath) | Out-Null
+        $global:saveLastFilePath = $TargetFilePath
+
+        Write-Host
+
+        Format-XML ([xml](cat $TargetFilePath)) -indent 4
+
+        Write-Host
+        Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+    }
+}
+
 
 Function Set-ODTDisplay{
 <#
@@ -1298,6 +1694,8 @@ Here is what the portion of configuration file looks like when modified by this 
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
         $ConfigFile.Load($TargetFilePath) | Out-Null
 
+        $global:saveLastConfigFile = $ConfigFile.OuterXml
+
         #Check for proper root element
         if($ConfigFile.Configuration -eq $null){
             throw $NoConfigurationElement
@@ -1319,9 +1717,14 @@ Here is what the portion of configuration file looks like when modified by this 
         }
 
         $ConfigFile.Save($TargetFilePath) | Out-Null
+        $global:saveLastFilePath = $TargetFilePath
 
-        return $TargetFilePath
+        Write-Host
 
+        Format-XML ([xml](cat $TargetFilePath)) -indent 4
+
+        Write-Host
+        Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
     }
 
 }
@@ -1358,6 +1761,89 @@ file.
         }
         
         $ConfigFile.Configuration.GetElementsByTagName("Display") | Select Level, AcceptEULA
+    }
+
+}
+
+Function Remove-ODTDisplay{
+<#
+.SYNOPSIS
+Modifies an existing configuration xml file to enable/disable updates
+
+.PARAMETER Level
+Optional. Determines the user interface that the user sees when the 
+operation is performed. If Level is set to None, the user sees no UI. 
+No progress UI, completion screen, error dialog boxes, or first run 
+automatic start UI are displayed. If Level is set to Full, the user 
+sees the normal Click-to-Run user interface: Automatic start, 
+application splash screen, and error dialog boxes.
+
+.PARAMETER AcceptEULA
+If this attribute is set to TRUE, the user does not see a Microsoft 
+Software License Terms dialog box. If this attribute is set to FALSE 
+or is not set, the user may see a Microsoft Software License Terms dialog box.
+
+.PARAMETER ConfigPath
+Full file path for the file to be modified and be output to.
+
+.Example
+Set-ODTLogging -Level "Full" -ConfigPath "$env:Public/Documents/config.xml"
+Sets config show the UI during install
+
+.Example
+Set-ODTDisplay -Level "none" -AcceptEULA "True" -ConfigPath "$env:Public/Documents/config.xml"
+Sets config to hide UI and automatically accept EULA during install
+
+.Notes
+Here is what the portion of configuration file looks like when modified by this function:
+
+<Configuration>
+  ...
+  <Display Level="None" AcceptEULA="TRUE" />
+  ...
+</Configuration>
+
+#>
+    Param(
+
+        [Parameter()]
+        [string] $Level,
+
+        [Parameter()]
+        [string] $AcceptEULA,
+
+        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+        [string] $TargetFilePath
+
+    )
+
+    Process{
+        #Load file
+        [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
+        $ConfigFile.Load($TargetFilePath) | Out-Null
+
+        $global:saveLastConfigFile = $ConfigFile.OuterXml
+
+        #Check for proper root element
+        if($ConfigFile.Configuration -eq $null){
+            throw $NoConfigurationElement
+        }
+
+        #Get display element if it exists
+        [System.XML.XMLElement]$DisplayElement = $ConfigFile.Configuration.GetElementsByTagName("Display").Item(0)
+        if($ConfigFile.Configuration.Display -ne $null){
+           $ConfigFile.Configuration.removeChild($LoggingElement) | Out-Null
+        }
+
+        $ConfigFile.Save($TargetFilePath) | Out-Null
+        $global:saveLastFilePath = $TargetFilePath
+
+        Write-Host
+
+        Format-XML ([xml](cat $TargetFilePath)) -indent 4
+
+        Write-Host
+        Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
     }
 
 }
@@ -1482,3 +1968,13 @@ Function SelectBitness() {
   } while($true);
 }
 
+Function Format-XML ([xml]$xml, $indent=2) { 
+    $StringWriter = New-Object System.IO.StringWriter 
+    $XmlWriter = New-Object System.XMl.XmlTextWriter $StringWriter 
+    $xmlWriter.Formatting = "indented" 
+    $xmlWriter.Indentation = $Indent 
+    $xml.WriteContentTo($XmlWriter) 
+    $XmlWriter.Flush() 
+    $StringWriter.Flush() 
+    Write-Output $StringWriter.ToString() 
+}
