@@ -1,6 +1,48 @@
 ﻿
 $validProductIds = @("O365ProPlusRetail","O365BusinessRetail","VisioProRetail","ProjectProRetail", "SPDRetail")
 
+$validLanguages = @(
+"English|en-us",
+"Arabic|ar-sa",
+"Bulgarian|bg-bg",
+"Chinese (Simplified)|zh-cn",
+"Chinese|zh-tw",
+"Croatian|hr-hr",
+"Czech|cs-cz",
+"Danish|da-dk",
+"Dutch|nl-nl",
+"Estonian|et-ee",
+"Finnish|fi-fi",
+"French|fr-fr",
+"German|de-de",
+"Greek|el-gr",
+"Hebrew|he-il",
+"Hindi|hi-in",
+"Hungarian|hu-hu",
+"Indonesian|id-id",
+"Italian|it-it",
+"Japanese|ja-jp",
+"Kazakh|kk-kh",
+"Korean|ko-kr",
+"Latvian|lv-lv",
+"Lithuanian|lt-lt",
+"Malay|ms-my",
+"Norwegian (Bokmål)|nb-no",
+"Polish|pl-pl",
+"Portuguese|pt-br",
+"Portuguese|pt-pt",
+"Romanian|ro-ro",
+"Russian|ru-ru",
+"Serbian (Latin)|sr-latn-rs",
+"Slovak|sk-sk",
+"Slovenian|sl-si",
+"Spanish|es-es",
+"Swedish|sv-se",
+"Thai|th-th",
+"Turkish|tr-tr",
+"Ukrainian|uk-ua")
+
+
 Function New-ODTConfiguration{
 <#
 .SYNOPSIS
@@ -65,11 +107,11 @@ Here is what the configuration file looks like when created from this function:
 #>
     Param(
 
-    [Parameter(Mandatory=$true)]
-    [string] $Bitness,
+    [Parameter()]
+    [string] $Bitness = $NULL,
 
-    [Parameter(Mandatory=$true, HelpMessage="Example: O365ProPlusRetail")]
-    [string] $ProductId,
+    [Parameter(HelpMessage="Example: O365ProPlusRetail")]
+    [string] $ProductId = $NULL,
 
     [Parameter()]
     [string] $LanguageId = (Get-Culture | %{$_.Name}),
@@ -80,6 +122,14 @@ Here is what the configuration file looks like when created from this function:
     )
 
     Process{
+        if (!$ProductId) {
+            $ProductId = SelectProductId
+        }
+
+        if (!$Bitness) {
+            $Bitness = SelectBitness
+        }
+
         if (!$validProductIds.Contains($ProductId)) {
            throw "Invalid or Unsupported Product Id"
         }
@@ -114,7 +164,8 @@ Here is what the configuration file looks like when created from this function:
     }
 }
 
-Function Add-ODTProduct{
+
+Function Add-ODTProductToAdd{
 <#
 .SYNOPSIS
 Modifies an existing configuration xml file to remove all or particular
@@ -137,12 +188,12 @@ identifier.
 Full file path for the file to be modified and be output to.
 
 .Example
-Add-ODTProduct -ProductId "O365ProPlusRetail" -LanguageId ("en-US", "es-es") -ConfigPath "$env:Public/Documents/config.xml" -ExcludeApps ("Access", "InfoPath")
+Add-ODTProductToAdd -ProductId "O365ProPlusRetail" -LanguageId ("en-US", "es-es") -ConfigPath "$env:Public/Documents/config.xml" -ExcludeApps ("Access", "InfoPath")
 Sets config to add the English and Spanish version of office 365 ProPlus
 excluding Access and InfoPath
 
 .Example
-Add-ODTProduct -ProductId "O365ProPlusRetail" -LanguageId ("en-US", "es-es) -ConfigPath "$env:Public/Documents/config.xml"
+Add-ODTProductToAdd -ProductId "O365ProPlusRetail" -LanguageId ("en-US", "es-es) -ConfigPath "$env:Public/Documents/config.xml"
 Sets config to add the English and Spanish version of office 365 ProPlus
 
 .Notes
@@ -162,22 +213,27 @@ Here is what the portion of configuration file looks like when modified by this 
 
 #>
     Param(
+        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+        [string] $TargetFilePath,
 
-        [Parameter(Mandatory=$true)]
-        [string] $ProductId,
+        [Parameter()]
+        [string] $ProductId = $NULL,
 
         [Parameter(Mandatory=$true)]
         [string[]] $LanguageIds,
 
         [Parameter()]
-        [string[]] $ExcludeApps,
-
-        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
-        [string] $TargetFilePath
+        [string[]] $ExcludeApps
 
     )
 
     Process{
+        if (!$ProductId) {
+            $ProductId = SelectProductId
+        }
+
+        #SelectLanguage
+
         #Load the file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
         $ConfigFile.Load($TargetFilePath) | Out-Null
@@ -196,7 +252,7 @@ Here is what the portion of configuration file looks like when modified by this 
         if($ProductElement -eq $null){
             [System.XML.XMLElement]$ProductElement=$ConfigFile.CreateElement("Product")
             $ConfigFile.Configuration.Add.appendChild($ProductElement) | Out-Null
-            $ProductElement.SetAttribute("Id", $ProductId) | Out-Null
+            $ProductElement.SetAttribute("ID", $ProductId) | Out-Null
         }
 
 
@@ -254,15 +310,14 @@ Language and Exclude values
 #>
     Param(
 
-        [Parameter(ParameterSetName="Id",Mandatory=$true)]
+        [Parameter(ParameterSetName="ID",Mandatory=$true)]
         [string] $ProductId,
 
-        [Parameter(ParameterSetName="All",Mandatory=$true)]
-        [switch] $All,
-
         [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
-        [string] $TargetFilePath
+        [string] $TargetFilePath,
 
+        [Parameter(ParameterSetName="All")]
+        [switch] $All
     )
 
     Process{
@@ -282,7 +337,9 @@ Language and Exclude values
         if($PSCmdlet.ParameterSetName -eq "All"){
             foreach($ProductElement in $ConfigFile.Configuration.Add.Product){
                 $Result = New-Object –TypeName PSObject 
-                Add-Member -InputObject $Result -MemberType NoteProperty -Name "ProductId" -Value ($ProductElement.GetAttribute("Id"))
+
+                Add-Member -InputObject $Result -MemberType NoteProperty -Name "ProductId" -Value ($ProductElement.GetAttribute("ID"))
+
                 if($ProductElement.Language -ne $null){
                     Add-Member -InputObject $Result -MemberType NoteProperty -Name "Languages" -Value ($ProductElement.Language.GetAttribute("ID"))
                 }
@@ -295,7 +352,7 @@ Language and Exclude values
         }else{
             [System.XML.XMLElement]$ProductElement = $ConfigFile.Configuration.Add.Product | ?  ID -eq $ProductId
             $Result = New-Object –TypeName PSObject 
-            Add-Member -InputObject $Result -MemberType NoteProperty -Name "ProductId" -Value ($ProductElement.GetAttribute("Id"))
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "ProductId" -Value ($ProductElement.GetAttribute("ID"))
             if($ProductElement.Language -ne $null){
                 Add-Member -InputObject $Result -MemberType NoteProperty -Name "Languages" -Value ($ProductElement.Language.GetAttribute("ID"))
             }
@@ -310,7 +367,63 @@ Language and Exclude values
 
 }
 
-Function Remove-ODTProduct{
+Function Remove-ODTProductToAdd{
+<#
+.SYNOPSIS
+Removes an existing product to add from the configuration file
+
+.PARAMETER ProductId
+Required. ID must be set to a valid ProductRelease ID.
+See https://support.microsoft.com/en-us/kb/2842297 for valid ids.
+
+.PARAMETER TargetFilePath
+Full file path for the file to be modified and be output to.
+
+.Example
+Add-ODTProductToAdd -ProductId "O365ProPlusRetail" -TargetFilePath "$env:Public/Documents/config.xml"
+Removes the ProductToAdd with the ProductId 'O365ProPlusRetail' from the XML Configuration file
+
+</Configuration>
+
+#>
+    Param(
+        [Parameter(Mandatory=$true)]
+        [string] $ProductId,
+
+        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+        [string] $TargetFilePath
+    )
+
+    Process{
+        #Load the file
+        [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
+        $ConfigFile.Load($TargetFilePath) | Out-Null
+
+        #Check that the file is properly formatted
+        if($ConfigFile.Configuration -eq $null){
+            throw $NoConfigurationElement
+        }
+
+        if($ConfigFile.Configuration.Add -eq $null){
+            throw $NoAddElement
+        }
+
+        #Set the desired values
+        [System.XML.XMLElement]$ProductElement = $ConfigFile.Configuration.Add.Product | ?  ID -eq $ProductId
+        if($ProductElement -ne $null){
+            $ConfigFile.Configuration.Add.removeChild($ProductElement)
+        }
+
+        $ConfigFile.Save($TargetFilePath) | Out-Null
+
+        Write-Host
+        Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+    }
+
+}
+
+
+Function Add-ODTProductToRemove{
 <#
 .SYNOPSIS
 Modifies an existing configuration xml file to remove all or particular
@@ -333,11 +446,11 @@ identifier.
 Full file path for the file to be modified and be output to.
 
 .Example
-Remove-ODTProduct -All -ConfigPath "$env:Public/Documents/config.xml"
+Add-ODTProductToRemove -All -ConfigPath "$env:Public/Documents/config.xml"
 Sets config to remove all click to run products
 
 .Example
-Remove-ODTProduct -ProductId "O365ProPlusRetail" -LanguageId "en-US" -ConfigPath "$env:Public/Documents/config.xml"
+Add-ODTProductToRemove -ProductId "O365ProPlusRetail" -LanguageId "en-US" -ConfigPath "$env:Public/Documents/config.xml"
 Sets config to remove the english version of office 365 ProPlus
 
 .Notes
@@ -450,7 +563,7 @@ Language and Exclude values
 #>
     Param(
 
-        [Parameter(ParameterSetName="Id",Mandatory=$true)]
+        [Parameter(ParameterSetName="ID",Mandatory=$true)]
         [string] $ProductId,
 
         [Parameter(ParameterSetName="All",Mandatory=$true)]
@@ -478,7 +591,7 @@ Language and Exclude values
         if($PSCmdlet.ParameterSetName -eq "All"){
             foreach($ProductElement in $ConfigFile.Configuration.Remove.Product){
                 $Result = New-Object –TypeName PSObject 
-                Add-Member -InputObject $Result -MemberType NoteProperty -Name "ProductId" -Value ($ProductElement.GetAttribute("Id"))
+                Add-Member -InputObject $Result -MemberType NoteProperty -Name "ProductId" -Value ($ProductElement.GetAttribute("ID"))
                 if($ProductElement.Language -ne $null){
                     Add-Member -InputObject $Result -MemberType NoteProperty -Name "Languages" -Value ($ProductElement.Language.GetAttribute("ID"))
                 }
@@ -491,7 +604,7 @@ Language and Exclude values
         }else{
             [System.XML.XMLElement]$ProductElement = $ConfigFile.Configuration.Remove.Product | ?  ID -eq $ProductId
             $Result = New-Object –TypeName PSObject 
-            Add-Member -InputObject $Result -MemberType NoteProperty -Name "ProductId" -Value ($ProductElement.GetAttribute("Id"))
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "ProductId" -Value ($ProductElement.GetAttribute("ID"))
             if($ProductElement.Language -ne $null){
                 Add-Member -InputObject $Result -MemberType NoteProperty -Name "Languages" -Value ($ProductElement.Language.GetAttribute("ID"))
             }
@@ -501,6 +614,62 @@ Language and Exclude values
     }
 
 }
+
+Function Remove-ODTProductToRemove{
+<#
+.SYNOPSIS
+Removes an existing product to remove from the configuration file
+
+.PARAMETER ProductId
+Required. ID must be set to a valid ProductRelease ID.
+See https://support.microsoft.com/en-us/kb/2842297 for valid ids.
+
+.PARAMETER TargetFilePath
+Full file path for the file to be modified and be output to.
+
+.Example
+Add-ODTProductToRemove -ProductId "O365ProPlusRetail" -TargetFilePath "$env:Public/Documents/config.xml"
+Removes the ProductToRemove with the ProductId 'O365ProPlusRetail' from the XML Configuration file
+
+</Configuration>
+
+#>
+    Param(
+        [Parameter(Mandatory=$true)]
+        [string] $ProductId,
+
+        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+        [string] $TargetFilePath
+    )
+
+    Process{
+        #Load the file
+        [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
+        $ConfigFile.Load($TargetFilePath) | Out-Null
+
+        #Check that the file is properly formatted
+        if($ConfigFile.Configuration -eq $null){
+            throw $NoConfigurationElement
+        }
+
+        if($ConfigFile.Configuration.Add -eq $null){
+            throw $NoAddElement
+        }
+
+        #Set the desired values
+        [System.XML.XMLElement]$ProductElement = $ConfigFile.Configuration.Remove.Product | ?  ID -eq $ProductId
+        if($ProductElement -ne $null){
+            $ConfigFile.Configuration.Remove.removeChild($ProductElement)
+        }
+
+        $ConfigFile.Save($TargetFilePath) | Out-Null
+
+        Write-Host
+        Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+    }
+
+}
+
 
 Function Set-ODTUpdates{
 <#
@@ -1192,3 +1361,124 @@ file.
     }
 
 }
+
+
+Function SelectLanguage() {
+  do {
+   Write-Host
+   Write-Host "Available Language identifiers"
+   Write-Host
+
+   $index = 1;
+   foreach ($language in $validLanguages) {
+      $langSplit = $language.Split("|")
+
+      $lineText = "`t$index - " + $langSplit[0] + " (" + $langSplit[1] + ")"
+      Write-Host $lineText
+      $index++
+   }
+
+   Write-Host
+   Write-Host "Select a Language:" -NoNewline
+   $selection = Read-Host
+
+   $load = [reflection.assembly]::LoadWithPartialName("'Microsoft.VisualBasic")
+   $isNumeric = [Microsoft.VisualBasic.Information]::isnumeric($selection)
+
+   if (!($isNumeric)) {
+      Write-Host "Invalid Selection" -BackgroundColor Red
+   } else {
+
+     [int] $numSelection = $selection
+
+     if ($numSelection -gt 0 -and $numSelection -lt $index) {
+        $selectedItem = $validLanguages[$numSelection - 1]
+        $langSplit = $language.Split("|")
+
+        return $langSplit[1]
+
+        break;
+     }
+
+     Write-Host "Invalid Selection" -BackgroundColor Red
+   }
+
+  } while($true);
+}
+
+Function SelectProductId() {
+  do {
+   Write-Host
+   Write-Host "Office Deployment Tool for Click-to-Run Product Ids"
+   Write-Host
+
+   $index = 1;
+   foreach ($product in $validProductIds) {
+      Write-Host "`t$index - $product"
+      $index++
+   }
+
+   Write-Host
+   Write-Host "Select a ProductId:" -NoNewline
+   $selection = Read-Host
+
+   $load = [reflection.assembly]::LoadWithPartialName("'Microsoft.VisualBasic")
+   $isNumeric = [Microsoft.VisualBasic.Information]::isnumeric($selection)
+
+   if (!($isNumeric)) {
+      Write-Host "Invalid Selection" -BackgroundColor Red
+   } else {
+
+     [int] $numSelection = $selection
+
+     if ($numSelection -gt 0 -and $numSelection -lt $index) {
+        return $validProductIds[$numSelection - 1]
+        break;
+     }
+
+     Write-Host "Invalid Selection" -BackgroundColor Red
+   }
+
+  } while($true);
+}
+
+Function SelectBitness() {
+  do {
+   Write-Host
+   Write-Host "Office Bitness"
+   Write-Host
+
+   $index = 1;
+   Write-Host "`t1 - 32-Bit"
+   Write-Host "`t2 - 64-Bit"
+
+   Write-Host
+   Write-Host "Select Product Bitness:" -NoNewline
+   $selection = Read-Host
+
+   $load = [reflection.assembly]::LoadWithPartialName("'Microsoft.VisualBasic")
+   $isNumeric = [Microsoft.VisualBasic.Information]::isnumeric($selection)
+
+   if (!($isNumeric)) {
+      Write-Host "Invalid Selection" -BackgroundColor Red
+   } else {
+
+     [int] $numSelection = $selection
+
+     if ($numSelection -eq 1 -or $numSelection -eq 2)
+     {
+        if ($numSelection -eq 1) {
+           return "32"
+        }
+        if ($numSelection -eq 2) {
+           return "64"
+        }
+        break;
+     }
+
+     Write-Host "Invalid Selection" -BackgroundColor Red
+   }
+
+  } while($true);
+}
+
