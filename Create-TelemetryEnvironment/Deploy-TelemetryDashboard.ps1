@@ -17,24 +17,10 @@ and the telemetry agent will be configured.
     + "and try running the script again."
 [string] $ErrorSqlServerNotFound = `
     "The installation failed. Try running the script again."
-[string] $ErrorLcidNotFound = `
-    "The language files for Office 2013 can't be found. " `
-    + "Please install Telemetry Processor using the instructions " `
-    + "in the Getting Started worksheet of Telemetry Dashboard."
-[string] $ErrorOfficeNotFound = `
-    "Office 2013 can't be found. Please verify that your computer has " `
-    + "Office 2013 installed."
-[string] $ErrorUnsupportedOfficeVersion = `
-    "The installed version of Office isn't supported."
 [string] $ErrorDpconfigNotExist = `
     "The Telemetry Processor Settings wizard can't be found. " `
     + "Please install Telemetry Processor using the instructions " `
     + "in the Getting Started worksheet of Telemetry Dashboard. "
-[string] $ErrorDatabaseNameNotInRegistry = `
-    "The telemetry database can't be found. Please run the " `
-    + "Telemetry Processor Settings wizard again."
-[string] $ErrorInstallerNotEnding = `
-    "Timed out. Installation takes too long to complete."
 [string] $Error32BitPowerShell64BitOS = `
     "The script failed to run. Open 64 bit version of PowerShell " `
     + "window and try running the script again."
@@ -47,24 +33,8 @@ and the telemetry agent will be configured.
     + "FOR A PARTICULAR PURPOSE.`n`n" `
     + "THE ENTIRE RISK OF USE, INABILITY TO USE, OR RESULTS FROM THE USE OF " `
     + "THIS CODE REMAINS WITH THE USER."   
-[string] $UiMessage_SameVersionInstalled `
-    = "The same version of Telemetry Processor is already installed. " `
-    + "You need to run repair installation to continue. " `
-    + "Do you want to run repair installation of Telemetry " `
-    + "Processor that is already installed? Y or N"
-[string] $UiMessage_PreviousVersionInstalled `
-    = "Another version of Telemetry Processor exists. " `
-    + "You need to remove existing version of Telemetry " `
-    + "Processor to continue.`n`n" `
-    + "Do you want to uninstall the version of Telemetry Processor " `
-    + "that is already installed? Y or N."
 [string] $UiMessage_InstallationInstruction `
     = "Installing Telemetry Processor."
-[string] $UiMessage_AskForBakFilePath `
-    = "Enter the full path and file name of the database backup (.bak) " `
-    + " file (for example: c:\Temp\TDDB.bak)"
-[string] $UiMessage_AskForBakFileAgain `
-    = "The database backup file can't be found." 
 [string] $UiMessage_HowToUseDashboard `
     = "`nTelemetry Dashboard deployed successfully. " `
     + "To view data in the dashboard, follow these steps:`n`n" `
@@ -72,15 +42,10 @@ and the telemetry agent will be configured.
     + "  2  Enter the SQL server and database, and then click Connect`n" `
     + "  3  Select the Documents or Solutions worksheet to see the collected data.`n"
 [string] $UiMessage_NotifySQLServerDownload `
-    = "Downloading Microsoft SQL server 2012 Express installer package. " `
+    = "Downloading Microsoft SQL server 2014 Express installer package. " `
     + "Please wait..."
 [string] $UiMessage_ConfigureDatabase `
     = "Configuring the database. Please wait..." 
-[string] $UiMessage_UploadData `
-    = "Checking to see if data has been uploaded to the database. " `
-    + "It will take a few minutes. Please wait..." 
-[string] $UiMessage_RestoreDatabase `
-    = "Restoring the database." 
 [string] $UiMessage_CreateFolder `
     = "Creating the shared folder."
 [string] $UiMessage_WriteRegFile = `
@@ -94,26 +59,7 @@ and the telemetry agent will be configured.
     "Installing Telemetry Processor service..."
 [string] $UiMessage_CompleteTelemetryProcessorSetup = `
     "Telemetry Processor installed successfully."
-[string] $UiMessage_DpconfigCreateDatabase = `
-    "To create a database, complete Telemetry Processor " `
-    + "settings wizard by following the steps below:`n" `
-    + "  1  On the Database Settings dialog, choose SQL server name " `
-    + "from the drop down list and click Connect.`n" `
-    + "  2  Enter the new database name in the SQL database text box, " `
-    + "and click Create and then click Next.`n" `
-    + "  3  Complete Telemetry Processor settings wizard and click Finish."
-[string] $UiMessage_DpconfigFull = `
-    "To create a database, complete Telemetry Processor " `
-    + "settings wizard by following the steps below:`n" `
-    + "  1  On the Getting started dialog, " `
-    + "click Next to move to Database Settings.`n" `
-    + "  2  On the Database Settings dialog, " `
-    + "choose SQL server name from the drop down list and click Connect.`n" `
-    + "  3  Enter the new database name in the SQL database text box, " `
-    + "and click Create and then click Next.`n" `
-    + "  4  On the Shared Folder dialog, Click Next.`n" `
-    + "  5  Complete Telemetry Processor settings wizard and click Finish.`n"
-    [string] $UiMessage_SqlServer2014Exists `
+[string] $UiMessage_SqlServer2014Exists `
     = "SQL server 2014 already exists. Do you want to skip the installation" `
     + " of the SQL server 2014 Express Edition? Y or N"
 [string] $UiMessage_SqlServerOtherExists `
@@ -178,8 +124,8 @@ function Test-64BitOS
 # Returns the version of Office
 function Get-OfficeVersion
 {
-$objExcel = New-Object -ComObject Excel.Application
-return $objExcel.Version
+    $objExcel = New-Object -ComObject Excel.Application
+    return $objExcel.Version
 }
 
 # Tell the user to run the script in a 64-bit console
@@ -354,8 +300,6 @@ Get-SqlInstance | foreach {$_.FullName}
 }
 
 # Build the shared folder path.
-# Since domain users can change the shared folder in dpconfig.exe, 
-# which will then write the changed folder name in registry.
 # The script gets the user selected folder name from the registry.
 function Build-FileSharePath([string] $folderName)
 {
@@ -407,13 +351,6 @@ function Read-DataProcessorRegistry
         DatabaseName = $databaseName;
             }
     }
-}
-
-# Print the copyright message and disclaimer.
-function Print-CopyrightDisclaimer
-{
-    Write-Host $UiMessage_Copyright
-    Write-Host $UiMessage_Disclaimer
 }
 
 # Throw an error if the script is not running in an elevated prompt.
@@ -537,7 +474,7 @@ New-Item $ConfigurationFile -type file -force -value $CreateIni
 #Clean up files written to the client machine.
 function Clear-Files
 {
-    [string] $installerPath = $env:temp + "\\" + $InstallerFileName
+    [string] $installerPath = $env:TEMP + "\\" + $InstallerFileName
     if (Test-Path -Path $installerPath)
     {
         Remove-Item $installerPath
@@ -579,8 +516,6 @@ function Install-SqlwithIni
         Clear-Files
 }
 
-
-
 #Enable TCP/IP and set the port
 function Set-TcpPort
 {
@@ -609,7 +544,7 @@ function New-SharedFolder
     $SharedFolderPath = "$env:SystemDrive"
     
     
-   if (!(Test-Path $SharedFolderPath\$ShareName))
+    if (!(Test-Path $SharedFolderPath\$ShareName))
         {
         New-Item "$env:SystemDrive\$ShareName" -Type Directory
         
@@ -988,16 +923,11 @@ function Configure-DashboardComponents
     Configure-TelemetryAgent
 }
 
-
-
-
 # Main script flow
 function Deploy-TelemetryDashboard
 {
 
     Confirm-ConsoleBitness
-
-    Print-CopyrightDisclaimer
 
     Check-Elevated
 
@@ -1038,152 +968,3 @@ function Deploy-TelemetryDashboard
         Write-RegFile $folderName
     }
 }
-
-
-# SIG # Begin signature block
-# MIIagAYJKoZIhvcNAQcCoIIacTCCGm0CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
-# gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUxK0X+531z2ovcU+PBkOALQnS
-# BkWgghU/MIIEqTCCA5GgAwIBAgITMwAAAIhZDjxRH+JqZwABAAAAiDANBgkqhkiG
-# 9w0BAQUFADB5MQswCQYDVQQGEwJVUzETMBEGA1UECBMKV2FzaGluZ3RvbjEQMA4G
-# A1UEBxMHUmVkbW9uZDEeMBwGA1UEChMVTWljcm9zb2Z0IENvcnBvcmF0aW9uMSMw
-# IQYDVQQDExpNaWNyb3NvZnQgQ29kZSBTaWduaW5nIFBDQTAeFw0xMjA3MjYyMDUw
-# NDFaFw0xMzEwMjYyMDUwNDFaMIGDMQswCQYDVQQGEwJVUzETMBEGA1UECBMKV2Fz
-# aGluZ3RvbjEQMA4GA1UEBxMHUmVkbW9uZDEeMBwGA1UEChMVTWljcm9zb2Z0IENv
-# cnBvcmF0aW9uMQ0wCwYDVQQLEwRNT1BSMR4wHAYDVQQDExVNaWNyb3NvZnQgQ29y
-# cG9yYXRpb24wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCzdHTQgjyH
-# p5rUjrIEQoCXJS7kQc6TYzZfE/K0eJiAxih+zIoT7z03jDsJoNgUxVxe2KkdfwHB
-# s5gbUHfs/up8Rc9/4SEOxYTKnw9rswk4t3TEVx6+8EioeVrfDpscmqi8yFK1DGmP
-# hM5xVXv/CSC/QHc3ITB0W5Xfd8ug5cFyEgY98shVbK/B+2oWJ8j1s2Hj2c4bDx70
-# 5M1MNGw+RxHnAitfFHoEB/XXPYvbZ31XPjXrbY0BQI0ah5biD3dMibo4nPuOApHb
-# Ig/l0DapuDdF0Cr8lo3BYHEzpYix9sIEMIdbw9cvsnkR2ItlYqKKEWZdfn8FenOK
-# H3qF5c0oENE9AgMBAAGjggEdMIIBGTATBgNVHSUEDDAKBggrBgEFBQcDAzAdBgNV
-# HQ4EFgQUJls+W12WX+L3d4h/XkVTWKguW7gwDgYDVR0PAQH/BAQDAgeAMB8GA1Ud
-# IwQYMBaAFMsR6MrStBZYAck3LjMWFrlMmgofMFYGA1UdHwRPME0wS6BJoEeGRWh0
-# dHA6Ly9jcmwubWljcm9zb2Z0LmNvbS9wa2kvY3JsL3Byb2R1Y3RzL01pY0NvZFNp
-# Z1BDQV8wOC0zMS0yMDEwLmNybDBaBggrBgEFBQcBAQROMEwwSgYIKwYBBQUHMAKG
-# Pmh0dHA6Ly93d3cubWljcm9zb2Z0LmNvbS9wa2kvY2VydHMvTWljQ29kU2lnUENB
-# XzA4LTMxLTIwMTAuY3J0MA0GCSqGSIb3DQEBBQUAA4IBAQAP3kBJiJHRMTejRDhp
-# smor1JH7aIWuWLseDI9W+pnXypcnTOiFjnlpLOS9lj/lcGaXlTBlKa3Gyqz1D3mo
-# Z79p9A+X4woPv+6WdimyItAzxv+LSa2usv2/JervJ1DA6xn4GmRqoOEXWa/xz+yB
-# qInosdIUBuNqbXRSZNqWlCpcaWsf7QWZGtzoZaqIGxWVGtOkUZb9VZX4Y42fFAyx
-# nn9KBP/DZq0Kr66k3mP68OrDs7Lrh9vFOK22c9J4ZOrsIVtrO9ZEIvSBUqUrQymL
-# DKEqcYJCy6sbftSlp6333vdGms5DOegqU+3PQOR3iEK/RxbgpTZq76cajTo9MwT2
-# JSAjMIIEwzCCA6ugAwIBAgITMwAAACs5MkjBsslI8wAAAAAAKzANBgkqhkiG9w0B
-# AQUFADB3MQswCQYDVQQGEwJVUzETMBEGA1UECBMKV2FzaGluZ3RvbjEQMA4GA1UE
-# BxMHUmVkbW9uZDEeMBwGA1UEChMVTWljcm9zb2Z0IENvcnBvcmF0aW9uMSEwHwYD
-# VQQDExhNaWNyb3NvZnQgVGltZS1TdGFtcCBQQ0EwHhcNMTIwOTA0MjExMjM0WhcN
-# MTMxMjA0MjExMjM0WjCBszELMAkGA1UEBhMCVVMxEzARBgNVBAgTCldhc2hpbmd0
-# b24xEDAOBgNVBAcTB1JlZG1vbmQxHjAcBgNVBAoTFU1pY3Jvc29mdCBDb3Jwb3Jh
-# dGlvbjENMAsGA1UECxMETU9QUjEnMCUGA1UECxMebkNpcGhlciBEU0UgRVNOOkMw
-# RjQtMzA4Ni1ERUY4MSUwIwYDVQQDExxNaWNyb3NvZnQgVGltZS1TdGFtcCBTZXJ2
-# aWNlMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAprYwDgNlrlBahmuF
-# n0ihHsnA7l5JB4XgcJZ8vrlfYl8GJtOLObsYIqUukq3YS4g6Gq+bg67IXjmMwjJ7
-# FnjtNzg68WL7aIICaOzru0CKsf6hLDZiYHA5YGIO+8YYOG+wktZADYCmDXiLNmuG
-# iiYXGP+w6026uykT5lxIjnBGNib+NDWrNOH32thc6pl9MbdNH1frfNaVDWYMHg4y
-# Fz4s1YChzuv3mJEC3MFf/TiA+Dl/XWTKN1w7UVtdhV/OHhz7NL5f5ShVcFScuOx8
-# AFVGWyiYKFZM4fG6CRmWgUgqMMj3MyBs52nDs9TDTs8wHjfUmFLUqSNFsq5cQUlP
-# tGJokwIDAQABo4IBCTCCAQUwHQYDVR0OBBYEFKUYM1M/lWChQxbvjsav0iu6nljQ
-# MB8GA1UdIwQYMBaAFCM0+NlSRnAK7UD7dvuzK7DDNbMPMFQGA1UdHwRNMEswSaBH
-# oEWGQ2h0dHA6Ly9jcmwubWljcm9zb2Z0LmNvbS9wa2kvY3JsL3Byb2R1Y3RzL01p
-# Y3Jvc29mdFRpbWVTdGFtcFBDQS5jcmwwWAYIKwYBBQUHAQEETDBKMEgGCCsGAQUF
-# BzAChjxodHRwOi8vd3d3Lm1pY3Jvc29mdC5jb20vcGtpL2NlcnRzL01pY3Jvc29m
-# dFRpbWVTdGFtcFBDQS5jcnQwEwYDVR0lBAwwCgYIKwYBBQUHAwgwDQYJKoZIhvcN
-# AQEFBQADggEBAH7MsHvlL77nVrXPc9uqUtEWOca0zfrX/h5ltedI85tGiAVmaiaG
-# Xv6HWNzGY444gPQIRnwrc7EOv0Gqy8eqlKQ38GQ54cXV+c4HzqvkJfBprtRG4v5m
-# MjzXl8UyIfruGiWgXgxCLBEzOoKD/e0ds77OkaSRJXG5q3Kwnq/kzwBiiXCpuEpQ
-# jO4vImSlqOZNa5UsHHnsp6Mx2pBgkKRu/pMCDT8sJA3GaiaBUYNKELt1Y0SqaQjG
-# A+vizwvtVjrs73KnCgz0ANMiuK8icrPnxJwLKKCAyuPh1zlmMOdGFxjn+oL6WQt6
-# vKgN/hz/A4tjsk0SAiNPLbOFhDvioUfozxUwggW8MIIDpKADAgECAgphMyYaAAAA
-# AAAxMA0GCSqGSIb3DQEBBQUAMF8xEzARBgoJkiaJk/IsZAEZFgNjb20xGTAXBgoJ
-# kiaJk/IsZAEZFgltaWNyb3NvZnQxLTArBgNVBAMTJE1pY3Jvc29mdCBSb290IENl
-# cnRpZmljYXRlIEF1dGhvcml0eTAeFw0xMDA4MzEyMjE5MzJaFw0yMDA4MzEyMjI5
-# MzJaMHkxCzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpXYXNoaW5ndG9uMRAwDgYDVQQH
-# EwdSZWRtb25kMR4wHAYDVQQKExVNaWNyb3NvZnQgQ29ycG9yYXRpb24xIzAhBgNV
-# BAMTGk1pY3Jvc29mdCBDb2RlIFNpZ25pbmcgUENBMIIBIjANBgkqhkiG9w0BAQEF
-# AAOCAQ8AMIIBCgKCAQEAsnJZXBkwZL8dmmAgIEKZdlNsPhvWb8zL8epr/pcWEODf
-# OnSDGrcvoDLs/97CQk4j1XIA2zVXConKriBJ9PBorE1LjaW9eUtxm0cH2v0l3511
-# iM+qc0R/14Hb873yNqTJXEXcr6094CholxqnpXJzVvEXlOT9NZRyoNZ2Xx53RYOF
-# OBbQc1sFumdSjaWyaS/aGQv+knQp4nYvVN0UMFn40o1i/cvJX0YxULknE+RAMM9y
-# KRAoIsc3Tj2gMj2QzaE4BoVcTlaCKCoFMrdL109j59ItYvFFPeesCAD2RqGe0VuM
-# JlPoeqpK8kbPNzw4nrR3XKUXno3LEY9WPMGsCV8D0wIDAQABo4IBXjCCAVowDwYD
-# VR0TAQH/BAUwAwEB/zAdBgNVHQ4EFgQUyxHoytK0FlgByTcuMxYWuUyaCh8wCwYD
-# VR0PBAQDAgGGMBIGCSsGAQQBgjcVAQQFAgMBAAEwIwYJKwYBBAGCNxUCBBYEFP3R
-# MU7TJoqV4ZhgO6gxb6Y8vNgtMBkGCSsGAQQBgjcUAgQMHgoAUwB1AGIAQwBBMB8G
-# A1UdIwQYMBaAFA6sgmBAVieX5SUT/CrhClOVWeSkMFAGA1UdHwRJMEcwRaBDoEGG
-# P2h0dHA6Ly9jcmwubWljcm9zb2Z0LmNvbS9wa2kvY3JsL3Byb2R1Y3RzL21pY3Jv
-# c29mdHJvb3RjZXJ0LmNybDBUBggrBgEFBQcBAQRIMEYwRAYIKwYBBQUHMAKGOGh0
-# dHA6Ly93d3cubWljcm9zb2Z0LmNvbS9wa2kvY2VydHMvTWljcm9zb2Z0Um9vdENl
-# cnQuY3J0MA0GCSqGSIb3DQEBBQUAA4ICAQBZOT5/Jkav629AsTK1ausOL26oSffr
-# X3XtTDst10OtC/7L6S0xoyPMfFCYgCFdrD0vTLqiqFac43C7uLT4ebVJcvc+6kF/
-# yuEMF2nLpZwgLfoLUMRWzS3jStK8cOeoDaIDpVbguIpLV/KVQpzx8+/u44YfNDy4
-# VprwUyOFKqSCHJPilAcd8uJO+IyhyugTpZFOyBvSj3KVKnFtmxr4HPBT1mfMIv9c
-# Hc2ijL0nsnljVkSiUc356aNYVt2bAkVEL1/02q7UgjJu/KSVE+Traeepoiy+yCsQ
-# DmWOmdv1ovoSJgllOJTxeh9Ku9HhVujQeJYYXMk1Fl/dkx1Jji2+rTREHO4QFRoA
-# Xd01WyHOmMcJ7oUOjE9tDhNOPXwpSJxy0fNsysHscKNXkld9lI2gG0gDWvfPo2cK
-# dKU27S0vF8jmcjcS9G+xPGeC+VKyjTMWZR4Oit0Q3mT0b85G1NMX6XnEBLTT+yzf
-# H4qerAr7EydAreT54al/RrsHYEdlYEBOsELsTu2zdnnYCjQJbRyAMR/iDlTd5aH7
-# 5UcQrWSY/1AWLny/BSF64pVBJ2nDk4+VyY3YmyGuDVyc8KKuhmiDDGotu3ZrAB2W
-# rfIWe/YWgyS5iM9qqEcxL5rc43E91wB+YkfRzojJuBj6DnKNwaM9rwJAav9pm5bi
-# EKgQtDdQCNbDPTCCBgcwggPvoAMCAQICCmEWaDQAAAAAABwwDQYJKoZIhvcNAQEF
-# BQAwXzETMBEGCgmSJomT8ixkARkWA2NvbTEZMBcGCgmSJomT8ixkARkWCW1pY3Jv
-# c29mdDEtMCsGA1UEAxMkTWljcm9zb2Z0IFJvb3QgQ2VydGlmaWNhdGUgQXV0aG9y
-# aXR5MB4XDTA3MDQwMzEyNTMwOVoXDTIxMDQwMzEzMDMwOVowdzELMAkGA1UEBhMC
-# VVMxEzARBgNVBAgTCldhc2hpbmd0b24xEDAOBgNVBAcTB1JlZG1vbmQxHjAcBgNV
-# BAoTFU1pY3Jvc29mdCBDb3Jwb3JhdGlvbjEhMB8GA1UEAxMYTWljcm9zb2Z0IFRp
-# bWUtU3RhbXAgUENBMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAn6Fs
-# sd/bSJIqfGsuGeG94uPFmVEjUK3O3RhOJA/u0afRTK10MCAR6wfVVJUVSZQbQpKu
-# mFwwJtoAa+h7veyJBw/3DgSY8InMH8szJIed8vRnHCz8e+eIHernTqOhwSNTyo36
-# Rc8J0F6v0LBCBKL5pmyTZ9co3EZTsIbQ5ShGLieshk9VUgzkAyz7apCQMG6H81kw
-# nfp+1pez6CGXfvjSE/MIt1NtUrRFkJ9IAEpHZhEnKWaol+TTBoFKovmEpxFHFAmC
-# n4TtVXj+AZodUAiFABAwRu233iNGu8QtVJ+vHnhBMXfMm987g5OhYQK1HQ2x/Peb
-# sgHOIktU//kFw8IgCwIDAQABo4IBqzCCAacwDwYDVR0TAQH/BAUwAwEB/zAdBgNV
-# HQ4EFgQUIzT42VJGcArtQPt2+7MrsMM1sw8wCwYDVR0PBAQDAgGGMBAGCSsGAQQB
-# gjcVAQQDAgEAMIGYBgNVHSMEgZAwgY2AFA6sgmBAVieX5SUT/CrhClOVWeSkoWOk
-# YTBfMRMwEQYKCZImiZPyLGQBGRYDY29tMRkwFwYKCZImiZPyLGQBGRYJbWljcm9z
-# b2Z0MS0wKwYDVQQDEyRNaWNyb3NvZnQgUm9vdCBDZXJ0aWZpY2F0ZSBBdXRob3Jp
-# dHmCEHmtFqFKoKWtTHNY9AcTLmUwUAYDVR0fBEkwRzBFoEOgQYY/aHR0cDovL2Ny
-# bC5taWNyb3NvZnQuY29tL3BraS9jcmwvcHJvZHVjdHMvbWljcm9zb2Z0cm9vdGNl
-# cnQuY3JsMFQGCCsGAQUFBwEBBEgwRjBEBggrBgEFBQcwAoY4aHR0cDovL3d3dy5t
-# aWNyb3NvZnQuY29tL3BraS9jZXJ0cy9NaWNyb3NvZnRSb290Q2VydC5jcnQwEwYD
-# VR0lBAwwCgYIKwYBBQUHAwgwDQYJKoZIhvcNAQEFBQADggIBABCXisNcA0Q23em0
-# rXfbznlRTQGxLnRxW20ME6vOvnuPuC7UEqKMbWK4VwLLTiATUJndekDiV7uvWJoc
-# 4R0Bhqy7ePKL0Ow7Ae7ivo8KBciNSOLwUxXdT6uS5OeNatWAweaU8gYvhQPpkSok
-# InD79vzkeJkuDfcH4nC8GE6djmsKcpW4oTmcZy3FUQ7qYlw/FpiLID/iBxoy+cwx
-# SnYxPStyC8jqcD3/hQoT38IKYY7w17gX606Lf8U1K16jv+u8fQtCe9RTciHuMMq7
-# eGVcWwEXChQO0toUmPU8uWZYsy0v5/mFhsxRVuidcJRsrDlM1PZ5v6oYemIp76Kb
-# KTQGdxpiyT0ebR+C8AvHLLvPQ7Pl+ex9teOkqHQ1uE7FcSMSJnYLPFKMcVpGQxS8
-# s7OwTWfIn0L/gHkhgJ4VMGboQhJeGsieIiHQQ+kr6bv0SMws1NgygEwmKkgkX1rq
-# Vu+m3pmdyjpvvYEndAYR7nYhv5uCwSdUtrFqPYmhdmG0bqETpr+qR/ASb/2KMmyy
-# /t9RyIwjyWa9nR2HEmQCPS2vWY+45CHltbDKY7R4VAXUQS5QrJSwpXirs6CWdRrZ
-# kocTdSIvMqgIbqBbjCW/oO+EyiHW6x5PyZruSeD3AWVviQt9yGnI5m7qp5fOMSn/
-# DsVbXNhNG6HY+i+ePy5VFmvJE6P9MYIEqzCCBKcCAQEwgZAweTELMAkGA1UEBhMC
-# VVMxEzARBgNVBAgTCldhc2hpbmd0b24xEDAOBgNVBAcTB1JlZG1vbmQxHjAcBgNV
-# BAoTFU1pY3Jvc29mdCBDb3Jwb3JhdGlvbjEjMCEGA1UEAxMaTWljcm9zb2Z0IENv
-# ZGUgU2lnbmluZyBQQ0ECEzMAAACIWQ48UR/iamcAAQAAAIgwCQYFKw4DAhoFAKCB
-# xDAZBgkqhkiG9w0BCQMxDAYKKwYBBAGCNwIBBDAcBgorBgEEAYI3AgELMQ4wDAYK
-# KwYBBAGCNwIBFTAjBgkqhkiG9w0BCQQxFgQU9zxH6+upL96zzKWM/EZD7IIWNTww
-# ZAYKKwYBBAGCNwIBDDFWMFSgGoAYAFQARABEAGUAcABsAG8AeQBtAGUAbgB0oTaA
-# NGh0dHA6Ly9vMTUub2ZmaWNlcmVkaXIubWljcm9zb2Z0LmNvbS9yL3JsaWRUREhl
-# bHBPMTUwDQYJKoZIhvcNAQEBBQAEggEAm+fi4AaPrGo8yklSLVWDzetWcZN9lAsQ
-# EFWI03Zg1Ksgw8ZRJy636AX63AdumCKAA2QMboAFroq7/mYwJmHqBPmdwao/KuYm
-# Fhlppr7epgCE1FPSkajlu5MR1tD3X60FGAVIRgoAfVgEn9Y+fqZhYlQPNrkwnXia
-# 9CPeQdKOagzjAJqBH4dKeXmorWJMjryo7Hgq66eiXcoJYjh7wrReJRr33K8d5LAQ
-# BdnYnRH9wOV4dajRQfzKcCt0oVj/kih7wufzF829lQ0NuYjc6CVSLVPHJ79Fyjta
-# KOmXiXtNOiW5Q4wA86skYIGf3QpFc0R9/jcbxT49isLZYO0qInQJe6GCAigwggIk
-# BgkqhkiG9w0BCQYxggIVMIICEQIBATCBjjB3MQswCQYDVQQGEwJVUzETMBEGA1UE
-# CBMKV2FzaGluZ3RvbjEQMA4GA1UEBxMHUmVkbW9uZDEeMBwGA1UEChMVTWljcm9z
-# b2Z0IENvcnBvcmF0aW9uMSEwHwYDVQQDExhNaWNyb3NvZnQgVGltZS1TdGFtcCBQ
-# Q0ECEzMAAAArOTJIwbLJSPMAAAAAACswCQYFKw4DAhoFAKBdMBgGCSqGSIb3DQEJ
-# AzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTEyMDkyODA0MTUyNVowIwYJ
-# KoZIhvcNAQkEMRYEFJZx87jLjkJl4plT2I5heHQ0+F4xMA0GCSqGSIb3DQEBBQUA
-# BIIBAEWzYGpUjC3iVd+8FUnXqB4GH5ssOx8ItY7br54FNyhdr+AXkUnZ+KDMQanP
-# R8mQ+qUJofCldwp3bNFTD8H6sjAdUxeE5lGYNjIxkTKfrH4vlBrH1L5+QfgVXVi0
-# FF070fNMJF8Q3ZvyEoiWSOcws+eeFTKQYjMvFILkOJLV8oQb+UPKFN1NzEFBS0hJ
-# fikjqdQTwVeQavecS7J/nlA8VeJTUDB5rdBvPEozQTxZFpqnPL5dBSl75ZgGGvzO
-# xT/JxaX+TJekknXAhgE8lNK9yQ3O433CoIAqaKIGoHm/MBGzphpFUVcLgbJB8vaO
-# ZTDrIdpKxYcrNuTC/WF79MbEznc=
-# SIG # End signature block
-
-
-
