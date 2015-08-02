@@ -1,5 +1,25 @@
-﻿
+﻿[String]$global:saveLastConfigFile = $NULL
+[String]$global:saveLastFilePath = $NULL
+
 $validProductIds = @("O365ProPlusRetail","O365BusinessRetail","VisioProRetail","ProjectProRetail", "SPDRetail")
+
+$enum = "
+using System;
+ 
+namespace Microsoft.Office
+{
+     [FlagsAttribute]
+     public enum Products
+     {
+         O365ProPlusRetail = 1,
+         O365BusinessRetail = 2,
+         VisioProRetail = 4,
+         ProjectProRetail = 8,
+         SPDRetail = 16
+     }
+}
+"
+Add-Type -TypeDefinition $enum -Language CSharpVersion3
 
 $validLanguages = @(
 "English|en-us",
@@ -41,9 +61,6 @@ $validLanguages = @(
 "Thai|th-th",
 "Turkish|tr-tr",
 "Ukrainian|uk-ua")
-
-[String]$global:saveLastConfigFile = $NULL
-[String]$global:saveLastFilePath = $NULL
 
 Function New-ODTConfiguration{
 <#
@@ -113,10 +130,10 @@ Here is what the configuration file looks like when created from this function:
     [string] $Bitness = $NULL,
 
     [Parameter(HelpMessage="Example: O365ProPlusRetail")]
-    [string] $ProductId = $NULL,
+    [Microsoft.Office.Products] $ProductId = $NULL,
 
     [Parameter()]
-    [string] $LanguageId = (Get-Culture | %{$_.Name}),
+    [string] $LanguageId = $NULL,
 
     [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
     [string] $TargetFilePath
@@ -132,9 +149,14 @@ Here is what the configuration file looks like when created from this function:
             $Bitness = SelectBitness
         }
 
-        if (!$validProductIds.Contains($ProductId)) {
-           throw "Invalid or Unsupported Product Id"
+        $ProductId = IsValidProductId -ProductId $ProductId
+
+        if (!($LanguageId)) {
+            $LanguageId = (Get-Culture | %{$_.Name})
+            $LanguageId = LanguagePrompt -DefaultLanguage $LanguageId
         }
+
+        $LanguageId = IsSupportedLanguage -Language $LanguageId
         
         $pathSplit = Split-Path -Path $TargetFilePath
         $createDir = [system.io.directory]::CreateDirectory($pathSplit)
@@ -243,7 +265,7 @@ Here is what the portion of configuration file looks like when modified by this 
         [string] $TargetFilePath,
 
         [Parameter()]
-        [string] $ProductId = $NULL,
+        [Microsoft.Office.Products] $ProductId = $NULL,
 
         [Parameter(Mandatory=$true)]
         [string[]] $LanguageIds,
@@ -255,10 +277,14 @@ Here is what the portion of configuration file looks like when modified by this 
 
     Process{
         if (!$ProductId) {
-            $ProductId = SelectProductId
+           $ProductId = SelectProductId
         }
 
-        #SelectLanguage
+        $ProductId = IsValidProductId -ProductId $ProductId
+        
+        foreach ($language in $LanguageIds) {
+           $language = IsSupportedLanguage -Language $language
+        }
 
         #Load the file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
@@ -420,7 +446,7 @@ Removes the ProductToAdd with the ProductId 'O365ProPlusRetail' from the XML Con
 
 #>
     Param(
-        [Parameter(Mandatory=$true)]
+        [Parameter()]
         [string] $ProductId,
 
         [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
@@ -428,6 +454,12 @@ Removes the ProductToAdd with the ProductId 'O365ProPlusRetail' from the XML Con
     )
 
     Process{
+        if (!$ProductId) {
+            $ProductId = SelectProductId
+        }
+
+        $ProductId = IsValidProductId -ProductId $ProductId
+
         #Load the file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
         $ConfigFile.Load($TargetFilePath) | Out-Null
@@ -519,7 +551,7 @@ Here is what the portion of configuration file looks like when modified by this 
         [switch] $All,
 
         [Parameter()]
-        [string] $ProductId,
+        [Microsoft.Office.Products] $ProductId = $NULL,
 
         [Parameter()]
         [string[]] $LanguageIds,
@@ -530,6 +562,15 @@ Here is what the portion of configuration file looks like when modified by this 
     )
 
     Process{
+
+        if (!$ProductId) {
+           $ProductId = SelectProductId
+        }
+
+        foreach ($language in $LanguageIds) {
+           IsSupportedLanguage -Language $language
+        }
+
         #Load file from path
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
         $ConfigFile.Load($TargetFilePath) | Out-Null
@@ -612,7 +653,7 @@ Language and Exclude values
     Param(
 
         [Parameter(ParameterSetName="ID",Mandatory=$true)]
-        [string] $ProductId,
+        [Microsoft.Office.Products] $ProductId,
 
         [Parameter(ParameterSetName="All",Mandatory=$true)]
         [switch] $All,
@@ -683,14 +724,19 @@ Removes the ProductToRemove with the ProductId 'O365ProPlusRetail' from the XML 
 
 #>
     Param(
-        [Parameter(Mandatory=$true)]
-        [string] $ProductId,
+        [Parameter()]
+        [Microsoft.Office.Products] $ProductId = $NULL,
 
         [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
         [string] $TargetFilePath
     )
 
     Process{
+
+        if (!$ProductId) {
+           $ProductId = SelectProductId
+        }
+
         #Load the file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
         $ConfigFile.Load($TargetFilePath) | Out-Null
@@ -710,6 +756,13 @@ Removes the ProductToRemove with the ProductId 'O365ProPlusRetail' from the XML 
         [System.XML.XMLElement]$ProductElement = $ConfigFile.Configuration.Remove.Product | ?  ID -eq $ProductId
         if($ProductElement -ne $null){
             $ConfigFile.Configuration.Remove.removeChild($ProductElement)
+        }
+
+        if ($ConfigFile.Configuration.Remove.Nodes.Count -eq 0) {
+            [System.XML.XMLElement]$RemoveNode = $ConfigFile.SelectSingleNode("/Configuration/Remove")
+            if ($RemoveNode) {
+                $ConfigFile.Configuration.removeChild($RemoveNode) | Out-Null
+            }
         }
 
         $ConfigFile.Save($TargetFilePath) | Out-Null
@@ -1127,7 +1180,11 @@ Name of the property to remove
 
 .Example
 Remove-ODTConfigProperties -TargetFilePath "$env:Public/Documents/config.xml"
-Removes all of the poperty items form the existing configuration xml file
+Removes all of the poperty items from the existing configuration xml file
+
+.Example
+Remove-ODTConfigProperties -Name "AUTOACTIVATE" -TargetFilePath "$env:Public/Documents/config.xml"
+Removes the poperty items with the Name "AUTOACTIVATE" from the existing configuration xml file
 
 .Notes
 Here is what the portion of configuration file that would be removed by this function:
@@ -1244,7 +1301,7 @@ Here is what the portion of configuration file looks like when modified by this 
     Param(
 
         [Parameter()]
-        [string] $SourcePath,
+        [string] $SourcePath = $NULL,
 
         [Parameter()]
         [string] $Version,
@@ -1278,12 +1335,32 @@ Here is what the portion of configuration file looks like when modified by this 
         #Set values as desired
         if([string]::IsNullOrWhiteSpace($SourcePath) -eq $false){
             $ConfigFile.Configuration.Add.SetAttribute("SourcePath", $SourcePath) | Out-Null
+        } else {
+           if (!($SourcePath)) {
+              if ($PSBoundParameters.ContainsKey('SourcePath')) {
+                  $ConfigFile.Configuration.Add.RemoveAttribute("SourcePath")
+              }
+           }
         }
+
         if([string]::IsNullOrWhiteSpace($Version) -eq $false){
             $ConfigFile.Configuration.Add.SetAttribute("Version", $Version) | Out-Null
+        } else {
+           if (!($Version)) {
+              if ($PSBoundParameters.ContainsKey('Version')) {
+                  $ConfigFile.Configuration.Add.RemoveAttribute("Version")
+              }
+           }
         }
+
         if([string]::IsNullOrWhiteSpace($Bitness) -eq $false){
             $ConfigFile.Configuration.Add.SetAttribute("OfficeClientEdition", $Bitness) | Out-Null
+        } else {
+           if (!($Bitness)) {
+              if ($PSBoundParameters.ContainsKey('OfficeClientEdition')) {
+                  $ConfigFile.Configuration.Add.RemoveAttribute("OfficeClientEdition")
+              }
+           }
         }
 
         $ConfigFile.Save($TargetFilePath) | Out-Null
@@ -1338,34 +1415,9 @@ file.
 Function Remove-ODTAdd{
 <#
 .SYNOPSIS
-Modifies an existing configuration xml file to enable/disable updates
+Removes the Add node from existing configuration xml file
 
-.PARAMETER SourcePath
-Optional.
-The SourcePath value can be set to a network, local, or HTTP path that contains a 
-Click-to-Run source. Environment variables can be used for network or local paths.
-SourcePath indicates the location to save the Click-to-Run installation source 
-when you run the Office Deployment Tool in download mode.
-SourcePath indicates the installation source path from which to install Office 
-when you run the Office Deployment Tool in configure mode. If you don’t specify 
-SourcePath in configure mode, Setup will look in the current folder for the Office 
-source files. If the Office source files aren’t found in the current folder, Setup 
-will look on Office 365 for them.
-SourcePath specifies the path of the Click-to-Run Office source from which the 
-App-V package will be made when you run the Office Deployment Tool in packager mode.
-If you do not specify SourcePath, Setup will attempt to create an \Office\Data\... 
-folder structure in the working directory from which you are running setup.exe.
-
-.PARAMETER Version
-Optional. If a Version value is not set, the Click-to-Run product installation streams 
-the latest available version from the source. The default is to use the most recently 
-advertised build (as defined in v32.CAB or v64.CAB at the Click-to-Run Office installation source).
-Version can be set to an Office 2013 build number by using this format: X.X.X.X
-
-.PARAMETER Bitness
-Required. Specifies the edition of Click-to-Run for Office 365 product to use: 32- or 64-bit.
-
-.PARAMETER ConfigPath
+.PARAMETER TargetFilePath
 Full file path for the file to be modified and be output to.
 
 .Example
@@ -1373,29 +1425,13 @@ Set-ODTAdd -SourcePath "C:\Preload\Office" -ConfigPath "$env:Public/Documents/co
 Sets config SourcePath property of the add element to C:\Preload\Office
 
 .Example
-Set-ODTAdd -SourcePath "C:\Preload\Office" -Version "15.1.2.3" -ConfigPath "$env:Public/Documents/config.xml"
-Sets config SourcePath property of the add element to C:\Preload\Office and version to 15.1.2.3
-
-.Notes
-Here is what the portion of configuration file looks like when modified by this function:
-
-<Configuration>
-  ...
-  <Add SourcePath="\\server\share\" Version="15.1.2.3" OfficeClientEdition="32"> 
-      ...
-  </Add>
-  ...
-</Configuration>
+Remove-ODTAdd -TargetFilePath "$env:Public/Documents/config.xml"
+Removes the Add node from the xml congfiguration file
 
 #>
     Param(
-
         [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
-        [string] $TargetFilePath,
-
-        [Parameter(ValueFromPipeline=$true)]
-        [string] $Name = $NULL
-
+        [string] $TargetFilePath
     )
 
     Process{
@@ -1410,35 +1446,9 @@ Here is what the portion of configuration file looks like when modified by this 
             throw $NoConfigurationElement
         }
 
-        #Get Add element if it exists
-        if($ConfigFile.Configuration.Add -eq $null){
-            [System.XML.XMLElement]$AddElement=$ConfigFile.CreateElement("Add")
-            $ConfigFile.Configuration.appendChild($AddElement) | Out-Null
-        }
-
-        #Set values as desired
-        if([string]::IsNullOrWhiteSpace($SourcePath) -eq $false){
-            $ConfigFile.Configuration.Add.SetAttribute("SourcePath", $SourcePath) | Out-Null
-        }
-        if([string]::IsNullOrWhiteSpace($Version) -eq $false){
-            $ConfigFile.Configuration.Add.SetAttribute("Version", $Version) | Out-Null
-        }
-        if([string]::IsNullOrWhiteSpace($Bitness) -eq $false){
-            $ConfigFile.Configuration.Add.SetAttribute("OfficeClientEdition", $Bitness) | Out-Null
-        }
-
-
-        if ($Name) {
-          [System.XML.XMLElement]$addItem = $ConfigFile.Configuration.Add | ?  Name -eq $Name.ToUpper()
-          if ($addItem) {
-              $removeNode = $ConfigFile.Configuration.removeChild($addItem)
-          }
-        } else {
-          Write-Host "Confirm: Remove all 'Add' Nodes? (Y/N)" -NoNewline
-          $confirm = Read-Host
-          if ($confirm.ToUpper() -eq "Y") {
-              $removeAll = $ConfigFile.Configuration.Add.RemoveAll()
-          }
+        $addNode = $ConfigFile.SelectSingleNode("/Configuration/Add")
+        if ($addNode) {
+            $removeAll = $ConfigFile.Configuration.removeChild($addNode)
         }
 
         $ConfigFile.Save($TargetFilePath) | Out-Null
@@ -1849,6 +1859,30 @@ Here is what the portion of configuration file looks like when modified by this 
 }
 
 
+Function LanguagePrompt() {
+    Param(
+        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+           [string] $DefaultLanguage
+        )
+        
+  do {
+   Write-Host
+   Write-Host "Enter Language (Current: $DefaultLanguage):" -NoNewline
+   $selection = Read-Host
+
+   if ($selection) {
+     $selection = IsSupportedLanguage -Language $selection
+     if (!($selection)) {
+       Write-Host "Invalid Selection" -BackgroundColor Red
+     } else {
+       return $selection
+     }
+    } else {
+      return $DefaultLanguage
+    }
+  } while($true);
+}
+
 Function SelectLanguage() {
   do {
    Write-Host
@@ -1876,13 +1910,11 @@ Function SelectLanguage() {
    } else {
 
      [int] $numSelection = $selection
-
+  
      if ($numSelection -gt 0 -and $numSelection -lt $index) {
         $selectedItem = $validLanguages[$numSelection - 1]
-        $langSplit = $language.Split("|")
-
+        $langSplit = $selectedItem.Split("|")
         return $langSplit[1]
-
         break;
      }
 
@@ -1977,4 +2009,46 @@ Function Format-XML ([xml]$xml, $indent=2) {
     $XmlWriter.Flush() 
     $StringWriter.Flush() 
     Write-Output $StringWriter.ToString() 
+}
+
+Function IsSupportedLanguage() {
+    Param(
+           [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+           [string] $Language,
+
+           [Parameter()]
+           [bool] $ShowLanguages = $true
+        )
+
+        $lang = $validLanguages | where {$_.ToString().ToUpper().EndsWith("|$Language".ToUpper())}
+          
+        if (!($lang)) {
+           if ($ShowLanguages) {
+              Write-Host
+              Write-Host "Invalid or Unsupported Language. Please select a language." -NoNewLine -BackgroundColor Red
+              Write-Host
+
+              return SelectLanguage 
+           } else {
+              throw "Invalid or Unsupported Language: $Language"
+           }
+           
+        }
+
+        return $Language
+}
+
+Function IsValidProductId() {
+    Param(
+           [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+           [string] $ProductId
+        )
+
+        $prod = $validProductIds | where {$_.ToString().ToUpper().Equals("$ProductId".ToUpper())}
+          
+        if (!($prod)) {
+            throw "Invalid or Unsupported ProductId: $ProductId"
+        }
+
+        return $ProductId
 }
