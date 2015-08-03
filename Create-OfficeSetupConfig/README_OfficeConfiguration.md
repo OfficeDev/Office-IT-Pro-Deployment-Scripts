@@ -3,29 +3,29 @@
 Functions for building the configuration xml file for click to run office products
 Functions included:
 
-	Add-ODTProductToAdd                                                                                              
-	Add-ODTProductToRemove                                                                                           
-	Get-ODTAdd                                                                                                       
-	Get-ODTConfigProperties                                                                                          
-	Get-ODTDisplay                                                                                                   
-	Get-ODTLogging                                                                                                   
-	Get-ODTProductToAdd                                                                                              
-	Get-ODTProductToRemove                                                                                           
-	Get-ODTUpdates                                                                                                   
-	New-ODTConfiguration                                                                                             
-	Remove-ODTAdd                                                                                                    
-	Remove-ODTConfigProperties                                                                                       
-	Remove-ODTDisplay                                                                                                
-	Remove-ODTLogging                                                                                                
-	Remove-ODTProductToAdd                                                                                           
-	Remove-ODTProductToRemove                                                                                        
-	Remove-ODTUpdates                                                                                                
-	Set-ODTAdd                                                                                                       
-	Set-ODTConfigProperties                                                                                          
-	Set-ODTDisplay                                                                                                   
-	Set-ODTLogging                                                                                                   
-	Set-ODTUpdates                                                                                                   
-	Show-ODTConfiguration                                                                                            
+	Add-ODTProductToAdd
+	Add-ODTProductToRemove
+	Get-ODTAdd
+	Get-ODTConfigProperties
+	Get-ODTDisplay
+	Get-ODTLogging
+	Get-ODTProductToAdd
+	Get-ODTProductToRemove
+	Get-ODTUpdates
+	New-ODTConfiguration
+	Remove-ODTAdd
+	Remove-ODTConfigProperties
+	Remove-ODTDisplay
+	Remove-ODTLogging
+	Remove-ODTProductToAdd
+	Remove-ODTProductToRemove
+	Remove-ODTUpdates
+	Set-ODTAdd
+	Set-ODTConfigProperties
+	Set-ODTDisplay
+	Set-ODTLogging
+	Set-ODTUpdates
+	Show-ODTConfiguration
 	Undo-ODTLastChange
 
 ###Examples
