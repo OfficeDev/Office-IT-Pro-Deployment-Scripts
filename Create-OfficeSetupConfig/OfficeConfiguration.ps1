@@ -125,6 +125,7 @@ Here is what the configuration file looks like when created from this function:
 </Configuration>
 
 #>
+    [CmdletBinding()]
     Param(
 
     [Parameter()]
@@ -136,12 +137,20 @@ Here is what the configuration file looks like when created from this function:
     [Parameter()]
     [string] $LanguageId = $NULL,
 
-    [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
-    [string] $TargetFilePath
+    [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName=$true)]
+    [string] $TargetFilePath,
+
+    [Parameter(ValueFromPipelineByPropertyName=$true)]
+$test
 
     )
 
+    Begin {
+      $once = $false
+    }
+
     Process{
+
         if ($ProductId -eq "Unknown") {
             $ProductId = SelectProductId
         }
@@ -185,12 +194,21 @@ Here is what the configuration file looks like when created from this function:
         $ConfigFile.Save($TargetFilePath) | Out-Null
         $global:saveLastFilePath = $TargetFilePath
 
-        Write-Host
+        if ($PSCmdlet.MyInvocation.PipelineLength -eq 1) {
+            Write-Host
 
-        Format-XML ([xml](cat $TargetFilePath)) -indent 4
+            Format-XML ([xml](cat $TargetFilePath)) -indent 4
 
-        Write-Host
-        Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+            Write-Host
+            Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+        } else {
+            $results = new-object PSObject[] 0;
+            $Result = New-Object –TypeName PSObject 
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "ProductId" -Value $ProductId
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "LanguageId" -Value $LanguageId
+            $Result
+        }
          
     }
 }
@@ -216,7 +234,7 @@ Function Undo-ODTLastChange {
 
 Function Show-ODTConfiguration {
     Param(
-        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+        [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName=$true)]
         [string] $TargetFilePath
     )
 
@@ -277,22 +295,25 @@ Here is what the portion of configuration file looks like when modified by this 
 </Configuration>
 
 #>
+    [CmdletBinding()]
     Param(
-        [Parameter(ValueFromPipeline=$true)]
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $TargetFilePath = $NULL,
 
-        [Parameter()]
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
         [Microsoft.Office.Products] $ProductId = "Unknown",
 
-        [Parameter()]
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [Alias("LanguageId")]
         [string[]] $LanguageIds = @(),
 
-        [Parameter()]
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string[]] $ExcludeApps
 
     )
 
     Process{
+
         $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
 
         if ($ProductId -eq "Unknown") {
@@ -314,6 +335,7 @@ Here is what the portion of configuration file looks like when modified by this 
 
         #Load the file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
+        
         $ConfigFile.Load($TargetFilePath) | Out-Null
 
         $global:saveLastConfigFile = $ConfigFile.OuterXml
@@ -323,18 +345,21 @@ Here is what the portion of configuration file looks like when modified by this 
             throw $NoConfigurationElement
         }
 
+        [System.XML.XMLElement]$AddElement=$NULL
         if($ConfigFile.Configuration.Add -eq $null){
-            throw $NoAddElement
+            $AddElement=$ConfigFile.CreateElement("Add")
+            $ConfigFile.DocumentElement.appendChild($AddElement) | Out-Null
+        } else {
+           $AddElement = $ConfigFile.Configuration.Add 
         }
 
         #Set the desired values
         [System.XML.XMLElement]$ProductElement = $ConfigFile.Configuration.Add.Product | ?  ID -eq $ProductId
         if($ProductElement -eq $null){
             [System.XML.XMLElement]$ProductElement=$ConfigFile.CreateElement("Product")
-            $ConfigFile.Configuration.Add.appendChild($ProductElement) | Out-Null
+            $AddElement.appendChild($ProductElement) | Out-Null
             $ProductElement.SetAttribute("ID", $ProductId) | Out-Null
         }
-
 
         foreach($LanguageId in $LanguageIds){
             [System.XML.XMLElement]$LanguageElement = $ProductElement.Language | ?  ID -eq $LanguageId
@@ -357,12 +382,21 @@ Here is what the portion of configuration file looks like when modified by this 
         $ConfigFile.Save($TargetFilePath) | Out-Null
         $global:saveLastFilePath = $TargetFilePath
 
-        Write-Host
+        if (($PSCmdlet.MyInvocation.PipelineLength -eq 1) -or `
+            ($PSCmdlet.MyInvocation.PipelineLength -eq $PSCmdlet.MyInvocation.PipelinePosition)) {
+            Write-Host
 
-        Format-XML ([xml](cat $TargetFilePath)) -indent 4
+            Format-XML ([xml](cat $TargetFilePath)) -indent 4
 
-        Write-Host
-        Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+            Write-Host
+            Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+        } else {
+            $results = new-object PSObject[] 0;
+            $Result = New-Object –TypeName PSObject 
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "ProductId" -Value $ProductId
+            $Result
+        }
     }
 
 }
@@ -393,12 +427,13 @@ Returns the Product with the O365ProPlusRetail Id and its corresponding
 Language and Exclude values
 
 #>
+    [CmdletBinding()]
     Param(
 
         [Parameter(ParameterSetName="ID",Mandatory=$true)]
         [Microsoft.Office.Products] $ProductId = "Unknown",
 
-        [Parameter(ValueFromPipeline=$true)]
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $TargetFilePath,
 
         [Parameter(ParameterSetName="All")]
@@ -473,12 +508,16 @@ Removes the ProductToAdd with the ProductId 'O365ProPlusRetail' from the XML Con
 </Configuration>
 
 #>
+    [CmdletBinding()]
     Param(
-        [Parameter()]
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $ProductId = "Unknown",
 
-        [Parameter(ValueFromPipeline=$true)]
-        [string] $TargetFilePath
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [string] $TargetFilePath,
+
+        [Parameter(ParameterSetName="All", ValueFromPipelineByPropertyName=$true)]
+        [switch] $All
     )
 
     Process{
@@ -505,28 +544,40 @@ Removes the ProductToAdd with the ProductId 'O365ProPlusRetail' from the XML Con
             throw $NoAddElement
         }
 
-        #Set the desired values
-        [System.XML.XMLElement]$ProductElement = $ConfigFile.Configuration.Add.Product | ?  ID -eq $ProductId
-        if($ProductElement -ne $null){
-            $ConfigFile.Configuration.Add.removeChild($ProductElement) | Out-Null
-        }
-
-        if ($ConfigFile.Configuration.Add.Product.Count -eq 0) {
-            [System.XML.XMLElement]$AddNode = $ConfigFile.SelectSingleNode("/Configuration/Add")
-            if ($AddNode) {
-                $ConfigFile.Configuration.removeChild($AddNode) | Out-Null
+        if ($All) {
+            #Set the desired values
+            [System.XML.XMLElement]$ProductElement = $ConfigFile.Configuration.Add.Product | ?  ID -eq $ProductId
+            if($ProductElement -ne $null){
+                $ConfigFile.Configuration.Add.removeChild($ProductElement) | Out-Null
             }
+
+            if ($ConfigFile.Configuration.Add.Product.Count -eq 0) {
+                [System.XML.XMLElement]$AddNode = $ConfigFile.SelectSingleNode("/Configuration/Add")
+                if ($AddNode) {
+                    $ConfigFile.Configuration.removeChild($AddNode) | Out-Null
+                }
+            }
+        } else {
+          $removeAll = $ConfigFile.Configuration.Product.RemoveAll()
         }
 
         $ConfigFile.Save($TargetFilePath) | Out-Null
         $global:saveLastFilePath = $TargetFilePath
 
-        Write-Host
+        if (($PSCmdlet.MyInvocation.PipelineLength -eq 1) -or `
+            ($PSCmdlet.MyInvocation.PipelineLength -eq $PSCmdlet.MyInvocation.PipelinePosition)) {
+            Write-Host
 
-        Format-XML ([xml](cat $TargetFilePath)) -indent 4
+            Format-XML ([xml](cat $TargetFilePath)) -indent 4
 
-        Write-Host
-        Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+            Write-Host
+            Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+        } else {
+            $results = new-object PSObject[] 0;
+            $Result = New-Object –TypeName PSObject 
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
+            $Result
+        }
     }
 
 }
@@ -582,20 +633,21 @@ Here is what the portion of configuration file looks like when modified by this 
 </Configuration>
 
 #>
+    [CmdletBinding()]
     Param(
 
-        [Parameter(ValueFromPipeline=$true)]
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $TargetFilePath,
 
-        [Parameter()]
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
         [switch] $All,
 
-        [Parameter()]
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
         [Microsoft.Office.Products] $ProductId = "Unknown",
 
-        [Parameter()]
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [Alias("LanguageId")]
         [string[]] $LanguageIds
-
     )
 
     Process{
@@ -650,12 +702,22 @@ Here is what the portion of configuration file looks like when modified by this 
 
         $global:saveLastFilePath = $TargetFilePath
 
-        Write-Host
+        if (($PSCmdlet.MyInvocation.PipelineLength -eq 1) -or `
+            ($PSCmdlet.MyInvocation.PipelineLength -eq $PSCmdlet.MyInvocation.PipelinePosition)) {
+            Write-Host
 
-        Format-XML ([xml](cat $TargetFilePath)) -indent 4
+            Format-XML ([xml](cat $TargetFilePath)) -indent 4
 
-        Write-Host
-        Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+            Write-Host
+            Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+        } else {
+            $results = new-object PSObject[] 0;
+            $Result = New-Object –TypeName PSObject 
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "ProductId" -Value $ProductId
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "LanguageIds" -Value $LanguageIds
+            $Result
+        }
     }
 
 }
@@ -814,12 +876,20 @@ Removes the ProductToRemove with the ProductId 'O365ProPlusRetail' from the XML 
         $ConfigFile.Save($TargetFilePath) | Out-Null
         $global:saveLastFilePath = $TargetFilePath
 
-        Write-Host
+        if (($PSCmdlet.MyInvocation.PipelineLength -eq 1) -or `
+            ($PSCmdlet.MyInvocation.PipelineLength -eq $PSCmdlet.MyInvocation.PipelinePosition)) {
+            Write-Host
 
-        Format-XML ([xml](cat $TargetFilePath)) -indent 4
+            Format-XML ([xml](cat $TargetFilePath)) -indent 4
 
-        Write-Host
-        Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+            Write-Host
+            Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+        } else {
+            $results = new-object PSObject[] 0;
+            $Result = New-Object –TypeName PSObject 
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
+            $Result
+        }
     }
 
 }
@@ -879,21 +949,22 @@ Here is what the portion of configuration file looks like when modified by this 
 </Configuration>
 
 #>
+    [CmdletBinding()]
     Param(
 
-        [Parameter(ValueFromPipeline=$true)]
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $TargetFilePath,
         
-        [Parameter()]
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $Enabled,
 
-        [Parameter()]
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $UpdatePath,
 
-        [Parameter()]
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $TargetVersion,
 
-        [Parameter()]
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $Deadline
 
     )
@@ -955,12 +1026,25 @@ Here is what the portion of configuration file looks like when modified by this 
         $ConfigFile.Save($TargetFilePath) | Out-Null
         $global:saveLastFilePath = $TargetFilePath
 
-        Write-Host
+        if (($PSCmdlet.MyInvocation.PipelineLength -eq 1) -or `
+            ($PSCmdlet.MyInvocation.PipelineLength -eq $PSCmdlet.MyInvocation.PipelinePosition)) {
+            Write-Host
 
-        Format-XML ([xml](cat $TargetFilePath)) -indent 4
+            Format-XML ([xml](cat $TargetFilePath)) -indent 4
 
-        Write-Host
-        Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+            Write-Host
+            Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+        } else {
+            $results = new-object PSObject[] 0;
+            $Result = New-Object –TypeName PSObject 
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "ProductId" -Value $ProductId
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "Enabled" -Value $Enabled
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "UpdatePath" -Value $UpdatePath
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetVersion" -Value $TargetVersion
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "Deadline" -Value $Deadline
+            $Result
+        }
     }
 }
 
@@ -978,9 +1062,10 @@ Returns the value of the Updates section if it exists in the specified
 file. 
 
 #>
+    [CmdletBinding()]
     Param(
 
-        [Parameter(ValueFromPipeline=$true)]
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $TargetFilePath
 
     )
@@ -1023,8 +1108,9 @@ This is the section that would be removed when running this function
 </Configuration>
 
 #>
+    [CmdletBinding()]
     Param(
-        [Parameter(ValueFromPipeline=$true)]
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $TargetFilePath
     )
 
@@ -1051,12 +1137,20 @@ This is the section that would be removed when running this function
         $ConfigFile.Save($TargetFilePath) | Out-Null
         $global:saveLastFilePath = $TargetFilePath
 
-        Write-Host
+        if (($PSCmdlet.MyInvocation.PipelineLength -eq 1) -or `
+            ($PSCmdlet.MyInvocation.PipelineLength -eq $PSCmdlet.MyInvocation.PipelinePosition)) {
+            Write-Host
 
-        Format-XML ([xml](cat $TargetFilePath)) -indent 4
+            Format-XML ([xml](cat $TargetFilePath)) -indent 4
 
-        Write-Host
-        Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+            Write-Host
+            Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+        } else {
+            $results = new-object PSObject[] 0;
+            $Result = New-Object –TypeName PSObject 
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
+            $Result
+        }
     }
 }
 
@@ -1115,21 +1209,22 @@ Here is what the portion of configuration file looks like when modified by this 
 </Configuration>
 
 #>
+    [CmdletBinding()]
     Param(
         
-        [Parameter()]
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $AutoActivate,
 
-        [Parameter()]
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $ForceAppShutDown,
 
-        [Parameter()]
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $PackageGUID,
 
-        [Parameter()]
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $SharedComputerLicensing,
 
-        [Parameter(ValueFromPipeline=$true)]
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $TargetFilePath
     )
 
@@ -1195,12 +1290,24 @@ Here is what the portion of configuration file looks like when modified by this 
         $ConfigFile.Save($TargetFilePath) | Out-Null
         $global:saveLastFilePath = $TargetFilePath
 
-        Write-Host
+        if (($PSCmdlet.MyInvocation.PipelineLength -eq 1) -or `
+            ($PSCmdlet.MyInvocation.PipelineLength -eq $PSCmdlet.MyInvocation.PipelinePosition)) {
+            Write-Host
 
-        Format-XML ([xml](cat $TargetFilePath)) -indent 4
+            Format-XML ([xml](cat $TargetFilePath)) -indent 4
 
-        Write-Host
-        Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+            Write-Host
+            Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+        } else {
+            $results = new-object PSObject[] 0;
+            $Result = New-Object –TypeName PSObject 
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "SharedComputerLicensing" -Value $SharedComputerLicensing
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "PackageGUID" -Value $PackageGUID
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "ForceAppShutDown" -Value $ForceAppShutDown
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "AutoActivate" -Value $AutoActivate
+            $Result
+        }
     }
 }
 
@@ -1220,7 +1327,7 @@ file.
 #>
     Param(
 
-        [Parameter(ValueFromPipeline=$true)]
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $TargetFilePath
 
     )
@@ -1275,10 +1382,10 @@ Here is what the portion of configuration file that would be removed by this fun
 
 #>
     Param(
-        [Parameter(ValueFromPipeline=$true)]
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $TargetFilePath,
 
-        [Parameter(ValueFromPipeline=$true)]
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $Name = $NULL
     )
 
@@ -1302,22 +1409,26 @@ Here is what the portion of configuration file that would be removed by this fun
               $removeNode = $ConfigFile.Configuration.removeChild($ForceAppShutDownElement)
           }
         } else {
-          Write-Host "Confirm: Remove all 'Add' Nodes? (Y/N)" -NoNewline
-          $confirm = Read-Host
-          if ($confirm.ToUpper() -eq "Y") {
-              $removeAll = $ConfigFile.Configuration.Property.RemoveAll()
-          }
+          $removeAll = $ConfigFile.Configuration.Property.RemoveAll()
         }
         
         $ConfigFile.Save($TargetFilePath) | Out-Null
         $global:saveLastFilePath = $TargetFilePath
 
-        Write-Host
+        if (($PSCmdlet.MyInvocation.PipelineLength -eq 1) -or `
+            ($PSCmdlet.MyInvocation.PipelineLength -eq $PSCmdlet.MyInvocation.PipelinePosition)) {
+            Write-Host
 
-        Format-XML ([xml](cat $TargetFilePath)) -indent 4
+            Format-XML ([xml](cat $TargetFilePath)) -indent 4
 
-        Write-Host
-        Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+            Write-Host
+            Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+        } else {
+            $results = new-object PSObject[] 0;
+            $Result = New-Object –TypeName PSObject 
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
+            $Result
+        }
     }
 }
 
@@ -1377,16 +1488,16 @@ Here is what the portion of configuration file looks like when modified by this 
 #>
     Param(
 
-        [Parameter()]
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $SourcePath = $NULL,
 
-        [Parameter()]
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $Version,
 
-        [Parameter()]
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $Bitness,
 
-        [Parameter(ValueFromPipeline=$true)]
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $TargetFilePath
 
     )
@@ -1439,12 +1550,23 @@ Here is what the portion of configuration file looks like when modified by this 
         $ConfigFile.Save($TargetFilePath) | Out-Null
         $global:saveLastFilePath = $TargetFilePath
 
-        Write-Host
+        if (($PSCmdlet.MyInvocation.PipelineLength -eq 1) -or `
+            ($PSCmdlet.MyInvocation.PipelineLength -eq $PSCmdlet.MyInvocation.PipelinePosition)) {
+            Write-Host
 
-        Format-XML ([xml](cat $TargetFilePath)) -indent 4
+            Format-XML ([xml](cat $TargetFilePath)) -indent 4
 
-        Write-Host
-        Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+            Write-Host
+            Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+        } else {
+            $results = new-object PSObject[] 0;
+            $Result = New-Object –TypeName PSObject 
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "SourcePath" -Value $SourcePath
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "Version" -Value $Version
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "Bitness" -Value $Bitness
+            $Result
+        }
     }
 
 }
@@ -1465,7 +1587,7 @@ file.
 #>
     Param(
 
-        [Parameter(ValueFromPipeline=$true)]
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $TargetFilePath
 
     )
@@ -1505,7 +1627,7 @@ Removes the Add node from the xml congfiguration file
 
 #>
     Param(
-        [Parameter(ValueFromPipeline=$true)]
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $TargetFilePath
     )
 
@@ -1531,12 +1653,20 @@ Removes the Add node from the xml congfiguration file
         $ConfigFile.Save($TargetFilePath) | Out-Null
         $global:saveLastFilePath = $TargetFilePath
 
-        Write-Host
+        if (($PSCmdlet.MyInvocation.PipelineLength -eq 1) -or `
+            ($PSCmdlet.MyInvocation.PipelineLength -eq $PSCmdlet.MyInvocation.PipelinePosition)) {
+            Write-Host
 
-        Format-XML ([xml](cat $TargetFilePath)) -indent 4
+            Format-XML ([xml](cat $TargetFilePath)) -indent 4
 
-        Write-Host
-        Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+            Write-Host
+            Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+        } else {
+            $results = new-object PSObject[] 0;
+            $Result = New-Object –TypeName PSObject 
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
+            $Result
+        }
     }
 
 }
@@ -1578,13 +1708,13 @@ Here is what the portion of configuration file looks like when modified by this 
 #>
     Param(
 
-        [Parameter()]
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $Level,
 
-        [Parameter()]
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $Path,
 
-        [Parameter(ValueFromPipeline=$true)]
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $TargetFilePath
 
     )
@@ -1630,12 +1760,22 @@ Here is what the portion of configuration file looks like when modified by this 
         $ConfigFile.Save($TargetFilePath) | Out-Null
         $global:saveLastFilePath = $TargetFilePath
 
-        Write-Host
+        if (($PSCmdlet.MyInvocation.PipelineLength -eq 1) -or `
+            ($PSCmdlet.MyInvocation.PipelineLength -eq $PSCmdlet.MyInvocation.PipelinePosition)) {
+            Write-Host
 
-        Format-XML ([xml](cat $TargetFilePath)) -indent 4
+            Format-XML ([xml](cat $TargetFilePath)) -indent 4
 
-        Write-Host
-        Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+            Write-Host
+            Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+        } else {
+            $results = new-object PSObject[] 0;
+            $Result = New-Object –TypeName PSObject 
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "Path" -Value $Path
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "Level" -Value $Level
+            $Result
+        }
     }
 }
 
@@ -1655,7 +1795,7 @@ file.
 #>
     Param(
 
-        [Parameter(ValueFromPipeline=$true)]
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $TargetFilePath
 
     )
@@ -1701,7 +1841,7 @@ Here is what the portion of configuration file that will be removed by this func
 #>
     Param(
 
-        [Parameter(ValueFromPipeline=$true)]
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $TargetFilePath
 
     )
@@ -1729,12 +1869,20 @@ Here is what the portion of configuration file that will be removed by this func
         $ConfigFile.Save($TargetFilePath) | Out-Null
         $global:saveLastFilePath = $TargetFilePath
 
-        Write-Host
+        if (($PSCmdlet.MyInvocation.PipelineLength -eq 1) -or `
+            ($PSCmdlet.MyInvocation.PipelineLength -eq $PSCmdlet.MyInvocation.PipelinePosition)) {
+            Write-Host
 
-        Format-XML ([xml](cat $TargetFilePath)) -indent 4
+            Format-XML ([xml](cat $TargetFilePath)) -indent 4
 
-        Write-Host
-        Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+            Write-Host
+            Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+        } else {
+            $results = new-object PSObject[] 0;
+            $Result = New-Object –TypeName PSObject 
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
+            $Result
+        }
     }
 }
 
@@ -1780,13 +1928,13 @@ Here is what the portion of configuration file looks like when modified by this 
 #>
     Param(
 
-        [Parameter()]
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $Level,
 
-        [Parameter()]
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $AcceptEULA,
 
-        [Parameter(ValueFromPipeline=$true)]
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $TargetFilePath
 
     )
@@ -1832,12 +1980,22 @@ Here is what the portion of configuration file looks like when modified by this 
         $ConfigFile.Save($TargetFilePath) | Out-Null
         $global:saveLastFilePath = $TargetFilePath
 
-        Write-Host
+        if (($PSCmdlet.MyInvocation.PipelineLength -eq 1) -or `
+            ($PSCmdlet.MyInvocation.PipelineLength -eq $PSCmdlet.MyInvocation.PipelinePosition)) {
+            Write-Host
 
-        Format-XML ([xml](cat $TargetFilePath)) -indent 4
+            Format-XML ([xml](cat $TargetFilePath)) -indent 4
 
-        Write-Host
-        Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+            Write-Host
+            Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+        } else {
+            $results = new-object PSObject[] 0;
+            $Result = New-Object –TypeName PSObject 
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "Level" -Value $Level
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "AcceptEULA" -Value $AcceptEULA
+            $Result
+        }
     }
 
 }
@@ -1858,7 +2016,7 @@ file.
 #>
     Param(
 
-        [Parameter(ValueFromPipeline=$true)]
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $TargetFilePath
 
     )
@@ -1921,13 +2079,13 @@ Here is what the portion of configuration file looks like when modified by this 
 #>
     Param(
 
-        [Parameter()]
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $Level,
 
-        [Parameter()]
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $AcceptEULA,
 
-        [Parameter(ValueFromPipeline=$true)]
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $TargetFilePath
 
     )
@@ -1955,12 +2113,20 @@ Here is what the portion of configuration file looks like when modified by this 
         $ConfigFile.Save($TargetFilePath) | Out-Null
         $global:saveLastFilePath = $TargetFilePath
 
-        Write-Host
+        if (($PSCmdlet.MyInvocation.PipelineLength -eq 1) -or `
+            ($PSCmdlet.MyInvocation.PipelineLength -eq $PSCmdlet.MyInvocation.PipelinePosition)) {
+            Write-Host
 
-        Format-XML ([xml](cat $TargetFilePath)) -indent 4
+            Format-XML ([xml](cat $TargetFilePath)) -indent 4
 
-        Write-Host
-        Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+            Write-Host
+            Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+        } else {
+            $results = new-object PSObject[] 0;
+            $Result = New-Object –TypeName PSObject 
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
+            $Result
+        }
     }
 
 }
@@ -1968,10 +2134,10 @@ Here is what the portion of configuration file looks like when modified by this 
 
 Function GetFilePath() {
     Param(
-       [Parameter(ValueFromPipeline=$true)]
+       [Parameter(ValueFromPipelineByPropertyName=$true)]
        [string] $TargetFilePath
     )
-    
+
     if (!($TargetFilePath)) {
         $TargetFilePath = $global:saveLastFilePath
     }  
@@ -1980,7 +2146,7 @@ Function GetFilePath() {
        Write-Host "Enter the path to the XML Configuration File: " -NoNewline
        $TargetFilePath = Read-Host
     } else {
-       Write-Host "Target XML Configuration File: $TargetFilePath"
+       #Write-Host "Target XML Configuration File: $TargetFilePath"
     }
 
     return $TargetFilePath
@@ -1988,7 +2154,7 @@ Function GetFilePath() {
 
 Function LanguagePrompt() {
     Param(
-        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+        [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName=$true)]
            [string] $DefaultLanguage
         )
         
@@ -2140,7 +2306,7 @@ Function Format-XML ([xml]$xml, $indent=2) {
 
 Function IsSupportedLanguage() {
     Param(
-           [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+           [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName=$true)]
            [string] $Language,
 
            [Parameter()]
@@ -2167,7 +2333,7 @@ Function IsSupportedLanguage() {
 
 Function IsValidProductId() {
     Param(
-           [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+           [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName=$true)]
            [string] $ProductId
         )
 
