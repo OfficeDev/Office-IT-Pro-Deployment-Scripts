@@ -49,4 +49,6 @@ to type the version of Office being used.
         Write-Host "Enable agent data upload"
         Set-GPRegistryValue -Name "Office Telemetry" -Key "HKCU\Software\Policies\Microsoft\office\16.0\osm" -ValueName EnableUpload -Type Dword -Value 1
     }
+
+    Write-Host 'Link the new GPO titled "Office Telemetry" to the proper OU in your environment.'
 }
