@@ -51,9 +51,9 @@ Functions included:
 4. Run the commands (All commands are able to be piped into each other except New-OfficeConfiguration needs to be first.
 
             Example: 
-		New-ODTConfiguration -Bitness "64" -ProductId "O365ProPlusRetail" -TargetFilePath "$env:UserProfile\Desktop\configuration.xml" |
+		New-ODTConfiguration -Bitness "64" -ProductId "O365ProPlusRetail" -LanguageId "en-us" -TargetFilePath "$env:UserProfile\Desktop\configuration.xml" |
 		Remove-ODTProductToAdd -All | 
-		Add-ODTProductToAdd -ProductId "O365ProPlusRetail" -LanguageId ("en-US", "es-es") -ExcludeApps ("Access", "InfoPath") | 
+		Add-ODTProductToAdd -ProductId "O365ProPlusRetail" -LanguageIds ("en-us") -ExcludeApps ("Access", "InfoPath") | 
 		Set-ODTUpdates -Enabled "True" -UpdatePath "\\Server\share\" -Deadline "05/16/2014 18:30" -TargetVersion "15.1.2.3" | 
 		Set-ODTConfigProperties -ForceAppShutDown "True" -PackageGUID "12345678-ABCD-1234-ABCD-1234567890AB" |
 		Set-ODTAdd -SourcePath "C:\Preload\Office" -Version "15.1.2.3" | 
