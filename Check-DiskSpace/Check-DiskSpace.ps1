@@ -136,6 +136,7 @@ namespace DiskSpaceChecker
                 Type = type,
                 FileSize = totalSize,
                 FileCount = fileCount,
+                TotalSize = totalSize,
                 DirectorySize = directorySize,
                 FreeSpace = 0,
                 AccessAllowed = accessAllowed
@@ -144,7 +145,7 @@ namespace DiskSpaceChecker
             DirectorySizeInfos.Add(dirSizeInfo);
         }
 
-        private DriveInfo GetTotalFreeSpace(string driveName)
+        public DriveInfo GetTotalFreeSpace(string driveName)
         {
             foreach (var drive in DriveInfo.GetDrives())
             {
@@ -230,6 +231,12 @@ Process{
     $checker = New-Object DiskSpaceChecker.DiskChecker
     $dInfo = New-Object System.IO.DirectoryInfo $DirectoryPath
     $checker.DirectorySize($dInfo, 0);
+    $DirectoryDrive = $checker.DirectorySizeInfos | ? Name -EQ $DirectoryPath
+    $Directoryinfo = $checker.GetTotalFreeSpace($DirectoryPath)
+    if($Directoryinfo -ne $null){
+        $DirectoryDrive.TotalSize = $Directoryinfo.TotalSize
+        $DirectoryDrive.FreeSpace = $Directoryinfo.TotalFreeSpace
+    }
     $checker.DirectorySizeInfos | Export-Csv $ResultFilePath -NoTypeInformation
     $checker.Reset();
 }
