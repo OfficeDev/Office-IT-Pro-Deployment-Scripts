@@ -25,9 +25,9 @@ to type the version of Office being used.
 
     Write-Host "You entered $SqlServer"
         
-    $officeVersion = Read-Host -Prompt 'If you are using Microsoft Office 2013 type 15. If you are using Microsoft Office 2016 type 16.'
+    $officeVersion = Read-Host -Prompt 'If you are using Microsoft Office 2013 type 2013. If you are using Microsoft Office 2016 type 2016.'
 
-    if($officeVersion -eq 15)
+    if($officeVersion -eq 2013)
     {
         Write-Host "Set the Fileshare name"
         Set-GPRegistryValue -Name "Office Telemetry" -Key "HKCU\Software\Policies\Microsoft\office\15.0\osm" -ValueName CommonFileShare -Type String -Value "\\$SqlServer\$shareName"
