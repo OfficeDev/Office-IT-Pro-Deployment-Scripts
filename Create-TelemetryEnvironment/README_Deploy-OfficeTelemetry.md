@@ -16,6 +16,8 @@ The user logged in must have administrative privelages and PowerShell needs to b
 
 The 2013 or 2016 administrative templates need to be installed on the Domain Controller.
 
+.NET Framework 3.5 must be installed. If it is not enabled the script will enable it.
+
 ###Example
 
 ####Install SQL, configure a database, install the telemetry processor, and enable the agent to upload data
