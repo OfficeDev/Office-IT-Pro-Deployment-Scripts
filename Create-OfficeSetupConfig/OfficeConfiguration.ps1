@@ -11,6 +11,7 @@ namespace Microsoft.Office
      [FlagsAttribute]
      public enum Products
      {
+         Unknown = 0,
          O365ProPlusRetail = 1,
          O365BusinessRetail = 2,
          VisioProRetail = 4,
@@ -130,7 +131,7 @@ Here is what the configuration file looks like when created from this function:
     [string] $Bitness = $NULL,
 
     [Parameter(HelpMessage="Example: O365ProPlusRetail")]
-    [Microsoft.Office.Products] $ProductId = $NULL,
+    [Microsoft.Office.Products] $ProductId = "Unknown",
 
     [Parameter()]
     [string] $LanguageId = $NULL,
@@ -141,7 +142,7 @@ Here is what the configuration file looks like when created from this function:
     )
 
     Process{
-        if (!$ProductId) {
+        if ($ProductId -eq "Unknown") {
             $ProductId = SelectProductId
         }
 
@@ -182,6 +183,7 @@ Here is what the configuration file looks like when created from this function:
         $LanguageElement.SetAttribute("ID",$LanguageId) | Out-Null
 
         $ConfigFile.Save($TargetFilePath) | Out-Null
+        $global:saveLastFilePath = $TargetFilePath
 
         Write-Host
 
@@ -209,6 +211,21 @@ Function Undo-ODTLastChange {
             Write-Host
             Write-Host "The Office XML Configuration file has been saved to: $global:saveLastFilePath"
         }
+    }
+}
+
+Function Show-ODTConfiguration {
+    Param(
+        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+        [string] $TargetFilePath
+    )
+
+    Process{        
+        Write-Host
+
+        Format-XML ([xml](cat $TargetFilePath)) -indent 4
+
+        Write-Host
     }
 }
 
@@ -261,14 +278,14 @@ Here is what the portion of configuration file looks like when modified by this 
 
 #>
     Param(
-        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
-        [string] $TargetFilePath,
+        [Parameter(ValueFromPipeline=$true)]
+        [string] $TargetFilePath = $NULL,
 
         [Parameter()]
-        [Microsoft.Office.Products] $ProductId = $NULL,
+        [Microsoft.Office.Products] $ProductId = "Unknown",
 
-        [Parameter(Mandatory=$true)]
-        [string[]] $LanguageIds,
+        [Parameter()]
+        [string[]] $LanguageIds = @(),
 
         [Parameter()]
         [string[]] $ExcludeApps
@@ -276,14 +293,23 @@ Here is what the portion of configuration file looks like when modified by this 
     )
 
     Process{
-        if (!$ProductId) {
+        $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
+
+        if ($ProductId -eq "Unknown") {
            $ProductId = SelectProductId
         }
 
         $ProductId = IsValidProductId -ProductId $ProductId
         
-        foreach ($language in $LanguageIds) {
-           $language = IsSupportedLanguage -Language $language
+        $langCount = $LanguageIds.Count
+
+        if ($langCount -gt 0) {
+           foreach ($language in $LanguageIds) {
+              $language = IsSupportedLanguage -Language $language
+           }
+        } else {
+            $CurrentLanguage = (Get-Culture | %{$_.Name})
+            $LanguageIds += LanguagePrompt -DefaultLanguage $CurrentLanguage
         }
 
         #Load the file
@@ -370,9 +396,9 @@ Language and Exclude values
     Param(
 
         [Parameter(ParameterSetName="ID",Mandatory=$true)]
-        [string] $ProductId,
+        [Microsoft.Office.Products] $ProductId = "Unknown",
 
-        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+        [Parameter(ValueFromPipeline=$true)]
         [string] $TargetFilePath,
 
         [Parameter(ParameterSetName="All")]
@@ -380,6 +406,8 @@ Language and Exclude values
     )
 
     Process{
+        $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
+
         #Load the file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
         $ConfigFile.Load($TargetFilePath) | Out-Null
@@ -447,14 +475,16 @@ Removes the ProductToAdd with the ProductId 'O365ProPlusRetail' from the XML Con
 #>
     Param(
         [Parameter()]
-        [string] $ProductId,
+        [string] $ProductId = "Unknown",
 
-        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+        [Parameter(ValueFromPipeline=$true)]
         [string] $TargetFilePath
     )
 
     Process{
-        if (!$ProductId) {
+        $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
+
+        if ($ProductId -eq "Unknown") {
             $ProductId = SelectProductId
         }
 
@@ -478,7 +508,14 @@ Removes the ProductToAdd with the ProductId 'O365ProPlusRetail' from the XML Con
         #Set the desired values
         [System.XML.XMLElement]$ProductElement = $ConfigFile.Configuration.Add.Product | ?  ID -eq $ProductId
         if($ProductElement -ne $null){
-            $ConfigFile.Configuration.Add.removeChild($ProductElement)
+            $ConfigFile.Configuration.Add.removeChild($ProductElement) | Out-Null
+        }
+
+        if ($ConfigFile.Configuration.Add.Product.Count -eq 0) {
+            [System.XML.XMLElement]$AddNode = $ConfigFile.SelectSingleNode("/Configuration/Add")
+            if ($AddNode) {
+                $ConfigFile.Configuration.removeChild($AddNode) | Out-Null
+            }
         }
 
         $ConfigFile.Save($TargetFilePath) | Out-Null
@@ -514,7 +551,7 @@ The ID value can be set to a valid Office culture language (such as en-us
 for English US or ja-jp for Japanese). The ll-cc value is the language 
 identifier.
 
-.PARAMETER ConfigPath
+.PARAMETER TargetFilePath
 Full file path for the file to be modified and be output to.
 
 .Example
@@ -547,29 +584,28 @@ Here is what the portion of configuration file looks like when modified by this 
 #>
     Param(
 
+        [Parameter(ValueFromPipeline=$true)]
+        [string] $TargetFilePath,
+
         [Parameter()]
         [switch] $All,
 
         [Parameter()]
-        [Microsoft.Office.Products] $ProductId = $NULL,
+        [Microsoft.Office.Products] $ProductId = "Unknown",
 
         [Parameter()]
-        [string[]] $LanguageIds,
-
-        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
-        [string] $TargetFilePath
+        [string[]] $LanguageIds
 
     )
 
     Process{
+        $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
 
-        if (!$ProductId) {
+        if ($ProductId -eq "Unknown") {
            $ProductId = SelectProductId
         }
 
-        foreach ($language in $LanguageIds) {
-           IsSupportedLanguage -Language $language
-        }
+        $ProductId = IsValidProductId -ProductId $ProductId
 
         #Load file from path
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
@@ -630,9 +666,6 @@ Function Get-ODTProductToRemove{
 Gets list of Products and the corresponding language values
 from the specified configuration file
 
-.PARAMETER All
-Switch to return All Products
-
 .PARAMETER ProductId
 Id of Product that you want to pull from the configuration file
 
@@ -640,7 +673,7 @@ Id of Product that you want to pull from the configuration file
 Required. Full file path for the file.
 
 .Example
-Get-ODTProductToRemove -All -TargetFilePath "$env:Public\Documents\config.xml"
+Get-ODTProductToRemove -TargetFilePath "$env:Public\Documents\config.xml"
 Returns all Products and their corresponding Language and Exclude values
 if they have them 
 
@@ -650,20 +683,27 @@ Returns the Product with the O365ProPlusRetail Id and its corresponding
 Language and Exclude values
 
 #>
+    [cmdletbinding()]
     Param(
 
-        [Parameter(ParameterSetName="ID",Mandatory=$true)]
-        [Microsoft.Office.Products] $ProductId,
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [Microsoft.Office.Products] $ProductId = "Unknown",
 
-        [Parameter(ParameterSetName="All",Mandatory=$true)]
-        [switch] $All,
-
-        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $TargetFilePath
 
     )
 
+    Begin {
+        $defaultDisplaySet = 'ProductId','Languages', 'ExcludedApps'
+
+        $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet(‘DefaultDisplayPropertySet’,[string[]]$defaultDisplaySet)
+        $PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultDisplayPropertySet)
+    }
+
     Process{
+        $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
+      
         #Load the file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
         $ConfigFile.Load($TargetFilePath) | Out-Null
@@ -673,33 +713,37 @@ Language and Exclude values
             throw $NoConfigurationElement
         }
 
-        if($ConfigFile.Configuration.Remove -eq $null){
+        if(!($ConfigFile.Configuration.Remove)){
             throw $NoAddElement
         }
 
-        if($PSCmdlet.ParameterSetName -eq "All"){
-            foreach($ProductElement in $ConfigFile.Configuration.Remove.Product){
-                $Result = New-Object –TypeName PSObject 
-                Add-Member -InputObject $Result -MemberType NoteProperty -Name "ProductId" -Value ($ProductElement.GetAttribute("ID"))
-                if($ProductElement.Language -ne $null){
-                    Add-Member -InputObject $Result -MemberType NoteProperty -Name "Languages" -Value ($ProductElement.Language.GetAttribute("ID"))
-                }
+        [System.XML.XMLElement[]]$ProductElements
+        if ($ProductId -eq "Unknown") {
+           $ProductElements = $ConfigFile.Configuration.Remove.Product
+        } else {
+           $ProductElements = $ConfigFile.Configuration.Remove.Product | Where {$_.ID -eq $ProductId}
+        }
 
-                if($ProductElement.ExcludeApp -ne $null){
-                    Add-Member -InputObject $Result -MemberType NoteProperty -Name "ExcludedApps" -Value ($ProductElement.ExcludeApp.GetAttribute("ID"))
-                }
-                $Result
-            }
-        }else{
-            [System.XML.XMLElement]$ProductElement = $ConfigFile.Configuration.Remove.Product | ?  ID -eq $ProductId
+        $results = new-object PSObject[] 0;
+
+        foreach($ProductElement in $ProductElements){
             $Result = New-Object –TypeName PSObject 
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "ProductId" -Value ($ProductElement.GetAttribute("ID"))
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath 
             if($ProductElement.Language -ne $null){
                 Add-Member -InputObject $Result -MemberType NoteProperty -Name "Languages" -Value ($ProductElement.Language.GetAttribute("ID"))
             }
-            $Result
-        }
 
+            if($ProductElement.ExcludeApp -ne $null){
+                Add-Member -InputObject $Result -MemberType NoteProperty -Name "ExcludedApps" -Value ($ProductElement.ExcludeApp.GetAttribute("ID"))
+            }
+
+            $Result | Add-Member MemberSet PSStandardMembers $PSStandardMembers
+
+            $results += $Result
+        }
+        
+        $results
     }
 
 }
@@ -723,17 +767,19 @@ Removes the ProductToRemove with the ProductId 'O365ProPlusRetail' from the XML 
 </Configuration>
 
 #>
+    [cmdletbinding()]
     Param(
-        [Parameter()]
-        [Microsoft.Office.Products] $ProductId = $NULL,
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [Microsoft.Office.Products] $ProductId = "Unknown",
 
-        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $TargetFilePath
     )
 
     Process{
+        $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
 
-        if (!$ProductId) {
+        if ($ProductId -eq "Unknown") {
            $ProductId = SelectProductId
         }
 
@@ -755,10 +801,10 @@ Removes the ProductToRemove with the ProductId 'O365ProPlusRetail' from the XML 
         #Set the desired values
         [System.XML.XMLElement]$ProductElement = $ConfigFile.Configuration.Remove.Product | ?  ID -eq $ProductId
         if($ProductElement -ne $null){
-            $ConfigFile.Configuration.Remove.removeChild($ProductElement)
+            $ConfigFile.Configuration.Remove.removeChild($ProductElement) | Out-Null
         }
 
-        if ($ConfigFile.Configuration.Remove.Nodes.Count -eq 0) {
+        if ($ConfigFile.Configuration.Remove.Product.Count -eq 0) {
             [System.XML.XMLElement]$RemoveNode = $ConfigFile.SelectSingleNode("/Configuration/Remove")
             if ($RemoveNode) {
                 $ConfigFile.Configuration.removeChild($RemoveNode) | Out-Null
@@ -835,7 +881,7 @@ Here is what the portion of configuration file looks like when modified by this 
 #>
     Param(
 
-        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+        [Parameter(ValueFromPipeline=$true)]
         [string] $TargetFilePath,
         
         [Parameter()]
@@ -853,6 +899,8 @@ Here is what the portion of configuration file looks like when modified by this 
     )
 
     Process{
+        $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
+
         #Load the file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
         $ConfigFile.Load($TargetFilePath) | Out-Null
@@ -874,15 +922,34 @@ Here is what the portion of configuration file looks like when modified by this 
         #Set the desired values
         if([string]::IsNullOrWhiteSpace($Enabled) -eq $false){
             $UpdateElement.SetAttribute("Enabled", $Enabled) | Out-Null
+        } else {
+          if ($PSBoundParameters.ContainsKey('Enabled')) {
+              $ConfigFile.Configuration.Updates.RemoveAttribute("Enabled")
+          }
         }
+
         if([string]::IsNullOrWhiteSpace($UpdatePath) -eq $false){
             $UpdateElement.SetAttribute("UpdatePath", $UpdatePath) | Out-Null
+        } else {
+          if ($PSBoundParameters.ContainsKey('UpdatePath')) {
+              $ConfigFile.Configuration.Updates.RemoveAttribute("UpdatePath")
+          }
         }
+
         if([string]::IsNullOrWhiteSpace($TargetVersion) -eq $false){
             $UpdateElement.SetAttribute("TargetVersion", $TargetVersion) | Out-Null
+        } else {
+          if ($PSBoundParameters.ContainsKey('TargetVersion')) {
+              $ConfigFile.Configuration.Updates.RemoveAttribute("TargetVersion")
+          }
         }
+
         if([string]::IsNullOrWhiteSpace($Deadline) -eq $false){
             $UpdateElement.SetAttribute("Deadline", $Deadline) | Out-Null
+        } else {
+          if ($PSBoundParameters.ContainsKey('Deadline')) {
+              $ConfigFile.Configuration.Updates.RemoveAttribute("Deadline")
+          }
         }
 
         $ConfigFile.Save($TargetFilePath) | Out-Null
@@ -913,12 +980,14 @@ file.
 #>
     Param(
 
-        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+        [Parameter(ValueFromPipeline=$true)]
         [string] $TargetFilePath
 
     )
 
     Process{
+        $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
+     
         #Load the file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
         $ConfigFile.Load($TargetFilePath) | Out-Null
@@ -955,11 +1024,13 @@ This is the section that would be removed when running this function
 
 #>
     Param(
-        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+        [Parameter(ValueFromPipeline=$true)]
         [string] $TargetFilePath
     )
 
     Process{
+        $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
+
         #Load the file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
         $ConfigFile.Load($TargetFilePath) | Out-Null
@@ -1058,11 +1129,13 @@ Here is what the portion of configuration file looks like when modified by this 
         [Parameter()]
         [string] $SharedComputerLicensing,
 
-        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+        [Parameter(ValueFromPipeline=$true)]
         [string] $TargetFilePath
     )
 
     Process{
+        $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
+
         #Load file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
         $ConfigFile.Load($TargetFilePath) | Out-Null
@@ -1147,12 +1220,14 @@ file.
 #>
     Param(
 
-        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+        [Parameter(ValueFromPipeline=$true)]
         [string] $TargetFilePath
 
     )
 
     Process{
+        $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
+
         #Load the file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
         $ConfigFile.Load($TargetFilePath) | Out-Null
@@ -1200,7 +1275,7 @@ Here is what the portion of configuration file that would be removed by this fun
 
 #>
     Param(
-        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+        [Parameter(ValueFromPipeline=$true)]
         [string] $TargetFilePath,
 
         [Parameter(ValueFromPipeline=$true)]
@@ -1208,6 +1283,8 @@ Here is what the portion of configuration file that would be removed by this fun
     )
 
     Process{
+        $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
+
         #Load file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
         $ConfigFile.Load($TargetFilePath) | Out-Null
@@ -1309,12 +1386,14 @@ Here is what the portion of configuration file looks like when modified by this 
         [Parameter()]
         [string] $Bitness,
 
-        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+        [Parameter(ValueFromPipeline=$true)]
         [string] $TargetFilePath
 
     )
 
     Process{
+        $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
+
         #Load file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
         $ConfigFile.Load($TargetFilePath) | Out-Null
@@ -1336,31 +1415,25 @@ Here is what the portion of configuration file looks like when modified by this 
         if([string]::IsNullOrWhiteSpace($SourcePath) -eq $false){
             $ConfigFile.Configuration.Add.SetAttribute("SourcePath", $SourcePath) | Out-Null
         } else {
-           if (!($SourcePath)) {
-              if ($PSBoundParameters.ContainsKey('SourcePath')) {
-                  $ConfigFile.Configuration.Add.RemoveAttribute("SourcePath")
-              }
-           }
+            if ($PSBoundParameters.ContainsKey('SourcePath')) {
+                $ConfigFile.Configuration.Add.RemoveAttribute("SourcePath")
+            }
         }
 
         if([string]::IsNullOrWhiteSpace($Version) -eq $false){
             $ConfigFile.Configuration.Add.SetAttribute("Version", $Version) | Out-Null
         } else {
-           if (!($Version)) {
-              if ($PSBoundParameters.ContainsKey('Version')) {
-                  $ConfigFile.Configuration.Add.RemoveAttribute("Version")
-              }
-           }
+            if ($PSBoundParameters.ContainsKey('Version')) {
+                $ConfigFile.Configuration.Add.RemoveAttribute("Version")
+            }
         }
 
         if([string]::IsNullOrWhiteSpace($Bitness) -eq $false){
             $ConfigFile.Configuration.Add.SetAttribute("OfficeClientEdition", $Bitness) | Out-Null
         } else {
-           if (!($Bitness)) {
-              if ($PSBoundParameters.ContainsKey('OfficeClientEdition')) {
-                  $ConfigFile.Configuration.Add.RemoveAttribute("OfficeClientEdition")
-              }
-           }
+            if ($PSBoundParameters.ContainsKey('OfficeClientEdition')) {
+                $ConfigFile.Configuration.Add.RemoveAttribute("OfficeClientEdition")
+            }
         }
 
         $ConfigFile.Save($TargetFilePath) | Out-Null
@@ -1392,12 +1465,14 @@ file.
 #>
     Param(
 
-        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+        [Parameter(ValueFromPipeline=$true)]
         [string] $TargetFilePath
 
     )
 
     Process{
+        $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
+
         #Load the file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
         $ConfigFile.Load($TargetFilePath) | Out-Null
@@ -1430,11 +1505,13 @@ Removes the Add node from the xml congfiguration file
 
 #>
     Param(
-        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+        [Parameter(ValueFromPipeline=$true)]
         [string] $TargetFilePath
     )
 
     Process{
+        $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
+
         #Load file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
         $ConfigFile.Load($TargetFilePath) | Out-Null
@@ -1507,12 +1584,14 @@ Here is what the portion of configuration file looks like when modified by this 
         [Parameter()]
         [string] $Path,
 
-        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+        [Parameter(ValueFromPipeline=$true)]
         [string] $TargetFilePath
 
     )
 
     Process{
+        $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
+
         #Load file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
         $ConfigFile.Load($TargetFilePath) | Out-Null
@@ -1534,9 +1613,18 @@ Here is what the portion of configuration file looks like when modified by this 
         #Set values
         if([string]::IsNullOrWhiteSpace($Level) -eq $false){
             $LoggingElement.SetAttribute("Level", $Level) | Out-Null
+        } else {
+            if ($PSBoundParameters.ContainsKey('Level')) {
+                $ConfigFile.Configuration.Add.RemoveAttribute("Level")
+            }
         }
+
         if([string]::IsNullOrWhiteSpace($Path) -eq $false){
             $LoggingElement.SetAttribute("Path", $Path) | Out-Null
+        } else {
+            if ($PSBoundParameters.ContainsKey('Path')) {
+                $ConfigFile.Configuration.Add.RemoveAttribute("Path")
+            }
         }
 
         $ConfigFile.Save($TargetFilePath) | Out-Null
@@ -1567,12 +1655,14 @@ file.
 #>
     Param(
 
-        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+        [Parameter(ValueFromPipeline=$true)]
         [string] $TargetFilePath
 
     )
 
     Process{
+        $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
+
         #Load the file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
         $ConfigFile.Load($TargetFilePath) | Out-Null
@@ -1611,12 +1701,14 @@ Here is what the portion of configuration file that will be removed by this func
 #>
     Param(
 
-        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+        [Parameter(ValueFromPipeline=$true)]
         [string] $TargetFilePath
 
     )
 
     Process{
+        $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
+
         #Load file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
         $ConfigFile.Load($TargetFilePath) | Out-Null
@@ -1694,12 +1786,14 @@ Here is what the portion of configuration file looks like when modified by this 
         [Parameter()]
         [string] $AcceptEULA,
 
-        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+        [Parameter(ValueFromPipeline=$true)]
         [string] $TargetFilePath
 
     )
 
     Process{
+        $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
+
         #Load file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
         $ConfigFile.Load($TargetFilePath) | Out-Null
@@ -1721,9 +1815,18 @@ Here is what the portion of configuration file looks like when modified by this 
         #Set values
         if([string]::IsNullOrWhiteSpace($Level) -eq $false){
             $DisplayElement.SetAttribute("Level", $Level) | Out-Null
+        } else {
+            if ($PSBoundParameters.ContainsKey('Level')) {
+                $ConfigFile.Configuration.Add.RemoveAttribute("Level")
+            }
         }
+
         if([string]::IsNullOrWhiteSpace($Path) -eq $AcceptEULA){
             $DisplayElement.SetAttribute("AcceptEULA", $AcceptEULA) | Out-Null
+        } else {
+            if ($PSBoundParameters.ContainsKey('AcceptEULA')) {
+                $ConfigFile.Configuration.Add.RemoveAttribute("AcceptEULA")
+            }
         }
 
         $ConfigFile.Save($TargetFilePath) | Out-Null
@@ -1755,12 +1858,14 @@ file.
 #>
     Param(
 
-        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+        [Parameter(ValueFromPipeline=$true)]
         [string] $TargetFilePath
 
     )
 
     Process{
+        $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
+
         #Load the file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
         $ConfigFile.Load($TargetFilePath) | Out-Null
@@ -1822,12 +1927,14 @@ Here is what the portion of configuration file looks like when modified by this 
         [Parameter()]
         [string] $AcceptEULA,
 
-        [Parameter(Mandatory=$true, ValueFromPipeline=$true)]
+        [Parameter(ValueFromPipeline=$true)]
         [string] $TargetFilePath
 
     )
 
     Process{
+        $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
+
         #Load file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
         $ConfigFile.Load($TargetFilePath) | Out-Null
@@ -1858,6 +1965,26 @@ Here is what the portion of configuration file looks like when modified by this 
 
 }
 
+
+Function GetFilePath() {
+    Param(
+       [Parameter(ValueFromPipeline=$true)]
+       [string] $TargetFilePath
+    )
+    
+    if (!($TargetFilePath)) {
+        $TargetFilePath = $global:saveLastFilePath
+    }  
+
+    if (!($TargetFilePath)) {
+       Write-Host "Enter the path to the XML Configuration File: " -NoNewline
+       $TargetFilePath = Read-Host
+    } else {
+       Write-Host "Target XML Configuration File: $TargetFilePath"
+    }
+
+    return $TargetFilePath
+}
 
 Function LanguagePrompt() {
     Param(
