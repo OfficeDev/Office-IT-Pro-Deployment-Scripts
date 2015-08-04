@@ -35,7 +35,7 @@ The Name of the GPO that you wish to transfer office policies to. Defaults to 16
 The version number of the office settings to copy
 
 .PARAMETER TargetVersion
-THe version number of the office settings to set
+The version number of the office settings to set
 
 .Example
 ./Copy-OfficePolicies -SourceGPOName "Office Settings"
