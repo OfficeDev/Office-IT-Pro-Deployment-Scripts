@@ -38,11 +38,11 @@ The version number of the office settings to copy
 The version number of the office settings to set
 
 .Example
-./Copy-OfficePolicies -SourceGPOName "Office Settings"
+./Copy-OfficeGPOSettings -SourceGPOName "Office Settings"
 Default copy the office 15.0 (2013) policies within 'Office Settings' to office 16.0 (2016) policies within 'Office Settings'
 
 .Example
-./Copy-OfficePolicies -SourceGPOName "Office Settings" -SourceVersion "14.0" -TargetVersion "15.0"
+./Copy-OfficeGPOSettings -SourceGPOName "Office Settings" -SourceVersion "14.0" -TargetVersion "15.0"
 Copy the office 14.0 (2010) policies within 'Office Settings' to office 15.0 (2013) policies within 'Office Settings'
 
 .Inputs
