@@ -8,7 +8,7 @@ List the Modern Office apps installed on the local or remote computers
 
 ###Examples
 
-####Check for modern apps installed on remote computers:
+####Check for modern apps installed on all computers in the domain:
 
 1. Open a PowerShell console.
 
@@ -18,7 +18,7 @@ List the Modern Office apps installed on the local or remote computers
 
             Example: cd C:\PowerShellScripts
             
-2. Run the Script. With no parameters specified the script will return the locally installed Office Version.
+2. Run the script. With no parameters specified the script will return the locally installed Office Version.
 
            Type . .\Get-ModernOfficeApps.ps1
 
@@ -26,9 +26,21 @@ List the Modern Office apps installed on the local or remote computers
            the PowerShell function in the script into your PowerShell session which will allow you to 
            run the function 'Get-ModernOfficeApps' from the console.
 	
-3. Run the script for specified computers or against an array you have created.
+####Check for modern apps installed on specified computers:
 
-            Example: .\Get-ModernOfficeApps.ps1 -ComputerName Client1,Client2
+1. Open a PowerShell console.
+
+            From the Run dialog type PowerShell
+            
+2. Change the directory to the location where the PowerShell Script is saved.
+
+            Example: cd C:\PowerShellScripts
+            
+2. Run the script with specified computers.
+
+           Type . .\Get-ModernOfficeApps.ps1 -ComputerNames "Computer1,Computer2"
+
+
             
 
 
