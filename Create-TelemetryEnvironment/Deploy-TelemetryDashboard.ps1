@@ -547,7 +547,7 @@ function New-SharedFolder {
         New-Item "$env:SystemDrive\$ShareName" -Type Directory
         
 
-        net share 'share=C:\TDShared' '/Grant:Authenticated Users,Change'
+        net share 'TDShared=C:\TDShared' '/Grant:Authenticated Users,Change'
       
         $acl = Get-Acl "$SharedFolderPath\$ShareName"
         $permission = "NT AUTHORITY\NETWORK SERVICE","FullControl","ContainerInherit,ObjectInherit","None","Allow"
