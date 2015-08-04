@@ -1,4 +1,4 @@
-#**Copy GPO settings from Office 2013 to Office 2016**
+#**Copy Office GPO settings**
 
 Automates the process of copying configured Office 2013 Group Policy Settings to the Office 2016 Group Policy Settings. 
 
