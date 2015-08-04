@@ -27,24 +27,33 @@ in to the folder where the script will be ran.
 
           . .\DownloadOfficeInstallationToNetworkShare -UncPath "\\Pathname\Sharename" -Bitness 64
       
-      Office will download per the bit specified to the folder share 
-      and will copy the Configuration_Download.xml, 
-      Configuration_InstallLocally.xml, and the setup.exe files. 
-      The xml files will reflect the bit specified next to OfficeClientEdition.
+   Office will download per the bit specified to the folder share 
+   and will copy the Configuration_Download.xml, 
+   Configuration_InstallLocally.xml, and the setup.exe files. 
+   The xml files will reflect the bit specified next to OfficeClientEdition.
 
 4. Run the "SetUpOfficeInstallationGpo.ps1" script and specify the paramaters, $UncPath and $GpoName.
 
-      . .\SetUpOfficeInstallationGpo -UncPath "\\Pathname\Sharename" -GpoName "MyGpo"
+          . .\SetUpOfficeInstallationGpo -UncPath "\\Pathname\Sharename" -GpoName "MyGpo"
       
           The InstallOffice2016.ps1 script will be copied to the GUID 
           located at %systemroot%\SYSVOL\sysvol\domain\Policies.
 
-5. Refresh the Group Policy on a client computer:
+5. Verify the Startup script in the Group Policy Object:
+
+          1. From within Group Policy Management right click the GPO and choose Edit.
+          2. Under Computer Configuration click the Policies drop down.
+          3. Expand Windows Settings and click on Scripts.
+          4. In the viewer window double click Startup.
+          5. Click the PowerShell Scripts tab and verify the PS script and parameters are available.
+          6. Click OK to close the Startup Properties window.
+
+6. Refresh the Group Policy on a client computer:
 
           From the Start screen type command and Press Enter
           Type "gpupdate /force" and press Enter.
 
-6. Restart the client computer.
+7. Restart the client computer.
 
           When the client computer starts the script will launch in the background. 
           You can verify if the script is running by opening 
