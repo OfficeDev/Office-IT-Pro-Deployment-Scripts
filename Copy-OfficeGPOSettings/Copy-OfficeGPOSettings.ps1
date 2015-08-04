@@ -51,7 +51,7 @@ System.String
 System.String
 
 .Notes
-Additional explaination. Long and indepth examples should also go here.
+Additional explanation. Long and indepth examples should also go here.
 
 
 .Link
