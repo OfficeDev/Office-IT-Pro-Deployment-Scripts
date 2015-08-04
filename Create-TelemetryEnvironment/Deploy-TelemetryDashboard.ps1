@@ -1,4 +1,4 @@
-function Deploy-TelemetryDashboard {
+
 <#
 .Synopsis
 Deploys the Office Telemetry Dashboard and its components
@@ -102,7 +102,7 @@ and the telemetry agent will be configured.
 # Instance name used for the SQL Server installation
 [string] $SuggestedInstanceName = "TDSQLEXPRESS"
 # Configuration file path
-[string] $ConfigurationPath=$env:TEMP
+[string] $ConfigurationPath="$env:TEMP\SQLEXPRWT_x64_ENU"
 # Actual configuration ini file
 [string] $ConfigurationFile="$ConfigurationPath\ConfigurationFile.ini"
 
@@ -481,13 +481,19 @@ function Clear-Files {
 function Install-SqlwithIni {
     Run-SqlServerInstaller -wait
     
+    Push-location $env:TEMP
+
+    .\SQLEXPRWT_x64_ENU.exe /Q | Out-Null
+
+    Pop-Location
+
     Create-ConfigurationFile
 
-    Push-location $env:TEMP
-    .\SQLEXPRWT_x64_ENU.exe /Q | Out-Null
-    Pop-Location
+    Push-Location $ConfigurationPath 
     
-    Start-Process -FilePath $SetupExe /ConfigurationFile=$ConfigurationFile -Wait
+    start-process "SETUP.EXE" /ConfigurationFile=$ConfigurationFile -Wait
+
+    Pop-Location
 
     [bool] $sqlServer2014Installed = $false
         [wmi[]] $wmiObjectArray = Get-WmiObject -class Win32_Product
@@ -512,6 +518,8 @@ function Install-SqlwithIni {
 
 #Enable TCP/IP and set the port
 function Set-TcpPort {
+
+    $SqlInstanceName = Get-SqlInstance | foreach { $_.SQLInstance }
     
     $TCPKey = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSSQL12.TDSQLEXPRESS\MSSQLServer\SuperSocketNetLib\Tcp"
     $RegKeyIP2 = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSSQL12.TDSQLEXPRESS\MSSQLServer\SuperSocketNetLib\Tcp\IP2"
@@ -522,9 +530,7 @@ function Set-TcpPort {
     Set-ItemProperty -Path $RegKeyIP2 -Name TcpPort -Value 1433
     Set-ItemProperty -Path $RegKeyIPAll -Name TcpPort -Value 1433
 
-    Import-Module SQLPS -DisableNameChecking
-
-    Restart-Service -Name "MSSQL`$$InstanceName" -WarningAction SilentlyContinue
+    Restart-Service -Name "MSSQL`$$SqlInstanceName" -WarningAction SilentlyContinue
     
 }
 
@@ -541,7 +547,7 @@ function New-SharedFolder {
         New-Item "$env:SystemDrive\$ShareName" -Type Directory
         
 
-        New-SMBShare –Name “TDShared” –Path “$SharedFolderPath\$ShareName”
+        net share 'share=C:\TDShared' '/Grant:Authenticated Users,Change'
       
         $acl = Get-Acl "$SharedFolderPath\$ShareName"
         $permission = "NT AUTHORITY\NETWORK SERVICE","FullControl","ContainerInherit,ObjectInherit","None","Allow"
@@ -550,10 +556,6 @@ function New-SharedFolder {
         $acl | Set-Acl "$SharedFolderPath\$ShareName"
         }
 
-    #Revoke Everyone access from Shared permissions and add Authenticated users
-
-    Revoke-SmbShareAccess -name $ShareName -CimSession "$env:COMPUTERNAME" -AccountName Everyone -Force
-    Grant-SmbShareAccess -name $ShareName -CimSession "$env:COMPUTERNAME" -AccountName "NT Authority\Authenticated Users" -AccessRight Change –Force
 }
 
 
@@ -710,8 +712,9 @@ function Copy-Sqlps {
 
 #Creates the database in the server instance
 function Create-DataBase {
+
     Import-Module SQLPS -DisableNameChecking
-    
+        
     $srv = new-Object Microsoft.SqlServer.Management.Smo.Server("(local)")
     $tddb = $srv.Databases | where {$_.Name -eq 'TDDB'} 
 
@@ -733,7 +736,7 @@ function Create-DataBase {
 
 #Applies the Office Telemetry settings to the database
 function Configure-Database {    
-    Invoke-Sqlcmd -ServerInstance $SqlServerName -InputFile "C:\PowerShellScripts\OfficeTelemetryDatabase.sql" -Database $DatabaseName
+    Invoke-Sqlcmd -ServerInstance $SqlServerName -InputFile "$env:TEMP\OfficeTelemetryDatabase.sql" -Database $DatabaseName
 }
 
 
@@ -898,6 +901,7 @@ function Configure-DashboardComponents {
 }
 
 # Main script flow
+function Deploy-TelemetryDashboard {
 Confirm-ConsoleBitness
 
 Check-Elevated
@@ -906,7 +910,7 @@ Enable-DOTNET3
 
 Check-SQLInstall
 
-    if($SqlServerName -eq "*")
+    if($SqlServerName -eq $null)
     {
         Install-SQLwithIni
 
