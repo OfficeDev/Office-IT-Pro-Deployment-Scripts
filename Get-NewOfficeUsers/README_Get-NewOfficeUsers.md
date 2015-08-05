@@ -27,15 +27,15 @@ the function takes note and populates another field in the CSV with that date (D
 	
 3. Run the Update-UserLicenseData.ps1 script.
 
-		Type . .\Update-UserLicenseData.ps1 -ServiceName "OFFICESUBSCRIPTION" -CSVPath "C:\Licensed Users\LicensedUsers.csv"
+		Type . .\Get-NewOfficeUsers.ps1
 
 		By including the additional period before the relative script path you are 'Dot-Sourcing' 
 		the PowerShell function in the script into your PowerShell session which will allow you to 
 		run the function from the console.
 		
-4. Run the Update-UserLicenseData.ps1 script and specify a username and password.
+4. Run the Update-UserLicenseData.ps1 script and you will be prompted for the Office 365 username and password
 
-		Type . .\Update-UserLicenseData.ps1 -ServiceName "OFFICESUBSCRIPTION" -CSVPath "C:\Licensed Users\LicensedUsers.csv" -Username "administrator" -Password "adminpassword"
+		Type Update-UserLicenseData -Credentials (Get-Credential)
 		
 ###Get-RecentlyLicensedUsers
 
@@ -52,6 +52,6 @@ It is important to have run the Update-UserLicenseData.ps1 prior to using this s
 
 		Example: cd C:\PowerShellScripts
 	
-3. Run the Get-NewOfficeUsers.ps1 script.
+3. Run the Get-NewOfficeUsers.ps1 script. This will by default show you the users that have been created in the last week.
 
-		Type . .\Get-RecentlyLicensedUsers.ps1 -CutOffDate (Get-Date "2015-8-5") -CSVPath "C:\Licensed Users\LicensedUsers.csv"
+		Type . .\Get-NewOfficeUsers.ps1
