@@ -11,7 +11,7 @@ A computer OU with a GPO asscociated to it in Group Policy Management.
 ###Setup
 
 Copy configuration_Download.xml, Configuration_InstallLocally.xml, configuration_template.xml, 
-DownloadOfficeInstallationToNetworkShare.ps1, InstallOffice2016.ps1, SetUpOfficeInstallationGpo.ps1, and setup.exe 
+DownloadOfficeInstallationToNetworkShare.ps1, InstallOffice2016.ps1, SetUpOfficeInstallationGpo.ps1, and SetupOffice2013.exe 
 in to the folder where the script will be ran.
 
 ###Example
