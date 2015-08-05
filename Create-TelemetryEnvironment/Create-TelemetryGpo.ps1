@@ -20,6 +20,7 @@ to type the version of Office being used.
     Import-Module -Name grouppolicy
  
     $gpo = "Office Telemetry"
+    New-GPO -Name $gpo
     $shareName = "TDShared"
     $SqlServer = Read-Host -Prompt 'Type the SQL Server host name'
 
