@@ -118,6 +118,7 @@ Process{
       }
     }
 
+    if ($Credentials) {
     $Domain = $Credentials.UserName.Split('@')[1]
     $CSVPath = "$env:APPDATA\Microsoft\OfficeAutomation\OfficeLicenseTracking-$Domain.csv"
     
@@ -183,6 +184,7 @@ Process{
         $LicensedUsers | ? ObjectId -ne $Null | Export-Csv $CSVPath -NoTypeInformation
 
         Write-host "CSV File Created: $CSVPath"
+    }
     }
 }
 
