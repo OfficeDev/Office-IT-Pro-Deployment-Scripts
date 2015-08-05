@@ -1,6 +1,6 @@
 #New GPO Office Installation
 
-Register a Group Policy that will silently install Office 2013 on computer startup.
+This script will configure an existing Active Directory Group Policy to silently install Office 2013 on computer startup.
 
 ###Pre-requisites
 
