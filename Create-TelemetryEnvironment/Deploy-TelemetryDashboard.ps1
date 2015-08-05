@@ -521,9 +521,9 @@ function Set-TcpPort {
 
     $SqlInstanceName = Get-SqlInstance | foreach { $_.SQLInstance }
     
-    $TCPKey = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSSQL12.TDSQLEXPRESS\MSSQLServer\SuperSocketNetLib\Tcp"
-    $RegKeyIP2 = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSSQL12.TDSQLEXPRESS\MSSQLServer\SuperSocketNetLib\Tcp\IP2"
-    $RegKeyIPAll = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSSQL12.TDSQLEXPRESS\MSSQLServer\SuperSocketNetLib\Tcp\IPAll"
+    $TCPKey = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSSQL12.$SqlInstanceName\MSSQLServer\SuperSocketNetLib\Tcp"
+    $RegKeyIP2 = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSSQL12.$SqlInstanceName\MSSQLServer\SuperSocketNetLib\Tcp\IP2"
+    $RegKeyIPAll = "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\MSSQL12.$SqlInstanceName\MSSQLServer\SuperSocketNetLib\Tcp\IPAll"
 
     Set-ItemProperty -Path $TCPKey -Name Enabled -Value 1    
     Set-ItemProperty -Path $RegKeyIP2 -Name Enabled -Value 1
@@ -593,7 +593,7 @@ function Install-TelemetryProcessor {
 #Create the DataProcessor reg values
 function Create-ProcessorRegData {
     $ShareName = "TDShared"
-    $databaseServer = "TDSQLEXPRESS"
+    $databaseServer = $SqlInstanceName
     [string[]] $OSMPath = ("HKLM:\SOFTWARE\Microsoft\Office\15.0" `
     ,"HKLM:\SOFTWARE\Microsoft\Office\16.0")
     [string[]] $DataProcessorPath = ("HKLM:\SOFTWARE\Microsoft\Office\15.0\OSM" `
@@ -674,14 +674,10 @@ function Read-RegistryValue([string] $key, [string] $value) {
 # Return the target instance name of the SQL server to be
 # used in this script.
 function Get-SqlInstanceName {
-    try
-    {
-        Get-SQLInstance | foreach { $_.SQLInstance }
-    }
-    catch
-    {
-        return $SuggestedInstanceName
-    }
+
+    $SqlInstanceName = Get-SQLInstance | foreach { $_.SQLInstance }
+    
+    Write-Host $SqlInstanceName
 }
 
 
@@ -891,6 +887,7 @@ function Write-RegFile([string] $folderName) {
 # Configure database, Telemetry Processor service and Telemetry Agent
 # using the target database.
 function Configure-DashboardComponents {
+
     Copy-Sqlps
     
     Create-Database
@@ -910,8 +907,12 @@ Enable-DOTNET3
 
 Check-SQLInstall
 
-    if($SqlServerName -eq $null)
-    {
+Get-SqlInstance | Out-Null
+
+Get-SqlServerName
+
+    if($SqlServerName -eq $null) {
+
         Install-SQLwithIni
 
         Set-TcpPort
@@ -928,8 +929,7 @@ Check-SQLInstall
 
         Write-RegFile $folderName
     }
-    else
-    {
+    else {
         New-SharedFolder
 
         Install-TelemetryProcessor
