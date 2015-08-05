@@ -7,7 +7,7 @@ upload data.
 
 ###Pre-requisites
 
-The script must be ran from a machine with Excel 2013 or 2016 already installed.
+The Deploy-TelemetryDashboard script must be ran from a machine with Office 2013 or 2016 already installed.
 
 Copy the OfficeTelemetryDatabase.sql file to C:\Users\username\Appdata\Local\Temp where username
 is the name of the user logged in.
@@ -17,6 +17,14 @@ The user logged in must have administrative privelages and PowerShell needs to b
 The 2013 or 2016 administrative templates need to be installed on the Domain Controller.
 
 .NET Framework 3.5 must be installed. If it is not enabled the script will enable it.
+
+Links:
+
+2013 Administrative Templates: https://www.microsoft.com/en-us/download/details.aspx?id=35554
+
+Overview of Office Telemetry: https://technet.microsoft.com/en-us/library/JJ863580.aspx
+
+SQL Server 2014 Express download: https://www.microsoft.com/en-us/download/details.aspx?id=42299
 
 ###Example
 
@@ -53,7 +61,7 @@ telemetry agent scheduled task to run and collect data.
           
 3. Run the script.
 
-          Type . .\Deploy-OfficeTelemetry.ps1
+          Type . .\TelemetryGpo.ps1
           
           By including the additional period before the relative script path you are 'Dot-Sourcing' 
           the PowerShell function in the script into your PowerShell session which will allow you to 
