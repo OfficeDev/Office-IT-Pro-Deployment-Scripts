@@ -1,4 +1,7 @@
-﻿<#
+﻿
+Function Update-UserLicenseData {
+
+<#
 .SYNOPSIS
 Finds all the MSOLUsers that are licensed with the specified plan and stores them in a csv
 
@@ -24,7 +27,12 @@ Used to generate Credentials for connecting to MSOL service
 Used to generate Credentials for connecting to MSOL service
 
 .Example
-.\Update-UserLicenseData.ps1 -ServiceName "OFFICESUBSCRIPTION" -CSVPath "$env:Public\Documents\LicensedUsers.csv"
+.\Update-UserLicenseData.ps1
+Get list of Users that are licensed for OFFICESUBSCRIPTION service plan and store the results in an AppData Folder
+The user will be prompted for their credentials.
+
+.Example
+.\Update-UserLicenseData.ps1 -ServiceName "OFFICESUBSCRIPTION"
 Get list of Users that are licensed for OFFICESUBSCRIPTION service plan and store the results in public documents.
 The user will be prompted for their credentials.
 
@@ -60,7 +68,7 @@ Proper use of this script should involve running this as a scheduled task
     7.  In the Program/script box enter "PowerShell."
         In the Add arguments (optional) box enter the value:
 
-         .\Update-UserLicenseData.ps1 -ServiceName [ServiceName] -CSVPath [Full\file\path\of.csv] -Username [username] -Password [password])
+         .\Update-UserLicenseData.ps1 -ServiceName [ServiceName] -Username [username] -Password [password])
 
     8.  Then, in the Start in (optional) box, add the location of the folder that contains 
         your PowerShell script.
@@ -78,6 +86,7 @@ Proper use of this script should involve running this as a scheduled task
         The scheduling of this task is complete, and is now ready to run based on the entered settings.
 
 #>
+
 [CmdletBinding(DefaultParameterSetName="PSCredential")]
 Param(
 
@@ -175,4 +184,111 @@ Process{
 
         Write-host "CSV File Created: $CSVPath"
     }
+}
+
+}
+
+Function Get-RecentlyLicensedUsers {
+
+<#
+.SYNOPSIS
+Get a list of users the were licensed after the specified date according to the specified csv
+
+.DESCRIPTION
+Get a list of users the were licensed after the specified date according to the specified csv.
+It is important to have run the Update-UserLicenseData.ps1 prior to using this script.
+
+.PARAMETER CutOffDate
+The cutoff date for how new you wish the return list of users to be
+
+.PARAMETER CSVPath
+The Full file path of the CSV with the data (should be the same as the path used for
+Update-UserLicenseData.ps1).
+
+.Example
+Get-RecentlyLicensedUsers 
+Get list of Users that are were licensed in the last 7 days if the Update-UserLicenseData cmdlet has already been run
+
+.Example
+Get-RecentlyLicensedUsers -CutOffDate (Get-Date "2015-7-13) -CSVPath "$env:Public\Documents\LicensedUsers.csv"
+Get list of Users that are were licensed after July 7, 2015 according to specified csv
+
+#>
+
+[CmdletBinding()]
+Param(
+
+    [Parameter()]
+    [string] $CSVPath,
+
+    [Parameter()]
+    [DateTime] $CutOffDate
+
+)
+
+Begin {
+    $defaultDisplaySet = 'DisplayName', 'SignInName'
+
+    $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet(‘DefaultDisplayPropertySet’,[string[]]$defaultDisplaySet)
+    $PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultDisplayPropertySet)
+}
+
+Process{
+    
+    if (!($CutOffDate)) {
+       $CutOffDate = (Get-Date).AddDays(-7)
+    }
+
+    [System.IO.FileSystemInfo[]]$filePaths = @()
+
+    if (!($CSVPath)) {
+        $childItems = Get-ChildItem -Path "$env:APPDATA\Microsoft\OfficeAutomation" | where {$_.Extension.ToLower() -eq ".csv" }
+        foreach ($csvFile in $childItems) {
+           $filePaths += $csvFile
+        }
+    } else {
+       $filePaths += ([System.IO.FileInfo]"$CSVPath")
+    }
+    
+    if ($filePaths.Length -eq 0) {
+      Write-Host "No CSV File Exits. Please run Update-UserLicenseData to generate the CSV File."
+    }
+
+    foreach ($csvFile in $filePaths) {
+        $fileName = $csvFile.Name.Replace($csvFile.Extension, "")
+        $domain = ""
+        if ($fileName.Contains("-")) {
+           $domain = $fileName.Split('-')[1]
+        }
+       
+        if (($PSCmdlet.MyInvocation.PipelineLength -eq 1) -or `
+            ($PSCmdlet.MyInvocation.PipelineLength -eq $PSCmdlet.MyInvocation.PipelinePosition)) {
+
+            Write-Host ""
+            Write-Host "Retrieving New Users Since: $CutOffDate"
+            Write-Host ""
+            if ($domain) {
+               Write-Host "Domain: $domain"
+            }
+        }
+
+        $NewUsers = new-object PSObject[] 1;
+
+        $ImportedCSV = Import-Csv -LiteralPath $csvFile.FullName
+
+        foreach($User in $ImportedCSV){
+            if ($CutOffDate -lt (Get-Date($user.LicensedAsOf))) {
+              if ($domain) {
+                Add-Member -InputObject $User -MemberType NoteProperty -Name "Domain" -Value $domain
+              }
+              $User | Add-Member MemberSet PSStandardMembers $PSStandardMembers
+
+              $NewUsers += $User
+            }
+        }
+
+        return $NewUsers
+    }
+}
+
 }
