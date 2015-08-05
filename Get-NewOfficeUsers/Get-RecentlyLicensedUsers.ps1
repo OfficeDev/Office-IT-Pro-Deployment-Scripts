@@ -23,22 +23,34 @@ Param(
     [Parameter()]
     [string] $CSVPath,
 
-    [Parameter()]
+    [Parameter(Mandatory=$true)]
     [DateTime] $CutOffDate
 
 )
 
 Process{
+    
+    [FileInfo[]]$filePaths = @()
 
-    $NewUsers = new-object PSObject[] 1;
-
-    $ImportedCSV = Import-Csv $CSVPath
-
-    foreach($User in $ImportedCSV){
-        if($CutOffDate.CompareTo((Get-Date($user.LicensedAsOf))) -lt 0){
-            $NewUsers += $User
-        }
+    $childItems = Get-ChildItem -Path "$env:APPDATA\Microsoft\OfficeAutomation" | where {$_.Extension.ToLower() -eq ".csv" }
+    foreach ($csvFile in $childItems) {
+       $filePaths += $csvFile
     }
 
-    return $NewUsers
+
+    foreach ($csvFile in $filePaths) {
+        
+
+        $NewUsers = new-object PSObject[] 1;
+
+        $ImportedCSV = Import-Csv -LiteralPath $csvFile.FullName
+
+        foreach($User in $ImportedCSV){
+            if ($CutOffDate -lt (Get-Date($user.LicensedAsOf))) {
+              $NewUsers += $User
+            }
+        }
+
+        return $NewUsers
+    }
 }

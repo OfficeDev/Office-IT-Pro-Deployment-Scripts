@@ -82,10 +82,10 @@ Proper use of this script should involve running this as a scheduled task
 Param(
 
     [Parameter()]
-    [string] $ServiceName,
+    [string] $ServiceName = "OFFICESUBSCRIPTION",
 
     [Parameter()]
-    [string] $CSVPath,
+    [string] $CSVPath = "$env:APPDATA\Microsoft\OfficeAutomation\OfficeLicenseTracking.csv",
 
     [Parameter(ParameterSetName="PSCredential")]
     [PSCredential] $Credentials,
@@ -99,17 +99,28 @@ Param(
 )
 
 Process{
-    if($PSCmdlet.ParameterSetName -eq "UsernamePassword"){
+    if($PSCmdlet.ParameterSetName -eq "UsernamePassword")
+    {
         $PWord = ConvertTo-SecureString –String $Password –AsPlainText -Force
         $Credentials = New-Object –TypeName System.Management.Automation.PSCredential –ArgumentList $Username, $PWord
-    }else{
+    } else {
+      if (!($Credentials)) {
         $Credentials = (Get-Credential)
+      }
     }
+
+    $Domain = $Credentials.UserName.Split('@')[1]
+    $CSVPath = "$env:APPDATA\Microsoft\OfficeAutomation\OfficeLicenseTracking-$Domain.csv"
+    
+    Write-host
+    Write-host "Connecting to Office 365..."
 
     Connect-MsolService -Credential $Credentials
 
-    $Users = Get-MsolUser | ? IsLicensed -eq $True | Select DisplayName, Licenses, LiveId, ObjectId, SignInName 
+    Write-host "Retrieving User List..."
 
+    $Users = Get-MsolUser | ? IsLicensed -eq $True | Select DisplayName, Licenses, LiveId, ObjectId, SignInName 
+    
     #Get list of users with the correct service plan
     $LicensedUsers = new-object PSObject[] 1;
     foreach($User in $Users){
@@ -130,6 +141,9 @@ Process{
             Add-Member -InputObject $User -MemberType NoteProperty -Name DelicensedAsOf -Value "-"
         }
     }
+
+    $pathSplit = Split-Path -Path $CSVPath
+    $createDir = [system.io.directory]::CreateDirectory($pathSplit)
 
     #Check if CSV exists
     if(Test-Path $CSVPath){
@@ -153,8 +167,12 @@ Process{
             }
         }
         $ImportedCSV | Export-Csv $CSVPath -NoTypeInformation
+
+        Write-host "CSV File Updated: $CSVPath"
     }else{
         #If csv does not exist, export data
         $LicensedUsers | ? ObjectId -ne $Null | Export-Csv $CSVPath -NoTypeInformation
+
+        Write-host "CSV File Created: $CSVPath"
     }
 }
