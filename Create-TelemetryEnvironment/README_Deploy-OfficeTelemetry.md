@@ -26,7 +26,7 @@ Overview of Office Telemetry: https://technet.microsoft.com/en-us/library/JJ8635
 
 SQL Server 2014 Express download: https://www.microsoft.com/en-us/download/details.aspx?id=42299
 
-###Example
+###Examples
 
 ####Install SQL, configure a database, install the telemetry processor, and enable the agent to upload data
 
@@ -50,6 +50,8 @@ SQL Server 2014 Express download: https://www.microsoft.com/en-us/download/detai
 telemetry agent scheduled task to run and collect data.
 
 ####Create a GPO on the Domain Controller
+
+A Group Policy can be set to enable Agent uploading and logging on computers in the domain.
 
 1. From the Domain Controller open a PowerShell console.
 
