@@ -697,7 +697,30 @@ function Get-DpconfigPath {
 
 #Copy the SQLPS folder
 function Copy-Sqlps {
+
+    $SqlVersion = Get-SqlVersion
+
+    if ($SqlVersion -match '8')
+    {
+    $sqlpsPath = "C:\Program Files (x86)\Microsoft SQL Server\80\Tools\PowerShell\Modules\SQLPS\*"    
+    }
+    elseif ($SqlVersion -match '9')
+    {
+    $sqlpsPath = "C:\Program Files (x86)\Microsoft SQL Server\90\Tools\PowerShell\Modules\SQLPS\*"
+    }
+    elseif ($SqlVersion -match '10')
+    {
+    $sqlpsPath = "C:\Program Files (x86)\Microsoft SQL Server\100\Tools\PowerShell\Modules\SQLPS\*"
+    }
+    elseif ($SqlVersion -match '11')
+    {
+    $sqlpsPath = "C:\Program Files (x86)\Microsoft SQL Server\110\Tools\PowerShell\Modules\SQLPS\*"
+    }
+    elseif ($SqlVersion -match '12')
+    {
     $sqlpsPath = "C:\Program Files (x86)\Microsoft SQL Server\120\Tools\PowerShell\Modules\SQLPS\*"
+    }
+
     $destinationPath = "$env:windir\System32\WindowsPowerShell\v1.0\Modules\SQLPS"
 
     if(!(Test-Path -Path $destinationPath))
