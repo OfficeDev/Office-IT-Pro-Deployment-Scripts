@@ -1,4 +1,4 @@
-\#New GPO Office Installation
+#New GPO Office Installation
 
 This script will configure an existing Active Directory Group Policy to silently install Office 2013 Click-To-Run on computer startup.
 
