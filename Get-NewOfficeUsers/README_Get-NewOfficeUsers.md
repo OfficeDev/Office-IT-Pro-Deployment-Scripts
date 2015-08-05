@@ -1,6 +1,6 @@
 #Get New Office Users
 
-Two scripts to identify licensed Office 365 users and track the dates they were enabled or disabled.
+Two functions to identify licensed Office 365 users and track the dates they were enabled or disabled.
 
 ###Pre-requisites
 
