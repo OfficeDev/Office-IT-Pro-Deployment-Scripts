@@ -5,7 +5,7 @@ This script will configure an existing Active Directory Group Policy to silently
 ###Pre-requisites
 
 1. Active Directory
-2. A Shared Network Folder for Office Installation Files.
+2. A shared network folder for Office Installation Files.
 3. An existing Group Policy Object that is assigned to the target computer you want to install Office 2013 Click-To-Run
 
 ###Setup
@@ -32,7 +32,7 @@ Copy the files below in to the folder from where the script will be ran.
       
 3. Run the "DownloadOfficeInstallationToNetworkShare.ps1" script and specify the paramaters, $UncPath and $Bitness.
 
-          . .\DownloadOfficeInstallationToNetworkShare -UncPath "\\Pathname\Sharename" -Bitness 64
+          . .\DownloadOfficeInstallationToNetworkShare -UncPath "\\Pathname\Sharename" -Bitness 32
       
    Office will download per the bit specified to the folder share 
    and will copy the Configuration_Download.xml, 
