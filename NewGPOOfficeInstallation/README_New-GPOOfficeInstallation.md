@@ -1,4 +1,4 @@
-#New GPO Office Installation
+\#New GPO Office Installation
 
 This script will configure an existing Active Directory Group Policy to silently install Office 2013 Click-To-Run on computer startup.
 
@@ -11,13 +11,14 @@ This script will configure an existing Active Directory Group Policy to silently
 ###Setup
 
 Copy the files below in to the folder from where the script will be ran.
-configuration_Download.xml
-Configuration_InstallLocally.xml
-configuration_template.xml
-DownloadOfficeInstallationToNetworkShare.ps1
-InstallOffice2016.ps1
-SetUpOfficeInstallationGpo.ps1
-SetupOffice2013.exe 
+
+        configuration_Download.xml
+        Configuration_InstallLocally.xml
+        configuration_template.xml
+        DownloadOfficeInstallationToNetworkShare.ps1
+        InstallOffice2016.ps1
+        SetUpOfficeInstallationGpo.ps1
+        SetupOffice2013.exe 
 
 
 ###Example
@@ -64,6 +65,8 @@ SetupOffice2013.exe
           When the client computer starts the script will launch in the background. 
           You can verify if the script is running by opening 
           Task Manager and look for the Click To Run process.
+
+
 
 
 
