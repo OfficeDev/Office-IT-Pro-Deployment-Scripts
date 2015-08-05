@@ -6,7 +6,7 @@ Automates the process of copying configured Office 2013 Group Policy Settings to
 
 Before running the script, you will need at least the following requirements
 
-1. The script must be run from a Domain Controller in the domain of the Group Policy you with to modify.
+1. The script must be run from a Domain Controller.
 2. The Administrative templates of the source Office version installed on the Domain Controller.
 2. The Administrative templates of the target Office version installed on the Domain Controller.
 
