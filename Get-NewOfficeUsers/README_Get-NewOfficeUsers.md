@@ -33,9 +33,9 @@ the function takes note and populates another field in the CSV with that date (D
 		the PowerShell function in the script into your PowerShell session which will allow you to 
 		run the function from the console.
 		
-4. Run the Update-UserLicenseData.ps1 script and specify a username and password.
+4. Run the Update-UserLicenseData.ps1 script and you will be prompted for the Office 365 username and password
 
-		Type Update-UserLicenseData -Username "administrator" -Password "adminpassword"
+		Type Update-UserLicenseData -Credentials (Get-Credential)
 		
 ###Get-RecentlyLicensedUsers
 
