@@ -51,7 +51,7 @@ telemetry agent scheduled task to run and collect data.
 
 ####Create a GPO on the Domain Controller
 
-To enable the Telemetry Agent on computers in the domain a Group Policy can be set to enable Agent uploading and logging.
+A Group Policy can be set to enable Agent uploading and logging on computers in the domain.
 
 1. From the Domain Controller open a PowerShell console.
 
