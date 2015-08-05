@@ -61,7 +61,7 @@ telemetry agent scheduled task to run and collect data.
           
 3. Run the script.
 
-          Type . .\Deploy-OfficeTelemetry.ps1
+          Type . .\TelemetryGpo.ps1
           
           By including the additional period before the relative script path you are 'Dot-Sourcing' 
           the PowerShell function in the script into your PowerShell session which will allow you to 
