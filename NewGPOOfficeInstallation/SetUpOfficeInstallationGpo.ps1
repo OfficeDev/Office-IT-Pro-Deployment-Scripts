@@ -11,16 +11,21 @@ Param
 	[String]$ConfigFileName = "Configuration_InstallLocally.xml",
 	
 	[Parameter()]
-	[String]$ScriptName = "InstallOffice2016.ps1"
+	[String]$ScriptName = "InstallOffice2013.ps1"
 )
 Begin
 {
 	$currentExecutionPolicy = Get-ExecutionPolicy
 	Set-ExecutionPolicy Unrestricted -Scope Process -Force  
     $startLocation = Get-Location
+
+    ipmo ActiveDirectory
 }
 Process
 {
+    $adsi = [ADSI]"LDAP://RootDSE"
+    $DomainPath = $Root.Get("DefaultNamingContext")
+
 	$gpo = Get-GPO -Name $GpoName
 	
 	if(!$gpo -or ($gpo -eq $null))
@@ -32,34 +37,47 @@ Process
 	$baseSysVolPath = "$env:LOGONSERVER\sysvol"
 
 	$domain = $gpo.DomainName
+    $gpoId = $gpo.Id.ToString()
 
-	$gpoId = $gpo.Id.ToString()
+    $adGPO = [ADSI]"LDAP://CN={$gpoId},CN=Policies,CN=System,$DomainPath"
+    	
 	$gpoPath = "{0}\{1}\Policies\{{{2}}}" -f $baseSysVolPath, $domain, $gpoId
 	$relativePathToScriptsFolder = "Machine\Scripts"
 	$scriptsPath = "{0}\{1}" -f $gpoPath, $relativePathToScriptsFolder
 
+    $createDir = [system.io.directory]::CreateDirectory($scriptsPath) 
+
 	$gptIniFileName = "GPT.ini"
 	$gptIniFilePath = ".\$gptIniFileName"
+   
 
 	Set-Location $scriptsPath
 	
 	#region PSSCripts.ini
 	$psScriptsFileName = "psscripts.ini"
+    $scriptsFileName = "scripts.ini"
 
 	$psScriptsFilePath = ".\$psScriptsFileName"
+    $scriptsFilePath = ".\$scriptsFileName"
 
 	$encoding = 'Unicode' #[System.Text.Encoding]::Unicode
 
 	if(!(Test-Path $psScriptsFilePath))
 	{
-		
 		$baseContent = "`r`n[ScriptsConfig]`r`nStartExecutePSFirst=true`r`n[Startup]"
-		
 		$baseContent | Out-File -FilePath $psScriptsFilePath -Encoding unicode -Force
 		
 		$file = Get-ChildItem -Path $psScriptsFilePath
 		$file.Attributes = $file.Attributes -bor ([System.IO.FileAttributes]::Hidden).value__
 	}
+
+	if(!(Test-Path $scriptsFilePath))
+	{
+        "" | Out-File -FilePath $scriptsFilePath -Encoding unicode -Force
+
+		$file = Get-ChildItem -Path $scriptsFilePath
+		$file.Attributes = $file.Attributes -bor ([System.IO.FileAttributes]::Hidden).value__
+    }
 	
 	$content = Get-Content -Encoding $encoding -Path $psScriptsFilePath
 
@@ -139,6 +157,10 @@ Process
 	#region Place the script to attach in the StartUp Folder
 	$setupExeSourcePath = "$startLocation\$ScriptName"
 	$setupExeTargetPath = "$scriptsPath\StartUp"
+    $setupExeTargetPathShutdown = "$scriptsPath\ShutDown"
+
+    $createDir = [system.io.directory]::CreateDirectory($setupExeTargetPath) 
+    $createDir = [system.io.directory]::CreateDirectory($setupExeTargetPathShutdown) 
 	
 	Copy-Item -Path $setupExeSourcePath -Destination $setupExeTargetPath -Force
 	#endregion
@@ -146,9 +168,10 @@ Process
 	#region Update GPT.ini
 	Set-Location $gpoPath   
 
-	$encoding = 'UTF8' #[System.Text.Encoding]::UTF
+	$encoding = 'ASCII' #[System.Text.Encoding]::ASCII
 	$gptIniContent = Get-Content -Encoding $encoding -Path $gptIniFilePath
 	
+    [int]$newVersion = 0
 	foreach($s in $gptIniContent)
 	{
 		if($s.StartsWith("Version"))
@@ -167,10 +190,51 @@ Process
 
 			Write-Host "New GPT.ini Version: $s"
 
+            $newVersion = $s.Split('=')[1]
+
 			$gptIniContent[$index] = $s
 			break
 		}
 	}
+
+    [System.Collections.ArrayList]$extList = New-Object System.Collections.ArrayList
+
+    Try {
+       $currentExt = $adGPO.get('gPCMachineExtensionNames')
+    } Catch { [system.exception]
+
+    }
+
+    if ($currentExt) {
+        [string]$currentExt = $currentExt.replace("[", "")
+        $currentExt = $currentExt.replace("]", "")
+
+        $extSplit = $currentExt.Split('{')
+
+        foreach ($extGuid in $extSplit) {
+          if ($extGuid) {
+             $addItem = $extList.Add($extGuid.Replace("}", "").ToUpper())
+          }
+        }
+    }
+
+    if (!$extList.Contains("42B5FAAE-6536-11D2-AE5A-0000F87571E3")) {
+       $extList.Add("42B5FAAE-6536-11D2-AE5A-0000F87571E3")
+    }
+
+    if (!$extList.Contains("40B6664F-4972-11D1-A7CA-0000F87571E3")) {
+       $extList.Add("40B6664F-4972-11D1-A7CA-0000F87571E3")
+    }
+
+    $newGptExt = "["
+    foreach ($extAddGuid in $extList) {
+       $newGptExt += "{$extAddGuid}"
+    }
+    $newGptExt += "]"
+
+    $adGPO.put('versionNumber',$newVersion)
+    $adGPO.put('gPCMachineExtensionNames',$newGptExt)
+    $adGPO.CommitChanges()
 
 	$gptIniContent | Set-Content -Encoding $encoding -Path $gptIniFilePath -Force
 	#endregion		

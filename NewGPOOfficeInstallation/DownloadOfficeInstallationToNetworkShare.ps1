@@ -17,13 +17,13 @@ Process
 {
 	Write-Host 'Updating Config Files'
 	
-	$setupFileName = 'setup.exe'
+	$setupFileName = 'SetupOffice2013.exe'
 	$localSetupFilePath = ".\$setupFileName"
 	$setupFilePath = "$UncPath\$localSetupFilePath"
 	
 	Copy-Item -Path $localSetupFilePath -Destination $UncPath -Force
 	
-	$downloadConfigFileName = 'Configure_Download.xml'
+	$downloadConfigFileName = 'Configuration_Download.xml'
 	$downloadConfigFilePath = "$UncPath\$downloadConfigFileName"
 	$localDownloadConfigFilePath = ".\$downloadConfigFileName"
 	
