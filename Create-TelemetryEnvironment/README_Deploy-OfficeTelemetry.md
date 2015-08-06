@@ -51,7 +51,8 @@ telemetry agent scheduled task to run and collect data.
 
 ####Create a GPO on the Domain Controller
 
-A Group Policy can be set to enable Agent uploading and logging on computers in the domain.
+A Group Policy can be set to enable Agent uploading and logging on computers in the domain. If computers in
+the domain have Office versions older than 2013 only the GPO will be created.
 
 1. From the Domain Controller open a PowerShell console.
 
@@ -61,14 +62,34 @@ A Group Policy can be set to enable Agent uploading and logging on computers in 
 
           Example: cd C:\PowerShellScripts
           
-3. Run the script.
+3. Run the script to create the GPO.
 
-          Type . .\TelemetryGpo.ps1
+          Type . .\Create-TelemetryGpo -GpoName "Office Telemetry" -SqlServerName SQLExpress
           
           By including the additional period before the relative script path you are 'Dot-Sourcing' 
           the PowerShell function in the script into your PowerShell session which will allow you to 
           run the function 'Get-ModernOfficeApps' from the console.
-          
-4. Type the SQL server and press Enter.
 
-5. Type the version of Microsoft Office and press Enter.
+4. Run the script to create the GPO and set the registry values for Office 2013.
+
+          Type . .\Create-TelemetryGpo -GpoName "Office Telemetry" -SqlServerName SQLExpress -officeVersion 2013
+
+####Modify the GPO to copy the Deploy-TelemetryAgent.ps1 script to the Startup folder. 
+
+Computers on the domain with Office versions older than 2013 will copy the osmia32.msi or osmia64.msi file, depending on the computer's bitness, to the temp folder (%temp%) and will install. The script will also create the registry keys and values needed for the telemetry agent to collect and upload data to the telemetry shared folder.
+
+1. From the Domain Controller open a PowerShell console as an administrator.
+
+          From the Run dialog type PowerShell, right click, and choose Run as Administrator.
+          
+2. Change the directory to the location where the PowerShell Script is saved.
+
+          Example: cd C:\PowerShellScripts
+          
+3. Run the script.
+
+          Type . .\Set-TelemetryStartup -GpoName "Office Telemetry" -UncPath "\\Server1\Sharedfolder"
+          
+          By including the additional period before the relative script path you are 'Dot-Sourcing' 
+          the PowerShell function in the script into your PowerShell session which will allow you to 
+          run the function 'Get-ModernOfficeApps' from the console.
