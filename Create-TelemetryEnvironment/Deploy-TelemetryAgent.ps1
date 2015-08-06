@@ -55,7 +55,7 @@ function Run-AgentInstaller {
 function Configure-TelemetryAgent([string] $database, [string] $folderName) {
 
     $objExcel = New-Object -ComObject Excel.Application
-    $officeVersion = $objExcel.Version
+    $officeVersion = $objExcel.Version.Split('.')[0]
 
     if($officeVersion -match '11'){
         $key = "HKCU:\Software\Policies\Microsoft\Office\11.0\osm"
