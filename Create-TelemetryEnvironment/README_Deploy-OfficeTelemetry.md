@@ -7,16 +7,11 @@ upload data.
 
 ###Pre-requisites
 
-1. The Deploy-TelemetryDashboard script must be ran from a machine with Office 2013 or 2016 already installed.
+1. The Deploy-TelemetryDashboard.ps1 script must be ran from a machine with Office 2013.
 
-Copy the OfficeTelemetryDatabase.sql file to C:\Users\username\Appdata\Local\Temp where username
-is the name of the user logged in.
+2. The user logged in must have administrative privelages and PowerShell needs to be opened as an administrator.
 
-The user logged in must have administrative privelages and PowerShell needs to be opened as an administrator.
-
-The 2013 administrative templates need to be installed on the Domain Controller.
-
-.NET Framework 3.5 must be installed. If it is not enabled the script will enable it.
+3. .NET Framework 3.5 must be installed. If it is not enabled the script will enable it.
 
 Links:
 
