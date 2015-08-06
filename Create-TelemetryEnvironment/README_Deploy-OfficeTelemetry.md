@@ -94,9 +94,9 @@ Computers in the domain with versions of Office older than 2013 will copy the os
 
           Example: cd C:\PowerShellScripts
           
-3. Run the script. Specify the GPO name and UNC path of the shared folder.
+3. Run the script. Specify the GPO name, UNC path of the shared folder hosting the osmia32 and osmia64 msi files, and specify the shared folder created in the Deploy-TelemetryDashboard.ps1 script where the telemetry data is uploaded.
 
-          Type . .\Set-TelemetryStartup -GpoName "Office Telemetry" -UncPath "\\Server1\Sharedfolder"
+          Type . .\Set-TelemetryStartup -GpoName "Office Telemetry" -UncPath "\\Server1\Sharedfolder" -CommonFileShare "\\Server1\TDShared"
           
           By including the additional period before the relative script path you are 'Dot-Sourcing' 
           the PowerShell function in the script into your PowerShell session which will allow you to 
