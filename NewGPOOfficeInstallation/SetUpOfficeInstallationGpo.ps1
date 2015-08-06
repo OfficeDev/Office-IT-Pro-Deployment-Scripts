@@ -40,6 +40,11 @@ Process
 
 	$gptIniFileName = "GPT.ini"
 	$gptIniFilePath = ".\$gptIniFileName"
+	
+	if(!(Test-Path ".\$scriptsPath\Startup"))
+    	{
+        New-Item -ItemType Directory -Force -Path "$scriptsPath\Startup"
+    	}
 
 	Set-Location $scriptsPath
 	
