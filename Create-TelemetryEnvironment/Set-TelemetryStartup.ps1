@@ -6,6 +6,9 @@ Param
 
     [Parameter(Mandatory=$true)]
     [string]$UncPath,
+
+    [Parameter(Mandatory=$true)]
+    [string]$CommonFileShare,
 	
 	[Parameter()]
 	[String]$ScriptName = "Deploy-TelemetryAgent.ps1"
@@ -154,7 +157,7 @@ Process
 
 	$newContent[$nextIndex+1] = "{0}CmdLine={1}" -f $nextScriptIndex, $ScriptName
 
-    $newContent[$nextIndex+2] = "{0}Parameters=-UncPath {1}" -f $nextScriptIndex, $UncPath
+    $newContent[$nextIndex+2] = "{0}Parameters=-UncPath {1} -CommonFileShare {2}" -f $nextScriptIndex, $UncPath, $CommonFileShare
     
 	
 	for($i=$nextIndex; $i -lt $length; $i++)
