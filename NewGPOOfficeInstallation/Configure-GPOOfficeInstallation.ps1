@@ -1,31 +1,106 @@
-[CmdletBinding(SupportsShouldProcess=$true)]
-Param
-(
-	[Parameter(Mandatory=$True)]
-	[String]$GpoName,
-	
+Function Download-GPOOfficeInstallation {
+
+    [CmdletBinding(SupportsShouldProcess=$true)]
+    Param
+                        (
 	[Parameter(Mandatory=$True)]
 	[String]$UncPath,
 	
 	[Parameter()]
-	[String]$ConfigFileName = "Configuration_InstallLocally.xml",
-	
-	[Parameter()]
-	[String]$ScriptName = "InstallOffice2013.ps1"
-)
-Begin
-{
+	[String]$Bitness = '32'
+    )
+    Begin
+                {
 	$currentExecutionPolicy = Get-ExecutionPolicy
 	Set-ExecutionPolicy Unrestricted -Scope Process -Force  
     $startLocation = Get-Location
+    }
+    Process
+    {
+	Write-Host 'Updating Config Files'
+	
+	$setupFileName = 'SetupOffice2013.exe'
+	$localSetupFilePath = ".\$setupFileName"
+	$setupFilePath = "$UncPath\$localSetupFilePath"
+	
+	Copy-Item -Path $localSetupFilePath -Destination $UncPath -Force
+	
+	$downloadConfigFileName = 'Configuration_Download.xml'
+	$downloadConfigFilePath = "$UncPath\$downloadConfigFileName"
+	$localDownloadConfigFilePath = ".\$downloadConfigFileName"
+	
+	$installConfigFileName = 'Configuration_InstallLocally.xml'
+	$installConfigFilePath = "$UncPath\$installConfigFileName"
+	$localInstallConfigFilePath = ".\$installConfigFileName"
+	
+	$content = [Xml](Get-Content $localDownloadConfigFilePath)
+	$addNode = $content.Configuration.Add
+	$addNode.OfficeClientEdition = $Bitness
+	Write-Host 'Saving Download Configuration XML'	
+	$content.Save($downloadConfigFilePath)
+	
+	$content = [Xml](Get-Content $localInstallConfigFilePath)
+	$addNode = $content.Configuration.Add
+	$addNode.OfficeClientEdition = $Bitness
+	$addNode.SourcePath = $UncPath
+	$updatesNode = $content.Configuration.Updates
+	$updatesNode.UpdatePath = $UncPath
+	Write-Host 'Saving Install Configuration XML'
+	$content.Save($installConfigFilePath)
+	
+	Write-Host 'Setting up Click2Run to download Office to UNC Path'
+	
+	Set-Location $UncPath
+	
+	$app = ".\$setupFileName"
+	$arguments = "/download", "$downloadConfigFileName"
+	
+	Write-Host 'Starting Download'
+	& $app @arguments
+	
+	Write-Host 'Download Complete'	
+    }
+    End
+    {
+	    Set-ExecutionPolicy $currentExecutionPolicy -Scope Process -Force
+        Set-Location $startLocation
+    }
 
-    ipmo ActiveDirectory
 }
-Process
-{
-    $adsi = [ADSI]"LDAP://RootDSE"
+
+Function Configure-GPOOfficeInstallation {
+    [CmdletBinding(SupportsShouldProcess=$true)]
+    Param
+    (
+	    [Parameter(Mandatory=$True)]
+	    [String]$GpoName,
+	
+	    [Parameter(Mandatory=$True)]
+	    [String]$UncPath,
+	
+	    [Parameter()]
+	    [String]$ConfigFileName = "Configuration_InstallLocally.xml",
+	
+	    [Parameter()]
+	    [String]$ScriptName = "InstallOffice2013.ps1"
+    )
+
+    Begin
+    {
+	    $currentExecutionPolicy = Get-ExecutionPolicy
+	    Set-ExecutionPolicy Unrestricted -Scope Process -Force  
+        $startLocation = Get-Location
+    }
+
+    Process {
+
+    $Root = [ADSI]"LDAP://RootDSE"
     $DomainPath = $Root.Get("DefaultNamingContext")
 
+    Write-Host "Configuring Group Policy to Install Office Click-To-Run"
+    Write-Host
+
+    Write-Host "Searching for GPO: $GpoName..." -NoNewline
 	$gpo = Get-GPO -Name $GpoName
 	
 	if(!$gpo -or ($gpo -eq $null))
@@ -33,6 +108,10 @@ Process
 		Write-Error "The GPO $GpoName could not be found."
 		Exit
 	}
+
+    Write-Host "GPO Found"
+
+    Write-Host "Modifying GPO: $GpoName..." -NoNewline
 
 	$baseSysVolPath = "$env:LOGONSERVER\sysvol"
 
@@ -50,7 +129,6 @@ Process
 	$gptIniFileName = "GPT.ini"
 	$gptIniFilePath = ".\$gptIniFileName"
    
-
 	Set-Location $scriptsPath
 	
 	#region PSSCripts.ini
@@ -178,7 +256,7 @@ Process
 		{
 			$index = $gptIniContent.IndexOf($s)
 
-			Write-Host "Old GPT.ini Version: $s"
+			#Write-Host "Old GPT.ini Version: $s"
 
 			$num = ($s -split "=")[1]
 
@@ -188,7 +266,7 @@ Process
 
 			$s = $s -replace $num, $newVer.ToString()
 
-			Write-Host "New GPT.ini Version: $s"
+			#Write-Host "New GPT.ini Version: $s"
 
             $newVersion = $s.Split('=')[1]
 
@@ -201,7 +279,7 @@ Process
 
     Try {
        $currentExt = $adGPO.get('gPCMachineExtensionNames')
-    } Catch { [system.exception]
+    } Catch { 
 
     }
 
@@ -219,11 +297,11 @@ Process
     }
 
     if (!$extList.Contains("42B5FAAE-6536-11D2-AE5A-0000F87571E3")) {
-       $extList.Add("42B5FAAE-6536-11D2-AE5A-0000F87571E3")
+      $addItem = $extList.Add("42B5FAAE-6536-11D2-AE5A-0000F87571E3")
     }
 
     if (!$extList.Contains("40B6664F-4972-11D1-A7CA-0000F87571E3")) {
-       $extList.Add("40B6664F-4972-11D1-A7CA-0000F87571E3")
+      $addItem = $extList.Add("40B6664F-4972-11D1-A7CA-0000F87571E3")
     }
 
     $newGptExt = "["
@@ -236,12 +314,22 @@ Process
     $adGPO.put('gPCMachineExtensionNames',$newGptExt)
     $adGPO.CommitChanges()
 
+    
 	$gptIniContent | Set-Content -Encoding $encoding -Path $gptIniFilePath -Force
-	#endregion		
-}
-End
-{
-	Set-ExecutionPolicy $currentExecutionPolicy -Scope Process -Force
-    Set-Location $startLocation
-}
+	
+    Write-Host "GPO Modified"
+    Write-Host ""
+    Write-Host "The Group Policy '$GpoName' has been modified to install Office at Workstation Startup." -BackgroundColor DarkBlue
+    Write-Host "Once Group Policy has refreshed on the Workstations then Office will install on next startup if the computer has access to the Network Share." -BackgroundColor DarkBlue
 
+    }
+
+    End {
+       
+       $setLocation = Set-Location $startLocation
+
+
+    }
+
+
+}

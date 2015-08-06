@@ -15,9 +15,8 @@ Copy the files below in to the folder from where the script will be ran.
         configuration_Download.xml
         Configuration_InstallLocally.xml
         configuration_template.xml
-        DownloadOfficeInstallationToNetworkShare.ps1
+        Configure-GPOOfficeInstallation.ps1
         InstallOffice2016.ps1
-        SetUpOfficeInstallationGpo.ps1
         SetupOffice2013.exe 
 
 
@@ -32,7 +31,7 @@ Copy the files below in to the folder from where the script will be ran.
       
 3. Run the "DownloadOfficeInstallationToNetworkShare.ps1" script and specify the paramaters, $UncPath and $Bitness.
 
-          . .\DownloadOfficeInstallationToNetworkShare -UncPath "\\Pathname\Sharename" -Bitness 32
+          . .\Configure-GPOOfficeInstallation.ps1 -UncPath "\\Pathname\Sharename" -Bitness 32
       
    Office will download per the bit specified to the folder share 
    and will copy the Configuration_Download.xml, 
