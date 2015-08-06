@@ -12,10 +12,10 @@ This script will configure an existing Active Directory Group Policy to silently
 
 Copy the files below in to the folder from where the script will be ran.
 
-        configuration_Download.xml
-        Configuration_InstallLocally.xml
-        configuration_template.xml
         Configure-GPOOfficeInstallation.ps1
+        Configuration_Download.xml
+        Configuration_InstallLocally.xml
+        Configuration_template.xml
         InstallOffice2016.ps1
         SetupOffice2013.exe 
 
@@ -29,30 +29,26 @@ Copy the files below in to the folder from where the script will be ran.
 2. Change the directory to the location where the PowerShell Script is saved.
           Example: cd C:\PowerShellScripts
       
-3. Run the "DownloadOfficeInstallationToNetworkShare.ps1" script and specify the paramaters, $UncPath and $Bitness.
+3. Dot-Source the script to gain access to the functions inside.
 
-          . .\Configure-GPOOfficeInstallation.ps1 -UncPath "\\Pathname\Sharename" -Bitness 32
+           Type: . .\Configure-GPOOfficeInstallation.ps1
+
+           By including the additional period before the relative script path you are 'Dot-Sourcing' 
+           the PowerShell function in the script into your PowerShell session which will allow you to 
+           run the inner functions from the console.
+
+4. Run the Download-GPOOfficeInstallation cmdlet and specify the paramaters, -UncPath
+
+          Download-GPOOfficeInstallation -UncPath "\\Pathname\Sharename"
       
    Office will download per the bit specified to the folder share 
    and will copy the Configuration_Download.xml, 
    Configuration_InstallLocally.xml, and the setup.exe files. 
    The xml files will reflect the bit specified next to OfficeClientEdition.
 
-4. Run the "SetUpOfficeInstallationGpo.ps1" script and specify the paramaters, $UncPath and $GpoName.
+5. Run the "SetUpOfficeInstallationGpo.ps1" script and specify the paramaters, $UncPath and $GpoName.
 
-          . .\SetUpOfficeInstallationGpo -UncPath "\\Pathname\Sharename" -GpoName "MyGpo"
-      
-          The InstallOffice2016.ps1 script will be copied to the GUID 
-          located at %systemroot%\SYSVOL\sysvol\domain\Policies.
-
-5. Verify the Startup script in the Group Policy Object:
-
-          1. From within Group Policy Management right click the GPO and choose Edit.
-          2. Under Computer Configuration click the Policies drop down.
-          3. Expand Windows Settings and click on Scripts.
-          4. In the viewer window double click Startup.
-          5. Click the PowerShell Scripts tab and verify the PS script and parameters are available.
-          6. Click OK to close the Startup Properties window.
+          Configure-GPOOfficeInstallation -UncPath "\\Pathname\Sharename" -GpoName "GroupPolicyName"
 
 6. Refresh the Group Policy on a client computer:
 
