@@ -14,7 +14,7 @@ is the name of the user logged in.
 
 The user logged in must have administrative privelages and PowerShell needs to be opened as an administrator.
 
-The 2013 or 2016 administrative templates need to be installed on the Domain Controller.
+The 2013 administrative templates need to be installed on the Domain Controller.
 
 .NET Framework 3.5 must be installed. If it is not enabled the script will enable it.
 
