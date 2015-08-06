@@ -95,7 +95,7 @@ Computers on the domain with Office versions older than 2013 will copy the osmia
 
           Example: cd C:\PowerShellScripts
           
-3. Run the script.
+3. Run the script. Specify the GPO name and UNC path of the shared folder.
 
           Type . .\Set-TelemetryStartup -GpoName "Office Telemetry" -UncPath "\\Server1\Sharedfolder"
           
