@@ -36,7 +36,7 @@ is the name of the user logged in.
 
 ###Examples
 
-####Install SQL, configure a database, install the telemetry processor, and enable the agent to upload data
+####Check for SQL installations, if a SQL server is not found SQL Server 2014 Express will be downloaded and installed, a database will be configured using the OfficeTelemetryDatabase.sql file, a shared folder will be created and configured, the Telemetry Processor will be installed, and the Telemetry Agent will be enabled to collect and upload data.
 
 1. Open a PowerShell console.
 
@@ -59,12 +59,12 @@ telemetry agent scheduled task to run and collect data.
 
 ####Create a GPO on the Domain Controller
 
-A Group Policy can be set to enable Agent uploading and logging on computers in the domain. If computers in
-the domain have Office versions older than 2013 only the GPO will be created.
+A Group Policy can be set to enable Telemetry Agent uploading and logging on computers in the domain. If computers in
+the domain have versions of Office older than 2013 only the GPO will be created.
 
-1. From the Domain Controller open a PowerShell console.
+1. From the Domain Controller open a PowerShell console as an administrator.
 
-          From the Run dialog type PowerShell
+          From the Run dialog type PowerShell, right click, and choose Run as Administrator.
           
 2. Change the directory to the location where the PowerShell Script is saved.
 
@@ -84,7 +84,7 @@ the domain have Office versions older than 2013 only the GPO will be created.
 
 ####Modify the GPO to copy the Deploy-TelemetryAgent.ps1 script to the Startup folder. 
 
-Computers on the domain with Office versions older than 2013 will copy the osmia32.msi or osmia64.msi file, depending on the computer's bitness, to the temp folder (%temp%) and will install. The script will also create the registry keys and values needed for the telemetry agent to collect and upload data to the telemetry shared folder.
+Computers in the domain with versions of Office older than 2013 will copy the osmia32.msi or osmia64.msi file, depending on the computer's bitness, to the temp folder (%temp%) and will install. The script will also create the registry keys and values needed for the telemetry agent to collect and upload data to the telemetry shared folder.
 
 1. From the Domain Controller open a PowerShell console as an administrator.
 
