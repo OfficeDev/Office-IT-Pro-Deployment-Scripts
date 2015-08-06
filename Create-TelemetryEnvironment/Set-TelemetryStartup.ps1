@@ -33,7 +33,7 @@ The path of the shared drive hosting the osmia32 and osmia64 msi
 files. These are the installation files for the telemetry agent.
 
 .EXAMPLE
-./Set-TelemetryStartup -GpoName "Office Telemetry" -UncPath "\\Server1\Sharedfolder"
+./Set-TelemetryStartup -GpoName "Office Telemetry" -UncPath "\\Server1\Sharedfolder" -CommonFileShare "\\Server1\TDShared"
 The Deploy-TelemetryAgent.ps1 script will be added to the Startup folder
 in a GPO named Office Telemetry and will create parameters for the UNC path.
 
