@@ -70,7 +70,7 @@ the domain have versions of Office older than 2013 only the GPO will be created.
 
           Example: cd C:\PowerShellScripts
           
-3. Run the script to create the GPO.
+3. For computers with versions of Office older than 2010 run the script to create the GPO. Specify the name of the GPO and the name of the SQL Server.
 
           Type . .\Create-TelemetryGpo -GpoName "Office Telemetry" -SqlServerName SQLExpress
           
@@ -78,7 +78,7 @@ the domain have versions of Office older than 2013 only the GPO will be created.
           the PowerShell function in the script into your PowerShell session which will allow you to 
           run the function 'Get-ModernOfficeApps' from the console.
 
-4. Run the script to create the GPO and set the registry values for Office 2013.
+4. For computers with versions of Office newer than 2010 run the script to create the GPO and set the registry values to enable Telemetry Agent logging and uploading.
 
           Type . .\Create-TelemetryGpo -GpoName "Office Telemetry" -SqlServerName SQLExpress -officeVersion 2013
 
