@@ -226,17 +226,22 @@ namespace DiskSpaceChecker
 }
 
 Process{
-    $csvTempPath = "C:\Users\Public\Documents\test.csv"
+    Write-Host "     Creating DiskChecker Object"
 	Add-Type -TypeDefinition $sourceCode -ReferencedAssemblies $assemblies -ErrorAction STOP;
     $checker = New-Object DiskSpaceChecker.DiskChecker
+    Write-Host "     Getting Directory Info"
     $dInfo = New-Object System.IO.DirectoryInfo $DirectoryPath
-    $checker.DirectorySize($dInfo, 0);
+    Write-Host "     Checking Used Disk Space. This may take several minutes..."
+    $checker.DirectorySize($dInfo, 0) | Out-Null
+    Write-Host "     Getting Free Space"
     $DirectoryDrive = $checker.DirectorySizeInfos | ? Name -EQ $DirectoryPath
     $Directoryinfo = $checker.GetTotalFreeSpace($DirectoryPath)
     if($Directoryinfo -ne $null){
         $DirectoryDrive.TotalSize = $Directoryinfo.TotalSize
         $DirectoryDrive.FreeSpace = $Directoryinfo.TotalFreeSpace
     }
+    Write-Host "     Outputting to $ResultFilePath"
     $checker.DirectorySizeInfos | Export-Csv $ResultFilePath -NoTypeInformation
     $checker.Reset();
+    Write-Host "     Process Complete"
 }
