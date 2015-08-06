@@ -2,7 +2,7 @@
 
 Configure the Office Telemetry Dashboard. If SQL Server is not installed SQL Server 2014 Express 
 will be installed. A database will be set up using the standard settings for Office Telemetry found in the dpconfig.exe file.
-A shared folder will be created and configured to allow telemetry agents to upload data. A Group Policy can be created to enable telemetry agents on computers in a domain. Computers will versions of Office older than 2013 will need to have the telemetry agent installed. Follow the instructions to create the GPO that will install and enable the telemetry agent on computers with versions of Office older than 2013.
+A shared folder will be created and configured to allow telemetry agents to upload data. A Group Policy can be created to enable telemetry agents on computers in a domain. Computers with versions of Office older than 2013 will need to have the telemetry agent installed. Follow the instructions to create the GPO that will install and enable the telemetry agent on computers with versions of Office older than 2013.
 
 ###Pre-requisites
 
