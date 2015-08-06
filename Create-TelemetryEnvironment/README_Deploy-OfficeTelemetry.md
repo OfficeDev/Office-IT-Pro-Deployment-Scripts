@@ -7,7 +7,7 @@ upload data.
 
 ###Pre-requisites
 
-The Deploy-TelemetryDashboard script must be ran from a machine with Office 2013 or 2016 already installed.
+1. The Deploy-TelemetryDashboard script must be ran from a machine with Office 2013 or 2016 already installed.
 
 Copy the OfficeTelemetryDatabase.sql file to C:\Users\username\Appdata\Local\Temp where username
 is the name of the user logged in.
@@ -25,6 +25,20 @@ Links:
 Overview of Office Telemetry: https://technet.microsoft.com/en-us/library/JJ863580.aspx
 
 SQL Server 2014 Express download: https://www.microsoft.com/en-us/download/details.aspx?id=42299
+
+###Setup
+
+1. Copy the below files in to the folder from where the script will be ran.
+
+          Create-TelemetryGpo.ps1
+          Deploy-TelemetryAgent.ps1
+          Deploy-TelemetryDashboard.ps1
+          Set-TelemetryStartup.ps1
+          
+2. Copy the OfficeTelemetryDatabase.sql file to C:\Users\username\Appdata\Local\Temp (%temp%) where username
+is the name of the user logged in.
+          
+3. Before creating the GPO, if you are testing on computers in the domain with Office versions older than 2013 copy the osmia32 and osmia64 msi files in to a shared folder. 
 
 ###Examples
 
