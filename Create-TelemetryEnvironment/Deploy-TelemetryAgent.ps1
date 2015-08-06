@@ -1,8 +1,10 @@
 ﻿
 Param
 (
-    [Paramater(Mandatory=$True)]
-    [string]$UncPath
+    [Parameter(Mandatory=$True)]
+    [string]$UncPath,
+    [Parameter(Mandatory=$True)]
+    [string]$CommonFileShare
 )
 
 # Return the bitness of Windows.
@@ -71,7 +73,7 @@ function Configure-TelemetryAgent([string] $database, [string] $folderName) {
         $key = "HKCU:\Software\Policies\Microsoft\Office\16.0\osm"
     }
     
-    Add-RegistryKey $key "CommonFileShare" "\\Client2\TDShared"  "String"
+    Add-RegistryKey $key "CommonFileShare" "$CommonFileShare"  "String"
 
     Add-RegistryKey $key "Tag1" "TAG1" "String"
     Add-RegistryKey $key "Tag2" "TAG2" "String"
