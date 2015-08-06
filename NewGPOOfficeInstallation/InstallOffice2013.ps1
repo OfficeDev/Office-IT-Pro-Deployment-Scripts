@@ -10,7 +10,7 @@ Param
 
 Set-Location $UncPath
 
-$c2RFileName = "setup.exe"
+$c2RFileName = "SetupOffice2013.exe"
 $app = ".\$c2RFileName"
 
 $arguments = "/configure", "$ConfigFileName"
