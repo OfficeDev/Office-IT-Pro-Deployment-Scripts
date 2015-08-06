@@ -4,11 +4,11 @@ Param
 	[Parameter(Mandatory=$true)]
 	[String]$GpoName,
 
-    [Parameter(Mandatory=$true)]
-    [string]$UncPath,
+    	[Parameter(Mandatory=$true)]
+    	[string]$UncPath,
 
-    [Parameter(Mandatory=$true)]
-    [string]$CommonFileShare,
+    	[Parameter(Mandatory=$true)]
+    	[string]$CommonFileShare,
 	
 	[Parameter()]
 	[String]$ScriptName = "Deploy-TelemetryAgent.ps1"
