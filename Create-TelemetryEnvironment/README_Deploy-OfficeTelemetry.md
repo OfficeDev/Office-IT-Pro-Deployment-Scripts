@@ -1,9 +1,8 @@
 #Deploy Office Telemetry
 
-Configure Office Telemetry Dashboard. If SQL Server is not installed SQL Server 2014 Express 
-will be installed. A database will be set up using the built-in settings for Office Telemetry.
-A shared folder will be created and permissions will be set up to allow telemetry agents to 
-upload data.
+Configure the Office Telemetry Dashboard. If SQL Server is not installed SQL Server 2014 Express 
+will be installed. A database will be set up using the standard settings for Office Telemetry found in the dpconfig.exe file.
+A shared folder will be created and configured to allow telemetry agents to upload data. A Group Policy can be created to enable telemetry agents on computers in a domain. Computers will versions of Office older than 2013 will need to have the telemetry agent installed. Follow the instructions to create the GPO that will install and enable the telemetry agent on computers with versions of Office older than 2013.
 
 ###Pre-requisites
 
@@ -15,9 +14,9 @@ upload data.
 
 ###Links:
 
-2013 Administrative Templates: https://www.microsoft.com/en-us/download/details.aspx?id=35554
-
 Overview of Office Telemetry: https://technet.microsoft.com/en-us/library/JJ863580.aspx
+
+2013 Administrative Templates: https://www.microsoft.com/en-us/download/details.aspx?id=35554
 
 SQL Server 2014 Express download: https://www.microsoft.com/en-us/download/details.aspx?id=42299
 
@@ -102,3 +101,25 @@ Computers on the domain with Office versions older than 2013 will copy the osmia
           By including the additional period before the relative script path you are 'Dot-Sourcing' 
           the PowerShell function in the script into your PowerShell session which will allow you to 
           run the function 'Get-ModernOfficeApps' from the console.
+          
+4. Verify the Deploy-TelemetryAgent.ps1 script is in the GPO startup folder.
+
+          1. Open Group Policy Management
+          2. Right click the newly created GPO and choose Edit.
+          3. Under Computer Configuration click the drop down next to Policies.
+          4. Click the drop down next to Windows Setting and click on Scripts.
+          5. Double click Startup and click the PowerShell Scripts tab.
+          6. Verify Deploy-TelemetryAgent.ps1 is under Name and -UncPath \\sharedfolder\path is under Parameters where \\sharedfolder\path is the path you entered.
+          7. Click OK to close the Startup Properties window.
+          
+5. Link the new GPO to the correct OU in the domain.
+
+          1. Right click on the apporpriate OU and choose Link an Existing GPO...
+          2. Select the GPO click OK.
+
+6. Refresh the group policy from a computer in the domain and restart.
+
+          1. From a run dialogue box type cmd and press Enter.
+          2. Type gpupdate -force and press Enter.
+          3. Restart the computer.
+          
