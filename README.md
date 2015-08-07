@@ -52,9 +52,14 @@ This is high level plan for contributing and the structure that we have in place
 <LI>There will be 3 main levels of branches: 1 master branch, 1 development branch, feature and bug branches
 <LI>Each powershell script will have its own branch and changes will be made at that level
 <UL>
-<LI>The 3rd level naming conventions will be as follows - Feature-FeatureName or Bug-FeatureName</UL>
+<LI>The 3rd level naming conventions will be as follows - Feature-FeatureName or Bug-BugName</UL>
 <LI>Pull requests will be made from the feature branches into the development branch and a code review will be completed in the development branch
 <LI>Pull requests should only be made from the feature branch after the script is tested and useable
 <LI>After the code review is complete a pull request will be made from the development branch into the master branch
 <LI>Changes to scripts (new functionality or bug fix) should be done at the thrid level (feature branches) by cloning the development branch using the naming conventions above
+<LI>Requests for changes to scripts can be made by submitting an issue and using the appropriate tag
+<UL>
+<LI>For additional features to an existing script, use the label "enhancement"
+<LI>For bugs, use the label "bug"
+<LI>All issues will be reviewed and prioritized each day as we work to add new scripts and improve existing ones</UL>
 </UL>
