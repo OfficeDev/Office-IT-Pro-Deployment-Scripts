@@ -88,7 +88,16 @@ function Configure-TelemetryAgent([string] $database, [string] $folderName) {
     
 }
 
-
-Run-AgentInstaller
+function Deploy-TelemetryAgent{
 
 Configure-TelemetryAgent
+
+    if($officeVersion -ne '15' -and $officeVersion -ne '16'){
+
+        Run-AgentInstaller
+
+    }
+
+}
+
+Deploy-TelemetryAgent $UncPath $CommonFileShare
