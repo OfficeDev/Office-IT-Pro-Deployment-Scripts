@@ -34,6 +34,11 @@ This script will configure an existing Active Directory Group Policy to silently
 
 [README](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/master/Configure-GPOOfficeInstallation/README_New-GPOOfficeInstallation.md)
 
+### Get-NewOfficeUsers
+Two functions to identify licensed Office 365 users and track the dates they were enabled or disabled.
+
+[README](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/master/Get-NewOfficeUsers/README_Get-NewOfficeUsers.md)
+
 ## New to PowerShell and Office 365?
 Check out [PowerShell for Office 365](https://poweshell.office.com) for advice on getting started, key scenarios and script samples.  
 
