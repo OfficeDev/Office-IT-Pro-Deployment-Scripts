@@ -4,19 +4,35 @@ This repo is a collection of useful PowerShell scripts to make deploying Office 
 ## Scripts
 For more detailed documentation of each script, check the readme file in the corresponding folder
 
-### Get-OfficeVersion
-Query a local or remote workstations to find the version of Office that is installed.
+### Edit-OfficeConfigurationFile
+Script to modify the Configuration.xml file to configure installation options for Click-to-Run for Office 365 products.
 
-### Get-ModernApps
-Remotely verify the modern apps installed on client machines across a domain.
+[README](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/master/Edit-OfficeConfigurationFile/README_Edit-OfficeConfigurationFile.md)
 
-### Copy-OfficePolicies
+### Setup-SCCMOfficeUpdates
+Configures System Center Configuration Manager (SCCM) to configure Office Click-To-Run clients to use their closest Distribution Point (DP) for Office Updates.
+
+[README](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/master/Setup-SCCMOfficeUpdates/README_Setup-SCCMOfficeUpdates.md)
+
+### Get-OfficeVersion    
+Query a local or remote workstations to find the version of Office that is installed. 
+
+[README](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/master/Get-OfficeVersion/README_Get-OfficeVersion.md)
+
+### Copy-OfficeGPOSettings
 Automate the process of moving from an existing version of Office to a newer version while retaining the current set of group policies. 
 
-### Check-DiskSpace
-Checks the space of a disk storing the results in a file
+[README](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/master/Copy-OfficeGPOSettings/README_Copy-OfficeGPOSettings.md)
 
-### Configure-SCCMOfficeUpdates
+### Get-OfficeModernApps
+Remotely verify the modern apps installed on client machines across a domain.
+
+[README](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/master/Get-ModernOfficeApps/README_Get-ModernOfficeApps.md)
+
+### Configure-GPOOfficeInstallation
+This script will configure an existing Active Directory Group Policy to silently install Office 2013 Click-To-Run on computer startup.
+
+[README](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/master/Configure-GPOOfficeInstallation/README_New-GPOOfficeInstallation.md)
 
 ## New to PowerShell and Office 365?
 Check out [PowerShell for Office 365](https://poweshell.office.com) for advice on getting started, key scenarios and script samples.  
