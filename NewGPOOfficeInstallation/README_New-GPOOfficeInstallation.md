@@ -12,7 +12,7 @@ For more information on deploying Office via Group Policy go to https://technet.
 
 ###Notes
 
-##Notes
+####Notes
 
 
 ###Setup
