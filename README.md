@@ -17,6 +17,8 @@ Query a local or remote workstations to find the version of Office that is insta
 ### Copy-OfficeGPOSettings
 Automate the process of moving from an existing version of Office to a newer version while retaining the current set of group policies. 
 
+[README](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/master/Copy-OfficeGPOSettings/README_Copy-OfficeGPOSettings.md)
+
 ### Get-OfficeModernApps
 Remotely verify the modern apps installed on client machines across a domain.
 
