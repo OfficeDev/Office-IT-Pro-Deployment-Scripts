@@ -29,6 +29,11 @@ Remotely verify the modern apps installed on client machines across a domain.
 
 [README](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/master/Get-ModernOfficeApps/README_Get-ModernOfficeApps.md)
 
+### Configure-GPOOfficeInstallation
+This script will configure an existing Active Directory Group Policy to silently install Office 2013 Click-To-Run on computer startup.
+
+[README](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/master/Configure-GPOOfficeInstallation/README_New-GPOOfficeInstallation.md)
+
 ## New to PowerShell and Office 365?
 Check out [PowerShell for Office 365](https://poweshell.office.com) for advice on getting started, key scenarios and script samples.  
 
