@@ -10,7 +10,7 @@ Configures System Center Configuration Manager (SCCM) to configure Office Click-
 ### Get-OfficeVersion
 Query a local or remote workstations to find the version of Office that is installed.
 
-https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/master/Get-OfficeVersion/README_Get-OfficeVersion.md
+[README](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/master/Get-OfficeVersion/README_Get-OfficeVersion.md)
 
 ### Copy-OfficeGPOSettings
 Automate the process of moving from an existing version of Office to a newer version while retaining the current set of group policies. 
