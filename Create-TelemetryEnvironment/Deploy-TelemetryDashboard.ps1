@@ -921,7 +921,7 @@ function Configure-DashboardComponents {
 }
 
 # Main script flow
-function Deploy-TelemetryDashboard {
+
 Confirm-ConsoleBitness
 
 Check-Elevated
@@ -965,5 +965,4 @@ Get-SqlServerName
 
         Write-RegFile $folderName
     }
-}
  
