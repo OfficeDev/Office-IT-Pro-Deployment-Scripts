@@ -41,10 +41,9 @@ Copy the files below in to the folder from where the script will be ran.
 
           Download-GPOOfficeInstallation -UncPath "\\Pathname\Sharename"
       
-   Office will download per the bit specified to the folder share 
+   Office will download the Office install files to the specified folder share 
    and will copy the Configuration_Download.xml, 
-   Configuration_InstallLocally.xml, and the setup.exe files. 
-   The xml files will reflect the bit specified next to OfficeClientEdition.
+   Configuration_InstallLocally.xml, and the SetupOffice2013.exe files. 
 
 5. Run the "SetUpOfficeInstallationGpo.ps1" script and specify the paramaters, $UncPath and $GpoName.
 
