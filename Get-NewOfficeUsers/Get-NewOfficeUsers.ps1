@@ -374,6 +374,7 @@ Process{
         $Progress += 1
         Write-Progress -Activity "Sending Emails" -Status "Processing Users" -PercentComplete ($Progress/$Denominator)
     }
+    $Users | Export-Csv $CSVPath
 }
 
 }
