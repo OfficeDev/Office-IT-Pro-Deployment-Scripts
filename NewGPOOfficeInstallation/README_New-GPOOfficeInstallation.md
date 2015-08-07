@@ -8,6 +8,11 @@ This script will configure an existing Active Directory Group Policy to silently
 2. A shared network folder for Office Installation Files.
 3. An existing Group Policy Object that is assigned to the target computer you want to install Office 2013 Click-To-Run
 
+###Notes
+
+
+https://technet.microsoft.com/en-us/library/Ff602181.aspx
+
 ###Setup
 
 Copy the files below in to the folder from where the script will be ran.
