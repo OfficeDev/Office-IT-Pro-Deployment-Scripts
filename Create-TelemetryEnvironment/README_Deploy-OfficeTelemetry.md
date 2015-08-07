@@ -20,6 +20,8 @@ Overview of Office Telemetry: https://technet.microsoft.com/en-us/library/JJ8635
 
 SQL Server 2014 Express download: https://www.microsoft.com/en-us/download/details.aspx?id=42299
 
+.NET Framework 3.5 download: https://www.microsoft.com/en-us/download/details.aspx?id=21
+
 ###Setup
 
 1. Copy the below files in to the folder from where the script will be ran.
