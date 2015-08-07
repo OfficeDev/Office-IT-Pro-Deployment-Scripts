@@ -2,6 +2,8 @@
 
 This script will configure an existing Active Directory Group Policy to silently install Office 2013 Click-To-Run on computer startup.
 
+For more information on deploying Office via Group Policy go to https://technet.microsoft.com/en-us/library/Ff602181.aspx
+
 ###Pre-requisites
 
 1. Active Directory
@@ -10,8 +12,8 @@ This script will configure an existing Active Directory Group Policy to silently
 
 ###Notes
 
+##Notes
 
-https://technet.microsoft.com/en-us/library/Ff602181.aspx
 
 ###Setup
 
