@@ -7,6 +7,8 @@ For more detailed documentation of each script, check the readme file in the cor
 ### Setup-SCCMOfficeUpdates
 Configures System Center Configuration Manager (SCCM) to configure Office Click-To-Run clients to use their closest Distribution Point (DP) for Office Updates.
 
+[README](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/master/Setup-SCCMOfficeUpdates/README_Setup-SCCMOfficeUpdates.md)
+
 ### Get-OfficeVersion    
 Query a local or remote workstations to find the version of Office that is installed. 
 
