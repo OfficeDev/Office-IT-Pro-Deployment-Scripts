@@ -4,6 +4,11 @@ This repo is a collection of useful PowerShell scripts to make deploying Office 
 ## Scripts
 For more detailed documentation of each script, check the readme file in the corresponding folder
 
+### Edit-OfficeConfigurationFile
+Script to modify the Configuration.xml file to configure installation options for Click-to-Run for Office 365 products.
+
+[README](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/master/Edit-OfficeConfigurationFile/README_Edit-OfficeConfigurationFile.md)
+
 ### Setup-SCCMOfficeUpdates
 Configures System Center Configuration Manager (SCCM) to configure Office Click-To-Run clients to use their closest Distribution Point (DP) for Office Updates.
 
@@ -21,6 +26,8 @@ Automate the process of moving from an existing version of Office to a newer ver
 
 ### Get-OfficeModernApps
 Remotely verify the modern apps installed on client machines across a domain.
+
+[README](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/master/Get-ModernOfficeApps/README_Get-ModernOfficeApps.md)
 
 ## New to PowerShell and Office 365?
 Check out [PowerShell for Office 365](https://poweshell.office.com) for advice on getting started, key scenarios and script samples.  
