@@ -1,4 +1,21 @@
-﻿
+﻿$90DayBody = "90 Days"
+
+$90DaySubject = "90Filler"
+
+$30DayBody = "30 Days"
+
+$30DaySubject = "30Filler"
+
+$5DayBody = "5 Days"
+
+$5DaySubject = "5Filler"
+
+$1DayBody = "1 Days"
+
+$1DaySubject = "1Filler"
+
+
+
 Function Update-UserLicenseData {
 
 <#
@@ -65,10 +82,10 @@ Proper use of this script should involve running this as a scheduled task
     6.  Next, go to the Actions tab and click New to set the action for this task to run. 
         Set the Action to Start a program.
 
-    7.  In the Program/script box enter "PowerShell."
+    7.  In the Program/script box enter "PowerShell"
         In the Add arguments (optional) box enter the value:
 
-         .\Update-UserLicenseData.ps1 -ServiceName [ServiceName] -Username [username] -Password [password])
+        . ./Get-NewOfficeUsers.ps1;Update-UserLicenseData -ServiceName [ServiceName] -Username [username] -Password [password])
 
     8.  Then, in the Start in (optional) box, add the location of the folder that contains 
         your PowerShell script.
@@ -129,7 +146,7 @@ Process{
 
     Write-host "Retrieving User List..."
 
-    $Users = Get-MsolUser | ? IsLicensed -eq $True | Select DisplayName, Licenses, LiveId, ObjectId, SignInName 
+    $Users = Get-MsolUser | ? IsLicensed -eq $True | Select DisplayName, Licenses, LiveId, ObjectId, SignInName, UserPrincipalName 
     
     #Get list of users with the correct service plan
     $LicensedUsers = new-object PSObject[] 1;
@@ -149,6 +166,10 @@ Process{
         if($User -ne $Null){
             Add-Member -InputObject $User -MemberType NoteProperty -Name LicensedAsOf -Value "$(Get-Date -Format "yyyy-MM-dd hh:mm")"
             Add-Member -InputObject $User -MemberType NoteProperty -Name DelicensedAsOf -Value "-"
+            Add-Member -InputObject $User -MemberType NoteProperty -Name Day1EmailSent -Value "$false"
+            Add-Member -InputObject $User -MemberType NoteProperty -Name Day5EmailSent -Value "$false"
+            Add-Member -InputObject $User -MemberType NoteProperty -Name Day30EmailSent -Value "$false"
+            Add-Member -InputObject $User -MemberType NoteProperty -Name Day90EmailSent -Value "$false"
         }
     }
 
@@ -290,6 +311,68 @@ Process{
         }
 
         return $NewUsers
+    }
+}
+
+}
+
+Function Send-RecentUserEmails{
+
+[CmdletBinding()]
+Param(
+
+    [Parameter()]
+    [DateTime] $SmtpServer,
+
+    [Parameter()]
+    [string] $CSVPath = "$env:APPDATA\Microsoft\OfficeAutomation\OfficeLicenseTracking.csv",
+
+    [Parameter(ParameterSetName="PSCredential")]
+    [PSCredential] $Credentials,
+
+    [Parameter(ParameterSetName="UsernamePassword")]
+    [string] $Username,
+
+    [Parameter(ParameterSetName="UsernamePassword")]
+    [string] $Password
+
+)
+
+Process{
+    if($PSCmdlet.ParameterSetName -eq "UsernamePassword")
+    {
+        $PWord = ConvertTo-SecureString –String $Password –AsPlainText -Force
+        $Credentials = New-Object –TypeName System.Management.Automation.PSCredential –ArgumentList $Username, $PWord
+    } else {
+      if (!($Credentials)) {
+        $Credentials = (Get-Credential)
+      }
+    }
+    $5DaysAgo = (Get-Date).AddDays(-5);
+    $30DaysAgo = (Get-Date).AddDays(-30);
+    $90DaysAgo = (Get-Date).AddDays(-90);
+    $Users = Import-Csv $CSVPath
+
+    $Denominator = $Users.Count;
+    [int]$Progress = 0;
+    Write-Progress -Activity "Sending Emails" -Status "Processing Users" -PercentComplete ($Progress/$Denominator)
+    foreach( $User in $Users ){
+        
+        if((Get-Date($User.LicensedAsOf)) -gt $5DaysAgo -and $User.Day1EmailSent -eq $false){
+            Send-MailMessage -To $User.UserPrincipalName -From $Credentials.UserName -Subject $1DaySubject -Body $1DayBody -SmtpServer $SmtpServer -Credential $Credentials -UseSsl -Port "587"
+            $User.Day1EmailSent = $true;
+        }elseif((Get-Date($User.LicensedAsOf)) -gt $30DaysAgo -and $User.Day5EmailSent -eq $false){
+            Send-MailMessage -To $User.UserPrincipalName -From $Credentials.UserName -Subject $5DaySubject -Body $5DayBody -SmtpServer $SmtpServer -Credential $Credentials -UseSsl -Port "587"
+            $User.Day5EmailSent = $true;
+        }elseif((Get-Date($User.LicensedAsOf)) -gt $90DaysAgo -and $User.Day30EmailSent -eq $false){
+            Send-MailMessage -To $User.UserPrincipalName -From $Credentials.UserName -Subject $30DaySubject -Body $30DayBody -SmtpServer $SmtpServer -Credential $Credentials -UseSsl -Port "587"
+            $User.Day30EmailSent = $true;
+        }elseif($User.Day90EmailSent -eq $false){
+            Send-MailMessage -To $User.UserPrincipalName -From $Credentials.UserName -Subject $90DaySubject -Body $90DayBody -SmtpServer $SmtpServer -Credential $Credentials -UseSsl -Port "587"
+            $User.Day90EmailSent = $true;
+        }
+        $Progress += 1
+        Write-Progress -Activity "Sending Emails" -Status "Processing Users" -PercentComplete ($Progress/$Denominator)
     }
 }
 
