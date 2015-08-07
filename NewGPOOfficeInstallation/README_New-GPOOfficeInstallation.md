@@ -7,8 +7,8 @@ For more information on deploying Office via Group Policy go to https://technet.
 ###Pre-requisites
 
 1. Active Directory
-2. A shared network folder for Office Installation Files.
-3. An existing Group Policy Object that is assigned to the target computer you want to install Office 2013 Click-To-Run
+2. A shared network folder for Office installation files
+3. An existing Group Policy Object that is assigned to the target computers you want to install Office 2013 Click-To-Run
 
 ###Network Share
 
