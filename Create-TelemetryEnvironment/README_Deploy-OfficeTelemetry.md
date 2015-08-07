@@ -102,7 +102,7 @@ Computers in the domain with versions of Office older than 2013 will copy the os
           the PowerShell function in the script into your PowerShell session which will allow you to 
           run the function 'Get-ModernOfficeApps' from the console.
           
-4. Verify the Deploy-TelemetryAgent.ps1 script is in the GPO startup folder.
+4. To verify the Deploy-TelemetryAgent.ps1 script is in the GPO startup folder:
 
           1. Open Group Policy Management
           2. Right click the newly created GPO and choose Edit.
