@@ -10,10 +10,13 @@ For more information on deploying Office via Group Policy go to https://technet.
 2. A shared network folder for Office Installation Files.
 3. An existing Group Policy Object that is assigned to the target computer you want to install Office 2013 Click-To-Run
 
-###Notes
+###Network Share
 
-####Network Share
+When deciding the location of the network share you should consider the locations from which the client workstations are accessing the share.  There are several options to ensure that workstations are installing Office over their local network.
 
+1. *Multiple GPOs* - You could create a separate Group Policy and a Network Share for each network site. For each network site you could create local share for the Office installation file and create a Group Policy that is applied to the workstations in that site to point to that local share.  This will provide a solution that provides a local copy of the Office installation files for each site.  The limitation to this solution is depending on how the Group Policy is assigned to the workstations this may not ensure that the computer is using a local share to install Office.  This could happen if a laptop user is a different location from where their Group Policy is assigned.  Another issue with this solution is having to maintain multiple Group Policies.
+
+2. *DFS Shares* - If the netowrk share that is used is a Distributed File System (DFS) share you can leverage the replication capabilities of DFS to ensure that each network site has copy of the Office installation files.  Also by using a DFS share path you can ensure that the workstations 
 
 ###Setup
 
