@@ -379,6 +379,11 @@ $(document).ready(function () {
         return false;
     });
 
+    $("#btViewOnGitHub").button().click(function () {
+        window.navigate("https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/Development/CTROfficeXmlWebEditor");
+        return false;
+    });
+
 });
 
 function setActiveTab() {
