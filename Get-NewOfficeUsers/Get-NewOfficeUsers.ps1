@@ -68,17 +68,17 @@ Used to generate Credentials for connecting to MSOL service
 Used to generate Credentials for connecting to MSOL service
 
 .Example
-.\Update-UserLicenseData.ps1
+Update-UserLicenseData
 Get list of Users that are licensed for OFFICESUBSCRIPTION service plan and store the results in an AppData Folder
 The user will be prompted for their credentials.
 
 .Example
-.\Update-UserLicenseData.ps1 -ServiceName "OFFICESUBSCRIPTION"
+Update-UserLicenseData -ServiceName "OFFICESUBSCRIPTION"
 Get list of Users that are licensed for OFFICESUBSCRIPTION service plan and store the results in public documents.
 The user will be prompted for their credentials.
 
 .Example
-.\Update-UserLicenseData.ps1 -ServiceName "OFFICESUBSCRIPTION" -CSVPath "$env:Public\Documents\LicensedUsers.csv" -Credentials $creds
+Update-UserLicenseData -ServiceName "OFFICESUBSCRIPTION" -CSVPath "$env:Public\Documents\LicensedUsers.csv" -Credentials $creds
 Get list of Users that are licensed for OFFICESUBSCRIPTION service plan and store the results in public documents.
 The user won't be prompted for their credentials
 
@@ -465,48 +465,51 @@ Process{
         $5DaysAgo = (Get-Date).AddDays(-5);
         $30DaysAgo = (Get-Date).AddDays(-30);
         $90DaysAgo = (Get-Date).AddDays(-90);
+        if(Test-Path $CSVPath){
+            $Users = Import-Csv $CSVPath
 
-        $Users = Import-Csv $CSVPath
-
-        $Denominator = $Users.Count;
-        [int]$Progress = 0;
-        Write-Progress -Activity "Sending Emails" -Status "Processing Users" -PercentComplete ($Progress/$Denominator)
-
-        foreach( $User in $Users ){
-        
-            if((Get-Date($User.LicensedAsOf)) -gt $5DaysAgo -and $User.Day1EmailSent -eq $false){
-
-                $Body = $1DayBody -f $User.DisplayName
-                Send-MailMessage -To $User.UserPrincipalName -From $Credentials.UserName -Subject $1DaySubject -Body $Body -SmtpServer $SmtpServer -Credential $Credentials -UseSsl -Port "587"
-                $User.Day1EmailSent = $true;
-
-            }elseif((Get-Date($User.LicensedAsOf)) -gt $30DaysAgo -and $User.Day5EmailSent -eq $false){
-
-                $Body = $5DayBody -f $User.DisplayName
-                Send-MailMessage -To $User.UserPrincipalName -From $Credentials.UserName -Subject $5DaySubject -Body $Body -SmtpServer $SmtpServer -Credential $Credentials -UseSsl -Port "587"
-                $User.Day5EmailSent = $true;
-
-            }elseif((Get-Date($User.LicensedAsOf)) -gt $90DaysAgo -and $User.Day30EmailSent -eq $false){
-
-                $Body = $30DayBody -f $User.DisplayName
-                Send-MailMessage -To $User.UserPrincipalName -From $Credentials.UserName -Subject $30DaySubject -Body $Body -SmtpServer $SmtpServer -Credential $Credentials -UseSsl -Port "587"
-                $User.Day30EmailSent = $true;
-
-            }elseif($User.Day90EmailSent -eq $false){
-
-                $Body = $90DayBody -f $User.DisplayName
-                Send-MailMessage -To $User.UserPrincipalName -From $Credentials.UserName -Subject $90DaySubject -Body $Body -SmtpServer $SmtpServer -Credential $Credentials -UseSsl -Port "587"
-                $User.Day90EmailSent = $true;
-
-            }#End Date if/elses
-
-            $Progress += 1
+            $Denominator = $Users.Count;
+            [int]$Progress = 0;
             Write-Progress -Activity "Sending Emails" -Status "Processing Users" -PercentComplete ($Progress/$Denominator)
 
-        }#end Foreach User
+            foreach( $User in $Users ){
+        
+                if((Get-Date($User.LicensedAsOf)) -gt $5DaysAgo -and $User.Day1EmailSent -eq $false){
 
-        $Users | Export-Csv $CSVPath
+                    $Body = $1DayBody -f $User.DisplayName
+                    Send-MailMessage -To $User.UserPrincipalName -From $Credentials.UserName -Subject $1DaySubject -Body $Body -SmtpServer $SmtpServer -Credential $Credentials -UseSsl -Port "587"
+                    $User.Day1EmailSent = "$(Get-Date -Format "yyyy-MM-dd hh:mm")" ;
 
+                }elseif((Get-Date($User.LicensedAsOf)) -gt $30DaysAgo -and $User.Day5EmailSent -eq $false){
+
+                    $Body = $5DayBody -f $User.DisplayName
+                    Send-MailMessage -To $User.UserPrincipalName -From $Credentials.UserName -Subject $5DaySubject -Body $Body -SmtpServer $SmtpServer -Credential $Credentials -UseSsl -Port "587"
+                    $User.Day5EmailSent = "$(Get-Date -Format "yyyy-MM-dd hh:mm")";
+
+                }elseif((Get-Date($User.LicensedAsOf)) -gt $90DaysAgo -and $User.Day30EmailSent -eq $false){
+
+                    $Body = $30DayBody -f $User.DisplayName
+                    Send-MailMessage -To $User.UserPrincipalName -From $Credentials.UserName -Subject $30DaySubject -Body $Body -SmtpServer $SmtpServer -Credential $Credentials -UseSsl -Port "587"
+                    $User.Day30EmailSent = "$(Get-Date -Format "yyyy-MM-dd hh:mm")";
+
+                }elseif($User.Day90EmailSent -eq $false){
+
+                    $Body = $90DayBody -f $User.DisplayName
+                    Send-MailMessage -To $User.UserPrincipalName -From $Credentials.UserName -Subject $90DaySubject -Body $Body -SmtpServer $SmtpServer -Credential $Credentials -UseSsl -Port "587"
+                    $User.Day90EmailSent = "$(Get-Date -Format "yyyy-MM-dd hh:mm")";
+
+                }#End Date if/elses
+
+                $Progress += 1
+                Write-Progress -Activity "Sending Emails" -Status "Processing Users" -PercentComplete ($Progress/$Denominator)
+
+            }#end Foreach User
+
+            $Users | Export-Csv $CSVPath
+        }#end If TestPath
+        else{
+            Write-Host "Can't find file at $CSVPath"
+        }
     }#end if Credentials
 }#End Process
 
