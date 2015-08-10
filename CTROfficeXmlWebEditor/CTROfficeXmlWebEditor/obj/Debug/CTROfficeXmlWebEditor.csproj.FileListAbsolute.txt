@@ -1,0 +1,5 @@
+e:\OfficeAutomation\DEV\ManagedCode\CTROfficeXmlWebEditor\CTROfficeXmlWebEditor\bin\CTROfficeXmlWebEditor.dll.config
+e:\OfficeAutomation\DEV\ManagedCode\CTROfficeXmlWebEditor\CTROfficeXmlWebEditor\bin\CTROfficeXmlWebEditor.dll
+e:\OfficeAutomation\DEV\ManagedCode\CTROfficeXmlWebEditor\CTROfficeXmlWebEditor\bin\CTROfficeXmlWebEditor.pdb
+e:\OfficeAutomation\DEV\ManagedCode\CTROfficeXmlWebEditor\CTROfficeXmlWebEditor\obj\Debug\CTROfficeXmlWebEditor.dll
+e:\OfficeAutomation\DEV\ManagedCode\CTROfficeXmlWebEditor\CTROfficeXmlWebEditor\obj\Debug\CTROfficeXmlWebEditor.pdb
