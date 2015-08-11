@@ -49,6 +49,7 @@ A GPO named "Office Telemetry" will be created.
 
     New-GPO -Name $gpoName
 
+    #The same share created in Deploy-TelemetryDashboard.ps1
     $shareName = "TDShared"
     
     if($OfficeVersion -eq 2013)
@@ -61,6 +62,7 @@ A GPO named "Office Telemetry" will be created.
 
         Write-Host "Enable agent data upload"
         Set-GPRegistryValue -Name $GpoName -Key "HKCU\Software\Policies\Microsoft\office\15.0\osm" -ValueName EnableUpload -Type Dword -Value 1 | Out-Null
+    }
         elseif($OfficeVersion -eq 2016)
         {
             Write-Host "Set the Fileshare name"
