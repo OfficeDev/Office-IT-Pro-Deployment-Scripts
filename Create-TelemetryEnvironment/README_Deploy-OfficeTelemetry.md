@@ -84,3 +84,31 @@ A Group Policy can be set to enable Telemetry Agent uploading and logging on com
           By including the additional period before the relative script path you are 'Dot-Sourcing' 
           the PowerShell function in the script into your PowerShell session which will allow you to 
           run the function 'Get-ModernOfficeApps' from the console.
+
+####Configure the GPO to run on startup
+
+1. From the Domain Controller open a PowerShell console as an administrator.
+
+          From the Run dialog type PowerShell, right click, and choose Run as Administrator.
+          
+2. Change the directory to the location where the PowerShell Script is saved.
+
+          Example: cd C:\PowerShellScripts
+          
+3. Run the script, specify the GPO name and the shared drive the telemetry agent will upload data to.
+
+          Type . .\Set-TelemetryStartup -GpoName "Office Telemetry" -CommonFileShare "\\Server1\TDShared"
+          
+          By including the additional period before the relative script path you are 'Dot-Sourcing' 
+          the PowerShell function in the script into your PowerShell session which will allow you to 
+          run the function 'Get-ModernOfficeApps' from the console.
+
+4. Link the GPO to the correct OU in Group Policy Management.
+
+	  1. Right click on the correct OU and choose Link an existing GPO...
+
+	  2. Highlight the GPO and click OK.
+
+5. From a computer in the OU open a command prompt and type gpupdate /force and press Enter.
+
+6. Restart the computer, log in, and wait for the script to run in the background.
