@@ -7,7 +7,7 @@ Param
     [Parameter(Mandatory=$true)]
     [string]$CommonFileShare,
 
-    [Parameter(Mandatory=$true)]
+    [Parameter()]
     [string]$agentShare,
 	
 	[Parameter()]
@@ -36,6 +36,12 @@ files. These are the installation files for the telemetry agent.
 ./Set-TelemetryStartup -GpoName "Office Telemetry" -CommonFileShare "\\Server1\TDShared"
 The Deploy-TelemetryAgent.ps1 script will be added to the Startup folder
 in a GPO named Office Telemetry and will create parameters for the UNC path.
+
+.EXAMPLE
+./Set-TelemetryStartup -GpoName "Office Telemetry" -CommonFileShare "\\Server1\TDShared" -agentShare "\\Server2\Telemetry Agent"
+The Deploy-TelemetryAgent.ps1 script will be added to the Startup folder
+in a GPO named Office Telemetry and will create parameters for the file share the 
+agent will upload data to and the agent share containing the agent msi files.
 
 #>
 
