@@ -1,14 +1,19 @@
 ﻿Param
 (
     [Parameter(Mandatory=$true)]
-    [string]$CommonFileShare
+    [string]$CommonFileShare,
+
+    [Parameter(Mandatory=$true)]
+    [string]$agentShare
 )
 
-function Deploy-TelemetryAgent3 {
+    $objExcel = New-Object -ComObject Excel.Application           
+    $officeVersion = $objExcel.Version
+
+function Deploy-TelemetryAgent {
 
 begin {
-    $HKLM = [UInt32] "0x80000002";
-    $HKCR = [UInt32] "0x80000000";
+    
     $HKEY_Users = 2147483651;
 
 	$results = new-object PSObject[] 1;
@@ -66,14 +71,46 @@ process {
                     New-ItemProperty -Path $packagePath -Name "EnableFileObfuscation" -Value "0" -PropertyType "DWord" | Out-Null
                     New-ItemProperty -Path $packagePath -Name "AgentRandomDelay" -Value "0" -PropertyType "DWord" | Out-Null
                    
+            }         
+
+            
+            function Run-AgentInstaller{
+
+
+                [Management.ManagementBaseObject] $os = Get-WMIObject win32_operatingsystem
+                if ($os.OSArchitecture -match "^64")
+                {
+                    $Bit = 64
+                }
+                else
+                {
+                    $Bit = 32
+                }
+
+                if($Bit -eq 32)
+                {
+                Copy-Item -Path "$agentShare\osmia32.msi" -Destination $temp:Public\Documents
+
+                Start-Process -FilePath "$temp:Public\Documents\osmia32.msi"
+                }
+                else
+                {
+                Copy-Item -Path "$agentShare\osmia64.msi" -Destination $temp:Public\Documents
+
+                Start-Process -FilePath "$temp:Public\Documents\osmia64.msi"
+                }
 
             }
 
-    }
+            if($officeVersion -ne '15' -and $officeVersion -ne '16'){
+
+                Run-AgentInstaller
+
+            }
  
+    }
+
 }
 
 
-Deploy-TelemetryAgent3 $CommonFileShare
-
-
+Deploy-TelemetryAgent $CommonFileShare $agentShare
