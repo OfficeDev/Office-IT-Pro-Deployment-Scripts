@@ -4,8 +4,11 @@ Param
 	[Parameter(Mandatory=$true)]
 	[String]$GpoName,
 
-    	[Parameter(Mandatory=$true)]
-    	[string]$CommonFileShare,
+    [Parameter(Mandatory=$true)]
+    [string]$CommonFileShare,
+
+    [Parameter(Mandatory=$true)]
+    [string]$agentShare,
 	
 	[Parameter()]
 	[String]$ScriptName = "Deploy-TelemetryAgent.ps1"
@@ -162,7 +165,7 @@ Process
 
 	$newContent[$nextIndex+1] = "{0}CmdLine={1}" -f $nextScriptIndex, $ScriptName
 
-    $newContent[$nextIndex+2] = "{0}Parameters=-CommonFileShare {1} " -f $nextScriptIndex, $CommonFileShare
+    $newContent[$nextIndex+2] = "{0}Parameters=-CommonFileShare {1} -agentShare {2}" -f $nextScriptIndex, $CommonFileShare, $agentShare
     
 	
 	for($i=$nextIndex; $i -lt $length; $i++)
