@@ -1,5 +1,5 @@
 # Office IT Pro Deployment Scripts
-This repo is a collection of useful PowerShell scripts to make deploying Office 2016 and Office 365 ProPlus easier for IT Pros and administrators. 
+This GitHub repository is a collection of useful PowerShell scripts to make deploying Office 2016 and Office 365 ProPlus easier for IT Pros and administrators. 
 
 ## Scripts
 For more detailed documentation of each script, check the readme file in the corresponding folder
