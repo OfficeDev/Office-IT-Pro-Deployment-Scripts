@@ -9,14 +9,14 @@
             font-size: 16px;
             color: white;
             padding: 7px 7px 7px 7px;
-            background-color: #555555;
+            background-color: #008510;
             border: 1px solid black;
             text-decoration: none;
         }
 
         .resource {
-            border-bottom: 1px solid #555555;
-            border-top: 0px none #ffffff;
+            border-bottom: 0px none #ffffff;
+            border-top: 1px solid #555555;
             border-left: 0px none #ffffff;
             border-right: 0px none #ffffff;
             padding-bottom: 20px;
@@ -31,17 +31,30 @@
             font-family: Arial, sans-serif;
             font-weight: normal;
             font-size: 1.25em;
+            color: #0072c6;
+            text-decoration: none;
         }
 
         .learn-more a {
             color: white;
             text-decoration: none;
         }
+
+        .learn-more a:hover {
+            color: white;
+            text-decoration: underline;
+        }
     </style>
     <table style="width:800px;border-bottom:2px solid gray;border-top:2px solid gray;border-left:2px solid gray;border-right:2px solid gray;padding: 10px;">
         <tr>
             <td>
-                <h1>Once More Unto The Breach</h1>
+                <table style="width:770px;background:#0072c6;color:white;text-align:center">
+                    <tr>
+                        <td>
+                            <h1>Once More Unto The Breach</h1>
+                        </td>
+                    </tr>
+                </table>
                 <p>Greetings {0},</p>
                 <p>Learning never stops. Dive a little deeper into Office with these tutorials.</p>
                 <div class="resource">
@@ -113,14 +126,14 @@ $30DayBody =  @'
             font-size: 16px;
             color: white;
             padding: 7px 7px 7px 7px;
-            background-color: #555555;
+            background-color: #008510;
             border: 1px solid black;
             text-decoration: none;
         }
 
         .resource {
-            border-bottom: 1px solid #555555;
-            border-top: 0px none #ffffff;
+            border-bottom: 0px none #ffffff;
+            border-top: 1px solid #555555;
             border-left: 0px none #ffffff;
             border-right: 0px none #ffffff;
             padding-bottom: 20px;
@@ -135,17 +148,31 @@ $30DayBody =  @'
             font-family: Arial, sans-serif;
             font-weight: normal;
             font-size: 1.25em;
+            color: #0072c6;
+            text-decoration: none;
         }
 
         .learn-more a {
             color: white;
             text-decoration: none;
         }
+
+        .learn-more a:hover {
+            color: white;
+            text-decoration: underline;
+        }
+    </style>
     </style>
     <table style="width:800px;border-bottom:2px solid gray;border-top:2px solid gray;border-left:2px solid gray;border-right:2px solid gray;padding: 10px;">
         <tr>
             <td>
-                <h1>The Power of Office</h1>
+                <table style="width:770px;background:#0072c6;color:white;text-align:center">
+                    <tr>
+                        <td>
+                            <h1>The Power of Office</h1>
+                        </td>
+                    </tr>
+                </table>
                 <p>Greetings {0},</p>
                 <p>With Office, you are more powerful than you think. Let these tutorials show you how to unlock that potential.</p>
                 <div class="resource">
@@ -217,14 +244,14 @@ $5DayBody =  @'
             font-size: 16px;
             color: white;
             padding: 7px 7px 7px 7px;
-            background-color: #555555;
+            background-color: #008510;
             border: 1px solid black;
             text-decoration: none;
         }
 
         .resource {
-            border-bottom: 1px solid #555555;
-            border-top: 0px none #ffffff;
+            border-bottom: 0px none #ffffff;
+            border-top: 1px solid #555555;
             border-left: 0px none #ffffff;
             border-right: 0px none #ffffff;
             padding-bottom: 20px;
@@ -239,17 +266,30 @@ $5DayBody =  @'
             font-family: Arial, sans-serif;
             font-weight: normal;
             font-size: 1.25em;
+            color: #0072c6;
+            text-decoration: none;
         }
 
         .learn-more a {
             color: white;
             text-decoration: none;
         }
+
+        .learn-more a:hover {
+            color: white;
+            text-decoration: underline;
+        }
     </style>
     <table style="width:800px;border-bottom:2px solid gray;border-top:2px solid gray;border-left:2px solid gray;border-right:2px solid gray;padding: 10px;">
         <tr>
             <td>
-                <h1>Work Smarter With Office</h1>
+                <table style="width:770px;background:#0072c6;color:white;text-align:center">
+                    <tr>
+                        <td>
+                            <h1>Work Smarter With Office</h1>
+                        </td>
+                    </tr>
+                </table>
                 <p>Greetings {0},</p>
                 <p>Hopefully, you're starting to get a handle on your new Office tools. Here are some more tips on how to get the most out of Office.</p>
                 <div class="resource">
@@ -307,14 +347,14 @@ $1DayBody = @'
             font-size: 16px;
             color: white;
             padding: 7px 7px 7px 7px;
-            background-color: #555555;
+            background-color: #008510;
             border: 1px solid black;
             text-decoration: none;
         }
 
         .resource {
-            border-bottom: 1px solid #555555;
-            border-top: 0px none #ffffff;
+            border-bottom: 0px none #ffffff;
+            border-top: 1px solid #555555;
             border-left: 0px none #ffffff;
             border-right: 0px none #ffffff;
             padding-bottom: 20px;
@@ -329,17 +369,29 @@ $1DayBody = @'
             font-family: Arial, sans-serif;
             font-weight: normal;
             font-size: 1.25em;
+            color: #0072c6;
+            text-decoration: none;
         }
 
         .learn-more a {
             color: white;
             text-decoration: none;
         }
+        .learn-more a:hover {
+            color: white;
+            text-decoration: underline;
+        }
     </style>
     <table style="width:800px;border-bottom:2px solid gray;border-top:2px solid gray;border-left:2px solid gray;border-right:2px solid gray;padding: 10px;">
         <tr>
             <td>
-                <h1>Getting Started With Office</h1>
+                <table style="width:770px;background:#0072c6;color:white;text-align:center">
+                    <tr>
+                        <td>
+                            <h1>Getting Started With Office</h1>
+                        </td>
+                    </tr>
+                </table>
                 <p>Greetings {0},</p>
                 <p>Getting a new set of tools can be confusing especially something as powerful as Office. Check out some of the resources below to help get you rolling.</p>
                 <div class="resource">
