@@ -1,0 +1,170 @@
+﻿<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>Office Deployment Scripts for IT Pros by OfficeDev</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="stylesheets/Index-Main.css" rel="stylesheet">  
+
+      <style>
+          
+           .navbar-static-top {
+               /*background-color: #dc3c00;*/
+               background-image: linear-gradient(120deg, #f56c39, #dc3c00);
+               height: 180px;
+               min-height: 180px;
+           }
+
+          .navbar-static-top button {
+              background-color: #f85d23;
+              border-color: white;
+          }
+
+          .navbar-static-top button:hover {
+              background-color: #f56c39;
+              border-color: white;
+              text-decoration: none;
+              background-color: rgba(255, 255, 255, 0.2);
+              border-color: rgba(255, 255, 255, 0.3);
+          }
+
+          .navbar-static-top button:visited {
+              background-color: #f56c39;
+              border-color: white;
+          }
+
+          .navbar-static-top button:focus {
+              background-color: #f56c39;
+              border-color: white;
+          }
+
+          .project-tagline {
+              color: white;
+          }
+
+          .infoButton {
+              color: #787878;
+          }
+
+          .mainText {
+
+              font-size: 1.2em;
+          }
+
+          .centered {  
+              z-index: 100;
+              position: absolute; 
+              top:10%;  
+              left:10%;  
+          }  
+
+          #bodyDiv {
+              position: relative;
+          }
+
+          .project-tagline {
+              font-weight: normal;
+              opacity: 0.7;
+              font-size: 1.2em;
+              position: relative;
+              top: -15px;
+          }
+
+          .project-name {
+              font-size: 3.25em;
+              font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+          }
+
+          .readme {
+             
+          }
+
+      </style>
+      <script type='text/javascript' src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+      <script type="text/javascript" src="./Scripts/Index-Main.js"></script>
+  </head>
+    <body>
+        
+        
+        <div id="top-nav" class="navbar navbar-inverse navbar-static-top" style="min-width: 1200px;">
+            <div class="container-fluid">
+                <div class="navbar-header" style="width:100%;">
+
+                    <table cellspacing="0" cellpadding="0" style="width: 100%;">
+                        <tr>
+                            <td style="width: 100%;text-align: center;min-width: 800px;">
+                                <h1 class="project-name" style="color:white;">Office Deployment Scripts for IT Pros</h1>
+                            </td>
+                        </tr> 
+                        <tr>
+                            <td style="text-align: center;">
+                                <h2 class="project-tagline">Making Office 2016 and Office 365 ProPlus as simple as CLI </h2>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: center;">
+                                <button id="btViewOnGitHub" class="btn btn-default btn-primary">
+                                    View On GitHub
+                                    
+                                </button>
+                                <button id="btDownloadZip" class="btn btn-default btn-primary">
+                                    Download .zip
+                                </button>
+                            </td>
+                        </tr>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+        
+        <div id="bodyDiv" style="width: 1400px; position: relative;min-width: 1200px;">
+        
+            <div id="textDiv" style="width:700px;padding-left: 20px;float:left;">
+                <div class="page-header">
+                    <h2>GitHub Script Repository</h2>
+                </div>
+                <p style="font-size: 1.2em">
+                    In an effort to streamline the deployment process for Office 2016 and Office 365 ProPlus, 
+                    a GitHub respository has been created with a collection of scripts and other projects. 
+                    The respository is meant to be a place for IT Pros to come and find solutions that will 
+                    make tasks related to deploying and maintaining Office easier.
+                </p>
+                <p style="font-size: 1.2em">
+                    All items in the master branch of the respository are tested and ready to use.  Each script
+                    has a ReadMe</a> 
+                    file that explains how to use it. The main ReadMe 
+                    has a list of the name and descriptions for all of the scripts in the respository.
+                </p>
+                <p style="font-size: 1.2em">
+                    If you would like to contribute to respository please following the instructions <br/> <i>'How to Contribute to this project'</i> in the main  
+                    ReadMe file in the respository.
+                </p>
+                <div class="page-header">
+                    <h4>Office Click-To-Run Configuration XML Editor</h4>
+                </div>
+                <p style="font-size: 1.2em">
+                    Also hosted in the GitHub respository is web based editor for the Click-To-Run version of the Office Deployment Tool. This page
+                    allows you to graphically generate and edit the configuration file used with Office Click-To-Run deployments.  The link for this
+                    page is listed below.
+                    <br/>
+                    <br />
+                    <a id="xmlEditorLabel" href="#">Office Click-To-Run Configuration XML Editor</a>
+                </p>
+            </div>
+            
+            <div id="imgDiv" style="width:700px;text-align:center;float:right;">
+                <div class="col-md-11">
+                    <a href="#" class="thumbnail" style="text-decoration: none;">
+                        <img id="gitHubImg" src="./images/GitHubScreen.png" alt="" width="700" style="border-width: 1px;" />
+                        <hr />
+                        <p class="thumbNailLabel">Office IT Pro Deployment Scripts Readme in GitHub</p>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </body>
+</html>
+
