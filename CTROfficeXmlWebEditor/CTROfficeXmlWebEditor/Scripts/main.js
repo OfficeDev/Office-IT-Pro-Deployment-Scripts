@@ -387,7 +387,74 @@ $(document).ready(function () {
         return false;
     });
 
+    $('#the-basics .typeahead').typeahead({
+        hint: true,
+        highlight: true,
+        minLength: 1
+    },
+{
+    name: 'versions',
+    source: substringMatcher(versions)
 });
+
+});
+
+var substringMatcher = function (strs) {
+    return function findMatches(q, cb) {
+        var matches, substringRegex;
+
+        // an array that will be populated with substring matches
+        matches = [];
+
+        // regex used to determine if a string contains the substring `q`
+        substrRegex = new RegExp(q, 'i');
+
+        // iterate through the pool of strings and for any string that
+        // contains the substring `q`, add it to the `matches` array
+        $.each(strs, function (i, str) {
+            if (substrRegex.test(str)) {
+                matches.push(str);
+            }
+        });
+
+        cb(matches);
+    };
+};
+
+var versions = [
+'15.0.4745.1001',
+'15.0.4727.1003',
+'15.0.4719.1002',
+'15.0.4711.1003',
+'15.0.4701.1002',
+'15.0.4693.1002',
+'15.0.4693.1001',
+'15.0.4675.1002',
+'15.0.4667.1002',
+'15.0.4659.1001',
+'15.0.4649.1003',
+'15.0.4649.1001',
+'15.0.4641.1003',
+'15.0.4631.1004',
+'15.0.4631.1002',
+'15.0.4623.1003',
+'15.0.4615.1002',
+'15.0.4605.1003',
+'15.0.4569.1508',
+'15.0.4569.1507',
+'15.0.4551.1512',
+'15.0.4551.1011',
+'15.0.4551.1005',
+'15.0.4535.1511',
+'15.0.4535.1004',
+'15.0.4517.1509',
+'15.0.4517.1005',
+'15.0.4505.1510',
+'15.0.4505.1006',
+'15.0.4481.1510'
+];
+
+
 
 function setActiveTab() {
     var activeTab = $.cookie("activeTab");
@@ -1761,5 +1828,9 @@ function toggleLoggingEnabled(sourceId) {
     }
 
 }
+
+
+
+
 
 

@@ -69,6 +69,7 @@
     <Content Include="Scripts\main.js" />
     <Content Include="Scripts\ui-bootstrap-tpls-0.13.2.min.js" />
     <Content Include="Scripts\vkbeautify.0.99.00.beta.js" />
+    <Content Include="stylesheets\typeahead.css" />
     <Content Include="templates\0365ProPlusBusiness.xml" />
     <Content Include="templates\0365ProPlusRetail.xml" />
     <Content Include="templates\O365ProPlusRetailwVisio.xml">

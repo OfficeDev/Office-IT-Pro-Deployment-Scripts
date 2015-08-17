@@ -12,6 +12,7 @@
     <link href="//cdn.rawgit.com/Eonasdan/bootstrap-datetimepicker/e8bddc60e73c1ec2475f827be36e1957af72e2ea/build/css/bootstrap-datetimepicker.css" rel="stylesheet">
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" rel="stylesheet">
     <script type="text/javascript" src="./Scripts/vkbeautify.0.99.00.beta.js"></script>
+    <link href="stylesheets/typeahead.css" rel="stylesheet">
 
     <style type="text/css">
         
@@ -80,7 +81,7 @@
         }
 
         .infoButton {
-
+            m
             color: #787878;
         }
 
@@ -325,9 +326,11 @@
 
 
                                                             <div class="input-group" style="width: 100%">
-                                                                <input id="txtVersion" type="text" pattern="^\d{2}\.\d\.\d{4}\.\d{4}$" maxlength="14"
-                                                                       style="width:100%" class="form-control" placeholder="15.0.4737.1003"
-                                                                       data-error="Invalid Version. ex: 15.0.4737.1003">
+                                                                <div id="the-basics" style="width: 100%;">
+                                                                    <input id="txtVersion" type="text" pattern="^\d{2}\.\d\.\d{4}\.\d{4}$" maxlength="14"
+                                                                           style="width:528px" class="form-control typeahead" placeholder="15.0.4745.1001"
+                                                                           data-error="Invalid Version. ex: 15.0.4745.1001">
+                                                                </div>
                                                                 <span id="versionSignal" class="glyphicon form-control-feedback" aria-hidden="true"></span>
                                                             </div>
                                                             
@@ -1352,8 +1355,9 @@
     <script type="text/javascript" src="//1000hz.github.io/bootstrap-validator/dist/validator.min.js"></script>
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/bootstrap.listgroup/1.1.2/listgroup.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.bundle.min.js"></script>
 
-    <script type="text/javascript" src="./Scripts/FileSaver.js"></script>
+    <script type=" text/javascript" src="./Scripts/FileSaver.js"></script>
     <script type="text/javascript" src="./Scripts/main.js"></script>
     
 </body>
