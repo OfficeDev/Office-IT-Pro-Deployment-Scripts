@@ -47,7 +47,7 @@ If you have any trouble running this sample, please log an issue.
 For more general feedback, send an email to o16scripts@microsoft.com.
 
 ## How to Contribute to this project
-This is high level plan for contributing and the structure that we have in place for pulling changes.
+This is high level plan for contributing and the structure that we have in place for pulling changes
 <UL>
 <LI>There will be 3 main levels of branches: 1 master branch, 1 development branch, feature and bug branches
 <LI>Each powershell script will have its own branch and changes will be made at that level
