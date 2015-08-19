@@ -484,7 +484,8 @@ Get list of Users that are licensed for OFFICESUBSCRIPTION service plan and stor
 The user won't be prompted for their credentials
 
 .Notes
-Proper use of this script should involve running this as a scheduled task
+Proper use of this script should involve running this as a scheduled task using a service account (not personal)
+because the password will be put in plan text in the scheduled task.
 
     1.  On the system that the task will be run from, open the Windows Task Scheduler. 
         This can be found in the Start menu, under Start > Administrative Tools.
@@ -787,7 +788,8 @@ in the proper intervals that have not received the emails yet.
 The user won't be prompted for their credentials.
 
 .Notes
-Proper use of this script should involve running this as a scheduled task
+Proper use of this script should involve running this as a scheduled task using a service 
+account (not personal) because the password will be put in plan text in the scheduled task.
 
     1.  On the system that the task will be run from, open the Windows Task Scheduler. 
         This can be found in the Start menu, under Start > Administrative Tools.
