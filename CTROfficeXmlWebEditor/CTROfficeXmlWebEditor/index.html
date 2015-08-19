@@ -335,7 +335,7 @@
                                                                            style="width:100%;line-height: 0px" class="form-control typeahead" placeholder="15.0.4745.1001"
                                                                            data-error="Invalid Version. ex: 15.0.4745.1001">
                                                                 </div>
-                                                                <span id="versionSignal" class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                                                                <span id="versionSignal" class="glyphicon form-control-feedback" aria-hidden="true" style="display:none;"></span>
                                                             </div>
                                                             
                                                         </div>
@@ -482,7 +482,7 @@
                                                                 <label>AutoActivate</label>
                                                             </td>
                                                             <td style="width: 30px;text-align: center;cursor:pointer;">
-                                                                <a data-toggle="modal" data-target="#levelModal" class="glyphicon glyphicon-info-sign infoButton"></a>
+                                                                <a data-toggle="modal" data-target="#AUTOACTIVATEModal" class="glyphicon glyphicon-info-sign infoButton"></a>
                                                             </td>
                                                             <td style="height: 40px">
                                                                 <span class="help-block with-errors" style="font-size: 12px"></span>
@@ -510,7 +510,7 @@
                                                                 <label>ForceAppShutdown</label>
                                                             </td>
                                                             <td style="width: 30px;text-align: center;cursor:pointer;">
-                                                                <a data-toggle="modal" data-target="#levelModal" class="glyphicon glyphicon-info-sign infoButton"></a>
+                                                                <a data-toggle="modal" data-target="#FORCEAPPSHUTDOWNModal" class="glyphicon glyphicon-info-sign infoButton"></a>
                                                             </td>
                                                             <td style="height: 40px">
                                                                 <span class="help-block with-errors" style="font-size: 12px"></span>
@@ -538,7 +538,7 @@
                                                                 <label>SharedComputerLicensing</label>
                                                             </td>
                                                             <td style="width: 30px;text-align: center;cursor:pointer;">
-                                                                <a data-toggle="modal" data-target="#accepteulaModal" class="glyphicon glyphicon-info-sign infoButton"></a>
+                                                                <a data-toggle="modal" data-target="#SharedComputerLicensingModal" class="glyphicon glyphicon-info-sign infoButton"></a>
                                                             </td>
                                                             <td style="height: 40px">
                                                                 <span class="help-block with-errors" style="font-size: 12px"></span>
@@ -580,7 +580,7 @@
                                                             <div class="input-group" style="width: 100%">
                                                                 <input id="txtPACKAGEGUID" type="text" pattern="^.{8}-.{4}-.{4}-.{4}-.{12}$"
                                                                        style="width:100%" class="form-control" placeholder="XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
-                                                                       data-error="This must be a valid APP-V Package Guid">
+                                                                       data-error="This must be a valid APP-V Package Guid" maxlength="36">
                                                                 <span id="PACKAGEGUIDSignal" class="glyphicon form-control-feedback" aria-hidden="true"></span>
                                                             </div>
                                                         </div>
@@ -1530,6 +1530,87 @@
                                             </p>
                                         </li>
                                     </ul> If you use any other characters, the App-V package is created with the default Package ID. Also, <strong id="STRONG_13">PACKAGEGUID</strong> needs to be 25 characters in length and be separated into 5 sections, with each section separated by a dash. The sections need to have the following number of characters: 8, 4, 4, 4, and 12. For example, 12345678-ABCD-1234-ABCD-1234567890AB is a valid value for <strong id="STRONG_14">PACKAGEGUID</strong>. This allows you to publish multiple App-V packages of Office 2013 to an App-V Management Server. But, this doesn’t enable you to deploy more than one Office 2013 App-V package to a single computer.
+
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- AUTOACTIVATE Modal -->
+                    <div class="modal fade" id="AUTOACTIVATEModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                    <h4 class="modal-title" id="myModalLabel">Help</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <h4>AUTOACTIVATE</h4>
+                                    <p>Specified products will attempt to activate automatically.</p>
+                                    <hr>
+
+                                    If <strong>AUTOACTIVATE</strong> is set to 1, the specified products will attempt to activate automatically. If <strong>AUTOACTIVATE</strong> is not set, the user may see the Activation Wizard UI.
+                                   
+                                    <br/>
+                                    <br />
+                                    <strong>Note:</strong> Office 365 Click-to-Run products are already set to activate automatically. You must not set <strong>AUTOACTIVATE</strong> for Office 365 Click-to-Run products.<br id="BR_15" /> This setting applies only to perpetual retail versions of Click-to-Run products.
+
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- FORCEAPPSHUTDOWN Modal -->
+                    <div class="modal fade" id="FORCEAPPSHUTDOWNModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                    <h4 class="modal-title" id="myModalLabel">Help</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <h4>FORCEAPPSHUTDOWN</h4>
+                                    <p> Forces the applications that block the action to be shut down.</p>
+                                    <hr>
+
+                                    An installation or removal action may be blocked if Office applications are running. Normally, such cases would start a process killer UI. 
+                                    Administrators can set <strong id="STRONG_3">FORCEAPPSHUTDOWN</strong> value to <strong id="STRONG_4">TRUE</strong> to prevent dependence 
+                                    on user interaction. When <strong id="STRONG_5">FORCEAPPSHUTDOWN</strong> is set to <strong id="STRONG_6">TRUE</strong>, any applications 
+                                    that block the action will be shut down. Data loss may occur. When <strong id="STRONG_7">FORCEAPPSHUTDOWN</strong> is set to 
+                                    <strong id="STRONG_8">FALSE</strong> (default), the action may fail if Office applications are running.
+                                  
+
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- SharedComputerLicensing Modal -->
+                    <div class="modal fade" id="SharedComputerLicensingModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                    <h4 class="modal-title" id="myModalLabel">Help</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <h4>SharedComputerLicensing</h4>
+                                    <p> Forces the applications that block the action to be shut down.</p>
+                                    <hr>
+                                    <p>Optional. </p>
+
+                                    Set <strong id="STRONG_3">SharedComputerLicensing</strong> to 1 if you deploy Office 365 ProPlus to shared computers by using Remote Desktop Services. 
+                                    For more information, see 
+                                    <a href="https://technet.microsoft.com/en-us/library/dn782860.aspx" id="A_5">Overview of shared computer activation for Office 365 ProPlus</a>.
 
                                 </div>
                                 <div class="modal-footer">

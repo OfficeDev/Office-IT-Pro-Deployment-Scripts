@@ -859,13 +859,13 @@ function validatePackageGuid(t) {
     }
 
     if (currentText.length > 23) {
-        fourthPart = currentText.substring(19, 23);
+        fourthPart = currentText.substring(20, 24);
         if (fourthPart.indexOf("-") > -1) return;
 
-        var dash4 = currentText.substring(23, 24);
+        var dash4 = currentText.substring(24, 25);
         if (dash4 != "-" & dash4 != "") {
-            var firstPart4 = currentText.substring(23, 27);
-            var restPart4 = currentText.substring(27, currentText.length);
+            var firstPart4 = currentText.substring(20, 24);
+            var restPart4 = currentText.substring(24, currentText.length);
 
             if (restPart4) {
                 fifthPart = firstPart4 + "-" + restPart4;
