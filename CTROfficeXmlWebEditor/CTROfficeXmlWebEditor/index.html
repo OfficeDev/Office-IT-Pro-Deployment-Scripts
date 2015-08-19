@@ -89,6 +89,10 @@
             font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
         }
 
+        .twitter-typeahead {
+            width: 100%;
+        }
+
     </style>
 
 </head>
@@ -328,7 +332,7 @@
                                                             <div class="input-group" style="width: 100%">
                                                                 <div id="the-basics" style="width: 100%;">
                                                                     <input id="txtVersion" type="text" pattern="^\d{2}\.\d\.\d{4}\.\d{4}$" maxlength="14"
-                                                                           style="width:528px" class="form-control typeahead" placeholder="15.0.4745.1001"
+                                                                           style="width:100%;line-height: 0px" class="form-control typeahead" placeholder="15.0.4745.1001"
                                                                            data-error="Invalid Version. ex: 15.0.4745.1001">
                                                                 </div>
                                                                 <span id="versionSignal" class="glyphicon form-control-feedback" aria-hidden="true"></span>
@@ -652,13 +656,16 @@
                                                                 </td>
                                                             </tr>
                                                         </table>
-
+                                                        
                                                         <div class="input-group" style="width: 100%">
-                                                            <input id="txtTargetVersion" type="text" pattern="^\d{2}\.\d\.\d{4}\.\d{4}$" maxlength="14"
-                                                                   style="width:100%" class="form-control" placeholder="15.0.4737.1003"
-                                                                   data-error="Invalid Version. ex: 15.0.4737.1003">
+                                                            <div id="the-basics" style="width: 100%;">
+                                                                <input id="txtTargetVersion" type="text" pattern="^\d{2}\.\d\.\d{4}\.\d{4}$" maxlength="14"
+                                                                       style="width:100%;line-height: 0px" class="form-control typeahead" placeholder="15.0.4745.1001"
+                                                                       data-error="Invalid Version. ex: 15.0.4745.1001">
+                                                            </div>
                                                             <span id="targetversionSignal" class="glyphicon form-control-feedback" aria-hidden="true"></span>
                                                         </div>
+
                                                     </div>
                                                 </div>
 

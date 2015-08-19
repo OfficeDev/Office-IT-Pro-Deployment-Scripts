@@ -159,13 +159,13 @@ $(document).ready(function () {
         }
     });
 
-    $('#txtVersion').on('input propertychange paste focus click', function () {
-        if (this.value.length == 0) {
-            document.getElementById("versionSignal").style.display = "none";
-        } else {
-            document.getElementById("versionSignal").style.display = "block";
-        }
-    });
+    //$('#txtVersion').on('input propertychange paste focus click', function () {
+    //    if (this.value.length == 0) {
+    //        document.getElementById("versionSignal").style.display = "none";
+    //    } else {
+    //        document.getElementById("versionSignal").style.display = "block";
+    //    }
+    //});
 
     $('#txtSourcePath').on('input propertychange paste focus click', function () {
         if (this.value.length == 0) {
@@ -392,32 +392,42 @@ $(document).ready(function () {
         highlight: true,
         minLength: 1
     },
-{
-    name: 'versions',
-    source: substringMatcher(versions)
-});
+    {
+        name: 'versions',
+        source: substringMatcher(versions)
+    });
+
+    $('#txtVersion').keydown(function (e) {
+        restrictToVersion(e);
+    });
+
+    $('#txtTargetVersion').keydown(function (e) {
+        restrictToVersion(e);
+    });
 
 });
 
 var substringMatcher = function (strs) {
     return function findMatches(q, cb) {
-        var matches, substringRegex;
+        try {
+            var matches, substringRegex;
 
-        // an array that will be populated with substring matches
-        matches = [];
+            // an array that will be populated with substring matches
+            matches = [];
 
-        // regex used to determine if a string contains the substring `q`
-        substrRegex = new RegExp(q, 'i');
+            // regex used to determine if a string contains the substring `q`
+            substrRegex = new RegExp(q, 'i');
 
-        // iterate through the pool of strings and for any string that
-        // contains the substring `q`, add it to the `matches` array
-        $.each(strs, function (i, str) {
-            if (substrRegex.test(str)) {
-                matches.push(str);
-            }
-        });
+            // iterate through the pool of strings and for any string that
+            // contains the substring `q`, add it to the `matches` array
+            $.each(strs, function(i, str) {
+                if (substrRegex.test(str)) {
+                    matches.push(str);
+                }
+            });
 
-        cb(matches);
+            cb(matches);
+        } catch(ex) {}
     };
 };
 
@@ -455,6 +465,21 @@ var versions = [
 ];
 
 
+function restrictToVersion(e) {
+    var currentText = this.value;
+    var code = e.keyCode || e.which;
+
+    var start = document.getElementById("txtPidKey").selectionStart;
+    var end = document.getElementById("txtPidKey").selectionEnd;
+
+    if ((code >= 48 && code <= 57) || code == 190 || code == 8
+       || code == 46 || (e.ctrlKey && code == 67) || code == 17
+       || (e.ctrlKey && code == 86) || (code >= 37 && code <= 40)) {
+
+    } else {
+        e.preventDefault();
+    }
+}
 
 function setActiveTab() {
     var activeTab = $.cookie("activeTab");
