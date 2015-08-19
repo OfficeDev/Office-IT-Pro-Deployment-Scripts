@@ -48,7 +48,7 @@ If you specify a Version then the script will download that version.  You can se
         CreateDownloadXmlFile -Path $path -ConfigFileName $UpdateSourceConfigFileName32 -Bitness 32 -Version $version
         CreateDownloadXmlFile -Path $path -ConfigFileName $UpdateSourceConfigFileName64 -Bitness 64 -Version $version
 
-        $c2rFileName = "setup.exe"
+        $c2rFileName = "Office2013Setup.exe"
 
         Set-Location $PSScriptRoot
 
@@ -173,7 +173,7 @@ Process
 
     Set-Location $PSScriptRoot
 
-    $c2rFileName = "setup.exe"
+    $c2rFileName = "Office2013Setup.exe"
 	$setupExePath = "$path\$c2rFileName"
 
 	Set-Location $startLocation
@@ -440,31 +440,41 @@ function CreateDownloadXmlFile([string]$Path, [string]$ConfigFileName, [string]$
 	#1 - Set the correct version number to update Source location
 	$sourceFilePath = "$path\$configFileName"
     $localSourceFilePath = ".\$configFileName"
-   
-	#$doc = [Xml] (Get-Content $localSourceFilePath)
-    $doc = New-Object System.XML.XMLDocument
 
-    $configuration = $doc.CreateElement("Configuration");
-    $a = $doc.AppendChild($configuration);
+    Set-Location $PSScriptRoot
 
-    $addNode = $doc.CreateElement("Add");
-    $addNode.SetAttribute("OfficeClientEdition", $bitness)
-    if ($Version) {
-       if ($Version.Length -gt 0) {
-           $addNode.SetAttribute("Version", $Version)
-       }
+    if (Test-Path -Path $localSourceFilePath) {   
+	  $doc = [Xml] (Get-Content $localSourceFilePath)
+
+      $addNode = $doc.Configuration.Add
+	  $addNode.OfficeClientEdition = $bitness
+
+      $doc.Save($sourceFilePath)
+    } else {
+      $doc = New-Object System.XML.XMLDocument
+
+      $configuration = $doc.CreateElement("Configuration");
+      $a = $doc.AppendChild($configuration);
+
+      $addNode = $doc.CreateElement("Add");
+      $addNode.SetAttribute("OfficeClientEdition", $bitness)
+      if ($Version) {
+         if ($Version.Length -gt 0) {
+             $addNode.SetAttribute("Version", $Version)
+         }
+      }
+      $a = $doc.DocumentElement.AppendChild($addNode);
+
+      $addProduct = $doc.CreateElement("Product");
+      $addProduct.SetAttribute("ID", "O365ProPlusRetail")
+      $a = $addNode.AppendChild($addProduct);
+
+      $addLanguage = $doc.CreateElement("Language");
+      $addLanguage.SetAttribute("ID", "en-us")
+      $a = $addProduct.AppendChild($addLanguage);
+
+	  $doc.Save($sourceFilePath)
     }
-    $a = $doc.DocumentElement.AppendChild($addNode);
-
-    $addProduct = $doc.CreateElement("Product");
-    $addProduct.SetAttribute("ID", "O365ProPlusRetail")
-    $a = $addNode.AppendChild($addProduct);
-
-    $addLanguage = $doc.CreateElement("Language");
-    $addLanguage.SetAttribute("ID", "en-us")
-    $a = $addProduct.AppendChild($addLanguage);
-
-	$doc.Save($sourceFilePath)
 }
 
 function CreateUpdateXmlFile([string]$Path, [string]$ConfigFileName, [string]$Bitness, [string]$Version){
