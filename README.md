@@ -4,6 +4,11 @@ This repo is a collection of useful PowerShell scripts to make deploying Office 
 ## Scripts
 For more detailed documentation of each script, check the readme file in the corresponding folder
 
+### Check-DiskSpace
+Script that will output a CSV file with data around disk space utilization that can be assessed in a graphical view using new charts in Excel 2016.
+
+[README](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/master/Check-DiskSpace/README_Check-DiskSpace.md)
+
 ### Edit-OfficeConfigurationFile
 Script to modify the Configuration.xml file to configure installation options for Click-to-Run for Office 365 products.
 
