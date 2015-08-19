@@ -81,7 +81,6 @@
         }
 
         .infoButton {
-            m
             color: #787878;
         }
 
@@ -286,6 +285,7 @@
                                     </div>
 
                                     <div class="panel panel-default">
+                                        
                                         <div class="panel-heading">
                                             <div class="panel-title">
                                                 <table style="width: 100%">
@@ -449,7 +449,161 @@
                                         </div>
                                         
                                     </div>
+                                    
+                                    <div class="panel panel-default">
 
+                                        <div class="panel-heading">
+                                            <div class="panel-title">
+                                                <table style="width: 100%">
+                                                    <tr>
+                                                        <td style="width: 100px">
+                                                            <h4>Properties</h4>
+                                                        </td>
+                                                        <td style="text-align: right;">
+                                                            <a id="togglePropertiesExpand" data-toggle="collapse" data-parent="#accordion" href="#collapseProperties" class="glyphicon glyphicon-collapse-up" onclick="toggleExpandProperties(this);">
+
+
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+
+
+                                            </div>
+                                        </div>
+
+                                        <div id="collapseProperties" class="panel-collapse collapse in" style="height:0;display:none;">
+                                            <div class="panel-body">
+                                                <form class="form form-vertical" data-toggle="validator" role="form">
+                                                    
+                                                    <table>
+                                                        <tr>
+                                                            <td>
+                                                                <label>AutoActivate</label>
+                                                            </td>
+                                                            <td style="width: 30px;text-align: center;cursor:pointer;">
+                                                                <a data-toggle="modal" data-target="#levelModal" class="glyphicon glyphicon-info-sign infoButton"></a>
+                                                            </td>
+                                                            <td style="height: 40px">
+                                                                <span class="help-block with-errors" style="font-size: 12px"></span>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+
+                                                    <div>
+                                                        <div class="btn-group" style="width:300px">
+
+                                                            <button id="btAutoActivateYes" type="button" class="btn btn-default" style="min-width: 120px" onclick="toggleAutoActivateEnabled(this.id);">
+                                                                Yes
+                                                            </button>
+                                                            <button id="btAutoActivateNo" type="button" class="btn btn-default" style="min-width: 120px" onclick="toggleAutoActivateEnabled(this.id);">
+                                                                No
+                                                            </button>
+                                                        </div>
+                                                    </div>
+
+                                                    <br />
+
+                                                    <table>
+                                                        <tr>
+                                                            <td>
+                                                                <label>ForceAppShutdown</label>
+                                                            </td>
+                                                            <td style="width: 30px;text-align: center;cursor:pointer;">
+                                                                <a data-toggle="modal" data-target="#levelModal" class="glyphicon glyphicon-info-sign infoButton"></a>
+                                                            </td>
+                                                            <td style="height: 40px">
+                                                                <span class="help-block with-errors" style="font-size: 12px"></span>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+
+                                                    <div>
+                                                        <div class="btn-group" style="width:300px">
+
+                                                            <button id="btForceAppShutdownTrue" type="button" class="btn btn-default" style="min-width: 120px" onclick="toggleForceAppShutdownEnabled(this.id);">
+                                                                True
+                                                            </button>
+                                                            <button id="btForceAppShutdownFalse" type="button" class="btn btn-default" style="min-width: 120px" onclick="toggleForceAppShutdownEnabled(this.id);">
+                                                                False
+                                                            </button>
+                                                        </div>
+                                                    </div>
+
+                                                    <br />
+
+                                                    <table>
+                                                        <tr>
+                                                            <td>
+                                                                <label>SharedComputerLicensing</label>
+                                                            </td>
+                                                            <td style="width: 30px;text-align: center;cursor:pointer;">
+                                                                <a data-toggle="modal" data-target="#accepteulaModal" class="glyphicon glyphicon-info-sign infoButton"></a>
+                                                            </td>
+                                                            <td style="height: 40px">
+                                                                <span class="help-block with-errors" style="font-size: 12px"></span>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+
+                                                    <div>
+                                                        <div class="btn-group" style="width:300px">
+
+                                                            <button id="btSharedComputerLicensingYes" type="button" class="btn btn-default" style="min-width: 120px" onclick="toggleSharedComputerLicensing(this.id);">
+                                                                True
+                                                            </button>
+                                                            <button id="btSharedComputerLicensingNo" type="button" class="btn btn-default" style="min-width: 120px" onclick="toggleSharedComputerLicensing(this.id);">
+                                                                False
+                                                            </button>
+                                                        </div>
+                                                    </div>
+
+                                                    <br />
+                                                    
+                                                    <div class="control-group" style="height: 85px;width: 100%">
+                                                        <div class="controls form-group has-feedback">
+                                                            <table>
+                                                                <tr>
+                                                                    <td>
+                                                                        <label>PACKAGEGUID</label>
+                                                                    </td>
+                                                                    <td style="width: 30px;text-align: center;cursor:pointer;">
+                                                                        <a data-toggle="modal" data-target="#PACKAGEGUIDModal" class="glyphicon glyphicon-info-sign infoButton"></a>
+                                                                    </td>
+                                                                    <td style="height: 40px">
+                                                                        <span class="help-block with-errors"></span>
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+
+
+                                                            <div class="input-group" style="width: 100%">
+                                                                <input id="txtPACKAGEGUID" type="text" pattern="^.{8}-.{4}-.{4}-.{4}-.{12}$"
+                                                                       style="width:100%" class="form-control" placeholder="XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
+                                                                       data-error="This must be a valid APP-V Package Guid">
+                                                                <span id="PACKAGEGUIDSignal" class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="control-group">
+                                                        <label></label>
+                                                        <div class="controls">
+                                                            <button id="btSaveDisplay" class="btn btn-primary">
+                                                                Save
+                                                            </button>
+                                                            <button id="btRemoveDisplay" class="btn btn-primary">
+                                                                Remove
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                </form>
+                                            </div>
+
+                                        </div>
+
+                                    </div>
                                 </div>
 
                                 <!-- Remove Product-->
@@ -1348,7 +1502,42 @@
                             </div>
                         </div>
                     </div>
+                    
+                    <!-- PACKAGEGUID Modal -->
+                    <div class="modal fade" id="PACKAGEGUIDModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                    <h4 class="modal-title" id="myModalLabel">Help</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <h4>PACKAGEGUID</h4>
+                                    <p>App-V Package ID.</p>
+                                    <hr>
+                                    <p>Optional. </p>
 
+                                    By default, all Office 2013 App-V packages created by using the Office Deployment Tool share the same App-V Package ID. Administrators can use <strong id="STRONG_3">PACKAGEGUID</strong> to specify a different Package ID. You can only use the following characters for <strong id="STRONG_5">PACKAGEGUID</strong>:
+                                    <ul id="UL_6">
+                                        <li id="LI_7">
+                                            <p id="P_8">
+                                                0, 1, 2, 3, 4, 5, 6, 7, 8, 9
+                                            </p>
+                                        </li>
+                                        <li id="LI_9">
+                                            <p id="P_10">
+                                                A, B, C, D, E, F
+                                            </p>
+                                        </li>
+                                    </ul> If you use any other characters, the App-V package is created with the default Package ID. Also, <strong id="STRONG_13">PACKAGEGUID</strong> needs to be 25 characters in length and be separated into 5 sections, with each section separated by a dash. The sections need to have the following number of characters: 8, 4, 4, 4, and 12. For example, 12345678-ABCD-1234-ABCD-1234567890AB is a valid value for <strong id="STRONG_14">PACKAGEGUID</strong>. This allows you to publish multiple App-V packages of Office 2013 to an App-V Management Server. But, this doesn’t enable you to deploy more than one Office 2013 App-V package to a single computer.
+
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                 </div>
             </div>

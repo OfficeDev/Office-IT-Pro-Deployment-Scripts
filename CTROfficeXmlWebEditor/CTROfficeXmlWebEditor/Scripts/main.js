@@ -22,6 +22,7 @@ $(document).ready(function () {
     });
 
     document.getElementById("collapseOne").style.display = "block";
+    document.getElementById("collapseProperties").style.display = "block";
 
     $("#btRemoveProduct").prop("disabled", true);
     $("#btAddLanguage").prop("disabled", true);
@@ -42,6 +43,19 @@ $(document).ready(function () {
         $("#toggleExpand").addClass('glyphicon-collapse-down');
         $("#collapseOne").collapse('hide');
         $("#collapseOne").css("height", "0");
+    }
+
+    var collapseProperties = $.cookie("propertiescollapse");
+    if (collapseProperties == "true") {
+        $("#togglePropertiesExpand").removeClass('glyphicon-collapse-down');
+        $("#togglePropertiesExpand").addClass('glyphicon-collapse-up');
+        $("#collapseProperties").collapse('show');
+        $("#collapseProperties").css("height", "");
+    } else {
+        $("#togglePropertiesExpand").removeClass('glyphicon-collapse-up');
+        $("#togglePropertiesExpand").addClass('glyphicon-collapse-down');
+        $("#collapseProperties").collapse('hide');
+        $("#collapseProperties").css("height", "0");
     }
 
     $('#templateList li').click(function (e) {
@@ -66,6 +80,7 @@ $(document).ready(function () {
     });
 
     $("#collapseOne").prop("height", "auto");
+    $("#collapseProperties").prop("height", "auto");
 
     setActiveTab();
 
@@ -530,6 +545,20 @@ function toggleExpandOptional(source) {
         $("#toggleExpand").addClass('glyphicon-collapse-up');
         $("#toggleExpand").removeClass('glyphicon-collapse-down');
         $.cookie("optionalcollapse", "true");
+    }
+
+}
+
+function toggleExpandProperties(source) {
+
+    if ($("#togglePropertiesExpand").hasClass('glyphicon-collapse-up')) {
+        $("#togglePropertiesExpand").removeClass('glyphicon-collapse-up');
+        $("#togglePropertiesExpand").addClass('glyphicon-collapse-down');
+        $.cookie("propertiescollapse", "false");
+    } else {
+        $("#togglePropertiesExpand").addClass('glyphicon-collapse-up');
+        $("#togglePropertiesExpand").removeClass('glyphicon-collapse-down');
+        $.cookie("propertiescollapse", "true");
     }
 
 }
@@ -1758,6 +1787,99 @@ function toggleUpdatesEnabled(sourceId) {
         $("#inputDeadline").prop("disabled", true);
     }
     return false;
+}
+
+
+function toggleAutoActivateEnabled(sourceId) {
+
+    if (sourceId.toLowerCase() == "btautoactivateyes") {
+        $("#btAutoActivateNo").removeClass('active');
+        $("#btAutoActivateNo").removeClass('btn-primary');
+
+        var $this = $("#btAutoActivateYes");
+        if (!$this.hasClass('active')) {
+            $this.addClass('active');
+        }
+
+        if (!$this.hasClass('btn-primary')) {
+            $this.addClass('btn-primary');
+        }
+    } else {
+        $("#btAutoActivateYes").removeClass('active');
+        $("#btAutoActivateYes").removeClass('btn-primary');
+
+        var $this = $("#btAutoActivateNo");
+        if (!$this.hasClass('active')) {
+            $this.addClass('active');
+        }
+
+        if (!$this.hasClass('btn-primary')) {
+            $this.addClass('btn-primary');
+        }
+    }
+
+}
+
+
+function toggleForceAppShutdownEnabled(sourceId) {
+
+    if (sourceId.toLowerCase() == "btforceappshutdowntrue") {
+        $("#btForceAppShutdownFalse").removeClass('active');
+        $("#btForceAppShutdownFalse").removeClass('btn-primary');
+
+        var $this = $("#btForceAppShutdownTrue");
+        if (!$this.hasClass('active')) {
+            $this.addClass('active');
+        }
+
+        if (!$this.hasClass('btn-primary')) {
+            $this.addClass('btn-primary');
+        }
+    } else {
+        $("#btForceAppShutdownTrue").removeClass('active');
+        $("#btForceAppShutdownTrue").removeClass('btn-primary');
+
+        var $this = $("#btForceAppShutdownFalse");
+        if (!$this.hasClass('active')) {
+            $this.addClass('active');
+        }
+
+        if (!$this.hasClass('btn-primary')) {
+            $this.addClass('btn-primary');
+        }
+    }
+
+}
+
+
+function toggleSharedComputerLicensing(sourceId) {
+
+    if (sourceId.toLowerCase() == "btsharedcomputerlicensingyes") {
+        $("#btSharedComputerLicensingNo").removeClass('active');
+        $("#btSharedComputerLicensingNo").removeClass('btn-primary');
+
+        var $this = $("#btSharedComputerLicensingYes");
+        if (!$this.hasClass('active')) {
+            $this.addClass('active');
+        }
+
+        if (!$this.hasClass('btn-primary')) {
+            $this.addClass('btn-primary');
+        }
+    } else {
+        $("#btSharedComputerLicensingYes").removeClass('active');
+        $("#btSharedComputerLicensingYes").removeClass('btn-primary');
+
+        var $this = $("#btSharedComputerLicensingNo");
+        if (!$this.hasClass('active')) {
+            $this.addClass('active');
+        }
+
+        if (!$this.hasClass('btn-primary')) {
+            $this.addClass('btn-primary');
+        }
+    }
+
 }
 
 function toggleDisplayLevelEnabled(sourceId) {
