@@ -458,6 +458,24 @@ $(document).ready(function () {
         return false;
     });
 
+    $("#btSaveProperties").button().click(function () {
+        var xmlDoc = getXmlDocument();
+
+        odtSaveProperties(xmlDoc);
+
+        displayXml(xmlDoc);
+        return false;
+    });
+
+    $("#btRemoveProperties").button().click(function () {
+        var xmlDoc = getXmlDocument();
+
+        odtRemoveProperties(xmlDoc);
+
+        displayXml(xmlDoc);
+        return false;
+    });
+
     $("#btViewOnGitHub").button().click(function () {
         //window.location.href = "https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/Development/CTROfficeXmlWebEditor";
 
@@ -1542,6 +1560,119 @@ function odtRemoveDisplay(xmlDoc) {
     $("#btAcceptEULADisabled").removeClass('active');
 }
 
+
+function odtSaveProperties(xmlDoc) {
+    var autoActivateNode = null;
+    var forceShutDownNode = null;
+    var sharedComputerLicensingNode = null;
+
+    var nodes = xmlDoc.documentElement.getElementsByTagName("Property");
+    if (nodes.length > 0) {
+        for (var n = 0; n < nodes.length; n++) {
+            propNode = xmlDoc.documentElement.getElementsByTagName("Property")[n];
+            if (propNode) {
+                if (propNode.getAttribute("Name").toUpperCase() == "AUTOACTIVATE") {
+                    autoActivateNode = propNode;
+                }
+                if (propNode.getAttribute("Name").toUpperCase() == "FORCEAPPSHUTDOWN") {
+                    forceShutDownNode = propNode;
+                }
+                if (propNode.getAttribute("Name").toUpperCase() == "SHAREDCOMPUTERLICENSING") {
+                    sharedComputerLicensingNode = propNode;
+                }
+            }
+        }
+    }
+
+    if (!(autoActivateNode)) {
+        autoActivateNode = xmlDoc.createElement("Property");
+        xmlDoc.documentElement.appendChild(autoActivateNode);
+    }
+
+    if (!(forceShutDownNode)) {
+        forceShutDownNode = xmlDoc.createElement("Property");
+        xmlDoc.documentElement.appendChild(forceShutDownNode);
+    }
+
+    if (!(sharedComputerLicensingNode)) {
+        sharedComputerLicensingNode = xmlDoc.createElement("Property");
+        xmlDoc.documentElement.appendChild(sharedComputerLicensingNode);
+    }
+
+
+    var $btAutoActivateYes = $("#btAutoActivateYes");
+    var $btAutoActivateNo = $("#btAutoActivateNo");
+    var $btForceAppShutdownTrue = $("#btForceAppShutdownTrue");
+    var $btForceAppShutdownFalse = $("#btForceAppShutdownFalse");
+    var $btSharedComputerLicensingYes = $("#btSharedComputerLicensingYes");
+    var $btSharedComputerLicensingNo = $("#btSharedComputerLicensingNo");
+
+    if (!$btAutoActivateYes.hasClass('btn-primary') && !$btAutoActivateNo.hasClass('btn-primary') &&
+        !$btForceAppShutdownTrue.hasClass('btn-primary') && !$btForceAppShutdownFalse.hasClass('btn-primary') &&
+        !$btSharedComputerLicensingYes.hasClass('btn-primary') && !$btSharedComputerLicensingNo.hasClass('btn-primary')) {
+        $btAutoActivateYes.addClass('btn-primary');
+        $btForceAppShutdownTrue.addClass('btn-primary');
+    }
+
+
+    if ($btAutoActivateYes.hasClass('btn-primary')) {
+        autoActivateNode.setAttribute("Name", "AUTOACTIVATE");
+        autoActivateNode.setAttribute("Value", "1");
+    }
+
+    if ($btAutoActivateNo.hasClass('btn-primary')) {
+        autoActivateNode.setAttribute("Name", "AUTOACTIVATE");
+        autoActivateNode.setAttribute("Value", "0");
+    }
+
+    if ($btForceAppShutdownTrue.hasClass('btn-primary')) {
+        forceShutDownNode.setAttribute("Name", "FORCEAPPSHUTDOWN");
+        forceShutDownNode.setAttribute("Value", "TRUE");
+    }
+
+    if ($btForceAppShutdownFalse.hasClass('btn-primary')) {
+        forceShutDownNode.setAttribute("Name", "FORCEAPPSHUTDOWN");
+        forceShutDownNode.setAttribute("Value", "FALSE");
+    }
+
+    if ($btSharedComputerLicensingYes.hasClass('btn-primary')) {
+        sharedComputerLicensingNode.setAttribute("Name", "SharedComputerLicensing");
+        sharedComputerLicensingNode.setAttribute("Value", "1");
+    }
+
+    if ($btSharedComputerLicensingNo.hasClass('btn-primary')) {
+        sharedComputerLicensingNode.setAttribute("Name", "SharedComputerLicensing");
+        sharedComputerLicensingNode.setAttribute("Value", "0");
+    }
+}
+
+function odtRemoveProperties(xmlDoc) {
+    var propNode = xmlDoc.createElement("Property");
+    var nodes = xmlDoc.documentElement.getElementsByTagName("Property");
+    if (nodes.length > 0) {
+        for (var n = 0; n < nodes.length; n++) {
+            propNode = xmlDoc.documentElement.getElementsByTagName("Property")[n];
+            if (propNode) {
+                xmlDoc.documentElement.removeChild(propNode);
+            }
+        }
+    }
+
+    $("#btAutoActivateYes").removeClass('btn-primary');
+    $("#btAutoActivateNo").removeClass('btn-primary');
+    $("#btAutoActivateYes").removeClass('active');
+    $("#btAutoActivateNo").removeClass('active');
+
+    $("#btForceAppShutdownTrue").removeClass('btn-primary');
+    $("#btForceAppShutdownTrue").removeClass('active');
+    $("#btForceAppShutdownFalse").removeClass('btn-primary');
+    $("#btForceAppShutdownFalse").removeClass('active');
+
+    $("#btSharedComputerLicensingYes").removeClass('btn-primary');
+    $("#btSharedComputerLicensingYes").removeClass('active');
+    $("#btSharedComputerLicensingNo").removeClass('btn-primary');
+    $("#btSharedComputerLicensingNo").removeClass('active');
+}
 
 
 function odtSaveLogging(xmlDoc) {
