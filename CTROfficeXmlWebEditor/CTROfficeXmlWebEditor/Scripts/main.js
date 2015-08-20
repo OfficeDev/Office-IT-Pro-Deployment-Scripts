@@ -24,6 +24,10 @@ $(document).ready(function () {
     document.getElementById("collapseOne").style.display = "block";
     document.getElementById("collapseProperties").style.display = "block";
 
+    document.getElementById("pidkeySignal").style.display = "none";
+    document.getElementById("targetversionSignal").style.display = "none";
+    document.getElementById("updatepathSignal").style.display = "none";
+
     if (isInternetExplorer()) {
         document.getElementById("txtVersion").style.lineHeight = "0px";
         document.getElementById("txtTargetVersion").style.lineHeight = "0px";
@@ -33,8 +37,8 @@ $(document).ready(function () {
     $("#btAddLanguage").prop("disabled", true);
     $("#btRemoveLanguage").prop("disabled", true);
 
-    $("#txtUpdatePath").prop("disabled", true);
-    $("#txtTargetVersion").prop("disabled", true);
+    toggleTextBox("txtUpdatePath", false);
+    toggleTextBox("txtTargetVersion", false);
     $("#inputDeadline").prop("disabled", true);
 
     var collapse = $.cookie("optionalcollapse");
@@ -336,6 +340,7 @@ $(document).ready(function () {
     $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
         //e.target // activated tab
         //e.relatedTarget // previous tab
+        scrollXmlEditor();
 
         $.cookie("activeTab", e.target);
 
@@ -490,16 +495,7 @@ $(document).ready(function () {
     });
 
     $(window).scroll(function() {
-        var scrollTop = $(window).scrollTop();
-
-        var xmlEditorDiv = document.getElementById("xmlEditorDiv");
-        if (xmlEditorDiv) {
-
-            if (scrollTop > 50) {
-                xmlEditorDiv.style.top = (scrollTop - 50) + "px";
-            }
-
-        }
+        scrollXmlEditor();
     });
     
     $('#the-basics .typeahead').typeahead({
@@ -520,7 +516,53 @@ $(document).ready(function () {
         restrictToVersion(e);
     });
 
+    setScrollBar();
+
 });
+
+function setScrollBar() {
+    var optionDiv = document.getElementById("optionDiv");
+    if (optionDiv) {
+        var optionDivHeight = optionDiv.clientHeight;
+        var bodyHeight = window.innerHeight;
+
+        if (optionDivHeight > bodyHeight - 100) {
+            document.body.style.overflow = "auto";
+        } else {
+            if (isInternetExplorer()) {
+                document.body.style.overflow = "hidden";
+            }
+        }
+    }
+}
+
+function scrollXmlEditor() {
+    var scrollTop = $(window).scrollTop();
+    var bodyWidth = window.innerWidth;
+
+    var xmlEditorDiv = document.getElementById("xmlEditorDiv");
+    if (xmlEditorDiv) {
+        var clientLeft = getPos(xmlEditorDiv).x;
+
+        if (clientLeft > 50) {
+            if (scrollTop > 50) {
+                xmlEditorDiv.style.top = (scrollTop - 50) + "px";
+            } else {
+                xmlEditorDiv.style.top = (0) + "px";
+            }
+        } else {
+            xmlEditorDiv.style.top = (0) + "px";
+        }
+    }
+}
+
+function getPos(el) {
+    // yay readability
+    for (var lx = 0, ly = 0;
+         el != null;
+         lx += el.offsetLeft, ly += el.offsetTop, el = el.offsetParent);
+    return { x: lx, y: ly };
+}
 
 function isInternetExplorer() {
     if (window.ActiveXObject || "ActiveXObject" in window) {
@@ -552,40 +594,6 @@ var substringMatcher = function (strs) {
         } catch(ex) {}
     };
 };
-
-var versions = [
-'15.0.4745.1001',
-'15.0.4727.1003',
-'15.0.4719.1002',
-'15.0.4711.1003',
-'15.0.4701.1002',
-'15.0.4693.1002',
-'15.0.4693.1001',
-'15.0.4675.1002',
-'15.0.4667.1002',
-'15.0.4659.1001',
-'15.0.4649.1003',
-'15.0.4649.1001',
-'15.0.4641.1003',
-'15.0.4631.1004',
-'15.0.4631.1002',
-'15.0.4623.1003',
-'15.0.4615.1002',
-'15.0.4605.1003',
-'15.0.4569.1508',
-'15.0.4569.1507',
-'15.0.4551.1512',
-'15.0.4551.1011',
-'15.0.4551.1005',
-'15.0.4535.1511',
-'15.0.4535.1004',
-'15.0.4517.1509',
-'15.0.4517.1005',
-'15.0.4505.1510',
-'15.0.4505.1006',
-'15.0.4481.1510'
-];
-
 
 function restrictToVersion(e) {
     var currentText = this.value;
@@ -654,6 +662,7 @@ function toggleExpandOptional(source) {
         $.cookie("optionalcollapse", "true");
     }
 
+    setTimeout(setScrollBar, 500);
 }
 
 function toggleExpandProperties(source) {
@@ -668,6 +677,7 @@ function toggleExpandProperties(source) {
         $.cookie("propertiescollapse", "true");
     }
 
+    setTimeout(setScrollBar, 500);
 }
 
 function download() {
@@ -1009,9 +1019,45 @@ function resizeWindow() {
     var leftPaneHeight = bodyHeight - 180;
 
     var rightPaneHeight = bodyHeight - 100;
-    $("#xmlText").height(rightPaneHeight - 120);
+
+    var scrollTop = $(window).scrollTop();
+    if (scrollTop > 50) {
+        rightPaneHeight = rightPaneHeight + 50;
+    }
+
+    $("#xmlText").height(rightPaneHeight - 90);
+
+    setScrollBar();
 }
 
+function cacheNodes(xmlDoc) {
+    var propertyNameList = ["Remove", "Display", "Logging", "Property", "Updates"];
+    var nodeList = [];
+
+    for (var p = 0; p < propertyNameList.length; p++) {
+        var propertyName = propertyNameList[p];
+
+        var nodes = xmlDoc.documentElement.getElementsByTagName(propertyName);
+        if (nodes.length > 0) {
+            var nodeCount = nodes.length;
+            for (var n = 0; n < nodeCount; n++) {
+                var propNode = xmlDoc.documentElement.getElementsByTagName(propertyName)[0];
+                nodeList.push(propNode);
+                xmlDoc.documentElement.removeChild(propNode);
+            }
+        }
+
+    }
+
+    return nodeList;
+}
+
+function readdNodes(xmlDoc, nodeList) {
+    for (var t = 0; t < nodeList.length; t++) {
+        var addPropNode = nodeList[t];
+        xmlDoc.documentElement.appendChild(addPropNode);
+    }
+}
 
 function odtAddProduct(xmlDoc) {
     var selectedProduct = $("#cbProduct").val();
@@ -1026,7 +1072,11 @@ function odtAddProduct(xmlDoc) {
     if (nodes.length > 0) {
         addNode = xmlDoc.documentElement.getElementsByTagName("Add")[0];
     } else {
+        var nodeList = cacheNodes(xmlDoc);
+
         xmlDoc.documentElement.appendChild(addNode);
+
+        readdNodes(xmlDoc, nodeList);
     }
 
     if (selectSourcePath) {
@@ -1258,11 +1308,25 @@ function odtRemoveRemoveLanguage(xmlDoc) {
     $("#btRemoveLanguage").prop("disabled", !(langCount > 1));
 }
 
-
+function removeAllSections() {
+    document.getElementById("btRemoveDisplay").click();
+    document.getElementById("btRemoveExcludeApp").click();
+    document.getElementById("btRemoveLanguage").click();
+    document.getElementById("btRemoveLogging").click();
+    document.getElementById("btRemoveProduct").click();
+    document.getElementById("btRemoveProperties").click();
+    document.getElementById("btRemoveRemoveLanguage").click();
+    document.getElementById("btRemovesUpdates").click();
+}
 
 function odtAddRemoveApp(xmlDoc) {
     var selectedProduct = $("#cbRemoveProduct").val();
     var selectLanguage = $("#cbRemoveLanguage").val();
+
+    var $removeAll = $("#removeAllProducts");
+    if ($removeAll.hasClass('btn-primary')) {
+ 
+    }
 
     var removeNode = xmlDoc.createElement("Remove");
     var nodes = xmlDoc.documentElement.getElementsByTagName("Remove");
@@ -1272,9 +1336,11 @@ function odtAddRemoveApp(xmlDoc) {
         xmlDoc.documentElement.appendChild(removeNode);
     }
 
+    var removeAll = false;
+
     var $removeSelect = $("#removeSelectProducts");
     if ($removeSelect.hasClass('btn-primary')) {
-        removeNode.removeAttribute("ALL");
+        removeNode.removeAttribute("All");
 
         var productNode = getProductNode(removeNode, selectedProduct);
         if (!(productNode)) {
@@ -1290,11 +1356,14 @@ function odtAddRemoveApp(xmlDoc) {
             productNode.appendChild(langNode);
         }
     } else {
-        removeNode.setAttribute("ALL", "TRUE");
+        removeAll = true;
+
+        removeNode.setAttribute("All", "TRUE");
         if (removeNode.childElementCount > 0) {
             var products = removeNode.getElementsByTagName("Product");
-            for (var v = 0; v < products.length; v++) {
-                removeNode.removeChild(products[v]);
+            var prodLength = products.length;
+            for (var v = 0; v < prodLength; v++) {
+                removeNode.removeChild(products[0]);
             }
         }
     }
@@ -1311,11 +1380,10 @@ function odtAddRemoveApp(xmlDoc) {
             addNode.removeChild(existingAddProduct);
         }
 
-        if (addNode.childElementCount == 0) {
+        if (addNode.childElementCount == 0 || removeAll) {
             xmlDoc.documentElement.removeChild(addNode);
         }
     }
-
 }
 
 function odtDeleteRemoveApp(xmlDoc) {
@@ -1332,7 +1400,7 @@ function odtDeleteRemoveApp(xmlDoc) {
 
     var $removeSelect = $("#removeSelectProducts");
     if ($removeSelect.hasClass('btn-primary')) {
-        removeNode.removeAttribute("ALL");
+        removeNode.removeAttribute("All");
 
         var productNode = getProductNode(removeNode, selectedProduct);
         if (productNode) {
@@ -1346,6 +1414,7 @@ function odtDeleteRemoveApp(xmlDoc) {
         removeNode.parentNode.removeChild(removeNode);
     }
 }
+
 
 function odtAddExcludeApp(xmlDoc) {
     var selectedProduct = $("#cbProduct").val();
@@ -1450,7 +1519,7 @@ function odtSaveUpdates(xmlDoc) {
         $btUpdatesEnabled.addClass('btn-primary');
 
         $("#txtUpdatePath").prop("disabled", false);
-        $("#txtTargetVersion").prop("disabled", false);
+        //$("#txtTargetVersion").prop("disabled", false);
         $("#inputDeadline").prop("disabled", false);
     }
 
@@ -1511,9 +1580,9 @@ function odtRemoveUpdates(xmlDoc) {
     $("#btupdatesDisabled").removeClass('active');
     $("#btupdatesEnabled").removeClass('active');
 
-    $("#txtUpdatePath").prop("disabled", true);
-    $("#txtTargetVersion").prop("disabled", true);
     $("#inputDeadline").prop("disabled", true);
+    toggleTextBox("txtUpdatePath", false);
+    toggleTextBox("txtTargetVersion", false);
 }
 
 
@@ -1536,7 +1605,6 @@ function odtSaveDisplay(xmlDoc) {
         $displayLevelNone.addClass('btn-primary');
         $AcceptEulaEnabled.addClass('btn-primary');
     }
-
 
     if ($displayLevelNone.hasClass('btn-primary')) {
         addNode.setAttribute("Level", "None");
@@ -1682,11 +1750,12 @@ function odtSaveProperties(xmlDoc) {
 }
 
 function odtRemoveProperties(xmlDoc) {
-    var propNode = xmlDoc.createElement("Property");
+    var propNode = null;
     var nodes = xmlDoc.documentElement.getElementsByTagName("Property");
     if (nodes.length > 0) {
-        for (var n = 0; n < nodes.length; n++) {
-            propNode = xmlDoc.documentElement.getElementsByTagName("Property")[n];
+        var nodeCount = nodes.length;
+        for (var n = 0; n < nodeCount; n++) {
+            propNode = xmlDoc.documentElement.getElementsByTagName("Property")[0];
             if (propNode) {
                 xmlDoc.documentElement.removeChild(propNode);
             }
@@ -1866,8 +1935,11 @@ function getRemoveLanguageNodeCount(xmlDoc, productId) {
 }
 
 
-function loadUploadXmlFile() {
-    var xmlDoc = getXmlDocument();
+function loadUploadXmlFile(inXmlDoc) {
+    var xmlDoc = inXmlDoc;
+    if (!(xmlDoc)) {
+        xmlDoc = getXmlDocument();
+    }
 
     var addNode = null;
     var nodes = xmlDoc.documentElement.getElementsByTagName("Add");
@@ -1973,6 +2045,84 @@ function loadUploadXmlFile() {
         }
     }
 
+    var propertyNodes = xmlDoc.documentElement.getElementsByTagName("Property");
+    if (propertyNodes.length > 0) {
+        var autoActivateNode = null;
+        var forceShutDownNode = null;
+        var sharedComputerLicensingNode = null;
+        var packageguidNode = null;
+
+        nodes = xmlDoc.documentElement.getElementsByTagName("Property");
+        if (nodes.length > 0) {
+            for (var n = 0; n < nodes.length; n++) {
+                var propNode = xmlDoc.documentElement.getElementsByTagName("Property")[n];
+                if (propNode) {
+                    var attrValue = propNode.getAttribute("Name");
+                    if (attrValue) {
+                        if (propNode.getAttribute("Name").toUpperCase() == "AUTOACTIVATE") {
+                            autoActivateNode = propNode;
+                        }
+                        if (propNode.getAttribute("Name").toUpperCase() == "FORCEAPPSHUTDOWN") {
+                            forceShutDownNode = propNode;
+                        }
+                        if (propNode.getAttribute("Name").toUpperCase() == "SHAREDCOMPUTERLICENSING") {
+                            sharedComputerLicensingNode = propNode;
+                        }
+                        if (propNode.getAttribute("Name").toUpperCase() == "PACKAGEGUID") {
+                            packageguidNode = propNode;
+                        }
+                    }
+                }
+            }
+        }
+
+        var autoActivate = "";
+        if (autoActivateNode) {
+            autoActivate = autoActivateNode.getAttribute("Value");
+        }
+
+        var forceShutDown = "";
+        if (forceShutDownNode) {
+            forceShutDown = forceShutDownNode.getAttribute("Value");
+        }
+
+        var sharedComputerLicensing = "";
+        if (sharedComputerLicensingNode) {
+            sharedComputerLicensing = sharedComputerLicensingNode.getAttribute("Value");
+        }
+
+        var packageguid = "";
+        if (packageguidNode) {
+            packageguid = packageguidNode.getAttribute("Value");
+        }
+
+        if (packageguid) {
+            if (packageguid.length > 0) {
+                $("#txtPACKAGEGUID").val(packageguid);
+            }
+        }
+
+        if (autoActivate == "1") {
+            toggleAutoActivateEnabled("btAutoActivateYes");
+        } else {
+            toggleAutoActivateEnabled("btAutoActivateNo");
+        }
+
+        if (forceShutDown == "TRUE") {
+            toggleForceAppShutdownEnabled("btForceAppShutdownTrue");
+        } else {
+            toggleForceAppShutdownEnabled("btForceAppShutdownFalse");
+        }
+
+        if (sharedComputerLicensing == "1") {
+            toggleSharedComputerLicensing("btSharedComputerLicensingYes");
+        } else {
+            toggleSharedComputerLicensing("btSharedComputerLicensingNo");
+        }
+    } else {
+        document.getElementById("btRemoveProduct").click();
+    }
+
     var loggingNodes = xmlDoc.documentElement.getElementsByTagName("Logging");
     if (loggingNodes.length > 0) {
         var loggingNode = xmlDoc.documentElement.getElementsByTagName("Logging")[0];
@@ -1998,9 +2148,20 @@ function loadUploadXmlFile() {
 
 }
 
+function sendMail() {
+    var xmlSource = $('textarea#xmlText').val();
+
+    var link = "mailto:"
+             + "&subject=" + escape("Office Click-To-Run Configuration XML")
+             + "&body=" + escape(xmlSource)
+    ;
+
+    window.location.href = link;
+}
+
 
 function clearXml() {
-    $('textarea#xmlText').val("<Configuration></Configuration>");
+    $('textarea#xmlText').val("");
     $("#txtDeadline").val("");
     $("#txtLoggingUpdatePath").val("");
     $("#txtPidKey").val("");
@@ -2009,33 +2170,29 @@ function clearXml() {
     $("#txtUpdatePath").val("");
     $("#txtVersion").val("");
 
-    $("select#cbEdition").prop('selectedIndex', 0);
-    $("select#cbExcludeApp").prop('selectedIndex', 0);
-    $("select#cbLanguage").prop('selectedIndex', 0);
-    $("select#cbProduct").prop('selectedIndex', 0);
-    $("select#cbRemoveLanguage").prop('selectedIndex', 0);
-    $("select#cbRemoveProduct").prop('selectedIndex', 0);
+    var resetDropDowns = document.getElementsByTagName("select");
+    for (var t = 0; t < resetDropDowns.length; t++) {
+        var dropDown = resetDropDowns[t];
+        $("#" + dropDown.id).prop('selectedIndex', 0);
+    }
 
     toggleRemove("removeAllProducts");
 
-    $("#btLevelNone").removeClass('active');
-    $("#btLevelNone").removeClass('btn-primary');
-    $("#btLevelFull").removeClass('active');
-    $("#btLevelFull").removeClass('btn-primary');
+    var clearButtons = ["#btLevelNone", "#btLevelFull", "#btLoggingLevelOff",
+        "#btLoggingLevelStandard", "#btAcceptEULAEnabled", "#btAcceptEULADisabled",
+        "#btLoggingLevelOff", "#btLoggingLevelStandard", "#btAutoActivateYes",
+        "#btAutoActivateNo", "#btForceAppShutdownTrue", "#btForceAppShutdownFalse",
+        "#btSharedComputerLicensingYes", "#btSharedComputerLicensingNo"];
 
-    $("#btLoggingLevelOff").removeClass('active');
-    $("#btLoggingLevelOff").removeClass('btn-primary');
-    $("#btLoggingLevelStandard").removeClass('active');
-    $("#btLoggingLevelStandard").removeClass('btn-primary');
-    $("#btAcceptEULAEnabled").removeClass('active');
-    $("#btAcceptEULAEnabled").removeClass('btn-primary');
-    $("#btAcceptEULADisabled").removeClass('active');
-    $("#btAcceptEULADisabled").removeClass('btn-primary');
+    for (var b = 0; b < clearButtons.length; b++) {
+        var buttonName = clearButtons[b];
+        $(buttonName).removeClass('active');
+        $(buttonName).removeClass('btn-primary');
+    }
 
-    $("#btLoggingLevelOff").removeClass('active');
-    $("#btLoggingLevelStandard").removeClass('btn-primary');
+    $.cookie("xmlcache", "");
 
-    $.cookie("xmlcache", "<Configuration></Configuration>");
+    $("#btAddProduct").text('Add Product');
 }
 
 function getXmlDocument() {
@@ -2123,9 +2280,10 @@ function toggleUpdatesEnabled(sourceId) {
             $this.addClass('btn-primary');
         }
 
-        $("#txtUpdatePath").prop("disabled", false);
-        $("#txtTargetVersion").prop("disabled", false);
         $("#inputDeadline").prop("disabled", false);
+
+        toggleTextBox("txtUpdatePath", true);
+        toggleTextBox("txtTargetVersion", true);
     } else {
         //$("#btupdatesEnabled").removeClass('active');
         $("#btupdatesEnabled").removeClass('btn-primary');
@@ -2139,11 +2297,25 @@ function toggleUpdatesEnabled(sourceId) {
             $this.addClass('btn-primary');
         }
 
-        $("#txtUpdatePath").prop("disabled", true);
-        $("#txtTargetVersion").prop("disabled", true);
         $("#inputDeadline").prop("disabled", true);
+
+        toggleTextBox("txtUpdatePath", false);
+        toggleTextBox("txtTargetVersion", false);
+
     }
     return false;
+}
+
+function toggleTextBox(id, enabled) {
+    if (enabled) {
+        $("#" + id).prop("disabled", false);
+        $("#" + id).css("background-color", "");
+        $("#" + id).css("border-color", "");
+    } else {
+        $("#" + id).prop("disabled", true);
+        $("#" + id).css("background-color", "#eeeeee");
+        $("#" + id).css("border-color", "#e1e1e1");
+    }
 }
 
 function toggleAutoActivateEnabled(sourceId) {
@@ -2337,4 +2509,36 @@ function IsGuid(value) {
 }
 
 
+var versions = [
+'15.0.4745.1001',
+'15.0.4727.1003',
+'15.0.4719.1002',
+'15.0.4711.1003',
+'15.0.4701.1002',
+'15.0.4693.1002',
+'15.0.4693.1001',
+'15.0.4675.1002',
+'15.0.4667.1002',
+'15.0.4659.1001',
+'15.0.4649.1003',
+'15.0.4649.1001',
+'15.0.4641.1003',
+'15.0.4631.1004',
+'15.0.4631.1002',
+'15.0.4623.1003',
+'15.0.4615.1002',
+'15.0.4605.1003',
+'15.0.4569.1508',
+'15.0.4569.1507',
+'15.0.4551.1512',
+'15.0.4551.1011',
+'15.0.4551.1005',
+'15.0.4535.1511',
+'15.0.4535.1004',
+'15.0.4517.1509',
+'15.0.4517.1005',
+'15.0.4505.1510',
+'15.0.4505.1006',
+'15.0.4481.1510'
+];
 
