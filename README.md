@@ -1,6 +1,8 @@
 # Office IT Pro Deployment Scripts
 This repo is a collection of useful PowerShell scripts to make deploying Office 2016 and Office 365 ProPlus easier for IT Pros and administrators. 
 
+Read more about it here: [Office Blogs](https://blogs.office.com/2015/08/19/introducing-the-office-it-pro-deployment-script-project/)
+
 ## Scripts
 For more detailed documentation of each script, check the readme file in the corresponding folder
 
@@ -13,6 +15,8 @@ Script that will output a CSV file with data around disk space utilization that 
 Script to modify the Configuration.xml file to configure installation options for Click-to-Run for Office 365 products.
 
 [README](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/master/Edit-OfficeConfigurationFile/README_Edit-OfficeConfigurationFile.md)
+
+You can also use the web page that was built to provide a more user friendly interface. You can find that here: [XML Editor](http://officedev.github.io/Office-IT-Pro-Deployment-Scripts/XmlEditor.html)
 
 ### Setup-SCCMOfficeUpdates
 Configures System Center Configuration Manager (SCCM) to configure Office Click-To-Run clients to use their closest Distribution Point (DP) for Office Updates.
