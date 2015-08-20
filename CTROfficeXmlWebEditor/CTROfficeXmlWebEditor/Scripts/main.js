@@ -496,9 +496,7 @@ $(document).ready(function () {
 
         }
     });
-
     
-
     $('#the-basics .typeahead').typeahead({
         hint: true,
         highlight: true,
@@ -998,17 +996,8 @@ function resizeWindow() {
     var bodyWidth = window.innerWidth;
     var leftPaneHeight = bodyHeight - 180;
 
-    //$("#mainDiv").height(bodyHeight - 70);
-
-    //$("#removeproduct").height(leftPaneHeight);
-    //$("#profile").height(leftPaneHeight);
-    //$("#updates").height(leftPaneHeight);
-    //$("#display").height(leftPaneHeight);
-    //$("#logging").height(leftPaneHeight);
-
     var rightPaneHeight = bodyHeight - 100;
     $("#xmlText").height(rightPaneHeight - 120);
-
 }
 
 

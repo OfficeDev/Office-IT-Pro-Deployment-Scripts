@@ -98,7 +98,7 @@
 
 <body>
     <div id="top-nav" class="navbar navbar-inverse navbar-static-top" style="min-width: 550px;border-bottom-color: #dc3c00;">
-        <div class="container-fluid" >
+        <div class="container-fluid">
             <div class="navbar-header">
 
                 <table cellspacing="0" cellpadding="0" width="100%">
@@ -108,7 +108,10 @@
                                 Office Click-To-Run Configuration XML Editor
                             </a>
                         </td>
-                        <td style="text-align: right;width: 100%;padding-right: 20px">
+                        <td style="text-align: right;width: 100%;padding-right: 10px">
+                            <button id="btAbout" data-toggle="modal" data-target="#myAboutModal" class="btn btn-default btn-primary">About</button>
+                        </td>
+                        <td style="text-align: right;width: 100px;padding-right: 20px">
                             <button id="btViewOnGitHub" class="btn btn-default btn-primary">View On GitHub</button>
                         </td>
                     </tr>
@@ -125,6 +128,7 @@
 
                     <div class="col-md-5" style="min-width: 550px;padding-right: 40px">
                         <div class="panel">
+                            
                             <ul class="nav nav-tabs" id="myTab">
                                 <li id="tabAddProduct" class="active"><a href="#profile" data-toggle="tab">Add Product</a></li>
                                 <li id="tabRemoveProduct"><a href="#removeproduct" data-toggle="tab">Remove Product</a></li>
@@ -133,6 +137,7 @@
                                 <li id="tabLogging"><a href="#logging" data-toggle="tab">Logging</a></li>
                                 <li id="tabTemplates"><a href="#templates" data-toggle="tab">Templates</a></li>
                             </ul>
+
                             <div class="tab-content">
 
                                 <!-- Add Product-->
@@ -158,7 +163,7 @@
                                                             </td>
                                                         </tr>
                                                     </table>
-                                                    
+
                                                     <div class="controls">
                                                         <select id="cbProduct" class="form-control">
                                                             <option value="O365ProPlusRetail">Office 365 ProPlus Retail</option>
@@ -205,7 +210,7 @@
 
                                                     <div class="controls" style="min-width: 400px; overflow: auto;">
                                                         <div style="float: left; width: 100%">
-                                                            <table >
+                                                            <table>
                                                                 <tr>
                                                                     <td style="width: 100%; padding-right: 10px">
                                                                         <select id="cbLanguage" class="form-control">
@@ -263,11 +268,11 @@
                                                                 </tr>
                                                             </table>
                                                         </div>
- 
+
                                                     </div>
                                                 </div>
 
-                                                <div class="control-group" >
+                                                <div class="control-group">
                                                     <label></label>
                                                     <div class="controls">
                                                         <button id="btAddProduct" class="btn btn-primary">
@@ -285,13 +290,13 @@
                                     </div>
 
                                     <div class="panel panel-default">
-                                        
+
                                         <div class="panel-heading">
                                             <div class="panel-title">
                                                 <table style="width: 100%">
                                                     <tr>
                                                         <td style="width: 100px">
-                                                            <h4>Optional</h4> 
+                                                            <h4>Optional</h4>
                                                         </td>
                                                         <td style="text-align: right;">
                                                             <a id="toggleExpand" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" class="glyphicon glyphicon-collapse-up" onclick="toggleExpandOptional(this);">
@@ -301,11 +306,11 @@
                                                         </td>
                                                     </tr>
                                                 </table>
-                                                
-                                                
+
+
                                             </div>
                                         </div>
-                                        
+
                                         <div id="collapseOne" class="panel-collapse collapse in" style="height:0;display:none;">
                                             <div class="panel-body">
                                                 <form class="form form-vertical" data-toggle="validator" role="form">
@@ -313,7 +318,7 @@
                                                     <div class="control-group" style="height: 75px;">
 
                                                         <div class="controls form-group has-feedback">
-                                                            
+
                                                             <table>
                                                                 <tr>
                                                                     <td>
@@ -337,11 +342,11 @@
                                                                 </div>
                                                                 <span id="versionSignal" class="glyphicon form-control-feedback" aria-hidden="true" style="display:none;"></span>
                                                             </div>
-                                                            
+
                                                         </div>
 
                                                     </div>
-                                                    
+
                                                     <div class="control-group" style="height: 75px;width: 100%">
                                                         <div class="controls form-group has-feedback">
                                                             <table>
@@ -447,9 +452,9 @@
                                                 </form>
                                             </div>
                                         </div>
-                                        
+
                                     </div>
-                                    
+
                                     <div class="panel panel-default">
 
                                         <div class="panel-heading">
@@ -475,7 +480,7 @@
                                         <div id="collapseProperties" class="panel-collapse collapse in" style="height:0;display:none;">
                                             <div class="panel-body">
                                                 <form class="form form-vertical" data-toggle="validator" role="form">
-                                                    
+
                                                     <table>
                                                         <tr>
                                                             <td>
@@ -559,7 +564,7 @@
                                                     </div>
 
                                                     <br />
-                                                    
+
                                                     <div class="control-group" style="height: 85px;width: 100%">
                                                         <div class="controls form-group has-feedback">
                                                             <table>
@@ -597,7 +602,7 @@
                                                             </button>
                                                         </div>
                                                     </div>
-                                                    
+
                                                 </form>
                                             </div>
 
@@ -635,7 +640,7 @@
                                                         </td>
                                                     </tr>
                                                 </table>
-                                                
+
 
                                                 <br />
                                                 <br />
@@ -656,7 +661,7 @@
                                                 <div class="control-group" style="padding-top: 5px;">
                                                     <label>Language</label>
                                                     <div class="controls">
-                                                                                                   
+
                                                         <table>
                                                             <tr>
                                                                 <td style="width: 100%; padding-right: 10px">
@@ -731,11 +736,11 @@
                                                         </button>
                                                     </div>
                                                 </div>
-                                                
+
 
 
                                             </form>
-                                            
+
                                         </div>
 
                                         <!--/panel content-->
@@ -810,7 +815,7 @@
                                                                 </td>
                                                             </tr>
                                                         </table>
-                                                        
+
                                                         <div class="input-group" style="width: 100%">
                                                             <div id="the-basics" style="width: 100%;">
                                                                 <input id="txtTargetVersion" type="text" pattern="^\d{2}\.\d\.\d{4}\.\d{4}$" maxlength="14"
@@ -834,7 +839,7 @@
                                                             </td>
                                                         </tr>
                                                     </table>
-                                                    
+
                                                     <div class="controls">
                                                         <div class='input-group date' id='txtDeadline'>
                                                             <input type='text' class="form-control" id="inputDeadline" />
@@ -879,7 +884,7 @@
 
                                         <div class="panel-body">
                                             <form class="form form-vertical">
-                                                
+
                                                 <table>
                                                     <tr>
                                                         <td>
@@ -893,7 +898,7 @@
                                                         </td>
                                                     </tr>
                                                 </table>
-                                                
+
                                                 <div>
                                                     <div class="btn-group" style="width:300px">
 
@@ -967,7 +972,7 @@
 
                                         <div class="panel-body">
                                             <form class="form form-vertical" data-toggle="validator" role="form">
-                                                
+
                                                 <table>
                                                     <tr>
                                                         <td>
@@ -1045,7 +1050,7 @@
                                     </div>
 
                                 </div>
-                                
+
                                 <!-- Templates-->
                                 <div class="tab-pane well" id="templates">
 
@@ -1063,7 +1068,7 @@
                                                     <li id="proPlusBusiness" href="./templates/0365ProPlusBusiness.xml" class="list-group-item">Office 365 ProPlus Business</li>
                                                     <li id="proPlusRetailVisio" href="./templates/O365ProPlusRetailwVisio.xml" class="list-group-item">Office 365 ProPlus Retail with Visio</li>
                                                 </ul>
-                                                
+
                                             </form>
                                         </div>
                                     </div>
@@ -1084,7 +1089,7 @@
                                         <td style="width: 200px;text-wrap:none;">
                                             <h4>XML Viewer</h4>
                                         </td>
-                                        
+
                                         <td style="text-align: right">
                                             <form id="text-options">
                                                 <input type="button" class="btn btn-default btn-primary" value="Reset" onclick="clearXml();">
@@ -1106,19 +1111,58 @@
                                         <td style="width:200px;display: none;width: 100px;">
                                             <form id="fileUploadForm">
                                                 <input type="file" id="fileInput" size="10">
-                                             </form>
+                                            </form>
                                         </td>
 
                                     </tr>
                                 </table>
                             </div>
                             <div class="panel-body">
-                                <textarea id="xmlText" style="width:100%; min-height: 455px;font-size:20px" rows="3" placeholder="" readonly ></textarea>
+                                <textarea id="xmlText" style="width:100%; min-height: 455px;font-size:20px" rows="3" placeholder="" readonly></textarea>
                             </div>
 
                         </div>
                     </div>
                     
+                    <!-- About Modal -->
+                    <div class="modal fade" id="myAboutModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                    <h4 class="modal-title" id="myModalLabel">Help</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <h4>Office Click-To-Run Configuration XML Editor</h4>
+                                    <p>Online Editor for the Office ProPlus Click-To-Run Configurtion XML file</p>
+                                    <hr>
+                                    
+                                    <a href="https://technet.microsoft.com/en-us/library/JJ219426.aspx">Reference for Click-to-Run configuration.xml file</a>
+                                                                        
+                                    <br/>
+                                    <br/>
+
+                                    The Click-to-Run for Office 365 Configuration.xml file is used to specify Click-to-Run installation and update options. The 
+                                    <a href="https://technet.microsoft.com/en-us/library/jj219422.aspx" id="A_2">Office Deployment Tool</a> is a downloadable tool 
+                                    that includes a sample Configuration.xml file. Administrators can modify the Configuration.xml file to configure installation options 
+                                    for Click-to-Run for Office 365 products.
+                                    
+                                    <br />
+                                    <br />
+
+                                    The Click-to-Run Configuration.xml file is a necessary component of the Office Deployment Tool. Click-to-Run customizations are performed 
+                                    primarily by starting the Office Deployment Tool and providing a custom Configuration.xml file. The Office Deployment Tool performs the tasks 
+                                    that are specified by using the optional properties in the configuration file. For the Office 2013 release of the product, administrators can 
+                                    download the Office Deployment Tool from the <a href="http://go.microsoft.com/fwlink/p/?LinkId=282642" id="A_2">Microsoft Download Center</a>.
+                                    
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Product Modal -->
                     <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
                         <div class="modal-dialog" role="document">
@@ -1139,7 +1183,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- Bitness Modal -->
                     <div class="modal fade" id="bitnessModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
                         <div class="modal-dialog" role="document">
@@ -1174,7 +1218,7 @@
                                     <p>Determine which product languages to install.</p>
                                     <hr>
                                     <p>Required. If the <strong>Language ID</strong> value is not set, the installation operation fails and indicates that the input is not valid.</p> <p>The <strong>ID</strong> value can be set to a valid Office culture language (such as en-us for English US or ja-jp for Japanese). The <em>ll-cc</em> value is the language identifier. </p>
-                                    
+
                                     <div class="alert">
                                         <table>
                                             <tr><th align="left"><img id="note" alt="Note" src="https://i-technet.sec.s-msft.com/areas/global/content/clear.gif" title="Note" xmlns="" class="cl_IC101471" /><strong>Note: </strong></th></tr>
@@ -1193,7 +1237,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- Version Modal -->
                     <div class="modal fade" id="versionModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
                         <div class="modal-dialog" role="document">
@@ -1235,7 +1279,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- PIDKEY Modal -->
                     <div class="modal fade" id="pidkeyModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
                         <div class="modal-dialog" role="document">
@@ -1248,18 +1292,19 @@
                                     <h4>PIDKEY</h4>
                                     <p>The 25-character volume license key.</p>
                                     <hr>
-                                    <p>Optional. </p> 
-                                    
+                                    <p>Optional. </p>
+
                                     <p>When the <strong>PIDKEY</strong> value is set, users are not required to enter a product key when they install Office.</p>
-                                    
-                                    <p>If this element is not defined, the default settings are used. If an invalid value is specified, Setup ends the installation. </p> <p>If the <strong>Level</strong> attribute is set to "basic" or “none” and you supply a product key by using the <a href="#ElementPIDKEY">PIDKEY</a>, Setup assumes that you also accept the license agreement on behalf of the user.</p></div>
+
+                                    <p>If this element is not defined, the default settings are used. If an invalid value is specified, Setup ends the installation. </p> <p>If the <strong>Level</strong> attribute is set to "basic" or “none” and you supply a product key by using the <a href="#ElementPIDKEY">PIDKEY</a>, Setup assumes that you also accept the license agreement on behalf of the user.</p>
+                                </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- ExcludeApp Modal -->
                     <div class="modal fade" id="excludeappModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
                         <div class="modal-dialog" role="document">
@@ -1281,7 +1326,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- RemoveProducts Modal -->
                     <div class="modal fade" id="removeproductsModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
                         <div class="modal-dialog" role="document">
@@ -1294,8 +1339,8 @@
                                     <h4>Remove Products</h4>
                                     <p>Removes products and languages.</p>
                                     <hr>
-                                    
-                                    
+
+
                                     <div id="DIV_1">
                                         <table id="TABLE_2">
                                             <tbody id="TBODY_3">
@@ -1312,8 +1357,8 @@
                                             </tbody>
                                         </table>
                                     </div>
-                                    
-                                    
+
+
 
                                 </div>
                                 <div class="modal-footer">
@@ -1322,7 +1367,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- UpdatePath Modal -->
                     <div class="modal fade" id="updatepathModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
                         <div class="modal-dialog" role="document">
@@ -1335,11 +1380,11 @@
                                     <h4>Update Path</h4>
                                     <p>Specifies a network, local, or HTTP path of a Click-to-Run source.</p>
                                     <hr>
-                                    Optional. 
-                                    <br/>
+                                    Optional.
+                                    <br />
                                     <br />
                                     If <strong id="STRONG_3">UpdatePath</strong> is not set, Click-to-Run installations obtain updates from the Microsoft Click-to-Run source (Content Delivery Network or CDN). This is by default. If <strong id="STRONG_5">UpdatePath</strong> is set to empty (""), updates are obtained from the Microsoft Click-to-Run source, CDN. <strong id="STRONG_7">UpdatePath</strong> can specify a network, local, or HTTP path of a Click-to-Run source. Environment variables can be used for network or local paths. If you use Group Policy and the <a href="http://go.microsoft.com/fwlink/p/?LinkID=257051" id="A_10">Office 2013 Administrative Template files (ADMX/ADML)</a>, you can set <strong id="STRONG_11">UpdatePath</strong> by using the <strong id="STRONG_12">Update Path</strong> policy setting. You can find this policy setting under Computer Configuration\Administrative Templates\Microsoft Office 2013 (Machine)\Updates.
-                                   
+
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -1363,7 +1408,7 @@
                                     Optional.
                                     <br />
                                     <br />
-                                    
+
                                     If <strong id="STRONG_3">TargetVersion</strong> is not set, Click-to-Run updates to the most recent version from the Microsoft Click-to-Run source. If <strong id="STRONG_5">TargetVersion</strong> is set to empty (""), Click-to-Run updates to the latest version from the Microsoft Click-to-Run source. <strong id="STRONG_7">TargetVersion</strong> can be set to an Office build number, for example, 15.1.2.3. When the version is set, Office attempts to transition to the specified version in the next update cycle. If you use Group Policy and the <a href="http://go.microsoft.com/fwlink/p/?LinkID=257051" id="A_9">Office 2013 Administrative Template files (ADMX/ADML)</a>, you can set <strong id="STRONG_10">TargetVersion</strong> by using the <strong id="STRONG_11">Target Version</strong> policy setting. You can find this policy setting under Computer Configuration\Administrative Templates\Microsoft Office 2013 (Machine)\Updates.
                                 </div>
                                 <div class="modal-footer">
@@ -1372,7 +1417,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- Deadline Modal -->
                     <div class="modal fade" id="deadlineModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
                         <div class="modal-dialog" role="document">
@@ -1388,9 +1433,9 @@
                                     Optional.
                                     <br />
                                     <br />
-                                    
+
                                     Sets a deadline by when updates to Office must be applied. The deadline is specified in Coordinated Universal Time (UTC). You can use <strong id="STRONG_4">Deadline</strong> with <strong id="STRONG_5">Target Version</strong> to make sure that Office is updated to a particular version by a particular date. We recommend that you set the deadline at least a week in the future to allow users time to install the updates. Prior to the deadline, users receive multiple reminders to install the updates. If Office isn’t updated by the deadline, users see a notification that the updates will be applied in 15 minutes. This gives users the opportunity to save the Office documents that they are working on and to close any Office programs that are open. If users don’t close the Office programs, the programs are closed automatically when the 15 minutes are up, which might result in data loss. After the Office programs are closed, the updates are applied automatically. The deadline only applies to one set of updates. If you want to use a deadline to make sure that Office is always up-to-date, you must change the deadline every time that a new update for Office is available. To use this attribute, Office must be running at least Service Pack 1 (version 15.0.4569.1507) and you must use at least version 15.0.4595.1000 of the Office Deployment Tool. If you use Group Policy and the <a href="http://go.microsoft.com/fwlink/p/?LinkID=257051" id="A_10">Office 2013 Administrative Template files (ADMX/ADML)</a>, you can set <strong id="STRONG_11">Deadline</strong> by using the <strong id="STRONG_12">Update Deadline</strong> policy setting. You can find this policy setting under Computer Configuration\Administrative Templates\Microsoft Office 2013 (Machine)\Updates.
-                                    
+
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -1398,7 +1443,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- Level Modal -->
                     <div class="modal fade" id="levelModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
                         <div class="modal-dialog" role="document">
@@ -1424,7 +1469,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- Display Level Modal -->
                     <div class="modal fade" id="accepteulaModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
                         <div class="modal-dialog" role="document">
@@ -1442,7 +1487,7 @@
                                     <br />
 
                                     If this attribute is set to <strong id="STRONG_6">TRUE</strong>, the user does not see a Microsoft Software License Terms dialog box. If this attribute is set to <strong id="STRONG_8">FALSE</strong> or is not set, the user may see a Microsoft Software License Terms dialog box. This attribute only applies if you install with the user's account. If you use System Center Configuration Manager or some other software distribution tool which uses the SYSTEM account to install, then the setting for this attribute is not applied.
-                                    
+
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -1450,7 +1495,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- Log Level Modal -->
                     <div class="modal fade" id="loglevelModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
                         <div class="modal-dialog" role="document">
@@ -1476,7 +1521,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- Log Level Modal -->
                     <div class="modal fade" id="logpathModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
                         <div class="modal-dialog" role="document">
@@ -1502,7 +1547,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- PACKAGEGUID Modal -->
                     <div class="modal fade" id="PACKAGEGUIDModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
                         <div class="modal-dialog" role="document">
@@ -1538,7 +1583,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- AUTOACTIVATE Modal -->
                     <div class="modal fade" id="AUTOACTIVATEModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
                         <div class="modal-dialog" role="document">
@@ -1553,8 +1598,8 @@
                                     <hr>
 
                                     If <strong>AUTOACTIVATE</strong> is set to 1, the specified products will attempt to activate automatically. If <strong>AUTOACTIVATE</strong> is not set, the user may see the Activation Wizard UI.
-                                   
-                                    <br/>
+
+                                    <br />
                                     <br />
                                     <strong>Note:</strong> Office 365 Click-to-Run products are already set to activate automatically. You must not set <strong>AUTOACTIVATE</strong> for Office 365 Click-to-Run products.<br id="BR_15" /> This setting applies only to perpetual retail versions of Click-to-Run products.
 
@@ -1565,7 +1610,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- FORCEAPPSHUTDOWN Modal -->
                     <div class="modal fade" id="FORCEAPPSHUTDOWNModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
                         <div class="modal-dialog" role="document">
@@ -1579,12 +1624,12 @@
                                     <p> Forces the applications that block the action to be shut down.</p>
                                     <hr>
 
-                                    An installation or removal action may be blocked if Office applications are running. Normally, such cases would start a process killer UI. 
-                                    Administrators can set <strong id="STRONG_3">FORCEAPPSHUTDOWN</strong> value to <strong id="STRONG_4">TRUE</strong> to prevent dependence 
-                                    on user interaction. When <strong id="STRONG_5">FORCEAPPSHUTDOWN</strong> is set to <strong id="STRONG_6">TRUE</strong>, any applications 
-                                    that block the action will be shut down. Data loss may occur. When <strong id="STRONG_7">FORCEAPPSHUTDOWN</strong> is set to 
+                                    An installation or removal action may be blocked if Office applications are running. Normally, such cases would start a process killer UI.
+                                    Administrators can set <strong id="STRONG_3">FORCEAPPSHUTDOWN</strong> value to <strong id="STRONG_4">TRUE</strong> to prevent dependence
+                                    on user interaction. When <strong id="STRONG_5">FORCEAPPSHUTDOWN</strong> is set to <strong id="STRONG_6">TRUE</strong>, any applications
+                                    that block the action will be shut down. Data loss may occur. When <strong id="STRONG_7">FORCEAPPSHUTDOWN</strong> is set to
                                     <strong id="STRONG_8">FALSE</strong> (default), the action may fail if Office applications are running.
-                                  
+
 
                                 </div>
                                 <div class="modal-footer">
@@ -1593,7 +1638,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- SharedComputerLicensing Modal -->
                     <div class="modal fade" id="SharedComputerLicensingModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
                         <div class="modal-dialog" role="document">
@@ -1608,8 +1653,8 @@
                                     <hr>
                                     <p>Optional. </p>
 
-                                    Set <strong id="STRONG_3">SharedComputerLicensing</strong> to 1 if you deploy Office 365 ProPlus to shared computers by using Remote Desktop Services. 
-                                    For more information, see 
+                                    Set <strong id="STRONG_3">SharedComputerLicensing</strong> to 1 if you deploy Office 365 ProPlus to shared computers by using Remote Desktop Services.
+                                    For more information, see
                                     <a href="https://technet.microsoft.com/en-us/library/dn782860.aspx" id="A_5">Overview of shared computer activation for Office 365 ProPlus</a>.
 
                                 </div>
@@ -1624,7 +1669,7 @@
             </div>
         </div>
     </div>
-    
+
     <script type='text/javascript' src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script type='text/javascript' src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment.min.js"></script>
@@ -1636,6 +1681,5 @@
 
     <script type=" text/javascript" src="./Scripts/FileSaver.js"></script>
     <script type="text/javascript" src="./Scripts/main.js"></script>
-    
 </body>
 </html>
