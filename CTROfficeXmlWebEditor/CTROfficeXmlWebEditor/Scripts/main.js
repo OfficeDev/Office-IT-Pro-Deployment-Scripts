@@ -24,6 +24,11 @@ $(document).ready(function () {
     document.getElementById("collapseOne").style.display = "block";
     document.getElementById("collapseProperties").style.display = "block";
 
+    if (isInternetExplorer()) {
+        document.getElementById("txtVersion").style.lineHeight = "0px";
+        document.getElementById("txtTargetVersion").style.lineHeight = "0px";
+    }
+
     $("#btRemoveProduct").prop("disabled", true);
     $("#btAddLanguage").prop("disabled", true);
     $("#btRemoveLanguage").prop("disabled", true);
@@ -516,6 +521,13 @@ $(document).ready(function () {
     });
 
 });
+
+function isInternetExplorer() {
+    if (window.ActiveXObject || "ActiveXObject" in window) {
+        return true;
+    }
+    return false;
+}
 
 var substringMatcher = function (strs) {
     return function findMatches(q, cb) {
