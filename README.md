@@ -1,13 +1,22 @@
 # Office IT Pro Deployment Scripts
-This GitHub repository is a collection of useful PowerShell scripts to make deploying Office 2016 and Office 365 ProPlus easier for IT Pros and administrators. 
+This repo is a collection of useful PowerShell scripts to make deploying Office 2016 and Office 365 ProPlus easier for IT Pros and administrators. 
+
+Read more about it here: [Office Blogs](https://blogs.office.com/2015/08/19/introducing-the-office-it-pro-deployment-script-project/)
 
 ## Scripts
 For more detailed documentation of each script, check the readme file in the corresponding folder
+
+### Check-DiskSpace
+Script that will output a CSV file with data around disk space utilization that can be assessed in a graphical view using new charts in Excel 2016.
+
+[README](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/master/Check-DiskSpace/README_Check-DiskSpace.md)
 
 ### Edit-OfficeConfigurationFile
 Script to modify the Configuration.xml file to configure installation options for Click-to-Run for Office 365 products.
 
 [README](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/master/Edit-OfficeConfigurationFile/README_Edit-OfficeConfigurationFile.md)
+
+You can also use the web page that was built to provide a more user friendly interface. You can find that here: [XML Editor](http://officedev.github.io/Office-IT-Pro-Deployment-Scripts/XmlEditor.html)
 
 ### Setup-SCCMOfficeUpdates
 Configures System Center Configuration Manager (SCCM) to configure Office Click-To-Run clients to use their closest Distribution Point (DP) for Office Updates.
@@ -34,20 +43,15 @@ This script will configure an existing Active Directory Group Policy to silently
 
 [README](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/master/Configure-GPOOfficeInstallation/README_New-GPOOfficeInstallation.md)
 
-### Get-NewOfficeUsers
-Two functions to identify licensed Office 365 users and track the dates they were enabled or disabled.
-
-[README](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/master/Get-NewOfficeUsers/README_Get-NewOfficeUsers.md)
-
 ## New to PowerShell and Office 365?
-Check out [PowerShell for Office 365](https://poweshell.office.com) for advice on getting started, key scenarios and script samples.  
+Check out [PowerShell for Office 365](http://powershell.office.com) for advice on getting started, key scenarios and script samples.  
 
 ##Questions and comments
 If you have any trouble running this sample, please log an issue.
 For more general feedback, send an email to o16scripts@microsoft.com.
 
 ## How to Contribute to this project
-This is high level plan for contributing and the structure that we have in place for pulling changes
+This is high level plan for contributing and the structure that we have in place for pulling changes.
 <UL>
 <LI>There will be 3 main levels of branches: 1 master branch, 1 development branch, feature and bug branches
 <LI>Each powershell script will have its own branch and changes will be made at that level
