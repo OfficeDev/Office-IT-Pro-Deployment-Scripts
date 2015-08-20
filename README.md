@@ -44,7 +44,7 @@ This script will configure an existing Active Directory Group Policy to silently
 [README](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/master/Configure-GPOOfficeInstallation/README_New-GPOOfficeInstallation.md)
 
 ## New to PowerShell and Office 365?
-Check out [PowerShell for Office 365](https://poweshell.office.com) for advice on getting started, key scenarios and script samples.  
+Check out [PowerShell for Office 365](https://powershell.office.com) for advice on getting started, key scenarios and script samples.  
 
 ##Questions and comments
 If you have any trouble running this sample, please log an issue.
