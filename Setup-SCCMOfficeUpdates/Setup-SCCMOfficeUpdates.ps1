@@ -137,10 +137,10 @@ Param
 	[String]$SiteCode = $null,
 	
 	[Parameter()]
-	[String]$PackageName = "Office Pro Plus Update",
+	[String]$PackageName = "Office ProPlus Update",
 		
 	[Parameter()]
-	[String]$ProgramName = "Office Pro Plus Update",
+	[String]$ProgramName = "Office ProPlus Update",
 
 	[Parameter()]	
 	[Bool]$UpdateOnlyChangedBits = $true,
@@ -235,10 +235,10 @@ function Deploy-SCCMOfficeUpdates {
 		[String]$Collection = "",
 
 		[Parameter()]
-		[String]$PackageName = "Office Pro Plus Update",
+		[String]$PackageName = "Office ProPlus Update",
 
 		[Parameter()]
-		[String]$ProgramName = "Office Pro Plus Update",
+		[String]$ProgramName = "Office ProPlus Update",
 
 		[Parameter()]	
 		[Bool]$UpdateOnlyChangedBits = $true
@@ -293,7 +293,7 @@ function CreateSCCMPackage() {
     Param
 	(
 		[Parameter()]
-		[String]$Name = "Office Pro Plus Update",
+		[String]$Name = "Office ProPlus Update",
 		
 		[Parameter(Mandatory=$True)]
 		[String]$Path,
@@ -329,13 +329,13 @@ function CreateSCCMProgram() {
     Param
 	(
 		[Parameter()]
-		[String]$PackageName = "Office Pro Plus Update",
+		[String]$PackageName = "Office ProPlus Update",
 		
 		[Parameter(Mandatory=$True)]
 		[String]$Path, 
 
 		[Parameter()]
-		[String]$Name = "Office Pro Plus Update",
+		[String]$Name = "Office ProPlus Update",
 		
 		[Parameter()]
 		[String[]] $RequiredPlatformNames = @()
