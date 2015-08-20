@@ -484,6 +484,21 @@ $(document).ready(function () {
         return false;
     });
 
+    $(window).scroll(function() {
+        var scrollTop = $(window).scrollTop();
+
+        var xmlEditorDiv = document.getElementById("xmlEditorDiv");
+        if (xmlEditorDiv) {
+
+            if (scrollTop > 50) {
+                xmlEditorDiv.style.top = (scrollTop - 50) + "px";
+            }
+
+        }
+    });
+
+    
+
     $('#the-basics .typeahead').typeahead({
         hint: true,
         highlight: true,
@@ -1565,40 +1580,31 @@ function odtSaveProperties(xmlDoc) {
     var autoActivateNode = null;
     var forceShutDownNode = null;
     var sharedComputerLicensingNode = null;
+    var packageguidNode = null;
 
     var nodes = xmlDoc.documentElement.getElementsByTagName("Property");
     if (nodes.length > 0) {
         for (var n = 0; n < nodes.length; n++) {
             propNode = xmlDoc.documentElement.getElementsByTagName("Property")[n];
             if (propNode) {
-                if (propNode.getAttribute("Name").toUpperCase() == "AUTOACTIVATE") {
-                    autoActivateNode = propNode;
-                }
-                if (propNode.getAttribute("Name").toUpperCase() == "FORCEAPPSHUTDOWN") {
-                    forceShutDownNode = propNode;
-                }
-                if (propNode.getAttribute("Name").toUpperCase() == "SHAREDCOMPUTERLICENSING") {
-                    sharedComputerLicensingNode = propNode;
+                var attrValue = propNode.getAttribute("Name");
+                if (attrValue) {
+                    if (propNode.getAttribute("Name").toUpperCase() == "AUTOACTIVATE") {
+                        autoActivateNode = propNode;
+                    }
+                    if (propNode.getAttribute("Name").toUpperCase() == "FORCEAPPSHUTDOWN") {
+                        forceShutDownNode = propNode;
+                    }
+                    if (propNode.getAttribute("Name").toUpperCase() == "SHAREDCOMPUTERLICENSING") {
+                        sharedComputerLicensingNode = propNode;
+                    }
+                    if (propNode.getAttribute("Name").toUpperCase() == "PACKAGEGUID") {
+                        packageguidNode = propNode;
+                    }
                 }
             }
         }
     }
-
-    if (!(autoActivateNode)) {
-        autoActivateNode = xmlDoc.createElement("Property");
-        xmlDoc.documentElement.appendChild(autoActivateNode);
-    }
-
-    if (!(forceShutDownNode)) {
-        forceShutDownNode = xmlDoc.createElement("Property");
-        xmlDoc.documentElement.appendChild(forceShutDownNode);
-    }
-
-    if (!(sharedComputerLicensingNode)) {
-        sharedComputerLicensingNode = xmlDoc.createElement("Property");
-        xmlDoc.documentElement.appendChild(sharedComputerLicensingNode);
-    }
-
 
     var $btAutoActivateYes = $("#btAutoActivateYes");
     var $btAutoActivateNo = $("#btAutoActivateNo");
@@ -1607,42 +1613,70 @@ function odtSaveProperties(xmlDoc) {
     var $btSharedComputerLicensingYes = $("#btSharedComputerLicensingYes");
     var $btSharedComputerLicensingNo = $("#btSharedComputerLicensingNo");
 
-    if (!$btAutoActivateYes.hasClass('btn-primary') && !$btAutoActivateNo.hasClass('btn-primary') &&
-        !$btForceAppShutdownTrue.hasClass('btn-primary') && !$btForceAppShutdownFalse.hasClass('btn-primary') &&
-        !$btSharedComputerLicensingYes.hasClass('btn-primary') && !$btSharedComputerLicensingNo.hasClass('btn-primary')) {
-        $btAutoActivateYes.addClass('btn-primary');
-        $btForceAppShutdownTrue.addClass('btn-primary');
+    var packageguidVal = $("#txtPACKAGEGUID").val();
+    if (packageguidVal) {
+        if (packageguidVal.length > 0) {
+            if (IsGuid(packageguidVal)) {
+                if (!(packageguidNode)) {
+                    packageguidNode = xmlDoc.createElement("Property");
+                    xmlDoc.documentElement.appendChild(packageguidNode);
+                }
+
+                packageguidNode.setAttribute("Name", "PACKAGEGUID");
+                packageguidNode.setAttribute("Value", packageguidVal);
+            }
+        }   
     }
 
+    if ($btAutoActivateYes.hasClass('btn-primary') || $btAutoActivateNo.hasClass('btn-primary')) {
+        if (!(autoActivateNode)) {
+            autoActivateNode = xmlDoc.createElement("Property");
+            xmlDoc.documentElement.appendChild(autoActivateNode);
+        }
 
-    if ($btAutoActivateYes.hasClass('btn-primary')) {
-        autoActivateNode.setAttribute("Name", "AUTOACTIVATE");
-        autoActivateNode.setAttribute("Value", "1");
+        if ($btAutoActivateYes.hasClass('btn-primary')) {
+            autoActivateNode.setAttribute("Name", "AUTOACTIVATE");
+            autoActivateNode.setAttribute("Value", "1");
+        }
+
+        if ($btAutoActivateNo.hasClass('btn-primary')) {
+            autoActivateNode.setAttribute("Name", "AUTOACTIVATE");
+            autoActivateNode.setAttribute("Value", "0");
+        }
     }
 
-    if ($btAutoActivateNo.hasClass('btn-primary')) {
-        autoActivateNode.setAttribute("Name", "AUTOACTIVATE");
-        autoActivateNode.setAttribute("Value", "0");
+    if ($btForceAppShutdownTrue.hasClass('btn-primary') || $btForceAppShutdownFalse.hasClass('btn-primary')) {
+        if (!(forceShutDownNode)) {
+            forceShutDownNode = xmlDoc.createElement("Property");
+            xmlDoc.documentElement.appendChild(forceShutDownNode);
+        }
+
+        if ($btForceAppShutdownTrue.hasClass('btn-primary')) {
+            forceShutDownNode.setAttribute("Name", "FORCEAPPSHUTDOWN");
+            forceShutDownNode.setAttribute("Value", "TRUE");
+        }
+
+        if ($btForceAppShutdownFalse.hasClass('btn-primary')) {
+            forceShutDownNode.setAttribute("Name", "FORCEAPPSHUTDOWN");
+            forceShutDownNode.setAttribute("Value", "FALSE");
+        }
     }
 
-    if ($btForceAppShutdownTrue.hasClass('btn-primary')) {
-        forceShutDownNode.setAttribute("Name", "FORCEAPPSHUTDOWN");
-        forceShutDownNode.setAttribute("Value", "TRUE");
-    }
+    if ($btSharedComputerLicensingYes.hasClass('btn-primary') || $btSharedComputerLicensingNo.hasClass('btn-primary')) {
+        if (!(sharedComputerLicensingNode)) {
+            sharedComputerLicensingNode = xmlDoc.createElement("Property");
+            xmlDoc.documentElement.appendChild(sharedComputerLicensingNode);
+        }
 
-    if ($btForceAppShutdownFalse.hasClass('btn-primary')) {
-        forceShutDownNode.setAttribute("Name", "FORCEAPPSHUTDOWN");
-        forceShutDownNode.setAttribute("Value", "FALSE");
-    }
+        if ($btSharedComputerLicensingYes.hasClass('btn-primary')) {
+            sharedComputerLicensingNode.setAttribute("Name", "SharedComputerLicensing");
+            sharedComputerLicensingNode.setAttribute("Value", "1");
+        }
 
-    if ($btSharedComputerLicensingYes.hasClass('btn-primary')) {
-        sharedComputerLicensingNode.setAttribute("Name", "SharedComputerLicensing");
-        sharedComputerLicensingNode.setAttribute("Value", "1");
-    }
-
-    if ($btSharedComputerLicensingNo.hasClass('btn-primary')) {
-        sharedComputerLicensingNode.setAttribute("Name", "SharedComputerLicensing");
-        sharedComputerLicensingNode.setAttribute("Value", "0");
+        if ($btSharedComputerLicensingNo.hasClass('btn-primary')) {
+            sharedComputerLicensingNode.setAttribute("Name", "SharedComputerLicensing");
+            sharedComputerLicensingNode.setAttribute("Value", "0");
+        }
     }
 }
 
@@ -2296,7 +2330,10 @@ function toggleLoggingEnabled(sourceId) {
 }
 
 
-
+function IsGuid(value) {
+    var rGx = new RegExp("\\b(?:[A-F0-9]{8})(?:-[A-F0-9]{4}){3}-(?:[A-F0-9]{12})\\b");
+    return rGx.exec(value) != null;
+}
 
 
 
