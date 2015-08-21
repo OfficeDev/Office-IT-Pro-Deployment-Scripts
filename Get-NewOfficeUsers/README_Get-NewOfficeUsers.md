@@ -55,3 +55,53 @@ It is important to have run the Update-UserLicenseData.ps1 prior to using this s
 3. Run the Get-NewOfficeUsers.ps1 script. This will by default show you the users that have been created in the last week.
 
 		Type . .\Get-NewOfficeUsers.ps1
+
+###Recommended Use Case
+
+Proper use of Update and Email scripts should involve running them as a scheduled task using a service 
+account (not personal) because the password will be put in plan text in the scheduled task.
+
+    1.  On the system that the task will be run from, open the Windows Task Scheduler. 
+        This can be found in the Start menu, under Start > Administrative Tools.
+        (For Windows 7 and upward, you can just search for Task Scheduler in the start
+        menu)
+
+    2.  In the Task Scheduler, select the Create Task option under the Actions heading 
+        on the right-hand side.
+
+    3.  Enter a name for the task, and give it a description (the description is optional 
+        and not required).
+
+    4.  In the General tab, go to the Security options heading and specify the user account 
+        that the task should be run under. Change the settings so the task will run if the 
+        user is logged in or not.
+
+    5.  Next, select the Triggers tab, and click New to add a new trigger for the scheduled 
+        task. This new task should use the On a schedule option. The start date can be set 
+        to a desired time, and the frequency and duration of the task can be set based on 
+        your specific needs. Click OK when your desired settings are entered.
+
+    6.  Next, go to the Actions tab and click New to set the action for this task to run. 
+        Set the Action to Start a program.
+
+    7.  In the Program/script box enter "PowerShell.exe"
+        In the Add arguments (optional) box enter the value:
+
+		. ./Get-NewOfficeUsers.ps1;Update-UserLicenseData -ServiceName [ServiceName] -Username [username] -Password [password])
+		-or-
+        . ./Get-NewOfficeUsers.ps1;Send-RecentUserEmails -SmtpServer [SmtpServer] -Username [username] -Password [password])
+
+    8.  Then, in the Start in (optional) box, add the location of the folder that contains 
+        your PowerShell script.
+
+        Note: The location used in the Start in box will also be used for storing the scheduled task 
+        run times, the job history for the copies, and any additional logging that may occur.
+        Click OK when all the desired settings are made.
+
+    9. Next, set any other desired settings in the Conditions and Settings tabs. You can also set up 
+        additional actions, such as emailing an Administrator each time the script is run.
+
+    10. Once all the desired actions have been made (or added), click OK. The task will be immediately 
+        set, and is ready to run.
+
+        The scheduling of this task is complete, and is now ready to run based on the entered settings.
