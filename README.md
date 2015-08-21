@@ -7,7 +7,7 @@ Read more about it here: [Office Blogs](https://blogs.office.com/2015/08/19/intr
 For more detailed documentation of each script, check the [Wiki](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/wiki) or the readme file in the corresponding folder
 
 ## XML Editor
-Tired of manually editing the Configuration XML File?  Try our online XML Editor.
+Tired of manually editing the Office Click-To-Run Configuration XML File?  Try our online XML Editor.
 
 [Office Click-To-Run Configuration XML Editor](http://officedev.github.io/Office-IT-Pro-Deployment-Scripts/XmlEditor.html)
 
