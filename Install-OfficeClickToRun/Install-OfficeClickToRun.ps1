@@ -370,6 +370,7 @@ function checkForLanguage() {
     }
 }
 
+
 $availableLangs = @("en-us",
 "ar-sa","bg-bg","zh-cn","zh-tw","hr-hr","cs-cz","da-dk","nl-nl","et-ee",
 "fi-fi","fr-fr","de-de","el-gr","he-il","hi-in","hu-hu","id-id","it-it",
