@@ -1,49 +1,11 @@
 Function Get-CurrentOfficeConfiguration {
-<#
-.Synopsis
-Gets the Office Version installed on the computer
 
-.DESCRIPTION
-This function will query the local or a remote computer and return the information about Office Products installed on the computer
-
-.NOTES   
-Name: Get-OfficeVersion
-Version: 1.0.3
-DateCreated: 2015-07-01
-DateUpdated: 2015-07-21
-
-.LINK
-https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
-
-.PARAMETER ComputerName
-The computer or list of computers from which to query 
-
-.PARAMETER ShowAllInstalledProducts
-Will expand the output to include all installed Office products
-
-.EXAMPLE
-Get-OfficeVersion
-
-Description:
-Will return the locally installed Office product
-
-.EXAMPLE
-Get-OfficeVersion -ComputerName client01,client02
-
-Description:
-Will return the installed Office product on the remote computers
-
-.EXAMPLE
-Get-OfficeVersion | select *
-
-Description:
-Will return the locally installed Office product with all of the available properties
-
-#>
 [CmdletBinding(SupportsShouldProcess=$true)]
 param(
     [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
-    [string[]]$ComputerName = $env:COMPUTERNAME
+    [string[]]$ComputerName = $env:COMPUTERNAME,
+    [Parameter(ValueFromPipelineByPropertyName=$true)]
+    [bool]$IncludeLocalLanguages = $true
 )
 
 begin {
@@ -74,8 +36,6 @@ process {
        $os=Get-WMIObject win32_operatingsystem -computername $computer
     }
 
-    $osArchitecture = $os.OSArchitecture
-
     if ($Credentials) {
        $regProv = Get-Wmiobject -list "StdRegProv" -namespace root\default -computername $computer -Credential $Credentials
     } else {
@@ -85,7 +45,6 @@ process {
     [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
 
     [string]$officeKeyPath = "";
-
     foreach ($regPath in $officeKeys) {
        [string]$installPath = $regProv.GetStringValue($HKLM, $regPath, "InstallPath").sValue
        if ($installPath) {
@@ -106,8 +65,6 @@ process {
     [string]$updateUrl = $regProv.GetStringValue($HKLM, $configurationPath, "UpdateUrl").sValue
     [string]$updateDeadline = $regProv.GetStringValue($HKLM, $configurationPath, "UpdateDeadline").sValue
 
-    getLanguages -regProv $regProv
-
     $splitProducts = $productIds.Split(',');
 
     if ($platform.ToLower() -eq "x86") {
@@ -116,12 +73,32 @@ process {
         $platform = "64"
     }
 
+    $osArchitecture = $os.OSArchitecture
+    $osLanguage = $os.OSLanguage
+    $machinelangId = "en-us"
+       
+    $machineCulture = [globalization.cultureinfo]::GetCultures("allCultures") | where {$_.LCID -eq $osLanguage}
+    if ($machineCulture) {
+        $machinelangId = $machineCulture.IetfLanguageTag
+    }
+
+    $returnLang = checkForLanguage -langId $machinelangId
+    if (!($returnLang)) {
+        throw "Cannot find matching Office language"
+    }
+
+    $addLang = @()
+    if ($IncludeLocalLanguages) {
+        $addLang = getLanguages -regProv $regProv
+    }
+
     foreach ($productId in $splitProducts) { 
        $excludeApps = $NULL
        if ($productId.ToLower().StartsWith("o365")) {
            $excludeApps = odtGetExcludedApps -ConfigDoc $ConfigFile -OfficeKeyPath $officeKeyPath -ProductId $productId
        }
-       odtAddProduct -ConfigDoc $ConfigFile -ProductId $productId -ExcludeApps $excludeApps -Version $versionToReport -Platform $platform
+       odtAddProduct -ConfigDoc $ConfigFile -ProductId $productId -ExcludeApps $excludeApps -Version $versionToReport `
+                     -Platform $platform -ClientCulture $returnLang -AdditionalLanguages $addLang
        odtAddUpdates -ConfigDoc $ConfigFile -Enabled $updatesEnabled -UpdatePath $updateUrl -Deadline $updateDeadline
     }
     
@@ -200,6 +177,7 @@ function odtAddProduct() {
 
        [Parameter(ValueFromPipelineByPropertyName=$true)]
        [string]$Version = $NULL
+
     )
 
     [System.XML.XMLElement]$ConfigElement=$NULL
@@ -234,7 +212,7 @@ function odtAddProduct() {
     $LanguageIds = @($ClientCulture)
 
     foreach ($addLang in $AdditionalLanguages) {
-       $LanguageIds.Add($addLang)
+       $LanguageIds += $addLang 
     }
 
     foreach($LanguageId in $LanguageIds){
@@ -242,7 +220,7 @@ function odtAddProduct() {
         if($LanguageElement -eq $null){
             [System.XML.XMLElement]$LanguageElement=$ConfigFile.CreateElement("Language")
             $ProductElement.appendChild($LanguageElement) | Out-Null
-            $LanguageElement.SetAttribute("ID", $LanguageId) | Out-Null
+            $LanguageElement.SetAttribute("ID", $LanguageId.ToString().ToLower()) | Out-Null
         }
     }
 
@@ -328,7 +306,7 @@ function odtAddUpdates{
     }
 }
 
-Function Format-XML ([xml]$xml, $indent=2) { 
+function Format-XML ([xml]$xml, $indent=2) { 
     $StringWriter = New-Object System.IO.StringWriter 
     $XmlWriter = New-Object System.XMl.XmlTextWriter $StringWriter 
     $xmlWriter.Formatting = "indented" 
@@ -345,25 +323,59 @@ function getLanguages() {
        $regProv = $NULL
     )
 
+    $returnLangs = @()
+
   $HKU = [UInt32] "0x80000003"
-
-  #HKEY_USERS\S-1-5-21-3551186017-1269127108-3113414353-1001\Control Panel\Desktop\MuiCached
-
   $userKeys = $regProv.EnumKey($HKU, "");
 
   foreach ($userKey in $userKeys.sNames) {
      if ($userKey.Length -gt 8 -and !($userKey.ToLower().EndsWith("_classes"))) {
-       Write-Host $userKey
-
-       [string]$languagePath = join-path $userKey "Control Panel\Desktop\MuiCached"
-       [string]$userLanguages = $regProv.GetMultiStringValue($HKU, $languagePath, "MachinePreferredUILanguages").sValue
-
-       Write-Host $userLanguages
+       [string]$userProfilePath = join-path $userKey "Control Panel\International\User Profile"
+       [string[]]$userLanguages = $regProv.GetMultiStringValue($HKU, $userProfilePath, "Languages").sValue
+       foreach ($userLang in $userLanguages) {
+         $convertLang = checkForLanguage -langId $userLang 
+         if ($convertLang) {
+             $returnLangs += $convertLang.ToLower()
+         }
+       }
+        
      }
   }
 
+  $returnLangs = $returnLangs | Get-Unique 
+  return $returnLangs
 
 }
+
+function checkForLanguage() {
+    param(
+       [Parameter(Mandatory=$true,ValueFromPipelineByPropertyName=$true)]
+       [string]$langId = $NULL
+    )
+
+    if ($availableLangs.Contains($langId.ToLower())) {
+       return $langId
+    } else {
+       $langStart = $langId.Split('-')[0]
+       $checkLang = $NULL
+
+       foreach ($availabeLang in $availableLangs) {
+          if ($availabeLang.ToLower().StartsWith($langStart.ToLower())) {
+             $checkLang = $availabeLang
+             break;
+          }
+       }
+
+       return $checkLang
+    }
+}
+
+$availableLangs = @("en-us",
+"ar-sa","bg-bg","zh-cn","zh-tw","hr-hr","cs-cz","da-dk","nl-nl","et-ee",
+"fi-fi","fr-fr","de-de","el-gr","he-il","hi-in","hu-hu","id-id","it-it",
+"ja-jp","kk-kh","ko-kr","lv-lv","lt-lt","ms-my","nb-no","pl-pl","pt-br",
+"pt-pt","ro-ro","ru-ru","sr-latn-rs","sk-sk","sl-si","es-es","sv-se","th-th",
+"tr-tr","uk-ua");
 
 Get-CurrentOfficeConfiguration
 
