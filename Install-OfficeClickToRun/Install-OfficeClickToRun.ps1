@@ -22,17 +22,18 @@ Function Install-OfficeClickToRun() {
     $xmlConfig = Get-CurrentOfficeConfiguration
 
     $officeVersion = Get-OfficeVersion -ComputerName $ComputerName
-    $officeCTRs = $officeVersion | where { $_.ClickToRun -eq $true }
+    
+    if ($officeVersion.GetType().Name -eq "Object[]") {
+        $officeCTRs = $officeVersion | where { $_.ClickToRun -eq $true }
+        if ($officeCTRs.Count -gt 0) {
+           $officeCTR = $officeCTRs[0]
 
-    if ($officeCTRs.Count -gt 0) {
-       $officeCTR = $officeCTRs[0]
-
-       $officeCTR.Version
-
-
+           $officeCTR.Version
+        }
+    } else {
+      $officeVersion.Version
     }
 }
-
 
 Function Get-CurrentOfficeConfiguration {
 
@@ -53,8 +54,8 @@ begin {
     $installKeys = 'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall',
                    'SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall'
 
-    $officeKeys = 'SOFTWARE\Microsoft\Office\15.0\ClickToRun',
-                  'SOFTWARE\Wow6432Node\Microsoft\Office\15.0\ClickToRun'
+    $officeCTRKeys = 'SOFTWARE\Microsoft\Office\15.0\ClickToRun',
+                     'SOFTWARE\Wow6432Node\Microsoft\Office\15.0\ClickToRun'
 
     $defaultDisplaySet = 'DisplayName','Version', 'ComputerName'
 
@@ -82,7 +83,7 @@ process {
     [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
 
     [string]$officeKeyPath = "";
-    foreach ($regPath in $officeKeys) {
+    foreach ($regPath in $officeCTRKeys) {
        [string]$installPath = $regProv.GetStringValue($HKLM, $regPath, "InstallPath").sValue
        if ($installPath) {
           if ($installPath.Length -gt 0) {
@@ -161,8 +162,7 @@ process {
        }
 
        $additionalLanguages = Get-Unique -InputObject $additionalLanguages -OnType
-      
-
+    
        if ($additionalLanguages.Contains($primaryLanguage)) {
            $additionalLanguages.Remove($primaryLanguage)
        }
@@ -172,17 +172,17 @@ process {
        odtAddUpdates -ConfigDoc $ConfigFile -Enabled $updatesEnabled -UpdatePath $updateUrl -Deadline $updateDeadline
     }
     
-    #Format-XML ([xml]($ConfigFile)) -indent 4
+    Format-XML ([xml]($ConfigFile)) -indent 4
 
-    return $ConfigFile
+    #return $ConfigFile
   }
 
-  return $results;
 }
 
 }
 
 Function Get-OfficeVersion {
+
 <#
 .Synopsis
 Gets the Office Version installed on the computer
@@ -482,20 +482,81 @@ function odtGetOfficeLanguages() {
     }
 
     process {
+        [System.Collections.ArrayList]$appLanguages1 = New-Object System.Collections.ArrayList
+
         $productsPath = join-path $officeKeyPath "ProductReleaseIDs\Active\$ProductId"
-
-        $appLanguages = @() 
-
         $installedCultures = $regProv.EnumKey($HKLM, $productsPath)
+      
         foreach ($installedCulture in $installedCultures.sNames) {
-           if ($installedCulture.Contains("-") -and !($installedCulture.ToLower() -eq "x-none")) {
-              $appLanguages += $installedCulture
-           }
+            if ($installedCulture.Contains("-") -and !($installedCulture.ToLower() -eq "x-none")) {
+                $addItem = $appLanguages1.Add($installedCulture) 
+            }
         }
-        
-        return $appLanguages;
+
+        if ($appLanguages1.Count) {
+            $productsPath = join-path $officeKeyPath "ProductReleaseIDs\Active\$ProductId"
+
+
+
+        }
+
+        return $appLanguages1;
     }
 }
+
+function getLanguages() {
+    param(
+       [Parameter(ValueFromPipelineByPropertyName=$true)]
+       $regProv = $NULL
+    )
+
+  [System.Collections.ArrayList] $returnLangs = New-Object System.Collections.ArrayList
+
+  $HKU = [UInt32] "0x80000003"
+  $userKeys = $regProv.EnumKey($HKU, "");
+
+  foreach ($userKey in $userKeys.sNames) {
+     if ($userKey.Length -gt 8 -and !($userKey.ToLower().EndsWith("_classes"))) {
+       [string]$userProfilePath = join-path $userKey "Control Panel\International\User Profile"
+       [string[]]$userLanguages = $regProv.GetMultiStringValue($HKU, $userProfilePath, "Languages").sValue
+       foreach ($userLang in $userLanguages) {
+         $convertLang = checkForLanguage -langId $userLang 
+         if ($convertLang) {
+             $returnLangs += $convertLang.ToLower()
+         }
+       }
+        
+     }
+  }
+
+  $returnLangs = $returnLangs | Get-Unique 
+  return $returnLangs
+
+}
+
+function checkForLanguage() {
+    param(
+       [Parameter(Mandatory=$true,ValueFromPipelineByPropertyName=$true)]
+       [string]$langId = $NULL
+    )
+
+    if ($availableLangs.Contains($langId.ToLower())) {
+       return $langId
+    } else {
+       $langStart = $langId.Split('-')[0]
+       $checkLang = $NULL
+
+       foreach ($availabeLang in $availableLangs) {
+          if ($availabeLang.ToLower().StartsWith($langStart.ToLower())) {
+             $checkLang = $availabeLang
+             break;
+          }
+       }
+
+       return $checkLang
+    }
+}
+
 
 function odtGetExcludedApps() {
     param(
@@ -704,59 +765,6 @@ function Format-XML ([xml]$xml, $indent=2) {
     Write-Output $StringWriter.ToString() 
 }
 
-function getLanguages() {
-    param(
-       [Parameter(ValueFromPipelineByPropertyName=$true)]
-       $regProv = $NULL
-    )
-
-  [System.Collections.ArrayList] $returnLangs = New-Object System.Collections.ArrayList
-
-  $HKU = [UInt32] "0x80000003"
-  $userKeys = $regProv.EnumKey($HKU, "");
-
-  foreach ($userKey in $userKeys.sNames) {
-     if ($userKey.Length -gt 8 -and !($userKey.ToLower().EndsWith("_classes"))) {
-       [string]$userProfilePath = join-path $userKey "Control Panel\International\User Profile"
-       [string[]]$userLanguages = $regProv.GetMultiStringValue($HKU, $userProfilePath, "Languages").sValue
-       foreach ($userLang in $userLanguages) {
-         $convertLang = checkForLanguage -langId $userLang 
-         if ($convertLang) {
-             $returnLangs += $convertLang.ToLower()
-         }
-       }
-        
-     }
-  }
-
-  $returnLangs = $returnLangs | Get-Unique 
-  return $returnLangs
-
-}
-
-function checkForLanguage() {
-    param(
-       [Parameter(Mandatory=$true,ValueFromPipelineByPropertyName=$true)]
-       [string]$langId = $NULL
-    )
-
-    if ($availableLangs.Contains($langId.ToLower())) {
-       return $langId
-    } else {
-       $langStart = $langId.Split('-')[0]
-       $checkLang = $NULL
-
-       foreach ($availabeLang in $availableLangs) {
-          if ($availabeLang.ToLower().StartsWith($langStart.ToLower())) {
-             $checkLang = $availabeLang
-             break;
-          }
-       }
-
-       return $checkLang
-    }
-}
-
 $availableLangs = @("en-us",
 "ar-sa","bg-bg","zh-cn","zh-tw","hr-hr","cs-cz","da-dk","nl-nl","et-ee",
 "fi-fi","fr-fr","de-de","el-gr","he-il","hi-in","hu-hu","id-id","it-it",
@@ -764,5 +772,8 @@ $availableLangs = @("en-us",
 "pt-pt","ro-ro","ru-ru","sr-latn-rs","sk-sk","sl-si","es-es","sv-se","th-th",
 "tr-tr","uk-ua");
 
-Install-OfficeClickToRun
+
+ Get-CurrentOfficeConfiguration -Languages AllInUseLanguages
+
+
 
