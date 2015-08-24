@@ -35,7 +35,7 @@ Function Install-OfficeClickToRun() {
     }
 }
 
-Function Get-CurrentOfficeConfiguration {
+Function Generate-OfficeCTRConfiguration {
 
 [CmdletBinding(SupportsShouldProcess=$true)]
 param(
@@ -55,7 +55,9 @@ begin {
                    'SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall'
 
     $officeCTRKeys = 'SOFTWARE\Microsoft\Office\15.0\ClickToRun',
-                     'SOFTWARE\Wow6432Node\Microsoft\Office\15.0\ClickToRun'
+                     'SOFTWARE\Wow6432Node\Microsoft\Office\15.0\ClickToRun',
+                     'SOFTWARE\Microsoft\Office\16.0\ClickToRun',
+                     'SOFTWARE\Wow6432Node\Microsoft\Office\16.0\ClickToRun'
 
     $defaultDisplaySet = 'DisplayName','Version', 'ComputerName'
 
@@ -82,34 +84,8 @@ process {
 
     [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
 
-    [string]$officeKeyPath = "";
-    foreach ($regPath in $officeCTRKeys) {
-       [string]$installPath = $regProv.GetStringValue($HKLM, $regPath, "InstallPath").sValue
-       if ($installPath) {
-          if ($installPath.Length -gt 0) {
-              $officeKeyPath = $regPath;
-              break;
-          }
-       }
-    }
-
-    $configurationPath = join-path $officeKeyPath "Configuration"
-
-    [string]$platform = $regProv.GetStringValue($HKLM, $configurationPath, "Platform").sValue
-    [string]$clientCulture = $regProv.GetStringValue($HKLM, $configurationPath, "ClientCulture").sValue
-    [string]$productIds = $regProv.GetStringValue($HKLM, $configurationPath, "ProductReleaseIds").sValue
-    [string]$versionToReport = $regProv.GetStringValue($HKLM, $configurationPath, "VersionToReport").sValue
-    [string]$updatesEnabled = $regProv.GetStringValue($HKLM, $configurationPath, "UpdatesEnabled").sValue
-    [string]$updateUrl = $regProv.GetStringValue($HKLM, $configurationPath, "UpdateUrl").sValue
-    [string]$updateDeadline = $regProv.GetStringValue($HKLM, $configurationPath, "UpdateDeadline").sValue
-
-    $splitProducts = $productIds.Split(',');
-
-    if ($platform.ToLower() -eq "x86") {
-        $platform = "32"
-    } else {
-        $platform = "64"
-    }
+    $ctrConfig = getCTRConfig -regProv $regProv
+    $splitProducts = $ctrConfig.ProductReleaseIds.Split(',');
 
     $osArchitecture = $os.OSArchitecture
     $osLanguage = $os.OSLanguage
@@ -127,7 +103,7 @@ process {
     switch ($Languages) {
       "CurrentOfficeLanguages" 
       {
-         $primaryLanguage = $clientCulture
+         $primaryLanguage = $ctrConfig.ClientCulture
       }
       "OSLanguage" 
       {
@@ -152,10 +128,9 @@ process {
     foreach ($productId in $splitProducts) { 
        $excludeApps = $NULL
        if ($productId.ToLower().StartsWith("o365")) {
-           $excludeApps = odtGetExcludedApps -ConfigDoc $ConfigFile -OfficeKeyPath $officeKeyPath -ProductId $productId
+           $excludeApps = odtGetExcludedApps -ConfigDoc $ConfigFile -OfficeKeyPath $ctrConfig.OfficeKeyPath -ProductId $productId
        }
-
-       $officeAddLangs = odtGetOfficeLanguages -ConfigDoc $ConfigFile -OfficeKeyPath $officeKeyPath -ProductId $productId
+       $officeAddLangs = odtGetOfficeLanguages -ConfigDoc $ConfigFile -OfficeKeyPath $ctrConfig.OfficeKeyPath -ProductId $productId
 
        if (($Languages -eq "CurrentOfficeLanguages") -or ($Languages -eq "AllInUseLanguages")) {
            $additionalLanguages += $officeAddLangs
@@ -167,9 +142,9 @@ process {
            $additionalLanguages.Remove($primaryLanguage)
        }
 
-       odtAddProduct -ConfigDoc $ConfigFile -ProductId $productId -ExcludeApps $excludeApps -Version $versionToReport `
-                     -Platform $platform -ClientCulture $primaryLanguage -AdditionalLanguages $additionalLanguages
-       odtAddUpdates -ConfigDoc $ConfigFile -Enabled $updatesEnabled -UpdatePath $updateUrl -Deadline $updateDeadline
+       odtAddProduct -ConfigDoc $ConfigFile -ProductId $productId -ExcludeApps $excludeApps -Version $ctrConfig.VersionToReport `
+                     -Platform $ctrConfig.Platform -ClientCulture $primaryLanguage -AdditionalLanguages $additionalLanguages
+       odtAddUpdates -ConfigDoc $ConfigFile -Enabled $ctrConfig.UpdatesEnabled -UpdatePath $ctrConfig.UpdateUrl -Deadline $ctrConfig.UpdateDeadline
     }
     
     Format-XML ([xml]($ConfigFile)) -indent 4
@@ -464,6 +439,57 @@ process {
 }
 
 
+function getCTRConfig() {
+    param(
+       [Parameter(ValueFromPipelineByPropertyName=$true)]
+       $regProv = $NULL
+    )
+
+    [string]$officeKeyPath = "";
+    foreach ($regPath in $officeCTRKeys) {
+       [string]$installPath = $regProv.GetStringValue($HKLM, $regPath, "InstallPath").sValue
+       if ($installPath) {
+          if ($installPath.Length -gt 0) {
+              $officeKeyPath = $regPath;
+              break;
+          }
+       }
+    }
+
+    if ($officeKeyPath.Length -gt 0) {
+        $configurationPath = join-path $officeKeyPath "Configuration"
+
+        [string]$platform = $regProv.GetStringValue($HKLM, $configurationPath, "Platform").sValue
+        [string]$clientCulture = $regProv.GetStringValue($HKLM, $configurationPath, "ClientCulture").sValue
+        [string]$productIds = $regProv.GetStringValue($HKLM, $configurationPath, "ProductReleaseIds").sValue
+        [string]$versionToReport = $regProv.GetStringValue($HKLM, $configurationPath, "VersionToReport").sValue
+        [string]$updatesEnabled = $regProv.GetStringValue($HKLM, $configurationPath, "UpdatesEnabled").sValue
+        [string]$updateUrl = $regProv.GetStringValue($HKLM, $configurationPath, "UpdateUrl").sValue
+        [string]$updateDeadline = $regProv.GetStringValue($HKLM, $configurationPath, "UpdateDeadline").sValue
+
+        $splitProducts = $productIds.Split(',');
+
+        if ($platform.ToLower() -eq "x86") {
+            $platform = "32"
+        } else {
+            $platform = "64"
+        }
+
+        $Object = New-Object PSObject
+        $Object | add-member Noteproperty Platform $platform
+        $Object | add-member Noteproperty ClientCulture $clientCulture
+        $Object | add-member Noteproperty ProductReleaseIds $productIds
+        $Object | add-member Noteproperty DatabaseName $versionToReport
+        $Object | add-member Noteproperty UpdatesEnabled $updatesEnabled
+        $Object | add-member Noteproperty UpdateUrl $updateUrl
+        $Object | add-member Noteproperty UpdateDeadline $updateDeadline
+        $Object | add-member Noteproperty OfficeKeyPath $officeKeyPath
+        
+        return $Object   
+    } 
+
+}
+
 function odtGetOfficeLanguages() {
     param(
        [Parameter(ValueFromPipelineByPropertyName=$true)]
@@ -483,6 +509,8 @@ function odtGetOfficeLanguages() {
 
     process {
         [System.Collections.ArrayList]$appLanguages1 = New-Object System.Collections.ArrayList
+
+        #SOFTWARE\Wow6432Node\Microsoft\Office\14.0\Common\LanguageResources\InstalledUIs
 
         $productsPath = join-path $officeKeyPath "ProductReleaseIDs\Active\$ProductId"
         $installedCultures = $regProv.EnumKey($HKLM, $productsPath)
@@ -772,8 +800,7 @@ $availableLangs = @("en-us",
 "pt-pt","ro-ro","ru-ru","sr-latn-rs","sk-sk","sl-si","es-es","sv-se","th-th",
 "tr-tr","uk-ua");
 
-
- Get-CurrentOfficeConfiguration -Languages AllInUseLanguages
+Generate-OfficeCTRConfiguration -Languages AllInUseLanguages
 
 
 
