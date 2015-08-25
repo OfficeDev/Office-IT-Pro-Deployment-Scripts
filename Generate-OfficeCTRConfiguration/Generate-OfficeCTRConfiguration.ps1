@@ -1,3 +1,12 @@
+[CmdletBinding(SupportsShouldProcess=$true)]
+param(
+    [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
+    [string[]]$ComputerName = $env:COMPUTERNAME,
+    
+    [Parameter(ValueFromPipelineByPropertyName=$true)]
+    [OfficeLanguages]$Languages = "AllInUseLanguages"
+)
+
 Add-Type -TypeDefinition @"
    public enum OfficeLanguages
    {
@@ -7,33 +16,6 @@ Add-Type -TypeDefinition @"
       AllInUseLanguages
    }
 "@
-
-Function Install-OfficeClickToRun() {
-
-    [CmdletBinding(SupportsShouldProcess=$true)]
-    param(
-        [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
-        [string[]]$ComputerName = $env:COMPUTERNAME,
-    
-        [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [OfficeLanguages]$Languages = "AllInUseLanguages"
-    )
-
-    $xmlConfig = Get-CurrentOfficeConfiguration
-
-    $officeVersion = Get-OfficeVersion -ComputerName $ComputerName
-    
-    if ($officeVersion.GetType().Name -eq "Object[]") {
-        $officeCTRs = $officeVersion | where { $_.ClickToRun -eq $true }
-        if ($officeCTRs.Count -gt 0) {
-           $officeCTR = $officeCTRs[0]
-
-           $officeCTR.Version
-        }
-    } else {
-      $officeVersion.Version
-    }
-}
 
 Function Generate-OfficeCTRConfiguration {
 
@@ -82,8 +64,12 @@ process {
     $officeConfig = getCTRConfig -regProv $regProv
 
     if (!($officeConfig.ClickToRunInstalled)) {
-        $officeConfig = getOfficeConfig -regProv $regProv
+        $mainOfficeProduct = Get-OfficeVersion -ComputerName $ComputerName
+        $officeProducts = Get-OfficeVersion -ComputerName $ComputerName -ShowAllInstalledProducts
+        $officeConfig = getOfficeConfig -regProv $regProv -mainOfficeProduct $mainOfficeProduct -officeProducts $officeProducts
+        $officeLangs = officeGetLanguages -regProv $regProv -OfficeKeyPath $officeConfig.OfficeKeyPath
     }
+
 
     $splitProducts = $officeConfig.ProductReleaseIds.Split(',');
 
@@ -142,6 +128,13 @@ process {
            }
 
            $officeAddLangs = odtGetOfficeLanguages -ConfigDoc $ConfigFile -OfficeKeyPath $officeConfig.OfficeKeyPath -ProductId $productId
+       } else {
+         $excludeApps = officeGetExcludedApps -OfficeProducts $officeProducts
+
+
+         foreach ($officeLang in $officeLangs) {
+            $additionalLanguages.Add($officeLang) | Out-Null
+         }
        }
 
        if (($Languages -eq "CurrentOfficeLanguages") -or ($Languages -eq "AllInUseLanguages")) {
@@ -518,8 +511,12 @@ function getOfficeConfig() {
     param(
        [Parameter(ValueFromPipelineByPropertyName=$true)]
        $regProv = $NULL,
-       [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
-       [string[]]$ComputerName = $env:COMPUTERNAME
+       [Parameter(ValueFromPipelineByPropertyName=$true)]
+       [string[]]$ComputerName = $env:COMPUTERNAME,
+       [Parameter(ValueFromPipelineByPropertyName=$true)]
+       [PSObject]$mainOfficeProduct = $NULL,
+       [Parameter(ValueFromPipelineByPropertyName=$true)]
+       [PSObject[]]$officeProducts = $NULL
     )
 
     #HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Office\14.0\Common\InstallRoot
@@ -550,9 +547,6 @@ function getOfficeConfig() {
     if ($officeKeyPath.Length -gt 0) {
         $Object.ClickToRunInstalled = $false
 
-        $mainOfficeProduct = Get-OfficeVersion -ComputerName $ComputerName
-        $officeProducts = Get-OfficeVersion -ComputerName $ComputerName -ShowAllInstalledProducts
-
         $productIds = generateProductReleaseIds -OfficeProducts $officeProducts
 
         $productDisplayName = ""
@@ -571,6 +565,12 @@ function getOfficeConfig() {
         } else {
             if ($mainOfficeProduct) 
             {
+               if ($mainOfficeProduct[0].Bitness.ToLower() -eq "32-bit") {
+                  $mainOfficeProduct[0].Bitness = "32"
+               } else {
+                  $mainOfficeProduct[0].Bitness = "64"
+               }
+
                $productBitness = $mainOfficeProduct[0].Bitness
                $productDisplayName = $mainOfficeProduct[0].DisplayName
                $productVersion = $mainOfficeProduct[0].Version
@@ -692,15 +692,15 @@ function getLanguages() {
        foreach ($userLang in $userLanguages) {
          $convertLang = checkForLanguage -langId $userLang 
          if ($convertLang) {
-             $returnLangs += $convertLang.ToLower()
+             $returnLangs.Add($convertLang.ToLower()) | Out-Null
          }
        }
         
      }
   }
-  
+
   if ($returnLangs.Count -gt 1) {
-     $returnLangs = $returnLangs | Get-Unique 
+     $returnLangs = Get-Unique -InputObject $returnLangs
   }
 
   return $returnLangs
@@ -713,7 +713,7 @@ function checkForLanguage() {
        [string]$langId = $NULL
     )
 
-    if ($availableLangs.Contains($langId.ToLower())) {
+    if ($availableLangs.Contains($langId.Trim().ToLower())) {
        return $langId
     } else {
        $langStart = $langId.Split('-')[0]
@@ -730,6 +730,76 @@ function checkForLanguage() {
     }
 }
 
+
+function officeGetExcludedApps() {
+    param(
+       [Parameter(ValueFromPipelineByPropertyName=$true, Position=0)]
+       [PSObject[]]$OfficeProducts = $NULL
+    )
+
+    begin {
+        $HKLM = [UInt32] "0x80000002"
+        $HKCR = [UInt32] "0x80000000"
+
+        $allExcludeApps = 'Access','Excel','Groove','InfoPath','OneNote','Outlook',
+                       'PowerPoint','Publisher','Word'
+        #"SharePointDesigner","Visio", 'Project'
+    }
+
+    process {
+        $appsToExclude = @() 
+
+        foreach ($appName in $allExcludeApps) {
+           [bool]$appInstalled = $false
+
+           foreach ($OfficeProduct in $OfficeProducts) {
+               if ($OfficeProduct.DisplayName.ToLower().Contains($appName.ToLower())) {
+                  $appInstalled = $true
+                  break;
+               }
+           }
+           
+           if (!($appInstalled)) {
+              $appsToExclude += $appName
+           }
+        }
+        
+        return $appsToExclude;
+    }
+}
+
+function officeGetLanguages() {
+   param(
+       [Parameter(Mandatory=$true,ValueFromPipelineByPropertyName=$true)]
+       $regProv = $NULL,
+       [Parameter(Mandatory=$true,ValueFromPipelineByPropertyName=$true)]
+       [string]$OfficeKeyPath = $NULL
+   )
+
+   $HKLM = [UInt32] "0x80000002"
+   $HKCR = [UInt32] "0x80000000"
+
+   [string]$officeLangPath = join-path $OfficeKeyPath "Common\LanguageResources\InstalledUIs"
+
+   [System.Collections.ArrayList] $returnLangs = New-Object System.Collections.ArrayList
+
+   $langValues = $regProv.EnumValues($HKLM, $officeLangPath);
+ 
+   foreach ($langValue in $langValues.sNames) {
+        $langCulture = [globalization.cultureinfo]::GetCultures("allCultures") | where {$_.LCID -eq $langValue}     
+        $convertLang = checkForLanguage -langId $langCulture 
+        if ($convertLang) {
+            $returnLangs.Add($convertLang.ToLower()) | Out-Null
+        }
+   }
+  
+   if ($returnLangs.Count -gt 1) {
+     $returnLangs = $returnLangs | Get-Unique 
+   }
+
+   return $returnLangs
+
+}
 
 function odtGetExcludedApps() {
     param(
@@ -775,6 +845,7 @@ function odtGetExcludedApps() {
         return $appsToExclude;
     }
 }
+
 
 function odtAddProduct() {
     param(
@@ -963,7 +1034,4 @@ $availableLangs = @("en-us",
 "pt-pt","ro-ro","ru-ru","sr-latn-rs","sk-sk","sl-si","es-es","sv-se","th-th",
 "tr-tr","uk-ua");
 
-Generate-OfficeCTRConfiguration -Languages AllInUseLanguages
-
-
-
+Generate-OfficeCTRConfiguration -ComputerName $ComputerName -Languages AllInUseLanguages
