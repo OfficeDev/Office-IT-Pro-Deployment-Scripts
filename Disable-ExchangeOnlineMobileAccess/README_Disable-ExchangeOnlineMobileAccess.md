@@ -26,8 +26,8 @@ This PowerShell Function connect to Exchange Online and disable Mobile access fo
 	
 3. Run the Script 
 
-		Type $credentials = Get-Credential
-		Type Disable-ExchangeOnlineMobileAccess -Credentials $credentials
+		$credentials = Get-Credential
+		Disable-ExchangeOnlineMobileAccess -Credentials $credentials
 	
 
 	
