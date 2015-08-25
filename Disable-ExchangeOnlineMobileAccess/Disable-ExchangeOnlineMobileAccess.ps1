@@ -22,13 +22,26 @@ DateUpdated: 2015-08-24
 https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
 
 .PARAMETER Credentials
-The computer or list of computers from which to query 
+This parameter is for the Office 365 Admin credentials that have Exchange Online administrative access
+to the Office 365 Tenant.  The account must be in the 'Recipient Management' or 'Organization Managment' role.
+The username must be your Office 365 username.
 
 .EXAMPLE
-Disable-ExchangeOnlineMobileAccess -Credentials Get-Credential
+Disable-ExchangeOnlineMobileAccess
 
 Description:
+Running the script with no parameters will prompt you to provide Office 365 credentials
 
+.EXAMPLE
+
+$userName = "admin@tenant.onmicrosoft.com"
+$securedPassword = ConvertTo-SecureString "PlainTextPassword" -AsPlainText -Force
+$credentials = New-Object System.Management.Automation.PSCredential ($userName, $securedPassword)
+
+Disable-ExchangeOnlineMobileAccess -Credentials $credentials
+
+Description:
+In this example you can create provide the username and password with a prompt
 
 #>
 [CmdletBinding(SupportsShouldProcess=$true)]
