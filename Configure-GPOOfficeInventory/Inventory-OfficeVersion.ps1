@@ -282,7 +282,7 @@ Function Inventory-OfficeVersion {
         $type = $ADSystemInfo.GetType()
         $ComputerDistinguishedName = $type.InvokeMember('ComputerName','GetProperty',$null,$ADSystemInfo,$null)
 
-        $officeText = $officeInstall.DisplayName + " (" + $officeInstall.Bitness + ")"
+        $officeText = $officeInstall.DisplayName + " : " + $officeInstall.Bitness + " : " + $officeInstall.Version
 
         $adComputer = [ADSI]"LDAP://$ComputerDistinguishedName"
         $adComputer.put('physicalDeliveryOfficeName',$officeText)
