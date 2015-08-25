@@ -1,6 +1,9 @@
 ﻿#**Disable Exchange Online Mobile Access**
 
-This PowerShell Function connect to Exchange Online and disable Mobile access for all of the Mailboxes in the Organization.   
+This PowerShell Function connect to Exchange Online and disable Mobile access for all of the Mailboxes in the Organization. This script is for Organizations that have moved their email to Exchange Online but they want restrict access so that mobile devices cannot access email. The settings in the Portal that are set are listed below.
+
+Disable Exchange ActiveSync
+Disable OWA for Devices
 
 ###**Pre-requisites**
 
