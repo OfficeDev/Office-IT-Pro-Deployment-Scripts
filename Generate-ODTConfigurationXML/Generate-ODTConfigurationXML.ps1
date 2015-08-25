@@ -1,12 +1,3 @@
-[CmdletBinding(SupportsShouldProcess=$true)]
-param(
-    [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
-    [string[]]$ComputerName = $env:COMPUTERNAME,
-    
-    [Parameter(ValueFromPipelineByPropertyName=$true)]
-    [OfficeLanguages]$Languages = "AllInUseLanguages"
-)
-
 Add-Type -TypeDefinition @"
    public enum OfficeLanguages
    {
@@ -21,11 +12,14 @@ Function Generate-ODTConfigurationXml {
 
 [CmdletBinding(SupportsShouldProcess=$true)]
 param(
-    [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
+    [Parameter(ValueFromPipelineByPropertyName=$true, Position=0)]
     [string[]]$ComputerName = $env:COMPUTERNAME,
     
     [Parameter(ValueFromPipelineByPropertyName=$true)]
-    [OfficeLanguages]$Languages = "AllInUseLanguages"
+    [OfficeLanguages]$Languages = "AllInUseLanguages",
+
+    [Parameter(ValueFromPipelineByPropertyName=$true)]
+    [String]$FilePath = $NULL
 )
 
 begin {
@@ -153,8 +147,11 @@ process {
        odtAddUpdates -ConfigDoc $ConfigFile -Enabled $officeConfig.UpdatesEnabled -UpdatePath $officeConfig.UpdateUrl -Deadline $officeConfig.UpdateDeadline
     }
     
-    Format-XML ([xml]($ConfigFile)) -indent 4
-
+    if (!($FilePath)) {
+       Format-XML ([xml]($ConfigFile)) -indent 4
+    } else {
+       Format-XML ([xml]($ConfigFile)) -indent 4 | Out-File -FilePath $FilePath
+    }
     #return $ConfigFile
   }
 
@@ -1034,4 +1031,3 @@ $availableLangs = @("en-us",
 "pt-pt","ro-ro","ru-ru","sr-latn-rs","sk-sk","sl-si","es-es","sv-se","th-th",
 "tr-tr","uk-ua");
 
-Generate-ODTConfigurationXml -ComputerName $ComputerName -Languages AllInUseLanguages
