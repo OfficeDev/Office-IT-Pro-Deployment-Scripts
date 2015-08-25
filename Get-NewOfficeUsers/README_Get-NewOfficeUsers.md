@@ -39,8 +39,8 @@ the function takes note and populates another field in the CSV with that date (D
 		
 ###Get-RecentlyLicensedUsers
 
-Get a list of users the were licensed after the specified date according to the specified CSV.
-It is important to have run the Update-UserLicenseData.ps1 prior to using this script.
+Get a list of users that were licensed after the specified date according to the specified CSV.
+It is important to run the Update-UserLicenseData.ps1 prior to using this script.
 
 ####Examples
 
@@ -52,14 +52,14 @@ It is important to have run the Update-UserLicenseData.ps1 prior to using this s
 
 		Example: cd C:\PowerShellScripts
 	
-3. Run the Get-NewOfficeUsers.ps1 script. This will by default show you the users that have been created in the last week.
+3. Run the Get-NewOfficeUsers.ps1 script. By default this will show you the users that have been created in the last week.
 
 		Type . .\Get-NewOfficeUsers.ps1
 
 ###Recommended Use Case
 
 Proper use of Update and Email scripts should involve running them as a scheduled task using a service 
-account (not personal) because the password will be put in plan text in the scheduled task.
+account (not personal) because the password will be put in plain text in the scheduled task.
 
     1.  On the system that the task will be run from, open the Windows Task Scheduler. 
         This can be found in the Start menu, under Start > Administrative Tools.
