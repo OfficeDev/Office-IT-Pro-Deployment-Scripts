@@ -17,7 +17,7 @@ Add-Type -TypeDefinition @"
    }
 "@
 
-Function Generate-OfficeCTRConfiguration {
+Function Generate-ODTConfigurationXml {
 
 [CmdletBinding(SupportsShouldProcess=$true)]
 param(
@@ -1034,4 +1034,4 @@ $availableLangs = @("en-us",
 "pt-pt","ro-ro","ru-ru","sr-latn-rs","sk-sk","sl-si","es-es","sv-se","th-th",
 "tr-tr","uk-ua");
 
-Generate-OfficeCTRConfiguration -ComputerName $ComputerName -Languages AllInUseLanguages
+Generate-ODTConfigurationXml -ComputerName $ComputerName -Languages AllInUseLanguages
