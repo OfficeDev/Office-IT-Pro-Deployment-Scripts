@@ -54,11 +54,6 @@ begin {
     $installKeys = 'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall',
                    'SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall'
 
-    $officeCTRKeys = 'SOFTWARE\Microsoft\Office\15.0\ClickToRun',
-                     'SOFTWARE\Wow6432Node\Microsoft\Office\15.0\ClickToRun',
-                     'SOFTWARE\Microsoft\Office\16.0\ClickToRun',
-                     'SOFTWARE\Wow6432Node\Microsoft\Office\16.0\ClickToRun'
-
     $defaultDisplaySet = 'DisplayName','Version', 'ComputerName'
 
     $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet(‘DefaultDisplayPropertySet’,[string[]]$defaultDisplaySet)
@@ -84,8 +79,13 @@ process {
 
     [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
 
-    $ctrConfig = getCTRConfig -regProv $regProv
-    $splitProducts = $ctrConfig.ProductReleaseIds.Split(',');
+    $officeConfig = getCTRConfig -regProv $regProv
+
+    if (!($officeConfig.ClickToRunInstalled)) {
+        $officeConfig = getOfficeConfig -regProv $regProv
+    }
+
+    $splitProducts = $officeConfig.ProductReleaseIds.Split(',');
 
     $osArchitecture = $os.OSArchitecture
     $osLanguage = $os.OSLanguage
@@ -103,7 +103,7 @@ process {
     switch ($Languages) {
       "CurrentOfficeLanguages" 
       {
-         $primaryLanguage = $ctrConfig.ClientCulture
+         $primaryLanguage = $officeConfig.ClientCulture
       }
       "OSLanguage" 
       {
@@ -117,7 +117,13 @@ process {
       "AllInUseLanguages" 
       {
          $primaryLanguage = checkForLanguage -langId $machinelangId
-         $additionalLanguages = getLanguages -regProv $regProv
+
+         $returnLangs = getLanguages -regProv $regProv
+
+         foreach ($returnLang in $returnLangs) {
+            $additionalLanguages.Add($returnLang) | Out-Null
+         }
+         
       }
     }
 
@@ -127,10 +133,16 @@ process {
     
     foreach ($productId in $splitProducts) { 
        $excludeApps = $NULL
-       if ($productId.ToLower().StartsWith("o365")) {
-           $excludeApps = odtGetExcludedApps -ConfigDoc $ConfigFile -OfficeKeyPath $ctrConfig.OfficeKeyPath -ProductId $productId
+
+       if ($officeConfig.ClickToRunInstalled) {
+             $officeKeyPath = $officeConfig.OfficeKeyPath
+
+           if ($productId.ToLower().StartsWith("o365")) {
+               $excludeApps = odtGetExcludedApps -ConfigDoc $ConfigFile -OfficeKeyPath $officeConfig.OfficeKeyPath -ProductId $productId
+           }
+
+           $officeAddLangs = odtGetOfficeLanguages -ConfigDoc $ConfigFile -OfficeKeyPath $officeConfig.OfficeKeyPath -ProductId $productId
        }
-       $officeAddLangs = odtGetOfficeLanguages -ConfigDoc $ConfigFile -OfficeKeyPath $ctrConfig.OfficeKeyPath -ProductId $productId
 
        if (($Languages -eq "CurrentOfficeLanguages") -or ($Languages -eq "AllInUseLanguages")) {
            $additionalLanguages += $officeAddLangs
@@ -142,9 +154,10 @@ process {
            $additionalLanguages.Remove($primaryLanguage)
        }
 
-       odtAddProduct -ConfigDoc $ConfigFile -ProductId $productId -ExcludeApps $excludeApps -Version $ctrConfig.VersionToReport `
-                     -Platform $ctrConfig.Platform -ClientCulture $primaryLanguage -AdditionalLanguages $additionalLanguages
-       odtAddUpdates -ConfigDoc $ConfigFile -Enabled $ctrConfig.UpdatesEnabled -UpdatePath $ctrConfig.UpdateUrl -Deadline $ctrConfig.UpdateDeadline
+       odtAddProduct -ConfigDoc $ConfigFile -ProductId $productId -ExcludeApps $excludeApps -Version $officeConfig.VersionToReport `
+                     -Platform $officeConfig.Platform -ClientCulture $primaryLanguage -AdditionalLanguages $additionalLanguages
+
+       odtAddUpdates -ConfigDoc $ConfigFile -Enabled $officeConfig.UpdatesEnabled -UpdatePath $officeConfig.UpdateUrl -Deadline $officeConfig.UpdateDeadline
     }
     
     Format-XML ([xml]($ConfigFile)) -indent 4
@@ -445,6 +458,15 @@ function getCTRConfig() {
        $regProv = $NULL
     )
 
+    
+    $officeCTRKeys = 'SOFTWARE\Microsoft\Office\15.0\ClickToRun',
+                     'SOFTWARE\Wow6432Node\Microsoft\Office\15.0\ClickToRun',
+                     'SOFTWARE\Microsoft\Office\16.0\ClickToRun',
+                     'SOFTWARE\Wow6432Node\Microsoft\Office\16.0\ClickToRun'
+
+    $Object = New-Object PSObject
+    $Object | add-member Noteproperty ClickToRunInstalled $false
+
     [string]$officeKeyPath = "";
     foreach ($regPath in $officeCTRKeys) {
        [string]$installPath = $regProv.GetStringValue($HKLM, $regPath, "InstallPath").sValue
@@ -457,6 +479,8 @@ function getCTRConfig() {
     }
 
     if ($officeKeyPath.Length -gt 0) {
+        $Object.ClickToRunInstalled = $true
+
         $configurationPath = join-path $officeKeyPath "Configuration"
 
         [string]$platform = $regProv.GetStringValue($HKLM, $configurationPath, "Platform").sValue
@@ -475,19 +499,137 @@ function getCTRConfig() {
             $platform = "64"
         }
 
-        $Object = New-Object PSObject
         $Object | add-member Noteproperty Platform $platform
         $Object | add-member Noteproperty ClientCulture $clientCulture
         $Object | add-member Noteproperty ProductReleaseIds $productIds
-        $Object | add-member Noteproperty DatabaseName $versionToReport
+        $Object | add-member Noteproperty Version $versionToReport
         $Object | add-member Noteproperty UpdatesEnabled $updatesEnabled
         $Object | add-member Noteproperty UpdateUrl $updateUrl
         $Object | add-member Noteproperty UpdateDeadline $updateDeadline
         $Object | add-member Noteproperty OfficeKeyPath $officeKeyPath
         
-        return $Object   
     } 
 
+    return $Object 
+
+}
+
+function getOfficeConfig() {
+    param(
+       [Parameter(ValueFromPipelineByPropertyName=$true)]
+       $regProv = $NULL,
+       [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
+       [string[]]$ComputerName = $env:COMPUTERNAME
+    )
+
+    #HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Office\14.0\Common\InstallRoot
+    
+    $officeCTRKeys = 'SOFTWARE\Microsoft\Office',
+                     'SOFTWARE\Wow6432Node\Microsoft\Office'
+
+
+    $Object = New-Object PSObject
+    $Object | add-member Noteproperty ClickToRunInstalled $false
+
+    [string]$officeKeyPath = "";
+    foreach ($regPath in $officeCTRKeys) {
+       $officeVersionNums = $regProv.EnumKey($HKLM, $regPath)
+
+       foreach ($officeVersionNum in $officeVersionNums.sNames) {
+           [string]$officePath = join-path $regPath "$officeVersionNum\Common\InstallRoot"
+           [string]$installPath = $regProv.GetStringValue($HKLM, $officePath, "Path").sValue
+           if ($installPath) {
+              if ($installPath.Length -gt 0) {
+                  $officeKeyPath = join-path $regPath $officeVersionNum
+                  break;
+              }
+           }
+       }
+    }
+
+    if ($officeKeyPath.Length -gt 0) {
+        $Object.ClickToRunInstalled = $false
+
+        $mainOfficeProduct = Get-OfficeVersion -ComputerName $ComputerName
+        $officeProducts = Get-OfficeVersion -ComputerName $ComputerName -ShowAllInstalledProducts
+
+        $productIds = generateProductReleaseIds -OfficeProducts $officeProducts
+
+        $productDisplayName = ""
+        $productBitness = ""
+        $productVersion = ""
+
+        if ($officeInstall.Bitness) {
+            if ($officeInstall.Bitness.ToLower() -eq "32-bit") {
+                $officeInstall.Bitness = "32"
+            } else {
+                $officeInstall.Bitness = "64"
+            }
+            $productBitness = $officeInstall.Bitness
+            $productDisplayName = $officeInstall.DisplayName
+            $productVersion = $officeInstall.Version
+        } else {
+            if ($mainOfficeProduct) 
+            {
+               $productBitness = $mainOfficeProduct[0].Bitness
+               $productDisplayName = $mainOfficeProduct[0].DisplayName
+               $productVersion = $mainOfficeProduct[0].Version
+            }
+        }
+
+        $Object | add-member Noteproperty Platform $productBitness
+        $Object | add-member Noteproperty DisplayName $productDisplayName
+        $Object | add-member Noteproperty Version $productVersion
+        $Object | add-member Noteproperty OfficeKeyPath $officeKeyPath
+        $Object | add-member Noteproperty ProductReleaseIds $productIds
+    } 
+
+    return $Object 
+
+}
+
+function generateProductReleaseIds() {
+    param(
+       [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
+       [PSObject[]]$MainOfficeProduct = $NULL,
+
+       [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
+       [PSObject[]]$OfficeProducts = $NULL
+    )
+
+    $productReleaseIds = ""
+
+    if (!($MainOfficeProduct)) 
+    {
+       $productReleaseIds += "O365ProPlusRetail"
+    }
+
+    foreach ($OfficeProduct in $OfficeProducts) 
+    {
+        if ($OfficeProduct.DisplayName.ToLower().Contains("microsoft") -and
+            $OfficeProduct.DisplayName.ToLower().Contains("visio")) {
+            if ($productReleaseIds.Length -gt 0) {
+               $productReleaseIds += ","
+            }
+            $productReleaseIds += "VisioProRetail"
+        }
+        if ($OfficeProduct.DisplayName.ToLower().Contains("microsoft") -and
+            $OfficeProduct.DisplayName.ToLower().Contains("visio")) {
+            if ($productReleaseIds.Length -gt 0) {
+               $productReleaseIds += ","
+            }
+            $productReleaseIds += "ProjectProRetail"
+        }
+        if ($OfficeProduct.DisplayName.ToLower().Contains("microsoft") -and
+            $OfficeProduct.DisplayName.ToLower().Contains("sharePoint designer")) {
+            if ($productReleaseIds.Length -gt 0) {
+               $productReleaseIds += ","
+            }
+            $productReleaseIds += "SPDRetail"
+        }
+    }
+
+    return $productReleaseIds
 }
 
 function odtGetOfficeLanguages() {
@@ -556,8 +698,11 @@ function getLanguages() {
         
      }
   }
+  
+  if ($returnLangs.Count -gt 1) {
+     $returnLangs = $returnLangs | Get-Unique 
+  }
 
-  $returnLangs = $returnLangs | Get-Unique 
   return $returnLangs
 
 }
@@ -692,12 +837,16 @@ function odtAddProduct() {
     }
 
     foreach($LanguageId in $LanguageIds){
-        [System.XML.XMLElement]$LanguageElement = $ProductElement.Language | ?  ID -eq $LanguageId
-        if($LanguageElement -eq $null){
-            [System.XML.XMLElement]$LanguageElement=$ConfigFile.CreateElement("Language")
-            $ProductElement.appendChild($LanguageElement) | Out-Null
-            $LanguageElement.SetAttribute("ID", $LanguageId.ToString().ToLower()) | Out-Null
-        }
+       if ($LanguageId) {
+          if ($LanguageId.Length -gt 0) {
+            [System.XML.XMLElement]$LanguageElement = $ProductElement.Language | ?  ID -eq $LanguageId
+            if($LanguageElement -eq $null){
+                [System.XML.XMLElement]$LanguageElement=$ConfigFile.CreateElement("Language")
+                $ProductElement.appendChild($LanguageElement) | Out-Null
+                $LanguageElement.SetAttribute("ID", $LanguageId.ToString().ToLower()) | Out-Null
+            }
+          }
+       }
     }
 
     foreach($ExcludeApp in $ExcludeApps){
@@ -739,44 +888,58 @@ function odtAddUpdates{
             throw $NoConfigurationElement
         }
 
-        #Get the Updates Element if it exists
-        [System.XML.XMLElement]$UpdateElement = $ConfigDoc.Configuration.GetElementsByTagName("Updates").Item(0)
-        if($ConfigDoc.Configuration.Updates -eq $null){
-            [System.XML.XMLElement]$UpdateElement=$ConfigDoc.CreateElement("Updates")
-            $ConfigDoc.Configuration.appendChild($UpdateElement) | Out-Null
-        }
+        $isEnabled = [string]::IsNullOrWhiteSpace($Enabled)
 
-        #Set the desired values
-        if([string]::IsNullOrWhiteSpace($Enabled) -eq $false){
-            $UpdateElement.SetAttribute("Enabled", $Enabled) | Out-Null
-        } else {
-          if ($PSBoundParameters.ContainsKey('Enabled')) {
-              $ConfigDoc.Configuration.Updates.RemoveAttribute("Enabled")
-          }
-        }
+        if($isEnabled -ne $true){
 
-        if([string]::IsNullOrWhiteSpace($UpdatePath) -eq $false){
-            $UpdateElement.SetAttribute("UpdatePath", $UpdatePath) | Out-Null
-        } else {
-          if ($PSBoundParameters.ContainsKey('UpdatePath')) {
-              $ConfigDoc.Configuration.Updates.RemoveAttribute("UpdatePath")
-          }
-        }
+            #Get the Updates Element if it exists
+            [System.XML.XMLElement]$UpdateElement = $ConfigDoc.Configuration.GetElementsByTagName("Updates").Item(0)
+            if($ConfigDoc.Configuration.Updates -eq $null){
+                [System.XML.XMLElement]$UpdateElement=$ConfigDoc.CreateElement("Updates")
+                $ConfigDoc.Configuration.appendChild($UpdateElement) | Out-Null
+            }
 
-        if([string]::IsNullOrWhiteSpace($TargetVersion) -eq $false){
-            $UpdateElement.SetAttribute("TargetVersion", $TargetVersion) | Out-Null
-        } else {
-          if ($PSBoundParameters.ContainsKey('TargetVersion')) {
-              $ConfigDoc.Configuration.Updates.RemoveAttribute("TargetVersion")
-          }
-        }
+            #Set the desired values
+            if([string]::IsNullOrWhiteSpace($Enabled) -eq $false){
+                $UpdateElement.SetAttribute("Enabled", $Enabled) | Out-Null
+            } else {
+              if ($PSBoundParameters.ContainsKey('Enabled')) {
+                 if ($ConfigDoc.Configuration.Updates) {
+                     $ConfigDoc.Configuration.Updates.RemoveAttribute("Enabled")
+                 }
+              }
+            }
 
-        if([string]::IsNullOrWhiteSpace($Deadline) -eq $false){
-            $UpdateElement.SetAttribute("Deadline", $Deadline) | Out-Null
-        } else {
-          if ($PSBoundParameters.ContainsKey('Deadline')) {
-              $ConfigDoc.Configuration.Updates.RemoveAttribute("Deadline")
-          }
+            if([string]::IsNullOrWhiteSpace($UpdatePath) -eq $false){
+                $UpdateElement.SetAttribute("UpdatePath", $UpdatePath) | Out-Null
+            } else {
+              if ($PSBoundParameters.ContainsKey('UpdatePath')) {
+                 if ($ConfigDoc.Configuration.Updates) {
+                     $ConfigDoc.Configuration.Updates.RemoveAttribute("UpdatePath")
+                 }
+              }
+            }
+
+            if([string]::IsNullOrWhiteSpace($TargetVersion) -eq $false){
+                $UpdateElement.SetAttribute("TargetVersion", $TargetVersion) | Out-Null
+            } else {
+              if ($PSBoundParameters.ContainsKey('TargetVersion')) {
+                 if ($ConfigDoc.Configuration.Updates) {
+                     $ConfigDoc.Configuration.Updates.RemoveAttribute("TargetVersion")
+                 }
+              }
+            }
+
+            if([string]::IsNullOrWhiteSpace($Deadline) -eq $false){
+                $UpdateElement.SetAttribute("Deadline", $Deadline) | Out-Null
+            } else {
+              if ($PSBoundParameters.ContainsKey('Deadline')) {
+                 if ($ConfigDoc.Configuration.Updates) {
+                     $ConfigDoc.Configuration.Updates.RemoveAttribute("Deadline")
+                 }
+              }
+            }
+
         }
 
     }
