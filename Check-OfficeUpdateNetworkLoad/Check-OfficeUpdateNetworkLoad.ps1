@@ -24,7 +24,9 @@ The version to update to
 
 .Example
 ./Check-OfficeUpdateNetworkLoad -VersionStart 15.0.4623.1003 -VersionEnd 15.0.4631.1002
-
+Installs Version 15.04623.1003 and updates to version 15.0.4631.1002 and returns the 
+network traffic numbers. (In original test environment this call returned the values
+MaxDownload: ~324000000, ActualDownload: ~128500000, DeltaCompressionRate: ~0.60)
 
 .Outputs
 Hashtable with values for Downloaded bytes, max size, delta compression rate
@@ -106,7 +108,17 @@ while($complete -eq $false){
 
 #get bytes for net adapter
 $netstat2 = Get-NetAdapterStatistics
-$bytes = $netstat2.ReceivedBytes - $netstat1.ReceivedBytes 
+$bytes = 0
+if($netstat1.GetType() -is [array]){
+    foreach($adapter in $netstat2){
+        $bytes += $adapter.ReceivedBytes
+    }
+    foreach($adapter in $netstat1){
+        $bytes -= $adapter.ReceivedBytes
+    }
+}else{
+    $bytes = $netstat2.ReceivedBytes - $netstat1.ReceivedBytes 
+}
 
 #Zip the Data/Updates/Apply folder to get what size of update could have been
 Add-Type -assembly "system.io.compression.filesystem"
