@@ -60,9 +60,9 @@ $ODTSource = "http://download.microsoft.com/download/6/2/3/6230F7A2-D8A9-478B-AC
 Process{
 #download setup
 Invoke-WebRequest $ODTSource -OutFile "$env:USERPROFILE\Downloads\officedeploymenttool_x86_4747-1000.exe" | Out-Null
-sl "$env:USERPROFILE\Downloads"
+Set-Location "$env:USERPROFILE\Downloads"
 .\officedeploymenttool_x86_4747-1000.exe /extract:$env:USERPROFILE\downloads\ODT /passive /quiet | Out-Null
-sl ODT
+Set-Location ODT
 
 #build configuration file
 $config1 | Out-File configuration.xml
@@ -72,22 +72,10 @@ $config1 | Out-File configuration.xml
 $netstat1 = Get-NetAdapterStatistics
 
 #Start word to block update from applying when finished downloading
-$WordCommand =
-@"
- Start-Process "${env:ProgramFiles}\Microsoft Office 15\root\office15\WINWORD.EXE"
-"@
-
-$WordBlock = [Scriptblock]::Create($WordCommand)
-& $WordBlock
+Start-Process "${env:ProgramFiles}\Microsoft Office 15\root\office15\WINWORD.EXE"
 
 #Start update
-$UpdateCommand =
-@"
- Start-Process "${env:ProgramFiles}\Microsoft Office 15\Clientx64\OfficeC2RClient.exe" "/update user updatetoversion=$VersionEnd"
-"@
-
-$UpdateBlock = [Scriptblock]::Create($UpdateCommand)
-& $UpdateBlock
+Start-Process "${env:ProgramFiles}\Microsoft Office 15\Clientx64\OfficeC2RClient.exe" "/update user updatetoversion=$VersionEnd"
 
 #Wait for update to complete and stop the UAC process if it gets in the way
 $complete = $false
@@ -126,7 +114,7 @@ Add-Type -assembly "system.io.compression.filesystem"
 $zipSize = Get-Item $ZipPath
 
 #Stop word process
-$word = Get-Process | ? Name -eq WINWORD
+$word = Get-Process | ? ProcessName -eq WINWORD
 $word.Kill()
 $word = $null
 
