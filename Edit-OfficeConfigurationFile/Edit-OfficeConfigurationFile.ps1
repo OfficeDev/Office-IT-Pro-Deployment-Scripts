@@ -392,6 +392,7 @@ Here is what the portion of configuration file looks like when modified by this 
             $Result = New-Object –TypeName PSObject 
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "ProductId" -Value $ProductId
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "LanguageIds" -Value $LanguageIds
             $Result
         }
     }

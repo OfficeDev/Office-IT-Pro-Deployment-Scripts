@@ -1,6 +1,6 @@
-﻿#**Install Office Click-To-Run**
+﻿#**Generate Office Deployment Tool Configuration XML**
 
-This PowerShell Function will install Office Click-To-Run  
+This PowerShell Function generate the Office Deployment Tool Configuration XML based on the current state of the workstation and the parameters specified for the Function
 
 ###**Examples**
 
@@ -14,7 +14,7 @@ This PowerShell Function will install Office Click-To-Run
 		
 2. Run the Script. With no parameters specified the script will return the locally installed Office Version.
 
-		Type . .\Install-OfficeClickToRun.ps1
+		Type . .\Generate-ODTConfigurationXML.ps1
 		Press Enter and then if Microsoft Office is installed locally it should display. 
 		By including the additional period before the relative script path you are 'Dot-Sourcing' 
 		the PowerShell function in the script into your PowerShell session which will allow you to 

@@ -1,12 +1,3 @@
-[CmdletBinding(SupportsShouldProcess=$true)]
-param(
-    [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
-    [string[]]$ComputerName = $env:COMPUTERNAME,
-    
-    [Parameter(ValueFromPipelineByPropertyName=$true)]
-    [OfficeLanguages]$Languages = "AllInUseLanguages"
-)
-
 Add-Type -TypeDefinition @"
    public enum OfficeLanguages
    {
@@ -21,11 +12,14 @@ Function Generate-ODTConfigurationXml {
 
 [CmdletBinding(SupportsShouldProcess=$true)]
 param(
-    [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
+    [Parameter(ValueFromPipelineByPropertyName=$true, Position=0)]
     [string[]]$ComputerName = $env:COMPUTERNAME,
     
     [Parameter(ValueFromPipelineByPropertyName=$true)]
-    [OfficeLanguages]$Languages = "AllInUseLanguages"
+    [OfficeLanguages]$Languages = "AllInUseLanguages",
+
+    [Parameter(ValueFromPipelineByPropertyName=$true)]
+    [String]$TargetFilePath = $NULL
 )
 
 begin {
@@ -85,6 +79,7 @@ process {
     $primaryLanguage = checkForLanguage -langId $machinelangId
 
     [System.Collections.ArrayList]$additionalLanguages = New-Object System.Collections.ArrayList
+    [String[]]$allLanguages = @()
 
     switch ($Languages) {
       "CurrentOfficeLanguages" 
@@ -113,6 +108,11 @@ process {
       }
     }
 
+    $allLanguages += $primaryLanguage
+    foreach ($lang in $additionalLanguages) {
+      $allLanguages += $lang
+    }
+
     if (!($primaryLanguage)) {
         throw "Cannot find matching Office language for: $primaryLanguage"
     }
@@ -130,8 +130,7 @@ process {
            $officeAddLangs = odtGetOfficeLanguages -ConfigDoc $ConfigFile -OfficeKeyPath $officeConfig.OfficeKeyPath -ProductId $productId
        } else {
          $excludeApps = officeGetExcludedApps -OfficeProducts $officeProducts
-
-
+         
          foreach ($officeLang in $officeLangs) {
             $additionalLanguages.Add($officeLang) | Out-Null
          }
@@ -153,8 +152,25 @@ process {
        odtAddUpdates -ConfigDoc $ConfigFile -Enabled $officeConfig.UpdatesEnabled -UpdatePath $officeConfig.UpdateUrl -Deadline $officeConfig.UpdateDeadline
     }
     
-    Format-XML ([xml]($ConfigFile)) -indent 4
+    if (($PSCmdlet.MyInvocation.PipelineLength -eq 1) -or `
+        ($PSCmdlet.MyInvocation.PipelineLength -eq $PSCmdlet.MyInvocation.PipelinePosition)) {
+        if (!($TargetFilePath)) {
+           Format-XML ([xml]($ConfigFile)) -indent 4
+        } else {
+           Format-XML ([xml]($ConfigFile)) -indent 4 | Out-File -FilePath $TargetFilePath
+        }
+    } else {
+        if ($TargetFilePath) {
+           Format-XML ([xml]($ConfigFile)) -indent 4 | Out-File -FilePath $TargetFilePath
+        }
 
+        $results = new-object PSObject[] 0;
+        $Result = New-Object –TypeName PSObject 
+        Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
+        Add-Member -InputObject $Result -MemberType NoteProperty -Name "LanguageIds" -Value $allLanguages
+        $Result
+    }
+    
     #return $ConfigFile
   }
 
@@ -1034,4 +1050,3 @@ $availableLangs = @("en-us",
 "pt-pt","ro-ro","ru-ru","sr-latn-rs","sk-sk","sl-si","es-es","sv-se","th-th",
 "tr-tr","uk-ua");
 
-Generate-ODTConfigurationXml -ComputerName $ComputerName -Languages AllInUseLanguages
