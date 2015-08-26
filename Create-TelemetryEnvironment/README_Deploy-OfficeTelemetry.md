@@ -50,7 +50,7 @@ is the name of the user logged in.
             
 3. Run the Script.
 
-          Type . .\Deploy-OfficeTelemetry.ps1
+          Type . .\Deploy-TelemetryDashboard.ps1
           
           By including the additional period before the relative script path you are 'Dot-Sourcing' 
           the PowerShell function in the script into your PowerShell session which will allow you to 
