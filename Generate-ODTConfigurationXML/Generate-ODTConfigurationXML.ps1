@@ -19,7 +19,7 @@ param(
     [OfficeLanguages]$Languages = "AllInUseLanguages",
 
     [Parameter(ValueFromPipelineByPropertyName=$true)]
-    [String]$FilePath = $NULL
+    [String]$TargetFilePath = $NULL
 )
 
 begin {
@@ -79,6 +79,7 @@ process {
     $primaryLanguage = checkForLanguage -langId $machinelangId
 
     [System.Collections.ArrayList]$additionalLanguages = New-Object System.Collections.ArrayList
+    [String[]]$allLanguages = @()
 
     switch ($Languages) {
       "CurrentOfficeLanguages" 
@@ -107,6 +108,11 @@ process {
       }
     }
 
+    $allLanguages += $primaryLanguage
+    foreach ($lang in $additionalLanguages) {
+      $allLanguages += $lang
+    }
+
     if (!($primaryLanguage)) {
         throw "Cannot find matching Office language for: $primaryLanguage"
     }
@@ -124,8 +130,7 @@ process {
            $officeAddLangs = odtGetOfficeLanguages -ConfigDoc $ConfigFile -OfficeKeyPath $officeConfig.OfficeKeyPath -ProductId $productId
        } else {
          $excludeApps = officeGetExcludedApps -OfficeProducts $officeProducts
-
-
+         
          foreach ($officeLang in $officeLangs) {
             $additionalLanguages.Add($officeLang) | Out-Null
          }
@@ -147,11 +152,25 @@ process {
        odtAddUpdates -ConfigDoc $ConfigFile -Enabled $officeConfig.UpdatesEnabled -UpdatePath $officeConfig.UpdateUrl -Deadline $officeConfig.UpdateDeadline
     }
     
-    if (!($FilePath)) {
-       Format-XML ([xml]($ConfigFile)) -indent 4
+    if (($PSCmdlet.MyInvocation.PipelineLength -eq 1) -or `
+        ($PSCmdlet.MyInvocation.PipelineLength -eq $PSCmdlet.MyInvocation.PipelinePosition)) {
+        if (!($TargetFilePath)) {
+           Format-XML ([xml]($ConfigFile)) -indent 4
+        } else {
+           Format-XML ([xml]($ConfigFile)) -indent 4 | Out-File -FilePath $TargetFilePath
+        }
     } else {
-       Format-XML ([xml]($ConfigFile)) -indent 4 | Out-File -FilePath $FilePath
+        if ($TargetFilePath) {
+           Format-XML ([xml]($ConfigFile)) -indent 4 | Out-File -FilePath $TargetFilePath
+        }
+
+        $results = new-object PSObject[] 0;
+        $Result = New-Object –TypeName PSObject 
+        Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
+        Add-Member -InputObject $Result -MemberType NoteProperty -Name "LanguageIds" -Value $allLanguages
+        $Result
     }
+    
     #return $ConfigFile
   }
 
