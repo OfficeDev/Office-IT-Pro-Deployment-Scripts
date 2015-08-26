@@ -56,7 +56,7 @@ process {
     [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
 
     $officeConfig = getCTRConfig -regProv $regProv
-
+    
     if (!($officeConfig.ClickToRunInstalled)) {
         $mainOfficeProduct = Get-OfficeVersion -ComputerName $ComputerName
         $officeProducts = Get-OfficeVersion -ComputerName $ComputerName -ShowAllInstalledProducts
@@ -146,10 +146,11 @@ process {
            $additionalLanguages.Remove($primaryLanguage)
        }
 
-       odtAddProduct -ConfigDoc $ConfigFile -ProductId $productId -ExcludeApps $excludeApps -Version $officeConfig.VersionToReport `
+       odtAddProduct -ConfigDoc $ConfigFile -ProductId $productId -ExcludeApps $excludeApps -Version $officeConfig.Version `
                      -Platform $officeConfig.Platform -ClientCulture $primaryLanguage -AdditionalLanguages $additionalLanguages
 
        odtAddUpdates -ConfigDoc $ConfigFile -Enabled $officeConfig.UpdatesEnabled -UpdatePath $officeConfig.UpdateUrl -Deadline $officeConfig.UpdateDeadline
+
     }
     
     if (($PSCmdlet.MyInvocation.PipelineLength -eq 1) -or `
@@ -160,14 +161,17 @@ process {
            Format-XML ([xml]($ConfigFile)) -indent 4 | Out-File -FilePath $TargetFilePath
         }
     } else {
+        $xmlConfig = Format-XML ([xml]($ConfigFile)) -indent 4
+
         if ($TargetFilePath) {
-           Format-XML ([xml]($ConfigFile)) -indent 4 | Out-File -FilePath $TargetFilePath
+           $xmlConfig | Out-File -FilePath $TargetFilePath
         }
 
         $results = new-object PSObject[] 0;
         $Result = New-Object –TypeName PSObject 
         Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
         Add-Member -InputObject $Result -MemberType NoteProperty -Name "LanguageIds" -Value $allLanguages
+        Add-Member -InputObject $Result -MemberType NoteProperty -Name "ConfigurationXML" -Value $xmlConfig
         $Result
     }
     
