@@ -34,10 +34,10 @@ Hashtable with values for Downloaded bytes, max size, delta compression rate
 #>
 
 Param(
-    [Parameter()]
+    [Parameter(Mandatory=$true)]
     [string] $VersionStart,
 
-    [Parameter()]
+    [Parameter(Mandatory=$true)]
     [string] $VersionEnd
 
 )
@@ -68,11 +68,11 @@ Set-Location ODT
 $config1 | Out-File configuration.xml
 ./setup.exe /configure configuration.xml | Out-Null
 
-#get bytes for net adapter
-$netstat1 = Get-NetAdapterStatistics
-
 #Start word to block update from applying when finished downloading
 Start-Process "${env:ProgramFiles}\Microsoft Office 15\root\office15\WINWORD.EXE"
+
+#get bytes for net adapter
+$netstat1 = Get-NetAdapterStatistics
 
 #Start update
 Start-Process "${env:ProgramFiles}\Microsoft Office 15\Clientx64\OfficeC2RClient.exe" "/update user updatetoversion=$VersionEnd"
