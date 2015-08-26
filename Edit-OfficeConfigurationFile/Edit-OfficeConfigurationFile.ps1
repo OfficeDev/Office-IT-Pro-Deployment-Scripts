@@ -313,9 +313,7 @@ Here is what the portion of configuration file looks like when modified by this 
     )
 
     Process{
-
         $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
-
 
         if ($ProductId -eq "Unknown") {
            $ProductId = SelectProductId
@@ -340,6 +338,8 @@ Here is what the portion of configuration file looks like when modified by this 
         if ($ConfigurationXml) 
         {
           $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
+          $global:saveLastConfigFile = $NULL
+          $global:saveLastFilePath = $NULL
         } else {
           $ConfigFile.Load($TargetFilePath) | Out-Null
         }
@@ -436,6 +436,8 @@ Language and Exclude values
 #>
     [CmdletBinding()]
     Param(
+        [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
+        [string] $ConfigurationXML = $NULL,
 
         [Parameter(ParameterSetName="ID",Mandatory=$true)]
         [Microsoft.Office.Products] $ProductId = "Unknown",
@@ -452,7 +454,15 @@ Language and Exclude values
 
         #Load the file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
-        $ConfigFile.Load($TargetFilePath) | Out-Null
+
+        if ($ConfigurationXml) 
+        {
+          $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
+          $global:saveLastConfigFile = $NULL
+          $global:saveLastFilePath = $NULL
+        } else {
+          $ConfigFile.Load($TargetFilePath) | Out-Null
+        }
 
         #Check that the file is properly formatted
         if($ConfigFile.Configuration -eq $null){
@@ -517,6 +527,9 @@ Removes the ProductToAdd with the ProductId 'O365ProPlusRetail' from the XML Con
 #>
     [CmdletBinding()]
     Param(
+        [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
+        [string] $ConfigurationXML = $NULL,
+
         [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $ProductId = "Unknown",
 
@@ -538,7 +551,15 @@ Removes the ProductToAdd with the ProductId 'O365ProPlusRetail' from the XML Con
 
         #Load the file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
-        $ConfigFile.Load($TargetFilePath) | Out-Null
+
+        if ($ConfigurationXml) 
+        {
+          $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
+          $global:saveLastConfigFile = $NULL
+          $global:saveLastFilePath = $NULL
+        } else {
+          $ConfigFile.Load($TargetFilePath) | Out-Null
+        }
 
         $global:saveLastConfigFile = $ConfigFile.OuterXml
 
@@ -642,6 +663,8 @@ Here is what the portion of configuration file looks like when modified by this 
 #>
     [CmdletBinding()]
     Param(
+        [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
+        [string] $ConfigurationXML = $NULL,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $TargetFilePath,
@@ -668,7 +691,15 @@ Here is what the portion of configuration file looks like when modified by this 
 
         #Load file from path
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
-        $ConfigFile.Load($TargetFilePath) | Out-Null
+
+        if ($ConfigurationXml) 
+        {
+          $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
+          $global:saveLastConfigFile = $NULL
+          $global:saveLastFilePath = $NULL
+        } else {
+          $ConfigFile.Load($TargetFilePath) | Out-Null
+        }
 
         $global:saveLastConfigFile = $ConfigFile.OuterXml
 
@@ -755,6 +786,9 @@ Language and Exclude values
     [cmdletbinding()]
     Param(
 
+        [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
+        [string] $ConfigurationXML = $NULL,
+
         [Parameter(ValueFromPipelineByPropertyName=$true)]
         [Microsoft.Office.Products] $ProductId = "Unknown",
 
@@ -775,7 +809,15 @@ Language and Exclude values
       
         #Load the file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
-        $ConfigFile.Load($TargetFilePath) | Out-Null
+
+        if ($ConfigurationXml) 
+        {
+          $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
+          $global:saveLastConfigFile = $NULL
+          $global:saveLastFilePath = $NULL
+        } else {
+          $ConfigFile.Load($TargetFilePath) | Out-Null
+        }
 
         #Check that the file is properly formatted
         if($ConfigFile.Configuration -eq $null){
@@ -838,6 +880,9 @@ Removes the ProductToRemove with the ProductId 'O365ProPlusRetail' from the XML 
 #>
     [cmdletbinding()]
     Param(
+        [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
+        [string] $ConfigurationXML = $NULL,
+
         [Parameter(ValueFromPipelineByPropertyName=$true)]
         [Microsoft.Office.Products] $ProductId = "Unknown",
 
@@ -854,7 +899,15 @@ Removes the ProductToRemove with the ProductId 'O365ProPlusRetail' from the XML 
 
         #Load the file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
-        $ConfigFile.Load($TargetFilePath) | Out-Null
+
+        if ($ConfigurationXml) 
+        {
+          $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
+          $global:saveLastConfigFile = $NULL
+          $global:saveLastFilePath = $NULL
+        } else {
+          $ConfigFile.Load($TargetFilePath) | Out-Null
+        }
 
         $global:saveLastConfigFile = $ConfigFile.OuterXml
 
@@ -958,6 +1011,8 @@ Here is what the portion of configuration file looks like when modified by this 
 #>
     [CmdletBinding()]
     Param(
+        [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
+        [string] $ConfigurationXML = $NULL,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $TargetFilePath,
@@ -981,7 +1036,15 @@ Here is what the portion of configuration file looks like when modified by this 
 
         #Load the file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
-        $ConfigFile.Load($TargetFilePath) | Out-Null
+
+        if ($ConfigurationXml) 
+        {
+          $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
+          $global:saveLastConfigFile = $NULL
+          $global:saveLastFilePath = $NULL
+        } else {
+          $ConfigFile.Load($TargetFilePath) | Out-Null
+        }
 
         $global:saveLastConfigFile = $ConfigFile.OuterXml
 
@@ -1072,6 +1135,9 @@ file.
     [CmdletBinding()]
     Param(
 
+        [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
+        [string] $ConfigurationXML = $NULL,
+
         [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $TargetFilePath
 
@@ -1082,7 +1148,15 @@ file.
      
         #Load the file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
-        $ConfigFile.Load($TargetFilePath) | Out-Null
+
+        if ($ConfigurationXml) 
+        {
+          $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
+          $global:saveLastConfigFile = $NULL
+          $global:saveLastFilePath = $NULL
+        } else {
+          $ConfigFile.Load($TargetFilePath) | Out-Null
+        }
 
         #Check that the file is properly formatted
         if($ConfigFile.Configuration -eq $null){
@@ -1117,6 +1191,9 @@ This is the section that would be removed when running this function
 #>
     [CmdletBinding()]
     Param(
+        [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
+        [string] $ConfigurationXML = $NULL,
+
         [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $TargetFilePath
     )
@@ -1126,7 +1203,15 @@ This is the section that would be removed when running this function
 
         #Load the file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
-        $ConfigFile.Load($TargetFilePath) | Out-Null
+
+        if ($ConfigurationXml) 
+        {
+          $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
+          $global:saveLastConfigFile = $NULL
+          $global:saveLastFilePath = $NULL
+        } else {
+          $ConfigFile.Load($TargetFilePath) | Out-Null
+        }
 
         $global:saveLastConfigFile = $ConfigFile.OuterXml
 
@@ -1218,7 +1303,10 @@ Here is what the portion of configuration file looks like when modified by this 
 #>
     [CmdletBinding()]
     Param(
-        
+
+        [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
+        [string] $ConfigurationXML = $NULL,
+
         [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $AutoActivate,
 
@@ -1240,7 +1328,15 @@ Here is what the portion of configuration file looks like when modified by this 
 
         #Load file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
-        $ConfigFile.Load($TargetFilePath) | Out-Null
+
+        if ($ConfigurationXml) 
+        {
+          $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
+          $global:saveLastConfigFile = $NULL
+          $global:saveLastFilePath = $NULL
+        } else {
+          $ConfigFile.Load($TargetFilePath) | Out-Null
+        }
 
         $global:saveLastConfigFile = $ConfigFile.OuterXml
 
@@ -1334,6 +1430,9 @@ file.
 #>
     Param(
 
+        [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
+        [string] $ConfigurationXML = $NULL,
+
         [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $TargetFilePath
 
@@ -1344,7 +1443,15 @@ file.
 
         #Load the file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
-        $ConfigFile.Load($TargetFilePath) | Out-Null
+
+        if ($ConfigurationXml) 
+        {
+          $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
+          $global:saveLastConfigFile = $NULL
+          $global:saveLastFilePath = $NULL
+        } else {
+          $ConfigFile.Load($TargetFilePath) | Out-Null
+        }
 
         #Check that the file is properly formatted
         if($ConfigFile.Configuration -eq $null){
@@ -1389,6 +1496,9 @@ Here is what the portion of configuration file that would be removed by this fun
 
 #>
     Param(
+        [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
+        [string] $ConfigurationXML = $NULL,
+
         [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $TargetFilePath,
 
@@ -1401,7 +1511,15 @@ Here is what the portion of configuration file that would be removed by this fun
 
         #Load file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
-        $ConfigFile.Load($TargetFilePath) | Out-Null
+
+        if ($ConfigurationXml) 
+        {
+          $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
+          $global:saveLastConfigFile = $NULL
+          $global:saveLastFilePath = $NULL
+        } else {
+          $ConfigFile.Load($TargetFilePath) | Out-Null
+        }
 
         $global:saveLastConfigFile = $ConfigFile.OuterXml
 
@@ -1495,6 +1613,9 @@ Here is what the portion of configuration file looks like when modified by this 
 #>
     Param(
 
+        [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
+        [string] $ConfigurationXML = $NULL,
+
         [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $SourcePath = $NULL,
 
@@ -1514,7 +1635,15 @@ Here is what the portion of configuration file looks like when modified by this 
 
         #Load file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
-        $ConfigFile.Load($TargetFilePath) | Out-Null
+
+        if ($ConfigurationXml) 
+        {
+          $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
+          $global:saveLastConfigFile = $NULL
+          $global:saveLastFilePath = $NULL
+        } else {
+          $ConfigFile.Load($TargetFilePath) | Out-Null
+        }
 
         $global:saveLastConfigFile = $ConfigFile.OuterXml
 
@@ -1594,6 +1723,9 @@ file.
 #>
     Param(
 
+        [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
+        [string] $ConfigurationXML = $NULL,
+
         [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $TargetFilePath
 
@@ -1604,7 +1736,15 @@ file.
 
         #Load the file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
-        $ConfigFile.Load($TargetFilePath) | Out-Null
+
+        if ($ConfigurationXml) 
+        {
+          $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
+          $global:saveLastConfigFile = $NULL
+          $global:saveLastFilePath = $NULL
+        } else {
+          $ConfigFile.Load($TargetFilePath) | Out-Null
+        }
 
         #Check that the file is properly formatted
         if($ConfigFile.Configuration -eq $null){
@@ -1634,6 +1774,9 @@ Removes the Add node from the xml congfiguration file
 
 #>
     Param(
+        [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
+        [string] $ConfigurationXML = $NULL,
+
         [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $TargetFilePath
     )
@@ -1643,7 +1786,15 @@ Removes the Add node from the xml congfiguration file
 
         #Load file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
-        $ConfigFile.Load($TargetFilePath) | Out-Null
+
+        if ($ConfigurationXml) 
+        {
+          $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
+          $global:saveLastConfigFile = $NULL
+          $global:saveLastFilePath = $NULL
+        } else {
+          $ConfigFile.Load($TargetFilePath) | Out-Null
+        }
 
         $global:saveLastConfigFile = $ConfigFile.OuterXml
 
@@ -1714,6 +1865,8 @@ Here is what the portion of configuration file looks like when modified by this 
 
 #>
     Param(
+        [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
+        [string] $ConfigurationXML = $NULL,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $Level,
@@ -1731,7 +1884,15 @@ Here is what the portion of configuration file looks like when modified by this 
 
         #Load file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
-        $ConfigFile.Load($TargetFilePath) | Out-Null
+ 
+        if ($ConfigurationXml) 
+        {
+          $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
+          $global:saveLastConfigFile = $NULL
+          $global:saveLastFilePath = $NULL
+        } else {
+          $ConfigFile.Load($TargetFilePath) | Out-Null
+        }
 
         $global:saveLastConfigFile = $ConfigFile.OuterXml
 
@@ -1801,6 +1962,8 @@ file.
 
 #>
     Param(
+        [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
+        [string] $ConfigurationXML = $NULL,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $TargetFilePath
@@ -1812,7 +1975,15 @@ file.
 
         #Load the file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
-        $ConfigFile.Load($TargetFilePath) | Out-Null
+ 
+        if ($ConfigurationXml) 
+        {
+          $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
+          $global:saveLastConfigFile = $NULL
+          $global:saveLastFilePath = $NULL
+        } else {
+          $ConfigFile.Load($TargetFilePath) | Out-Null
+        }
 
         #Check that the file is properly formatted
         if($ConfigFile.Configuration -eq $null){
@@ -1848,6 +2019,9 @@ Here is what the portion of configuration file that will be removed by this func
 #>
     Param(
 
+        [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
+        [string] $ConfigurationXML = $NULL,
+
         [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $TargetFilePath
 
@@ -1858,7 +2032,15 @@ Here is what the portion of configuration file that will be removed by this func
 
         #Load file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
-        $ConfigFile.Load($TargetFilePath) | Out-Null
+
+        if ($ConfigurationXml) 
+        {
+          $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
+          $global:saveLastConfigFile = $NULL
+          $global:saveLastFilePath = $NULL
+        } else {
+          $ConfigFile.Load($TargetFilePath) | Out-Null
+        }
 
         $global:saveLastConfigFile = $ConfigFile.OuterXml
 
@@ -1935,6 +2117,9 @@ Here is what the portion of configuration file looks like when modified by this 
 #>
     Param(
 
+        [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
+        [string] $ConfigurationXML = $NULL,
+
         [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $Level,
 
@@ -1951,7 +2136,15 @@ Here is what the portion of configuration file looks like when modified by this 
 
         #Load file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
-        $ConfigFile.Load($TargetFilePath) | Out-Null
+
+        if ($ConfigurationXml) 
+        {
+          $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
+          $global:saveLastConfigFile = $NULL
+          $global:saveLastFilePath = $NULL
+        } else {
+          $ConfigFile.Load($TargetFilePath) | Out-Null
+        }
 
         $global:saveLastConfigFile = $ConfigFile.OuterXml
 
@@ -2023,6 +2216,9 @@ file.
 #>
     Param(
 
+        [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
+        [string] $ConfigurationXML = $NULL,
+
         [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $TargetFilePath
 
@@ -2033,7 +2229,15 @@ file.
 
         #Load the file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
-        $ConfigFile.Load($TargetFilePath) | Out-Null
+
+        if ($ConfigurationXml) 
+        {
+          $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
+          $global:saveLastConfigFile = $NULL
+          $global:saveLastFilePath = $NULL
+        } else {
+          $ConfigFile.Load($TargetFilePath) | Out-Null
+        }
 
         #Check that the file is properly formatted
         if($ConfigFile.Configuration -eq $null){
@@ -2069,6 +2273,9 @@ Here is what the removed portion of configuration file looks like:
 #>
     Param(
 
+        [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
+        [string] $ConfigurationXML = $NULL,
+
         [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $TargetFilePath
 
@@ -2079,7 +2286,15 @@ Here is what the removed portion of configuration file looks like:
 
         #Load file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
-        $ConfigFile.Load($TargetFilePath) | Out-Null
+
+        if ($ConfigurationXml) 
+        {
+          $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
+          $global:saveLastConfigFile = $NULL
+          $global:saveLastFilePath = $NULL
+        } else {
+          $ConfigFile.Load($TargetFilePath) | Out-Null
+        }
 
         $global:saveLastConfigFile = $ConfigFile.OuterXml
 
