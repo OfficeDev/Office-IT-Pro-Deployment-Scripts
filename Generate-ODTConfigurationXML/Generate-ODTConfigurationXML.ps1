@@ -108,9 +108,11 @@ process {
       }
     }
 
-    $allLanguages += $primaryLanguage
+    $allLanguages += $primaryLanguage.ToLower()
     foreach ($lang in $additionalLanguages) {
-      $allLanguages += $lang
+      if (!$allLanguages.Contains($lang.ToLower())) {
+         $allLanguages += $lang.ToLower()
+      }
     }
 
     if (!($primaryLanguage)) {
@@ -153,25 +155,39 @@ process {
 
     }
     
+    $formattedXml = Format-XML ([xml]($ConfigFile)) -indent 4
+
     if (($PSCmdlet.MyInvocation.PipelineLength -eq 1) -or `
         ($PSCmdlet.MyInvocation.PipelineLength -eq $PSCmdlet.MyInvocation.PipelinePosition)) {
         if (!($TargetFilePath)) {
-           Format-XML ([xml]($ConfigFile)) -indent 4
-        } else {
-           Format-XML ([xml]($ConfigFile)) -indent 4 | Out-File -FilePath $TargetFilePath
-        }
-    } else {
-        $xmlConfig = Format-XML ([xml]($ConfigFile)) -indent 4
+           if ($ComputerName.Length -gt 1) {
 
-        if ($TargetFilePath) {
-           $xmlConfig | Out-File -FilePath $TargetFilePath
+                $results = new-object PSObject[] 0;
+                $Result = New-Object –TypeName PSObject 
+                Add-Member -InputObject $Result -MemberType NoteProperty -Name "ComputerName" -Value $computer
+                Add-Member -InputObject $Result -MemberType NoteProperty -Name "ConfigurationXML" -Value $formattedXml
+                Add-Member -InputObject $Result -MemberType NoteProperty -Name "LanguageIds" -Value $allLanguages
+                $Result
+
+           } else {
+              $formattedXml
+           }
+        } else {
+           $formattedXml | Out-File -FilePath $TargetFilePath
         }
+
+    } else {
+        if ($TargetFilePath) {
+           $formattedXml | Out-File -FilePath $TargetFilePath
+        }
+
+        $allLanguages = Get-Unique -InputObject $allLanguages
 
         $results = new-object PSObject[] 0;
         $Result = New-Object –TypeName PSObject 
         Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
         Add-Member -InputObject $Result -MemberType NoteProperty -Name "LanguageIds" -Value $allLanguages
-        Add-Member -InputObject $Result -MemberType NoteProperty -Name "ConfigurationXML" -Value $xmlConfig
+        Add-Member -InputObject $Result -MemberType NoteProperty -Name "ConfigurationXML" -Value $formattedXml
         $Result
     }
     
@@ -1054,3 +1070,6 @@ $availableLangs = @("en-us",
 "pt-pt","ro-ro","ru-ru","sr-latn-rs","sk-sk","sl-si","es-es","sv-se","th-th",
 "tr-tr","uk-ua");
 
+
+
+Generate-ODTConfigurationXml -ComputerName vcg-rsmith1, vcg-cstrohl | fl
