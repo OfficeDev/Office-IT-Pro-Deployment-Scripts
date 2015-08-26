@@ -294,6 +294,9 @@ Here is what the portion of configuration file looks like when modified by this 
 #>
     [CmdletBinding()]
     Param(
+        [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
+        [string] $ConfigurationXML = $NULL,
+
         [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $TargetFilePath = $NULL,
 
@@ -312,6 +315,7 @@ Here is what the portion of configuration file looks like when modified by this 
     Process{
 
         $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
+
 
         if ($ProductId -eq "Unknown") {
            $ProductId = SelectProductId
@@ -333,7 +337,12 @@ Here is what the portion of configuration file looks like when modified by this 
         #Load the file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
         
-        $ConfigFile.Load($TargetFilePath) | Out-Null
+        if ($ConfigurationXml) 
+        {
+          $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
+        } else {
+          $ConfigFile.Load($TargetFilePath) | Out-Null
+        }
 
         $global:saveLastConfigFile = $ConfigFile.OuterXml
 
