@@ -1,12 +1,11 @@
 #Deploy Office Telemetry
 
-This script will configure the Office Telemetry Dashboard. If SQL Server is not installed SQL Server 2014 Express 
-will be installed. A database will be set up using the standard settings for Office Telemetry found in the dpconfig.exe file.
+This script will configure the Office Telemetry Dashboard in your environment. If SQL Server is not installed SQL Server 2014 Express will be installed. A database will be set up using the standard settings for Office Telemetry found in the dpconfig.exe file.
 A shared folder will be created and configured to allow telemetry agents to upload data. A Group Policy can be created to enable telemetry agents on computers in a domain. Computers with versions of Office older than 2013 will need to have the telemetry agent installed. Follow the instructions to create the GPO that will install and enable the telemetry agent on computers with versions of Office older than 2013.
 
 ###Pre-requisites
 
-1. The Deploy-TelemetryDashboard.ps1 script must be ran from a machine with **Office 2013** or **Office 2016**.
+1. The Deploy-TelemetryDashboard.ps1 script must be ran from a machine with **Office 2013** or **Office 2016**.  The server that you run this script from will be the Telemetry Processing server where clients will submit Telemetry.
 
 2. The user logged in must have administrative privelages and PowerShell needs to be opened as an administrator.
 
@@ -24,10 +23,14 @@ SQL Server 2014 Express download: https://www.microsoft.com/en-us/download/detai
 
 ###Setup
 
-1. Copy the below files in to the folder to where the script will be ran.
+1. All of the files below must be in the directory from where you run the scripts.
 
-          Create-TelemetryGpo.ps1
           Deploy-TelemetryDashboard.ps1
+          Configure-TelemetryGpo.ps1
+          Deploy-TelemetryAgent.ps1
+          OfficeTelemetryDatabase.sql
+          osmia32.msi
+          osmia64.msi
           
 2. From the run dialog type **%temp%** which will open your temp directory then copy the OfficeTelemetryDatabase.sql file into that folder
 
