@@ -72,7 +72,7 @@ A Group Policy can be set to enable Telemetry Agent uploading and logging on com
           
 3. To create a GPO for Office versions 2013 or 2016; Run the script, specify the GPO name, the common file share that the agent will upload data to, and the version of office (2013 or 2016)
 
-          Type . .\Set-TelemetryStartup -GpoName "Office Telemetry" -CommonFileShare "\\Server1\TDShared" -officeVersion 2013
+          Type . .\Set-TelemetryStartup -GpoName "Office Telemetry" -CommonFileShare "\\TelemetryServer\TDShared" -officeVersion 2013
           
           By including the additional period before the relative script path you are 'Dot-Sourcing' 
           the PowerShell function in the script into your PowerShell session which will allow you to 
