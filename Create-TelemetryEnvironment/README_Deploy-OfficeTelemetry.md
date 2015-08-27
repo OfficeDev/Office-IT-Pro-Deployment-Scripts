@@ -80,7 +80,9 @@ A Group Policy can be set to enable Telemetry Agent uploading and logging on com
           
 4. To create a GPO for Office versions older than 2013; Run the script and specify the GPO name.
 
-          Type . .\Set-TelemetryStartup -GpoName "Office Telemetry"
+          Type . .\Create-TelemetryGpo -GpoName "Office Telemetry"
+          
+          	This will create the GPO used to deploy the Telemetry Agent to machines with versions of Office older than 2013.
           
           By including the additional period before the relative script path you are 'Dot-Sourcing' 
           the PowerShell function in the script into your PowerShell session which will allow you to 
