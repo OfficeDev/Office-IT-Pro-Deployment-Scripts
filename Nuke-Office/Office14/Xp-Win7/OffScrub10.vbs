@@ -3838,12 +3838,12 @@ Sub ParseCmdLine
     End If
     If iArgCnt = 0 Then
         Select Case UCase(wscript.ScriptName)
-        'Case Else
-        '    'Create the log
+        Case Else
+            'Create the log
         '    CreateLog
         '    Log "No argument specified. Preparing user prompt" & vbCrLf
         '    FindInstalledOProducts
-        '    If dicInstalledSku.Count > 0 Then sDefault = Join(RemoveDuplicates(dicInstalledSku.Items),",") Else sDefault = "CLIENTALL"
+            If dicInstalledSku.Count > 0 Then sDefault = Join(RemoveDuplicates(dicInstalledSku.Items),",") Else sDefault = "CLIENTALL"
         '    sDefault = InputBox("Enter a list of " & ONAME & " products to remove" & vbCrLf & vbCrLf & _
         '            "Examples:" & vbCrLf & _
         '            "CLIENTALL" & vbTab & "-> all Client products" & vbCrLf & _
@@ -3863,10 +3863,10 @@ Sub ParseCmdLine
         '        wscript.quit iError
         '    End If 'IsEmpty(sDefault)
         '    Log "Answer from prompt: " & sDefault & vbCrLf
-        '    sDefault = Trim(UCase(Trim(Replace(sDefault,Chr(34),""))))
-        '    arrArguments = Split(Trim(sDefault)," ")
-        '    If UBound(arrArguments) = -1 Then ReDim arrArguments(0)
-        'End Select
+            sDefault = Trim(UCase(Trim(Replace(sDefault,Chr(34),""))))
+            arrArguments = Split(Trim(sDefault)," ")
+            If UBound(arrArguments) = -1 Then ReDim arrArguments(0)
+        End Select
     Else
         ReDim arrArguments(iArgCnt-1)
         For iCnt = 0 To (iArgCnt-1)

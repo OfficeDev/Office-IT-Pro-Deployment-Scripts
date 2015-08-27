@@ -301,18 +301,18 @@ Log vbCrLf & "End removal: " & Now & vbCrLf
 Log vbCrLf & "For detailed logging please refer to the log in folder " &chr(34)&sScrubDir&chr(34)&vbCrLf
 
 If fRebootRequired Then
-    Log vbCrLf & "A restart is required to complete the operation!"
-    If NOT fQuiet Then
-        If MsgBox("Do you want to reboot now?",vbYesNo,"Reboot Required") = VB_YES Then
+    'Log vbCrLf & "A restart is required to complete the operation!"
+    'If NOT fQuiet Then
+    '    If MsgBox("Do you want to reboot now?",vbYesNo,"Reboot Required") = VB_YES Then
             Dim colOS, oOS
             Dim oWmiReboot
             Set oWmiReboot = GetObject("winmgmts:{impersonationLevel=impersonate,(Shutdown)}!\\.\root\cimv2")
             Set colOS = oWmiReboot.ExecQuery ("Select * from Win32_OperatingSystem")
             For Each oOS in colOS
                 oOS.Reboot()
-            Next
-        End If
-    End If
+           Next
+    '   End If
+    'End If
 End If
 
 If NOT fQuiet Then
@@ -3675,28 +3675,28 @@ Sub ParseCmdLine
     If iArgCnt = 0 Then
         Select Case UCase(wscript.ScriptName)
         Case Else
-            'Create the log
-            CreateLog
-            Log "No argument specified. Preparing user prompt" & vbCrLf
+        '    Create the log
+        '    CreateLog
+        '    Log "No argument specified. Preparing user prompt" & vbCrLf
             FindInstalledOProducts
             If dicInstalledSku.Count > 0 Then sDefault = Join(RemoveDuplicates(dicInstalledSku.Items),",") Else sDefault = "CLIENTALL"
-            sDefault = InputBox("Enter a list of " & ONAME & " products to remove" & vbCrLf & vbCrLf & _
-                    "Examples:" & vbCrLf & _
-                    "CLIENTALL" & vbTab & "-> all Client products" & vbCrLf & _
-                    "SERVER" & vbTab & "-> all Server products" & vbCrLf & _
-                    "ALL" & vbTab & vbTab & "-> all Server & Client products" & vbCrLf & _
-                    "ProPlus,PrjPro" & vbTab & "-> ProPlus and Project" & vbCrLf &_
-                    "?" & vbTab & vbTab & "-> display Help", _
-                    SCRIPTFILE & " - " & ONAME & " remover", _
-                    sDefault)
-
-            If IsEmpty(sDefault) Then 'User cancelled
-                Log "User cancelled. CleanUp & Exit."
-                'Undo temporary entries created in ARP
-                TmpKeyCleanUp
-                wscript.quit 1602
-            End If 'IsEmpty(sDefault)
-            Log "Answer from prompt: " & sDefault & vbCrLf
+        '    sDefault = InputBox("Enter a list of " & ONAME & " products to remove" & vbCrLf & vbCrLf & _
+        '            "Examples:" & vbCrLf & _
+        '            "CLIENTALL" & vbTab & "-> all Client products" & vbCrLf & _
+        '            "SERVER" & vbTab & "-> all Server products" & vbCrLf & _
+        '            "ALL" & vbTab & vbTab & "-> all Server & Client products" & vbCrLf & _
+        '            "ProPlus,PrjPro" & vbTab & "-> ProPlus and Project" & vbCrLf &_
+        '            "?" & vbTab & vbTab & "-> display Help", _
+        '            SCRIPTFILE & " - " & ONAME & " remover", _
+        '            sDefault)
+        '
+        '    If IsEmpty(sDefault) Then 'User cancelled
+        '        Log "User cancelled. CleanUp & Exit."
+        '        'Undo temporary entries created in ARP
+        '        TmpKeyCleanUp
+        '        wscript.quit 1602
+        '    End If 'IsEmpty(sDefault)
+        '    Log "Answer from prompt: " & sDefault & vbCrLf
             sDefault = Trim(UCase(Trim(Replace(sDefault,Chr(34),""))))
             arrArguments = Split(Trim(sDefault)," ")
             If UBound(arrArguments) = -1 Then ReDim arrArguments(0)
