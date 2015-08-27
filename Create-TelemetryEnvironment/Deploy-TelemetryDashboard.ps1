@@ -552,12 +552,10 @@ function New-SharedFolder {
     $ShareName = "TDShared"
     $SharedFolderPath = "$env:SystemDrive"
     
-    
     if (!(Test-Path $SharedFolderPath\$ShareName))
-        {
+    {
         New-Item "$env:SystemDrive\$ShareName" -Type Directory
         
-
         net share 'TDShared=C:\TDShared' '/Grant:Authenticated Users,Change'
       
         $acl = Get-Acl "$SharedFolderPath\$ShareName"
@@ -565,10 +563,27 @@ function New-SharedFolder {
         $accessRule = New-Object System.Security.AccessControl.FileSystemAccessRule $permission
         $acl.SetAccessRule($accessRule)
         $acl | Set-Acl "$SharedFolderPath\$ShareName"
-        }
+    }
 
+    $ShareName = "TelemetryAgent"
+    $SharedFolderPath = "$env:SystemDrive"
+
+    if (!(Test-Path $SharedFolderPath\$ShareName))
+    {
+        New-Item "$env:SystemDrive\$ShareName" -Type Directory
+        
+        net share 'TelemetryAgent=C:\TelemetryAgent'
+    }
+
+    if (!(Test-Path "C:\TelemetryAgent\osmia32.msi"))
+    {
+       Copy-Item -Path "$PSScriptRoot\osmia32.msi" -Destination "C:\TelemetryAgent" -Force
+    }
+    if (!(Test-Path "C:\TelemetryAgent\osmia64.msi"))
+    {
+        Copy-Item -Path "$PSScriptRoot\osmia64.msi" -Destination "C:\TelemetryAgent" -Force 
+    }
 }
-
 
 # Install the Telemetry Processor
 function Install-TelemetryProcessor {
@@ -767,7 +782,7 @@ function Create-DataBase {
 
 #Applies the Office Telemetry settings to the database
 function Configure-Database {    
-    Invoke-Sqlcmd -ServerInstance $SqlServerName -InputFile "$env:TEMP\OfficeTelemetryDatabase.sql" -Database $DatabaseName -ErrorAction SilentlyContinue
+    Invoke-Sqlcmd -ServerInstance $SqlServerName -InputFile "$PSScriptRoot\OfficeTelemetryDatabase.sql" -Database $DatabaseName -ErrorAction SilentlyContinue
 }
 
 
