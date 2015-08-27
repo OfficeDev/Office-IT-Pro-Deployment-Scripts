@@ -31,16 +31,10 @@ SQL Server 2014 Express download: https://www.microsoft.com/en-us/download/detai
           OfficeTelemetryDatabase.sql
           osmia32.msi
           osmia64.msi
-          
-2. From the run dialog type **%temp%** which will open your temp directory then copy the OfficeTelemetryDatabase.sql file into that folder
 
-          This file contains the predefined database settings found in the dpconfig.exe file.
-
-3. To deploy the Telemetry Agent to computers with versions of Office older than 2013, copy osmia32.msi and osmia64.msi to a shared folder 'TDShared' on the server you run this script.
-          
 ###Examples
 
-#####Check for SQL installations, if a SQL server is not found SQL Server 2014 Express will be downloaded and installed, a database will be configured using the OfficeTelemetryDatabase.sql file, a shared folder will be created and configured, the Telemetry Processor will be installed, and the Telemetry Agent will be enabled to collect and upload data.
+#####If SQL server is not found on the local server SQL Server 2014 Express will be downloaded and installed, a database will be configured using the OfficeTelemetryDatabase.sql file, two shared folders will be created and configured, the Telemetry Processor will be installed, and the Telemetry Agent will be enabled to collect and upload data.
 
 1. Open a PowerShell console.
 
@@ -52,12 +46,8 @@ SQL Server 2014 Express download: https://www.microsoft.com/en-us/download/detai
             
 3. Run the Script.
 
-          Type . .\Deploy-TelemetryDashboard.ps1
-          
-          By including the additional period before the relative script path you are 'Dot-Sourcing' 
-          the PowerShell function in the script into your PowerShell session which will allow you to 
-          run the function 'Get-ModernOfficeApps' from the console.
-          
+          .\Deploy-TelemetryDashboard.ps1
+
 4. Wait for the script to finish. When the script is completed restart the computer to allow the 
 telemetry agent scheduled task to run and collect data.
 
@@ -72,56 +62,10 @@ A Group Policy can be set to enable Telemetry Agent uploading and logging on com
 2. Change the directory to the location where the PowerShell Script is saved.
 
           Example: cd C:\PowerShellScripts
-          
-3. For Office versions newer than 2010; Run the script, specify the GPO name, the common file share that the agent will upload data to, and the version of office (2013 or 2016)
+   
+3. To Create or Configure a Group Policy to configure Office clients to submit Telemetry to the Telemetry proccessing server run the following Powershell Script.
 
-          Type . .\Create-TelemetryGpo -GpoName "Office Telemetry" -CommonFileShare "\\TelemetryServer\TDShared" -officeVersion 2013
-          
-          By including the additional period before the relative script path you are 'Dot-Sourcing' 
-          the PowerShell function in the script into your PowerShell session which will allow you to 
-          run the function 'Get-ModernOfficeApps' from the console.
-          
-4. To create a GPO for Office versions older than 2013; Run the script and specify the GPO name.
-
-          Type . .\Create-TelemetryGpo -GpoName "Office Telemetry"
-          
-          	This will create the GPO used to deploy the Telemetry Agent to machines with versions of Office older than 2013.
-          
-          By including the additional period before the relative script path you are 'Dot-Sourcing' 
-          the PowerShell function in the script into your PowerShell session which will allow you to 
-          run the function 'Get-ModernOfficeApps' from the console.
-          
-####Configure the GPO to run on startup
-
-1. From the Domain Controller open a PowerShell console as an administrator.
-
-          From the Run dialog type PowerShell, right click, and choose Run as Administrator.
-          
-2. Change the directory to the location where the PowerShell Script is saved.
-
-          Example: cd C:\PowerShellScripts
-
-3. For versions of Office newer than 2010; Run the script, specify the GPO name and the common file share that the agent will upload data to.
-
-          Type . .\Set-TelemetryStartup -GpoName "Office Telemetry" -CommonFileShare "\\Server1\TDShared
-
-          By including the additional period before the relative script path you are 'Dot-Sourcing' 
-          the PowerShell function in the script into your PowerShell session which will allow you to 
-          run the function 'Get-ModernOfficeApps' from the console.
-
-4. For versions of Office older than 2013; Run the script, specify the GPO name, the common file share that the agent will upload data to, and the shared folder containing the osmia32 and osmia64 msi files.
-
-          Type . .\Set-TelemetryStartup -GpoName "Office Telemetry" -CommonFileShare "\\Server1\TDShared -agentShare "\\Server2\Telemetry Agent"
-
-	  By including the additional period before the relative script path you are 'Dot-Sourcing' 
-          the PowerShell function in the script into your PowerShell session which will allow you to 
-          run the function 'Get-ModernOfficeApps' from the console.
-
-5. Link the GPO to the correct OU in Group Policy Management.
-
-	  1. Right click on the correct OU and choose Link an existing GPO...
-
-	  2. Highlight the GPO and click OK.
+          .\Configure-TelemetryGpo.ps1 -GpoName "Office Telemetry" -TelemetryServer "TelemetryServerName"
 
 6. From a computer in the OU open a command prompt and type gpupdate /force and press Enter.
 
