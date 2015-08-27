@@ -38,7 +38,7 @@ is the name of the user logged in.
           
 ###Examples
 
-###Check for SQL installations, if a SQL server is not found SQL Server 2014 Express will be downloaded and installed, a database will be configured using the OfficeTelemetryDatabase.sql file, a shared folder will be created and configured, the Telemetry Processor will be installed, and the Telemetry Agent will be enabled to collect and upload data.
+#####Check for SQL installations, if a SQL server is not found SQL Server 2014 Express will be downloaded and installed, a database will be configured using the OfficeTelemetryDatabase.sql file, a shared folder will be created and configured, the Telemetry Processor will be installed, and the Telemetry Agent will be enabled to collect and upload data.
 
 1. Open a PowerShell console.
 
