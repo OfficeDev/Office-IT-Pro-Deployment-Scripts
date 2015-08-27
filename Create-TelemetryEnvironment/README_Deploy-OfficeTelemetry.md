@@ -58,7 +58,7 @@ SQL Server 2014 Express download: https://www.microsoft.com/en-us/download/detai
 4. Wait for the script to finish. When the script is completed restart the computer to allow the 
 telemetry agent scheduled task to run and collect data.
 
-####Create a GPO on the Domain Controller for Office version 2013 and newer.
+####Create a GPO on the Domain Controller.
 
 A Group Policy can be set to enable Telemetry Agent uploading and logging on computers in the domain.
 
