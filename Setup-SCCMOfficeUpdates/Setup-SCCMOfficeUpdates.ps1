@@ -98,7 +98,7 @@ If you specify a Version then the script will download that version.  You can se
 function Setup-SCCMOfficeUpdates {
 <#
 .SYNOPSIS
-Automates the configuration of System Center Configuration Manager (SCCM) to configure Office Click-To-Run 
+Automates the configuration of System Center Configuration Manager (SCCM) to configure Office Click-To-Run Updates
 .DESCRIPTION
 
 .PARAMETER version
@@ -113,6 +113,8 @@ The 3 Letter Site ID
 The config file that is used to download the bits for the intended version.
 .PARAMETER UpdateTestGroupConfigFileName
 The config file that is used to update the target machines to the intended version.
+.PARAMETER SCCMPSModulePath
+Allows the user to specify that full path to the ConfigurationManager.psd1 PowerShell Module. This is especially useful if SCCM is installed in a non standard path.
 .Example
 .\SetupOfficeUpdatesSCCM.ps1 -version "15.0.4737.1003" -path "\\OfficeShare" -siteId "ABC"
 Default update Office 2013 to version 15.0.4737.1003
@@ -152,7 +154,10 @@ Param
 	[string]$DistributionPointGroupName,
 
 	[Parameter()]
-	[uint16]$DeploymentExpiryDurationInDays = 15
+	[uint16]$DeploymentExpiryDurationInDays = 15,
+
+	[Parameter()]
+	[String]$SCCMPSModulePath = $NULL
 
 )
 Begin
@@ -182,14 +187,11 @@ Process
     Write-Host "Loading SCCM Module"
     Write-Host ""
 
-    $sccmModulePath = "$env:ProgramFiles\Microsoft Configuration Manager\AdminConsole\bin\ConfigurationManager.psd1"
-    [bool]$pathExists = Test-Path -Path $sccmModulePath
-    if (!$pathExists) {
-       $sccmModulePath = "${env:ProgramFiles(x86)}\Microsoft Configuration Manager\AdminConsole\bin\ConfigurationManager.psd1"
-       $pathExists = Test-Path -Path $sccmModulePath
-    }
+    #HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\SMS\Setup
+
+    $sccmModulePath = GetSCCMPSModulePath -SCCMPSModulePath $SCCMPSModulePath 
     
-    if ($pathExists) {
+    if ($sccmModulePath) {
         Import-Module $sccmModulePath
 
         if (!$SiteCode) {
@@ -228,6 +230,25 @@ End
 }
 
 function Deploy-SCCMOfficeUpdates {
+<#
+.SYNOPSIS
+Automates the configuration of System Center Configuration Manager (SCCM) to configure Office Click-To-Run Updates
+.DESCRIPTION
+
+.PARAMETER Collection
+The target SCCM Collection
+.PARAMETER PackageName
+The Name of the SCCM package create by the Setup-SCCMOfficeUpdates function
+.PARAMETER ProgramName
+The Name of the SCCM program create by the Setup-SCCMOfficeUpdates function
+.PARAMETER UpdateOnlyChangedBits
+Determines whether or not the EnableBinaryDeltaReplication enabled or not
+.PARAMETER SCCMPSModulePath
+Allows the user to specify that full path to the ConfigurationManager.psd1 PowerShell Module. This is especially useful if SCCM is installed in a non standard path.
+.Example
+Deploy-SCCMOfficeUpdates -Collection "CollectionName"
+Deploys the Package created by the Setup-SCCMOfficeUpdates function
+#>
     [CmdletBinding()]	
     Param
 	(
@@ -241,7 +262,10 @@ function Deploy-SCCMOfficeUpdates {
 		[String]$ProgramName = "Office ProPlus Update",
 
 		[Parameter()]	
-		[Bool]$UpdateOnlyChangedBits = $true
+		[Bool]$UpdateOnlyChangedBits = $true,
+
+		[Parameter()]
+		[String]$SCCMPSModulePath = $NULL
 	) 
 Begin
 {
@@ -249,14 +273,9 @@ Begin
 }
 Process
 {
-    $sccmModulePath = "$env:ProgramFiles\Microsoft Configuration Manager\AdminConsole\bin\ConfigurationManager.psd1"
-    [bool]$pathExists = Test-Path -Path $sccmModulePath
-    if (!$pathExists) {
-       $sccmModulePath = "${env:ProgramFiles(x86)}\Microsoft Configuration Manager\AdminConsole\bin\ConfigurationManager.psd1"
-       $pathExists = Test-Path -Path $sccmModulePath
-    }
+    $sccmModulePath = GetSCCMPSModulePath -SCCMPSModulePath $SCCMPSModulePath 
     
-    if ($pathExists) {
+    if ($sccmModulePath) {
         Import-Module $sccmModulePath
 
         if (!$SiteCode) {
@@ -587,4 +606,61 @@ function Create-FileShare() {
           25 {Write-Host "Share:$name Path:$path Result:Network Name Not Found" -foregroundcolor red -backgroundcolor yellow;break}
           default {Write-Host "Share:$name Path:$path Result:*** Unknown Error ***" -foregroundcolor red -backgroundcolor yellow;break}
      }
+}
+
+function GetSCCMPSModulePath() {
+    [CmdletBinding()]	
+    Param
+	(
+		[Parameter()]
+		[String]$SCCMPSModulePath = $NULL
+	)
+
+    [bool]$pathExists = $false
+
+    if ($SCCMPSModulePath) {
+       if ($SCCMPSModulePath.ToLower().EndsWith(".psd1")) {
+         $sccmModulePath = $SCCMPSModulePath
+         $pathExists = Test-Path -Path $sccmModulePath
+       }
+    }
+
+    if (!$pathExists) {
+        $uiInstallDir = (Get-ItemProperty -Path "hklm:\SOFTWARE\Microsoft\SMS\Setup" -Name "UI Installation Directory").'UI Installation Directory'
+        $sccmModulePath = Join-Path $uiInstallDir "bin\ConfigurationManager.psd1"
+
+        $pathExists = Test-Path -Path $sccmModulePath
+        if (!$pathExists) {
+            $sccmModulePath = "$env:ProgramFiles\Microsoft Configuration Manager\AdminConsole\bin\ConfigurationManager.psd1"
+            $pathExists = Test-Path -Path $sccmModulePath
+        }
+    }
+
+    if (!$pathExists) {
+       $uiAdminPath = ${env:SMS_ADMIN_UI_PATH}
+       if ($uiAdminPath.ToLower().EndsWith("\bin")) {
+           $dirInfo = $uiAdminPath
+       } else {
+           $dirInfo = ([System.IO.DirectoryInfo]$uiAdminPath).Parent.FullName
+       }
+      
+       $sccmModulePath = $dirInfo + "\ConfigurationManager.psd1"
+       $pathExists = Test-Path -Path $sccmModulePath
+    }
+
+    if (!$pathExists) {
+       $sccmModulePath = "${env:ProgramFiles(x86)}\Microsoft Configuration Manager\AdminConsole\bin\ConfigurationManager.psd1"
+       $pathExists = Test-Path -Path $sccmModulePath
+    }
+
+    if (!$pathExists) {
+       $sccmModulePath = "${env:ProgramFiles(x86)}\Microsoft Configuration Manager\AdminConsole\bin\ConfigurationManager.psd1"
+       $pathExists = Test-Path -Path $sccmModulePath
+    }
+
+    if (!$pathExists) {
+       throw "Cannot find the ConfigurationManager.psd1 file. Please use the -SCCMPSModulePath parameter to specify the location of the PowerShell Module"
+    }
+
+    return $sccmModulePath
 }
