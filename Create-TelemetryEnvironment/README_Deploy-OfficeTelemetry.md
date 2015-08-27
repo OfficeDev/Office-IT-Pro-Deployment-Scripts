@@ -1,12 +1,12 @@
 #Deploy Office Telemetry
 
-Configure the Office Telemetry Dashboard. If SQL Server is not installed SQL Server 2014 Express 
+This script will configure the Office Telemetry Dashboard. If SQL Server is not installed SQL Server 2014 Express 
 will be installed. A database will be set up using the standard settings for Office Telemetry found in the dpconfig.exe file.
 A shared folder will be created and configured to allow telemetry agents to upload data. A Group Policy can be created to enable telemetry agents on computers in a domain. Computers with versions of Office older than 2013 will need to have the telemetry agent installed. Follow the instructions to create the GPO that will install and enable the telemetry agent on computers with versions of Office older than 2013.
 
 ###Pre-requisites
 
-1. The Deploy-TelemetryDashboard.ps1 script must be ran from a machine with Office 2013.
+1. The Deploy-TelemetryDashboard.ps1 script must be ran from a machine with **Office 2013** or **Office 2016**.
 
 2. The user logged in must have administrative privelages and PowerShell needs to be opened as an administrator.
 
@@ -29,8 +29,7 @@ SQL Server 2014 Express download: https://www.microsoft.com/en-us/download/detai
           Create-TelemetryGpo.ps1
           Deploy-TelemetryDashboard.ps1
           
-2. Copy the OfficeTelemetryDatabase.sql file to C:\Users\username\Appdata\Local\Temp (%temp%) where username
-is the name of the user logged in.
+2. From the run dialog type **%temp%** which will open your temp directory then copy the OfficeTelemetryDatabase.sql file into that folder
 
           This file contains the predefined database settings found in the dpconfig.exe file.
 
