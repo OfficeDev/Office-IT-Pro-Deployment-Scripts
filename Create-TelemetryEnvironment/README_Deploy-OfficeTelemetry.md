@@ -58,7 +58,7 @@ SQL Server 2014 Express download: https://www.microsoft.com/en-us/download/detai
 4. Wait for the script to finish. When the script is completed restart the computer to allow the 
 telemetry agent scheduled task to run and collect data.
 
-####Create a GPO on the Domain Controller
+####Create a GPO on the Domain Controller for Office version 2013 and newer.
 
 A Group Policy can be set to enable Telemetry Agent uploading and logging on computers in the domain.
 
@@ -70,7 +70,7 @@ A Group Policy can be set to enable Telemetry Agent uploading and logging on com
 
           Example: cd C:\PowerShellScripts
           
-3. To create a GPO for Office versions 2013 or 2016; Run the script, specify the GPO name, the common file share that the agent will upload data to, and the version of office (2013 or 2016)
+3. Run the script, specify the GPO name, the common file share that the agent will upload data to, and the version of office (2013 or 2016)
 
           Type . .\Create-TelemetryGpo -GpoName "Office Telemetry" -CommonFileShare "\\TelemetryServer\TDShared" -officeVersion 2013
           
@@ -87,7 +87,7 @@ A Group Policy can be set to enable Telemetry Agent uploading and logging on com
           By including the additional period before the relative script path you are 'Dot-Sourcing' 
           the PowerShell function in the script into your PowerShell session which will allow you to 
           run the function 'Get-ModernOfficeApps' from the console.
-
+          
 ####Configure the GPO to run on startup
 
 1. From the Domain Controller open a PowerShell console as an administrator.
