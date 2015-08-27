@@ -33,7 +33,7 @@ SQL Server 2014 Express download: https://www.microsoft.com/en-us/download/detai
 
           This file contains the predefined database settings found in the dpconfig.exe file.
 
-3. To deploy the Telemetry Agent to computers with versions of Office older than 2013, copy osmia32.msi and osmia64.msi to a shared folder on the network.
+3. To deploy the Telemetry Agent to computers with versions of Office older than 2013, copy osmia32.msi and osmia64.msi to a shared folder 'TDShared' on the server you run this script.
           
 ###Examples
 
