@@ -38,19 +38,33 @@ begin {
 
 process {
 
+ if ($TargetFilePath) {
+     $folderPath = Split-Path -Path $TargetFilePath -Parent
+     $fileName = Split-Path -Path $TargetFilePath -Leaf
+     [system.io.directory]::CreateDirectory($folderPath) | Out-Null
+ }
+ 
  $results = new-object PSObject[] 0;
 
  foreach ($computer in $ComputerName) {
+   try {
     if ($Credentials) {
-       $os=Get-WMIObject win32_operatingsystem -computername $computer -Credential $Credentials
+       $os=Get-WMIObject win32_operatingsystem -computername $computer -Credential $Credentials -ErrorAction Stop
     } else {
-       $os=Get-WMIObject win32_operatingsystem -computername $computer
+       $os=Get-WMIObject win32_operatingsystem -computername $computer  -ErrorAction Stop
     }
 
     if ($Credentials) {
-       $regProv = Get-Wmiobject -list "StdRegProv" -namespace root\default -computername $computer -Credential $Credentials
+       $regProv = Get-Wmiobject -list "StdRegProv" -namespace root\default -computername $computer -Credential $Credentials  -ErrorAction Stop
     } else {
-       $regProv = Get-Wmiobject -list "StdRegProv" -namespace root\default -computername $computer
+       $regProv = Get-Wmiobject -list "StdRegProv" -namespace root\default -computername $computer  -ErrorAction Stop
+    }
+
+    if ($TargetFilePath) {
+      if ($ComputerName.Length -gt 1) {
+         $NewFileName = $computer + "-" + $fileName
+         $TargetFilePath = Join-Path $folderPath $NewFileName
+      }
     }
 
     [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
@@ -159,23 +173,24 @@ process {
 
     if (($PSCmdlet.MyInvocation.PipelineLength -eq 1) -or `
         ($PSCmdlet.MyInvocation.PipelineLength -eq $PSCmdlet.MyInvocation.PipelinePosition)) {
-        if (!($TargetFilePath)) {
-           if ($ComputerName.Length -gt 1) {
 
-                $results = new-object PSObject[] 0;
-                $Result = New-Object –TypeName PSObject 
-                Add-Member -InputObject $Result -MemberType NoteProperty -Name "ComputerName" -Value $computer
-                Add-Member -InputObject $Result -MemberType NoteProperty -Name "ConfigurationXML" -Value $formattedXml
-                Add-Member -InputObject $Result -MemberType NoteProperty -Name "LanguageIds" -Value $allLanguages
-                $Result
+        $results = new-object PSObject[] 0;
+        $Result = New-Object –TypeName PSObject 
+        Add-Member -InputObject $Result -MemberType NoteProperty -Name "ConfigurationXML" -Value $formattedXml
 
-           } else {
-              $formattedXml
-           }
-        } else {
-           $formattedXml | Out-File -FilePath $TargetFilePath
+        if ($ComputerName.Length -gt 1) {
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "LanguageIds" -Value $allLanguages
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "ComputerName" -Value $computer
         }
 
+        if ($TargetFilePath) {
+           $formattedXml | Out-File -FilePath $TargetFilePath
+           if ($ComputerName.Length -eq 1) {
+               $Result = $formattedXml
+           }
+        }
+
+        $Result
     } else {
         if ($TargetFilePath) {
            $formattedXml | Out-File -FilePath $TargetFilePath
@@ -192,8 +207,12 @@ process {
     }
     
     #return $ConfigFile
+  } catch {
+    $errorMessage = $computer + ": " + $_
+    Write-Host $errorMessage
   }
 
+  }
 }
 
 }
@@ -1069,7 +1088,3 @@ $availableLangs = @("en-us",
 "ja-jp","kk-kh","ko-kr","lv-lv","lt-lt","ms-my","nb-no","pl-pl","pt-br",
 "pt-pt","ro-ro","ru-ru","sr-latn-rs","sk-sk","sl-si","es-es","sv-se","th-th",
 "tr-tr","uk-ua");
-
-
-
-Generate-ODTConfigurationXml -ComputerName vcg-rsmith1, vcg-cstrohl | fl

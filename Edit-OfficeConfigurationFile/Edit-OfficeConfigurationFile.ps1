@@ -335,13 +335,16 @@ Here is what the portion of configuration file looks like when modified by this 
         #Load the file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
         
-        if ($ConfigurationXml) 
-        {
-          $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
-          $global:saveLastConfigFile = $NULL
-          $global:saveLastFilePath = $NULL
+        if ($TargetFilePath) {
+           $ConfigFile.Load($TargetFilePath) | Out-Null
         } else {
-          $ConfigFile.Load($TargetFilePath) | Out-Null
+            if ($ConfigurationXml) 
+            {
+              $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
+              $global:saveLastConfigFile = $NULL
+              $global:saveLastFilePath = $NULL
+              $TargetFilePath = $NULL
+            }
         }
 
         $global:saveLastConfigFile = $ConfigFile.OuterXml
@@ -455,13 +458,15 @@ Language and Exclude values
         #Load the file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
 
-        if ($ConfigurationXml) 
-        {
-          $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
-          $global:saveLastConfigFile = $NULL
-          $global:saveLastFilePath = $NULL
+        if ($TargetFilePath) {
+           $ConfigFile.Load($TargetFilePath) | Out-Null
         } else {
-          $ConfigFile.Load($TargetFilePath) | Out-Null
+            if ($ConfigurationXml) 
+            {
+              $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
+              $global:saveLastConfigFile = $NULL
+              $global:saveLastFilePath = $NULL
+            }
         }
 
         #Check that the file is properly formatted
@@ -552,13 +557,15 @@ Removes the ProductToAdd with the ProductId 'O365ProPlusRetail' from the XML Con
         #Load the file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
 
-        if ($ConfigurationXml) 
-        {
-          $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
-          $global:saveLastConfigFile = $NULL
-          $global:saveLastFilePath = $NULL
+        if ($TargetFilePath) {
+           $ConfigFile.Load($TargetFilePath) | Out-Null
         } else {
-          $ConfigFile.Load($TargetFilePath) | Out-Null
+            if ($ConfigurationXml) 
+            {
+              $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
+              $global:saveLastConfigFile = $NULL
+              $global:saveLastFilePath = $NULL
+            }
         }
 
         $global:saveLastConfigFile = $ConfigFile.OuterXml
@@ -692,13 +699,15 @@ Here is what the portion of configuration file looks like when modified by this 
         #Load file from path
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
 
-        if ($ConfigurationXml) 
-        {
-          $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
-          $global:saveLastConfigFile = $NULL
-          $global:saveLastFilePath = $NULL
+        if ($TargetFilePath) {
+           $ConfigFile.Load($TargetFilePath) | Out-Null
         } else {
-          $ConfigFile.Load($TargetFilePath) | Out-Null
+            if ($ConfigurationXml) 
+            {
+              $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
+              $global:saveLastConfigFile = $NULL
+              $global:saveLastFilePath = $NULL
+            }
         }
 
         $global:saveLastConfigFile = $ConfigFile.OuterXml
@@ -810,13 +819,15 @@ Language and Exclude values
         #Load the file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
 
-        if ($ConfigurationXml) 
-        {
-          $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
-          $global:saveLastConfigFile = $NULL
-          $global:saveLastFilePath = $NULL
+        if ($TargetFilePath) {
+           $ConfigFile.Load($TargetFilePath) | Out-Null
         } else {
-          $ConfigFile.Load($TargetFilePath) | Out-Null
+            if ($ConfigurationXml) 
+            {
+              $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
+              $global:saveLastConfigFile = $NULL
+              $global:saveLastFilePath = $NULL
+            }
         }
 
         #Check that the file is properly formatted
@@ -900,13 +911,15 @@ Removes the ProductToRemove with the ProductId 'O365ProPlusRetail' from the XML 
         #Load the file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
 
-        if ($ConfigurationXml) 
-        {
-          $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
-          $global:saveLastConfigFile = $NULL
-          $global:saveLastFilePath = $NULL
+        if ($TargetFilePath) {
+           $ConfigFile.Load($TargetFilePath) | Out-Null
         } else {
-          $ConfigFile.Load($TargetFilePath) | Out-Null
+            if ($ConfigurationXml) 
+            {
+              $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
+              $global:saveLastConfigFile = $NULL
+              $global:saveLastFilePath = $NULL
+            }
         }
 
         $global:saveLastConfigFile = $ConfigFile.OuterXml
@@ -1037,13 +1050,15 @@ Here is what the portion of configuration file looks like when modified by this 
         #Load the file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
 
-        if ($ConfigurationXml) 
-        {
-          $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
-          $global:saveLastConfigFile = $NULL
-          $global:saveLastFilePath = $NULL
+        if ($TargetFilePath) {
+           $ConfigFile.Load($TargetFilePath) | Out-Null
         } else {
-          $ConfigFile.Load($TargetFilePath) | Out-Null
+            if ($ConfigurationXml) 
+            {
+              $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
+              $global:saveLastConfigFile = $NULL
+              $global:saveLastFilePath = $NULL
+            }
         }
 
         $global:saveLastConfigFile = $ConfigFile.OuterXml
@@ -1149,13 +1164,15 @@ file.
         #Load the file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
 
-        if ($ConfigurationXml) 
-        {
-          $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
-          $global:saveLastConfigFile = $NULL
-          $global:saveLastFilePath = $NULL
+        if ($TargetFilePath) {
+           $ConfigFile.Load($TargetFilePath) | Out-Null
         } else {
-          $ConfigFile.Load($TargetFilePath) | Out-Null
+            if ($ConfigurationXml) 
+            {
+              $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
+              $global:saveLastConfigFile = $NULL
+              $global:saveLastFilePath = $NULL
+            }
         }
 
         #Check that the file is properly formatted
@@ -1204,13 +1221,15 @@ This is the section that would be removed when running this function
         #Load the file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
 
-        if ($ConfigurationXml) 
-        {
-          $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
-          $global:saveLastConfigFile = $NULL
-          $global:saveLastFilePath = $NULL
+        if ($TargetFilePath) {
+           $ConfigFile.Load($TargetFilePath) | Out-Null
         } else {
-          $ConfigFile.Load($TargetFilePath) | Out-Null
+            if ($ConfigurationXml) 
+            {
+              $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
+              $global:saveLastConfigFile = $NULL
+              $global:saveLastFilePath = $NULL
+            }
         }
 
         $global:saveLastConfigFile = $ConfigFile.OuterXml
@@ -1329,13 +1348,15 @@ Here is what the portion of configuration file looks like when modified by this 
         #Load file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
 
-        if ($ConfigurationXml) 
-        {
-          $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
-          $global:saveLastConfigFile = $NULL
-          $global:saveLastFilePath = $NULL
+        if ($TargetFilePath) {
+           $ConfigFile.Load($TargetFilePath) | Out-Null
         } else {
-          $ConfigFile.Load($TargetFilePath) | Out-Null
+            if ($ConfigurationXml) 
+            {
+              $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
+              $global:saveLastConfigFile = $NULL
+              $global:saveLastFilePath = $NULL
+            }
         }
 
         $global:saveLastConfigFile = $ConfigFile.OuterXml
@@ -1444,13 +1465,15 @@ file.
         #Load the file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
 
-        if ($ConfigurationXml) 
-        {
-          $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
-          $global:saveLastConfigFile = $NULL
-          $global:saveLastFilePath = $NULL
+        if ($TargetFilePath) {
+           $ConfigFile.Load($TargetFilePath) | Out-Null
         } else {
-          $ConfigFile.Load($TargetFilePath) | Out-Null
+            if ($ConfigurationXml) 
+            {
+              $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
+              $global:saveLastConfigFile = $NULL
+              $global:saveLastFilePath = $NULL
+            }
         }
 
         #Check that the file is properly formatted
@@ -1512,13 +1535,15 @@ Here is what the portion of configuration file that would be removed by this fun
         #Load file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
 
-        if ($ConfigurationXml) 
-        {
-          $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
-          $global:saveLastConfigFile = $NULL
-          $global:saveLastFilePath = $NULL
+        if ($TargetFilePath) {
+           $ConfigFile.Load($TargetFilePath) | Out-Null
         } else {
-          $ConfigFile.Load($TargetFilePath) | Out-Null
+            if ($ConfigurationXml) 
+            {
+              $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
+              $global:saveLastConfigFile = $NULL
+              $global:saveLastFilePath = $NULL
+            }
         }
 
         $global:saveLastConfigFile = $ConfigFile.OuterXml
@@ -1636,13 +1661,15 @@ Here is what the portion of configuration file looks like when modified by this 
         #Load file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
 
-        if ($ConfigurationXml) 
-        {
-          $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
-          $global:saveLastConfigFile = $NULL
-          $global:saveLastFilePath = $NULL
+        if ($TargetFilePath) {
+           $ConfigFile.Load($TargetFilePath) | Out-Null
         } else {
-          $ConfigFile.Load($TargetFilePath) | Out-Null
+            if ($ConfigurationXml) 
+            {
+              $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
+              $global:saveLastConfigFile = $NULL
+              $global:saveLastFilePath = $NULL
+            }
         }
 
         $global:saveLastConfigFile = $ConfigFile.OuterXml
@@ -1737,13 +1764,15 @@ file.
         #Load the file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
 
-        if ($ConfigurationXml) 
-        {
-          $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
-          $global:saveLastConfigFile = $NULL
-          $global:saveLastFilePath = $NULL
+        if ($TargetFilePath) {
+           $ConfigFile.Load($TargetFilePath) | Out-Null
         } else {
-          $ConfigFile.Load($TargetFilePath) | Out-Null
+            if ($ConfigurationXml) 
+            {
+              $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
+              $global:saveLastConfigFile = $NULL
+              $global:saveLastFilePath = $NULL
+            }
         }
 
         #Check that the file is properly formatted
@@ -1787,13 +1816,15 @@ Removes the Add node from the xml congfiguration file
         #Load file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
 
-        if ($ConfigurationXml) 
-        {
-          $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
-          $global:saveLastConfigFile = $NULL
-          $global:saveLastFilePath = $NULL
+        if ($TargetFilePath) {
+           $ConfigFile.Load($TargetFilePath) | Out-Null
         } else {
-          $ConfigFile.Load($TargetFilePath) | Out-Null
+            if ($ConfigurationXml) 
+            {
+              $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
+              $global:saveLastConfigFile = $NULL
+              $global:saveLastFilePath = $NULL
+            }
         }
 
         $global:saveLastConfigFile = $ConfigFile.OuterXml
@@ -1885,13 +1916,15 @@ Here is what the portion of configuration file looks like when modified by this 
         #Load file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
  
-        if ($ConfigurationXml) 
-        {
-          $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
-          $global:saveLastConfigFile = $NULL
-          $global:saveLastFilePath = $NULL
+        if ($TargetFilePath) {
+           $ConfigFile.Load($TargetFilePath) | Out-Null
         } else {
-          $ConfigFile.Load($TargetFilePath) | Out-Null
+            if ($ConfigurationXml) 
+            {
+              $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
+              $global:saveLastConfigFile = $NULL
+              $global:saveLastFilePath = $NULL
+            }
         }
 
         $global:saveLastConfigFile = $ConfigFile.OuterXml
@@ -1976,13 +2009,15 @@ file.
         #Load the file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
  
-        if ($ConfigurationXml) 
-        {
-          $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
-          $global:saveLastConfigFile = $NULL
-          $global:saveLastFilePath = $NULL
+        if ($TargetFilePath) {
+           $ConfigFile.Load($TargetFilePath) | Out-Null
         } else {
-          $ConfigFile.Load($TargetFilePath) | Out-Null
+            if ($ConfigurationXml) 
+            {
+              $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
+              $global:saveLastConfigFile = $NULL
+              $global:saveLastFilePath = $NULL
+            }
         }
 
         #Check that the file is properly formatted
@@ -2033,13 +2068,15 @@ Here is what the portion of configuration file that will be removed by this func
         #Load file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
 
-        if ($ConfigurationXml) 
-        {
-          $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
-          $global:saveLastConfigFile = $NULL
-          $global:saveLastFilePath = $NULL
+        if ($TargetFilePath) {
+           $ConfigFile.Load($TargetFilePath) | Out-Null
         } else {
-          $ConfigFile.Load($TargetFilePath) | Out-Null
+            if ($ConfigurationXml) 
+            {
+              $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
+              $global:saveLastConfigFile = $NULL
+              $global:saveLastFilePath = $NULL
+            }
         }
 
         $global:saveLastConfigFile = $ConfigFile.OuterXml
@@ -2137,13 +2174,15 @@ Here is what the portion of configuration file looks like when modified by this 
         #Load file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
 
-        if ($ConfigurationXml) 
-        {
-          $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
-          $global:saveLastConfigFile = $NULL
-          $global:saveLastFilePath = $NULL
+        if ($TargetFilePath) {
+           $ConfigFile.Load($TargetFilePath) | Out-Null
         } else {
-          $ConfigFile.Load($TargetFilePath) | Out-Null
+            if ($ConfigurationXml) 
+            {
+              $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
+              $global:saveLastConfigFile = $NULL
+              $global:saveLastFilePath = $NULL
+            }
         }
 
         $global:saveLastConfigFile = $ConfigFile.OuterXml
@@ -2230,13 +2269,15 @@ file.
         #Load the file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
 
-        if ($ConfigurationXml) 
-        {
-          $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
-          $global:saveLastConfigFile = $NULL
-          $global:saveLastFilePath = $NULL
+        if ($TargetFilePath) {
+           $ConfigFile.Load($TargetFilePath) | Out-Null
         } else {
-          $ConfigFile.Load($TargetFilePath) | Out-Null
+            if ($ConfigurationXml) 
+            {
+              $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
+              $global:saveLastConfigFile = $NULL
+              $global:saveLastFilePath = $NULL
+            }
         }
 
         #Check that the file is properly formatted
@@ -2287,13 +2328,15 @@ Here is what the removed portion of configuration file looks like:
         #Load file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
 
-        if ($ConfigurationXml) 
-        {
-          $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
-          $global:saveLastConfigFile = $NULL
-          $global:saveLastFilePath = $NULL
+        if ($TargetFilePath) {
+           $ConfigFile.Load($TargetFilePath) | Out-Null
         } else {
-          $ConfigFile.Load($TargetFilePath) | Out-Null
+            if ($ConfigurationXml) 
+            {
+              $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
+              $global:saveLastConfigFile = $NULL
+              $global:saveLastFilePath = $NULL
+            }
         }
 
         $global:saveLastConfigFile = $ConfigFile.OuterXml
