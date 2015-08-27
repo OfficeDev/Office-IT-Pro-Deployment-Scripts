@@ -123,8 +123,12 @@ function Test-64BitOS {
 
 # Returns the version of Office
 function Get-OfficeVersion {
+  try {
     $objExcel = New-Object -ComObject Excel.Application
     return $objExcel.Version
+  } catch [system.exception] {
+     throw "Office must be installed on the local computer" 
+  }
 }
 
 # Tell the user to run the script in a 64-bit console
@@ -294,6 +298,13 @@ function Get-SqlInstance {  
 #Get the SQL Server name
 function Get-SqlServerName {
 Get-SqlInstance | foreach {$_.FullName}
+}
+
+function Get-SqlVersion {
+#NB: replace "." with instance name (e.g. ".\sqlexpress" or "axlive\sql06")
+[System.Reflection.Assembly]::LoadWithPartialName("Microsoft.SqlServer.SMO") | Out-Null
+$sqlVersion = New-Object -typeName Microsoft.SqlServer.Management.Smo.Server(".") | select version
+return $sqlVersion
 }
 
 # Build the shared folder path.
@@ -561,32 +572,33 @@ function New-SharedFolder {
 
 # Install the Telemetry Processor
 function Install-TelemetryProcessor {
-    [string[]] $msiPath = ("C:\Program Files\Common Files\microsoft shared\OFFICE16\osmdp64.msi" `
+    [string[]] $msiPath32 = ("C:\Program Files\Common Files\microsoft shared\OFFICE16\osmdp32.msi" `
+    ,"C:\Program Files\Microsoft Office\root\VFS\ProgramFilesCommonX64\Microsoft Shared\OFFICE16\1033\osmdp32.msi" `
+    ,"C:\Program Files\Microsoft Office 15\root\vfs\ProgramFilesCommonX86\Microsoft Shared\OFFICE15\1033\osmdp32.msi" `
+    ,"C:\Program Files (x86)\Microsoft Office 15\root\vfs\ProgramFilesCommonX86\Microsoft Shared\OFFICE15\1033\osmdp32.msi")
+
+    [string[]] $msiPath64 = ("C:\Program Files\Common Files\microsoft shared\OFFICE16\osmdp64.msi" `
     ,"C:\Program Files\Microsoft Office\root\VFS\ProgramFilesCommonX64\Microsoft Shared\OFFICE16\1033\osmdp64.msi" `
-    ,"C:\Program Files\Common Files\microsoft shared\OFFICE16\osmdp32.msi" `
-    ,"C:\Program Files\Microsoft Office\root\VFS\ProgramFilesCommonX64\Microsoft Shared\OFFICE16\1033\osmdp32.msi")
-    
+    ,"C:\Program Files\Microsoft Office 15\root\vfs\ProgramFilesCommonX86\Microsoft Shared\OFFICE15\1033\osmdp64.msi" `
+    ,"C:\Program Files (x86)\Microsoft Office 15\root\vfs\ProgramFilesCommonX86\Microsoft Shared\OFFICE15\1033\osmdp64.msi")
+
     if (Test-64BitOS)
     {
-        if (Test-Path $msiPath[0])
-        {
-        Start-Process $msiPath[0] /qn -wait
+        foreach ($path in $msiPath64) {
+            if (Test-Path $path)
+            {
+            Start-Process $path /qn -wait
+            }
         }
-        elseif (Test-Path $msiPath[1])
-        {
-        Start-Process $msiPath[1] /qn -wait  
-        } 
      }
      else
      {
-        if (Test-Path $msiPath[2])
-        {
-        Start-Process $msiPath[2] /qn -wait
+        foreach ($path in $msiPath32) {
+            if (Test-Path $path)
+            {
+            Start-Process $path /qn -wait
+            }
         }
-        elseif (Test-Path $msiPath[3])
-        {
-        Start-Process $msiPath[3] /qn -wait  
-        } 
      }
  } 
 
@@ -603,19 +615,19 @@ function Create-ProcessorRegData {
 
     if ($officeTest -eq "15.0")
     {
-        New-Item -Path $OSMPath[0] -Name OSM
-        New-Item -Path $DataProcessorPath[0] -Name DataProcessor
-        New-ItemProperty -Path "$($DataProcessorPath[0])\DataProcessor" -Name DatabaseName -Value $DatabaseName
-        New-ItemProperty -Path "$($DataProcessorPath[0])\DataProcessor" -Name DatabaseServer -Value "$env:ComputerName\$databaseServer"
-        New-ItemProperty -Path "$($DataProcessorPath[0])\DataProcessor" -Name FileShareLocation -Value "\\$env:ComputerName\$ShareName"
+        New-Item -Path $OSMPath[0] -Name OSM -ErrorAction SilentlyContinue
+        New-Item -Path $DataProcessorPath[0] -Name DataProcessor -ErrorAction SilentlyContinue
+        New-ItemProperty -Path "$($DataProcessorPath[0])\DataProcessor" -Name DatabaseName -Value $DatabaseName -ErrorAction SilentlyContinue
+        New-ItemProperty -Path "$($DataProcessorPath[0])\DataProcessor" -Name DatabaseServer -Value "$env:ComputerName\$databaseServer" -ErrorAction SilentlyContinue
+        New-ItemProperty -Path "$($DataProcessorPath[0])\DataProcessor" -Name FileShareLocation -Value "\\$env:ComputerName\$ShareName" -ErrorAction SilentlyContinue
     }
     else
     {
-        New-Item -Path $OSMPath[1] -Name OSM
-        New-Item -Path $DataProcessorPath[1] -Name DataProcessor
-        New-ItemProperty -Path "$($DataProcessorPath[1])\DataProcessor" -Name DatabaseName -Value $DatabaseName
-        New-ItemProperty -Path "$($DataProcessorPath[1])\DataProcessor" -Name DatabaseServer -Value "$env:ComputerName\$databaseServer"
-        New-ItemProperty -Path "$($DataProcessorPath[1])\DataProcessor" -Name FileShareLocation -Value "\\$env:ComputerName\$ShareName"
+        New-Item -Path $OSMPath[1] -Name OSM -ErrorAction SilentlyContinue
+        New-Item -Path $DataProcessorPath[1] -Name DataProcessor -ErrorAction SilentlyContinue
+        New-ItemProperty -Path "$($DataProcessorPath[1])\DataProcessor" -Name DatabaseName -Value $DatabaseName -ErrorAction SilentlyContinue
+        New-ItemProperty -Path "$($DataProcessorPath[1])\DataProcessor" -Name DatabaseServer -Value "$env:ComputerName\$databaseServer" -ErrorAction SilentlyContinue
+        New-ItemProperty -Path "$($DataProcessorPath[1])\DataProcessor" -Name FileShareLocation -Value "\\$env:ComputerName\$ShareName" -ErrorAction SilentlyContinue
     }
 }
 
@@ -755,7 +767,7 @@ function Create-DataBase {
 
 #Applies the Office Telemetry settings to the database
 function Configure-Database {    
-    Invoke-Sqlcmd -ServerInstance $SqlServerName -InputFile "$env:TEMP\OfficeTelemetryDatabase.sql" -Database $DatabaseName
+    Invoke-Sqlcmd -ServerInstance $SqlServerName -InputFile "$env:TEMP\OfficeTelemetryDatabase.sql" -Database $DatabaseName -ErrorAction SilentlyContinue
 }
 
 
@@ -792,7 +804,15 @@ function Configure-DatabasePermissions([string] $database) {
 
 # Run the task to let Telemetry Agent write data to the shared folder.
 function Run-TelemetryAgentTask {
-    Start-ScheduledTask OfficeTelemetryAgentLogOn2016 \Microsoft\Office         
+   $logon2016 = Get-ScheduledTask | Where { $_.TaskName -eq 'OfficeTelemetryAgentLogOn2016' }
+   $logon = Get-ScheduledTask | Where { $_.TaskName -eq 'OfficeTelemetryAgentLogOn' }
+
+   if ($logon2016) {
+       Start-ScheduledTask Microsoft\Office\OfficeTelemetryAgentLogOn2016 
+   }
+   if ($logon) {
+       Start-ScheduledTask Microsoft\Office\OfficeTelemetryAgentLogOn 
+   }
 }
 
 # Display instructions to the user about how to use Telemetry Dashboard.
@@ -932,7 +952,7 @@ Check-SQLInstall
 
 Get-SqlInstance | Out-Null
 
-Get-SqlServerName
+$SqlServerName = Get-SqlServerName
 
     if($SqlServerName -eq $null) {
 
