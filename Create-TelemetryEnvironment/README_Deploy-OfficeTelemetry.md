@@ -99,15 +99,15 @@ A Group Policy can be set to enable Telemetry Agent uploading and logging on com
 
 3. For versions of Office newer than 2010; Run the script, specify the GPO name and the common file share that the agent will upload data to.
 
-	  Type . .\Set-TelemetryStartup -GpoName "Office Telemetry" -CommonFileShare "\\Server1\TDShared
+          Type . .\Set-TelemetryStartup -GpoName "Office Telemetry" -CommonFileShare "\\Server1\TDShared
 
-	  By including the additional period before the relative script path you are 'Dot-Sourcing' 
+          By including the additional period before the relative script path you are 'Dot-Sourcing' 
           the PowerShell function in the script into your PowerShell session which will allow you to 
           run the function 'Get-ModernOfficeApps' from the console.
 
 4. For versions of Office older than 2013; Run the script, specify the GPO name, the common file share that the agent will upload data to, and the shared folder containing the osmia32 and osmia64 msi files.
 
-	  Type . .\Set-TelemetryStartup -GpoName "Office Telemetry" -CommonFileShare "\\Server1\TDShared -agentShare "\\Server2\Telemetry Agent"
+          Type . .\Set-TelemetryStartup -GpoName "Office Telemetry" -CommonFileShare "\\Server1\TDShared -agentShare "\\Server2\Telemetry Agent"
 
 	  By including the additional period before the relative script path you are 'Dot-Sourcing' 
           the PowerShell function in the script into your PowerShell session which will allow you to 
