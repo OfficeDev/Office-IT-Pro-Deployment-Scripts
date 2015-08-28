@@ -20,7 +20,7 @@ namespace Microsoft.Office
      }
 }
 "
-Add-Type -TypeDefinition $enum -Language CSharpVersion3
+Add-Type -TypeDefinition $enum
 
 $enum2 = "
 using System;
@@ -32,7 +32,7 @@ using System;
         Full=1
     }
 "
-Add-Type -TypeDefinition $enum2 -Language CSharpVersion3
+Add-Type -TypeDefinition $enum2
 
 $validLanguages = @(
 "English|en-us",

@@ -81,7 +81,6 @@ function Install-OfficeClickToRun {
          New-Item -Path $TargetFilePath -ItemType "File" -Value $ConfigurationXML -Force | Out-Null
       }
     }
-
     $products = Get-ODTProductToAdd -TargetFilePath $TargetFilePath 
     $addNode = Get-ODTAdd -TargetFilePath $TargetFilePath 
 
@@ -91,7 +90,7 @@ function Install-OfficeClickToRun {
 
     foreach ($product in $products)
     {
-        $languages = getLanguages -Product $product 
+        $languages = getProductLanguages -Product $product 
         $existingLangs = checkForLanguagesInSourceFiles -Languages $languages -SourcePath $sourcePath -Version $version -Edition $edition
         Set-ODTProductToAdd -TargetFilePath $TargetFilePath -ProductId $product.ProductId -LanguageIds $existingLangs | Out-Null
     }
@@ -100,7 +99,7 @@ function Install-OfficeClickToRun {
 
     $cmdLine = $officeCtrPath + " /configure " + $TargetFilePath
 
-    Write-Host "Installing Office Click-To-Run"
+    Write-Host "Installing Office Click-To-Run..."
     Invoke-Expression -Command  $cmdLine
 }
 
@@ -135,7 +134,6 @@ Function checkForLanguagesInSourceFiles() {
        $cabFolderPath = Join-Path $PSScriptRoot "Office\Data"
        $vdXmlPath = Join-Path $localPath "\VersionDescriptor.xml"
        
-
        if (Test-Path -Path $cabPath) {
           Invoke-Expression -Command "Expand $cabPath -F:VersionDescriptor.xml $localPath" | Out-Null
           $Version = getVersionFromVersionDescriptor -vesionDescriptorPath $vdXmlPath
@@ -178,7 +176,7 @@ Function getVersionFromVersionDescriptor() {
     }
 }
 
-Function getLanguages() {
+Function getProductLanguages() {
     [CmdletBinding()]
     Param(
         [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
