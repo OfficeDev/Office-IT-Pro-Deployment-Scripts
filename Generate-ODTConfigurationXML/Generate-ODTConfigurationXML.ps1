@@ -287,7 +287,6 @@ begin {
     $PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultDisplayPropertySet)
 }
 
-
 process {
 
  $results = new-object PSObject[] 0;
