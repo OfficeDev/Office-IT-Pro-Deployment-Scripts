@@ -24,6 +24,18 @@ namespace Microsoft.Office
 "
 Add-Type -TypeDefinition $enum -Language CSharpVersion3
 
+$enum2 = "
+using System;
+ 
+    [FlagsAttribute]
+    public enum LogLevel
+    {
+        None=0,
+        Full=1
+    }
+"
+Add-Type -TypeDefinition $enum2 -Language CSharpVersion3
+
 function Install-OfficeClickToRun {
     [CmdletBinding()]
     Param(
@@ -77,19 +89,19 @@ function Install-OfficeClickToRun {
     $version = $addNode.Version
     $edition = $addNode.OfficeClientEdition
 
-    $uniqueLanguages = getUniqueLanguages -Products $products 
-
-    $existingLangs = checkForLanguagesInSourceFiles -Languages $uniqueLanguages -SourcePath $sourcePath -Version $version -Edition $edition
-
-    $existingLangs
-
     foreach ($product in $products)
     {
-        
-
-
-
+        $languages = getLanguages -Product $product 
+        $existingLangs = checkForLanguagesInSourceFiles -Languages $languages -SourcePath $sourcePath -Version $version -Edition $edition
+        Set-ODTProductToAdd -TargetFilePath $TargetFilePath -ProductId $product.ProductId -LanguageIds $existingLangs | Out-Null
     }
+
+    Set-ODTDisplay -TargetFilePath $TargetFilePath -Level None -AcceptEULA $true | Out-Null
+
+    $cmdLine = $officeCtrPath + " /configure " + $TargetFilePath
+
+    Write-Host "Installing Office Click-To-Run"
+    Invoke-Expression -Command  $cmdLine
 }
 
 Function checkForLanguagesInSourceFiles() {
@@ -164,6 +176,25 @@ Function getVersionFromVersionDescriptor() {
         $doc.Load($vesionDescriptorPath) | Out-Null
         return $doc.DocumentElement.Available.Build
     }
+}
+
+Function getLanguages() {
+    [CmdletBinding()]
+    Param(
+        [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
+        $Product = $NULL
+    )
+
+    $languages = @()
+
+    foreach ($language in $Product.Languages)
+    {
+      if (!($languages.Contains($language))) {
+          $languages += $language
+      }
+    }
+
+    return $languages
 }
 
 Function getUniqueLanguages() {
@@ -334,6 +365,132 @@ file.
         }
         
         $ConfigFile.Configuration.GetElementsByTagName("Add") | Select OfficeClientEdition, SourcePath, Version
+    }
+
+}
+
+Function Set-ODTDisplay{
+<#
+.SYNOPSIS
+Modifies an existing configuration xml file to set display level and acceptance of the EULA
+
+.PARAMETER Level
+Optional. Determines the user interface that the user sees when the 
+operation is performed. If Level is set to None, the user sees no UI. 
+No progress UI, completion screen, error dialog boxes, or first run 
+automatic start UI are displayed. If Level is set to Full, the user 
+sees the normal Click-to-Run user interface: Automatic start, 
+application splash screen, and error dialog boxes.
+
+.PARAMETER AcceptEULA
+If this attribute is set to TRUE, the user does not see a Microsoft 
+Software License Terms dialog box. If this attribute is set to FALSE 
+or is not set, the user may see a Microsoft Software License Terms dialog box.
+
+.PARAMETER TargetFilePath
+Full file path for the file to be modified and be output to.
+
+.Example
+Set-ODTLogging -Level "Full" -TargetFilePath "$env:Public/Documents/config.xml"
+Sets config show the UI during install
+
+.Example
+Set-ODTDisplay -Level "none" -AcceptEULA "True" -TargetFilePath "$env:Public/Documents/config.xml"
+Sets config to hide UI and automatically accept EULA during install
+
+.Notes
+Here is what the portion of configuration file looks like when modified by this function:
+
+<Configuration>
+  ...
+  <Display Level="None" AcceptEULA="TRUE" />
+  ...
+</Configuration>
+
+#>
+    Param(
+
+        [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
+        [string] $ConfigurationXML = $NULL,
+
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [LogLevel] $Level,
+
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [bool] $AcceptEULA,
+
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [string] $TargetFilePath
+
+    )
+
+    Process{
+        $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
+
+        #Load file
+        [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
+
+        if ($TargetFilePath) {
+           $ConfigFile.Load($TargetFilePath) | Out-Null
+        } else {
+            if ($ConfigurationXml) 
+            {
+              $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
+              $global:saveLastConfigFile = $NULL
+              $global:saveLastFilePath = $NULL
+            }
+        }
+
+        $global:saveLastConfigFile = $ConfigFile.OuterXml
+
+        #Check for proper root element
+        if($ConfigFile.Configuration -eq $null){
+            throw $NoConfigurationElement
+        }
+
+        #Get display element if it exists
+        [System.XML.XMLElement]$DisplayElement = $ConfigFile.Configuration.GetElementsByTagName("Display").Item(0)
+        if($ConfigFile.Configuration.Display -eq $null){
+            [System.XML.XMLElement]$DisplayElement=$ConfigFile.CreateElement("Display")
+            $ConfigFile.Configuration.appendChild($DisplayElement) | Out-Null
+        }
+
+        #Set values
+        if([string]::IsNullOrWhiteSpace($Level) -eq $false){
+            $DisplayElement.SetAttribute("Level", $Level) | Out-Null
+        } else {
+            if ($PSBoundParameters.ContainsKey('Level')) {
+                $ConfigFile.Configuration.Add.RemoveAttribute("Level")
+            }
+        }
+
+        if([string]::IsNullOrWhiteSpace($Path) -eq $AcceptEULA){
+            $DisplayElement.SetAttribute("AcceptEULA", $AcceptEULA) | Out-Null
+        } else {
+            if ($PSBoundParameters.ContainsKey('AcceptEULA')) {
+                $ConfigFile.Configuration.Add.RemoveAttribute("AcceptEULA")
+            }
+        }
+
+        $ConfigFile.Save($TargetFilePath) | Out-Null
+        $global:saveLastFilePath = $TargetFilePath
+
+        if (($PSCmdlet.MyInvocation.PipelineLength -eq 1) -or `
+            ($PSCmdlet.MyInvocation.PipelineLength -eq $PSCmdlet.MyInvocation.PipelinePosition)) {
+            Write-Host
+
+            Format-XML ([xml](cat $TargetFilePath)) -indent 4
+
+            Write-Host
+            Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+        } else {
+            $results = new-object PSObject[] 0;
+            $Result = New-Object –TypeName PSObject 
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "Level" -Value $Level
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "AcceptEULA" -Value $AcceptEULA
+            $Result
+        }
     }
 
 }
