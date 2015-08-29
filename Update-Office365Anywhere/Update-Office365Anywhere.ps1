@@ -89,7 +89,10 @@ Function StartProcess {
 }
 
 Function Get-OfficeCDNUrl() {
-    $CDNBaseUrl = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration -Name CDNBaseUrl -ErrorAction SilentlyContinue).UpdateUrl
+    $CDNBaseUrl = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration -Name CDNBaseUrl -ErrorAction SilentlyContinue).CDNBaseUrl
+    if (!($CDNBaseUrl)) {
+       $CDNBaseUrl = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Office\15.0\ClickToRun\Configuration -Name CDNBaseUrl -ErrorAction SilentlyContinue).CDNBaseUrl
+    }
     if (!($CDNBaseUrl)) {
         Push-Location
         $path15 = 'HKLM:\SOFTWARE\Microsoft\Office\15.0\ClickToRun\ProductReleaseIDs\Active\stream'
@@ -151,19 +154,31 @@ Function Update-Office365Anywhere() {
     $oc2rcParams = "/update user forceappshutdown=false updatepromptuser=true displaylevel=true"
 
     $UpdateSource = "http"
-    If ($currentUpdateSource.StartsWith("\\",1)) {
-      $UpdateSource = "UNC"
+    if ($currentUpdateSource) {
+        If ($currentUpdateSource.StartsWith("\\",1)) {
+          $UpdateSource = "UNC"
+        }
     }
 
-    [bool]$isAlive = $false
-    if ($currentUpdateSource.ToLower() -eq $officeUpdateCDN.ToLower()) {
-        if ($currentUpdateSource -ne $saveUpdateSource) {
-	        $isAlive = Test-UpdateSource -UpdateSource $saveUpdateSource
-            if ($isAlive) {
-               Write-Log -Message "Restoring Saved Update Source $saveUpdateSource" -severity 1 -component "Office 365 Update Anywhere"
-               Set-Reg -Hive "HKLM" -keyPath $officeRegPath -ValueName "UpdateUrl" -Value $saveUpdateSource -Type String
+    if ($currentUpdateSource) {
+        [bool]$isAlive = $false
+        if ($currentUpdateSource.ToLower() -eq $officeUpdateCDN.ToLower()) {
+            if ($currentUpdateSource -ne $saveUpdateSource) {
+	            $isAlive = Test-UpdateSource -UpdateSource $saveUpdateSource
+                if ($isAlive) {
+                   Write-Log -Message "Restoring Saved Update Source $saveUpdateSource" -severity 1 -component "Office 365 Update Anywhere"
+                   Set-Reg -Hive "HKLM" -keyPath $officeRegPath -ValueName "UpdateUrl" -Value $saveUpdateSource -Type String
+                }
             }
         }
+    }
+
+    if (!($currentUpdateSource)) {
+       if ($officeUpdateCDN) {
+           Write-Log -Message "No Update source is set so defaulting to Office CDN" -severity 1 -component "Office 365 Update Anywhere"
+           Set-Reg -Hive "HKLM" -keyPath $officeRegPath -ValueName "UpdateUrl" -Value $officeUpdateCDN -Type String
+           $currentUpdateSource = $officeUpdateCDN
+       }
     }
 
     if (!$isAlive) {
