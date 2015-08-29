@@ -38,19 +38,33 @@ begin {
 
 process {
 
+ if ($TargetFilePath) {
+     $folderPath = Split-Path -Path $TargetFilePath -Parent
+     $fileName = Split-Path -Path $TargetFilePath -Leaf
+     [system.io.directory]::CreateDirectory($folderPath) | Out-Null
+ }
+ 
  $results = new-object PSObject[] 0;
 
  foreach ($computer in $ComputerName) {
+   try {
     if ($Credentials) {
-       $os=Get-WMIObject win32_operatingsystem -computername $computer -Credential $Credentials
+       $os=Get-WMIObject win32_operatingsystem -computername $computer -Credential $Credentials -ErrorAction Stop
     } else {
-       $os=Get-WMIObject win32_operatingsystem -computername $computer
+       $os=Get-WMIObject win32_operatingsystem -computername $computer  -ErrorAction Stop
     }
 
     if ($Credentials) {
-       $regProv = Get-Wmiobject -list "StdRegProv" -namespace root\default -computername $computer -Credential $Credentials
+       $regProv = Get-Wmiobject -list "StdRegProv" -namespace root\default -computername $computer -Credential $Credentials  -ErrorAction Stop
     } else {
-       $regProv = Get-Wmiobject -list "StdRegProv" -namespace root\default -computername $computer
+       $regProv = Get-Wmiobject -list "StdRegProv" -namespace root\default -computername $computer  -ErrorAction Stop
+    }
+
+    if ($TargetFilePath) {
+      if ($ComputerName.Length -gt 1) {
+         $NewFileName = $computer + "-" + $fileName
+         $TargetFilePath = Join-Path $folderPath $NewFileName
+      }
     }
 
     [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
@@ -108,9 +122,11 @@ process {
       }
     }
 
-    $allLanguages += $primaryLanguage
+    $allLanguages += $primaryLanguage.ToLower()
     foreach ($lang in $additionalLanguages) {
-      $allLanguages += $lang
+      if (!$allLanguages.Contains($lang.ToLower())) {
+         $allLanguages += $lang.ToLower()
+      }
     }
 
     if (!($primaryLanguage)) {
@@ -153,37 +169,55 @@ process {
 
     }
     
+    $formattedXml = Format-XML ([xml]($ConfigFile)) -indent 4
+
     if (($PSCmdlet.MyInvocation.PipelineLength -eq 1) -or `
         ($PSCmdlet.MyInvocation.PipelineLength -eq $PSCmdlet.MyInvocation.PipelinePosition)) {
-        if (!($TargetFilePath)) {
-           Format-XML ([xml]($ConfigFile)) -indent 4
-        } else {
-           Format-XML ([xml]($ConfigFile)) -indent 4 | Out-File -FilePath $TargetFilePath
+
+        $results = new-object PSObject[] 0;
+        $Result = New-Object –TypeName PSObject 
+        Add-Member -InputObject $Result -MemberType NoteProperty -Name "ConfigurationXML" -Value $formattedXml
+
+        if ($ComputerName.Length -gt 1) {
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "LanguageIds" -Value $allLanguages
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "ComputerName" -Value $computer
         }
-    } else {
-        $xmlConfig = Format-XML ([xml]($ConfigFile)) -indent 4
 
         if ($TargetFilePath) {
-           $xmlConfig | Out-File -FilePath $TargetFilePath
+           $formattedXml | Out-File -FilePath $TargetFilePath
+           if ($ComputerName.Length -eq 1) {
+               $Result = $formattedXml
+           }
         }
+
+        $Result
+    } else {
+        if ($TargetFilePath) {
+           $formattedXml | Out-File -FilePath $TargetFilePath
+        }
+
+        $allLanguages = Get-Unique -InputObject $allLanguages
 
         $results = new-object PSObject[] 0;
         $Result = New-Object –TypeName PSObject 
         Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
         Add-Member -InputObject $Result -MemberType NoteProperty -Name "LanguageIds" -Value $allLanguages
-        Add-Member -InputObject $Result -MemberType NoteProperty -Name "ConfigurationXML" -Value $xmlConfig
+        Add-Member -InputObject $Result -MemberType NoteProperty -Name "ConfigurationXML" -Value $formattedXml
         $Result
     }
     
     #return $ConfigFile
+  } catch {
+    $errorMessage = $computer + ": " + $_
+    Write-Host $errorMessage
   }
 
+  }
 }
 
 }
 
 Function Get-OfficeVersion {
-
 <#
 .Synopsis
 Gets the Office Version installed on the computer
@@ -193,9 +227,9 @@ This function will query the local or a remote computer and return the informati
 
 .NOTES   
 Name: Get-OfficeVersion
-Version: 1.0.3
+Version: 1.0.4
 DateCreated: 2015-07-01
-DateUpdated: 2015-07-21
+DateUpdated: 2015-08-28
 
 .LINK
 https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
@@ -272,11 +306,11 @@ process {
        $regProv = Get-Wmiobject -list "StdRegProv" -namespace root\default -computername $computer
     }
 
-    $VersionList = New-Object -TypeName System.Collections.ArrayList
-    $PathList = New-Object -TypeName System.Collections.ArrayList
-    $PackageList = New-Object -TypeName System.Collections.ArrayList
-    $ClickToRunPathList = New-Object -TypeName System.Collections.ArrayList
-    $ConfigItemList = New-Object -TypeName System.Collections.ArrayList
+    [System.Collections.ArrayList]$VersionList = New-Object -TypeName System.Collections.ArrayList
+    [System.Collections.ArrayList]$PathList = New-Object -TypeName System.Collections.ArrayList
+    [System.Collections.ArrayList]$PackageList = New-Object -TypeName System.Collections.ArrayList
+    [System.Collections.ArrayList]$ClickToRunPathList = New-Object -TypeName System.Collections.ArrayList
+    [System.Collections.ArrayList]$ConfigItemList = New-Object -TypeName  System.Collections.ArrayList
     $ClickToRunList = new-object PSObject[] 0;
 
     foreach ($regKey in $officeKeys) {
@@ -291,8 +325,12 @@ process {
 
             $configPath = join-path $path "Common\Config"
             $configItems = $regProv.EnumKey($HKLM, $configPath)
-            foreach ($configId in $configItems.sNames) {
-               $Add = $ConfigItemList.Add($configId.ToUpper())
+            if ($configItems) {
+               foreach ($configId in $configItems.sNames) {
+                 if ($configId) {
+                    $Add = $ConfigItemList.Add($configId.ToUpper())
+                 }
+               }
             }
 
             $cltr = New-Object -TypeName PSObject
@@ -306,6 +344,23 @@ process {
             $packagePath = join-path $path "Common\InstalledPackages"
             $clickToRunPath = join-path $path "ClickToRun\Configuration"
             $virtualInstallPath = $regProv.GetStringValue($HKLM, $clickToRunPath, "InstallationPath").sValue
+
+            [string]$officeLangResourcePath = join-path  $path "Common\LanguageResources"
+            $mainLangId = $regProv.GetDWORDValue($HKLM, $officeLangResourcePath, "SKULanguage").uValue
+            if ($mainLangId) {
+                $mainlangCulture = [globalization.cultureinfo]::GetCultures("allCultures") | where {$_.LCID -eq $mainLangId}
+                if ($mainlangCulture) {
+                    $cltr.ClientCulture = $mainlangCulture.Name
+                }
+            }
+
+            [string]$officeLangPath = join-path  $path "Common\LanguageResources\InstalledUIs"
+            $langValues = $regProv.EnumValues($HKLM, $officeLangPath);
+            if ($langValues) {
+               foreach ($langValue in $langValues) {
+                  $langCulture = [globalization.cultureinfo]::GetCultures("allCultures") | where {$_.LCID -eq $langValue}
+               } 
+            }
 
             if ($virtualInstallPath) {
 
@@ -346,7 +401,9 @@ process {
               $packageName = $regProv.GetStringValue($HKLM, $packageItemPath, "").sValue
             
               if (!$PackageList.Contains($packageName)) {
-                $AddItem = $PackageList.Add($packageName.Replace(' ', '').ToLower())
+                if ($packageName) {
+                   $AddItem = $PackageList.Add($packageName.Replace(' ', '').ToLower())
+                }
               }
             }
 
@@ -363,6 +420,7 @@ process {
         foreach ($key in $keys.sNames) {
            $path = join-path $regKey $key
            $installPath = $regProv.GetStringValue($HKLM, $path, "InstallLocation").sValue
+           if (!($installPath)) { continue }
            if ($installPath.Length -eq 0) { continue }
 
            $buildType = "64-Bit"
@@ -459,11 +517,12 @@ process {
 
   }
 
+  $results = Get-Unique -InputObject $results 
+
   return $results;
 }
 
 }
-
 
 function getCTRConfig() {
     param(
@@ -911,7 +970,7 @@ function odtAddProduct() {
     }
 
     if ($Platform) {
-       $AddElement.SetAttribute("Edition", $Platform) | Out-Null
+       $AddElement.SetAttribute("OfficeClientEdition", $Platform) | Out-Null
     }
 
     [System.XML.XMLElement]$ProductElement = $ConfigFile.Configuration.Add.Product | ?  ID -eq $ProductId
@@ -1053,4 +1112,3 @@ $availableLangs = @("en-us",
 "ja-jp","kk-kh","ko-kr","lv-lv","lt-lt","ms-my","nb-no","pl-pl","pt-br",
 "pt-pt","ro-ro","ru-ru","sr-latn-rs","sk-sk","sl-si","es-es","sv-se","th-th",
 "tr-tr","uk-ua");
-
