@@ -15,9 +15,9 @@ This function will query the local or a remote computer and return the informati
 
 .NOTES   
 Name: Get-OfficeVersion
-Version: 1.0.3
+Version: 1.0.4
 DateCreated: 2015-07-01
-DateUpdated: 2015-07-21
+DateUpdated: 2015-08-28
 
 .LINK
 https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
@@ -94,11 +94,11 @@ process {
        $regProv = Get-Wmiobject -list "StdRegProv" -namespace root\default -computername $computer
     }
 
-    $VersionList = New-Object -TypeName System.Collections.ArrayList
-    $PathList = New-Object -TypeName System.Collections.ArrayList
-    $PackageList = New-Object -TypeName System.Collections.ArrayList
-    $ClickToRunPathList = New-Object -TypeName System.Collections.ArrayList
-    $ConfigItemList = New-Object -TypeName System.Collections.ArrayList
+    [System.Collections.ArrayList]$VersionList = New-Object -TypeName System.Collections.ArrayList
+    [System.Collections.ArrayList]$PathList = New-Object -TypeName System.Collections.ArrayList
+    [System.Collections.ArrayList]$PackageList = New-Object -TypeName System.Collections.ArrayList
+    [System.Collections.ArrayList]$ClickToRunPathList = New-Object -TypeName System.Collections.ArrayList
+    [System.Collections.ArrayList]$ConfigItemList = New-Object -TypeName  System.Collections.ArrayList
     $ClickToRunList = new-object PSObject[] 0;
 
     foreach ($regKey in $officeKeys) {
@@ -113,8 +113,12 @@ process {
 
             $configPath = join-path $path "Common\Config"
             $configItems = $regProv.EnumKey($HKLM, $configPath)
-            foreach ($configId in $configItems.sNames) {
-               $Add = $ConfigItemList.Add($configId.ToUpper())
+            if ($configItems) {
+               foreach ($configId in $configItems.sNames) {
+                 if ($configId) {
+                    $Add = $ConfigItemList.Add($configId.ToUpper())
+                 }
+               }
             }
 
             $cltr = New-Object -TypeName PSObject
@@ -168,7 +172,9 @@ process {
               $packageName = $regProv.GetStringValue($HKLM, $packageItemPath, "").sValue
             
               if (!$PackageList.Contains($packageName)) {
-                $AddItem = $PackageList.Add($packageName.Replace(' ', '').ToLower())
+                if ($packageName) {
+                   $AddItem = $PackageList.Add($packageName.Replace(' ', '').ToLower())
+                }
               }
             }
 
@@ -185,6 +191,7 @@ process {
         foreach ($key in $keys.sNames) {
            $path = join-path $regKey $key
            $installPath = $regProv.GetStringValue($HKLM, $path, "InstallLocation").sValue
+           if (!($installPath)) { continue }
            if ($installPath.Length -eq 0) { continue }
 
            $buildType = "64-Bit"
@@ -280,6 +287,8 @@ process {
     }
 
   }
+
+  $results = Get-Unique -InputObject $results 
 
   return $results;
 }

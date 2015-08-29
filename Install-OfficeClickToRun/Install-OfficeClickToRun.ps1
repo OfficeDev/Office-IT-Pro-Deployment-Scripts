@@ -22,7 +22,7 @@ namespace Microsoft.Office
      }
 }
 "
-Add-Type -TypeDefinition $enum -Language CSharpVersion3
+Add-Type -TypeDefinition $enum
 
 $enum2 = "
 using System;
@@ -34,7 +34,7 @@ using System;
         Full=1
     }
 "
-Add-Type -TypeDefinition $enum2 -Language CSharpVersion3
+Add-Type -TypeDefinition $enum2
 
 function Install-OfficeClickToRun {
     [CmdletBinding()]
@@ -100,6 +100,7 @@ function Install-OfficeClickToRun {
     $cmdLine = $officeCtrPath + " /configure " + $TargetFilePath
 
     Write-Host "Installing Office Click-To-Run..."
+
     Invoke-Expression -Command  $cmdLine
 }
 
