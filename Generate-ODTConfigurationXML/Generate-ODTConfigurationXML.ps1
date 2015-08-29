@@ -345,6 +345,23 @@ process {
             $clickToRunPath = join-path $path "ClickToRun\Configuration"
             $virtualInstallPath = $regProv.GetStringValue($HKLM, $clickToRunPath, "InstallationPath").sValue
 
+            [string]$officeLangResourcePath = join-path  $path "Common\LanguageResources"
+            $mainLangId = $regProv.GetDWORDValue($HKLM, $officeLangResourcePath, "SKULanguage").uValue
+            if ($mainLangId) {
+                $mainlangCulture = [globalization.cultureinfo]::GetCultures("allCultures") | where {$_.LCID -eq $mainLangId}
+                if ($mainlangCulture) {
+                    $cltr.ClientCulture = $mainlangCulture.Name
+                }
+            }
+
+            [string]$officeLangPath = join-path  $path "Common\LanguageResources\InstalledUIs"
+            $langValues = $regProv.EnumValues($HKLM, $officeLangPath);
+            if ($langValues) {
+               foreach ($langValue in $langValues) {
+                  $langCulture = [globalization.cultureinfo]::GetCultures("allCultures") | where {$_.LCID -eq $langValue}
+               } 
+            }
+
             if ($virtualInstallPath) {
 
             } else {
@@ -506,7 +523,6 @@ process {
 }
 
 }
-
 
 function getCTRConfig() {
     param(
