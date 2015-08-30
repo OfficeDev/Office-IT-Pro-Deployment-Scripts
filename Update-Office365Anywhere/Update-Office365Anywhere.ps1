@@ -128,6 +128,19 @@ Function Get-OfficeCTRRegPath() {
     }
 }
 
+Function Get-OfficeCTRScenarioRegPath() {
+    $path15 = 'SOFTWARE\Microsoft\Office\15.0\ClickToRun\scenario'
+    $path16 = 'SOFTWARE\Microsoft\Office\ClickToRun\scenario'
+
+    if (Test-Path "HKLM:\$path15") {
+      return $path15
+    } else {
+      if (Test-Path "HKLM:\$path16") {
+         return $path16
+      }
+    }
+}
+
 Function Test-UpdateSource() {
     [CmdletBinding()]
     Param(
@@ -197,6 +210,73 @@ Function Update-Office365Anywhere() {
        Write-Log -Message "Will now execute $oc2rcFilePath $oc2rcParams" -severity 1 -component "Office 365 Update Anywhere"
        StartProcess -execFilePath $oc2rcFilePath -execParams $oc2rcParams
     }
+
+    Wait-ForOfficeCTRUpadate
 }
 
-Update-Office365Anywhere
+Function Wait-ForOfficeCTRUpadate() {
+    begin {
+        $HKLM = [UInt32] "0x80000002"
+        $HKCR = [UInt32] "0x80000000"
+    }
+
+    process {
+       Write-Host "Waiting for Update to Complete..."
+
+       Start-Sleep -Seconds 5
+
+       $scenarioPath = Get-OfficeCTRScenarioRegPath
+
+       $regProv = Get-Wmiobject -list "StdRegProv" -namespace root\default -ErrorAction Stop
+
+       $updateRunning=$false
+       [string[]]$trackProgress = @()
+       do {
+           $allComplete = $true
+           $scenarioKeys = $regProv.EnumKey($HKLM, $scenarioPath)
+           foreach ($scenarioKey in $scenarioKeys.sNames) {
+              if ($scenarioKey.ToUpper() -eq "UPDATE") {
+                   $taskKeyPath = Join-Path $scenarioPath "$scenarioKey\TasksState"
+                   $taskValues = $regProv.EnumValues($HKLM, $taskKeyPath).sNames
+
+                    foreach ($taskValue in $taskValues) {
+                        [string]$status = $regProv.GetStringValue($HKLM, $taskKeyPath, $taskValue).sValue
+                        $operation = $taskValue.Split(':')[0]
+                        $keyValue = $taskValue
+
+                        if ($status.ToLower() -ne "TASKSTATE_COMPLETED") {
+                            $allComplete = $false
+                            $updateRunning=$true
+
+                            if (!$trackProgress.Contains($keyValue)) {
+                                $trackProgress += $keyValue 
+                                $displayValue = $operation + "`t" + $status
+                                Write-Host $displayValue
+                            }
+                        } else {
+                            if ($trackProgress.Contains($keyValue)) {
+                                $displayValue = $operation + "`t" + $status
+                                Write-Host $displayValue
+                            }
+                        }
+                    }
+               }
+           }
+
+           if ($allComplete) {
+              break;
+           }
+
+           Start-Sleep -Seconds 1
+       } while($true -eq $true) 
+
+       if ($updateRunning) {
+          Write-Host "Update Complete"
+       } else {
+          Write-Host "Update Not Running"
+       } 
+    }
+}
+
+
+#Update-Office365Anywhere
