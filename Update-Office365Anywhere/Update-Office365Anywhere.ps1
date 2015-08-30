@@ -194,7 +194,7 @@ Function Update-Office365Anywhere() {
     if ($EnableUpdateAnywhere) {
         if ($currentUpdateSource) {
             [bool]$isAlive = $false
-            if ($currentUpdateSource.ToLower() -eq $officeUpdateCDN.ToLower()) {
+            if ($currentUpdateSource.ToLower() -eq $officeUpdateCDN.ToLower() -and ($saveUpdateSource)) {
                 if ($currentUpdateSource -ne $saveUpdateSource) {
 	                $isAlive = Test-UpdateSource -UpdateSource $saveUpdateSource
                     if ($isAlive) {
@@ -240,6 +240,12 @@ Function Update-Office365Anywhere() {
 }
 
 Function Wait-ForOfficeCTRUpadate() {
+    [CmdletBinding()]
+    Param(
+        [Parameter()]
+        [int] $TimeOutInMinutes = 120
+    )
+
     begin {
         $HKLM = [UInt32] "0x80000002"
         $HKCR = [UInt32] "0x80000000"
@@ -304,7 +310,7 @@ Function Wait-ForOfficeCTRUpadate() {
               break;
            }
 
-           if ($startTime -lt (Get-Date).AddHours(-2)) {
+           if ($startTime -lt (Get-Date).AddHours(-$TimeOutInMinutes)) {
               throw "Waiting for Update Timed-Out"
               break;
            }
