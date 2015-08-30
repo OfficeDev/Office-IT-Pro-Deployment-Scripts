@@ -209,9 +209,10 @@ Function Update-Office365Anywhere() {
     if ($isAlive) {
        Write-Log -Message "Will now execute $oc2rcFilePath $oc2rcParams" -severity 1 -component "Office 365 Update Anywhere"
        StartProcess -execFilePath $oc2rcFilePath -execParams $oc2rcParams
+
+       Wait-ForOfficeCTRUpadate
     }
 
-    Wait-ForOfficeCTRUpadate
 }
 
 Function Wait-ForOfficeCTRUpadate() {
@@ -229,10 +230,13 @@ Function Wait-ForOfficeCTRUpadate() {
 
        $regProv = Get-Wmiobject -list "StdRegProv" -namespace root\default -ErrorAction Stop
 
+       $failure = $false
        $updateRunning=$false
        [string[]]$trackProgress = @()
+       [string[]]$trackComplete = @()
        do {
            $allComplete = $true
+           
            $scenarioKeys = $regProv.EnumKey($HKLM, $scenarioPath)
            foreach ($scenarioKey in $scenarioKeys.sNames) {
               if ($scenarioKey.ToUpper() -eq "UPDATE") {
@@ -244,17 +248,24 @@ Function Wait-ForOfficeCTRUpadate() {
                         $operation = $taskValue.Split(':')[0]
                         $keyValue = $taskValue
 
-                        if ($status.ToLower() -ne "TASKSTATE_COMPLETED") {
+                        if ($status.ToUpper() -eq "TASKSTATE_FAILED") {
+                          $failure = $true
+                        }
+
+                        if (($status.ToUpper() -eq "TASKSTATE_COMPLETED") -or`
+                            ($status.ToUpper() -eq "TASKSTATE_CANCELLED") -or`
+                            ($status.ToUpper() -eq "TASKSTATE_FAILED")) {
+                            if ($trackProgress.Contains($keyValue) -and !$trackComplete.Contains($keyValue)) {
+                                $displayValue = $operation + "`t" + $status
+                                Write-Host $displayValue
+                                $trackComplete += $keyValue 
+                            }
+                        } else {
                             $allComplete = $false
                             $updateRunning=$true
 
                             if (!$trackProgress.Contains($keyValue)) {
                                 $trackProgress += $keyValue 
-                                $displayValue = $operation + "`t" + $status
-                                Write-Host $displayValue
-                            }
-                        } else {
-                            if ($trackProgress.Contains($keyValue)) {
                                 $displayValue = $operation + "`t" + $status
                                 Write-Host $displayValue
                             }
@@ -267,11 +278,15 @@ Function Wait-ForOfficeCTRUpadate() {
               break;
            }
 
-           Start-Sleep -Seconds 1
+           Start-Sleep -Seconds 5
        } while($true -eq $true) 
 
        if ($updateRunning) {
-          Write-Host "Update Complete"
+          if ($failure) {
+            Write-Host "Update Failed"
+          } else {
+            Write-Host "Update Complete"
+          }
        } else {
           Write-Host "Update Not Running"
        } 
@@ -279,4 +294,4 @@ Function Wait-ForOfficeCTRUpadate() {
 }
 
 
-#Update-Office365Anywhere
+
