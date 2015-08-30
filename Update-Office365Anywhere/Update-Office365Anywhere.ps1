@@ -1,4 +1,13 @@
-﻿$os=Get-WMIObject win32_operatingsystem
+﻿[CmdletBinding()]
+Param(
+    [Parameter()]
+    [bool] $WaitForUpdateToFinish = $true,
+
+    [Parameter()]
+    [bool] $EnableUpdateAnywhere = $true
+)
+
+$os=Get-WMIObject win32_operatingsystem
 $osArchitecture = $os.OSArchitecture
 
 if ($osArchitecture -eq "32-bit") {
@@ -154,6 +163,15 @@ Function Test-UpdateSource() {
 }
 
 Function Update-Office365Anywhere() {
+    [CmdletBinding()]
+    Param(
+        [Parameter()]
+        [bool] $WaitForUpdateToFinish = $true,
+
+        [Parameter()]
+        [bool] $EnableUpdateAnywhere = $true
+    )
+
     $officeRegPath = Get-OfficeCTRRegPath
 
     $currentUpdateSource = (Get-ItemProperty HKLM:\$officeRegPath -Name UpdateUrl -ErrorAction SilentlyContinue).UpdateUrl
@@ -165,7 +183,7 @@ Function Update-Office365Anywhere() {
     $officeCDN = "http://officecdn.microsoft.com"
     $oc2rcFilePath = Join-Path $clientFolder "\OfficeC2RClient.exe"
     $oc2rcParams = "/update user forceappshutdown=false updatepromptuser=true displaylevel=true"
-
+    
     $UpdateSource = "http"
     if ($currentUpdateSource) {
         If ($currentUpdateSource.StartsWith("\\",1)) {
@@ -173,44 +191,50 @@ Function Update-Office365Anywhere() {
         }
     }
 
-    if ($currentUpdateSource) {
-        [bool]$isAlive = $false
-        if ($currentUpdateSource.ToLower() -eq $officeUpdateCDN.ToLower()) {
-            if ($currentUpdateSource -ne $saveUpdateSource) {
-	            $isAlive = Test-UpdateSource -UpdateSource $saveUpdateSource
-                if ($isAlive) {
-                   Write-Log -Message "Restoring Saved Update Source $saveUpdateSource" -severity 1 -component "Office 365 Update Anywhere"
-                   Set-Reg -Hive "HKLM" -keyPath $officeRegPath -ValueName "UpdateUrl" -Value $saveUpdateSource -Type String
+    if ($EnableUpdateAnywhere) {
+        if ($currentUpdateSource) {
+            [bool]$isAlive = $false
+            if ($currentUpdateSource.ToLower() -eq $officeUpdateCDN.ToLower()) {
+                if ($currentUpdateSource -ne $saveUpdateSource) {
+	                $isAlive = Test-UpdateSource -UpdateSource $saveUpdateSource
+                    if ($isAlive) {
+                       Write-Log -Message "Restoring Saved Update Source $saveUpdateSource" -severity 1 -component "Office 365 Update Anywhere"
+                       Set-Reg -Hive "HKLM" -keyPath $officeRegPath -ValueName "UpdateUrl" -Value $saveUpdateSource -Type String
+                    }
                 }
             }
         }
-    }
 
-    if (!($currentUpdateSource)) {
-       if ($officeUpdateCDN) {
-           Write-Log -Message "No Update source is set so defaulting to Office CDN" -severity 1 -component "Office 365 Update Anywhere"
-           Set-Reg -Hive "HKLM" -keyPath $officeRegPath -ValueName "UpdateUrl" -Value $officeUpdateCDN -Type String
-           $currentUpdateSource = $officeUpdateCDN
-       }
-    }
+        if (!($currentUpdateSource)) {
+           if ($officeUpdateCDN) {
+               Write-Log -Message "No Update source is set so defaulting to Office CDN" -severity 1 -component "Office 365 Update Anywhere"
+               Set-Reg -Hive "HKLM" -keyPath $officeRegPath -ValueName "UpdateUrl" -Value $officeUpdateCDN -Type String
+               $currentUpdateSource = $officeUpdateCDN
+           }
+        }
 
-    if (!$isAlive) {
-        $isAlive = Test-UpdateSource -UpdateSource $currentUpdateSource
-        if (!($isAlive)) {
-           if ($currentUpdateSource.ToLower() -ne $officeUpdateCDN.ToLower()) {
+        if (!$isAlive) {
+            $isAlive = Test-UpdateSource -UpdateSource $currentUpdateSource
+            if (!($isAlive)) {
+                       if ($currentUpdateSource.ToLower() -ne $officeUpdateCDN.ToLower()) {
                Set-Reg -Hive "HKLM" -keyPath $officeRegPath -ValueName "SaveUpdateUrl" -Value $currentUpdateSource -Type String
            }
 
-           Write-Log -Message "Unable to use $currentUpdateSource. Will now use $officeUpdateCDN" -severity 1 -component "Office 365 Update Anywhere"
-           Set-Reg -Hive "HKLM" -keyPath $officeRegPath -ValueName "UpdateUrl" -Value $officeUpdateCDN -Type String
+               Write-Log -Message "Unable to use $currentUpdateSource. Will now use $officeUpdateCDN" -severity 1 -component "Office 365 Update Anywhere"
+               Set-Reg -Hive "HKLM" -keyPath $officeRegPath -ValueName "UpdateUrl" -Value $officeUpdateCDN -Type String
+            }
         }
+    } else {
+      $isAlive = Test-UpdateSource -UpdateSource $currentUpdateSource
     }
 
     if ($isAlive) {
        Write-Log -Message "Will now execute $oc2rcFilePath $oc2rcParams" -severity 1 -component "Office 365 Update Anywhere"
        StartProcess -execFilePath $oc2rcFilePath -execParams $oc2rcParams
 
-       Wait-ForOfficeCTRUpadate
+       if ($WaitForUpdateToFinish) {
+            Wait-ForOfficeCTRUpadate
+       }
     }
 
 }
@@ -229,6 +253,8 @@ Function Wait-ForOfficeCTRUpadate() {
        $scenarioPath = Get-OfficeCTRScenarioRegPath
 
        $regProv = Get-Wmiobject -list "StdRegProv" -namespace root\default -ErrorAction Stop
+
+       [DateTime]$startTime = Get-Date
 
        $failure = $false
        $updateRunning=$false
@@ -278,6 +304,11 @@ Function Wait-ForOfficeCTRUpadate() {
               break;
            }
 
+           if ($startTime -lt (Get-Date).AddHours(-2)) {
+              throw "Waiting for Update Timed-Out"
+              break;
+           }
+
            Start-Sleep -Seconds 5
        } while($true -eq $true) 
 
@@ -293,5 +324,5 @@ Function Wait-ForOfficeCTRUpadate() {
     }
 }
 
-
+Update-Office365Anywhere -WaitForUpdateToFinish $WaitForUpdateToFinish -EnableUpdateAnywhere $EnableUpdateAnywhere
 
