@@ -99,13 +99,14 @@ function Install-OfficeClickToRun {
         Set-ODTProductToAdd -TargetFilePath $TargetFilePath -ProductId $product.ProductId -LanguageIds $existingLangs | Out-Null
     }
 
-    Set-ODTDisplay -TargetFilePath $TargetFilePath -Level None -AcceptEULA $true | Out-Null
+    Set-ODTDisplay -TargetFilePath $TargetFilePath -Level Full -AcceptEULA $true | Out-Null
 
-    $cmdLine = $officeCtrPath + " /configure " + $TargetFilePath
+    $cmdLine = $officeCtrPath
+    $cmdArgs = "/configure " + $TargetFilePath
 
     Write-Host "Installing Office Click-To-Run..."
 
-    Invoke-Expression -Command  $cmdLine
+    StartProcess -execFilePath $cmdLine -execParams $cmdArgs -WaitForExit $false
 
     if ($WaitForInstallToFinish) {
          Wait-ForOfficeCTRInstall
@@ -523,8 +524,8 @@ Function GetFilePath() {
 }
 
 Function Get-OfficeCTRRegPath() {
-    $path15 = 'SOFTWARE\Microsoft\Office\15.0\ClickToRun\Configuration'
-    $path16 = 'SOFTWARE\Microsoft\Office\ClickToRun\Configuration'
+    $path15 = 'SOFTWARE\Microsoft\Office\15.0\ClickToRun'
+    $path16 = 'SOFTWARE\Microsoft\Office\ClickToRun'
 
     if (Test-Path "HKLM:\$path15") {
       return $path15
@@ -535,18 +536,6 @@ Function Get-OfficeCTRRegPath() {
     }
 }
 
-Function Get-OfficeCTRScenarioRegPath() {
-    $path15 = 'SOFTWARE\Microsoft\Office\15.0\ClickToRun\scenario'
-    $path16 = 'SOFTWARE\Microsoft\Office\ClickToRun\scenario'
-
-    if (Test-Path "HKLM:\$path15") {
-      return $path15
-    } else {
-      if (Test-Path "HKLM:\$path16") {
-         return $path16
-      }
-    }
-}
 
 Function Wait-ForOfficeCTRInstall() {
     [CmdletBinding()]
@@ -565,21 +554,31 @@ Function Wait-ForOfficeCTRInstall() {
 
        Start-Sleep -Seconds 5
 
-       $scenarioPath = Get-OfficeCTRScenarioRegPath
+       $mainRegPath = Get-OfficeCTRRegPath 
+       $scenarioPath = Join-Path $mainRegPath "scenario"
 
        $regProv = Get-Wmiobject -list "StdRegProv" -namespace root\default -ErrorAction Stop
 
        [DateTime]$startTime = Get-Date
 
+       [string]$executingScenario = ""
        $failure = $false
        $updateRunning=$false
        [string[]]$trackProgress = @()
        [string[]]$trackComplete = @()
        do {
            $allComplete = $true
-           
+           try {
+              $exScenario = $regProv.GetStringValue($HKLM, $mainRegPath, "ExecutingScenario")
+           } catch { }
+           if ($exScenario) {
+              $executingScenario = $exScenario.sValue
+           }
+
            $scenarioKeys = $regProv.EnumKey($HKLM, $scenarioPath)
            foreach ($scenarioKey in $scenarioKeys.sNames) {
+              if (!($executingScenario)) { continue }
+              if ($scenarioKey.ToLower() -eq $executingScenario.ToLower()) {
                 $taskKeyPath = Join-Path $scenarioPath "$scenarioKey\TasksState"
                 $taskValues = $regProv.EnumValues($HKLM, $taskKeyPath).sNames
 
@@ -592,12 +591,13 @@ Function Wait-ForOfficeCTRInstall() {
                         $failure = $true
                     }
 
+                    $displayValue = showTaskStatus -Operation $operation -Status $status -DateTime (Get-Date).ToString('yyyy-MM-dd HH:mm:ss')
+
                     if (($status.ToUpper() -eq "TASKSTATE_COMPLETED") -or`
                         ($status.ToUpper() -eq "TASKSTATE_CANCELLED") -or`
                         ($status.ToUpper() -eq "TASKSTATE_FAILED")) {
                         if ($trackProgress.Contains($keyValue) -and !$trackComplete.Contains($keyValue)) {
-                            $displayValue = $operation + "`t" + $status + "`t" + (Get-Date).ToString('yyyy-MM-dd HH:mm:ss')
-                            Write-Host $displayValue
+                            $displayValue
                             $trackComplete += $keyValue 
                         }
                     } else {
@@ -605,13 +605,14 @@ Function Wait-ForOfficeCTRInstall() {
                         $updateRunning=$true
 
                         if (!$trackProgress.Contains($keyValue)) {
-                                $trackProgress += $keyValue 
-                                $displayValue = $operation + "`t" + $status + "`t" + (Get-Date).ToString('yyyy-MM-dd HH:mm:ss')
-                                Write-Host $displayValue
-                            }
+                            $trackProgress += $keyValue 
+                            $displayValue
+                        }
                     }
                 }
+              }
            }
+
 
            if ($allComplete) {
               break;
@@ -637,6 +638,58 @@ Function Wait-ForOfficeCTRInstall() {
     }
 }
 
+function showTaskStatus() {
+    [CmdletBinding()]
+    Param(
+        [Parameter()]
+        [string] $Operation = "",
+
+        [Parameter()]
+        [string] $Status = "",
+
+        [Parameter()]
+        [string] $DateTime = ""
+    )
+
+    $results = new-object PSObject[] 0;
+    $Result = New-Object –TypeName PSObject 
+    Add-Member -InputObject $Result -MemberType NoteProperty -Name "Operation" -Value $Operation
+    Add-Member -InputObject $Result -MemberType NoteProperty -Name "Status" -Value $Status
+    Add-Member -InputObject $Result -MemberType NoteProperty -Name "DateTime" -Value $DateTime
+    return $Result
+}
+
+Function StartProcess {
+	Param
+	(
+        [Parameter()]
+		[String]$execFilePath,
+
+        [Parameter()]
+        [String]$execParams,
+
+        [Parameter()]
+        [bool]$WaitForExit = $false
+	)
+
+    Try
+    {
+        $startExe = new-object System.Diagnostics.ProcessStartInfo
+        $startExe.FileName = $execFilePath
+        $startExe.Arguments = $execParams
+        $startExe.CreateNoWindow = $false
+        $startExe.UseShellExecute = $false
+
+        $execStatement = [System.Diagnostics.Process]::Start($startExe) 
+        if ($WaitForExit) {
+           $execStatement.WaitForExit()
+        }
+    }
+    Catch
+    {
+        Write-Log -Message $_.Exception.Message -severity 1 -component "Office 365 Update Anywhere"
+    }
+}
 
 
 
