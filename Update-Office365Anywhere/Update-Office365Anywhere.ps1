@@ -194,7 +194,7 @@ Function Update-Office365Anywhere() {
     if ($EnableUpdateAnywhere) {
         if ($currentUpdateSource) {
             [bool]$isAlive = $false
-            if ($currentUpdateSource.ToLower() -eq $officeUpdateCDN.ToLower()) {
+            if ($currentUpdateSource.ToLower() -eq $officeUpdateCDN.ToLower() -and ($saveUpdateSource)) {
                 if ($currentUpdateSource -ne $saveUpdateSource) {
 	                $isAlive = Test-UpdateSource -UpdateSource $saveUpdateSource
                     if ($isAlive) {
@@ -216,9 +216,9 @@ Function Update-Office365Anywhere() {
         if (!$isAlive) {
             $isAlive = Test-UpdateSource -UpdateSource $currentUpdateSource
             if (!($isAlive)) {
-                       if ($currentUpdateSource.ToLower() -ne $officeUpdateCDN.ToLower()) {
-               Set-Reg -Hive "HKLM" -keyPath $officeRegPath -ValueName "SaveUpdateUrl" -Value $currentUpdateSource -Type String
-           }
+                if ($currentUpdateSource.ToLower() -ne $officeUpdateCDN.ToLower()) {
+                  Set-Reg -Hive "HKLM" -keyPath $officeRegPath -ValueName "SaveUpdateUrl" -Value $currentUpdateSource -Type String
+                }
 
                Write-Log -Message "Unable to use $currentUpdateSource. Will now use $officeUpdateCDN" -severity 1 -component "Office 365 Update Anywhere"
                Set-Reg -Hive "HKLM" -keyPath $officeRegPath -ValueName "UpdateUrl" -Value $officeUpdateCDN -Type String
@@ -235,11 +235,20 @@ Function Update-Office365Anywhere() {
        if ($WaitForUpdateToFinish) {
             Wait-ForOfficeCTRUpadate
        }
+    } else {
+       $currentUpdateSource = (Get-ItemProperty HKLM:\$officeRegPath -Name UpdateUrl -ErrorAction SilentlyContinue).UpdateUrl
+       Write-Host "Update Source '$currentUpdateSource' Unavailable"
+       Write-Log -Message "Update Source '$currentUpdateSource' Unavailable" -severity 1 -component "Office 365 Update Anywhere"
     }
-
 }
 
 Function Wait-ForOfficeCTRUpadate() {
+    [CmdletBinding()]
+    Param(
+        [Parameter()]
+        [int] $TimeOutInMinutes = 120
+    )
+
     begin {
         $HKLM = [UInt32] "0x80000002"
         $HKCR = [UInt32] "0x80000000"
@@ -265,46 +274,44 @@ Function Wait-ForOfficeCTRUpadate() {
            
            $scenarioKeys = $regProv.EnumKey($HKLM, $scenarioPath)
            foreach ($scenarioKey in $scenarioKeys.sNames) {
-              if ($scenarioKey.ToUpper() -eq "UPDATE") {
-                   $taskKeyPath = Join-Path $scenarioPath "$scenarioKey\TasksState"
-                   $taskValues = $regProv.EnumValues($HKLM, $taskKeyPath).sNames
+                $taskKeyPath = Join-Path $scenarioPath "$scenarioKey\TasksState"
+                $taskValues = $regProv.EnumValues($HKLM, $taskKeyPath).sNames
 
-                    foreach ($taskValue in $taskValues) {
-                        [string]$status = $regProv.GetStringValue($HKLM, $taskKeyPath, $taskValue).sValue
-                        $operation = $taskValue.Split(':')[0]
-                        $keyValue = $taskValue
+                foreach ($taskValue in $taskValues) {
+                    [string]$status = $regProv.GetStringValue($HKLM, $taskKeyPath, $taskValue).sValue
+                    $operation = $taskValue.Split(':')[0]
+                    $keyValue = $taskValue
 
-                        if ($status.ToUpper() -eq "TASKSTATE_FAILED") {
-                          $failure = $true
+                    if ($status.ToUpper() -eq "TASKSTATE_FAILED") {
+                        $failure = $true
+                    }
+
+                    if (($status.ToUpper() -eq "TASKSTATE_COMPLETED") -or`
+                        ($status.ToUpper() -eq "TASKSTATE_CANCELLED") -or`
+                        ($status.ToUpper() -eq "TASKSTATE_FAILED")) {
+                        if ($trackProgress.Contains($keyValue) -and !$trackComplete.Contains($keyValue)) {
+                            $displayValue = $operation + "`t" + $status + "`t" + (Get-Date).ToString('yyyy-MM-dd HH:mm:ss')
+                            Write-Host $displayValue
+                            $trackComplete += $keyValue 
                         }
+                    } else {
+                        $allComplete = $false
+                        $updateRunning=$true
 
-                        if (($status.ToUpper() -eq "TASKSTATE_COMPLETED") -or`
-                            ($status.ToUpper() -eq "TASKSTATE_CANCELLED") -or`
-                            ($status.ToUpper() -eq "TASKSTATE_FAILED")) {
-                            if ($trackProgress.Contains($keyValue) -and !$trackComplete.Contains($keyValue)) {
-                                $displayValue = $operation + "`t" + $status
-                                Write-Host $displayValue
-                                $trackComplete += $keyValue 
-                            }
-                        } else {
-                            $allComplete = $false
-                            $updateRunning=$true
-
-                            if (!$trackProgress.Contains($keyValue)) {
-                                $trackProgress += $keyValue 
-                                $displayValue = $operation + "`t" + $status
-                                Write-Host $displayValue
-                            }
+                        if (!$trackProgress.Contains($keyValue)) {
+                             $trackProgress += $keyValue 
+                             $displayValue = $operation + "`t" + $status + "`t" + (Get-Date).ToString('yyyy-MM-dd HH:mm:ss')
+                             Write-Host $displayValue
                         }
                     }
-               }
+                }
            }
 
            if ($allComplete) {
               break;
            }
 
-           if ($startTime -lt (Get-Date).AddHours(-2)) {
+           if ($startTime -lt (Get-Date).AddHours(-$TimeOutInMinutes)) {
               throw "Waiting for Update Timed-Out"
               break;
            }

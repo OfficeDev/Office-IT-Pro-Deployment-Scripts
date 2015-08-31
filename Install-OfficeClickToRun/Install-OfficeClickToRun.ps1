@@ -46,7 +46,11 @@ function Install-OfficeClickToRun {
         [string] $TargetFilePath = $NULL,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [OfficeCTRVersion] $OfficeVersion = "Office2013"
+        [OfficeCTRVersion] $OfficeVersion = "Office2013",
+
+        [Parameter()]
+        [bool] $WaitForInstallToFinish = $true
+
     )
 
     #Load the file
@@ -102,6 +106,10 @@ function Install-OfficeClickToRun {
     Write-Host "Installing Office Click-To-Run..."
 
     Invoke-Expression -Command  $cmdLine
+
+    if ($WaitForInstallToFinish) {
+         Wait-ForOfficeCTRInstall
+    }
 }
 
 Function checkForLanguagesInSourceFiles() {
@@ -514,7 +522,120 @@ Function GetFilePath() {
     return $TargetFilePath
 }
 
+Function Get-OfficeCTRRegPath() {
+    $path15 = 'SOFTWARE\Microsoft\Office\15.0\ClickToRun\Configuration'
+    $path16 = 'SOFTWARE\Microsoft\Office\ClickToRun\Configuration'
 
+    if (Test-Path "HKLM:\$path15") {
+      return $path15
+    } else {
+      if (Test-Path "HKLM:\$path16") {
+         return $path16
+      }
+    }
+}
+
+Function Get-OfficeCTRScenarioRegPath() {
+    $path15 = 'SOFTWARE\Microsoft\Office\15.0\ClickToRun\scenario'
+    $path16 = 'SOFTWARE\Microsoft\Office\ClickToRun\scenario'
+
+    if (Test-Path "HKLM:\$path15") {
+      return $path15
+    } else {
+      if (Test-Path "HKLM:\$path16") {
+         return $path16
+      }
+    }
+}
+
+Function Wait-ForOfficeCTRInstall() {
+    [CmdletBinding()]
+    Param(
+        [Parameter()]
+        [int] $TimeOutInMinutes = 120
+    )
+
+    begin {
+        $HKLM = [UInt32] "0x80000002"
+        $HKCR = [UInt32] "0x80000000"
+    }
+
+    process {
+       Write-Host "Waiting for Update to Complete..."
+
+       Start-Sleep -Seconds 5
+
+       $scenarioPath = Get-OfficeCTRScenarioRegPath
+
+       $regProv = Get-Wmiobject -list "StdRegProv" -namespace root\default -ErrorAction Stop
+
+       [DateTime]$startTime = Get-Date
+
+       $failure = $false
+       $updateRunning=$false
+       [string[]]$trackProgress = @()
+       [string[]]$trackComplete = @()
+       do {
+           $allComplete = $true
+           
+           $scenarioKeys = $regProv.EnumKey($HKLM, $scenarioPath)
+           foreach ($scenarioKey in $scenarioKeys.sNames) {
+                $taskKeyPath = Join-Path $scenarioPath "$scenarioKey\TasksState"
+                $taskValues = $regProv.EnumValues($HKLM, $taskKeyPath).sNames
+
+                foreach ($taskValue in $taskValues) {
+                    [string]$status = $regProv.GetStringValue($HKLM, $taskKeyPath, $taskValue).sValue
+                    $operation = $taskValue.Split(':')[0]
+                    $keyValue = $taskValue
+
+                    if ($status.ToUpper() -eq "TASKSTATE_FAILED") {
+                        $failure = $true
+                    }
+
+                    if (($status.ToUpper() -eq "TASKSTATE_COMPLETED") -or`
+                        ($status.ToUpper() -eq "TASKSTATE_CANCELLED") -or`
+                        ($status.ToUpper() -eq "TASKSTATE_FAILED")) {
+                        if ($trackProgress.Contains($keyValue) -and !$trackComplete.Contains($keyValue)) {
+                            $displayValue = $operation + "`t" + $status + "`t" + (Get-Date).ToString('yyyy-MM-dd HH:mm:ss')
+                            Write-Host $displayValue
+                            $trackComplete += $keyValue 
+                        }
+                    } else {
+                        $allComplete = $false
+                        $updateRunning=$true
+
+                        if (!$trackProgress.Contains($keyValue)) {
+                                $trackProgress += $keyValue 
+                                $displayValue = $operation + "`t" + $status + "`t" + (Get-Date).ToString('yyyy-MM-dd HH:mm:ss')
+                                Write-Host $displayValue
+                            }
+                    }
+                }
+           }
+
+           if ($allComplete) {
+              break;
+           }
+
+           if ($startTime -lt (Get-Date).AddHours(-$TimeOutInMinutes)) {
+              throw "Waiting for Update Timed-Out"
+              break;
+           }
+
+           Start-Sleep -Seconds 5
+       } while($true -eq $true) 
+
+       if ($updateRunning) {
+          if ($failure) {
+            Write-Host "Update Failed"
+          } else {
+            Write-Host "Update Complete"
+          }
+       } else {
+          Write-Host "Update Not Running"
+       } 
+    }
+}
 
 
 
