@@ -271,39 +271,37 @@ Function Wait-ForOfficeCTRUpadate() {
            
            $scenarioKeys = $regProv.EnumKey($HKLM, $scenarioPath)
            foreach ($scenarioKey in $scenarioKeys.sNames) {
-              if (($scenarioKey.ToUpper() -eq "UPDATE") -or ($scenarioKey.ToUpper() -eq "CLIENTUPDATE")) {
-                   $taskKeyPath = Join-Path $scenarioPath "$scenarioKey\TasksState"
-                   $taskValues = $regProv.EnumValues($HKLM, $taskKeyPath).sNames
+                $taskKeyPath = Join-Path $scenarioPath "$scenarioKey\TasksState"
+                $taskValues = $regProv.EnumValues($HKLM, $taskKeyPath).sNames
 
-                    foreach ($taskValue in $taskValues) {
-                        [string]$status = $regProv.GetStringValue($HKLM, $taskKeyPath, $taskValue).sValue
-                        $operation = $taskValue.Split(':')[0]
-                        $keyValue = $taskValue
+                foreach ($taskValue in $taskValues) {
+                    [string]$status = $regProv.GetStringValue($HKLM, $taskKeyPath, $taskValue).sValue
+                    $operation = $taskValue.Split(':')[0]
+                    $keyValue = $taskValue
 
-                        if ($status.ToUpper() -eq "TASKSTATE_FAILED") {
-                          $failure = $true
-                        }
+                    if ($status.ToUpper() -eq "TASKSTATE_FAILED") {
+                        $failure = $true
+                    }
 
-                        if (($status.ToUpper() -eq "TASKSTATE_COMPLETED") -or`
-                            ($status.ToUpper() -eq "TASKSTATE_CANCELLED") -or`
-                            ($status.ToUpper() -eq "TASKSTATE_FAILED")) {
-                            if ($trackProgress.Contains($keyValue) -and !$trackComplete.Contains($keyValue)) {
+                    if (($status.ToUpper() -eq "TASKSTATE_COMPLETED") -or`
+                        ($status.ToUpper() -eq "TASKSTATE_CANCELLED") -or`
+                        ($status.ToUpper() -eq "TASKSTATE_FAILED")) {
+                        if ($trackProgress.Contains($keyValue) -and !$trackComplete.Contains($keyValue)) {
                                 $displayValue = $operation + "`t" + $status
                                 Write-Host $displayValue
                                 $trackComplete += $keyValue 
                             }
-                        } else {
-                            $allComplete = $false
-                            $updateRunning=$true
+                    } else {
+                        $allComplete = $false
+                        $updateRunning=$true
 
-                            if (!$trackProgress.Contains($keyValue)) {
+                        if (!$trackProgress.Contains($keyValue)) {
                                 $trackProgress += $keyValue 
                                 $displayValue = $operation + "`t" + $status
                                 Write-Host $displayValue
                             }
-                        }
                     }
-               }
+                }
            }
 
            if ($allComplete) {
