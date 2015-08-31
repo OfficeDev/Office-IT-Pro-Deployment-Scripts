@@ -248,6 +248,24 @@
 
 }
 
+function Get-TaskSubFolders {                        
+    [cmdletbinding()]                        
+    param (                        
+        $FolderRef                        
+    )                        
+    $ArrFolders = @()                        
+    $folders = $folderRef.getfolders(1)                        
+    if($folders) {                        
+        foreach ($folder in $folders) {                        
+            $ArrFolders = $ArrFolders + $folder                        
+            if($folder.getfolders(1)) {                        
+                Get-TaskSubFolders -FolderRef $folder                        
+            }                        
+        }                        
+    }                        
+    return $ArrFolders                        
+}  
+
 function Get-ScheduledTasks{
     [cmdletbinding()]                        
     param (                        
@@ -382,7 +400,7 @@ function Nuke-Office{
             ac $logPath "$CurrentDate - The scheduled task already exists on $computer. Attempting to run the task..."
 
         }
-        Invoke-Expression $scheduleRegClean
+        Invoke-Expression $scheduleRegClean >> $logPath
         Invoke-Expression $runTask >> $logPath
     }
 

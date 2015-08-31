@@ -1,4 +1,22 @@
-﻿[string] $TaskName = "OfficeRegClean"
+﻿function Get-TaskSubFolders {                        
+    [cmdletbinding()]                        
+    param (                        
+        $FolderRef                        
+    )                        
+    $ArrFolders = @()                        
+    $folders = $folderRef.getfolders(1)                        
+    if($folders) {                        
+        foreach ($folder in $folders) {                        
+            $ArrFolders = $ArrFolders + $folder                        
+            if($folder.getfolders(1)) {                        
+                Get-TaskSubFolders -FolderRef $folder                        
+            }                        
+        }                        
+    }                        
+    return $ArrFolders                        
+} 
+
+[string] $TaskName = "OfficeRegClean"
 
 $mytask
                      
@@ -10,30 +28,22 @@ $folders += Get-Tasksubfolders -FolderRef $RootFolder
                                 
 foreach($Folder in $folders) {                        
     $Tasks = $folder.gettasks(1)                        
-    foreach($Task in $Tasks) {                        
-        $mytask = New-Object -TypeName PSobject                         
-        $mytask | Add-Member -MemberType NoteProperty -Name ComputerName -Value $Computer                        
-        $mytask | Add-Member -MemberType NoteProperty -Name TaskName -Value $Task.Name                        
-        $mytask | Add-Member -MemberType NoteProperty -Name TaskFolder -Value $Folder.path                        
-        $mytask | Add-Member -MemberType NoteProperty -Name IsEnabled -Value $task.enabled                        
-        $mytask | Add-Member -MemberType NoteProperty -Name LastRunTime -Value $task.LastRunTime                        
-        $mytask | Add-Member -MemberType NoteProperty -Name NextRunTime -Value $task.NextRunTime
-        if($mytask.Name -eq $TaskName){
+    foreach($Task in $Tasks) {           
+        if($Task.TaskName -eq $TaskName){
             $preErrorAction = $ErrorActionPreference
-            $deleteTask = "schtasks.exe /delete /s $computer /tn $TaskName /F"
+            $deleteTask = "schtasks.exe /delete /s $env:COMPUTERNAME /tn $TaskName /F"
             $ErrorActionPreference = Stop
             Invoke-Expression $deleteTask
             $ErrorActionPreference = $preErrorAction
-            break;
+
+            $Hives = Get-ChildItem Microsoft.PowerShell.Core\Registry::
+
+            $OfficeRegistries = foreach($Hive in $Hives){
+                Get-ChildItem "$($Hive.PSPath)" -Recurse -ErrorAction SilentlyContinue | ? PSPath -like *\Software\Microsoft\Office
+            }
+            foreach($Item in $OfficeRegistries){
+                Remove-Item $Item.PSPath -Recurse -Force -ErrorAction SilentlyContinue
+            }
         }                                               
     }                        
-}
-
-$Hives = Get-ChildItem Microsoft.PowerShell.Core\Registry::
-
-$OfficeRegistries = foreach($Hive in $Hives){
-    Get-ChildItem "$($Hive.PSPath)" -Recurse -ErrorAction SilentlyContinue | ? PSPath -like *\Software\Microsoft\Office
-}
-foreach($Item in $OfficeRegistries){
-    Remove-Item $Item.PSPath -Recurse -Force -ErrorAction SilentlyContinue
 }
