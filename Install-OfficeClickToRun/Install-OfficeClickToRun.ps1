@@ -46,7 +46,11 @@ function Install-OfficeClickToRun {
         [string] $TargetFilePath = $NULL,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [OfficeCTRVersion] $OfficeVersion = "Office2013"
+        [OfficeCTRVersion] $OfficeVersion = "Office2013",
+
+        [Parameter()]
+        [bool] $WaitForInstallToFinish = $true
+
     )
 
     #Load the file
@@ -103,7 +107,9 @@ function Install-OfficeClickToRun {
 
     Invoke-Expression -Command  $cmdLine
 
-    Wait-ForOfficeCTRInstall
+    if ($WaitForInstallToFinish) {
+         Wait-ForOfficeCTRInstall
+    }
 }
 
 Function checkForLanguagesInSourceFiles() {
