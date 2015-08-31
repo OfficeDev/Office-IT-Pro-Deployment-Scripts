@@ -271,7 +271,7 @@ Function Wait-ForOfficeCTRUpadate() {
            
            $scenarioKeys = $regProv.EnumKey($HKLM, $scenarioPath)
            foreach ($scenarioKey in $scenarioKeys.sNames) {
-              if ($scenarioKey.ToUpper() -eq "UPDATE") {
+              if (($scenarioKey.ToUpper() -eq "UPDATE") -or ($scenarioKey.ToUpper() -eq "CLIENTUPDATE")) {
                    $taskKeyPath = Join-Path $scenarioPath "$scenarioKey\TasksState"
                    $taskValues = $regProv.EnumValues($HKLM, $taskKeyPath).sNames
 
