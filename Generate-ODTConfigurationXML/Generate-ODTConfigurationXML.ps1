@@ -19,7 +19,10 @@ param(
     [OfficeLanguages]$Languages = "AllInUseLanguages",
 
     [Parameter(ValueFromPipelineByPropertyName=$true)]
-    [String]$TargetFilePath = $NULL
+    [String]$TargetFilePath = $NULL,
+
+    [Parameter(ValueFromPipelineByPropertyName=$true)]
+    [bool]$IncludeUpdatePathAsSourcePath = $false
 )
 
 begin {
@@ -132,7 +135,7 @@ process {
     if (!($primaryLanguage)) {
         throw "Cannot find matching Office language for: $primaryLanguage"
     }
-    
+
     foreach ($productId in $splitProducts) { 
        $excludeApps = $NULL
 
@@ -166,9 +169,14 @@ process {
                      -Platform $officeConfig.Platform -ClientCulture $primaryLanguage -AdditionalLanguages $additionalLanguages
 
        odtAddUpdates -ConfigDoc $ConfigFile -Enabled $officeConfig.UpdatesEnabled -UpdatePath $officeConfig.UpdateUrl -Deadline $officeConfig.UpdateDeadline
-
     }
     
+    if ($IncludeUpdatePathAsSourcePath) {
+      if ($officeConfig.UpdateUrl) {
+          odtSetAdd -ConfigDoc $ConfigFile -SourcePath $officeConfig.UpdateUrl
+      }
+    }
+
     $formattedXml = Format-XML ([xml]($ConfigFile)) -indent 4
 
     if (($PSCmdlet.MyInvocation.PipelineLength -eq 1) -or `
@@ -1037,11 +1045,14 @@ function odtAddUpdates{
         if($ConfigDoc.Configuration -eq $null){
             throw $NoConfigurationElement
         }
+        [bool]$addUpdates = $false
+        $hasEnabled = [string]::IsNullOrWhiteSpace($Enabled)
+        $hasUpdatePath = [string]::IsNullOrWhiteSpace($UpdatePath)
+        if(($hasEnabled -ne $true) -or ($hasUpdatePath -ne $true)){
+           $addUpdates = $true
+        }
 
-        $isEnabled = [string]::IsNullOrWhiteSpace($Enabled)
-
-        if($isEnabled -ne $true){
-
+        if ($addUpdates) {
             #Get the Updates Element if it exists
             [System.XML.XMLElement]$UpdateElement = $ConfigDoc.Configuration.GetElementsByTagName("Updates").Item(0)
             if($ConfigDoc.Configuration.Updates -eq $null){
@@ -1089,10 +1100,68 @@ function odtAddUpdates{
                  }
               }
             }
-
         }
+       
 
     }
+}
+
+Function odtSetAdd{
+
+    Param(
+
+        [Parameter(Mandatory=$true,ValueFromPipelineByPropertyName=$true)]
+        [System.XML.XMLDocument]$ConfigDoc = $NULL,
+
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [string] $SourcePath = $NULL,
+
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [string] $Version,
+
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [string] $Bitness
+
+    )
+
+    Process{
+        #Check for proper root element
+        if($ConfigDoc.Configuration -eq $null){
+            throw $NoConfigurationElement
+        }
+
+        #Get Add element if it exists
+        if($ConfigDoc.Configuration.Add -eq $null){
+            [System.XML.XMLElement]$AddElement=$ConfigFile.CreateElement("Add")
+            $ConfigDoc.Configuration.appendChild($AddElement) | Out-Null
+        }
+
+        #Set values as desired
+        if([string]::IsNullOrWhiteSpace($SourcePath) -eq $false){
+            $ConfigFile.Configuration.Add.SetAttribute("SourcePath", $SourcePath) | Out-Null
+        } else {
+            if ($PSBoundParameters.ContainsKey('SourcePath')) {
+                $ConfigDoc.Configuration.Add.RemoveAttribute("SourcePath")
+            }
+        }
+
+        if([string]::IsNullOrWhiteSpace($Version) -eq $false){
+            $ConfigDoc.Configuration.Add.SetAttribute("Version", $Version) | Out-Null
+        } else {
+            if ($PSBoundParameters.ContainsKey('Version')) {
+                $ConfigDoc.Configuration.Add.RemoveAttribute("Version")
+            }
+        }
+
+        if([string]::IsNullOrWhiteSpace($Bitness) -eq $false){
+            $ConfigDoc.Configuration.Add.SetAttribute("OfficeClientEdition", $Bitness) | Out-Null
+        } else {
+            if ($PSBoundParameters.ContainsKey('OfficeClientEdition')) {
+                $ConfigDoc.Configuration.Add.RemoveAttribute("OfficeClientEdition")
+            }
+        }
+    }
+
 }
 
 function Format-XML ([xml]$xml, $indent=2) { 

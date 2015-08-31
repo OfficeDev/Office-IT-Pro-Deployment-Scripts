@@ -522,6 +522,32 @@ Function GetFilePath() {
     return $TargetFilePath
 }
 
+Function Get-OfficeCTRRegPath() {
+    $path15 = 'SOFTWARE\Microsoft\Office\15.0\ClickToRun\Configuration'
+    $path16 = 'SOFTWARE\Microsoft\Office\ClickToRun\Configuration'
+
+    if (Test-Path "HKLM:\$path15") {
+      return $path15
+    } else {
+      if (Test-Path "HKLM:\$path16") {
+         return $path16
+      }
+    }
+}
+
+Function Get-OfficeCTRScenarioRegPath() {
+    $path15 = 'SOFTWARE\Microsoft\Office\15.0\ClickToRun\scenario'
+    $path16 = 'SOFTWARE\Microsoft\Office\ClickToRun\scenario'
+
+    if (Test-Path "HKLM:\$path15") {
+      return $path15
+    } else {
+      if (Test-Path "HKLM:\$path16") {
+         return $path16
+      }
+    }
+}
+
 Function Wait-ForOfficeCTRInstall() {
     [CmdletBinding()]
     Param(
