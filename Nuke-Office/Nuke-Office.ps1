@@ -1,13 +1,4 @@
-﻿function Nuke-Office{
-
-[CmdletBinding(SupportsShouldProcess=$true)]
-param(
-    [string[]]$ComputerName,
-    [switch]$ShowAllInstalledProducts,
-    [System.Management.Automation.PSCredential]$Credentials
-)
-
-function Get-OfficeVersion{
+﻿function Get-OfficeVersion{
 
 [CmdletBinding(SupportsShouldProcess=$true)]
     param(
@@ -295,321 +286,104 @@ function Get-ScheduledTasks{
     }
 }
 
-function Nuke-Office([string[]] $ComputerName){
+function Nuke-Office{
+
+    [CmdletBinding(SupportsShouldProcess=$true)]
+    param(
+        [Parameter(Mandatory=$true)]
+        [string[]]$ComputerName,
+
+        [Parameter(Mandatory=$true)]
+        [System.Management.Automation.PSCredential]$Credentials
+    )
+
+    $c2rVBS = "OffScrubc2r.vbs"
+    $03VBS = "OffScrub03.vbs"
+    $07VBS = "OffScrub07.vbs"
+    $10VBS = "OffScrub10.vbs"
+    $15MSIVBS = "OffScrub_O15msi.vbs"
+    $16MSIVBS = "OffScrub_O16msi.vbs"
 
     foreach($computer in $ComputerName){
-       
-        $osVersion = [System.Environment]::OSVersion.Version | foreach {"$_.Major"}
+        #commands to create and run the unistall tasks
+        $createTask = "schtasks.exe /create /s $computer /ru System /tn OffScrub /sc Once /sd 01/01/2999 /st 00:00 /tr"
+        $scheduleRegClean = "schtasks.exe /create /s $computer /ru System /tn OfficeRegClean /sc ONSTART /tr `"Powershell.exe C:\Windows\Temp\Nuke-OfficeRegistry.ps1`""
+        $runTask = "schtasks.exe /run /s $computer /tn OffScrub"
+
+        #get environment data
+        $osVersion = [System.Environment]::OSVersion.Version | foreach {"$($_.Major)"}
+
         $versionTest = Get-OfficeVersion $computer
         $c2r = $versionTest.ClicktoRun
+
         $CurrentDate = Get-Date
         $CurrentDate = $CurrentDate.ToString('MM-dd-yyyy hh:mm:ss')
+
+        #set path values for copying files
         $destination = "\\$computer\c$\Windows\Temp"
         $log = $computer + "Log.txt"
         $logPath = "\\" + $computer + "\c$\Windows\Temp\$log"
         
-            
+
+        $taskName = Get-ScheduledTasks $computer | foreach {$_.TaskName}
+        $ActionFile = ""
         if($c2r -eq $true){
-
-            $taskName = Get-ScheduledTasks $computer | foreach {$_.TaskName}
-
-            Copy-Item -Path ".\Offscrubc2r.vbs" -Destination $destination -Force | Out-Null
-
-                if(Test-Path -Path $destination){
-
-                    "$CurrentDate - OffScrubc2r.vbs has been copied to C:\Windows\Temp" | Out-File $logPath
+            $ActionFile = $c2rVBS
+        }else{
+            switch -wildcard ($versionTest.Version)
+            {
+                "11.*"
+                {
+                    $ActionFile = $03VBS
                 }
-                else{
-
-                    "$CurrentDate - Unable to copy OffScrubc2r.vbs to $destination" | Out-File $logPath
+                "12.*"
+                {
+                    $ActionFile = $07VBS
                 }
-                    
-            if(!($taskName -match "OffScrub")){
+                "14.*"
+                {
+                    $ActionFile = $10VBS
+                }
+                "15.*"
+                {
+                    $ActionFile = $15MSIVBS
+                }
+                "16.*"
+                {
+                    $ActionFile = $16MSIVBS
+                }
+            }
+        }
 
-                [string]$TaskRun = '"%systemroot%\system32\cscript.exe C:\Windows\Temp\OffScrubc2r.vbs"'
-                $command = "schtasks.exe /create /s $computer /ru System /tn OffScrub /tr $TaskRun /sc Onstart"
-                $runTask = "schtasks.exe /run /s $computer /tn OffScrub"
-                
-                ac $logPath "$CurrentDate - Attempting to create the scheduled task on $computer..."
+        Copy-Item -Path ".\$ActionFile" -Destination $destination -Force | Out-Null
+        Copy-Item -Path ".\Nuke-OfficeRegistry.ps1" -Destination $destination -Force | Out-Null
 
-                Invoke-Expression $command >> $logPath
+            if(Test-Path -Path $destination){
 
-                ac $logPath "$CurrentDate - Attempting to run the new task on $computer..."
-
-                Invoke-Expression $runTask >> $logPath
-
+                "$CurrentDate - $ActionFile has been copied to C:\Windows\Temp" | Out-File $logPath
             }
             else{
 
-                [string]$TaskRun = '"%systemroot%\system32\cscript.exe C:\Windows\Temp\OffScrubc2r.vbs"'
-                $command = "schtasks.exe /create /s $computer /ru System /tn OffScrub /tr $TaskRun /sc Once /sd 01/01/2999 /st 00:00"
-                $runTask = "schtasks.exe /run /s $computer /tn OffScrub"
-
-                ac $logPath "$CurrentDate - The scheduled task already exists on $computer. Attempting to run the task..."
-
-                Invoke-Expression $runTask >> $logPath
+                "$CurrentDate - Unable to copy $ActionFile to $destination" | Out-File $logPath
             }
+        [string]$Action = "`"%systemroot%\system32\cscript.exe C:\Windows\Temp\$ActionFile`""
+             
+        if(!($taskName -match "OffScrub")){
+                
+            ac $logPath "$CurrentDate - Attempting to create the scheduled task on $computer..."
+
+            Invoke-Expression "$createTask $Action" >> $logPath
+
+            ac $logPath "$CurrentDate - Attempting to run the new task on $computer..."
+
         }
         else{
-            if($versionTest.Version -match "11.*"){
 
-                if($osVersion -match "5.1.*" -or $osVersion -match "5.2.*" -or $osVersion -match "6.0.*" -or $osVersion -match "6.1.*"){
+            ac $logPath "$CurrentDate - The scheduled task already exists on $computer. Attempting to run the task..."
 
-                $taskName = Get-ScheduledTasks $computer | foreach {$_.TaskName}
-
-                    if(!($taskName -match "OffScrub")){
-
-                        [string]$TaskRun = '"%systemroot%\system32\cscript.exe C:\Windows\Temp\MicrosoftFixit50416.msi"'
-                        $command = "schtasks.exe /create /s $computer /ru System /tn OffScrub /tr $TaskRun /sc Once /sd 01/01/2999 /st 00:00"
-                        $runTask = "schtasks.exe /run /s $computer /tn OffScrub"
-                
-                        Copy-Item -Path ".\MicrosoftFixit50416.msi" -Destination "\\$computer\c$\Windows\Temp" -Force | Out-Null
-
-                        ac $logPath "$CurrentDate - Attempting to create the scheduled task on $computer..."
-
-                        Invoke-Expression $command >> $logPath
-
-                        ac $logPath "$CurrentDate - Attempting to run the new task on $computer..."
-
-                        Invoke-Expression $runTask >> $logPath
-                    }
-                    else{
-
-                        [string]$TaskRun = '"%systemroot%\system32\cscript.exe C:\Windows\Temp\MicrosoftFixit50416.msi"'
-                        $command = "schtasks.exe /create /s $computer /ru System /tn OffScrub /tr $TaskRun /sc Once /sd 01/01/2999 /st 00:00"
-                        $runTask = "schtasks.exe /run /s $computer /tn OffScrub"
-
-                        ac $logPath "$CurrentDate - The scheduled task already exists on $computer. Attempting to run the task..."
-
-                        Invoke-Expression $runTask >> $logPath
-                    }
-                }
-                else{
-
-                    $taskName = Get-ScheduledTasks $computer | foreach {$_.TaskName}
-
-                    if(!($taskName -match "OffScrub")){
-
-                        [string]$TaskRun = '"%systemroot%\system32\cscript.exe C:\Windows\Temp\OffScrub03.vbs"'
-                        $command = "schtasks.exe /create /s $computer /ru System /tn OffScrub /tr $TaskRun /sc Once /sd 01/01/2999 /st 00:00"
-                        $runTask = "schtasks.exe /run /s $computer /tn OffScrub"
-                
-                        Copy-Item -Path ".\Offscrub03.vbs" -Destination "\\$computer\c$\Windows\Temp" -Force | Out-Null
-
-                        ac $logPath "$CurrentDate - Attempting to create the scheduled task on $computer..."
-
-                        Invoke-Expression $command >> $logPath
-
-                        ac $logPath "$CurrentDate - Attempting to run the new task on $computer..."
-
-                        Invoke-Expression $runTask >> $logPath
-                    }
-                    else{
-
-                        [string]$TaskRun = '"%systemroot%\system32\cscript.exe C:\Windows\Temp\OffScrub03.vbs"'
-                        $command = "schtasks.exe /create /s $computer /ru System /tn OffScrub /tr $TaskRun /sc Once /sd 01/01/2999 /st 00:00"
-                        $runTask = "schtasks.exe /run /s $computer /tn OffScrub"
-
-                        ac $logPath "$CurrentDate - The scheduled task already exists on $computer."
-
-                        Invoke-Expression $runTask >> $logPath
-                    }
-                }
-            }
-            elseif($versionTest.Version -match "12.*"){
-
-                if($osVersion -match "5.1.*" -or $osVersion -match "5.2.*" -or $osVersion -match "6.0.*" -or $osVersion -match "6.1.*"){
-
-                $taskName = Get-ScheduledTasks $computer | foreach {$_.TaskName}
-
-                    if(!($taskName -match "OffScrub")){
-
-                        [string]$TaskRun = '"%systemroot%\system32\cscript.exe C:\Windows\Temp\MicrosoftFixit50154.msi"'
-                        $command = "schtasks.exe /create /s $computer /ru System /tn OffScrub /tr $TaskRun /MO ONSTART"
-                        $runTask = "schtasks.exe /run /s $computer /tn OffScrub"
-                
-                        Copy-Item -Path ".\MicrosoftFixit50154.msi" -Destination "\\$computer\c$\Windows\Temp" -Force | Out-Null
-
-                        ac $logPath "$CurrentDate - Attempting to create the scheduled task on $computer..."
-
-                        Invoke-Expression $command >> $logPath
-
-                        ac $logPath "$CurrentDate - Attempting to run the new task on $computer..."
-
-                        Invoke-Expression $runTask >> $logPath
-                    }
-                    else{
-
-                        [string]$TaskRun = '"%systemroot%\system32\cscript.exe C:\Windows\Temp\MicrosoftFixit50154.msi"'
-                        $command = "schtasks.exe /create /s $computer /ru System /tn OffScrub /tr $TaskRun /MO ONSTART"
-                        $runTask = "schtasks.exe /run /s $computer /tn OffScrub"
-
-                        ac $logPath "$CurrentDate - The scheduled task already exists on $computer..."
-
-                        Invoke-Expression $runTask >> $logPath
-                    }
-                }
-                else{
-
-                    $taskName = Get-ScheduledTasks $computer | foreach {$_.TaskName}
-
-                    if(!($taskName -match "OffScrub")){
-
-                        [string]$TaskRun = '"%systemroot%\system32\cscript.exe C:\Windows\Temp\OffScrub07.vbs"'
-                        $command = "schtasks.exe /create /s $computer /ru System /tn OffScrub /tr $TaskRun /sc Once /sd 01/01/2999 /st 00:00"
-                        $runTask = "schtasks.exe /run /s $computer /tn OffScrub"
-                
-                        Copy-Item -Path ".\Offscrub07.vbs" -Destination "\\$computer\c$\Windows\Temp" -Force | Out-Null
-
-                        ac $logPath "$CurrentDate - Attempting to create the scheduled task on $computer..."
-
-                        Invoke-Expression $command >> $logPath
-
-                        ac $logPath "$CurrentDate - Attempting to run the new task on $computer..."
-
-                        Invoke-Expression $runTask >> $logPath
-                    }
-                    else{
-
-                        [string]$TaskRun = '"%systemroot%\system32\cscript.exe C:\Windows\Temp\OffScrub07.vbs"'
-                        $command = "schtasks.exe /create /s $computer /ru System /tn OffScrub /tr $TaskRun /sc Once /sd 01/01/2999 /st 00:00"
-                        $runTask = "schtasks.exe /run /s $computer /tn OffScrub"
-
-                        ac $logPath "$CurrentDate - The scheduled task already exists on $computer."
-
-                        Invoke-Expression $runTask >> $logPath
-                    }
-                }
-            }
-            elseif($versionTest.Version -match "14.*"){
-
-                if($osVersion -match "5.1.*" -or $osVersion -match "5.2.*" -or $osVersion -match "6.0.*" -or $osVersion -match "6.1.*"){
-
-                $taskName = Get-ScheduledTasks $computer | foreach {$_.TaskName}
-
-                    if(!($taskName -match "OffScrub")){
-
-                        [string]$TaskRun = '"%systemroot%\system32\cscript.exe C:\Windows\Temp\OffScrub10.vbs"'
-                        $command = "schtasks.exe /create /s $computer /ru System /tn OffScrub /tr $TaskRun /sc Once /sd 01/01/2999 /st 00:00"
-                        $runTask = "schtasks.exe /run /s $computer /tn OffScrub"
-                
-                        Copy-Item -Path ".\OffScrub10.vbs" -Destination "\\$computer\c$\Windows\Temp" -Force | Out-Null
-
-                        ac $logPath "$CurrentDate - Attempting to create the scheduled task on $computer..."
-
-                        Invoke-Expression $command >> $logPath
-
-                        ac $logPath "$CurrentDate - Attempting to run the new task on $computer..."
-
-                        Invoke-Expression $runTask >> $logPath
-                    }
-                    else{
-
-                        [string]$TaskRun = '"%systemroot%\system32\cscript.exe C:\Windows\Temp\OffScrub10.vbs"'
-                        $command = "schtasks.exe /create /s $computer /ru System /tn OffScrub /tr $TaskRun /sc Once /sd 01/01/2999 /st 00:00"
-                        $runTask = "schtasks.exe /run /s $computer /tn OffScrub"
-
-                        ac $logPath "$CurrentDate - The scheduled task already exists on $computer."
-
-                        Invoke-Expression $runTask >> $logPath
-                    }
-                }
-                 else{
-
-                    $taskName = Get-ScheduledTasks $computer | foreach {$_.TaskName}
-
-                    if(!($taskName -match "OffScrub")){
-
-                        [string]$TaskRun = '"%systemroot%\system32\cscript.exe C:\Windows\Temp\OffScrub10.vbs"'
-                        $command = "schtasks.exe /create /s $computer /ru System /tn OffScrub /tr $TaskRun /sc Once /sd 01/01/2999 /st 00:00"
-                        $runTask = "schtasks.exe /run /s $computer /tn OffScrub"
-                
-                        Copy-Item -Path ".\Offscrub10.vbs" -Destination "\\$computer\c$\Windows\Temp" -Force | Out-Null
-
-                        ac $logPath "$CurrentDate - Attempting to create the scheduled task on $computer..."
-
-                        Invoke-Expression $command >> $logPath
-
-                        ac $logPath "$CurrentDate - Attempting to run the new task on $computer..."
-
-                        Invoke-Expression $runTask >> $logPath
-                    }
-                    else{
-
-                        [string]$TaskRun = '"%systemroot%\system32\cscript.exe C:\Windows\Temp\OffScrub10.vbs"'
-                        $command = "schtasks.exe /create /s $computer /ru System /tn OffScrub /tr $TaskRun /sc Once /sd 01/01/2999 /st 00:00"
-                        $runTask = "schtasks.exe /run /s $computer /tn OffScrub"
-
-                        ac $logPath "$CurrentDate - The scheduled task already exists on $computer."
-
-                        Invoke-Expression $runTask >> $logPath
-                    }
-                }
-            }
-            elseif($versionTest.Version -match "15.*"){
-
-                $taskName = Get-ScheduledTasks $computer | foreach {$_.TaskName}
-
-                    if(!($taskName -match "OffScrub")){
-
-                        [string]$TaskRun = '"%systemroot%\system32\cscript.exe C:\Windows\Temp\OffScrub_O15msi.vbs"'
-                        $command = "schtasks.exe /create /s $computer /ru System /tn OffScrub /tr $TaskRun /sc Once /sd 01/01/2999 /st 00:00"
-                        $runTask = "schtasks.exe /run /s $computer /tn OffScrub"
-                
-                        Copy-Item -Path ".\OffScrub_O15msi.vbs" -Destination "\\$computer\c$\Windows\Temp" -Force | Out-Null
-
-                        ac $logPath "$CurrentDate - Attempting to create the scheduled task on $computer..."
-
-                        Invoke-Expression $command >> $logPath
-
-                        ac $logPath "$CurrentDate - Attempting to run the new task on $computer..."
-
-                        Invoke-Expression $runTask >> $logPath
-                    }
-                    else{
-
-                        [string]$TaskRun = '"%systemroot%\system32\cscript.exe C:\Windows\Temp\OffScrub_O15msi.vbs"'
-                        $command = "schtasks.exe /create /s $computer /ru System /tn OffScrub /tr $TaskRun /sc Once /sd 01/01/2999 /st 00:00"
-                        $runTask = "schtasks.exe /run /s $computer /tn OffScrub"
-
-                        ac $logPath "$CurrentDate - The scheduled task already exists on $computer."
-
-                        Invoke-Expression $runTask >> $logPath
-                    }
-            }
-            elseif($versionTest.Version -match "16.*"){
-
-                $taskName = Get-ScheduledTasks $computer | foreach {$_.TaskName}
-
-                    if(!($taskName -match "OffScrub")){
-
-                        [string]$TaskRun = '"%systemroot%\system32\cscript.exe C:\Windows\Temp\OffScrub_O16msi.vbs"'
-                        $command = "schtasks.exe /create /s $computer /ru System /tn OffScrub /tr $TaskRun /sc Once /sd 01/01/2999 /st 00:00"
-                        $runTask = "schtasks.exe /run /s $computer /tn OffScrub"
-                
-                        Copy-Item -Path ".\OffScrub_O16msi.vbs" -Destination "\\$computer\c$\Windows\Temp" -Force | Out-Null
-
-                        ac $logPath "$CurrentDate - Attempting to create the scheduled task on $computer..."
-
-                        Invoke-Expression $command >> $logPath
-
-                        ac $logPath "$CurrentDate - Attempting to run the new task on $computer..."
-
-                        Invoke-Expression $runTask >> $logPath
-                    }
-                    else{
-
-                        [string]$TaskRun = '"%systemroot%\system32\cscript.exe C:\Windows\Temp\OffScrub_O16msi.vbs"'
-                        $command = "schtasks.exe /create /s $computer /ru System /tn OffScrub /tr $TaskRun /sc Once /sd 01/01/2999 /st 00:00"
-                        $runTask = "schtasks.exe /run /s $computer /tn OffScrub"
-
-                        ac $logPath "$CurrentDate - The scheduled task already exists on $computer."
-
-                        Invoke-Expression $runTask >> $logPath
-                    }
-            }   
         }
+        Invoke-Expression $scheduleRegClean
+        Invoke-Expression $runTask >> $logPath
     }
-}
 
 }
