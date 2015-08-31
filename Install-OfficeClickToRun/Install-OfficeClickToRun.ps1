@@ -570,7 +570,7 @@ Function Wait-ForOfficeCTRInstall() {
                         ($status.ToUpper() -eq "TASKSTATE_CANCELLED") -or`
                         ($status.ToUpper() -eq "TASKSTATE_FAILED")) {
                         if ($trackProgress.Contains($keyValue) -and !$trackComplete.Contains($keyValue)) {
-                            $displayValue = $operation + "`t" + $status
+                            $displayValue = $operation + "`t" + $status + "`t" + (Get-Date).ToString('yyyy-MM-dd HH:mm:ss')
                             Write-Host $displayValue
                             $trackComplete += $keyValue 
                         }
@@ -580,7 +580,7 @@ Function Wait-ForOfficeCTRInstall() {
 
                         if (!$trackProgress.Contains($keyValue)) {
                                 $trackProgress += $keyValue 
-                                $displayValue = $operation + "`t" + $status
+                                $displayValue = $operation + "`t" + $status + "`t" + (Get-Date).ToString('yyyy-MM-dd HH:mm:ss')
                                 Write-Host $displayValue
                             }
                     }
