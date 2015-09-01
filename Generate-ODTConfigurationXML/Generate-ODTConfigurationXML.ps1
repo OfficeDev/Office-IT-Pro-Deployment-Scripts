@@ -541,8 +541,8 @@ function getCTRConfig() {
     
     $officeCTRKeys = 'SOFTWARE\Microsoft\Office\15.0\ClickToRun',
                      'SOFTWARE\Wow6432Node\Microsoft\Office\15.0\ClickToRun',
-                     'SOFTWARE\Microsoft\Office\16.0\ClickToRun',
-                     'SOFTWARE\Wow6432Node\Microsoft\Office\16.0\ClickToRun'
+                     'SOFTWARE\Microsoft\Office\ClickToRun',
+                     'SOFTWARE\Wow6432Node\Microsoft\Office\ClickToRun'
 
     $Object = New-Object PSObject
     $Object | add-member Noteproperty ClickToRunInstalled $false
@@ -570,6 +570,19 @@ function getCTRConfig() {
         [string]$updatesEnabled = $regProv.GetStringValue($HKLM, $configurationPath, "UpdatesEnabled").sValue
         [string]$updateUrl = $regProv.GetStringValue($HKLM, $configurationPath, "UpdateUrl").sValue
         [string]$updateDeadline = $regProv.GetStringValue($HKLM, $configurationPath, "UpdateDeadline").sValue
+
+        if (!($productIds)) {
+            $productIds = ""
+            $officeActivePath = Join-Path $officeKeyPath "ProductReleaseIDs\Active"
+            $officeProducts = $regProv.EnumKey($HKLM, $officeActivePath)
+
+            foreach ($productName in $officeProducts.sNames) {
+               if ($productName.ToLower() -eq "stream") { continue }
+               if ($productName.ToLower() -eq "culture") { continue }
+               if ($productIds.Length -gt 0) { $productIds += "," }
+               $productIds += "$productName"
+            }
+        }
 
         $splitProducts = $productIds.Split(',');
 

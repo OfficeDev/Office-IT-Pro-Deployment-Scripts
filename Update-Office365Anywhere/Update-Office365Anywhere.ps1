@@ -125,21 +125,8 @@ Function Get-OfficeCDNUrl() {
 }
 
 Function Get-OfficeCTRRegPath() {
-    $path15 = 'SOFTWARE\Microsoft\Office\15.0\ClickToRun\Configuration'
-    $path16 = 'SOFTWARE\Microsoft\Office\ClickToRun\Configuration'
-
-    if (Test-Path "HKLM:\$path15") {
-      return $path15
-    } else {
-      if (Test-Path "HKLM:\$path16") {
-         return $path16
-      }
-    }
-}
-
-Function Get-OfficeCTRScenarioRegPath() {
-    $path15 = 'SOFTWARE\Microsoft\Office\15.0\ClickToRun\scenario'
-    $path16 = 'SOFTWARE\Microsoft\Office\ClickToRun\scenario'
+    $path15 = 'SOFTWARE\Microsoft\Office\15.0\ClickToRun'
+    $path16 = 'SOFTWARE\Microsoft\Office\ClickToRun'
 
     if (Test-Path "HKLM:\$path15") {
       return $path15
@@ -172,7 +159,7 @@ Function Update-Office365Anywhere() {
         [bool] $EnableUpdateAnywhere = $true
     )
 
-    $officeRegPath = Get-OfficeCTRRegPath
+    $officeRegPath = Get-OfficeCTRRegPath + "\Configuration"
 
     $currentUpdateSource = (Get-ItemProperty HKLM:\$officeRegPath -Name UpdateUrl -ErrorAction SilentlyContinue).UpdateUrl
     $saveUpdateSource = (Get-ItemProperty HKLM:\$officeRegPath -Name SaveUpdateUrl -ErrorAction SilentlyContinue).SaveUpdateUrl
@@ -257,23 +244,29 @@ Function Wait-ForOfficeCTRUpadate() {
     process {
        Write-Host "Waiting for Update to Complete..."
 
-       Start-Sleep -Seconds 5
+       Start-Sleep -Seconds 10
 
-       $scenarioPath = Get-OfficeCTRScenarioRegPath
+       $mainRegPath = Get-OfficeCTRRegPath
+       $scenarioPath = $mainRegPath + "\scenario"
 
        $regProv = Get-Wmiobject -list "StdRegProv" -namespace root\default -ErrorAction Stop
 
        [DateTime]$startTime = Get-Date
 
+       [string]$executingScenario = ""
        $failure = $false
        $updateRunning=$false
        [string[]]$trackProgress = @()
        [string[]]$trackComplete = @()
+       [int]$noScenarioCount = 0
        do {
            $allComplete = $true
+           $executingScenario = $regProv.GetStringValue($HKLM, $mainRegPath, "ExecutingScenario").sValue
            
            $scenarioKeys = $regProv.EnumKey($HKLM, $scenarioPath)
            foreach ($scenarioKey in $scenarioKeys.sNames) {
+              if (!($executingScenario)) { continue }
+              if ($scenarioKey.ToLower() -eq $executingScenario.ToLower()) {
                 $taskKeyPath = Join-Path $scenarioPath "$scenarioKey\TasksState"
                 $taskValues = $regProv.EnumValues($HKLM, $taskKeyPath).sNames
 
@@ -305,6 +298,7 @@ Function Wait-ForOfficeCTRUpadate() {
                         }
                     }
                 }
+              }
            }
 
            if ($allComplete) {
