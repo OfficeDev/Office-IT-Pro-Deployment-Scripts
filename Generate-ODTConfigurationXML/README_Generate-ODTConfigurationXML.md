@@ -14,7 +14,7 @@ You can control which languages the script will add to the configuration xml by 
 For more information on the specifics of the Click-to-Run for Office 365 Configuration XML go to the following link.
 [Click-to-Run for Office 365 Configuration XML Reference](https://technet.microsoft.com/en-us/library/JJ219426.aspx)
 
-If the parameter 'IncludeUpdatePathAsSourcePath' is set to $true then it will use the UpdatePath as the SourcePath for the generated configuration xml. This option would be useful for distributed environments where clients are pointed to a local update source for updates.  In order to use this option the Update source must have the version and language packs that are required by the generated configuration xml.  The UpdatePath is stored in the UpdateUrl value in the registy path **HKLM\SOFTWARE\Microsoft\Office\15.0\ClickToRun\Configuration** for Office 2013 ProPlus or **HKLM\SOFTWARE\Microsoft\Office\ClickToRun\Configuration** for Office 2016 ProPlus.
+If the parameter **IncludeUpdatePathAsSourcePath** is set to $true then it will use the UpdatePath as the SourcePath for the generated configuration xml. This option would be useful for distributed environments where clients are pointed to a local update source for updates.  In order to use this option the Update source must have the version and language packs that are required by the generated configuration xml.  The UpdatePath is stored in the UpdateUrl value in the registy path **HKLM\SOFTWARE\Microsoft\Office\15.0\ClickToRun\Configuration** for Office 2013 ProPlus or **HKLM\SOFTWARE\Microsoft\Office\ClickToRun\Configuration** for Office 2016 ProPlus.
 
 ###**Examples**
 
@@ -55,5 +55,9 @@ If the parameter 'IncludeUpdatePathAsSourcePath' is set to $true then it will us
              <Updates Enabled="False" />
           </Configuration>
 
+6. In order to create a complete solution there are two other scripts in this GitHub Repository.  
+
+	[Edit-OfficeConfigurationFile](../Edit-OfficeConfigurationFile) - This script provides functions to edit the Office Click-To-Run configuration file.
 	
+	[Install-OfficeClickToRun](../Install-OfficeClickToRun) - This script will install Office Click-To-Run.  The script requires that a configuration Xml file is provided.  
 
