@@ -37,7 +37,7 @@ If the parameter **IncludeUpdatePathAsSourcePath** is set to $true then it will 
 
 		Generate-ODTConfigurationXml -Languages AllInUseLanguages -TargetFilePath configuration.xml 
 
-5. An example output is below
+5. An example output is below.  The first language in the list is the Shell UI culture.  
 
           <Configuration>
              <Add Version="15.0.4745.1002" OfficeClientEdition="32">
