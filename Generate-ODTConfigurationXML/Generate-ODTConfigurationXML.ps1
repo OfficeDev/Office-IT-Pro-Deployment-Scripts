@@ -44,7 +44,9 @@ process {
  if ($TargetFilePath) {
      $folderPath = Split-Path -Path $TargetFilePath -Parent
      $fileName = Split-Path -Path $TargetFilePath -Leaf
-     [system.io.directory]::CreateDirectory($folderPath) | Out-Null
+     if ($folderPath) {
+         [system.io.directory]::CreateDirectory($folderPath) | Out-Null
+     }
  }
  
  $results = new-object PSObject[] 0;
