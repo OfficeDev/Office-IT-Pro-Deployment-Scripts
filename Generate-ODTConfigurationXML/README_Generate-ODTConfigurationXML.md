@@ -40,17 +40,17 @@ If the parameter 'IncludeUpdatePathAsSourcePath' is set to $true then it will us
 5. An example output is below
 
 		<Configuration>
-		     <Add Version="15.0.4745.1002" OfficeClientEdition="32">
-                       <Product ID="O365ProPlusRetail">
+                    <Add Version="15.0.4745.1002" OfficeClientEdition="32">
+                         <Product ID="O365ProPlusRetail">
                            <Language ID="en-us" />
                            <Language ID="de-de" />
                            <Language ID="fr-fr" />
-                       </Product>
-		        <Product ID="ProjectProRetail">
+                         </Product>
+                         <Product ID="ProjectProRetail">
                            <Language ID="en-us" />
                            <Language ID="de-de" />
                            <Language ID="fr-fr" />
-                       </Product>
+                         </Product>
                     </Add>
                     <Updates Enabled="False" />
 		</Configuration>
