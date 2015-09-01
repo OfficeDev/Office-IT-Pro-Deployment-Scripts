@@ -1,4 +1,4 @@
-﻿#**Generate Office Deployment Tool Configuration XML**
+﻿#**Generate Office Deployment Tool (ODT) Configuration XML**
 
 This PowerShell function queries the existing configuration of the target computer and generates the Configuration XML for Click-to-Run for Office 365 products.  This XML is used with the [Office Deployment Tool (ODT)](http://www.microsoft.com/en-us/download/details.aspx?id=36778) to deploy Office Click-To-Run products.  The purpose of this script is to dynamically generate a configuration.xml file to be used to either install new or modify existing Office Click-To-Run deployments.  
 
