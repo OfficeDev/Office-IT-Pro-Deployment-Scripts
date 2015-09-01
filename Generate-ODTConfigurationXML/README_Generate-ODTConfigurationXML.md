@@ -37,6 +37,8 @@ If the parameter 'IncludeUpdatePathAsSourcePath' is set to $true then it will us
 
 		Generate-ODTConfigurationXml -Languages AllInUseLanguages -TargetFilePath configuration.xml 
 
+5. An example output is below
+
 		<Configuration>
 		     <Add Version="15.0.4745.1002" OfficeClientEdition="32">
 		        <Product ID="ProjectProRetail">
