@@ -36,6 +36,6 @@ For more information on the specifics of the Click-to-Run for Office 365 Configu
 		Generate-ODTConfigurationXml -Languages AllInUseLanguages -TargetFilePath configuration.xml 
 
 	
-[Edit-OfficeConfigurationFile](../Edit-OfficeConfigurationFile/README_Edit-OfficeConfigurationFile.md)
+[Edit-OfficeConfigurationFile](../Edit-OfficeConfigurationFile)
 	
 
