@@ -6,10 +6,10 @@ Deploying Office can be challenging in Organizations that have to support many d
 
 You can control which languages the script will add to the configuration xml by using the **Languages** parameter. The parameter has four options.  The options and explanations for this parameter are listed below.
 
- - CurrentOfficeLanguages - This option will use the languages that the current installation of Office is using.
- - OSLanguage - This option will use only the primary language of the Operating System.
- - OSandUserLanguages - This option will use use the primary language of the Operating System and the languages that the local users have added to their profiles.
- - AllInUseLanguages - This option will use all of the currently in use languages including, Office, Operating System and user lanaguages.
+ - **CurrentOfficeLanguages** - This option will use the languages that the current installation of Office is using.
+ - **OSLanguage** - This option will use only the primary language of the Operating System.
+ - **OSandUserLanguages** - This option will use use the primary language of the Operating System and the languages that the local users have added to their profiles.
+ - **AllInUseLanguages** - This option will use all of the currently in use languages including, Office, Operating System and user lanaguages.
 
 For more information on the specifics of the Click-to-Run for Office 365 Configuration XML go to the following link.
 [Click-to-Run for Office 365 Configuration XML Reference](https://technet.microsoft.com/en-us/library/JJ219426.aspx)
