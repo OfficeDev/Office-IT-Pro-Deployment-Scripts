@@ -1,0 +1,9 @@
+<Configuration>
+  <Add OfficeClientEdition="64">
+    <Product ID="O365ProPlusRetail">
+      <Language ID="en-us" />
+    </Product>
+  </Add>
+  <Updates Enabled="True" UpdatePath="\\vcg-rsmith1\OfficeSource" />
+  <Display Level="Full" AcceptEULA="True" />
+</Configuration>
