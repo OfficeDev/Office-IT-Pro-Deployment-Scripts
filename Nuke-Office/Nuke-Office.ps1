@@ -348,6 +348,7 @@ function Nuke-Office{
         if($c2r -eq $true){
             $ActionFile = $c2rVBS
         }else{
+            #Set script file based on office version, if no office detected continue to next computer skipping this one.
             switch -wildcard ($versionTest.Version)
             {
                 "11.*"
@@ -369,6 +370,11 @@ function Nuke-Office{
                 "16.*"
                 {
                     $ActionFile = $16MSIVBS
+                }
+                default 
+                {
+                    "Did not detect Office on target computer ($computer)."
+                    continue
                 }
             }
         }
