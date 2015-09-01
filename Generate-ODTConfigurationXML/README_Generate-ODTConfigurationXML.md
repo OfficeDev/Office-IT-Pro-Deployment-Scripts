@@ -1,6 +1,18 @@
 ﻿#**Generate Office Deployment Tool Configuration XML**
 
-This PowerShell Function generate the Office Deployment Tool Configuration XML based on the current state of the workstation and the parameters specified for the Function
+This PowerShell function queries the existing configuration of the target computer and generates the Configuration XML for Click-to-Run for Office 365 products.  This XML is used with the [Office Deployment Tool (ODT)](http://www.microsoft.com/en-us/download/details.aspx?id=36778) to deploy Office Click-To-Run products.  The purpose of this script is to dynamically generate a configuration.xml file to be used to either install new or modify existing Office Click-To-Run deployments.  
+
+Deploying Office can be challenging in Organizations that have to support many different languages.  This script provides a way to automate the deployment of Language packs.  The script will query for the languages currently in use by the local computer.  It will then add those languages into the configuration xml.
+
+You can control which languages the script will add to the configuration xml by using the **Languages** parameter. The parameter has four options.  The options and explanations for this parameter are listed below.
+
+ - CurrentOfficeLanguages - This option will use the languages that the current installation of Office is using.
+ - OSLanguage - This option will use only the primary language of the Operating System.
+ - OSandUserLanguages - This option will use use the primary language of the Operating System and the languages that the local users have added to their profiles.
+ - AllInUseLanguages - This option will use all of the currently in use languages including, Office, Operating System and user lanaguages.
+
+For more information on the specifics of the Click-to-Run for Office 365 Configuration XML go to the following link.
+[Click-to-Run for Office 365 Configuration XML Reference](https://technet.microsoft.com/en-us/library/JJ219426.aspx)
 
 ###**Examples**
 
