@@ -19,7 +19,7 @@ Generate-ODTConfigurationXml -Languages AllInUseLanguages -TargetFilePath $targe
 Set-ODTAdd -TargetFilePath $targetFilePath -Version $NULL | Out-Null
 
 
-
+if (
  
 
 #$xmlConfig | Install-OfficeClickToRun

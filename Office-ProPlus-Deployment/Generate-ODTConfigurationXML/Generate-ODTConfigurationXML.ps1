@@ -9,7 +9,78 @@ Add-Type -TypeDefinition @"
 "@
 
 Function Generate-ODTConfigurationXml {
+<#
+.Synopsis
+Generates the Office Deployment Tool (ODT) Configuration XML from the current configuration of the target computer
 
+.DESCRIPTION
+This function will query the local or a remote computer and Generate the ODT configuration xml based on the local Office install
+and the local languages that are used on the local computer.  If Office isn't installed then it will utilize the configuration file
+specified in the 
+
+.NOTES   
+Name: Generate-ODTConfigurationXm
+Version: 1.0.1
+DateCreated: 2015-08-24
+DateUpdated: 2015-09-02
+
+.LINK
+https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
+
+.PARAMETER ComputerName
+The computer or list of computers from which to query 
+
+.PARAMETER Languages
+Will expand the output to include all installed Office products
+
+.PARAMETER TargetFilePath
+The path and file name of the file to save the Configuration xml
+
+.PARAMETER IncludeUpdatePathAsSourcePath
+If this parameter is set to $true then the SourcePath in the Configuration xml will be set to 
+the current UpdatePath on the local computer.  This assumes that the UpdatePath location has 
+the required files needed to run the installation 
+
+.PARAMETER DefaultConfigurationXml
+This parameter sets the path to the Default Configuration XML file.  If Office is not installed on
+the computer that this script is run against it will default to this file in order to generate the 
+ODT Configuration XML.  The default file should have the products that you would want installed on 
+a workstation if Office isn't currently installed.  If this parameter is set to $NULL then it will
+not generate configuration XML if Office is not installed.  By default the script looks for a file
+called "DefaultConfiguration.xml" in the same directory as the script
+
+.EXAMPLE
+Generate-ODTConfigurationXml | fl
+
+Description:
+Will generate the Office Deployment Tool (ODT) configuration XML based on the local computer
+
+.EXAMPLE
+Generate-ODTConfigurationXml  -ComputerName client01,client02 | fl
+
+Description:
+Will generate the Office Deployment Tool (ODT) configuration XML based on the configuration of the remote computers client01 and client02
+
+.EXAMPLE
+Generate-ODTConfigurationXml -Languages OSandUserLanguages
+
+Description:
+Will generate the Office Deployment Tool (ODT) configuration XML based on the local computer and add the languages that the Operating System and the local users
+are currently using.
+
+.EXAMPLE
+Generate-ODTConfigurationXml -Languages OSLanguage
+
+Description:
+Will generate the Office Deployment Tool (ODT) configuration XML based on the local computer and add the Current UI Culture language of the Operating System
+
+.EXAMPLE
+Generate-ODTConfigurationXml -Languages CurrentOfficeLanguages
+
+Description:
+Will generate the Office Deployment Tool (ODT) configuration XML based on the local computer and add only add the Languages currently in use by the current Office installation
+
+#>
 [CmdletBinding(SupportsShouldProcess=$true)]
 param(
     [Parameter(ValueFromPipelineByPropertyName=$true, Position=0)]
@@ -25,7 +96,7 @@ param(
     [bool]$IncludeUpdatePathAsSourcePath = $false,
 
     [Parameter(ValueFromPipelineByPropertyName=$true)]
-    [string]$DefaultConfigurationXml = "DefaultConfiguration.xml"
+    [string]$DefaultConfigurationXml = (Join-Path $PSScriptRoot "DefaultConfiguration.xml") 
 )
 
 begin {
@@ -102,22 +173,24 @@ process {
     [bool]$officeExists = $true
     if (!($officeProducts)) {
       $officeExists = $false
-      if (Test-Path -Path $DefaultConfigurationXml) {
-         $ConfigFile.Load($DefaultConfigurationXml)
+      if ($DefaultConfigurationXml) {
+          if (Test-Path -Path $DefaultConfigurationXml) {
+             $ConfigFile.Load($DefaultConfigurationXml)
 
-         $products = $ConfigFile.SelectNodes("/Configuration/Add/Product")
-         if ($products) {
-             foreach ($product in $products) {
-                if ($productReleaseIds.Length -gt 0) { $productReleaseIds += "," }
-                $productReleaseIds += $product.ID
+             $products = $ConfigFile.SelectNodes("/Configuration/Add/Product")
+             if ($products) {
+                 foreach ($product in $products) {
+                    if ($productReleaseIds.Length -gt 0) { $productReleaseIds += "," }
+                    $productReleaseIds += $product.ID
+                 }
              }
-         }
 
-         $addNode = $ConfigFile.SelectSingleNode("/Configuration/Add");
-         if ($addNode) {
-            $productPlatform = $addNode.OfficeClientEdition
-         }
+             $addNode = $ConfigFile.SelectSingleNode("/Configuration/Add");
+             if ($addNode) {
+                $productPlatform = $addNode.OfficeClientEdition
+             }
 
+          }
       }
     }
 
