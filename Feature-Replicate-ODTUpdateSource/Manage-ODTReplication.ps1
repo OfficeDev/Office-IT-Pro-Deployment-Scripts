@@ -21,19 +21,39 @@ function Download-ODTOfficeFiles() {
 }
 
 function Replicate-ODTOfficeFiles() {
-   param(
-     [bool]$CopyLatestVersionOnly = $true,
-     [string] $LogPath,
-     [string] $source
-   )   
 
-    $Shares = @(Import-Csv $logPath | foreach {$_.ShareName})
+    Param(
+        [string[]] $Source,
+        [string[]] $ODTShareNameLogFile
+    )
 
-    foreach($share in $Shares){
+    [array]$ShareName = Import-Csv $ODTShareNameLogFile | foreach {$_.ShareName}
 
-        $roboCopy = "Robocopy $source $share /e /np"
+    foreach($share in $ShareName){
 
-        Invoke-Expression $roboCopy
+        $destinationFolder = Get-ChildItem $share -Recurse
+        $sourceFolder = Get-ChildItem $Source -Recurse
+
+        if($destinationFolder -ne $null){
+                         
+            $comparison = Compare-Object -ReferenceObject $sourceFolder -DifferenceObject $destinationFolder -IncludeEqual
+            $roboCopy = "Robocopy $source $share /e /np"
+
+            if($comparison.SideIndicator -eq "<="){
+
+                Invoke-Expression $roboCopy
+            }
+            elseif($comparison.SideIndicator -eq "=="){
+
+                Write-Host "The folders are up to date in $share"
+            }
+        }
+        elseif($destinationFolder -eq $null){
+             
+            $roboCopy = "Robocopy $source $share /e /np"
+
+            Invoke-Expression $roboCopy
+        }                         
     }
 }
 
@@ -41,7 +61,7 @@ function Add-ODTRemoteUpdateSource() {
     param(
         [string[]]$RemoteShares,
         [string[]]$Languages,
-        [string] $LogPath
+        [string] $ODTShareNameLogFile
     )
    
     $defaultDisplaySet = 'ShareName';
@@ -50,19 +70,19 @@ function Add-ODTRemoteUpdateSource() {
 
     $results = New-Object PSObject[] 1;
 
-    if(!(Test-Path $LogPath)){
+    if(!(Test-Path $ODTShareNameLogFile)){
         foreach($share in $RemoteShares){
             $object = New-Object PSObject -Property @{'ShareName' = "$share";}
             $object | Add-Member MemberSet PSStandardMembers $PSStandardMembers;
             $results += $object
-            $results | Export-Csv $LogPath -ErrorAction SilentlyContinue -NoTypeInformation
+            $results | Export-Csv $ODTShareNameLogFile -ErrorAction SilentlyContinue -NoTypeInformation
         }
     }
     else{
         foreach($share in $RemoteShares){
-            $logContent = Import-Csv $LogPath -Header "ShareName"
+            $logContent = Import-Csv $ODTShareNameLogFile -Header "ShareName"
             $newRow = New-Object PSObject -Property @{ShareName = $share}
-            $logContent += $newRow | Export-Csv $LogPath -ErrorAction SilentlyContinue -NoTypeInformation
+            $logContent += $newRow | Export-Csv $ODTShareNameLogFile -Append -Force -NoTypeInformation
         }
     }
 }
@@ -70,20 +90,19 @@ function Add-ODTRemoteUpdateSource() {
 function Remove-ODTRemoteUpdateSource() {
 
     Param(
-        [string] $logPath,
-        [string] $newLogPath,
-        [string] $shareName
+        [string] $ODTShareNameLogFile,
+        [string] $RemoteShares
     )
 
-    $files = Import-Csv $logPath | where {$_.ShareName -notlike $shareName}
-
-    $output = @($files)
-    $output = $files
-    $output
+    $removedShares = Import-Csv $ODTShareNameLogFile | where ShareName -notin $RemoteShares
+    $removedShares | Export-Csv $ODTShareNameLogFile -Force -NoTypeInformation
 }
 
 function List-ODTRemoteUpdateSource() {
 
+    Param(
+        [string] $ODTShareNameLogFile
+    )
 
-
+    Import-Csv $ODTShareNameLogFile
 }
