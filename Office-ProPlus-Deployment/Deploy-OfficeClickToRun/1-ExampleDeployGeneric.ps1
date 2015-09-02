@@ -7,7 +7,6 @@
 . .\Generate-ODTConfigurationXML.ps1
 . .\Edit-OfficeConfigurationFile.ps1
 . .\Install-OfficeClickToRun.ps1
-. .\EnvironmentalFilter.ps1
 
 $targetFilePath = "configuration.xml"
 
@@ -15,13 +14,6 @@ $targetFilePath = "configuration.xml"
 #from which the script is run.  It will then remove the Version attribute from the XML to ensure the installation gets the latest version
 #when updating an existing install and then it will initiate a install
 
-Generate-ODTConfigurationXml -Languages AllInUseLanguages -TargetFilePath $targetFilePath | Out-Null
-Set-ODTAdd -TargetFilePath $targetFilePath -Version $NULL | Out-Null
-
-
-if (
- 
-
-#$xmlConfig | Install-OfficeClickToRun
+Generate-ODTConfigurationXml -Languages AllInUseLanguages -TargetFilePath $targetFilePath | Set-ODTAdd -Version $NULL | Install-OfficeClickToRun
 
 # Configuration.xml file for Click-to-Run for Office 365 products reference. https://technet.microsoft.com/en-us/library/JJ219426.aspx
