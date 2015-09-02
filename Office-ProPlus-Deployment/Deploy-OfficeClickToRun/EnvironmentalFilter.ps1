@@ -1,26 +1,110 @@
-
-
-Function Check-UserInOU() {
+Function Check-UserInOUPath() {
    param (
-      [string]$OUPath
+      [parameter(Mandatory=$true)]
+      [string]$ContainerPath,
 
+      [parameter()]
+      [bool]$IncludeSubContainers=$true
    )
 
-   $adSysInfo = Get-AdSystemInfo 
+   $adSysInfo = Get-AdSystemInfo
+   return checkInOUPath -DistinguishedName $adSysInfo.UserDistinguishedName -IncludeSubContainers $IncludeSubContainers -ContainerPath $ContainerPath
+}
 
-   $testOUPath = $OUPath + "," + $adSysInfo.DomainPath
+Function Check-ComputerInOUPath() {
+   param (
+      [parameter(Mandatory=$true)]
+      [string]$ContainerPath,
 
-   if ($adSysInfo.ToLower().EndsWidth($testOUPath.ToLower())) {
-      return $true
-   }
+      [parameter()]
+      [bool]$IncludeSubContainers=$true
+   )
 
-   return $false
+   $adSysInfo = Get-AdSystemInfo
+   return checkInOUPath -DistinguishedName $adSysInfo.ComputerDistinguishedName -IncludeSubContainers $IncludeSubContainers -ContainerPath $ContainerPath
 }
 
 
+Function checkInOUPath() {
+   param (
+      [parameter(Mandatory=$true)]
+      [string]$DistinguishedName,
 
-function Get-AdSystemInfo
-{
+      [parameter(Mandatory=$true)]
+      [string]$ContainerPath,
+
+      [parameter()]
+      [bool]$IncludeSubContainers=$true
+   )
+
+   $OUPath = $OUPath -replace ",$", ""
+
+   $pathParse = Parse-LDAPPath -DistinguishedName $DistinguishedName
+   
+   if ($ContainerPath.ToUpper().Contains("DC=")) {
+     $chkPath = $pathParse.ContainerPath.ToUpper() + "," + $pathParse.DomainPath
+
+     if ($IncludeSubContainers) {
+         if ($chkPath.ToUpper().EndsWith($ContainerPath.ToUpper())) {
+            return $true
+         }
+     } else {
+         if ($ContainerPath.ToUpper() -eq $chkPath.ToUpper()) {
+            return $true
+         }
+     }
+   } else {
+     if ($IncludeSubContainers) {
+         if ($pathParse.ContainerPath.ToUpper().Trim().EndsWith($ContainerPath.ToUpper().Trim())) {
+            return $true
+         }
+     } else {
+         if ($ContainerPath.ToUpper().Trim() -eq $pathParse.ContainerPath.ToUpper().Trim()) {
+            return $true
+         }
+     }
+   }
+   return $false
+}
+
+function Parse-LDAPPath() {
+   param(
+      [Parameter(mandatory=$true)]
+      [string]$DistinguishedName
+   )
+
+   $userDN = $DistinguishedName.Replace("\,", "-----")
+
+   $pathSplit = $userDN.Split(',')
+   $commonName = $pathSplit[0]
+
+   $contPath = "";
+   $domainPath = "";
+   for ($n=1;$n -lt $pathSplit.Length;$n++) {
+     $pathItem = $pathSplit[$n]
+      
+     if ($pathItem.ToUpper().StartsWith("OU") -or $pathItem.ToUpper().StartsWith("CN")) {
+        if ($contPath.Length -gt 0) { $contPath += "," }
+        $contPath += $pathItem 
+     }
+
+     if ($pathItem.ToUpper().StartsWith("DC")) {
+        if ($domainPath.Length -gt 0) { $domainPath += "," }
+        $domainPath += $pathItem 
+     }
+   }
+
+    $contPath = $contPath -replace ",$", ""
+
+    $result = New-Object -TypeName PSObject -Property @{
+        CommonName = $commonName.Replace("-----", "\,")
+        ContainerPath = $contPath.Replace("-----", "\,")
+        DomainPath = $domainPath.Replace("-----", "\,")
+    }  
+    return $result
+}
+
+function Get-AdSystemInfo {
     $ADSystemInfo = New-Object -ComObject ADSystemInfo
     $adSysInfoType = $ADSystemInfo.GetType()
 
@@ -34,7 +118,7 @@ function Get-AdSystemInfo
         DomainDNSName = $adSysInfoType.InvokeMember('DomainDNSName','GetProperty',$null,$ADSystemInfo,$null)
         ForestDNSName = $adSysInfoType.InvokeMember('ForestDNSName','GetProperty',$null,$ADSystemInfo,$null)
         IsNativeModeDomain = $adSysInfoType.InvokeMember('IsNativeMode','GetProperty',$null,$ADSystemInfo,$null)
-    }
+    }  
 
     return $result
 }
