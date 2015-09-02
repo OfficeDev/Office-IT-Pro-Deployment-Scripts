@@ -9,3 +9,9 @@ D:\Office-IT-Pro-Deployment-Scripts\CTROfficeXmlWebEditor\CTROfficeXmlWebEditor\
 D:\Office-IT-Pro-Deployment-Scripts\CTROfficeXmlWebEditor\CTROfficeXmlWebEditor\obj\Debug\CTROfficeXmlWebEditor.dll
 D:\Office-IT-Pro-Deployment-Scripts\CTROfficeXmlWebEditor\CTROfficeXmlWebEditor\obj\Debug\CTROfficeXmlWebEditor.pdb
 D:\Office-IT-Pro-Deployment-Scripts\CTROfficeXmlWebEditor\CTROfficeXmlWebEditor\obj\Debug\CTROfficeXmlWebEditor.csprojResolveAssemblyReference.cache
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\CTROfficeXmlWebEditor\CTROfficeXmlWebEditor\bin\CTROfficeXmlWebEditor.dll.config
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\CTROfficeXmlWebEditor\CTROfficeXmlWebEditor\bin\CTROfficeXmlWebEditor.dll
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\CTROfficeXmlWebEditor\CTROfficeXmlWebEditor\bin\CTROfficeXmlWebEditor.pdb
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\CTROfficeXmlWebEditor\CTROfficeXmlWebEditor\obj\Debug\CTROfficeXmlWebEditor.csprojResolveAssemblyReference.cache
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\CTROfficeXmlWebEditor\CTROfficeXmlWebEditor\obj\Debug\CTROfficeXmlWebEditor.dll
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\CTROfficeXmlWebEditor\CTROfficeXmlWebEditor\obj\Debug\CTROfficeXmlWebEditor.pdb
