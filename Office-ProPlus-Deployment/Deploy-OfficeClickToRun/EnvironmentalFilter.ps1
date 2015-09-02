@@ -20,6 +20,21 @@ Function Check-ComputerInOUPath() {
       [bool]$IncludeSubContainers=$true
    )
 
+
+
+
+   Add-Type -AssemblyName System.DirectoryServices.AccountManagement | out-null
+$ct = [System.DirectoryServices.AccountManagement.ContextType]::Domain
+$pc = new-object  'System.DirectoryServices.AccountManagement.PrincipalContext'($ct, "foo.co.uk", "OU=foo,DC=foo,dc=co,dc=uk");
+$cpp = New-Object 'System.DirectoryServices.AccountManagement.Computerprincipal'($pc)
+$ps = new-object  'System.DirectoryServices.AccountManagement.PrincipalSearcher'
+$ps.QueryFilter = $cpp
+$MyListArray = $ps.FindAll() | select -expa name
+
+
+
+
+
    $adSysInfo = Get-AdSystemInfo
    return checkInOUPath -DistinguishedName $adSysInfo.ComputerDistinguishedName -IncludeSubContainers $IncludeSubContainers -ContainerPath $ContainerPath
 }

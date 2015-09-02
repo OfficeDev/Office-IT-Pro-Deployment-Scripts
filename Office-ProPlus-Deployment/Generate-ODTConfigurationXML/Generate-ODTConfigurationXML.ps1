@@ -22,7 +22,10 @@ param(
     [String]$TargetFilePath = $NULL,
 
     [Parameter(ValueFromPipelineByPropertyName=$true)]
-    [bool]$IncludeUpdatePathAsSourcePath = $false
+    [bool]$IncludeUpdatePathAsSourcePath = $false,
+
+    [Parameter(ValueFromPipelineByPropertyName=$true)]
+    [string]$DefaultConfigurationXml = "DefaultConfiguration.xml"
 )
 
 begin {
@@ -76,15 +79,51 @@ process {
 
     $officeConfig = getCTRConfig -regProv $regProv
     
+    $productReleaseIds = "";
+    $productPlatform = "32";
+
     if (!($officeConfig.ClickToRunInstalled)) {
         $mainOfficeProduct = Get-OfficeVersion -ComputerName $ComputerName
         $officeProducts = Get-OfficeVersion -ComputerName $ComputerName -ShowAllInstalledProducts
         $officeConfig = getOfficeConfig -regProv $regProv -mainOfficeProduct $mainOfficeProduct -officeProducts $officeProducts
-        $officeLangs = officeGetLanguages -regProv $regProv -OfficeKeyPath $officeConfig.OfficeKeyPath
+        if ($officeConfig -and $officeConfig.OfficeKeyPath) {
+            $officeLangs = officeGetLanguages -regProv $regProv -OfficeKeyPath $officeConfig.OfficeKeyPath
+        }
+        if ($officeConfig -and $officeConfig.Platform) {
+           $productPlatform = $officeConfig.Platform
+        }
     }
 
 
-    $splitProducts = $officeConfig.ProductReleaseIds.Split(',');
+    if ($officeConfig.ProductReleaseIds) {
+        $productReleaseIds = $officeConfig.ProductReleaseIds
+    }
+
+    [bool]$officeExists = $true
+    if (!($officeProducts)) {
+      $officeExists = $false
+      if (Test-Path -Path $DefaultConfigurationXml) {
+         $ConfigFile.Load($DefaultConfigurationXml)
+
+         $products = $ConfigFile.SelectNodes("/Configuration/Add/Product")
+         if ($products) {
+             foreach ($product in $products) {
+                if ($productReleaseIds.Length -gt 0) { $productReleaseIds += "," }
+                $productReleaseIds += $product.ID
+             }
+         }
+
+         $addNode = $ConfigFile.SelectSingleNode("/Configuration/Add");
+         if ($addNode) {
+            $productPlatform = $addNode.OfficeClientEdition
+         }
+
+      }
+    }
+
+    if ($productReleaseIds) {
+        $splitProducts = $productReleaseIds.Split(',');
+    }
 
     $osArchitecture = $os.OSArchitecture
     $osLanguage = $os.OSLanguage
@@ -103,7 +142,11 @@ process {
     switch ($Languages) {
       "CurrentOfficeLanguages" 
       {
-         $primaryLanguage = $officeConfig.ClientCulture
+         if ($officeConfig) {
+            $primaryLanguage = $officeConfig.ClientCulture
+         } else {
+            $primaryLanguage = checkForLanguage -langId $machinelangId
+         }
       }
       "OSLanguage" 
       {
@@ -143,15 +186,17 @@ process {
 
        if ($officeConfig.ClickToRunInstalled) {
              $officeKeyPath = $officeConfig.OfficeKeyPath
-
+           
            if ($productId.ToLower().StartsWith("o365")) {
                $excludeApps = odtGetExcludedApps -ConfigDoc $ConfigFile -OfficeKeyPath $officeConfig.OfficeKeyPath -ProductId $productId
            }
 
            $officeAddLangs = odtGetOfficeLanguages -ConfigDoc $ConfigFile -OfficeKeyPath $officeConfig.OfficeKeyPath -ProductId $productId
        } else {
-         $excludeApps = officeGetExcludedApps -OfficeProducts $officeProducts
-         
+         if ($officeExists) {
+             $excludeApps = officeGetExcludedApps -OfficeProducts $officeProducts
+         }
+
          foreach ($officeLang in $officeLangs) {
             $additionalLanguages.Add($officeLang) | Out-Null
          }
@@ -168,9 +213,13 @@ process {
        }
 
        odtAddProduct -ConfigDoc $ConfigFile -ProductId $productId -ExcludeApps $excludeApps -Version $officeConfig.Version `
-                     -Platform $officeConfig.Platform -ClientCulture $primaryLanguage -AdditionalLanguages $additionalLanguages
-
-       odtAddUpdates -ConfigDoc $ConfigFile -Enabled $officeConfig.UpdatesEnabled -UpdatePath $officeConfig.UpdateUrl -Deadline $officeConfig.UpdateDeadline
+                     -Platform $productPlatform -ClientCulture $primaryLanguage -AdditionalLanguages $additionalLanguages
+       
+       if ($officeConfig) {
+          if (($officeConfig.UpdatesEnabled) -or ($officeConfig.UpdateUrl) -or  ($officeConfig.UpdateDeadline)) {
+            odtAddUpdates -ConfigDoc $ConfigFile -Enabled $officeConfig.UpdatesEnabled -UpdatePath $officeConfig.UpdateUrl -Deadline $officeConfig.UpdateDeadline
+          }
+       }
     }
     
     if ($IncludeUpdatePathAsSourcePath) {
@@ -220,6 +269,7 @@ process {
   } catch {
     $errorMessage = $computer + ": " + $_
     Write-Host $errorMessage
+    throw;
   }
 
   }
