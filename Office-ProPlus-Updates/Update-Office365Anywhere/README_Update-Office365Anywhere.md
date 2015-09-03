@@ -8,16 +8,17 @@ This functionality is available with this function but it's use can be controlle
 
 ###**Running the script**
 
-1. dsfsdf
+1. Open a PowerShell console.
 
-		From the Run dialog type PowerShell.
-
-3. Change directory to the location where the PowerShell Script is saved. This directory must contain the files that are in the *Setup-SCCMOfficeUpdates* folder.
+		From the Run dialog type PowerShell 
+		
+2. Change directory to the location where the PowerShell Script is saved.
 
 		Example: cd C:\PowerShellScripts
+		
 
 4. Type the following in the elevated PowerShell Session
 
-		 . .\Setup-SCCMOfficeUpdates.ps1
+		 . .\Update-Office365Anywhere.ps1
          
 
