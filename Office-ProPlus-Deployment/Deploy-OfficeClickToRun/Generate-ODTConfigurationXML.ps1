@@ -245,8 +245,12 @@ process {
 
     $allLanguages += $primaryLanguage.ToLower()
     foreach ($lang in $additionalLanguages) {
-      if (!$allLanguages.Contains($lang.ToLower())) {
-         $allLanguages += $lang.ToLower()
+      if ($lang.GetType().Name.ToLower().Contains("string")) {
+        if ($lang.Contains("-")) {
+          if (!$allLanguages.Contains($lang.ToLower())) {
+             $allLanguages += $lang.ToLower()
+          }
+        }
       }
     }
 
@@ -923,6 +927,15 @@ function getLanguages() {
         
      }
   }
+
+  $langPacks = $regProv.EnumKey($HKLM, "SYSTEM\CurrentControlSet\Control\MUI\UILanguages");
+  foreach ($langPackName in $langPacks.sNames) {
+     if (!$returnLangs.Contains($langPackName.ToLower())) {
+        $returnLangs.Add($langPackName.ToLower()) | Out-Null
+     }
+  }
+
+  #HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\MUI\UILanguages
 
   if ($returnLangs.Count -gt 1) {
      $returnLangs = Get-Unique -InputObject $returnLangs

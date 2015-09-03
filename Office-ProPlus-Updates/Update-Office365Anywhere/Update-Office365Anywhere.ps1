@@ -156,20 +156,46 @@ Function Update-Office365Anywhere() {
         [bool] $WaitForUpdateToFinish = $true,
 
         [Parameter()]
-        [bool] $EnableUpdateAnywhere = $true
+        [bool] $EnableUpdateAnywhere = $true,
+
+        [Parameter()]
+        [bool] $ForceAppShutdown = $false,
+
+        [Parameter()]
+        [bool] $UpdatePromptUser = $false,
+
+        [Parameter()]
+        [bool] $DisplayLevel = $false
     )
 
-    $officeRegPath = Get-OfficeCTRRegPath + "\Configuration"
+    $mainRegPath = Get-OfficeCTRRegPath
+    $configRegPath = $mainRegPath + "\Configuration"
 
-    $currentUpdateSource = (Get-ItemProperty HKLM:\$officeRegPath -Name UpdateUrl -ErrorAction SilentlyContinue).UpdateUrl
-    $saveUpdateSource = (Get-ItemProperty HKLM:\$officeRegPath -Name SaveUpdateUrl -ErrorAction SilentlyContinue).SaveUpdateUrl
-    $clientFolder = (Get-ItemProperty HKLM:\$officeRegPath -Name ClientFolder -ErrorAction SilentlyContinue).ClientFolder
+    $currentUpdateSource = (Get-ItemProperty HKLM:\$configRegPath -Name UpdateUrl -ErrorAction SilentlyContinue).UpdateUrl
+    $saveUpdateSource = (Get-ItemProperty HKLM:\$configRegPath -Name SaveUpdateUrl -ErrorAction SilentlyContinue).SaveUpdateUrl
+    $clientFolder = (Get-ItemProperty HKLM:\$configRegPath -Name ClientFolder -ErrorAction SilentlyContinue).ClientFolder
 
     $officeUpdateCDN = Get-OfficeCDNUrl
 
     $officeCDN = "http://officecdn.microsoft.com"
     $oc2rcFilePath = Join-Path $clientFolder "\OfficeC2RClient.exe"
-    $oc2rcParams = "/update user forceappshutdown=false updatepromptuser=true displaylevel=true"
+
+    $oc2rcParams = "/update user"
+    if ($ForceAppShutdown) {
+      $oc2rcParams += " forceappshutdown=true"
+    } else {
+      $oc2rcParams += " forceappshutdown=false"
+    }
+    if ($UpdatePromptUser) {
+      $oc2rcParams += " updatepromptuser=true"
+    } else {
+      $oc2rcParams += " updatepromptuser=false"
+    }
+    if ($DisplayLevel) {
+      $oc2rcParams += " displaylevel=true"
+    } else {
+      $oc2rcParams += " displaylevel=false"
+    }
     
     $UpdateSource = "http"
     if ($currentUpdateSource) {
@@ -216,6 +242,7 @@ Function Update-Office365Anywhere() {
     }
 
     if ($isAlive) {
+       Write-Host "Starting Update process"
        Write-Log -Message "Will now execute $oc2rcFilePath $oc2rcParams" -severity 1 -component "Office 365 Update Anywhere"
        StartProcess -execFilePath $oc2rcFilePath -execParams $oc2rcParams
 
@@ -242,7 +269,7 @@ Function Wait-ForOfficeCTRUpadate() {
     }
 
     process {
-       Write-Host "Waiting for Update to Complete..."
+       Write-Host "Waiting for Update process to Complete..."
 
        Start-Sleep -Seconds 10
 
@@ -255,6 +282,7 @@ Function Wait-ForOfficeCTRUpadate() {
 
        [string]$executingScenario = ""
        $failure = $false
+       $cancelled = $false
        $updateRunning=$false
        [string[]]$trackProgress = @()
        [string[]]$trackComplete = @()
@@ -279,22 +307,48 @@ Function Wait-ForOfficeCTRUpadate() {
                         $failure = $true
                     }
 
+                    if ($status.ToUpper() -eq "TASKSTATE_CANCELLED") {
+                        $cancelled = $true
+                    }
+
                     if (($status.ToUpper() -eq "TASKSTATE_COMPLETED") -or`
                         ($status.ToUpper() -eq "TASKSTATE_CANCELLED") -or`
                         ($status.ToUpper() -eq "TASKSTATE_FAILED")) {
                         if ($trackProgress.Contains($keyValue) -and !$trackComplete.Contains($keyValue)) {
                             $displayValue = $operation + "`t" + $status + "`t" + (Get-Date).ToString('yyyy-MM-dd HH:mm:ss')
-                            Write-Host $displayValue
+                            #Write-Host $displayValue
                             $trackComplete += $keyValue 
+
+                            $statusName = $status.Split('_')[1];
+
+                            if ($operation.ToUpper().Contains("DOWNLOAD") -or `
+                                $operation.ToUpper().Contains("APPLY") -or `
+                                $operation.ToUpper().Contains("FINALIZE")) {
+                               Write-Host $statusName
+                            }
                         }
                     } else {
                         $allComplete = $false
                         $updateRunning=$true
 
+
                         if (!$trackProgress.Contains($keyValue)) {
                              $trackProgress += $keyValue 
                              $displayValue = $operation + "`t" + $status + "`t" + (Get-Date).ToString('yyyy-MM-dd HH:mm:ss')
-                             Write-Host $displayValue
+
+                             if ($operation.ToUpper().Contains("DOWNLOAD")) {
+                                Write-Host "Downloading Update: " -NoNewline
+                             }
+
+                             if ($operation.ToUpper().Contains("APPLY")) {
+                                Write-Host "Applying Update: " -NoNewline
+                             }
+
+                             if ($operation.ToUpper().Contains("FINALIZE")) {
+                                Write-Host "Finalizing Update: " -NoNewline
+                             }
+
+                             #Write-Host $displayValue
                         }
                     }
                 }
