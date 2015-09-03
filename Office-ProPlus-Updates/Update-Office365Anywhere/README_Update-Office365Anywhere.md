@@ -8,7 +8,7 @@ This functionality is available with this function but it's use can be controlle
 
 ###**Running the script**
 
-1. Open a PowerShell console.
+1. Open an Elevated PowerShell Console(see, [Starting Windows PowerShell](https://technet.microsoft.com/en-us/library/hh857343.aspx)):
 
 		From the Run dialog type PowerShell 
 		
