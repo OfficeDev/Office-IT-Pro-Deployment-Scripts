@@ -7,16 +7,6 @@ Param(
     [bool] $EnableUpdateAnywhere = $true
 )
 
-$os=Get-WMIObject win32_operatingsystem
-$osArchitecture = $os.OSArchitecture
-
-if ($osArchitecture -eq "32-bit") {
-   $ProgramFiles32Bit = [Environment]::GetFolderPath("ProgramFiles")
-} else {
-   $ProgramFiles32Bit = [Environment]::GetFolderPath("ProgramFilesx86")
-   $ProgramFiles64Bit = [Environment]::GetFolderPath("ProgramFiles")
-}
-
 Function Write-Log {
  
     PARAM
@@ -256,6 +246,53 @@ Function Update-Office365Anywhere() {
     }
 }
 
+Function formatTimeItem() {
+    [CmdletBinding()]
+    Param(
+        [Parameter(Mandatory=$true)]
+        [string] $TimeItem = ""
+    )
+
+    [string]$returnItem = $TimeItem
+    if ($TimeItem.Length -eq 1) {
+       $returnItem = "0" + $TimeItem
+    }
+    return $returnItem
+}
+
+Function getOperationTime() {
+    [CmdletBinding()]
+    Param(
+        [Parameter(Mandatory=$true)]
+        [DateTime] $OperationStart
+    )
+
+    $operationTime = ""
+
+    $dateDiff = NEW-TIMESPAN –Start $OperationStart –End (GET-DATE)
+    $strHours = formatTimeItem -TimeItem $dateDiff.Hours.ToString() 
+    $strMinutes = formatTimeItem -TimeItem $dateDiff.Minutes.ToString() 
+    $strSeconds = formatTimeItem -TimeItem $dateDiff.Seconds.ToString() 
+
+    if ($dateDiff.Days -gt 0) {
+        $operationTime += "Days: " + $dateDiff.Days.ToString() + ":"  + $strHours + ":" + $strMinutes + ":" + $strSeconds
+    }
+    if ($dateDiff.Hours -gt 0 -and $dateDiff.Days -eq 0) {
+        if ($operationTime.Length -gt 0) { $operationTime += " " }
+        $operationTime += "Hours: " + $strHours + ":" + $strMinutes + ":" + $strSeconds
+    }
+    if ($dateDiff.Minutes -gt 0 -and $dateDiff.Days -eq 0 -and $dateDiff.Hours -eq 0) {
+        if ($operationTime.Length -gt 0) { $operationTime += " " }
+        $operationTime += "Minutes: " + $strMinutes + ":" + $strSeconds
+    }
+    if ($dateDiff.Seconds -gt 0 -and $dateDiff.Days -eq 0 -and $dateDiff.Hours -eq 0 -and $dateDiff.Minutes -eq 0) {
+        if ($operationTime.Length -gt 0) { $operationTime += " " }
+        $operationTime += "Seconds: " + $strSeconds
+    }
+
+    return $operationTime
+}
+
 Function Wait-ForOfficeCTRUpadate() {
     [CmdletBinding()]
     Param(
@@ -270,6 +307,9 @@ Function Wait-ForOfficeCTRUpadate() {
 
     process {
        Write-Host "Waiting for Update process to Complete..."
+
+       [datetime]$operationStart = Get-Date
+       [datetime]$totalOperationStart = Get-Date
 
        Start-Sleep -Seconds 10
 
@@ -287,6 +327,7 @@ Function Wait-ForOfficeCTRUpadate() {
        [string[]]$trackProgress = @()
        [string[]]$trackComplete = @()
        [int]$noScenarioCount = 0
+
        do {
            $allComplete = $true
            $executingScenario = $regProv.GetStringValue($HKLM, $mainRegPath, "ExecutingScenario").sValue
@@ -302,7 +343,7 @@ Function Wait-ForOfficeCTRUpadate() {
                     [string]$status = $regProv.GetStringValue($HKLM, $taskKeyPath, $taskValue).sValue
                     $operation = $taskValue.Split(':')[0]
                     $keyValue = $taskValue
-
+                   
                     if ($status.ToUpper() -eq "TASKSTATE_FAILED") {
                         $failure = $true
                     }
@@ -322,9 +363,13 @@ Function Wait-ForOfficeCTRUpadate() {
                             $statusName = $status.Split('_')[1];
 
                             if ($operation.ToUpper().Contains("DOWNLOAD") -or `
-                                $operation.ToUpper().Contains("APPLY") -or `
-                                $operation.ToUpper().Contains("FINALIZE")) {
-                               Write-Host $statusName
+                                $operation.ToUpper().Contains("APPLY")) {
+
+                                $operationTime = getOperationTime -OperationStart $operationStart
+
+                                $displayText = $statusName + "`t" + $operationTime
+
+                                Write-Host $displayText
                             }
                         }
                     } else {
@@ -335,6 +380,8 @@ Function Wait-ForOfficeCTRUpadate() {
                         if (!$trackProgress.Contains($keyValue)) {
                              $trackProgress += $keyValue 
                              $displayValue = $operation + "`t" + $status + "`t" + (Get-Date).ToString('yyyy-MM-dd HH:mm:ss')
+
+                             $operationStart = Get-Date
 
                              if ($operation.ToUpper().Contains("DOWNLOAD")) {
                                 Write-Host "Downloading Update: " -NoNewline
@@ -367,11 +414,28 @@ Function Wait-ForOfficeCTRUpadate() {
            Start-Sleep -Seconds 5
        } while($true -eq $true) 
 
+       $operationTime = getOperationTime -OperationStart $operationStart
+
+       $displayValue = ""
+       if ($cancelled) {
+         $displayValue = "CANCELLED`t" + $operationTime
+       } else {
+         if ($failure) {
+            $displayValue = "FAILED`t" + $operationTime
+         } else {
+            $displayValue = "COMPLETED`t" + $operationTime
+         }
+       }
+
+       Write-Host $displayValue
+
+       $totalOperationTime = getOperationTime -OperationStart $totalOperationStart
+
        if ($updateRunning) {
           if ($failure) {
             Write-Host "Update Failed"
           } else {
-            Write-Host "Update Complete"
+            Write-Host "Update Completed - Total Time: $totalOperationTime"
           }
        } else {
           Write-Host "Update Not Running"
@@ -380,4 +444,6 @@ Function Wait-ForOfficeCTRUpadate() {
 }
 
 Update-Office365Anywhere -WaitForUpdateToFinish $WaitForUpdateToFinish -EnableUpdateAnywhere $EnableUpdateAnywhere
+
+
 
