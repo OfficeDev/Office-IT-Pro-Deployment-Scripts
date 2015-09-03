@@ -6,6 +6,13 @@ How it works is if the configured Update source for the Office Click-To-Run is c
 
 This functionality is available with this function but it's use can be controller by the parameter -EnableUpdateAnywhere.  This function also provides a way to initiate an update and the script will wait for the update to complete before exiting. Natively starting an update executable does not wait for the process to complete before exiting and in certain scenarios it may be useful to have the update process wait for the update to complete.
 
+The script considers the primary Update source whataver is configured in the following registry values.
+
+		Office 2013 - HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Office\15.0\Configuration\UpdateUrl
+		Office 2016 - HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Office\Configuration\UpdateUrl
+
+The configuration of this attribute is not in scope of this script but the there are ways to manage this update source to include a script for SCCM called [Setup-SCCMOfficeUpdates](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/Development/Office-ProPlus-Updates/Setup-SCCMOfficeUpdates)
+
 ###**Running the script**
 
 1. Open an Elevated PowerShell Console(see, [Starting Windows PowerShell](https://technet.microsoft.com/en-us/library/hh857343.aspx)):
