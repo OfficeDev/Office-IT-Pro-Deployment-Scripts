@@ -4,7 +4,19 @@ Param(
     [bool] $WaitForUpdateToFinish = $true,
 
     [Parameter()]
-    [bool] $EnableUpdateAnywhere = $true
+    [bool] $EnableUpdateAnywhere = $true,
+
+    [Parameter()]
+    [bool] $ForceAppShutdown = $false,
+
+    [Parameter()]
+    [bool] $UpdatePromptUser = $false,
+
+    [Parameter()]
+    [bool] $DisplayLevel = $false,
+
+    [Parameter()]
+    [string] $UpdateToVersion = $NULL
 )
 
 Function Write-Log {
@@ -140,6 +152,58 @@ Function Test-UpdateSource() {
 }
 
 Function Update-Office365Anywhere() {
+<#
+.Synopsis
+This function is designed to provide way for Office Click-To-Run clients to have the ability to update themselves from a managed network source
+or from the Internet depending on the availability of the primary update source.
+
+.DESCRIPTION
+This function is designed to provide way for Office Click-To-Run clients to have the ability to update themselves from a managed network source
+or from the Internet depending on the availability of the primary update source.  The idea behind this is if users have laptops and are mobile 
+they may not recieve updates if they are not able to be in the office on regular basis.  This functionality is available with this function but it's 
+use can be controller by the parameter -EnableUpdateAnywhere.  This function also provides a way to initiate an update and the script will wait
+for the update to complete before exiting. Natively starting an update executable does not wait for the process to complete before exiting and
+in certain scenarios it may be useful to have the update process wait for the update to complete.
+
+.NOTES   
+Name: Update-Office365Anywhere
+Version: 1.0.1
+DateCreated: 2015-08-28
+DateUpdated: 2015-09-03
+
+.LINK
+https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
+
+.PARAMETER WaitForUpdateToFinish
+If this parameter is set to $true then the function will monitor the Office update and will not exit until the update process has stopped.
+If this parameter is set to $false then the script will exit right after the update process has been started.  By default this parameter is set
+to $true
+
+.PARAMETER EnableUpdateAnywhere
+This parameter controls whether the UpdateAnywhere functionality is used or not. When enabled the update process will check the availbility
+of the update source set for the client.  If that update source is not available then it will update the client from the Microsoft Office CDN.
+When set to $false the function will only use the Update source configured on the client. By default it is set to $true.
+
+.PARAMETER ForceAppShutdown
+This specifies whether the user will be given the option to cancel out of the update. However, if this variable is set to True, then the applications will be shut down immediately and the update will proceed.
+
+.PARAMETER UpdatePromptUser
+This specifies whether or not the user will see this dialog before automatically applying the updates:
+
+.PARAMETER DisplayLevel
+This specifies whether the user will see a user interface during the update. Setting this to false will hide all update UI (including error UI that is encountered during the update scenario).
+
+.PARAMETER UpdateToVersion
+This specifies the version to which Office needs to be updated to.  This can used to install a newer or an older version than what is presently installed.
+
+.EXAMPLE
+Update-Office365Anywhere 
+
+Description:
+Will generate the Office Deployment Tool (ODT) configuration XML based on the local computer
+
+#>
+
     [CmdletBinding()]
     Param(
         [Parameter()]
@@ -155,7 +219,11 @@ Function Update-Office365Anywhere() {
         [bool] $UpdatePromptUser = $false,
 
         [Parameter()]
-        [bool] $DisplayLevel = $false
+        [bool] $DisplayLevel = $false,
+
+        [Parameter()]
+        [string] $UpdateToVersion = $NULL
+        
     )
 
     $mainRegPath = Get-OfficeCTRRegPath
@@ -185,6 +253,9 @@ Function Update-Office365Anywhere() {
       $oc2rcParams += " displaylevel=true"
     } else {
       $oc2rcParams += " displaylevel=false"
+    }
+    if ($UpdateToVersion) {
+      $oc2rcParams += " updatetoversion=$UpdateToVersion"
     }
     
     $UpdateSource = "http"
@@ -443,7 +514,7 @@ Function Wait-ForOfficeCTRUpadate() {
     }
 }
 
-Update-Office365Anywhere -WaitForUpdateToFinish $WaitForUpdateToFinish -EnableUpdateAnywhere $EnableUpdateAnywhere
+Update-Office365Anywhere -WaitForUpdateToFinish $WaitForUpdateToFinish -EnableUpdateAnywhere $EnableUpdateAnywhere -ForceAppShutdown $ForceAppShutdown -UpdatePromptUser $UpdatePromptUser -DisplayLevel $DisplayLevel -UpdateToVersion $UpdateToVersion
 
 
 
