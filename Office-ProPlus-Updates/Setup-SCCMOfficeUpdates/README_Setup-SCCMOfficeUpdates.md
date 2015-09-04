@@ -30,9 +30,9 @@ Before running this script, the following conditions must be met
 		 the PowerShell functions in the script into your PowerShell session which will allow you to 
 		 run the function from the console.
 
-5. Before you download the Updates you must configure the following files with the products and languages that you have installed in your environment.  This will ensure that you have the files necessary to update the products in your environment.  For reference of the options in the configuration xml you can either go to https://technet.microsoft.com/en-us/library/JJ219426.aspx or we provide an online editor in this GitHub repository at http://officedev.github.io/Office-IT-Pro-Deployment-Scripts/XmlEditor.html
+5. Before you download the Updates you must configure the following files with the products and languages that you have installed in your environment.  This will ensure that you have the files necessary to update the products in your environment.  For a reference of the options in the configuration xml you can either go to https://technet.microsoft.com/en-us/library/JJ219426.aspx or we provide an online editor in this GitHub repository at http://officedev.github.io/Office-IT-Pro-Deployment-Scripts/XmlEditor.html
 
-	If you specify a version in either the xml files below or in the command line options, in order to make that version the active version for this solution you either have to copy the v32_XX.X.XXXX.XXXX.cab and v64_XX.X.XXXX.XXXX.cab and rename them to v32.cab and v64.cab respectively. If no version is specified, the latest version will be downloaded and the v32.cab and v64.cab files will be updated automatically.
+	If you specify a version in either the xml files below or in the command line options, in order to make that version the active version for this solution, you either have to copy the v32_XX.X.XXXX.XXXX.cab and v64_XX.X.XXXX.XXXX.cab and rename them to v32.cab and v64.cab respectively. If no version is specified, the latest version will be downloaded and the v32.cab and v64.cab files will be updated automatically.
 
 		Configuration_UpdateSource32.xml
 		Configuration_UpdateSource64.xml
@@ -43,7 +43,7 @@ Before running this script, the following conditions must be met
         
 	If you specify the *-Path* parameter then the script will download the Office updates to that path. The path must be a valid UNC path. Specifying the *-Version* parameter will cause the script to download a specific version of the Office updates.
     
-    If you do not specify any parameters the script will create a local folder name 'OfficeUpdates' on the SystemDrive.  It will then share the folder using a hidden share name 'OfficeUpdates$'. This share will be used to store the Office update files. If you are not running the script on a SCCM server it is important that you specify the -Path parameter with all functions so the local share will not be created.
+    If you do not specify any parameters the script will create a local folder named 'OfficeUpdates' on the SystemDrive.  It will then share the folder using a hidden share name 'OfficeUpdates$'. This share will be used to store the Office update files. If you are not running the script on a SCCM server it is important that you specify the -Path parameter with all functions so the local share will not be created.
     
 7. Now that the Office update files have been downloaded to a share on the network you can run the setup function to configure SCCM. A SCCM collection must be specified to use this function. The collection specified should contain the workstations that you want configured.  If there are no Distribution Point Groups added to the collection then you will also have to use the parameter *-DistributionPointGroupName*
 
