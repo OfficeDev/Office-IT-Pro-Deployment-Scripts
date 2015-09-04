@@ -1,11 +1,11 @@
 #ODT Server Replication
 
-This script will provide IT Pros with a way to manage ODT replication between a source server and a remote destination.
+This script will provide IT Pros a way to manage ODT replication between a source server and a remote destination.
 
 ###Pre-requisites
 
 1. A shared folder that will host the C2R builds. This will be referred to as the source.
-2. Remote shared folders that will replicate from the source.
+2. Remote shared folders that will replicate the source.
 3. A configuration.xml file used to poll the CDN for C2R builds.
 4. The setup.exe used to download the C2R builds from the CDN.
 
@@ -42,6 +42,14 @@ Use the link provided above for configuring the xml file.
 
 ####Download-ODTOfficeFiles
 
+#####Parameters
+
+OfficeVersion - The version of Office used for the ODT
+
+XmlConfigPath - Path to the Configuration xml file located on a shared folder
+
+TaskName - The name of the task created on the source computer
+
 #####Example 1
 
   1. Open PowerShell as an administrator.
@@ -74,9 +82,14 @@ Use the link provided above for configuring the xml file.
 
 ####Replicate-ODTOfficeFiles
 
-#####Example 1
+#####Parameters
+
+Source - The source folder hosting the C2R builds.
+
+ODTShareNameLogFile - The name of the csv file containing a list of shared folders.
+
+#####Example
   
-      
   1. Open PowerShell as an administrator.
 
           From the Run dialog type PowerShell, right click it and choose Run as Administrator
@@ -88,13 +101,121 @@ Use the link provided above for configuring the xml file.
   3. Dot-Source the script to gain access to the functions inside.
 
           Type: . .\Manage-ODTReplication.ps1
+          
+  4. Compare the remote share to the source folder. If the source folder has updated files or folders the remote share will replicate the source.
+  
+        Replicate-ODTOfficeFiles -Source "\\Server1\ODT Replication" -ODTShareNameLogFile "\\Server1\ODT Replication\ODTRemoteShares.csv"
 
 ####Schedule-ODTRemoteShareReplicationTask
 
-####dd-ODTRemoteUpdateSource
+#####Parameters
 
+ComputerName - LIst of computers to create the shceduled task on.
+
+Source - The source share hosting the C2R builds.
+
+TaskName - The name of the scheduled task.
+
+Schedule - A trigger for the script to run Monthly. "MONTHLY" will autopopulate.
+
+Modifier - The value that refines the scheduled frequency. The list of available
+modifiers are FIRST,SECOND,THIRD,FOURTH,LAST.
+
+Days - Provide the day of week for the task to run on. The list of available
+days are MON,TUE,WED,THU,FRI,SAT,SUN.
+
+StartTime - The time of day the task will run. The hour format is 24-hour (HH:mm)
+If no StartTime is given the time will default to the time the task is created.
+
+#####Example
+
+    1. Open PowerShell as an administrator.
+
+          From the Run dialog type PowerShell, right click it and choose Run as Administrator
+        
+    2. Change the directory to the location where the PowerShell Script is saved. 
+  
+          Example: cd C:\PowerShellScripts
+
+    3. Dot-Source the script to gain access to the functions inside.
+
+          Type: . .\Manage-ODTReplication.ps1
+          
+    4. Create a scheduled task on a remote computer.
+    
+          Schedule-ODTRemoteShareReplicationTask -ComputerName Computer1,Computer2 -Source "\\Server1\ODT Replication" -TaskName "ODT Replication" -Schedule MONTHLY -Modifier SECOND -Days WED -StartTime 03:00 
+
+####Add-ODTRemoteUpdateSource
+
+#####Parameters
+
+ODTShareNameLogFile - The name of the csv file containing a list of shared folders.
+
+RemoteShares - A list of remote shares to remove from the csv.
+
+#####Example
+    1. Open PowerShell as an administrator.
+
+          From the Run dialog type PowerShell, right click it and choose Run as Administrator
+        
+    2. Change the directory to the location where the PowerShell Script is saved. 
+  
+          Example: cd C:\PowerShellScripts
+
+    3. Dot-Source the script to gain access to the functions inside.
+
+          Type: . .\Manage-ODTReplication.ps1
+          
+    4. Add a list of remote shares to be recorded in  csv file.
+    
+          Add-ODTRemoteUpdateSource -RemoteShare "\\Computer3\ODT Replication","\\Computer4\ODT Replication" -ODTShareNameLogFile "\\Server1\ODT Replication\ODTRemoteShares.csv"
+    
 ####Remove-ODTRemoteUpdateSource
 
-####ist-ODTRemoteUpdateSource
+#####Parameters
 
+ODTShareNameLogFile - The name of the csv file containing a list of shared folders.
 
+RemoteShares - A list of remote shares to remove from the csv.
+
+#####Example
+
+    1. Open PowerShell as an administrator.
+
+          From the Run dialog type PowerShell, right click it and choose Run as Administrator
+        
+    2. Change the directory to the location where the PowerShell Script is saved. 
+  
+          Example: cd C:\PowerShellScripts
+
+    3. Dot-Source the script to gain access to the functions inside.
+
+          Type: . .\Manage-ODTReplication.ps1
+          
+    4. Remove a remote share from the csv file containing the list of available shares to replicate to.
+
+          Remove-ODTRemoteUpdateSource -ODTShareNameLogFile "\\Server1\ODT Replication\ODTRemoteShares.csv" -RemoteShares "\\Computer1\ODT Replication","\\Computer2\ODT Replication"
+          
+####List-ODTRemoteUpdateSource
+
+#####Parameter
+
+ODTRemoteUpdateSource - The name of the csv file containing a list of shared folders.
+
+#####Example
+
+    1. Open PowerShell as an administrator.
+
+          From the Run dialog type PowerShell, right click it and choose Run as Administrator
+        
+    2. Change the directory to the location where the PowerShell Script is saved. 
+  
+          Example: cd C:\PowerShellScripts
+
+    3. Dot-Source the script to gain access to the functions inside.
+
+          Type: . .\Manage-ODTReplication.ps1 
+          
+    4. List the available shares to replicate to.
+
+         List-ODTRemoteUpdateSource -ODTShareNameLogFile
