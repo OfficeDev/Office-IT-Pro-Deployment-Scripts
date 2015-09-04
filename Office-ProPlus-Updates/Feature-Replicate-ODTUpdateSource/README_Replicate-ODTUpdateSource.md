@@ -52,31 +52,31 @@ TaskName - The name of the task created on the source computer
 
 #####Example 1
 
-  1. Open PowerShell as an administrator.
+    1. Open PowerShell as an administrator.
 
           From the Run dialog type PowerShell, right click it and choose Run as Administrator
         
-  2. Change the directory to the location where the PowerShell Script is saved. 
+    2. Change the directory to the location where the PowerShell Script is saved. 
   
           Example: cd C:\PowerShellScripts
 
-  3. Dot-Source the script to gain access to the functions inside.
+    3. Dot-Source the script to gain access to the functions inside.
 
           Type: . .\Manage-ODTReplication.ps1
 
-   By including the additional period before the relative script path you are 'Dot-Sourcing' 
-   the PowerShell function in the script into your PowerShell session which will allow you to 
-   run the inner functions from the console.
+            By including the additional period before the relative script path you are 'Dot-Sourcing' 
+            the PowerShell function in the script into your PowerShell session which will allow you to 
+            run the inner functions from the console.
    
-  4. Download the latest C2R build with a specified Configuration xml file
+    4. Download the latest C2R build with a specified Configuration xml file
   
           Download-ODTOfficeFiles -OfficeVersion 2013 -XmlConfigPath "\\Server1\ODT Replication"
           
 #####Example 2
 
-  1. See the first three steps in Example 1.
+    1. See the first three steps in Example 1.
   
-  2. Create a task on the source that will poll the CDN daily and download the latest C2R build.
+    2. Create a task on the source that will poll the CDN daily and download the latest C2R build.
   
           Download-ODTOfficeFiles -OfficeVersion 2013 -XmlConfigPath "C:\ODT Replication" -TaskName "ODT CDN Poll" -ScheduledTime 03:00
 
@@ -90,19 +90,19 @@ ODTShareNameLogFile - The name of the csv file containing a list of shared folde
 
 #####Example
   
-  1. Open PowerShell as an administrator.
+    1. Open PowerShell as an administrator.
 
           From the Run dialog type PowerShell, right click it and choose Run as Administrator
         
-  2. Change the directory to the location where the PowerShell Script is saved. 
+    2. Change the directory to the location where the PowerShell Script is saved. 
   
           Example: cd C:\PowerShellScripts
 
-  3. Dot-Source the script to gain access to the functions inside.
+    3. Dot-Source the script to gain access to the functions inside.
 
           Type: . .\Manage-ODTReplication.ps1
           
-  4. Compare the remote share to the source folder. If the source folder has updated files or folders the remote share will replicate the source.
+    4. Compare the remote share to the source folder. If the source folder has updated files or folders the remote share will replicate the source.
   
         Replicate-ODTOfficeFiles -Source "\\Server1\ODT Replication" -ODTShareNameLogFile "\\Server1\ODT Replication\ODTRemoteShares.csv"
 
