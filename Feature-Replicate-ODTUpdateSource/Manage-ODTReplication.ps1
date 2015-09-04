@@ -1,23 +1,62 @@
-﻿Add-Type -TypeDefinition @"
+﻿$OfficeCTRVersion = @"
    public enum OfficeCTRVersion
    {
-      Office2013
+      Office2013,Office2016
    }
 "@ 
+Add-Type -TypeDefinition $OfficeCTRVersion
+
+$Schedule = @"
+   public enum Schedule
+   {
+      MONTHLY
+   }
+"@ 
+Add-Type -TypeDefinition $Schedule
+
+$Modifier = @"
+   public enum Modifier
+   {
+      FIRST,SECOND,THIRD,FOURTH,LAST
+   }
+"@ 
+Add-Type -TypeDefinition $Modifier
+
+$Days = @"
+   public enum Days
+   {
+      MON,TUE,WED,THU,FRI,SAT,SUN
+   }
+"@ 
+Add-Type -TypeDefinition $Days
 
 function Download-ODTOfficeFiles() {
     param(
         [OfficeCTRVersion]$OfficeVersion,
-        [string] $XmlConfigPath
+        [string] $XmlConfigPath,
+        [string] $TaskName = $null,
+        [string[]] $ComputerName = $env:COMPUTERNAME
     )  
     
     switch($OfficeVersion){
 
-        Office2013 { $XmlDownload = "Office2013Setup.exe /Download $XmlConfigPath" }
-        Office2016 { $XmlDownload = "Office2016Setup.exe /Download $XmlConfigPath" }
-    }
+            Office2013 { $XmlDownload = ".\Office2013Setup.exe /Download $XmlConfigPath" }
+            Office2016 { $XmlDownload = ".\Office2016Setup.exe /Download $XmlConfigPath" }
+        }
 
-    Invoke-Expression $XmlDownload
+    if(!($TaskName)){
+    
+        Invoke-Expression $XmlDownload
+    }
+    else{
+
+        foreach($computer in $ComputerName){
+            
+            $scheduledTask = 'schtasks /create /s $computer /ru System /tn $TaskName /tr $XmlDownload /sc Daily /st 03:00:00'
+
+            Invoke-Expression $scheduledTask
+        }
+    }
 }
 
 function Replicate-ODTOfficeFiles() {
@@ -57,33 +96,67 @@ function Replicate-ODTOfficeFiles() {
     }
 }
 
+function Schedule-ODTRemoteShareReplicationTask{
+
+    Param(
+        [string[]] $ComputerName = $env:COMPUTERNAME,
+        [string] $Source,
+        [string] $TaskName,
+        [Schedule] $Schedule,
+        [Modifier] $Modifier,
+        [Days] $Days,
+        [string] $StartTime = $null         
+    )
+
+    foreach($Computer in $ComputerName){
+
+        $Destination = Read-Host "Enter the remote share for $computer"
+        $roboCommand = "Robocopy $Source $Destination /e /np"
+        $scheduledTask = 'schtasks /create /s $Computer /ru System /tn $TaskName /tr $roboCommand /sc $Schedule /MO $Modifier /D $Days /st $StartTime'   
+            
+        Invoke-Expression $scheduledTask
+    }                                             
+}
+
 function Add-ODTRemoteUpdateSource() {
-    param(
-        [string[]]$RemoteShares,
-        [string[]]$Languages,
+    
+    Param(
+        [string[]] $RemoteShare,
         [string] $ODTShareNameLogFile
     )
-   
-    $defaultDisplaySet = 'ShareName';
-    $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet(‘DefaultDisplayPropertySet’,[string[]]$defaultDisplaySet);
-    $PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultDisplayPropertySet);
-
-    $results = New-Object PSObject[] 1;
-
+        
     if(!(Test-Path $ODTShareNameLogFile)){
-        foreach($share in $RemoteShares){
-            $object = New-Object PSObject -Property @{'ShareName' = "$share";}
-            $object | Add-Member MemberSet PSStandardMembers $PSStandardMembers;
-            $results += $object
-            $results | Export-Csv $ODTShareNameLogFile -ErrorAction SilentlyContinue -NoTypeInformation
-        }
+
+        [array]$RemoteShareTable = foreach($share in $RemoteShare){
+       
+            $LastWriteTime = Get-ItemProperty $share | foreach {$_.LastWriteTime.ToString("MM-dd-yyyy")}
+            $results = new-object PSObject[] 0;
+            $Result = New-Object –TypeName PSObject 
+
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "ShareName" -Value $Share
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "LastUpdateTime" -Value $LastWriteTime
+
+            $result
+        } 
+
+        $RemoteShareTable | Export-Csv $ODTShareNameLogFile -NoTypeInformation
     }
     else{
-        foreach($share in $RemoteShares){
-            $logContent = Import-Csv $ODTShareNameLogFile -Header "ShareName"
-            $newRow = New-Object PSObject -Property @{ShareName = $share}
-            $logContent += $newRow | Export-Csv $ODTShareNameLogFile -Append -Force -NoTypeInformation
+
+        [array] $AddNewShare = foreach($share in $RemoteShare){
+
+            $LastWriteTime = Get-ItemProperty $share | foreach {$_.LastWriteTime.ToString("MM-dd-yyyy")}
+            $results = new-object PSObject[] 0;
+            $Result = New-Object –TypeName PSObject 
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "ShareName" -Value $Share
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "LastUpdateTime" -Value $LastWriteTime
+
+            $result
         }
+
+        [array]$ExistingShares = Import-Csv $ODTShareNameLogFile
+        $newShares = $ExistingShares += [array]$AddNewShare 
+        $newShares | Export-Csv $ODTShareNameLogFile -NoTypeInformation -Force
     }
 }
 
@@ -91,7 +164,7 @@ function Remove-ODTRemoteUpdateSource() {
 
     Param(
         [string] $ODTShareNameLogFile,
-        [string] $RemoteShares
+        [string[]] $RemoteShares
     )
 
     $removedShares = Import-Csv $ODTShareNameLogFile | where ShareName -notin $RemoteShares
