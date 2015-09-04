@@ -1,3 +1,11 @@
+[CmdletBinding()]
+param(
+    [Parameter()]
+    [string]$AttributeToStoreOfficeVersion = "info",
+    [Parameter()]
+    [string]$OverWriteAttributeValue = "false"
+)
+
 Function Get-LocalOfficeVersion {
 <#
 .Synopsis
@@ -269,8 +277,13 @@ Function Inventory-OfficeVersion {
         [Parameter()]
         [string]$AttributeToStoreOfficeVersion = "info",
         [Parameter()]
-        [bool]$OverWriteValue = $false
+        [string]$OverWriteAttributeValue = "false"
     )
+
+    [bool]$OverWriteValue = $false
+    if ($OverWriteAttributeValue.ToLower() -eq "true") {
+      $OverWriteValue = $true
+    }
 
     $ADSystemInfo = New-Object -ComObject ADSystemInfo
     $type = $ADSystemInfo.GetType()
@@ -315,4 +328,4 @@ Function Inventory-OfficeVersion {
     }
 }
 
-Inventory-OfficeVersion 
+Inventory-OfficeVersion -AttributeToStoreOfficeVersion $AttributeToStoreOfficeVersion -OverWriteAttributeValue $OverWriteAttributeValue

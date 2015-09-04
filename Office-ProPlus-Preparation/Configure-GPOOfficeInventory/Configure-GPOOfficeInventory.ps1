@@ -5,9 +5,11 @@ Function Configure-GPOOfficeInventory {
 	    [Parameter(Mandatory=$True)]
 	    [String]$GpoName,
 
-	
-	    [Parameter()]
-	    [String]$ScriptName = "InstallOffice2013.ps1"
+        [Parameter()]
+        [string]$AttributeToStoreOfficeVersion = "info",
+
+        [Parameter()]
+        [bool]$OverWriteFile = $false
     )
 
     Begin {
@@ -46,10 +48,13 @@ Function Configure-GPOOfficeInventory {
 	$gpoPath = "{0}\{1}\Policies\{{{2}}}" -f $baseSysVolPath, $domain, $gpoId
 	$relativePathToSchedTaskFolder = "Machine\Preferences\ScheduledTasks"
 	$scriptsPath = "{0}\{1}" -f $gpoPath, $relativePathToSchedTaskFolder
-
     $netlogonPath = "{0}\{1}\Scripts" -f $baseSysVolPath, $domain
 
-    $createDir = [system.io.directory]::CreateDirectory($scriptsPath) 
+    $relativePathToFileFolder = "Machine\Preferences\Files"
+	$filesPath = "{0}\{1}" -f $gpoPath, $relativePathToFileFolder
+
+    [system.io.directory]::CreateDirectory($scriptsPath) | Out-Null
+    [system.io.directory]::CreateDirectory($filesPath) | Out-Null
 
 	$gptIniFileName = "GPT.ini"
 	$gptIniFilePath = ".\$gptIniFileName"
@@ -58,10 +63,26 @@ Function Configure-GPOOfficeInventory {
 
 	$encoding = 'Unicode' #[System.Text.Encoding]::Unicode
 
+    $sourceFileXmlPath = Join-Path $PSScriptRoot "Files.xml"
+    $targetFileXmlPath = Join-Path $filesPath "Files.xml"
+
+    Copy-Item -Path $sourceFileXmlPath -Destination $targetFileXmlPath -Force
+
     $sourceXmlPath = Join-Path $PSScriptRoot "ScheduledTasks.xml"
     $targetXmlPath = Join-Path $scriptsPath "ScheduledTasks.xml"
 
-    Copy-Item -Path $sourceXmlPath -Destination $targetXmlPath
+    [string]$overWriteTextValue = "false"
+    if ($OverWriteFile) {
+       $overWriteTextValue = "true"
+    }
+
+    [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
+    $ConfigFile.Load($sourceXmlPath)
+    $argNode = $ConfigFile.SelectSingleNode("/ScheduledTasks/ImmediateTaskV2/Properties/Task/Actions/Exec/Arguments")
+    $argNode.InnerText = "-File %Windir%\Temp\Inventory-OfficeVersion.ps1 -AttributeToStoreOfficeVersion $AttributeToStoreOfficeVersion -OverWriteAttributeValue $overWriteTextValue"
+    $ConfigFile.Save($sourceXmlPath)
+     
+    Copy-Item -Path $sourceXmlPath -Destination $targetXmlPath -Force
 
     $sourcePsPath = Join-Path $PSScriptRoot "Inventory-OfficeVersion.ps1"
     $targetPsPath = Join-Path $netlogonPath "Inventory-OfficeVersion.ps1"
@@ -113,8 +134,10 @@ Function Configure-GPOOfficeInventory {
         }
     }
 
-    $extGuids = @("{00000000-0000-0000-0000-000000000000}{CAB54552-DEEA-4691-817E-ED4A4D1AFC72}",`
+    $extGuids = @("{00000000-0000-0000-0000-000000000000}{3BAE7E51-E3F4-41D0-853D-9BB9FD47605F}{CAB54552-DEEA-4691-817E-ED4A4D1AFC72}",`
+                  "{7150F9BF-48AD-4DA4-A49C-29EF4A8369BA}{3BAE7E51-E3F4-41D0-853D-9BB9FD47605F}",`
                   "{AADCED64-746C-4633-A97C-D61349046527}{CAB54552-DEEA-4691-817E-ED4A4D1AFC72}")
+
 
     foreach ($extGuid in $extGuids) {
         if (!$extList.Contains($extGuid)) {
@@ -148,4 +171,43 @@ Function Configure-GPOOfficeInventory {
     }
 
 
+}
+
+Function Export-GPOOfficeInventory {
+    Param (
+        [Parameter()]
+        [string]$AttributeToStoreOfficeVersion = "info"
+    )
+
+    $AttributeToStoreOfficeVersion = $AttributeToStoreOfficeVersion.ToLower()
+
+    $strFilter = "(&(objectCategory=Computer)($AttributeToStoreOfficeVersion=*))"
+
+    $objDomain = New-Object System.DirectoryServices.DirectoryEntry
+
+    $objSearcher = New-Object System.DirectoryServices.DirectorySearcher
+    $objSearcher.SearchRoot = $objDomain
+    $objSearcher.PageSize = 1000
+    $objSearcher.Filter = $strFilter
+    $objSearcher.SearchScope = "Subtree"
+
+    $colProplist = @("name", "operatingSystem", $AttributeToStoreOfficeVersion)
+    foreach ($i in $colPropList){
+        $objSearcher.PropertiesToLoad.Add($i) | out-Null
+    }
+
+    $colResults = $objSearcher.FindAll()
+
+    $results = new-object PSObject[] 0;
+    foreach ($objResult in $colResults) {
+        $objItem = $objResult.Properties;
+
+        $cltr = New-Object -TypeName PSObject
+        $cltr | Add-Member -MemberType NoteProperty -Name "ComputerName" -Value $objItem.name[0]
+        $cltr | Add-Member -MemberType NoteProperty -Name "OperatingSystem" -Value $objItem.operatingsystem[0]
+        $cltr | Add-Member -MemberType NoteProperty -Name "OfficeVersion" -Value $objItem.$AttributeToStoreOfficeVersion[0]
+
+        $results += $cltr
+    }
+    $results
 }
