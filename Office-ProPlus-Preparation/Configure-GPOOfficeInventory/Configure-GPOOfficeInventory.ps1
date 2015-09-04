@@ -1,22 +1,16 @@
-Function Configure-GPOOfficeInstallation {
+Function Configure-GPOOfficeInventory {
     [CmdletBinding(SupportsShouldProcess=$true)]
     Param
     (
 	    [Parameter(Mandatory=$True)]
 	    [String]$GpoName,
-	
-	    [Parameter(Mandatory=$True)]
-	    [String]$UncPath,
-	
-	    [Parameter()]
-	    [String]$ConfigFileName = "Configuration_InstallLocally.xml",
+
 	
 	    [Parameter()]
 	    [String]$ScriptName = "InstallOffice2013.ps1"
     )
 
-    Begin
-    {
+    Begin {
 	    $currentExecutionPolicy = Get-ExecutionPolicy
 	    Set-ExecutionPolicy Unrestricted -Scope Process -Force  
         $startLocation = Get-Location
@@ -40,7 +34,6 @@ Function Configure-GPOOfficeInstallation {
 	}
 
     Write-Host "GPO Found"
-
     Write-Host "Modifying GPO: $GpoName..." -NoNewline
 
 	$baseSysVolPath = "$env:LOGONSERVER\sysvol"
@@ -51,8 +44,8 @@ Function Configure-GPOOfficeInstallation {
     $adGPO = [ADSI]"LDAP://CN={$gpoId},CN=Policies,CN=System,$DomainPath"
     	
 	$gpoPath = "{0}\{1}\Policies\{{{2}}}" -f $baseSysVolPath, $domain, $gpoId
-	$relativePathToScriptsFolder = "Machine\Scripts"
-	$scriptsPath = "{0}\{1}" -f $gpoPath, $relativePathToScriptsFolder
+	$relativePathToSchedTaskFolder = "Machine\Preferences\ScheduledTasks"
+	$scriptsPath = "{0}\{1}" -f $gpoPath, $relativePathToSchedTaskFolder
 
     $createDir = [system.io.directory]::CreateDirectory($scriptsPath) 
 
@@ -60,119 +53,17 @@ Function Configure-GPOOfficeInstallation {
 	$gptIniFilePath = ".\$gptIniFileName"
    
 	Set-Location $scriptsPath
-	
-	#region PSSCripts.ini
-	$psScriptsFileName = "psscripts.ini"
-    $scriptsFileName = "scripts.ini"
-
-	$psScriptsFilePath = ".\$psScriptsFileName"
-    $scriptsFilePath = ".\$scriptsFileName"
 
 	$encoding = 'Unicode' #[System.Text.Encoding]::Unicode
-
-	if(!(Test-Path $psScriptsFilePath))
-	{
-		$baseContent = "`r`n[ScriptsConfig]`r`nStartExecutePSFirst=true`r`n[Startup]"
-		$baseContent | Out-File -FilePath $psScriptsFilePath -Encoding unicode -Force
-		
-		$file = Get-ChildItem -Path $psScriptsFilePath
-		$file.Attributes = $file.Attributes -bor ([System.IO.FileAttributes]::Hidden).value__
-	}
-
-	if(!(Test-Path $scriptsFilePath))
-	{
-        "" | Out-File -FilePath $scriptsFilePath -Encoding unicode -Force
-
-		$file = Get-ChildItem -Path $scriptsFilePath
-		$file.Attributes = $file.Attributes -bor ([System.IO.FileAttributes]::Hidden).value__
-    }
 	
-	$content = Get-Content -Encoding $encoding -Path $psScriptsFilePath
+    #$createDir = [system.io.directory]::CreateDirectory($setupExeTargetPath) 	
+	#Copy-Item -Path $setupExeSourcePath -Destination $setupExeTargetPath -Force
 
-	$length = $content.Length
+    $sourceXmlPath = Join-Path $PSScriptRoot "ScheduledTasks.xml"
+    $targetXmlPath = Join-Path $scriptsPath "ScheduledTasks.xml"
 
-	$newContentLength = $length + 2
+    Copy-Item -Path $sourceXmlPath -Destination $targetXmlPath
 
-	$newContent = New-Object System.String[] ($newContentLength)
-
-	$pattern = [string]"\[\w+\]"
-
-	$startUpIndex = 0
-	$nextIndex = 0
-	$startUpFound = $false
-
-	foreach($s in $content)
-	{
-		if($s -match $pattern)
-		{
-		   if($startUpFound)
-		   {
-			  $nextIndex = $content.IndexOf($s) - 1
-			  break
-		   }
-		   else
-		   {
-				if($s -eq "[Startup]")
-				{
-					$startUpIndex = $content.IndexOf($s)
-					$startUpFound = $true
-				}
-		   }
-		}
-	}
-
-	if($startUpFound -and ($nextIndex -eq 0))
-	{
-		$nextIndex = $content.Count - 1;
-	}
-	
-	$lastEntry = [string]$content[$nextIndex]
-
-	$num = [regex]::Matches($lastEntry, "\d+")[0].Value   
-	
-	if($num)
-	{
-		$lastScriptIndex = [Convert]::ToInt32($num)
-	}
-	else
-	{
-		$lastScriptIndex = 0
-		$nextScriptIndex = 0
-	}
-	
-	if($lastScriptIndex -gt 0)
-	{
-		$nextScriptIndex = $lastScriptIndex + 1
-	}
-
-	for($i=0; $i -le $nextIndex; $i++)
-	{
-		$newContent[$i] = $content[$i]
-	}
-
-	$newContent[$nextIndex+1] = "{0}CmdLine={1}" -f $nextScriptIndex, $ScriptName
-
-	$newContent[$nextIndex+2] = "{0}Parameters=-UncPath {1} -ConfigFileName {2}" -f $nextScriptIndex, $UncPath, $ConfigFileName
-
-	for($i=$nextIndex; $i -lt $length; $i++)
-	{
-		$newContent[$i] = $content[$i]
-	}
-
-	$newContent | Set-Content -Encoding $encoding -Path $psScriptsFilePath -Force
-	#endregion
-	
-	#region Place the script to attach in the StartUp Folder
-	$setupExeSourcePath = "$startLocation\$ScriptName"
-	$setupExeTargetPath = "$scriptsPath\StartUp"
-    $setupExeTargetPathShutdown = "$scriptsPath\ShutDown"
-
-    $createDir = [system.io.directory]::CreateDirectory($setupExeTargetPath) 
-    $createDir = [system.io.directory]::CreateDirectory($setupExeTargetPathShutdown) 
-	
-	Copy-Item -Path $setupExeSourcePath -Destination $setupExeTargetPath -Force
-	#endregion
-	
 	#region Update GPT.ini
 	Set-Location $gpoPath   
 
@@ -185,21 +76,15 @@ Function Configure-GPOOfficeInstallation {
 		if($s.StartsWith("Version"))
 		{
 			$index = $gptIniContent.IndexOf($s)
-
 			#Write-Host "Old GPT.ini Version: $s"
 
 			$num = ($s -split "=")[1]
-
 			$ver = [Convert]::ToInt32($num)
-
 			$newVer = $ver + 1
-
 			$s = $s -replace $num, $newVer.ToString()
 
 			#Write-Host "New GPT.ini Version: $s"
-
             $newVersion = $s.Split('=')[1]
-
 			$gptIniContent[$index] = $s
 			break
 		}
@@ -226,12 +111,15 @@ Function Configure-GPOOfficeInstallation {
         }
     }
 
-    if (!$extList.Contains("42B5FAAE-6536-11D2-AE5A-0000F87571E3")) {
-      $addItem = $extList.Add("42B5FAAE-6536-11D2-AE5A-0000F87571E3")
-    }
+    $extGuids = @("{00000000-0000-0000-0000-000000000000}",`
+                  "{CAB54552-DEEA-4691-817E-ED4A4D1AFC72}",`
+                  "{AADCED64-746C-4633-A97C-D61349046527}",`
+                  "{CAB54552-DEEA-4691-817E-ED4A4D1AFC72}")
 
-    if (!$extList.Contains("40B6664F-4972-11D1-A7CA-0000F87571E3")) {
-      $addItem = $extList.Add("40B6664F-4972-11D1-A7CA-0000F87571E3")
+    foreach ($extGuid in $extGuids) {
+        if (!$extList.Contains($extGuid)) {
+          $addItem = $extList.Add($extGuid)
+        }
     }
 
     $newGptExt = "["
@@ -249,8 +137,8 @@ Function Configure-GPOOfficeInstallation {
 	
     Write-Host "GPO Modified"
     Write-Host ""
-    Write-Host "The Group Policy '$GpoName' has been modified to install Office at Workstation Startup." -BackgroundColor DarkBlue
-    Write-Host "Once Group Policy has refreshed on the Workstations then Office will install on next startup if the computer has access to the Network Share." -BackgroundColor DarkBlue
+    Write-Host "The Group Policy '$GpoName' has been modified to inventory Office via Scheduled Task." -BackgroundColor DarkBlue
+    Write-Host "Once Group Policy has refreshed as scheduled task will be created to run the scheduled task." -BackgroundColor DarkBlue
 
     }
 

@@ -52,7 +52,6 @@ begin {
     $PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultDisplayPropertySet)
 }
 
-
 process {
 
  $ComputerName = "$env:computername"
@@ -154,9 +153,7 @@ process {
 
           }
        }
-    }
-
-    
+    }  
 
     foreach ($regKey in $installKeys) {
         $keyList = new-object System.Collections.ArrayList
