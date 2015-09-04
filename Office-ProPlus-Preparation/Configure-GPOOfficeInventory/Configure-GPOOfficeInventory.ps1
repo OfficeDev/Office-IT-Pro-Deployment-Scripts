@@ -47,6 +47,8 @@ Function Configure-GPOOfficeInventory {
 	$relativePathToSchedTaskFolder = "Machine\Preferences\ScheduledTasks"
 	$scriptsPath = "{0}\{1}" -f $gpoPath, $relativePathToSchedTaskFolder
 
+    $netlogonPath = "{0}\{1}\Scripts" -f $baseSysVolPath, $domain
+
     $createDir = [system.io.directory]::CreateDirectory($scriptsPath) 
 
 	$gptIniFileName = "GPT.ini"
@@ -55,14 +57,15 @@ Function Configure-GPOOfficeInventory {
 	Set-Location $scriptsPath
 
 	$encoding = 'Unicode' #[System.Text.Encoding]::Unicode
-	
-    #$createDir = [system.io.directory]::CreateDirectory($setupExeTargetPath) 	
-	#Copy-Item -Path $setupExeSourcePath -Destination $setupExeTargetPath -Force
 
     $sourceXmlPath = Join-Path $PSScriptRoot "ScheduledTasks.xml"
     $targetXmlPath = Join-Path $scriptsPath "ScheduledTasks.xml"
 
     Copy-Item -Path $sourceXmlPath -Destination $targetXmlPath
+
+    $sourcePsPath = Join-Path $PSScriptRoot "Inventory-OfficeVersion.ps1"
+    $targetPsPath = Join-Path $netlogonPath "Inventory-OfficeVersion.ps1"
+    Copy-Item -Path $sourcePsPath -Destination $targetPsPath -Force
 
 	#region Update GPT.ini
 	Set-Location $gpoPath   
@@ -99,22 +102,19 @@ Function Configure-GPOOfficeInventory {
     }
 
     if ($currentExt) {
-        [string]$currentExt = $currentExt.replace("[", "")
-        $currentExt = $currentExt.replace("]", "")
-
-        $extSplit = $currentExt.Split('{')
+        $extSplit = $currentExt.Split(']')
 
         foreach ($extGuid in $extSplit) {
           if ($extGuid) {
-             $addItem = $extList.Add($extGuid.Replace("}", "").ToUpper())
+            if ($extGuid.Length -gt 0) {
+                $addItem = $extList.Add($extGuid.Replace("[", "").ToUpper())
+            }
           }
         }
     }
 
-    $extGuids = @("{00000000-0000-0000-0000-000000000000}",`
-                  "{CAB54552-DEEA-4691-817E-ED4A4D1AFC72}",`
-                  "{AADCED64-746C-4633-A97C-D61349046527}",`
-                  "{CAB54552-DEEA-4691-817E-ED4A4D1AFC72}")
+    $extGuids = @("{00000000-0000-0000-0000-000000000000}{CAB54552-DEEA-4691-817E-ED4A4D1AFC72}",`
+                  "{AADCED64-746C-4633-A97C-D61349046527}{CAB54552-DEEA-4691-817E-ED4A4D1AFC72}")
 
     foreach ($extGuid in $extGuids) {
         if (!$extList.Contains($extGuid)) {
@@ -122,11 +122,9 @@ Function Configure-GPOOfficeInventory {
         }
     }
 
-    $newGptExt = "["
     foreach ($extAddGuid in $extList) {
-       $newGptExt += "{$extAddGuid}"
+       $newGptExt += "[$extAddGuid]"
     }
-    $newGptExt += "]"
 
     $adGPO.put('versionNumber',$newVersion)
     $adGPO.put('gPCMachineExtensionNames',$newGptExt)
