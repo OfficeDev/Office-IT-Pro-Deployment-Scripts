@@ -1,3 +1,4 @@
+
 Function Download-GPOOfficeInstallation {
 
     [CmdletBinding(SupportsShouldProcess=$true)]
@@ -284,36 +285,32 @@ Function Configure-GPOOfficeInstallation {
     }
 
     if ($currentExt) {
-        [string]$currentExt = $currentExt.replace("[", "")
-        $currentExt = $currentExt.replace("]", "")
-
-        $extSplit = $currentExt.Split('{')
+        $extSplit = $currentExt.Split(']')
 
         foreach ($extGuid in $extSplit) {
           if ($extGuid) {
-             $addItem = $extList.Add($extGuid.Replace("}", "").ToUpper())
+            if ($extGuid.Length -gt 0) {
+                $addItem = $extList.Add($extGuid.Replace("[", "").ToUpper())
+            }
           }
         }
     }
 
-    if (!$extList.Contains("42B5FAAE-6536-11D2-AE5A-0000F87571E3")) {
-      $addItem = $extList.Add("42B5FAAE-6536-11D2-AE5A-0000F87571E3")
+    $extGuids = @("{42B5FAAE-6536-11D2-AE5A-0000F87571E3}{40B6664F-4972-11D1-A7CA-0000F87571E3}")
+
+    foreach ($extGuid in $extGuids) {
+        if (!$extList.Contains($extGuid)) {
+          $addItem = $extList.Add($extGuid)
+        }
     }
 
-    if (!$extList.Contains("40B6664F-4972-11D1-A7CA-0000F87571E3")) {
-      $addItem = $extList.Add("40B6664F-4972-11D1-A7CA-0000F87571E3")
-    }
-
-    $newGptExt = "["
     foreach ($extAddGuid in $extList) {
-       $newGptExt += "{$extAddGuid}"
+       $newGptExt += "[$extAddGuid]"
     }
-    $newGptExt += "]"
 
     $adGPO.put('versionNumber',$newVersion)
     $adGPO.put('gPCMachineExtensionNames',$newGptExt)
     $adGPO.CommitChanges()
-
     
 	$gptIniContent | Set-Content -Encoding $encoding -Path $gptIniFilePath -Force
 	

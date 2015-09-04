@@ -52,7 +52,6 @@ begin {
     $PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultDisplayPropertySet)
 }
 
-
 process {
 
  $ComputerName = "$env:computername"
@@ -154,9 +153,7 @@ process {
 
           }
        }
-    }
-
-    
+    }  
 
     foreach ($regKey in $installKeys) {
         $keyList = new-object System.Collections.ArrayList
@@ -267,6 +264,21 @@ process {
 }
 
 Function Inventory-OfficeVersion {
+    [CmdletBinding()]
+    param(
+        [Parameter()]
+        [string]$AttributeToStoreOfficeVersion = "info",
+        [Parameter()]
+        [bool]$OverWriteValue = $false
+    )
+
+    $ADSystemInfo = New-Object -ComObject ADSystemInfo
+    $type = $ADSystemInfo.GetType()
+    $ComputerDistinguishedName = $type.InvokeMember('ComputerName','GetProperty',$null,$ADSystemInfo,$null)
+   
+    $adComputer = [ADSI]"LDAP://$ComputerDistinguishedName"
+    $currentValue =  $adComputer.$AttributeToStoreOfficeVersion
+    if (!($currentValue)) { $currentValue = "" }
 
     $officeInstalls = Get-LocalOfficeVersion
     if ($officeInstalls) {
@@ -278,18 +290,29 @@ Function Inventory-OfficeVersion {
           $officeInstall = $officeInstalls
         }
 
-        $ADSystemInfo = New-Object -ComObject ADSystemInfo
-        $type = $ADSystemInfo.GetType()
-        $ComputerDistinguishedName = $type.InvokeMember('ComputerName','GetProperty',$null,$ADSystemInfo,$null)
-
         $officeText = $officeInstall.DisplayName + " : " + $officeInstall.Bitness + " : " + $officeInstall.Version
 
-        $adComputer = [ADSI]"LDAP://$ComputerDistinguishedName"
-        $adComputer.put('physicalDeliveryOfficeName',$officeText)
-        $adComputer.CommitChanges()
+        $writeValue = $false
+        if ($OverWriteValue) {
+          $writeValue = $true
+        } else {
+          if ($currentValue.Trim().Length -eq 0) {
+             $writeValue = $true
+          }
+        }
+
+        if ($currentValue -match ': \d{2}\.\d\.\d{4}\.\d{4}') {
+            $writeValue = $true
+        }
+
+        if ($writeValue) {
+            if ($currentValue -ne $officeText) {
+                $adComputer = [ADSI]"LDAP://$ComputerDistinguishedName"
+                $adComputer.put($AttributeToStoreOfficeVersion,$officeText)
+                $adComputer.CommitChanges()
+            }
+        }
     }
 }
 
-
-Inventory-OfficeVersion
-
+Inventory-OfficeVersion 
