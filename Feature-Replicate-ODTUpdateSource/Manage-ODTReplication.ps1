@@ -4,10 +4,10 @@ Manage the download and replication of the latest
 Click-to-Run builds.
 
 .DESCRIPTION
-The functions available will provide IT Professionals
-with methods for polling the CDN daily for newer C2R builds, 
-and replicate the folders from the source to a list of specified
-remote shares on the network.
+The functions available will provide IT Pros with methods for polling 
+the CDN daily for newer C2R builds, replicate the folders from 
+the source to specified remote shares on the network, and manage the list
+of available shares to replicate to.
 
 .FUNCTIONS
 Download-ODTOfficeFiles
