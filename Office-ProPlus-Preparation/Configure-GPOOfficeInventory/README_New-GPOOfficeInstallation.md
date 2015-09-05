@@ -62,16 +62,14 @@ Copy the files below in to the folder from where the script will be ran.
 
           Configure-GPOOfficeInventory -GpoName WorkstationPolicy
 
-5. Run the "SetUpOfficeInstallationGpo.ps1" script and specify the paramaters, $UncPath and $GpoName.
+6. Once the computers in scope of the conigured Group Policy Object (GPO) have the policy you should start seeing the Office Versions showing up in Active Directory
 
-          Configure-GPOOfficeInstallation -UncPath "\\Pathname\Sharename" -GpoName "GroupPolicyName"
-
-6. Refresh the Group Policy on a client computer:
+7. To refresh the Group Policy on a client computer:
 
           From the Start screen type command and Press Enter
           Type "gpupdate /force" and press Enter.
 
-7. Exporting computer Office versions from Active Diretory
+8. Exporting computer Office versions from Active Diretory
 
           Export-GPOOfficeInventory
 
