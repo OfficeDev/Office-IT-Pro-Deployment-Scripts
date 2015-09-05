@@ -1,36 +1,45 @@
-#New GPO Office Installation
+#Configure GPO Office Inventory
 
-This script will configure an existing Active Directory Group Policy to silently install Office 2013 Click-To-Run on computer startup.
+This script will configure an existing Group Policy Object (GPO) to schedule a task on workstations to query the version of Office that is installed on the computer and write that information to an attribute on the computer object in Active Directory.
 
-For more information on deploying Office via Group Policy go to https://technet.microsoft.com/en-us/library/Ff602181.aspx
+If you don't have System Center Configruration Manager (SCCM) or an equivalent software management system then using this script will provide the capability to inventory what versions of Office are installed in the domain.
+
+With this script the parameter **AttributeToStoreOfficeVersion** will set the attribute on the computer object in Active Driectory that is used to store the Office version.  By default the attribute used is the **info** attribute.  If you want to use an attribute that can be added to the list view in Active Directory User and Computer then two possible attributes would be **telephoneNumber** (Business Phone) and **physicalDeliveryOfficeName** (Office)
+
+In order for this script to work the computer object's **SELF** must have write permissions to the attribute specified.  By default a computer in Active Directory has permissions to write to attributes that are classified as 'Personal Information'.  This functionality is what allows this inventory functionality to work.  The scheduled task that runs on the computer runs under the 'System' context which gives it permissions to write to its own computer account in Active Directory.  If you would like to use an attribute that is not in the 'Personal Information' list then you would have to give 'Self' permissions to write to that Attribute on computer object in Active Directory. A list of possible attributes that you can use are listed below.  The default attribute that is used by this script is Info.  It is an attribute that is unlikely to be already used.  The drawback to using it is that you can not see the value in the computer list view in Active Directory Users and computers.
+
+    -info
+    -physicalDeliveryOfficeName
+    -assistant
+    -facsimileTelephoneNumber
+    -InternationalISDNNumber
+    -personalTitle
+    -otherIpPhone
+    -ipPhone
+    -primaryInternationalISDNNumber
+    -thumbnailPhoto
+    -postalCode
+    -preferredDeliveryMethod
+    -registeredAddress
+    -streetAddress
+    -telephoneNumber
+    -teletexTerminalIdentifier
+    -telexNumber
+    -primaryTelexNumber
 
 ###Pre-requisites
 
 1. Active Directory
-2. A shared network folder for Office installation files
-3. An existing Group Policy Object that is assigned to the target computers you want to install Office 2013 Click-To-Run
-
-###Network Share
-
-When deciding the location of the network share you should consider the locations from which the client workstations are accessing the share.  There are several options to ensure that workstations are installing Office over their local network.
-
-1. **Multiple GPOs** - You could create a separate Group Policy and a Network Share for each network site. For each network site you could create local share for the Office installation file and create a Group Policy that is applied to the workstations in that site to point to that local share.  This will provide a solution that provides a local copy of the Office installation files for each site.  The limitation to this solution is depending on how the Group Policy is assigned to the workstations this may not ensure that the computer is using a local share to install Office.  This could happen if a laptop user is a different location from where their Group Policy is assigned.  Another issue with this solution is having to maintain multiple Group Policies.
-
-2. **DFS Shares** - If the netowrk share that is used is a Distributed File System (DFS) share you can leverage the replication capabilities of DFS to ensure that each network site has copy of the Office installation files.  Also by using a DFS share path you can ensure that the workstations 
-
-3. **Netlogon Share** - By using the netlogon share on the Active Directory Domain Controllers to store the Office installation files you can ensure the workstations are always using the closest Domain Controller to install Office.  Since this solution uses Active Directory replication to copy the Office installation files to every Domain Controller in the Domain you must ensure that every Domain Controller has enough free space, on the volume where the SYSVOL share is located, to store the Office installation files.
+3. An existing Group Policy Object that is assigned to the target computers you want to inventory the Office Version
 
 ###Setup
 
 Copy the files below in to the folder from where the script will be ran.
 
-        Configure-GPOOfficeInstallation.ps1
-        Configuration_Download.xml
-        Configuration_InstallLocally.xml
-        Configuration_template.xml
-        InstallOffice2016.ps1
-        SetupOffice2013.exe 
-
+        Configure-GPOOfficeInventory.ps1
+        Inventory-OfficeVersion.ps1
+        ScheduledTasks.xml
+        Files.xml
 
 ###Example
 
@@ -43,36 +52,26 @@ Copy the files below in to the folder from where the script will be ran.
       
 3. Dot-Source the script to gain access to the functions inside.
 
-           Type: . .\Configure-GPOOfficeInstallation.ps1
+           Type: . .\Configure-GPOOfficeInventory
 
            By including the additional period before the relative script path you are 'Dot-Sourcing' 
            the PowerShell function in the script into your PowerShell session which will allow you to 
            run the inner functions from the console.
 
-4. Run the Download-GPOOfficeInstallation cmdlet and specify the paramaters, -UncPath
+4. Run the Configure-GPOOfficeInventory function. This function will configure the Group Policy Object (GPO) specified to inventory the Office version of the workstations that are in the scope of the GPO.
 
-          Download-GPOOfficeInstallation -UncPath "\\Pathname\Sharename"
-      
-   Office will download the Office install files to the specified folder share 
-   and will copy the Configuration_Download.xml, 
-   Configuration_InstallLocally.xml, and the SetupOffice2013.exe files. 
+          Configure-GPOOfficeInventory -GpoName WorkstationPolicy
 
-5. Run the "SetUpOfficeInstallationGpo.ps1" script and specify the paramaters, $UncPath and $GpoName.
+6. Once the computers in scope of the conigured Group Policy Object (GPO) have the policy you should start seeing the Office Versions showing up in Active Directory
 
-          Configure-GPOOfficeInstallation -UncPath "\\Pathname\Sharename" -GpoName "GroupPolicyName"
-
-6. Refresh the Group Policy on a client computer:
+7. To refresh the Group Policy on a client computer:
 
           From the Start screen type command and Press Enter
           Type "gpupdate /force" and press Enter.
 
-7. Restart the client computer.
+8. Exporting computer Office versions from Active Diretory
 
-          When the client computer starts the script will launch in the background. 
-          You can verify if the script is running by opening 
-          Task Manager and look for the Click To Run process.
-
-
+          Export-GPOOfficeInventory
 
 
 
