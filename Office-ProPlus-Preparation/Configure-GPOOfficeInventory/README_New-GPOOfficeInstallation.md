@@ -48,8 +48,9 @@ Copy the files below in to the folder from where the script will be ran.
           From the Run dialog type PowerShell, right click it and choose Run as Administrator
 
 2. Change the directory to the location where the PowerShell Script is saved.
+
           Example: cd C:\PowerShellScripts
-      
+
 3. Dot-Source the script to gain access to the functions inside.
 
            Type: . .\Configure-GPOOfficeInventory
