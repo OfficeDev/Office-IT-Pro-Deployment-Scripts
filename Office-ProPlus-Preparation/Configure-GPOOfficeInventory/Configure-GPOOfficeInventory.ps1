@@ -48,20 +48,18 @@ Function Configure-GPOOfficeInventory {
 	$gpoPath = "{0}\{1}\Policies\{{{2}}}" -f $baseSysVolPath, $domain, $gpoId
 	$relativePathToSchedTaskFolder = "Machine\Preferences\ScheduledTasks"
 	$scriptsPath = "{0}\{1}" -f $gpoPath, $relativePathToSchedTaskFolder
-    $netlogonPath = "{0}\{1}\Scripts" -f $baseSysVolPath, $domain
-
+    [system.io.directory]::CreateDirectory($scriptsPath) | Out-Null
+    
     $relativePathToFileFolder = "Machine\Preferences\Files"
 	$filesPath = "{0}\{1}" -f $gpoPath, $relativePathToFileFolder
-
-    [system.io.directory]::CreateDirectory($scriptsPath) | Out-Null
     [system.io.directory]::CreateDirectory($filesPath) | Out-Null
+
+    $netlogonPath = "{0}\{1}\Scripts" -f $baseSysVolPath, $domain
 
 	$gptIniFileName = "GPT.ini"
 	$gptIniFilePath = ".\$gptIniFileName"
    
 	Set-Location $scriptsPath
-
-	$encoding = 'Unicode' #[System.Text.Encoding]::Unicode
 
     $sourceFileXmlPath = Join-Path $PSScriptRoot "Files.xml"
     $targetFileXmlPath = Join-Path $filesPath "Files.xml"
@@ -191,7 +189,7 @@ Function Export-GPOOfficeInventory {
     $objSearcher.Filter = $strFilter
     $objSearcher.SearchScope = "Subtree"
 
-    $colProplist = @("name", "operatingSystem", $AttributeToStoreOfficeVersion)
+    $colProplist = @("name", "operatingSystem", "distinguishedname", $AttributeToStoreOfficeVersion)
     foreach ($i in $colPropList){
         $objSearcher.PropertiesToLoad.Add($i) | out-Null
     }
@@ -201,6 +199,8 @@ Function Export-GPOOfficeInventory {
     $results = new-object PSObject[] 0;
     foreach ($objResult in $colResults) {
         $objItem = $objResult.Properties;
+
+        #$objItem.distinguishedname
 
         $cltr = New-Object -TypeName PSObject
         $cltr | Add-Member -MemberType NoteProperty -Name "ComputerName" -Value $objItem.name[0]
