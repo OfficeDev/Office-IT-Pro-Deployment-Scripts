@@ -1,6 +1,6 @@
 ﻿#**Nuke-Office**
 
-This PowerShell Script will create a scheduled task on a remote PC to completely remove whatever version of Office is present, including in the registry.   
+This PowerShell Script will create a scheduled task on a remote PC to completely remove any version of Office present.   
 The Script will also notify you of any Add-Ins present on the PC.
 
 ###**Pre-requisites**
