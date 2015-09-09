@@ -148,14 +148,14 @@ process {
 
     [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
 
-    $officeConfig = getCTRConfig -regProv $regProv
-    
     $productReleaseIds = "";
     $productPlatform = "32";
 
+    $officeConfig = getCTRConfig -regProv $regProv
+    $mainOfficeProduct = Get-OfficeVersion -ComputerName $ComputerName
+    $officeProducts = Get-OfficeVersion -ComputerName $ComputerName -ShowAllInstalledProducts
+
     if (!($officeConfig.ClickToRunInstalled)) {
-        $mainOfficeProduct = Get-OfficeVersion -ComputerName $ComputerName
-        $officeProducts = Get-OfficeVersion -ComputerName $ComputerName -ShowAllInstalledProducts
         $officeConfig = getOfficeConfig -regProv $regProv -mainOfficeProduct $mainOfficeProduct -officeProducts $officeProducts
         if ($officeConfig -and $officeConfig.OfficeKeyPath) {
             $officeLangs = officeGetLanguages -regProv $regProv -OfficeKeyPath $officeConfig.OfficeKeyPath
@@ -163,6 +163,8 @@ process {
         if ($officeConfig -and $officeConfig.Platform) {
            $productPlatform = $officeConfig.Platform
         }
+    } else {
+      $productPlatform = $officeConfig.Platform
     }
 
 
@@ -171,6 +173,7 @@ process {
     }
 
     [bool]$officeExists = $true
+
     if (!($officeProducts)) {
       $officeExists = $false
       if ($DefaultConfigurationXml) {
