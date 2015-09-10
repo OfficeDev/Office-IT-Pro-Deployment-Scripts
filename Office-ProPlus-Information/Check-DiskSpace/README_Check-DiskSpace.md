@@ -1,36 +1,6 @@
-#Check Local Disk Space
+### Check Disk Space
+This script will output a CSV file with data around disk space utilization that can be assessed in a graphical view using new charts in Excel 2016. The folder also contains a spreadsheet that utilizes Power Query to import the data, and then a PivotTable to organize the data, so that you can display it in a Sunburst or Treemap chart.
 
-###Pre-requisites
+**IT Pro Scenario:** This script is really designed for Excel 2016 and provides IT Pros with insight into diskspace utilization for a workstation while also exposing them to the new charts that are available in Excel 2016. 
 
-Excel 2016
-
-###Examples
-
-1. Download "Excel 2016 New Charts.docx" and "Excel Template.xlsx." 
-
-          The Excel 2016 New Charts.docx will explain the process of creating a Treemap or Sunburst chart in Excel.
-          
-          The Excel Template.xlsx is the template containing the PivotTable.  
-
-2. Open a PowerShell console.
-
-          From the Run dialog type PowerShell and press Enter.
-  
-3. Change the directory to the location where the PowerShell Script is saved.
-
-          Example: cd C:\PowerShellScripts
-  
-4. Run the Script.
-
-          Type . .\Check-DiskSpace.ps1
-
-          By including the additional period before the relative script path you are 'Dot-Sourcing' 
-          the PowerShell function in the script into your PowerShell session which will allow you to 
-          run the function 'Get-ModernOfficeApps' from the console
-           
-5. A folder called "FolderData.csv" containing the results will be copied to Public\Documents.
-
-6. Open "Excel Template.xlsx", click the Data Tab and under Connections choose Refresh All.
-
-7. Follow the instructions in "Excel 2016 New Charts.docx" to insert the data into a Treemap or Sunburst chart.
-           
+[README](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/wiki/README_Check-LocalDiskSpace)
