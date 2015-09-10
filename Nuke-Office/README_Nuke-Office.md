@@ -21,14 +21,10 @@ The Script will also notify you of any Add-Ins present on the PC.
 
 		Example: cd C:\PowerShellScripts
 		
-2. Run the Script. With no parameters specified the script will remove the locally installed Office Version.
+2. Run the Script. With no parameters specified the script will remove the local installed version of Office from the PC.
 
-		Type . .\Nuke-Office.ps1
-		Press Enter and then if Microsoft Office is installed locally it should display. 
-		By including the additional period before the relative script path you are 'Dot-Sourcing' 
-		the PowerShell function in the script into your PowerShell session which will allow you to 
-		run the function from the console.
-	
+		Type  .\Nuke-Office.ps1
+			
 3. Run the Script against a remote computer. 
 
 		Type Nuke-Office -ComputerName Client01
@@ -36,6 +32,10 @@ The Script will also notify you of any Add-Ins present on the PC.
 4. Run the Script against multiple remote computers. 
 
 		Type Nuke-Office -ComputerName Client01,Client02
+
+5. Run the script against a remote computer and supply admin credentials.
+
+		Type Nuke-Office -ComputerName Client01 -credential
 	
 
 	
