@@ -255,7 +255,7 @@ has updated files or folders they will be copied to each destination.
 
     $progDirPath = "$env:ProgramFiles\OfficeCTRRepl"
     [system.io.directory]::CreateDirectory($progDirPath) | Out-Null
-    $Source = $progDirPath
+    $Source = "$progDirPath\Office"
 
     $ODTShareNameLogFile = "$progDirPath\ODTReplication.csv"
 
@@ -266,28 +266,27 @@ has updated files or folders they will be copied to each destination.
     [array]$ShareName = Import-Csv $ODTShareNameLogFile | foreach {$_.ShareName}
 
     foreach($share in $ShareName){
+        $shareFolder = "$share\Office"
+        [system.io.directory]::CreateDirectory($shareFolder) | Out-Null
 
         $destinationFolder = Get-ChildItem $share -Recurse
         $sourceFolder = Get-ChildItem $Source -Recurse
 
         if($destinationFolder -ne $null){          
             $comparison = Compare-Object -ReferenceObject $sourceFolder -DifferenceObject $destinationFolder -IncludeEqual
-            $roboCopy = "Robocopy `"$source`" `"$share`" /mir /r:0 /w:0"
 
             if($comparison.SideIndicator -eq "<="){
-
-                Invoke-Expression $roboCopy
+                Copy-WithProgress -Source $source -Destination $share 
             }
             elseif($comparison.SideIndicator -eq "=="){
-
-                Write-Host "The folders are up to date in $share"
+                Write-Host "The remote update source `"$share`" is up to date."
             }
         }
         elseif($destinationFolder -eq $null){
-             
             $roboCopy = "Robocopy `"$source`" `"$share`" /mir /r:0 /w:0"
+            #Invoke-Expression $roboCopy
 
-            Invoke-Expression $roboCopy
+            Copy-WithProgress -Source $source -Destination $share 
         }                         
     }
 }
@@ -304,14 +303,8 @@ for the task to operate (Schedule,Modifier,Days,StartTime) a scheduled
 task can be created on the remote computers to copy the files from
 the source.
 
-.PARAMETER ComputerName
+.PARAMETER RemoteShare
 LIst of computers to create the shceduled task on.
-
-.PARAMETER Source
-The source share hosting the C2R builds.
-
-.PARAMETER TaskName
-The name of the scheduled task.
 
 .PARAMETER Schedule
 A trigger for the script to run Monthly. "MONTHLY" will autopopulate.
@@ -337,20 +330,32 @@ the second Wednesday at 3:00am.
 
 #>
     Param(
-        [string[]] $ComputerName = $env:COMPUTERNAME,
-        [string] $Source,
-        [string] $TaskName,
+        [Parameter(Mandatory=$true)]
+        [string[]] $RemoteShare,
+
+        [Parameter()]
         [Schedule] $Schedule,
+
+        [Parameter()]
         [Modifier] $Modifier,
+
+        [Parameter()]
         [Days] $Days,
+
+        [Parameter()]
         [string] $StartTime = $null         
     )
+    
+    $TaskName = "Microsoft\OfficeC2R\$OfficeVersion ODT Download"
 
-    foreach($Computer in $ComputerName){
+    $progDirPath = "$env:ProgramFiles\OfficeCTRRepl"
+    [system.io.directory]::CreateDirectory($progDirPath) | Out-Null
+    $Source = "$progDirPath\Office"
 
-        $Destination = Read-Host "Enter the remote share for $computer"
-        $roboCommand = "Robocopy $Source $Destination /e /np"
-        $scheduledTask = 'schtasks /create /s $Computer /ru System /tn $TaskName /tr $roboCommand /sc $Schedule /MO $Modifier /D $Days /st $StartTime'   
+    foreach($remotePath in $RemoteShare){
+
+        $roboCommand = "Robocopy $Source $remotePath /mir /r:0 /w:0"
+        $scheduledTask = "schtasks /create /s $Computer /ru System /tn $TaskName /tr $roboCommand /sc $Schedule /MO $Modifier /D $Days /st $StartTime"
             
         Invoke-Expression $scheduledTask
     }                                             
@@ -488,6 +493,165 @@ be populated in the console.
 
     Import-Csv $ODTShareNameLogFile
 }
+
+
+function Copy-WithProgress2 {
+    [CmdletBinding()]
+    param (
+            [Parameter(Mandatory = $true)]
+            [string] $Source
+        , [Parameter(Mandatory = $true)]
+            [string] $Destination
+        , [int] $Gap = 200
+        , [int] $ReportGap = 2000
+    )
+    # Define regular expression that will gather number of bytes copied
+    $RegexBytes = '(?<=\s+)\d+(?=\s+)';
+
+    #region Robocopy params
+    # MIR = Mirror mode
+    # NP  = Don't show progress percentage in log
+    # NC  = Don't log file classes (existing, new file, etc.)
+    # BYTES = Show file sizes in bytes
+    # NJH = Do not display robocopy job header (JH)
+    # NJS = Do not display robocopy job summary (JS)
+    # TEE = Display log in stdout AND in target log file
+    $CommonRobocopyParams = '/MIR /NP /NDL /NC /BYTES /NJH /NJS';
+    #endregion Robocopy params
+
+    #region Robocopy Staging
+    Write-Verbose -Message 'Analyzing robocopy job ...';
+    $StagingLogPath = '{0}\temp\{1} robocopy staging.log' -f $env:windir, (Get-Date -Format 'yyyy-MM-dd hh-mm-ss');
+
+    $StagingArgumentList = '"{0}" "{1}" /LOG:"{2}" /L {3}' -f $Source, $Destination, $StagingLogPath, $CommonRobocopyParams;
+    Write-Verbose -Message ('Staging arguments: {0}' -f $StagingArgumentList);
+    Start-Process -Wait -FilePath robocopy.exe -ArgumentList $StagingArgumentList -NoNewWindow;
+    # Get the total number of files that will be copied
+    $StagingContent = Get-Content -Path $StagingLogPath;
+    $FileCount = $StagingContent.Count;
+
+    # Get the total number of bytes to be copied
+    [RegEx]::Matches(($StagingContent -join "`n"), $RegexBytes) | % { $BytesTotal = 0; } { $BytesTotal += $_.Value; };
+    Write-Verbose -Message ('Total bytes to be copied: {0}' -f $BytesTotal);
+    #endregion Robocopy Staging
+
+    #region Start Robocopy
+    # Begin the robocopy process
+    $RobocopyLogPath = '{0}\temp\{1} robocopy.log' -f $env:windir, (Get-Date -Format 'yyyy-MM-dd hh-mm-ss');
+    $ArgumentList = '"{0}" "{1}" /LOG:"{2}" /ipg:{3} {4}' -f $Source, $Destination, $RobocopyLogPath, $Gap, $CommonRobocopyParams;
+    Write-Verbose -Message ('Beginning the robocopy process with arguments: {0}' -f $ArgumentList);
+    $Robocopy = Start-Process -FilePath robocopy.exe -ArgumentList $ArgumentList -Verbose -PassThru -NoNewWindow;
+    Start-Sleep -Milliseconds 100;
+    #endregion Start Robocopy
+
+    #region Progress bar loop
+    while (!$Robocopy.HasExited) {
+        Start-Sleep -Milliseconds $ReportGap;
+        $BytesCopied = 0;
+        $LogContent = Get-Content -Path $RobocopyLogPath;
+        $BytesCopied = [Regex]::Matches($LogContent, $RegexBytes) | ForEach-Object -Process { $BytesCopied += $_.Value; } -End { $BytesCopied; };
+        Write-Verbose -Message ('Bytes copied: {0}' -f $BytesCopied);
+        Write-Verbose -Message ('Files copied: {0}' -f $LogContent.Count);
+        Write-Progress -Activity Robocopy -Status ("Copied {0} files; Copied {1} of {2} bytes" -f $LogContent.Count, $BytesCopied, $BytesTotal) -PercentComplete (($BytesCopied/$BytesTotal)*100);
+    }
+    #endregion Progress loop
+
+    #region Function output
+    [PSCustomObject]@{
+        BytesCopied = $BytesCopied;
+        FilesCopied = $LogContent.Count;
+    };
+    #endregion Function output
+}
+
+function Copy-WithProgress   
+{  
+    [CmdletBinding()]  
+  
+    param (  
+            [Parameter(Mandatory = $true)]  
+            [string] $Source  
+        , [Parameter(Mandatory = $true)]  
+            [string] $Destination)  
+  
+    $robocopycmd = "robocopy ""$source"" ""$destination"" /mir /bytes"  
+    $Staging = Invoke-Expression "$robocopycmd /l"  
+    $totalnewfiles = $Staging -match 'new file'  
+    $totalmodified = $Staging -match 'newer'  
+    $totalfiles = $totalnewfiles + $totalmodified 
+    $TotalBytesarray = @() 
+    foreach ($file in $totalfiles)   
+    {  
+        $fName = $Newfile.tostring().substring(13, 13).trim();
+
+        if ($fName.length -ne 9) {
+            $TotalBytesarray+= $file.substring(13,15).trim() 
+        }  
+        else 
+        {
+            $TotalBytesarray+= $file.substring(13,13).trim()
+        }  
+    }  
+    $totalbytes = (($TotalBytesarray | Measure-Object -Sum).sum) 
+  
+    $robocopyjob = Start-Job -Name robocopy -ScriptBlock {param ($command) ; Invoke-Expression -Command $command} -ArgumentList $robocopycmd  
+  
+    while ($robocopyjob.State -eq 'running')  
+    {  
+        $progress = Receive-Job -Job $robocopyjob -Keep -ErrorAction SilentlyContinue 
+        if ($progress) 
+        { 
+            $copiedfiles = ($progress | Select-String -SimpleMatch 'new file', 'newer') 
+            if ($copiedfiles.count -le 0) { $TotalFilesCopied = $copiedfiles.Count } 
+            else { $TotalFilesCopied = $copiedfiles.Count - 1 } 
+            $FilesRemaining = ($totalfiles.count - $TotalFilesCopied) 
+            $Bytesarray = @() 
+            foreach ($Newfile in $copiedfiles) 
+            { 
+                $fName = $Newfile.tostring().substring(13, 13).trim();
+
+                if ($fName.length -ne 9) { 
+                   $Bytesarray += $Newfile.tostring().substring(13, 15).trim() 
+                } 
+                else { 
+                   $Bytesarray += $Newfile.tostring().substring(13, 13).trim() 
+                } 
+            } 
+            $bytescopied = ([int64]$Bytesarray[-1] * ($Filepercentcomplete/100)) 
+            $totalfilebytes = [int64]$Bytesarray[-1] 
+            $TotalBytesCopied = ((($Bytesarray | Measure-Object -Sum).sum) - $totalfilebytes) + $bytescopied 
+            $TotalBytesRemaining = ($totalbytes - $totalBytesCopied) 
+            if ($copiedfiles) 
+            { 
+                if ($copiedfiles[-1].tostring().substring(13, 13).trim().length -eq 9) { 
+                    $currentfile = $copiedfiles[-1].tostring().substring(28).trim() 
+                } 
+                else { 
+                    $currentfile = $copiedfiles[-1].tostring().substring(25).trim() 
+                } 
+            } 
+            $totalfilescount = $totalfiles.count 
+            if ($progress[-1] -match '%') { $Filepercentcomplete = $progress[-1].substring(0, 3).trim() } 
+            else { $Filepercentcomplete = 0 } 
+            $totalPercentcomplete = (($TotalBytesCopied/$totalbytes) * 100) 
+            if ($totalbytes -gt 2gb) { $BytesCopiedprogress = "{0:N2}" -f ($totalBytesCopied/1gb); $totalbytesprogress = "{0:N2}" -f ($totalbytes/1gb); $bytes = 'Gbytes' } 
+            else { $BytesCopiedprogress = "{0:N2}" -f ($totalBytesCopied/1mb); $totalbytesprogress = "{0:N2}" -f ($totalbytes/1mb); $bytes = 'Mbytes' } 
+            if ($totalfilebytes -gt 1gb) { $totalfilebytes = "{0:N2}" -f ($totalfilebytes/1gb); $bytescopied = "{0:N2}" -f ($bytescopied/1gb); $filebytes = 'Gbytes' } 
+            else { $totalfilebytes = "{0:N2}" -f ($totalfilebytes/1mb); $bytescopied = "{0:N2}" -f ($bytescopied/1mb); $filebytes = 'Mbytes' } 
+             
+            Write-Progress -Id 1 -Activity "Copying files from $source to $destination, $totalfilescopied of $totalfilescount files copied" -Status "$bytescopiedprogress of $totalbytesprogress $bytes copied" -PercentComplete $totalPercentcomplete 
+            Write-Progress -Id 2 -Activity "$currentfile" -status "$bytescopied of $totalfilebytes $filebytes" -PercentComplete $Filepercentcomplete 
+        } 
+         
+    } 
+     
+    Write-Progress -Id 1 -Activity "Copying files from $source to $destination" -Status 'Completed' -Completed  
+    Write-Progress -Id 2 -Activity 'Done' -Completed  
+    $results = Receive-Job -Job $robocopyjob  
+    Remove-Job $robocopyjob  
+    $results[5]  
+    $results[-13..-1]  
+} 
 
 
 function findScheduledTask() {
