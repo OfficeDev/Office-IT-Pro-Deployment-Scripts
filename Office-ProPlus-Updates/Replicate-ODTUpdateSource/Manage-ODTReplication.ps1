@@ -225,7 +225,7 @@ function Remove-ODTDownloadSchedule() {
 }
 
 
-function Replicate-ODTOfficeFiles() {
+function Start-ODTFileReplication() {
 <#
 
 .SYNOPSIS
@@ -250,9 +250,18 @@ has updated files or folders they will be copied to each destination.
 
 #>
     Param(
-        [string[]] $Source,
-        [string[]] $ODTShareNameLogFile
+
     )
+
+    $progDirPath = "$env:ProgramFiles\OfficeCTRRepl"
+    [system.io.directory]::CreateDirectory($progDirPath) | Out-Null
+    $Source = $progDirPath
+
+    $ODTShareNameLogFile = "$progDirPath\ODTReplication.csv"
+
+    if (!(Test-Path -Path $progDirPath)) {
+      throw "Source Path '$Source' does not exist run Start-ODTDownload cmdlet to create it"
+    }
 
     [array]$ShareName = Import-Csv $ODTShareNameLogFile | foreach {$_.ShareName}
 
@@ -263,7 +272,7 @@ has updated files or folders they will be copied to each destination.
 
         if($destinationFolder -ne $null){          
             $comparison = Compare-Object -ReferenceObject $sourceFolder -DifferenceObject $destinationFolder -IncludeEqual
-            $roboCopy = "Robocopy $source $share /e /np"
+            $roboCopy = "Robocopy `"$source`" `"$share`" /mir /r:0 /w:0"
 
             if($comparison.SideIndicator -eq "<="){
 
@@ -276,15 +285,14 @@ has updated files or folders they will be copied to each destination.
         }
         elseif($destinationFolder -eq $null){
              
-            $roboCopy = "Robocopy $source $share /e /np"
+            $roboCopy = "Robocopy `"$source`" `"$share`" /mir /r:0 /w:0"
 
             Invoke-Expression $roboCopy
         }                         
     }
 }
 
-
-function Schedule-ODTRemoteShareReplicationTask{
+function New-ODTFileReplicationTask{
 <#
 .SYNOPSIS
 Create a scheduled task on the remote computer to copy the 
@@ -375,9 +383,12 @@ shares "\\Computer3\ODT Replication" and "\\Computer4\ODT Replication".
 
 #> 
     Param(
-        [string[]] $RemoteShare,
-        [string] $ODTShareNameLogFile = "$env:WinDir\Temp\ODTReplication.csv"
+        [string[]] $RemoteShare
     )
+
+    $progDirPath = "$env:ProgramFiles\OfficeCTRRepl"
+    [system.io.directory]::CreateDirectory($progDirPath) | Out-Null
+    $ODTShareNameLogFile = "$progDirPath\ODTReplication.csv"
         
     if(!(Test-Path $ODTShareNameLogFile)){
 
@@ -437,9 +448,12 @@ be removed from the csv file and saved.
 
 #>
     Param(
-        [string] $ODTShareNameLogFile = "$env:WinDir\Temp\ODTReplication.csv",
         [string[]] $RemoteShare
     )
+
+    $progDirPath = "$env:ProgramFiles\OfficeCTRRepl"
+    [system.io.directory]::CreateDirectory($progDirPath) | Out-Null
+    $ODTShareNameLogFile = "$progDirPath\ODTReplication.csv"
 
     $removedShares = Import-Csv $ODTShareNameLogFile | where ShareName -notin $RemoteShare
     $removedShares | Export-Csv $ODTShareNameLogFile -Force -NoTypeInformation
@@ -465,8 +479,12 @@ be populated in the console.
 
 #>
     Param(
-       [string] $ODTShareNameLogFile = "$env:WinDir\Temp\ODTReplication.csv"
+       
     )
+
+    $progDirPath = "$env:ProgramFiles\OfficeCTRRepl"
+    [system.io.directory]::CreateDirectory($progDirPath) | Out-Null
+    $ODTShareNameLogFile = "$progDirPath\ODTReplication.csv"
 
     Import-Csv $ODTShareNameLogFile
 }
