@@ -145,17 +145,24 @@ function New-ODTDownloadSchedule() {
     $progDirPath = "$env:ProgramFiles\OfficeCTRRepl"
     [system.io.directory]::CreateDirectory($progDirPath) | Out-Null
 
-    Copy-Item -Path "$PSScriptRoot\Office2013Setup.exe"
+    switch($OfficeVersion){
+       Office2013 { 
+         if (!(Test-Path -Path "$env:ProgramFiles\OfficeCTRRepl\Office2013Setup.exe")) {
+            Copy-Item -Path "$PSScriptRoot\Office2013Setup.exe" -Destination "$env:ProgramFiles\OfficeCTRRepl\Office2013Setup.exe" -Force | Out-Null
+         }
+       }
+       Office2016 { 
+          if (!(Test-Path -Path "$env:ProgramFiles\OfficeCTRRepl\Office2016Setup.exe")) {
+            Copy-Item -Path "$PSScriptRoot\Office2016Setup.exe" -Destination "$env:ProgramFiles\OfficeCTRRepl\Office2016Setup.exe" -Force -ErrorAction SilentlyContinue | Out-Null
+          }
+       }
+    }
 
-    $configFileName = Split-Path -Path $XmlConfigPath -Leaf
+    Copy-Item -Path $XmlConfigPath -Destination "$env:ProgramFiles\OfficeCTRRepl\configuration32.xml" -Force | Out-Null
+    Copy-Item -Path $XmlConfigPath -Destination "$env:ProgramFiles\OfficeCTRRepl\configuration64.xml" -Force | Out-Null
 
-    Copy-Item -Path $PSScriptRoot\Office2013Setup.exe -Destination "$env:ProgramFiles\OfficeCTRRepl\Office2013Setup.exe" | Out-Null
-
-    Copy-Item -Path $XmlConfigPath -Destination "$env:ProgramFiles\OfficeCTRRepl\configuration32.xml" | Out-Null
-    Copy-Item -Path $XmlConfigPath -Destination "$env:ProgramFiles\OfficeCTRRepl\configuration64.xml" | Out-Null
-
-    Set-ODTAdd -TargetFilePath "$env:ProgramFiles\OfficeCTRRepl\configuration32.xml" -SourcePath $progDirPath -Bitness 32
-    Set-ODTAdd -TargetFilePath "$env:ProgramFiles\OfficeCTRRepl\configuration64.xml" -SourcePath $progDirPath -Bitness 64
+    Set-ODTAdd -TargetFilePath "$env:ProgramFiles\OfficeCTRRepl\configuration32.xml" -SourcePath $progDirPath -Bitness 32 | Out-Null
+    Set-ODTAdd -TargetFilePath "$env:ProgramFiles\OfficeCTRRepl\configuration64.xml" -SourcePath $progDirPath -Bitness 64 | Out-Null
 
     switch($OfficeVersion){
        Office2013 { 
@@ -179,8 +186,11 @@ function New-ODTDownloadSchedule() {
     $scheduledTaskAdd64 = "schtasks /create /ru System /tn '$TaskName64' /tr '$odtCmd64' /sc Monthly /mo SECOND /D TUE /st $ScheduledTime64Bit /f"
     $scheduledTaskDel64 = "schtasks /delete /tn '$TaskName64' /f"
 
-    if (findScheduledTask -OfficeVersion $OfficeVersion) {
+    if (findScheduledTask -OfficeVersion $OfficeVersion -Bitness 32) {
         Invoke-Expression $scheduledTaskDel32
+    }
+
+    if (findScheduledTask -OfficeVersion $OfficeVersion -Bitness 64) {
         Invoke-Expression $scheduledTaskDel64
     }
 
@@ -195,14 +205,22 @@ function Remove-ODTDownloadSchedule() {
     
     [string] $computer = $env:COMPUTERNAME
      
-    $TaskName = "Microsoft\OfficeC2R\$OfficeVersion ODT Download"
+    $TaskName32 = "Microsoft\OfficeC2R\$OfficeVersion ODT Download 32-Bit"
+    $TaskName64 = "Microsoft\OfficeC2R\$OfficeVersion ODT Download 64-Bit"
 
-    $scheduledTaskDel = "schtasks /delete /tn '$TaskName' /f"
+    $scheduledTaskDel32 = "schtasks /delete /tn '$TaskName32' /f"
+    $scheduledTaskDel64 = "schtasks /delete /tn '$TaskName64' /f"
 
-    if (findScheduledTask -OfficeVersion $OfficeVersion) {
-        Invoke-Expression $scheduledTaskDel
+    if (findScheduledTask -OfficeVersion $OfficeVersion -Bitness 32) {
+        Invoke-Expression $scheduledTaskDel32
     } else {
-        Write-Host "Task `"$TaskName`" does not exist"
+        Write-Host "Task `"$TaskName32`" does not exist"
+    }
+
+    if (findScheduledTask -OfficeVersion $OfficeVersion -Bitness 64) {
+        Invoke-Expression $scheduledTaskDel64
+    } else {
+        Write-Host "Task `"$TaskName64`" does not exist"
     }
 }
 
@@ -456,10 +474,11 @@ be populated in the console.
 
 function findScheduledTask() {
     param(
-        [OfficeCTRVersion]$OfficeVersion = "Office2013"
+        [OfficeCTRVersion]$OfficeVersion = "Office2013",
+        [string]$Bitness="32"
     )  
     
-     $TaskName = "Microsoft\OfficeC2R\$OfficeVersion ODT Download"
+     $TaskName = "Microsoft\OfficeC2R\$OfficeVersion ODT Download $Bitness-bit"
      $scheduledTaskQuery = "/query /tn `"$TaskName`""
  
         $pinfo = New-Object System.Diagnostics.ProcessStartInfo
