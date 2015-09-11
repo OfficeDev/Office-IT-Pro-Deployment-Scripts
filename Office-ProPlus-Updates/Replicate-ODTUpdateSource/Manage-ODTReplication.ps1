@@ -74,6 +74,7 @@ $Days = @"
 "@ 
 Add-Type -TypeDefinition $Days
 
+function Start-ODTDownload() {
 <#
 
 .SYNOPSIS
@@ -105,36 +106,108 @@ Download-ODTOfficeFiles -OfficeVersion 2013 -XmlConfigPath "C:\ODT Replication" 
 A task will be created on the host machine to download the latest C2R builds daily at 3:00am.
 
 #>
-function Download-ODTOfficeFiles() {
     param(
-        [OfficeCTRVersion]$OfficeVersion,
-        [string] $XmlConfigPath,
-        [string] $TaskName = $null,
-        [string[]] $ComputerName = $env:COMPUTERNAME,
-        [string] $ScheduledTime
+        [OfficeCTRVersion]$OfficeVersion = "Office2013",
+        [string] $XmlConfigPath = "$PSScriptRoot\configuration.xml"
     )  
+
+    . $PSScriptRoot\Edit-OfficeConfigurationFile.ps1
     
     switch($OfficeVersion){
-
-            Office2013 { $XmlDownload = ".\Office2013Setup.exe /Download $XmlConfigPath" }
-            Office2016 { $XmlDownload = ".\Office2016Setup.exe /Download $XmlConfigPath" }
-        }
-
-    if(!($TaskName)){
-    
-        Invoke-Expression $XmlDownload
+       Office2013 { $odtExtPath = "$PSScriptRoot\Office2013Setup.exe" }
+       Office2016 { $odtExtPath = "$PSScriptRoot\Office2016Setup.exe" }
     }
-    else{
 
-        foreach($computer in $ComputerName){
-            
-            $scheduledTask = 'schtasks /create /s $computer /ru System /tn $TaskName /tr $XmlDownload /sc Daily /st $ScheduledTime'
+    $progDirPath = "$env:ProgramFiles\OfficeCTRRepl"
+    [system.io.directory]::CreateDirectory($progDirPath) | Out-Null
 
-            Invoke-Expression $scheduledTask
-        }
+    Write-Host "Downloading `"$OfficeVersion`" Latest 32-Bit Version..." -NoNewline
+    $download32 = "$odtExtPath /download $XmlConfigPath"
+    Set-ODTAdd -TargetFilePath "$XmlConfigPath" -Bitness 32 -SourcePath $progDirPath | Out-Null
+    Invoke-Expression $download32
+    Write-Host "Completed"
+
+    Write-Host "Downloading `"$OfficeVersion`" Latest 64-Bit Version..." -NoNewline
+    $download64 = "$odtExtPath /download $XmlConfigPath"
+    Set-ODTAdd -TargetFilePath "$XmlConfigPath" -Bitness 64 -SourcePath $progDirPath | Out-Null
+    Invoke-Expression $download64
+    Write-Host "Completed"
+}
+
+function New-ODTDownloadSchedule() {
+    param(
+        [OfficeCTRVersion]$OfficeVersion = "Office2013",
+        [string] $XmlConfigPath = "$PSScriptRoot\configuration.xml",
+        [string] $ScheduledTime32Bit = "19:00",
+        [string] $ScheduledTime64Bit = "18:00"
+    )  
+    
+    $progDirPath = "$env:ProgramFiles\OfficeCTRRepl"
+    [system.io.directory]::CreateDirectory($progDirPath) | Out-Null
+
+    Copy-Item -Path "$PSScriptRoot\Office2013Setup.exe"
+
+    $configFileName = Split-Path -Path $XmlConfigPath -Leaf
+
+    Copy-Item -Path $PSScriptRoot\Office2013Setup.exe -Destination "$env:ProgramFiles\OfficeCTRRepl\Office2013Setup.exe" | Out-Null
+
+    Copy-Item -Path $XmlConfigPath -Destination "$env:ProgramFiles\OfficeCTRRepl\configuration32.xml" | Out-Null
+    Copy-Item -Path $XmlConfigPath -Destination "$env:ProgramFiles\OfficeCTRRepl\configuration64.xml" | Out-Null
+
+    Set-ODTAdd -TargetFilePath "$env:ProgramFiles\OfficeCTRRepl\configuration32.xml" -SourcePath $progDirPath -Bitness 32
+    Set-ODTAdd -TargetFilePath "$env:ProgramFiles\OfficeCTRRepl\configuration64.xml" -SourcePath $progDirPath -Bitness 64
+
+    switch($OfficeVersion){
+       Office2013 { 
+            $odtCmd32 = "\`"$progDirPath\Office2013Setup.exe\`" /Download \`"$env:ProgramFiles\OfficeCTRRepl\configuration32.xml\`"" 
+            $odtCmd64 = "\`"$progDirPath\Office2013Setup.exe\`" /Download \`"$env:ProgramFiles\OfficeCTRRepl\configuration64.xml\`"" 
+       }
+       Office2016 { 
+            $odtCmd32 = "\`"$progDirPath\Office2016Setup.exe\`" /Download \`"$env:ProgramFiles\OfficeCTRRepl\configuration32.xml\`"" 
+            $odtCmd64 = "\`"$progDirPath\Office2016Setup.exe\`" /Download \`"$env:ProgramFiles\OfficeCTRRepl\configuration64.xml\`"" 
+       }
+    }
+
+    [string] $computer = $env:COMPUTERNAME
+     
+    $TaskName32 = "Microsoft\OfficeC2R\$OfficeVersion ODT Download 32-Bit"
+    $TaskName64 = "Microsoft\OfficeC2R\$OfficeVersion ODT Download 64-Bit"
+
+    $scheduledTaskAdd32 = "schtasks /create /ru System /tn '$TaskName32' /tr '$odtCmd32' /sc Monthly /mo SECOND /D TUE /st $ScheduledTime32Bit /f"
+    $scheduledTaskDel32 = "schtasks /delete /tn '$TaskName32' /f"
+
+    $scheduledTaskAdd64 = "schtasks /create /ru System /tn '$TaskName64' /tr '$odtCmd64' /sc Monthly /mo SECOND /D TUE /st $ScheduledTime64Bit /f"
+    $scheduledTaskDel64 = "schtasks /delete /tn '$TaskName64' /f"
+
+    if (findScheduledTask -OfficeVersion $OfficeVersion) {
+        Invoke-Expression $scheduledTaskDel32
+        Invoke-Expression $scheduledTaskDel64
+    }
+
+    Invoke-Expression $scheduledTaskAdd32
+    Invoke-Expression $scheduledTaskAdd64
+}
+
+function Remove-ODTDownloadSchedule() {
+    param(
+        [OfficeCTRVersion]$OfficeVersion = "Office2013"
+    )  
+    
+    [string] $computer = $env:COMPUTERNAME
+     
+    $TaskName = "Microsoft\OfficeC2R\$OfficeVersion ODT Download"
+
+    $scheduledTaskDel = "schtasks /delete /tn '$TaskName' /f"
+
+    if (findScheduledTask -OfficeVersion $OfficeVersion) {
+        Invoke-Expression $scheduledTaskDel
+    } else {
+        Write-Host "Task `"$TaskName`" does not exist"
     }
 }
 
+
+function Replicate-ODTOfficeFiles() {
 <#
 
 .SYNOPSIS
@@ -158,8 +231,6 @@ The source folder and destination folder(s) will be compared. If the source fold
 has updated files or folders they will be copied to each destination.
 
 #>
-function Replicate-ODTOfficeFiles() {
-
     Param(
         [string[]] $Source,
         [string[]] $ODTShareNameLogFile
@@ -172,8 +243,7 @@ function Replicate-ODTOfficeFiles() {
         $destinationFolder = Get-ChildItem $share -Recurse
         $sourceFolder = Get-ChildItem $Source -Recurse
 
-        if($destinationFolder -ne $null){
-                         
+        if($destinationFolder -ne $null){          
             $comparison = Compare-Object -ReferenceObject $sourceFolder -DifferenceObject $destinationFolder -IncludeEqual
             $roboCopy = "Robocopy $source $share /e /np"
 
@@ -195,6 +265,8 @@ function Replicate-ODTOfficeFiles() {
     }
 }
 
+
+function Schedule-ODTRemoteShareReplicationTask{
 <#
 .SYNOPSIS
 Create a scheduled task on the remote computer to copy the 
@@ -238,8 +310,6 @@ the second Wednesday at 3:00am.
 
 
 #>
-function Schedule-ODTRemoteShareReplicationTask{
-
     Param(
         [string[]] $ComputerName = $env:COMPUTERNAME,
         [string] $Source,
@@ -260,7 +330,9 @@ function Schedule-ODTRemoteShareReplicationTask{
     }                                             
 }
 
-<#
+
+function Add-ODTRemoteUpdateSource() {
+   <#
 
 .SYNOPSIS
 Create or add a remote share to a list of shares to replicate the ODT
@@ -283,12 +355,10 @@ Add-ODTRemoteUpdateSource -RemoteShare "\\Computer3\ODT Replication","\\Computer
 The ODTRemoteShares.csv file will be updated to include 
 shares "\\Computer3\ODT Replication" and "\\Computer4\ODT Replication".
 
-#>
-function Add-ODTRemoteUpdateSource() {
-    
+#> 
     Param(
         [string[]] $RemoteShare,
-        [string] $ODTShareNameLogFile
+        [string] $ODTShareNameLogFile = "$env:WinDir\Temp\ODTReplication.csv"
     )
         
     if(!(Test-Path $ODTShareNameLogFile)){
@@ -326,6 +396,7 @@ function Add-ODTRemoteUpdateSource() {
     }
 }
 
+function Remove-ODTRemoteUpdateSource() {
 <#
 
 .SYNOPSIS
@@ -347,10 +418,8 @@ Remote shares \\Computer1\ODT Replication" and "\\Computer2\ODT Replication will
 be removed from the csv file and saved.
 
 #>
-function Remove-ODTRemoteUpdateSource() {
-
     Param(
-        [string] $ODTShareNameLogFile,
+        [string] $ODTShareNameLogFile = "$env:WinDir\Temp\ODTReplication.csv",
         [string[]] $RemoteShare
     )
 
@@ -358,6 +427,7 @@ function Remove-ODTRemoteUpdateSource() {
     $removedShares | Export-Csv $ODTShareNameLogFile -Force -NoTypeInformation
 }
 
+function List-ODTRemoteUpdateSource() {
 <#
 .SYNOPSIS
 List available shares.
@@ -376,11 +446,43 @@ be populated in the console.
 
 
 #>
-function List-ODTRemoteUpdateSource() {
-
     Param(
-        [string] $ODTShareNameLogFile
+       [string] $ODTShareNameLogFile = "$env:WinDir\Temp\ODTReplication.csv"
     )
 
     Import-Csv $ODTShareNameLogFile
+}
+
+
+function findScheduledTask() {
+    param(
+        [OfficeCTRVersion]$OfficeVersion = "Office2013"
+    )  
+    
+     $TaskName = "Microsoft\OfficeC2R\$OfficeVersion ODT Download"
+     $scheduledTaskQuery = "/query /tn `"$TaskName`""
+ 
+        $pinfo = New-Object System.Diagnostics.ProcessStartInfo
+        $pinfo.FileName = "schtasks"
+        $pinfo.RedirectStandardError = $true
+        $pinfo.RedirectStandardOutput = $true
+        $pinfo.UseShellExecute = $false
+        $pinfo.Arguments = $scheduledTaskQuery
+
+        $p = New-Object System.Diagnostics.Process
+        $p.StartInfo = $pinfo
+        $p.Start() | Out-Null
+        $p.WaitForExit()
+        $stdout = $p.StandardOutput.ReadToEnd()
+        $stderr = $p.StandardError.ReadToEnd()
+
+        if ($stderr) {
+            return $false;
+        }
+
+        if ($stdout) {
+            return $true
+        }
+
+     return $false
 }

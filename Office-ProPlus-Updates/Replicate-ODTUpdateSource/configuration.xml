@@ -1,20 +1,9 @@
 <Configuration>
-
-  <!--  <Add SourcePath="\\Server\Share\" OfficeClientEdition="32" >
+  <Add OfficeClientEdition="32" SourcePath="C:\Program Files\OfficeCTRRepl">
     <Product ID="O365ProPlusRetail">
       <Language ID="en-us" />
     </Product>
-    <Product ID="VisioProRetail">
-      <Language ID="en-us" />
-    </Product>
-  </Add>  -->
-
-  <!--  <Updates Enabled="TRUE" UpdatePath="\\Server\Share\" /> -->
-
-  <!--  <Display Level="None" AcceptEULA="TRUE" />  -->
-
-  <!--  <Logging Path="%temp%" />  -->
-
-  <!--  <Property Name="AUTOACTIVATE" Value="1" />  -->
-
+  </Add>
+  <Display Level="None" AcceptEULA="TRUE" />
+  <Logging Path="%temp%" />
 </Configuration>
