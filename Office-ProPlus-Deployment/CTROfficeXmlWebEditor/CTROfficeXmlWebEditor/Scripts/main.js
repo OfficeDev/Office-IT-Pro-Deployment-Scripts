@@ -3,15 +3,15 @@ var selectDate;
 
 $(document).ready(function () {
     
-    $('#txtDeadline').datetimepicker({
-        sideBySide: true
-    }).on("dp.change", function (e) {
-        var date = e.date; //e.date is a moment object
-        if (date) {
-            selectDate = date.format("MM/DD/YYYY HH:mm");
-            var target = $(e.target).attr('name');
-        }
-    });
+    //$('#txtDeadline').datetimepicker({
+    //    sideBySide: true
+    //}).on("dp.change", function (e) {
+    //    var date = e.date; //e.date is a moment object
+    //    if (date) {
+    //        selectDate = date.format("MM/DD/YYYY HH:mm");
+    //        var target = $(e.target).attr('name');
+    //    }
+    //});
 
     var finput = document.getElementById('fileInput');
     finput.addEventListener('change', function (e) {
@@ -21,12 +21,12 @@ $(document).ready(function () {
 
     });
 
-    document.getElementById("collapseOne").style.display = "block";
-    document.getElementById("collapseProperties").style.display = "block";
+    //document.getElementById("collapseOne").style.display = "block";
+    //document.getElementById("collapseProperties").style.display = "block";
 
-    document.getElementById("pidkeySignal").style.display = "none";
-    document.getElementById("targetversionSignal").style.display = "none";
-    document.getElementById("updatepathSignal").style.display = "none";
+    //document.getElementById("pidkeySignal").style.display = "none";
+    //document.getElementById("targetversionSignal").style.display = "none";
+    //document.getElementById("updatepathSignal").style.display = "none";
 
     if (isInternetExplorer()) {
         document.getElementById("txtVersion").style.lineHeight = "0px";
@@ -42,30 +42,30 @@ $(document).ready(function () {
     $("#inputDeadline").prop("disabled", true);
 
     var collapse = $.cookie("optionalcollapse");
-    if (collapse == "true") {
-        $("#toggleExpand").removeClass('glyphicon-collapse-down');
-        $("#toggleExpand").addClass('glyphicon-collapse-up');
-        $("#collapseOne").collapse('show');
-        $("#collapseOne").css("height", "");
-    } else {
-        $("#toggleExpand").removeClass('glyphicon-collapse-up');
-        $("#toggleExpand").addClass('glyphicon-collapse-down');
-        $("#collapseOne").collapse('hide');
-        $("#collapseOne").css("height", "0");
-    }
+    //if (collapse == "true") {
+    //    $("#toggleExpand").removeClass('glyphicon-collapse-down');
+    //    $("#toggleExpand").addClass('glyphicon-collapse-up');
+    //    $("#collapseOne").collapse('show');
+    //    $("#collapseOne").css("height", "");
+    //} else {
+    //    $("#toggleExpand").removeClass('glyphicon-collapse-up');
+    //    $("#toggleExpand").addClass('glyphicon-collapse-down');
+    //    $("#collapseOne").collapse('hide');
+    //    $("#collapseOne").css("height", "0");
+    //}
 
     var collapseProperties = $.cookie("propertiescollapse");
-    if (collapseProperties == "true") {
-        $("#togglePropertiesExpand").removeClass('glyphicon-collapse-down');
-        $("#togglePropertiesExpand").addClass('glyphicon-collapse-up');
-        $("#collapseProperties").collapse('show');
-        $("#collapseProperties").css("height", "");
-    } else {
-        $("#togglePropertiesExpand").removeClass('glyphicon-collapse-up');
-        $("#togglePropertiesExpand").addClass('glyphicon-collapse-down');
-        $("#collapseProperties").collapse('hide');
-        $("#collapseProperties").css("height", "0");
-    }
+    //if (collapseProperties == "true") {
+    //    $("#togglePropertiesExpand").removeClass('glyphicon-collapse-down');
+    //    $("#togglePropertiesExpand").addClass('glyphicon-collapse-up');
+    //    $("#collapseProperties").collapse('show');
+    //    $("#collapseProperties").css("height", "");
+    //} else {
+    //    $("#togglePropertiesExpand").removeClass('glyphicon-collapse-up');
+    //    $("#togglePropertiesExpand").addClass('glyphicon-collapse-down');
+    //    $("#collapseProperties").collapse('hide');
+    //    $("#collapseProperties").css("height", "0");
+    //}
 
     $('#templateList li').click(function (e) {
         e.preventDefault();
@@ -88,8 +88,8 @@ $(document).ready(function () {
 
     });
 
-    $("#collapseOne").prop("height", "auto");
-    $("#collapseProperties").prop("height", "auto");
+    //$("#collapseOne").prop("height", "auto");
+    //$("#collapseProperties").prop("height", "auto");
 
     setActiveTab();
 
@@ -287,7 +287,8 @@ $(document).ready(function () {
         }
     });
 
-    $("#btAddProduct").button().click(function () {
+    //$("#btAddProduct").button().click(function () {
+    $("#btAddProduct").on('click', function () {
         var xmlDoc = getXmlDocument();
 
         odtAddProduct(xmlDoc);
@@ -299,7 +300,8 @@ $(document).ready(function () {
         return false;
     });
 
-    $("#btRemoveProduct").button().click(function () {
+    //$("#btRemoveProduct").button().click(function () {
+    $("#btRemoveProduct").on('click', function () {
         var xmlDoc = getXmlDocument();
 
         odtRemoveProduct(xmlDoc);
@@ -309,7 +311,8 @@ $(document).ready(function () {
         return false;
     });
 
-    $("#btAddLanguage").button().click(function () {
+    //$("#btAddLanguage").button().click(function () {
+    $("#btAddLanguage").on('click', function () {
         var xmlDoc = getXmlDocument();
 
         odtAddLanguage(xmlDoc);
@@ -318,7 +321,8 @@ $(document).ready(function () {
         return false;
     });
 
-    $("#btRemoveLanguage").button().click(function () {
+    //$("#btRemoveLanguage").button().click(function () {
+    $("#btRemoveLanguage").on('click', function () {
         var xmlDoc = getXmlDocument();
 
         odtRemoveLanguage(xmlDoc);
@@ -360,7 +364,8 @@ $(document).ready(function () {
         }
     });
 
-    $("#btAddExcludeApp").button().click(function () {
+    //$("#btAddExcludeApp").button().click(function () {
+    $("#btAddExcludeApp").on('click', function () {
         var xmlDoc = getXmlDocument();
 
         odtAddExcludeApp(xmlDoc);
@@ -369,7 +374,8 @@ $(document).ready(function () {
         return false;
     });
 
-    $("#btRemoveExcludeApp").button().click(function () {
+    //$("#btRemoveExcludeApp").button().click(function () {
+    $("#btRemoveExcludeApp").on('click', function () {
         var xmlDoc = getXmlDocument();
 
         odtRemoveExcludeApp(xmlDoc);
@@ -378,7 +384,8 @@ $(document).ready(function () {
         return false;
     });
 
-    $("#btAddRemoveProduct").button().click(function () {
+    //$("#btAddRemoveProduct").button().click(function () {
+    $("#btAddRemoveProduct").on('click', function () {
         var xmlDoc = getXmlDocument();
 
         odtAddRemoveApp(xmlDoc);
@@ -387,7 +394,8 @@ $(document).ready(function () {
         return false;
     });
 
-    $("#btDeleteRemoveProduct").button().click(function () {
+    //$("#btDeleteRemoveProduct").button().click(function () {
+    $("#btDeleteRemoveProduct").on('click', function () {
         var xmlDoc = getXmlDocument();
 
         odtDeleteRemoveApp(xmlDoc);
@@ -396,7 +404,8 @@ $(document).ready(function () {
         return false;
     });
 
-    $("#btAddRemoveLanguage").button().click(function () {
+    //$("#btAddRemoveLanguage").button().click(function () {
+    $("#btAddRemoveLanguage").on('click', function () {
         var xmlDoc = getXmlDocument();
 
         odtAddRemoveLanguage(xmlDoc);
@@ -405,7 +414,8 @@ $(document).ready(function () {
         return false;
     });
 
-    $("#btRemoveRemoveLanguage").button().click(function () {
+    //$("#btRemoveRemoveLanguage").button().click(function () {
+    $("#btRemoveRemoveLanguage").on('click', function () {
         var xmlDoc = getXmlDocument();
 
         odtRemoveRemoveLanguage(xmlDoc);
@@ -414,7 +424,8 @@ $(document).ready(function () {
         return false;
     });
 
-    $("#btSaveUpdates").button().click(function () {
+    //$("#btSaveUpdates").button().click(function () {
+    $("#btSaveUpdates").on('click', function () {
         var xmlDoc = getXmlDocument();
 
         odtSaveUpdates(xmlDoc);
@@ -423,7 +434,8 @@ $(document).ready(function () {
         return false;
     });
 
-    $("#btRemovesUpdates").button().click(function () {
+    //$("#btRemovesUpdates").button().click(function () {
+    $("#btRemovesUpdates").on('click', function () {
         var xmlDoc = getXmlDocument();
 
         odtRemoveUpdates(xmlDoc);
@@ -432,7 +444,8 @@ $(document).ready(function () {
         return false;
     });
 
-    $("#btSaveDisplay").button().click(function () {
+    //$("#btSaveDisplay").button().click(function () {
+    $("#btSaveDisplay").on('click', function () {
         var xmlDoc = getXmlDocument();
 
         odtSaveDisplay(xmlDoc);
@@ -441,7 +454,8 @@ $(document).ready(function () {
         return false;
     });
 
-    $("#btRemoveDisplay").button().click(function () {
+    //$("#btRemoveDisplay").button().click(function () {
+    $("#btRemoveDisplay").on('click', function () {
         var xmlDoc = getXmlDocument();
 
         odtRemoveDisplay(xmlDoc);
@@ -450,7 +464,8 @@ $(document).ready(function () {
         return false;
     });
 
-    $("#btSaveLogging").button().click(function () {
+    //$("#btSaveLogging").button().click(function () {
+    $("#btSaveLogging").on('click', function () {
         var xmlDoc = getXmlDocument();
 
         odtSaveLogging(xmlDoc);
@@ -459,7 +474,8 @@ $(document).ready(function () {
         return false;
     });
 
-    $("#btRemoveLogging").button().click(function () {
+    //$("#btRemoveLogging").button().click(function () {
+    $("#btRemoveLogging").on('click', function () {
         var xmlDoc = getXmlDocument();
 
         odtRemoveLogging(xmlDoc);
@@ -468,7 +484,8 @@ $(document).ready(function () {
         return false;
     });
 
-    $("#btSaveProperties").button().click(function () {
+    //$("#btSaveProperties").button().click(function () {
+    $("#btSaveProperties").on('click', function () {
         var xmlDoc = getXmlDocument();
 
         odtSaveProperties(xmlDoc);
@@ -477,7 +494,8 @@ $(document).ready(function () {
         return false;
     });
 
-    $("#btRemoveProperties").button().click(function () {
+    //$("#btRemoveProperties").button().click(function () {
+    $("#btRemoveProperties").on('click', function () {
         var xmlDoc = getXmlDocument();
 
         odtRemoveProperties(xmlDoc);
@@ -486,7 +504,8 @@ $(document).ready(function () {
         return false;
     });
 
-    $("#btViewOnGitHub").button().click(function () {
+    //$("#btViewOnGitHub").button().click(function () {
+    $("#btViewOnGitHub").on('click', function () {
         window.open("https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/master/Office-ProPlus-Deployment/CTROfficeXmlWebEditor");
 
         return false;
@@ -648,35 +667,35 @@ function fileUploaded(e) {
     reader.readAsText(file);
 }
 
-function toggleExpandOptional(source) {
+//function toggleExpandOptional(source) {
 
-    if ($("#toggleExpand").hasClass('glyphicon-collapse-up')) {
-        $("#toggleExpand").removeClass('glyphicon-collapse-up');
-        $("#toggleExpand").addClass('glyphicon-collapse-down');
-        $.cookie("optionalcollapse", "false");
-    } else {
-        $("#toggleExpand").addClass('glyphicon-collapse-up');
-        $("#toggleExpand").removeClass('glyphicon-collapse-down');
-        $.cookie("optionalcollapse", "true");
-    }
+//    if ($("#toggleExpand").hasClass('glyphicon-collapse-up')) {
+//        $("#toggleExpand").removeClass('glyphicon-collapse-up');
+//        $("#toggleExpand").addClass('glyphicon-collapse-down');
+//        $.cookie("optionalcollapse", "false");
+//    } else {
+//        $("#toggleExpand").addClass('glyphicon-collapse-up');
+//        $("#toggleExpand").removeClass('glyphicon-collapse-down');
+//        $.cookie("optionalcollapse", "true");
+//    }
 
-    setTimeout(setScrollBar, 500);
-}
+//    setTimeout(setScrollBar, 500);
+//}
 
-function toggleExpandProperties(source) {
+//function toggleExpandProperties(source) {
 
-    if ($("#togglePropertiesExpand").hasClass('glyphicon-collapse-up')) {
-        $("#togglePropertiesExpand").removeClass('glyphicon-collapse-up');
-        $("#togglePropertiesExpand").addClass('glyphicon-collapse-down');
-        $.cookie("propertiescollapse", "false");
-    } else {
-        $("#togglePropertiesExpand").addClass('glyphicon-collapse-up');
-        $("#togglePropertiesExpand").removeClass('glyphicon-collapse-down');
-        $.cookie("propertiescollapse", "true");
-    }
+//    if ($("#togglePropertiesExpand").hasClass('glyphicon-collapse-up')) {
+//        $("#togglePropertiesExpand").removeClass('glyphicon-collapse-up');
+//        $("#togglePropertiesExpand").addClass('glyphicon-collapse-down');
+//        $.cookie("propertiescollapse", "false");
+//    } else {
+//        $("#togglePropertiesExpand").addClass('glyphicon-collapse-up');
+//        $("#togglePropertiesExpand").removeClass('glyphicon-collapse-down');
+//        $.cookie("propertiescollapse", "true");
+//    }
 
-    setTimeout(setScrollBar, 500);
-}
+//    setTimeout(setScrollBar, 500);
+//}
 
 function download() {
     var xmlDoc = getXmlDocument();

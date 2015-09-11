@@ -1,0 +1,98 @@
+﻿<!-- Copyright (c) Microsoft. All rights reserved. Licensed under the MIT license. See LICENSE in the project root for license information. -->
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+
+    <title>Component ContextualMenu</title>
+
+    <link rel="stylesheet" href="stylesheets/fabric.min.css">
+    <link rel="stylesheet" href="components/ContextualMenu/ContextualMenu.min.css">
+
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="Scripts/jquery.fabric.min.js"></script>
+    <script type="text/javascript" src="components/ContextualMenu/Jquery.ContextualMenu.js"></script>
+    <!--<script type="text/javascript" src="ContextualMenu.js"></script>-->
+    <script type="text/javascript">
+    $(document).ready(function() {
+      // File Picker demo fixes
+      if ($('.ms-FilePicker').length > 0) {
+        $('.ms-FilePicker').css({
+          "position": "absolute !important"
+        });
+
+        $('.ms-ContextualMenu').FilePicker();
+      } else {
+        if ($.fn.ContextualMenu) {
+          $('.ms-ContextualMenu').ContextualMenu();
+        }
+      }
+
+      if(fabric && fabric['ContextualMenu']) {
+        var component, componentHolder;
+        componentHolder = document.querySelector('.component-holder');
+
+        if (componentHolder) {
+          component = new fabric.Spinner(componentHolder);
+        }
+      }
+    });
+    </script>
+
+    <!-- Styles specifically for this page, not required for proper display on components  -->
+    <style type="text/css">
+        body {
+            margin: auto 20px;
+        }
+
+        h1 {
+            padding: 8px;
+        }
+
+        #componentWrapper {
+            width: 100%;
+            height: 100%;
+        }
+
+        .sample-wrapper {
+            margin: 20px;
+        }
+
+        .ms-ContextualMenu.is-open {
+            position: relative;
+            margin-bottom: 10px;
+        }
+
+        .ms-Dialog {
+            position: relative;
+            margin-bottom: 10px;
+        }
+
+        .ms-NavBar-item .ms-ContextualMenu {
+            position: absolute;
+        }
+
+        .ms-ContextualMenu .ms-ContextualMenu {
+            position: absolute;
+        }
+    </style>
+</head>
+
+<body>
+    <h1 class="ms-font-su ms-fontColor-white ms-bgColor-themeDarker">ContextualMenu</h1>
+    <div id="componentWrapper">
+        <!-- Copyright (c) Microsoft. All rights reserved. Licensed under the MIT license. See LICENSE in the project root for license information. -->
+        <ul class="ms-ContextualMenu is-open">
+            <li class="ms-ContextualMenu-item"><a class="ms-ContextualMenu-link" href="#">Animals</a></li>
+            <li class="ms-ContextualMenu-item"><a class="ms-ContextualMenu-link" href="#">Books</a></li>
+            <li class="ms-ContextualMenu-item"><a class="ms-ContextualMenu-link is-selected" href="#">Education</a></li>
+            <li class="ms-ContextualMenu-item"><a class="ms-ContextualMenu-link" href="#">Music</a></li>
+            <li class="ms-ContextualMenu-item "><a class="ms-ContextualMenu-link is-disabled" href="#">Sports</a></li>
+        </ul>
+
+
+
+    </div>
+</body>
+</html>
