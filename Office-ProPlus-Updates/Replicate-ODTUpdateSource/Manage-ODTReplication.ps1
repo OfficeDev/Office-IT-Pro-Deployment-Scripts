@@ -250,7 +250,8 @@ has updated files or folders they will be copied to each destination.
 
 #>
     Param(
-
+        [Parameter(Mandatory=$true,ValueFromPipelineByPropertyName=$true)]
+        [string[]]$ShareName
     )
 
     $progDirPath = "$env:ProgramFiles\OfficeCTRRepl"
@@ -259,11 +260,18 @@ has updated files or folders they will be copied to each destination.
 
     $ODTShareNameLogFile = "$progDirPath\ODTReplication.csv"
 
+    $remoteShares = Import-Csv $ODTShareNameLogFile
+
+    foreach($share in $ShareName){
+       $existingShares = $remoteShares | where { $_.ShareName.ToLower() -eq $share.ToLower() }
+       if ($existingShares.Length -eq 0) {
+          throw "Remote Share `"$share`" is not added as a remote source"
+       }
+    }
+
     if (!(Test-Path -Path $progDirPath)) {
       throw "Source Path '$Source' does not exist run Start-ODTDownload cmdlet to create it"
     }
-
-    [array]$ShareName = Import-Csv $ODTShareNameLogFile | foreach {$_.ShareName}
 
     foreach($share in $ShareName){
         $shareFolder = "$share\Office"
@@ -291,7 +299,7 @@ has updated files or folders they will be copied to each destination.
     }
 }
 
-function New-ODTFileReplicationTask{
+function Enable-ODTRemoteUpdateSourceReplication{
 <#
 .SYNOPSIS
 Create a scheduled task on the remote computer to copy the 
@@ -330,34 +338,65 @@ the second Wednesday at 3:00am.
 
 #>
     Param(
-        [Parameter(Mandatory=$true)]
-        [string[]] $RemoteShare,
+        [Parameter(Mandatory=$true,ValueFromPipelineByPropertyName=$true)]
+        [string[]] $ShareName,
 
         [Parameter()]
-        [Schedule] $Schedule,
+        [Schedule] $Schedule = "MONTHLY",
 
         [Parameter()]
-        [Modifier] $Modifier,
+        [Modifier] $Modifier = "SECOND",
 
         [Parameter()]
-        [Days] $Days,
+        [Days] $Days = "TUE",
 
         [Parameter()]
-        [string] $StartTime = $null         
+        [string] $StartTime = "20:00"       
     )
-    
-    $TaskName = "Microsoft\OfficeC2R\$OfficeVersion ODT Download"
 
     $progDirPath = "$env:ProgramFiles\OfficeCTRRepl"
     [system.io.directory]::CreateDirectory($progDirPath) | Out-Null
     $Source = "$progDirPath\Office"
 
-    foreach($remotePath in $RemoteShare){
+    foreach($remotePath in $ShareName) {
+        $serverName= $remotePath.Split("\")[2]
 
-        $roboCommand = "Robocopy $Source $remotePath /mir /r:0 /w:0"
-        $scheduledTask = "schtasks /create /s $Computer /ru System /tn $TaskName /tr $roboCommand /sc $Schedule /MO $Modifier /D $Days /st $StartTime"
-            
-        Invoke-Expression $scheduledTask
+        $TaskName = "Microsoft\OfficeC2R\ODT Replication - $serverName"
+
+        $roboCommand = "Robocopy \`"$Source\`" \`"$remotePath\`" /mir /r:0 /w:0"
+        $scheduledTask = "schtasks /create /ru System /tn '$TaskName' /tr '$roboCommand' /sc $Schedule /MO $Modifier /D $Days /st $StartTime /f"
+
+        $scheduledTaskDel = "schtasks /delete /tn '$TaskName' /f"
+           
+        Invoke-Expression $scheduledTaskDel | out-Null
+        Invoke-Expression $scheduledTask | Out-Null
+
+        $remShares = Get-ODTRemoteUpdateSource | Where { $_.ShareName.ToLower() -eq $remotePath.ToLower() }
+        $remShares
+    }                                             
+}
+
+function Disable-ODTRemoteUpdateSourceReplication{
+    Param(
+        [Parameter(Mandatory=$true,ValueFromPipelineByPropertyName=$true)]
+        [string[]] $ShareName    
+    )
+
+    $progDirPath = "$env:ProgramFiles\OfficeCTRRepl"
+    [system.io.directory]::CreateDirectory($progDirPath) | Out-Null
+    $Source = "$progDirPath\Office"
+
+    foreach($remotePath in $ShareName) {
+        $serverName= $remotePath.Split("\")[2]
+
+        $TaskName = "Microsoft\OfficeC2R\ODT Replication - $serverName"
+
+        $scheduledTaskDel = "schtasks /delete /tn '$TaskName' /f"
+           
+        Invoke-Expression $scheduledTaskDel | out-Null
+
+        $remShares = Get-ODTRemoteUpdateSource | Where { $_.ShareName.ToLower() -eq $remotePath.ToLower() }
+        $remShares
     }                                             
 }
 
@@ -394,40 +433,39 @@ shares "\\Computer3\ODT Replication" and "\\Computer4\ODT Replication".
     $progDirPath = "$env:ProgramFiles\OfficeCTRRepl"
     [system.io.directory]::CreateDirectory($progDirPath) | Out-Null
     $ODTShareNameLogFile = "$progDirPath\ODTReplication.csv"
-        
-    if(!(Test-Path $ODTShareNameLogFile)){
 
-        [array]$RemoteShareTable = foreach($share in $RemoteShare){
-       
-            $LastWriteTime = Get-ItemProperty $share | foreach {$_.LastWriteTime.ToString("MM-dd-yyyy")}
-            $results = new-object PSObject[] 0;
-            $Result = New-Object –TypeName PSObject 
-
-            Add-Member -InputObject $Result -MemberType NoteProperty -Name "ShareName" -Value $Share
-            Add-Member -InputObject $Result -MemberType NoteProperty -Name "LastUpdateTime" -Value $LastWriteTime
-
-            $result
-        } 
-
-        $RemoteShareTable | Export-Csv $ODTShareNameLogFile -NoTypeInformation
+    [PSObject[]]$ExistingShares = new-object PSObject[] 0;
+    if(Test-Path $ODTShareNameLogFile){
+        $ExistingShares = Import-Csv $ODTShareNameLogFile
     }
-    else{
 
-        [array] $AddNewShare = foreach($share in $RemoteShare){
-
-            $LastWriteTime = Get-ItemProperty $share | foreach {$_.LastWriteTime.ToString("MM-dd-yyyy")}
+    foreach($share in $RemoteShare) {
+        $checkShares = $ExistingShares | Where { $_.ShareName.ToLower() -eq $share.ToLower() }
+        if ($checkShares.Length -eq 0) {
             $results = new-object PSObject[] 0;
             $Result = New-Object –TypeName PSObject 
-            Add-Member -InputObject $Result -MemberType NoteProperty -Name "ShareName" -Value $Share
-            Add-Member -InputObject $Result -MemberType NoteProperty -Name "LastUpdateTime" -Value $LastWriteTime
 
-            $result
+            $computerName = $share.Split("\")[2]
+
+            if (Test-Connection -ComputerName $computerName -ErrorAction SilentlyContinue){
+                if (Test-Path -Path $share) {
+                    Add-Member -InputObject $Result -MemberType NoteProperty -Name "ShareName" -Value $Share
+                    Add-Member -InputObject $Result -MemberType NoteProperty -Name "AutoReplicationEnabled" -Value $false
+
+                    $ExistingShares += $Result
+
+                    $Result
+                } else {
+                   Write-Host "The remote share `"$share`" is unavailble" -BackgroundColor Red
+                }
+            } else {
+               Write-Host "The remote host `"$computerName`" is unavailble" -BackgroundColor Red
+            }
         }
-
-        [array]$ExistingShares = Import-Csv $ODTShareNameLogFile
-        $newShares = $ExistingShares += [array]$AddNewShare 
-        $newShares | Export-Csv $ODTShareNameLogFile -NoTypeInformation -Force
-    }
+    } 
+            
+    $ExistingShares | Export-Csv $ODTShareNameLogFile -NoTypeInformation -Force
+    
 }
 
 function Remove-ODTRemoteUpdateSource() {
@@ -464,7 +502,7 @@ be removed from the csv file and saved.
     $removedShares | Export-Csv $ODTShareNameLogFile -Force -NoTypeInformation
 }
 
-function List-ODTRemoteUpdateSource() {
+function Get-ODTRemoteUpdateSource() {
 <#
 .SYNOPSIS
 List available shares.
@@ -491,81 +529,25 @@ be populated in the console.
     [system.io.directory]::CreateDirectory($progDirPath) | Out-Null
     $ODTShareNameLogFile = "$progDirPath\ODTReplication.csv"
 
-    Import-Csv $ODTShareNameLogFile
-}
-
-
-function Copy-WithProgress2 {
-    [CmdletBinding()]
-    param (
-            [Parameter(Mandatory = $true)]
-            [string] $Source
-        , [Parameter(Mandatory = $true)]
-            [string] $Destination
-        , [int] $Gap = 200
-        , [int] $ReportGap = 2000
-    )
-    # Define regular expression that will gather number of bytes copied
-    $RegexBytes = '(?<=\s+)\d+(?=\s+)';
-
-    #region Robocopy params
-    # MIR = Mirror mode
-    # NP  = Don't show progress percentage in log
-    # NC  = Don't log file classes (existing, new file, etc.)
-    # BYTES = Show file sizes in bytes
-    # NJH = Do not display robocopy job header (JH)
-    # NJS = Do not display robocopy job summary (JS)
-    # TEE = Display log in stdout AND in target log file
-    $CommonRobocopyParams = '/MIR /NP /NDL /NC /BYTES /NJH /NJS';
-    #endregion Robocopy params
-
-    #region Robocopy Staging
-    Write-Verbose -Message 'Analyzing robocopy job ...';
-    $StagingLogPath = '{0}\temp\{1} robocopy staging.log' -f $env:windir, (Get-Date -Format 'yyyy-MM-dd hh-mm-ss');
-
-    $StagingArgumentList = '"{0}" "{1}" /LOG:"{2}" /L {3}' -f $Source, $Destination, $StagingLogPath, $CommonRobocopyParams;
-    Write-Verbose -Message ('Staging arguments: {0}' -f $StagingArgumentList);
-    Start-Process -Wait -FilePath robocopy.exe -ArgumentList $StagingArgumentList -NoNewWindow;
-    # Get the total number of files that will be copied
-    $StagingContent = Get-Content -Path $StagingLogPath;
-    $FileCount = $StagingContent.Count;
-
-    # Get the total number of bytes to be copied
-    [RegEx]::Matches(($StagingContent -join "`n"), $RegexBytes) | % { $BytesTotal = 0; } { $BytesTotal += $_.Value; };
-    Write-Verbose -Message ('Total bytes to be copied: {0}' -f $BytesTotal);
-    #endregion Robocopy Staging
-
-    #region Start Robocopy
-    # Begin the robocopy process
-    $RobocopyLogPath = '{0}\temp\{1} robocopy.log' -f $env:windir, (Get-Date -Format 'yyyy-MM-dd hh-mm-ss');
-    $ArgumentList = '"{0}" "{1}" /LOG:"{2}" /ipg:{3} {4}' -f $Source, $Destination, $RobocopyLogPath, $Gap, $CommonRobocopyParams;
-    Write-Verbose -Message ('Beginning the robocopy process with arguments: {0}' -f $ArgumentList);
-    $Robocopy = Start-Process -FilePath robocopy.exe -ArgumentList $ArgumentList -Verbose -PassThru -NoNewWindow;
-    Start-Sleep -Milliseconds 100;
-    #endregion Start Robocopy
-
-    #region Progress bar loop
-    while (!$Robocopy.HasExited) {
-        Start-Sleep -Milliseconds $ReportGap;
-        $BytesCopied = 0;
-        $LogContent = Get-Content -Path $RobocopyLogPath;
-        $BytesCopied = [Regex]::Matches($LogContent, $RegexBytes) | ForEach-Object -Process { $BytesCopied += $_.Value; } -End { $BytesCopied; };
-        Write-Verbose -Message ('Bytes copied: {0}' -f $BytesCopied);
-        Write-Verbose -Message ('Files copied: {0}' -f $LogContent.Count);
-        Write-Progress -Activity Robocopy -Status ("Copied {0} files; Copied {1} of {2} bytes" -f $LogContent.Count, $BytesCopied, $BytesTotal) -PercentComplete (($BytesCopied/$BytesTotal)*100);
+    if (!(Test-Path $ODTShareNameLogFile)) {
+       return
     }
-    #endregion Progress loop
 
-    #region Function output
-    [PSCustomObject]@{
-        BytesCopied = $BytesCopied;
-        FilesCopied = $LogContent.Count;
-    };
-    #endregion Function output
+    $remoteShares = Import-Csv $ODTShareNameLogFile
+
+    foreach ($remoteShare in $remoteShares) {
+       $serverName = $remoteShare.ShareName.Split("\")[2]
+
+       $replExists = findReplScheduledTask -ServerName $serverName
+
+       $remoteShare.AutoReplicationEnabled = $replExists
+    }
+
+    $remoteShares
 }
 
-function Copy-WithProgress   
-{  
+
+function Copy-WithProgress {  
     [CmdletBinding()]  
   
     param (  
@@ -582,15 +564,8 @@ function Copy-WithProgress
     $TotalBytesarray = @() 
     foreach ($file in $totalfiles)   
     {  
-        $fName = $Newfile.tostring().substring(13, 13).trim();
-
-        if ($fName.length -ne 9) {
-            $TotalBytesarray+= $file.substring(13,15).trim() 
-        }  
-        else 
-        {
-            $TotalBytesarray+= $file.substring(13,13).trim()
-        }  
+        $fileSize = getFileSize -text $file
+        $TotalBytesarray+=$fileSize
     }  
     $totalbytes = (($TotalBytesarray | Measure-Object -Sum).sum) 
   
@@ -608,14 +583,8 @@ function Copy-WithProgress
             $Bytesarray = @() 
             foreach ($Newfile in $copiedfiles) 
             { 
-                $fName = $Newfile.tostring().substring(13, 13).trim();
-
-                if ($fName.length -ne 9) { 
-                   $Bytesarray += $Newfile.tostring().substring(13, 15).trim() 
-                } 
-                else { 
-                   $Bytesarray += $Newfile.tostring().substring(13, 13).trim() 
-                } 
+                $fileSize = getFileSize -text $Newfile
+                $Bytesarray+=$fileSize
             } 
             $bytescopied = ([int64]$Bytesarray[-1] * ($Filepercentcomplete/100)) 
             $totalfilebytes = [int64]$Bytesarray[-1] 
@@ -623,12 +592,9 @@ function Copy-WithProgress
             $TotalBytesRemaining = ($totalbytes - $totalBytesCopied) 
             if ($copiedfiles) 
             { 
-                if ($copiedfiles[-1].tostring().substring(13, 13).trim().length -eq 9) { 
-                    $currentfile = $copiedfiles[-1].tostring().substring(28).trim() 
-                } 
-                else { 
-                    $currentfile = $copiedfiles[-1].tostring().substring(25).trim() 
-                } 
+                #$fileSize = getFileSize -text $copiedfiles[-1].tostring()
+
+                $currentfile = getFileName -text $copiedfiles[-1].tostring()
             } 
             $totalfilescount = $totalfiles.count 
             if ($progress[-1] -match '%') { $Filepercentcomplete = $progress[-1].substring(0, 3).trim() } 
@@ -639,8 +605,10 @@ function Copy-WithProgress
             if ($totalfilebytes -gt 1gb) { $totalfilebytes = "{0:N2}" -f ($totalfilebytes/1gb); $bytescopied = "{0:N2}" -f ($bytescopied/1gb); $filebytes = 'Gbytes' } 
             else { $totalfilebytes = "{0:N2}" -f ($totalfilebytes/1mb); $bytescopied = "{0:N2}" -f ($bytescopied/1mb); $filebytes = 'Mbytes' } 
              
-            Write-Progress -Id 1 -Activity "Copying files from $source to $destination, $totalfilescopied of $totalfilescount files copied" -Status "$bytescopiedprogress of $totalbytesprogress $bytes copied" -PercentComplete $totalPercentcomplete 
-            Write-Progress -Id 2 -Activity "$currentfile" -status "$bytescopied of $totalfilebytes $filebytes" -PercentComplete $Filepercentcomplete 
+            if ($currentfile) {
+               Write-Progress -Id 1 -Activity "Copying files from $source to $destination, $totalfilescopied of $totalfilescount files copied" -Status "$bytescopiedprogress of $totalbytesprogress $bytes copied" -PercentComplete $totalPercentcomplete 
+               Write-Progress -Id 2 -Activity "$currentfile" -status "$bytescopied of $totalfilebytes $filebytes" -PercentComplete $Filepercentcomplete 
+            }
         } 
          
     } 
@@ -652,7 +620,6 @@ function Copy-WithProgress
     $results[5]  
     $results[-13..-1]  
 } 
-
 
 function findScheduledTask() {
     param(
@@ -687,3 +654,136 @@ function findScheduledTask() {
 
      return $false
 }
+
+function findReplScheduledTask() {
+    param(
+        [Parameter(Mandatory=$true)]
+        [string]$ServerName
+    )  
+    
+     $TaskName = "Microsoft\OfficeC2R\ODT Replication - $ServerName"
+     $scheduledTaskQuery = "/query /tn `"$TaskName`""
+ 
+        $pinfo = New-Object System.Diagnostics.ProcessStartInfo
+        $pinfo.FileName = "schtasks"
+        $pinfo.RedirectStandardError = $true
+        $pinfo.RedirectStandardOutput = $true
+        $pinfo.UseShellExecute = $false
+        $pinfo.Arguments = $scheduledTaskQuery
+
+        $p = New-Object System.Diagnostics.Process
+        $p.StartInfo = $pinfo
+        $p.Start() | Out-Null
+        $p.WaitForExit()
+        $stdout = $p.StandardOutput.ReadToEnd()
+        $stderr = $p.StandardError.ReadToEnd()
+
+        if ($stderr) {
+            return $false;
+        }
+
+        if ($stdout) {
+            return $true
+        }
+
+     return $false
+}
+
+
+function getFileName() {
+    param (  
+            [Parameter(Mandatory = $true)]  
+            [string] $text 
+    )
+
+    $text = $text -replace "`t", " "
+
+    foreach ($line in $text.Split(" ")) {
+       if ($line) {
+          $line = $line.Trim()
+          if ($line.Length -gt 0) {
+              if ($line.Contains(".")) {
+                 return $line
+              }
+          }
+       }
+    }
+
+}
+
+function getFileSize() {
+    param (  
+            [Parameter(Mandatory = $true)]  
+            [string] $text 
+    )
+
+    $text = $text -replace "`t", " "
+
+    foreach ($line in $text.Split(" ")) {
+       if ($line) {
+          $line = $line.Trim()
+          if ($line.Length -gt 0) {
+              if (IsNumeric -Value $line) {
+                 return $line
+              }
+          }
+       }
+    }
+
+}
+
+function IsNumeric { 
+ 
+[CmdletBinding( 
+    SupportsShouldProcess=$True, 
+    ConfirmImpact='High')] 
+ 
+param ( 
+ 
+[Parameter( 
+    Mandatory=$True, 
+    ValueFromPipeline=$True, 
+    ValueFromPipelineByPropertyName=$True)] 
+     
+    $Value, 
+     
+[Parameter( 
+    Mandatory=$False, 
+    ValueFromPipeline=$True, 
+    ValueFromPipelineByPropertyName=$True)] 
+    [alias('B')] 
+    [Switch] $Boolean 
+     
+) 
+     
+BEGIN { 
+ 
+    #clear variable 
+    $IsNumeric = 0 
+ 
+} 
+ 
+PROCESS { 
+ 
+    #verify input value is numeric data type 
+    try { 0 + $Value | Out-Null 
+    $IsNumeric = 1 }catch{ $IsNumeric = 0 } 
+ 
+    if($IsNumeric){  
+        $IsNumeric = 1 
+        if($Boolean) { $Isnumeric = $True } 
+    }else{  
+        $IsNumeric = 0 
+        if($Boolean) { $IsNumeric = $False } 
+    } 
+     
+    if($PSBoundParameters['Verbose'] -and $IsNumeric) {  
+    Write-Verbose "True" }else{ Write-Verbose "False" } 
+     
+    
+    return $IsNumeric 
+} 
+ 
+END {} 
+ 
+} 
