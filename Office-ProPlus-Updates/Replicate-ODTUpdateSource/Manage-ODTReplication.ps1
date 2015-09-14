@@ -299,7 +299,7 @@ has updated files or folders they will be copied to each destination.
     }
 }
 
-function Enable-ODTRemoteUpdateSourceReplication{
+function Enable-ODTRemoteUpdateSourceReplication() {
 <#
 .SYNOPSIS
 Create a scheduled task on the remote computer to copy the 
@@ -337,8 +337,9 @@ the second Wednesday at 3:00am.
 
 
 #>
+    [CmdletBinding(SupportsShouldProcess=$True)]
     Param(
-        [Parameter(Mandatory=$true,ValueFromPipelineByPropertyName=$true)]
+        [Parameter(Mandatory=$true,ValueFromPipeline=$True,ValueFromPipelineByPropertyName=$true)]
         [string[]] $ShareName,
 
         [Parameter()]
@@ -354,29 +355,42 @@ the second Wednesday at 3:00am.
         [string] $StartTime = "20:00"       
     )
 
-    $progDirPath = "$env:ProgramFiles\OfficeCTRRepl"
-    [system.io.directory]::CreateDirectory($progDirPath) | Out-Null
-    $Source = "$progDirPath\Office"
+    Process {
 
-    foreach($remotePath in $ShareName) {
-        $serverName= $remotePath.Split("\")[2]
+        $progDirPath = "$env:ProgramFiles\OfficeCTRRepl"
+        [system.io.directory]::CreateDirectory($progDirPath) | Out-Null
+        $Source = "$progDirPath\Office"
 
-        $TaskName = "Microsoft\OfficeC2R\ODT Replication - $serverName"
+        $remShares = $null
+        foreach($remotePath in $ShareName) {
+  
+            $serverName= $remotePath.Split("\")[2]
+            $shareName= $remotePath.Replace("\\$serverName\", "").Replace("\", "-")
 
-        $roboCommand = "Robocopy \`"$Source\`" \`"$remotePath\`" /mir /r:0 /w:0"
-        $scheduledTask = "schtasks /create /ru System /tn '$TaskName' /tr '$roboCommand' /sc $Schedule /MO $Modifier /D $Days /st $StartTime /f"
+            $TaskName = "Microsoft\OfficeC2R\ODT Replication - $serverName - $shareName"
 
-        $scheduledTaskDel = "schtasks /delete /tn '$TaskName' /f"
-           
-        Invoke-Expression $scheduledTaskDel | out-Null
-        Invoke-Expression $scheduledTask | Out-Null
+            $roboCommand = "Robocopy \`"$Source\`" \`"$remotePath\`" /mir /r:0 /w:0"
+            $scheduledTask = "schtasks /create /ru System /tn '$TaskName' /tr '$roboCommand' /sc $Schedule /MO $Modifier /D $Days /st $StartTime /f"
 
-        $remShares = Get-ODTRemoteUpdateSource | Where { $_.ShareName.ToLower() -eq $remotePath.ToLower() }
-        $remShares
-    }                                             
+            $scheduledTaskDel = "schtasks /delete /tn '$TaskName' /f"
+        
+            try {   
+              & $scheduledTaskDel| out-Null
+            } catch { }
+
+            Invoke-Expression $scheduledTask | Out-Null
+
+            $remShare = Get-ODTRemoteUpdateSource | Where { $_.ShareName.ToLower() -eq $remotePath.ToLower() }
+            $remShares += $remShare
+	
+        }  
+    
+        $remShares 
+    
+    }                                          
 }
 
-function Disable-ODTRemoteUpdateSourceReplication{
+function Disable-ODTRemoteUpdateSourceReplication() {
     Param(
         [Parameter(Mandatory=$true,ValueFromPipelineByPropertyName=$true)]
         [string[]] $ShareName    
@@ -388,8 +402,9 @@ function Disable-ODTRemoteUpdateSourceReplication{
 
     foreach($remotePath in $ShareName) {
         $serverName= $remotePath.Split("\")[2]
+        $shareName= $remotePath.Replace("\\$serverName\", "").Replace("\", "-")
 
-        $TaskName = "Microsoft\OfficeC2R\ODT Replication - $serverName"
+        $TaskName = "Microsoft\OfficeC2R\ODT Replication - $serverName - $shareName"
 
         $scheduledTaskDel = "schtasks /delete /tn '$TaskName' /f"
            
@@ -521,9 +536,15 @@ be populated in the console.
 
 
 #>
+    [cmdletbinding()]
     Param(
        
     )
+
+    $defaultDisplaySet = 'ShareName','AutoReplicationEnabled', 'LastReplTime', 'NextReplTime', 'LastResult'
+
+    $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet(‘DefaultDisplayPropertySet’,[string[]]$defaultDisplaySet)
+    $PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultDisplayPropertySet)
 
     $progDirPath = "$env:ProgramFiles\OfficeCTRRepl"
     [system.io.directory]::CreateDirectory($progDirPath) | Out-Null
@@ -535,15 +556,60 @@ be populated in the console.
 
     $remoteShares = Import-Csv $ODTShareNameLogFile
 
+    $results = new-object PSObject[] 0;
+
     foreach ($remoteShare in $remoteShares) {
+	   $Result = New-Object –TypeName PSObject 
+	
        $serverName = $remoteShare.ShareName.Split("\")[2]
-
-       $replExists = findReplScheduledTask -ServerName $serverName
-
+       $shareName= $remoteShare.ShareName.Replace("\\$serverName\", "").Replace("\", "-")
+       
+       $replExists = findReplScheduledTask -ServerName $serverName -ShareName $shareName
        $remoteShare.AutoReplicationEnabled = $replExists
+	
+       Add-Member -InputObject $Result -MemberType NoteProperty -Name "ShareName" -Value $remoteShare.ShareName
+       Add-Member -InputObject $Result -MemberType NoteProperty -Name "AutoReplicationEnabled" -Value $remoteShare.AutoReplicationEnabled
+	   
+	   $NextRunTime = $null
+       $LastRunTime = $null
+       $LastResult = 0
+       $State = $null
+       $ScheduleType= $null
+       $StartTime = $null
+       $ScheduleDays= $null
+       $ScheduleMonths= $null
+
+       if ($replExists) {
+          $TaskName = "Microsoft\OfficeC2R\ODT Replication - $serverName - $shareName"
+
+          schtasks /query /tn $TaskName /v /fo csv  | Out-File -FilePath "$env:temp\TmpSchTask.csv"
+	      $importTasks = Import-Csv -Path "$env:temp\TmpSchTask.csv"
+	     	
+	      $NextRunTime = $importTasks.'Next Run Time'
+          $LastRunTime = $importTasks.'Last Run Time'
+          $LastResult = $importTasks.'Last Result'
+          $ScheduleType = $importTasks.'Schedule Type' 
+          $StartTime = $importTasks.'Start Time'
+          $ScheduleDays = $importTasks.'Days'
+          $ScheduleMonths = $importTasks.'Months'
+          $State = $importTasks.'Scheduled Task State'
+	   }
+	   
+	   Add-Member -InputObject $Result -MemberType NoteProperty -Name "NextReplTime" -Value $NextRunTime
+       Add-Member -InputObject $Result -MemberType NoteProperty -Name "LastReplTime" -Value $LastRunTime
+       Add-Member -InputObject $Result -MemberType NoteProperty -Name "LastResult" -Value $LastResult
+       Add-Member -InputObject $Result -MemberType NoteProperty -Name "State" -Value $State
+       Add-Member -InputObject $Result -MemberType NoteProperty -Name "StartTime" -Value  $StartTime
+       Add-Member -InputObject $Result -MemberType NoteProperty -Name "ScheduleType" -Value $ScheduleType
+       Add-Member -InputObject $Result -MemberType NoteProperty -Name "ScheduleDays" -Value  $ScheduleDays
+       Add-Member -InputObject $Result -MemberType NoteProperty -Name "ScheduleMonths" -Value $ScheduleMonths
+	   
+       $Result | Add-Member MemberSet PSStandardMembers $PSStandardMembers
+
+	   $results += $Result
     }
 
-    $remoteShares
+    return $results
 }
 
 
@@ -658,10 +724,12 @@ function findScheduledTask() {
 function findReplScheduledTask() {
     param(
         [Parameter(Mandatory=$true)]
-        [string]$ServerName
+        [string]$ServerName,
+        [Parameter(Mandatory=$true)]
+        [string]$ShareName
     )  
     
-     $TaskName = "Microsoft\OfficeC2R\ODT Replication - $ServerName"
+     $TaskName = "Microsoft\OfficeC2R\ODT Replication - $ServerName - $ShareName"
      $scheduledTaskQuery = "/query /tn `"$TaskName`""
  
         $pinfo = New-Object System.Diagnostics.ProcessStartInfo
