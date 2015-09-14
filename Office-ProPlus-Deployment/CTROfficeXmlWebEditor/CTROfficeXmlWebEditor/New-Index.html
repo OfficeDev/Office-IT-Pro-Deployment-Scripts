@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="components/DatePicker/DatePicker.min.css"/>
     <link rel="stylesheet" href="components/NavBar/NavBar.min.css">
     <link rel="stylesheet" href="components/CommandBar/CommandBar.min.css">
+    <link rel="stylesheet" href="components/Callout/Callout.min.css">
 
     <script type='text/javascript' src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script type="text/javascript" src="./components/Table/Jquery.Table.js"></script>
@@ -24,6 +25,7 @@
     <script type="text/javascript" src="./components/DatePicker/Jquery.DatePicker.js"></script>
     <script type="text/javascript" src="./components/NavBar/Jquery.NavBar.js"></script>
     <script type="text/javascript" src="./components/CommandBar/Jquery.CommandBar.js"></script>
+    <script type="text/javascript" src="components/Callout/Jquery.Callout.js"></script>
     <script type="text/javascript" src="./Scripts/vkbeautify.0.99.00.beta.js"></script>
 
     <style type="text/css">
@@ -126,6 +128,23 @@
                                     <td>
                                         <label class="ms-Label">Product</label>
                                     </td>
+                                    <td>
+                                        <i id="productInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onmouseover="showInfo('productInfo', this)" onmouseout="hideInfo('productInfo')"></i>
+                                        <div id="productInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none">
+                                            <div class="ms-Callout-main">
+                                                <div class="ms-Callout-header">
+                                                    <p class="ms-Callout-title">Office Client Edition</p>
+                                                </div>
+                                                <div class="ms-Callout-inner">
+                                                    <div class="ms-Callout-content">
+                                                        <p class="ms-Callout-subText">Required. Specifies the edition of Click-to-Run for Office 365 product to use: 32- or 64-bit. The action fails if <strong>OfficeClientEdition</strong> is not set to a valid value.</p>
+                                                        <br />
+                                                        <p class="ms-Callout-subText">A <strong>configure</strong> mode action may fail if <strong>OfficeClientEdition</strong> is set incorrectly. For example, if you attempt to install a 64-bit edition of a Click-to-Run for Office 365 product on a computer that is running a 32-bit Windows operating system, or if you try to install a 32-bit Click-to-Run for Office 365 product on a computer that has a 64-bit edition of Office installed.</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
                                 </tr>
                             </table>
                             <div class="ms-Dropdown">
@@ -143,6 +162,23 @@
                                     <td>
                                         <label class="ms-Label">Edition</label>
                                     </td>
+                                    <td>
+                                        <i id="editionInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onmouseover="showInfo('editionInfo', this)" ; onmouseout="hideInfo('editionInfo')"></i>
+                                        <div id="editionInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:75px; top:115px; display:none">
+                                            <div class="ms-Callout-main">
+                                                <div class="ms-Callout-header">
+                                                    <p class="ms-Callout-title">Office Client Edition</p>
+                                                </div>
+                                                <div class="ms-Callout-inner">
+                                                    <div class="ms-Callout-content">
+                                                        <p class="ms-Callout-subText">Required. Specifies the edition of Click-to-Run for Office 365 product to use: 32- or 64-bit. The action fails if <strong>OfficeClientEdition</strong> is not set to a valid value.</p> 
+                                                        <br />
+                                                        <p class="ms-Callout-subText">A <strong>configure</strong> mode action may fail if <strong>OfficeClientEdition</strong> is set incorrectly. For example, if you attempt to install a 64-bit edition of a Click-to-Run for Office 365 product on a computer that is running a 32-bit Windows operating system, or if you try to install a 32-bit Click-to-Run for Office 365 product on a computer that has a 64-bit edition of Office installed.</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
                                 </tr>
                             </table>
                             <div class="ms-Dropdown">
@@ -156,6 +192,23 @@
                                 <tr>
                                     <td>
                                         <label class="ms-Label">Language</label>
+                                    </td>
+                                    <td>
+                                        <i id="languageInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onmouseover="showInfo('languageInfo', this)" onmouseout="hideInfo('languageInfo')"></i>
+                                        <div id="languageInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:90px; top:188px; display:none">
+                                            <div class="ms-Callout-main">
+                                                <div class="ms-Callout-header">
+                                                    <p class="ms-Callout-title">Office Client Edition</p>
+                                                </div>
+                                                <div class="ms-Callout-inner">
+                                                    <div class="ms-Callout-content">
+                                                        <p class="ms-Callout-subText">Required. Specifies the edition of Click-to-Run for Office 365 product to use: 32- or 64-bit. The action fails if <strong>OfficeClientEdition</strong> is not set to a valid value.</p>
+                                                        <br />
+                                                        <p class="ms-Callout-subText">A <strong>configure</strong> mode action may fail if <strong>OfficeClientEdition</strong> is set incorrectly. For example, if you attempt to install a 64-bit edition of a Click-to-Run for Office 365 product on a computer that is running a 32-bit Windows operating system, or if you try to install a 32-bit Click-to-Run for Office 365 product on a computer that has a 64-bit edition of Office installed.</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </td>
                                 </tr>
                             </table>
@@ -236,6 +289,23 @@
                                     <td>
                                         <label class="ms-Label">Version</label>
                                     </td>
+                                    <td>
+                                        <i id="versionInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onmouseover="showInfo('versionInfo', this)" ; onmouseout="    hideInfo('versionInfo')"></i>
+                                        <div id="versionInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:343px; display:none">
+                                            <div class="ms-Callout-main">
+                                                <div class="ms-Callout-header">
+                                                    <p class="ms-Callout-title">Office Client Edition</p>
+                                                </div>
+                                                <div class="ms-Callout-inner">
+                                                    <div class="ms-Callout-content">
+                                                        <p class="ms-Callout-subText">Required. Specifies the edition of Click-to-Run for Office 365 product to use: 32- or 64-bit. The action fails if <strong>OfficeClientEdition</strong> is not set to a valid value.</p>
+                                                        <br />
+                                                        <p class="ms-Callout-subText">A <strong>configure</strong> mode action may fail if <strong>OfficeClientEdition</strong> is set incorrectly. For example, if you attempt to install a 64-bit edition of a Click-to-Run for Office 365 product on a computer that is running a 32-bit Windows operating system, or if you try to install a 32-bit Click-to-Run for Office 365 product on a computer that has a 64-bit edition of Office installed.</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
                                 </tr>
                             </table>
                             <div class="input-group">
@@ -252,6 +322,23 @@
                                     <td>
                                         <label class="ms-Label">SourcePath</label>
                                     </td>
+                                    <td>
+                                        <i id="srcPathInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onmouseover="showInfo('srcPathInfo', this)" ; onmouseout="hideInfo('srcPathInfo')"></i>
+                                        <div id="srcPathInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:98px; top:408px; display:none">
+                                            <div class="ms-Callout-main">
+                                                <div class="ms-Callout-header">
+                                                    <p class="ms-Callout-title">Office Client Edition</p>
+                                                </div>
+                                                <div class="ms-Callout-inner">
+                                                    <div class="ms-Callout-content">
+                                                        <p class="ms-Callout-subText">Required. Specifies the edition of Click-to-Run for Office 365 product to use: 32- or 64-bit. The action fails if <strong>OfficeClientEdition</strong> is not set to a valid value.</p>
+                                                        <br />
+                                                        <p class="ms-Callout-subText">A <strong>configure</strong> mode action may fail if <strong>OfficeClientEdition</strong> is set incorrectly. For example, if you attempt to install a 64-bit edition of a Click-to-Run for Office 365 product on a computer that is running a 32-bit Windows operating system, or if you try to install a 32-bit Click-to-Run for Office 365 product on a computer that has a 64-bit edition of Office installed.</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
                                 </tr>
                             </table>
 
@@ -267,6 +354,23 @@
                                     <td>
                                         <label class="ms-Label">PIDKEY</label>
                                     </td>
+                                    <td>
+                                        <i id="pidkeyInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onmouseover="showInfo('pidkeyInfo', this)" ; onmouseout="hideInfo('pidkeyInfo')"></i>
+                                        <div id="pidkeyInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:75px; top:472px; display:none">
+                                            <div class="ms-Callout-main">
+                                                <div class="ms-Callout-header">
+                                                    <p class="ms-Callout-title">Office Client Edition</p>
+                                                </div>
+                                                <div class="ms-Callout-inner">
+                                                    <div class="ms-Callout-content">
+                                                        <p class="ms-Callout-subText">Required. Specifies the edition of Click-to-Run for Office 365 product to use: 32- or 64-bit. The action fails if <strong>OfficeClientEdition</strong> is not set to a valid value.</p>
+                                                        <br />
+                                                        <p class="ms-Callout-subText">A <strong>configure</strong> mode action may fail if <strong>OfficeClientEdition</strong> is set incorrectly. For example, if you attempt to install a 64-bit edition of a Click-to-Run for Office 365 product on a computer that is running a 32-bit Windows operating system, or if you try to install a 32-bit Click-to-Run for Office 365 product on a computer that has a 64-bit edition of Office installed.</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
                                 </tr>
                             </table>
 
@@ -281,6 +385,23 @@
                                 <tr>
                                     <td>
                                         <label class="ms-Label">Exclude Office Programs</label>
+                                    </td>
+                                    <td>
+                                        <i id="exclAppInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onmouseover="showInfo('exclAppInfo', this)" ; onmouseout="hideInfo('exclAppInfo')"></i>
+                                        <div id="exclAppInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:150px; top:510px; display:none">
+                                            <div class="ms-Callout-main">
+                                                <div class="ms-Callout-header">
+                                                    <p class="ms-Callout-title">Office Client Edition</p>
+                                                </div>
+                                                <div class="ms-Callout-inner">
+                                                    <div class="ms-Callout-content">
+                                                        <p class="ms-Callout-subText">Required. Specifies the edition of Click-to-Run for Office 365 product to use: 32- or 64-bit. The action fails if <strong>OfficeClientEdition</strong> is not set to a valid value.</p>
+                                                        <br />
+                                                        <p class="ms-Callout-subText">A <strong>configure</strong> mode action may fail if <strong>OfficeClientEdition</strong> is set incorrectly. For example, if you attempt to install a 64-bit edition of a Click-to-Run for Office 365 product on a computer that is running a 32-bit Windows operating system, or if you try to install a 32-bit Click-to-Run for Office 365 product on a computer that has a 64-bit edition of Office installed.</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </td>
                                 </tr>
                             </table>
@@ -370,7 +491,7 @@
                                 <td style="width: 100%; padding-right: 10px">
                                     <div class="ms-Dropdown">
                                         <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
-                                        <select id="cbLanguage" class="ms-Dropdown-select">
+                                        <select id="cbRemoveLanguage" class="ms-Dropdown-select">
                                             <option value="en-us">English (en-us)</option>
                                             <option value="ar-sa">Arabic (ar-sa)</option>
                                             <option value="bg-bg">Bulgarian (bg-bg)</option>
@@ -439,7 +560,7 @@
                     <!-- Start Updates Panel -->
                     <div id="UpdatesPanel" class="option-panel">
                         <h1 class="ms-font-l">Updates</h1>
-                        <div class="ms-Toggle">
+                        <div id="updateToggleContainer" class="ms-Toggle">
                             <span class="ms-Toggle-description">Enable Updates</span>
                             <input type="checkbox" id="updatesEnabled" class="ms-Toggle-input" />
                             <label for="updatesEnabled" class="ms-Toggle-field">
@@ -484,7 +605,7 @@
                             <div class="ms-TextField">
                                 <label class="ms-Label">Deadline</label>
                                 <i class="ms-DatePicker-event ms-Icon ms-Icon--event"></i>
-                                <input class="ms-TextField-field" type="text" placeholder="Select a date&hellip;">
+                                <input id="txtDeadline" class="ms-TextField-field" type="text" placeholder="Select a date&hellip;">
                             </div>
                             <div class="ms-DatePicker-monthComponents">
                                 <span class="ms-DatePicker-nextMonth js-nextMonth"><i class="ms-Icon ms-Icon--chevronRight"></i></span>
@@ -641,6 +762,14 @@
                                    class="ms-TextField-field" placeholder="XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
                                    data-error="This must be a valid APP-V Package Guid" maxlength="36">
                             <!--<span id="PACKAGEGUIDSignal" class="glyphicon form-control-feedback" aria-hidden="true"></span>-->
+                        </div>
+                        <div class="controls">
+                            <button id="btSaveProperties" class="ms-Button">
+                                Save
+                            </button>
+                            <button id="btRemoveProperties" class="ms-Button">
+                                Remove
+                            </button>
                         </div>
                     </div>
                     <!-- End Properties Panel -->
