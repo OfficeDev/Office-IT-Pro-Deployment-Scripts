@@ -536,6 +536,184 @@ Function Get-OfficeCTRRegPath() {
     }
 }
 
+Function Set-ODTProductToAdd{
+<#
+.SYNOPSIS
+Modifies an existing configuration xml file to modify a existing product item.
+
+.PARAMETER ExcludeApps
+Array of IDs of Apps to exclude from install
+
+.PARAMETER ProductId
+Required. ID must be set to a valid ProductRelease ID.
+See https://support.microsoft.com/en-us/kb/2842297 for valid ids.
+
+.PARAMETER LanguageIds
+Possible values match 'll-cc' pattern (Microsoft Language ids)
+The ID value can be set to a valid Office culture language (such as en-us 
+for English US or ja-jp for Japanese). The ll-cc value is the language 
+identifier.
+
+.PARAMETER TargetFilePath
+Full file path for the file to be modified and be output to.
+
+.Example
+Add-ODTProductToAdd -ProductId "O365ProPlusRetail" -LanguageId ("en-US", "es-es") -TargetFilePath "$env:Public/Documents/config.xml" -ExcludeApps ("Access", "InfoPath")
+Sets config to add the English and Spanish version of office 365 ProPlus
+excluding Access and InfoPath
+
+.Example
+Add-ODTProductToAdd -ProductId "O365ProPlusRetail" -LanguageId ("en-US", "es-es) -TargetFilePath "$env:Public/Documents/config.xml"
+Sets config to add the English and Spanish version of office 365 ProPlus
+
+.Notes
+Here is what the portion of configuration file looks like when modified by this function:
+
+<Configuration>
+  <Add OfficeClientEdition="64" >
+    <Product ID="O365ProPlusRetail">
+      <Language ID="en-US" />
+      <Language ID="es-es" />
+      <ExcludeApp ID="Access">
+      <ExcludeApp ID="InfoPath">
+    </Product>
+  </Add>
+  ...
+</Configuration>
+
+#>
+    [CmdletBinding()]
+    Param(
+        [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
+        [string] $ConfigurationXML = $NULL,
+
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [string] $TargetFilePath = $NULL,
+
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [Microsoft.Office.Products] $ProductId = "Unknown",
+
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [Alias("LanguageId")]
+        [string[]] $LanguageIds = $NULL,
+
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [string[]] $ExcludeApps = $NULL
+
+    )
+
+    Process{
+        $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
+
+        if ($ProductId -eq "Unknown") {
+           $ProductId = SelectProductId
+        }
+
+        $ProductId = IsValidProductId -ProductId $ProductId
+        
+        $langCount = $LanguageIds.Count
+
+        if ($langCount -gt 0) {
+           foreach ($language in $LanguageIds) {
+              $language = IsSupportedLanguage -Language $language
+           }
+        }
+
+        #Load the file
+        [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
+        
+        if ($TargetFilePath) {
+           $ConfigFile.Load($TargetFilePath) | Out-Null
+        } else {
+            if ($ConfigurationXml) 
+            {
+              $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
+              $global:saveLastConfigFile = $NULL
+              $global:saveLastFilePath = $NULL
+              $TargetFilePath = $NULL
+            }
+        }
+
+        $global:saveLastConfigFile = $ConfigFile.OuterXml
+
+        #Check that the file is properly formatted
+        if($ConfigFile.Configuration -eq $null){
+            throw $NoConfigurationElement
+        }
+
+        [System.XML.XMLElement]$AddElement=$NULL
+        if($ConfigFile.Configuration.Add -eq $null){
+           throw "Cannot find 'Add' element"
+        }
+
+        $AddElement = $ConfigFile.Configuration.Add 
+
+        #Set the desired values
+        [System.XML.XMLElement]$ProductElement = $ConfigFile.Configuration.Add.Product | ?  ID -eq $ProductId
+        if($ProductElement -eq $null){
+           throw "Cannot find Product with Id '$ProductId'"
+        }
+
+        if ($LanguageIds) {
+            $existingLangs = $ProductElement.selectnodes("./Language")
+            if ($existingLangs.count -gt 0) {
+                foreach ($lang in $existingLangs) {
+                  $ProductElement.removeChild($lang) | Out-Null
+                }
+
+                foreach($LanguageId in $LanguageIds){
+                    [System.XML.XMLElement]$LanguageElement = $ProductElement.Language | ?  ID -eq $LanguageId
+                    if($LanguageElement -eq $null){
+                        [System.XML.XMLElement]$LanguageElement=$ConfigFile.CreateElement("Language")
+                        $ProductElement.appendChild($LanguageElement) | Out-Null
+                        $LanguageElement.SetAttribute("ID", $LanguageId) | Out-Null
+                    }
+                }
+            }
+        }
+
+        if ($ExcludeApps) {
+            $existingExcludes = $ProductElement.selectnodes("./ExcludeApp")
+            if ($existingExcludes.count -gt 0) {
+                foreach ($exclude in $existingLangs) {
+                  $ProductElement.removeChild($exclude) | Out-Null
+                }
+
+                foreach($ExcludeApp in $ExcludeApps){
+                    [System.XML.XMLElement]$ExcludeAppElement = $ProductElement.ExcludeApp | ?  ID -eq $ExcludeApp
+                    if($ExcludeAppElement -eq $null){
+                        [System.XML.XMLElement]$ExcludeAppElement=$ConfigFile.CreateElement("ExcludeApp")
+                        $ProductElement.appendChild($ExcludeAppElement) | Out-Null
+                        $ExcludeAppElement.SetAttribute("ID", $ExcludeApp) | Out-Null
+                    }
+                }
+            }
+        }
+
+        $ConfigFile.Save($TargetFilePath) | Out-Null
+        $global:saveLastFilePath = $TargetFilePath
+
+        if (($PSCmdlet.MyInvocation.PipelineLength -eq 1) -or `
+            ($PSCmdlet.MyInvocation.PipelineLength -eq $PSCmdlet.MyInvocation.PipelinePosition)) {
+            Write-Host
+
+            Format-XML ([xml](cat $TargetFilePath)) -indent 4
+
+            Write-Host
+            Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+        } else {
+            $results = new-object PSObject[] 0;
+            $Result = New-Object –TypeName PSObject 
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "ProductId" -Value $ProductId
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "LanguageIds" -Value $LanguageIds
+            $Result
+        }
+
+
+    }
+
+}
 
 Function Wait-ForOfficeCTRInstall() {
     [CmdletBinding()]
