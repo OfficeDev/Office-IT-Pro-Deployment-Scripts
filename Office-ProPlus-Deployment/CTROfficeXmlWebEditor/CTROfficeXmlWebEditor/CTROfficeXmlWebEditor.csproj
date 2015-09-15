@@ -61,9 +61,6 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="callout-example.html" />
-    <Content Include="ChoiceField-example.html" />
-    <Content Include="CommandBar-Example.html" />
     <Content Include="components\Breadcrumb\Breadcrumb.css" />
     <Content Include="components\Breadcrumb\Breadcrumb.html" />
     <Content Include="components\Breadcrumb\Breadcrumb.min.css" />
@@ -210,17 +207,10 @@
     <Content Include="components\Toggle\Toggle.html" />
     <Content Include="components\Toggle\Toggle.min.css" />
     <Content Include="components\Toggle\Toggle.TextLeft.html" />
-    <Content Include="ContextualMenu-Example.html" />
-    <Content Include="DatePicker-Example.html" />
-    <Content Include="Dialog-example.html" />
     <Content Include="images\info.png" />
     <Content Include="images\Office.png" />
     <Content Include="index.html" />
-    <Content Include="index2.html" />
-    <Content Include="List-example.html" />
-    <Content Include="NavBar-Example.html" />
     <Content Include="New-Index.html" />
-    <Content Include="Pivot-Example.html" />
     <Content Include="Scripts\FileSaver.js" />
     <Content Include="Scripts\FileSaver.min.js" />
     <Content Include="Scripts\jquery.fabric.min.js" />
@@ -235,8 +225,6 @@
     <Content Include="templates\O365ProPlusRetailwVisio.xml">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="TextField-Example.html" />
-    <Content Include="Toggle-Example.html" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>

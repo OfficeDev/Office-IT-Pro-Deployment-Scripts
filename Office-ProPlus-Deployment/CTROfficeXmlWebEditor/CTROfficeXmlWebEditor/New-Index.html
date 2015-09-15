@@ -1275,9 +1275,9 @@
         </form>
                 
     </div>
-    <div id="aboutDialog" class="ms-Dialog" style="display:none;position:absolute;top:0;width:100%">
+    <div id="aboutDialog" class="ms-Dialog" style="display:none;position:fixed;top:-100%;width:100%">
         <div class="ms-Overlay"></div>
-        <div class="ms-Dialog-main" style="width:75%">
+        <div class="ms-Dialog-main">
             <button class="ms-Dialog-button ms-Dialog-button--close" onclick="hideAbout()">
                 <i class="ms-Icon ms-Icon--x"></i>
             </button>
@@ -1292,11 +1292,9 @@
                         This page provides a graphical method to generate and edit the Office Click-to-Run configuration.xml file
                     </p>
                     <br />
-                    <br />
                     <p class="ms-Dialog-subText">
                         <a href="https://technet.microsoft.com/en-us/library/JJ219426.aspx">Reference for Click-to-Run configuration.xml file</a>
                     </p>
-                    <br />
                     <br />
                     <p class="ms-Dialog-subText">
                         The Click-to-Run for Office 365 Configuration.xml file is used to specify Click-to-Run installation and update options. The
@@ -1304,7 +1302,6 @@
                         that includes a sample Configuration.xml file. Administrators can modify the Configuration.xml file to configure installation options
                         for Click-to-Run for Office 365 products.
                     </p>
-                    <br />
                     <br />
                     <p class="ms-Dialog-subText">
                         The Click-to-Run Configuration.xml file is a necessary component of the Office Deployment Tool. Click-to-Run customizations are performed
