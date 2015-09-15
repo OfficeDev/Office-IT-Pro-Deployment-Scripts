@@ -2151,6 +2151,15 @@ function toggleTextBox(id, enabled) {
     }
 }
 
+function toggleInfo(calloutId, icon) {
+    var disp = $("#" + calloutId)[0].style.display;
+    if (disp == "none") {
+        showInfo(calloutId, icon);
+    } else {
+        hideInfo(calloutId);
+    }
+}
+
 function showInfo(calloutId, icon) {
     var pos = $("#" + icon.id).position();
     var iconWidth = $("#" + icon.id).width();
@@ -2164,6 +2173,21 @@ function showInfo(calloutId, icon) {
 
 function hideInfo(calloutId) {
     $("#" + calloutId)[0].style.display = 'none';
+}
+
+function showAbout() {
+    //var pos = $("#" + icon.id).position();
+    //var iconWidth = $("#" + icon.id).width();
+    //var iconHeight = $("#" + icon.id).height();
+    //var nTop = pos.top - 60;
+    //var nLeft = pos.left + iconWidth - 5;
+    //$("#" + calloutId)[0].style.top = nTop.toString() + "px";
+    //$("#" + calloutId)[0].style.left = nLeft.toString() + "px";
+    $("#aboutDialog")[0].style.display = 'block';
+}
+
+function hideAbout() {
+    $("#aboutDialog")[0].style.display = 'none';
 }
 
 function IsGuid(value) {
