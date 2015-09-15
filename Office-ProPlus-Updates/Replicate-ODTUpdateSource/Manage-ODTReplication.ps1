@@ -107,31 +107,51 @@ A task will be created on the host machine to download the latest C2R builds dai
 
 #>
     param(
+        [Parameter()]
         [OfficeCTRVersion]$OfficeVersion = "Office2013",
+
+        [Parameter()]
+        [string] $UpdateVersion = $null,
+
+        [Parameter()]
         [string] $XmlConfigPath = "$PSScriptRoot\configuration.xml"
     )  
 
-    . $PSScriptRoot\Edit-OfficeConfigurationFile.ps1
-    
-    switch($OfficeVersion){
-       Office2013 { $odtExtPath = "$PSScriptRoot\Office2013Setup.exe" }
-       Office2016 { $odtExtPath = "$PSScriptRoot\Office2016Setup.exe" }
+    Begin {
+
     }
 
-    $progDirPath = "$env:ProgramFiles\OfficeCTRRepl"
-    [system.io.directory]::CreateDirectory($progDirPath) | Out-Null
+    Process {
+        switch($OfficeVersion){
+           Office2013 { $odtExtPath = "$PSScriptRoot\Office2013Setup.exe" }
+           Office2016 { $odtExtPath = "$PSScriptRoot\Office2016Setup.exe" }
+        }
 
-    Write-Host "Downloading `"$OfficeVersion`" Latest 32-Bit Version..." -NoNewline
-    $download32 = "$odtExtPath /download $XmlConfigPath"
-    Set-ODTAdd -TargetFilePath "$XmlConfigPath" -Bitness 32 -SourcePath $progDirPath | Out-Null
-    Invoke-Expression $download32
-    Write-Host "Completed"
+        $progDirPath = "$env:ProgramFiles\Office Update Replication"
+        [system.io.directory]::CreateDirectory($progDirPath) | Out-Null
 
-    Write-Host "Downloading `"$OfficeVersion`" Latest 64-Bit Version..." -NoNewline
-    $download64 = "$odtExtPath /download $XmlConfigPath"
-    Set-ODTAdd -TargetFilePath "$XmlConfigPath" -Bitness 64 -SourcePath $progDirPath | Out-Null
-    Invoke-Expression $download64
-    Write-Host "Completed"
+        Write-Host "Downloading `"$OfficeVersion`" Latest 32-Bit Version..." -NoNewline
+        $download32 = "$odtExtPath /download $XmlConfigPath"
+        Set-ODTAdd -TargetFilePath "$XmlConfigPath" -Bitness 32 -SourcePath $progDirPath | Out-Null
+
+        if ($UpdateVersion) {
+          Set-ODTAdd -TargetFilePath "$XmlConfigPath" -Version $UpdateVersion
+        }
+
+        Invoke-Expression $download32
+        Write-Host "Completed"
+
+        Write-Host "Downloading `"$OfficeVersion`" Latest 64-Bit Version..." -NoNewline
+        $download64 = "$odtExtPath /download $XmlConfigPath"
+        Set-ODTAdd -TargetFilePath "$XmlConfigPath" -Bitness 64 -SourcePath $progDirPath | Out-Null
+
+        if ($UpdateVersion) {
+          Set-ODTAdd -TargetFilePath "$XmlConfigPath" -Version $UpdateVersion
+        }
+
+        Invoke-Expression $download64
+        Write-Host "Completed"
+    }
 }
 
 function New-ODTDownloadSchedule() {
@@ -142,60 +162,62 @@ function New-ODTDownloadSchedule() {
         [string] $ScheduledTime64Bit = "18:00"
     )  
     
-    $progDirPath = "$env:ProgramFiles\OfficeCTRRepl"
-    [system.io.directory]::CreateDirectory($progDirPath) | Out-Null
+    Process {
+        $progDirPath = "$env:ProgramFiles\Office Update Replication"
+        [system.io.directory]::CreateDirectory($progDirPath) | Out-Null
 
-    switch($OfficeVersion){
-       Office2013 { 
-         if (!(Test-Path -Path "$env:ProgramFiles\OfficeCTRRepl\Office2013Setup.exe")) {
-            Copy-Item -Path "$PSScriptRoot\Office2013Setup.exe" -Destination "$env:ProgramFiles\OfficeCTRRepl\Office2013Setup.exe" -Force | Out-Null
-         }
-       }
-       Office2016 { 
-          if (!(Test-Path -Path "$env:ProgramFiles\OfficeCTRRepl\Office2016Setup.exe")) {
-            Copy-Item -Path "$PSScriptRoot\Office2016Setup.exe" -Destination "$env:ProgramFiles\OfficeCTRRepl\Office2016Setup.exe" -Force -ErrorAction SilentlyContinue | Out-Null
+        switch($OfficeVersion){
+          Office2013 { 
+             if (!(Test-Path -Path "$env:ProgramFiles\Office Update Replication\Office2013Setup.exe")) {
+                Copy-Item -Path "$PSScriptRoot\Office2013Setup.exe" -Destination "$env:ProgramFiles\Office Update Replication\Office2013Setup.exe" -Force | Out-Null
+             }
           }
-       }
-    }
+          Office2016 { 
+             if (!(Test-Path -Path "$env:ProgramFiles\Office Update Replication\Office2016Setup.exe")) {
+               Copy-Item -Path "$PSScriptRoot\Office2016Setup.exe" -Destination "$env:ProgramFiles\Office Update Replication\Office2016Setup.exe" -Force -ErrorAction SilentlyContinue | Out-Null
+             }
+          }
+        }
 
-    Copy-Item -Path $XmlConfigPath -Destination "$env:ProgramFiles\OfficeCTRRepl\configuration32.xml" -Force | Out-Null
-    Copy-Item -Path $XmlConfigPath -Destination "$env:ProgramFiles\OfficeCTRRepl\configuration64.xml" -Force | Out-Null
+        Copy-Item -Path $XmlConfigPath -Destination "$env:ProgramFiles\Office Update Replication\configuration32.xml" -Force | Out-Null
+        Copy-Item -Path $XmlConfigPath -Destination "$env:ProgramFiles\Office Update Replication\configuration64.xml" -Force | Out-Null
 
-    Set-ODTAdd -TargetFilePath "$env:ProgramFiles\OfficeCTRRepl\configuration32.xml" -SourcePath $progDirPath -Bitness 32 | Out-Null
-    Set-ODTAdd -TargetFilePath "$env:ProgramFiles\OfficeCTRRepl\configuration64.xml" -SourcePath $progDirPath -Bitness 64 | Out-Null
+        Set-ODTAdd -TargetFilePath "$env:ProgramFiles\Office Update Replication\configuration32.xml" -SourcePath $progDirPath -Bitness 32 | Out-Null
+        Set-ODTAdd -TargetFilePath "$env:ProgramFiles\Office Update Replication\configuration64.xml" -SourcePath $progDirPath -Bitness 64 | Out-Null
 
-    switch($OfficeVersion){
-       Office2013 { 
-            $odtCmd32 = "\`"$progDirPath\Office2013Setup.exe\`" /Download \`"$env:ProgramFiles\OfficeCTRRepl\configuration32.xml\`"" 
-            $odtCmd64 = "\`"$progDirPath\Office2013Setup.exe\`" /Download \`"$env:ProgramFiles\OfficeCTRRepl\configuration64.xml\`"" 
-       }
-       Office2016 { 
-            $odtCmd32 = "\`"$progDirPath\Office2016Setup.exe\`" /Download \`"$env:ProgramFiles\OfficeCTRRepl\configuration32.xml\`"" 
-            $odtCmd64 = "\`"$progDirPath\Office2016Setup.exe\`" /Download \`"$env:ProgramFiles\OfficeCTRRepl\configuration64.xml\`"" 
-       }
-    }
+        switch($OfficeVersion){
+          Office2013 { 
+            $odtCmd32 = "\`"$progDirPath\Office2013Setup.exe\`" /Download \`"$env:ProgramFiles\Office Update Replication\configuration32.xml\`"" 
+            $odtCmd64 = "\`"$progDirPath\Office2013Setup.exe\`" /Download \`"$env:ProgramFiles\Office Update Replication\configuration64.xml\`"" 
+          }
+          Office2016 { 
+            $odtCmd32 = "\`"$progDirPath\Office2016Setup.exe\`" /Download \`"$env:ProgramFiles\Office Update Replication\configuration32.xml\`"" 
+            $odtCmd64 = "\`"$progDirPath\Office2016Setup.exe\`" /Download \`"$env:ProgramFiles\Office Update Replication\configuration64.xml\`"" 
+          }
+        }
 
-    [string] $computer = $env:COMPUTERNAME
+        [string] $computer = $env:COMPUTERNAME
      
-    $TaskName32 = "Microsoft\OfficeC2R\$OfficeVersion ODT Download 32-Bit"
-    $TaskName64 = "Microsoft\OfficeC2R\$OfficeVersion ODT Download 64-Bit"
+        $TaskName32 = "Microsoft\OfficeC2R\$OfficeVersion ODT Download 32-Bit"
+        $TaskName64 = "Microsoft\OfficeC2R\$OfficeVersion ODT Download 64-Bit"
 
-    $scheduledTaskAdd32 = "schtasks /create /ru System /tn '$TaskName32' /tr '$odtCmd32' /sc Monthly /mo SECOND /D TUE /st $ScheduledTime32Bit /f"
-    $scheduledTaskDel32 = "schtasks /delete /tn '$TaskName32' /f"
+        $scheduledTaskAdd32 = "schtasks /create /ru System /tn '$TaskName32' /tr '$odtCmd32' /sc Monthly /mo SECOND /D TUE /st $ScheduledTime32Bit /f"
+        $scheduledTaskDel32 = "schtasks /delete /tn '$TaskName32' /f"
 
-    $scheduledTaskAdd64 = "schtasks /create /ru System /tn '$TaskName64' /tr '$odtCmd64' /sc Monthly /mo SECOND /D TUE /st $ScheduledTime64Bit /f"
-    $scheduledTaskDel64 = "schtasks /delete /tn '$TaskName64' /f"
+        $scheduledTaskAdd64 = "schtasks /create /ru System /tn '$TaskName64' /tr '$odtCmd64' /sc Monthly /mo SECOND /D TUE /st $ScheduledTime64Bit /f"
+        $scheduledTaskDel64 = "schtasks /delete /tn '$TaskName64' /f"
 
-    if (findScheduledTask -OfficeVersion $OfficeVersion -Bitness 32) {
-        Invoke-Expression $scheduledTaskDel32
+        if (findScheduledTask -OfficeVersion $OfficeVersion -Bitness 32) {
+           Invoke-Expression $scheduledTaskDel32
+        }
+
+        if (findScheduledTask -OfficeVersion $OfficeVersion -Bitness 64) {
+           Invoke-Expression $scheduledTaskDel64
+        }
+
+        Invoke-Expression $scheduledTaskAdd32
+        Invoke-Expression $scheduledTaskAdd64
     }
-
-    if (findScheduledTask -OfficeVersion $OfficeVersion -Bitness 64) {
-        Invoke-Expression $scheduledTaskDel64
-    }
-
-    Invoke-Expression $scheduledTaskAdd32
-    Invoke-Expression $scheduledTaskAdd64
 }
 
 function Remove-ODTDownloadSchedule() {
@@ -203,24 +225,26 @@ function Remove-ODTDownloadSchedule() {
         [OfficeCTRVersion]$OfficeVersion = "Office2013"
     )  
     
-    [string] $computer = $env:COMPUTERNAME
+    Process {
+        [string] $computer = $env:COMPUTERNAME
      
-    $TaskName32 = "Microsoft\OfficeC2R\$OfficeVersion ODT Download 32-Bit"
-    $TaskName64 = "Microsoft\OfficeC2R\$OfficeVersion ODT Download 64-Bit"
+        $TaskName32 = "Microsoft\OfficeC2R\$OfficeVersion ODT Download 32-Bit"
+        $TaskName64 = "Microsoft\OfficeC2R\$OfficeVersion ODT Download 64-Bit"
 
-    $scheduledTaskDel32 = "schtasks /delete /tn '$TaskName32' /f"
-    $scheduledTaskDel64 = "schtasks /delete /tn '$TaskName64' /f"
+        $scheduledTaskDel32 = "schtasks /delete /tn '$TaskName32' /f"
+        $scheduledTaskDel64 = "schtasks /delete /tn '$TaskName64' /f"
 
-    if (findScheduledTask -OfficeVersion $OfficeVersion -Bitness 32) {
-        Invoke-Expression $scheduledTaskDel32
-    } else {
+        if (findScheduledTask -OfficeVersion $OfficeVersion -Bitness 32) {
+           Invoke-Expression $scheduledTaskDel32
+        } else {
         Write-Host "Task `"$TaskName32`" does not exist"
     }
 
-    if (findScheduledTask -OfficeVersion $OfficeVersion -Bitness 64) {
-        Invoke-Expression $scheduledTaskDel64
-    } else {
-        Write-Host "Task `"$TaskName64`" does not exist"
+        if (findScheduledTask -OfficeVersion $OfficeVersion -Bitness 64) {
+           Invoke-Expression $scheduledTaskDel64
+        } else {
+           Write-Host "Task `"$TaskName64`" does not exist"
+        }
     }
 }
 
@@ -254,48 +278,54 @@ has updated files or folders they will be copied to each destination.
         [string[]]$ShareName
     )
 
-    $progDirPath = "$env:ProgramFiles\OfficeCTRRepl"
-    [system.io.directory]::CreateDirectory($progDirPath) | Out-Null
-    $Source = "$progDirPath\Office"
+    Process {
+        $progDirPath = "$env:ProgramFiles\Office Update Replication"
+        [system.io.directory]::CreateDirectory($progDirPath) | Out-Null
+        $Source = "$progDirPath\Office"
 
-    $ODTShareNameLogFile = "$progDirPath\ODTReplication.csv"
-
-    $remoteShares = Import-Csv $ODTShareNameLogFile
-
-    foreach($share in $ShareName){
-       $existingShares = $remoteShares | where { $_.ShareName.ToLower() -eq $share.ToLower() }
-       if ($existingShares.Length -eq 0) {
-          throw "Remote Share `"$share`" is not added as a remote source"
-       }
-    }
-
-    if (!(Test-Path -Path $progDirPath)) {
-      throw "Source Path '$Source' does not exist run Start-ODTDownload cmdlet to create it"
-    }
-
-    foreach($share in $ShareName){
-        $shareFolder = "$share\Office"
-        [system.io.directory]::CreateDirectory($shareFolder) | Out-Null
-
-        $destinationFolder = Get-ChildItem $share -Recurse
-        $sourceFolder = Get-ChildItem $Source -Recurse
-
-        if($destinationFolder -ne $null){          
-            $comparison = Compare-Object -ReferenceObject $sourceFolder -DifferenceObject $destinationFolder -IncludeEqual
-
-            if($comparison.SideIndicator -eq "<="){
-                Copy-WithProgress -Source $source -Destination $share 
-            }
-            elseif($comparison.SideIndicator -eq "=="){
-                Write-Host "The remote update source `"$share`" is up to date."
-            }
+        if (!(Test-Path -Path $Source)) { 
+           throw "Before you can replicate the Office ProPlus Click-To-Run Files you must first run the Start-ODTDownload function" 
         }
-        elseif($destinationFolder -eq $null){
-            $roboCopy = "Robocopy `"$source`" `"$share`" /mir /r:0 /w:0"
-            #Invoke-Expression $roboCopy
 
-            Copy-WithProgress -Source $source -Destination $share 
-        }                         
+        $ODTShareNameLogFile = "$progDirPath\ODTReplication.csv"
+
+        $remoteShares = Import-Csv $ODTShareNameLogFile
+
+        foreach($share in $ShareName){
+           $existingShares = $remoteShares | where { $_.ShareName.ToLower() -eq $share.ToLower() }
+           if ($existingShares.Length -eq 0) {
+              throw "Remote Share `"$share`" is not added as a remote source"
+           }
+        }
+
+        if (!(Test-Path -Path $progDirPath)) {
+          throw "Source Path '$Source' does not exist run Start-ODTDownload cmdlet to create it"
+        }
+
+        foreach($share in $ShareName){
+            $shareFolder = "$share\Office"
+            [system.io.directory]::CreateDirectory($shareFolder) | Out-Null
+
+            $destinationFolder = Get-ChildItem $share -Recurse
+            $sourceFolder = Get-ChildItem $Source -Recurse
+
+            if($destinationFolder -ne $null){          
+                $comparison = Compare-Object -ReferenceObject $sourceFolder -DifferenceObject $destinationFolder -IncludeEqual
+
+                if($comparison.SideIndicator -eq "<="){
+                    Copy-WithProgress -Source $source -Destination $share 
+                }
+                elseif($comparison.SideIndicator -eq "=="){
+                    Write-Host "The remote update source `"$share`" is up to date."
+                }
+            }
+            elseif($destinationFolder -eq $null){
+                $roboCopy = "Robocopy `"$source`" `"$share`" /mir /r:0 /w:0"
+                #Invoke-Expression $roboCopy
+
+                Copy-WithProgress -Source $source -Destination $share 
+            }                         
+        }
     }
 }
 
@@ -352,14 +382,18 @@ the second Wednesday at 3:00am.
         [Days] $Days = "TUE",
 
         [Parameter()]
-        [string] $StartTime = "20:00"       
+        [string] $StartTime = "20:00", 
+         
+        [Parameter()]
+        [int] $UpdateInterval = 30
     )
 
     Process {
 
-        $progDirPath = "$env:ProgramFiles\OfficeCTRRepl"
+        $progDirPath = "$env:ProgramFiles\Office Update Replication"
         [system.io.directory]::CreateDirectory($progDirPath) | Out-Null
         $Source = "$progDirPath\Office"
+        $ODTShareNameLogFile = "$progDirPath\ODTReplication.csv"
 
         $remShares = $null
         foreach($remotePath in $ShareName) {
@@ -367,10 +401,44 @@ the second Wednesday at 3:00am.
             $serverName= $remotePath.Split("\")[2]
             $shareName= $remotePath.Replace("\\$serverName\", "").Replace("\", "-")
 
+            $remoteShares = Get-ODTRemoteUpdateSource | Select *
+            [datetime]$dtStartTime = getSecondTuesday
+            for ($i=0;$i -lt $remoteShares.Length;$i++) {
+                $dtStartTime =$dtStartTime.AddMinutes($UpdateInterval)
+
+                $dtHour = $dtStartTime.Hour.ToString()
+                $dtMinute = $dtStartTime.Minute.ToString()
+                if ($dtMinute.Length -eq 1) { $dtMinute = $dtMinute + "0" }
+
+                [DateTime]$chkStartDate = Get-Date -Hour $dtStartTime.Hour -Minute $dtMinute -Second 0
+
+                $shortTime = $chkStartDate.ToLongTimeString()
+                $existingTimes = $remoteShares | Where {$_.StartTime -eq $shortTime }
+
+                $tmpStartTime = $dtHour + ":" + $dtMinute
+
+                if ($existingTimes.Length -eq 0) {
+                   $StartTime = $tmpStartTime
+                   break
+                }
+            }
+
             $TaskName = "Microsoft\OfficeC2R\ODT Replication - $serverName - $shareName"
 
+            $existingTask = findReplScheduledTask -ServerName $serverName -ShareName $shareName
+            if ($existingTask) {
+                $taskCsv = & schtasks /query /tn $TaskName /v /fo csv
+                if ($taskCsv) {
+                   $taskCsv   | Out-File -FilePath "$env:temp\TmpSchTask.csv"
+	               $importTasks = Import-Csv -Path "$env:temp\TmpSchTask.csv"
+        
+                   $StartTime = $importTasks.'Start Time' 
+                   $StartTime = "{0:HH:mm}" -f [datetime]$StartTime     
+                }
+            }
+
             $roboCommand = "Robocopy \`"$Source\`" \`"$remotePath\`" /mir /r:0 /w:0"
-            $scheduledTask = "schtasks /create /ru System /tn '$TaskName' /tr '$roboCommand' /sc $Schedule /MO $Modifier /D $Days /st $StartTime /f"
+            $scheduledTask = "schtasks /create /ru System /tn '$TaskName' /tr '$roboCommand' /sc $Schedule /MO $Modifier /D $Days /st '$StartTime' /f"
 
             $scheduledTaskDel = "schtasks /delete /tn '$TaskName' /f"
         
@@ -386,7 +454,6 @@ the second Wednesday at 3:00am.
         }  
     
         $remShares 
-    
     }                                          
 }
 
@@ -396,23 +463,25 @@ function Disable-ODTRemoteUpdateSourceReplication() {
         [string[]] $ShareName    
     )
 
-    $progDirPath = "$env:ProgramFiles\OfficeCTRRepl"
-    [system.io.directory]::CreateDirectory($progDirPath) | Out-Null
-    $Source = "$progDirPath\Office"
+    process {
+        $progDirPath = "$env:ProgramFiles\Office Update Replication"
+        [system.io.directory]::CreateDirectory($progDirPath) | Out-Null
+        $Source = "$progDirPath\Office"
 
-    foreach($remotePath in $ShareName) {
-        $serverName= $remotePath.Split("\")[2]
-        $shareName= $remotePath.Replace("\\$serverName\", "").Replace("\", "-")
+        foreach($remotePath in $ShareName) {
+            $serverName= $remotePath.Split("\")[2]
+            $shareName= $remotePath.Replace("\\$serverName\", "").Replace("\", "-")
 
-        $TaskName = "Microsoft\OfficeC2R\ODT Replication - $serverName - $shareName"
+            $TaskName = "Microsoft\OfficeC2R\ODT Replication - $serverName - $shareName"
 
-        $scheduledTaskDel = "schtasks /delete /tn '$TaskName' /f"
+            $scheduledTaskDel = "schtasks /delete /tn '$TaskName' /f"
            
-        Invoke-Expression $scheduledTaskDel | out-Null
+            Invoke-Expression $scheduledTaskDel | out-Null
 
-        $remShares = Get-ODTRemoteUpdateSource | Where { $_.ShareName.ToLower() -eq $remotePath.ToLower() }
-        $remShares
-    }                                             
+            $remShares = Get-ODTRemoteUpdateSource | Where { $_.ShareName.ToLower() -eq $remotePath.ToLower() }
+            $remShares
+        }       
+    }                                      
 }
 
 
@@ -445,42 +514,43 @@ shares "\\Computer3\ODT Replication" and "\\Computer4\ODT Replication".
         [string[]] $RemoteShare
     )
 
-    $progDirPath = "$env:ProgramFiles\OfficeCTRRepl"
-    [system.io.directory]::CreateDirectory($progDirPath) | Out-Null
-    $ODTShareNameLogFile = "$progDirPath\ODTReplication.csv"
+    Process {
+        $progDirPath = "$env:ProgramFiles\Office Update Replication"
+        [system.io.directory]::CreateDirectory($progDirPath) | Out-Null
+        $ODTShareNameLogFile = "$progDirPath\ODTReplication.csv"
 
-    [PSObject[]]$ExistingShares = new-object PSObject[] 0;
-    if(Test-Path $ODTShareNameLogFile){
-        $ExistingShares = Import-Csv $ODTShareNameLogFile
-    }
-
-    foreach($share in $RemoteShare) {
-        $checkShares = $ExistingShares | Where { $_.ShareName.ToLower() -eq $share.ToLower() }
-        if ($checkShares.Length -eq 0) {
-            $results = new-object PSObject[] 0;
-            $Result = New-Object –TypeName PSObject 
-
-            $computerName = $share.Split("\")[2]
-
-            if (Test-Connection -ComputerName $computerName -ErrorAction SilentlyContinue){
-                if (Test-Path -Path $share) {
-                    Add-Member -InputObject $Result -MemberType NoteProperty -Name "ShareName" -Value $Share
-                    Add-Member -InputObject $Result -MemberType NoteProperty -Name "AutoReplicationEnabled" -Value $false
-
-                    $ExistingShares += $Result
-
-                    $Result
-                } else {
-                   Write-Host "The remote share `"$share`" is unavailble" -BackgroundColor Red
-                }
-            } else {
-               Write-Host "The remote host `"$computerName`" is unavailble" -BackgroundColor Red
-            }
+        [PSObject[]]$ExistingShares = new-object PSObject[] 0;
+        if(Test-Path $ODTShareNameLogFile){
+            $ExistingShares = Import-Csv $ODTShareNameLogFile
         }
-    } 
+
+        foreach($share in $RemoteShare) {
+            $checkShares = $ExistingShares | Where { $_.ShareName.ToLower() -eq $share.ToLower() }
+            if ($checkShares.Length -eq 0) {
+                $results = new-object PSObject[] 0;
+                $Result = New-Object –TypeName PSObject 
+
+                $computerName = $share.Split("\")[2]
+
+                if (Test-Connection -ComputerName $computerName -ErrorAction SilentlyContinue){
+                    if (Test-Path -Path $share) {
+                        Add-Member -InputObject $Result -MemberType NoteProperty -Name "ShareName" -Value $Share
+                        Add-Member -InputObject $Result -MemberType NoteProperty -Name "AutoReplicationEnabled" -Value $false
+
+                        $ExistingShares += $Result
+
+                        $Result
+                    } else {
+                       Write-Host "The remote share `"$share`" is unavailble" -BackgroundColor Red
+                    }
+                } else {
+                   Write-Host "The remote host `"$computerName`" is unavailble" -BackgroundColor Red
+                }
+            }
+        } 
             
-    $ExistingShares | Export-Csv $ODTShareNameLogFile -NoTypeInformation -Force
-    
+        $ExistingShares | Export-Csv $ODTShareNameLogFile -NoTypeInformation -Force
+    }
 }
 
 function Remove-ODTRemoteUpdateSource() {
@@ -509,12 +579,14 @@ be removed from the csv file and saved.
         [string[]] $RemoteShare
     )
 
-    $progDirPath = "$env:ProgramFiles\OfficeCTRRepl"
-    [system.io.directory]::CreateDirectory($progDirPath) | Out-Null
-    $ODTShareNameLogFile = "$progDirPath\ODTReplication.csv"
+    Process {
+        $progDirPath = "$env:ProgramFiles\Office Update Replication"
+        [system.io.directory]::CreateDirectory($progDirPath) | Out-Null
+        $ODTShareNameLogFile = "$progDirPath\ODTReplication.csv"
 
-    $removedShares = Import-Csv $ODTShareNameLogFile | where ShareName -notin $RemoteShare
-    $removedShares | Export-Csv $ODTShareNameLogFile -Force -NoTypeInformation
+        $removedShares = Import-Csv $ODTShareNameLogFile | where ShareName -notin $RemoteShare
+        $removedShares | Export-Csv $ODTShareNameLogFile -Force -NoTypeInformation
+    }
 }
 
 function Get-ODTRemoteUpdateSource() {
@@ -541,75 +613,77 @@ be populated in the console.
        
     )
 
-    $defaultDisplaySet = 'ShareName','AutoReplicationEnabled', 'LastReplTime', 'NextReplTime', 'LastResult'
+    Process {
+        $defaultDisplaySet = 'ShareName','AutoReplicationEnabled', 'LastReplTime', 'NextReplTime', 'LastResult'
 
-    $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet(‘DefaultDisplayPropertySet’,[string[]]$defaultDisplaySet)
-    $PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultDisplayPropertySet)
+        $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet(‘DefaultDisplayPropertySet’,[string[]]$defaultDisplaySet)
+        $PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultDisplayPropertySet)
 
-    $progDirPath = "$env:ProgramFiles\OfficeCTRRepl"
-    [system.io.directory]::CreateDirectory($progDirPath) | Out-Null
-    $ODTShareNameLogFile = "$progDirPath\ODTReplication.csv"
+        $progDirPath = "$env:ProgramFiles\Office Update Replication"
+        [system.io.directory]::CreateDirectory($progDirPath) | Out-Null
+        $ODTShareNameLogFile = "$progDirPath\ODTReplication.csv"
 
-    if (!(Test-Path $ODTShareNameLogFile)) {
-       return
-    }
+        if (!(Test-Path $ODTShareNameLogFile)) {
+           return
+        }
 
-    $remoteShares = Import-Csv $ODTShareNameLogFile
+        $remoteShares = Import-Csv $ODTShareNameLogFile
 
-    $results = new-object PSObject[] 0;
+        $results = new-object PSObject[] 0;
 
-    foreach ($remoteShare in $remoteShares) {
-	   $Result = New-Object –TypeName PSObject 
+        foreach ($remoteShare in $remoteShares) {
+	       $Result = New-Object –TypeName PSObject 
 	
-       $serverName = $remoteShare.ShareName.Split("\")[2]
-       $shareName= $remoteShare.ShareName.Replace("\\$serverName\", "").Replace("\", "-")
+           $serverName = $remoteShare.ShareName.Split("\")[2]
+           $shareName= $remoteShare.ShareName.Replace("\\$serverName\", "").Replace("\", "-")
        
-       $replExists = findReplScheduledTask -ServerName $serverName -ShareName $shareName
-       $remoteShare.AutoReplicationEnabled = $replExists
+           $replExists = findReplScheduledTask -ServerName $serverName -ShareName $shareName
+           $remoteShare.AutoReplicationEnabled = $replExists
 	
-       Add-Member -InputObject $Result -MemberType NoteProperty -Name "ShareName" -Value $remoteShare.ShareName
-       Add-Member -InputObject $Result -MemberType NoteProperty -Name "AutoReplicationEnabled" -Value $remoteShare.AutoReplicationEnabled
+           Add-Member -InputObject $Result -MemberType NoteProperty -Name "ShareName" -Value $remoteShare.ShareName
+           Add-Member -InputObject $Result -MemberType NoteProperty -Name "AutoReplicationEnabled" -Value $remoteShare.AutoReplicationEnabled
 	   
-	   $NextRunTime = $null
-       $LastRunTime = $null
-       $LastResult = 0
-       $State = $null
-       $ScheduleType= $null
-       $StartTime = $null
-       $ScheduleDays= $null
-       $ScheduleMonths= $null
+	       $NextRunTime = $null
+           $LastRunTime = $null
+           $LastResult = 0
+           $State = $null
+           $ScheduleType= $null
+           $StartTime = $null
+           $ScheduleDays= $null
+           $ScheduleMonths= $null
 
-       if ($replExists) {
-          $TaskName = "Microsoft\OfficeC2R\ODT Replication - $serverName - $shareName"
+           if ($replExists) {
+              $TaskName = "Microsoft\OfficeC2R\ODT Replication - $serverName - $shareName"
 
-          schtasks /query /tn $TaskName /v /fo csv  | Out-File -FilePath "$env:temp\TmpSchTask.csv"
-	      $importTasks = Import-Csv -Path "$env:temp\TmpSchTask.csv"
+              schtasks /query /tn $TaskName /v /fo csv  | Out-File -FilePath "$env:temp\TmpSchTask.csv"
+	          $importTasks = Import-Csv -Path "$env:temp\TmpSchTask.csv"
 	     	
-	      $NextRunTime = $importTasks.'Next Run Time'
-          $LastRunTime = $importTasks.'Last Run Time'
-          $LastResult = $importTasks.'Last Result'
-          $ScheduleType = $importTasks.'Schedule Type' 
-          $StartTime = $importTasks.'Start Time'
-          $ScheduleDays = $importTasks.'Days'
-          $ScheduleMonths = $importTasks.'Months'
-          $State = $importTasks.'Scheduled Task State'
-	   }
+	          $NextRunTime = $importTasks.'Next Run Time'
+              $LastRunTime = $importTasks.'Last Run Time'
+              $LastResult = $importTasks.'Last Result'
+              $ScheduleType = $importTasks.'Schedule Type' 
+              $StartTime = $importTasks.'Start Time'
+              $ScheduleDays = $importTasks.'Days'
+              $ScheduleMonths = $importTasks.'Months'
+              $State = $importTasks.'Scheduled Task State'
+	       }
 	   
-	   Add-Member -InputObject $Result -MemberType NoteProperty -Name "NextReplTime" -Value $NextRunTime
-       Add-Member -InputObject $Result -MemberType NoteProperty -Name "LastReplTime" -Value $LastRunTime
-       Add-Member -InputObject $Result -MemberType NoteProperty -Name "LastResult" -Value $LastResult
-       Add-Member -InputObject $Result -MemberType NoteProperty -Name "State" -Value $State
-       Add-Member -InputObject $Result -MemberType NoteProperty -Name "StartTime" -Value  $StartTime
-       Add-Member -InputObject $Result -MemberType NoteProperty -Name "ScheduleType" -Value $ScheduleType
-       Add-Member -InputObject $Result -MemberType NoteProperty -Name "ScheduleDays" -Value  $ScheduleDays
-       Add-Member -InputObject $Result -MemberType NoteProperty -Name "ScheduleMonths" -Value $ScheduleMonths
+	       Add-Member -InputObject $Result -MemberType NoteProperty -Name "NextReplTime" -Value $NextRunTime
+           Add-Member -InputObject $Result -MemberType NoteProperty -Name "LastReplTime" -Value $LastRunTime
+           Add-Member -InputObject $Result -MemberType NoteProperty -Name "LastResult" -Value $LastResult
+           Add-Member -InputObject $Result -MemberType NoteProperty -Name "State" -Value $State
+           Add-Member -InputObject $Result -MemberType NoteProperty -Name "StartTime" -Value  $StartTime
+           Add-Member -InputObject $Result -MemberType NoteProperty -Name "ScheduleType" -Value $ScheduleType
+           Add-Member -InputObject $Result -MemberType NoteProperty -Name "ScheduleDays" -Value  $ScheduleDays
+           Add-Member -InputObject $Result -MemberType NoteProperty -Name "ScheduleMonths" -Value $ScheduleMonths
 	   
-       $Result | Add-Member MemberSet PSStandardMembers $PSStandardMembers
+           $Result | Add-Member MemberSet PSStandardMembers $PSStandardMembers
 
-	   $results += $Result
+	       $results += $Result
+        }
+
+        return $results
     }
-
-    return $results
 }
 
 
@@ -757,6 +831,23 @@ function findReplScheduledTask() {
      return $false
 }
 
+function getSecondTuesday() {
+    $FindNthDay=2
+
+    $WeekDay='Tuesday'
+
+    [datetime]$Today=[datetime]::NOW
+    $todayM=$Today.AddMonths(1).Month.ToString()
+    $todayY=$Today.Year.ToString()
+    [datetime]$StrtMonth=$todayM+'/1/'+$todayY
+
+    while ($StrtMonth.DayofWeek -ine $WeekDay ) { $StrtMonth=$StrtMonth.AddDays(1) }
+
+    $secTues = $StrtMonth.AddDays(7*($FindNthDay-1))
+    
+    $dateReturn = Get-Date -Year $secTues.Year -Month $secTues.Month -Day $secTues.Day -Hour 18 -Minute 00 
+    return $dateReturn 
+}
 
 function getFileName() {
     param (  
@@ -855,3 +946,174 @@ PROCESS {
 END {} 
  
 } 
+
+Function Set-ODTAdd{
+<#
+.SYNOPSIS
+Modifies an existing configuration xml file's add section
+
+.PARAMETER SourcePath
+Optional.
+The SourcePath value can be set to a network, local, or HTTP path that contains a 
+Click-to-Run source. Environment variables can be used for network or local paths.
+SourcePath indicates the location to save the Click-to-Run installation source 
+when you run the Office Deployment Tool in download mode.
+SourcePath indicates the installation source path from which to install Office 
+when you run the Office Deployment Tool in configure mode. If you don’t specify 
+SourcePath in configure mode, Setup will look in the current folder for the Office 
+source files. If the Office source files aren’t found in the current folder, Setup 
+will look on Office 365 for them.
+SourcePath specifies the path of the Click-to-Run Office source from which the 
+App-V package will be made when you run the Office Deployment Tool in packager mode.
+If you do not specify SourcePath, Setup will attempt to create an \Office\Data\... 
+folder structure in the working directory from which you are running setup.exe.
+
+.PARAMETER Version
+Optional. If a Version value is not set, the Click-to-Run product installation streams 
+the latest available version from the source. The default is to use the most recently 
+advertised build (as defined in v32.CAB or v64.CAB at the Click-to-Run Office installation source).
+Version can be set to an Office 2013 build number by using this format: X.X.X.X
+
+.PARAMETER Bitness
+Required. Specifies the edition of Click-to-Run for Office 365 product to use: 32- or 64-bit.
+
+.PARAMETER TargetFilePath
+Full file path for the file to be modified and be output to.
+
+.Example
+Set-ODTAdd -SourcePath "C:\Preload\Office" -TargetFilePath "$env:Public/Documents/config.xml"
+Sets config SourcePath property of the add element to C:\Preload\Office
+
+.Example
+Set-ODTAdd -SourcePath "C:\Preload\Office" -Version "15.1.2.3" -TargetFilePath "$env:Public/Documents/config.xml"
+Sets config SourcePath property of the add element to C:\Preload\Office and version to 15.1.2.3
+
+.Notes
+Here is what the portion of configuration file looks like when modified by this function:
+
+<Configuration>
+  ...
+  <Add SourcePath="\\server\share\" Version="15.1.2.3" OfficeClientEdition="32"> 
+      ...
+  </Add>
+  ...
+</Configuration>
+
+#>
+    Param(
+
+        [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
+        [string] $ConfigurationXML = $NULL,
+
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [string] $SourcePath = $NULL,
+
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [string] $Version,
+
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [string] $Bitness,
+
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [string] $TargetFilePath
+
+    )
+
+    Process{
+        $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
+
+        #Load file
+        [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
+
+        if ($TargetFilePath) {
+           $ConfigFile.Load($TargetFilePath) | Out-Null
+        } else {
+            if ($ConfigurationXml) 
+            {
+              $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
+              $global:saveLastConfigFile = $NULL
+              $global:saveLastFilePath = $NULL
+            }
+        }
+
+        $global:saveLastConfigFile = $ConfigFile.OuterXml
+
+        #Check for proper root element
+        if($ConfigFile.Configuration -eq $null){
+            throw $NoConfigurationElement
+        }
+
+        #Get Add element if it exists
+        if($ConfigFile.Configuration.Add -eq $null){
+            [System.XML.XMLElement]$AddElement=$ConfigFile.CreateElement("Add")
+            $ConfigFile.Configuration.appendChild($AddElement) | Out-Null
+        }
+
+        #Set values as desired
+        if([string]::IsNullOrWhiteSpace($SourcePath) -eq $false){
+            $ConfigFile.Configuration.Add.SetAttribute("SourcePath", $SourcePath) | Out-Null
+        } else {
+            if ($PSBoundParameters.ContainsKey('SourcePath')) {
+                $ConfigFile.Configuration.Add.RemoveAttribute("SourcePath")
+            }
+        }
+
+        if([string]::IsNullOrWhiteSpace($Version) -eq $false){
+            $ConfigFile.Configuration.Add.SetAttribute("Version", $Version) | Out-Null
+        } else {
+            if ($PSBoundParameters.ContainsKey('Version')) {
+                $ConfigFile.Configuration.Add.RemoveAttribute("Version")
+            }
+        }
+
+        if([string]::IsNullOrWhiteSpace($Bitness) -eq $false){
+            $ConfigFile.Configuration.Add.SetAttribute("OfficeClientEdition", $Bitness) | Out-Null
+        } else {
+            if ($PSBoundParameters.ContainsKey('OfficeClientEdition')) {
+                $ConfigFile.Configuration.Add.RemoveAttribute("OfficeClientEdition")
+            }
+        }
+
+        $ConfigFile.Save($TargetFilePath) | Out-Null
+        $global:saveLastFilePath = $TargetFilePath
+
+        if (($PSCmdlet.MyInvocation.PipelineLength -eq 1) -or `
+            ($PSCmdlet.MyInvocation.PipelineLength -eq $PSCmdlet.MyInvocation.PipelinePosition)) {
+            Write-Host
+
+            Format-XML ([xml](cat $TargetFilePath)) -indent 4
+
+            Write-Host
+            Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+        } else {
+            $results = new-object PSObject[] 0;
+            $Result = New-Object –TypeName PSObject 
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "SourcePath" -Value $SourcePath
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "Version" -Value $Version
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "Bitness" -Value $Bitness
+            $Result
+        }
+    }
+
+}
+
+Function GetFilePath() {
+    Param(
+       [Parameter(ValueFromPipelineByPropertyName=$true)]
+       [string] $TargetFilePath
+    )
+
+    if (!($TargetFilePath)) {
+        $TargetFilePath = $global:saveLastFilePath
+    }  
+
+    if (!($TargetFilePath)) {
+       Write-Host "Enter the path to the XML Configuration File: " -NoNewline
+       $TargetFilePath = Read-Host
+    } else {
+       #Write-Host "Target XML Configuration File: $TargetFilePath"
+    }
+
+    return $TargetFilePath
+}
