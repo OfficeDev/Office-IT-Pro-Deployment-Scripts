@@ -119,7 +119,7 @@ A task will be created on the host machine to download the latest C2R builds dai
 #>
     param(
         [Parameter()]
-        [OfficeCTRVersion]$OfficeVersion = "Office2013",
+        [OfficeVersionSelection]$OfficeVersion = "Office2013",
 
         [Parameter()]
         [string] $UpdateVersion = $null,
@@ -133,35 +133,47 @@ A task will be created on the host machine to download the latest C2R builds dai
     }
 
     Process {
-        switch($OfficeVersion){
-           Office2013 { $odtExtPath = "$PSScriptRoot\Office2013Setup.exe" }
-           Office2016 { $odtExtPath = "$PSScriptRoot\Office2016Setup.exe" }
+        $officeVersions = @()
+
+        if ($OfficeVersion -eq "All") {
+           $officeVersions += "Office2013"
+           $officeVersions += "Office2016"
+        } else {
+           $officeVersions += $OfficeVersion
         }
 
-        $progDirPath = "$env:ProgramFiles\Office Update Replication\$OfficeVersion"
-        [system.io.directory]::CreateDirectory($progDirPath) | Out-Null
+        foreach ($offVersion in $officeVersions) {
+            switch($offVersion){
+               Office2013 { $odtExtPath = "$PSScriptRoot\Office2013Setup.exe" }
+               Office2016 { $odtExtPath = "$PSScriptRoot\Office2016Setup.exe" }
+            }
 
-        Write-Host "Downloading `"$OfficeVersion`" Latest 32-Bit Version..." -NoNewline
-        $download32 = "$odtExtPath /download $XmlConfigPath"
-        Set-ODTAdd -TargetFilePath "$XmlConfigPath" -Bitness 32 -SourcePath $progDirPath | Out-Null
+            $progDirPath = "$env:ProgramFiles\Office Update Replication\$offVersion"
+            [system.io.directory]::CreateDirectory($progDirPath) | Out-Null
 
-        if ($UpdateVersion) {
-          Set-ODTAdd -TargetFilePath "$XmlConfigPath" -Version $UpdateVersion
+            Write-Host "Downloading `"$offVersion`" Latest 32-Bit Version..." -NoNewline
+            $download32 = "$odtExtPath /download $XmlConfigPath"
+            Set-ODTAdd -TargetFilePath "$XmlConfigPath" -Bitness 32 -SourcePath $progDirPath | Out-Null
+
+            if ($UpdateVersion) {
+              Set-ODTAdd -TargetFilePath "$XmlConfigPath" -Version $UpdateVersion
+            }
+
+            Invoke-Expression $download32
+            Write-Host "Completed"
+
+            Write-Host "Downloading `"$offVersion`" Latest 64-Bit Version..." -NoNewline
+            $download64 = "$odtExtPath /download $XmlConfigPath"
+            Set-ODTAdd -TargetFilePath "$XmlConfigPath" -Bitness 64 -SourcePath $progDirPath | Out-Null
+
+            if ($UpdateVersion) {
+              Set-ODTAdd -TargetFilePath "$XmlConfigPath" -Version $UpdateVersion
+            }
+
+            Invoke-Expression $download64
+            Write-Host "Completed"
         }
 
-        Invoke-Expression $download32
-        Write-Host "Completed"
-
-        Write-Host "Downloading `"$OfficeVersion`" Latest 64-Bit Version..." -NoNewline
-        $download64 = "$odtExtPath /download $XmlConfigPath"
-        Set-ODTAdd -TargetFilePath "$XmlConfigPath" -Bitness 64 -SourcePath $progDirPath | Out-Null
-
-        if ($UpdateVersion) {
-          Set-ODTAdd -TargetFilePath "$XmlConfigPath" -Version $UpdateVersion
-        }
-
-        Invoke-Expression $download64
-        Write-Host "Completed"
     }
 }
 
@@ -332,14 +344,18 @@ has updated files or folders they will be copied to each destination.
                 $comparison = Compare-Object -ReferenceObject $sourceFolder -DifferenceObject $destinationFolder -IncludeEqual
 
                 if($comparison.SideIndicator -eq "<="){
+                    Write-Host "Copying Office Updates to '$share\Office'"
                     Copy-WithProgress -Source $sourceFolderPath -Destination "$share\Office" 
+                    Write-Host
                 }
                 elseif($comparison.SideIndicator -eq "=="){
                     Write-Host "The remote update source `"$share`" is up to date."
                 }
             }
             elseif($destinationFolder -eq $null){
+                Write-Host "Copying Office Updates to '$share\Office'"
                 Copy-WithProgress -Source $sourceFolderPath -Destination "$share\Office" 
+                Write-Host
             }                         
         }
     }
@@ -454,7 +470,7 @@ the second Wednesday at 3:00am.
             }
 
             $existingShare = $null
-            $chkExisting = $remoteShares | where { $_.ShareName.ToLower() -eq $share.ToLower() }
+            $chkExisting = $remoteShares | where { $_.ShareName.ToLower() -eq $remotePath.ToLower() }
             if ($chkExisting) {
                 $existingShare = $chkExisting[0]   
             }
@@ -607,8 +623,10 @@ Remote shares \\Computer1\ODT Replication" and "\\Computer2\ODT Replication will
 be removed from the csv file and saved.
 
 #>
+    [CmdletBinding(SupportsShouldProcess=$True)]
     Param(
-        [string[]] $RemoteShare
+        [Parameter(Mandatory=$true,ValueFromPipeline=$True,ValueFromPipelineByPropertyName=$true)]
+        [string[]] $ShareName
     )
 
     Process {
@@ -616,7 +634,13 @@ be removed from the csv file and saved.
         [system.io.directory]::CreateDirectory($progDirPath) | Out-Null
         $ODTShareNameLogFile = "$progDirPath\ODTReplication.csv"
 
-        $removedShares = Import-Csv $ODTShareNameLogFile | where ShareName -notin $RemoteShare
+        foreach ($remoteShare in $ShareName) {
+           Disable-ODTRemoteUpdateSourceReplication -ShareName $remoteShare | Out-Null
+        }
+
+        Write-Host "Removing Remote Share: $ShareName"
+
+        $removedShares = Import-Csv $ODTShareNameLogFile | where ShareName -notin $ShareName
         $removedShares | Export-Csv $ODTShareNameLogFile -Force -NoTypeInformation
     }
 }
