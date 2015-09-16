@@ -69,7 +69,7 @@
         }
 
         .custom-cmditem {
-            line-height: 39px;
+            line-height: 46px;
             padding: 0 6px;
             min-width: 22px;
             text-align: center;
@@ -77,7 +77,7 @@
             display: inline-block;
             margin-right: 8px;
             color: #0078d7;
-            height: 40px;
+            height: 50px;
             outline: none;
             vertical-align: top;
         }
@@ -86,32 +86,43 @@
             width:450px;
         }
 
+        .headerText {
+            font-family: "SegoeUI-SemiLight-final","Segoe UI SemiLight","Segoe UI WPC Semilight","Segoe UI",Segoe,Tahoma,Helvetica,Arial,sans-serif;
+            font-size: 22px;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .ms-Icon {
+            
+        }
+
     </style>
 </head>
 
 <body>
-    <div class="ms-bgColor-themeDarker ms-CommandBar" style="background-color:#004578;color:white">
+    <div class="ms-bgColor-themeDarker ms-CommandBar" style="background-color:#004578;color:white;height: 50px;">
         <div class="ms-CommandBar-sideCommands">
-            <div class="ms-CommandBarItem ms-CommandBarItem--iconOnly" style="border-left:1px solid white;border-right:1px solid white; margin-right:-5px">
+            <div class="ms-CommandBarItem ms-CommandBarItem--iconOnly" style="border-left:1px solid white;
+                             border-right:1px solid white; margin-right:-5px;height: 50px;width:50px">
                 <div class="ms-CommandBarItem-linkWrapper">
                     <div class="ms-CommandBarItem-link" onclick="showAbout()">
-                        <span class="ms-CommandBarItem-icon ms-Icon ms-Icon--question ms-fontColor-white"></span>
+                        <span class="ms-CommandBarItem-icon ms-Icon ms-Icon--question ms-fontColor-white" style="font-size: 20px;margin-top: 15px"></span>
                         <span class="ms-CommandBarItem-commandText ms-font-m ms-font-weight-regular ms-fontColor-white">About</span>
                     </div>
                 </div>
             </div>
-            <div class="ms-CommandBarItem ms-CommandBarItem--iconOnly" style="border-left:1px solid white;border-right:1px solid white;margin-right:-5px">
+            <div class="ms-CommandBarItem ms-CommandBarItem--iconOnly" style="border-left:1px solid white;border-right:1px solid white;margin-right:-5px;height: 50px;width:50px">
                 <div class=" ms-commandbaritem-linkwrapper">
                     <div class="ms-CommandBarItem-link">
-                        <span class="ms-CommandBarItem-icon ms-Icon ms-Icon--support ms-fontColor-white"></span>
+                        <span class="ms-CommandBarItem-icon ms-Icon ms-Icon--support ms-fontColor-white" style="font-size: 20px;margin-top: 15px"></span>
                         <span class="ms-CommandBarItem-commandText ms-font-m ms-font-weight-regular ms-fontColor-white">Issues</span>
                     </div>
                 </div>
             </div>
-            <div class="ms-CommandBarItem ms-CommandBarItem--iconOnly" style="border-left:1px solid white;margin-right:-5px">
+            <div class="ms-CommandBarItem ms-CommandBarItem--iconOnly" style="border-left:1px solid white;margin-right:-5px;height: 50px;width:50px">
                 <div id="btviewongithub" class="ms-CommandBarItem-linkWrapper">
                     <div class="ms-CommandBarItem-link">
-                        <span class="ms-CommandBarItem-icon ms-Icon ms-Icon--circleFill ms-fontColor-white"></span>
+                        <span class="ms-CommandBarItem-icon ms-Icon ms-Icon--circleFill ms-fontColor-white" style="font-size: 20px;margin-top: 15px"></span>
                         <span class="ms-CommandBarItem-commandText ms-font-m ms-font-weight-regular ms-fontColor-white">View On GitHub</span>
                     </div>
                 </div>
@@ -119,10 +130,10 @@
         </div>
         <div class="ms-CommandBar-mainArea">
             <div class="custom-cmditem">
-                <span class="ms-font-l ms-font-weight-regular ms-fontColor-white" style="height:100%;width:100%;margin:0px 0px 0px 15px;border-right:1px solid white; padding-right:15px">Office 365 Click-To-Run</span>
+                <span class="ms-font-l ms-font-weight-regular ms-fontColor-white headerText" style="height:100%;width:100%;margin:0px 0px 0px 15px;border-right:1px solid white; padding-right:15px;">Office 365 ProPlus</span>
             </div>
             <div class="custom-cmditem">
-                <span class="ms-font-l ms-font-weight-regular ms-fontColor-white" style="height:100%;width:100%;margin:0px 0px 0px 0px;">Configuration XML Editor</span>
+                <span class="ms-font-l ms-font-weight-regular ms-fontColor-white headerText" style="height:100%;width:100%;margin:0px 0px 0px 0px;">Configuration XML Editor</span>
             </div>
         </div>
     </div>
@@ -130,10 +141,10 @@
     <div id="componentWrapper">
         <div class="ms-Grid">
             <div class="ms-Grid-row">
-                <div class="ms-Grid-col ms-u-md12 ms-u-lg3 ms-u-xl2 ms-u-sm12">
+                <div class="ms-Grid-col ms-u-md10 ms-u-lg2 ms-u-xl2 ms-u-sm10">
                     <div class="ms-Table">
                         <div class="ms-Table-row">
-                            <span class="ms-Table-cell">Section</span>
+                            <span class="ms-font-xl">Section</span>
                         </div>
                         <div id="addProductRow" class="ms-Table-row  is-selected navrow">
                             <span class="ms-Table-cell" onclick="setPanel('AddProductPanel', 'addProductRow')">Add Product</span>
@@ -158,10 +169,10 @@
                         </div>
                     </div>
                 </div>
-                <div class="ms-Grid-col ms-u-md12 ms-u-lg9 ms-u-xl5 ms-u-sm12">
+                <div class="ms-Grid-col ms-u-md9 ms-u-lg6 ms-u-xl3 ms-u-sm9">
                     <!-- Start Add Product Panel -->
                     <div id="AddProductPanel" class="option-panel visible">
-                        <h1 class="ms-font-l">Add Product</h1>
+                        <h1 class="ms-font-xxl">Add Product</h1>
                         <div style="border-bottom:1px solid grey">
                             <h2 class="ms-font-m">Required Fields</h2>
                             <table>
@@ -554,7 +565,7 @@
                         <table>
                             <tr>
                                 <td>
-                                    <h1 class="ms-font-l">Add Remove Product</h1>
+                                    <h1 class="ms-font-xxl">Add Remove Product</h1>
                                 </td>
                                 <td>
                                     <i id="removeProductInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('removeProductInfo', this)"></i>
@@ -690,7 +701,7 @@
                     <!-- End Remove Product Panel -->
                     <!-- Start Updates Panel -->
                     <div id="UpdatesPanel" class="option-panel">
-                        <h1 class="ms-font-l">Updates</h1>
+                        <h1 class="ms-font-xxl">Updates</h1>
                         <div id="updateToggleContainer" class="ms-Toggle">
                             <span class="ms-Toggle-description">Enable Updates</span>
                             <input type="checkbox" id="updatesEnabled" class="ms-Toggle-input" />
@@ -881,7 +892,7 @@
                     <!-- End Updates Panel -->
                     <!-- Start Display Panel -->
                     <div id="DisplayPanel" class="option-panel">
-                        <h1 class="ms-font-l">Display</h1>
+                        <h1 class="ms-font-xxl">Display</h1>
                         <div class="ms-Toggle">
                             <table>
                                 <tr>
@@ -967,7 +978,7 @@
                     <!-- End Display Panel -->
                     <!-- Start Logging Panel -->
                     <div id="LoggingPanel" class="option-panel">
-                        <h1 class="ms-font-l">Logging</h1>
+                        <h1 class="ms-font-xxl">Logging</h1>
                         <div class="ms-Toggle">
                             <div class="ms-Toggle">
                                 <table>
@@ -1055,7 +1066,7 @@
                     <!-- End Logging Panel -->
                     <!-- Start Properties Panel -->
                     <div id="PropertiesPanel" class="option-panel">
-                        <h1 class="ms-font-l">Properties</h1>
+                        <h1 class="ms-font-xxl">Properties</h1>
                         <div class="ms-Toggle">
                             <table>
                                 <tr>
@@ -1227,7 +1238,7 @@
                     <!-- End Properties Panel -->
                     <!-- Start Templates Panel -->
                     <div id="TemplatesPanel" class="option-panel">
-                        <h1 class="ms-font-l">Templates</h1>
+                        <h1 class="ms-font-xxl">Templates</h1>
                         <div class="ms-Table">
                             <div class="ms-Table-row">
                                 <span class="ms-Table-cell">Templates</span>
@@ -1245,7 +1256,7 @@
                     </div>
                     <!-- End Templates Panel -->
                 </div>
-                <div class="ms-Grid-col ms-u-md12 ms-u-lg12 ms-u-xl5 ms-u-sm12">
+                <div class="ms-Grid-col ms-u-md12 ms-u-lg12 ms-u-xl7 ms-u-sm12">
                     <div class="ms-CommandBar">
                         <div class="ms-CommandBar-sideCommands">
                             <div class="ms-CommandBarItem">
@@ -1288,7 +1299,7 @@
                         </div>
                     </div>
                     <div class="ms-TextField" style="margin-top:10px;">
-                        <textarea id="xmlText" class="ms-TextField-field ms-TextField--multiline" style="height:800px"></textarea>
+                        <textarea id="xmlText" class="ms-TextField-field ms-TextField--multiline" style="height:800px;font-size: 25px"></textarea>
                     </div>
                 </div>
             </div>
