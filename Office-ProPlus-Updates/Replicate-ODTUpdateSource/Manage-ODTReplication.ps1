@@ -45,10 +45,21 @@ the CDN.
 $OfficeCTRVersion = @"
    public enum OfficeCTRVersion
    {
-      Office2013,Office2016
+      Office2013,
+      Office2016
    }
 "@ 
 Add-Type -TypeDefinition $OfficeCTRVersion
+
+$OfficeCTRVersionSel = @"
+   public enum OfficeVersionSelection
+   {
+      All,
+      Office2013,
+      Office2016
+   }
+"@ 
+Add-Type -TypeDefinition $OfficeCTRVersionSel
 
 $Schedule = @"
    public enum Schedule
@@ -127,7 +138,7 @@ A task will be created on the host machine to download the latest C2R builds dai
            Office2016 { $odtExtPath = "$PSScriptRoot\Office2016Setup.exe" }
         }
 
-        $progDirPath = "$env:ProgramFiles\Office Update Replication"
+        $progDirPath = "$env:ProgramFiles\Office Update Replication\$OfficeVersion"
         [system.io.directory]::CreateDirectory($progDirPath) | Out-Null
 
         Write-Host "Downloading `"$OfficeVersion`" Latest 32-Bit Version..." -NoNewline
@@ -179,20 +190,20 @@ function New-ODTDownloadSchedule() {
           }
         }
 
-        Copy-Item -Path $XmlConfigPath -Destination "$env:ProgramFiles\Office Update Replication\configuration32.xml" -Force | Out-Null
-        Copy-Item -Path $XmlConfigPath -Destination "$env:ProgramFiles\Office Update Replication\configuration64.xml" -Force | Out-Null
+        Copy-Item -Path $XmlConfigPath -Destination "$env:ProgramFiles\Office Update Replication\$OfficeVersion\configuration32.xml" -Force | Out-Null
+        Copy-Item -Path $XmlConfigPath -Destination "$env:ProgramFiles\Office Update Replication\$OfficeVersion\configuration64.xml" -Force | Out-Null
 
-        Set-ODTAdd -TargetFilePath "$env:ProgramFiles\Office Update Replication\configuration32.xml" -SourcePath $progDirPath -Bitness 32 | Out-Null
-        Set-ODTAdd -TargetFilePath "$env:ProgramFiles\Office Update Replication\configuration64.xml" -SourcePath $progDirPath -Bitness 64 | Out-Null
+        Set-ODTAdd -TargetFilePath "$env:ProgramFiles\Office Update Replication\$OfficeVersion\configuration32.xml" -SourcePath $progDirPath -Bitness 32 | Out-Null
+        Set-ODTAdd -TargetFilePath "$env:ProgramFiles\Office Update Replication\$OfficeVersion\configuration64.xml" -SourcePath $progDirPath -Bitness 64 | Out-Null
 
         switch($OfficeVersion){
           Office2013 { 
-            $odtCmd32 = "\`"$progDirPath\Office2013Setup.exe\`" /Download \`"$env:ProgramFiles\Office Update Replication\configuration32.xml\`"" 
-            $odtCmd64 = "\`"$progDirPath\Office2013Setup.exe\`" /Download \`"$env:ProgramFiles\Office Update Replication\configuration64.xml\`"" 
+            $odtCmd32 = "\`"$progDirPath\Office2013Setup.exe\`" /Download \`"$env:ProgramFiles\Office Update Replication\$OfficeVersion\configuration32.xml\`"" 
+            $odtCmd64 = "\`"$progDirPath\Office2013Setup.exe\`" /Download \`"$env:ProgramFiles\Office Update Replication\$OfficeVersion\configuration64.xml\`"" 
           }
           Office2016 { 
-            $odtCmd32 = "\`"$progDirPath\Office2016Setup.exe\`" /Download \`"$env:ProgramFiles\Office Update Replication\configuration32.xml\`"" 
-            $odtCmd64 = "\`"$progDirPath\Office2016Setup.exe\`" /Download \`"$env:ProgramFiles\Office Update Replication\configuration64.xml\`"" 
+            $odtCmd32 = "\`"$progDirPath\Office2016Setup.exe\`" /Download \`"$env:ProgramFiles\Office Update Replication\$OfficeVersion\configuration32.xml\`"" 
+            $odtCmd64 = "\`"$progDirPath\Office2016Setup.exe\`" /Download \`"$env:ProgramFiles\Office Update Replication\$OfficeVersion\configuration64.xml\`"" 
           }
         }
 
@@ -281,11 +292,6 @@ has updated files or folders they will be copied to each destination.
     Process {
         $progDirPath = "$env:ProgramFiles\Office Update Replication"
         [system.io.directory]::CreateDirectory($progDirPath) | Out-Null
-        $Source = "$progDirPath\Office"
-
-        if (!(Test-Path -Path $Source)) { 
-           throw "Before you can replicate the Office ProPlus Click-To-Run Files you must first run the Start-ODTDownload function" 
-        }
 
         $ODTShareNameLogFile = "$progDirPath\ODTReplication.csv"
 
@@ -299,31 +305,41 @@ has updated files or folders they will be copied to each destination.
         }
 
         if (!(Test-Path -Path $progDirPath)) {
-          throw "Source Path '$Source' does not exist run Start-ODTDownload cmdlet to create it"
+           throw "Source Path '$Source' does not exist run Start-ODTDownload cmdlet to create it"
         }
 
-        foreach($share in $ShareName){
-            $shareFolder = "$share\Office"
-            [system.io.directory]::CreateDirectory($shareFolder) | Out-Null
+        foreach($share in $ShareName){  
+            $chkExisting = $remoteShares | where { $_.ShareName.ToLower() -eq $share.ToLower() }
+            if ($chkExisting) {
+                $existingShare = $chkExisting[0]   
+            }
 
-            $destinationFolder = Get-ChildItem $share -Recurse
-            $sourceFolder = Get-ChildItem $Source -Recurse
+            $officeVersion = $existingShare.OfficeVersion
+            $Source = "$progDirPath\$officeVersion\Office"
+            
+            if (!(Test-Path -Path $Source)) { 
+               throw "Before you can replicate the Office ProPlus Click-To-Run Files you must first run the Start-ODTDownload function" 
+            }
+          
+            $sourceFolderPath = $Source
+
+            [system.io.directory]::CreateDirectory($sourceFolderPath) | Out-Null
+
+            $destinationFolder = Get-ChildItem "$share\Office" -Recurse
+            $sourceFolder = Get-ChildItem $sourceFolderPath -Recurse
 
             if($destinationFolder -ne $null){          
                 $comparison = Compare-Object -ReferenceObject $sourceFolder -DifferenceObject $destinationFolder -IncludeEqual
 
                 if($comparison.SideIndicator -eq "<="){
-                    Copy-WithProgress -Source $source -Destination $share 
+                    Copy-WithProgress -Source $sourceFolderPath -Destination "$share\Office" 
                 }
                 elseif($comparison.SideIndicator -eq "=="){
                     Write-Host "The remote update source `"$share`" is up to date."
                 }
             }
             elseif($destinationFolder -eq $null){
-                $roboCopy = "Robocopy `"$source`" `"$share`" /mir /r:0 /w:0"
-                #Invoke-Expression $roboCopy
-
-                Copy-WithProgress -Source $source -Destination $share 
+                Copy-WithProgress -Source $sourceFolderPath -Destination "$share\Office" 
             }                         
         }
     }
@@ -437,7 +453,18 @@ the second Wednesday at 3:00am.
                 }
             }
 
-            $roboCommand = "Robocopy \`"$Source\`" \`"$remotePath\`" /mir /r:0 /w:0"
+            $existingShare = $null
+            $chkExisting = $remoteShares | where { $_.ShareName.ToLower() -eq $share.ToLower() }
+            if ($chkExisting) {
+                $existingShare = $chkExisting[0]   
+            }
+
+            $officeVersion = $existingShare.OfficeVersion
+            $Source = "$progDirPath\$officeVersion\Office"
+
+            $destRemPath = $remotePath + "\Office"
+
+            $roboCommand = "Robocopy \`"$Source\`" \`"$destRemPath\`" /mir /r:0 /w:0"
             $scheduledTask = "schtasks /create /ru System /tn '$TaskName' /tr '$roboCommand' /sc $Schedule /MO $Modifier /D $Days /st '$StartTime' /f"
 
             $scheduledTaskDel = "schtasks /delete /tn '$TaskName' /f"
@@ -511,7 +538,11 @@ shares "\\Computer3\ODT Replication" and "\\Computer4\ODT Replication".
 
 #> 
     Param(
-        [string[]] $RemoteShare
+        [Parameter()]
+        [string[]] $RemoteShare,
+
+        [Parameter()]
+        [OfficeCTRVersion]$OfficeVersion = "Office2013"
     )
 
     Process {
@@ -536,6 +567,7 @@ shares "\\Computer3\ODT Replication" and "\\Computer4\ODT Replication".
                     if (Test-Path -Path $share) {
                         Add-Member -InputObject $Result -MemberType NoteProperty -Name "ShareName" -Value $Share
                         Add-Member -InputObject $Result -MemberType NoteProperty -Name "AutoReplicationEnabled" -Value $false
+                        Add-Member -InputObject $Result -MemberType NoteProperty -Name "OfficeVersion" -Value $OfficeVersion
 
                         $ExistingShares += $Result
 
@@ -610,11 +642,12 @@ be populated in the console.
 #>
     [cmdletbinding()]
     Param(
-       
+        [Parameter()]
+        [OfficeVersionSelection]$OfficeVersion = "All"
     )
 
     Process {
-        $defaultDisplaySet = 'ShareName','AutoReplicationEnabled', 'LastReplTime', 'NextReplTime', 'LastResult'
+        $defaultDisplaySet = 'ShareName', 'OfficeVersion', 'AutoReplicationEnabled', 'LastReplTime', 'NextReplTime', 'LastResult'
 
         $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet(‘DefaultDisplayPropertySet’,[string[]]$defaultDisplaySet)
         $PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultDisplayPropertySet)
@@ -628,6 +661,9 @@ be populated in the console.
         }
 
         $remoteShares = Import-Csv $ODTShareNameLogFile
+        if ($OfficeVersion -ne "All") {
+           $remoteShares = $remoteShares | Where { $_.OfficeVersion -eq $OfficeVersion }
+        }
 
         $results = new-object PSObject[] 0;
 
@@ -642,6 +678,7 @@ be populated in the console.
 	
            Add-Member -InputObject $Result -MemberType NoteProperty -Name "ShareName" -Value $remoteShare.ShareName
            Add-Member -InputObject $Result -MemberType NoteProperty -Name "AutoReplicationEnabled" -Value $remoteShare.AutoReplicationEnabled
+           Add-Member -InputObject $Result -MemberType NoteProperty -Name "OfficeVersion" -Value $remoteShare.OfficeVersion
 	   
 	       $NextRunTime = $null
            $LastRunTime = $null
@@ -812,6 +849,7 @@ function findReplScheduledTask() {
         $pinfo.RedirectStandardOutput = $true
         $pinfo.UseShellExecute = $false
         $pinfo.Arguments = $scheduledTaskQuery
+        $pinfo.CreateNoWindow = $true
 
         $p = New-Object System.Diagnostics.Process
         $p.StartInfo = $pinfo

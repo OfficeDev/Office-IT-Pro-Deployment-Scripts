@@ -1,5 +1,5 @@
 <Configuration>
-  <Add OfficeClientEdition="64" SourcePath="C:\Program Files\Office Update Replication">
+  <Add OfficeClientEdition="32" SourcePath="C:\Program Files\Office Update Replication\Office2013">
     <Product ID="O365ProPlusRetail">
       <Language ID="en-us" />
     </Product>
