@@ -571,15 +571,15 @@ function restrictToVersion(e) {
 }
 
 function setActiveTab() {
-    var activeTab = $.cookie("activeTab");
+    //var activeTab = $.cookie("activeTab");
 
-    if (activeTab) {
-        if (activeTab.indexOf('#') > -1) {
-            var tabSplit = activeTab.split('#');
-            activeTab = tabSplit[tabSplit.length - 1];
-        }
-        $('[data-toggle="tab"][href="#' + activeTab + '"]').tab('show');
-    }
+    //if (activeTab) {
+    //    if (activeTab.indexOf('#') > -1) {
+    //        var tabSplit = activeTab.split('#');
+    //        activeTab = tabSplit[tabSplit.length - 1];
+    //    }
+    //    //$('[data-toggle="tab"][href="#' + activeTab + '"]').tab('show');
+    //}
 }
 
 function clickUpload() {
