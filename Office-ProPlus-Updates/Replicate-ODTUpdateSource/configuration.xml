@@ -1,0 +1,9 @@
+<Configuration>
+  <Add OfficeClientEdition="32" SourcePath="C:\Program Files\Office Update Replication\Office2013">
+    <Product ID="O365ProPlusRetail">
+      <Language ID="en-us" />
+    </Product>
+  </Add>
+  <Display Level="None" AcceptEULA="TRUE" />
+  <Logging Path="%temp%" />
+</Configuration>
