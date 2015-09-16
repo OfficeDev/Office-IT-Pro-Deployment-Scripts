@@ -90,16 +90,39 @@
 </head>
 
 <body>
-    <div class="ms-Grid">
-        <div class="ms-Grid-row ms-fontColor-white ms-bgColor-themeDarker">
-            <div class="ms-Grid-col ms-u-md8 ms-u-lg9 ms-u-xl10">
-                <h1 class="ms-font-su ms-fontColor-white ms-bgColor-themeDarker" style="padding:10px 10px 10px 0;margin:0 0 0 0">Office Click-To-Run Configuration XML Editor</h1>
+    <div class="ms-bgColor-themeDarker ms-CommandBar" style="background-color:#004578;color:white">
+        <div class="ms-CommandBar-sideCommands">
+            <div class="ms-CommandBarItem ms-CommandBarItem--iconOnly" style="border-left:1px solid white;border-right:1px solid white; margin-right:-5px">
+                <div class="ms-CommandBarItem-linkWrapper">
+                    <div class="ms-CommandBarItem-link" onclick="showAbout()">
+                        <span class="ms-CommandBarItem-icon ms-Icon ms-Icon--question ms-fontColor-white"></span>
+                        <span class="ms-CommandBarItem-commandText ms-font-m ms-font-weight-regular ms-fontColor-white">About</span>
+                    </div>
+                </div>
             </div>
-            <div class="ms-Grid-col ms-u-md1 ms-u-lg1 ms-u-xl1">
-                <button id="btAbout" class="ms-Button" style="margin:20px 0" onclick="showAbout()">About</button>
+            <div class="ms-CommandBarItem ms-CommandBarItem--iconOnly" style="border-left:1px solid white;border-right:1px solid white;margin-right:-5px">
+                <div class=" ms-commandbaritem-linkwrapper">
+                    <div class="ms-CommandBarItem-link">
+                        <span class="ms-CommandBarItem-icon ms-Icon ms-Icon--support ms-fontColor-white"></span>
+                        <span class="ms-CommandBarItem-commandText ms-font-m ms-font-weight-regular ms-fontColor-white">Issues</span>
+                    </div>
+                </div>
             </div>
-            <div class="ms-Grid-col ms-u-md3 ms-u-lg2 ms-u-xl1">
-                <button id="btViewOnGitHub" class="ms-Button" style="margin:20px 0">View On Github</button>
+            <div class="ms-CommandBarItem ms-CommandBarItem--iconOnly" style="border-left:1px solid white;margin-right:-5px">
+                <div id="btviewongithub" class="ms-CommandBarItem-linkWrapper">
+                    <div class="ms-CommandBarItem-link">
+                        <span class="ms-CommandBarItem-icon ms-Icon ms-Icon--circleFill ms-fontColor-white"></span>
+                        <span class="ms-CommandBarItem-commandText ms-font-m ms-font-weight-regular ms-fontColor-white">View On GitHub</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="ms-CommandBar-mainArea">
+            <div class="custom-cmditem">
+                <span class="ms-font-l ms-font-weight-regular ms-fontColor-white" style="height:100%;width:100%;margin:0px 0px 0px 15px;border-right:1px solid white; padding-right:15px">Office 365 Click-To-Run</span>
+            </div>
+            <div class="custom-cmditem">
+                <span class="ms-font-l ms-font-weight-regular ms-fontColor-white" style="height:100%;width:100%;margin:0px 0px 0px 0px;">Configuration XML Editor</span>
             </div>
         </div>
     </div>
@@ -312,7 +335,7 @@
                                     </td>
                                 </tr>
                             </table>
-                            <div>
+                            <div style="margin-bottom:10px">
                                 <button id="btAddProduct" class="ms-Button">
                                     Add Product
                                 </button>
@@ -655,7 +678,7 @@
                             </tr>
                         </table>
 
-                        <div class="controls">
+                        <div style="margin-bottom:10px">
                             <button id="btAddRemoveProduct" class="ms-Button">
                                 Add Remove Product
                             </button>
@@ -1020,7 +1043,7 @@
                             <!--<span id="logupdatepathSignal" class="glyphicon form-control-feedback" aria-hidden="true"></span>-->
                         </div>
 
-                        <div class="controls">
+                        <div style="margin-top:10px">
                             <button id="btSaveLogging" class="ms-Button">
                                 Save
                             </button>
@@ -1192,7 +1215,7 @@
                                    data-error="This must be a valid APP-V Package Guid" maxlength="36">
                             <!--<span id="PACKAGEGUIDSignal" class="glyphicon form-control-feedback" aria-hidden="true"></span>-->
                         </div>
-                        <div class="controls">
+                        <div style="margin-top:10px">
                             <button id="btSaveProperties" class="ms-Button">
                                 Save
                             </button>
