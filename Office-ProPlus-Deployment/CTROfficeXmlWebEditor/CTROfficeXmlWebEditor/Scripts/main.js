@@ -7,13 +7,7 @@ $(document).ready(function () {
     finput.addEventListener('change', function (e) {
         fileUploaded(e);
 
-        document.getElementById("fileUploadForm").reset();
-
     });
-
-    //document.getElementById("pidkeySignal").style.display = "none";
-    //document.getElementById("targetversionSignal").style.display = "none";
-    //document.getElementById("updatepathSignal").style.display = "none";
 
     if (isInternetExplorer()) {
         document.getElementById("txtVersion").style.lineHeight = "0px";
