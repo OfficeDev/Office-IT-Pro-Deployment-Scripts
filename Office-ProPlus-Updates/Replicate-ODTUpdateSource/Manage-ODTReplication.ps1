@@ -94,6 +94,7 @@ $ReplDir = @"
 "@ 
 Add-Type -TypeDefinition $ReplDir
 
+
 function Start-ODTDownload() {
 <#
 
@@ -134,7 +135,10 @@ A task will be created on the host machine to download the latest C2R builds dai
         [string] $UpdateVersion = $null,
 
         [Parameter()]
-        [string] $XmlConfigPath = "$PSScriptRoot\configuration.xml"
+        [string] $XmlConfigPath = "$PSScriptRoot\configuration.xml",
+
+        [Parameter()]
+        [int]$NumberOfVersionsToKeep = 2
     )  
 
     Begin {
@@ -180,7 +184,11 @@ A task will be created on the host machine to download the latest C2R builds dai
             }
 
             Invoke-Expression $download64
+
             Write-Host "Completed"
+            Write-Host
+
+            Start-OfficeUpdateSourceCleanup -NumberOfVersionsToKeep $NumberOfVersionsToKeep -OfficeVersion $offVersion
         }
 
     }
@@ -815,63 +823,83 @@ be populated in the console.
 function Start-OfficeUpdateSourceCleanup() {
     [cmdletbinding()]
     Param(
-        [Parameter(Mandatory=$true)]
-        [string]$SourcePath,
+        [Parameter()]
+        [OfficeVersionSelection]$OfficeVersion = "All",
 
         [Parameter()]
         [int]$NumberOfVersionsToKeep = 2
     )
 
-    $tempPath = $env:TEMP
-    $latestVersionString = $null
+    Write-Host "Removing Previous Versions"
+    Write-Host
 
-    if ($NumberOfVersionsToKeep -lt 1) {
-        $NumberOfVersionsToKeep = 1
-    }
+    $progDirPath = "$env:ProgramFiles\Office Update Replication"
+    [system.io.directory]::CreateDirectory($progDirPath) | Out-Null
 
-    if (Test-Path -Path $SourcePath) {
-       $v32Path = $SourcePath + "\v32.cab"
-       if (Test-Path -Path $v32Path) {
-          expand $v32Path $tempPath -f:VersionDescriptor.xml | Out-Null
-          $xmlPath = $tempPath + "\VersionDescriptor.xml"
-          [xml]$xmlVersion = Get-Content $xmlPath
-          $buildVersion = $xmlVersion.Version.Available.Build
-          $latestVersionString = $buildVersion
-          Remove-Item -Path $xmlPath
-       }
-    }
+    $sourcePaths = @()
 
-    if ($latestVersionString) {
-       $latestVerion = New-Object -TypeName System.Version -ArgumentList @($latestVersionString)
-      
-       $versionFolders = Get-ChildItem -Path $SourcePath -Include $include -Recurse:$recurse | Where-Object { $_.PSIsContainer } | select Name
-       $sortedFolders = $versionFolders | Sort-Object -Descending -Property Name
-
-       for ($n=$NumberOfVersionsToKeep;$n -lt $sortedFolders.Length;$n++) {
-         try {
-          $folder = $sortedFolders[$n]
-          $folderName = $folder.Name
-
-          Write-Host "Removing Version: $folderName"
-
-          if (Test-Path -Path "$SourcePath\v32_$folderName.cab") {
-             Remove-Item -Path "$SourcePath\v32_$folderName.cab" -Force -ErrorAction Stop | Out-Null
-          }
-
-          if (Test-Path -Path "$SourcePath\v64_$folderName.cab") {
-             Remove-Item -Path "$SourcePath\v64_$folderName.cab" -Force -ErrorAction Stop | Out-Null
-          }
-
-          if (Test-Path -Path "$SourcePath\$folderName") {
-             Remove-Item -Path "$SourcePath\$folderName" -Recurse -Force -ErrorAction Stop
-          }
-        } catch {
-          Throw
+    switch($OfficeVersion){
+        All { 
+           $sourcePaths += "$progDirPath\Office2013\Office\Data" 
+           $sourcePaths += "$progDirPath\Office2016\Office\Data"
         }
-       }
+        Office2013 { $sourcePaths += "$progDirPath\Office2013\Office\Data" }
+        Office2016 { $sourcePaths += "$progDirPath\Office2016\Office\Data" }
+    }
 
+    foreach ($SourcePath in $sourcePaths) {
+        $tempPath = $env:TEMP
+        $latestVersionString = $null
 
+        if ($NumberOfVersionsToKeep -lt 1) {
+            $NumberOfVersionsToKeep = 1
+        }
 
+        if (Test-Path -Path $SourcePath) {
+           $v32Path = $SourcePath + "\v32.cab"
+           if (Test-Path -Path $v32Path) {
+              expand $v32Path $tempPath -f:VersionDescriptor.xml | Out-Null
+              $xmlPath = $tempPath + "\VersionDescriptor.xml"
+              [xml]$xmlVersion = Get-Content $xmlPath
+              $buildVersion = $xmlVersion.Version.Available.Build
+              $latestVersionString = $buildVersion
+              Remove-Item -Path $xmlPath
+           }
+        }
+
+        if ($latestVersionString) {
+           $latestVerion = New-Object -TypeName System.Version -ArgumentList @($latestVersionString)
+      
+           $versionFolders = Get-ChildItem -Path $SourcePath -Include $include -Recurse:$recurse | Where-Object { $_.PSIsContainer } | select Name
+           $sortedFolders = $versionFolders | Sort-Object -Descending -Property Name
+
+           Write-Host "Checking Path: $SourcePath"
+
+           for ($n=$NumberOfVersionsToKeep;$n -lt $sortedFolders.Length;$n++) {
+             try {
+              $folder = $sortedFolders[$n]
+              $folderName = $folder.Name
+
+              Write-Host "`tRemoving Version: $folderName"
+
+              if (Test-Path -Path "$SourcePath\v32_$folderName.cab") {
+                 Remove-Item -Path "$SourcePath\v32_$folderName.cab" -Force -ErrorAction Stop | Out-Null
+              }
+
+              if (Test-Path -Path "$SourcePath\v64_$folderName.cab") {
+                 Remove-Item -Path "$SourcePath\v64_$folderName.cab" -Force -ErrorAction Stop | Out-Null
+              }
+
+              if (Test-Path -Path "$SourcePath\$folderName") {
+                 Remove-Item -Path "$SourcePath\$folderName" -Recurse -Force -ErrorAction Stop
+              }
+            } catch {
+              Throw
+            }
+           }
+
+           Write-Host
+        }
     }
 }
 
