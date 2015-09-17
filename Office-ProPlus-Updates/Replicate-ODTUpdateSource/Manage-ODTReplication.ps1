@@ -85,6 +85,15 @@ $Days = @"
 "@ 
 Add-Type -TypeDefinition $Days
 
+$ReplDir = @"
+   public enum ReplicationDirection
+   {
+      Push,
+      Pull
+   }
+"@ 
+Add-Type -TypeDefinition $ReplDir
+
 function Start-ODTDownload() {
 <#
 
@@ -404,6 +413,12 @@ the second Wednesday at 3:00am.
         [Parameter(Mandatory=$true,ValueFromPipeline=$True,ValueFromPipelineByPropertyName=$true)]
         [string[]] $ShareName,
 
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [ReplicationDirection] $ReplicationDirection = "Push",
+
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [System.Management.Automation.PSCredential] $Credential,
+
         [Parameter()]
         [Schedule] $Schedule = "MONTHLY",
 
@@ -431,6 +446,7 @@ the second Wednesday at 3:00am.
         foreach($remotePath in $ShareName) {
   
             $serverName= $remotePath.Split("\")[2]
+            $shareRoot = $remotePath.Split("\")[3]
             $shareName= $remotePath.Replace("\\$serverName\", "").Replace("\", "-")
 
             $remoteShares = Get-ODTRemoteUpdateSource | Select *
@@ -478,22 +494,54 @@ the second Wednesday at 3:00am.
             $officeVersion = $existingShare.OfficeVersion
             $Source = "$progDirPath\$officeVersion\Office"
 
+            $localComputerName = $env:COMPUTERNAME
             $destRemPath = $remotePath + "\Office"
 
-            $roboCommand = "Robocopy \`"$Source\`" \`"$destRemPath\`" /mir /r:0 /w:0"
-            $scheduledTask = "schtasks /create /ru System /tn '$TaskName' /tr '$roboCommand' /sc $Schedule /MO $Modifier /D $Days /st '$StartTime' /f"
+            try {
+                if ($ReplicationDirection -eq "Push") {
+                    Grant-SmbShareAccess -name $shareRoot -CimSession $serverName -AccountName "$localComputerName$" -AccessRight Full –Force -ErrorAction Stop | Out-Null
+                    Grant-SmbShareAccess -name $shareRoot -CimSession $serverName -AccountName "Administrators" -AccessRight Full –Force -ErrorAction Stop | Out-Null
+                    [system.io.directory]::CreateDirectory($destRemPath) | Out-Null
+                    $Acl = Get-Acl $destRemPath  -ErrorAction Stop
+                    $Ar = New-Object  system.security.accesscontrol.filesystemaccessrule("$localComputerName$","FullControl", "ContainerInherit,ObjectInherit", "None", "Allow")
+                    $Acl.SetAccessRule($Ar) | Out-Null
+                    Set-Acl $destRemPath $Acl -ErrorAction Stop | Out-Null
 
-            $scheduledTaskDel = "schtasks /delete /tn '$TaskName' /f"
+                    $roboCommand = "Robocopy \`"$Source\`" \`"$destRemPath\`" /mir /r:0 /w:0"
+                    $scheduledTask = "schtasks /create /ru System /tn '$TaskName' /rl HIGHEST /tr '$roboCommand' /sc $Schedule /MO $Modifier /D $Days /st '$StartTime' /f"
+                } else {
+                    $localShareName = $officeVersion + "Updates`$"
+
+                    $localShare = Get-SmbShare -Name $localShareName -ErrorAction SilentlyContinue
+                    if (!($localShare)) {
+                       New-SmbShare -Name "$localShareName" -Path $Source -ReadAccess "Everyone" | Out-Null
+                    }
+                    $localSharePath = "\\" + $localComputerName + "\" + $localShareName
+
+                    $roboCommand = "Robocopy \`"$localSharePath\`" \`"$destRemPath\`" /mir /r:0 /w:0"
+                    $scheduledTask = "schtasks /create /s $serverName /ru System /rl HIGHEST /tn '$TaskName' /tr '$roboCommand' /sc $Schedule /MO $Modifier /D $Days /st '$StartTime' /f"
+
+                    if ($Credential) {
+                      $scheduledTask += " /U "
+                      $scheduledTask += $Credential.UserName
+                      $scheduledTask += " /P "
+                      $scheduledTask += $creds.GetNetworkCredential().password
+                    }
+                }
+
+                $scheduledTaskDel = "schtasks /delete /tn '$TaskName' /f"
         
-            try {   
-              & $scheduledTaskDel| out-Null
-            } catch { }
+                try {   
+                  & $scheduledTaskDel| out-Null
+                } catch { }
 
-            Invoke-Expression $scheduledTask | Out-Null
+                Invoke-Expression $scheduledTask | Out-Null
 
-            $remShare = Get-ODTRemoteUpdateSource | Where { $_.ShareName.ToLower() -eq $remotePath.ToLower() }
-            $remShares += $remShare
-	
+                $remShare = Get-ODTRemoteUpdateSource | Where { $_.ShareName.ToLower() -eq $remotePath.ToLower() }
+                $remShares += $remShare
+            } catch {
+              Throw
+            }
         }  
     
         $remShares 
@@ -671,7 +719,7 @@ be populated in the console.
     )
 
     Process {
-        $defaultDisplaySet = 'ShareName', 'OfficeVersion', 'AutoReplicationEnabled', 'LastReplTime', 'NextReplTime', 'LastResult'
+        $defaultDisplaySet = 'ShareName', 'OfficeVersion', 'AutoReplicationEnabled', 'ReplicationDirection', 'LastReplTime', 'NextReplTime', 'LastResult'
 
         $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet(‘DefaultDisplayPropertySet’,[string[]]$defaultDisplaySet)
         $PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultDisplayPropertySet)
@@ -698,10 +746,22 @@ be populated in the console.
            $shareName= $remoteShare.ShareName.Replace("\\$serverName\", "").Replace("\", "-")
        
            $replExists = findReplScheduledTask -ServerName $serverName -ShareName $shareName
-           $remoteShare.AutoReplicationEnabled = $replExists
+           $remoteReplExists = findRemoteReplScheduledTask -ServerName $serverName -ShareName $shareName
+
+           $replDirection = "Push"
+           if ($remoteReplExists) {
+               $remoteShare.AutoReplicationEnabled = $remoteReplExists
+           } else {
+                $remoteShare.AutoReplicationEnabled = $replExists
+           }
+
+           if ($remoteReplExists) {
+              $replDirection = "Pull"
+           }
 	
            Add-Member -InputObject $Result -MemberType NoteProperty -Name "ShareName" -Value $remoteShare.ShareName
            Add-Member -InputObject $Result -MemberType NoteProperty -Name "AutoReplicationEnabled" -Value $remoteShare.AutoReplicationEnabled
+           Add-Member -InputObject $Result -MemberType NoteProperty -Name "ReplicationDirection" -Value $replDirection
            Add-Member -InputObject $Result -MemberType NoteProperty -Name "OfficeVersion" -Value $remoteShare.OfficeVersion
 	   
 	       $NextRunTime = $null
@@ -713,10 +773,15 @@ be populated in the console.
            $ScheduleDays= $null
            $ScheduleMonths= $null
 
-           if ($replExists) {
+           if ($replExists -or $replDirection) {
               $TaskName = "Microsoft\OfficeC2R\ODT Replication - $serverName - $shareName"
 
-              schtasks /query /tn $TaskName /v /fo csv  | Out-File -FilePath "$env:temp\TmpSchTask.csv"
+              if ($replDirection -eq "Push") {
+                 schtasks /query /tn $TaskName /v /fo csv  | Out-File -FilePath "$env:temp\TmpSchTask.csv"
+              } else {
+                 schtasks /query /s "$serverName" /tn $TaskName /v /fo csv  | Out-File -FilePath "$env:temp\TmpSchTask.csv"
+              }
+
 	          $importTasks = Import-Csv -Path "$env:temp\TmpSchTask.csv"
 	     	
 	          $NextRunTime = $importTasks.'Next Run Time'
@@ -744,6 +809,69 @@ be populated in the console.
         }
 
         return $results
+    }
+}
+
+function Start-OfficeUpdateSourceCleanup() {
+    [cmdletbinding()]
+    Param(
+        [Parameter(Mandatory=$true)]
+        [string]$SourcePath,
+
+        [Parameter()]
+        [int]$NumberOfVersionsToKeep = 2
+    )
+
+    $tempPath = $env:TEMP
+    $latestVersionString = $null
+
+    if ($NumberOfVersionsToKeep -lt 1) {
+        $NumberOfVersionsToKeep = 1
+    }
+
+    if (Test-Path -Path $SourcePath) {
+       $v32Path = $SourcePath + "\v32.cab"
+       if (Test-Path -Path $v32Path) {
+          expand $v32Path $tempPath -f:VersionDescriptor.xml | Out-Null
+          $xmlPath = $tempPath + "\VersionDescriptor.xml"
+          [xml]$xmlVersion = Get-Content $xmlPath
+          $buildVersion = $xmlVersion.Version.Available.Build
+          $latestVersionString = $buildVersion
+          Remove-Item -Path $xmlPath
+       }
+    }
+
+    if ($latestVersionString) {
+       $latestVerion = New-Object -TypeName System.Version -ArgumentList @($latestVersionString)
+      
+       $versionFolders = Get-ChildItem -Path $SourcePath -Include $include -Recurse:$recurse | Where-Object { $_.PSIsContainer } | select Name
+       $sortedFolders = $versionFolders | Sort-Object -Descending -Property Name
+
+       for ($n=$NumberOfVersionsToKeep;$n -lt $sortedFolders.Length;$n++) {
+         try {
+          $folder = $sortedFolders[$n]
+          $folderName = $folder.Name
+
+          Write-Host "Removing Version: $folderName"
+
+          if (Test-Path -Path "$SourcePath\v32_$folderName.cab") {
+             Remove-Item -Path "$SourcePath\v32_$folderName.cab" -Force -ErrorAction Stop | Out-Null
+          }
+
+          if (Test-Path -Path "$SourcePath\v64_$folderName.cab") {
+             Remove-Item -Path "$SourcePath\v64_$folderName.cab" -Force -ErrorAction Stop | Out-Null
+          }
+
+          if (Test-Path -Path "$SourcePath\$folderName") {
+             Remove-Item -Path "$SourcePath\$folderName" -Recurse -Force -ErrorAction Stop
+          }
+        } catch {
+          Throw
+        }
+       }
+
+
+
     }
 }
 
@@ -866,6 +994,43 @@ function findReplScheduledTask() {
     
      $TaskName = "Microsoft\OfficeC2R\ODT Replication - $ServerName - $ShareName"
      $scheduledTaskQuery = "/query /tn `"$TaskName`""
+ 
+        $pinfo = New-Object System.Diagnostics.ProcessStartInfo
+        $pinfo.FileName = "schtasks"
+        $pinfo.RedirectStandardError = $true
+        $pinfo.RedirectStandardOutput = $true
+        $pinfo.UseShellExecute = $false
+        $pinfo.Arguments = $scheduledTaskQuery
+        $pinfo.CreateNoWindow = $true
+
+        $p = New-Object System.Diagnostics.Process
+        $p.StartInfo = $pinfo
+        $p.Start() | Out-Null
+        $p.WaitForExit()
+        $stdout = $p.StandardOutput.ReadToEnd()
+        $stderr = $p.StandardError.ReadToEnd()
+
+        if ($stderr) {
+            return $false;
+        }
+
+        if ($stdout) {
+            return $true
+        }
+
+     return $false
+}
+
+function findRemoteReplScheduledTask() {
+    param(
+        [Parameter(Mandatory=$true)]
+        [string]$ServerName,
+        [Parameter(Mandatory=$true)]
+        [string]$ShareName
+    )  
+    
+     $TaskName = "Microsoft\OfficeC2R\ODT Replication - $ServerName - $ShareName"
+     $scheduledTaskQuery = "/query /s $ServerName /tn `"$TaskName`""
  
         $pinfo = New-Object System.Diagnostics.ProcessStartInfo
         $pinfo.FileName = "schtasks"
