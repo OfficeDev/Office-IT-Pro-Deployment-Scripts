@@ -869,11 +869,11 @@ Process
         if ($entries_15) { $sourceCount += $entries_15.Count; }
         if ($entries_16) { $targetCount += $entries_16.Count; }
 
-        $i=0
-         Write-Progress -Activity "Checking Group Policy Settings: $ConfigType" -status "Copying Settings..." -percentComplete ($i / $totalSettings*100)
-		#Find and copy each Policy but only if it doesn't already exist in the target location
-
         $totalSettings = $entries_15.Count;
+        
+        $i=0
+        Write-Progress -Activity "Checking Group Policy Settings: $ConfigType" -status "Copying Settings..." -percentComplete ($i / $totalSettings*100)
+		#Find and copy each Policy but only if it doesn't already exist in the target location
 
 		foreach($entry in $entries_15) 
 		{
