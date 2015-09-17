@@ -47,7 +47,7 @@ Functions included:
             
 3. Dot-Source the script to gain access to the functions inside.
 
-           Type: . .\OfficeConfiguration.ps1
+           Type: . .\Edit-OfficeConfigurationFile.ps1
 
            By including the additional period before the relative script path you are 'Dot-Sourcing' 
            the PowerShell function in the script into your PowerShell session which will allow you to 
