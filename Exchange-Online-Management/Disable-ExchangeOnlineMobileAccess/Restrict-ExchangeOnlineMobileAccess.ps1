@@ -4,19 +4,20 @@ param(
     [System.Management.Automation.PSCredential]$Credentials=$NULL
 )
 
-Function Disable-ExchangeOnlineMobileAccess {
+Function Restrict-ExchangeOnlineMobileAccess {
+
 <#
 .Synopsis
-Disables Mobile Devices access to Exchange Online Mailboxes
+Allows only Outlook Mobile Device access to Exchange Online Mailboxes
 
 .DESCRIPTION
-This function will connect to Exchange Online and disable Mobile Device access to all Mailboxes in an Exchange Online Tenant
+This function will connect to Exchange Online, allow Outlook Mobile App access, and disable all other Mobile Device access to all Mailboxes in an Exchange Online Tenant
 
 .NOTES   
-Name: Get-OfficeVersion
+Name: RestrictMobileAccess
 Version: 0.1.0
-DateCreated: 2015-08-24
-DateUpdated: 2015-08-24
+DateCreated: 2015-09-16
+DateUpdated: 2015-09-17
 
 .LINK
 https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
@@ -27,7 +28,7 @@ to the Office 365 Tenant.  The account must be in the 'Recipient Management' or 
 The username must be your Office 365 username.
 
 .EXAMPLE
-Disable-ExchangeOnlineMobileAccess
+.\Restrict-ExchangeOnlineMobileAccess
 
 Description:
 Running the script with no parameters will prompt you to provide Office 365 credentials
@@ -44,6 +45,7 @@ Description:
 In this example you can create provide the username and password with a prompt
 
 #>
+
 [CmdletBinding(SupportsShouldProcess=$true)]
 param(
     [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
@@ -64,14 +66,14 @@ process {
    if ($Credentials) {
        $Session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri https://outlook.office365.com/powershell-liveid/ -Credential $Credentials -Authentication Basic -AllowRedirection -WarningAction SilentlyContinue
 
-       Import-PSSession $Session | Out-Null
 
        Write-Host
-       Write-Host "Disabling Mobile Mailbox access for all Mailboxes..."
+       Write-Host "Creating Access Rule to explicitly allow Outlook Mobile Access..."
 
-       Get-Mailbox | Set-CasMailbox -ActiveSyncEnabled $False -OWAforDevicesEnabled $False
+       New-ActiveSyncDeviceAccessRule -Characteristic DeviceModel -QueryString "Outlook for iOS and Android" -AccessLevel Allow
+       Set-ActiveSyncOrganizationSettings -DefaultAccessLevel Block
 
-       Write-Host "Disabling Mobile Mailbox access for all Mailboxes: Complete"
+       Write-Host "Disabling all other Mobile Device access for all Mailboxes: Complete"
 
        Remove-PSSession $Session
    }
@@ -79,4 +81,4 @@ process {
 
 }
 
-Disable-ExchangeOnlineMobileAccess -Credentials $Credentials
+Restrict-ExchangeOnlineMobileAccess -Credentials $Credentials
