@@ -12,7 +12,7 @@ This PowerShell function will take and existing Office Click-To-Run configuratio
 
 		Example: cd C:\PowerShellScripts
 
-3. Dot-Source the Generate-ODTConfigurationXML function into your current session.
+3. Dot-Source the Install-OfficeClickToRun function into your current session.
 
 		Type . .\Install-OfficeClickToRun.ps1
 		By including the additional period before the relative script path you are 'Dot-Sourcing' 
