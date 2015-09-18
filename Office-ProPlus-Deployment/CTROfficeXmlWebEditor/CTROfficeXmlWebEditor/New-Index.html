@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="components/CommandBar/CommandBar.min.css">
     <link rel="stylesheet" href="components/Callout/Callout.min.css">
     <link rel="stylesheet" href="components/Dialog/Dialog.min.css">
+    <link href="stylesheets/typeahead.css" rel="stylesheet">
 
     <script type='text/javascript' src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script type="text/javascript" src="./components/Table/Jquery.Table.js"></script>
@@ -90,6 +91,10 @@
             font-family: "SegoeUI-SemiLight-final","Segoe UI SemiLight","Segoe UI WPC Semilight","Segoe UI",Segoe,Tahoma,Helvetica,Arial,sans-serif;
             font-size: 22px;
             -webkit-font-smoothing: antialiased;
+        }
+
+        .twitter-typeahead {
+            width: 100%;
         }
 
     </style>
@@ -382,11 +387,11 @@
                                     </td>
                                 </tr>
                             </table>
-                            <div class="input-group">
-                                <div id="the-basics">
+                            <div class="input-group" style="width:100%">
+                                <div id="the-basics" style="width:100%">
                                     <input id="txtVersion" type="text" pattern="^\d{2}\.\d\.\d{4}\.\d{4}$" maxlength="14"
-                                           class="ms-TextField-field" placeholder="15.0.4745.1001"
-                                           data-error="Invalid Version. ex: 15.0.4745.1001">
+                                           class="ms-TextField-field form-control typeahead" placeholder="15.0.4745.1001"
+                                           data-error="Invalid Version. ex: 15.0.4745.1001" style="width:100%">
                                 </div>
                                 <!--<span id="versionSignal" class="glyphicon form-control-feedback" aria-hidden="true" style="display:none;"></span>-->
                             </div>
@@ -425,7 +430,7 @@
                                 </tr>
                             </table>
 
-                            <div class="input-group">
+                            <div>
                                 <input id="txtSourcePath" type="text" pattern="\\\\.*\\.*|http://.*|https://|^\w:\\.*"
                                        class="ms-TextField-field" placeholder="Network, local, or HTTP path"
                                        data-error="This must be a network, local, or HTTP path">
@@ -463,7 +468,7 @@
                                 </tr>
                             </table>
 
-                            <div class="input-group">
+                            <div>
                                 <input id="txtPidKey" type="text" pattern="^.{5}-.{5}-.{5}-.{5}-.{5}$"
                                        class="ms-TextField-field" placeholder="XXXXX-XXXXX-XXXXX-XXXXX-XXXXX"
                                        data-error="This must be a 25-character volume license key">
@@ -741,7 +746,7 @@
                             </tr>
                         </table>
 
-                        <div class="input-group">
+                        <div>
                             <input id="txtUpdatePath" type="text" pattern="\\\\.*\\.*|http://.*|https://|^\w:\\.*"
                                    class="ms-TextField-field" placeholder="Network, local, or HTTP path"
                                    data-error="This must be a network, local, or HTTP path">
@@ -786,7 +791,7 @@
                             </tr>
                         </table>
 
-                        <div class="input-group">
+                        <div>
                             <div id="the-basics">
                                 <input id="txtTargetVersion" type="text" pattern="^\d{2}\.\d\.\d{4}\.\d{4}$" maxlength="14"
                                        class="ms-TextField-field" placeholder="15.0.4745.1001"
@@ -1043,7 +1048,7 @@
                             </tr>
                         </table>
 
-                        <div class="input-group">
+                        <div>
                             <input id="txtLoggingUpdatePath" type="text" pattern="^\w:\\.*"
                                    class="ms-TextField-field" placeholder="Local Path"
                                    data-error="Local Path">
@@ -1216,7 +1221,7 @@
                                 </td>
                             </tr>
                         </table>
-                        <div class="input-group">
+                        <div>
                             <input id="txtPACKAGEGUID" type="text" pattern="^.{8}-.{4}-.{4}-.{4}-.{12}$"
                                    class="ms-TextField-field" placeholder="XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
                                    data-error="This must be a valid APP-V Package Guid" maxlength="36">

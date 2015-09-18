@@ -27,27 +27,6 @@ $(document).ready(function () {
     odtToggleRemoveApp();
     $("#removeAllProducts").change(odtToggleRemoveApp());
 
-    $('#templateList li').click(function (e) {
-        e.preventDefault();
-        var $that = $(this);
-        var url = document.getElementById(this.id).getAttribute("href");
-        
-        var rawFile = new XMLHttpRequest();
-        rawFile.open("GET", url, true);
-        rawFile.onreadystatechange = function () {
-            if (rawFile.readyState === 4) {
-                var allText = rawFile.responseText;
-                if (allText) {
-                    $('textarea#xmlText').val(allText);
-                    loadUploadXmlFile();
-                }
-            }
-        }
-
-        rawFile.send();
-
-    });
-
     setActiveTab();
 
     resizeWindow();
@@ -187,64 +166,6 @@ $(document).ready(function () {
         }
     });
 
-
-    //$('txtPidKey').on('input propertychange paste focus click', function () {
-    //    if (this.value.length == 0) {
-    //        document.getElementById("pidkeySignal").style.display = "none";
-    //    } else {
-    //        document.getElementById("pidkeySignal").style.display = "block";
-    //    }
-    //});
-
-    //$('#txtVersion').on('input propertychange paste focus click', function () {
-    //    if (this.value.length == 0) {
-    //        document.getElementById("versionSignal").style.display = "none";
-    //    } else {
-    //        document.getElementById("versionSignal").style.display = "block";
-    //    }
-    //});
-
-    //$('#txtPACKAGEGUID').on('input propertychange paste focus click', function () {
-    //    if (this.value.length == 0) {
-    //        document.getElementById("PACKAGEGUIDSignal").style.display = "none";
-    //    } else {
-    //        document.getElementById("PACKAGEGUIDSignal").style.display = "block";
-    //    }
-    //});
-
-    //$('#txtSourcePath').on('input propertychange paste focus click', function () {
-    //    if (this.value.length == 0) {
-    //        document.getElementById("sourcepathSignal").style.display = "none";
-    //    } else {
-    //        document.getElementById("sourcepathSignal").style.display = "block";
-    //    }
-    //});
-
-    //$('#txtUpdatePath').on('input propertychange paste focus click', function () {
-    //    if (this.value.length == 0) {
-    //        document.getElementById("updatepathSignal").style.display = "none";
-    //    } else {
-    //        document.getElementById("updatepathSignal").style.display = "block";
-    //    }
-    //});
-
-    //$('#txtTargetVersion').on('input propertychange paste focus click', function () {
-    //    if (this.value.length == 0) {
-    //        document.getElementById("targetversionSignal").style.display = "none";
-    //    } else {
-    //        document.getElementById("targetversionSignal").style.display = "block";
-    //    }
-    //});
-
-    //$('#txtLoggingUpdatePath').on('input propertychange paste focus click', function () {
-    //    if (this.value.length == 0) {
-    //        document.getElementById("logupdatepathSignal").style.display = "none";
-    //    } else {
-    //        document.getElementById("logupdatepathSignal").style.display = "block";
-    //    }
-    //});
-
-    //$("#btAddProduct").button().click(function () {
     $("#btAddProduct").on('click', function () {
         var xmlDoc = getXmlDocument();
 
@@ -257,7 +178,6 @@ $(document).ready(function () {
         return false;
     });
 
-    //$("#btRemoveProduct").button().click(function () {
     $("#btRemoveProduct").on('click', function () {
         var xmlDoc = getXmlDocument();
 
@@ -268,7 +188,6 @@ $(document).ready(function () {
         return false;
     });
 
-    //$("#btAddLanguage").button().click(function () {
     $("#btAddLanguage").on('click', function () {
         var xmlDoc = getXmlDocument();
 
@@ -278,7 +197,6 @@ $(document).ready(function () {
         return false;
     });
 
-    //$("#btRemoveLanguage").button().click(function () {
     $("#btRemoveLanguage").on('click', function () {
         var xmlDoc = getXmlDocument();
 
@@ -299,8 +217,6 @@ $(document).ready(function () {
     });
 
     $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-        //e.target // activated tab
-        //e.relatedTarget // previous tab
         scrollXmlEditor();
 
         $.cookie("activeTab", e.target);
