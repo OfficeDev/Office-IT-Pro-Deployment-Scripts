@@ -1,0 +1,1434 @@
+﻿<!-- Copyright (c) Microsoft. All rights reserved. Licensed under the MIT license. See LICENSE in the project root for license information. -->
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+
+    <title>Office Click-To-Run Configuration XML Editor</title>
+
+    <link rel="stylesheet" href="stylesheets/fabric.css"/>
+    <link rel="stylesheet" href="components/Table/Table.min.css"/>
+    <link rel="stylesheet" href="components/Button/Button.min.css" />
+    <link rel="stylesheet" href="components/Dropdown/Dropdown.min.css" />
+    <link rel="stylesheet" href="components/TextField/TextField.min.css"/>
+    <link rel="stylesheet" href="components/Toggle/Toggle.min.css"/>
+    <link rel="stylesheet" href="components/DatePicker/DatePicker.min.css"/>
+    <link rel="stylesheet" href="components/NavBar/NavBar.min.css">
+    <link rel="stylesheet" href="components/CommandBar/CommandBar.min.css">
+    <link rel="stylesheet" href="components/Callout/Callout.min.css">
+    <link rel="stylesheet" href="components/Dialog/Dialog.min.css">
+    <link href="stylesheets/typeahead.css" rel="stylesheet">
+
+    <script type='text/javascript' src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script type="text/javascript" src="./components/Table/Jquery.Table.js"></script>
+    <script type="text/javascript" src="./components/TextField/Jquery.TextField.js"></script>
+    <script type="text/javascript" src="./components/Toggle/Jquery.Toggle.js"></script>
+    <script type="text/javascript" src="./components/DatePicker/Jquery.DatePicker.js"></script>
+    <script type="text/javascript" src="./components/NavBar/Jquery.NavBar.js"></script>
+    <script type="text/javascript" src="./components/CommandBar/Jquery.CommandBar.js"></script>
+    <script type="text/javascript" src="components/Callout/Jquery.Callout.js"></script>
+    <script type="text/javascript" src="./Scripts/vkbeautify.0.99.00.beta.js"></script>
+
+    <style type="text/css">
+        body {
+            margin: 0px 0px;
+        }
+
+        h1 {
+            padding: 8px;
+        }
+
+        #componentWrapper {
+            width: 100%;
+            height: 100%;
+        }
+
+        .ms-Table.is-open {
+            position: relative;
+            margin-bottom: 10px;
+        }
+
+        .ms-Dialog {
+            position: relative;
+            margin-bottom: 10px;
+        }
+
+        .ms-NavBar-item .ms-Table {
+            position: absolute;
+        }
+
+        .ms-Table .ms-Table {
+            position: absolute;
+        }
+
+        .option-panel{
+            display:none;
+        }
+        .visible{
+            display:block;
+        }
+
+        .custom-cmditem {
+            line-height: 46px;
+            padding: 0 6px;
+            min-width: 22px;
+            text-align: center;
+            position: relative;
+            display: inline-block;
+            margin-right: 8px;
+            color: #0078d7;
+            height: 50px;
+            outline: none;
+            vertical-align: top;
+        }
+        
+        .ms-Callout{
+            width:450px;
+        }
+
+        .headerText {
+            font-family: "SegoeUI-SemiLight-final","Segoe UI SemiLight","Segoe UI WPC Semilight","Segoe UI",Segoe,Tahoma,Helvetica,Arial,sans-serif;
+            font-size: 22px;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .twitter-typeahead {
+            width: 100%;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="ms-bgColor-themeDarker ms-CommandBar" style="background-color:#004578;color:white;height: 50px;">
+        <div class="ms-CommandBar-sideCommands">
+            <div class="ms-CommandBarItem ms-CommandBarItem--iconOnly" style="border-left:1px solid white;
+                             border-right:1px solid white; margin-right:-5px;height: 50px;width:50px">
+                <div class="ms-CommandBarItem-linkWrapper">
+                    <div class="ms-CommandBarItem-link" onclick="showAbout()">
+                        <span class="ms-CommandBarItem-icon ms-Icon ms-Icon--question ms-fontColor-white" style="font-size: 20px;margin-top: 15px"></span>
+                        <span class="ms-CommandBarItem-commandText ms-font-m ms-font-weight-regular ms-fontColor-white">About</span>
+                    </div>
+                </div>
+            </div>
+            <div class="ms-CommandBarItem ms-CommandBarItem--iconOnly" style="border-left:1px solid white;border-right:1px solid white;margin-right:-5px;height: 50px;width:50px">
+                <div class=" ms-commandbaritem-linkwrapper">
+                    <div class="ms-CommandBarItem-link">
+                        <span class="ms-CommandBarItem-icon ms-Icon ms-Icon--support ms-fontColor-white" style="font-size: 20px;margin-top: 15px"></span>
+                        <span class="ms-CommandBarItem-commandText ms-font-m ms-font-weight-regular ms-fontColor-white">Issues</span>
+                    </div>
+                </div>
+            </div>
+            <div class="ms-CommandBarItem ms-CommandBarItem--iconOnly" style="border-left:1px solid white;margin-right:-5px;height: 50px;width:50px">
+                <div id="btviewongithub" class="ms-CommandBarItem-linkWrapper">
+                    <div class="ms-CommandBarItem-link">
+                        <span class="ms-CommandBarItem-icon ms-Icon ms-Icon--circleFill ms-fontColor-white" style="font-size: 20px;margin-top: 15px"></span>
+                        <span class="ms-CommandBarItem-commandText ms-font-m ms-font-weight-regular ms-fontColor-white">View On GitHub</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="ms-CommandBar-mainArea">
+            <div class="custom-cmditem">
+                <span class="ms-font-l ms-font-weight-regular ms-fontColor-white headerText" style="height:100%;width:100%;margin:0px 0px 0px 15px;border-right:1px solid white; padding-right:15px;">Office 365 ProPlus</span>
+            </div>
+            <div class="custom-cmditem">
+                <span class="ms-font-l ms-font-weight-regular ms-fontColor-white headerText" style="height:100%;width:100%;margin:0px 0px 0px 0px;">Configuration XML Editor</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="componentWrapper">
+        <div class="ms-Grid">
+            <div class="ms-Grid-row">
+                <div class="ms-Grid-col ms-u-md10 ms-u-lg2 ms-u-xl2 ms-u-sm10">
+                    <div class="ms-Table">
+                        <div class="ms-Table-row">
+                            <span class="ms-font-xl">Section</span>
+                        </div>
+                        <div id="addProductRow" class="ms-Table-row  is-selected navrow">
+                            <span class="ms-Table-cell" onclick="setPanel('AddProductPanel', 'addProductRow')">Add Product</span>
+                        </div>
+                        <div id="removeProductRow" class="ms-Table-row navrow">
+                            <span class="ms-Table-cell" onclick="setPanel('RemoveProductPanel', 'removeProductRow')">Remove Product</span>
+                        </div>
+                        <div id="updatesRow" class="ms-Table-row navrow">
+                            <span class="ms-Table-cell" onclick="setPanel('UpdatesPanel', 'updatesRow')">Updates</span>
+                        </div>
+                        <div id="displayRow" class="ms-Table-row navrow">
+                            <span class="ms-Table-cell" onclick="setPanel('DisplayPanel', 'displayRow')">Display</span>
+                        </div>
+                        <div id="loggingRow" class="ms-Table-row navrow">
+                            <span class="ms-Table-cell" onclick="setPanel('LoggingPanel', 'loggingRow')">Logging</span>
+                        </div>
+                        <div id="propertiesRow" class="ms-Table-row navrow">
+                            <span class="ms-Table-cell" onclick="setPanel('PropertiesPanel', 'propertiesRow')">Properties</span>
+                        </div>
+                        <div id="templatesRow" class="ms-Table-row navrow">
+                            <span class="ms-Table-cell" onclick="setPanel('TemplatesPanel', 'templatesRow')">Templates</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="ms-Grid-col ms-u-md9 ms-u-lg6 ms-u-xl3 ms-u-sm9">
+                    <!-- Start Add Product Panel -->
+                    <div id="AddProductPanel" class="option-panel visible">
+                        <h1 class="ms-font-xxl">Add Product</h1>
+                        <div style="border-bottom:1px solid grey">
+                            <h2 class="ms-font-xl">Required Fields</h2>
+                            <table>
+                                <tr>
+                                    <td>
+                                        <label class="ms-Label">Product</label>
+                                    </td>
+                                    <td>
+                                        <i id="productInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('productInfo', this)"></i>
+                                        <div id="productInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none">
+                                            <div class="ms-Callout-main">
+                                                <div class="ms-Callout-header">
+                                                    <p class="ms-Callout-title">Office Product</p>
+                                                </div>
+                                                <div class="ms-Callout-inner">
+                                                    <div class="ms-Callout-content">
+                                                        <p class="ms-Callout-subText">Specifies the Click-to-Run product to install.</p>
+                                                        <hr>
+                                                        <p class="ms-Callout-subText">Required. <strong>ID</strong> must be set to a valid ProductRelease ID.</p>
+                                                        <br />
+                                                        <p class="ms-Callout-subText">The supported ProductRelease IDs for Click-to-Run for Office 365 products are as follows:</p>
+                                                        <ul>
+                                                            <li> <p class="ms-Callout-subText">O365ProPlusRetail</p> </li>
+                                                            <li> <p class="ms-Callout-subText">O365BusinessRetail</p> </li>
+                                                            <li> <p class="ms-Callout-subText">VisioProRetail</p> </li>
+                                                            <li> <p class="ms-Callout-subText">ProjectProRetail</p> </li>
+                                                            <li> <p class="ms-Callout-subText">SPDRetail (SharePoint Designer)</p> </li>
+                                                        </ul>
+                                                        <p class="ms-Callout-subText">If <strong>ID</strong> is not set, the operation fails and indicates that the input is not valid.</p>
+                                                        <br />
+                                                        <p class="ms-Callout-subText">The order of <strong>Product</strong> elements determines the order in which the products are installed. The first <strong>Product ID</strong> is used to determine in which context the Microsoft Office First Run Experience application starts. Microsoft Office First Run Experience refers to the first time each Office application starts.</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                            <div class="ms-Dropdown">
+                                <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
+                                <select id="cbProduct" class="ms-Dropdown-select">
+                                    <option value="O365ProPlusRetail">Office 365 ProPlus Retail</option>
+                                    <option value="O365BusinessRetail">Office 365 Business Retail</option>
+                                    <option value="VisioProRetail">Visio Professional Retail</option>
+                                    <option value="ProjectProRetail">Project Professional Retail</option>
+                                    <option value="SPDRetail">SharePoint Designer</option>
+                                </select>
+                            </div>
+                            <table>
+                                <tr>
+                                    <td>
+                                        <label class="ms-Label">Edition</label>
+                                    </td>
+                                    <td>
+                                        <i id="editionInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('editionInfo', this)"></i>
+                                        <div id="editionInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:75px; top:115px; display:none">
+                                            <div class="ms-Callout-main">
+                                                <div class="ms-Callout-header">
+                                                    <p class="ms-Callout-title">Office Client Edition</p>
+                                                </div>
+                                                <div class="ms-Callout-inner">
+                                                    <div class="ms-Callout-content">
+                                                        <p class="ms-Callout-subText">Required. Specifies the edition of Click-to-Run for Office 365 product to use: 32- or 64-bit. The action fails if <strong>OfficeClientEdition</strong> is not set to a valid value.</p>
+                                                        <br />
+                                                        <p class="ms-Callout-subText">A <strong>configure</strong> mode action may fail if <strong>OfficeClientEdition</strong> is set incorrectly. For example, if you attempt to install a 64-bit edition of a Click-to-Run for Office 365 product on a computer that is running a 32-bit Windows operating system, or if you try to install a 32-bit Click-to-Run for Office 365 product on a computer that has a 64-bit edition of Office installed.</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                            <div class="ms-Dropdown">
+                                <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
+                                <select id="cbEdition" class="ms-Dropdown-select">
+                                    <option value="32">32-bit</option>
+                                    <option value="64">64-bit</option>
+                                </select>
+                            </div>
+                            <table>
+                                <tr>
+                                    <td>
+                                        <label class="ms-Label">Language</label>
+                                    </td>
+                                    <td>
+                                        <i id="languageInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('languageInfo', this)"></i>
+                                        <div id="languageInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:90px; top:188px; display:none">
+                                            <div class="ms-Callout-main">
+                                                <div class="ms-Callout-header">
+                                                    <p class="ms-Callout-title">Product Language</p>
+                                                </div>
+                                                <div class="ms-Callout-inner">
+                                                    <div class="ms-Callout-content">
+                                                        <p class="ms-Callout-subText">Determine which product languages to install.</p>
+                                                        <hr>
+                                                        <p class="ms-Callout-subText">Required. If the <strong>Language ID</strong> value is not set, the installation operation fails and indicates that the input is not valid.</p>
+                                                        <br />
+                                                        <p class="ms-Callout-subText">The <strong>ID</strong> value can be set to a valid Office culture language (such as en-us for English US or ja-jp for Japanese). The <em>ll-cc</em> value is the language identifier. </p>
+                                                        <br />
+                                                        <p class="ms-Callout-subText">
+                                                            Language elements determine which product languages to install. Administrators must specify the languages they want to install. The first language determines the Shell UI culture. The Shell UI is the language of shortcuts, right-click context menus, and tooltips.
+                                                        </p>
+                                                        <br />
+                                                        <p class="ms-Callout-subText">
+                                                            If you decide that you want to change the Shell UI language after an initial installation, you have to uninstall Click-to-Run and reinstall. Add the language that you want to set for the Shell UI as the first language in the custom Configuration.xml file.
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                            <table>
+                                <tr>
+                                    <td style="width: 100%; padding-right: 10px">
+                                        <div class="ms-Dropdown">
+                                            <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
+                                            <select id="cbLanguage" class="ms-Dropdown-select">
+                                                <option value="en-us">English (en-us)</option>
+                                                <option value="ar-sa">Arabic (ar-sa)</option>
+                                                <option value="bg-bg">Bulgarian (bg-bg)</option>
+                                                <option value="zh-cn">Chinese (Simplified) (zh-cn)</option>
+                                                <option value="zh-tw">Chinese (zh-tw)</option>
+                                                <option value="hr-hr">Croatian (hr-hr)</option>
+                                                <option value="cs-cz">Czech (cs-cz)</option>
+                                                <option value="da-dk">Danish (da-dk)</option>
+                                                <option value="nl-nl">Dutch (nl-nl)</option>
+                                                <option value="et-ee">Estonian (et-ee)</option>
+                                                <option value="fi-fi">Finnish (fi-fi)</option>
+                                                <option value="fr-fr">French (fr-fr)</option>
+                                                <option value="de-de">German (de-de)</option>
+                                                <option value="el-gr">Greek (el-gr)</option>
+                                                <option value="he-il">Hebrew (he-il)</option>
+                                                <option value="hi-in">Hindi (hi-in)</option>
+                                                <option value="hu-hu">Hungarian (hu-hu)</option>
+                                                <option value="id-id">Indonesian (id-id)</option>
+                                                <option value="it-it">Italian (it-it)</option>
+                                                <option value="ja-jp">Japanese (ja-jp)</option>
+                                                <option value="kk-kh">Kazakh (kk-kh)</option>
+                                                <option value="ko-kr">Korean (ko-kr)</option>
+                                                <option value="lv-lv">Latvian (lv-lv)</option>
+                                                <option value="lt-lt">Lithuanian (lt-lt)</option>
+                                                <option value="ms-my">Malay (ms-my)</option>
+                                                <option value="nb-no">Norwegian (Bokm�l) (nb-no)</option>
+                                                <option value="pl-pl">Polish (pl-pl)</option>
+                                                <option value="pt-br">Portuguese (pt-br)</option>
+                                                <option value="pt-pt">Portuguese (pt-pt)</option>
+                                                <option value="ro-ro">Romanian (ro-ro)</option>
+                                                <option value="ru-ru">Russian (ru-ru)</option>
+                                                <option value="sr-latn-rs">Serbian (Latin) (sr-latn-rs)</option>
+                                                <option value="sk-sk">Slovak (sk-sk)</option>
+                                                <option value="sl-si">Slovenian (sl-si)</option>
+                                                <option value="es-es">Spanish (es-es)</option>
+                                                <option value="sv-se">Swedish (sv-se)</option>
+                                                <option value="th-th">Thai (th-th)</option>
+                                                <option value="tr-tr">Turkish (tr-tr)</option>
+                                                <option value="uk-ua">Ukrainian (uk-ua)</option>
+                                            </select>
+                                        </div>
+                                    </td>
+                                    <td style="width: 150px;text-align: right; padding-right: 10px;padding-bottom: 10px">
+                                        <button id="btAddLanguage" class="ms-Button">
+                                            Add
+                                        </button>
+                                    </td>
+                                    <td style="width:80px;text-align: right;padding-bottom: 10px">
+                                        <button id="btRemoveLanguage" class="ms-Button" disabled="true">
+                                            Remove
+                                        </button>
+                                    </td>
+                                </tr>
+                            </table>
+                            <div style="margin-bottom:10px">
+                                <button id="btAddProduct" class="ms-Button">
+                                    Add Product
+                                </button>
+                                <button id="btRemoveProduct" class="ms-Button">
+                                    Delete Product
+                                </button>
+                            </div>
+                        </div>
+                        <div>
+                            <h2 class="ms-font-xl">Optional Fields</h2>
+
+                            <table>
+                                <tr>
+                                    <td>
+                                        <label class="ms-Label">Version</label>
+                                    </td>
+                                    <td>
+                                        <i id="versionInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('versionInfo', this)"></i>
+                                        <div id="versionInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:343px; display:none">
+                                            <div class="ms-Callout-main">
+                                                <div class="ms-Callout-header">
+                                                    <p class="ms-Callout-title">Product Version</p>
+                                                </div>
+                                                <div class="ms-Callout-inner">
+                                                    <div class="ms-Callout-content">
+                                                        <p class="ms-Callout-subText">The Version of the Click-to-Run product to installation</p>
+                                                        <hr>
+                                                        <p class="ms-Callout-subText">Optional. If a <strong>Version</strong> value is not set, the Click-to-Run product installation streams the latest available version from the source. The default is to use the most recently advertised build (as defined in v32.CAB or v64.CAB at the Click-to-Run Office installation source). </p>
+                                                        <br />
+                                                        <p class="ms-Callout-subText"> <strong>Version</strong> can be set to an Office 2013 build number by using this format: X.X.X.X</p>
+                                                        <br />
+                                                        <p class="ms-Callout-subText">For more information on the specific versions of Office Click-To-Run see <a href="https://support.microsoft.com/en-us/gp/office-2013-365-update">Update Office 2013 or Office 365</a></p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                            <div class="input-group" style="width:100%">
+                                <div id="the-basics" style="width:100%">
+                                    <input id="txtVersion" type="text" pattern="^\d{2}\.\d\.\d{4}\.\d{4}$" maxlength="14"
+                                           class="ms-TextField-field form-control typeahead" placeholder="15.0.4745.1001"
+                                           data-error="Invalid Version. ex: 15.0.4745.1001" style="width:100%">
+                                </div>
+                                <!--<span id="versionSignal" class="glyphicon form-control-feedback" aria-hidden="true" style="display:none;"></span>-->
+                            </div>
+
+                            <table>
+                                <tr>
+                                    <td>
+                                        <label class="ms-Label">SourcePath</label>
+                                    </td>
+                                    <td>
+                                        <i id="srcPathInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('srcPathInfo', this)"></i>
+                                        <div id="srcPathInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:98px; top:408px; display:none;">
+                                            <div class="ms-Callout-main">
+                                                <div class="ms-Callout-header">
+                                                    <p class="ms-Callout-title">Source Path</p>
+                                                </div>
+                                                <div class="ms-Callout-inner">
+                                                    <div class="ms-Callout-content">
+                                                        <p class="ms-Callout-subText">Indicates the location to save the Click-to-Run installation source when you run the Office Deployment Tool in download mode.</p>
+                                                        <hr>
+                                                        <p class="ms-Callout-subText">Optional. </p>
+                                                        <p class="ms-Callout-subText">The <strong>SourcePath</strong> value can be set to a network, local, or HTTP path that contains a Click-to-Run source. Environment variables can be used for network or local paths.</p>
+                                                        <br />
+                                                        <p class="ms-Callout-subText"> <strong>SourcePath</strong> indicates the location to save the Click-to-Run installation source when you run the Office Deployment Tool in <strong>download</strong> mode. </p>
+                                                        <br />
+                                                        <p class="ms-Callout-subText"> <strong>SourcePath</strong> indicates the installation source path from which to install Office when you run the Office Deployment Tool in <strong>configure</strong> mode. If you don’t specify <strong>SourcePath</strong> in <strong>configure</strong> mode, Setup will look in the current folder for the Office source files. If the Office source files aren’t found in the current folder, Setup will look on Office 365 for them.</p>
+                                                        <br />
+                                                        <p class="ms-Callout-subText"> <strong>SourcePath</strong> specifies the path of the Click-to-Run Office source from which the App-V package will be made when you run the Office Deployment Tool in <strong>packager</strong> mode.</p>
+                                                        <br />
+                                                        <p class="ms-Callout-subText">If you do not specify <strong>SourcePath</strong>, Setup will attempt to create an <strong>\Office\Data\...</strong> folder structure in the working directory from which you are running setup.exe.</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <div>
+                                <input id="txtSourcePath" type="text" pattern="\\\\.*\\.*|http://.*|https://|^\w:\\.*"
+                                       class="ms-TextField-field" placeholder="Network, local, or HTTP path"
+                                       data-error="This must be a network, local, or HTTP path">
+                                <!--<span id="sourcepathSignal" class="glyphicon form-control-feedback" aria-hidden="true"></span>-->
+                            </div>
+
+                            <table>
+                                <tr>
+                                    <td>
+                                        <label class="ms-Label">PIDKEY</label>
+                                    </td>
+                                    <td>
+                                        <i id="pidkeyInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('pidkeyInfo', this)"></i>
+                                        <div id="pidkeyInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:75px; top:472px; display:none">
+                                            <div class="ms-Callout-main">
+                                                <div class="ms-Callout-header">
+                                                    <p class="ms-Callout-title">PIDKEY</p>
+                                                </div>
+                                                <div class="ms-Callout-inner">
+                                                    <div class="ms-Callout-content">
+                                                        <p class="ms-Callout-subText">The 25-character volume license key.</p>
+                                                        <hr>
+                                                        <p class="ms-Callout-subText">Optional. </p>
+
+                                                        <p class="ms-Callout-subText">When the <strong>PIDKEY</strong> value is set, users are not required to enter a product key when they install Office.</p>
+                                                        <br />
+                                                        <p class="ms-Callout-subText">If this element is not defined, the default settings are used. If an invalid value is specified, Setup ends the installation. </p>
+                                                        <br />
+                                                        <p class="ms-Callout-subText">If the <strong>Level</strong> attribute is set to "basic" or “none” and you supply a product key by using the <strong>PIDKEY</strong>, Setup assumes that you also accept the license agreement on behalf of the user.</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <div>
+                                <input id="txtPidKey" type="text" pattern="^.{5}-.{5}-.{5}-.{5}-.{5}$"
+                                       class="ms-TextField-field" placeholder="XXXXX-XXXXX-XXXXX-XXXXX-XXXXX"
+                                       data-error="This must be a 25-character volume license key">
+                                <!--<span id="pidkeySignal" class="glyphicon form-control-feedback" aria-hidden="true"></span>-->
+                            </div>
+
+                            <table>
+                                <tr>
+                                    <td>
+                                        <label class="ms-Label">Exclude Office Programs</label>
+                                    </td>
+                                    <td>
+                                        <i id="exclAppInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('exclAppInfo', this)"></i>
+                                        <div id="exclAppInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:150px; top:510px; display:none">
+                                            <div class="ms-Callout-main">
+                                                <div class="ms-Callout-header">
+                                                    <p class="ms-Callout-title">ExcludeApp</p>
+                                                </div>
+                                                <div class="ms-Callout-inner">
+                                                    <div class="ms-Callout-content">
+                                                        <p class="ms-Callout-subText">Specifies which Office programs not to install.</p>
+                                                        <hr>
+                                                        <p class="ms-Callout-subText">Optional. </p>
+                                                        <p class="ms-Callout-subText">The following is a list of the supported values for <strong>ID</strong>:</p>
+                                                        <ul>
+                                                            <li> <p class="ms-Callout-subText">Access</p> </li>
+                                                            <li> <p class="ms-Callout-subText">Excel</p> </li>
+                                                            <li> <p class="ms-Callout-subText">Groove</p> </li>
+                                                            <li> <p class="ms-Callout-subText">InfoPath</p> </li>
+                                                            <li> <p class="ms-Callout-subText">Lync</p> </li>
+                                                            <li> <p class="ms-Callout-subText">OneNote</p> </li>
+                                                            <li> <p class="ms-Callout-subText">Outlook</p> </li>
+                                                            <li> <p class="ms-Callout-subText">PowerPoint</p> </li>
+                                                            <li> <p class="ms-Callout-subText">Project</p> </li>
+                                                            <li> <p class="ms-Callout-subText">Publisher</p> </li>
+                                                            <li> <p class="ms-Callout-subText">SharePointDesigner</p> </li>
+                                                            <li> <p class="ms-Callout-subText">Visio</p> </li>
+                                                            <li> <p class="ms-Callout-subText">Word</p> </li>
+                                                        </ul>
+                                                        <p class="ms-Callout-subText">The value “Groove” is used to exclude OneDrive for Business.</p>
+                                                        <p class="ms-Callout-subText">The value "Lync" also applies to Skype for Business.</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <div>
+                                <div>
+                                    <table>
+                                        <tr>
+                                            <td style="width: 100%; padding-right: 10px">
+                                                <div class="ms-Dropdown">
+                                                    <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
+                                                    <select id="cbExcludeApp" class="ms-Dropdown-select">
+                                                        <option value="Access">Access</option>
+                                                        <option value="Excel">Excel</option>
+                                                        <option value="Groove">Groove</option>
+                                                        <option value="InfoPath">InfoPath</option>
+                                                        <option value="Lync">Lync</option>
+                                                        <option value="OneNote">OneNote</option>
+                                                        <option value="Outlook">Outlook</option>
+                                                        <option value="PowerPoint">PowerPoint</option>
+                                                        <option value="Project">Project</option>
+                                                        <option value="Publisher">Publisher</option>
+                                                        <option value="SharePointDesigner">SharePointDesigner</option>
+                                                        <option value="Visio">Visio</option>
+                                                        <option value="Word">Word</option>
+                                                    </select>
+                                                </div>
+                                            </td>
+                                            <td style="width: 150px;text-align: right; padding-right: 10px; padding-bottom:10px">
+                                                <button id="btAddExcludeApp" class="ms-Button">
+                                                    Add
+                                                </button>
+                                            </td>
+                                            <td style="width:80px;text-align: right; padding-bottom:10px">
+                                                <button id="btRemoveExcludeApp" class="ms-Button" disabled="true">
+                                                    Remove
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+                    <!-- End Add Product Panel -->
+                    <!-- Start Remove Product Panel -->
+                    <div id="RemoveProductPanel" class="option-panel">
+                        <table>
+                            <tr>
+                                <td>
+                                    <h1 class="ms-font-xxl">Add Remove Product</h1>
+                                </td>
+                                <td>
+                                    <i id="removeProductInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('removeProductInfo', this)"></i>
+                                    <div id="removeProductInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none">
+                                        <div class="ms-Callout-main">
+                                            <div class="ms-Callout-header">
+                                                <p class="ms-Callout-title">Remove Products</p>
+                                            </div>
+                                            <div class="ms-Callout-inner">
+                                                <div class="ms-Callout-content">
+                                                    <p class="ms-Callout-subText">Removes products and languages.</p>
+                                                    <hr>
+                                                    <p class="ms-Callout-subText"><strong>Important:</strong></p>
+                                                    <p class="ms-Callout-subText">
+                                                        To remove an installed language for a product, you must specify the ID for the product, and specify the ID for the language that you want to remove. To remove a product completely, you must specify the ID for the product, and specify the IDs of all the languages that are installed. But, if the product and languages are also specified in the <a href="#BKMK_AddElement" id="A_10">Add element</a> of the configuration.xml file, then the product or languages won’t be removed.
+                                                    </p>
+                                                    <br />
+                                                    <p class="ms-Callout-subText">
+                                                        If <strong>All</strong> is set to <strong>TRUE</strong>, then all products and languages are removed, regardless of what is specified in the <strong>Add element</strong>.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <div class="ms-Toggle">
+                            <span class="ms-Toggle-description">Remove All or Selected Products</span>
+                            <input type="checkbox" id="removeAllProducts" class="ms-Toggle-input" />
+                            <label for="removeAllProducts" class="ms-Toggle-field">
+                                <span class="ms-Label ms-Label--off">Selected</span>
+                                <span class="ms-Label ms-Label--on">All</span>
+                            </label>
+                        </div>
+
+                        <table>
+                            <tr>
+                                <td>
+                                    <label class="ms-Label">Product</label>
+                                </td>
+                            </tr>
+                        </table>
+                        <div class="ms-Dropdown">
+                            <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
+                            <select id="cbRemoveProduct" class="ms-Dropdown-select">
+                                <option value="O365ProPlusRetail">Office 365 ProPlus Retail</option>
+                                <option value="O365BusinessRetail">Office 365 Business Retail</option>
+                                <option value="VisioProRetail">Visio Professional Retail</option>
+                                <option value="ProjectProRetail">Project Professional Retail</option>
+                                <option value="SPDRetail">SharePoint Designer</option>
+                            </select>
+                        </div>
+
+                        <table>
+                            <tr>
+                                <td>
+                                    <label class="ms-Label">Language</label>
+                                </td>
+                            </tr>
+                        </table>
+                        <table>
+                            <tr>
+                                <td style="width: 100%; padding-right: 10px">
+                                    <div class="ms-Dropdown">
+                                        <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
+                                        <select id="cbRemoveLanguage" class="ms-Dropdown-select">
+                                            <option value="en-us">English (en-us)</option>
+                                            <option value="ar-sa">Arabic (ar-sa)</option>
+                                            <option value="bg-bg">Bulgarian (bg-bg)</option>
+                                            <option value="zh-cn">Chinese (Simplified) (zh-cn)</option>
+                                            <option value="zh-tw">Chinese (zh-tw)</option>
+                                            <option value="hr-hr">Croatian (hr-hr)</option>
+                                            <option value="cs-cz">Czech (cs-cz)</option>
+                                            <option value="da-dk">Danish (da-dk)</option>
+                                            <option value="nl-nl">Dutch (nl-nl)</option>
+                                            <option value="et-ee">Estonian (et-ee)</option>
+                                            <option value="fi-fi">Finnish (fi-fi)</option>
+                                            <option value="fr-fr">French (fr-fr)</option>
+                                            <option value="de-de">German (de-de)</option>
+                                            <option value="el-gr">Greek (el-gr)</option>
+                                            <option value="he-il">Hebrew (he-il)</option>
+                                            <option value="hi-in">Hindi (hi-in)</option>
+                                            <option value="hu-hu">Hungarian (hu-hu)</option>
+                                            <option value="id-id">Indonesian (id-id)</option>
+                                            <option value="it-it">Italian (it-it)</option>
+                                            <option value="ja-jp">Japanese (ja-jp)</option>
+                                            <option value="kk-kh">Kazakh (kk-kh)</option>
+                                            <option value="ko-kr">Korean (ko-kr)</option>
+                                            <option value="lv-lv">Latvian (lv-lv)</option>
+                                            <option value="lt-lt">Lithuanian (lt-lt)</option>
+                                            <option value="ms-my">Malay (ms-my)</option>
+                                            <option value="nb-no">Norwegian (Bokm�l) (nb-no)</option>
+                                            <option value="pl-pl">Polish (pl-pl)</option>
+                                            <option value="pt-br">Portuguese (pt-br)</option>
+                                            <option value="pt-pt">Portuguese (pt-pt)</option>
+                                            <option value="ro-ro">Romanian (ro-ro)</option>
+                                            <option value="ru-ru">Russian (ru-ru)</option>
+                                            <option value="sr-latn-rs">Serbian (Latin) (sr-latn-rs)</option>
+                                            <option value="sk-sk">Slovak (sk-sk)</option>
+                                            <option value="sl-si">Slovenian (sl-si)</option>
+                                            <option value="es-es">Spanish (es-es)</option>
+                                            <option value="sv-se">Swedish (sv-se)</option>
+                                            <option value="th-th">Thai (th-th)</option>
+                                            <option value="tr-tr">Turkish (tr-tr)</option>
+                                            <option value="uk-ua">Ukrainian (uk-ua)</option>
+                                        </select>
+                                    </div>
+                                </td>
+                                <td style="width: 150px;text-align: right; padding-right: 10px;padding-bottom:10px">
+                                    <button id="btAddRemoveLanguage" class="ms-Button ">
+                                        Add
+                                    </button>
+                                </td>
+                                <td style="width:80px;text-align: right;padding-bottom:10px">
+                                    <button id="btRemoveRemoveLanguage" class="ms-Button" disabled="true">
+                                        Remove
+                                    </button>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <div style="margin-bottom:10px">
+                            <button id="btAddRemoveProduct" class="ms-Button">
+                                Add Remove Product
+                            </button>
+                            <button id="btDeleteRemoveProduct" class="ms-Button">
+                                Delete Remove Product
+                            </button>
+                        </div>
+                    </div>
+                    <!-- End Remove Product Panel -->
+                    <!-- Start Updates Panel -->
+                    <div id="UpdatesPanel" class="option-panel">
+                        <h1 class="ms-font-xxl">Updates</h1>
+                        <div id="updateToggleContainer" class="ms-Toggle">
+                            <span class="ms-Toggle-description">Enable Updates</span>
+                            <input type="checkbox" id="updatesEnabled" class="ms-Toggle-input" />
+                            <label for="updatesEnabled" class="ms-Toggle-field">
+                                <span class="ms-Label ms-Label--off">Disabled</span>
+                                <span class="ms-Label ms-Label--on">Enabled</span>
+                            </label>
+                        </div>
+
+                        <table>
+                            <tr>
+                                <td>
+                                    <label class="ms-Label">UpdatePath</label>
+                                </td>
+                                <td>
+                                    <i id="updatePathInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('updatePathInfo', this)"></i>
+                                    <div id="updatePathInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none">
+                                        <div class="ms-Callout-main">
+                                            <div class="ms-Callout-header">
+                                                <p class="ms-Callout-title">Update Path</p>
+                                            </div>
+                                            <div class="ms-Callout-inner">
+                                                <div class="ms-Callout-content">
+                                                    <p class="ms-Callout-subText">Specifies a network, local, or HTTP path of a Click-to-Run source.</p>
+                                                    <hr>
+                                                    <p class="ms-Callout-subText">
+                                                        Optional.
+                                                    </p>
+                                                    <p class="ms-Callout-subText">
+                                                        If <strong>UpdatePath</strong> is not set, Click-to-Run installations obtain updates from the Microsoft Click-to-Run source (Content Delivery Network or CDN). This is by default. If <strong>UpdatePath</strong> is set to empty (""), updates are obtained from the Microsoft Click-to-Run source, CDN.
+                                                    </p>
+                                                    <br />
+                                                    <p class="ms-Callout-subText">
+                                                        <strong>UpdatePath</strong> can specify a network, local, or HTTP path of a Click-to-Run source. Environment variables can be used for network or local paths. If you use Group Policy and the <a href="http://go.microsoft.com/fwlink/p/?LinkID=257051" id="A_10">Office 2013 Administrative Template files (ADMX/ADML)</a>, you can set <strong>UpdatePath</strong> by using the <strong>Update Path</strong> policy setting. You can find this policy setting under Computer Configuration\Administrative Templates\Microsoft Office 2013 (Machine)\Updates.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <div>
+                            <input id="txtUpdatePath" type="text" pattern="\\\\.*\\.*|http://.*|https://|^\w:\\.*"
+                                   class="ms-TextField-field" placeholder="Network, local, or HTTP path"
+                                   data-error="This must be a network, local, or HTTP path">
+                            <!--<span id="updatepathSignal" class="glyphicon form-control-feedback" aria-hidden="true"></span>-->
+                        </div>
+
+                        <table>
+                            <tr>
+                                <td>
+                                    <label class="ms-Label">TargetVersion</label>
+                                </td>
+                                <td>
+                                    <i id="targetVersionInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('targetVersionInfo', this)"></i>
+                                    <div id="targetVersionInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none">
+                                        <div class="ms-Callout-main">
+                                            <div class="ms-Callout-header">
+                                                <p class="ms-Callout-title">Remove Products</p>
+                                            </div>
+                                            <div class="ms-Callout-inner">
+                                                <div class="ms-Callout-content">
+                                                    <p class="ms-Callout-subText">The Click-to-Run product version to install.</p>
+                                                    <hr>
+                                                    <p class="ms-Callout-subText">
+                                                        Optional.
+                                                    </p>
+                                                    <p class="ms-Callout-subText">
+                                                        If <strong>TargetVersion</strong> is not set, Click-to-Run updates to the most recent version from the Microsoft Click-to-Run source. If <strong>TargetVersion</strong> is set to empty (""), Click-to-Run updates to the latest version from the Microsoft Click-to-Run source.
+                                                    </p>
+                                                    <br />
+                                                    <p class="ms-Callout-subText">
+                                                        <strong>TargetVersion</strong> can be set to an Office build number, for example, 15.1.2.3. When the version is set, Office attempts to transition to the specified version in the next update cycle. If you use Group Policy and the <a href="http://go.microsoft.com/fwlink/p/?LinkID=257051" id="A_9">Office 2013 Administrative Template files (ADMX/ADML)</a>, you can set <strong>TargetVersion</strong> by using the <strong>Target Version</strong> policy setting. You can find this policy setting under Computer Configuration\Administrative Templates\Microsoft Office 2013 (Machine)\Updates.
+                                                    </p>
+                                                    <br />
+                                                    <p class="ms-Callout-subText">
+                                                        For more information on the specific versions of Office Click-To-Run see <a href="https://support.microsoft.com/en-us/gp/office-2013-365-update">Update Office 2013 or Office 365</a>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <div>
+                            <div id="the-basics">
+                                <input id="txtTargetVersion" type="text" pattern="^\d{2}\.\d\.\d{4}\.\d{4}$" maxlength="14"
+                                       class="ms-TextField-field typeahead" placeholder="15.0.4745.1001"
+                                       data-error="Invalid Version. ex: 15.0.4745.1001">
+                            </div>
+                            <!--<span id="targetversionSignal" class="glyphicon form-control-feedback" aria-hidden="true"></span>-->
+                        </div>
+
+                        <div class="ms-DatePicker">
+                            <div class="ms-TextField">
+                                <table>
+                                    <tr>
+                                        <td>
+                                            <label class="ms-Label">Deadline</label>
+                                        </td>
+                                        <td>
+                                            <i id="deadlineInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('deadlineInfo', this)"></i>
+                                            <div id="deadlineInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none">
+                                                <div class="ms-Callout-main">
+                                                    <div class="ms-Callout-header">
+                                                        <p class="ms-Callout-title">Deadline</p>
+                                                    </div>
+                                                    <div class="ms-Callout-inner">
+                                                        <div class="ms-Callout-content">
+                                                            <p class="ms-Callout-subText">Sets a deadline by when updates to Office must be applied. The deadline is specified in Coordinated Universal Time (UTC).</p>
+                                                            <hr>
+                                                            <p class="ms-Callout-subText">
+                                                                Optional.
+                                                            </p>
+                                                            <p class="ms-Callout-subText">
+                                                                Sets a deadline by when updates to Office must be applied. The deadline is specified in Coordinated Universal Time (UTC). You can use <strong>Deadline</strong> with <strong>Target Version</strong> to make sure that Office is updated to a particular version by a particular date.
+                                                            </p>
+                                                            <br />
+                                                            <p class="ms-Callout-subText">
+                                                                We recommend that you set the deadline at least a week in the future to allow users time to install the updates. Prior to the deadline, users receive multiple reminders to install the updates. If Office isn’t updated by the deadline, users see a notification that the updates will be applied in 15 minutes. This gives users the opportunity to save the Office documents that they are working on and to close any Office programs that are open. If users don’t close the Office programs, the programs are closed automatically when the 15 minutes are up, which might result in data loss. After the Office programs are closed, the updates are applied automatically.
+                                                            </p>
+                                                            <br />
+                                                            <p class="ms-Callout-subText">
+                                                                The deadline only applies to one set of updates. If you want to use a deadline to make sure that Office is always up-to-date, you must change the deadline every time that a new update for Office is available. To use this attribute, Office must be running at least Service Pack 1 (version 15.0.4569.1507) and you must use at least version 15.0.4595.1000 of the Office Deployment Tool. If you use Group Policy and the <a href="http://go.microsoft.com/fwlink/p/?LinkID=257051">Office 2013 Administrative Template files (ADMX/ADML)</a>, you can set <strong>Deadline</strong> by using the <strong>Update Deadline</strong> policy setting. You can find this policy setting under Computer Configuration\Administrative Templates\Microsoft Office 2013 (Machine)\Updates.
+                                                            </p>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <i class="ms-DatePicker-event ms-Icon ms-Icon--event"></i>
+                                <input id="txtDeadline" class="ms-TextField-field" type="text" placeholder="Select a date&hellip;">
+                            </div>
+                            <div class="ms-DatePicker-monthComponents">
+                                <span class="ms-DatePicker-nextMonth js-nextMonth"><i class="ms-Icon ms-Icon--chevronRight"></i></span>
+                                <span class="ms-DatePicker-prevMonth js-prevMonth"><i class="ms-Icon ms-Icon--chevronLeft"></i></span>
+                                <div class="ms-DatePicker-headerToggleView js-showMonthPicker"></div>
+                            </div>
+                            <span class="ms-DatePicker-goToday js-goToday">Go to today</span>
+                            <div class="ms-DatePicker-monthPicker">
+                                <div class="ms-DatePicker-header">
+                                    <div class="ms-DatePicker-yearComponents">
+                                        <span class="ms-DatePicker-nextYear js-nextYear"><i class="ms-Icon ms-Icon--chevronRight"></i></span>
+                                        <span class="ms-DatePicker-prevYear js-prevYear"><i class="ms-Icon ms-Icon--chevronLeft"></i></span>
+                                    </div>
+                                    <div class="ms-DatePicker-currentYear js-showYearPicker"></div>
+                                </div>
+                                <div class="ms-DatePicker-optionGrid">
+                                    <span class="ms-DatePicker-monthOption js-changeDate" data-month="0">Jan</span>
+                                    <span class="ms-DatePicker-monthOption js-changeDate" data-month="1">Feb</span>
+                                    <span class="ms-DatePicker-monthOption js-changeDate" data-month="2">Mar</span>
+                                    <span class="ms-DatePicker-monthOption js-changeDate" data-month="3">Apr</span>
+                                    <span class="ms-DatePicker-monthOption js-changeDate" data-month="4">May</span>
+                                    <span class="ms-DatePicker-monthOption js-changeDate" data-month="5">Jun</span>
+                                    <span class="ms-DatePicker-monthOption js-changeDate" data-month="6">Jul</span>
+                                    <span class="ms-DatePicker-monthOption js-changeDate" data-month="7">Aug</span>
+                                    <span class="ms-DatePicker-monthOption js-changeDate" data-month="8">Sep</span>
+                                    <span class="ms-DatePicker-monthOption js-changeDate" data-month="9">Oct</span>
+                                    <span class="ms-DatePicker-monthOption js-changeDate" data-month="10">Nov</span>
+                                    <span class="ms-DatePicker-monthOption js-changeDate" data-month="11">Dec</span>
+                                </div>
+                            </div>
+                            <div class="ms-DatePicker-yearPicker">
+                                <div class="ms-DatePicker-decadeComponents">
+                                    <span class="ms-DatePicker-nextDecade js-nextDecade"><i class="ms-Icon ms-Icon--chevronRight"></i></span>
+                                    <span class="ms-DatePicker-prevDecade js-prevDecade"><i class="ms-Icon ms-Icon--chevronLeft"></i></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="controls">
+                            <button id="btSaveUpdates" class="ms-Button">
+                                Save
+                            </button>
+                            <button id="btRemovesUpdates" class="ms-Button">
+                                Remove
+                            </button>
+                        </div>
+
+                    </div>
+                    <!-- End Updates Panel -->
+                    <!-- Start Display Panel -->
+                    <div id="DisplayPanel" class="option-panel">
+                        <h1 class="ms-font-xxl">Display</h1>
+                        <div class="ms-Toggle">
+                            <table>
+                                <tr>
+                                    <td>
+                                        <label class="ms-Toggle-description">Display Level</label>
+                                    </td>
+                                    <td>
+                                        <i id="displayLevelInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('displayLevelInfo', this)"></i>
+                                        <div id="displayLevelInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none">
+                                            <div class="ms-Callout-main">
+                                                <div class="ms-Callout-header">
+                                                    <p class="ms-Callout-title">Display Level</p>
+                                                </div>
+                                                <div class="ms-Callout-inner">
+                                                    <div class="ms-Callout-content">
+                                                        <p class="ms-Callout-subText">Determines the user interface that the user sees when the operation is performed.</p>
+                                                        <hr>
+                                                        <p class="ms-Callout-subText">
+                                                            Optional.
+                                                        </p>
+                                                        <p class="ms-Callout-subText">
+                                                            If <strong>Level</strong> is set to <strong>None</strong>, the user sees no UI. No progress UI, completion screen, error dialog boxes, or first run automatic start UI are displayed. If <strong>Level</strong> is set to <strong>Full</strong>, the user sees the normal Click-to-Run user interface: Automatic start, application splash screen, and error dialog boxes.
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                            <input type="checkbox" id="displayLevel" class="ms-Toggle-input" />
+                            <label for="displayLevel" class="ms-Toggle-field">
+                                <span class="ms-Label ms-Label--off">None</span>
+                                <span class="ms-Label ms-Label--on">Full</span>
+                            </label>
+                        </div>
+                        <div class="ms-Toggle">
+                            <table>
+                                <tr>
+                                    <td>
+                                        <label class="ms-Toggle-description">Accept EULA</label>
+                                    </td>
+                                    <td>
+                                        <i id="acceptEULAInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('acceptEULAInfo', this)"></i>
+                                        <div id="acceptEULAInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none">
+                                            <div class="ms-Callout-main">
+                                                <div class="ms-Callout-header">
+                                                    <p class="ms-Callout-title">Display Level</p>
+                                                </div>
+                                                <div class="ms-Callout-inner">
+                                                    <div class="ms-Callout-content">
+                                                        <p class="ms-Callout-subText">We recommend that administrators set AcceptEULA to TRUE.</p>
+                                                        <hr>
+                                                        <p class="ms-Callout-subText">
+                                                            Optional.
+                                                        </p>
+                                                        <p class="ms-Callout-subText">
+                                                            If this attribute is set to <strong>TRUE</strong>, the user does not see a Microsoft Software License Terms dialog box. If this attribute is set to <strong>FALSE</strong> or is not set, the user may see a Microsoft Software License Terms dialog box. This attribute only applies if you install with the user's account. If you use System Center Configuration Manager or some other software distribution tool which uses the SYSTEM account to install, then the setting for this attribute is not applied.
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                            <input type="checkbox" id="acceptEULA" class="ms-Toggle-input" />
+                            <label for="acceptEULA" class="ms-Toggle-field">
+                                <span class="ms-Label ms-Label--off">False</span>
+                                <span class="ms-Label ms-Label--on">True</span>
+                            </label>
+                        </div>
+
+                        <div class="controls">
+                            <button id="btSaveDisplay" class="ms-Button">
+                                Save
+                            </button>
+                            <button id="btRemoveDisplay" class="ms-Button">
+                                Remove
+                            </button>
+                        </div>
+                    </div>
+                    <!-- End Display Panel -->
+                    <!-- Start Logging Panel -->
+                    <div id="LoggingPanel" class="option-panel">
+                        <h1 class="ms-font-xxl">Logging</h1>
+                        <div class="ms-Toggle">
+                            <div class="ms-Toggle">
+                                <table>
+                                    <tr>
+                                        <td>
+                                            <label class="ms-Toggle-description">Logging Level</label>
+                                        </td>
+                                        <td>
+                                            <i id="logLevelInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('logLevelInfo', this)"></i>
+                                            <div id="logLevelInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none">
+                                                <div class="ms-Callout-main">
+                                                    <div class="ms-Callout-header">
+                                                        <p class="ms-Callout-title">Log Level</p>
+                                                    </div>
+                                                    <div class="ms-Callout-inner">
+                                                        <div class="ms-Callout-content">
+                                                            <p class="ms-Callout-subText">Specifies options for the logging that Click-to-Run Setup performs.</p>
+                                                            <hr>
+                                                            <p class="ms-Callout-subText">
+                                                                Optional.
+                                                            </p>
+                                                            <p class="ms-Callout-subText">
+                                                                The default level is Standard.
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <input type="checkbox" id="loggingLevel" class="ms-Toggle-input" />
+                                <label for="loggingLevel" class="ms-Toggle-field">
+                                    <span class="ms-Label ms-Label--off">Off</span>
+                                    <span class="ms-Label ms-Label--on">Standard</span>
+                                </label>
+                            </div>
+                        </div>
+                        <table>
+                            <tr>
+                                <td>
+                                    <label class="ms-Label">Path</label>
+                                </td>
+                                <td>
+                                    <i id="logPathInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('logPathInfo', this)"></i>
+                                    <div id="logPathInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none">
+                                        <div class="ms-Callout-main">
+                                            <div class="ms-Callout-header">
+                                                <p class="ms-Callout-title">Log Path</p>
+                                            </div>
+                                            <div class="ms-Callout-inner">
+                                                <div class="ms-Callout-content">
+                                                    <p class="ms-Callout-subText">Specifies the fully qualified path of the folder that is used for the log file.</p>
+                                                    <hr>
+                                                    <p class="ms-Callout-subText">
+                                                        Optional.
+                                                    </p>
+                                                    <p class="ms-Callout-subText">
+                                                        You can use environment variables. The default is <strong>%temp%</strong>.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <div>
+                            <input id="txtLoggingUpdatePath" type="text" pattern="^\w:\\.*"
+                                   class="ms-TextField-field" placeholder="Local Path"
+                                   data-error="Local Path">
+                            <!--<span id="logupdatepathSignal" class="glyphicon form-control-feedback" aria-hidden="true"></span>-->
+                        </div>
+
+                        <div style="margin-top:10px">
+                            <button id="btSaveLogging" class="ms-Button">
+                                Save
+                            </button>
+                            <button id="btRemoveLogging" class="ms-Button">
+                                Remove
+                            </button>
+                        </div>
+                    </div>
+                    <!-- End Logging Panel -->
+                    <!-- Start Properties Panel -->
+                    <div id="PropertiesPanel" class="option-panel">
+                        <h1 class="ms-font-xxl">Properties</h1>
+                        <div class="ms-Toggle">
+                            <table>
+                                <tr>
+                                    <td>
+                                        <label class="ms-Toggle-description">AutoActivate</label>
+                                    </td>
+                                    <td>
+                                        <i id="aaInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('aaInfo', this)"></i>
+                                        <div id="aaInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none">
+                                            <div class="ms-Callout-main">
+                                                <div class="ms-Callout-header">
+                                                    <p class="ms-Callout-title">AUTOACTIVATE</p>
+                                                </div>
+                                                <div class="ms-Callout-inner">
+                                                    <div class="ms-Callout-content">
+                                                        <p class="ms-Callout-subText">Specified products will attempt to activate automatically.</p>
+                                                        <hr>
+                                                        <p class="ms-Callout-subText">
+                                                            If <strong>AUTOACTIVATE</strong> is set to 1, the specified products will attempt to activate automatically. If <strong>AUTOACTIVATE</strong> is not set, the user may see the Activation Wizard UI.
+                                                        </p>
+                                                        <br />
+                                                        <p class="ms-Callout-subText">
+                                                            <strong>Note:</strong> Office 365 Click-to-Run products are already set to activate automatically. You must not set <strong>AUTOACTIVATE</strong> for Office 365 Click-to-Run products. This setting applies only to perpetual retail versions of Click-to-Run products.
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                            <input type="checkbox" id="autoActivate" class="ms-Toggle-input" />
+                            <label for="autoActivate" class="ms-Toggle-field">
+                                <span class="ms-Label ms-Label--off">No</span>
+                                <span class="ms-Label ms-Label--on">Yes</span>
+                            </label>
+                        </div>
+                        <div class="ms-Toggle">
+                            <table>
+                                <tr>
+                                    <td>
+                                        <label class="ms-Toggle-description">ForceAppShutdown</label>
+                                    </td>
+                                    <td>
+                                        <i id="fasInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('fasInfo', this)"></i>
+                                        <div id="fasInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none">
+                                            <div class="ms-Callout-main">
+                                                <div class="ms-Callout-header">
+                                                    <p class="ms-Callout-title">FORCEAPPSHUTDOWN</p>
+                                                </div>
+                                                <div class="ms-Callout-inner">
+                                                    <div class="ms-Callout-content">
+                                                        <p class="ms-Callout-subText"> Forces the applications that block the action to be shut down.</p>
+                                                        <hr>
+                                                        <p class="ms-Callout-subText">
+                                                            An installation or removal action may be blocked if Office applications are running. Normally, such cases would start a process killer UI.
+                                                            Administrators can set <strong>FORCEAPPSHUTDOWN</strong> value to <strong>TRUE</strong> to prevent dependence
+                                                            on user interaction. When <strong>FORCEAPPSHUTDOWN</strong> is set to <strong>TRUE</strong>, any applications
+                                                            that block the action will be shut down. Data loss may occur. When <strong>FORCEAPPSHUTDOWN</strong> is set to
+                                                            <strong>FALSE</strong> (default), the action may fail if Office applications are running.
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                            <input type="checkbox" id="forceAppShutdown" class="ms-Toggle-input" />
+                            <label for="forceAppShutdown" class="ms-Toggle-field">
+                                <span class="ms-Label ms-Label--off">False</span>
+                                <span class="ms-Label ms-Label--on">True</span>
+                            </label>
+                        </div>
+                        <div class="ms-Toggle">
+                            <table>
+                                <tr>
+                                    <td>
+                                        <label class="ms-Toggle-description">SharedComputerLicensing</label>
+                                    </td>
+                                    <td>
+                                        <i id="sclInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('sclInfo', this)"></i>
+                                        <div id="sclInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none">
+                                            <div class="ms-Callout-main">
+                                                <div class="ms-Callout-header">
+                                                    <p class="ms-Callout-title">SharedComputerLicensing</p>
+                                                </div>
+                                                <div class="ms-Callout-inner">
+                                                    <div class="ms-Callout-content">
+                                                        <p class="ms-Callout-subText"> Forces the applications that block the action to be shut down.</p>
+                                                        <hr>
+                                                        <p class="ms-Callout-subText">Optional. </p>
+                                                        <p class="ms-Callout-subText">
+                                                            Set <strong id="STRONG_3">SharedComputerLicensing</strong> to 1 if you deploy Office 365 ProPlus to shared computers by using Remote Desktop Services.
+                                                            For more information, see
+                                                            <a href="https://technet.microsoft.com/en-us/library/dn782860.aspx">Overview of shared computer activation for Office 365 ProPlus</a>.
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                            <input type="checkbox" id="sharedComputerLicensing" class="ms-Toggle-input" />
+                            <label for="sharedComputerLicensing" class="ms-Toggle-field">
+                                <span class="ms-Label ms-Label--off">False</span>
+                                <span class="ms-Label ms-Label--on">True</span>
+                            </label>
+                        </div>
+
+                        <table>
+                            <tr>
+                                <td>
+                                    <label class="ms-Label">PACKAGEGUID</label>
+                                </td>
+                                <td>
+                                    <i id="PACKAGEGUIDInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('PACKAGEGUIDInfo', this)"></i>
+                                    <div id="PACKAGEGUIDInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none">
+                                        <div class="ms-Callout-main">
+                                            <div class="ms-Callout-header">
+                                                <p class="ms-Callout-title">PACKAGEGUID</p>
+                                            </div>
+                                            <div class="ms-Callout-inner">
+                                                <div class="ms-Callout-content">
+                                                    <p class="ms-Callout-subText">App-V Package ID.</p>
+                                                    <hr>
+                                                    <p class="ms-Callout-subText">Optional. </p>
+                                                    <p class="ms-Callout-subText">
+                                                        By default, all Office 2013 App-V packages created by using the Office Deployment Tool share the same App-V Package ID. Administrators can use <strong>PACKAGEGUID</strong> to specify a different Package ID. You can only use the following characters for <strong>PACKAGEGUID</strong>:
+                                                    </p>
+                                                    <ul>
+                                                        <li>
+                                                            <p class="ms-Callout-subText">
+                                                                0, 1, 2, 3, 4, 5, 6, 7, 8, 9
+                                                            </p>
+                                                        </li>
+                                                        <li>
+                                                            <p class="ms-Callout-subText">
+                                                                A, B, C, D, E, F
+                                                            </p>
+                                                        </li>
+                                                    </ul>
+                                                    <p class="ms-Callout-subText">
+                                                        If you use any other characters, the App-V package is created with the default Package ID. Also, <strong>PACKAGEGUID</strong> needs to be 25 characters in length and be separated into 5 sections, with each section separated by a dash. The sections need to have the following number of characters: 8, 4, 4, 4, and 12. For example, 12345678-ABCD-1234-ABCD-1234567890AB is a valid value for <strong>PACKAGEGUID</strong>. This allows you to publish multiple App-V packages of Office 2013 to an App-V Management Server. But, this doesn’t enable you to deploy more than one Office 2013 App-V package to a single computer.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                        <div>
+                            <input id="txtPACKAGEGUID" type="text" pattern="^.{8}-.{4}-.{4}-.{4}-.{12}$"
+                                   class="ms-TextField-field" placeholder="XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
+                                   data-error="This must be a valid APP-V Package Guid" maxlength="36">
+                            <!--<span id="PACKAGEGUIDSignal" class="glyphicon form-control-feedback" aria-hidden="true"></span>-->
+                        </div>
+                        <div style="margin-top:10px">
+                            <button id="btSaveProperties" class="ms-Button">
+                                Save
+                            </button>
+                            <button id="btRemoveProperties" class="ms-Button">
+                                Remove
+                            </button>
+                        </div>
+                    </div>
+                    <!-- End Properties Panel -->
+                    <!-- Start Templates Panel -->
+                    <div id="TemplatesPanel" class="option-panel">
+                        <h1 class="ms-font-xxl">Templates</h1>
+                        <div class="ms-Table">
+                            <div class="ms-Table-row">
+                                <span class="ms-Table-cell">Templates</span>
+                            </div>
+                            <div class="ms-Table-row">
+                                <span class="ms-Table-cell" id="proPlusRetail" href="./templates/0365ProPlusRetail.xml" onclick="setTemplate(this)">Office 365 ProPlus Retail</span>
+                            </div>
+                            <div class="ms-Table-row">
+                                <span class="ms-Table-cell" id="proPlusBusiness" href="./templates/0365ProPlusBusiness.xml" onclick="setTemplate(this)">Office 365 ProPlus Business</span>
+                            </div>
+                            <div class="ms-Table-row">
+                                <span class="ms-Table-cell" id="proPlusRetailVisio" href="./templates/O365ProPlusRetailwVisio.xml" onclick="setTemplate(this)">Office 365 ProPlus Retail with Visio</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End Templates Panel -->
+                </div>
+                <div class="ms-Grid-col ms-u-md12 ms-u-lg12 ms-u-xl7 ms-u-sm12">
+                    <div class="ms-CommandBar">
+                        <div class="ms-CommandBar-sideCommands">
+                            <div class="ms-CommandBarItem">
+                                <div class="ms-CommandBarItem-linkWrapper">
+                                    <div class="ms-CommandBarItem-link" onclick="sendMail()">
+                                        <span class="ms-CommandBarItem-icon ms-Icon ms-Icon--mail"></span>
+                                        <span class="ms-CommandBarItem-commandText ms-font-m ms-font-weight-regular">Email</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="ms-CommandBarItem">
+                                <div class="ms-CommandBarItem-linkWrapper">
+                                    <div class="ms-CommandBarItem-link" onclick="clearXml();">
+                                        <span class="ms-CommandBarItem-icon ms-Icon ms-Icon--reload"></span>
+                                        <span class="ms-CommandBarItem-commandText ms-font-m ms-font-weight-regular">Reset</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="ms-CommandBarItem">
+                                <div class="ms-CommandBarItem-linkWrapper" onclick="clickUpload();">
+                                    <div class="ms-CommandBarItem-link">
+                                        <span class="ms-CommandBarItem-icon ms-Icon ms-Icon--upload"></span>
+                                        <span class="ms-CommandBarItem-commandText ms-font-m ms-font-weight-regular">Upload</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="ms-CommandBarItem">
+                                <div class="ms-CommandBarItem-linkWrapper" onclick="download()">
+                                    <div class="ms-CommandBarItem-link">
+                                        <span class="ms-CommandBarItem-icon ms-Icon ms-Icon--download"></span>
+                                        <span class="ms-CommandBarItem-commandText ms-font-m ms-font-weight-regular">Download</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ms-CommandBar-mainArea">
+                            <div class="custom-cmditem">
+                                <span class="ms-font-l ms-font-weight-regular" style="height:100%;width:100%;margin:0px 0px 0px 15px;">XML Viewer</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ms-TextField" style="margin-top:10px;">
+                        <textarea id="xmlText" class="ms-TextField-field ms-TextField--multiline" style="height:800px;font-size: 25px"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <form id="fileuploadform" style="width:200px;display: none;width: 100px;">
+            <input type="file" id="fileInput" size="10">
+        </form>
+                
+    </div>
+    <div id="aboutDialog" class="ms-Dialog" style="display:none;position:fixed;top:-100%;width:100%">
+        <div class="ms-Overlay"></div>
+        <div class="ms-Dialog-main">
+            <button class="ms-Dialog-button ms-Dialog-button--close" onclick="hideAbout()">
+                <i class="ms-Icon ms-Icon--x"></i>
+            </button>
+            <div class="ms-Dialog-header">
+                <p class="ms-Dialog-title">Office Click-To-Run Configuration XML Editor</p>
+            </div>
+            <div class="ms-Dialog-inner">
+                <div class="ms-Dialog-content">
+                    <p class="ms-Dialog-subText">Online Editor for the Office ProPlus Click-To-Run Configurtion XML file</p>
+                    <hr>
+                    <p class="ms-Dialog-subText">
+                        This page provides a graphical method to generate and edit the Office Click-to-Run configuration.xml file
+                    </p>
+                    <br />
+                    <p class="ms-Dialog-subText">
+                        <a href="https://technet.microsoft.com/en-us/library/JJ219426.aspx">Reference for Click-to-Run configuration.xml file</a>
+                    </p>
+                    <br />
+                    <p class="ms-Dialog-subText">
+                        The Click-to-Run for Office 365 Configuration.xml file is used to specify Click-to-Run installation and update options. The
+                        <a href="https://technet.microsoft.com/en-us/library/jj219422.aspx" id="A_2">Office Deployment Tool</a> is a downloadable tool
+                        that includes a sample Configuration.xml file. Administrators can modify the Configuration.xml file to configure installation options
+                        for Click-to-Run for Office 365 products.
+                    </p>
+                    <br />
+                    <p class="ms-Dialog-subText">
+                        The Click-to-Run Configuration.xml file is a necessary component of the Office Deployment Tool. Click-to-Run customizations are performed
+                        primarily by starting the Office Deployment Tool and providing a custom Configuration.xml file. The Office Deployment Tool performs the tasks
+                        that are specified by using the optional properties in the configuration file. For the Office 2013 release of the product, administrators can
+                        download the Office Deployment Tool from the <a href="http://go.microsoft.com/fwlink/p/?LinkId=282642" id="A_2">Microsoft Download Center</a>.
+                    </p>
+                </div>
+                <div class="ms-Dialog-actions">
+                    <div class="ms-Dialog-actionsRight">
+                        <button class="ms-Dialog-action ms-Button" onclick="hideAbout()">
+                            <span class="ms-Button-label">Close</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.bundle.min.js"></script>
+    <script type="text/javascript" src="./Scripts/FileSaver.js"></script>
+    <script type="text/javascript" src="./Scripts/new-main.js"></script>
+    <script type="text/javascript" src="./Scripts/jquery.fabric.min.js"></script>
+    <script type="text/javascript" src="./components/Dropdown/Jquery.Dropdown.js"></script>
+    <script>
+    $(document).ready(function () {
+        if ($('.ms-FilePicker').length > 0) {
+            $('.ms-FilePicker').css({
+                "position": "absolute !important"
+            });
+
+            $('.ms-Dropdown').FilePicker();
+            $('.ms-Toggle').FilePicker();
+            $('.ms-Table').FilePicker();
+            $('.ms-DatePicker').FilePicker();
+        } else {
+            if ($.fn.Dropdown) {
+                $('.ms-Dropdown').Dropdown();
+            }
+            if ($.fn.Toggle) {
+                $('.ms-Toggle').Toggle();
+            }
+            if ($.fn.Table) {
+                $('.ms-Table').Table();
+            }
+            if ($.fn.DatePicker) {
+                $('.ms-DatePicker').DatePicker();
+            }
+        }
+
+        if (fabric && fabric['Dropdown']) {
+            var component, componentHolder;
+            componentHolder = document.querySelector('.component-holder');
+
+            if (componentHolder) {
+                component = new fabric.Spinner(componentHolder);
+            }
+        }
+        if (fabric && fabric['Toggle']) {
+            var component, componentHolder;
+            componentHolder = document.querySelector('.component-holder');
+
+            if (componentHolder) {
+                component = new fabric.Spinner(componentHolder);
+            }
+        }
+        if (fabric && fabric['Table']) {
+            var component, componentHolder;
+            componentHolder = document.querySelector('.component-holder');
+
+            if (componentHolder) {
+                component = new fabric.Spinner(componentHolder);
+            }
+        }
+        if (fabric && fabric['DatePicker']) {
+            var component, componentHolder;
+            componentHolder = document.querySelector('.component-holder');
+
+            if (componentHolder) {
+                component = new fabric.Spinner(componentHolder);
+            }
+        }
+    });
+
+    function setPanel(panelId, buttonId) {
+        $(".option-panel").removeClass('visible');
+        $(".navrow").removeClass('is-selected');
+        $("#" + buttonId).addClass('is-selected');
+        $("#" + panelId).addClass('visible');
+    }
+    
+
+    </script>
+</body>
+</html>
