@@ -456,7 +456,7 @@ $(document).ready(function () {
     $(window).scroll(function() {
         scrollXmlEditor();
     });
-    
+
     $('#the-basics .typeahead').typeahead({
         hint: true,
         highlight: true,
@@ -2170,13 +2170,6 @@ function hideInfo(calloutId) {
 }
 
 function showAbout() {
-    //var pos = $("#" + icon.id).position();
-    //var iconWidth = $("#" + icon.id).width();
-    //var iconHeight = $("#" + icon.id).height();
-    //var nTop = pos.top - 60;
-    //var nLeft = pos.left + iconWidth - 5;
-    //$("#" + calloutId)[0].style.top = nTop.toString() + "px";
-    //$("#" + calloutId)[0].style.left = nLeft.toString() + "px";
     $("#aboutDialog")[0].style.display = 'block';
 }
 
@@ -2189,6 +2182,24 @@ function IsGuid(value) {
     return rGx.exec(value) != null;
 }
 
+function setTemplate(template) {
+    var url = document.getElementById(template.id).getAttribute("href");
+        
+    var rawFile = new XMLHttpRequest();
+    rawFile.open("GET", url, true);
+    rawFile.onreadystatechange = function () {
+        if (rawFile.readyState === 4) {
+            var allText = rawFile.responseText;
+            if (allText) {
+                $('textarea#xmlText').val(allText);
+                loadUploadXmlFile();
+            }
+        }
+    }
+
+    rawFile.send();
+
+}
 
 var versions = [
 '15.0.4745.1001',
