@@ -684,13 +684,22 @@ Process
 
 	$ID = $GPO.Id;
 	$domain = [string]($GPO.DomainName);
-	$Paths = [string]"$env:windir\SYSVOL\Sysvol\$domain\Policies\{$ID}\User\Registry.pol", 
-                     "$env:windir\SYSVOL\Sysvol\$domain\Policies\{$ID}\Machine\Registry.pol";
+   
+    $sysvolDir = (Get-ItemProperty -Path hklm:\SYSTEM\CurrentControlSet\Services\Netlogon\Parameters).SysVol
+
+	$Paths = [string]"$sysvolDir\$domain\Policies\{$ID}\User\Registry.pol", 
+                     "$sysvolDir\$domain\Policies\{$ID}\Machine\Registry.pol";
+    $CentralPolicyDefinitionDirectory = "$sysvolDir\$domain\Policies\PolicyDefinitions"
 	$PolicyDefinitionDirectory = "$env:windir\PolicyDefinitions"
 
 	#Get all the admx files associated with the target version
     $admxPat = $TargetVersion.Substring(0,2);
-	$admxFiles = dir -Path $PolicyDefinitionDirectory | ? Name -like "*$admxPat*";  
+
+    $admxFiles = dir -Path $CentralPolicyDefinitionDirectory | ? Name -like "*$admxPat*";  
+
+    if (!($admxFiles)) {
+	    $admxFiles = dir -Path $PolicyDefinitionDirectory | ? Name -like "*$admxPat*";  
+    }
 
 	#Get all the policy definitions from the admx files
 	$ExistingKeys = $null; 
@@ -851,4 +860,3 @@ Process
 }
 
 Copy-OfficeGPOSettings -SourceGPOName $SourceGPOName -TargetGPOName $TargetGPOName -SourceVersion $SourceVersion -TargetVersion $TargetVersion
-
