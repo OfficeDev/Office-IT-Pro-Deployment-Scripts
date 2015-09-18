@@ -207,6 +207,7 @@
     <Content Include="components\Toggle\Toggle.html" />
     <Content Include="components\Toggle\Toggle.min.css" />
     <Content Include="components\Toggle\Toggle.TextLeft.html" />
+    <Content Include="images\github24.png" />
     <Content Include="images\info.png" />
     <Content Include="images\Office.png" />
     <Content Include="index.html" />
