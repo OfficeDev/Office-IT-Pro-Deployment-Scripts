@@ -798,8 +798,6 @@ namespace TJX.PolFileEditor
 '@;
 }
 
-
-
 Process
 {
     Import-Module ServerManager
@@ -827,8 +825,10 @@ Process
 		}
 	}
 
-	#Get Policy File reader object
-	Add-Type -TypeDefinition $sourceCode -ReferencedAssemblies $assemblies -ErrorAction STOP;
+    try {
+	      #Get Policy File reader object
+	  Add-Type -TypeDefinition $sourceCode -ReferencedAssemblies $assemblies -ErrorAction SilentlyContinue;
+    } catch { }
 
     $sourceCount=0;
     $targetCount=0;
@@ -870,7 +870,9 @@ Process
         if ($entries_16) { $targetCount += $entries_16.Count; }
 
         $i=0
-         Write-Progress -Activity "Checking Group Policy Settings: $ConfigType" -status "Copying Settings..." -percentComplete ($i / $totalSettings*100)
+        if($i -gt 0) {
+           Write-Progress -Activity "Checking Group Policy Settings: $ConfigType" -status "Copying Settings..." -percentComplete ($i / $totalSettings*100)
+        }
 		#Find and copy each Policy but only if it doesn't already exist in the target location
 
         $totalSettings = $entries_15.Count;
