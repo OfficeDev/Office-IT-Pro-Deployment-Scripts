@@ -35,14 +35,14 @@ The Name of the GPO that you wish to transfer office policies to. Defaults to 16
 The version number of the office settings to copy
 
 .PARAMETER TargetVersion
-THe version number of the office settings to set
+The version number of the office settings to set
 
 .Example
-./Copy-OfficePolicies -SourceGPOName "Office Settings"
+./Copy-OfficeGPOSettings -SourceGPOName "Office Settings"
 Default copy the office 15.0 (2013) policies within 'Office Settings' to office 16.0 (2016) policies within 'Office Settings'
 
 .Example
-./Copy-OfficePolicies -SourceGPOName "Office Settings" -SourceVersion "14.0" -TargetVersion "15.0"
+./Copy-OfficeGPOSettings -SourceGPOName "Office Settings" -SourceVersion "14.0" -TargetVersion "15.0"
 Copy the office 14.0 (2010) policies within 'Office Settings' to office 15.0 (2013) policies within 'Office Settings'
 
 .Inputs
@@ -51,7 +51,7 @@ System.String
 System.String
 
 .Notes
-Additional explaination. Long and indepth examples should also go here.
+Additional explanation. Long and indepth examples should also go here.
 
 
 .Link
@@ -798,8 +798,6 @@ namespace TJX.PolFileEditor
 '@;
 }
 
-
-
 Process
 {
     Import-Module ServerManager
@@ -827,8 +825,10 @@ Process
 		}
 	}
 
-	#Get Policy File reader object
-	Add-Type -TypeDefinition $sourceCode -ReferencedAssemblies $assemblies -ErrorAction STOP;
+    try {
+	      #Get Policy File reader object
+	  Add-Type -TypeDefinition $sourceCode -ReferencedAssemblies $assemblies -ErrorAction SilentlyContinue;
+    } catch { }
 
     $sourceCount=0;
     $targetCount=0;
@@ -869,11 +869,13 @@ Process
         if ($entries_15) { $sourceCount += $entries_15.Count; }
         if ($entries_16) { $targetCount += $entries_16.Count; }
 
-        $totalSettings = $entries_15.Count;
-        
         $i=0
-        Write-Progress -Activity "Checking Group Policy Settings: $ConfigType" -status "Copying Settings..." -percentComplete ($i / $totalSettings*100)
+        if($i -gt 0) {
+           Write-Progress -Activity "Checking Group Policy Settings: $ConfigType" -status "Copying Settings..." -percentComplete ($i / $totalSettings*100)
+        }
 		#Find and copy each Policy but only if it doesn't already exist in the target location
+
+        $totalSettings = $entries_15.Count;
 
 		foreach($entry in $entries_15) 
 		{
