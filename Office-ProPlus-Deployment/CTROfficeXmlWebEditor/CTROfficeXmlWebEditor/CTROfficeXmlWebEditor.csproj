@@ -214,7 +214,7 @@
     <Content Include="Scripts\FileSaver.js" />
     <Content Include="Scripts\FileSaver.min.js" />
     <Content Include="Scripts\jquery.fabric.min.js" />
-    <Content Include="Scripts\main.js" />
+    <Content Include="Scripts\new-main.js" />
     <Content Include="Scripts\ui-bootstrap-tpls-0.13.2.min.js" />
     <Content Include="Scripts\vkbeautify.0.99.00.beta.js" />
     <Content Include="stylesheets\fabric.css" />
