@@ -56,7 +56,6 @@ begin {
  
 }
 
-
 process {
 
    if (!($Credentials)) {
@@ -64,18 +63,42 @@ process {
    }
 
    if ($Credentials) {
-       $Session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri https://outlook.office365.com/powershell-liveid/ -Credential $Credentials -Authentication Basic -AllowRedirection -WarningAction SilentlyContinue
+       $Session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri https://outlook.office365.com/powershell-liveid/ -Credential $Credentials -Authentication Basic -AllowRedirection -WarningAction SilentlyContinue -ErrorAction Stop
 
+       Import-PSSession $Session -ErrorAction Stop -WarningAction SilentlyContinue -AllowClobber | Out-Null
 
        Write-Host
-       Write-Host "Creating Access Rule to explicitly allow Outlook Mobile Access..."
+       Write-Host "Disabling OWA for Mobile Devices: " -NoNewline
+       Get-Mailbox | Set-CasMailbox -OWAforDevicesEnabled $False -WarningAction SilentlyContinue
+       Write-Host "Complete"
 
-       New-ActiveSyncDeviceAccessRule -Characteristic DeviceModel -QueryString "Outlook for iOS and Android" -AccessLevel Allow
-       Set-ActiveSyncOrganizationSettings -DefaultAccessLevel Block
+       Write-Host "Creating Access Rule to explicitly allow Outlook Mobile Access: " -NoNewline
 
-       Write-Host "Disabling all other Mobile Device access for all Mailboxes: Complete"
+       $ruleExists = $false
+       $existingRules = Get-ActiveSyncDeviceAccessRule | where { $_.QueryString -eq "Outlook for iOS and Android" -and $_.AccessLevel -eq "Allow" -and $_.Characteristic -eq "DeviceModel" }
+       if ($existingRules) {
+          $ruleExists = $true
+       }
 
-       Remove-PSSession $Session
+       if (!($ruleExists)) {
+          New-ActiveSyncDeviceAccessRule -Characteristic DeviceModel -QueryString "Outlook for iOS and Android" -AccessLevel Allow | Out-Null
+          Write-Host "Complete"
+       } else {
+          Write-Host "Already Exists"
+       }
+
+       Write-Host "Setting ActiveSync Mobile Device Access to 'Block': " -NoNewline
+
+       $asOrgSettings = Get-ActiveSyncOrganizationSettings
+
+       if ($asOrgSettings.DefaultAccessLevel -ne "Block") {
+           Set-ActiveSyncOrganizationSettings -DefaultAccessLevel Block -WarningAction SilentlyContinue | Out-Null
+           Write-Host "Complete"
+       } else {
+          Write-Host "Already Set"
+       }
+
+       #Remove-PSSession $Session
    }
 }
 
