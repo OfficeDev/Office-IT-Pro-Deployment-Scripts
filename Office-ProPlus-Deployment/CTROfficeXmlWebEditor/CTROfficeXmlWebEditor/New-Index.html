@@ -66,6 +66,7 @@
         .option-panel{
             display:none;
         }
+
         .visible{
             display:block;
         }
@@ -1280,23 +1281,8 @@
                 <div id="xmlSection" class="ms-Grid-col ms-u-md12 ms-u-lg12 ms-u-xl7 ms-u-sm12" >
                     <div id="xmlSec" style="border-left: solid 1px #e5e3e3;height:500px;">
                         <div class="ms-CommandBar">
-                            <div class="ms-CommandBar-sideCommands">
-                                <div class="ms-CommandBarItem">
-                                    <div class="ms-CommandBarItem-linkWrapper">
-                                        <div class="ms-CommandBarItem-link" onclick="sendMail()">
-                                            <span class="ms-CommandBarItem-icon ms-Icon ms-Icon--mail"></span>
-                                            <span class="ms-CommandBarItem-commandText ms-font-m ms-font-weight-regular">Email</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="ms-CommandBarItem">
-                                    <div class="ms-CommandBarItem-linkWrapper">
-                                        <div class="ms-CommandBarItem-link" onclick="clearXml();">
-                                            <span class="ms-CommandBarItem-icon ms-Icon ms-Icon--reload"></span>
-                                            <span class="ms-CommandBarItem-commandText ms-font-m ms-font-weight-regular">Reset</span>
-                                        </div>
-                                    </div>
-                                </div>
+                            
+                            <div class="ms-CommandBar-sideCommands" style="float: left;text-align: left;">
                                 <div class="ms-CommandBarItem">
                                     <div class="ms-CommandBarItem-linkWrapper" onclick="clickUpload();">
                                         <div class="ms-CommandBarItem-link">
@@ -1313,12 +1299,25 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="ms-CommandBar-mainArea">
-                                <div class="custom-cmditem">
-                                    <span class="ms-font-l ms-font-weight-regular" style="height:100%;width:100%;margin:0px 0px 0px 15px;">XML Viewer</span>
+                                <div class="ms-CommandBarItem">
+                                    <div class="ms-CommandBarItem-linkWrapper">
+                                        <div class="ms-CommandBarItem-link" onclick="clearXml();">
+                                            <span class="ms-CommandBarItem-icon ms-Icon ms-Icon--reload"></span>
+                                            <span class="ms-CommandBarItem-commandText ms-font-m ms-font-weight-regular">Reset</span>
+                                        </div>
+                                    </div>
                                 </div>
+                                <div class="ms-CommandBarItem">
+                                    <div class="ms-CommandBarItem-linkWrapper">
+                                        <div class="ms-CommandBarItem-link" onclick="sendMail()" style="position: relative">
+                                            <span class="ms-CommandBarItem-icon ms-Icon ms-Icon--mail"></span>
+                                            <span class="ms-CommandBarItem-commandText ms-font-m ms-font-weight-regular">Email</span>
+                                        </div>
+                                    </div>
+                                </div>
+
                             </div>
+
                         </div>
                         <div class="ms-TextField" style="margin-top:10px;">
                             <textarea id="xmlText" class="ms-TextField-field ms-TextField--multiline"
