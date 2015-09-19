@@ -218,7 +218,7 @@ $(document).ready(function () {
 
     $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
         scrollXmlEditor();
-
+    
         $.cookie("activeTab", e.target);
 
         var mainTabs = document.getElementById("myTab");
@@ -803,10 +803,11 @@ function changeSelectedLanguage() {
 
     if (addNode) {
         var productNode = getProductNode(addNode, selectedProduct);
-
-        var langNode = getLanguageNode(productNode, selectLanguage);
-        if (langNode) {
-            $("#btAddLanguage").prop("disabled", true);
+        if (productNode) {
+            var langNode = getLanguageNode(productNode, selectLanguage);
+            if (langNode) {
+                $("#btAddLanguage").prop("disabled", true);
+            }
         }
     }
 }
@@ -870,7 +871,9 @@ function resizeWindow() {
         rightPaneHeight = rightPaneHeight + 50;
     }
 
-    $("#xmlText").height(rightPaneHeight - 90);
+    $("#xmlText").height(rightPaneHeight - 30);
+    $("#menuSec").height(bodyHeight - 50);
+    $("#xmlSec").height(bodyHeight - 50);
 
     setScrollBar();
 }
@@ -984,6 +987,8 @@ function odtAddProduct(xmlDoc) {
         $("#btRemoveProduct").prop("disabled", false);
         $("#btAddLanguage").prop("disabled", true);
     }
+
+    
 }
 
 function odtRemoveProduct(xmlDoc) {

@@ -29,6 +29,7 @@
     <script type="text/javascript" src="./components/CommandBar/Jquery.CommandBar.js"></script>
     <script type="text/javascript" src="components/Callout/Jquery.Callout.js"></script>
     <script type="text/javascript" src="./Scripts/vkbeautify.0.99.00.beta.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.8.0/highlight.min.js"></script>
 
     <style type="text/css">
         body {
@@ -142,31 +143,50 @@
     <div id="componentWrapper">
         <div class="ms-Grid">
             <div class="ms-Grid-row">
-                <div class="ms-Grid-col ms-u-md10 ms-u-lg2 ms-u-xl2 ms-u-sm10">
-                    <div class="ms-Table">
-                        <div class="ms-Table-row">
-                            <span class="ms-font-xl">Section</span>
+                <div class="ms-Grid-col ms-u-md10 ms-u-lg2 ms-u-xl2 ms-u-sm10" >
+                    <div id="menuSec" style="border-right: solid 1px #e5e3e3;height:500px;">
+                        
+                        <br/>
+
+                        <div class="ms-Table">
+                            <div class="ms-Table-row">
+                                <span class="ms-font-xl">Version</span>
+                            </div>
+                            <div id="office2013Select" class="ms-Table-row is-selected navrowversion">
+                                <span class="ms-Table-cell" onclick="setVersionPanel('office2013Select')">Office ProPlus 2013</span>
+                            </div>
+                            <div id="office2016Select" class="ms-Table-row navrowversion">
+                                <span class="ms-Table-cell" onclick="setVersionPanel('office2016Select')">Office ProPlus 2016</span>
+                            </div>
                         </div>
-                        <div id="addProductRow" class="ms-Table-row  is-selected navrow">
-                            <span class="ms-Table-cell" onclick="setPanel('AddProductPanel', 'addProductRow')">Add Product</span>
-                        </div>
-                        <div id="removeProductRow" class="ms-Table-row navrow">
-                            <span class="ms-Table-cell" onclick="setPanel('RemoveProductPanel', 'removeProductRow')">Remove Product</span>
-                        </div>
-                        <div id="updatesRow" class="ms-Table-row navrow">
-                            <span class="ms-Table-cell" onclick="setPanel('UpdatesPanel', 'updatesRow')">Updates</span>
-                        </div>
-                        <div id="displayRow" class="ms-Table-row navrow">
-                            <span class="ms-Table-cell" onclick="setPanel('DisplayPanel', 'displayRow')">Display</span>
-                        </div>
-                        <div id="loggingRow" class="ms-Table-row navrow">
-                            <span class="ms-Table-cell" onclick="setPanel('LoggingPanel', 'loggingRow')">Logging</span>
-                        </div>
-                        <div id="propertiesRow" class="ms-Table-row navrow">
-                            <span class="ms-Table-cell" onclick="setPanel('PropertiesPanel', 'propertiesRow')">Properties</span>
-                        </div>
-                        <div id="templatesRow" class="ms-Table-row navrow">
-                            <span class="ms-Table-cell" onclick="setPanel('TemplatesPanel', 'templatesRow')">Templates</span>
+                        
+                        <br/>
+
+                        <div class="ms-Table">
+                            <div class="ms-Table-row">
+                                <span class="ms-font-xl">Section</span>
+                            </div>
+                            <div id="addProductRow" class="ms-Table-row  is-selected navrow">
+                                <span class="ms-Table-cell" onclick="setPanel('AddProductPanel', 'addProductRow')">Add Product</span>
+                            </div>
+                            <div id="removeProductRow" class="ms-Table-row navrow">
+                                <span class="ms-Table-cell" onclick="setPanel('RemoveProductPanel', 'removeProductRow')">Remove Product</span>
+                            </div>
+                            <div id="updatesRow" class="ms-Table-row navrow">
+                                <span class="ms-Table-cell" onclick="setPanel('UpdatesPanel', 'updatesRow')">Updates</span>
+                            </div>
+                            <div id="displayRow" class="ms-Table-row navrow">
+                                <span class="ms-Table-cell" onclick="setPanel('DisplayPanel', 'displayRow')">Display</span>
+                            </div>
+                            <div id="loggingRow" class="ms-Table-row navrow">
+                                <span class="ms-Table-cell" onclick="setPanel('LoggingPanel', 'loggingRow')">Logging</span>
+                            </div>
+                            <div id="propertiesRow" class="ms-Table-row navrow">
+                                <span class="ms-Table-cell" onclick="setPanel('PropertiesPanel', 'propertiesRow')">Properties</span>
+                            </div>
+                            <div id="templatesRow" class="ms-Table-row navrow">
+                                <span class="ms-Table-cell" onclick="setPanel('TemplatesPanel', 'templatesRow')">Templates</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1257,50 +1277,53 @@
                     </div>
                     <!-- End Templates Panel -->
                 </div>
-                <div class="ms-Grid-col ms-u-md12 ms-u-lg12 ms-u-xl7 ms-u-sm12">
-                    <div class="ms-CommandBar">
-                        <div class="ms-CommandBar-sideCommands">
-                            <div class="ms-CommandBarItem">
-                                <div class="ms-CommandBarItem-linkWrapper">
-                                    <div class="ms-CommandBarItem-link" onclick="sendMail()">
-                                        <span class="ms-CommandBarItem-icon ms-Icon ms-Icon--mail"></span>
-                                        <span class="ms-CommandBarItem-commandText ms-font-m ms-font-weight-regular">Email</span>
+                <div id="xmlSection" class="ms-Grid-col ms-u-md12 ms-u-lg12 ms-u-xl7 ms-u-sm12" >
+                    <div id="xmlSec" style="border-left: solid 1px #e5e3e3;height:500px;">
+                        <div class="ms-CommandBar">
+                            <div class="ms-CommandBar-sideCommands">
+                                <div class="ms-CommandBarItem">
+                                    <div class="ms-CommandBarItem-linkWrapper">
+                                        <div class="ms-CommandBarItem-link" onclick="sendMail()">
+                                            <span class="ms-CommandBarItem-icon ms-Icon ms-Icon--mail"></span>
+                                            <span class="ms-CommandBarItem-commandText ms-font-m ms-font-weight-regular">Email</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="ms-CommandBarItem">
+                                    <div class="ms-CommandBarItem-linkWrapper">
+                                        <div class="ms-CommandBarItem-link" onclick="clearXml();">
+                                            <span class="ms-CommandBarItem-icon ms-Icon ms-Icon--reload"></span>
+                                            <span class="ms-CommandBarItem-commandText ms-font-m ms-font-weight-regular">Reset</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="ms-CommandBarItem">
+                                    <div class="ms-CommandBarItem-linkWrapper" onclick="clickUpload();">
+                                        <div class="ms-CommandBarItem-link">
+                                            <span class="ms-CommandBarItem-icon ms-Icon ms-Icon--upload"></span>
+                                            <span class="ms-CommandBarItem-commandText ms-font-m ms-font-weight-regular">Upload</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="ms-CommandBarItem">
+                                    <div class="ms-CommandBarItem-linkWrapper" onclick="download()">
+                                        <div class="ms-CommandBarItem-link">
+                                            <span class="ms-CommandBarItem-icon ms-Icon ms-Icon--download"></span>
+                                            <span class="ms-CommandBarItem-commandText ms-font-m ms-font-weight-regular">Download</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="ms-CommandBarItem">
-                                <div class="ms-CommandBarItem-linkWrapper">
-                                    <div class="ms-CommandBarItem-link" onclick="clearXml();">
-                                        <span class="ms-CommandBarItem-icon ms-Icon ms-Icon--reload"></span>
-                                        <span class="ms-CommandBarItem-commandText ms-font-m ms-font-weight-regular">Reset</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="ms-CommandBarItem">
-                                <div class="ms-CommandBarItem-linkWrapper" onclick="clickUpload();">
-                                    <div class="ms-CommandBarItem-link">
-                                        <span class="ms-CommandBarItem-icon ms-Icon ms-Icon--upload"></span>
-                                        <span class="ms-CommandBarItem-commandText ms-font-m ms-font-weight-regular">Upload</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="ms-CommandBarItem">
-                                <div class="ms-CommandBarItem-linkWrapper" onclick="download()">
-                                    <div class="ms-CommandBarItem-link">
-                                        <span class="ms-CommandBarItem-icon ms-Icon ms-Icon--download"></span>
-                                        <span class="ms-CommandBarItem-commandText ms-font-m ms-font-weight-regular">Download</span>
-                                    </div>
+                            <div class="ms-CommandBar-mainArea">
+                                <div class="custom-cmditem">
+                                    <span class="ms-font-l ms-font-weight-regular" style="height:100%;width:100%;margin:0px 0px 0px 15px;">XML Viewer</span>
                                 </div>
                             </div>
                         </div>
-                        <div class="ms-CommandBar-mainArea">
-                            <div class="custom-cmditem">
-                                <span class="ms-font-l ms-font-weight-regular" style="height:100%;width:100%;margin:0px 0px 0px 15px;">XML Viewer</span>
-                            </div>
+                        <div class="ms-TextField" style="margin-top:10px;">
+                            <textarea id="xmlText" class="ms-TextField-field ms-TextField--multiline"
+                                      style="height:800px;font-size: 25px;border-width: 0"></textarea>
                         </div>
-                    </div>
-                    <div class="ms-TextField" style="margin-top:10px;">
-                        <textarea id="xmlText" class="ms-TextField-field ms-TextField--multiline" style="height:800px;font-size: 25px"></textarea>
                     </div>
                 </div>
             </div>
@@ -1370,74 +1393,87 @@
     <script type="text/javascript" src="./Scripts/new-main.js"></script>
     <script type="text/javascript" src="./Scripts/jquery.fabric.min.js"></script>
     <script type="text/javascript" src="./components/Dropdown/Jquery.Dropdown.js"></script>
+
     <script>
-    $(document).ready(function () {
-        if ($('.ms-FilePicker').length > 0) {
-            $('.ms-FilePicker').css({
-                "position": "absolute !important"
-            });
+        $(document).ready(function () {
+            if ($('.ms-FilePicker').length > 0) {
+                $('.ms-FilePicker').css({
+                    "position": "absolute !important"
+                });
 
-            $('.ms-Dropdown').FilePicker();
-            $('.ms-Toggle').FilePicker();
-            $('.ms-Table').FilePicker();
-            $('.ms-DatePicker').FilePicker();
-        } else {
-            if ($.fn.Dropdown) {
-                $('.ms-Dropdown').Dropdown();
+                $('.ms-Dropdown').FilePicker();
+                $('.ms-Toggle').FilePicker();
+                $('.ms-Table').FilePicker();
+                $('.ms-DatePicker').FilePicker();
+            } else {
+                if ($.fn.Dropdown) {
+                    $('.ms-Dropdown').Dropdown();
+                }
+                if ($.fn.Toggle) {
+                    $('.ms-Toggle').Toggle();
+                }
+                if ($.fn.Table) {
+                    $('.ms-Table').Table();
+                }
+                if ($.fn.DatePicker) {
+                    $('.ms-DatePicker').DatePicker();
+                }
             }
-            if ($.fn.Toggle) {
-                $('.ms-Toggle').Toggle();
+
+            if (fabric && fabric['Dropdown']) {
+                var component, componentHolder;
+                componentHolder = document.querySelector('.component-holder');
+
+                if (componentHolder) {
+                    component = new fabric.Spinner(componentHolder);
+                }
             }
-            if ($.fn.Table) {
-                $('.ms-Table').Table();
+            if (fabric && fabric['Toggle']) {
+                var component, componentHolder;
+                componentHolder = document.querySelector('.component-holder');
+
+                if (componentHolder) {
+                    component = new fabric.Spinner(componentHolder);
+                }
             }
-            if ($.fn.DatePicker) {
-                $('.ms-DatePicker').DatePicker();
+            if (fabric && fabric['Table']) {
+                var component, componentHolder;
+                componentHolder = document.querySelector('.component-holder');
+
+                if (componentHolder) {
+                    component = new fabric.Spinner(componentHolder);
+                }
             }
+            if (fabric && fabric['DatePicker']) {
+                var component, componentHolder;
+                componentHolder = document.querySelector('.component-holder');
+
+                if (componentHolder) {
+                    component = new fabric.Spinner(componentHolder);
+                }
+            }
+        });
+
+        function setPanel(panelId, buttonId) {
+            $(".option-panel").removeClass('visible');
+            $(".navrow").removeClass('is-selected');
+            $("#" + buttonId).addClass('is-selected');
+            $("#" + panelId).addClass('visible');
+
+            var siblings = $("#" + panelId).siblings();
+
+            for (var i = 0; i < siblings.length; i++) {
+                var sibling = siblings[i];
+                $("#" + sibling.id).removeClass("ms-u-slideLeftIn400");
+            }
+
+            $("#" + panelId).addClass("ms-u-slideLeftIn400");
         }
 
-        if (fabric && fabric['Dropdown']) {
-            var component, componentHolder;
-            componentHolder = document.querySelector('.component-holder');
-
-            if (componentHolder) {
-                component = new fabric.Spinner(componentHolder);
-            }
+        function setVersionPanel(buttonId) {
+            $(".navrowversion").removeClass('is-selected');
+            $("#" + buttonId).addClass('is-selected');
         }
-        if (fabric && fabric['Toggle']) {
-            var component, componentHolder;
-            componentHolder = document.querySelector('.component-holder');
-
-            if (componentHolder) {
-                component = new fabric.Spinner(componentHolder);
-            }
-        }
-        if (fabric && fabric['Table']) {
-            var component, componentHolder;
-            componentHolder = document.querySelector('.component-holder');
-
-            if (componentHolder) {
-                component = new fabric.Spinner(componentHolder);
-            }
-        }
-        if (fabric && fabric['DatePicker']) {
-            var component, componentHolder;
-            componentHolder = document.querySelector('.component-holder');
-
-            if (componentHolder) {
-                component = new fabric.Spinner(componentHolder);
-            }
-        }
-    });
-
-    function setPanel(panelId, buttonId) {
-        $(".option-panel").removeClass('visible');
-        $(".navrow").removeClass('is-selected');
-        $("#" + buttonId).addClass('is-selected');
-        $("#" + panelId).addClass('visible');
-    }
-    
-
     </script>
 </body>
 
