@@ -218,7 +218,7 @@ $(document).ready(function () {
 
     $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
         scrollXmlEditor();
-
+    
         $.cookie("activeTab", e.target);
 
         var mainTabs = document.getElementById("myTab");
@@ -365,7 +365,16 @@ $(document).ready(function () {
 
     $("#btViewOnGitHub").on('click', function () {
         window.open("https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/master/Office-ProPlus-Deployment/CTROfficeXmlWebEditor");
+        return false;
+    });
 
+    $("#menuViewOnGitHub").on('click', function () {
+        window.open("https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/master/Office-ProPlus-Deployment/CTROfficeXmlWebEditor");
+        return false;
+    });
+
+    $("#menuGitHubIssues").on('click', function () {
+        window.open("https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/issues");
         return false;
     });
 
@@ -803,10 +812,11 @@ function changeSelectedLanguage() {
 
     if (addNode) {
         var productNode = getProductNode(addNode, selectedProduct);
-
-        var langNode = getLanguageNode(productNode, selectLanguage);
-        if (langNode) {
-            $("#btAddLanguage").prop("disabled", true);
+        if (productNode) {
+            var langNode = getLanguageNode(productNode, selectLanguage);
+            if (langNode) {
+                $("#btAddLanguage").prop("disabled", true);
+            }
         }
     }
 }
@@ -870,7 +880,9 @@ function resizeWindow() {
         rightPaneHeight = rightPaneHeight + 50;
     }
 
-    $("#xmlText").height(rightPaneHeight - 90);
+    $("#xmlText").height(rightPaneHeight - 30);
+    $("#menuSec").height(bodyHeight - 50);
+    $("#xmlSec").height(bodyHeight - 50);
 
     setScrollBar();
 }
@@ -903,6 +915,7 @@ function readdNodes(xmlDoc, nodeList) {
         xmlDoc.documentElement.appendChild(addPropNode);
     }
 }
+
 
 function odtAddProduct(xmlDoc) {
     var selectedProduct = $("#cbProduct").val();
@@ -937,6 +950,13 @@ function odtAddProduct(xmlDoc) {
     }
 
     addNode.setAttribute("OfficeClientEdition", selectBitness);
+
+    if ($("#office2016Select").hasClass("is-selected")) {
+        var selectedBranch = $("#cbBranch").val();
+        addNode.setAttribute("Branch", selectedBranch);
+    } else {
+        addNode.removeAttribute("Branch");
+    }
 
     var productNode = getProductNode(addNode, selectedProduct);
     if (!(productNode)) {
@@ -984,6 +1004,8 @@ function odtAddProduct(xmlDoc) {
         $("#btRemoveProduct").prop("disabled", false);
         $("#btAddLanguage").prop("disabled", true);
     }
+
+    
 }
 
 function odtRemoveProduct(xmlDoc) {
@@ -1398,6 +1420,23 @@ function odtSaveUpdates(xmlDoc) {
         xmlDoc.documentElement.appendChild(updateNode);
     }
 
+    if ($UpdatesEnabled.checked) {
+        updateNode.setAttribute("Enabled", "TRUE");
+
+        if ($("#office2016Select").hasClass("is-selected")) {
+            var selectedBranch = $("#cbUpdateBranch").val();
+            updateNode.setAttribute("Branch", selectedBranch);
+        } else {
+            updateNode.removeAttribute("Branch");
+        }
+    } else {
+        updateNode.setAttribute("Enabled", "FALSE");
+        updateNode.removeAttribute("UpdatePath");
+        updateNode.removeAttribute("TargetVersion");
+        updateNode.removeAttribute("Deadline");
+        updateNode.removeAttribute("Branch");
+    }
+
     if (selectUpdatePath) {
         updateNode.setAttribute("UpdatePath", selectUpdatePath);
     } else {
@@ -1416,14 +1455,6 @@ function odtSaveUpdates(xmlDoc) {
         updateNode.removeAttribute("Deadline");
     }
 
-    if ($UpdatesEnabled.checked) {
-        updateNode.setAttribute("Enabled", "TRUE");
-    } else {
-        updateNode.setAttribute("Enabled", "FALSE");
-        updateNode.removeAttribute("UpdatePath");
-        updateNode.removeAttribute("TargetVersion");
-        updateNode.removeAttribute("Deadline");
-    }
 }
 
 function odtRemoveUpdates(xmlDoc) {
@@ -2045,6 +2076,7 @@ function createXmlDocument(string) {
 function displayXml(xmlDoc) {
     var xmlString = (new XMLSerializer().serializeToString(xmlDoc.documentElement));
     var xmlOutput = vkbeautify.xml(xmlString);
+
     $('textarea#xmlText').val(xmlOutput);
     $.cookie("xmlcache", xmlOutput);
 }
@@ -2071,14 +2103,18 @@ function toggleInfo(calloutId, icon) {
 }
 
 function showInfo(calloutId, icon) {
-    var pos = $("#" + icon.id).position();
+    var pos = $("#" + icon.id).offset();
     var iconWidth = $("#" + icon.id).width();
     var iconHeight = $("#" + icon.id).height();
+
     var nTop = pos.top - 60;
     var nLeft = pos.left + iconWidth - 5;
+
     $("#" + calloutId)[0].style.top = nTop.toString() + "px";
     $("#" + calloutId)[0].style.left = nLeft.toString() + "px";
     $("#" + calloutId)[0].style.display = 'block';
+    //$("#" + calloutId)[0].css('z-index', 9999);
+    $("#xmlText").css('z-index', 0);
 }
 
 function hideInfo(calloutId) {

@@ -869,6 +869,367 @@
   margin-left: 14px;
 }
 
+.ms-CommandBar {
+  background-color: #eff6fc;
+  height: 40px;
+  white-space: nowrap;
+  padding-left: 0;
+  padding-right: 15px;
+  border: 0;
+}
+
+.ms-CommandBar:focus {
+  outline: none;
+}
+
+.ms-CommandBar-mainArea {
+  overflow-x: hidden;
+  display: block;
+}
+
+.ms-CommandBar-sideCommands {
+  float: right;
+  text-align: right;
+}
+
+@media only screen and (max-width: 479px) {
+  .ms-CommandBar-sideCommands {
+    width: auto;
+  }
+}
+
+@media only screen and (min-width: 480px) {
+  .ms-CommandBar-sideCommands {
+    min-width: 128px;
+  }
+}
+
+.ms-CommandBarItem {
+  display: inline-block;
+  margin-right: 8px;
+  color: #0078d7;
+  height: 40px;
+  outline: none;
+  vertical-align: top;
+}
+
+@media screen and (-ms-high-contrast: active) {
+  .ms-CommandBarItem {
+    border-left: 1px solid #000000;
+    border-right: 1px solid #000000;
+    height: 38px;
+    outline: none;
+  }
+}
+
+@media screen and (-ms-high-contrast: black-on-white) {
+  .ms-CommandBarItem {
+    border-left: 1px solid #ffffff;
+    border-right: 1px solid #ffffff;
+    height: 38px;
+    outline: none;
+  }
+}
+
+.ms-CommandBarItem:hover {
+  background-color: #c7e0f4;
+  color: #0078d7;
+}
+
+@media screen and (-ms-high-contrast: active) {
+  .ms-CommandBarItem:hover {
+    border-left: 1px solid #ffffff;
+    border-right: 1px solid #ffffff;
+  }
+}
+
+@media screen and (-ms-high-contrast: black-on-white) {
+  .ms-CommandBarItem:hover {
+    border-left: 1px solid #000000;
+    border-right: 1px solid #000000;
+  }
+}
+
+.ms-CommandBarItem.is-toggled {
+  background: #c7e0f4;
+  color: #005a9e;
+}
+
+@media screen and (-ms-high-contrast: active) {
+  .ms-CommandBarItem.is-toggled {
+    border-left: 1px solid #ffffff;
+    border-right: 1px solid #ffffff;
+  }
+}
+
+@media screen and (-ms-high-contrast: black-on-white) {
+  .ms-CommandBarItem.is-toggled {
+    border-left: 1px solid #000000;
+    border-right: 1px solid #000000;
+  }
+}
+
+.ms-CommandBarItem.is-toggled:hover {
+  background: #c8c8c8;
+  color: #005a9e;
+}
+
+@media screen and (-ms-high-contrast: active) {
+  .ms-CommandBarItem.is-toggled:hover {
+    border-left: 1px solid #ffffff;
+    border-right: 1px solid #ffffff;
+  }
+}
+
+@media screen and (-ms-high-contrast: black-on-white) {
+  .ms-CommandBarItem.is-toggled:hover {
+    border-left: 1px solid #000000;
+    border-right: 1px solid #000000;
+  }
+}
+
+@media only screen and (max-width: 639px) {
+  .ms-CommandBarItem .ms-CommandBarItem-chevronDown,
+  .ms-CommandBarItem .ms-CommandBarItem-commandText {
+    display: none;
+  }
+}
+
+@media only screen and (max-width: 1023px) {
+  .ms-CommandBarItem {
+    margin-right: 0;
+  }
+}
+
+.ms-CommandBarItem.is-hidden {
+  display: none;
+}
+
+.ms-CommandBarItem.icon-only .ms-CommandBarItem-chevronDown,
+.ms-CommandBarItem.ms-CommandBarItem--iconOnly .ms-CommandBarItem-chevronDown,
+.ms-CommandBarItem.icon-only .ms-CommandBarItem-commandText,
+.ms-CommandBarItem.ms-CommandBarItem--iconOnly .ms-CommandBarItem-commandText {
+  display: none;
+}
+
+.ms-CommandBarItem-overflow {
+  display: none;
+}
+
+.ms-CommandBarItem-overflow.is-visible {
+  display: inline-block;
+}
+
+.ms-CommandBarItem-link {
+  line-height: 39px;
+  padding: 0 6px;
+  cursor: pointer;
+  height: 40px;
+  min-width: 22px;
+  text-align: center;
+  position: relative;
+}
+
+@media only screen and (max-width: 1023px) {
+  .ms-CommandBarItem-link {
+    padding: 0 6px;
+  }
+}
+
+@media only screen and (min-width: 640px) {
+  .ms-CommandBarItem-link {
+    padding-right: 8px;
+    padding-left: 6px;
+  }
+}
+
+.ms-CommandBarItem-chevronDown {
+  vertical-align: top;
+  padding-bottom: 3px;
+  margin-top: 13px;
+  font-size: 1.1em;
+  line-height: 1em;
+  color: #666666;
+}
+
+.ms-CommandBarItem-chevronDown:before {
+  height: 10px;
+  line-height: 16px;
+}
+
+.ms-CommandBarSearch {
+  float: left;
+  width: 208px;
+  max-width: 208px;
+  background-color: #deecf9;
+  color: #333333;
+  height: 40px;
+  position: relative;
+  box-sizing: border-box;
+  border-color: transparent;
+  transition: 0.367s cubic-bezier(0.1, 0.9, 0.2, 1);
+  transition-property: width, background-color;
+}
+
+@media only screen and (max-width: 639px) {
+  .ms-CommandBarSearch {
+    overflow: hidden;
+    background-color: transparent;
+    width: 40px;
+  }
+}
+
+@media screen and (-ms-high-contrast: active) {
+  .ms-CommandBarSearch {
+    border-right: 1px solid #ffffff;
+    z-index: 10;
+  }
+}
+
+@media screen and (-ms-high-contrast: black-on-white) {
+  .ms-CommandBarSearch {
+    border-right: 1px solid #000000;
+  }
+}
+
+.ms-CommandBarSearch .ms-Icon--search {
+  margin-left: 2px;
+  margin-top: 12px;
+  vertical-align: top;
+}
+
+.ms-CommandBarSearch-input {
+  height: 40px;
+  padding: 8px 8px 8px 0;
+  border: none;
+  border-left: 42px solid transparent;
+  background-color: transparent;
+  width: 100%;
+  box-sizing: border-box;
+  outline: none;
+  cursor: pointer;
+  font-size: 14px;
+  -webkit-appearance: none;
+  -webkit-border-radius: 0;
+}
+
+@media screen and (-ms-high-contrast: active) {
+  .ms-CommandBarSearch-input {
+    border-left: 40px solid #000000;
+  }
+}
+
+@media screen and (-ms-high-contrast: black-on-white) {
+  .ms-CommandBarSearch-input {
+    border-left: 40px solid #ffffff;
+  }
+}
+
+.ms-CommandBarSearch-input::-ms-clear {
+  display: none;
+}
+
+.ms-CommandBarSearch-input::-webkit-input-placeholder {
+  color: #333333;
+  opacity: 1;
+  font-size: 14px;
+}
+
+.ms-CommandBarSearch-input::-moz-placeholder {
+  color: #333333;
+  opacity: 1;
+  font-size: 14px;
+}
+
+.ms-CommandBarSearch-input:-ms-input-placeholder {
+  color: #333333;
+  opacity: 1;
+  font-size: 14px;
+}
+
+.ms-CommandBarSearch-input::placeholder {
+  color: #333333;
+  opacity: 1;
+  font-size: 14px;
+}
+
+.ms-CommandBarSearch-input:placeholder {
+  color: #333333;
+  opacity: 1;
+  font-size: 14px;
+}
+
+.ms-CommandBarSearch-iconSearchWrapper {
+  display: block;
+  padding-left: 15px;
+}
+
+.ms-CommandBarSearch-iconArrowWrapper {
+  display: none;
+}
+
+.ms-CommandBarSearch-iconSearchWrapper,
+.ms-CommandBarSearch-iconArrowWrapper {
+  top: 0;
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+.ms-CommandBarSearch-iconClearWrapper {
+  display: none;
+  top: 1px;
+  right: 0px;
+}
+
+.ms-CommandBarSearch--active {
+  background-color: #c7e0f4;
+  color: #000000;
+}
+
+.ms-CommandBarSearch--active:hover {
+  background-color: #c7e0f4;
+  color: #000000;
+}
+
+.ms-CommandBarSearch--active .ms-CommandBarSearch-input {
+  cursor: text;
+  padding-right: 40px;
+  border-left-width: 8px;
+}
+
+.ms-CommandBarSearch--active.ms-CommandBarSearch--hasBack .ms-CommandBarSearch-input {
+  border-left-width: 40px;
+}
+
+.ms-CommandBarSearch--active .ms-CommandBarSearch-iconSearchWrapper {
+  display: none;
+}
+
+.ms-CommandBarSearch--active.ms-CommandBarSearch--hasBack .ms-CommandBarSearch-iconArrowWrapper {
+  display: block;
+}
+
+.ms-CommandBarSearch--active.ms-CommandBarSearch--hasText .ms-CommandBarSearch-input {
+  padding-right: 40px;
+}
+
+.ms-CommandBarSearch--active.ms-CommandBarSearch--hasText .ms-CommandBarSearch-iconClearWrapper {
+  display: block;
+}
+
+.ms-CommandBarSearch-iconWrapper {
+  height: 40px;
+  line-height: 40px;
+  cursor: pointer;
+  padding: 0px 8px;
+  position: absolute;
+}
+
+.ms-CommandBarSearch .ms-Icon:before {
+  font-size: 17px;
+  color: #0078d7;
+}
+
 .ms-Label {
   color: #333333;
   font-family: 'Segoe UI Regular WestEuropean', 'Segoe UI', 'Segoe WP', Tahoma, Arial, sans-serif;
@@ -891,272 +1252,207 @@
   color: #a6a6a6;
 }
 
-.ms-Link {
-  color: #0078d7;
-  text-decoration: none;
-  cursor: pointer;
-}
-
-.ms-Link:hover,
-.ms-Link:focus {
-  color: #004578;
-}
-
-.ms-Link:active {
-  color: #0078d7;
-}
-
-.ms-Link.ms-Link--hero {
-  font-family: 'Segoe UI Semilight WestEuropean', 'Segoe UI Semilight', 'Segoe WP Semilight', 'Segoe UI', 'Segoe WP', Tahoma, Arial, sans-serif;
-  padding: 2px 8px 4px;
-}
-
-.ms-Callout {
-  z-index: 9999;
-  margin: 16px auto;
-  position: relative;
-  width: 288px;
-}
-
-.ms-Callout.ms-Callout--arrowRight:before,
-.ms-Callout.ms-Callout--arrowLeft:before,
-.ms-Callout.ms-Callout--arrowBottom:before,
-.ms-Callout.ms-Callout--arrowTop:before,
-.ms-Callout.ms-Callout--arrowRight:after,
-.ms-Callout.ms-Callout--arrowLeft:after,
-.ms-Callout.ms-Callout--arrowBottom:after,
-.ms-Callout.ms-Callout--arrowTop:after {
-  content: '';
+.ms-Overlay {
+  background-color: rgba(255, 255, 255, 0.4);
   position: absolute;
-  -webkit-transform: rotate(-45deg);
-      -ms-transform: rotate(-45deg);
-          transform: rotate(-45deg);
-  height: 0;
-  width: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  top: 0;
+  z-index: 200;
 }
 
-.ms-Callout.ms-Callout--arrowRight:before,
-.ms-Callout.ms-Callout--arrowLeft:before,
-.ms-Callout.ms-Callout--arrowBottom:before,
-.ms-Callout.ms-Callout--arrowTop:before {
+.ms-Overlay.ms-Overlay--dark {
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.ms-Overlay.ms-Overlay--none {
+  visibility: hidden;
+}
+
+.ms-Panel {
+  bottom: 0;
+  left: 0;
+  position: fixed;
+  right: 0;
+  top: 0;
+  z-index: 300;
+}
+
+.ms-Panel .ms-Overlay {
   z-index: 0;
-  outline: 1px solid transparent;
-  box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.4);
 }
 
-.ms-Callout.ms-Callout--arrowRight:after,
-.ms-Callout.ms-Callout--arrowLeft:after,
-.ms-Callout.ms-Callout--arrowBottom:after,
-.ms-Callout.ms-Callout--arrowTop:after {
+.ms-Panel-main {
+  background-color: #ffffff;
+  bottom: 0;
+  position: fixed;
+  right: 0;
+  top: 0;
+  display: none;
   z-index: 10;
 }
 
-.ms-Callout.ms-Callout--arrowLeft:before,
-.ms-Callout.ms-Callout--arrowRight:before,
-.ms-Callout.ms-Callout--arrowLeft:after,
-.ms-Callout.ms-Callout--arrowRight:after {
+.ms-Panel-contentInner {
+  position: absolute;
   top: 40px;
-  display: none;
-}
-
-.ms-Callout.ms-Callout--arrowLeft:before,
-.ms-Callout.ms-Callout--arrowLeft:after {
-  border-top: 10px solid #ffffff;
-  border-right: 10px solid transparent;
-  border-bottom: 10px solid transparent;
-  border-left: 10px solid #ffffff;
-  left: -10px;
-}
-
-.ms-Callout.ms-Callout--arrowRight:before,
-.ms-Callout.ms-Callout--arrowRight:after {
-  border-top: 10px solid transparent;
-  border-right: 10px solid #ffffff;
-  border-bottom: 10px solid #ffffff;
-  border-left: 10px solid transparent;
-  right: -10px;
-}
-
-.ms-Callout.ms-Callout--arrowTop:before,
-.ms-Callout.ms-Callout--arrowBottom:before,
-.ms-Callout.ms-Callout--arrowTop:after,
-.ms-Callout.ms-Callout--arrowBottom:after {
+  bottom: 0;
   left: 0;
   right: 0;
-  margin: 0 auto;
-  width: 0;
+  padding: 0 32px 20px 32px;
+  overflow-y: auto;
 }
 
-.ms-Callout.ms-Callout--arrowTop:before,
-.ms-Callout.ms-Callout--arrowTop:after {
-  border-top: 10px solid #ffffff;
-  border-right: 10px solid #ffffff;
-  border-bottom: 10px solid transparent;
-  border-left: 10px solid transparent;
-  top: -10px;
-}
-
-.ms-Callout.ms-Callout--arrowBottom:before,
-.ms-Callout.ms-Callout--arrowBottom:after {
-  border-top: 10px solid transparent;
-  border-right: 10px solid transparent;
-  border-bottom: 10px solid #ffffff;
-  border-left: 10px solid #ffffff;
-  bottom: -10px;
-}
-
-.ms-Callout-main {
-  position: relative;
-  background-color: #ffffff;
-  box-sizing: border-box;
-  outline: 1px solid transparent;
-  z-index: 5;
-  box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.4);
-}
-
-.ms-Callout-close {
-  margin: 0;
-  border: 0;
-  background: none;
-  cursor: pointer;
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  padding: 8px;
-  width: 32px;
-  height: 32px;
-  font-size: 14px;
-  color: #666666;
-  z-index: 110;
-}
-
-.ms-Callout-inner {
-  height: 100%;
-  padding: 0 24px 20px;
-}
-
-.ms-Callout-header {
-  z-index: 105;
-  padding: 18px 24px 12px;
-}
-
-.ms-Callout-title {
-  margin: 0;
-  font-family: 'Segoe UI Semilight WestEuropean', 'Segoe UI Semilight', 'Segoe WP Semilight', 'Segoe UI', 'Segoe WP', Tahoma, Arial, sans-serif;
-  font-size: 21px;
-}
-
-.ms-Callout-subText {
-  margin: 0;
-  font-family: 'Segoe UI Semilight WestEuropean', 'Segoe UI Semilight', 'Segoe WP Semilight', 'Segoe UI', 'Segoe WP', Tahoma, Arial, sans-serif;
-  color: #333333;
-  font-size: 12px;
-}
-
-.ms-Callout-actions {
-  position: relative;
-  margin-top: 20px;
-  width: 100%;
-  white-space: nowrap;
-}
-
-.ms-Callout-actions .ms-Link.ms-Link--hero {
-  position: relative;
-  left: -8px;
-}
-
-.ms-Callout-action {
-  position: relative;
-  top: 4px;
-  left: -8px;
-  margin-left: 0 !important;
-}
-
-.ms-Callout-action:hover .ms-Callout-actionIcon,
-.ms-Callout-action:focus .ms-Callout-actionIcon {
-  color: #0078d7;
-}
-
-.ms-Callout-button {
-  margin-right: 12px;
-}
-
-.ms-Callout.ms-Callout--close .ms-Callout-title {
-  margin-right: 20px;
-}
-
-.ms-Callout.ms-Callout--OOBE.ms-Callout--arrowRight:before,
-.ms-Callout.ms-Callout--OOBE.ms-Callout--arrowLeft:before,
-.ms-Callout.ms-Callout--OOBE.ms-Callout--arrowTop:before,
-.ms-Callout.ms-Callout--OOBE.ms-Callout--arrowRight:after,
-.ms-Callout.ms-Callout--OOBE.ms-Callout--arrowLeft:after,
-.ms-Callout.ms-Callout--OOBE.ms-Callout--arrowTop:after {
-  border-color: #0078d7;
-  background-color: transparent;
-}
-
-.ms-Callout.ms-Callout--OOBE .ms-Callout-header {
-  padding: 28px 24px;
-  background-color: #0078d7;
-}
-
-.ms-Callout.ms-Callout--OOBE .ms-Callout-title {
+.ms-Panel-headerText {
   font-family: 'Segoe UI Light WestEuropean', 'Segoe UI Light', 'Segoe WP Light', 'Segoe UI', 'Segoe WP', Tahoma, Arial, sans-serif;
-  font-size: 28px;
-  color: #ffffff;
+  font-size: 21px;
+  color: #333333;
+  line-height: 82px;
+  height: 70px;
 }
 
-.ms-Callout.ms-Callout--OOBE .ms-Callout-inner {
-  padding-top: 20px;
-}
+@media (min-width: 320px) {
+  .ms-Panel {
+    display: none;
+  }
 
-.ms-Callout.ms-Callout--OOBE .ms-Callout-subText {
-  font-size: 14px;
-}
+  .ms-Panel.is-open {
+    display: block;
+  }
 
-.ms-Callout.ms-Callout--actionText .ms-Callout-actions {
-  border-top: 1px solid #eaeaea;
-  margin-bottom: -8px;
-}
+  .ms-Panel .ms-Overlay {
+    display: none;
+  }
 
-.ms-Callout.ms-Callout--peek.ms-Callout--arrowTop:before,
-.ms-Callout.ms-Callout--peek.ms-Callout--arrowBottom:before,
-.ms-Callout.ms-Callout--peek.ms-Callout--arrowTop:after,
-.ms-Callout.ms-Callout--peek.ms-Callout--arrowBottom:after {
-  left: 40px;
-  right: auto;
-}
-
-.ms-Callout.ms-Callout--peek.ms-Callout--arrowRight:before,
-.ms-Callout.ms-Callout--peek.ms-Callout--arrowLeft:before,
-.ms-Callout.ms-Callout--peek.ms-Callout--arrowRight:after,
-.ms-Callout.ms-Callout--peek.ms-Callout--arrowLeft:after {
-  top: calc(50% - 10px);
-}
-
-.ms-Callout.ms-Callout--peek .ms-Callout-header {
-  padding-bottom: 0;
-}
-
-.ms-Callout.ms-Callout--peek .ms-Callout-title {
-  font-size: 14px;
-}
-
-.ms-Callout.ms-Callout--peek .ms-Callout-actions {
-  margin-top: 12px;
-  margin-bottom: -4px;
+  .ms-Panel.is-open .ms-Panel-main {
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    opacity: 1;
+  }
 }
 
 @media (min-width: 480px) {
-  .ms-Callout {
-    width: 300px;
-    margin: 16px;
+  .ms-Panel {
+    display: block;
+    pointer-events: none;
   }
 
-  .ms-Callout.ms-Callout--arrowRight:before,
-  .ms-Callout.ms-Callout--arrowLeft:before,
-  .ms-Callout.ms-Callout--arrowRight:after,
-  .ms-Callout.ms-Callout--arrowLeft:after {
+  .ms-Panel-main {
+    border-left: 1px solid #eaeaea;
+    border-right: 1px solid #eaeaea;
+    right: -40px;
+    pointer-events: auto;
+    width: 341px;
+    -webkit-animation-name: fadeOut, slideRightOut40;
+            animation-name: fadeOut, slideRightOut40;
+    -webkit-animation-duration: 0.167s;
+       -moz-animation-duration: 0.167s;
+        -ms-animation-duration: 0.167s;
+         -o-animation-duration: 0.167s;
+    -webkit-animation-timing-function: cubic-bezier(0.1, 0.25, 0.75, 0.9);
+            animation-timing-function: cubic-bezier(0.1, 0.25, 0.75, 0.9);
+    -webkit-animation-fill-mode: both;
+            animation-fill-mode: both;
+  }
+
+  .ms-Panel.is-open .ms-Panel-main {
+    box-shadow: -30px 0px 30px -30px rgba(0, 0, 0, 0.2);
+    left: auto;
+    -webkit-animation-name: fadeIn, slideLeft40;
+            animation-name: fadeIn, slideLeft40;
+    -webkit-animation-duration: 0.367s;
+       -moz-animation-duration: 0.367s;
+        -ms-animation-duration: 0.367s;
+         -o-animation-duration: 0.367s;
+    -webkit-animation-timing-function: cubic-bezier(0.1, 0.9, 0.2, 1);
+            animation-timing-function: cubic-bezier(0.1, 0.9, 0.2, 1);
+    -webkit-animation-fill-mode: both;
+            animation-fill-mode: both;
+  }
+
+  .ms-Panel.ms-Panel--small.ms-Panel--left.is-open .ms-Panel-main {
+    box-shadow: 30px 0px 30px -30px rgba(0, 0, 0, 0.2);
+    -webkit-animation-name: fadeIn, slideRight40;
+            animation-name: fadeIn, slideRight40;
+    -webkit-animation-duration: 0.367s;
+       -moz-animation-duration: 0.367s;
+        -ms-animation-duration: 0.367s;
+         -o-animation-duration: 0.367s;
+    -webkit-animation-timing-function: cubic-bezier(0.1, 0.9, 0.2, 1);
+            animation-timing-function: cubic-bezier(0.1, 0.9, 0.2, 1);
+    -webkit-animation-fill-mode: both;
+            animation-fill-mode: both;
+  }
+
+  .ms-Panel.ms-Panel--small.ms-Panel--left .ms-Panel-main {
+    left: 0;
+    right: auto;
+    -webkit-animation-name: fadeOut, slideLeftOut40;
+            animation-name: fadeOut, slideLeftOut40;
+    -webkit-animation-duration: 0.167s;
+       -moz-animation-duration: 0.167s;
+        -ms-animation-duration: 0.167s;
+         -o-animation-duration: 0.167s;
+    -webkit-animation-timing-function: cubic-bezier(0.1, 0.25, 0.75, 0.9);
+            animation-timing-function: cubic-bezier(0.1, 0.25, 0.75, 0.9);
+    -webkit-animation-fill-mode: both;
+            animation-fill-mode: both;
+  }
+
+  .ms-Panel .ms-Overlay {
     display: block;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.367s cubic-bezier(0.1, 0.9, 0.2, 1);
+  }
+
+  .ms-Panel.is-open .ms-Overlay {
+    cursor: pointer;
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+@media (min-width: 640px) {
+  .ms-Panel.ms-Panel--medium .ms-Panel-main,
+  .ms-Panel.ms-Panel--large .ms-Panel-main,
+  .ms-Panel.ms-Panel--extraLarge .ms-Panel-main {
+    left: 47px;
+    width: auto;
+  }
+
+  .ms-Panel.ms-Panel--medium.is-open .ms-Panel-main,
+  .ms-Panel.ms-Panel--large.is-open .ms-Panel-main,
+  .ms-Panel.ms-Panel--extraLarge.is-open .ms-Panel-main {
+    width: auto;
+  }
+}
+
+@media (min-width: 1024px) {
+  .ms-Panel.ms-Panel--medium .ms-Panel-main {
+    left: auto;
+    width: 644px;
+  }
+
+  .ms-Panel.ms-Panel--medium.is-open .ms-Panel-main {
+    left: auto;
+    right: 0;
+    width: 644px;
+  }
+}
+
+@media (min-width: 1366px) {
+  .ms-Panel.ms-Panel--large .ms-Panel-main {
+    left: 427px;
+  }
+
+  .ms-Panel.ms-Panel--extraLarge .ms-Panel-main {
+    left: 175px;
+  }
+
+  .ms-Panel.ms-Panel--small.ms-Panel--left {
+    display: none;
   }
 }

@@ -891,272 +891,830 @@
   color: #a6a6a6;
 }
 
-.ms-Link {
-  color: #0078d7;
-  text-decoration: none;
-  cursor: pointer;
-}
-
-.ms-Link:hover,
-.ms-Link:focus {
-  color: #004578;
-}
-
-.ms-Link:active {
-  color: #0078d7;
-}
-
-.ms-Link.ms-Link--hero {
-  font-family: 'Segoe UI Semilight WestEuropean', 'Segoe UI Semilight', 'Segoe WP Semilight', 'Segoe UI', 'Segoe WP', Tahoma, Arial, sans-serif;
-  padding: 2px 8px 4px;
-}
-
-.ms-Callout {
-  z-index: 9999;
-  margin: 16px auto;
-  position: relative;
-  width: 288px;
-}
-
-.ms-Callout.ms-Callout--arrowRight:before,
-.ms-Callout.ms-Callout--arrowLeft:before,
-.ms-Callout.ms-Callout--arrowBottom:before,
-.ms-Callout.ms-Callout--arrowTop:before,
-.ms-Callout.ms-Callout--arrowRight:after,
-.ms-Callout.ms-Callout--arrowLeft:after,
-.ms-Callout.ms-Callout--arrowBottom:after,
-.ms-Callout.ms-Callout--arrowTop:after {
-  content: '';
+.ms-Overlay {
+  background-color: rgba(255, 255, 255, 0.4);
   position: absolute;
-  -webkit-transform: rotate(-45deg);
-      -ms-transform: rotate(-45deg);
-          transform: rotate(-45deg);
+  bottom: 0;
+  left: 0;
+  right: 0;
+  top: 0;
+  z-index: 200;
+}
+
+.ms-Overlay.ms-Overlay--dark {
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.ms-Overlay.ms-Overlay--none {
+  visibility: hidden;
+}
+
+.ms-Persona {
+  color: #333333;
+  font-family: 'Segoe UI Regular WestEuropean', 'Segoe UI', 'Segoe WP', Tahoma, Arial, sans-serif;
+  font-size: 14px;
+  font-weight: normal;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-shadow: none;
+  display: table;
+  line-height: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+.ms-Persona-imageArea {
+  position: relative;
+  display: block;
+  background-color: transparent;
+  overflow: hidden;
+  width: 50px;
+  height: 50px;
+}
+
+.ms-Persona-imageCircle {
+  width: 50px;
+  height: 50px;
+  margin: 0;
+  border-radius: 50%;
+  overflow: hidden;
+  position: absolute;
+  left: 0;
+  right: 0;
+  background-color: #a6a6a6;
+}
+
+.ms-Persona-placeholder {
+  color: #ffffff;
+  position: absolute;
+  right: 0;
+  left: 0;
+  font-size: 47px;
+  top: 7px;
+}
+
+.ms-Persona-image {
+  display: table-cell;
+  margin-right: 10px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50px;
+  height: 50px;
+}
+
+.ms-Persona-image[src=''] {
+  display: none;
+}
+
+.ms-Persona-presence {
+  background-color: #5dd255;
+  position: absolute;
+  height: 10px;
+  width: 10px;
+  border-radius: 50%;
+  top: auto;
+  left: auto;
+  right: 2px;
+  bottom: -1px;
+  border: 2px solid #ffffff;
+}
+
+.ms-Persona-details {
+  display: table-cell;
+  padding: 0 16px;
+  vertical-align: middle;
+}
+
+.ms-Persona-primaryText {
+  color: #333333;
+  font-family: 'Segoe UI Regular WestEuropean', 'Segoe UI', 'Segoe WP', Tahoma, Arial, sans-serif;
+  font-size: 17px;
+  margin-top: -3px;
+  white-space: nowrap;
+}
+
+.ms-Persona-secondaryText,
+.ms-Persona-tertiaryText,
+.ms-Persona-optionalText {
+  color: #666666;
+  font-family: 'Segoe UI Regular WestEuropean', 'Segoe UI', 'Segoe WP', Tahoma, Arial, sans-serif;
+  font-size: 12px;
+  padding-top: 8px;
+  white-space: nowrap;
+}
+
+.ms-Persona-tertiaryText,
+.ms-Persona-optionalText {
+  display: none;
+}
+
+.ms-Persona.ms-Persona--square .ms-Persona-imageArea {
+  background-color: #a6a6a6;
+}
+
+.ms-Persona.ms-Persona--square .ms-Persona-imageCircle {
+  border-radius: 0;
+}
+
+.ms-Persona.ms-Persona--square .ms-Persona-presence {
+  top: 0;
+  left: 0;
+  bottom: auto;
+  right: auto;
+  height: 50px;
+  width: 5px;
+  border-radius: 0;
+  border: 0;
+}
+
+.ms-Persona.ms-Persona--tiny {
+  height: 30px;
+  background-color: #ffffff;
+  display: inline-block;
+}
+
+.ms-Persona.ms-Persona--tiny .ms-Persona-imageArea {
+  overflow: visible;
+  background: transparent;
   height: 0;
   width: 0;
 }
 
-.ms-Callout.ms-Callout--arrowRight:before,
-.ms-Callout.ms-Callout--arrowLeft:before,
-.ms-Callout.ms-Callout--arrowBottom:before,
-.ms-Callout.ms-Callout--arrowTop:before {
-  z-index: 0;
-  outline: 1px solid transparent;
-  box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.4);
-}
-
-.ms-Callout.ms-Callout--arrowRight:after,
-.ms-Callout.ms-Callout--arrowLeft:after,
-.ms-Callout.ms-Callout--arrowBottom:after,
-.ms-Callout.ms-Callout--arrowTop:after {
-  z-index: 10;
-}
-
-.ms-Callout.ms-Callout--arrowLeft:before,
-.ms-Callout.ms-Callout--arrowRight:before,
-.ms-Callout.ms-Callout--arrowLeft:after,
-.ms-Callout.ms-Callout--arrowRight:after {
-  top: 40px;
+.ms-Persona.ms-Persona--tiny .ms-Persona-imageCircle {
   display: none;
 }
 
-.ms-Callout.ms-Callout--arrowLeft:before,
-.ms-Callout.ms-Callout--arrowLeft:after {
-  border-top: 10px solid #ffffff;
-  border-right: 10px solid transparent;
-  border-bottom: 10px solid transparent;
-  border-left: 10px solid #ffffff;
-  left: -10px;
-}
-
-.ms-Callout.ms-Callout--arrowRight:before,
-.ms-Callout.ms-Callout--arrowRight:after {
-  border-top: 10px solid transparent;
-  border-right: 10px solid #ffffff;
-  border-bottom: 10px solid #ffffff;
-  border-left: 10px solid transparent;
-  right: -10px;
-}
-
-.ms-Callout.ms-Callout--arrowTop:before,
-.ms-Callout.ms-Callout--arrowBottom:before,
-.ms-Callout.ms-Callout--arrowTop:after,
-.ms-Callout.ms-Callout--arrowBottom:after {
-  left: 0;
-  right: 0;
-  margin: 0 auto;
-  width: 0;
-}
-
-.ms-Callout.ms-Callout--arrowTop:before,
-.ms-Callout.ms-Callout--arrowTop:after {
-  border-top: 10px solid #ffffff;
-  border-right: 10px solid #ffffff;
-  border-bottom: 10px solid transparent;
-  border-left: 10px solid transparent;
-  top: -10px;
-}
-
-.ms-Callout.ms-Callout--arrowBottom:before,
-.ms-Callout.ms-Callout--arrowBottom:after {
-  border-top: 10px solid transparent;
-  border-right: 10px solid transparent;
-  border-bottom: 10px solid #ffffff;
-  border-left: 10px solid #ffffff;
-  bottom: -10px;
-}
-
-.ms-Callout-main {
-  position: relative;
-  background-color: #ffffff;
-  box-sizing: border-box;
-  outline: 1px solid transparent;
-  z-index: 5;
-  box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.4);
-}
-
-.ms-Callout-close {
-  margin: 0;
+.ms-Persona.ms-Persona--tiny .ms-Persona-presence {
+  right: auto;
+  height: 10px;
+  width: 10px;
+  top: 10px;
   border: 0;
-  background: none;
-  cursor: pointer;
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  padding: 8px;
-  width: 32px;
-  height: 32px;
+}
+
+.ms-Persona.ms-Persona--tiny .ms-Persona-details {
+  padding-left: 18px;
+}
+
+.ms-Persona.ms-Persona--tiny .ms-Persona-primaryText {
   font-size: 14px;
-  color: #666666;
-  z-index: 110;
+  padding-top: 11px;
 }
 
-.ms-Callout-inner {
-  height: 100%;
-  padding: 0 24px 20px;
+.ms-Persona.ms-Persona--tiny .ms-Persona-secondaryText {
+  display: none;
 }
 
-.ms-Callout-header {
-  z-index: 105;
-  padding: 18px 24px 12px;
-}
-
-.ms-Callout-title {
-  margin: 0;
-  font-family: 'Segoe UI Semilight WestEuropean', 'Segoe UI Semilight', 'Segoe WP Semilight', 'Segoe UI', 'Segoe WP', Tahoma, Arial, sans-serif;
-  font-size: 21px;
-}
-
-.ms-Callout-subText {
-  margin: 0;
-  font-family: 'Segoe UI Semilight WestEuropean', 'Segoe UI Semilight', 'Segoe WP Semilight', 'Segoe UI', 'Segoe WP', Tahoma, Arial, sans-serif;
-  color: #333333;
-  font-size: 12px;
-}
-
-.ms-Callout-actions {
-  position: relative;
-  margin-top: 20px;
-  width: 100%;
-  white-space: nowrap;
-}
-
-.ms-Callout-actions .ms-Link.ms-Link--hero {
-  position: relative;
-  left: -8px;
-}
-
-.ms-Callout-action {
-  position: relative;
-  top: 4px;
-  left: -8px;
-  margin-left: 0 !important;
-}
-
-.ms-Callout-action:hover .ms-Callout-actionIcon,
-.ms-Callout-action:focus .ms-Callout-actionIcon {
-  color: #0078d7;
-}
-
-.ms-Callout-button {
-  margin-right: 12px;
-}
-
-.ms-Callout.ms-Callout--close .ms-Callout-title {
-  margin-right: 20px;
-}
-
-.ms-Callout.ms-Callout--OOBE.ms-Callout--arrowRight:before,
-.ms-Callout.ms-Callout--OOBE.ms-Callout--arrowLeft:before,
-.ms-Callout.ms-Callout--OOBE.ms-Callout--arrowTop:before,
-.ms-Callout.ms-Callout--OOBE.ms-Callout--arrowRight:after,
-.ms-Callout.ms-Callout--OOBE.ms-Callout--arrowLeft:after,
-.ms-Callout.ms-Callout--OOBE.ms-Callout--arrowTop:after {
-  border-color: #0078d7;
+.ms-Persona.ms-Persona--tiny.ms-Persona--readonly {
+  padding: 0;
   background-color: transparent;
 }
 
-.ms-Callout.ms-Callout--OOBE .ms-Callout-header {
-  padding: 28px 24px;
+.ms-Persona.ms-Persona--tiny.ms-Persona--readonly .ms-Persona-primaryText:after {
+  content: ';';
+}
+
+.ms-Persona.ms-Persona--square.ms-Persona--tiny .ms-Persona-presence {
+  height: 10px;
+  width: 10px;
+  top: 10px;
+}
+
+.ms-Persona.ms-Persona--square.ms-Persona--tiny .ms-Persona-details {
+  padding-left: 18px;
+}
+
+.ms-Persona.ms-Persona--xs .ms-Persona-imageArea,
+.ms-Persona.ms-Persona--xs .ms-Persona-imageCircle,
+.ms-Persona.ms-Persona--xs .ms-Persona-image {
+  width: 30px;
+  height: 30px;
+}
+
+.ms-Persona.ms-Persona--xs .ms-Persona-placeholder {
+  font-size: 28px;
+  top: 4px;
+}
+
+.ms-Persona.ms-Persona--xs .ms-Persona-presence {
+  height: 8px;
+  width: 8px;
+  right: -1px;
+  bottom: -1px;
+}
+
+.ms-Persona.ms-Persona--xs .ms-Persona-details {
+  padding-left: 8px;
+}
+
+.ms-Persona.ms-Persona--xs .ms-Persona-primaryText {
+  font-size: 14px;
+  padding-top: 3px;
+}
+
+.ms-Persona.ms-Persona--xs .ms-Persona-secondaryText {
+  display: none;
+}
+
+.ms-Persona.ms-Persona--square.ms-Persona--xs .ms-Persona-presence {
+  height: 30px;
+  width: 4px;
+}
+
+.ms-Persona.ms-Persona--sm .ms-Persona-imageArea,
+.ms-Persona.ms-Persona--sm .ms-Persona-imageCircle,
+.ms-Persona.ms-Persona--sm .ms-Persona-image {
+  width: 40px;
+  height: 40px;
+}
+
+.ms-Persona.ms-Persona--sm .ms-Persona-placeholder {
+  font-size: 38px;
+  top: 5px;
+}
+
+.ms-Persona.ms-Persona--sm .ms-Persona-presence {
+  height: 10px;
+  width: 10px;
+  right: -1px;
+  bottom: -1px;
+}
+
+.ms-Persona.ms-Persona--sm .ms-Persona-details {
+  padding-left: 8px;
+}
+
+.ms-Persona.ms-Persona--sm .ms-Persona-primaryText {
+  font-size: 14px;
+  padding-top: 1px;
+}
+
+.ms-Persona.ms-Persona--sm .ms-Persona-secondaryText {
+  padding-top: 5px;
+}
+
+.ms-Persona.ms-Persona--square.ms-Persona--sm .ms-Persona-presence {
+  height: 40px;
+  width: 4px;
+}
+
+.ms-Persona.ms-Persona--lg .ms-Persona-imageArea,
+.ms-Persona.ms-Persona--lg .ms-Persona-imageCircle,
+.ms-Persona.ms-Persona--lg .ms-Persona-image {
+  width: 70px;
+  height: 70px;
+}
+
+.ms-Persona.ms-Persona--lg .ms-Persona-placeholder {
+  font-size: 67px;
+  top: 9px;
+}
+
+.ms-Persona.ms-Persona--lg .ms-Persona-presence {
+  height: 16px;
+  width: 16px;
+}
+
+.ms-Persona.ms-Persona--lg .ms-Persona-primaryText {
+  font-family: 'Segoe UI Regular WestEuropean', 'Segoe UI', 'Segoe WP', Tahoma, Arial, sans-serif;
+}
+
+.ms-Persona.ms-Persona--lg .ms-Persona-tertiaryText {
+  display: block;
+}
+
+.ms-Persona.ms-Persona--square.ms-Persona--lg .ms-Persona-presence {
+  height: 70px;
+  width: 7px;
+}
+
+.ms-Persona.ms-Persona--xl .ms-Persona-imageArea,
+.ms-Persona.ms-Persona--xl .ms-Persona-imageCircle,
+.ms-Persona.ms-Persona--xl .ms-Persona-image {
+  width: 100px;
+  height: 100px;
+}
+
+.ms-Persona.ms-Persona--xl .ms-Persona-placeholder {
+  font-size: 95px;
+  top: 12px;
+}
+
+.ms-Persona.ms-Persona--xl .ms-Persona-presence {
+  height: 24px;
+  width: 24px;
+}
+
+.ms-Persona.ms-Persona--xl .ms-Persona-details {
+  padding-left: 20px;
+}
+
+.ms-Persona.ms-Persona--xl .ms-Persona-primaryText {
+  font-size: 21px;
+  font-family: 'Segoe UI Semilight WestEuropean', 'Segoe UI Semilight', 'Segoe WP Semilight', 'Segoe UI', 'Segoe WP', Tahoma, Arial, sans-serif;
+  margin-top: 2px;
+}
+
+.ms-Persona.ms-Persona--xl .ms-Persona-secondaryText {
+  padding-top: 7px;
+}
+
+.ms-Persona.ms-Persona--xl .ms-Persona-tertiaryText,
+.ms-Persona.ms-Persona--xl .ms-Persona-optionalText {
+  padding-top: 8px;
+  display: block;
+}
+
+.ms-Persona.ms-Persona--square.ms-Persona--xl .ms-Persona-presence {
+  height: 100px;
+  width: 9px;
+}
+
+.ms-Persona.ms-Persona--darkText .ms-Persona-primaryText {
+  color: #212121;
+}
+
+.ms-Persona.ms-Persona--darkText .ms-Persona-secondaryText,
+.ms-Persona.ms-Persona--darkText .ms-Persona-tertiaryText,
+.ms-Persona.ms-Persona--darkText .ms-Persona-optionalText {
+  color: #333333;
+}
+
+.ms-Persona.ms-Persona--selectable {
+  cursor: pointer;
+  padding: 0 10px;
+}
+
+.ms-Persona.ms-Persona--selectable:not(.ms-Persona--xl):hover,
+.ms-Persona.ms-Persona--selectable:not(.ms-Persona--xl):focus {
+  background-color: #deecf9;
+  outline: 1px solid transparent;
+}
+
+.ms-Persona.ms-Persona--available .ms-Persona-presence {
+  background-color: #5dd255;
+}
+
+.ms-Persona.ms-Persona--away .ms-Persona-presence {
+  background-color: #ffd200;
+}
+
+.ms-Persona.ms-Persona--blocked .ms-Persona-presence {
+  background-color: #dedede;
+  background-image: linear-gradient(to bottom, #dedede 0%, #dedede 48%, #c72d25 40%, #c72d25 58%, #dedede 52%, #dedede 100%);
+}
+
+.ms-Persona.ms-Persona--busy .ms-Persona-presence {
+  background-color: #d93b3b;
+  background: repeating-linear-gradient(-45deg, #e57a79, #e57a79 1px, #d00e0d 0px, #d00e0d 2px);
+}
+
+.ms-Persona.ms-Persona--busy.ms-Persona--square .ms-Persona-presence {
+  background-color: #d93b3b;
+  background: repeating-linear-gradient(-45deg, #e57a79, #e57a79 3px, #d00e0d 3px, #d00e0d 6px);
+}
+
+.ms-Persona.ms-Persona--dnd .ms-Persona-presence {
+  background-color: #c72d25;
+  background-image: linear-gradient(to bottom, #c72d25 0%, #c72d25 48%, #ffffff 48%, #ffffff 52%, #c72d25 52%, #c72d25 100%);
+}
+
+.ms-Persona.ms-Persona--offline .ms-Persona-presence {
+  background-color: #b6cfd8;
+}
+
+.ms-PeoplePicker {
+  color: #333333;
+  font-family: 'Segoe UI Regular WestEuropean', 'Segoe UI', 'Segoe WP', Tahoma, Arial, sans-serif;
+  font-size: 14px;
+  font-weight: normal;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-shadow: none;
+  background-color: #ffffff;
+  margin-bottom: 10px;
+}
+
+.ms-PeoplePicker-searchBox {
+  *zoom: 1;
+  border: 1px solid #c8c8c8;
+  box-sizing: border-box;
+  min-height: 40px;
+  width: 100%;
+}
+
+.ms-PeoplePicker-searchBox:before,
+.ms-PeoplePicker-searchBox:after {
+  display: table;
+  content: '';
+  line-height: 0;
+}
+
+.ms-PeoplePicker-searchBox:after {
+  clear: both;
+}
+
+.ms-PeoplePicker-searchBox:hover {
+  border-color: #767676;
+}
+
+.ms-PeoplePicker.is-active .ms-PeoplePicker-searchBox {
+  border-color: #0078d7;
+}
+
+.ms-PeoplePicker-searchField {
+  border: none;
+  box-sizing: border-box;
+  display: inline-block;
+  float: left;
+  height: 38px;
+  outline: none;
+  padding-left: 8px;
+  width: 100%;
+}
+
+.ms-PeoplePicker-persona {
+  display: inline-block;
+  float: left;
+  margin: 4px;
+}
+
+.ms-PeoplePicker-persona .ms-Persona {
+  background-color: #f4f4f4;
+  float: left;
+  min-height: 30px;
+}
+
+.ms-PeoplePicker-persona.has-error .ms-Persona-primaryText {
+  color: #a80000;
+}
+
+.ms-PeoplePicker-personaRemove {
+  background: none;
+  border: 0;
+  cursor: pointer;
+  background-color: #f4f4f4;
+  color: #666666;
+  display: inline-block;
+  float: left;
+  height: 30px;
+  text-align: center;
+  width: 30px;
+}
+
+.ms-PeoplePicker-personaRemove:hover {
+  background-color: #eaeaea;
+  color: #333333;
+  cursor: pointer;
+}
+
+.ms-PeoplePicker-personaRemove:focus {
+  background-color: #eaeaea;
+  color: #333333;
+  border: 1px solid #0078d7;
+  outline: none;
+}
+
+.ms-PeoplePicker-results {
+  box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.4);
+  background-color: #ffffff;
+  border: 1px solid #c8c8c8;
+  display: none;
+  margin-bottom: -1px;
+  max-width: 340px;
+  padding-top: 9px;
+  position: absolute;
+  z-index: 305;
+}
+
+.ms-PeoplePicker.is-active .ms-PeoplePicker-results {
+  display: block;
+}
+
+.ms-PeoplePicker-resultGroups {
+  max-height: 309px;
+  overflow-y: scroll;
+}
+
+.ms-PeoplePicker-resultGroup {
+  border-top: 1px solid #eaeaea;
+}
+
+.ms-PeoplePicker-resultGroup:first-child {
+  border-top: none;
+}
+
+.ms-PeoplePicker-resultGroupTitle {
+  color: #0078d7;
+  font-family: 'Segoe UI Semilight WestEuropean', 'Segoe UI Semilight', 'Segoe WP Semilight', 'Segoe UI', 'Segoe WP', Tahoma, Arial, sans-serif;
+  font-size: 12px;
+  padding: 17px 0 0 12px;
+  text-transform: uppercase;
+  height: 40px;
+}
+
+.ms-PeoplePicker-resultList {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-shadow: none;
+  margin-bottom: -1px;
+  list-style-type: none;
+}
+
+.ms-PeoplePicker-result {
+  position: relative;
+}
+
+.ms-PeoplePicker-result .ms-Persona:hover {
+  cursor: pointer;
+}
+
+.ms-PeoplePicker-result .ms-Persona:hover .ms-Persona-primaryText {
+  color: #212121;
+}
+
+.ms-PeoplePicker-result .ms-Persona:hover .ms-Persona-secondaryText,
+.ms-PeoplePicker-result .ms-Persona:hover .ms-Persona-tertiaryText,
+.ms-PeoplePicker-result .ms-Persona:hover .ms-Persona-optionalText {
+  color: #333333;
+}
+
+.ms-PeoplePicker-result .ms-Persona:active {
+  background-color: #c7e0f4;
+}
+
+.ms-PeoplePicker-result .ms-Persona-details {
+  width: 100%;
+}
+
+.ms-PeoplePicker-resultBtn {
+  cursor: pointer;
+  position: relative;
+  height: 50px;
+  width: 100%;
+  background: none;
+  border: 0;
+  text-align: left;
+  margin: 0 0 10px 0;
+  padding: 0 0 0 9px;
+}
+
+.ms-PeoplePicker-resultBtn:hover {
+  background-color: #eaeaea;
+  outline: 1px solid transparent;
+}
+
+.ms-PeoplePicker-resultBtn:focus {
+  outline: 1;
+}
+
+.ms-PeoplePicker-resultBtn.ms-PeoplePicker-resultBtn--compact {
+  height: 30px;
+}
+
+.ms-PeoplePicker-resultAction {
+  background: none;
+  border: 0;
+  cursor: pointer;
+  display: block;
+  transition: background-color 0.367s cubic-bezier(0.1, 0.9, 0.2, 1);
+  height: 50px;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 30px;
+  z-index: 300;
+}
+
+.ms-PeoplePicker-resultAction .ms-Icon {
+  color: #666666;
+  font-size: 15px;
+  margin-top: -8px;
+  position: absolute;
+  text-align: center;
+  left: 8px;
+}
+
+.ms-PeoplePicker-resultAction:hover {
+  background-color: #c8c8c8;
+  outline: 1px solid transparent;
+}
+
+.ms-PeoplePicker-resultAction:active {
+  background-color: #71afe5;
+}
+
+.ms-PeoplePicker-resultAdditionalContent {
+  display: none;
+}
+
+.ms-PeoplePicker-result.is-expanded {
+  background-color: #f4f4f4;
+  margin-bottom: 11px;
+}
+
+.ms-PeoplePicker-result.is-expanded .ms-PeoplePicker-resultAction .ms-Icon {
+  -webkit-transform: rotate(180deg);
+      -ms-transform: rotate(180deg);
+          transform: rotate(180deg);
+}
+
+.ms-PeoplePicker-result.is-expanded .ms-PeoplePicker-resultAdditionalContent {
+  display: block;
+}
+
+.ms-PeoplePicker-searchMore {
+  border-top: 1px solid #eaeaea;
+  height: 69px;
+  position: relative;
+}
+
+.ms-PeoplePicker-searchMore .ms-Spinner {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  top: 20px;
+  left: 20px;
+  display: none;
+}
+
+.ms-PeoplePicker-searchMore .ms-Spinner .ms-Spinner-circle {
   background-color: #0078d7;
 }
 
-.ms-Callout.ms-Callout--OOBE .ms-Callout-title {
+.ms-PeoplePicker-searchMore.is-searching .ms-Spinner {
+  display: block;
+}
+
+.ms-PeoplePicker-searchMore.is-searching .ms-PeoplePicker-searchMoreIcon .ms-Icon {
+  display: none;
+}
+
+.ms-PeoplePicker-searchMore.is-searching .ms-PeoplePicker-searchMorePrimary {
+  color: #0078d7;
+}
+
+.ms-PeoplePicker-searchMore.is-searching:hover {
+  background-color: transparent;
+  cursor: default;
+}
+
+.ms-PeoplePicker-searchMoreBtn {
+  background: none;
+  border: 0;
+  cursor: pointer;
+  position: relative;
+  height: 69px;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  padding-left: 70px;
+  text-align: left;
+}
+
+.ms-PeoplePicker-searchMoreBtn:hover {
+  background-color: #eaeaea;
+  cursor: pointer;
+}
+
+.ms-PeoplePicker-searchMoreBtn:active {
+  background-color: #c7e0f4;
+}
+
+.ms-PeoplePicker-searchMoreBtn.ms-PeoplePicker-searchMoreBtn--compact {
+  height: 49px;
+  padding-left: 50px;
+}
+
+.ms-PeoplePicker-searchMoreIcon {
+  height: 70px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 70px;
+}
+
+.ms-PeoplePicker-searchMoreIcon .ms-Icon {
+  color: #333333;
+  font-size: 24px;
+  position: absolute;
+  text-align: center;
+  top: 27px;
+  width: 100%;
+}
+
+.ms-PeoplePicker-searchMorePrimary {
+  padding-top: 2px;
+  font-family: 'Segoe UI Regular WestEuropean', 'Segoe UI', 'Segoe WP', Tahoma, Arial, sans-serif;
+}
+
+.ms-PeoplePicker-searchMoreSecondary {
+  font-family: 'Segoe UI Semilight WestEuropean', 'Segoe UI Semilight', 'Segoe WP Semilight', 'Segoe UI', 'Segoe WP', Tahoma, Arial, sans-serif;
+  font-size: 11px;
+  color: #666666;
+}
+
+.ms-PeoplePicker-searchMore.ms-PeoplePicker-searchMore--disconnected:hover {
+  background-color: inherit;
+  cursor: default;
+}
+
+.ms-PeoplePicker-searchMore.ms-PeoplePicker-searchMore--disconnected .ms-PeoplePicker-searchMoreIcon .ms-Icon {
+  color: #666666;
+}
+
+.ms-PeoplePicker-searchMore.ms-PeoplePicker-searchMore--disconnected .ms-PeoplePicker-searchMorePrimary {
+  color: #666666;
+  font-family: 'Segoe UI Semilight WestEuropean', 'Segoe UI Semilight', 'Segoe WP Semilight', 'Segoe UI', 'Segoe WP', Tahoma, Arial, sans-serif;
+  font-size: 11px;
+  line-height: 20px;
+}
+
+.ms-PeoplePicker.ms-PeoplePicker--compact .ms-PeoplePicker-resultGroups {
+  max-height: 209px;
+}
+
+.ms-PeoplePicker.ms-PeoplePicker--compact .ms-PeoplePicker-resultAction {
+  height: 30px;
+}
+
+.ms-PeoplePicker.ms-PeoplePicker--compact .ms-PeoplePicker-resultAction .ms-Icon {
+  margin-top: -8px;
+}
+
+.ms-PeoplePicker.ms-PeoplePicker--compact .ms-PeoplePicker-searchMore {
+  height: 49px;
+}
+
+.ms-PeoplePicker.ms-PeoplePicker--compact .ms-PeoplePicker-searchMore .ms-Spinner {
+  width: 28px;
+  height: 28px;
+  top: 12px;
+  left: 12px;
+}
+
+.ms-PeoplePicker.ms-PeoplePicker--compact .ms-PeoplePicker-searchMore.is-searching .ms-PeoplePicker-searchMoreIcon {
+  background-size: 16px;
+}
+
+.ms-PeoplePicker.ms-PeoplePicker--compact .ms-PeoplePicker-searchMoreIcon {
+  height: 50px;
+  width: 50px;
+}
+
+.ms-PeoplePicker.ms-PeoplePicker--compact .ms-PeoplePicker-searchMoreIcon .ms-Icon {
+  font-size: 17px;
+  margin-top: -12px;
+}
+
+.ms-PeoplePicker.ms-PeoplePicker--compact .ms-PeoplePicker-searchMorePrimary {
+  font-size: 12px;
+}
+
+.ms-PeoplePicker.ms-PeoplePicker--compact .ms-PeoplePicker-searchMoreSecondary {
+  display: none;
+}
+
+.ms-PeoplePicker.ms-PeoplePicker--facePile .ms-PeoplePicker-searchBox {
+  height: 30px;
+  min-height: 30px;
+}
+
+.ms-PeoplePicker.ms-PeoplePicker--facePile .ms-PeoplePicker-searchField {
+  height: 28px;
+}
+
+.ms-PeoplePicker-selected {
+  margin-bottom: 20px;
+  display: none;
+}
+
+.ms-PeoplePicker-selected.is-active {
+  display: block;
+}
+
+.ms-PeoplePicker-selectedHeader {
+  color: #0078d7;
+  text-transform: uppercase;
+  font-size: 12px;
   font-family: 'Segoe UI Light WestEuropean', 'Segoe UI Light', 'Segoe WP Light', 'Segoe UI', 'Segoe WP', Tahoma, Arial, sans-serif;
-  font-size: 28px;
-  color: #ffffff;
+  height: 50px;
+  line-height: 50px;
 }
 
-.ms-Callout.ms-Callout--OOBE .ms-Callout-inner {
-  padding-top: 20px;
+.ms-PeoplePicker-selectedPeople {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-shadow: none;
+  list-style: none;
 }
 
-.ms-Callout.ms-Callout--OOBE .ms-Callout-subText {
-  font-size: 14px;
-}
-
-.ms-Callout.ms-Callout--actionText .ms-Callout-actions {
-  border-top: 1px solid #eaeaea;
-  margin-bottom: -8px;
-}
-
-.ms-Callout.ms-Callout--peek.ms-Callout--arrowTop:before,
-.ms-Callout.ms-Callout--peek.ms-Callout--arrowBottom:before,
-.ms-Callout.ms-Callout--peek.ms-Callout--arrowTop:after,
-.ms-Callout.ms-Callout--peek.ms-Callout--arrowBottom:after {
-  left: 40px;
-  right: auto;
-}
-
-.ms-Callout.ms-Callout--peek.ms-Callout--arrowRight:before,
-.ms-Callout.ms-Callout--peek.ms-Callout--arrowLeft:before,
-.ms-Callout.ms-Callout--peek.ms-Callout--arrowRight:after,
-.ms-Callout.ms-Callout--peek.ms-Callout--arrowLeft:after {
-  top: calc(50% - 10px);
-}
-
-.ms-Callout.ms-Callout--peek .ms-Callout-header {
-  padding-bottom: 0;
-}
-
-.ms-Callout.ms-Callout--peek .ms-Callout-title {
-  font-size: 14px;
-}
-
-.ms-Callout.ms-Callout--peek .ms-Callout-actions {
-  margin-top: 12px;
-  margin-bottom: -4px;
-}
-
-@media (min-width: 480px) {
-  .ms-Callout {
-    width: 300px;
-    margin: 16px;
-  }
-
-  .ms-Callout.ms-Callout--arrowRight:before,
-  .ms-Callout.ms-Callout--arrowLeft:before,
-  .ms-Callout.ms-Callout--arrowRight:after,
-  .ms-Callout.ms-Callout--arrowLeft:after {
-    display: block;
-  }
+.ms-PeoplePicker-selectedPerson {
+  margin-bottom: 10px;
+  position: relative;
 }
