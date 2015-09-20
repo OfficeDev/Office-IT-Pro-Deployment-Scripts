@@ -2076,6 +2076,7 @@ function createXmlDocument(string) {
 function displayXml(xmlDoc) {
     var xmlString = (new XMLSerializer().serializeToString(xmlDoc.documentElement));
     var xmlOutput = vkbeautify.xml(xmlString);
+
     $('textarea#xmlText').val(xmlOutput);
     $.cookie("xmlcache", xmlOutput);
 }
