@@ -99,13 +99,33 @@
             width: 100%;
         }
 
+        .ms-CommandBarItem:hover {
+          /*background-color: #004578;*/
+          color: #0078d7;
+          -webkit-transition: background 0.5s linear;
+          -moz-transition: background 0.5s linear;
+          -ms-transition: background 0.5s linear;
+          -o-transition: background 0.5s linear;
+          transition: background 0.5s linear;
+        }
+
+        .ms-CommandBarItemTop:hover {
+            background-color: #004578;
+          color: #0078d7;
+          -webkit-transition: background 0.5s linear;
+          -moz-transition: background 0.5s linear;
+          -ms-transition: background 0.5s linear;
+          -o-transition: background 0.5s linear;
+          transition: background 0.5s linear;
+        }
+
     </style>
 </head>
 
 <body>
-    <div class="ms-bgColor-themeDarker ms-CommandBar" style="background-color:#004578;color:white;height: 50px;">
+    <div class="ms-bgColor-themeDarker ms-CommandBar" style="background-color:#0072c5;color:#4c9cd6;height: 50px;">
         <div class="ms-CommandBar-sideCommands">
-            <div class="ms-CommandBarItem ms-CommandBarItem--iconOnly" style="border-left:1px solid white;
+            <div class="ms-CommandBarItem ms-CommandBarItem--iconOnly ms-CommandBarItemTop" style="border-left:1px solid #4c9cd6;
                              border-right:1px solid white; margin-right:-5px;height: 50px;width:50px">
                 <div class="ms-CommandBarItem-linkWrapper">
                     <div class="ms-CommandBarItem-link" onclick="showAbout()">
@@ -114,7 +134,7 @@
                     </div>
                 </div>
             </div>
-            <div id="menuGitHubIssues" class="ms-CommandBarItem ms-CommandBarItem--iconOnly" style="border-left:1px solid white;border-right:1px solid white;margin-right:-5px;height: 50px;width:50px">
+            <div id="menuGitHubIssues" class="ms-CommandBarItem ms-CommandBarItem--iconOnly ms-CommandBarItemTop" style="border-left:1px solid #4c9cd6;border-right:1px solid #4c9cd6;margin-right:-5px;height: 50px;width:50px">
                 <div class=" ms-commandbaritem-linkwrapper">
                     <div class="ms-CommandBarItem-link">
                         <span class="ms-CommandBarItem-icon ms-Icon ms-Icon--support ms-fontColor-white" style="font-size: 20px;margin-top: 15px"></span>
@@ -122,7 +142,7 @@
                     </div>
                 </div>
             </div>
-            <div id="menuViewOnGitHub" class="ms-CommandBarItem ms-CommandBarItem--iconOnly" style="border-left:1px solid white;margin-right:-5px;height: 50px;width:50px">
+            <div id="menuViewOnGitHub" class="ms-CommandBarItem ms-CommandBarItem--iconOnly ms-CommandBarItemTop" style="border-right:1px solid #4c9cd6;;border-left:1px solid #4c9cd6;margin-right:-5px;height: 50px;width:50px">
                 <div id="btviewongithub" class="ms-CommandBarItem-linkWrapper">
                     <div class="ms-CommandBarItem-link">
                         <img class="ms-CommandBarItem-icon ms-Icon ms-fontColor-white" style="font-size: 20px;margin-top: 13px" src="images/github24.png">
@@ -133,7 +153,7 @@
         </div>
         <div class="ms-CommandBar-mainArea">
             <div class="custom-cmditem">
-                <span class="ms-font-l ms-font-weight-regular ms-fontColor-white headerText" style="height:100%;width:100%;margin:0px 0px 0px 15px;border-right:1px solid white; padding-right:15px;">Office 365 ProPlus</span>
+                <span class="ms-font-l ms-font-weight-regular ms-fontColor-white headerText" style="height:100%;width:100%;margin:0px 0px 0px 15px;border-right:1px solid #4c9cd6; padding-right:15px;">Office 365 ProPlus</span>
             </div>
             <div class="custom-cmditem">
                 <span class="ms-font-l ms-font-weight-regular ms-fontColor-white headerText" style="height:100%;width:100%;margin:0px 0px 0px 0px;">Configuration XML Editor</span>
