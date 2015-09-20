@@ -912,7 +912,7 @@
 }
 
 .ms-Callout {
-  z-index: 100;
+  z-index: 9999;
   margin: 16px auto;
   position: relative;
   width: 288px;

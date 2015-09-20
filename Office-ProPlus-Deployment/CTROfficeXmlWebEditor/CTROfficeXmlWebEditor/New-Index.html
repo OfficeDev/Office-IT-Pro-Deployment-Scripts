@@ -114,7 +114,7 @@
                     </div>
                 </div>
             </div>
-            <div class="ms-CommandBarItem ms-CommandBarItem--iconOnly" style="border-left:1px solid white;border-right:1px solid white;margin-right:-5px;height: 50px;width:50px">
+            <div id="menuGitHubIssues" class="ms-CommandBarItem ms-CommandBarItem--iconOnly" style="border-left:1px solid white;border-right:1px solid white;margin-right:-5px;height: 50px;width:50px">
                 <div class=" ms-commandbaritem-linkwrapper">
                     <div class="ms-CommandBarItem-link">
                         <span class="ms-CommandBarItem-icon ms-Icon ms-Icon--support ms-fontColor-white" style="font-size: 20px;margin-top: 15px"></span>
@@ -122,7 +122,7 @@
                     </div>
                 </div>
             </div>
-            <div class="ms-CommandBarItem ms-CommandBarItem--iconOnly" style="border-left:1px solid white;margin-right:-5px;height: 50px;width:50px">
+            <div id="menuViewOnGitHub" class="ms-CommandBarItem ms-CommandBarItem--iconOnly" style="border-left:1px solid white;margin-right:-5px;height: 50px;width:50px">
                 <div id="btviewongithub" class="ms-CommandBarItem-linkWrapper">
                     <div class="ms-CommandBarItem-link">
                         <img class="ms-CommandBarItem-icon ms-Icon ms-fontColor-white" style="font-size: 20px;margin-top: 13px" src="images/github24.png">
@@ -153,11 +153,11 @@
                             <div class="ms-Table-row">
                                 <span class="ms-font-xl">Version</span>
                             </div>
-                            <div id="office2013Select" class="ms-Table-row is-selected navrowversion">
-                                <span class="ms-Table-cell" onclick="setVersionPanel('office2013Select')">Office ProPlus 2013</span>
-                            </div>
-                            <div id="office2016Select" class="ms-Table-row navrowversion">
+                            <div id="office2016Select" class="ms-Table-row is-selected navrowversion">
                                 <span class="ms-Table-cell" onclick="setVersionPanel('office2016Select')">Office ProPlus 2016</span>
+                            </div>
+                            <div id="office2013Select" class="ms-Table-row navrowversion">
+                                <span class="ms-Table-cell" onclick="setVersionPanel('office2013Select')">Office ProPlus 2013</span>
                             </div>
                         </div>
                         
@@ -195,7 +195,7 @@
                     <!-- Start Add Product Panel -->
                     <div id="AddProductPanel" class="option-panel visible">
                         <h1 class="ms-font-xxl">Add Product</h1>
-                        <div style="border-bottom:1px solid grey">
+                        <div style="border-bottom:1px solid #e5e3e3">
                             <h2 class="ms-font-xl">Required Fields</h2>
                             <table>
                                 <tr>
@@ -204,32 +204,6 @@
                                     </td>
                                     <td>
                                         <i id="productInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('productInfo', this)"></i>
-                                        <div id="productInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none">
-                                            <div class="ms-Callout-main">
-                                                <div class="ms-Callout-header">
-                                                    <p class="ms-Callout-title">Office Product</p>
-                                                </div>
-                                                <div class="ms-Callout-inner">
-                                                    <div class="ms-Callout-content">
-                                                        <p class="ms-Callout-subText">Specifies the Click-to-Run product to install.</p>
-                                                        <hr>
-                                                        <p class="ms-Callout-subText">Required. <strong>ID</strong> must be set to a valid ProductRelease ID.</p>
-                                                        <br />
-                                                        <p class="ms-Callout-subText">The supported ProductRelease IDs for Click-to-Run for Office 365 products are as follows:</p>
-                                                        <ul>
-                                                            <li> <p class="ms-Callout-subText">O365ProPlusRetail</p> </li>
-                                                            <li> <p class="ms-Callout-subText">O365BusinessRetail</p> </li>
-                                                            <li> <p class="ms-Callout-subText">VisioProRetail</p> </li>
-                                                            <li> <p class="ms-Callout-subText">ProjectProRetail</p> </li>
-                                                            <li> <p class="ms-Callout-subText">SPDRetail (SharePoint Designer)</p> </li>
-                                                        </ul>
-                                                        <p class="ms-Callout-subText">If <strong>ID</strong> is not set, the operation fails and indicates that the input is not valid.</p>
-                                                        <br />
-                                                        <p class="ms-Callout-subText">The order of <strong>Product</strong> elements determines the order in which the products are installed. The first <strong>Product ID</strong> is used to determine in which context the Microsoft Office First Run Experience application starts. Microsoft Office First Run Experience refers to the first time each Office application starts.</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
                                     </td>
                                 </tr>
                             </table>
@@ -243,6 +217,7 @@
                                     <option value="SPDRetail">SharePoint Designer</option>
                                 </select>
                             </div>
+
                             <table>
                                 <tr>
                                     <td>
@@ -250,20 +225,6 @@
                                     </td>
                                     <td>
                                         <i id="editionInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('editionInfo', this)"></i>
-                                        <div id="editionInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:75px; top:115px; display:none">
-                                            <div class="ms-Callout-main">
-                                                <div class="ms-Callout-header">
-                                                    <p class="ms-Callout-title">Office Client Edition</p>
-                                                </div>
-                                                <div class="ms-Callout-inner">
-                                                    <div class="ms-Callout-content">
-                                                        <p class="ms-Callout-subText">Required. Specifies the edition of Click-to-Run for Office 365 product to use: 32- or 64-bit. The action fails if <strong>OfficeClientEdition</strong> is not set to a valid value.</p>
-                                                        <br />
-                                                        <p class="ms-Callout-subText">A <strong>configure</strong> mode action may fail if <strong>OfficeClientEdition</strong> is set incorrectly. For example, if you attempt to install a 64-bit edition of a Click-to-Run for Office 365 product on a computer that is running a 32-bit Windows operating system, or if you try to install a 32-bit Click-to-Run for Office 365 product on a computer that has a 64-bit edition of Office installed.</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
                                     </td>
                                 </tr>
                             </table>
@@ -274,6 +235,28 @@
                                     <option value="64">64-bit</option>
                                 </select>
                             </div>
+                            
+                            <div id="branchSection">
+                                <table>
+                                    <tr>
+                                        <td>
+                                            <label class="ms-Label">Branch</label>
+                                        </td>
+                                        <td>
+                                            <i id="branchInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('branchnInfo', this)"></i>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <div class="ms-Dropdown">
+                                    <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
+                                    <select id="cbBranch" class="ms-Dropdown-select">
+                                        <option value="Current">Current</option>
+                                        <option value="Business">Business</option>
+                                        <option value="FirstReleaseBusiness">First Release Business</option>
+                                    </select>
+                                </div>
+                            </div>
+
                             <table>
                                 <tr>
                                     <td>
@@ -281,34 +264,11 @@
                                     </td>
                                     <td>
                                         <i id="languageInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('languageInfo', this)"></i>
-                                        <div id="languageInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:90px; top:188px; display:none">
-                                            <div class="ms-Callout-main">
-                                                <div class="ms-Callout-header">
-                                                    <p class="ms-Callout-title">Product Language</p>
-                                                </div>
-                                                <div class="ms-Callout-inner">
-                                                    <div class="ms-Callout-content">
-                                                        <p class="ms-Callout-subText">Determine which product languages to install.</p>
-                                                        <hr>
-                                                        <p class="ms-Callout-subText">Required. If the <strong>Language ID</strong> value is not set, the installation operation fails and indicates that the input is not valid.</p>
-                                                        <br />
-                                                        <p class="ms-Callout-subText">The <strong>ID</strong> value can be set to a valid Office culture language (such as en-us for English US or ja-jp for Japanese). The <em>ll-cc</em> value is the language identifier. </p>
-                                                        <br />
-                                                        <p class="ms-Callout-subText">
-                                                            Language elements determine which product languages to install. Administrators must specify the languages they want to install. The first language determines the Shell UI culture. The Shell UI is the language of shortcuts, right-click context menus, and tooltips.
-                                                        </p>
-                                                        <br />
-                                                        <p class="ms-Callout-subText">
-                                                            If you decide that you want to change the Shell UI language after an initial installation, you have to uninstall Click-to-Run and reinstall. Add the language that you want to set for the Shell UI as the first language in the custom Configuration.xml file.
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
                                     </td>
                                 </tr>
                             </table>
-                            <table>
+
+                            <table style="position: relative;left:-3px;">
                                 <tr>
                                     <td style="width: 100%; padding-right: 10px">
                                         <div class="ms-Dropdown">
@@ -368,6 +328,7 @@
                                     </td>
                                 </tr>
                             </table>
+
                             <div style="margin-bottom:10px">
                                 <button id="btAddProduct" class="ms-Button">
                                     Add Product
@@ -387,24 +348,6 @@
                                     </td>
                                     <td>
                                         <i id="versionInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('versionInfo', this)"></i>
-                                        <div id="versionInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:343px; display:none">
-                                            <div class="ms-Callout-main">
-                                                <div class="ms-Callout-header">
-                                                    <p class="ms-Callout-title">Product Version</p>
-                                                </div>
-                                                <div class="ms-Callout-inner">
-                                                    <div class="ms-Callout-content">
-                                                        <p class="ms-Callout-subText">The Version of the Click-to-Run product to installation</p>
-                                                        <hr>
-                                                        <p class="ms-Callout-subText">Optional. If a <strong>Version</strong> value is not set, the Click-to-Run product installation streams the latest available version from the source. The default is to use the most recently advertised build (as defined in v32.CAB or v64.CAB at the Click-to-Run Office installation source). </p>
-                                                        <br />
-                                                        <p class="ms-Callout-subText"> <strong>Version</strong> can be set to an Office 2013 build number by using this format: X.X.X.X</p>
-                                                        <br />
-                                                        <p class="ms-Callout-subText">For more information on the specific versions of Office Click-To-Run see <a href="https://support.microsoft.com/en-us/gp/office-2013-365-update">Update Office 2013 or Office 365</a></p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
                                     </td>
                                 </tr>
                             </table>
@@ -424,29 +367,6 @@
                                     </td>
                                     <td>
                                         <i id="srcPathInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('srcPathInfo', this)"></i>
-                                        <div id="srcPathInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:98px; top:408px; display:none;">
-                                            <div class="ms-Callout-main">
-                                                <div class="ms-Callout-header">
-                                                    <p class="ms-Callout-title">Source Path</p>
-                                                </div>
-                                                <div class="ms-Callout-inner">
-                                                    <div class="ms-Callout-content">
-                                                        <p class="ms-Callout-subText">Indicates the location to save the Click-to-Run installation source when you run the Office Deployment Tool in download mode.</p>
-                                                        <hr>
-                                                        <p class="ms-Callout-subText">Optional. </p>
-                                                        <p class="ms-Callout-subText">The <strong>SourcePath</strong> value can be set to a network, local, or HTTP path that contains a Click-to-Run source. Environment variables can be used for network or local paths.</p>
-                                                        <br />
-                                                        <p class="ms-Callout-subText"> <strong>SourcePath</strong> indicates the location to save the Click-to-Run installation source when you run the Office Deployment Tool in <strong>download</strong> mode. </p>
-                                                        <br />
-                                                        <p class="ms-Callout-subText"> <strong>SourcePath</strong> indicates the installation source path from which to install Office when you run the Office Deployment Tool in <strong>configure</strong> mode. If you don’t specify <strong>SourcePath</strong> in <strong>configure</strong> mode, Setup will look in the current folder for the Office source files. If the Office source files aren’t found in the current folder, Setup will look on Office 365 for them.</p>
-                                                        <br />
-                                                        <p class="ms-Callout-subText"> <strong>SourcePath</strong> specifies the path of the Click-to-Run Office source from which the App-V package will be made when you run the Office Deployment Tool in <strong>packager</strong> mode.</p>
-                                                        <br />
-                                                        <p class="ms-Callout-subText">If you do not specify <strong>SourcePath</strong>, Setup will attempt to create an <strong>\Office\Data\...</strong> folder structure in the working directory from which you are running setup.exe.</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
                                     </td>
                                 </tr>
                             </table>
@@ -457,43 +377,25 @@
                                        data-error="This must be a network, local, or HTTP path">
                                 <!--<span id="sourcepathSignal" class="glyphicon form-control-feedback" aria-hidden="true"></span>-->
                             </div>
+                            
+                            <div id="pidKeyLabel">
+                                <table>
+                                    <tr>
+                                        <td>
+                                            <label class="ms-Label">PIDKEY</label>
+                                        </td>
+                                        <td>
+                                            <i id="pidkeyInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('pidkeyInfo', this)"></i>
+                                        </td>
+                                    </tr>
+                                </table>
 
-                            <table>
-                                <tr>
-                                    <td>
-                                        <label class="ms-Label">PIDKEY</label>
-                                    </td>
-                                    <td>
-                                        <i id="pidkeyInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('pidkeyInfo', this)"></i>
-                                        <div id="pidkeyInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:75px; top:472px; display:none">
-                                            <div class="ms-Callout-main">
-                                                <div class="ms-Callout-header">
-                                                    <p class="ms-Callout-title">PIDKEY</p>
-                                                </div>
-                                                <div class="ms-Callout-inner">
-                                                    <div class="ms-Callout-content">
-                                                        <p class="ms-Callout-subText">The 25-character volume license key.</p>
-                                                        <hr>
-                                                        <p class="ms-Callout-subText">Optional. </p>
-
-                                                        <p class="ms-Callout-subText">When the <strong>PIDKEY</strong> value is set, users are not required to enter a product key when they install Office.</p>
-                                                        <br />
-                                                        <p class="ms-Callout-subText">If this element is not defined, the default settings are used. If an invalid value is specified, Setup ends the installation. </p>
-                                                        <br />
-                                                        <p class="ms-Callout-subText">If the <strong>Level</strong> attribute is set to "basic" or “none” and you supply a product key by using the <strong>PIDKEY</strong>, Setup assumes that you also accept the license agreement on behalf of the user.</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </table>
-
-                            <div>
-                                <input id="txtPidKey" type="text" pattern="^.{5}-.{5}-.{5}-.{5}-.{5}$"
-                                       class="ms-TextField-field" placeholder="XXXXX-XXXXX-XXXXX-XXXXX-XXXXX"
-                                       data-error="This must be a 25-character volume license key">
-                                <!--<span id="pidkeySignal" class="glyphicon form-control-feedback" aria-hidden="true"></span>-->
+                                <div>
+                                    <input id="txtPidKey" type="text" pattern="^.{5}-.{5}-.{5}-.{5}-.{5}$"
+                                           class="ms-TextField-field" placeholder="XXXXX-XXXXX-XXXXX-XXXXX-XXXXX"
+                                           data-error="This must be a 25-character volume license key">
+                                    <!--<span id="pidkeySignal" class="glyphicon form-control-feedback" aria-hidden="true"></span>-->
+                                </div>
                             </div>
 
                             <table>
@@ -503,43 +405,11 @@
                                     </td>
                                     <td>
                                         <i id="exclAppInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('exclAppInfo', this)"></i>
-                                        <div id="exclAppInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:150px; top:510px; display:none">
-                                            <div class="ms-Callout-main">
-                                                <div class="ms-Callout-header">
-                                                    <p class="ms-Callout-title">ExcludeApp</p>
-                                                </div>
-                                                <div class="ms-Callout-inner">
-                                                    <div class="ms-Callout-content">
-                                                        <p class="ms-Callout-subText">Specifies which Office programs not to install.</p>
-                                                        <hr>
-                                                        <p class="ms-Callout-subText">Optional. </p>
-                                                        <p class="ms-Callout-subText">The following is a list of the supported values for <strong>ID</strong>:</p>
-                                                        <ul>
-                                                            <li> <p class="ms-Callout-subText">Access</p> </li>
-                                                            <li> <p class="ms-Callout-subText">Excel</p> </li>
-                                                            <li> <p class="ms-Callout-subText">Groove</p> </li>
-                                                            <li> <p class="ms-Callout-subText">InfoPath</p> </li>
-                                                            <li> <p class="ms-Callout-subText">Lync</p> </li>
-                                                            <li> <p class="ms-Callout-subText">OneNote</p> </li>
-                                                            <li> <p class="ms-Callout-subText">Outlook</p> </li>
-                                                            <li> <p class="ms-Callout-subText">PowerPoint</p> </li>
-                                                            <li> <p class="ms-Callout-subText">Project</p> </li>
-                                                            <li> <p class="ms-Callout-subText">Publisher</p> </li>
-                                                            <li> <p class="ms-Callout-subText">SharePointDesigner</p> </li>
-                                                            <li> <p class="ms-Callout-subText">Visio</p> </li>
-                                                            <li> <p class="ms-Callout-subText">Word</p> </li>
-                                                        </ul>
-                                                        <p class="ms-Callout-subText">The value “Groove” is used to exclude OneDrive for Business.</p>
-                                                        <p class="ms-Callout-subText">The value "Lync" also applies to Skype for Business.</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
                                     </td>
                                 </tr>
                             </table>
 
-                            <div>
+                            <div style="position: relative;left:-3px;">
                                 <div>
                                     <table>
                                         <tr>
@@ -591,27 +461,6 @@
                                 </td>
                                 <td>
                                     <i id="removeProductInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('removeProductInfo', this)"></i>
-                                    <div id="removeProductInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none">
-                                        <div class="ms-Callout-main">
-                                            <div class="ms-Callout-header">
-                                                <p class="ms-Callout-title">Remove Products</p>
-                                            </div>
-                                            <div class="ms-Callout-inner">
-                                                <div class="ms-Callout-content">
-                                                    <p class="ms-Callout-subText">Removes products and languages.</p>
-                                                    <hr>
-                                                    <p class="ms-Callout-subText"><strong>Important:</strong></p>
-                                                    <p class="ms-Callout-subText">
-                                                        To remove an installed language for a product, you must specify the ID for the product, and specify the ID for the language that you want to remove. To remove a product completely, you must specify the ID for the product, and specify the IDs of all the languages that are installed. But, if the product and languages are also specified in the <a href="#BKMK_AddElement" id="A_10">Add element</a> of the configuration.xml file, then the product or languages won’t be removed.
-                                                    </p>
-                                                    <br />
-                                                    <p class="ms-Callout-subText">
-                                                        If <strong>All</strong> is set to <strong>TRUE</strong>, then all products and languages are removed, regardless of what is specified in the <strong>Add element</strong>.
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
                                 </td>
                             </tr>
                         </table>
@@ -732,6 +581,27 @@
                                 <span class="ms-Label ms-Label--on">Enabled</span>
                             </label>
                         </div>
+                        
+                        <div id="updateBranchSection">
+                            <table>
+                                <tr>
+                                    <td>
+                                        <label class="ms-Label">Branch</label>
+                                    </td>
+                                    <td>
+                                        <i id="editionInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('editionInfo', this)"></i>
+                                    </td>
+                                </tr>
+                            </table>
+                            <div class="ms-Dropdown">
+                                <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
+                                <select id="cbUpdateBranch" class="ms-Dropdown-select">
+                                    <option value="Current">Current</option>
+                                    <option value="Business">Business</option>
+                                    <option value="FirstReleaseBusiness">First Release Business</option>
+                                </select>
+                            </div>
+                        </div>
 
                         <table>
                             <tr>
@@ -740,29 +610,6 @@
                                 </td>
                                 <td>
                                     <i id="updatePathInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('updatePathInfo', this)"></i>
-                                    <div id="updatePathInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none">
-                                        <div class="ms-Callout-main">
-                                            <div class="ms-Callout-header">
-                                                <p class="ms-Callout-title">Update Path</p>
-                                            </div>
-                                            <div class="ms-Callout-inner">
-                                                <div class="ms-Callout-content">
-                                                    <p class="ms-Callout-subText">Specifies a network, local, or HTTP path of a Click-to-Run source.</p>
-                                                    <hr>
-                                                    <p class="ms-Callout-subText">
-                                                        Optional.
-                                                    </p>
-                                                    <p class="ms-Callout-subText">
-                                                        If <strong>UpdatePath</strong> is not set, Click-to-Run installations obtain updates from the Microsoft Click-to-Run source (Content Delivery Network or CDN). This is by default. If <strong>UpdatePath</strong> is set to empty (""), updates are obtained from the Microsoft Click-to-Run source, CDN.
-                                                    </p>
-                                                    <br />
-                                                    <p class="ms-Callout-subText">
-                                                        <strong>UpdatePath</strong> can specify a network, local, or HTTP path of a Click-to-Run source. Environment variables can be used for network or local paths. If you use Group Policy and the <a href="http://go.microsoft.com/fwlink/p/?LinkID=257051" id="A_10">Office 2013 Administrative Template files (ADMX/ADML)</a>, you can set <strong>UpdatePath</strong> by using the <strong>Update Path</strong> policy setting. You can find this policy setting under Computer Configuration\Administrative Templates\Microsoft Office 2013 (Machine)\Updates.
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
                                 </td>
                             </tr>
                         </table>
@@ -781,33 +628,6 @@
                                 </td>
                                 <td>
                                     <i id="targetVersionInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('targetVersionInfo', this)"></i>
-                                    <div id="targetVersionInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none">
-                                        <div class="ms-Callout-main">
-                                            <div class="ms-Callout-header">
-                                                <p class="ms-Callout-title">Remove Products</p>
-                                            </div>
-                                            <div class="ms-Callout-inner">
-                                                <div class="ms-Callout-content">
-                                                    <p class="ms-Callout-subText">The Click-to-Run product version to install.</p>
-                                                    <hr>
-                                                    <p class="ms-Callout-subText">
-                                                        Optional.
-                                                    </p>
-                                                    <p class="ms-Callout-subText">
-                                                        If <strong>TargetVersion</strong> is not set, Click-to-Run updates to the most recent version from the Microsoft Click-to-Run source. If <strong>TargetVersion</strong> is set to empty (""), Click-to-Run updates to the latest version from the Microsoft Click-to-Run source.
-                                                    </p>
-                                                    <br />
-                                                    <p class="ms-Callout-subText">
-                                                        <strong>TargetVersion</strong> can be set to an Office build number, for example, 15.1.2.3. When the version is set, Office attempts to transition to the specified version in the next update cycle. If you use Group Policy and the <a href="http://go.microsoft.com/fwlink/p/?LinkID=257051" id="A_9">Office 2013 Administrative Template files (ADMX/ADML)</a>, you can set <strong>TargetVersion</strong> by using the <strong>Target Version</strong> policy setting. You can find this policy setting under Computer Configuration\Administrative Templates\Microsoft Office 2013 (Machine)\Updates.
-                                                    </p>
-                                                    <br />
-                                                    <p class="ms-Callout-subText">
-                                                        For more information on the specific versions of Office Click-To-Run see <a href="https://support.microsoft.com/en-us/gp/office-2013-365-update">Update Office 2013 or Office 365</a>
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
                                 </td>
                             </tr>
                         </table>
@@ -830,34 +650,6 @@
                                         </td>
                                         <td>
                                             <i id="deadlineInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('deadlineInfo', this)"></i>
-                                            <div id="deadlineInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none">
-                                                <div class="ms-Callout-main">
-                                                    <div class="ms-Callout-header">
-                                                        <p class="ms-Callout-title">Deadline</p>
-                                                    </div>
-                                                    <div class="ms-Callout-inner">
-                                                        <div class="ms-Callout-content">
-                                                            <p class="ms-Callout-subText">Sets a deadline by when updates to Office must be applied. The deadline is specified in Coordinated Universal Time (UTC).</p>
-                                                            <hr>
-                                                            <p class="ms-Callout-subText">
-                                                                Optional.
-                                                            </p>
-                                                            <p class="ms-Callout-subText">
-                                                                Sets a deadline by when updates to Office must be applied. The deadline is specified in Coordinated Universal Time (UTC). You can use <strong>Deadline</strong> with <strong>Target Version</strong> to make sure that Office is updated to a particular version by a particular date.
-                                                            </p>
-                                                            <br />
-                                                            <p class="ms-Callout-subText">
-                                                                We recommend that you set the deadline at least a week in the future to allow users time to install the updates. Prior to the deadline, users receive multiple reminders to install the updates. If Office isn’t updated by the deadline, users see a notification that the updates will be applied in 15 minutes. This gives users the opportunity to save the Office documents that they are working on and to close any Office programs that are open. If users don’t close the Office programs, the programs are closed automatically when the 15 minutes are up, which might result in data loss. After the Office programs are closed, the updates are applied automatically.
-                                                            </p>
-                                                            <br />
-                                                            <p class="ms-Callout-subText">
-                                                                The deadline only applies to one set of updates. If you want to use a deadline to make sure that Office is always up-to-date, you must change the deadline every time that a new update for Office is available. To use this attribute, Office must be running at least Service Pack 1 (version 15.0.4569.1507) and you must use at least version 15.0.4595.1000 of the Office Deployment Tool. If you use Group Policy and the <a href="http://go.microsoft.com/fwlink/p/?LinkID=257051">Office 2013 Administrative Template files (ADMX/ADML)</a>, you can set <strong>Deadline</strong> by using the <strong>Update Deadline</strong> policy setting. You can find this policy setting under Computer Configuration\Administrative Templates\Microsoft Office 2013 (Machine)\Updates.
-                                                            </p>
-
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
                                         </td>
                                     </tr>
                                 </table>
@@ -923,25 +715,6 @@
                                     </td>
                                     <td>
                                         <i id="displayLevelInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('displayLevelInfo', this)"></i>
-                                        <div id="displayLevelInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none">
-                                            <div class="ms-Callout-main">
-                                                <div class="ms-Callout-header">
-                                                    <p class="ms-Callout-title">Display Level</p>
-                                                </div>
-                                                <div class="ms-Callout-inner">
-                                                    <div class="ms-Callout-content">
-                                                        <p class="ms-Callout-subText">Determines the user interface that the user sees when the operation is performed.</p>
-                                                        <hr>
-                                                        <p class="ms-Callout-subText">
-                                                            Optional.
-                                                        </p>
-                                                        <p class="ms-Callout-subText">
-                                                            If <strong>Level</strong> is set to <strong>None</strong>, the user sees no UI. No progress UI, completion screen, error dialog boxes, or first run automatic start UI are displayed. If <strong>Level</strong> is set to <strong>Full</strong>, the user sees the normal Click-to-Run user interface: Automatic start, application splash screen, and error dialog boxes.
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
                                     </td>
                                 </tr>
                             </table>
@@ -959,25 +732,6 @@
                                     </td>
                                     <td>
                                         <i id="acceptEULAInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('acceptEULAInfo', this)"></i>
-                                        <div id="acceptEULAInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none">
-                                            <div class="ms-Callout-main">
-                                                <div class="ms-Callout-header">
-                                                    <p class="ms-Callout-title">Display Level</p>
-                                                </div>
-                                                <div class="ms-Callout-inner">
-                                                    <div class="ms-Callout-content">
-                                                        <p class="ms-Callout-subText">We recommend that administrators set AcceptEULA to TRUE.</p>
-                                                        <hr>
-                                                        <p class="ms-Callout-subText">
-                                                            Optional.
-                                                        </p>
-                                                        <p class="ms-Callout-subText">
-                                                            If this attribute is set to <strong>TRUE</strong>, the user does not see a Microsoft Software License Terms dialog box. If this attribute is set to <strong>FALSE</strong> or is not set, the user may see a Microsoft Software License Terms dialog box. This attribute only applies if you install with the user's account. If you use System Center Configuration Manager or some other software distribution tool which uses the SYSTEM account to install, then the setting for this attribute is not applied.
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
                                     </td>
                                 </tr>
                             </table>
@@ -1010,25 +764,6 @@
                                         </td>
                                         <td>
                                             <i id="logLevelInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('logLevelInfo', this)"></i>
-                                            <div id="logLevelInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none">
-                                                <div class="ms-Callout-main">
-                                                    <div class="ms-Callout-header">
-                                                        <p class="ms-Callout-title">Log Level</p>
-                                                    </div>
-                                                    <div class="ms-Callout-inner">
-                                                        <div class="ms-Callout-content">
-                                                            <p class="ms-Callout-subText">Specifies options for the logging that Click-to-Run Setup performs.</p>
-                                                            <hr>
-                                                            <p class="ms-Callout-subText">
-                                                                Optional.
-                                                            </p>
-                                                            <p class="ms-Callout-subText">
-                                                                The default level is Standard.
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
                                         </td>
                                     </tr>
                                 </table>
@@ -1046,25 +781,6 @@
                                 </td>
                                 <td>
                                     <i id="logPathInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('logPathInfo', this)"></i>
-                                    <div id="logPathInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none">
-                                        <div class="ms-Callout-main">
-                                            <div class="ms-Callout-header">
-                                                <p class="ms-Callout-title">Log Path</p>
-                                            </div>
-                                            <div class="ms-Callout-inner">
-                                                <div class="ms-Callout-content">
-                                                    <p class="ms-Callout-subText">Specifies the fully qualified path of the folder that is used for the log file.</p>
-                                                    <hr>
-                                                    <p class="ms-Callout-subText">
-                                                        Optional.
-                                                    </p>
-                                                    <p class="ms-Callout-subText">
-                                                        You can use environment variables. The default is <strong>%temp%</strong>.
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
                                 </td>
                             </tr>
                         </table>
@@ -1097,26 +813,6 @@
                                     </td>
                                     <td>
                                         <i id="aaInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('aaInfo', this)"></i>
-                                        <div id="aaInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none">
-                                            <div class="ms-Callout-main">
-                                                <div class="ms-Callout-header">
-                                                    <p class="ms-Callout-title">AUTOACTIVATE</p>
-                                                </div>
-                                                <div class="ms-Callout-inner">
-                                                    <div class="ms-Callout-content">
-                                                        <p class="ms-Callout-subText">Specified products will attempt to activate automatically.</p>
-                                                        <hr>
-                                                        <p class="ms-Callout-subText">
-                                                            If <strong>AUTOACTIVATE</strong> is set to 1, the specified products will attempt to activate automatically. If <strong>AUTOACTIVATE</strong> is not set, the user may see the Activation Wizard UI.
-                                                        </p>
-                                                        <br />
-                                                        <p class="ms-Callout-subText">
-                                                            <strong>Note:</strong> Office 365 Click-to-Run products are already set to activate automatically. You must not set <strong>AUTOACTIVATE</strong> for Office 365 Click-to-Run products. This setting applies only to perpetual retail versions of Click-to-Run products.
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
                                     </td>
                                 </tr>
                             </table>
@@ -1134,26 +830,6 @@
                                     </td>
                                     <td>
                                         <i id="fasInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('fasInfo', this)"></i>
-                                        <div id="fasInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none">
-                                            <div class="ms-Callout-main">
-                                                <div class="ms-Callout-header">
-                                                    <p class="ms-Callout-title">FORCEAPPSHUTDOWN</p>
-                                                </div>
-                                                <div class="ms-Callout-inner">
-                                                    <div class="ms-Callout-content">
-                                                        <p class="ms-Callout-subText"> Forces the applications that block the action to be shut down.</p>
-                                                        <hr>
-                                                        <p class="ms-Callout-subText">
-                                                            An installation or removal action may be blocked if Office applications are running. Normally, such cases would start a process killer UI.
-                                                            Administrators can set <strong>FORCEAPPSHUTDOWN</strong> value to <strong>TRUE</strong> to prevent dependence
-                                                            on user interaction. When <strong>FORCEAPPSHUTDOWN</strong> is set to <strong>TRUE</strong>, any applications
-                                                            that block the action will be shut down. Data loss may occur. When <strong>FORCEAPPSHUTDOWN</strong> is set to
-                                                            <strong>FALSE</strong> (default), the action may fail if Office applications are running.
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
                                     </td>
                                 </tr>
                             </table>
@@ -1171,25 +847,6 @@
                                     </td>
                                     <td>
                                         <i id="sclInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('sclInfo', this)"></i>
-                                        <div id="sclInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none">
-                                            <div class="ms-Callout-main">
-                                                <div class="ms-Callout-header">
-                                                    <p class="ms-Callout-title">SharedComputerLicensing</p>
-                                                </div>
-                                                <div class="ms-Callout-inner">
-                                                    <div class="ms-Callout-content">
-                                                        <p class="ms-Callout-subText"> Forces the applications that block the action to be shut down.</p>
-                                                        <hr>
-                                                        <p class="ms-Callout-subText">Optional. </p>
-                                                        <p class="ms-Callout-subText">
-                                                            Set <strong id="STRONG_3">SharedComputerLicensing</strong> to 1 if you deploy Office 365 ProPlus to shared computers by using Remote Desktop Services.
-                                                            For more information, see
-                                                            <a href="https://technet.microsoft.com/en-us/library/dn782860.aspx">Overview of shared computer activation for Office 365 ProPlus</a>.
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
                                     </td>
                                 </tr>
                             </table>
@@ -1207,38 +864,6 @@
                                 </td>
                                 <td>
                                     <i id="PACKAGEGUIDInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('PACKAGEGUIDInfo', this)"></i>
-                                    <div id="PACKAGEGUIDInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none">
-                                        <div class="ms-Callout-main">
-                                            <div class="ms-Callout-header">
-                                                <p class="ms-Callout-title">PACKAGEGUID</p>
-                                            </div>
-                                            <div class="ms-Callout-inner">
-                                                <div class="ms-Callout-content">
-                                                    <p class="ms-Callout-subText">App-V Package ID.</p>
-                                                    <hr>
-                                                    <p class="ms-Callout-subText">Optional. </p>
-                                                    <p class="ms-Callout-subText">
-                                                        By default, all Office 2013 App-V packages created by using the Office Deployment Tool share the same App-V Package ID. Administrators can use <strong>PACKAGEGUID</strong> to specify a different Package ID. You can only use the following characters for <strong>PACKAGEGUID</strong>:
-                                                    </p>
-                                                    <ul>
-                                                        <li>
-                                                            <p class="ms-Callout-subText">
-                                                                0, 1, 2, 3, 4, 5, 6, 7, 8, 9
-                                                            </p>
-                                                        </li>
-                                                        <li>
-                                                            <p class="ms-Callout-subText">
-                                                                A, B, C, D, E, F
-                                                            </p>
-                                                        </li>
-                                                    </ul>
-                                                    <p class="ms-Callout-subText">
-                                                        If you use any other characters, the App-V package is created with the default Package ID. Also, <strong>PACKAGEGUID</strong> needs to be 25 characters in length and be separated into 5 sections, with each section separated by a dash. The sections need to have the following number of characters: 8, 4, 4, 4, and 12. For example, 12345678-ABCD-1234-ABCD-1234567890AB is a valid value for <strong>PACKAGEGUID</strong>. This allows you to publish multiple App-V packages of Office 2013 to an App-V Management Server. But, this doesn’t enable you to deploy more than one Office 2013 App-V package to a single computer.
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
                                 </td>
                             </tr>
                         </table>
@@ -1319,9 +944,9 @@
                             </div>
 
                         </div>
-                        <div class="ms-TextField" style="margin-top:10px;">
+                        <div class="ms-TextField" style="margin-top:10px;margin-left: 30px;">
                             <textarea id="xmlText" class="ms-TextField-field ms-TextField--multiline"
-                                      style="height:800px;font-size: 25px;border-width: 0"></textarea>
+                                      style="height:800px;font-size: 25px;border-width: 0;"></textarea>
                         </div>
                     </div>
                 </div>
@@ -1386,6 +1011,483 @@
             </div>
         </div>
     </div>
+    
+    <div id="productInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none">
+        <div class="ms-Callout-main">
+            <div class="ms-Callout-header">
+                <p class="ms-Callout-title">Office Product</p>
+            </div>
+            <div class="ms-Callout-inner">
+                <div class="ms-Callout-content">
+                    <p class="ms-Callout-subText">Specifies the Click-to-Run product to install.</p>
+                    <hr>
+                    <p class="ms-Callout-subText">Required. <strong>ID</strong> must be set to a valid ProductRelease ID.</p>
+                    <br />
+                    <p class="ms-Callout-subText">The supported ProductRelease IDs for Click-to-Run for Office 365 products are as follows:</p>
+                    <ul>
+                        <li> <p class="ms-Callout-subText">O365ProPlusRetail</p> </li>
+                        <li> <p class="ms-Callout-subText">O365BusinessRetail</p> </li>
+                        <li> <p class="ms-Callout-subText">VisioProRetail</p> </li>
+                        <li> <p class="ms-Callout-subText">ProjectProRetail</p> </li>
+                        <li> <p class="ms-Callout-subText">SPDRetail (SharePoint Designer)</p> </li>
+                    </ul>
+                    <p class="ms-Callout-subText">If <strong>ID</strong> is not set, the operation fails and indicates that the input is not valid.</p>
+                    <br />
+                    <p class="ms-Callout-subText">The order of <strong>Product</strong> elements determines the order in which the products are installed. The first <strong>Product ID</strong> is used to determine in which context the Microsoft Office First Run Experience application starts. Microsoft Office First Run Experience refers to the first time each Office application starts.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="versionInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:100px; display:none;">
+        <div class="ms-Callout-main">
+            <div class="ms-Callout-header">
+                <p class="ms-Callout-title">Product Version</p>
+            </div>
+            <div class="ms-Callout-inner">
+                <div class="ms-Callout-content">
+                    <p class="ms-Callout-subText">The Version of the Click-to-Run product to installation</p>
+                    <hr>
+                    <p class="ms-Callout-subText">Optional. If a <strong>Version</strong> value is not set, the Click-to-Run product installation streams the latest available version from the source. The default is to use the most recently advertised build (as defined in v32.CAB or v64.CAB at the Click-to-Run Office installation source). </p>
+                    <br />
+                    <p class="ms-Callout-subText"> <strong>Version</strong> can be set to an Office 2013 build number by using this format: X.X.X.X</p>
+                    <br />
+                    <p class="ms-Callout-subText">For more information on the specific versions of Office Click-To-Run see <a href="https://support.microsoft.com/en-us/gp/office-2013-365-update">Update Office 2013 or Office 365</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="officeBranchInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:75px; top:115px; display:none">
+        <div class="ms-Callout-main">
+            <div class="ms-Callout-header">
+                <p class="ms-Callout-title">Office Branch</p>
+            </div>
+            <div class="ms-Callout-inner">
+                <div class="ms-Callout-content">
+                    <p class="ms-Callout-subText">Required. Specifies the edition of Click-to-Run for Office 365 product to use: 32- or 64-bit. The action fails if <strong>OfficeClientEdition</strong> is not set to a valid value.</p>
+                    <br />
+                    <p class="ms-Callout-subText">A <strong>configure</strong> mode action may fail if <strong>OfficeClientEdition</strong> is set incorrectly. For example, if you attempt to install a 64-bit edition of a Click-to-Run for Office 365 product on a computer that is running a 32-bit Windows operating system, or if you try to install a 32-bit Click-to-Run for Office 365 product on a computer that has a 64-bit edition of Office installed.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="pidkeyInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:75px; top:472px; display:none">
+        <div class="ms-Callout-main">
+            <div class="ms-Callout-header">
+                <p class="ms-Callout-title">PIDKEY</p>
+            </div>
+            <div class="ms-Callout-inner">
+                <div class="ms-Callout-content">
+                    <p class="ms-Callout-subText">The 25-character volume license key.</p>
+                    <hr>
+                    <p class="ms-Callout-subText">Optional. </p>
+
+                    <p class="ms-Callout-subText">When the <strong>PIDKEY</strong> value is set, users are not required to enter a product key when they install Office.</p>
+                    <br />
+                    <p class="ms-Callout-subText">If this element is not defined, the default settings are used. If an invalid value is specified, Setup ends the installation. </p>
+                    <br />
+                    <p class="ms-Callout-subText">If the <strong>Level</strong> attribute is set to "basic" or “none” and you supply a product key by using the <strong>PIDKEY</strong>, Setup assumes that you also accept the license agreement on behalf of the user.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="editionInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:75px; top:115px; display:none">
+        <div class="ms-Callout-main">
+            <div class="ms-Callout-header">
+                <p class="ms-Callout-title">Office Client Edition</p>
+            </div>
+            <div class="ms-Callout-inner">
+                <div class="ms-Callout-content">
+                    <p class="ms-Callout-subText">Required. Specifies the edition of Click-to-Run for Office 365 product to use: 32- or 64-bit. The action fails if <strong>OfficeClientEdition</strong> is not set to a valid value.</p>
+                    <br />
+                    <p class="ms-Callout-subText">A <strong>configure</strong> mode action may fail if <strong>OfficeClientEdition</strong> is set incorrectly. For example, if you attempt to install a 64-bit edition of a Click-to-Run for Office 365 product on a computer that is running a 32-bit Windows operating system, or if you try to install a 32-bit Click-to-Run for Office 365 product on a computer that has a 64-bit edition of Office installed.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="languageInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:90px; top:188px; display:none">
+        <div class="ms-Callout-main">
+            <div class="ms-Callout-header">
+                <p class="ms-Callout-title">Product Language</p>
+            </div>
+            <div class="ms-Callout-inner">
+                <div class="ms-Callout-content">
+                    <p class="ms-Callout-subText">Determine which product languages to install.</p>
+                    <hr>
+                    <p class="ms-Callout-subText">Required. If the <strong>Language ID</strong> value is not set, the installation operation fails and indicates that the input is not valid.</p>
+                    <br />
+                    <p class="ms-Callout-subText">The <strong>ID</strong> value can be set to a valid Office culture language (such as en-us for English US or ja-jp for Japanese). The <em>ll-cc</em> value is the language identifier. </p>
+                    <br />
+                    <p class="ms-Callout-subText">
+                        Language elements determine which product languages to install. Administrators must specify the languages they want to install. The first language determines the Shell UI culture. The Shell UI is the language of shortcuts, right-click context menus, and tooltips.
+                    </p>
+                    <br />
+                    <p class="ms-Callout-subText">
+                        If you decide that you want to change the Shell UI language after an initial installation, you have to uninstall Click-to-Run and reinstall. Add the language that you want to set for the Shell UI as the first language in the custom Configuration.xml file.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="srcPathInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:98px; top:408px; display:none;">
+        <div class="ms-Callout-main">
+            <div class="ms-Callout-header">
+                <p class="ms-Callout-title">Source Path</p>
+            </div>
+            <div class="ms-Callout-inner">
+                <div class="ms-Callout-content">
+                    <p class="ms-Callout-subText">Indicates the location to save the Click-to-Run installation source when you run the Office Deployment Tool in download mode.</p>
+                    <hr>
+                    <p class="ms-Callout-subText">Optional. </p>
+                    <p class="ms-Callout-subText">The <strong>SourcePath</strong> value can be set to a network, local, or HTTP path that contains a Click-to-Run source. Environment variables can be used for network or local paths.</p>
+                    <br />
+                    <p class="ms-Callout-subText"> <strong>SourcePath</strong> indicates the location to save the Click-to-Run installation source when you run the Office Deployment Tool in <strong>download</strong> mode. </p>
+                    <br />
+                    <p class="ms-Callout-subText"> <strong>SourcePath</strong> indicates the installation source path from which to install Office when you run the Office Deployment Tool in <strong>configure</strong> mode. If you don’t specify <strong>SourcePath</strong> in <strong>configure</strong> mode, Setup will look in the current folder for the Office source files. If the Office source files aren’t found in the current folder, Setup will look on Office 365 for them.</p>
+                    <br />
+                    <p class="ms-Callout-subText"> <strong>SourcePath</strong> specifies the path of the Click-to-Run Office source from which the App-V package will be made when you run the Office Deployment Tool in <strong>packager</strong> mode.</p>
+                    <br />
+                    <p class="ms-Callout-subText">If you do not specify <strong>SourcePath</strong>, Setup will attempt to create an <strong>\Office\Data\...</strong> folder structure in the working directory from which you are running setup.exe.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="removeProductInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none">
+        <div class="ms-Callout-main">
+            <div class="ms-Callout-header">
+                <p class="ms-Callout-title">Remove Products</p>
+            </div>
+            <div class="ms-Callout-inner">
+                <div class="ms-Callout-content">
+                    <p class="ms-Callout-subText">Removes products and languages.</p>
+                    <hr>
+                    <p class="ms-Callout-subText"><strong>Important:</strong></p>
+                    <p class="ms-Callout-subText">
+                        To remove an installed language for a product, you must specify the ID for the product, and specify the ID for the language that you want to remove. To remove a product completely, you must specify the ID for the product, and specify the IDs of all the languages that are installed. But, if the product and languages are also specified in the <a href="#BKMK_AddElement" id="A_10">Add element</a> of the configuration.xml file, then the product or languages won’t be removed.
+                    </p>
+                    <br />
+                    <p class="ms-Callout-subText">
+                        If <strong>All</strong> is set to <strong>TRUE</strong>, then all products and languages are removed, regardless of what is specified in the <strong>Add element</strong>.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="exclAppInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:150px; top:510px; display:none">
+        <div class="ms-Callout-main">
+            <div class="ms-Callout-header">
+                <p class="ms-Callout-title">ExcludeApp</p>
+            </div>
+            <div class="ms-Callout-inner">
+                <div class="ms-Callout-content">
+                    <p class="ms-Callout-subText">Specifies which Office programs not to install.</p>
+                    <hr>
+                    <p class="ms-Callout-subText">Optional. </p>
+                    <p class="ms-Callout-subText">The following is a list of the supported values for <strong>ID</strong>:</p>
+                    <ul>
+                        <li> <p class="ms-Callout-subText">Access</p> </li>
+                        <li> <p class="ms-Callout-subText">Excel</p> </li>
+                        <li> <p class="ms-Callout-subText">Groove</p> </li>
+                        <li> <p class="ms-Callout-subText">InfoPath</p> </li>
+                        <li> <p class="ms-Callout-subText">Lync</p> </li>
+                        <li> <p class="ms-Callout-subText">OneNote</p> </li>
+                        <li> <p class="ms-Callout-subText">Outlook</p> </li>
+                        <li> <p class="ms-Callout-subText">PowerPoint</p> </li>
+                        <li> <p class="ms-Callout-subText">Project</p> </li>
+                        <li> <p class="ms-Callout-subText">Publisher</p> </li>
+                        <li> <p class="ms-Callout-subText">SharePointDesigner</p> </li>
+                        <li> <p class="ms-Callout-subText">Visio</p> </li>
+                        <li> <p class="ms-Callout-subText">Word</p> </li>
+                    </ul>
+                    <p class="ms-Callout-subText">The value “Groove” is used to exclude OneDrive for Business.</p>
+                    <p class="ms-Callout-subText">The value "Lync" also applies to Skype for Business.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="updatePathInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none">
+        <div class="ms-Callout-main">
+            <div class="ms-Callout-header">
+                <p class="ms-Callout-title">Update Path</p>
+            </div>
+            <div class="ms-Callout-inner">
+                <div class="ms-Callout-content">
+                    <p class="ms-Callout-subText">Specifies a network, local, or HTTP path of a Click-to-Run source.</p>
+                    <hr>
+                    <p class="ms-Callout-subText">
+                        Optional.
+                    </p>
+                    <p class="ms-Callout-subText">
+                        If <strong>UpdatePath</strong> is not set, Click-to-Run installations obtain updates from the Microsoft Click-to-Run source (Content Delivery Network or CDN). This is by default. If <strong>UpdatePath</strong> is set to empty (""), updates are obtained from the Microsoft Click-to-Run source, CDN.
+                    </p>
+                    <br />
+                    <p class="ms-Callout-subText">
+                        <strong>UpdatePath</strong> can specify a network, local, or HTTP path of a Click-to-Run source. Environment variables can be used for network or local paths. If you use Group Policy and the <a href="http://go.microsoft.com/fwlink/p/?LinkID=257051" id="A_10">Office 2013 Administrative Template files (ADMX/ADML)</a>, you can set <strong>UpdatePath</strong> by using the <strong>Update Path</strong> policy setting. You can find this policy setting under Computer Configuration\Administrative Templates\Microsoft Office 2013 (Machine)\Updates.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="targetVersionInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none">
+        <div class="ms-Callout-main">
+            <div class="ms-Callout-header">
+                <p class="ms-Callout-title">Remove Products</p>
+            </div>
+            <div class="ms-Callout-inner">
+                <div class="ms-Callout-content">
+                    <p class="ms-Callout-subText">The Click-to-Run product version to install.</p>
+                    <hr>
+                    <p class="ms-Callout-subText">
+                        Optional.
+                    </p>
+                    <p class="ms-Callout-subText">
+                        If <strong>TargetVersion</strong> is not set, Click-to-Run updates to the most recent version from the Microsoft Click-to-Run source. If <strong>TargetVersion</strong> is set to empty (""), Click-to-Run updates to the latest version from the Microsoft Click-to-Run source.
+                    </p>
+                    <br />
+                    <p class="ms-Callout-subText">
+                        <strong>TargetVersion</strong> can be set to an Office build number, for example, 15.1.2.3. When the version is set, Office attempts to transition to the specified version in the next update cycle. If you use Group Policy and the <a href="http://go.microsoft.com/fwlink/p/?LinkID=257051" id="A_9">Office 2013 Administrative Template files (ADMX/ADML)</a>, you can set <strong>TargetVersion</strong> by using the <strong>Target Version</strong> policy setting. You can find this policy setting under Computer Configuration\Administrative Templates\Microsoft Office 2013 (Machine)\Updates.
+                    </p>
+                    <br />
+                    <p class="ms-Callout-subText">
+                        For more information on the specific versions of Office Click-To-Run see <a href="https://support.microsoft.com/en-us/gp/office-2013-365-update">Update Office 2013 or Office 365</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="editionInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:75px; top:115px; display:none">
+        <div class="ms-Callout-main">
+            <div class="ms-Callout-header">
+                <p class="ms-Callout-title">Office Branch</p>
+            </div>
+            <div class="ms-Callout-inner">
+                <div class="ms-Callout-content">
+                    <p class="ms-Callout-subText">Required. Specifies the edition of Click-to-Run for Office 365 product to use: 32- or 64-bit. The action fails if <strong>OfficeClientEdition</strong> is not set to a valid value.</p>
+                    <br />
+                    <p class="ms-Callout-subText">A <strong>configure</strong> mode action may fail if <strong>OfficeClientEdition</strong> is set incorrectly. For example, if you attempt to install a 64-bit edition of a Click-to-Run for Office 365 product on a computer that is running a 32-bit Windows operating system, or if you try to install a 32-bit Click-to-Run for Office 365 product on a computer that has a 64-bit edition of Office installed.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="deadlineInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none">
+        <div class="ms-Callout-main">
+            <div class="ms-Callout-header">
+                <p class="ms-Callout-title">Deadline</p>
+            </div>
+            <div class="ms-Callout-inner">
+                <div class="ms-Callout-content">
+                    <p class="ms-Callout-subText">Sets a deadline by when updates to Office must be applied. The deadline is specified in Coordinated Universal Time (UTC).</p>
+                    <hr>
+                    <p class="ms-Callout-subText">
+                        Optional.
+                    </p>
+                    <p class="ms-Callout-subText">
+                        Sets a deadline by when updates to Office must be applied. The deadline is specified in Coordinated Universal Time (UTC). You can use <strong>Deadline</strong> with <strong>Target Version</strong> to make sure that Office is updated to a particular version by a particular date.
+                    </p>
+                    <br />
+                    <p class="ms-Callout-subText">
+                        We recommend that you set the deadline at least a week in the future to allow users time to install the updates. Prior to the deadline, users receive multiple reminders to install the updates. If Office isn’t updated by the deadline, users see a notification that the updates will be applied in 15 minutes. This gives users the opportunity to save the Office documents that they are working on and to close any Office programs that are open. If users don’t close the Office programs, the programs are closed automatically when the 15 minutes are up, which might result in data loss. After the Office programs are closed, the updates are applied automatically.
+                    </p>
+                    <br />
+                    <p class="ms-Callout-subText">
+                        The deadline only applies to one set of updates. If you want to use a deadline to make sure that Office is always up-to-date, you must change the deadline every time that a new update for Office is available. To use this attribute, Office must be running at least Service Pack 1 (version 15.0.4569.1507) and you must use at least version 15.0.4595.1000 of the Office Deployment Tool. If you use Group Policy and the <a href="http://go.microsoft.com/fwlink/p/?LinkID=257051">Office 2013 Administrative Template files (ADMX/ADML)</a>, you can set <strong>Deadline</strong> by using the <strong>Update Deadline</strong> policy setting. You can find this policy setting under Computer Configuration\Administrative Templates\Microsoft Office 2013 (Machine)\Updates.
+                    </p>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="displayLevelInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none">
+        <div class="ms-Callout-main">
+            <div class="ms-Callout-header">
+                <p class="ms-Callout-title">Display Level</p>
+            </div>
+            <div class="ms-Callout-inner">
+                <div class="ms-Callout-content">
+                    <p class="ms-Callout-subText">Determines the user interface that the user sees when the operation is performed.</p>
+                    <hr>
+                    <p class="ms-Callout-subText">
+                        Optional.
+                    </p>
+                    <p class="ms-Callout-subText">
+                        If <strong>Level</strong> is set to <strong>None</strong>, the user sees no UI. No progress UI, completion screen, error dialog boxes, or first run automatic start UI are displayed. If <strong>Level</strong> is set to <strong>Full</strong>, the user sees the normal Click-to-Run user interface: Automatic start, application splash screen, and error dialog boxes.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="acceptEULAInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none">
+        <div class="ms-Callout-main">
+            <div class="ms-Callout-header">
+                <p class="ms-Callout-title">Display Level</p>
+            </div>
+            <div class="ms-Callout-inner">
+                <div class="ms-Callout-content">
+                    <p class="ms-Callout-subText">We recommend that administrators set AcceptEULA to TRUE.</p>
+                    <hr>
+                    <p class="ms-Callout-subText">
+                        Optional.
+                    </p>
+                    <p class="ms-Callout-subText">
+                        If this attribute is set to <strong>TRUE</strong>, the user does not see a Microsoft Software License Terms dialog box. If this attribute is set to <strong>FALSE</strong> or is not set, the user may see a Microsoft Software License Terms dialog box. This attribute only applies if you install with the user's account. If you use System Center Configuration Manager or some other software distribution tool which uses the SYSTEM account to install, then the setting for this attribute is not applied.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="logLevelInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none">
+        <div class="ms-Callout-main">
+            <div class="ms-Callout-header">
+                <p class="ms-Callout-title">Log Level</p>
+            </div>
+            <div class="ms-Callout-inner">
+                <div class="ms-Callout-content">
+                    <p class="ms-Callout-subText">Specifies options for the logging that Click-to-Run Setup performs.</p>
+                    <hr>
+                    <p class="ms-Callout-subText">
+                        Optional.
+                    </p>
+                    <p class="ms-Callout-subText">
+                        The default level is Standard.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="logPathInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none">
+        <div class="ms-Callout-main">
+            <div class="ms-Callout-header">
+                <p class="ms-Callout-title">Log Path</p>
+            </div>
+            <div class="ms-Callout-inner">
+                <div class="ms-Callout-content">
+                    <p class="ms-Callout-subText">Specifies the fully qualified path of the folder that is used for the log file.</p>
+                    <hr>
+                    <p class="ms-Callout-subText">
+                        Optional.
+                    </p>
+                    <p class="ms-Callout-subText">
+                        You can use environment variables. The default is <strong>%temp%</strong>.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="aaInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none">
+        <div class="ms-Callout-main">
+            <div class="ms-Callout-header">
+                <p class="ms-Callout-title">AUTOACTIVATE</p>
+            </div>
+            <div class="ms-Callout-inner">
+                <div class="ms-Callout-content">
+                    <p class="ms-Callout-subText">Specified products will attempt to activate automatically.</p>
+                    <hr>
+                    <p class="ms-Callout-subText">
+                        If <strong>AUTOACTIVATE</strong> is set to 1, the specified products will attempt to activate automatically. If <strong>AUTOACTIVATE</strong> is not set, the user may see the Activation Wizard UI.
+                    </p>
+                    <br />
+                    <p class="ms-Callout-subText">
+                        <strong>Note:</strong> Office 365 Click-to-Run products are already set to activate automatically. You must not set <strong>AUTOACTIVATE</strong> for Office 365 Click-to-Run products. This setting applies only to perpetual retail versions of Click-to-Run products.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="fasInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none">
+        <div class="ms-Callout-main">
+            <div class="ms-Callout-header">
+                <p class="ms-Callout-title">FORCEAPPSHUTDOWN</p>
+            </div>
+            <div class="ms-Callout-inner">
+                <div class="ms-Callout-content">
+                    <p class="ms-Callout-subText"> Forces the applications that block the action to be shut down.</p>
+                    <hr>
+                    <p class="ms-Callout-subText">
+                        An installation or removal action may be blocked if Office applications are running. Normally, such cases would start a process killer UI.
+                        Administrators can set <strong>FORCEAPPSHUTDOWN</strong> value to <strong>TRUE</strong> to prevent dependence
+                        on user interaction. When <strong>FORCEAPPSHUTDOWN</strong> is set to <strong>TRUE</strong>, any applications
+                        that block the action will be shut down. Data loss may occur. When <strong>FORCEAPPSHUTDOWN</strong> is set to
+                        <strong>FALSE</strong> (default), the action may fail if Office applications are running.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="sclInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none">
+        <div class="ms-Callout-main">
+            <div class="ms-Callout-header">
+                <p class="ms-Callout-title">SharedComputerLicensing</p>
+            </div>
+            <div class="ms-Callout-inner">
+                <div class="ms-Callout-content">
+                    <p class="ms-Callout-subText"> Forces the applications that block the action to be shut down.</p>
+                    <hr>
+                    <p class="ms-Callout-subText">Optional. </p>
+                    <p class="ms-Callout-subText">
+                        Set <strong id="STRONG_3">SharedComputerLicensing</strong> to 1 if you deploy Office 365 ProPlus to shared computers by using Remote Desktop Services.
+                        For more information, see
+                        <a href="https://technet.microsoft.com/en-us/library/dn782860.aspx">Overview of shared computer activation for Office 365 ProPlus</a>.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="PACKAGEGUIDInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none">
+        <div class="ms-Callout-main">
+            <div class="ms-Callout-header">
+                <p class="ms-Callout-title">PACKAGEGUID</p>
+            </div>
+            <div class="ms-Callout-inner">
+                <div class="ms-Callout-content">
+                    <p class="ms-Callout-subText">App-V Package ID.</p>
+                    <hr>
+                    <p class="ms-Callout-subText">Optional. </p>
+                    <p class="ms-Callout-subText">
+                        By default, all Office 2013 App-V packages created by using the Office Deployment Tool share the same App-V Package ID. Administrators can use <strong>PACKAGEGUID</strong> to specify a different Package ID. You can only use the following characters for <strong>PACKAGEGUID</strong>:
+                    </p>
+                    <ul>
+                        <li>
+                            <p class="ms-Callout-subText">
+                                0, 1, 2, 3, 4, 5, 6, 7, 8, 9
+                            </p>
+                        </li>
+                        <li>
+                            <p class="ms-Callout-subText">
+                                A, B, C, D, E, F
+                            </p>
+                        </li>
+                    </ul>
+                    <p class="ms-Callout-subText">
+                        If you use any other characters, the App-V package is created with the default Package ID. Also, <strong>PACKAGEGUID</strong> needs to be 25 characters in length and be separated into 5 sections, with each section separated by a dash. The sections need to have the following number of characters: 8, 4, 4, 4, and 12. For example, 12345678-ABCD-1234-ABCD-1234567890AB is a valid value for <strong>PACKAGEGUID</strong>. This allows you to publish multiple App-V packages of Office 2013 to an App-V Management Server. But, this doesn’t enable you to deploy more than one Office 2013 App-V package to a single computer.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    
+    
+    
+
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.bundle.min.js"></script>
     <script type="text/javascript" src="./Scripts/FileSaver.js"></script>
@@ -1395,6 +1497,8 @@
 
     <script>
         $(document).ready(function () {
+            $("#pidKeyLabel").hide();
+
             if ($('.ms-FilePicker').length > 0) {
                 $('.ms-FilePicker').css({
                     "position": "absolute !important"
@@ -1472,6 +1576,27 @@
         function setVersionPanel(buttonId) {
             $(".navrowversion").removeClass('is-selected');
             $("#" + buttonId).addClass('is-selected');
+
+            if (buttonId.toLowerCase() == "office2013select") {
+                changeVersions("2013");
+            }
+            if (buttonId.toLowerCase() == "office2016select") {
+                changeVersions("2016");
+            }
+        }
+
+        function changeVersions(version) {
+            if (version == "2013") {
+                $("#pidKeyLabel").show("slow");
+                $("#branchSection").hide("slow");
+                $("#updateBranchSection").hide("slow");
+            }
+            if (version == "2016") {
+                $("#pidKeyLabel").hide("slow");
+                $("#branchSection").show("slow");
+                $("#updateBranchSection").show("slow");
+                $("#txtPidKey").val("");
+            }
         }
     </script>
 </body>
