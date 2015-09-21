@@ -69,28 +69,36 @@ If you specify a Version then the script will download that version.  You can se
 
         Write-Host "Staging the Office ProPlus Update to: $path"
         Write-Host
-
         
         $CopyFromVerified = $false;
         #Verify CopyFrom Source
         if(Test-Path $CopyFrom){
             if($CopyFrom.Split("\")[-1] -eq "Office"){
-                if(Test-Path "$CopyFrom\Data"){
-                    $CopyFromVerified = $true;
-                }
+                $CopyFromVerified = $true;
             }
-        }
+        } 
 
         #if CopyFrom is set, copy from there to destination path otherwise download files
         $Copied32 = $false
         if (($bitness.ToLower() -eq "all") -or ($bitness -eq "32")) {
             $Copied32 = $false
-            if(Test-Path "$CopyFrom\Data\v32.cab"){
-                if($CopyFromVerified){
-                    Write-Host "`tStarting Copy of Office Update 32-Bit..." -NoNewline
-                    Copy-Item -Path $CopyFrom -Destination $Path -Recurse
-                    $Copied32 = $true
-                    Write-Host "`tComplete"
+            if($CopyFromVerified){
+                $v32Path = "$CopyFrom\Data\v32.cab"
+                if(Test-Path $v32Path){
+                    expand $v32Path $env:TEMP -f:VersionDescriptor.xml | Out-Null
+                    $xmlPath = $env:TEMP + "\VersionDescriptor.xml"
+                    [xml]$xmlVersion = Get-Content $xmlPath
+                    $buildVersion = $xmlVersion.Version.Available.Build
+                    $latestVersionString = $buildVersion
+                    Remove-Item -Path $xmlPath
+                    if($Version -eq $latestVersionString){
+                        if(Test-Path "$CopyFrom\Data\$latestVersionString"){
+                            Write-Host "`tStarting Copy of Office Update 32-Bit..." -NoNewline
+                            Copy-Item -Path $CopyFrom -Destination $Path -Recurse
+                            $Copied32 = $true
+                            Write-Host "`tComplete"
+                        }
+                    }
                 }
             }
 
@@ -109,14 +117,27 @@ If you specify a Version then the script will download that version.  You can se
 
 	    if (($bitness.ToLower() -eq "all") -or ($bitness -eq "64")) {
             $Copied64 = $false
-            if(Test-Path "$CopyFrom\Data\v64.cab"){
-                if($CopyFromVerified){
-                    Write-Host "`tStarting Copy of Office Update 64-Bit..." -NoNewline
-                    if($Copied32){
-                        Copy-Item -Path $CopyFrom -Destination $Path -Recurse
+            if($CopyFromVerified){
+                $v64Path = "$CopyFrom\Data\v64.cab"
+                if(Test-Path $v64Path){
+                    expand $v64Path $env:TEMP -f:VersionDescriptor.xml | Out-Null
+                    $xmlPath = $env:TEMP + "\VersionDescriptor.xml"
+                    [xml]$xmlVersion = Get-Content $xmlPath
+                    $buildVersion = $xmlVersion.Version.Available.Build
+                    $latestVersionString = $buildVersion
+                    Remove-Item -Path $xmlPath
+                    if($Version -eq $latestVersionString){
+                        if(Test-Path "$CopyFrom\Data\$latestVersionString"){
+                            Write-Host "`tStarting Copy of Office Update 64-Bit..." -NoNewline
+                            if($Copied32){
+                                Copy-Item -Path $CopyFrom -Destination $Path -Recurse
+                                Write-Host "`tComplete"
+                            }else{
+                                Write-Host "`tAlready Copied"
+                            }
+                            $Copied64 = $true
+                        }
                     }
-                    $Copied64 = $true
-                    Write-Host "`tComplete"
                 }
             }
 
