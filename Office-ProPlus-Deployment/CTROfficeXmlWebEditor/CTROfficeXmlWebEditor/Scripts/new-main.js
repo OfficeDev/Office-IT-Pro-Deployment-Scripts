@@ -400,6 +400,62 @@ $(document).ready(function () {
         restrictToVersion(e);
     });
 
+    $('txtPidKey').on('input propertychange paste focus click', function () {
+        if (this.value.length == 0) {
+            document.getElementById("pidkeySignal").style.display = "none";
+        } else {
+            document.getElementById("pidkeySignal").style.display = "block";
+        }
+    });
+
+    $('#txtVersion').on('input propertychange paste focus click', function () {
+        if (this.value.length == 0) {
+            document.getElementById("versionSignal").style.display = "none";
+        } else {
+            document.getElementById("versionSignal").style.display = "block";
+        }
+    });
+
+    $('#txtPACKAGEGUID').on('input propertychange paste focus click', function () {
+        if (this.value.length == 0) {
+            document.getElementById("PACKAGEGUIDSignal").style.display = "none";
+        } else {
+            document.getElementById("PACKAGEGUIDSignal").style.display = "block";
+        }
+    });
+
+    $('#txtSourcePath').on('input propertychange paste focus click', function () {
+        if (this.value.length == 0) {
+            document.getElementById("sourcepathSignal").style.display = "none";
+        } else {
+            document.getElementById("sourcepathSignal").style.display = "block";
+        }
+    });
+
+    $('#txtUpdatePath').on('input propertychange paste focus click', function () {
+        if (this.value.length == 0) {
+            document.getElementById("updatepathSignal").style.display = "none";
+        } else {
+            document.getElementById("updatepathSignal").style.display = "block";
+        }
+    });
+
+    $('#txtTargetVersion').on('input propertychange paste focus click', function () {
+        if (this.value.length == 0) {
+            document.getElementById("targetversionSignal").style.display = "none";
+        } else {
+            document.getElementById("targetversionSignal").style.display = "block";
+        }
+    });
+
+    $('#txtLoggingUpdatePath').on('input propertychange paste focus click', function () {
+        if (this.value.length == 0) {
+            document.getElementById("logupdatepathSignal").style.display = "none";
+        } else {
+            document.getElementById("logupdatepathSignal").style.display = "block";
+        }
+    });
+
     setScrollBar();
 
 });
@@ -525,6 +581,7 @@ function fileUploaded(e) {
         var xmlOutput = vkbeautify.xml(contents);
 
         $('textarea#xmlText').val(xmlOutput);
+        $.cookie("xmlcache", xmlOutput);
 
         loadUploadXmlFile();
     };
@@ -883,6 +940,11 @@ function resizeWindow() {
     $("#xmlText").height(rightPaneHeight - 30);
     $("#menuSec").height(bodyHeight - 50);
     $("#xmlSec").height(bodyHeight - 50);
+
+    var menuWidth = $("#menuColumn").width();
+    var configWidth = $("#configColumn").width();
+
+    $("#xmlSection").width(bodyWidth - menuWidth - configWidth - 48);
 
     setScrollBar();
 }
@@ -1832,6 +1894,12 @@ function loadUploadXmlFile(inXmlDoc) {
 
         var version = addNode.getAttribute("SourcePath");
         $("#txtSourcePath").val(version);
+
+        var selectedBranch = addNode.getAttribute("Branch");
+        if (selectedBranch) {
+            $("#cbBranch").val(selectedBranch);
+           // $("#office2016Select").addClass("is-selected");
+        }
     }
 
     var removeNode = null;
@@ -2103,6 +2171,8 @@ function toggleInfo(calloutId, icon) {
 }
 
 function showInfo(calloutId, icon) {
+    hideAllCallOuts();
+
     var pos = $("#" + icon.id).offset();
     var iconWidth = $("#" + icon.id).width();
     var iconHeight = $("#" + icon.id).height();
@@ -2113,8 +2183,18 @@ function showInfo(calloutId, icon) {
     $("#" + calloutId)[0].style.top = nTop.toString() + "px";
     $("#" + calloutId)[0].style.left = nLeft.toString() + "px";
     $("#" + calloutId)[0].style.display = 'block';
-    //$("#" + calloutId)[0].css('z-index', 9999);
+    
     $("#xmlText").css('z-index', 0);
+}
+
+function hideAllCallOuts() {
+    var callOuts = document.getElementsByClassName("ms-Callout");
+    for (var i = 0; i < callOuts.length; i++) {
+        var callOut = callOuts[i];
+        if (callOut) {
+            callOut.style.display = "none";
+        }
+    }
 }
 
 function hideInfo(calloutId) {
