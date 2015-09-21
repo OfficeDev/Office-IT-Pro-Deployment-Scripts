@@ -10,6 +10,8 @@ The path to the UNC share to download the Office updates to
 The version of Office 2013 you wish to update to. E.g. 15.0.4737.1003
 .PARAMETER Bitness
 Specifies if the target installation is 32 bit or 64 bit. Defaults to 64 bit.
+.PARAMETER CopyFrom
+Specifies the UNC path to copy Office files from. Should end in /Office and that folder should contain a 'Data' folder
 .Example
 Download-OfficeUpdates 
 Default without parameters specified this will create a local folder named 'OfficeUpdates' on the system drive and then create a hidden share named 'OfficeUpdates$'. It will then download the latest Office update to that folder.
@@ -30,7 +32,10 @@ If you specify a Version then the script will download that version.  You can se
 	    [String]$Version = $NULL,
 
 	    [Parameter()]
-	    [String]$Bitness = 'All'
+	    [String]$Bitness = 'All',
+
+        [Parameter()]
+        [String]$CopyFrom = $NULL
     )
     Begin
     {
@@ -64,30 +69,72 @@ If you specify a Version then the script will download that version.  You can se
 
         Write-Host "Staging the Office ProPlus Update to: $path"
         Write-Host
-         
-	    if (($bitness.ToLower() -eq "all") -or ($bitness -eq "32")) {
-	        $app = "$path\$c2rFileName" 
-	        $arguments = "/download", "$UpdateSourceConfigFileName32"
+
+        
+        $CopyFromVerified = $false;
+        #Verify CopyFrom Source
+        if(Test-Path $CopyFrom){
+            if($CopyFrom.Split("\")[-1] -eq "Office"){
+                if(Test-Path "$CopyFrom\Data"){
+                    $CopyFromVerified = $true;
+                }
+            }
+        }
+
+        #if CopyFrom is set, copy from there to destination path otherwise download files
+        $Copied32 = $false
+        if (($bitness.ToLower() -eq "all") -or ($bitness -eq "32")) {
+            $Copied32 = $false
+            if(Test-Path "$CopyFrom\Data\v32.cab"){
+                if($CopyFromVerified){
+                    Write-Host "`tStarting Copy of Office Update 32-Bit..." -NoNewline
+                    Copy-Item -Path $CopyFrom -Destination $Path -Recurse
+                    $Copied32 = $true
+                    Write-Host "`tComplete"
+                }
+            }
+
+            if(!$Copied32){
+	            $app = "$path\$c2rFileName" 
+	            $arguments = "/download", "$UpdateSourceConfigFileName32"
  
-            Write-Host "`tStarting Download of Office Update 32-Bit..." -NoNewline
+                Write-Host "`tStarting Download of Office Update 32-Bit..." -NoNewline
 
-	        #run the executable, this will trigger the download of bits to \\ShareName\Office\Data\
-	        & $app @arguments
+	            #run the executable, this will trigger the download of bits to \\ShareName\Office\Data\
+	            & $app @arguments
 
-            Write-Host "`tComplete"
+                Write-Host "`tComplete"
+            }
         }
 
 	    if (($bitness.ToLower() -eq "all") -or ($bitness -eq "64")) {
-	        $app = "$path\$c2rFileName" 
-	        $arguments = "/download", "$UpdateSourceConfigFileName64"
+            $Copied64 = $false
+            if(Test-Path "$CopyFrom\Data\v64.cab"){
+                if($CopyFromVerified){
+                    Write-Host "`tStarting Copy of Office Update 64-Bit..." -NoNewline
+                    if($Copied32){
+                        Copy-Item -Path $CopyFrom -Destination $Path -Recurse
+                    }
+                    $Copied64 = $true
+                    Write-Host "`tComplete"
+                }
+            }
 
-            Write-Host "`tStarting Download of Office Update 64-Bit..."  -NoNewline
+            if(!$Copied64){
+	            $app = "$path\$c2rFileName" 
+	            $arguments = "/download", "$UpdateSourceConfigFileName64"
 
-	        #run the executable, this will trigger the download of bits to \\ShareName\Office\Data\
-	        & $app @arguments
+                Write-Host "`tStarting Download of Office Update 64-Bit..."  -NoNewline
 
-            Write-Host "`tComplete"
+	            #run the executable, this will trigger the download of bits to \\ShareName\Office\Data\
+	            & $app @arguments
+
+                Write-Host "`tComplete"
+            }
+
         }
+        
+
 
         Write-Host
         Write-Host "The Office Update download has finished"
