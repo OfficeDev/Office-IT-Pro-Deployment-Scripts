@@ -19,6 +19,7 @@
     <link rel="stylesheet" href="components/Callout/Callout.min.css">
     <link rel="stylesheet" href="components/Dialog/Dialog.min.css">
     <link href="stylesheets/typeahead.css" rel="stylesheet">
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
 
     <script type='text/javascript' src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script type="text/javascript" src="./components/Table/Jquery.Table.js"></script>
@@ -119,6 +120,11 @@
           transition: background 0.5s linear;
         }
 
+        .Editor-Column {
+            padding-right: 8px;
+            padding-left: 8px;
+        }
+
     </style>
 </head>
 
@@ -164,812 +170,828 @@
     <div id="componentWrapper">
         <div class="ms-Grid">
             <div class="ms-Grid-row">
-                <div class="ms-Grid-col ms-u-md10 ms-u-lg2 ms-u-xl2 ms-u-sm10" >
-                    <div id="menuSec" style="border-right: solid 1px #e5e3e3;height:500px;">
-                        
-                        <br/>
+                <table cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td style="vertical-align: top;" style="vertical-align: top;">
+                            <div id="menuColumn" class="Editor-Column" style="width: 300px;">
+                                <div id="menuSec" style="border-right: solid 1px #e5e3e3;height:500px;">
 
-                        <div class="ms-Table">
-                            <div class="ms-Table-row">
-                                <span class="ms-font-xl">Version</span>
-                            </div>
-                            <div id="office2016Select" class="ms-Table-row is-selected navrowversion">
-                                <span class="ms-Table-cell" onclick="setVersionPanel('office2016Select')">Office ProPlus 2016</span>
-                            </div>
-                            <div id="office2013Select" class="ms-Table-row navrowversion">
-                                <span class="ms-Table-cell" onclick="setVersionPanel('office2013Select')">Office ProPlus 2013</span>
-                            </div>
-                        </div>
-                        
-                        <br/>
+                                    <br />
 
-                        <div class="ms-Table">
-                            <div class="ms-Table-row">
-                                <span class="ms-font-xl">Section</span>
-                            </div>
-                            <div id="addProductRow" class="ms-Table-row  is-selected navrow">
-                                <span class="ms-Table-cell" onclick="setPanel('AddProductPanel', 'addProductRow')">Add Product</span>
-                            </div>
-                            <div id="removeProductRow" class="ms-Table-row navrow">
-                                <span class="ms-Table-cell" onclick="setPanel('RemoveProductPanel', 'removeProductRow')">Remove Product</span>
-                            </div>
-                            <div id="updatesRow" class="ms-Table-row navrow">
-                                <span class="ms-Table-cell" onclick="setPanel('UpdatesPanel', 'updatesRow')">Updates</span>
-                            </div>
-                            <div id="displayRow" class="ms-Table-row navrow">
-                                <span class="ms-Table-cell" onclick="setPanel('DisplayPanel', 'displayRow')">Display</span>
-                            </div>
-                            <div id="loggingRow" class="ms-Table-row navrow">
-                                <span class="ms-Table-cell" onclick="setPanel('LoggingPanel', 'loggingRow')">Logging</span>
-                            </div>
-                            <div id="propertiesRow" class="ms-Table-row navrow">
-                                <span class="ms-Table-cell" onclick="setPanel('PropertiesPanel', 'propertiesRow')">Properties</span>
-                            </div>
-                            <div id="templatesRow" class="ms-Table-row navrow">
-                                <span class="ms-Table-cell" onclick="setPanel('TemplatesPanel', 'templatesRow')">Templates</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="ms-Grid-col ms-u-md9 ms-u-lg6 ms-u-xl3 ms-u-sm9">
-                    <!-- Start Add Product Panel -->
-                    <div id="AddProductPanel" class="option-panel visible">
-                        <h1 class="ms-font-xxl">Add Product</h1>
-                        <div style="border-bottom:1px solid #e5e3e3">
-                            <h2 class="ms-font-xl">Required Fields</h2>
-                            <table>
-                                <tr>
-                                    <td>
-                                        <label class="ms-Label">Product</label>
-                                    </td>
-                                    <td>
-                                        <i id="productInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('productInfo', this)"></i>
-                                    </td>
-                                </tr>
-                            </table>
-                            <div class="ms-Dropdown">
-                                <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
-                                <select id="cbProduct" class="ms-Dropdown-select">
-                                    <option value="O365ProPlusRetail">Office 365 ProPlus Retail</option>
-                                    <option value="O365BusinessRetail">Office 365 Business Retail</option>
-                                    <option value="VisioProRetail">Visio Professional Retail</option>
-                                    <option value="ProjectProRetail">Project Professional Retail</option>
-                                    <option value="SPDRetail">SharePoint Designer</option>
-                                </select>
-                            </div>
+                                    <div class="ms-Table">
+                                        <div class="ms-Table-row">
+                                            <span class="ms-font-xl">Version</span>
+                                        </div>
+                                        <div id="office2016Select" class="ms-Table-row is-selected navrowversion">
+                                            <span class="ms-Table-cell" onclick="setVersionPanel('office2016Select')">Office ProPlus 2016</span>
+                                        </div>
+                                        <div id="office2013Select" class="ms-Table-row navrowversion">
+                                            <span class="ms-Table-cell" onclick="setVersionPanel('office2013Select')">Office ProPlus 2013</span>
+                                        </div>
+                                    </div>
 
-                            <table>
-                                <tr>
-                                    <td>
-                                        <label class="ms-Label">Edition</label>
-                                    </td>
-                                    <td>
-                                        <i id="editionInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('editionInfo', this)"></i>
-                                    </td>
-                                </tr>
-                            </table>
-                            <div class="ms-Dropdown">
-                                <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
-                                <select id="cbEdition" class="ms-Dropdown-select">
-                                    <option value="32">32-bit</option>
-                                    <option value="64">64-bit</option>
-                                </select>
-                            </div>
-                            
-                            <div id="branchSection">
-                                <table>
-                                    <tr>
-                                        <td>
-                                            <label class="ms-Label">Branch</label>
-                                        </td>
-                                        <td>
-                                            <i id="branchInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('branchnInfo', this)"></i>
-                                        </td>
-                                    </tr>
-                                </table>
-                                <div class="ms-Dropdown">
-                                    <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
-                                    <select id="cbBranch" class="ms-Dropdown-select">
-                                        <option value="Current">Current</option>
-                                        <option value="Business">Business</option>
-                                        <option value="FirstReleaseBusiness">First Release Business</option>
-                                    </select>
+                                    <br />
+
+                                    <div class="ms-Table">
+                                        <div class="ms-Table-row">
+                                            <span class="ms-font-xl">Section</span>
+                                        </div>
+                                        <div id="addProductRow" class="ms-Table-row  is-selected navrow">
+                                            <span class="ms-Table-cell" onclick="setPanel('AddProductPanel', 'addProductRow')">Add Product</span>
+                                        </div>
+                                        <div id="removeProductRow" class="ms-Table-row navrow">
+                                            <span class="ms-Table-cell" onclick="setPanel('RemoveProductPanel', 'removeProductRow')">Remove Product</span>
+                                        </div>
+                                        <div id="updatesRow" class="ms-Table-row navrow">
+                                            <span class="ms-Table-cell" onclick="setPanel('UpdatesPanel', 'updatesRow')">Updates</span>
+                                        </div>
+                                        <div id="displayRow" class="ms-Table-row navrow">
+                                            <span class="ms-Table-cell" onclick="setPanel('DisplayPanel', 'displayRow')">Display</span>
+                                        </div>
+                                        <div id="loggingRow" class="ms-Table-row navrow">
+                                            <span class="ms-Table-cell" onclick="setPanel('LoggingPanel', 'loggingRow')">Logging</span>
+                                        </div>
+                                        <div id="propertiesRow" class="ms-Table-row navrow">
+                                            <span class="ms-Table-cell" onclick="setPanel('PropertiesPanel', 'propertiesRow')">Properties</span>
+                                        </div>
+                                        <div id="templatesRow" class="ms-Table-row navrow">
+                                            <span class="ms-Table-cell" onclick="setPanel('TemplatesPanel', 'templatesRow')">Templates</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-
-                            <table>
-                                <tr>
-                                    <td>
-                                        <label class="ms-Label">Language</label>
-                                    </td>
-                                    <td>
-                                        <i id="languageInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('languageInfo', this)"></i>
-                                    </td>
-                                </tr>
-                            </table>
-
-                            <table style="position: relative;left:-3px;">
-                                <tr>
-                                    <td style="width: 100%; padding-right: 10px">
+                        </td>
+                        <td style="vertical-align: top;">
+                            <div id="configColumn" class="Editor-Column" style="width: 450px;">
+                                <!-- Start Add Product Panel -->
+                                <div id="AddProductPanel" class="option-panel visible">
+                                    <h1 class="ms-font-xxl">Add Product</h1>
+                                    <div style="border-bottom:1px solid #e5e3e3">
+                                        <h2 class="ms-font-xl">Required Fields</h2>
+                                        <table>
+                                            <tr>
+                                                <td>
+                                                    <label class="ms-Label">Product</label>
+                                                </td>
+                                                <td>
+                                                    <i id="productInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('productInfo', this)"></i>
+                                                </td>
+                                            </tr>
+                                        </table>
                                         <div class="ms-Dropdown">
                                             <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
-                                            <select id="cbLanguage" class="ms-Dropdown-select">
-                                                <option value="en-us">English (en-us)</option>
-                                                <option value="ar-sa">Arabic (ar-sa)</option>
-                                                <option value="bg-bg">Bulgarian (bg-bg)</option>
-                                                <option value="zh-cn">Chinese (Simplified) (zh-cn)</option>
-                                                <option value="zh-tw">Chinese (zh-tw)</option>
-                                                <option value="hr-hr">Croatian (hr-hr)</option>
-                                                <option value="cs-cz">Czech (cs-cz)</option>
-                                                <option value="da-dk">Danish (da-dk)</option>
-                                                <option value="nl-nl">Dutch (nl-nl)</option>
-                                                <option value="et-ee">Estonian (et-ee)</option>
-                                                <option value="fi-fi">Finnish (fi-fi)</option>
-                                                <option value="fr-fr">French (fr-fr)</option>
-                                                <option value="de-de">German (de-de)</option>
-                                                <option value="el-gr">Greek (el-gr)</option>
-                                                <option value="he-il">Hebrew (he-il)</option>
-                                                <option value="hi-in">Hindi (hi-in)</option>
-                                                <option value="hu-hu">Hungarian (hu-hu)</option>
-                                                <option value="id-id">Indonesian (id-id)</option>
-                                                <option value="it-it">Italian (it-it)</option>
-                                                <option value="ja-jp">Japanese (ja-jp)</option>
-                                                <option value="kk-kh">Kazakh (kk-kh)</option>
-                                                <option value="ko-kr">Korean (ko-kr)</option>
-                                                <option value="lv-lv">Latvian (lv-lv)</option>
-                                                <option value="lt-lt">Lithuanian (lt-lt)</option>
-                                                <option value="ms-my">Malay (ms-my)</option>
-                                                <option value="nb-no">Norwegian (Bokm�l) (nb-no)</option>
-                                                <option value="pl-pl">Polish (pl-pl)</option>
-                                                <option value="pt-br">Portuguese (pt-br)</option>
-                                                <option value="pt-pt">Portuguese (pt-pt)</option>
-                                                <option value="ro-ro">Romanian (ro-ro)</option>
-                                                <option value="ru-ru">Russian (ru-ru)</option>
-                                                <option value="sr-latn-rs">Serbian (Latin) (sr-latn-rs)</option>
-                                                <option value="sk-sk">Slovak (sk-sk)</option>
-                                                <option value="sl-si">Slovenian (sl-si)</option>
-                                                <option value="es-es">Spanish (es-es)</option>
-                                                <option value="sv-se">Swedish (sv-se)</option>
-                                                <option value="th-th">Thai (th-th)</option>
-                                                <option value="tr-tr">Turkish (tr-tr)</option>
-                                                <option value="uk-ua">Ukrainian (uk-ua)</option>
+                                            <select id="cbProduct" class="ms-Dropdown-select">
+                                                <option value="O365ProPlusRetail">Office 365 ProPlus Retail</option>
+                                                <option value="O365BusinessRetail">Office 365 Business Retail</option>
+                                                <option value="VisioProRetail">Visio Professional Retail</option>
+                                                <option value="ProjectProRetail">Project Professional Retail</option>
+                                                <option value="SPDRetail">SharePoint Designer</option>
                                             </select>
                                         </div>
-                                    </td>
-                                    <td style="width: 150px;text-align: right; padding-right: 10px;padding-bottom: 10px">
-                                        <button id="btAddLanguage" class="ms-Button">
-                                            Add
-                                        </button>
-                                    </td>
-                                    <td style="width:80px;text-align: right;padding-bottom: 10px">
-                                        <button id="btRemoveLanguage" class="ms-Button" disabled="true">
-                                            Remove
-                                        </button>
-                                    </td>
-                                </tr>
-                            </table>
 
-                            <div style="margin-bottom:10px">
-                                <button id="btAddProduct" class="ms-Button">
-                                    Add Product
-                                </button>
-                                <button id="btRemoveProduct" class="ms-Button">
-                                    Delete Product
-                                </button>
-                            </div>
-                        </div>
-                        <div>
-                            <h2 class="ms-font-xl">Optional Fields</h2>
+                                        <table>
+                                            <tr>
+                                                <td>
+                                                    <label class="ms-Label">Edition</label>
+                                                </td>
+                                                <td>
+                                                    <i id="editionInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('editionInfo', this)"></i>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        <div class="ms-Dropdown">
+                                            <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
+                                            <select id="cbEdition" class="ms-Dropdown-select">
+                                                <option value="32">32-bit</option>
+                                                <option value="64">64-bit</option>
+                                            </select>
+                                        </div>
 
-                            <table>
-                                <tr>
-                                    <td>
-                                        <label class="ms-Label">Version</label>
-                                    </td>
-                                    <td>
-                                        <i id="versionInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('versionInfo', this)"></i>
-                                    </td>
-                                </tr>
-                            </table>
-                            <div class="input-group" style="width:100%">
-                                <div id="the-basics" style="width:100%">
-                                    <input id="txtVersion" type="text" pattern="^\d{2}\.\d\.\d{4}\.\d{4}$" maxlength="14"
-                                           class="ms-TextField-field form-control typeahead" placeholder="15.0.4745.1001"
-                                           data-error="Invalid Version. ex: 15.0.4745.1001" style="width:100%">
+                                        <div id="branchSection">
+                                            <table>
+                                                <tr>
+                                                    <td>
+                                                        <label class="ms-Label">Branch</label>
+                                                    </td>
+                                                    <td>
+                                                        <i id="branchInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('branchInfo', this)"></i>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                            <div class="ms-Dropdown">
+                                                <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
+                                                <select id="cbBranch" class="ms-Dropdown-select">
+                                                    <option value="Current">Current</option>
+                                                    <option value="Business">Business</option>
+                                                    <option value="FirstReleaseBusiness">First Release Business</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <table>
+                                            <tr>
+                                                <td>
+                                                    <label class="ms-Label">Language</label>
+                                                </td>
+                                                <td>
+                                                    <i id="languageInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('languageInfo', this)"></i>
+                                                </td>
+                                            </tr>
+                                        </table>
+
+                                        <table style="position: relative;left:-3px;">
+                                            <tr>
+                                                <td style="width: 100%; padding-right: 10px">
+                                                    <div class="ms-Dropdown">
+                                                        <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
+                                                        <select id="cbLanguage" class="ms-Dropdown-select">
+                                                            <option value="en-us">English (en-us)</option>
+                                                            <option value="ar-sa">Arabic (ar-sa)</option>
+                                                            <option value="bg-bg">Bulgarian (bg-bg)</option>
+                                                            <option value="zh-cn">Chinese (Simplified) (zh-cn)</option>
+                                                            <option value="zh-tw">Chinese (zh-tw)</option>
+                                                            <option value="hr-hr">Croatian (hr-hr)</option>
+                                                            <option value="cs-cz">Czech (cs-cz)</option>
+                                                            <option value="da-dk">Danish (da-dk)</option>
+                                                            <option value="nl-nl">Dutch (nl-nl)</option>
+                                                            <option value="et-ee">Estonian (et-ee)</option>
+                                                            <option value="fi-fi">Finnish (fi-fi)</option>
+                                                            <option value="fr-fr">French (fr-fr)</option>
+                                                            <option value="de-de">German (de-de)</option>
+                                                            <option value="el-gr">Greek (el-gr)</option>
+                                                            <option value="he-il">Hebrew (he-il)</option>
+                                                            <option value="hi-in">Hindi (hi-in)</option>
+                                                            <option value="hu-hu">Hungarian (hu-hu)</option>
+                                                            <option value="id-id">Indonesian (id-id)</option>
+                                                            <option value="it-it">Italian (it-it)</option>
+                                                            <option value="ja-jp">Japanese (ja-jp)</option>
+                                                            <option value="kk-kh">Kazakh (kk-kh)</option>
+                                                            <option value="ko-kr">Korean (ko-kr)</option>
+                                                            <option value="lv-lv">Latvian (lv-lv)</option>
+                                                            <option value="lt-lt">Lithuanian (lt-lt)</option>
+                                                            <option value="ms-my">Malay (ms-my)</option>
+                                                            <option value="nb-no">Norwegian (Bokm�l) (nb-no)</option>
+                                                            <option value="pl-pl">Polish (pl-pl)</option>
+                                                            <option value="pt-br">Portuguese (pt-br)</option>
+                                                            <option value="pt-pt">Portuguese (pt-pt)</option>
+                                                            <option value="ro-ro">Romanian (ro-ro)</option>
+                                                            <option value="ru-ru">Russian (ru-ru)</option>
+                                                            <option value="sr-latn-rs">Serbian (Latin) (sr-latn-rs)</option>
+                                                            <option value="sk-sk">Slovak (sk-sk)</option>
+                                                            <option value="sl-si">Slovenian (sl-si)</option>
+                                                            <option value="es-es">Spanish (es-es)</option>
+                                                            <option value="sv-se">Swedish (sv-se)</option>
+                                                            <option value="th-th">Thai (th-th)</option>
+                                                            <option value="tr-tr">Turkish (tr-tr)</option>
+                                                            <option value="uk-ua">Ukrainian (uk-ua)</option>
+                                                        </select>
+                                                    </div>
+                                                </td>
+                                                <td style="width: 150px;text-align: right; padding-right: 10px;padding-bottom: 10px">
+                                                    <button id="btAddLanguage" class="ms-Button">
+                                                        Add
+                                                    </button>
+                                                </td>
+                                                <td style="width:80px;text-align: right;padding-bottom: 10px">
+                                                    <button id="btRemoveLanguage" class="ms-Button" disabled="true">
+                                                        Remove
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </table>
+
+                                        <div style="margin-bottom:10px">
+                                            <button id="btAddProduct" class="ms-Button">
+                                                Add Product
+                                            </button>
+                                            <button id="btRemoveProduct" class="ms-Button">
+                                                Delete Product
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h2 class="ms-font-xl">Optional Fields</h2>
+
+                                        <table>
+                                            <tr>
+                                                <td>
+                                                    <label class="ms-Label">Version</label>
+                                                </td>
+                                                <td>
+                                                    <i id="versionInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('versionInfo', this)"></i>
+                                                </td>
+                                            </tr>
+                                        </table>
+
+                                        <form data-toggle="validator" role="form">
+                                            <div class="input-group" style="width:100%">
+                                                <div id="the-basics" style="width:100%">
+                                                    <input id="txtVersion" type="text" pattern="^\d{2}\.\d\.\d{4}\.\d{4}$" maxlength="14"
+                                                           class="ms-TextField-field typeahead" placeholder="15.0.4745.1001"
+                                                           data-error="Invalid Version. ex: 15.0.4745.1001" style="width:100%">
+                                                </div>
+                                                <span id="versionSignal" class="glyphicon form-control-feedback" aria-hidden="true" style="display:none;"></span>
+                                            </div>
+                                        </form>
+
+                                        <table>
+                                            <tr>
+                                                <td>
+                                                    <label class="ms-Label">SourcePath</label>
+                                                </td>
+                                                <td>
+                                                    <i id="srcPathInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('srcPathInfo', this)"></i>
+                                                </td>
+                                            </tr>
+                                        </table>
+
+                                        <form data-toggle="validator" role="form">
+                                            <div class="controls form-group has-feedback">
+                                                <input id="txtSourcePath" type="text" pattern="\\\\.*\\.*|http://.*|https://|^\w:\\.*"
+                                                       class="ms-TextField-field" placeholder="Network, local, or HTTP path"
+                                                       data-error="This must be a network, local, or HTTP path">
+                                                <span id="sourcepathSignal" class="glyphicon form-control-feedback" aria-hidden="true" style="margin-right: 20px"></span>
+                                            </div>
+                                        </form>
+
+                                        <div id="pidKeyLabel">
+                                            <table>
+                                                <tr>
+                                                    <td>
+                                                        <label class="ms-Label">PIDKEY</label>
+                                                    </td>
+                                                    <td>
+                                                        <i id="pidkeyInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('pidkeyInfo', this)"></i>
+                                                    </td>
+                                                </tr>
+                                            </table>
+
+                                            <div>
+                                                <input id="txtPidKey" type="text" pattern="^.{5}-.{5}-.{5}-.{5}-.{5}$"
+                                                       class="ms-TextField-field" placeholder="XXXXX-XXXXX-XXXXX-XXXXX-XXXXX"
+                                                       data-error="This must be a 25-character volume license key">
+                                                <span id="pidkeySignal" class="glyphicon form-control-feedback" aria-hidden="true"></span>-
+                                            </div>
+                                        </div>
+
+                                        <table>
+                                            <tr>
+                                                <td>
+                                                    <label class="ms-Label">Exclude Office Programs</label>
+                                                </td>
+                                                <td>
+                                                    <i id="exclAppInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('exclAppInfo', this)"></i>
+                                                </td>
+                                            </tr>
+                                        </table>
+
+                                        <div style="position: relative;">
+                                            <div>
+                                                <table>
+                                                    <tr>
+                                                        <td style="width: 100%; padding-right: 10px">
+                                                            <div class="ms-Dropdown">
+                                                                <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
+                                                                <select id="cbExcludeApp" class="ms-Dropdown-select">
+                                                                    <option value="Access">Access</option>
+                                                                    <option value="Excel">Excel</option>
+                                                                    <option value="Groove">Groove</option>
+                                                                    <option value="InfoPath">InfoPath</option>
+                                                                    <option value="Lync">Lync</option>
+                                                                    <option value="OneNote">OneNote</option>
+                                                                    <option value="Outlook">Outlook</option>
+                                                                    <option value="PowerPoint">PowerPoint</option>
+                                                                    <option value="Project">Project</option>
+                                                                    <option value="Publisher">Publisher</option>
+                                                                    <option value="SharePointDesigner">SharePointDesigner</option>
+                                                                    <option value="Visio">Visio</option>
+                                                                    <option value="Word">Word</option>
+                                                                </select>
+                                                            </div>
+                                                        </td>
+                                                        <td style="width: 150px;text-align: right; padding-right: 10px; padding-bottom:10px">
+                                                            <button id="btAddExcludeApp" class="ms-Button">
+                                                                Add
+                                                            </button>
+                                                        </td>
+                                                        <td style="width:80px;text-align: right; padding-bottom:10px">
+                                                            <button id="btRemoveExcludeApp" class="ms-Button" disabled="true">
+                                                                Remove
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+
+                                        </div>
+
+                                    </div>
                                 </div>
-                                <!--<span id="versionSignal" class="glyphicon form-control-feedback" aria-hidden="true" style="display:none;"></span>-->
-                            </div>
+                                <!-- End Add Product Panel -->
+                                <!-- Start Remove Product Panel -->
+                                <div id="RemoveProductPanel" class="option-panel">
+                                    <table>
+                                        <tr>
+                                            <td>
+                                                <h1 class="ms-font-xxl">Add Remove Product</h1>
+                                            </td>
+                                            <td>
+                                                <i id="removeProductInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('removeProductInfo', this)"></i>
+                                            </td>
+                                        </tr>
+                                    </table>
 
-                            <table>
-                                <tr>
-                                    <td>
-                                        <label class="ms-Label">SourcePath</label>
-                                    </td>
-                                    <td>
-                                        <i id="srcPathInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('srcPathInfo', this)"></i>
-                                    </td>
-                                </tr>
-                            </table>
+                                    <div class="ms-Toggle">
+                                        <span class="ms-Toggle-description">Remove All or Selected Products</span>
+                                        <input type="checkbox" id="removeAllProducts" class="ms-Toggle-input" />
+                                        <label for="removeAllProducts" class="ms-Toggle-field">
+                                            <span class="ms-Label ms-Label--off">Selected</span>
+                                            <span class="ms-Label ms-Label--on">All</span>
+                                        </label>
+                                    </div>
 
-                            <div>
-                                <input id="txtSourcePath" type="text" pattern="\\\\.*\\.*|http://.*|https://|^\w:\\.*"
-                                       class="ms-TextField-field" placeholder="Network, local, or HTTP path"
-                                       data-error="This must be a network, local, or HTTP path">
-                                <!--<span id="sourcepathSignal" class="glyphicon form-control-feedback" aria-hidden="true"></span>-->
-                            </div>
-                            
-                            <div id="pidKeyLabel">
-                                <table>
-                                    <tr>
-                                        <td>
-                                            <label class="ms-Label">PIDKEY</label>
-                                        </td>
-                                        <td>
-                                            <i id="pidkeyInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('pidkeyInfo', this)"></i>
-                                        </td>
-                                    </tr>
-                                </table>
+                                    <table>
+                                        <tr>
+                                            <td>
+                                                <label class="ms-Label">Product</label>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                    <div class="ms-Dropdown">
+                                        <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
+                                        <select id="cbRemoveProduct" class="ms-Dropdown-select">
+                                            <option value="O365ProPlusRetail">Office 365 ProPlus Retail</option>
+                                            <option value="O365BusinessRetail">Office 365 Business Retail</option>
+                                            <option value="VisioProRetail">Visio Professional Retail</option>
+                                            <option value="ProjectProRetail">Project Professional Retail</option>
+                                            <option value="SPDRetail">SharePoint Designer</option>
+                                        </select>
+                                    </div>
 
-                                <div>
-                                    <input id="txtPidKey" type="text" pattern="^.{5}-.{5}-.{5}-.{5}-.{5}$"
-                                           class="ms-TextField-field" placeholder="XXXXX-XXXXX-XXXXX-XXXXX-XXXXX"
-                                           data-error="This must be a 25-character volume license key">
-                                    <!--<span id="pidkeySignal" class="glyphicon form-control-feedback" aria-hidden="true"></span>-->
-                                </div>
-                            </div>
-
-                            <table>
-                                <tr>
-                                    <td>
-                                        <label class="ms-Label">Exclude Office Programs</label>
-                                    </td>
-                                    <td>
-                                        <i id="exclAppInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('exclAppInfo', this)"></i>
-                                    </td>
-                                </tr>
-                            </table>
-
-                            <div style="position: relative;left:-3px;">
-                                <div>
+                                    <table>
+                                        <tr>
+                                            <td>
+                                                <label class="ms-Label">Language</label>
+                                            </td>
+                                        </tr>
+                                    </table>
                                     <table>
                                         <tr>
                                             <td style="width: 100%; padding-right: 10px">
                                                 <div class="ms-Dropdown">
                                                     <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
-                                                    <select id="cbExcludeApp" class="ms-Dropdown-select">
-                                                        <option value="Access">Access</option>
-                                                        <option value="Excel">Excel</option>
-                                                        <option value="Groove">Groove</option>
-                                                        <option value="InfoPath">InfoPath</option>
-                                                        <option value="Lync">Lync</option>
-                                                        <option value="OneNote">OneNote</option>
-                                                        <option value="Outlook">Outlook</option>
-                                                        <option value="PowerPoint">PowerPoint</option>
-                                                        <option value="Project">Project</option>
-                                                        <option value="Publisher">Publisher</option>
-                                                        <option value="SharePointDesigner">SharePointDesigner</option>
-                                                        <option value="Visio">Visio</option>
-                                                        <option value="Word">Word</option>
+                                                    <select id="cbRemoveLanguage" class="ms-Dropdown-select">
+                                                        <option value="en-us">English (en-us)</option>
+                                                        <option value="ar-sa">Arabic (ar-sa)</option>
+                                                        <option value="bg-bg">Bulgarian (bg-bg)</option>
+                                                        <option value="zh-cn">Chinese (Simplified) (zh-cn)</option>
+                                                        <option value="zh-tw">Chinese (zh-tw)</option>
+                                                        <option value="hr-hr">Croatian (hr-hr)</option>
+                                                        <option value="cs-cz">Czech (cs-cz)</option>
+                                                        <option value="da-dk">Danish (da-dk)</option>
+                                                        <option value="nl-nl">Dutch (nl-nl)</option>
+                                                        <option value="et-ee">Estonian (et-ee)</option>
+                                                        <option value="fi-fi">Finnish (fi-fi)</option>
+                                                        <option value="fr-fr">French (fr-fr)</option>
+                                                        <option value="de-de">German (de-de)</option>
+                                                        <option value="el-gr">Greek (el-gr)</option>
+                                                        <option value="he-il">Hebrew (he-il)</option>
+                                                        <option value="hi-in">Hindi (hi-in)</option>
+                                                        <option value="hu-hu">Hungarian (hu-hu)</option>
+                                                        <option value="id-id">Indonesian (id-id)</option>
+                                                        <option value="it-it">Italian (it-it)</option>
+                                                        <option value="ja-jp">Japanese (ja-jp)</option>
+                                                        <option value="kk-kh">Kazakh (kk-kh)</option>
+                                                        <option value="ko-kr">Korean (ko-kr)</option>
+                                                        <option value="lv-lv">Latvian (lv-lv)</option>
+                                                        <option value="lt-lt">Lithuanian (lt-lt)</option>
+                                                        <option value="ms-my">Malay (ms-my)</option>
+                                                        <option value="nb-no">Norwegian (Bokm�l) (nb-no)</option>
+                                                        <option value="pl-pl">Polish (pl-pl)</option>
+                                                        <option value="pt-br">Portuguese (pt-br)</option>
+                                                        <option value="pt-pt">Portuguese (pt-pt)</option>
+                                                        <option value="ro-ro">Romanian (ro-ro)</option>
+                                                        <option value="ru-ru">Russian (ru-ru)</option>
+                                                        <option value="sr-latn-rs">Serbian (Latin) (sr-latn-rs)</option>
+                                                        <option value="sk-sk">Slovak (sk-sk)</option>
+                                                        <option value="sl-si">Slovenian (sl-si)</option>
+                                                        <option value="es-es">Spanish (es-es)</option>
+                                                        <option value="sv-se">Swedish (sv-se)</option>
+                                                        <option value="th-th">Thai (th-th)</option>
+                                                        <option value="tr-tr">Turkish (tr-tr)</option>
+                                                        <option value="uk-ua">Ukrainian (uk-ua)</option>
                                                     </select>
                                                 </div>
                                             </td>
-                                            <td style="width: 150px;text-align: right; padding-right: 10px; padding-bottom:10px">
-                                                <button id="btAddExcludeApp" class="ms-Button">
+                                            <td style="width: 150px;text-align: right; padding-right: 10px;padding-bottom:10px">
+                                                <button id="btAddRemoveLanguage" class="ms-Button ">
                                                     Add
                                                 </button>
                                             </td>
-                                            <td style="width:80px;text-align: right; padding-bottom:10px">
-                                                <button id="btRemoveExcludeApp" class="ms-Button" disabled="true">
+                                            <td style="width:80px;text-align: right;padding-bottom:10px">
+                                                <button id="btRemoveRemoveLanguage" class="ms-Button" disabled="true">
                                                     Remove
                                                 </button>
                                             </td>
                                         </tr>
                                     </table>
-                                </div>
 
-                            </div>
-
-                        </div>
-                    </div>
-                    <!-- End Add Product Panel -->
-                    <!-- Start Remove Product Panel -->
-                    <div id="RemoveProductPanel" class="option-panel">
-                        <table>
-                            <tr>
-                                <td>
-                                    <h1 class="ms-font-xxl">Add Remove Product</h1>
-                                </td>
-                                <td>
-                                    <i id="removeProductInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('removeProductInfo', this)"></i>
-                                </td>
-                            </tr>
-                        </table>
-
-                        <div class="ms-Toggle">
-                            <span class="ms-Toggle-description">Remove All or Selected Products</span>
-                            <input type="checkbox" id="removeAllProducts" class="ms-Toggle-input" />
-                            <label for="removeAllProducts" class="ms-Toggle-field">
-                                <span class="ms-Label ms-Label--off">Selected</span>
-                                <span class="ms-Label ms-Label--on">All</span>
-                            </label>
-                        </div>
-
-                        <table>
-                            <tr>
-                                <td>
-                                    <label class="ms-Label">Product</label>
-                                </td>
-                            </tr>
-                        </table>
-                        <div class="ms-Dropdown">
-                            <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
-                            <select id="cbRemoveProduct" class="ms-Dropdown-select">
-                                <option value="O365ProPlusRetail">Office 365 ProPlus Retail</option>
-                                <option value="O365BusinessRetail">Office 365 Business Retail</option>
-                                <option value="VisioProRetail">Visio Professional Retail</option>
-                                <option value="ProjectProRetail">Project Professional Retail</option>
-                                <option value="SPDRetail">SharePoint Designer</option>
-                            </select>
-                        </div>
-
-                        <table>
-                            <tr>
-                                <td>
-                                    <label class="ms-Label">Language</label>
-                                </td>
-                            </tr>
-                        </table>
-                        <table>
-                            <tr>
-                                <td style="width: 100%; padding-right: 10px">
-                                    <div class="ms-Dropdown">
-                                        <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
-                                        <select id="cbRemoveLanguage" class="ms-Dropdown-select">
-                                            <option value="en-us">English (en-us)</option>
-                                            <option value="ar-sa">Arabic (ar-sa)</option>
-                                            <option value="bg-bg">Bulgarian (bg-bg)</option>
-                                            <option value="zh-cn">Chinese (Simplified) (zh-cn)</option>
-                                            <option value="zh-tw">Chinese (zh-tw)</option>
-                                            <option value="hr-hr">Croatian (hr-hr)</option>
-                                            <option value="cs-cz">Czech (cs-cz)</option>
-                                            <option value="da-dk">Danish (da-dk)</option>
-                                            <option value="nl-nl">Dutch (nl-nl)</option>
-                                            <option value="et-ee">Estonian (et-ee)</option>
-                                            <option value="fi-fi">Finnish (fi-fi)</option>
-                                            <option value="fr-fr">French (fr-fr)</option>
-                                            <option value="de-de">German (de-de)</option>
-                                            <option value="el-gr">Greek (el-gr)</option>
-                                            <option value="he-il">Hebrew (he-il)</option>
-                                            <option value="hi-in">Hindi (hi-in)</option>
-                                            <option value="hu-hu">Hungarian (hu-hu)</option>
-                                            <option value="id-id">Indonesian (id-id)</option>
-                                            <option value="it-it">Italian (it-it)</option>
-                                            <option value="ja-jp">Japanese (ja-jp)</option>
-                                            <option value="kk-kh">Kazakh (kk-kh)</option>
-                                            <option value="ko-kr">Korean (ko-kr)</option>
-                                            <option value="lv-lv">Latvian (lv-lv)</option>
-                                            <option value="lt-lt">Lithuanian (lt-lt)</option>
-                                            <option value="ms-my">Malay (ms-my)</option>
-                                            <option value="nb-no">Norwegian (Bokm�l) (nb-no)</option>
-                                            <option value="pl-pl">Polish (pl-pl)</option>
-                                            <option value="pt-br">Portuguese (pt-br)</option>
-                                            <option value="pt-pt">Portuguese (pt-pt)</option>
-                                            <option value="ro-ro">Romanian (ro-ro)</option>
-                                            <option value="ru-ru">Russian (ru-ru)</option>
-                                            <option value="sr-latn-rs">Serbian (Latin) (sr-latn-rs)</option>
-                                            <option value="sk-sk">Slovak (sk-sk)</option>
-                                            <option value="sl-si">Slovenian (sl-si)</option>
-                                            <option value="es-es">Spanish (es-es)</option>
-                                            <option value="sv-se">Swedish (sv-se)</option>
-                                            <option value="th-th">Thai (th-th)</option>
-                                            <option value="tr-tr">Turkish (tr-tr)</option>
-                                            <option value="uk-ua">Ukrainian (uk-ua)</option>
-                                        </select>
+                                    <div style="margin-bottom:10px">
+                                        <button id="btAddRemoveProduct" class="ms-Button">
+                                            Add Remove Product
+                                        </button>
+                                        <button id="btDeleteRemoveProduct" class="ms-Button">
+                                            Delete Remove Product
+                                        </button>
                                     </div>
-                                </td>
-                                <td style="width: 150px;text-align: right; padding-right: 10px;padding-bottom:10px">
-                                    <button id="btAddRemoveLanguage" class="ms-Button ">
-                                        Add
-                                    </button>
-                                </td>
-                                <td style="width:80px;text-align: right;padding-bottom:10px">
-                                    <button id="btRemoveRemoveLanguage" class="ms-Button" disabled="true">
-                                        Remove
-                                    </button>
-                                </td>
-                            </tr>
-                        </table>
-
-                        <div style="margin-bottom:10px">
-                            <button id="btAddRemoveProduct" class="ms-Button">
-                                Add Remove Product
-                            </button>
-                            <button id="btDeleteRemoveProduct" class="ms-Button">
-                                Delete Remove Product
-                            </button>
-                        </div>
-                    </div>
-                    <!-- End Remove Product Panel -->
-                    <!-- Start Updates Panel -->
-                    <div id="UpdatesPanel" class="option-panel">
-                        <h1 class="ms-font-xxl">Updates</h1>
-                        <div id="updateToggleContainer" class="ms-Toggle">
-                            <span class="ms-Toggle-description">Enable Updates</span>
-                            <input type="checkbox" id="updatesEnabled" class="ms-Toggle-input" />
-                            <label for="updatesEnabled" class="ms-Toggle-field">
-                                <span class="ms-Label ms-Label--off">Disabled</span>
-                                <span class="ms-Label ms-Label--on">Enabled</span>
-                            </label>
-                        </div>
-                        
-                        <div id="updateBranchSection">
-                            <table>
-                                <tr>
-                                    <td>
-                                        <label class="ms-Label">Branch</label>
-                                    </td>
-                                    <td>
-                                        <i id="editionInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('editionInfo', this)"></i>
-                                    </td>
-                                </tr>
-                            </table>
-                            <div class="ms-Dropdown">
-                                <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
-                                <select id="cbUpdateBranch" class="ms-Dropdown-select">
-                                    <option value="Current">Current</option>
-                                    <option value="Business">Business</option>
-                                    <option value="FirstReleaseBusiness">First Release Business</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <table>
-                            <tr>
-                                <td>
-                                    <label class="ms-Label">UpdatePath</label>
-                                </td>
-                                <td>
-                                    <i id="updatePathInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('updatePathInfo', this)"></i>
-                                </td>
-                            </tr>
-                        </table>
-
-                        <div>
-                            <input id="txtUpdatePath" type="text" pattern="\\\\.*\\.*|http://.*|https://|^\w:\\.*"
-                                   class="ms-TextField-field" placeholder="Network, local, or HTTP path"
-                                   data-error="This must be a network, local, or HTTP path">
-                            <!--<span id="updatepathSignal" class="glyphicon form-control-feedback" aria-hidden="true"></span>-->
-                        </div>
-
-                        <table>
-                            <tr>
-                                <td>
-                                    <label class="ms-Label">TargetVersion</label>
-                                </td>
-                                <td>
-                                    <i id="targetVersionInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('targetVersionInfo', this)"></i>
-                                </td>
-                            </tr>
-                        </table>
-
-                        <div>
-                            <div id="the-basics">
-                                <input id="txtTargetVersion" type="text" pattern="^\d{2}\.\d\.\d{4}\.\d{4}$" maxlength="14"
-                                       class="ms-TextField-field typeahead" placeholder="15.0.4745.1001"
-                                       data-error="Invalid Version. ex: 15.0.4745.1001">
-                            </div>
-                            <!--<span id="targetversionSignal" class="glyphicon form-control-feedback" aria-hidden="true"></span>-->
-                        </div>
-
-                        <div class="ms-DatePicker">
-                            <div class="ms-TextField">
-                                <table>
-                                    <tr>
-                                        <td>
-                                            <label class="ms-Label">Deadline</label>
-                                        </td>
-                                        <td>
-                                            <i id="deadlineInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('deadlineInfo', this)"></i>
-                                        </td>
-                                    </tr>
-                                </table>
-                                <i class="ms-DatePicker-event ms-Icon ms-Icon--event"></i>
-                                <input id="txtDeadline" class="ms-TextField-field" type="text" placeholder="Select a date&hellip;">
-                            </div>
-                            <div class="ms-DatePicker-monthComponents">
-                                <span class="ms-DatePicker-nextMonth js-nextMonth"><i class="ms-Icon ms-Icon--chevronRight"></i></span>
-                                <span class="ms-DatePicker-prevMonth js-prevMonth"><i class="ms-Icon ms-Icon--chevronLeft"></i></span>
-                                <div class="ms-DatePicker-headerToggleView js-showMonthPicker"></div>
-                            </div>
-                            <span class="ms-DatePicker-goToday js-goToday">Go to today</span>
-                            <div class="ms-DatePicker-monthPicker">
-                                <div class="ms-DatePicker-header">
-                                    <div class="ms-DatePicker-yearComponents">
-                                        <span class="ms-DatePicker-nextYear js-nextYear"><i class="ms-Icon ms-Icon--chevronRight"></i></span>
-                                        <span class="ms-DatePicker-prevYear js-prevYear"><i class="ms-Icon ms-Icon--chevronLeft"></i></span>
+                                </div>
+                                <!-- End Remove Product Panel -->
+                                <!-- Start Updates Panel -->
+                                <div id="UpdatesPanel" class="option-panel">
+                                    <h1 class="ms-font-xxl">Updates</h1>
+                                    <div id="updateToggleContainer" class="ms-Toggle">
+                                        <span class="ms-Toggle-description">Enable Updates</span>
+                                        <input type="checkbox" id="updatesEnabled" class="ms-Toggle-input" />
+                                        <label for="updatesEnabled" class="ms-Toggle-field">
+                                            <span class="ms-Label ms-Label--off">Disabled</span>
+                                            <span class="ms-Label ms-Label--on">Enabled</span>
+                                        </label>
                                     </div>
-                                    <div class="ms-DatePicker-currentYear js-showYearPicker"></div>
+
+                                    <div id="updateBranchSection">
+                                        <table>
+                                            <tr>
+                                                <td>
+                                                    <label class="ms-Label">Branch</label>
+                                                </td>
+                                                <td>
+                                                    <i id="editionInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('branchInfo', this)"></i>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        <div class="ms-Dropdown">
+                                            <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
+                                            <select id="cbUpdateBranch" class="ms-Dropdown-select">
+                                                <option value="Current">Current</option>
+                                                <option value="Business">Business</option>
+                                                <option value="FirstReleaseBusiness">First Release Business</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <table>
+                                        <tr>
+                                            <td>
+                                                <label class="ms-Label">UpdatePath</label>
+                                            </td>
+                                            <td>
+                                                <i id="updatePathInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('updatePathInfo', this)"></i>
+                                            </td>
+                                        </tr>
+                                    </table>
+
+                                    <div>
+                                        <input id="txtUpdatePath" type="text" pattern="\\\\.*\\.*|http://.*|https://|^\w:\\.*"
+                                               class="ms-TextField-field" placeholder="Network, local, or HTTP path"
+                                               data-error="This must be a network, local, or HTTP path">
+                                        <span id="updatepathSignal" class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                                    </div>
+
+                                    <table>
+                                        <tr>
+                                            <td>
+                                                <label class="ms-Label">TargetVersion</label>
+                                            </td>
+                                            <td>
+                                                <i id="targetVersionInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('targetVersionInfo', this)"></i>
+                                            </td>
+                                        </tr>
+                                    </table>
+
+                                    <div>
+                                        <div id="the-basics">
+                                            <input id="txtTargetVersion" type="text" pattern="^\d{2}\.\d\.\d{4}\.\d{4}$" maxlength="14"
+                                                   class="ms-TextField-field typeahead" placeholder="15.0.4745.1001"
+                                                   data-error="Invalid Version. ex: 15.0.4745.1001">
+                                        </div>
+                                        <span id="targetversionSignal" class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                                    </div>
+
+                                    <div class="ms-DatePicker">
+                                        <div class="ms-TextField">
+                                            <table>
+                                                <tr>
+                                                    <td>
+                                                        <label class="ms-Label">Deadline</label>
+                                                    </td>
+                                                    <td>
+                                                        <i id="deadlineInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('deadlineInfo', this)"></i>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                            <i class="ms-DatePicker-event ms-Icon ms-Icon--event"></i>
+                                            <input id="txtDeadline" class="ms-TextField-field" type="text" placeholder="Select a date&hellip;">
+                                        </div>
+                                        <div class="ms-DatePicker-monthComponents">
+                                            <span class="ms-DatePicker-nextMonth js-nextMonth"><i class="ms-Icon ms-Icon--chevronRight"></i></span>
+                                            <span class="ms-DatePicker-prevMonth js-prevMonth"><i class="ms-Icon ms-Icon--chevronLeft"></i></span>
+                                            <div class="ms-DatePicker-headerToggleView js-showMonthPicker"></div>
+                                        </div>
+                                        <span class="ms-DatePicker-goToday js-goToday">Go to today</span>
+                                        <div class="ms-DatePicker-monthPicker">
+                                            <div class="ms-DatePicker-header">
+                                                <div class="ms-DatePicker-yearComponents">
+                                                    <span class="ms-DatePicker-nextYear js-nextYear"><i class="ms-Icon ms-Icon--chevronRight"></i></span>
+                                                    <span class="ms-DatePicker-prevYear js-prevYear"><i class="ms-Icon ms-Icon--chevronLeft"></i></span>
+                                                </div>
+                                                <div class="ms-DatePicker-currentYear js-showYearPicker"></div>
+                                            </div>
+                                            <div class="ms-DatePicker-optionGrid">
+                                                <span class="ms-DatePicker-monthOption js-changeDate" data-month="0">Jan</span>
+                                                <span class="ms-DatePicker-monthOption js-changeDate" data-month="1">Feb</span>
+                                                <span class="ms-DatePicker-monthOption js-changeDate" data-month="2">Mar</span>
+                                                <span class="ms-DatePicker-monthOption js-changeDate" data-month="3">Apr</span>
+                                                <span class="ms-DatePicker-monthOption js-changeDate" data-month="4">May</span>
+                                                <span class="ms-DatePicker-monthOption js-changeDate" data-month="5">Jun</span>
+                                                <span class="ms-DatePicker-monthOption js-changeDate" data-month="6">Jul</span>
+                                                <span class="ms-DatePicker-monthOption js-changeDate" data-month="7">Aug</span>
+                                                <span class="ms-DatePicker-monthOption js-changeDate" data-month="8">Sep</span>
+                                                <span class="ms-DatePicker-monthOption js-changeDate" data-month="9">Oct</span>
+                                                <span class="ms-DatePicker-monthOption js-changeDate" data-month="10">Nov</span>
+                                                <span class="ms-DatePicker-monthOption js-changeDate" data-month="11">Dec</span>
+                                            </div>
+                                        </div>
+                                        <div class="ms-DatePicker-yearPicker">
+                                            <div class="ms-DatePicker-decadeComponents">
+                                                <span class="ms-DatePicker-nextDecade js-nextDecade"><i class="ms-Icon ms-Icon--chevronRight"></i></span>
+                                                <span class="ms-DatePicker-prevDecade js-prevDecade"><i class="ms-Icon ms-Icon--chevronLeft"></i></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="controls">
+                                        <button id="btSaveUpdates" class="ms-Button">
+                                            Save
+                                        </button>
+                                        <button id="btRemovesUpdates" class="ms-Button">
+                                            Remove
+                                        </button>
+                                    </div>
+
                                 </div>
-                                <div class="ms-DatePicker-optionGrid">
-                                    <span class="ms-DatePicker-monthOption js-changeDate" data-month="0">Jan</span>
-                                    <span class="ms-DatePicker-monthOption js-changeDate" data-month="1">Feb</span>
-                                    <span class="ms-DatePicker-monthOption js-changeDate" data-month="2">Mar</span>
-                                    <span class="ms-DatePicker-monthOption js-changeDate" data-month="3">Apr</span>
-                                    <span class="ms-DatePicker-monthOption js-changeDate" data-month="4">May</span>
-                                    <span class="ms-DatePicker-monthOption js-changeDate" data-month="5">Jun</span>
-                                    <span class="ms-DatePicker-monthOption js-changeDate" data-month="6">Jul</span>
-                                    <span class="ms-DatePicker-monthOption js-changeDate" data-month="7">Aug</span>
-                                    <span class="ms-DatePicker-monthOption js-changeDate" data-month="8">Sep</span>
-                                    <span class="ms-DatePicker-monthOption js-changeDate" data-month="9">Oct</span>
-                                    <span class="ms-DatePicker-monthOption js-changeDate" data-month="10">Nov</span>
-                                    <span class="ms-DatePicker-monthOption js-changeDate" data-month="11">Dec</span>
+                                <!-- End Updates Panel -->
+                                <!-- Start Display Panel -->
+                                <div id="DisplayPanel" class="option-panel">
+                                    <h1 class="ms-font-xxl">Display</h1>
+                                    <div class="ms-Toggle">
+                                        <table>
+                                            <tr>
+                                                <td>
+                                                    <label class="ms-Toggle-description">Display Level</label>
+                                                </td>
+                                                <td>
+                                                    <i id="displayLevelInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('displayLevelInfo', this)"></i>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        <input type="checkbox" id="displayLevel" class="ms-Toggle-input" />
+                                        <label for="displayLevel" class="ms-Toggle-field">
+                                            <span class="ms-Label ms-Label--off">None</span>
+                                            <span class="ms-Label ms-Label--on">Full</span>
+                                        </label>
+                                    </div>
+                                    <div class="ms-Toggle">
+                                        <table>
+                                            <tr>
+                                                <td>
+                                                    <label class="ms-Toggle-description">Accept EULA</label>
+                                                </td>
+                                                <td>
+                                                    <i id="acceptEULAInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('acceptEULAInfo', this)"></i>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        <input type="checkbox" id="acceptEULA" class="ms-Toggle-input" />
+                                        <label for="acceptEULA" class="ms-Toggle-field">
+                                            <span class="ms-Label ms-Label--off">False</span>
+                                            <span class="ms-Label ms-Label--on">True</span>
+                                        </label>
+                                    </div>
+
+                                    <div class="controls">
+                                        <button id="btSaveDisplay" class="ms-Button">
+                                            Save
+                                        </button>
+                                        <button id="btRemoveDisplay" class="ms-Button">
+                                            Remove
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="ms-DatePicker-yearPicker">
-                                <div class="ms-DatePicker-decadeComponents">
-                                    <span class="ms-DatePicker-nextDecade js-nextDecade"><i class="ms-Icon ms-Icon--chevronRight"></i></span>
-                                    <span class="ms-DatePicker-prevDecade js-prevDecade"><i class="ms-Icon ms-Icon--chevronLeft"></i></span>
+                                <!-- End Display Panel -->
+                                <!-- Start Logging Panel -->
+                                <div id="LoggingPanel" class="option-panel">
+                                    <h1 class="ms-font-xxl">Logging</h1>
+                                    <div class="ms-Toggle">
+                                        <div class="ms-Toggle">
+                                            <table>
+                                                <tr>
+                                                    <td>
+                                                        <label class="ms-Toggle-description">Logging Level</label>
+                                                    </td>
+                                                    <td>
+                                                        <i id="logLevelInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('logLevelInfo', this)"></i>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                            <input type="checkbox" id="loggingLevel" class="ms-Toggle-input" />
+                                            <label for="loggingLevel" class="ms-Toggle-field">
+                                                <span class="ms-Label ms-Label--off">Off</span>
+                                                <span class="ms-Label ms-Label--on">Standard</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <table>
+                                        <tr>
+                                            <td>
+                                                <label class="ms-Label">Path</label>
+                                            </td>
+                                            <td>
+                                                <i id="logPathInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('logPathInfo', this)"></i>
+                                            </td>
+                                        </tr>
+                                    </table>
+
+                                    <div>
+                                        <input id="txtLoggingUpdatePath" type="text" pattern="^\w:\\.*"
+                                               class="ms-TextField-field" placeholder="Local Path"
+                                               data-error="Local Path">
+                                        <span id="logupdatepathSignal" class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                                    </div>
+
+                                    <div style="margin-top:10px">
+                                        <button id="btSaveLogging" class="ms-Button">
+                                            Save
+                                        </button>
+                                        <button id="btRemoveLogging" class="ms-Button">
+                                            Remove
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
+                                <!-- End Logging Panel -->
+                                <!-- Start Properties Panel -->
+                                <div id="PropertiesPanel" class="option-panel">
+                                    <h1 class="ms-font-xxl">Properties</h1>
+                                    <div class="ms-Toggle">
+                                        <table>
+                                            <tr>
+                                                <td>
+                                                    <label class="ms-Toggle-description">AutoActivate</label>
+                                                </td>
+                                                <td>
+                                                    <i id="aaInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('aaInfo', this)"></i>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        <input type="checkbox" id="autoActivate" class="ms-Toggle-input" />
+                                        <label for="autoActivate" class="ms-Toggle-field">
+                                            <span class="ms-Label ms-Label--off">No</span>
+                                            <span class="ms-Label ms-Label--on">Yes</span>
+                                        </label>
+                                    </div>
+                                    <div class="ms-Toggle">
+                                        <table>
+                                            <tr>
+                                                <td>
+                                                    <label class="ms-Toggle-description">ForceAppShutdown</label>
+                                                </td>
+                                                <td>
+                                                    <i id="fasInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('fasInfo', this)"></i>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        <input type="checkbox" id="forceAppShutdown" class="ms-Toggle-input" />
+                                        <label for="forceAppShutdown" class="ms-Toggle-field">
+                                            <span class="ms-Label ms-Label--off">False</span>
+                                            <span class="ms-Label ms-Label--on">True</span>
+                                        </label>
+                                    </div>
+                                    <div class="ms-Toggle">
+                                        <table>
+                                            <tr>
+                                                <td>
+                                                    <label class="ms-Toggle-description">SharedComputerLicensing</label>
+                                                </td>
+                                                <td>
+                                                    <i id="sclInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('sclInfo', this)"></i>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        <input type="checkbox" id="sharedComputerLicensing" class="ms-Toggle-input" />
+                                        <label for="sharedComputerLicensing" class="ms-Toggle-field">
+                                            <span class="ms-Label ms-Label--off">False</span>
+                                            <span class="ms-Label ms-Label--on">True</span>
+                                        </label>
+                                    </div>
 
-                        <div class="controls">
-                            <button id="btSaveUpdates" class="ms-Button">
-                                Save
-                            </button>
-                            <button id="btRemovesUpdates" class="ms-Button">
-                                Remove
-                            </button>
-                        </div>
-
-                    </div>
-                    <!-- End Updates Panel -->
-                    <!-- Start Display Panel -->
-                    <div id="DisplayPanel" class="option-panel">
-                        <h1 class="ms-font-xxl">Display</h1>
-                        <div class="ms-Toggle">
-                            <table>
-                                <tr>
-                                    <td>
-                                        <label class="ms-Toggle-description">Display Level</label>
-                                    </td>
-                                    <td>
-                                        <i id="displayLevelInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('displayLevelInfo', this)"></i>
-                                    </td>
-                                </tr>
-                            </table>
-                            <input type="checkbox" id="displayLevel" class="ms-Toggle-input" />
-                            <label for="displayLevel" class="ms-Toggle-field">
-                                <span class="ms-Label ms-Label--off">None</span>
-                                <span class="ms-Label ms-Label--on">Full</span>
-                            </label>
-                        </div>
-                        <div class="ms-Toggle">
-                            <table>
-                                <tr>
-                                    <td>
-                                        <label class="ms-Toggle-description">Accept EULA</label>
-                                    </td>
-                                    <td>
-                                        <i id="acceptEULAInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('acceptEULAInfo', this)"></i>
-                                    </td>
-                                </tr>
-                            </table>
-                            <input type="checkbox" id="acceptEULA" class="ms-Toggle-input" />
-                            <label for="acceptEULA" class="ms-Toggle-field">
-                                <span class="ms-Label ms-Label--off">False</span>
-                                <span class="ms-Label ms-Label--on">True</span>
-                            </label>
-                        </div>
-
-                        <div class="controls">
-                            <button id="btSaveDisplay" class="ms-Button">
-                                Save
-                            </button>
-                            <button id="btRemoveDisplay" class="ms-Button">
-                                Remove
-                            </button>
-                        </div>
-                    </div>
-                    <!-- End Display Panel -->
-                    <!-- Start Logging Panel -->
-                    <div id="LoggingPanel" class="option-panel">
-                        <h1 class="ms-font-xxl">Logging</h1>
-                        <div class="ms-Toggle">
-                            <div class="ms-Toggle">
-                                <table>
-                                    <tr>
-                                        <td>
-                                            <label class="ms-Toggle-description">Logging Level</label>
-                                        </td>
-                                        <td>
-                                            <i id="logLevelInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('logLevelInfo', this)"></i>
-                                        </td>
-                                    </tr>
-                                </table>
-                                <input type="checkbox" id="loggingLevel" class="ms-Toggle-input" />
-                                <label for="loggingLevel" class="ms-Toggle-field">
-                                    <span class="ms-Label ms-Label--off">Off</span>
-                                    <span class="ms-Label ms-Label--on">Standard</span>
-                                </label>
-                            </div>
-                        </div>
-                        <table>
-                            <tr>
-                                <td>
-                                    <label class="ms-Label">Path</label>
-                                </td>
-                                <td>
-                                    <i id="logPathInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('logPathInfo', this)"></i>
-                                </td>
-                            </tr>
-                        </table>
-
-                        <div>
-                            <input id="txtLoggingUpdatePath" type="text" pattern="^\w:\\.*"
-                                   class="ms-TextField-field" placeholder="Local Path"
-                                   data-error="Local Path">
-                            <!--<span id="logupdatepathSignal" class="glyphicon form-control-feedback" aria-hidden="true"></span>-->
-                        </div>
-
-                        <div style="margin-top:10px">
-                            <button id="btSaveLogging" class="ms-Button">
-                                Save
-                            </button>
-                            <button id="btRemoveLogging" class="ms-Button">
-                                Remove
-                            </button>
-                        </div>
-                    </div>
-                    <!-- End Logging Panel -->
-                    <!-- Start Properties Panel -->
-                    <div id="PropertiesPanel" class="option-panel">
-                        <h1 class="ms-font-xxl">Properties</h1>
-                        <div class="ms-Toggle">
-                            <table>
-                                <tr>
-                                    <td>
-                                        <label class="ms-Toggle-description">AutoActivate</label>
-                                    </td>
-                                    <td>
-                                        <i id="aaInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('aaInfo', this)"></i>
-                                    </td>
-                                </tr>
-                            </table>
-                            <input type="checkbox" id="autoActivate" class="ms-Toggle-input" />
-                            <label for="autoActivate" class="ms-Toggle-field">
-                                <span class="ms-Label ms-Label--off">No</span>
-                                <span class="ms-Label ms-Label--on">Yes</span>
-                            </label>
-                        </div>
-                        <div class="ms-Toggle">
-                            <table>
-                                <tr>
-                                    <td>
-                                        <label class="ms-Toggle-description">ForceAppShutdown</label>
-                                    </td>
-                                    <td>
-                                        <i id="fasInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('fasInfo', this)"></i>
-                                    </td>
-                                </tr>
-                            </table>
-                            <input type="checkbox" id="forceAppShutdown" class="ms-Toggle-input" />
-                            <label for="forceAppShutdown" class="ms-Toggle-field">
-                                <span class="ms-Label ms-Label--off">False</span>
-                                <span class="ms-Label ms-Label--on">True</span>
-                            </label>
-                        </div>
-                        <div class="ms-Toggle">
-                            <table>
-                                <tr>
-                                    <td>
-                                        <label class="ms-Toggle-description">SharedComputerLicensing</label>
-                                    </td>
-                                    <td>
-                                        <i id="sclInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('sclInfo', this)"></i>
-                                    </td>
-                                </tr>
-                            </table>
-                            <input type="checkbox" id="sharedComputerLicensing" class="ms-Toggle-input" />
-                            <label for="sharedComputerLicensing" class="ms-Toggle-field">
-                                <span class="ms-Label ms-Label--off">False</span>
-                                <span class="ms-Label ms-Label--on">True</span>
-                            </label>
-                        </div>
-
-                        <table>
-                            <tr>
-                                <td>
-                                    <label class="ms-Label">PACKAGEGUID</label>
-                                </td>
-                                <td>
-                                    <i id="PACKAGEGUIDInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('PACKAGEGUIDInfo', this)"></i>
-                                </td>
-                            </tr>
-                        </table>
-                        <div>
-                            <input id="txtPACKAGEGUID" type="text" pattern="^.{8}-.{4}-.{4}-.{4}-.{12}$"
-                                   class="ms-TextField-field" placeholder="XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
-                                   data-error="This must be a valid APP-V Package Guid" maxlength="36">
-                            <!--<span id="PACKAGEGUIDSignal" class="glyphicon form-control-feedback" aria-hidden="true"></span>-->
-                        </div>
-                        <div style="margin-top:10px">
-                            <button id="btSaveProperties" class="ms-Button">
-                                Save
-                            </button>
-                            <button id="btRemoveProperties" class="ms-Button">
-                                Remove
-                            </button>
-                        </div>
-                    </div>
-                    <!-- End Properties Panel -->
-                    <!-- Start Templates Panel -->
-                    <div id="TemplatesPanel" class="option-panel">
-                        <h1 class="ms-font-xxl">Templates</h1>
-                        <div class="ms-Table">
-                            <div class="ms-Table-row">
-                                <span class="ms-Table-cell">Templates</span>
-                            </div>
-                            <div class="ms-Table-row">
-                                <span class="ms-Table-cell" id="proPlusRetail" href="./templates/0365ProPlusRetail.xml" onclick="setTemplate(this)">Office 365 ProPlus Retail</span>
-                            </div>
-                            <div class="ms-Table-row">
-                                <span class="ms-Table-cell" id="proPlusBusiness" href="./templates/0365ProPlusBusiness.xml" onclick="setTemplate(this)">Office 365 ProPlus Business</span>
-                            </div>
-                            <div class="ms-Table-row">
-                                <span class="ms-Table-cell" id="proPlusRetailVisio" href="./templates/O365ProPlusRetailwVisio.xml" onclick="setTemplate(this)">Office 365 ProPlus Retail with Visio</span>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- End Templates Panel -->
-                </div>
-                <div id="xmlSection" class="ms-Grid-col ms-u-md12 ms-u-lg12 ms-u-xl7 ms-u-sm12" >
-                    <div id="xmlSec" style="border-left: solid 1px #e5e3e3;height:500px;">
-                        <div class="ms-CommandBar">
-                            
-                            <div class="ms-CommandBar-sideCommands" style="float: left;text-align: left;">
-                                <div class="ms-CommandBarItem">
-                                    <div class="ms-CommandBarItem-linkWrapper" onclick="clickUpload();">
-                                        <div class="ms-CommandBarItem-link">
-                                            <span class="ms-CommandBarItem-icon ms-Icon ms-Icon--upload"></span>
-                                            <span class="ms-CommandBarItem-commandText ms-font-m ms-font-weight-regular">Upload</span>
+                                    <table>
+                                        <tr>
+                                            <td>
+                                                <label class="ms-Label">PACKAGEGUID</label>
+                                            </td>
+                                            <td>
+                                                <i id="PACKAGEGUIDInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('PACKAGEGUIDInfo', this)"></i>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                    <div>
+                                        <input id="txtPACKAGEGUID" type="text" pattern="^.{8}-.{4}-.{4}-.{4}-.{12}$"
+                                               class="ms-TextField-field" placeholder="XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
+                                               data-error="This must be a valid APP-V Package Guid" maxlength="36">
+                                        <span id="PACKAGEGUIDSignal" class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                                    </div>
+                                    <div style="margin-top:10px">
+                                        <button id="btSaveProperties" class="ms-Button">
+                                            Save
+                                        </button>
+                                        <button id="btRemoveProperties" class="ms-Button">
+                                            Remove
+                                        </button>
+                                    </div>
+                                </div>
+                                <!-- End Properties Panel -->
+                                <!-- Start Templates Panel -->
+                                <div id="TemplatesPanel" class="option-panel">
+                                    <h1 class="ms-font-xxl">Templates</h1>
+                                    <div class="ms-Table">
+                                        <div class="ms-Table-row">
+                                            <span class="ms-Table-cell">Templates</span>
+                                        </div>
+                                        <div class="ms-Table-row">
+                                            <span class="ms-Table-cell" id="proPlusRetail" href="./templates/0365ProPlusRetail.xml" onclick="setTemplate(this)">Office 365 ProPlus Retail</span>
+                                        </div>
+                                        <div class="ms-Table-row">
+                                            <span class="ms-Table-cell" id="proPlusBusiness" href="./templates/0365ProPlusBusiness.xml" onclick="setTemplate(this)">Office 365 ProPlus Business</span>
+                                        </div>
+                                        <div class="ms-Table-row">
+                                            <span class="ms-Table-cell" id="proPlusRetailVisio" href="./templates/O365ProPlusRetailwVisio.xml" onclick="setTemplate(this)">Office 365 ProPlus Retail with Visio</span>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="ms-CommandBarItem">
-                                    <div class="ms-CommandBarItem-linkWrapper" onclick="download()">
-                                        <div class="ms-CommandBarItem-link">
-                                            <span class="ms-CommandBarItem-icon ms-Icon ms-Icon--download"></span>
-                                            <span class="ms-CommandBarItem-commandText ms-font-m ms-font-weight-regular">Download</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="ms-CommandBarItem">
-                                    <div class="ms-CommandBarItem-linkWrapper">
-                                        <div class="ms-CommandBarItem-link" onclick="clearXml();">
-                                            <span class="ms-CommandBarItem-icon ms-Icon ms-Icon--reload"></span>
-                                            <span class="ms-CommandBarItem-commandText ms-font-m ms-font-weight-regular">Reset</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="ms-CommandBarItem">
-                                    <div class="ms-CommandBarItem-linkWrapper">
-                                        <div class="ms-CommandBarItem-link" onclick="sendMail()" style="position: relative">
-                                            <span class="ms-CommandBarItem-icon ms-Icon ms-Icon--mail"></span>
-                                            <span class="ms-CommandBarItem-commandText ms-font-m ms-font-weight-regular">Email</span>
-                                        </div>
-                                    </div>
-                                </div>
-
+                                <!-- End Templates Panel -->
                             </div>
+                        </td>
+                        <td style="vertical-align: top;">
+                            <div id="xmlSection" class="Editor-Column" style="width: 500px;">
+                                <div id="xmlSec" style="border-left: solid 1px #e5e3e3;height:500px;">
+                                    <div class="ms-CommandBar" style="min-width: 500px">
 
-                        </div>
-                        <div class="ms-TextField" style="margin-top:10px;margin-left: 30px;">
-                            <textarea id="xmlText" class="ms-TextField-field ms-TextField--multiline"
-                                      style="height:800px;font-size: 25px;border-width: 0;overflow-y: auto" readonly></textarea>
-                        </div>
-                    </div>
-                </div>
+                                        <div class="ms-CommandBar-sideCommands" style="float: left;text-align: left;">
+                                            <div class="ms-CommandBarItem">
+                                                <div class="ms-CommandBarItem-linkWrapper" onclick="clickUpload();">
+                                                    <div class="ms-CommandBarItem-link">
+                                                        <span class="ms-CommandBarItem-icon ms-Icon ms-Icon--upload"></span>
+                                                        <span class="ms-CommandBarItem-commandText ms-font-m ms-font-weight-regular">Upload</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="ms-CommandBarItem">
+                                                <div class="ms-CommandBarItem-linkWrapper" onclick="download()">
+                                                    <div class="ms-CommandBarItem-link">
+                                                        <span class="ms-CommandBarItem-icon ms-Icon ms-Icon--download"></span>
+                                                        <span class="ms-CommandBarItem-commandText ms-font-m ms-font-weight-regular">Download</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="ms-CommandBarItem">
+                                                <div class="ms-CommandBarItem-linkWrapper">
+                                                    <div class="ms-CommandBarItem-link" onclick="clearXml();">
+                                                        <span class="ms-CommandBarItem-icon ms-Icon ms-Icon--reload"></span>
+                                                        <span class="ms-CommandBarItem-commandText ms-font-m ms-font-weight-regular">Reset</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="ms-CommandBarItem">
+                                                <div class="ms-CommandBarItem-linkWrapper">
+                                                    <div class="ms-CommandBarItem-link" onclick="sendMail()" style="position: relative">
+                                                        <span class="ms-CommandBarItem-icon ms-Icon ms-Icon--mail"></span>
+                                                        <span class="ms-CommandBarItem-commandText ms-font-m ms-font-weight-regular">Email</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+                                    <div class="ms-TextField" style="margin-top:10px;margin-left: 30px;">
+                                        <textarea id="xmlText" class="ms-TextField-field ms-TextField--multiline"
+                                                  style="height:800px;font-size: 23px;border-width: 0;overflow-y: auto" readonly></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+
             </div>
         </div>
         <form id="fileuploadform" style="width:200px;display: none;width: 100px;">
@@ -977,6 +999,7 @@
         </form>
                 
     </div>
+
     <div id="aboutDialog" class="ms-Dialog" style="display:none;position:fixed;top:-100%;width:100%">
         <div class="ms-Overlay"></div>
         <div class="ms-Dialog-main">
@@ -1078,16 +1101,19 @@
         </div>
     </div>
     
-    <div id="officeBranchInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:75px; top:115px; display:none">
+    <div id="branchInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:75px; top:115px; display:none">
         <div class="ms-Callout-main">
             <div class="ms-Callout-header">
                 <p class="ms-Callout-title">Office Branch</p>
             </div>
             <div class="ms-Callout-inner">
                 <div class="ms-Callout-content">
-                    <p class="ms-Callout-subText">Required. Specifies the edition of Click-to-Run for Office 365 product to use: 32- or 64-bit. The action fails if <strong>OfficeClientEdition</strong> is not set to a valid value.</p>
-                    <br />
-                    <p class="ms-Callout-subText">A <strong>configure</strong> mode action may fail if <strong>OfficeClientEdition</strong> is set incorrectly. For example, if you attempt to install a 64-bit edition of a Click-to-Run for Office 365 product on a computer that is running a 32-bit Windows operating system, or if you try to install a 32-bit Click-to-Run for Office 365 product on a computer that has a 64-bit edition of Office installed.</p>
+                    <p class="ms-Callout-subText">
+                        One of the benefits of Office 365 ProPlus is that Microsoft can provide new features for Office apps on a regular basis, through monthly updates. However, as the admin who deploys Office 365 ProPlus to the users in your organization, you might want to have more control over how often your users get these new features. For the Office 2016 version of Office 365 ProPlus, Microsoft provides you three options, called update branches, to control how often Office 365 ProPlus is updated with new features. Here's an overview of the three options.
+                    </p>
+                    <p>
+                        <a href="https://technet.microsoft.com/en-us/library/mt455210.aspx">Overview of update branches for Office 365 ProPlus</a>
+                    </p>
                 </div>
             </div>
         </div>
@@ -1504,16 +1530,13 @@
         </div>
     </div>
     
-    
-    
-    
-
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.bundle.min.js"></script>
     <script type="text/javascript" src="./Scripts/FileSaver.js"></script>
     <script type="text/javascript" src="./Scripts/new-main.js"></script>
     <script type="text/javascript" src="./Scripts/jquery.fabric.min.js"></script>
     <script type="text/javascript" src="./components/Dropdown/Jquery.Dropdown.js"></script>
+    <script type="text/javascript" src="//1000hz.github.io/bootstrap-validator/dist/validator.min.js"></script>
 
     <script>
         $(document).ready(function () {
@@ -1578,6 +1601,8 @@
         });
 
         function setPanel(panelId, buttonId) {
+            hideAllCallOuts();
+
             $(".option-panel").removeClass('visible');
             $(".navrow").removeClass('is-selected');
             $("#" + buttonId).addClass('is-selected');
