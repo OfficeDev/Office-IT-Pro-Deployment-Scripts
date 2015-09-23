@@ -573,9 +573,17 @@ function Disable-ODTRemoteUpdateSourceReplication() {
 
             $TaskName = "Microsoft\OfficeC2R\ODT Replication - $serverName - $shareName"
 
-            $scheduledTaskDel = "schtasks /delete /tn '$TaskName' /f"
+            $allTasks = schtasks /query
+            if ($allTasks.ToUpper().Contains($TaskName.ToUpper())) {
+
+                $scheduledTaskDel = "schtasks /delete /tn '$TaskName' /f"
            
-            Invoke-Expression $scheduledTaskDel | out-Null
+                try {
+                Invoke-Expression $scheduledTaskDel | out-Null
+                } catch {
+
+                }
+            }
 
             $remShares = Get-ODTRemoteUpdateSource | Where { $_.ShareName.ToLower() -eq $remotePath.ToLower() }
             $remShares
@@ -628,14 +636,18 @@ shares "\\Computer3\ODT Replication" and "\\Computer4\ODT Replication".
         }
 
         foreach($share in $RemoteShare) {
-            $checkShares = $ExistingShares | Where { $_.ShareName.ToLower() -eq $share.ToLower() }
-            if ($checkShares.Length -eq 0) {
-                $results = new-object PSObject[] 0;
-                $Result = New-Object –TypeName PSObject 
+          if ($share) {
+            if ($ExistingShares) {
+                $checkShares = $ExistingShares | Where { $_.ShareName.ToLower() -eq $share.ToLower() }
+            }
 
-                $computerName = $share.Split("\")[2]
+                if ($checkShares.Length -eq 0) {
+                    $results = new-object PSObject[] 0;
+                    $Result = New-Object –TypeName PSObject 
 
-                if (Test-Connection -ComputerName $computerName -ErrorAction SilentlyContinue){
+                    $computerName = $share.Split("\")[2]
+
+                    if (Test-Connection -ComputerName $computerName -ErrorAction SilentlyContinue){
                     if (Test-Path -Path $share) {
                         Add-Member -InputObject $Result -MemberType NoteProperty -Name "ShareName" -Value $Share
                         Add-Member -InputObject $Result -MemberType NoteProperty -Name "AutoReplicationEnabled" -Value $false
@@ -647,10 +659,12 @@ shares "\\Computer3\ODT Replication" and "\\Computer4\ODT Replication".
                     } else {
                        Write-Host "The remote share `"$share`" is unavailble" -BackgroundColor Red
                     }
-                } else {
+                        } else {
                    Write-Host "The remote host `"$computerName`" is unavailble" -BackgroundColor Red
                 }
-            }
+                }
+
+          }
         } 
             
         $ExistingShares | Export-Csv $ODTShareNameLogFile -NoTypeInformation -Force
@@ -784,22 +798,35 @@ be populated in the console.
            if ($replExists -or $replDirection) {
               $TaskName = "Microsoft\OfficeC2R\ODT Replication - $serverName - $shareName"
 
-              if ($replDirection -eq "Push") {
-                 schtasks /query /tn $TaskName /v /fo csv  | Out-File -FilePath "$env:temp\TmpSchTask.csv"
-              } else {
-                 schtasks /query /s "$serverName" /tn $TaskName /v /fo csv  | Out-File -FilePath "$env:temp\TmpSchTask.csv"
+              if (Test-Path -Path "$env:temp\TmpSchTask.csv") {
+                  Remove-Item -Path "$env:temp\TmpSchTask.csv" -Force
               }
+              try {
+                  if ($replDirection -eq "Push") {
+                     $allTasks = schtasks /query
+                     if ($allTasks.ToUpper().Contains($TaskName.ToUpper())) {
+                         schtasks /query /tn $TaskName /v /fo csv  | Out-File -FilePath "$env:temp\TmpSchTask.csv" -ErrorAction SilentlyContinue
+                     }
+                  } else {
+                     $allTasks = schtasks /query /s "$serverName"
+                     if ($allTasks.ToUpper().Contains($TaskName.ToUpper())) {
+                       schtasks /query /s "$serverName" /tn $TaskName /v /fo csv  | Out-File -FilePath "$env:temp\TmpSchTask.csv" -ErrorAction SilentlyContinue
+                     }
+                  }
+              } catch { }
 
-	          $importTasks = Import-Csv -Path "$env:temp\TmpSchTask.csv"
+              if (Test-Path -Path "$env:temp\TmpSchTask.csv") {
+	              $importTasks = Import-Csv -Path "$env:temp\TmpSchTask.csv"
 	     	
-	          $NextRunTime = $importTasks.'Next Run Time'
-              $LastRunTime = $importTasks.'Last Run Time'
-              $LastResult = $importTasks.'Last Result'
-              $ScheduleType = $importTasks.'Schedule Type' 
-              $StartTime = $importTasks.'Start Time'
-              $ScheduleDays = $importTasks.'Days'
-              $ScheduleMonths = $importTasks.'Months'
-              $State = $importTasks.'Scheduled Task State'
+	              $NextRunTime = $importTasks.'Next Run Time'
+                  $LastRunTime = $importTasks.'Last Run Time'
+                  $LastResult = $importTasks.'Last Result'
+                  $ScheduleType = $importTasks.'Schedule Type' 
+                  $StartTime = $importTasks.'Start Time'
+                  $ScheduleDays = $importTasks.'Days'
+                  $ScheduleMonths = $importTasks.'Months'
+                  $State = $importTasks.'Scheduled Task State'
+              }
 	       }
 	   
 	       Add-Member -InputObject $Result -MemberType NoteProperty -Name "NextReplTime" -Value $NextRunTime
