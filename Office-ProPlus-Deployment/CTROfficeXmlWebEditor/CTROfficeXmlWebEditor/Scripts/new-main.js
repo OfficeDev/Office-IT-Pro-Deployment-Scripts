@@ -14,6 +14,12 @@ $(document).ready(function () {
         document.getElementById("txtTargetVersion").style.lineHeight = "0px";
     }
 
+    var hW = $.cookie("hideWelcome")
+
+    if (hW) {
+        $("#welcomeDialog")[0].style.display = "none";
+    }
+
     $("#btRemoveProduct").prop("disabled", true);
     $("#btAddLanguage").prop("disabled", true);
     $("#btRemoveLanguage").prop("disabled", true);
@@ -455,6 +461,18 @@ $(document).ready(function () {
             document.getElementById("logupdatepathSignal").style.display = "block";
         }
     });
+
+    $(window).on('resize', function () {
+        var totH = welcomeMain.clientHeight;
+        var headerH = welcomeHeader.clientHeight;
+        var desH = (totH - headerH)
+        $('#welcomeInner')[0].style.height = desH + "px"
+    });
+
+    var totH = welcomeMain.clientHeight;
+    var headerH = welcomeHeader.clientHeight;
+    var desH = (totH - headerH)
+    $('#welcomeInner')[0].style.height = desH + "px"
 
     setScrollBar();
 
@@ -2207,6 +2225,15 @@ function showAbout() {
 
 function hideAbout() {
     $("#aboutDialog")[0].style.display = 'none';
+}
+
+function hideWelcome() {
+    $("#welcomeDialog")[0].style.display = 'none';
+}
+
+function foreverHideWelcome() {
+    $("#welcomeDialog")[0].style.display = 'none';
+    $.cookie("hideWelcome", true);
 }
 
 function IsGuid(value) {

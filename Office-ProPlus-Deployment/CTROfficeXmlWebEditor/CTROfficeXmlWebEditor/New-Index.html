@@ -132,7 +132,7 @@
     <div class="ms-bgColor-themeDarker ms-CommandBar" style="background-color:#0072c5;color:#4c9cd6;height: 50px;">
         <div class="ms-CommandBar-sideCommands">
             <div class="ms-CommandBarItem ms-CommandBarItem--iconOnly ms-CommandBarItemTop" style="border-left:1px solid #4c9cd6;
-                             border-right:1px solid white; margin-right:-5px;height: 50px;width:50px">
+                             border-right:1px solid #4c9cd6; margin-right:-5px;height: 50px;width:50px" title="About">
                 <div class="ms-CommandBarItem-linkWrapper">
                     <div class="ms-CommandBarItem-link" onclick="showAbout()">
                         <span class="ms-CommandBarItem-icon ms-Icon ms-Icon--question ms-fontColor-white" style="font-size: 20px;margin-top: 15px"></span>
@@ -140,7 +140,8 @@
                     </div>
                 </div>
             </div>
-            <div id="menuGitHubIssues" class="ms-CommandBarItem ms-CommandBarItem--iconOnly ms-CommandBarItemTop" style="border-left:1px solid #4c9cd6;border-right:1px solid #4c9cd6;margin-right:-5px;height: 50px;width:50px">
+            <div id="menuGitHubIssues" class="ms-CommandBarItem ms-CommandBarItem--iconOnly ms-CommandBarItemTop" style="border-left:1px solid #4c9cd6;border-right:1px solid #4c9cd6;
+                            margin-right:-5px;height: 50px;width:50px" title="Issues">
                 <div class=" ms-commandbaritem-linkwrapper">
                     <div class="ms-CommandBarItem-link">
                         <span class="ms-CommandBarItem-icon ms-Icon ms-Icon--support ms-fontColor-white" style="font-size: 20px;margin-top: 15px"></span>
@@ -148,7 +149,8 @@
                     </div>
                 </div>
             </div>
-            <div id="menuViewOnGitHub" class="ms-CommandBarItem ms-CommandBarItem--iconOnly ms-CommandBarItemTop" style="border-right:1px solid #4c9cd6;;border-left:1px solid #4c9cd6;margin-right:-5px;height: 50px;width:50px">
+            <div id="menuViewOnGitHub" class="ms-CommandBarItem ms-CommandBarItem--iconOnly ms-CommandBarItemTop" style="border-right:1px solid #4c9cd6;
+                            border-left:1px solid #4c9cd6;margin-right:-5px;height: 50px;width:50px" title="View on GitHub">
                 <div id="btviewongithub" class="ms-CommandBarItem-linkWrapper">
                     <div class="ms-CommandBarItem-link">
                         <img class="ms-CommandBarItem-icon ms-Icon ms-fontColor-white" style="font-size: 20px;margin-top: 13px" src="images/github24.png">
@@ -183,10 +185,10 @@
                                             <span class="ms-font-xl">Version</span>
                                         </div>
                                         <div id="office2016Select" class="ms-Table-row is-selected navrowversion">
-                                            <span class="ms-Table-cell" onclick="setVersionPanel('office2016Select')">Office ProPlus 2016</span>
+                                            <span class="ms-Table-cell" onclick="setVersionPanel('office2016Select')">Office 365 ProPlus (2016)</span>
                                         </div>
                                         <div id="office2013Select" class="ms-Table-row navrowversion">
-                                            <span class="ms-Table-cell" onclick="setVersionPanel('office2013Select')">Office ProPlus 2013</span>
+                                            <span class="ms-Table-cell" onclick="setVersionPanel('office2013Select')">Office 365 ProPlus (2013)</span>
                                         </div>
                                     </div>
 
@@ -1000,7 +1002,7 @@
                 
     </div>
 
-    <div id="aboutDialog" class="ms-Dialog" style="display:none;position:fixed;top:-100%;width:100%">
+    <div id="aboutDialog" class="ms-Dialog" style="display:none;position:fixed;width:100%;top:-100%">
         <div class="ms-Overlay"></div>
         <div class="ms-Dialog-main">
             <button class="ms-Dialog-button ms-Dialog-button--close" onclick="hideAbout()">
@@ -1047,6 +1049,74 @@
                 <div class="ms-Dialog-actions">
                     <div class="ms-Dialog-actionsRight">
                         <button class="ms-Dialog-action ms-Button" onclick="hideAbout()">
+                            <span class="ms-Button-label">Close</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="welcomeDialog" class="ms-Dialog" style="position:fixed;width:100%;max-height:90%">
+        <div id="welcomeMain" class="ms-Dialog-main" style="width:90%;max-height:90%;max-width:none;margin-bottom:auto">
+            <div id="welcomeHeader" class="ms-Dialog-header ms-bgColor-themeDark ms-bgColor-themeSecondary ms-fontColor-white">
+                <p class="ms-Dialog-title" style="width:90%; margin-left:auto; margin-right:auto">Welcome to the Office Click-To-Run Configuration XML Editor</p>
+            </div>
+            <div id="welcomeInner" class="ms-Dialog-inner" style="overflow-y:auto;height:auto; max-height:90%">
+                <div class="ms-Dialog-content" style="width:90%; margin-left:auto; margin-right:auto;">
+                    <p class ="ms-font-l" style="margin-top:10px">About</p>
+                    <p class="ms-font-m">
+                        This page provides a graphical method to generate and edit the Office Click-to-Run configuration.xml file
+                    </p>
+                    <br />
+                    <p class="ms-font-m">
+                        <a href="https://technet.microsoft.com/en-us/library/JJ219426.aspx">Reference for Click-to-Run configuration.xml file</a>
+                    </p>
+                    <br />
+                    <p class="ms-font-m">
+                        The Click-to-Run for Office 365 Configuration.xml file is used to specify Click-to-Run installation and update options. The
+                        <a href="https://technet.microsoft.com/en-us/library/jj219422.aspx" id="A_2">Office Deployment Tool</a> is a downloadable tool
+                        that includes a sample Configuration.xml file. Administrators can modify the Configuration.xml file to configure installation options
+                        for Click-to-Run for Office 365 products.
+                    </p>
+                    <br />
+                    <p class="ms-font-m">
+                        The Click-to-Run Configuration.xml file is a necessary component of the Office Deployment Tool. Click-to-Run customizations are performed
+                        primarily by starting the Office Deployment Tool and providing a custom Configuration.xml file. The Office Deployment Tool performs the tasks
+                        that are specified by using the optional properties in the configuration file. For the Office 2013 release of the product, administrators can
+                        download the Office Deployment Tool from the <a href="http://go.microsoft.com/fwlink/p/?LinkId=282642" id="A_2">Microsoft Download Center</a>.
+                    </p>
+                    <hr />
+                    <p class="ms-font-l" style="margin-top:10px">How to Use This Tool</p>
+                    <p class="ms-font-m">
+                        To make a XML configuration file, start in the 'Add Product' section and select the options that fit your environment. 
+                        Then click the 'Add Product' button. 
+                        Each section you add can be edited by making changes and then clicking the corresponding 'Edit' or 'Add' button.
+                        Sections can be removed by clicking the 'Remove' or 'Delete' button near the 'Add' or 'Edit' button.
+                    </p>
+                    <br />
+                    <p class="ms-font-m">
+                        If you find a option confusing, click on the info-icon next to it for more information.
+                    </p>
+                    <br />
+                    <p class="ms-font-m">
+                        For simple, pre-made files use the templates section.
+                    </p>
+                    <br />
+                    <p class="ms-font-m">
+                        To edit an existing file, click upload (above the XML). Be sure to download the file again when you finish.
+                    </p>
+                    <br />
+                    <p class="ms-font-m">
+                        There are many options that can be set in the configuration XML so don't hesitate to explore beyond what is mention above.
+                    </p>
+                </div>
+                <div class="ms-Dialog-actions" style="width:90%; margin-left:auto; margin-right:auto">
+                    <div class="ms-Dialog-actionsRight">
+                        <button class="ms-Dialog-action ms-Button" onclick="foreverHideWelcome()">
+                            <span class="ms-Button-label">Don't Show This Again</span>
+                        </button>
+                        <button class="ms-Dialog-action ms-Button" onclick="hideWelcome()">
                             <span class="ms-Button-label">Close</span>
                         </button>
                     </div>
