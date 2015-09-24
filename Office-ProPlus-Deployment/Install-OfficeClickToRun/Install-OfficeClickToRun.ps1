@@ -1,7 +1,8 @@
 Add-Type -TypeDefinition @"
    public enum OfficeCTRVersion
    {
-      Office2013
+      Office2013,
+      Office2016
    }
 "@
 
@@ -46,7 +47,7 @@ function Install-OfficeClickToRun {
         [string] $TargetFilePath = $NULL,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [OfficeCTRVersion] $OfficeVersion = "Office2013",
+        [OfficeCTRVersion] $OfficeVersion = "Office2016",
 
         [Parameter()]
         [bool] $WaitForInstallToFinish = $true
@@ -67,15 +68,19 @@ function Install-OfficeClickToRun {
         }
     }
 
-    $officeCtrPath = Join-Path $PSScriptRoot "Office2013Setup.exe"
-
-    if (!(Test-Path -Path $officeCtrPath)) {
-       $officeCtrPath = Join-Path $PSScriptRoot "Setup.exe"
-    }
+    [string]$officeCtrPath = ""
 
     if ($OfficeVersion -eq "Office2013") {
+        $officeCtrPath = Join-Path $PSScriptRoot "Office2013Setup.exe"
         if (!(Test-Path -Path $officeCtrPath)) {
            throw "Cannot find the Office 2013 Setup executable"
+        }
+    }
+
+    if ($OfficeVersion -eq "Office2016") {
+        $officeCtrPath = Join-Path $PSScriptRoot "Office2016Setup.exe"
+        if (!(Test-Path -Path $officeCtrPath)) {
+           throw "Cannot find the Office 2016 Setup executable"
         }
     }
     
