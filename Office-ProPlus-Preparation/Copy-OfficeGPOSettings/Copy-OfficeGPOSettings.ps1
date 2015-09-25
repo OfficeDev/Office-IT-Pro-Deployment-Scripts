@@ -37,16 +37,8 @@ Default copy the office 15.0 (2013) policies within 'Office Settings' to office 
 .Example
 ./Copy-OfficeGPOSettings -SourceGPOName "Office Settings" -SourceVersion "14.0" -TargetVersion "15.0"
 Copy the office 14.0 (2010) policies within 'Office Settings' to office 15.0 (2013) policies within 'Office Settings'
-.Inputs
-System.String
-System.String
-System.String
-.Notes
-Additional explanation. Long and indepth examples should also go here.
 .Link
-https://gallery.technet.microsoft.com/Read-or-modify-Registrypol-778fed6e
-.Link
-Get-GPO
+https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
 #>
 [CmdletBinding(SupportsShouldProcess=$true)]
 Param
