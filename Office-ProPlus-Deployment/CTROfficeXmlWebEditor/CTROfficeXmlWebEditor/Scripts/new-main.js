@@ -2159,6 +2159,7 @@ function getXmlDocument() {
 
 function createXmlDocument(string) {
     var doc;
+    //if (!detectIE()){
     if (window.DOMParser) {
         parser = new DOMParser();
         doc = parser.parseFromString(string, "application/xml");
@@ -2170,6 +2171,32 @@ function createXmlDocument(string) {
         doc.loadXML(string);
     }
     return doc;
+}
+
+function detectIE() {
+    var ua = window.navigator.userAgent;
+
+    var msie = ua.indexOf('MSIE ');
+    if (msie > 0) {
+        // IE 10 or older => return version number
+        return parseInt(ua.substring(msie + 5, ua.indexOf('.', msie)), 10);
+    }
+
+    var trident = ua.indexOf('Trident/');
+    if (trident > 0) {
+        // IE 11 => return version number
+        var rv = ua.indexOf('rv:');
+        return parseInt(ua.substring(rv + 3, ua.indexOf('.', rv)), 10);
+    }
+
+    var edge = ua.indexOf('Edge/');
+    if (edge > 0) {
+        // IE 12 => return version number
+        return parseInt(ua.substring(edge + 5, ua.indexOf('.', edge)), 10);
+    }
+
+    // other browser
+    return false;
 }
 
 function displayXml(xmlDoc) {
@@ -2259,16 +2286,20 @@ function hideCommentDialog() {
 }
 
 function insertComment(xmldoc) {
+    removeComment(xmldoc);
     var commenttxt = $("#commentText").val();
     var comment = xmldoc.createComment(commenttxt);
-    xmldoc.appendChild(comment);
-    //var xmlString = (new XMLSerializer().serializeToString(xmldoc.documentElement));
-    //var xmlOutput = vkbeautify.xml(xmlString);
+    xmldoc.getElementsByTagName('Configuration')[0].appendChild(comment);
+}
 
-    //xmlOutput = xmlOutput.replace(/\n/g, "\r\n");
-
-    //var blob = new Blob([xmlOutput], { type: "text/xml" });
-    //saveAs(blob, "configuration.xml");
+function removeComment(xmldoc) {
+    var config = xmldoc.getElementsByTagName('Configuration')[0];
+    var childNodes = config.childNodes;
+    for (var i = 0; i < childNodes.length; i++) {
+        if (childNodes[i].nodeName == "#comment") {
+            config.removeChild(childNodes[i]);
+        }
+    }
 }
 
 function IsGuid(value) {
