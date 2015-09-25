@@ -286,6 +286,9 @@ Array of IDs of Apps to exclude from install
 Required. ID must be set to a valid ProductRelease ID.
 See https://support.microsoft.com/en-us/kb/2842297 for valid ids.
 
+.PARAMETER PIDKEY
+Optional. If PIDKEY is set, the specified 25 character PIDKEY value is used for this product.
+
 .PARAMETER LanguageIds
 Possible values match 'll-cc' pattern (Microsoft Language ids)
 The ID value can be set to a valid Office culture language (such as en-us 
@@ -330,6 +333,9 @@ Here is what the portion of configuration file looks like when modified by this 
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
         [Microsoft.Office.Products] $ProductId = "Unknown",
+
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [string] $PIDKEY = $NULL,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
         [Alias("LanguageId")]
@@ -396,6 +402,9 @@ Here is what the portion of configuration file looks like when modified by this 
             [System.XML.XMLElement]$ProductElement=$ConfigFile.CreateElement("Product")
             $AddElement.appendChild($ProductElement) | Out-Null
             $ProductElement.SetAttribute("ID", $ProductId) | Out-Null
+            if($PIDKEY -ne $null){
+                $ProductElement.SetAttribute("PIDKEY", $PIDKEY) | Out-Null
+            }
         }
 
         foreach($LanguageId in $LanguageIds){
@@ -497,6 +506,9 @@ Here is what the portion of configuration file looks like when modified by this 
         [Microsoft.Office.Products] $ProductId = "Unknown",
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [string] $PIDKEY = $NULL,
+
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
         [Alias("LanguageId")]
         [string[]] $LanguageIds = $NULL,
 
@@ -555,6 +567,10 @@ Here is what the portion of configuration file looks like when modified by this 
         [System.XML.XMLElement]$ProductElement = $ConfigFile.Configuration.Add.Product | ?  ID -eq $ProductId
         if($ProductElement -eq $null){
            throw "Cannot find Product with Id '$ProductId'"
+        }
+
+        if($PIDKEY -ne $null){
+            $ProductElement.SetAttribute("PIDKEY", $PIDKEY) | Out-Null
         }
 
         if ($LanguageIds) {
