@@ -374,6 +374,18 @@ $(document).ready(function () {
         return false;
     });
 
+    $("#addCommentbt").on('click', function () {
+        var xmlDoc = getXmlDocument();
+
+        insertComment(xmlDoc);
+
+        displayXml(xmlDoc);
+
+        $("#commentDialog")[0].style.display = 'none';
+
+        return false;
+    });
+
     $("#menuViewOnGitHub").on('click', function () {
         window.open("https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/master/Office-ProPlus-Deployment/CTROfficeXmlWebEditor");
         return false;
@@ -463,10 +475,11 @@ $(document).ready(function () {
     });
 
     $(window).on('resize', function () {
+        $('#welcomeInner')[0].style.height = "";
         var totH = welcomeMain.clientHeight;
         var headerH = welcomeHeader.clientHeight;
-        var desH = (totH - headerH)
-        $('#welcomeInner')[0].style.height = desH + "px"
+        var desH = (totH - headerH);
+        $('#welcomeInner')[0].style.height = desH + "px";
     });
 
     var totH = welcomeMain.clientHeight;
@@ -2201,11 +2214,12 @@ function showInfo(calloutId, icon) {
     $("#" + calloutId)[0].style.top = nTop.toString() + "px";
     $("#" + calloutId)[0].style.left = nLeft.toString() + "px";
     $("#" + calloutId)[0].style.display = 'block';
-    
+    $("#infoOverlay")[0].style.display = 'block';
     $("#xmlText").css('z-index', 0);
 }
 
 function hideAllCallOuts() {
+    $("#infoOverlay")[0].style.display = 'none';
     var callOuts = document.getElementsByClassName("ms-Callout");
     for (var i = 0; i < callOuts.length; i++) {
         var callOut = callOuts[i];
@@ -2234,6 +2248,27 @@ function hideWelcome() {
 function foreverHideWelcome() {
     $("#welcomeDialog")[0].style.display = 'none';
     $.cookie("hideWelcome", true);
+}
+
+function openCommentDialog() {
+    $("#commentDialog")[0].style.display = 'block';
+}
+
+function hideCommentDialog() {
+    $("#commentDialog")[0].style.display = 'none';
+}
+
+function insertComment(xmldoc) {
+    var commenttxt = $("#commentText").val();
+    var comment = xmldoc.createComment(commenttxt);
+    xmldoc.appendChild(comment);
+    //var xmlString = (new XMLSerializer().serializeToString(xmldoc.documentElement));
+    //var xmlOutput = vkbeautify.xml(xmlString);
+
+    //xmlOutput = xmlOutput.replace(/\n/g, "\r\n");
+
+    //var blob = new Blob([xmlOutput], { type: "text/xml" });
+    //saveAs(blob, "configuration.xml");
 }
 
 function IsGuid(value) {
