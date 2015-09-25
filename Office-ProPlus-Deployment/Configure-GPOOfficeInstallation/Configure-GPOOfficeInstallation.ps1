@@ -1,14 +1,23 @@
+Add-Type -TypeDefinition @"
+   public enum OfficeVersion
+   {
+      Office2013,
+      Office2016
+   }
+"@
 
 Function Download-GPOOfficeInstallation {
 
     [CmdletBinding(SupportsShouldProcess=$true)]
-    Param
-                        (
-	[Parameter(Mandatory=$True)]
-	[String]$UncPath,
+    Param(
+	    [Parameter(Mandatory=$True)]
+	    [String]$UncPath,
+
+	    [Parameter(Mandatory=$True)]
+	    [OfficeVersion]$OfficeVersion,
 	
-	[Parameter()]
-	[String]$Bitness = '32'
+	    [Parameter()]
+	    [String]$Bitness = '32'
     )
     Begin
                 {
@@ -20,7 +29,14 @@ Function Download-GPOOfficeInstallation {
     {
 	Write-Host 'Updating Config Files'
 	
-	$setupFileName = 'SetupOffice2013.exe'
+	if($OfficeVersion -eq "Office2013")
+    {
+        $setupFileName = 'Office2013Setup.exe'
+    }
+    else
+    {
+        $setupFileName = 'Office2016Setup.exe'
+    } 
 	$localSetupFilePath = ".\$setupFileName"
 	$setupFilePath = "$UncPath\$localSetupFilePath"
 	
@@ -37,6 +53,7 @@ Function Download-GPOOfficeInstallation {
 	$content = [Xml](Get-Content $localDownloadConfigFilePath)
 	$addNode = $content.Configuration.Add
 	$addNode.OfficeClientEdition = $Bitness
+    $addNode.SourcePath = $UncPath
 	Write-Host 'Saving Download Configuration XML'	
 	$content.Save($downloadConfigFilePath)
 	
@@ -78,12 +95,12 @@ Function Configure-GPOOfficeInstallation {
 	
 	    [Parameter(Mandatory=$True)]
 	    [String]$UncPath,
+
+	    [Parameter(Mandatory=$True)]
+	    [OfficeVersion]$OfficeVersion,
 	
 	    [Parameter()]
-	    [String]$ConfigFileName = "Configuration_InstallLocally.xml",
-	
-	    [Parameter()]
-	    [String]$ScriptName = "InstallOffice2013.ps1"
+	    [String]$ConfigFileName = "Configuration_InstallLocally.xml" 
     )
 
     Begin
@@ -91,6 +108,14 @@ Function Configure-GPOOfficeInstallation {
 	    $currentExecutionPolicy = Get-ExecutionPolicy
 	    Set-ExecutionPolicy Unrestricted -Scope Process -Force  
         $startLocation = Get-Location
+        if($OfficeVersion -eq "Office2013")
+        {
+            [String]$ScriptName = "InstallOffice2013.ps1"
+        }
+        else
+        {
+            [String]$ScriptName = "InstallOffice2016.ps1"
+        }
     }
 
     Process {
