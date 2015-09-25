@@ -34,6 +34,22 @@ using System;
 "
 Add-Type -TypeDefinition $enum2
 
+$enum3 = "
+using System;
+
+namespace Microsoft.Office
+{
+    [FlagsAttribute]
+    public enum Branches
+    {
+        Current=0,
+        Business=1,
+        Validation=2
+    }
+}
+"
+Add-Type -TypeDefinition $enum3
+
 $validLanguages = @(
 "English|en-us",
 "Arabic|ar-sa",
@@ -1194,6 +1210,9 @@ to install the updates.
 .PARAMETER TargetFilePath
 Full file path for the file to be modified and be output to.
 
+.PARAMETER Branch
+Optional. Specifies the update branch for the product that you want to download or install.
+
 .Example
 Set-ODTUpdates -Enabled "False" -TargetFilePath "$env:Public/Documents/config.xml"
 Sets config to disable updates
@@ -1229,6 +1248,9 @@ Here is what the portion of configuration file looks like when modified by this 
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $TargetVersion,
+
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [Microsoft.Office.Branches] $Branch = "Current",
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $Deadline
@@ -1267,6 +1289,10 @@ Here is what the portion of configuration file looks like when modified by this 
         }
 
         #Set the desired values
+        if($Branch -ne $null){
+            $UpdateElement.SetAttribute("Branch", $Branch);
+        }
+
         if([string]::IsNullOrWhiteSpace($Enabled) -eq $false){
             $UpdateElement.SetAttribute("Enabled", $Enabled) | Out-Null
         } else {
@@ -1807,6 +1833,9 @@ Required. Specifies the edition of Click-to-Run for Office 365 product to use: 3
 .PARAMETER TargetFilePath
 Full file path for the file to be modified and be output to.
 
+.PARAMETER Branch
+Optional. Specifies the update branch for the product that you want to download or install.
+
 .Example
 Set-ODTAdd -SourcePath "C:\Preload\Office" -TargetFilePath "$env:Public/Documents/config.xml"
 Sets config SourcePath property of the add element to C:\Preload\Office
@@ -1842,7 +1871,10 @@ Here is what the portion of configuration file looks like when modified by this 
         [string] $Bitness,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [string] $TargetFilePath
+        [string] $TargetFilePath,
+
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [Microsoft.Office.Branches] $Branch = "Current"
 
     )
 
@@ -1877,6 +1909,10 @@ Here is what the portion of configuration file looks like when modified by this 
         }
 
         #Set values as desired
+        if($Branch -ne $null){
+            $ConfigFile.Configuration.Add.SetAttribute("Branch", $Branch);
+        }
+
         if([string]::IsNullOrWhiteSpace($SourcePath) -eq $false){
             $ConfigFile.Configuration.Add.SetAttribute("SourcePath", $SourcePath) | Out-Null
         } else {
@@ -1971,7 +2007,7 @@ file.
             throw $NoConfigurationElement
         }
         
-        $ConfigFile.Configuration.GetElementsByTagName("Add") | Select OfficeClientEdition, SourcePath, Version
+        $ConfigFile.Configuration.GetElementsByTagName("Add") | Select OfficeClientEdition, SourcePath, Version, Branch
     }
 
 }
