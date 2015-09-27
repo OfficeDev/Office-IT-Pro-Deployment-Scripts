@@ -138,7 +138,10 @@
     <Content Include="components\Overlay\Overlay.min.css" />
     <Content Include="components\Panel\Jquery.Panel.js" />
     <Content Include="components\Panel\Panel.css" />
+    <Content Include="components\Panel\Panel.ExtraLarge.html" />
     <Content Include="components\Panel\Panel.html" />
+    <Content Include="components\Panel\Panel.Large.html" />
+    <Content Include="components\Panel\Panel.Medium.html" />
     <Content Include="components\Panel\Panel.min.css" />
     <Content Include="components\PeoplePicker\Jquery.PeoplePicker.js" />
     <Content Include="components\PeoplePicker\PeoplePicker.Compact.html" />

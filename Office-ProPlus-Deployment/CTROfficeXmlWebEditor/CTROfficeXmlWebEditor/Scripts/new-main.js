@@ -3,6 +3,7 @@ var selectDate;
 
 $(document).ready(function () {
 
+
     var finput = document.getElementById('fileInput');
     finput.addEventListener('change', function (e) {
         fileUploaded(e);
@@ -14,11 +15,16 @@ $(document).ready(function () {
         document.getElementById("txtTargetVersion").style.lineHeight = "0px";
     }
 
-    var hW = $.cookie("hideWelcome")
-
+    var hW = $.cookie("hideWelcome");
     if (hW) {
-        $("#welcomeDialog")[0].style.display = "none";
+        $("#welcomeDialog").hide();
+    } else {
+        fadeBackground(true);
+        $("#welcomeDialog").draggable();
+        $("#welcomeDialog").css("display", "block");
     }
+
+    $("#commentDialog").draggable();
 
     $("#btRemoveProduct").prop("disabled", true);
     $("#btAddLanguage").prop("disabled", true);
@@ -374,18 +380,6 @@ $(document).ready(function () {
         return false;
     });
 
-    $("#addCommentbt").on('click', function () {
-        var xmlDoc = getXmlDocument();
-
-        insertComment(xmlDoc);
-
-        displayXml(xmlDoc);
-
-        $("#commentDialog")[0].style.display = 'none';
-
-        return false;
-    });
-
     $("#menuViewOnGitHub").on('click', function () {
         window.open("https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/master/Office-ProPlus-Deployment/CTROfficeXmlWebEditor");
         return false;
@@ -484,12 +478,47 @@ $(document).ready(function () {
 
     var totH = welcomeMain.clientHeight;
     var headerH = welcomeHeader.clientHeight;
-    var desH = (totH - headerH)
-    $('#welcomeInner')[0].style.height = desH + "px"
+    var desH = (totH - headerH);
+    $('#welcomeInner')[0].style.height = desH + "px";
 
     setScrollBar();
 
 });
+
+function addComment() {
+    var xmlDoc = getXmlDocument();
+
+    insertComment(xmlDoc);
+
+    displayXml(xmlDoc);
+
+    $("#commentDialog")[0].style.display = 'none';
+
+    return false;
+}
+
+function deleteComment() {
+    $("#confirmDelete")[0].style.display = 'block';
+
+    /*
+    var xmlDoc = getXmlDocument();
+    $("#commentText").val("");
+    removeComment(xmlDoc);
+
+    displayXml(xmlDoc);
+    */
+}
+
+function fadeBackground(enabled) {
+    if (enabled) {
+        $('#screen').css({ opacity: 0.3, 'width': $(document).width(), 'height': $(document).height() });
+        $('body').css({ 'overflow': 'visible' });
+        //$('#box').css({ 'display': 'block' });
+    } else {
+        $('#screen').css({ opacity: 0, 'width': $(document).width(), 'height': $(document).height() });
+        $('#screen').hide();
+    }
+}
 
 function setScrollBar() {
     var optionDiv = document.getElementById("optionDiv");
@@ -2269,16 +2298,20 @@ function hideAbout() {
 }
 
 function hideWelcome() {
-    $("#welcomeDialog")[0].style.display = 'none';
+    $("#welcomeDialog").fadeOut("fast", function () {
+        fadeBackground(false);
+    });
 }
 
 function foreverHideWelcome() {
-    $("#welcomeDialog")[0].style.display = 'none';
+    $("#welcomeDialog").fadeOut(function() {
+        fadeBackground(false);
+    });
     $.cookie("hideWelcome", true);
 }
 
 function openCommentDialog() {
-    $("#commentDialog")[0].style.display = 'block';
+    //$("#commentDialog")[0].style.display = 'block';
 }
 
 function hideCommentDialog() {
@@ -2288,8 +2321,10 @@ function hideCommentDialog() {
 function insertComment(xmldoc) {
     removeComment(xmldoc);
     var commenttxt = $("#commentText").val();
-    var comment = xmldoc.createComment(commenttxt);
-    xmldoc.getElementsByTagName('Configuration')[0].appendChild(comment);
+    if (commenttxt) {
+        var comment = xmldoc.createComment(commenttxt);
+        xmldoc.getElementsByTagName('Configuration')[0].appendChild(comment);
+    }
 }
 
 function removeComment(xmldoc) {
