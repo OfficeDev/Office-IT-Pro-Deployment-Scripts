@@ -394,15 +394,9 @@ $(document).ready(function () {
         scrollXmlEditor();
     });
 
-    $('#the-basics .typeahead').typeahead({
-        hint: true,
-        highlight: true,
-        minLength: 1
-    },
-    {
-        name: 'versions',
-        source: substringMatcher(versions)
-    });
+    changeVersions("2016");
+
+
 
     $('#txtVersion').keydown(function (e) {
         restrictToVersion(e);
@@ -485,6 +479,104 @@ $(document).ready(function () {
 
 });
 
+function setPanel(panelId, buttonId) {
+    hideAllCallOuts();
+
+    $(".option-panel").removeClass('visible');
+    $(".navrow").removeClass('is-selected');
+    $("#" + buttonId).addClass('is-selected');
+    $("#" + panelId).addClass('visible');
+
+    var siblings = $("#" + panelId).siblings();
+
+    for (var i = 0; i < siblings.length; i++) {
+        var sibling = siblings[i];
+        $("#" + sibling.id).removeClass("ms-u-slideLeftIn400");
+    }
+
+    $("#" + panelId).addClass("ms-u-slideLeftIn400");
+}
+
+function setVersionPanel(buttonId) {
+    $(".navrowversion").removeClass('is-selected');
+    $("#" + buttonId).addClass('is-selected');
+
+    if (buttonId.toLowerCase() == "office2013select") {
+        changeVersions("2013");
+    }
+    if (buttonId.toLowerCase() == "office2016select") {
+        changeVersions("2016");
+    }
+}
+
+function changeVersions(version) {
+    if (version == "2013") {
+        //$("#pidKeyLabel").show("slow");
+        $("#branchSection").hide("slow");
+        $("#updateBranchSection").hide("slow");
+
+        //16.0.4229.1024
+
+        $('#versionTextBox .typeahead').typeahead('destroy', 'NoCached');
+        $('#updateVersionTextBox .typeahead').typeahead('destroy', 'NoCached');
+
+        $('#versionTextBox .typeahead').typeahead({
+            hint: true,
+            highlight: true,
+            minLength: 1
+        },
+        {
+            name: 'versions',
+            source: substringMatcher(versions)
+        });
+
+        $('#updateVersionTextBox .typeahead').typeahead({
+            hint: true,
+            highlight: true,
+            minLength: 1
+        },
+        {
+            name: 'versions',
+            source: substringMatcher(versions)
+        });
+
+        $("#txtVersion").attr("placeholder", versions[0]);
+        $("#txtTargetVersion").attr("placeholder", versions[0]);
+    }
+    if (version == "2016") {
+        //$("#pidKeyLabel").hide("slow");
+        $("#branchSection").show("slow");
+        $("#updateBranchSection").show("slow");
+        $("#txtPidKey").val("");
+
+        $('#versionTextBox .typeahead').typeahead('destroy', 'NoCached');
+        $('#updateVersionTextBox .typeahead').typeahead('destroy', 'NoCached');
+
+        $('#versionTextBox .typeahead').typeahead({
+            hint: true,
+            highlight: true,
+            minLength: 1
+        },
+        {
+            name: 'versions',
+            source: substringMatcher(versions2016)
+        });
+
+        $('#updateVersionTextBox .typeahead').typeahead({
+            hint: true,
+            highlight: true,
+            minLength: 1
+        },
+        {
+            name: 'versions',
+            source: substringMatcher(versions2016)
+        });
+
+        $("#txtVersion").attr("placeholder", versions2016[0]);
+        $("#txtTargetVersion").attr("placeholder", versions2016[0]);
+    }
+}
+
 function addComment() {
     var xmlDoc = getXmlDocument();
 
@@ -498,15 +590,11 @@ function addComment() {
 }
 
 function deleteComment() {
-    $("#confirmDelete")[0].style.display = 'block';
-
-    /*
     var xmlDoc = getXmlDocument();
     $("#commentText").val("");
     removeComment(xmlDoc);
 
     displayXml(xmlDoc);
-    */
 }
 
 function fadeBackground(enabled) {
@@ -1007,6 +1095,10 @@ function resizeWindow() {
     $("#xmlSection").width(bodyWidth - menuWidth - configWidth - 48);
 
     setScrollBar();
+
+    if ($('#screen').is(":visible")) {
+        fadeBackground(true);
+    }
 }
 
 function cacheNodes(xmlDoc) {
@@ -1513,10 +1605,13 @@ function odtToggleUpdate() {
         $("#txtUpdatePath").removeProp("disabled");
         $("#txtTargetVersion").removeProp("disabled");
         $('#txtDeadline').removeProp("disabled");
+        $('#txtTargetVersion').css("background-color", "");
+        
     } else {
         $("#txtUpdatePath").prop("disabled", "true");
         $("#txtTargetVersion").prop("disabled", "true");
         $('#txtDeadline').prop("disabled", "true");
+        $('#txtTargetVersion').css("background-color", "#f0f0f0");
     }
 }
 
@@ -2352,7 +2447,7 @@ function setTemplate(template) {
             var allText = rawFile.responseText;
             if (allText) {
                 $('textarea#xmlText').val(allText);
-                loadUploadXmlFile();
+                //loadUploadXmlFile();
             }
         }
     }
@@ -2392,5 +2487,9 @@ var versions = [
 '15.0.4505.1510',
 '15.0.4505.1006',
 '15.0.4481.1510'
+];
+
+var versions2016 = [
+    '16.0.4229.1024'
 ];
 

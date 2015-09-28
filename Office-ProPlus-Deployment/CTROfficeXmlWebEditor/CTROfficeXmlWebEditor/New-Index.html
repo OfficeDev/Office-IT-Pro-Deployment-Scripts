@@ -166,6 +166,10 @@
           top: -4px;
         }
 
+        .ms-Dropdown-items {
+            max-height: 200px;
+        }
+
     </style>
 </head>
 
@@ -284,11 +288,10 @@
                                         <div class="ms-Dropdown">
                                             <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
                                             <select id="cbProduct" class="ms-Dropdown-select">
-                                                <option value="O365ProPlusRetail">Office 365 ProPlus Retail</option>
-                                                <option value="O365BusinessRetail">Office 365 Business Retail</option>
-                                                <option value="VisioProRetail">Visio Professional Retail</option>
-                                                <option value="ProjectProRetail">Project Professional Retail</option>
-                                                <option value="SPDRetail">SharePoint Designer</option>
+                                                <option value="O365ProPlusRetail">Office 365 ProPlus</option>
+                                                <option value="O365BusinessRetail">Office 365 for Business</option>
+                                                <option value="VisioProRetail">Visio for Office 365</option>
+                                                <option value="ProjectProRetail">Project for Office 365</option>
                                             </select>
                                         </div>
 
@@ -428,7 +431,7 @@
 
                                         <form data-toggle="validator" role="form">
                                             <div class="input-group" style="width:100%">
-                                                <div id="the-basics" style="width:100%">
+                                                <div id="versionTextBox" style="width:100%">
                                                     <input id="txtVersion" type="text" pattern="^\d{2}\.\d\.\d{4}\.\d{4}$" maxlength="14"
                                                            class="ms-TextField-field typeahead" placeholder="15.0.4745.1001"
                                                            data-error="Invalid Version. ex: 15.0.4745.1001" style="width:100%">
@@ -457,7 +460,7 @@
                                             </div>
                                         </form>
 
-                                        <div id="pidKeyLabel">
+                                        <div id="pidKeyLabel" style="display: none;">
                                             <table>
                                                 <tr>
                                                     <td>
@@ -506,7 +509,6 @@
                                                                     <option value="PowerPoint">PowerPoint</option>
                                                                     <option value="Project">Project</option>
                                                                     <option value="Publisher">Publisher</option>
-                                                                    <option value="SharePointDesigner">SharePointDesigner</option>
                                                                     <option value="Visio">Visio</option>
                                                                     <option value="Word">Word</option>
                                                                 </select>
@@ -563,11 +565,10 @@
                                     <div class="ms-Dropdown">
                                         <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
                                         <select id="cbRemoveProduct" class="ms-Dropdown-select">
-                                            <option value="O365ProPlusRetail">Office 365 ProPlus Retail</option>
-                                            <option value="O365BusinessRetail">Office 365 Business Retail</option>
-                                            <option value="VisioProRetail">Visio Professional Retail</option>
-                                            <option value="ProjectProRetail">Project Professional Retail</option>
-                                            <option value="SPDRetail">SharePoint Designer</option>
+                                            <option value="O365ProPlusRetail">Office 365 ProPlus</option>
+                                            <option value="O365BusinessRetail">Office 365 for Business</option>
+                                            <option value="VisioProRetail">Visio for Office 365</option>
+                                            <option value="ProjectProRetail">Project for Office 365</option>
                                         </select>
                                     </div>
 
@@ -712,7 +713,7 @@
                                     </table>
 
                                     <div>
-                                        <div id="the-basics">
+                                        <div id="updateVersionTextBox">
                                             <input id="txtTargetVersion" type="text" pattern="^\d{2}\.\d\.\d{4}\.\d{4}$" maxlength="14"
                                                    class="ms-TextField-field typeahead" placeholder="15.0.4745.1001"
                                                    data-error="Invalid Version. ex: 15.0.4745.1001">
@@ -965,37 +966,20 @@
                                 <!-- Start Templates Panel -->
                                 <div id="TemplatesPanel" class="option-panel">
                                     <h1 class="ms-font-xxl">Templates</h1>
-                                    <div class="ms-Table">
-                                        <div class="ms-Table-row">
-                                            <span class="ms-Table-cell">Templates</span>
-                                        </div>
-                                        <div class="ms-Table-row">
-                                            <span class="ms-Table-cell" id="proPlusRetail" href="./templates/0365ProPlusRetail.xml" onclick="setTemplate(this)">Office 365 ProPlus Retail</span>
-                                        </div>
-                                        <div class="ms-Table-row">
-                                            <span class="ms-Table-cell" id="proPlusBusiness" href="./templates/0365ProPlusBusiness.xml" onclick="setTemplate(this)">Office 365 ProPlus Business</span>
-                                        </div>
-                                        <div class="ms-Table-row">
-                                            <span class="ms-Table-cell" id="proPlusRetailVisio" href="./templates/O365ProPlusRetailwVisio.xml" onclick="setTemplate(this)">Office 365 ProPlus Retail with Visio</span>
-                                        </div>
-                                    </div>
                                     <ul class="ms-List">
-                                        <div class="ms-ListItem is-unread is-selectable">
-                                            <span class="ms-ListItem-primaryText">Office 365 ProPlus Retail</span>
-                                            <span class="ms-ListItem-secondaryText">Office 365 ProPlus Retail</span>
-                                            <span class="ms-ListItem-tertiaryText" style="word-wrap:break-word;" >Today we discussed the importance of a, b, and c in regards to d.</span>
+                                        <div id="proPlusRetail" class="ms-ListItem is-unread is-selectable" href="./templates/0365ProPlusRetail.xml" onclick="setTemplate(this)">
+                                            <span class="ms-ListItem-primaryText">Office 365 ProPlus</span>
+                                            <span class="ms-ListItem-tertiaryText" style="word-wrap:break-word;">Silent install of 32-Bit Office 365 ProPlus with Updates and Logging enabled</span>
                                             <div class="ms-ListItem-selectionTarget js-toggleSelection"></div>
                                         </div>
-                                        <div class="ms-ListItem is-unread is-selectable">
-                                            <span class="ms-ListItem-primaryText">Office 365 ProPlus Business</span>
-                                            <span class="ms-ListItem-secondaryText">Meeting notes</span>
-                                            <span class="ms-ListItem-tertiaryText">Today we discussed the importance of a, b, and c in regards to d.</span>
+                                        <div id="proPlusBusiness" class="ms-ListItem is-unread is-selectable" href="./templates/0365ProPlusBusiness.xml" onclick="setTemplate(this)">
+                                            <span class="ms-ListItem-primaryText">Office 365 for Business</span>
+                                            <span class="ms-ListItem-tertiaryText">Silent install of 32-Bit Office 365 for Business with Updates and Logging enabled</span>
                                             <div class="ms-ListItem-selectionTarget js-toggleSelection"></div>
                                         </div>
-                                        <div class="ms-ListItem is-unread is-selectable">
-                                            <span class="ms-ListItem-primaryText">Office 365 ProPlus Retail with Visio</span>
-                                            <span class="ms-ListItem-secondaryText">Meeting notes</span>
-                                            <span class="ms-ListItem-tertiaryText">Today we discussed the importance of a, b, and c in regards to d.</span>
+                                        <div id="proPlusRetailVisio" class="ms-ListItem is-unread is-selectable" href="./templates/O365ProPlusRetailwVisio.xml" onclick="setTemplate(this)">
+                                            <span class="ms-ListItem-primaryText">Office 365 ProPlus with Visio</span>
+                                            <span class="ms-ListItem-tertiaryText">Silent install of 32-Bit Office 365 ProPlus with Visio with Updates and Logging enabled</span>
                                             <div class="ms-ListItem-selectionTarget js-toggleSelection"></div>
                                         </div>
                                     </ul>
@@ -1013,7 +997,7 @@
                                                 <div class="ms-CommandBarItem-linkWrapper" onclick="clickUpload();">
                                                     <div class="ms-CommandBarItem-link">
                                                         <span class="ms-CommandBarItem-icon ms-Icon ms-Icon--upload"></span>
-                                                        <span class="ms-CommandBarItem-commandText ms-font-m ms-font-weight-regular">Upload</span>
+                                                        <span class="ms-CommandBarItem-commandText ms-font-m ms-font-weight-regular">Import</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -1021,7 +1005,7 @@
                                                 <div class="ms-CommandBarItem-linkWrapper" onclick="download()">
                                                     <div class="ms-CommandBarItem-link">
                                                         <span class="ms-CommandBarItem-icon ms-Icon ms-Icon--download"></span>
-                                                        <span class="ms-CommandBarItem-commandText ms-font-m ms-font-weight-regular">Download</span>
+                                                        <span class="ms-CommandBarItem-commandText ms-font-m ms-font-weight-regular">Export</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -1138,7 +1122,7 @@
             <div id="welcomeInner" class="ms-Dialog-inner" style="overflow-y:auto;height:auto; max-height:90%">
                 <div class="ms-Dialog-content" style="width:98%; padding-left:20px;padding-top: 10px;">
                     <p class="ms-font-m">
-                        This page provides a graphical method to generate and edit the Office Click-to-Run configuration.xml file
+                        This page provides a graphical method to generate and edit the Office Click-to-Run configuration.xml file.  The configuration.xml file is used to specify Click-to-Run installation and update options.
                     </p>
                     <br />
                     <p class="ms-font-m">
@@ -1146,15 +1130,12 @@
                     </p>
                     <br />
                     <p class="ms-font-m">
-                        The Click-to-Run for Office 365 Configuration.xml file is used to specify Click-to-Run installation and update options. The
-                        <a href="https://technet.microsoft.com/en-us/library/jj219422.aspx" id="A_2">Office Deployment Tool</a> is a downloadable tool (
-                        <a href="http://www.microsoft.com/en-us/download/details.aspx?id=36778">2013</a>, <a href="https://www.microsoft.com/en-us/download/details.aspx?id=49117">2016</a>
-                        )
-                        and it includes a sample Configuration.xml file. Administrators can modify the Configuration.xml file to configure installation options
-                        for Click-to-Run for Office 365 products.
+                        The <a href="https://technet.microsoft.com/en-us/library/jj219422.aspx" id="A_2">Office Deployment Tool</a> is a downloadable tool. 
+                        (<a href="https://www.microsoft.com/en-us/download/details.aspx?id=49117">Office 365 ProPlus 2016</a>,
+                        <a href="http://www.microsoft.com/en-us/download/details.aspx?id=36778">Office 365 ProPlus 2013</a>) 
                     </p>
                     <hr />
-                    <p class="ms-font-xl" style="margin-top:10px">How to Use This Tool</p>
+                    <p class="ms-font-xl" style="margin-top:10px">How to use this site</p>
 
                     <p class="ms-font-l" style="margin-top:10px">Start</p>
                     <p class="ms-font-m">
@@ -1190,7 +1171,10 @@
                     <hr />
 
                     <p class="ms-font-m">
-                         <a href="https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts" id="A_2">Office IT Pro Deployment Scripts</a>.
+                        For more scripts and tools for automating Office ProPlus deployments you can go to the <a href="https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts" id="A_2">Office IT Pro Deployment Scripts</a>
+                        respository in the <a href="https://github.com/OfficeDev" id="A_2">OfficeDev</a> GitHub Site.
+                        
+                        
                     </p>
                 </div>
                 <div class="ms-Dialog-actions" style="width:98%;margin-right:30px;padding-bottom: 20px;">
@@ -1251,7 +1235,6 @@
                             <li> <p class="ms-Callout-subText">O365BusinessRetail</p> </li>
                             <li> <p class="ms-Callout-subText">VisioProRetail</p> </li>
                             <li> <p class="ms-Callout-subText">ProjectProRetail</p> </li>
-                            <li> <p class="ms-Callout-subText">SPDRetail (SharePoint Designer)</p> </li>
                         </ul>
                         <p class="ms-Callout-subText">If <strong>ID</strong> is not set, the operation fails and indicates that the input is not valid.</p>
                         <br />
@@ -1454,7 +1437,6 @@
                             <li> <p class="ms-Callout-subText">PowerPoint</p> </li>
                             <li> <p class="ms-Callout-subText">Project</p> </li>
                             <li> <p class="ms-Callout-subText">Publisher</p> </li>
-                            <li> <p class="ms-Callout-subText">SharePointDesigner</p> </li>
                             <li> <p class="ms-Callout-subText">Visio</p> </li>
                             <li> <p class="ms-Callout-subText">Word</p> </li>
                         </ul>
@@ -1828,7 +1810,7 @@
         </div>
     </div>
 
-    <div id='screen'>
+    <div id='screen' style="width: 100%">
     </div>
 
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
@@ -1914,49 +1896,6 @@
             }
         });
 
-        function setPanel(panelId, buttonId) {
-            hideAllCallOuts();
-
-            $(".option-panel").removeClass('visible');
-            $(".navrow").removeClass('is-selected');
-            $("#" + buttonId).addClass('is-selected');
-            $("#" + panelId).addClass('visible');
-
-            var siblings = $("#" + panelId).siblings();
-
-            for (var i = 0; i < siblings.length; i++) {
-                var sibling = siblings[i];
-                $("#" + sibling.id).removeClass("ms-u-slideLeftIn400");
-            }
-
-            $("#" + panelId).addClass("ms-u-slideLeftIn400");
-        }
-
-        function setVersionPanel(buttonId) {
-            $(".navrowversion").removeClass('is-selected');
-            $("#" + buttonId).addClass('is-selected');
-
-            if (buttonId.toLowerCase() == "office2013select") {
-                changeVersions("2013");
-            }
-            if (buttonId.toLowerCase() == "office2016select") {
-                changeVersions("2016");
-            }
-        }
-
-        function changeVersions(version) {
-            if (version == "2013") {
-                $("#pidKeyLabel").show("slow");
-                $("#branchSection").hide("slow");
-                $("#updateBranchSection").hide("slow");
-            }
-            if (version == "2016") {
-                $("#pidKeyLabel").hide("slow");
-                $("#branchSection").show("slow");
-                $("#updateBranchSection").show("slow");
-                $("#txtPidKey").val("");
-            }
-        }
     </script>
 </body>
 
