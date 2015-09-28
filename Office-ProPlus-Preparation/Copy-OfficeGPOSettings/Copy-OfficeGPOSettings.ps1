@@ -681,6 +681,8 @@ Process
 
 	$Paths = [string]"$sysvolDir\$domain\Policies\{$ID}\User\Registry.pol", 
                      "$sysvolDir\$domain\Policies\{$ID}\Machine\Registry.pol";
+    $commentPaths = "$sysvolDir\$domain\Policies\{$ID}\User\comment.cmtx", 
+                     "$sysvolDir\$domain\Policies\{$ID}\Machine\comment.cmtx";
     $CentralPolicyDefinitionDirectory = "$sysvolDir\$domain\Policies\PolicyDefinitions"
 	$PolicyDefinitionDirectory = "$env:windir\PolicyDefinitions"
 
@@ -786,7 +788,7 @@ Process
                 #get value to compare if exists in admx files
                 $compareKey = $newkey.Substring(5);
 
-                $exists = $ExistingKeys | ? key -like $compareKey;
+                $exists = $ExistingKeys | ? key -like $compareKey | ? valueName -eq $valueName;
 
                 if($exists -ne $null){
 				    $alreadySet = $false;
@@ -835,6 +837,66 @@ Process
         
 	}
 
+    $shortOldVersion = $SourceVersion.Split(".")[0];
+    $shortNewVersion = $TargetVersion.Split(".")[0];
+
+    foreach($commentFilePath in $commentPaths){
+        if(Test-Path $commentFilePath){
+            [xml]$cmtx = Get-Content $commentFilePath;
+
+            $namespaces = $cmtx.policyComments.policyNamespaces.using | ? namespace -Like "*$shortOldVersion.Office.Microsoft.Policies.Windows";
+            $newNamespaces = $cmtx.policyComments.policyNamespaces.using | ? namespace -Like "*$shortNewVersion.Office.Microsoft.Policies.Windows";
+
+            foreach($namespace in $namespaces){
+                #get comments associated with each namespace
+                $comments = $cmtx.policyComments.comments.admTemplate.comment | ? policyRef -Like "$($namespace.prefix):*"
+                $resources = $cmtx.policyComments.resources.stringTable.string;
+                
+                #create new namespace to copy to
+                $convertedNamespace = $namespace.namespace -replace "$shortOldVersion", "$shortNewVersion"
+                $newNamespace = $newNamespaces | ? namespace -Like "$convertedNamespace";
+                if($newNamespace -eq $null){
+                    $maximum = $cmtx.policyComments.policyNamespaces.using.prefix -replace "ns", "" | %{[int32]::Parse($_)} | measure -Maximum
+                    $newNamespace = $cmtx.CreateElement("using", $cmtx.policyComments.NamespaceURI)
+                    $newNamespace.RemoveAllAttributes();
+                    $newNamespace.SetAttribute("prefix", "ns$($maximum.Maximum + 1)") | Out-Null
+                    $newNamespace.SetAttribute("namespace", $convertedNamespace) | Out-Null
+                    $cmtx.policyComments.policyNamespaces.AppendChild($newNamespace) | Out-Null
+                }
+
+                #copy all comments
+                foreach($comment in $comments){
+                    $nComment = $cmtx.CreateElement("comment", $cmtx.policyComments.NamespaceURI);
+                    $nComment.RemoveAllAttributes();
+                    #convert policy ref
+                    $nPolicyRef = $comment.policyRef;
+                    $nPolicyRef = $nPolicyRef -replace "$($namespace.prefix):", "$($newNamespace.prefix):"
+                    $nComment.SetAttribute("policyRef", $nPolicyRef) | Out-Null
+
+                    #convert comment text
+                    $commentText = $comment.commentText -replace "$($namespace.prefix)_", "$($newNamespace.prefix)_"
+                    $nComment.SetAttribute("commentText", $commentText) | Out-Null
+                    $id = $comment.commentText -replace "\$\(resource\.", "";
+                    $id = $id -replace "\)", "";
+                    
+                    $string = $resources | ? id -eq $id;
+                    $string = $string.InnerText;
+
+                    $id = $id -replace "$($namespace.prefix)_", "$($newNamespace.prefix)_"
+                    $nResource = $cmtx.CreateElement("string", $cmtx.policyComments.NamespaceURI);
+                    $nResource.RemoveAllAttributes();
+                    $nResource.SetAttribute("id", $id) | Out-Null
+                    $nResource.InnerText = $string;
+
+                    #actually add the elements
+                    $cmtx.policyComments.comments.admTemplate.AppendChild($nComment) | Out-Null
+                    $cmtx.policyComments.resources.stringTable.AppendChild($nResource) | Out-Null
+                }
+            }
+            $cmtx.Save($commentFilePath);
+        }
+    }
+    
     Write-Host
 
     if ($sourceCount -eq 0 -and $targetCount -eq 0) {
