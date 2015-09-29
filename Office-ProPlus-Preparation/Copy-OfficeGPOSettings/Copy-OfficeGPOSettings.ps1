@@ -671,9 +671,10 @@ Process
 	$GPO = Get-GPO -Name $SourceGPOName;
     $TargetGPO = Get-GPO -Name $TargetGPOName -ErrorAction SilentlyContinue
     if (!($TargetGPO)) {
-       New-GPO -Name $TargetGPOName | Out-Null
+       $TargetGPO = New-GPO -Name $TargetGPOName
     }
 
+    $TargetID = $TargetGPO.Id;
 	$ID = $GPO.Id;
 	$domain = [string]($GPO.DomainName);
    
@@ -681,8 +682,10 @@ Process
 
 	$Paths = [string]"$sysvolDir\$domain\Policies\{$ID}\User\Registry.pol", 
                      "$sysvolDir\$domain\Policies\{$ID}\Machine\Registry.pol";
-    $commentPaths = "$sysvolDir\$domain\Policies\{$ID}\User\comment.cmtx", 
-                     "$sysvolDir\$domain\Policies\{$ID}\Machine\comment.cmtx";
+    $commentPaths = ("$sysvolDir\$domain\Policies\{$ID}\User\comment.cmtx",
+                     "$sysvolDir\$domain\Policies\{$TargetID}\User\comment.cmtx"),
+                     ("$sysvolDir\$domain\Policies\{$ID}\Machine\comment.cmtx",
+                     "$sysvolDir\$domain\Policies\{$TargetID}\Machine\comment.cmtx");
     $CentralPolicyDefinitionDirectory = "$sysvolDir\$domain\Policies\PolicyDefinitions"
 	$PolicyDefinitionDirectory = "$env:windir\PolicyDefinitions"
 
@@ -697,13 +700,24 @@ Process
 
 	#Get all the policy definitions from the admx files
 	$ExistingKeys = $null; 
+    $j = 0;
 	foreach($admx in $admxFiles){
+        Write-Progress -Activity "Gathering Data from Administrative Templates" -status "Finding Registry Keys" -percentComplete ($j / $admxFiles.Count *100)
 		[xml]$xml = Get-Content $admx.FullName;
 		if($ExistingKeys -ne $null){
 			$ExistingKeys += $xml.policyDefinitions.policies.policy | Select name, class, key, valueName;
 		}else{
 			$ExistingKeys = $xml.policyDefinitions.policies.policy | Select name, class, key, valueName;
 		}
+        $missingNames = $ExistingKeys | ? valueName -eq $null
+        foreach($ek in $missingNames){
+            $mnpolicy = $xml.policyDefinitions.policies.policy | ? name -EQ $ek.name | ? class -EQ $ek.class | ? key -EQ $ek.key
+            foreach($mne in $mnpolicy.elements.ChildNodes){
+                $ek.valueName = $mne.valueName;
+                $ExistingKeys += $ek;
+            }
+        }
+        $j = $j + 1;
 	}
 
     try {
@@ -841,11 +855,20 @@ Process
     $shortNewVersion = $TargetVersion.Split(".")[0];
 
     foreach($commentFilePath in $commentPaths){
-        if(Test-Path $commentFilePath){
-            [xml]$cmtx = Get-Content $commentFilePath;
+        if(Test-Path $commentFilePath[0]){
+            [xml]$cmtx = Get-Content $commentFilePath[0];
+            if(Test-Path $commentFilePath[1]){
+                [xml]$newcmtx = Get-Content $commentFilePath[1];
+            }else{
+                $cmtx.Save($commentFilePath[1]);
+                [xml]$newcmtx = Get-Content $commentFilePath[1];
+                $newcmtx.policyComments.policyNamespaces.RemoveAll();
+                $newcmtx.policyComments.comments.admTemplate.RemoveAll();
+                $newcmtx.policyComments.resources.stringTable.RemoveAll();
+            }
 
             $namespaces = $cmtx.policyComments.policyNamespaces.using | ? namespace -Like "*$shortOldVersion.Office.Microsoft.Policies.Windows";
-            $newNamespaces = $cmtx.policyComments.policyNamespaces.using | ? namespace -Like "*$shortNewVersion.Office.Microsoft.Policies.Windows";
+            $newNamespaces = $newcmtx.policyComments.policyNamespaces.using | ? namespace -Like "*$shortNewVersion.Office.Microsoft.Policies.Windows";
 
             foreach($namespace in $namespaces){
                 #get comments associated with each namespace
@@ -856,17 +879,16 @@ Process
                 $convertedNamespace = $namespace.namespace -replace "$shortOldVersion", "$shortNewVersion"
                 $newNamespace = $newNamespaces | ? namespace -Like "$convertedNamespace";
                 if($newNamespace -eq $null){
-                    $maximum = $cmtx.policyComments.policyNamespaces.using.prefix -replace "ns", "" | %{[int32]::Parse($_)} | measure -Maximum
-                    $newNamespace = $cmtx.CreateElement("using", $cmtx.policyComments.NamespaceURI)
-                    $newNamespace.RemoveAllAttributes();
+                    $maximum = $newcmtx.policyComments.policyNamespaces.using.prefix -replace "ns", "" | %{[int32]::Parse($_)} | measure -Maximum
+                    $newNamespace = $newcmtx.CreateElement("using", $newcmtx.policyComments.NamespaceURI)
                     $newNamespace.SetAttribute("prefix", "ns$($maximum.Maximum + 1)") | Out-Null
                     $newNamespace.SetAttribute("namespace", $convertedNamespace) | Out-Null
-                    $cmtx.policyComments.policyNamespaces.AppendChild($newNamespace) | Out-Null
+                    $newcmtx.policyComments.GetElementsByTagName("policyNamespaces").AppendChild($newNamespace) | Out-Null
                 }
 
                 #copy all comments
                 foreach($comment in $comments){
-                    $nComment = $cmtx.CreateElement("comment", $cmtx.policyComments.NamespaceURI);
+                    $nComment = $newcmtx.CreateElement("comment", $newcmtx.policyComments.NamespaceURI);
                     $nComment.RemoveAllAttributes();
                     #convert policy ref
                     $nPolicyRef = $comment.policyRef;
@@ -883,17 +905,17 @@ Process
                     $string = $string.InnerText;
 
                     $id = $id -replace "$($namespace.prefix)_", "$($newNamespace.prefix)_"
-                    $nResource = $cmtx.CreateElement("string", $cmtx.policyComments.NamespaceURI);
+                    $nResource = $newcmtx.CreateElement("string", $newcmtx.policyComments.NamespaceURI);
                     $nResource.RemoveAllAttributes();
                     $nResource.SetAttribute("id", $id) | Out-Null
                     $nResource.InnerText = $string;
 
                     #actually add the elements
-                    $cmtx.policyComments.comments.admTemplate.AppendChild($nComment) | Out-Null
-                    $cmtx.policyComments.resources.stringTable.AppendChild($nResource) | Out-Null
+                    $newcmtx.policyComments.comments.GetElementsByTagName("admTemplate").AppendChild($nComment) | Out-Null
+                    $newcmtx.policyComments.resources.GetElementsByTagName("stringTable").AppendChild($nResource) | Out-Null
                 }
             }
-            $cmtx.Save($commentFilePath);
+            $newcmtx.Save($commentFilePath[1]);
         }
     }
     
