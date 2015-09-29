@@ -6,8 +6,12 @@ $(document).ready(function () {
 
     var finput = document.getElementById('fileInput');
     finput.addEventListener('change', function (e) {
-        fileUploaded(e);
+        var hWCheck = $.cookie("hideWelcome");
+        if (!(hWCheck)) {
+            setCookie("hideWelcome", true, 1);
+        }
 
+        fileUploaded(e);
     });
 
     if (isInternetExplorer()) {
@@ -18,11 +22,14 @@ $(document).ready(function () {
     var hW = $.cookie("hideWelcome");
     if (hW) {
         $("#welcomeDialog").hide();
+        fadeBackground(false);
     } else {
         fadeBackground(true);
         $("#welcomeDialog").draggable();
         $("#welcomeDialog").css("display", "block");
     }
+
+    changeExcludeApps("2016");
 
     $("#commentDialog").draggable();
 
@@ -42,10 +49,6 @@ $(document).ready(function () {
     setActiveTab();
 
     resizeWindow();
-
-    var xmlOutput = $.cookie("xmlcache");
-    $('textarea#xmlText').val(xmlOutput);
-    loadUploadXmlFile();
 
     $(window).resize(function () {
         resizeWindow();
@@ -396,8 +399,6 @@ $(document).ready(function () {
 
     changeVersions("2016");
 
-
-
     $('#txtVersion').keydown(function (e) {
         restrictToVersion(e);
     });
@@ -475,9 +476,19 @@ $(document).ready(function () {
     var desH = (totH - headerH);
     $('#welcomeInner')[0].style.height = desH + "px";
 
+    var xmlOutput = $.cookie("xmlcache");
+    $('textarea#xmlText').val(xmlOutput);
+    loadUploadXmlFile();
+
     setScrollBar();
 
 });
+
+function setCookie(name, value, minutes) {
+    var date = new Date();
+    date.setTime(date.getTime() + (minutes * 60 * 1000));
+    $.cookie(name, value, { expires: date });
+}
 
 function setPanel(panelId, buttonId) {
     hideAllCallOuts();
@@ -575,6 +586,40 @@ function changeVersions(version) {
         $("#txtVersion").attr("placeholder", versions2016[0]);
         $("#txtTargetVersion").attr("placeholder", versions2016[0]);
     }
+
+    odtToggleUpdate();
+
+    changeExcludeApps(version);
+}
+
+function changeExcludeApps(version) {
+    $("#cbExcludeApp").empty();
+    var mySelect = $('#cbExcludeApp');
+
+    if (version == "2013") {
+        //$.each(excludeApps2013, function(val, text) {
+        //    mySelect.append(
+        //        $('<option></option>').val(val).html(text)
+        //    );
+        //});
+
+        var newOption = $('<option value="1">test</option>');
+        mySelect.append(newOption);
+    }
+    if (version == "2016") {
+        $.each(excludeApps2016, function (val, text) {
+            mySelect.append(
+                $('<option></option>').val(val).html(text)
+            );
+        });
+    }
+
+    mySelect.trigger("chosen:updated");
+}
+
+function UpdateDropDown() {
+    
+
 }
 
 function addComment() {
@@ -731,7 +776,11 @@ function fileUploaded(e) {
         $('textarea#xmlText').val(xmlOutput);
         $.cookie("xmlcache", xmlOutput);
 
+        getXmlDocument();
+
         loadUploadXmlFile();
+
+        window.location = window.location;
     };
     reader.onerror = function (event) {
         throw "File could not be read! Code " + event.target.error.code;
@@ -2008,6 +2057,25 @@ function getRemoveLanguageNodeCount(xmlDoc, productId) {
 }
 
 
+function setDropDownValue(id, value) {
+    $('#' + id + ' option').each(function () {
+        var optionValue = $(this).attr('value');
+        if (optionValue.toLowerCase() == value.toLowerCase()) {
+            
+        } else {
+            $(this).prop("selected", false);
+        }
+    });
+    $('#' + id + ' option').each(function () {
+        var optionValue = $(this).attr('value');
+        if (optionValue.toLowerCase() == value.toLowerCase()) {
+            $(this).prop("selected", true);
+        } else {
+
+        }
+    });
+}
+
 function loadUploadXmlFile(inXmlDoc) {
     var xmlDoc = inXmlDoc;
     if (!(xmlDoc)) {
@@ -2027,7 +2095,7 @@ function loadUploadXmlFile(inXmlDoc) {
             var product = products[0];
             var productId = product.getAttribute("ID");
 
-            $("#cbProduct").val(productId);
+            $("select#cbProduct").val(productId);
 
             var pidKey = product.getAttribute("PIDKEY");
             $("#txtPidKey").val(pidKey);
@@ -2103,6 +2171,12 @@ function loadUploadXmlFile(inXmlDoc) {
             $("#txtTargetVersion").val("");
             $("#txtDeadline").val("");
         }
+
+        var selectedUpdateBranch = updateNode.getAttribute("Branch");
+        if (selectedUpdateBranch) {
+            $("#cbUpdateBranch").val(selectedUpdateBranch);
+        }
+
         odtToggleUpdate();
     }
 
@@ -2200,6 +2274,7 @@ function loadUploadXmlFile(inXmlDoc) {
         } else {
             $("#sharedComputerLicensing")[0].checked = false;
         }
+
     } else {
         document.getElementById("btRemoveProduct").click();
     }
@@ -2220,13 +2295,15 @@ function loadUploadXmlFile(inXmlDoc) {
         $("#txtLoggingUpdatePath").val(path);
     }
 
+
     var productCount = getAddProductCount(xmlDoc);
     if (productCount == 0) {
         $("#btRemoveProduct").prop("disabled", true);
     } else {
         $("#btRemoveProduct").prop("disabled", false);
     }
-
+    var strXml = (new XMLSerializer()).serializeToString(xmlDoc);
+    return strXml;
 }
 
 function sendMail() {
@@ -2407,6 +2484,16 @@ function foreverHideWelcome() {
 
 function openCommentDialog() {
     //$("#commentDialog")[0].style.display = 'block';
+
+    var xmlDoc = getXmlDocument();
+    var config = xmlDoc.getElementsByTagName('Configuration')[0];
+    var childNodes = config.childNodes;
+    for (var i = 0; i < childNodes.length; i++) {
+        if (childNodes[i].nodeName == "#comment") {
+            var xmlComment = childNodes[i].nodeValue;
+            $("textarea#commentText").val(xmlComment);
+        }
+    }
 }
 
 function hideCommentDialog() {
@@ -2438,6 +2525,8 @@ function IsGuid(value) {
 }
 
 function setTemplate(template) {
+    $('textarea#xmlText').val("");
+
     var url = document.getElementById(template.id).getAttribute("href");
         
     var rawFile = new XMLHttpRequest();
@@ -2447,7 +2536,10 @@ function setTemplate(template) {
             var allText = rawFile.responseText;
             if (allText) {
                 $('textarea#xmlText').val(allText);
-                //loadUploadXmlFile();
+                getXmlDocument();
+                var xml = loadUploadXmlFile();
+
+                $('textarea#xmlText').val(xml);
             }
         }
     }
@@ -2493,3 +2585,31 @@ var versions2016 = [
     '16.0.4229.1024'
 ];
 
+var excludeApps2013 = [
+    'Access',
+    'Excel',
+    'Groove',
+    'InfoPath',
+    'Lync',
+    'OneNote',
+    'Outlook',
+    'PowerPoint',
+    'Project',
+    'Publisher',
+    'Visio',
+    'Word'
+];
+
+var excludeApps2016 = [
+    'Access',
+    'Excel',
+    'Groove',
+    'Lync',
+    'OneNote',
+    'Outlook',
+    'PowerPoint',
+    'Project',
+    'Publisher',
+    'Visio',
+    'Word'
+];
