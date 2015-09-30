@@ -1,0 +1,1687 @@
+﻿
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <title>Office Click-To-Run Configuration XML Editor</title>
+    <meta name="generator" content="OfficeClick-To-RunXmlEditor" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="description" content="Office Click-To-Run Configuration XML Editor" />
+
+    <link href="//cdn.rawgit.com/Eonasdan/bootstrap-datetimepicker/e8bddc60e73c1ec2475f827be36e1957af72e2ea/build/css/bootstrap-datetimepicker.css" rel="stylesheet">
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <script type="text/javascript" src="./Scripts/vkbeautify.0.99.00.beta.js"></script>
+    <link href="stylesheets/typeahead.css" rel="stylesheet">
+
+    <style type="text/css">
+
+        .navbar-static-top {
+            margin-bottom: 20px;
+            background-image: linear-gradient(120deg, #e7612f, #dc3c00);
+        }
+
+        .navbar-static-top button {
+            background-color: #dc3c00;
+            border-color: white;
+        }
+
+        .navbar-static-top button:hover {
+            background-color: #dc3c00;
+            border-color: white;
+        }
+
+        .navbar-static-top button:visited {
+            background-color: #dc3c00;
+            border-color: white;
+        }
+
+        .navbar-static-top button:focus {
+            background-color: #dc3c00;
+            border-color: white;
+        }
+
+        i {
+            font-size: 16px;
+        }
+
+        .nav > li > a {
+            color: #787878;
+        }
+
+        footer {
+            margin-top: 20px;
+            padding-top: 20px;
+            padding-bottom: 20px;
+            background-color: #efefef;
+        }
+
+        /* count indicator near icons */
+        .nav > li .count {
+            position: absolute;
+            bottom: 12px;
+            right: 6px;
+            font-size: 9px;
+            background: rgba(51,200,51,0.55);
+            color: rgba(255,255,255,0.9);
+            line-height: 1em;
+            padding: 2px 4px;
+            -webkit-border-radius: 10px;
+            -moz-border-radius: 10px;
+            -ms-border-radius: 10px;
+            -o-border-radius: 10px;
+            border-radius: 10px;
+        }
+
+        #cbProduct {
+        }
+
+        #cbEdition {
+        }
+
+        .infoButton {
+            color: #787878;
+        }
+
+        .navbar-brand {
+            font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+        }
+
+        .twitter-typeahead {
+            width: 100%;
+        }
+
+    </style>
+
+</head>
+
+<body>
+    <div id="top-nav" class="navbar navbar-inverse navbar-static-top" style="min-width: 550px;border-bottom-color: #dc3c00;">
+        <div class="container-fluid">
+            <div class="navbar-header">
+
+                <table cellspacing="0" cellpadding="0" width="100%">
+                    <tr>
+                        <td style="padding-left: 10px;">
+                            <a class="navbar-brand" href="#" style="color:white;width:500px;">
+                                Office Click-To-Run Configuration XML Editor
+                            </a>
+                        </td>
+                        <td style="text-align: right;width: 100%;padding-right: 10px">
+                            <button id="btAbout" data-toggle="modal" data-target="#myAboutModal" class="btn btn-default btn-primary">About</button>
+                        </td>
+                        <td style="text-align: right;width: 100px;padding-right: 20px">
+                            <button id="btViewOnGitHub" class="btn btn-default btn-primary">View On GitHub</button>
+                        </td>
+                    </tr>
+                </table>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="row">
+
+                    <div id="optionDiv" class="col-md-5" style="min-width: 550px;padding-right: 40px;">
+                        <div class="panel">
+                            
+                            <ul class="nav nav-tabs" id="myTab">
+                                <li id="tabAddProduct" class="active"><a href="#profile" data-toggle="tab">Add Product</a></li>
+                                <li id="tabRemoveProduct"><a href="#removeproduct" data-toggle="tab">Remove Product</a></li>
+                                <li id="tabUpdates"><a href="#updates" data-toggle="tab">Updates</a></li>
+                                <li id="tabDisplay"><a href="#display" data-toggle="tab">Display</a></li>
+                                <li id="tabLogging"><a href="#logging" data-toggle="tab">Logging</a></li>
+                                <li id="tabTemplates"><a href="#templates" data-toggle="tab">Templates</a></li>
+                            </ul>
+
+                            <div class="tab-content">
+
+                                <!-- Add Product-->
+                                <div class="tab-pane active well" id="profile">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <div class="panel-title">
+                                                <h4>Add Product</h4>
+                                            </div>
+                                        </div>
+
+                                        <div class="panel-body">
+                                            <form class="form form-vertical">
+
+                                                <div class="control-group" style="padding-top: 5px;">
+                                                    <table>
+                                                        <tr>
+                                                            <td>
+                                                                <label>Product</label>
+                                                            </td>
+                                                            <td style="width: 30px;text-align: center;cursor:pointer;">
+                                                                <a data-toggle="modal" data-target="#myModal" class="glyphicon glyphicon-info-sign infoButton"></a>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+
+                                                    <div class="controls">
+                                                        <select id="cbProduct" class="form-control">
+                                                            <option value="O365ProPlusRetail">Office 365 ProPlus Retail</option>
+                                                            <option value="O365BusinessRetail">Office 365 Business Retail</option>
+                                                            <option value="VisioProRetail">Visio Professional Retail</option>
+                                                            <option value="ProjectProRetail">Project Professional Retail</option>
+                                                            <option value="SPDRetail">SharePoint Designer</option>
+                                                        </select>
+                                                    </div>
+
+                                                </div>
+
+                                                <div class="control-group" style="padding-top: 5px;">
+                                                    <table>
+                                                        <tr>
+                                                            <td>
+                                                                <label>Edition</label>
+                                                            </td>
+                                                            <td style="width: 30px;text-align: center;cursor:pointer;">
+                                                                <a data-toggle="modal" data-target="#bitnessModal" class="glyphicon glyphicon-info-sign infoButton"></a>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+
+                                                    <div class="controls">
+                                                        <select id="cbEdition" class="form-control">
+                                                            <option value="32">32-bit</option>
+                                                            <option value="64">64-bit</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <div class="control-group" style="padding-top: 5px;">
+                                                    <table>
+                                                        <tr>
+                                                            <td>
+                                                                <label>Language</label>
+                                                            </td>
+                                                            <td style="width: 30px;text-align: center;cursor:pointer;">
+                                                                <a data-toggle="modal" data-target="#languageModal" class="glyphicon glyphicon-info-sign infoButton"></a>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+
+                                                    <div class="controls" style="min-width: 400px; overflow: auto;">
+                                                        <div style="float: left; width: 100%">
+                                                            <table>
+                                                                <tr>
+                                                                    <td style="width: 100%; padding-right: 10px">
+                                                                        <select id="cbLanguage" class="form-control">
+                                                                            <option value="en-us">English (en-us)</option>
+                                                                            <option value="ar-sa">Arabic (ar-sa)</option>
+                                                                            <option value="bg-bg">Bulgarian (bg-bg)</option>
+                                                                            <option value="zh-cn">Chinese (Simplified) (zh-cn)</option>
+                                                                            <option value="zh-tw">Chinese (zh-tw)</option>
+                                                                            <option value="hr-hr">Croatian (hr-hr)</option>
+                                                                            <option value="cs-cz">Czech (cs-cz)</option>
+                                                                            <option value="da-dk">Danish (da-dk)</option>
+                                                                            <option value="nl-nl">Dutch (nl-nl)</option>
+                                                                            <option value="et-ee">Estonian (et-ee)</option>
+                                                                            <option value="fi-fi">Finnish (fi-fi)</option>
+                                                                            <option value="fr-fr">French (fr-fr)</option>
+                                                                            <option value="de-de">German (de-de)</option>
+                                                                            <option value="el-gr">Greek (el-gr)</option>
+                                                                            <option value="he-il">Hebrew (he-il)</option>
+                                                                            <option value="hi-in">Hindi (hi-in)</option>
+                                                                            <option value="hu-hu">Hungarian (hu-hu)</option>
+                                                                            <option value="id-id">Indonesian (id-id)</option>
+                                                                            <option value="it-it">Italian (it-it)</option>
+                                                                            <option value="ja-jp">Japanese (ja-jp)</option>
+                                                                            <option value="kk-kh">Kazakh (kk-kh)</option>
+                                                                            <option value="ko-kr">Korean (ko-kr)</option>
+                                                                            <option value="lv-lv">Latvian (lv-lv)</option>
+                                                                            <option value="lt-lt">Lithuanian (lt-lt)</option>
+                                                                            <option value="ms-my">Malay (ms-my)</option>
+                                                                            <option value="nb-no">Norwegian (Bokm�l) (nb-no)</option>
+                                                                            <option value="pl-pl">Polish (pl-pl)</option>
+                                                                            <option value="pt-br">Portuguese (pt-br)</option>
+                                                                            <option value="pt-pt">Portuguese (pt-pt)</option>
+                                                                            <option value="ro-ro">Romanian (ro-ro)</option>
+                                                                            <option value="ru-ru">Russian (ru-ru)</option>
+                                                                            <option value="sr-latn-rs">Serbian (Latin) (sr-latn-rs)</option>
+                                                                            <option value="sk-sk">Slovak (sk-sk)</option>
+                                                                            <option value="sl-si">Slovenian (sl-si)</option>
+                                                                            <option value="es-es">Spanish (es-es)</option>
+                                                                            <option value="sv-se">Swedish (sv-se)</option>
+                                                                            <option value="th-th">Thai (th-th)</option>
+                                                                            <option value="tr-tr">Turkish (tr-tr)</option>
+                                                                            <option value="uk-ua">Ukrainian (uk-ua)</option>
+                                                                        </select>
+                                                                    </td>
+                                                                    <td style="width: 150px;text-align: right; padding-right: 10px">
+                                                                        <button id="btAddLanguage" class="btn btn-primary">
+                                                                            Add
+                                                                        </button>
+                                                                    </td>
+                                                                    <td style="width:80px;text-align: right">
+                                                                        <button id="btRemoveLanguage" class="btn btn-primary" disabled="true">
+                                                                            Remove
+                                                                        </button>
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+
+                                                <div class="control-group">
+                                                    <label></label>
+                                                    <div class="controls">
+                                                        <button id="btAddProduct" class="btn btn-primary">
+                                                            Add Product
+                                                        </button>
+                                                        <button id="btRemoveProduct" class="btn btn-primary">
+                                                            Delete Product
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+
+                                        <!--/panel content-->
+                                    </div>
+
+                                    <div class="panel panel-default">
+
+                                        <div class="panel-heading">
+                                            <div class="panel-title">
+                                                <table style="width: 100%">
+                                                    <tr>
+                                                        <td style="width: 100px">
+                                                            <h4>Optional</h4>
+                                                        </td>
+                                                        <td style="text-align: right;">
+                                                            <a id="toggleExpand" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" class="glyphicon glyphicon-collapse-up" onclick="toggleExpandOptional(this);">
+
+
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                        </div>
+
+                                        <div id="collapseOne" class="panel-collapse collapse in" style="height:0;display:none;">
+                                            <div class="panel-body">
+                                                <form class="form form-vertical" data-toggle="validator" role="form">
+
+                                                    <div class="control-group" style="height: 75px;">
+
+                                                        <div class="controls form-group has-feedback">
+
+                                                            <table>
+                                                                <tr>
+                                                                    <td>
+                                                                        <label>Version</label>
+                                                                    </td>
+                                                                    <td style="width: 30px;text-align: center;cursor:pointer;">
+                                                                        <a data-toggle="modal" data-target="#versionModal" class="glyphicon glyphicon-info-sign infoButton"></a>
+                                                                    </td>
+                                                                    <td style="height: 40px">
+                                                                        <span class="help-block with-errors" style="font-size: 12px"></span>
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+
+                                                            <div class="input-group" style="width: 100%">
+                                                                <div id="the-basics" style="width: 100%;">
+                                                                    <input id="txtVersion" type="text" pattern="^\d{2}\.\d\.\d{4}\.\d{4}$" maxlength="14"
+                                                                           style="width:100%;" class="form-control typeahead" placeholder="15.0.4753.1002"
+                                                                           data-error="Invalid Version. ex: 15.0.4753.1002">
+                                                                </div>
+                                                                <span id="versionSignal" class="glyphicon form-control-feedback" aria-hidden="true" style="display:none;"></span>
+                                                            </div>
+
+                                                        </div>
+
+                                                    </div>
+
+                                                    <div class="control-group" style="height: 75px;width: 100%">
+                                                        <div class="controls form-group has-feedback">
+                                                            <table>
+                                                                <tr>
+                                                                    <td>
+                                                                        <label>SourcePath</label>
+                                                                    </td>
+                                                                    <td style="width: 30px;text-align: center;cursor:pointer;">
+                                                                        <a data-toggle="modal" data-target="#sourcepathModal" class="glyphicon glyphicon-info-sign infoButton"></a>
+                                                                    </td>
+                                                                    <td style="height: 40px">
+                                                                        <span class="help-block with-errors"></span>
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+
+                                                            <div class="input-group" style="width: 100%">
+                                                                <input id="txtSourcePath" type="text" pattern="\\\\.*\\.*|http://.*|https://|^\w:\\.*"
+                                                                       style="width:100%" class="form-control" placeholder="Network, local, or HTTP path"
+                                                                       data-error="This must be a network, local, or HTTP path">
+                                                                <span id="sourcepathSignal" class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="control-group" style="height: 85px;width: 100%">
+                                                        <div class="controls form-group has-feedback">
+                                                            <table>
+                                                                <tr>
+                                                                    <td>
+                                                                        <label>PIDKEY</label>
+                                                                    </td>
+                                                                    <td style="width: 30px;text-align: center;cursor:pointer;">
+                                                                        <a data-toggle="modal" data-target="#pidkeyModal" class="glyphicon glyphicon-info-sign infoButton"></a>
+                                                                    </td>
+                                                                    <td style="height: 40px">
+                                                                        <span class="help-block with-errors"></span>
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+
+                                                            <div class="input-group" style="width: 100%">
+                                                                <input id="txtPidKey" type="text" pattern="^.{5}-.{5}-.{5}-.{5}-.{5}$"
+                                                                       style="width:100%" class="form-control" placeholder="XXXXX-XXXXX-XXXXX-XXXXX-XXXXX"
+                                                                       data-error="This must be a 25-character volume license key">
+                                                                <span id="pidkeySignal" class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="control-group" style="height:75px">
+                                                        <table>
+                                                            <tr>
+                                                                <td>
+                                                                    <label>Exclude Office Programs</label>
+                                                                </td>
+                                                                <td style="width: 30px;text-align: center;cursor:pointer;">
+                                                                    <a data-toggle="modal" data-target="#excludeappModal" class="glyphicon glyphicon-info-sign infoButton"></a>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+
+                                                        <div class="controls" style="min-width: 400px; overflow: auto;">
+                                                            <div style="float: left; width: 100%">
+                                                                <table>
+                                                                    <tr>
+                                                                        <td style="width: 100%; padding-right: 10px">
+                                                                            <select id="cbExcludeApp" class="form-control">
+                                                                                <option value="Access">Access</option>
+                                                                                <option value="Excel">Excel</option>
+                                                                                <option value="Groove">Groove</option>
+                                                                                <option value="InfoPath">InfoPath</option>
+                                                                                <option value="Lync">Lync</option>
+                                                                                <option value="OneNote">OneNote</option>
+                                                                                <option value="Outlook">Outlook</option>
+                                                                                <option value="PowerPoint">PowerPoint</option>
+                                                                                <option value="Project">Project</option>
+                                                                                <option value="Publisher">Publisher</option>
+                                                                                <option value="SharePointDesigner">SharePointDesigner</option>
+                                                                                <option value="Visio">Visio</option>
+                                                                                <option value="Word">Word</option>
+                                                                            </select>
+                                                                        </td>
+                                                                        <td style="width: 150px;text-align: right; padding-right: 10px">
+                                                                            <button id="btAddExcludeApp" class="btn btn-primary">
+                                                                                Add
+                                                                            </button>
+                                                                        </td>
+                                                                        <td style="width:80px;text-align: right">
+                                                                            <button id="btRemoveExcludeApp" class="btn btn-primary" disabled="true">
+                                                                                Remove
+                                                                            </button>
+                                                                        </td>
+                                                                    </tr>
+                                                                </table>
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+
+                                                </form>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <div class="panel-title">
+                                                <table style="width: 100%">
+                                                    <tr>
+                                                        <td style="width: 100px">
+                                                            <h4>Properties</h4>
+                                                        </td>
+                                                        <td style="text-align: right;">
+                                                            <a id="togglePropertiesExpand" data-toggle="collapse" data-parent="#accordion" href="#collapseProperties" class="glyphicon glyphicon-collapse-up" onclick="toggleExpandProperties(this);">
+
+
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                        </div>
+
+                                        <div id="collapseProperties" class="panel-collapse collapse in" style="height:0;display:none;">
+                                            <div class="panel-body">
+                                                <form class="form form-vertical" data-toggle="validator" role="form">
+
+                                                    <table>
+                                                        <tr>
+                                                            <td>
+                                                                <label>AutoActivate</label>
+                                                            </td>
+                                                            <td style="width: 30px;text-align: center;cursor:pointer;">
+                                                                <a data-toggle="modal" data-target="#AUTOACTIVATEModal" class="glyphicon glyphicon-info-sign infoButton"></a>
+                                                            </td>
+                                                            <td style="height: 40px">
+                                                                <span class="help-block with-errors" style="font-size: 12px"></span>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+
+                                                    <div>
+                                                        <div class="btn-group" style="width:300px">
+
+                                                            <button id="btAutoActivateYes" type="button" class="btn btn-default" style="min-width: 120px" onclick="toggleAutoActivateEnabled(this.id);">
+                                                                Yes
+                                                            </button>
+                                                            <button id="btAutoActivateNo" type="button" class="btn btn-default" style="min-width: 120px" onclick="toggleAutoActivateEnabled(this.id);">
+                                                                No
+                                                            </button>
+                                                        </div>
+                                                    </div>
+
+                                                    <br />
+
+                                                    <table>
+                                                        <tr>
+                                                            <td>
+                                                                <label>ForceAppShutdown</label>
+                                                            </td>
+                                                            <td style="width: 30px;text-align: center;cursor:pointer;">
+                                                                <a data-toggle="modal" data-target="#FORCEAPPSHUTDOWNModal" class="glyphicon glyphicon-info-sign infoButton"></a>
+                                                            </td>
+                                                            <td style="height: 40px">
+                                                                <span class="help-block with-errors" style="font-size: 12px"></span>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+
+                                                    <div>
+                                                        <div class="btn-group" style="width:300px">
+
+                                                            <button id="btForceAppShutdownTrue" type="button" class="btn btn-default" style="min-width: 120px" onclick="toggleForceAppShutdownEnabled(this.id);">
+                                                                True
+                                                            </button>
+                                                            <button id="btForceAppShutdownFalse" type="button" class="btn btn-default" style="min-width: 120px" onclick="toggleForceAppShutdownEnabled(this.id);">
+                                                                False
+                                                            </button>
+                                                        </div>
+                                                    </div>
+
+                                                    <br />
+
+                                                    <table>
+                                                        <tr>
+                                                            <td>
+                                                                <label>SharedComputerLicensing</label>
+                                                            </td>
+                                                            <td style="width: 30px;text-align: center;cursor:pointer;">
+                                                                <a data-toggle="modal" data-target="#SharedComputerLicensingModal" class="glyphicon glyphicon-info-sign infoButton"></a>
+                                                            </td>
+                                                            <td style="height: 40px">
+                                                                <span class="help-block with-errors" style="font-size: 12px"></span>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+
+                                                    <div>
+                                                        <div class="btn-group" style="width:300px">
+
+                                                            <button id="btSharedComputerLicensingYes" type="button" class="btn btn-default" style="min-width: 120px" onclick="toggleSharedComputerLicensing(this.id);">
+                                                                True
+                                                            </button>
+                                                            <button id="btSharedComputerLicensingNo" type="button" class="btn btn-default" style="min-width: 120px" onclick="toggleSharedComputerLicensing(this.id);">
+                                                                False
+                                                            </button>
+                                                        </div>
+                                                    </div>
+
+                                                    <br />
+
+                                                    <div class="control-group" style="height: 85px;width: 100%">
+                                                        <div class="controls form-group has-feedback">
+                                                            <table>
+                                                                <tr>
+                                                                    <td>
+                                                                        <label>PACKAGEGUID</label>
+                                                                    </td>
+                                                                    <td style="width: 30px;text-align: center;cursor:pointer;">
+                                                                        <a data-toggle="modal" data-target="#PACKAGEGUIDModal" class="glyphicon glyphicon-info-sign infoButton"></a>
+                                                                    </td>
+                                                                    <td style="height: 40px">
+                                                                        <span class="help-block with-errors"></span>
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+
+
+                                                            <div class="input-group" style="width: 100%">
+                                                                <input id="txtPACKAGEGUID" type="text" pattern="^.{8}-.{4}-.{4}-.{4}-.{12}$"
+                                                                       style="width:100%" class="form-control" placeholder="XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
+                                                                       data-error="This must be a valid APP-V Package Guid" maxlength="36">
+                                                                <span id="PACKAGEGUIDSignal" class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="control-group">
+                                                        <label></label>
+                                                        <div class="controls">
+                                                            <button id="btSaveProperties" class="btn btn-primary">
+                                                                Save
+                                                            </button>
+                                                            <button id="btRemoveProperties" class="btn btn-primary">
+                                                                Remove
+                                                            </button>
+                                                        </div>
+                                                    </div>
+
+                                                </form>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                                <!-- Remove Product-->
+                                <div class="tab-pane well" id="removeproduct">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <div class="panel-title">
+                                                <h4>Add Remove Product</h4>
+                                            </div>
+                                        </div>
+
+                                        <div class="panel-body">
+                                            <form class="form form-vertical">
+
+                                                <table style="width: 100%">
+                                                    <tr>
+                                                        <td>
+                                                            <div class="btn-group" style="width:300px;min-width: 300px">
+                                                                <button id="removeAllProducts" type="button" class="btn btn-default btn-primary" style="min-width: 120px" onclick="toggleRemove(this.id);">
+                                                                    Remove All
+                                                                </button>
+                                                                <button id="removeSelectProducts" type="button" class="btn btn-default" style="min-width: 120px" onclick="toggleRemove(this.id);">
+                                                                    Remove Select
+                                                                </button>
+                                                            </div>
+                                                        </td>
+                                                        <td style="width: 30px;text-align: center;cursor:pointer;">
+                                                            <a data-toggle="modal" data-target="#removeproductsModal" class="glyphicon glyphicon-info-sign infoButton"></a>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+
+
+                                                <br />
+                                                <br />
+
+                                                <div class="control-group" style="padding-top: 5px;">
+                                                    <label>Product</label>
+                                                    <div class="controls">
+                                                        <select id="cbRemoveProduct" class="form-control" disabled="true">
+                                                            <option value="O365ProPlusRetail">Office 365 ProPlus Retail</option>
+                                                            <option value="O365BusinessRetail">Office 365 Business Retail</option>
+                                                            <option value="VisioProRetail">Visio Professional Retail</option>
+                                                            <option value="ProjectProRetail">Project Professional Retail</option>
+                                                            <option value="SPDRetail">SharePoint Designer</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <div class="control-group" style="padding-top: 5px;">
+                                                    <label>Language</label>
+                                                    <div class="controls">
+
+                                                        <table>
+                                                            <tr>
+                                                                <td style="width: 100%; padding-right: 10px">
+                                                                    <select id="cbRemoveLanguage" class="form-control" disabled="true">
+                                                                        <option value="en-us">English (en-us)</option>
+                                                                        <option value="ar-sa">Arabic (ar-sa)</option>
+                                                                        <option value="bg-bg">Bulgarian (bg-bg)</option>
+                                                                        <option value="zh-cn">Chinese (Simplified) (zh-cn)</option>
+                                                                        <option value="zh-tw">Chinese (zh-tw)</option>
+                                                                        <option value="hr-hr">Croatian (hr-hr)</option>
+                                                                        <option value="cs-cz">Czech (cs-cz)</option>
+                                                                        <option value="da-dk">Danish (da-dk)</option>
+                                                                        <option value="nl-nl">Dutch (nl-nl)</option>
+                                                                        <option value="et-ee">Estonian (et-ee)</option>
+                                                                        <option value="fi-fi">Finnish (fi-fi)</option>
+                                                                        <option value="fr-fr">French (fr-fr)</option>
+                                                                        <option value="de-de">German (de-de)</option>
+                                                                        <option value="el-gr">Greek (el-gr)</option>
+                                                                        <option value="he-il">Hebrew (he-il)</option>
+                                                                        <option value="hi-in">Hindi (hi-in)</option>
+                                                                        <option value="hu-hu">Hungarian (hu-hu)</option>
+                                                                        <option value="id-id">Indonesian (id-id)</option>
+                                                                        <option value="it-it">Italian (it-it)</option>
+                                                                        <option value="ja-jp">Japanese (ja-jp)</option>
+                                                                        <option value="kk-kh">Kazakh (kk-kh)</option>
+                                                                        <option value="ko-kr">Korean (ko-kr)</option>
+                                                                        <option value="lv-lv">Latvian (lv-lv)</option>
+                                                                        <option value="lt-lt">Lithuanian (lt-lt)</option>
+                                                                        <option value="ms-my">Malay (ms-my)</option>
+                                                                        <option value="nb-no">Norwegian (Bokm�l) (nb-no)</option>
+                                                                        <option value="pl-pl">Polish (pl-pl)</option>
+                                                                        <option value="pt-br">Portuguese (pt-br)</option>
+                                                                        <option value="pt-pt">Portuguese (pt-pt)</option>
+                                                                        <option value="ro-ro">Romanian (ro-ro)</option>
+                                                                        <option value="ru-ru">Russian (ru-ru)</option>
+                                                                        <option value="sr-latn-rs">Serbian (Latin) (sr-latn-rs)</option>
+                                                                        <option value="sk-sk">Slovak (sk-sk)</option>
+                                                                        <option value="sl-si">Slovenian (sl-si)</option>
+                                                                        <option value="es-es">Spanish (es-es)</option>
+                                                                        <option value="sv-se">Swedish (sv-se)</option>
+                                                                        <option value="th-th">Thai (th-th)</option>
+                                                                        <option value="tr-tr">Turkish (tr-tr)</option>
+                                                                        <option value="uk-ua">Ukrainian (uk-ua)</option>
+                                                                    </select>
+                                                                </td>
+                                                                <td style="width: 150px;text-align: right; padding-right: 10px">
+                                                                    <button id="btAddRemoveLanguage" class="btn btn-primary" disabled="true">
+                                                                        Add
+                                                                    </button>
+                                                                </td>
+                                                                <td style="width:80px;text-align: right">
+                                                                    <button id="btRemoveRemoveLanguage" class="btn btn-primary" disabled="true">
+                                                                        Remove
+                                                                    </button>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+
+                                                    </div>
+                                                </div>
+
+                                                <br />
+
+                                                <div class="control-group" style="padding-top: 5px;">
+                                                    <label></label>
+                                                    <div class="controls">
+                                                        <button id="btAddRemoveProduct" class="btn btn-primary">
+                                                            Add Remove Product
+                                                        </button>
+                                                        <button id="btDeleteRemoveProduct" class="btn btn-primary">
+                                                            Delete Remove Product
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+
+
+                                            </form>
+
+                                        </div>
+
+                                        <!--/panel content-->
+                                    </div>
+                                </div>
+
+                                <!-- Updates-->
+                                <div class="tab-pane well" id="updates">
+
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <div class="panel-title">
+                                                <h4>Updates</h4>
+                                            </div>
+                                        </div>
+
+                                        <div class="panel-body">
+                                            <form class="form form-vertical" data-toggle="validator" role="form">
+
+                                                <div class="btn-group" style="width:300px">
+                                                    <button id="btupdatesEnabled" type="button" class="btn btn-default" style="min-width: 120px" onclick="toggleUpdatesEnabled(this.id);">
+                                                        Enabled
+                                                    </button>
+                                                    <button id="btupdatesDisabled" type="button" class="btn btn-default" style="min-width: 120px" onclick="toggleUpdatesEnabled(this.id);">
+                                                        Disabled
+                                                    </button>
+                                                </div>
+
+                                                <br />
+                                                <br />
+
+
+                                                <div class="control-group">
+                                                    <div class="controls form-group has-feedback">
+                                                        <table>
+                                                            <tr>
+                                                                <td>
+                                                                    <label>UpdatePath</label>
+                                                                </td>
+                                                                <td style="width: 30px;text-align: center;cursor:pointer;">
+                                                                    <a data-toggle="modal" data-target="#updatepathModal" class="glyphicon glyphicon-info-sign infoButton"></a>
+                                                                </td>
+                                                                <td style="height: 40px">
+                                                                    <span class="help-block with-errors"></span>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+
+                                                        <div class="input-group" style="width: 100%">
+                                                            <input id="txtUpdatePath" type="text" pattern="\\\\.*\\.*|http://.*|https://|^\w:\\.*"
+                                                                   style="width:100%" class="form-control" placeholder="Network, local, or HTTP path"
+                                                                   data-error="This must be a network, local, or HTTP path">
+                                                            <span id="updatepathSignal" class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="control-group" style="padding-top: 5px;">
+                                                    <div class="controls form-group has-feedback">
+
+                                                        <table>
+                                                            <tr>
+                                                                <td>
+                                                                    <label>TargetVersion</label>
+                                                                </td>
+                                                                <td style="width: 30px;text-align: center;cursor:pointer;">
+                                                                    <a data-toggle="modal" data-target="#targetversionModal" class="glyphicon glyphicon-info-sign infoButton"></a>
+                                                                </td>
+                                                                <td style="height: 40px">
+                                                                    <span class="help-block with-errors" style="font-size: 12px"></span>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+
+                                                        <div class="input-group" style="width: 100%">
+                                                            <div id="the-basics" style="width: 100%;">
+                                                                <input id="txtTargetVersion" type="text" pattern="^\d{2}\.\d\.\d{4}\.\d{4}$" maxlength="14"
+                                                                       style="width:100%;" class="form-control typeahead" placeholder="15.0.4753.1002"
+                                                                       data-error="Invalid Version. ex: 15.0.4753.1002">
+                                                            </div>
+                                                            <span id="targetversionSignal" class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+
+                                                <div class="control-group" style="padding-top: 5px;">
+                                                    <table>
+                                                        <tr>
+                                                            <td>
+                                                                <label>Deadline</label>
+                                                            </td>
+                                                            <td style="width: 30px;text-align: center;cursor:pointer;">
+                                                                <a data-toggle="modal" data-target="#deadlineModal" class="glyphicon glyphicon-info-sign infoButton"></a>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+
+                                                    <div class="controls">
+                                                        <div class='input-group date' id='txtDeadline'>
+                                                            <input type='text' class="form-control" id="inputDeadline" />
+                                                            <span class="input-group-addon">
+                                                                <span class="glyphicon glyphicon-calendar"></span>
+                                                            </span>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+
+                                                <br />
+
+                                                <div class="control-group">
+                                                    <label></label>
+                                                    <div class="controls">
+                                                        <button id="btSaveUpdates" class="btn btn-primary">
+                                                            Save
+                                                        </button>
+                                                        <button id="btRemovesUpdates" class="btn btn-primary">
+                                                            Remove
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <!-- Display-->
+                                <div class="tab-pane well" id="display">
+
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <div class="panel-title">
+                                                <h4>Display</h4>
+                                            </div>
+                                        </div>
+
+                                        <div class="panel-body">
+                                            <form class="form form-vertical">
+
+                                                <table>
+                                                    <tr>
+                                                        <td>
+                                                            <label>Level</label>
+                                                        </td>
+                                                        <td style="width: 30px;text-align: center;cursor:pointer;">
+                                                            <a data-toggle="modal" data-target="#levelModal" class="glyphicon glyphicon-info-sign infoButton"></a>
+                                                        </td>
+                                                        <td style="height: 40px">
+                                                            <span class="help-block with-errors" style="font-size: 12px"></span>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+
+                                                <div>
+                                                    <div class="btn-group" style="width:300px">
+
+                                                        <button id="btLevelNone" type="button" class="btn btn-default" style="min-width: 120px" onclick="toggleDisplayLevelEnabled(this.id);">
+                                                            None
+                                                        </button>
+                                                        <button id="btLevelFull" type="button" class="btn btn-default" style="min-width: 120px" onclick="toggleDisplayLevelEnabled(this.id);">
+                                                            Full
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+                                                <br />
+
+                                                <table>
+                                                    <tr>
+                                                        <td>
+                                                            <label>AcceptEULA</label>
+                                                        </td>
+                                                        <td style="width: 30px;text-align: center;cursor:pointer;">
+                                                            <a data-toggle="modal" data-target="#accepteulaModal" class="glyphicon glyphicon-info-sign infoButton"></a>
+                                                        </td>
+                                                        <td style="height: 40px">
+                                                            <span class="help-block with-errors" style="font-size: 12px"></span>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+
+                                                <div>
+                                                    <div class="btn-group" style="width:300px">
+
+                                                        <button id="btAcceptEULAEnabled" type="button" class="btn btn-default" style="min-width: 120px" onclick="toggleDisplayEULAEnabled(this.id);">
+                                                            True
+                                                        </button>
+                                                        <button id="btAcceptEULADisabled" type="button" class="btn btn-default" style="min-width: 120px" onclick="toggleDisplayEULAEnabled(this.id);">
+                                                            False
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+
+                                                <br />
+
+                                                <div class="control-group">
+                                                    <label></label>
+                                                    <div class="controls">
+                                                        <button id="btSaveDisplay" class="btn btn-primary">
+                                                            Save
+                                                        </button>
+                                                        <button id="btRemoveDisplay" class="btn btn-primary">
+                                                            Remove
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                                <!-- Logging-->
+                                <div class="tab-pane well" id="logging">
+
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <div class="panel-title">
+                                                <h4>Logging</h4>
+                                            </div>
+                                        </div>
+
+                                        <div class="panel-body">
+                                            <form class="form form-vertical" data-toggle="validator" role="form">
+
+                                                <table>
+                                                    <tr>
+                                                        <td>
+                                                            <label>Level</label>
+                                                        </td>
+                                                        <td style="width: 30px;text-align: center;cursor:pointer;">
+                                                            <a data-toggle="modal" data-target="#loglevelModal" class="glyphicon glyphicon-info-sign infoButton"></a>
+                                                        </td>
+                                                        <td style="height: 40px">
+                                                            <span class="help-block with-errors" style="font-size: 12px"></span>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+
+
+                                                <div>
+                                                    <div class="btn-group" style="width:300px">
+
+                                                        <button id="btLoggingLevelOff" type="button" class="btn btn-default" style="min-width: 120px" onclick="toggleLoggingEnabled(this.id);">
+                                                            Off
+                                                        </button>
+                                                        <button id="btLoggingLevelStandard" type="button" class="btn btn-default" style="min-width: 120px" onclick="toggleLoggingEnabled(this.id);">
+                                                            Standard
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+                                                <br />
+
+                                                <div class="control-group">
+                                                    <div class="controls form-group has-feedback">
+                                                        <table>
+                                                            <tr>
+                                                                <td>
+                                                                    <label>Path</label>
+                                                                </td>
+                                                                <td style="width: 30px;text-align: center;cursor:pointer;">
+                                                                    <a data-toggle="modal" data-target="#logpathModal" class="glyphicon glyphicon-info-sign infoButton"></a>
+                                                                </td>
+                                                                <td style="height: 40px">
+                                                                    <span class="help-block with-errors"></span>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+
+
+                                                        <div class="input-group" style="width: 100%">
+                                                            <input id="txtLoggingUpdatePath" type="text" pattern="^\w:\\.*"
+                                                                   style="width:100%" class="form-control" placeholder="Local Path"
+                                                                   data-error="Local Path">
+                                                            <span id="logupdatepathSignal" class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+
+
+                                                <br />
+
+                                                <div class="control-group">
+                                                    <label></label>
+                                                    <div class="controls">
+                                                        <button id="btSaveLogging" class="btn btn-primary">
+                                                            Save
+                                                        </button>
+                                                        <button id="btRemoveLogging" class="btn btn-primary">
+                                                            Remove
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+
+                                        <!--/panel content-->
+                                    </div>
+
+                                </div>
+
+                                <!-- Templates-->
+                                <div class="tab-pane well" id="templates">
+
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading">
+                                            <div class="panel-title">
+                                                <h4>Templates</h4>
+                                            </div>
+                                        </div>
+
+                                        <div class="panel-body">
+                                            <form class="form form-vertical" data-toggle="validator" role="form">
+                                                <ul id="templateList" class="list-group">
+                                                    <li id="proPlusRetail" href="./templates/0365ProPlusRetail.xml" class="list-group-item">Office 365 ProPlus Retail</li>
+                                                    <li id="proPlusBusiness" href="./templates/0365ProPlusBusiness.xml" class="list-group-item">Office 365 ProPlus Business</li>
+                                                    <li id="proPlusRetailVisio" href="./templates/O365ProPlusRetailwVisio.xml" class="list-group-item">Office 365 ProPlus Retail with Visio</li>
+                                                </ul>
+
+                                            </form>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div id="xmlEditorDiv" class="col-md-7" style="min-width: 550px;padding-right: 40px;position: relative;">
+                        <div class="panel panel-default" id="xmlViewerPane">
+                            <div class="panel-heading">
+                                <table style="width: 100%">
+                                    <tr>
+                                        <td style="width: 200px;text-wrap:none;">
+                                            <h4>XML Viewer</h4>
+                                        </td>
+                                        
+                                        <td style="text-align: right">
+                                            <form id="text-options">
+                                                <input type="button" class="btn btn-default btn-primary" value="Email" onclick="sendMail()">
+                                            </form>
+                                        </td>
+
+                                        <td style="text-align: right;width: 70px;">
+                                            <form id="text-options">
+                                                <input type="button" class="btn btn-default btn-primary" value="Reset" onclick="clearXml();">
+                                            </form>
+                                        </td>
+
+                                        <td style="text-align: right;width: 78px;">
+                                            <form id="text-options">
+                                                <input type="button" class="btn btn-default btn-primary" value="Upload" onclick="clickUpload();">
+                                            </form>
+                                        </td>
+
+                                        <td style="width: 95px;text-align: right">
+                                            <form id="text-options">
+                                                <input type="button" class="btn btn-default btn-primary" value="Download" onclick="download()">
+                                            </form>
+                                        </td>
+
+                                        <td style="width:200px;display: none;width: 100px;">
+                                            <form id="fileUploadForm">
+                                                <input type="file" id="fileInput" size="10">
+                                            </form>
+                                        </td>
+
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="panel-body">
+                                <textarea id="xmlText" style="width:100%; min-height: 455px;font-size:20px" rows="3" placeholder="" readonly></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+
+                        <!-- About Modal -->
+                        <div class="modal fade" id="myAboutModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                        <h4 class="modal-title" id="myModalLabel">Help</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h4>Office Click-To-Run Configuration XML Editor</h4>
+                                        <p>Online Editor for the Office ProPlus Click-To-Run Configurtion XML file</p>
+                                        <hr>
+
+                                        This page provides a graphical method to generate and edit the Office Click-to-Run configuration.xml file
+
+                                        <br />
+                                        <br />
+
+                                        <a href="https://technet.microsoft.com/en-us/library/JJ219426.aspx">Reference for Click-to-Run configuration.xml file</a>
+
+                                        <br />
+                                        <br />
+
+                                        The Click-to-Run for Office 365 Configuration.xml file is used to specify Click-to-Run installation and update options. The
+                                        <a href="https://technet.microsoft.com/en-us/library/jj219422.aspx" id="A_2">Office Deployment Tool</a> is a downloadable tool
+                                        that includes a sample Configuration.xml file. Administrators can modify the Configuration.xml file to configure installation options
+                                        for Click-to-Run for Office 365 products.
+
+                                        <br />
+                                        <br />
+
+                                        The Click-to-Run Configuration.xml file is a necessary component of the Office Deployment Tool. Click-to-Run customizations are performed
+                                        primarily by starting the Office Deployment Tool and providing a custom Configuration.xml file. The Office Deployment Tool performs the tasks
+                                        that are specified by using the optional properties in the configuration file. For the Office 2013 release of the product, administrators can
+                                        download the Office Deployment Tool from the <a href="http://go.microsoft.com/fwlink/p/?LinkId=282642" id="A_2">Microsoft Download Center</a>.
+
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Product Modal -->
+                        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                        <h4 class="modal-title" id="myModalLabel">Help</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h4>Office Product</h4>
+                                        <p>Specifies the Click-to-Run product to install.</p>
+                                        <hr>
+                                        <p>Required. <strong>ID</strong> must be set to a valid ProductRelease ID.</p> <p>The supported ProductRelease IDs for Click-to-Run for Office 365 products are as follows:</p> <ul><li> <p>O365ProPlusRetail</p> </li> <li> <p>O365BusinessRetail</p> </li>  <li> <p>VisioProRetail</p> </li><li> <p>ProjectProRetail</p> </li><li> <p>SPDRetail (SharePoint Designer)</p> </li></ul> <p>If <strong>ID</strong> is not set, the operation fails and indicates that the input is not valid.</p> <p>The order of <strong>Product</strong> elements determines the order in which the products are installed. The first <strong>Product ID</strong> is used to determine in which context the Microsoft Office First Run Experience application starts. Microsoft Office First Run Experience refers to the first time each Office application starts.</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bitness Modal -->
+                        <div class="modal fade" id="bitnessModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                        <h4 class="modal-title" id="myModalLabel">Help</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h4>Office Client Edition</h4>
+                                        <p>Specifies the edition of Click-to-Run for Office 365 product to use: 32- or 64-bit.</p>
+                                        <hr>
+                                        <p>Required. Specifies the edition of Click-to-Run for Office 365 product to use: 32- or 64-bit. The action fails if <strong>OfficeClientEdition</strong> is not set to a valid value.</p> <p>A <strong>configure</strong> mode action may fail if <strong>OfficeClientEdition</strong> is set incorrectly. For example, if you attempt to install a 64-bit edition of a Click-to-Run for Office 365 product on a computer that is running a 32-bit Windows operating system, or if you try to install a 32-bit Click-to-Run for Office 365 product on a computer that has a 64-bit edition of Office installed.</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Language Modal -->
+                        <div class="modal fade" id="languageModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                        <h4 class="modal-title" id="myModalLabel">Help</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h4>Product Language</h4>
+                                        <p>Determine which product languages to install.</p>
+                                        <hr>
+                                        <p>Required. If the <strong>Language ID</strong> value is not set, the installation operation fails and indicates that the input is not valid.</p> <p>The <strong>ID</strong> value can be set to a valid Office culture language (such as en-us for English US or ja-jp for Japanese). The <em>ll-cc</em> value is the language identifier. </p>
+
+                                        <div class="alert">
+                                            <table>
+                                                <tr><th align="left"><img id="note" alt="Note" src="https://i-technet.sec.s-msft.com/areas/global/content/clear.gif" title="Note" xmlns="" class="cl_IC101471" /><strong>Note: </strong></th></tr>
+                                                <tr>
+                                                    <td>
+                                                        Language elements determine which product languages to install. Administrators must specify the languages they want to install. The first language determines the Shell UI culture. The Shell UI is the language of shortcuts, right-click context menus, and tooltips.<br />
+                                                        If you decide that you want to change the Shell UI language after an initial installation, you have to uninstall Click-to-Run and reinstall. Add the language that you want to set for the Shell UI as the first language in the custom Configuration.xml file.
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Version Modal -->
+                        <div class="modal fade" id="versionModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                        <h4 class="modal-title" id="myModalLabel">Help</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h4>Product Version</h4>
+                                        <p>The Version of the Click-to-Run product to installation</p>
+                                        <hr>
+                                        <p>Optional. If a <strong>Version</strong> value is not set, the Click-to-Run product installation streams the latest available version from the source. The default is to use the most recently advertised build (as defined in v32.CAB or v64.CAB at the Click-to-Run Office installation source). </p> <p> <strong>Version</strong> can be set to an Office 2013 build number by using this format: X.X.X.X</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SourcePath Modal -->
+                        <div class="modal fade" id="sourcepathModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                        <h4 class="modal-title" id="myModalLabel">Help</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h4>Source Path</h4>
+                                        <p>Indicates the location to save the Click-to-Run installation source when you run the Office Deployment Tool in download mode.</p>
+                                        <hr>
+                                        <p>Optional. </p> <p>The <strong>SourcePath</strong> value can be set to a network, local, or HTTP path that contains a Click-to-Run source. Environment variables can be used for network or local paths.</p> <p></p> <p> <strong>SourcePath</strong> indicates the location to save the Click-to-Run installation source when you run the Office Deployment Tool in <strong>download</strong> mode. </p> <p></p> <p> <strong>SourcePath</strong> indicates the installation source path from which to install Office when you run the Office Deployment Tool in <strong>configure</strong> mode. If you don’t specify <strong>SourcePath</strong> in <strong>configure</strong> mode, Setup will look in the current folder for the Office source files. If the Office source files aren’t found in the current folder, Setup will look on Office 365 for them.</p> <p></p> <p> <strong>SourcePath</strong> specifies the path of the Click-to-Run Office source from which the App-V package will be made when you run the Office Deployment Tool in <strong>packager</strong> mode.</p> <p>If you do not specify <strong>SourcePath</strong>, Setup will attempt to create an <strong>\Office\Data\...</strong> folder structure in the working directory from which you are running setup.exe.</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- PIDKEY Modal -->
+                        <div class="modal fade" id="pidkeyModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                        <h4 class="modal-title" id="myModalLabel">Help</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h4>PIDKEY</h4>
+                                        <p>The 25-character volume license key.</p>
+                                        <hr>
+                                        <p>Optional. </p>
+
+                                        <p>When the <strong>PIDKEY</strong> value is set, users are not required to enter a product key when they install Office.</p>
+
+                                        <p>If this element is not defined, the default settings are used. If an invalid value is specified, Setup ends the installation. </p> <p>If the <strong>Level</strong> attribute is set to "basic" or “none” and you supply a product key by using the <a href="#ElementPIDKEY">PIDKEY</a>, Setup assumes that you also accept the license agreement on behalf of the user.</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ExcludeApp Modal -->
+                        <div class="modal fade" id="excludeappModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                        <h4 class="modal-title" id="myModalLabel">Help</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h4>ExcludeApp</h4>
+                                        <p>Specifies which Office programs not to install.</p>
+                                        <hr>
+                                        <p>Optional. </p>
+                                        <p>The following is a list of the supported values for <strong>ID</strong>:</p> <ul><li> <p>Access</p> </li><li> <p>Excel</p> </li><li> <p>Groove</p> </li><li> <p>InfoPath</p> </li><li> <p>Lync</p> </li><li> <p>OneNote</p> </li><li> <p>Outlook</p> </li><li> <p>PowerPoint</p> </li><li> <p>Project</p> </li><li> <p>Publisher</p> </li><li> <p>SharePointDesigner</p> </li><li> <p>Visio</p> </li><li> <p>Word</p> </li></ul> <p>The value “Groove” is used to exclude OneDrive for Business.</p> <p>The value "Lync" also applies to Skype for Business.</p> </td> </tr> </table> <p>The following example shows how to install the 32-bit edition of Office 365 ProPlus in English, without Access or InfoPath.</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- RemoveProducts Modal -->
+                        <div class="modal fade" id="removeproductsModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                        <h4 class="modal-title" id="myModalLabel">Help</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h4>Remove Products</h4>
+                                        <p>Removes products and languages.</p>
+                                        <hr>
+
+
+                                        <div id="DIV_1">
+                                            <table id="TABLE_2">
+                                                <tbody id="TBODY_3">
+                                                    <tr id="TR_4">
+                                                        <th id="TH_5">
+                                                            <img id="IMG_6" alt="Important" src="https://i-technet.sec.s-msft.com/areas/global/content/clear.gif" /><strong id="STRONG_7">Important:</strong>
+                                                        </th>
+                                                    </tr>
+                                                    <tr id="TR_8">
+                                                        <td id="TD_9">
+                                                            To remove an installed language for a product, you must specify the ID for the product, and specify the ID for the language that you want to remove. To remove a product completely, you must specify the ID for the product, and specify the IDs of all the languages that are installed. But, if the product and languages are also specified in the <a href="#BKMK_AddElement" id="A_10">Add element</a> of the configuration.xml file, then the product or languages won’t be removed.<br id="BR_11" /> If <strong id="STRONG_12">All</strong> is set to <strong id="STRONG_13">TRUE</strong>, then all products and languages are removed, regardless of what is specified in the <a href="#BKMK_AddElement" id="A_14">Add element</a>.
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+
+
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- UpdatePath Modal -->
+                        <div class="modal fade" id="updatepathModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                        <h4 class="modal-title" id="myModalLabel">Help</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h4>Update Path</h4>
+                                        <p>Specifies a network, local, or HTTP path of a Click-to-Run source.</p>
+                                        <hr>
+                                        Optional.
+                                        <br />
+                                        <br />
+                                        If <strong id="STRONG_3">UpdatePath</strong> is not set, Click-to-Run installations obtain updates from the Microsoft Click-to-Run source (Content Delivery Network or CDN). This is by default. If <strong id="STRONG_5">UpdatePath</strong> is set to empty (""), updates are obtained from the Microsoft Click-to-Run source, CDN. <strong id="STRONG_7">UpdatePath</strong> can specify a network, local, or HTTP path of a Click-to-Run source. Environment variables can be used for network or local paths. If you use Group Policy and the <a href="http://go.microsoft.com/fwlink/p/?LinkID=257051" id="A_10">Office 2013 Administrative Template files (ADMX/ADML)</a>, you can set <strong id="STRONG_11">UpdatePath</strong> by using the <strong id="STRONG_12">Update Path</strong> policy setting. You can find this policy setting under Computer Configuration\Administrative Templates\Microsoft Office 2013 (Machine)\Updates.
+
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- TargetVersion Modal -->
+                        <div class="modal fade" id="targetversionModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                        <h4 class="modal-title" id="myModalLabel">Help</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h4>Target Version</h4>
+                                        <p>The Click-to-Run product version to install.</p>
+                                        <hr>
+                                        Optional.
+                                        <br />
+                                        <br />
+
+                                        If <strong id="STRONG_3">TargetVersion</strong> is not set, Click-to-Run updates to the most recent version from the Microsoft Click-to-Run source. If <strong id="STRONG_5">TargetVersion</strong> is set to empty (""), Click-to-Run updates to the latest version from the Microsoft Click-to-Run source. <strong id="STRONG_7">TargetVersion</strong> can be set to an Office build number, for example, 15.1.2.3. When the version is set, Office attempts to transition to the specified version in the next update cycle. If you use Group Policy and the <a href="http://go.microsoft.com/fwlink/p/?LinkID=257051" id="A_9">Office 2013 Administrative Template files (ADMX/ADML)</a>, you can set <strong id="STRONG_10">TargetVersion</strong> by using the <strong id="STRONG_11">Target Version</strong> policy setting. You can find this policy setting under Computer Configuration\Administrative Templates\Microsoft Office 2013 (Machine)\Updates.
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Deadline Modal -->
+                        <div class="modal fade" id="deadlineModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                        <h4 class="modal-title" id="myModalLabel">Help</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h4>Deadline</h4>
+                                        <p>Sets a deadline by when updates to Office must be applied. The deadline is specified in Coordinated Universal Time (UTC).</p>
+                                        <hr>
+                                        Optional.
+                                        <br />
+                                        <br />
+
+                                        Sets a deadline by when updates to Office must be applied. The deadline is specified in Coordinated Universal Time (UTC). You can use <strong id="STRONG_4">Deadline</strong> with <strong id="STRONG_5">Target Version</strong> to make sure that Office is updated to a particular version by a particular date. We recommend that you set the deadline at least a week in the future to allow users time to install the updates. Prior to the deadline, users receive multiple reminders to install the updates. If Office isn’t updated by the deadline, users see a notification that the updates will be applied in 15 minutes. This gives users the opportunity to save the Office documents that they are working on and to close any Office programs that are open. If users don’t close the Office programs, the programs are closed automatically when the 15 minutes are up, which might result in data loss. After the Office programs are closed, the updates are applied automatically. The deadline only applies to one set of updates. If you want to use a deadline to make sure that Office is always up-to-date, you must change the deadline every time that a new update for Office is available. To use this attribute, Office must be running at least Service Pack 1 (version 15.0.4569.1507) and you must use at least version 15.0.4595.1000 of the Office Deployment Tool. If you use Group Policy and the <a href="http://go.microsoft.com/fwlink/p/?LinkID=257051" id="A_10">Office 2013 Administrative Template files (ADMX/ADML)</a>, you can set <strong id="STRONG_11">Deadline</strong> by using the <strong id="STRONG_12">Update Deadline</strong> policy setting. You can find this policy setting under Computer Configuration\Administrative Templates\Microsoft Office 2013 (Machine)\Updates.
+
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Level Modal -->
+                        <div class="modal fade" id="levelModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                        <h4 class="modal-title" id="myModalLabelLevel">Help</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h4>Level</h4>
+                                        <p>Determines the user interface that the user sees when the operation is performed.</p>
+                                        <hr>
+                                        Optional.
+                                        <br />
+                                        <br />
+
+                                        If <strong id="STRONG_4">Level</strong> is set to <strong id="STRONG_5">None</strong>, the user sees no UI. No progress UI, completion screen, error dialog boxes, or first run automatic start UI are displayed. If <strong id="STRONG_7">Level</strong> is set to <strong id="STRONG_8">Full</strong>, the user sees the normal Click-to-Run user interface: Automatic start, application splash screen, and error dialog boxes.
+
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Display Level Modal -->
+                        <div class="modal fade" id="accepteulaModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                        <h4 class="modal-title" id="myModalLabeleula">Help</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h4>Accept Eula</h4>
+                                        <p>We recommend that administrators set AcceptEULA to TRUE.</p>
+                                        <hr>
+                                        Optional.
+                                        <br />
+                                        <br />
+
+                                        If this attribute is set to <strong id="STRONG_6">TRUE</strong>, the user does not see a Microsoft Software License Terms dialog box. If this attribute is set to <strong id="STRONG_8">FALSE</strong> or is not set, the user may see a Microsoft Software License Terms dialog box. This attribute only applies if you install with the user's account. If you use System Center Configuration Manager or some other software distribution tool which uses the SYSTEM account to install, then the setting for this attribute is not applied.
+
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Log Level Modal -->
+                        <div class="modal fade" id="loglevelModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                        <h4 class="modal-title" id="myModalLabelLogLevel">Help</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h4>Log Level</h4>
+                                        <p>Specifies options for the logging that Click-to-Run Setup performs.</p>
+                                        <hr>
+                                        Optional.
+                                        <br />
+                                        <br />
+
+                                        The default level is Standard.
+
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Log Level Modal -->
+                        <div class="modal fade" id="logpathModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                        <h4 class="modal-title" id="myModalLabelLogLevel">Help</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h4>Log Path</h4>
+                                        <p>Specifies the fully qualified path of the folder that is used for the log file.</p>
+                                        <hr>
+                                        Optional.
+                                        <br />
+                                        <br />
+
+                                        You can use environment variables. The default is <strong id="STRONG_3">%temp%</strong>.
+
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- PACKAGEGUID Modal -->
+                        <div class="modal fade" id="PACKAGEGUIDModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                        <h4 class="modal-title" id="myModalLabel">Help</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h4>PACKAGEGUID</h4>
+                                        <p>App-V Package ID.</p>
+                                        <hr>
+                                        <p>Optional. </p>
+
+                                        By default, all Office 2013 App-V packages created by using the Office Deployment Tool share the same App-V Package ID. Administrators can use <strong id="STRONG_3">PACKAGEGUID</strong> to specify a different Package ID. You can only use the following characters for <strong id="STRONG_5">PACKAGEGUID</strong>:
+                                        <ul id="UL_6">
+                                            <li id="LI_7">
+                                                <p id="P_8">
+                                                    0, 1, 2, 3, 4, 5, 6, 7, 8, 9
+                                                </p>
+                                            </li>
+                                            <li id="LI_9">
+                                                <p id="P_10">
+                                                    A, B, C, D, E, F
+                                                </p>
+                                            </li>
+                                        </ul> If you use any other characters, the App-V package is created with the default Package ID. Also, <strong id="STRONG_13">PACKAGEGUID</strong> needs to be 25 characters in length and be separated into 5 sections, with each section separated by a dash. The sections need to have the following number of characters: 8, 4, 4, 4, and 12. For example, 12345678-ABCD-1234-ABCD-1234567890AB is a valid value for <strong id="STRONG_14">PACKAGEGUID</strong>. This allows you to publish multiple App-V packages of Office 2013 to an App-V Management Server. But, this doesn’t enable you to deploy more than one Office 2013 App-V package to a single computer.
+
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- AUTOACTIVATE Modal -->
+                        <div class="modal fade" id="AUTOACTIVATEModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                        <h4 class="modal-title" id="myModalLabel">Help</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h4>AUTOACTIVATE</h4>
+                                        <p>Specified products will attempt to activate automatically.</p>
+                                        <hr>
+
+                                        If <strong>AUTOACTIVATE</strong> is set to 1, the specified products will attempt to activate automatically. If <strong>AUTOACTIVATE</strong> is not set, the user may see the Activation Wizard UI.
+
+                                        <br />
+                                        <br />
+                                        <strong>Note:</strong> Office 365 Click-to-Run products are already set to activate automatically. You must not set <strong>AUTOACTIVATE</strong> for Office 365 Click-to-Run products.<br id="BR_15" /> This setting applies only to perpetual retail versions of Click-to-Run products.
+
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- FORCEAPPSHUTDOWN Modal -->
+                        <div class="modal fade" id="FORCEAPPSHUTDOWNModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                        <h4 class="modal-title" id="myModalLabel">Help</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h4>FORCEAPPSHUTDOWN</h4>
+                                        <p> Forces the applications that block the action to be shut down.</p>
+                                        <hr>
+
+                                        An installation or removal action may be blocked if Office applications are running. Normally, such cases would start a process killer UI.
+                                        Administrators can set <strong id="STRONG_3">FORCEAPPSHUTDOWN</strong> value to <strong id="STRONG_4">TRUE</strong> to prevent dependence
+                                        on user interaction. When <strong id="STRONG_5">FORCEAPPSHUTDOWN</strong> is set to <strong id="STRONG_6">TRUE</strong>, any applications
+                                        that block the action will be shut down. Data loss may occur. When <strong id="STRONG_7">FORCEAPPSHUTDOWN</strong> is set to
+                                        <strong id="STRONG_8">FALSE</strong> (default), the action may fail if Office applications are running.
+
+
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SharedComputerLicensing Modal -->
+                        <div class="modal fade" id="SharedComputerLicensingModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                        <h4 class="modal-title" id="myModalLabel">Help</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <h4>SharedComputerLicensing</h4>
+                                        <p> Forces the applications that block the action to be shut down.</p>
+                                        <hr>
+                                        <p>Optional. </p>
+
+                                        Set <strong id="STRONG_3">SharedComputerLicensing</strong> to 1 if you deploy Office 365 ProPlus to shared computers by using Remote Desktop Services.
+                                        For more information, see
+                                        <a href="https://technet.microsoft.com/en-us/library/dn782860.aspx" id="A_5">Overview of shared computer activation for Office 365 ProPlus</a>.
+
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type='text/javascript' src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script type='text/javascript' src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment.min.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.15.35/js/bootstrap-datetimepicker.min.js"></script>
+    <script type="text/javascript" src="//1000hz.github.io/bootstrap-validator/dist/validator.min.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/bootstrap.listgroup/1.1.2/listgroup.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.bundle.min.js"></script>
+
+    <script type=" text/javascript" src="./Scripts/FileSaver.js"></script>
+    <script type="text/javascript" src="./Scripts/main.js"></script>
+</body>
+</html>

@@ -1,6 +1,6 @@
 /* Copyright (c) Microsoft. All rights reserved. Licensed under the MIT license. See LICENSE in the project root for license information. */
 /**
- * Fabric 1.0.0
+ * Fabric 1.1.0
  * The front-end framework for building experiences for Office 365.
  **/
 .ms-Persona {
@@ -14,7 +14,6 @@
   box-shadow: none;
   display: table;
   line-height: 1;
-  overflow: hidden;
   position: relative;
 }
 
@@ -23,19 +22,9 @@
   display: block;
   background-color: transparent;
   overflow: hidden;
-  width: 50px;
-  height: 50px;
-}
-
-.ms-Persona-imageCircle {
-  width: 50px;
-  height: 50px;
-  margin: 0;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
-  overflow: hidden;
-  position: absolute;
-  left: 0;
-  right: 0;
   background-color: #a6a6a6;
 }
 
@@ -54,8 +43,8 @@
   position: absolute;
   top: 0;
   left: 0;
-  width: 50px;
-  height: 50px;
+  width: 52px;
+  height: 52px;
 }
 
 .ms-Persona-image[src=''] {
@@ -65,20 +54,30 @@
 .ms-Persona-presence {
   background-color: #5dd255;
   position: absolute;
-  height: 10px;
-  width: 10px;
+  height: 12px;
+  width: 12px;
   border-radius: 50%;
   top: auto;
-  left: auto;
-  right: 2px;
+  left: 34px;
   bottom: -1px;
   border: 2px solid #ffffff;
 }
 
 .ms-Persona-details {
   display: table-cell;
-  padding: 0 16px;
+  padding: 0 12px;
   vertical-align: middle;
+  overflow: hidden;
+}
+
+.ms-Persona-primaryText,
+.ms-Persona-secondaryText,
+.ms-Persona-tertiaryText,
+.ms-Persona-optionalText {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .ms-Persona-primaryText {
@@ -86,7 +85,7 @@
   font-family: 'Segoe UI Regular WestEuropean', 'Segoe UI', 'Segoe WP', Tahoma, Arial, sans-serif;
   font-size: 17px;
   margin-top: -3px;
-  white-space: nowrap;
+  line-height: 1.4;
 }
 
 .ms-Persona-secondaryText,
@@ -95,20 +94,22 @@
   color: #666666;
   font-family: 'Segoe UI Regular WestEuropean', 'Segoe UI', 'Segoe WP', Tahoma, Arial, sans-serif;
   font-size: 12px;
-  padding-top: 8px;
   white-space: nowrap;
+  line-height: 1.3;
+}
+
+.ms-Persona-secondaryText {
+  padding-top: 3px;
 }
 
 .ms-Persona-tertiaryText,
 .ms-Persona-optionalText {
+  padding-top: 5px;
   display: none;
 }
 
 .ms-Persona.ms-Persona--square .ms-Persona-imageArea {
   background-color: #a6a6a6;
-}
-
-.ms-Persona.ms-Persona--square .ms-Persona-imageCircle {
   border-radius: 0;
 }
 
@@ -117,7 +118,7 @@
   left: 0;
   bottom: auto;
   right: auto;
-  height: 50px;
+  height: 52px;
   width: 5px;
   border-radius: 0;
   border: 0;
@@ -125,7 +126,6 @@
 
 .ms-Persona.ms-Persona--tiny {
   height: 30px;
-  background-color: #ffffff;
   display: inline-block;
 }
 
@@ -136,25 +136,20 @@
   width: 0;
 }
 
-.ms-Persona.ms-Persona--tiny .ms-Persona-imageCircle {
-  display: none;
-}
-
 .ms-Persona.ms-Persona--tiny .ms-Persona-presence {
   right: auto;
-  height: 10px;
-  width: 10px;
   top: 10px;
+  left: 0;
   border: 0;
 }
 
 .ms-Persona.ms-Persona--tiny .ms-Persona-details {
-  padding-left: 18px;
+  padding-left: 20px;
 }
 
 .ms-Persona.ms-Persona--tiny .ms-Persona-primaryText {
   font-size: 14px;
-  padding-top: 11px;
+  padding-top: 9px;
 }
 
 .ms-Persona.ms-Persona--tiny .ms-Persona-secondaryText {
@@ -171,20 +166,15 @@
 }
 
 .ms-Persona.ms-Persona--square.ms-Persona--tiny .ms-Persona-presence {
-  height: 10px;
-  width: 10px;
+  height: 12px;
+  width: 12px;
   top: 10px;
 }
 
-.ms-Persona.ms-Persona--square.ms-Persona--tiny .ms-Persona-details {
-  padding-left: 18px;
-}
-
 .ms-Persona.ms-Persona--xs .ms-Persona-imageArea,
-.ms-Persona.ms-Persona--xs .ms-Persona-imageCircle,
 .ms-Persona.ms-Persona--xs .ms-Persona-image {
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
 }
 
 .ms-Persona.ms-Persona--xs .ms-Persona-placeholder {
@@ -193,10 +183,7 @@
 }
 
 .ms-Persona.ms-Persona--xs .ms-Persona-presence {
-  height: 8px;
-  width: 8px;
-  right: -1px;
-  bottom: -1px;
+  left: 19px;
 }
 
 .ms-Persona.ms-Persona--xs .ms-Persona-details {
@@ -213,12 +200,12 @@
 }
 
 .ms-Persona.ms-Persona--square.ms-Persona--xs .ms-Persona-presence {
-  height: 30px;
+  height: 32px;
   width: 4px;
+  left: 0;
 }
 
 .ms-Persona.ms-Persona--sm .ms-Persona-imageArea,
-.ms-Persona.ms-Persona--sm .ms-Persona-imageCircle,
 .ms-Persona.ms-Persona--sm .ms-Persona-image {
   width: 40px;
   height: 40px;
@@ -230,10 +217,7 @@
 }
 
 .ms-Persona.ms-Persona--sm .ms-Persona-presence {
-  height: 10px;
-  width: 10px;
-  right: -1px;
-  bottom: -1px;
+  left: 27px;
 }
 
 .ms-Persona.ms-Persona--sm .ms-Persona-details {
@@ -242,23 +226,23 @@
 
 .ms-Persona.ms-Persona--sm .ms-Persona-primaryText {
   font-size: 14px;
-  padding-top: 1px;
 }
 
+.ms-Persona.ms-Persona--sm .ms-Persona-primaryText,
 .ms-Persona.ms-Persona--sm .ms-Persona-secondaryText {
-  padding-top: 5px;
+  padding-top: 1px;
 }
 
 .ms-Persona.ms-Persona--square.ms-Persona--sm .ms-Persona-presence {
   height: 40px;
   width: 4px;
+  left: 0;
 }
 
 .ms-Persona.ms-Persona--lg .ms-Persona-imageArea,
-.ms-Persona.ms-Persona--lg .ms-Persona-imageCircle,
 .ms-Persona.ms-Persona--lg .ms-Persona-image {
-  width: 70px;
-  height: 70px;
+  width: 72px;
+  height: 72px;
 }
 
 .ms-Persona.ms-Persona--lg .ms-Persona-placeholder {
@@ -267,12 +251,15 @@
 }
 
 .ms-Persona.ms-Persona--lg .ms-Persona-presence {
-  height: 16px;
-  width: 16px;
+  left: 49px;
 }
 
-.ms-Persona.ms-Persona--lg .ms-Persona-primaryText {
-  font-family: 'Segoe UI Regular WestEuropean', 'Segoe UI', 'Segoe WP', Tahoma, Arial, sans-serif;
+.ms-Persona.ms-Persona--lg .ms-Persona-secondaryText {
+  padding-top: 3px;
+}
+
+.ms-Persona.ms-Persona--lg .ms-Persona-tertiaryText {
+  padding-top: 5px;
 }
 
 .ms-Persona.ms-Persona--lg .ms-Persona-tertiaryText {
@@ -280,12 +267,12 @@
 }
 
 .ms-Persona.ms-Persona--square.ms-Persona--lg .ms-Persona-presence {
-  height: 70px;
+  height: 72px;
   width: 7px;
+  left: 0;
 }
 
 .ms-Persona.ms-Persona--xl .ms-Persona-imageArea,
-.ms-Persona.ms-Persona--xl .ms-Persona-imageCircle,
 .ms-Persona.ms-Persona--xl .ms-Persona-image {
   width: 100px;
   height: 100px;
@@ -297,8 +284,9 @@
 }
 
 .ms-Persona.ms-Persona--xl .ms-Persona-presence {
-  height: 24px;
-  width: 24px;
+  height: 20px;
+  width: 20px;
+  left: 71px;
 }
 
 .ms-Persona.ms-Persona--xl .ms-Persona-details {
@@ -308,22 +296,23 @@
 .ms-Persona.ms-Persona--xl .ms-Persona-primaryText {
   font-size: 21px;
   font-family: 'Segoe UI Semilight WestEuropean', 'Segoe UI Semilight', 'Segoe WP Semilight', 'Segoe UI', 'Segoe WP', Tahoma, Arial, sans-serif;
-  margin-top: 2px;
+  margin-top: 0;
 }
 
 .ms-Persona.ms-Persona--xl .ms-Persona-secondaryText {
-  padding-top: 7px;
+  padding-top: 2px;
 }
 
 .ms-Persona.ms-Persona--xl .ms-Persona-tertiaryText,
 .ms-Persona.ms-Persona--xl .ms-Persona-optionalText {
-  padding-top: 8px;
+  padding-top: 5px;
   display: block;
 }
 
 .ms-Persona.ms-Persona--square.ms-Persona--xl .ms-Persona-presence {
   height: 100px;
   width: 9px;
+  left: 0;
 }
 
 .ms-Persona.ms-Persona--darkText .ms-Persona-primaryText {

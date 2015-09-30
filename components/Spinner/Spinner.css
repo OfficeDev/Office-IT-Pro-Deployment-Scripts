@@ -1,12 +1,12 @@
 /* Copyright (c) Microsoft. All rights reserved. Licensed under the MIT license. See LICENSE in the project root for license information. */
 /**
- * Fabric 1.0.0
+ * Fabric 1.1.0
  * The front-end framework for building experiences for Office 365.
  **/
 .ms-Spinner {
   position: relative;
-  width: 64px;
-  height: 64px;
+  width: 32px;
+  height: 32px;
 }
 
 .ms-Spinner-circle {

@@ -1,6 +1,6 @@
 /* Copyright (c) Microsoft. All rights reserved. Licensed under the MIT license. See LICENSE in the project root for license information. */
 /**
- * Fabric 1.0.0
+ * Fabric 1.1.0
  * The front-end framework for building experiences for Office 365.
  **/
 .ms-Label {
@@ -82,6 +82,7 @@
   padding: 6px 10px 8px;
   width: 100%;
   min-width: 180px;
+  outline: 1px solid transparent;
 }
 
 .ms-TextField-field:hover {
@@ -154,6 +155,7 @@
   padding-bottom: 5px;
   height: 32px;
   width: 1%;
+  white-space: nowrap;
 }
 
 .ms-TextField.ms-TextField--underlined .ms-TextField-field {
@@ -193,10 +195,4 @@
   min-width: 260px;
   padding-top: 6px;
   overflow: auto;
-}
-
-@media screen and (-ms-high-contrast: active) {
-  .ms-TextField .ms-TextField-field {
-    outline: 1px solid transparent;
-  }
 }

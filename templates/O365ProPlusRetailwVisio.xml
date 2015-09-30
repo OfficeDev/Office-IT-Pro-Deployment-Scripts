@@ -10,4 +10,5 @@
   <Updates Enabled="TRUE" />
   <Display Level="None" AcceptEULA="TRUE" />
   <Logging Level="Standard" Path="%temp%" />
+  <!--Silent install of 32-Bit Office 365 ProPlus with Visio with Updates and Logging enabled-->
 </Configuration>

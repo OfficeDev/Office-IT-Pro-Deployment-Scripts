@@ -3,16 +3,36 @@ var selectDate;
 
 $(document).ready(function () {
 
+
     var finput = document.getElementById('fileInput');
     finput.addEventListener('change', function (e) {
+        var hWCheck = $.cookie("hideWelcome");
+        if (!(hWCheck)) {
+            setCookie("hideWelcome", true, 1);
+        }
         fileUploaded(e);
-
     });
 
     if (isInternetExplorer()) {
         document.getElementById("txtVersion").style.lineHeight = "0px";
         document.getElementById("txtTargetVersion").style.lineHeight = "0px";
     }
+
+    var hW = $.cookie("hideWelcome");
+    if (hW) {
+        $("#welcomeDialog").hide();
+        fadeBackground(false);
+    } else {
+        fadeBackground(true);
+        $("#welcomeDialog").draggable();
+        $("#welcomeDialog").css("display", "block");
+    }
+
+    
+
+    changeExcludeApps("2016");
+
+    $("#commentDialog").draggable();
 
     $("#btRemoveProduct").prop("disabled", true);
     $("#btAddLanguage").prop("disabled", true);
@@ -30,10 +50,6 @@ $(document).ready(function () {
     setActiveTab();
 
     resizeWindow();
-
-    var xmlOutput = $.cookie("xmlcache");
-    $('textarea#xmlText').val(xmlOutput);
-    loadUploadXmlFile();
 
     $(window).resize(function () {
         resizeWindow();
@@ -382,15 +398,7 @@ $(document).ready(function () {
         scrollXmlEditor();
     });
 
-    $('#the-basics .typeahead').typeahead({
-        hint: true,
-        highlight: true,
-        minLength: 1
-    },
-    {
-        name: 'versions',
-        source: substringMatcher(versions)
-    });
+    changeVersions("2016");
 
     $('#txtVersion').keydown(function (e) {
         restrictToVersion(e);
@@ -456,9 +464,276 @@ $(document).ready(function () {
         }
     });
 
+    $(window).on('resize', function () {
+        $('#welcomeInner')[0].style.height = "";
+        var totH = welcomeMain.clientHeight;
+        var headerH = welcomeHeader.clientHeight;
+        var desH = (totH - headerH);
+        $('#welcomeInner')[0].style.height = desH + "px";
+    });
+
+    var totH = welcomeMain.clientHeight;
+    var headerH = welcomeHeader.clientHeight;
+    var desH = (totH - headerH);
+    $('#welcomeInner')[0].style.height = desH + "px";
+
+    var xmlOutput = $.cookie("xmlcache");
+    $('textarea#xmlText').val(xmlOutput);
+    loadUploadXmlFile();
+
     setScrollBar();
 
+    fixDatePicker();
 });
+
+(function ($) {
+
+    $.fn.msdropdownval = function (value) {
+        var currentValue = this.val();
+
+        if (value) {
+            this.val(value);
+        }
+
+        var displayName = this.find('option:selected').text();
+
+        var parent = this[0].parentNode;
+        if (parent) {
+            var titles = parent.getElementsByClassName("ms-Dropdown-title");
+            if (titles) {
+                var ddTitle = titles[0];
+                if (ddTitle) {
+                    currentValue = ddTitle.innerText;
+                    if (value) {
+                        ddTitle.innerText = displayName;
+                    }
+                }
+            } 
+        }
+
+        if (value) {
+            currentValue = value;
+        }
+       
+        return currentValue;
+    };
+
+    $.fn.msdropdownvals = function (values) {
+        var currentValues = this.val();
+
+        var parent = this[0].parentNode;
+        if (parent) {
+            var selects = parent.getElementsByTagName("select");
+            var uls = parent.getElementsByClassName("ms-Dropdown-items");
+            var mySelect = $("#" + selects[0].id);
+
+            if (uls) {
+                var ddUl = uls[0];
+                if (ddUl) {
+                    var jqueryUl = $(ddUl);
+
+                    if (values) {
+                        jqueryUl.empty();
+
+                        $.each(values, function(val, text) {
+                            jqueryUl.append(
+                                $('<li class="ms-Dropdown-item">' + text + '</li>')
+                            );
+                        });
+
+                    }
+                }
+            }
+        } else {
+            mySelect = $(this);
+        }
+
+        mySelect.empty();
+
+        $.each(values, function (val, text) {
+            mySelect.append(
+                $('<option></option>').val(text).html(text)
+            );
+        });
+    };
+
+
+})(jQuery);
+
+function fixDatePicker() {
+    //ms-DatePicker
+    //ms-TextField
+    var datePickers = document.getElementsByClassName("ms-DatePicker");
+
+    for (var i = 0; i < datePickers.length; i++) {
+        var datePicker = datePickers[i];
+
+        var textFields = datePicker.childNodes;
+        for (var t = 0; t < textFields.length; t++) {
+            var childNode = textFields[t];
+
+            var className = childNode.className;
+            if (className) {
+                
+            }
+
+        }
+    }
+
+}
+
+function setCookie(name, value, minutes) {
+    var date = new Date();
+    date.setTime(date.getTime() + (minutes * 60 * 1000));
+    $.cookie(name, value, { expires: date });
+}
+
+function setPanel(panelId, buttonId) {
+    hideAllCallOuts();
+
+    $(".option-panel").removeClass('visible');
+    $(".navrow").removeClass('is-selected');
+    $("#" + buttonId).addClass('is-selected');
+    $("#" + panelId).addClass('visible');
+
+    var siblings = $("#" + panelId).siblings();
+
+    for (var i = 0; i < siblings.length; i++) {
+        var sibling = siblings[i];
+        $("#" + sibling.id).removeClass("ms-u-slideLeftIn400");
+    }
+
+    $("#" + panelId).addClass("ms-u-slideLeftIn400");
+}
+
+function setVersionPanel(buttonId) {
+    $(".navrowversion").removeClass('is-selected');
+    $("#" + buttonId).addClass('is-selected');
+
+    if (buttonId.toLowerCase() == "office2013select") {
+        changeVersions("2013");
+    }
+    if (buttonId.toLowerCase() == "office2016select") {
+        changeVersions("2016");
+    }
+}
+
+function changeVersions(version) {
+    if (version == "2013") {
+        //$("#pidKeyLabel").show("slow");
+        $("#branchSection").hide("slow");
+        $("#updateBranchSection").hide("slow");
+
+        //16.0.4229.1024
+
+        $('#versionTextBox .typeahead').typeahead('destroy', 'NoCached');
+        $('#updateVersionTextBox .typeahead').typeahead('destroy', 'NoCached');
+
+        $('#versionTextBox .typeahead').typeahead({
+            hint: true,
+            highlight: true,
+            minLength: 1
+        },
+        {
+            name: 'versions',
+            source: substringMatcher(versions)
+        });
+
+        $('#updateVersionTextBox .typeahead').typeahead({
+            hint: true,
+            highlight: true,
+            minLength: 1
+        },
+        {
+            name: 'versions',
+            source: substringMatcher(versions)
+        });
+
+        $("#txtVersion").attr("placeholder", versions[0]);
+        $("#txtTargetVersion").attr("placeholder", versions[0]);
+    }
+    if (version == "2016") {
+        //$("#pidKeyLabel").hide("slow");
+        $("#branchSection").show("slow");
+        $("#updateBranchSection").show("slow");
+        $("#txtPidKey").val("");
+
+        $('#versionTextBox .typeahead').typeahead('destroy', 'NoCached');
+        $('#updateVersionTextBox .typeahead').typeahead('destroy', 'NoCached');
+
+        $('#versionTextBox .typeahead').typeahead({
+            hint: true,
+            highlight: true,
+            minLength: 1
+        },
+        {
+            name: 'versions',
+            source: substringMatcher(versions2016)
+        });
+
+        $('#updateVersionTextBox .typeahead').typeahead({
+            hint: true,
+            highlight: true,
+            minLength: 1
+        },
+        {
+            name: 'versions',
+            source: substringMatcher(versions2016)
+        });
+
+        $("#txtVersion").attr("placeholder", versions2016[0]);
+        $("#txtTargetVersion").attr("placeholder", versions2016[0]);
+    }
+
+    odtToggleUpdate();
+
+    changeExcludeApps(version);
+}
+
+function changeExcludeApps(version) {
+    $("#cbExcludeApp").empty();
+    var mySelect = $('#cbExcludeApp');
+
+    if (version == "2013") {
+        mySelect.msdropdownvals(excludeApps2013);
+    }
+    if (version == "2016") {
+        mySelect.msdropdownvals(excludeApps2016);
+    }
+
+    mySelect.trigger("chosen:updated");
+}
+
+function addComment() {
+    var xmlDoc = getXmlDocument();
+
+    insertComment(xmlDoc);
+
+    displayXml(xmlDoc);
+
+    $("#commentDialog")[0].style.display = 'none';
+
+    return false;
+}
+
+function deleteComment() {
+    var xmlDoc = getXmlDocument();
+    $("#commentText").val("");
+    removeComment(xmlDoc);
+
+    displayXml(xmlDoc);
+}
+
+function fadeBackground(enabled) {
+    if (enabled) {
+        $('#screen').css({ opacity: 0.3, 'width': $(document).width(), 'height': $(document).height() });
+        $('body').css({ 'overflow': 'visible' });
+        //$('#box').css({ 'display': 'block' });
+    } else {
+        $('#screen').css({ opacity: 0, 'width': $(document).width(), 'height': $(document).height() });
+        $('#screen').hide();
+    }
+}
 
 function setScrollBar() {
     var optionDiv = document.getElementById("optionDiv");
@@ -564,6 +839,8 @@ function setActiveTab() {
 }
 
 function clickUpload() {
+    $("#fileInput").val("");
+
     var finput = document.getElementById('fileInput');
     finput.click();
 }
@@ -574,21 +851,24 @@ function fileUploaded(e) {
     var i = 0,
     files = control.files;
     var file = files[i];
+    if (file) {
+        var reader = new FileReader();
+        reader.onload = function(event) {
+            var contents = event.target.result;
+            var xmlOutput = vkbeautify.xml(contents);
 
-    var reader = new FileReader();
-    reader.onload = function (event) {
-        var contents = event.target.result;
-        var xmlOutput = vkbeautify.xml(contents);
+            $('textarea#xmlText').val(xmlOutput);
+            $.cookie("xmlcache", xmlOutput);
 
-        $('textarea#xmlText').val(xmlOutput);
-        $.cookie("xmlcache", xmlOutput);
+            getXmlDocument();
 
-        loadUploadXmlFile();
-    };
-    reader.onerror = function (event) {
-        throw "File could not be read! Code " + event.target.error.code;
-    };
-    reader.readAsText(file);
+            loadUploadXmlFile();
+        };
+        reader.onerror = function(event) {
+            throw "File could not be read! Code " + event.target.error.code;
+        };
+        reader.readAsText(file);
+    }
 }
 
 function download() {
@@ -947,6 +1227,10 @@ function resizeWindow() {
     $("#xmlSection").width(bodyWidth - menuWidth - configWidth - 48);
 
     setScrollBar();
+
+    if ($('#screen').is(":visible")) {
+        fadeBackground(true);
+    }
 }
 
 function cacheNodes(xmlDoc) {
@@ -1356,6 +1640,10 @@ function odtDeleteRemoveApp(xmlDoc) {
 
 
 function odtAddExcludeApp(xmlDoc) {
+
+
+    $("#cbExcludeApp").msdropdownval();
+
     var selectedProduct = $("#cbProduct").val();
     var selectExcludeApp = $("#cbExcludeApp").val();
 
@@ -1453,10 +1741,13 @@ function odtToggleUpdate() {
         $("#txtUpdatePath").removeProp("disabled");
         $("#txtTargetVersion").removeProp("disabled");
         $('#txtDeadline').removeProp("disabled");
+        $('#txtTargetVersion').css("background-color", "");
+        
     } else {
         $("#txtUpdatePath").prop("disabled", "true");
         $("#txtTargetVersion").prop("disabled", "true");
         $('#txtDeadline').prop("disabled", "true");
+        $('#txtTargetVersion').css("background-color", "#f0f0f0");
     }
 }
 
@@ -1853,6 +2144,25 @@ function getRemoveLanguageNodeCount(xmlDoc, productId) {
 }
 
 
+function setDropDownValue(id, value) {
+    $('#' + id + ' option').each(function () {
+        var optionValue = $(this).attr('value');
+        if (optionValue.toLowerCase() == value.toLowerCase()) {
+            
+        } else {
+            $(this).prop("selected", false);
+        }
+    });
+    $('#' + id + ' option').each(function () {
+        var optionValue = $(this).attr('value');
+        if (optionValue.toLowerCase() == value.toLowerCase()) {
+            $(this).prop("selected", true);
+        } else {
+
+        }
+    });
+}
+
 function loadUploadXmlFile(inXmlDoc) {
     var xmlDoc = inXmlDoc;
     if (!(xmlDoc)) {
@@ -1865,14 +2175,14 @@ function loadUploadXmlFile(inXmlDoc) {
         addNode = xmlDoc.documentElement.getElementsByTagName("Add")[0];
 
         var selectBitness = addNode.getAttribute("OfficeClientEdition");
-        $("#cbEdition").val(selectBitness);
+        $("#cbEdition").msdropdownval(selectBitness);
 
         var products = addNode.getElementsByTagName("Product");
         if (products.length > 0) {
             var product = products[0];
             var productId = product.getAttribute("ID");
 
-            $("#cbProduct").val(productId);
+            $("select#cbProduct").msdropdownval(productId);
 
             var pidKey = product.getAttribute("PIDKEY");
             $("#txtPidKey").val(pidKey);
@@ -1881,7 +2191,7 @@ function loadUploadXmlFile(inXmlDoc) {
             if (exApps.length > 0) {
                 var exApp = exApps[0];
                 var excludeAppId = exApp.getAttribute("ID");
-                $("#cbExcludeApp").val(excludeAppId);
+                $("#cbExcludeApp").msdropdownval(excludeAppId);
 
                 $("#btRemoveExcludeApp").prop("disabled", false);
             } else {
@@ -1897,7 +2207,7 @@ function loadUploadXmlFile(inXmlDoc) {
 
         var selectedBranch = addNode.getAttribute("Branch");
         if (selectedBranch) {
-            $("#cbBranch").val(selectedBranch);
+            $("#cbBranch").msdropdownval(selectedBranch);
            // $("#office2016Select").addClass("is-selected");
         }
     }
@@ -1912,12 +2222,12 @@ function loadUploadXmlFile(inXmlDoc) {
                 var removeproduct = removeProducts[0];
                 var removeproductId = removeproduct.getAttribute("ID");
 
-                $("#cbRemoveProduct").val(removeproductId);
+                $("#cbRemoveProduct").msdropdownval(removeproductId);
 
                 var removeLangs = removeproduct.getElementsByTagName("Language");
                 if (removeLangs.length > 0) {
                     var removeLangId = removeLangs[0].getAttribute("ID");
-                    $("#cbRemoveLanguage").val(removeLangId);
+                    $("#cbRemoveLanguage").msdropdownval(removeLangId);
                 }
 
                 $("#removeAllProducts")[0].checked = false;
@@ -1948,6 +2258,12 @@ function loadUploadXmlFile(inXmlDoc) {
             $("#txtTargetVersion").val("");
             $("#txtDeadline").val("");
         }
+
+        var selectedUpdateBranch = updateNode.getAttribute("Branch");
+        if (selectedUpdateBranch) {
+            $("#cbUpdateBranch").msdropdownval(selectedUpdateBranch);
+        }
+
         odtToggleUpdate();
     }
 
@@ -2045,6 +2361,7 @@ function loadUploadXmlFile(inXmlDoc) {
         } else {
             $("#sharedComputerLicensing")[0].checked = false;
         }
+
     } else {
         document.getElementById("btRemoveProduct").click();
     }
@@ -2065,13 +2382,15 @@ function loadUploadXmlFile(inXmlDoc) {
         $("#txtLoggingUpdatePath").val(path);
     }
 
+
     var productCount = getAddProductCount(xmlDoc);
     if (productCount == 0) {
         $("#btRemoveProduct").prop("disabled", true);
     } else {
         $("#btRemoveProduct").prop("disabled", false);
     }
-
+    var strXml = (new XMLSerializer()).serializeToString(xmlDoc);
+    return strXml;
 }
 
 function sendMail() {
@@ -2100,6 +2419,7 @@ function clearXml() {
     for (var t = 0; t < resetDropDowns.length; t++) {
         var dropDown = resetDropDowns[t];
         $("#" + dropDown.id).prop('selectedIndex', 0);
+        $("#" + dropDown.id).msdropdownval($("#" + dropDown.id).val());
     }
 
     var resetToggles = $("input:checkbox");
@@ -2128,6 +2448,7 @@ function getXmlDocument() {
 
 function createXmlDocument(string) {
     var doc;
+    //if (!detectIE()){
     if (window.DOMParser) {
         parser = new DOMParser();
         doc = parser.parseFromString(string, "application/xml");
@@ -2139,6 +2460,32 @@ function createXmlDocument(string) {
         doc.loadXML(string);
     }
     return doc;
+}
+
+function detectIE() {
+    var ua = window.navigator.userAgent;
+
+    var msie = ua.indexOf('MSIE ');
+    if (msie > 0) {
+        // IE 10 or older => return version number
+        return parseInt(ua.substring(msie + 5, ua.indexOf('.', msie)), 10);
+    }
+
+    var trident = ua.indexOf('Trident/');
+    if (trident > 0) {
+        // IE 11 => return version number
+        var rv = ua.indexOf('rv:');
+        return parseInt(ua.substring(rv + 3, ua.indexOf('.', rv)), 10);
+    }
+
+    var edge = ua.indexOf('Edge/');
+    if (edge > 0) {
+        // IE 12 => return version number
+        return parseInt(ua.substring(edge + 5, ua.indexOf('.', edge)), 10);
+    }
+
+    // other browser
+    return false;
 }
 
 function displayXml(xmlDoc) {
@@ -2183,11 +2530,12 @@ function showInfo(calloutId, icon) {
     $("#" + calloutId)[0].style.top = nTop.toString() + "px";
     $("#" + calloutId)[0].style.left = nLeft.toString() + "px";
     $("#" + calloutId)[0].style.display = 'block';
-    
+    $("#infoOverlay")[0].style.display = 'block';
     $("#xmlText").css('z-index', 0);
 }
 
 function hideAllCallOuts() {
+    $("#infoOverlay")[0].style.display = 'none';
     var callOuts = document.getElementsByClassName("ms-Callout");
     for (var i = 0; i < callOuts.length; i++) {
         var callOut = callOuts[i];
@@ -2209,12 +2557,66 @@ function hideAbout() {
     $("#aboutDialog")[0].style.display = 'none';
 }
 
+function hideWelcome() {
+    $("#welcomeDialog").fadeOut("fast", function () {
+        fadeBackground(false);
+    });
+}
+
+function foreverHideWelcome() {
+    $("#welcomeDialog").fadeOut(function() {
+        fadeBackground(false);
+    });
+    $.cookie("hideWelcome", true);
+}
+
+function openCommentDialog() {
+    //$("#commentDialog")[0].style.display = 'block';
+
+    $("textarea#commentText").val("");
+
+    var xmlDoc = getXmlDocument();
+    var config = xmlDoc.getElementsByTagName('Configuration')[0];
+    var childNodes = config.childNodes;
+    for (var i = 0; i < childNodes.length; i++) {
+        if (childNodes[i].nodeName == "#comment") {
+            var xmlComment = childNodes[i].nodeValue;
+            $("textarea#commentText").val(xmlComment);
+        }
+    }
+}
+
+function hideCommentDialog() {
+    $("#commentDialog")[0].style.display = 'none';
+}
+
+function insertComment(xmldoc) {
+    removeComment(xmldoc);
+    var commenttxt = $("#commentText").val();
+    if (commenttxt) {
+        var comment = xmldoc.createComment(commenttxt);
+        xmldoc.getElementsByTagName('Configuration')[0].appendChild(comment);
+    }
+}
+
+function removeComment(xmldoc) {
+    var config = xmldoc.getElementsByTagName('Configuration')[0];
+    var childNodes = config.childNodes;
+    for (var i = 0; i < childNodes.length; i++) {
+        if (childNodes[i].nodeName == "#comment") {
+            config.removeChild(childNodes[i]);
+        }
+    }
+}
+
 function IsGuid(value) {
     var rGx = new RegExp("\\b(?:[A-F0-9]{8})(?:-[A-F0-9]{4}){3}-(?:[A-F0-9]{12})\\b");
     return rGx.exec(value) != null;
 }
 
 function setTemplate(template) {
+    $('textarea#xmlText').val("");
+
     var url = document.getElementById(template.id).getAttribute("href");
         
     var rawFile = new XMLHttpRequest();
@@ -2224,7 +2626,10 @@ function setTemplate(template) {
             var allText = rawFile.responseText;
             if (allText) {
                 $('textarea#xmlText').val(allText);
-                loadUploadXmlFile();
+                getXmlDocument();
+                var xml = loadUploadXmlFile();
+
+                $('textarea#xmlText').val(xml);
             }
         }
     }
@@ -2266,3 +2671,35 @@ var versions = [
 '15.0.4481.1510'
 ];
 
+var versions2016 = [
+    '16.0.4229.1024'
+];
+
+var excludeApps2013 = [
+    'Access',
+    'Excel',
+    'Groove',
+    'InfoPath',
+    'Lync',
+    'OneNote',
+    'Outlook',
+    'PowerPoint',
+    'Project',
+    'Publisher',
+    'Visio',
+    'Word'
+];
+
+var excludeApps2016 = [
+    'Access',
+    'Excel',
+    'Groove',
+    'Lync',
+    'OneNote',
+    'Outlook',
+    'PowerPoint',
+    'Project',
+    'Publisher',
+    'Visio',
+    'Word'
+];

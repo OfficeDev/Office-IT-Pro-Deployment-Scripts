@@ -1,6 +1,6 @@
 /* Copyright (c) Microsoft. All rights reserved. Licensed under the MIT license. See LICENSE in the project root for license information. */
 /**
- * Fabric 1.0.0
+ * Fabric 1.1.0
  * The front-end framework for building experiences for Office 365.
  **/
 .ms-Button {
@@ -912,7 +912,7 @@
 }
 
 .ms-Callout {
-  z-index: 9999;
+  z-index: 100;
   margin: 16px auto;
   position: relative;
   width: 288px;
@@ -1051,6 +1051,10 @@
   font-family: 'Segoe UI Semilight WestEuropean', 'Segoe UI Semilight', 'Segoe WP Semilight', 'Segoe UI', 'Segoe WP', Tahoma, Arial, sans-serif;
   color: #333333;
   font-size: 12px;
+}
+
+.ms-Callout-link {
+  font-size: 14px;
 }
 
 .ms-Callout-actions {
