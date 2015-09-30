@@ -222,7 +222,7 @@
     var datePicker;
     var self = this;
     var optionMonths = options && options.optionMonths || ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-    var label = options && options.label || "Start Date";
+    var label = options && options.label;// || "Start Date";
     var placeholderText = options && options.placeholderText || "Select a date";
 
     /** check if the PickaDate plugin exists, if not load the plugin */
@@ -243,11 +243,11 @@
         var $datePicker = $(this);
 
         /**create the body of the datepicker */
-        appendElements($datePicker, optionMonths);
+        //appendElements($datePicker, optionMonths);
 
         /** insert label and placeholder text */
-        $datePicker.find('.ms-Label').text(label);
-        $datePicker.find('.ms-TextField-field').attr("placeholder", placeholderText + "...");
+        //$datePicker.find('.ms-Label').text(label);
+        //$datePicker.find('.ms-TextField-field').attr("placeholder", placeholderText + "...");
 
         /** Set up variables and run the Pickadate plugin. */
         var $dateField = $datePicker.find('.ms-TextField-field').pickadate({
@@ -496,12 +496,14 @@
 
     /** Switch to the is-pickingMonths state. */
     $monthControls.on('click', '.js-showMonthPicker', function(event) {
-      $datePicker.toggleClass('is-pickingMonths');
+        $datePicker.toggleClass('is-pickingMonths');
+        $datePicker.toggleClass('is-pickingYears');
     });
 
     /** Switch to the is-pickingYears state. */
     $monthPicker.on('click', '.js-showYearPicker', function(event) {
-      $datePicker.toggleClass('is-pickingYears');
+        $datePicker.toggleClass('is-pickingYears');
+        $datePicker.toggleClass('is-pickingMonths');
     });
 
   }
