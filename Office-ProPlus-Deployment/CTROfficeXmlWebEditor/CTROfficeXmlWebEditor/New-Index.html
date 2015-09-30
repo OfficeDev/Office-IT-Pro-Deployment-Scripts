@@ -708,55 +708,6 @@
                                     </div>
 
                                     <div class="ms-DatePicker">
-                                        <div class="ms-TextField">
-                                            <table>
-                                                <tr>
-                                                    <td>
-                                                        <label class="ms-Label">Deadline</label>
-                                                    </td>
-                                                    <td>
-                                                        <i id="deadlineInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('deadlineInfo', this)"></i>
-                                                    </td>
-                                                </tr>
-                                            </table>
-                                            <i class="ms-DatePicker-event ms-Icon ms-Icon--event"></i>
-                                            <input id="txtDeadline" class="ms-TextField-field" type="text" placeholder="Select a date&hellip;">
-                                        </div>
-                                        <div class="ms-DatePicker-monthComponents">
-                                            <span class="ms-DatePicker-nextMonth js-nextMonth"><i class="ms-Icon ms-Icon--chevronRight"></i></span>
-                                            <span class="ms-DatePicker-prevMonth js-prevMonth"><i class="ms-Icon ms-Icon--chevronLeft"></i></span>
-                                            <div class="ms-DatePicker-headerToggleView js-showMonthPicker"></div>
-                                        </div>
-                                        <span class="ms-DatePicker-goToday js-goToday">Go to today</span>
-                                        <div class="ms-DatePicker-monthPicker">
-                                            <div class="ms-DatePicker-header">
-                                                <div class="ms-DatePicker-yearComponents">
-                                                    <span class="ms-DatePicker-nextYear js-nextYear"><i class="ms-Icon ms-Icon--chevronRight"></i></span>
-                                                    <span class="ms-DatePicker-prevYear js-prevYear"><i class="ms-Icon ms-Icon--chevronLeft"></i></span>
-                                                </div>
-                                                <div class="ms-DatePicker-currentYear js-showYearPicker"></div>
-                                            </div>
-                                            <div class="ms-DatePicker-optionGrid">
-                                                <span class="ms-DatePicker-monthOption js-changeDate" data-month="0">Jan</span>
-                                                <span class="ms-DatePicker-monthOption js-changeDate" data-month="1">Feb</span>
-                                                <span class="ms-DatePicker-monthOption js-changeDate" data-month="2">Mar</span>
-                                                <span class="ms-DatePicker-monthOption js-changeDate" data-month="3">Apr</span>
-                                                <span class="ms-DatePicker-monthOption js-changeDate" data-month="4">May</span>
-                                                <span class="ms-DatePicker-monthOption js-changeDate" data-month="5">Jun</span>
-                                                <span class="ms-DatePicker-monthOption js-changeDate" data-month="6">Jul</span>
-                                                <span class="ms-DatePicker-monthOption js-changeDate" data-month="7">Aug</span>
-                                                <span class="ms-DatePicker-monthOption js-changeDate" data-month="8">Sep</span>
-                                                <span class="ms-DatePicker-monthOption js-changeDate" data-month="9">Oct</span>
-                                                <span class="ms-DatePicker-monthOption js-changeDate" data-month="10">Nov</span>
-                                                <span class="ms-DatePicker-monthOption js-changeDate" data-month="11">Dec</span>
-                                            </div>
-                                        </div>
-                                        <div class="ms-DatePicker-yearPicker">
-                                            <div class="ms-DatePicker-decadeComponents">
-                                                <span class="ms-DatePicker-nextDecade js-nextDecade"><i class="ms-Icon ms-Icon--chevronRight"></i></span>
-                                                <span class="ms-DatePicker-prevDecade js-prevDecade"><i class="ms-Icon ms-Icon--chevronLeft"></i></span>
-                                            </div>
-                                        </div>
                                     </div>
 
                                     <div class="controls">
@@ -1803,7 +1754,7 @@
     <script type="text/javascript" src="./Scripts/new-main.js"></script>
 
     <script type="text/javascript" src="//1000hz.github.io/bootstrap-validator/dist/validator.min.js"></script>
-    <script type="text/javascript" src="./Scripts/jquery.fabric.js"></script>
+    <script type="text/javascript" src="./Scripts/jquery.fabric.min.js"></script>
     <script type="text/javascript" src="./components/Panel/Jquery.Panel.js"></script>
 
     <script>
@@ -1830,7 +1781,9 @@
                     $('.ms-Table').Table();
                 }
                 if ($.fn.DatePicker) {
-                    $('.ms-DatePicker').DatePicker();
+                    var myDatepicker = $('.ms-DatePicker').DatePicker({
+                        label: "Deadline"
+                    });
                 }
 
                 if ($.fn.Panel) {
@@ -1878,8 +1831,66 @@
                     component = new fabric.Spinner(componentHolder);
                 }
             }
+            //Corrections to bad datepicker behavior (from UI Fabric)
+            var $monthPicker = $('.ms-DatePicker-monthPicker');
+            var $monthControls = $('.ms-DatePicker-monthComponents');
+            var $yearControls = $('.ms-DatePicker-monthComponents');
+            var $decadeControls = $('.ms-DatePicker-decadeComponents');
+            var $yearPicker = $('.ms-DatePicker-yearPicker');
+            var $picker = myDatepicker.find('.ms-TextField-field').pickadate('picker');
+
+            /** Switch to the is-pickingMonths state. */
+            $monthPicker.on('click', '.js-showMonthPicker', function (event) {
+                myDatepicker.toggleClass('is-pickingMonths');
+                myDatepicker.toggleClass('is-pickingYears');
+            });
+
+            $monthControls.on('click', '.js-showMonthPicker', function (event) {
+                //fix disappearing box behavior
+                myDatepicker.toggleClass('is-pickingMonths');
+
+                //check to see if trying to click previous month icon
+                var $prevClickIcon = $('.js-prevMonth');
+                var X = (event.pageX);
+                var Y = (event.pageY);
+                if (($prevClickIcon.offset().left < X) && (($prevClickIcon.offset().left + $prevClickIcon.width()) > X) && ($prevClickIcon.offset().top < Y) && (($prevClickIcon.offset().top + $prevClickIcon.width()) > Y)) {
+                    //process the event
+                    event.preventDefault();
+                    var newMonth = $picker.get('highlight').month - 1;
+                    changeHighlightedDate($picker, null, newMonth, null);
+                }
+            });
+
+            $decadeControls.on('click', '.js-showMonthPicker', function (event) {
+                myDatepicker.toggleClass('is-pickingMonths');
+            });
+
+            /** Switch to the is-pickingYears state. */
+            $yearControls.on('click', '.js-showYearPicker', function (event) {
+                myDatepicker.toggleClass('is-pickingYears');
+            });
+
+            myDatepicker.find('.ms-Label').append("<i id=\"deadlineInfoIcon\" class=\"ms-Icon ms-Icon--circleInfo ms-fontColor-blue\" style=\"width: 30px;text-align: center;cursor:pointer;\" onclick=\"toggleInfo('deadlineInfo', this)\"></i>");
         });
 
+        /** Change the highlighted date. */
+        function changeHighlightedDate($picker, newYear, newMonth, newDay) {
+
+            /** All variables are optional. If not provided, default to the current value. */
+            if (newYear == null) {
+                newYear = $picker.get('highlight').year;
+            }
+            if (newMonth == null) {
+                newMonth = $picker.get('highlight').month;
+            }
+            if (newDay == null) {
+                newDay = $picker.get('highlight').date;
+            }
+
+            /** Update it. */
+            $picker.set('highlight', [newYear, newMonth, newDay]);
+
+        }
     </script>
 </body>
 
