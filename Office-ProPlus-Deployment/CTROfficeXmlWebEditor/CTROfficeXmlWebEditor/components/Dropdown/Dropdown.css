@@ -1,6 +1,6 @@
 /* Copyright (c) Microsoft. All rights reserved. Licensed under the MIT license. See LICENSE in the project root for license information. */
 /**
- * Fabric 1.0.0
+ * Fabric 1.1.0
  * The front-end framework for building experiences for Office 365.
  **/
 .ms-Dropdown {
@@ -88,7 +88,6 @@
   box-shadow: none;
   box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.4);
   background-color: #ffffff;
-  border: 1px solid #eaeaea;
   display: none;
   list-style-type: none;
   position: absolute;
@@ -98,6 +97,17 @@
   top: 0;
   right: 0;
   bottom: 0;
+}
+
+.ms-Dropdown-items:before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: 1px solid #eaeaea;
 }
 
 .ms-Dropdown-item {
@@ -120,7 +130,7 @@
 .ms-Dropdown-item:hover {
   background-color: #eaeaea;
   color: #000000;
-  outline: 1px solid #eaeaea;
+  outline: 1px solid transparent;
 }
 
 .ms-Dropdown-item:active {
@@ -136,15 +146,15 @@
   line-height: 40px;
 }
 
-.ms-Dropdown-item.ms-Dropdown-item--selected,
-.ms-Dropdown-item.is-selected {
+.ms-Dropdown-item.is-selected,
+.ms-Dropdown-item.ms-Dropdown-item--selected {
   background-color: #c7e0f4;
   color: #000000;
   line-height: 40px;
 }
 
-.ms-Dropdown-item.ms-Dropdown-item--selected:hover,
-.ms-Dropdown-item.is-selected:hover {
+.ms-Dropdown-item.is-selected:hover,
+.ms-Dropdown-item.ms-Dropdown-item--selected:hover {
   background-color: #c7e0f4;
 }
 

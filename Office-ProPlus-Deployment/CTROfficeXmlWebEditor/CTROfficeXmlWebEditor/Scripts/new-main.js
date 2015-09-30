@@ -10,7 +10,6 @@ $(document).ready(function () {
         if (!(hWCheck)) {
             setCookie("hideWelcome", true, 1);
         }
-
         fileUploaded(e);
     });
 
@@ -28,6 +27,8 @@ $(document).ready(function () {
         $("#welcomeDialog").draggable();
         $("#welcomeDialog").css("display", "block");
     }
+
+    
 
     changeExcludeApps("2016");
 
@@ -482,7 +483,104 @@ $(document).ready(function () {
 
     setScrollBar();
 
+    fixDatePicker();
 });
+
+(function ($) {
+
+    $.fn.msdropdownval = function (value) {
+        var currentValue = this.val();
+
+        if (value) {
+            this.val(value);
+        }
+
+        var displayName = this.find('option:selected').text();
+
+        var parent = this[0].parentNode;
+        if (parent) {
+            var titles = parent.getElementsByClassName("ms-Dropdown-title");
+            if (titles) {
+                var ddTitle = titles[0];
+                if (ddTitle) {
+                    currentValue = ddTitle.innerText;
+                    if (value) {
+                        ddTitle.innerText = displayName;
+                    }
+                }
+            } 
+        }
+
+        if (value) {
+            currentValue = value;
+        }
+       
+        return currentValue;
+    };
+
+    $.fn.msdropdownvals = function (values) {
+        var currentValues = this.val();
+
+        var parent = this[0].parentNode;
+        if (parent) {
+            var selects = parent.getElementsByTagName("select");
+            var uls = parent.getElementsByClassName("ms-Dropdown-items");
+            var mySelect = $("#" + selects[0].id);
+
+            if (uls) {
+                var ddUl = uls[0];
+                if (ddUl) {
+                    var jqueryUl = $(ddUl);
+
+                    if (values) {
+                        jqueryUl.empty();
+
+                        $.each(values, function(val, text) {
+                            jqueryUl.append(
+                                $('<li class="ms-Dropdown-item">' + text + '</li>')
+                            );
+                        });
+
+                    }
+                }
+            }
+        } else {
+            mySelect = $(this);
+        }
+
+        mySelect.empty();
+
+        $.each(values, function (val, text) {
+            mySelect.append(
+                $('<option></option>').val(text).html(text)
+            );
+        });
+    };
+
+
+})(jQuery);
+
+function fixDatePicker() {
+    //ms-DatePicker
+    //ms-TextField
+    var datePickers = document.getElementsByClassName("ms-DatePicker");
+
+    for (var i = 0; i < datePickers.length; i++) {
+        var datePicker = datePickers[i];
+
+        var textFields = datePicker.childNodes;
+        for (var t = 0; t < textFields.length; t++) {
+            var childNode = textFields[t];
+
+            var className = childNode.className;
+            if (className) {
+                
+            }
+
+        }
+    }
+
+}
 
 function setCookie(name, value, minutes) {
     var date = new Date();
@@ -597,29 +695,13 @@ function changeExcludeApps(version) {
     var mySelect = $('#cbExcludeApp');
 
     if (version == "2013") {
-        //$.each(excludeApps2013, function(val, text) {
-        //    mySelect.append(
-        //        $('<option></option>').val(val).html(text)
-        //    );
-        //});
-
-        var newOption = $('<option value="1">test</option>');
-        mySelect.append(newOption);
+        mySelect.msdropdownvals(excludeApps2013);
     }
     if (version == "2016") {
-        $.each(excludeApps2016, function (val, text) {
-            mySelect.append(
-                $('<option></option>').val(val).html(text)
-            );
-        });
+        mySelect.msdropdownvals(excludeApps2016);
     }
 
     mySelect.trigger("chosen:updated");
-}
-
-function UpdateDropDown() {
-    
-
 }
 
 function addComment() {
@@ -757,6 +839,8 @@ function setActiveTab() {
 }
 
 function clickUpload() {
+    $("#fileInput").val("");
+
     var finput = document.getElementById('fileInput');
     finput.click();
 }
@@ -767,25 +851,24 @@ function fileUploaded(e) {
     var i = 0,
     files = control.files;
     var file = files[i];
+    if (file) {
+        var reader = new FileReader();
+        reader.onload = function(event) {
+            var contents = event.target.result;
+            var xmlOutput = vkbeautify.xml(contents);
 
-    var reader = new FileReader();
-    reader.onload = function (event) {
-        var contents = event.target.result;
-        var xmlOutput = vkbeautify.xml(contents);
+            $('textarea#xmlText').val(xmlOutput);
+            $.cookie("xmlcache", xmlOutput);
 
-        $('textarea#xmlText').val(xmlOutput);
-        $.cookie("xmlcache", xmlOutput);
+            getXmlDocument();
 
-        getXmlDocument();
-
-        loadUploadXmlFile();
-
-        window.location = window.location;
-    };
-    reader.onerror = function (event) {
-        throw "File could not be read! Code " + event.target.error.code;
-    };
-    reader.readAsText(file);
+            loadUploadXmlFile();
+        };
+        reader.onerror = function(event) {
+            throw "File could not be read! Code " + event.target.error.code;
+        };
+        reader.readAsText(file);
+    }
 }
 
 function download() {
@@ -1557,6 +1640,10 @@ function odtDeleteRemoveApp(xmlDoc) {
 
 
 function odtAddExcludeApp(xmlDoc) {
+
+
+    $("#cbExcludeApp").msdropdownval();
+
     var selectedProduct = $("#cbProduct").val();
     var selectExcludeApp = $("#cbExcludeApp").val();
 
@@ -2088,14 +2175,14 @@ function loadUploadXmlFile(inXmlDoc) {
         addNode = xmlDoc.documentElement.getElementsByTagName("Add")[0];
 
         var selectBitness = addNode.getAttribute("OfficeClientEdition");
-        $("#cbEdition").val(selectBitness);
+        $("#cbEdition").msdropdownval(selectBitness);
 
         var products = addNode.getElementsByTagName("Product");
         if (products.length > 0) {
             var product = products[0];
             var productId = product.getAttribute("ID");
 
-            $("select#cbProduct").val(productId);
+            $("select#cbProduct").msdropdownval(productId);
 
             var pidKey = product.getAttribute("PIDKEY");
             $("#txtPidKey").val(pidKey);
@@ -2104,7 +2191,7 @@ function loadUploadXmlFile(inXmlDoc) {
             if (exApps.length > 0) {
                 var exApp = exApps[0];
                 var excludeAppId = exApp.getAttribute("ID");
-                $("#cbExcludeApp").val(excludeAppId);
+                $("#cbExcludeApp").msdropdownval(excludeAppId);
 
                 $("#btRemoveExcludeApp").prop("disabled", false);
             } else {
@@ -2120,7 +2207,7 @@ function loadUploadXmlFile(inXmlDoc) {
 
         var selectedBranch = addNode.getAttribute("Branch");
         if (selectedBranch) {
-            $("#cbBranch").val(selectedBranch);
+            $("#cbBranch").msdropdownval(selectedBranch);
            // $("#office2016Select").addClass("is-selected");
         }
     }
@@ -2135,12 +2222,12 @@ function loadUploadXmlFile(inXmlDoc) {
                 var removeproduct = removeProducts[0];
                 var removeproductId = removeproduct.getAttribute("ID");
 
-                $("#cbRemoveProduct").val(removeproductId);
+                $("#cbRemoveProduct").msdropdownval(removeproductId);
 
                 var removeLangs = removeproduct.getElementsByTagName("Language");
                 if (removeLangs.length > 0) {
                     var removeLangId = removeLangs[0].getAttribute("ID");
-                    $("#cbRemoveLanguage").val(removeLangId);
+                    $("#cbRemoveLanguage").msdropdownval(removeLangId);
                 }
 
                 $("#removeAllProducts")[0].checked = false;
@@ -2174,7 +2261,7 @@ function loadUploadXmlFile(inXmlDoc) {
 
         var selectedUpdateBranch = updateNode.getAttribute("Branch");
         if (selectedUpdateBranch) {
-            $("#cbUpdateBranch").val(selectedUpdateBranch);
+            $("#cbUpdateBranch").msdropdownval(selectedUpdateBranch);
         }
 
         odtToggleUpdate();
@@ -2332,6 +2419,7 @@ function clearXml() {
     for (var t = 0; t < resetDropDowns.length; t++) {
         var dropDown = resetDropDowns[t];
         $("#" + dropDown.id).prop('selectedIndex', 0);
+        $("#" + dropDown.id).msdropdownval($("#" + dropDown.id).val());
     }
 
     var resetToggles = $("input:checkbox");
@@ -2484,6 +2572,8 @@ function foreverHideWelcome() {
 
 function openCommentDialog() {
     //$("#commentDialog")[0].style.display = 'block';
+
+    $("textarea#commentText").val("");
 
     var xmlDoc = getXmlDocument();
     var config = xmlDoc.getElementsByTagName('Configuration')[0];

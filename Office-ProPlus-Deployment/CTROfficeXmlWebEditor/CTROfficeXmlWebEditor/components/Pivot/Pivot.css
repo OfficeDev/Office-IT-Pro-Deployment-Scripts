@@ -1,6 +1,6 @@
 /* Copyright (c) Microsoft. All rights reserved. Licensed under the MIT license. See LICENSE in the project root for license information. */
 /**
- * Fabric 1.0.0
+ * Fabric 1.1.0
  * The front-end framework for building experiences for Office 365.
  **/
 .ms-Pivot {
@@ -42,14 +42,6 @@
   font-family: 'Segoe UI Semibold WestEuropean', 'Segoe UI Semibold', 'Segoe WP Semibold', 'Segoe UI', 'Segoe WP', Tahoma, Arial, sans-serif;
 }
 
-.ms-Pivot--large .ms-Pivot-link {
-  font-size: 17px;
-}
-
-.ms-Pivot--large .ms-Pivot-link.is-selected {
-  font-family: 'Segoe UI Semilight WestEuropean', 'Segoe UI Semilight', 'Segoe WP Semilight', 'Segoe UI', 'Segoe WP', Tahoma, Arial, sans-serif;
-}
-
 .ms-Pivot-link.ms-Pivot-link--overflow {
   color: #666666;
 }
@@ -73,7 +65,15 @@
   top: 0;
 }
 
-.ms-Pivot--large .ms-Pivot-link.ms-Pivot-link--overflow:after {
+.ms-Pivot.ms-Pivot--large .ms-Pivot-link {
+  font-size: 17px;
+}
+
+.ms-Pivot.ms-Pivot--large .ms-Pivot-link.is-selected {
+  font-family: 'Segoe UI Semilight WestEuropean', 'Segoe UI Semilight', 'Segoe WP Semilight', 'Segoe UI', 'Segoe WP', Tahoma, Arial, sans-serif;
+}
+
+.ms-Pivot.ms-Pivot--large .ms-Pivot-link.ms-Pivot-link--overflow:after {
   font-size: 17px;
 }
 

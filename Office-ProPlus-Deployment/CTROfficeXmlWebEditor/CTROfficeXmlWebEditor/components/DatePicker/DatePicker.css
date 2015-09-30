@@ -1,6 +1,6 @@
 /* Copyright (c) Microsoft. All rights reserved. Licensed under the MIT license. See LICENSE in the project root for license information. */
 /**
- * Fabric 1.0.0
+ * Fabric 1.1.0
  * The front-end framework for building experiences for Office 365.
  **/
 .ms-TextField {
@@ -60,6 +60,7 @@
   padding: 6px 10px 8px;
   width: 100%;
   min-width: 180px;
+  outline: 1px solid transparent;
 }
 
 .ms-TextField-field:hover {
@@ -132,6 +133,7 @@
   padding-bottom: 5px;
   height: 32px;
   width: 1%;
+  white-space: nowrap;
 }
 
 .ms-TextField.ms-TextField--underlined .ms-TextField-field {
@@ -171,12 +173,6 @@
   min-width: 260px;
   padding-top: 6px;
   overflow: auto;
-}
-
-@media screen and (-ms-high-contrast: active) {
-  .ms-TextField .ms-TextField-field {
-    outline: 1px solid transparent;
-  }
 }
 
 .ms-Label {
@@ -250,7 +246,7 @@
   position: absolute;
   right: 5px;
   bottom: 5px;
-  z-index: 10;
+  z-index: 5;
 }
 
 .ms-DatePicker-holder {
@@ -277,6 +273,11 @@
   box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.4);
   border: 1px solid #eaeaea;
   display: block;
+}
+
+.ms-DatePicker-picker--focused.ms-DatePicker-picker--opened {
+  position: relative;
+  z-index: 10;
 }
 
 .ms-DatePicker-frame {
@@ -436,7 +437,7 @@
   left: 0px;
   position: absolute;
   top: 0px;
-  width: 180px;
+  width: 140px;
   z-index: 5;
   cursor: pointer;
 }

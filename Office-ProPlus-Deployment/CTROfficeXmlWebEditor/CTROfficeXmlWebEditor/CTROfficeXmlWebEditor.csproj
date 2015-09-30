@@ -217,6 +217,7 @@
     <Content Include="New-Index.html" />
     <Content Include="Scripts\FileSaver.js" />
     <Content Include="Scripts\FileSaver.min.js" />
+    <Content Include="Scripts\jquery.fabric.js" />
     <Content Include="Scripts\jquery.fabric.min.js" />
     <Content Include="Scripts\new-main.js" />
     <Content Include="Scripts\ui-bootstrap-tpls-0.13.2.min.js" />

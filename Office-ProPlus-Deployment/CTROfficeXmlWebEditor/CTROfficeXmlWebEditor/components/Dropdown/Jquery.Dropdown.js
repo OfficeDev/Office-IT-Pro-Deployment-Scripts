@@ -129,7 +129,7 @@
                 if (!$dropdownWrapper.hasClass('is-disabled')) {
 
                     /** Deselect all items and select this one. */
-                    $(this).siblings('.ms-Dropdown-item').removeClass('is-selected');
+                    $(this).siblings('.ms-Dropdown-item').removeClass('is-selected')
                     $(this).addClass('is-selected');
 
                     /** Update the replacement dropdown's title. */

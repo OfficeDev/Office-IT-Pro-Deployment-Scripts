@@ -1,6 +1,6 @@
 /* Copyright (c) Microsoft. All rights reserved. Licensed under the MIT license. See LICENSE in the project root for license information. */
 /**
- * Fabric 1.0.0
+ * Fabric 1.1.0
  * The front-end framework for building experiences for Office 365.
  **/
 .ms-Button {
@@ -876,6 +876,7 @@
   padding-left: 0;
   padding-right: 15px;
   border: 0;
+  position: relative;
 }
 
 .ms-CommandBar:focus {
@@ -890,12 +891,7 @@
 .ms-CommandBar-sideCommands {
   float: right;
   text-align: right;
-}
-
-@media only screen and (max-width: 479px) {
-  .ms-CommandBar-sideCommands {
-    width: auto;
-  }
+  width: auto;
 }
 
 @media only screen and (min-width: 480px) {
@@ -911,6 +907,11 @@
   height: 40px;
   outline: none;
   vertical-align: top;
+}
+
+.ms-CommandBarItem .ms-CommandBarItem-chevronDown,
+.ms-CommandBarItem .ms-CommandBarItem-commandText {
+  display: none;
 }
 
 @media screen and (-ms-high-contrast: active) {
@@ -950,54 +951,10 @@
   }
 }
 
-.ms-CommandBarItem.is-toggled {
-  background: #c7e0f4;
-  color: #005a9e;
-}
-
-@media screen and (-ms-high-contrast: active) {
-  .ms-CommandBarItem.is-toggled {
-    border-left: 1px solid #ffffff;
-    border-right: 1px solid #ffffff;
-  }
-}
-
-@media screen and (-ms-high-contrast: black-on-white) {
-  .ms-CommandBarItem.is-toggled {
-    border-left: 1px solid #000000;
-    border-right: 1px solid #000000;
-  }
-}
-
-.ms-CommandBarItem.is-toggled:hover {
-  background: #c8c8c8;
-  color: #005a9e;
-}
-
-@media screen and (-ms-high-contrast: active) {
-  .ms-CommandBarItem.is-toggled:hover {
-    border-left: 1px solid #ffffff;
-    border-right: 1px solid #ffffff;
-  }
-}
-
-@media screen and (-ms-high-contrast: black-on-white) {
-  .ms-CommandBarItem.is-toggled:hover {
-    border-left: 1px solid #000000;
-    border-right: 1px solid #000000;
-  }
-}
-
-@media only screen and (max-width: 639px) {
+@media only screen and (min-width: 640px) {
   .ms-CommandBarItem .ms-CommandBarItem-chevronDown,
   .ms-CommandBarItem .ms-CommandBarItem-commandText {
-    display: none;
-  }
-}
-
-@media only screen and (max-width: 1023px) {
-  .ms-CommandBarItem {
-    margin-right: 0;
+    display: inline;
   }
 }
 
@@ -1022,18 +979,12 @@
 
 .ms-CommandBarItem-link {
   line-height: 39px;
-  padding: 0 6px;
   cursor: pointer;
   height: 40px;
   min-width: 22px;
   text-align: center;
   position: relative;
-}
-
-@media only screen and (max-width: 1023px) {
-  .ms-CommandBarItem-link {
-    padding: 0 6px;
-  }
+  padding: 0 6px;
 }
 
 @media only screen and (min-width: 640px) {
@@ -1179,41 +1130,51 @@
   display: none;
   top: 1px;
   right: 0px;
+  z-index: 10;
 }
 
-.ms-CommandBarSearch--active {
+.ms-CommandBarSearch.is-active {
   background-color: #c7e0f4;
   color: #000000;
 }
 
-.ms-CommandBarSearch--active:hover {
+@media only screen and (max-width: 639px) {
+  .ms-CommandBarSearch.is-active {
+    width: 100%;
+    position: absolute;
+    z-index: 10;
+    max-width: 100%;
+  }
+}
+
+.ms-CommandBarSearch.is-active:hover {
   background-color: #c7e0f4;
   color: #000000;
 }
 
-.ms-CommandBarSearch--active .ms-CommandBarSearch-input {
+.ms-CommandBarSearch.is-active .ms-CommandBarSearch-input {
   cursor: text;
   padding-right: 40px;
   border-left-width: 8px;
 }
 
-.ms-CommandBarSearch--active.ms-CommandBarSearch--hasBack .ms-CommandBarSearch-input {
+.ms-CommandBarSearch.is-active.ms-CommandBarSearch--hasBack .ms-CommandBarSearch-input {
   border-left-width: 40px;
 }
 
-.ms-CommandBarSearch--active .ms-CommandBarSearch-iconSearchWrapper {
+.ms-CommandBarSearch.is-active .ms-CommandBarSearch-iconSearchWrapper {
   display: none;
 }
 
-.ms-CommandBarSearch--active.ms-CommandBarSearch--hasBack .ms-CommandBarSearch-iconArrowWrapper {
+.ms-CommandBarSearch.is-active.ms-CommandBarSearch--hasBack .ms-CommandBarSearch-iconArrowWrapper {
   display: block;
 }
 
-.ms-CommandBarSearch--active.ms-CommandBarSearch--hasText .ms-CommandBarSearch-input {
+.ms-CommandBarSearch.is-active .ms-CommandBarSearch-input {
   padding-right: 40px;
 }
 
-.ms-CommandBarSearch--active.ms-CommandBarSearch--hasText .ms-CommandBarSearch-iconClearWrapper {
+.ms-CommandBarSearch.is-active .ms-CommandBarSearch-iconClearWrapper {
   display: block;
 }
 
@@ -1266,7 +1227,7 @@
   background-color: rgba(0, 0, 0, 0.4);
 }
 
-.ms-Overlay.ms-Overlay--none {
+.ms-Overlay--none {
   visibility: hidden;
 }
 
