@@ -496,12 +496,14 @@
 
     /** Switch to the is-pickingMonths state. */
     $monthControls.on('click', '.js-showMonthPicker', function(event) {
-      $datePicker.toggleClass('is-pickingMonths');
+        $datePicker.toggleClass('is-pickingMonths');
+        //$datePicker.toggleClass('is-pickingYears');
     });
 
     /** Switch to the is-pickingYears state. */
     $monthPicker.on('click', '.js-showYearPicker', function(event) {
-      $datePicker.toggleClass('is-pickingYears');
+        $datePicker.toggleClass('is-pickingYears');
+        //$datePicker.toggleClass('is-pickingMonths');
     });
 
   }

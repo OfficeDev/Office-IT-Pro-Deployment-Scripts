@@ -1740,13 +1740,13 @@ function odtToggleUpdate() {
     if ($UpdatesEnabled.checked) {
         $("#txtUpdatePath").removeProp("disabled");
         $("#txtTargetVersion").removeProp("disabled");
-        $('#txtDeadline').removeProp("disabled");
+        $(".ms-DatePicker .ms-TextField input").removeProp("disabled"); //deadline textbox
         $('#txtTargetVersion').css("background-color", "");
         
     } else {
         $("#txtUpdatePath").prop("disabled", "true");
         $("#txtTargetVersion").prop("disabled", "true");
-        $('#txtDeadline').prop("disabled", "true");
+        $(".ms-DatePicker .ms-TextField input").prop("disabled", "true"); //deadline textbox
         $('#txtTargetVersion').css("background-color", "#f0f0f0");
     }
 }
@@ -1754,7 +1754,7 @@ function odtToggleUpdate() {
 function odtSaveUpdates(xmlDoc) {
     var selectUpdatePath = $("#txtUpdatePath").val();
     var selectTargetVersion = $("#txtTargetVersion").val();
-    var date = $('#txtDeadline').val();
+    var date = $(".ms-DatePicker .ms-TextField input").val(); //deadline textbox
     var $UpdatesEnabled = $("#updatesEnabled")[0];
     if (date) {
         date = new Date(date);
@@ -2251,12 +2251,12 @@ function loadUploadXmlFile(inXmlDoc) {
             $("#updatesEnabled")[0].checked = true;
             $("#txtUpdatePath").val(selectUpdatePath);
             $("#txtTargetVersion").val(selectTargetVersion);
-            $("#txtDeadline").val(selectDeadline);
+            $(".ms-DatePicker .ms-TextField input").val(selectDeadline);
         } else {
             $("#updatesEnabled")[0].checked = false;
             $("#txtUpdatePath").val("");
             $("#txtTargetVersion").val("");
-            $("#txtDeadline").val("");
+            $(".ms-DatePicker .ms-TextField input").val("");
         }
 
         var selectedUpdateBranch = updateNode.getAttribute("Branch");
@@ -2407,7 +2407,7 @@ function sendMail() {
 
 function clearXml() {
     $('textarea#xmlText').val("");
-    $("#txtDeadline").val("");
+    $(".ms-DatePicker .ms-TextField input").val("");
     $("#txtLoggingUpdatePath").val("");
     $("#txtPidKey").val("");
     $("#txtSourcePath").val("");
