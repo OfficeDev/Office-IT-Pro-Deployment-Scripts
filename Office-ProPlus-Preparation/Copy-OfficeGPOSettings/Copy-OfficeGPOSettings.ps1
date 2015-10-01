@@ -692,7 +692,7 @@ Process
 	#Get all the admx files associated with the target version
     $admxPat = $TargetVersion.Substring(0,2);
 
-    $admxFiles = dir -Path $CentralPolicyDefinitionDirectory | ? Name -like "*$admxPat*";  
+    $admxFiles = dir -Path $CentralPolicyDefinitionDirectory -ErrorAction SilentlyContinue | ? Name -like "*$admxPat*";  
 
     if (!($admxFiles)) {
 	    $admxFiles = dir -Path $PolicyDefinitionDirectory | ? Name -like "*$admxPat*";  
