@@ -1,4 +1,4 @@
 ### Restrict Exchange Online Mobile Access
-This PowerShell Function connects to Exchange Online and Restricts Mobile access to only Outlook Mobile App for all of the Mailboxes in the Organization. This script is for Organizations that have moved their email to Exchange Online but they want restrict access so that mobile devices cannot access email unless they use Outlook Mobile App.
+This PowerShell script will connect to Exchange Online and configure it to restrict mobile device access to Exchange Online.  It will disable OWA for Mobile Devices. It will also disable all mobile ActiveSync access to Exchange Online except for the "Outlook for iOS and Android" mobile app.
 
 [README](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/wiki/README_Disable-ExchangeOnlineMobileAccess)
