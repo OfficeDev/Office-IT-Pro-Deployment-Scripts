@@ -1,0 +1,257 @@
+﻿<!-- Copyright (c) Microsoft. All rights reserved. Licensed under the MIT license. See LICENSE in the project root for license information. -->
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+
+    <title>Component Table</title>
+
+    <link rel="stylesheet" href="stylesheets/fabric.css">
+    <link rel="stylesheet" href="components/Table/Table.min.css">
+    <link rel="stylesheet" href="components/Button/Button.min.css" />
+    <link rel="stylesheet" href="components/Dropdown/Dropdown.min.css" />
+
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="Scripts/jquery.fabric.min.js"></script>
+    <script type="text/javascript" src="components/Table/Jquery.Table.js"></script>
+
+    <!--<script type="text/javascript" src="Table.js"></script>-->
+    <script type="text/javascript">
+    $(document).ready(function() {
+      // File Picker demo fixes
+      if ($('.ms-FilePicker').length > 0) {
+        $('.ms-FilePicker').css({
+          "position": "absolute !important"
+        });
+
+        $('.ms-Table').FilePicker();
+      } else {
+        if ($.fn.Table) {
+          $('.ms-Table').Table();
+        }
+      }
+
+      if(fabric && fabric['Table']) {
+        var component, componentHolder;
+        componentHolder = document.querySelector('.component-holder');
+
+        if (componentHolder) {
+          component = new fabric.Spinner(componentHolder);
+        }
+      }
+    });
+    </script>
+
+    <!-- Styles specifically for this page, not required for proper display on components  -->
+    <style type="text/css">
+        body {
+            margin: auto 20px;
+        }
+
+        h1 {
+            padding: 8px;
+        }
+
+        #componentWrapper {
+            width: 100%;
+            height: 100%;
+        }
+
+        .sample-wrapper {
+            margin: 20px;
+        }
+
+        .ms-Table.is-open {
+            position: relative;
+            margin-bottom: 10px;
+        }
+
+        .ms-Dialog {
+            position: relative;
+            margin-bottom: 10px;
+        }
+
+        .ms-NavBar-item .ms-Table {
+            position: absolute;
+        }
+
+        .ms-Table .ms-Table {
+            position: absolute;
+        }
+    </style>
+</head>
+
+<body>
+    <h1 class="ms-font-su ms-fontColor-white ms-bgColor-themeDarker">Table</h1>
+    <div id="componentWrapper">
+        <div class="ms-Grid">
+            <div class="ms-Grid-row">
+                <div class="ms-Grid-col ms-u-md2 ms-u-lg2 ms-u-xl1">
+                    <div class="ms-Table">
+                        <div class="ms-Table-row">
+                            <span class="ms-Table-cell">Section</span>
+                        </div>
+                        <div class="ms-Table-row">
+                            <span class="ms-Table-cell">Add Product</span>
+                        </div>
+                        <div class="ms-Table-row">
+                            <span class="ms-Table-cell">Remove Product</span>
+                        </div>
+                        <div class="ms-Table-row">
+                            <span class="ms-Table-cell">Updates</span>
+                        </div>
+                        <div class="ms-Table-row is-selected">
+                            <span class="ms-Table-cell">Display</span>
+                        </div>
+                        <div class="ms-Table-row">
+                            <span class="ms-Table-cell">Logging</span>
+                        </div>
+                        <div class="ms-Table-row">
+                            <span class="ms-Table-cell">Templates</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="ms-Grid-col ms-u-md5 ms-u-lg4 ms-u-xl4">
+                    <h1 class="ms-font-l">Add Product</h1>
+                    <table>
+                        <tr>
+                            <td>
+                                <label class="ms-Label">Product</label>
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="ms-Dropdown">
+                        <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
+                        <select id="cbProduct" class="ms-Dropdown-select">
+                            <option value="O365ProPlusRetail">Office 365 ProPlus Retail</option>
+                            <option value="O365BusinessRetail">Office 365 Business Retail</option>
+                            <option value="VisioProRetail">Visio Professional Retail</option>
+                            <option value="ProjectProRetail">Project Professional Retail</option>
+                            <option value="SPDRetail">SharePoint Designer</option>
+                        </select>
+                    </div>
+                    <table>
+                        <tr>
+                            <td>
+                                <label class="ms-Label">Edition</label>
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="ms-Dropdown">
+                        <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
+                        <select id="cbEdition" class="ms-Dropdown-select">
+                            <option value="32">32-bit</option>
+                            <option value="64">64-bit</option>
+                        </select>
+                    </div>
+                    <table>
+                        <tr>
+                            <td>
+                                <label class="ms-Label">Language</label>
+                            </td>
+                        </tr>
+                    </table>
+                    <table>
+                        <tr>
+                            <td style="width: 100%; padding-right: 10px">
+                                <div class="ms-Dropdown">
+                                    <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
+                                    <select id="cbLanguage" class="ms-Dropdown-select">
+                                        <option value="en-us">English (en-us)</option>
+                                        <option value="ar-sa">Arabic (ar-sa)</option>
+                                        <option value="bg-bg">Bulgarian (bg-bg)</option>
+                                        <option value="zh-cn">Chinese (Simplified) (zh-cn)</option>
+                                        <option value="zh-tw">Chinese (zh-tw)</option>
+                                        <option value="hr-hr">Croatian (hr-hr)</option>
+                                        <option value="cs-cz">Czech (cs-cz)</option>
+                                        <option value="da-dk">Danish (da-dk)</option>
+                                        <option value="nl-nl">Dutch (nl-nl)</option>
+                                        <option value="et-ee">Estonian (et-ee)</option>
+                                        <option value="fi-fi">Finnish (fi-fi)</option>
+                                        <option value="fr-fr">French (fr-fr)</option>
+                                        <option value="de-de">German (de-de)</option>
+                                        <option value="el-gr">Greek (el-gr)</option>
+                                        <option value="he-il">Hebrew (he-il)</option>
+                                        <option value="hi-in">Hindi (hi-in)</option>
+                                        <option value="hu-hu">Hungarian (hu-hu)</option>
+                                        <option value="id-id">Indonesian (id-id)</option>
+                                        <option value="it-it">Italian (it-it)</option>
+                                        <option value="ja-jp">Japanese (ja-jp)</option>
+                                        <option value="kk-kh">Kazakh (kk-kh)</option>
+                                        <option value="ko-kr">Korean (ko-kr)</option>
+                                        <option value="lv-lv">Latvian (lv-lv)</option>
+                                        <option value="lt-lt">Lithuanian (lt-lt)</option>
+                                        <option value="ms-my">Malay (ms-my)</option>
+                                        <option value="nb-no">Norwegian (Bokm�l) (nb-no)</option>
+                                        <option value="pl-pl">Polish (pl-pl)</option>
+                                        <option value="pt-br">Portuguese (pt-br)</option>
+                                        <option value="pt-pt">Portuguese (pt-pt)</option>
+                                        <option value="ro-ro">Romanian (ro-ro)</option>
+                                        <option value="ru-ru">Russian (ru-ru)</option>
+                                        <option value="sr-latn-rs">Serbian (Latin) (sr-latn-rs)</option>
+                                        <option value="sk-sk">Slovak (sk-sk)</option>
+                                        <option value="sl-si">Slovenian (sl-si)</option>
+                                        <option value="es-es">Spanish (es-es)</option>
+                                        <option value="sv-se">Swedish (sv-se)</option>
+                                        <option value="th-th">Thai (th-th)</option>
+                                        <option value="tr-tr">Turkish (tr-tr)</option>
+                                        <option value="uk-ua">Ukrainian (uk-ua)</option>
+                                    </select>
+                                </div>
+                            </td>
+                            <td style="width: 150px;text-align: right; padding-right: 10px">
+                                <button id="btAddLanguage" class="ms-Button ">
+                                    <!-- btn btn-primary -->
+                                    Add
+                                </button>
+                            </td>
+                            <td style="width:80px;text-align: right">
+                                <button id="btRemoveLanguage" class="ms-Button" disabled="true">
+                                    <!-- btn btn-primary -->
+                                    Remove
+                                </button>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="ms-Grid-col ms-u-md5 ms-u-lg6 ms-u-xl7">
+                    Third
+                </div>
+            </div>
+        </div>
+
+
+                
+    </div>
+    <script type='text/javascript' src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script type="text/javascript" src="./Scripts/jquery.fabric.min.js"></script>
+    <script type="text/javascript" src="./components/Dropdown/Jquery.Dropdown.js"></script>
+    <script>
+    $(document).ready(function () {
+        if ($('.ms-FilePicker').length > 0) {
+            $('.ms-FilePicker').css({
+                "position": "absolute !important"
+            });
+
+            $('.ms-Dropdown').FilePicker();
+        } else {
+            if ($.fn.Dropdown) {
+                $('.ms-Dropdown').Dropdown();
+            }
+        }
+
+        if (fabric && fabric['Dropdown']) {
+            var component, componentHolder;
+            componentHolder = document.querySelector('.component-holder');
+
+            if (componentHolder) {
+                component = new fabric.Spinner(componentHolder);
+            }
+        }
+    });
+
+    </script>
+
+</body>
+</html>
