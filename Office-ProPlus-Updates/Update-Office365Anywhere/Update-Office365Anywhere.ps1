@@ -299,7 +299,12 @@ Will generate the Office Deployment Tool (ODT) configuration XML based on the lo
             }
         }
     } else {
-      $isAlive = Test-UpdateSource -UpdateSource $currentUpdateSource
+        if($currentUpdateSource -ne $null){
+            $isAlive = Test-UpdateSource -UpdateSource $currentUpdateSource
+        }else{
+            $isAlive = Test-UpdateSource -UpdateSource $officeUpdateCDN
+            $currentUpdateSource = $officeUpdateCDN;
+        }
     }
 
     if ($isAlive) {
