@@ -1069,18 +1069,21 @@ function odtGetExcludedApps() {
         $appsToExclude = @() 
 
         $installedItems = $regProv.EnumKey($HKLM, $productsPath)
-        foreach ($appName in $allExcludeApps) {
-           [bool]$appInstalled = $false
-           foreach ($installedItem in $installedItems.sNames) {
-               if ($installedItem.ToLower().StartsWith($appName.ToLower())) {
-                  $appInstalled = $true
-                  break;
+
+        if ($installedItems.Count -gt 0) {
+            foreach ($appName in $allExcludeApps) {
+               [bool]$appInstalled = $false
+               foreach ($installedItem in $installedItems.sNames) {
+                   if ($installedItem.ToLower().StartsWith($appName.ToLower())) {
+                      $appInstalled = $true
+                      break;
+                   }
                }
-           }
            
-           if (!($appInstalled)) {
-              $appsToExclude += $appName
-           }
+               if (!($appInstalled)) {
+                  $appsToExclude += $appName
+               }
+            }
         }
         
         return $appsToExclude;
