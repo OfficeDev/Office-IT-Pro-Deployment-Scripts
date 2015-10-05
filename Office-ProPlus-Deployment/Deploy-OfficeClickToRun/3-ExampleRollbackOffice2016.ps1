@@ -12,8 +12,8 @@
 $targetFilePath = "configuration.xml"
 
 #This example will create an Office Deployment Tool (ODT) configuration file and include all of the Languages currently in use on the computer
-#from which the script is run.  It will then remove the Version attribute from the XML to ensure the installation gets the latest version
-#when updating an existing install and then it will initiate a install
+#from which the script is run. It will then remove the existing Office 2016 Click-To-Run installation and then it will then remove the Version attribute from the XML to ensure the installation gets the latest version
+#when updating an existing install and then it will initiate a install of Office 2013 Click-To-Run
 
 Generate-ODTConfigurationXml -Languages AllInUseLanguages -TargetFilePath $targetFilePath | Remove-OfficeClickToRun | Set-ODTAdd -Version $NULL | Install-OfficeClickToRun -OfficeVersion Office2013
 
