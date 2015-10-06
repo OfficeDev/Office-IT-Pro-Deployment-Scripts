@@ -39,6 +39,10 @@ Will uninstall Office Click-to-Run.
         }
             
         $c2rVersion = Get-OfficeVersion | Where-Object {$_.ClickToRun -eq "True" -and $_.DisplayName -match "Microsoft Office 365"}
+        if ( $c2rVersion.Count -gt 0) {
+            $c2rVersion =  $c2rVersion[0]
+        }
+
         $c2rName = $c2rVersion.DisplayName
              
         if(!($isInPipe)) {
