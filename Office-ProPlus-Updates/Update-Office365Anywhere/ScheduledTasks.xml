@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScheduledTasks clsid="{CC63F200-7309-4ba0-B154-A71CD118DBCC}">
+  <ImmediateTaskV2 clsid="{9756B581-76EC-4169-9AFC-0CA8D43ADB5F}" name="Update Office365 Anywhere" image="0" changed="2015-08-25 05:01:45" uid="{65AA709B-0094-4538-86BE-6EFA6E7CA417}" userContext="0" removePolicy="0">
+    <Properties action="C" name="Update Office365 Anywhere" runAs="NT AUTHORITY\System" logonType="S4U">
+      <Task version="1.3">
+        <RegistrationInfo>
+          <Author>DOMAIN\admin</Author>
+          <Description>
+          </Description>
+        </RegistrationInfo>
+        <Principals>
+          <Principal id="Author">
+            <UserId>NT AUTHORITY\System</UserId>
+            <LogonType>S4U</LogonType>
+            <RunLevel>HighestAvailable</RunLevel>
+          </Principal>
+        </Principals>
+        <Settings>
+          <IdleSettings>
+            <Duration>PT5M</Duration>
+            <WaitTimeout>PT1H</WaitTimeout>
+            <StopOnIdleEnd>false</StopOnIdleEnd>
+            <RestartOnIdle>false</RestartOnIdle>
+          </IdleSettings>
+          <MultipleInstancesPolicy>IgnoreNew</MultipleInstancesPolicy>
+          <DisallowStartIfOnBatteries>false</DisallowStartIfOnBatteries>
+          <StopIfGoingOnBatteries>false</StopIfGoingOnBatteries>
+          <AllowHardTerminate>false</AllowHardTerminate>
+          <StartWhenAvailable>true</StartWhenAvailable>
+          <AllowStartOnDemand>true</AllowStartOnDemand>
+          <Enabled>true</Enabled>
+          <Hidden>false</Hidden>
+          <ExecutionTimeLimit>PT2H</ExecutionTimeLimit>
+          <Priority>7</Priority>
+          <DeleteExpiredTaskAfter>PT0S</DeleteExpiredTaskAfter>
+        </Settings>
+        <Triggers>
+          <TimeTrigger>
+            <StartBoundary>%LocalTimeXmlEx%</StartBoundary>
+            <EndBoundary>%LocalTimeXmlEx%</EndBoundary>
+            <Enabled>true</Enabled>
+	    <ScheduleByDay>
+                <DaysInterval>1</DaysInterval>
+            </ScheduleByDay>
+          </TimeTrigger>
+        </Triggers>
+        <Actions Context="Author">
+          <Exec>
+            <Command>PowerShell</Command>
+            <Arguments>"-File %Windir%\Temp\Update-Office365Anywhere -WaitForUpdateToFinish $false -EnableUpdateAnywhere $false -ForceAppShutdown $false -UpdatePromptUser $false -DisplayLevel $false</Arguments>
+            <WorkingDirectory>%Windir%\Temp</WorkingDirectory>
+          </Exec>
+        </Actions>
+      </Task>
+    </Properties>
+  </ImmediateTaskV2>
+</ScheduledTasks>
