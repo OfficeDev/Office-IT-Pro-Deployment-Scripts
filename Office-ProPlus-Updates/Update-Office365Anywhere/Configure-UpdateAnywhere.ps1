@@ -1,18 +1,11 @@
 ﻿Function Configure-UpdateAnywhere {
 <#
 .Synopsis
-Configures an existing Group Policy Object (GPO) to schedule a task on workstations to query the version of Office that is installed
-on the computer and write that information to an attribute on the computer object in Active Directory.
-
-.DESCRIPTION
-If you don't have System Center Configruration Manager (SCCM) or an equivalent software management system then using this script
-will provide the capability to inventory what versions of Office are installed in the domain.
+Configures an existing Group Policy Object (GPO) to schedule a task on workstations to query the update Office using the update anywhere script
 
 .NOTES   
 Name: Configure-UpdateAnywhere
 Version: 1.0.1
-DateCreated: 2015-08-20
-DateUpdated: 2015-09-04
 
 .LINK
 https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
@@ -23,46 +16,31 @@ The name of the Group Policy Object (GPO) to configure to inventory Office Clien
 .PARAMETER Domain
 The Domain name of the target Active Directory Domain
 
-.PARAMETER AttributeToStoreOfficeVersion
-The parameter on the computer object that will store the version of Active Directory.  In order for this script to work 
-the computer object's SELF must have write permissions to the attribute specified.  By default a computer in Active Directory
-has permissions to write to attributes that are classified as 'Personal Information'.  This functionality is what allows this 
-Inventory functionality to work.  The scheduled task that runs on the computer runs under the 'System' context which gives it
-permissions to write to its own computer account in Active Directory.  If you would like to use an attribute that is not in the 
-'Personal Information' list then you would have to give 'Self' permissions to write to that Attribute on computer object in 
-Active Directory.  A list of possible attributes that you can use are listed below.  The default attribute that is used by
-this script is Info.  It is an attribute that is unlikely to be already used.  The drawback to using it is that you can 
-not see the value in the computer list view in Active Directory Users and computers.
+.PARAMETER WaitForUpdateToFinish
+If this parameter is set to $true then the function will monitor the Office update and will not exit until the update process has stopped.
+If this parameter is set to $false then the script will exit right after the update process has been started.  By default this parameter is set
+to $true
 
-    -info
-    -physicalDeliveryOfficeName
-    -assistant
-    -facsimileTelephoneNumber
-    -InternationalISDNNumber
-    -personalTitle
-    -otherIpPhone
-    -ipPhone
-    -primaryInternationalISDNNumber
-    -thumbnailPhoto
-    -postalCode
-    -preferredDeliveryMethod
-    -registeredAddress
-    -streetAddress
-    -telephoneNumber
-    -teletexTerminalIdentifier
-    -telexNumber
-    -primaryTelexNumber
+.PARAMETER EnableUpdateAnywhere
+This parameter controls whether the UpdateAnywhere functionality is used or not. When enabled the update process will check the availbility
+of the update source set for the client.  If that update source is not available then it will update the client from the Microsoft Office CDN.
+When set to $false the function will only use the Update source configured on the client. By default it is set to $true.
 
-.PARAMETER OverWriteFile
-Will parameter controls whether or not the Office inventory script will overwrite the Active Directory computer attribute if 
-a value already exists for that attribute
+.PARAMETER ForceAppShutdown
+This specifies whether the user will be given the option to cancel out of the update. However, if this variable is set to True, then the applications will be shut down immediately and the update will proceed.
+
+.PARAMETER UpdatePromptUser
+This specifies whether or not the user will see this dialog before automatically applying the updates:
+
+.PARAMETER DisplayLevel
+This specifies whether the user will see a user interface during the update. Setting this to false will hide all update UI (including error UI that is encountered during the update scenario).
+
+.PARAMETER UpdateToVersion
+This specifies the version to which Office needs to be updated to.  This can used to install a newer or an older version than what is presently installed.
+
 
 .EXAMPLE
-Configure-GPOOfficeInventory -GpoName OfficeInventoryGPO
-
-Description:
-This Example will configure the GPO 'OfficeInventoryGPO' to inventory the Office version of the workstations to which the Group 
-Policy is applied
+Configure-UpdateAnywhere -GpoName UpdateGPO
 
 #>
     [CmdletBinding(SupportsShouldProcess=$true)]
@@ -156,9 +134,9 @@ Policy is applied
     $ConfigFile.Load($sourceXmlPath)
     $argNode = $ConfigFile.SelectSingleNode("/ScheduledTasks/ImmediateTaskV2/Properties/Task/Actions/Exec/Arguments")
     
-    $innerText = "-File %Windir%\Temp\Update-Office365Anywhere -WaitForUpdateToFinish $WaitForUpdateToFinish -EnableUpdateAnywhere $EnableUpdateAnywhere -ForceAppShutdown $ForceAppShutdown -UpdatePromptUser $UpdatePromptUser -DisplayLevel $DisplayLevel"
-    if($UpdateToVersion -ne $null){
-        $innerText += " -UpdateToVersion $UpdateToVersion"
+    $innerText = "-File %Windir%\Temp\Update-Office365Anywhere.ps1 -WaitForUpdateToFinish `$$WaitForUpdateToFinish -EnableUpdateAnywhere `$$EnableUpdateAnywhere -ForceAppShutdown `$$ForceAppShutdown -UpdatePromptUser `$$UpdatePromptUser -DisplayLevel `$$DisplayLevel"
+    if([string]::IsNullOrWhiteSpace($UpdateToVersion) -eq $false){
+        $innerText = "-File %Windir%\Temp\Update-Office365Anywhere.ps1 -WaitForUpdateToFinish `$$WaitForUpdateToFinish -EnableUpdateAnywhere `$$EnableUpdateAnywhere -ForceAppShutdown `$$ForceAppShutdown -UpdatePromptUser `$$UpdatePromptUser -DisplayLevel `$$DisplayLevel -UpdateToVersion `$$UpdateToVersion"
     } 
     $argNode.InnerText = $innerText
     $ConfigFile.Save($sourceXmlPath)

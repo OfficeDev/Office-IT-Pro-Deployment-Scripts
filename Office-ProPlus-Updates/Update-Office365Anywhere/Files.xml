@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Files clsid="{215B2E53-57CE-475c-80FE-9EEC14635851}"><File clsid="{50BE44C8-567A-4ed1-B1D0-9234FE1F38AF}" name="Update-Office365Anywhere.ps1" status="Update-Office365Anywhere.ps1" image="2" changed="2015-09-04 20:45:32" uid="{021653A3-A60E-41DF-9FFC-07FBDF64394D}" bypassErrors="1"><Properties action="U" fromPath="\\%DomainName%\netlogon\Update-Office365Anywhere.ps1" targetPath="%WindowsDir%\Temp\Update-Office365Anywhere.ps1" readOnly="0" archive="1" hidden="0" suppress="0"/></File>
+</Files>

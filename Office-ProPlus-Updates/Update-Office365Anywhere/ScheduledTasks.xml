@@ -32,22 +32,20 @@
           <Hidden>false</Hidden>
           <ExecutionTimeLimit>PT2H</ExecutionTimeLimit>
           <Priority>7</Priority>
-          <DeleteExpiredTaskAfter>PT0S</DeleteExpiredTaskAfter>
         </Settings>
         <Triggers>
-          <TimeTrigger>
-            <StartBoundary>%LocalTimeXmlEx%</StartBoundary>
-            <EndBoundary>%LocalTimeXmlEx%</EndBoundary>
-            <Enabled>true</Enabled>
-	    <ScheduleByDay>
-                <DaysInterval>1</DaysInterval>
+          <CalendarTrigger>
+            <StartBoundary>2005-10-11T13:21:17-08:00</StartBoundary>
+            <EndBoundary>2999-01-01T00:00:00-08:00</EndBoundary>
+            <ScheduleByDay>
+              <DaysInterval>1</DaysInterval>
             </ScheduleByDay>
-          </TimeTrigger>
+          </CalendarTrigger>
         </Triggers>
         <Actions Context="Author">
           <Exec>
             <Command>PowerShell</Command>
-            <Arguments>"-File %Windir%\Temp\Update-Office365Anywhere -WaitForUpdateToFinish $false -EnableUpdateAnywhere $false -ForceAppShutdown $false -UpdatePromptUser $false -DisplayLevel $false</Arguments>
+            <Arguments>-File %Windir%\Temp\Update-Office365Anywhere.ps1 -WaitForUpdateToFinish $True -EnableUpdateAnywhere $False -ForceAppShutdown $True -UpdatePromptUser $True -DisplayLevel $True</Arguments>
             <WorkingDirectory>%Windir%\Temp</WorkingDirectory>
           </Exec>
         </Actions>
