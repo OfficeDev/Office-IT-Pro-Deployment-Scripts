@@ -87,7 +87,7 @@ Process
                   if ($result.Name) {
                      if ($result.Name.ToUpper() -eq $packageName.ToUpper() -and $result.Version -eq $packageVersion -and $result.ComputerName -eq $computer) {
                          $exists = $true;
-                         $result.NumInstalls += 1;
+                         $result.NumberOfInstalls += 1;
                      }
                   }
                 }
