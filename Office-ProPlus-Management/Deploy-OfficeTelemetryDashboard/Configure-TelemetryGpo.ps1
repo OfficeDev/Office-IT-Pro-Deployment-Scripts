@@ -358,7 +358,15 @@ A GPO named "Office Telemetry" will be created.
     } else {
       $existingGPO = Get-GPO -Name $gpoName -ErrorAction SilentlyContinue
     }
-    
+
+    if ($TelemetryServer) 
+    {
+        if (!($CommonFileShare)) 
+        {
+            $CommonFileShare = "\\$TelemetryServer\TDShared"
+        }
+    }
+ 
     if (!($existingGPO)) 
     {
         Write-Host "Creating a new Group Policy..."
@@ -379,12 +387,12 @@ A GPO named "Office Telemetry" will be created.
 
     #Office 2013
     
-    Set-GPRegistryValue -Name $GpoName -Key "HKCU\Software\Policies\Microsoft\office\15.0\osm" -ValueName CommonFileShare -Type String -Value "\\$CommonFileShare\$shareName" | Out-Null
+    Set-GPRegistryValue -Name $GpoName -Key "HKCU\Software\Policies\Microsoft\office\15.0\osm" -ValueName CommonFileShare -Type String -Value $CommonFileShare | Out-Null
     Set-GPRegistryValue -Name $GpoName -Key "HKCU\Software\Policies\Microsoft\office\15.0\osm" -ValueName Enablelogging -Type Dword -Value 1 | Out-Null
     Set-GPRegistryValue -Name $GpoName -Key "HKCU\Software\Policies\Microsoft\office\15.0\osm" -ValueName EnableUpload -Type Dword -Value 1 | Out-Null
 
     #Office 2016
-    Set-GPRegistryValue -Name $GpoName -Key "HKCU\Software\Policies\Microsoft\office\16.0\osm" -ValueName CommonFileShare -Type String -Value "\\$CommonFileShare\$shareName" | Out-Null
+    Set-GPRegistryValue -Name $GpoName -Key "HKCU\Software\Policies\Microsoft\office\16.0\osm" -ValueName CommonFileShare -Type String -Value $CommonFileShare | Out-Null
     Set-GPRegistryValue -Name $GpoName -Key "HKCU\Software\Policies\Microsoft\office\16.0\osm" -ValueName Enablelogging -Type Dword -Value 1 | Out-Null
     Set-GPRegistryValue -Name $GpoName -Key "HKCU\Software\Policies\Microsoft\office\16.0\osm" -ValueName EnableUpload -Type Dword -Value 1 | Out-Null
 
