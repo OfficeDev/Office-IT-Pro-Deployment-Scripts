@@ -129,13 +129,13 @@ Function Get-OfficeCDNUrl() {
 Function Get-OfficeCTRRegPath() {
     $path15 = 'SOFTWARE\Microsoft\Office\15.0\ClickToRun'
     $path16 = 'SOFTWARE\Microsoft\Office\ClickToRun'
-
-    if (Test-Path "HKLM:\$path15") {
-      return $path15
-    } else {
-      if (Test-Path "HKLM:\$path16") {
-         return $path16
-      }
+    if (Test-Path "HKLM:\$path16") {
+        return $path16
+    }
+    else {
+        if (Test-Path "HKLM:\$path15") {
+            return $path15
+        }
     }
 }
 
