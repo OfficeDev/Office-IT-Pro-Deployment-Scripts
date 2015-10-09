@@ -587,44 +587,54 @@ function New-SharedFolder {
 
 # Install the Telemetry Processor
 function Install-TelemetryProcessor {
-    [string[]] $msiPath32 = ("C:\Program Files\Common Files\microsoft shared\OFFICE16\osmdp32.msi" `
-    ,"C:\Program Files\Microsoft Office\root\VFS\ProgramFilesCommonX64\Microsoft Shared\OFFICE16\1033\osmdp32.msi" `
-    ,"C:\Program Files\Microsoft Office 15\root\vfs\ProgramFilesCommonX86\Microsoft Shared\OFFICE15\1033\osmdp32.msi" `
-    ,"C:\Program Files (x86)\Microsoft Office 15\root\vfs\ProgramFilesCommonX86\Microsoft Shared\OFFICE15\1033\osmdp32.msi")
 
-    [string[]] $msiPath64 = ("C:\Program Files\Common Files\microsoft shared\OFFICE16\osmdp64.msi" `
-    ,"C:\Program Files\Microsoft Office\root\VFS\ProgramFilesCommonX64\Microsoft Shared\OFFICE16\1033\osmdp64.msi" `
-    ,"C:\Program Files\Microsoft Office 15\root\vfs\ProgramFilesCommonX86\Microsoft Shared\OFFICE15\1033\osmdp64.msi" `
-    ,"C:\Program Files (x86)\Microsoft Office 15\root\vfs\ProgramFilesCommonX86\Microsoft Shared\OFFICE15\1033\osmdp64.msi")
-
-    if (Test-64BitOS)
+    if(Test-64BitOS)
     {
-        foreach ($path in $msiPath64) {
-            if (Test-Path $path)
-            {
-            Start-Process $path /qn -wait
-            }
+            [string[]] $msiPath = ("C:\Program Files\Microsoft Office 15\root\vfs\ProgramFilesCommonX86\Microsoft Shared\OFFICE15\1033\osmdp64.msi",
+                                   "C:\Program Files\Microsoft Office 15\root\vfs\ProgramFilesCommonX64\Microsoft Shared\OFFICE15\1033\osmdp64.msi",
+                                   "C:\Program Files\Microsoft Office\root\VFS\ProgramFilesCommonX86\Microsoft Shared\OFFICE15\1033\osmdp64.msi",
+                                   "C:\Program Files\Microsoft Office\root\VFS\ProgramFilesCommonX64\Microsoft Shared\OFFICE15\1033\osmdp64.msi",
+                                   "C:\Program Files\Microsoft Office\root\vfs\ProgramFilesCommonX86\Microsoft Shared\OFFICE16\1033\osmdp64.msi",
+                                   "C:\Program Files\Microsoft Office\root\vfs\ProgramFilesCommonX64\Microsoft Shared\OFFICE16\1033\osmdp64.msi",
+                                   "C:\Program Files (x86)\Microsoft Office\root\VFS\ProgramFilesCommonX86\Microsoft Shared\OFFICE15\1033\osmdp64.msi",                               
+                                   "C:\Program Files (x86)\Microsoft Office\root\VFS\ProgramFilesCommonX86\Microsoft Shared\OFFICE16\1033\osmdp64.msi",
+                                   "C:\Program Files (x86)\Common Files\microsoft shared\OFFICE15\osmdp64.msi",
+                                   "C:\Program Files (x86)\Common Files\microsoft shared\OFFICE16\osmdp64.msi")
+     
+    }
+    else
+    {
+        [string[]] $msiPath = ("C:\Program Files\Microsoft Office 15\root\vfs\ProgramFilesCommonX86\Microsoft Shared\OFFICE15\1033\osmdp32.msi",
+                               "C:\Program Files\Microsoft Office 15\root\vfs\ProgramFilesCommonX64\Microsoft Shared\OFFICE15\1033\osmdp32.msi",
+                               "C:\Program Files\Microsoft Office\root\VFS\ProgramFilesCommonX86\Microsoft Shared\OFFICE15\1033\osmdp32.msi",
+                               "C:\Program Files\Microsoft Office\root\VFS\ProgramFilesCommonX64\Microsoft Shared\OFFICE15\1033\osmdp32.msi",
+                               "C:\Program Files\Microsoft Office\root\vfs\ProgramFilesCommonX86\Microsoft Shared\OFFICE16\1033\osmdp32.msi",
+                               "C:\Program Files\Microsoft Office\root\vfs\ProgramFilesCommonX64\Microsoft Shared\OFFICE16\1033\osmdp32.msi",
+                               "C:\Program Files (x86)\Microsoft Office\root\VFS\ProgramFilesCommonX86\Microsoft Shared\OFFICE15\1033\osmdp32.msi",                               
+                               "C:\Program Files (x86)\Microsoft Office\root\VFS\ProgramFilesCommonX86\Microsoft Shared\OFFICE16\1033\osmdp32.msi",
+                               "C:\Program Files (x86)\Common Files\microsoft shared\OFFICE15\osmdp32.msi",
+                               "C:\Program Files (x86)\Common Files\microsoft shared\OFFICE16\osmdp32.msi")
+
+    }
+            
+    foreach ($path in $msiPath) 
+    {
+        if (Test-Path $path)
+        {
+            Start-Process $path /qn -wait                
         }
-     }
-     else
-     {
-        foreach ($path in $msiPath32) {
-            if (Test-Path $path)
-            {
-            Start-Process $path /qn -wait
-            }
-        }
-     }
- } 
+    }
+} 
 
 #Create the DataProcessor reg values
 function Create-ProcessorRegData {
+    $SqlInstanceName = Get-SqlInstance | foreach { $_.SQLInstance }
     $ShareName = "TDShared"
     $databaseServer = $SqlInstanceName
     [string[]] $OSMPath = ("HKLM:\SOFTWARE\Microsoft\Office\15.0" `
     ,"HKLM:\SOFTWARE\Microsoft\Office\16.0")
-    [string[]] $DataProcessorPath = ("HKLM:\SOFTWARE\Microsoft\Office\15.0\OSM" `
-    ,"HKLM:\SOFTWARE\Microsoft\Office\16.0\OSM")
+    [string[]] $DataProcessorPath = ("HKLM:\SOFTWARE\Microsoft\Office\15.0\OSM",
+                                     "HKLM:\SOFTWARE\Microsoft\Office\16.0\OSM")
     $officeTest = Get-OfficeVersion
     
 
@@ -832,31 +842,20 @@ function Run-TelemetryAgentTask {
 
 # Display instructions to the user about how to use Telemetry Dashboard.
 function Show-TelemetryDashboard {
-   [string[]] $dashboardPath = ("C:\Program Files\Microsoft Office\Root\Office15\msotd.exe" `
-    ,"C:\Program Files\Microsoft Office\Root\Office16\msotd.exe" `
-    ,"C:\Program Files\Microsoft Office 15\root\office15\msotd.exe" `
-    ,"C:\Program Files\Microsoft Office 16\root\office16\msotd.exe")
+   [string[]] $dashboardPath = ("C:\Program Files\Microsoft Office\Root\Office15\msotd.exe",
+                                "C:\Program Files\Microsoft Office\Root\Office16\msotd.exe",
+                                "C:\Program Files\Microsoft Office 15\root\office15\msotd.exe",
+                                "C:\Program Files\Microsoft Office 16\root\office16\msotd.exe",
+                                "C:\Program Files (x86)\Microsoft Office\root\Office16\msotd.exe",
+                                "C:\Program Files (x86)\Microsoft Office 15\root\Office15\msotd.exe")
 
     Write-Host $UiMessage_HowToUseDashboard
-    if (Test-Path $dashboardPath[0])
-    {      
-        Start-Process -FilePath $dashboardPath[0] /qn -Wait
-    }
-
-    elseif (Test-Path $dashboardPath[1])
+    foreach($path in $dashboardPath)
     {
-        Start-Process -FilePath $dashboardPath[1] /qn -wait
-        
-    }
-    elseif (Test-Path $dashboardPath[2])
-    {
-        Start-Process -FilePath $dashboardPath[2] /qn -wait
-        
-    }
-    elseif (Test-Path $dashboardPath[3])
-    {
-        Start-Process -FilePath $dashboardPath[3] /qn -wait
-        
+        if(Test-Path -Path $path)
+        {
+            Start-Process -FilePath $path /qn -Wait
+        }
     }
 }
 
@@ -956,7 +955,6 @@ function Configure-DashboardComponents {
 }
 
 # Main script flow
-
 Confirm-ConsoleBitness
 
 Check-Elevated
@@ -1000,4 +998,3 @@ $SqlServerName = Get-SqlServerName
 
         Write-RegFile $folderName
     }
- 
