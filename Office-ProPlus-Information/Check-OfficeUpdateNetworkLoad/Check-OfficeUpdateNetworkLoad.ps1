@@ -57,7 +57,7 @@ if($VersionStart.Split(".")[0] -eq 15){
     $folderPath = "$env:ProgramFiles\Microsoft Office 15\Data\Updates\Apply"
     $ODTSource = "http://download.microsoft.com/download/6/2/3/6230F7A2-D8A9-478B-AC5C-57091B632FCF/officedeploymenttool_x86_4747-1000.exe"
 }elseif($VersionStart.Split(".")[0] -eq 16){
-    $folderPath = "$env:ProgramFiles\Microsoft Office 16\Data\Updates\Apply"
+    $folderPath = "${env:ProgramFiles(x86)}\Microsoft Office\Updates\Download"
     $ODTSource = "http://download.microsoft.com/download/2/7/A/27AF1BE6-DD20-4CB4-B154-EBAB8A7D4A7E/OfficeDeploymentTool.exe"
 }
 }
@@ -94,7 +94,13 @@ if($VersionStart.Split(".")[0] -eq 15){
     ./setup.exe /configure configuration.xml | Out-Null
 
     #Start word to block update from applying when finished downloading
-    Start-Process "${env:ProgramFiles}\Microsoft Office\root\Office16\WINWORD.EXE"
+    Start-Process "${env:ProgramFiles(x86)}\Microsoft Office\root\Office16\WINWORD.EXE"
+
+    $keyPath = "HKLM:\SOFTWARE\Microsoft\Office\16.0\common\OfficeUpdate"
+    if(!(Test-Path $keyPath)){
+        New-Item -Path $keyPath -Force
+    }
+    New-ItemProperty -Path $keyPath -Name "EnableAutomaticUpdates" -PropertyType DWORD -Value 1
 
     #get bytes for net adapter
     $netstat1 = Get-NetAdapterStatistics
@@ -104,18 +110,31 @@ if($VersionStart.Split(".")[0] -eq 15){
 }
 #Wait for update to complete and stop the UAC process if it gets in the way
 $complete = $false
-while($complete -eq $false){
-    $procs = Get-Process | ? ProcessName -eq 'officeclicktorun'
-    $UACProc = Get-Process | ? ProcessName -eq "consent"
-    if($UACProc -ne $null){
-        $UACProc.Kill()
-        $UACProc = $null
-        $complete = $true
-    }
-    foreach($proc in $procs){
-        if($proc.MainWindowTitle -eq "Please close programs" -or $proc.MainWindowTitle -eq "We need to close some programs"){
+if($VersionStart.Split(".")[0] -eq 15){
+    while($complete -eq $false){
+        $procs = Get-Process | ? ProcessName -eq 'officeclicktorun'
+        $UACProc = Get-Process | ? ProcessName -eq "consent"
+        if($UACProc -ne $null){
+            $UACProc.Kill()
+            $UACProc = $null
             $complete = $true
         }
+        foreach($proc in $procs){
+            if($proc.MainWindowTitle -eq "Please close programs" -or $proc.MainWindowTitle -eq "We need to close some programs"){
+                $complete = $true
+            }
+        }
+}
+}elseif($VersionStart.Split(".")[0] -eq 16){
+    $officeSlideShow = Get-Process | ? ProcessName -like "*Office*" | ? MainWindowTitle -like "*Microsoft Office*"
+    $officeSlideShow.Kill();
+    while($complete -eq $false){
+        $Uproc = $null
+        $Uproc = Get-Process | ? ProcessName -like "*OfficeClickToRun*" | ? MainWindowTitle -like "*Applying update*"
+        if($Uproc -ne $null){
+            $complete = $true
+        }
+        sleep -Seconds 1
     }
 }
 
@@ -139,6 +158,10 @@ Add-Type -assembly "system.io.compression.filesystem"
 $zipSize = Get-Item $ZipPath
 
 #Stop word process
+if($Uproc -ne $null){
+    $Uproc.Kill();
+    $Uproc = $null
+}
 $word = Get-Process | ? ProcessName -eq WINWORD
 $word.Kill()
 $word = $null
