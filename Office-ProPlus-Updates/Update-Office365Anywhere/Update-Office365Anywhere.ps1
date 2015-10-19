@@ -257,6 +257,7 @@ Will generate the Office Deployment Tool (ODT) configuration XML based on the lo
     if ($UpdateToVersion) {
       $oc2rcParams += " updatetoversion=$UpdateToVersion"
     }
+
     
     $UpdateSource = "http"
     if ($currentUpdateSource) {
@@ -288,15 +289,17 @@ Will generate the Office Deployment Tool (ODT) configuration XML based on the lo
         }
 
         if (!$isAlive) {
-            $isAlive = Test-UpdateSource -UpdateSource $officeUpdateCDN
+            $isAlive = Test-UpdateSource -UpdateSource $currentUpdateSource
             if (!($isAlive)) {
                 if ($currentUpdateSource.ToLower() -ne $officeUpdateCDN.ToLower()) {
                   Set-Reg -Hive "HKLM" -keyPath $configRegPath -ValueName "SaveUpdateUrl" -Value $currentUpdateSource -Type String
                 }
 
-               Write-Host "Unable to use $currentUpdateSource. Will now use $officeUpdateCDN" -severity 1 -component "Office 365 Update Anywhere"
+               Write-Host "Unable to use $currentUpdateSource. Will now use $officeUpdateCDN"
                Write-Log -Message "Unable to use $currentUpdateSource. Will now use $officeUpdateCDN" -severity 1 -component "Office 365 Update Anywhere"
                Set-Reg -Hive "HKLM" -keyPath $configRegPath -ValueName "UpdateUrl" -Value $officeUpdateCDN -Type String
+
+                $isAlive = Test-UpdateSource -UpdateSource $officeUpdateCDN
             }
         }
     } else {
