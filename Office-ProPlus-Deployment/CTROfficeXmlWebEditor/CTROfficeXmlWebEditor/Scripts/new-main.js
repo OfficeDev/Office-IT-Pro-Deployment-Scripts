@@ -28,7 +28,11 @@ $(document).ready(function () {
         $("#welcomeDialog").css("display", "block");
     }
 
-    
+    $('code#xmlText').change(function () {
+
+            hljs.highlightBlock(document.getElementById('xmlText'));
+
+    });
 
     changeExcludeApps("2016");
 
@@ -478,7 +482,7 @@ $(document).ready(function () {
     $('#welcomeInner')[0].style.height = desH + "px";
 
     var xmlOutput = $.cookie("xmlcache");
-    $('textarea#xmlText').val(xmlOutput);
+    $('code#xmlText').text(xmlOutput).trigger('change');
     loadUploadXmlFile();
 
     setScrollBar();
@@ -857,7 +861,7 @@ function fileUploaded(e) {
             var contents = event.target.result;
             var xmlOutput = vkbeautify.xml(contents);
 
-            $('textarea#xmlText').val(xmlOutput);
+            $('code#xmlText').text(xmlOutput).trigger('change');
             $.cookie("xmlcache", xmlOutput);
 
             getXmlDocument();
@@ -2394,7 +2398,7 @@ function loadUploadXmlFile(inXmlDoc) {
 }
 
 function sendMail() {
-    var xmlSource = $('textarea#xmlText').val();
+    var xmlSource = $('code#xmlText').text();
 
     var link = "mailto:"
              + "&subject=" + escape("Office Click-To-Run Configuration XML")
@@ -2406,7 +2410,7 @@ function sendMail() {
 
 
 function clearXml() {
-    $('textarea#xmlText').val("");
+    $('code#xmlText').text("").trigger('change');
     $(".ms-DatePicker .ms-TextField input").val("");
     $("#txtLoggingUpdatePath").val("");
     $("#txtPidKey").val("");
@@ -2438,7 +2442,7 @@ function clearXml() {
 }
 
 function getXmlDocument() {
-    var xmlSource = $('textarea#xmlText').val();
+    var xmlSource = $('code#xmlText').text();
     if (!(xmlSource)) {
         xmlSource = "<Configuration></Configuration>";
     }
@@ -2492,7 +2496,7 @@ function displayXml(xmlDoc) {
     var xmlString = (new XMLSerializer().serializeToString(xmlDoc.documentElement));
     var xmlOutput = vkbeautify.xml(xmlString);
 
-    $('textarea#xmlText').val(xmlOutput);
+    $('code#xmlText').text(xmlOutput).trigger('change');
     $.cookie("xmlcache", xmlOutput);
 }
 
@@ -2615,7 +2619,7 @@ function IsGuid(value) {
 }
 
 function setTemplate(template) {
-    $('textarea#xmlText').val("");
+    $('code#xmlText').text("").trigger('change');
 
     var url = document.getElementById(template.id).getAttribute("href");
         
@@ -2625,11 +2629,11 @@ function setTemplate(template) {
         if (rawFile.readyState === 4) {
             var allText = rawFile.responseText;
             if (allText) {
-                $('textarea#xmlText').val(allText);
+                $('code#xmlText').text(allText).trigger('change');
                 getXmlDocument();
                 var xml = loadUploadXmlFile();
 
-                $('textarea#xmlText').val(xml);
+                $('code#xmlText').text(xml).trigger('change');
             }
         }
     }
