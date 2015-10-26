@@ -30,6 +30,7 @@ Will uninstall Office Click-to-Run.
         [string] $TargetFilePath = $NULL
     )
 
+     Process{
     
         newCTRRemoveXml | Out-File $RemoveCTRXmlPath
     
@@ -48,12 +49,12 @@ Will uninstall Office Click-to-Run.
         if(!($isInPipe)) {
             write-host "Please wait while $c2rName is being uninstalled..."
         }
-        
+   
         if($c2rVersion -match "15"){
-            $OdtExe = ".\Office2013Setup.exe"
+            $OdtExe = "$PSScriptRoot\Office2013Setup.exe"
         }
         else{
-            $OdtExe = ".\Office2016Setup.exe"
+            $OdtExe = "$PSScriptRoot\Office2016Setup.exe"
         } 
 
         $command = "$OdtExe /configure $RemoveCTRXmlPath"
@@ -77,6 +78,8 @@ Will uninstall Office Click-to-Run.
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
             $Result
         } 
+
+    }
 }
 
 Function Get-OfficeVersion {

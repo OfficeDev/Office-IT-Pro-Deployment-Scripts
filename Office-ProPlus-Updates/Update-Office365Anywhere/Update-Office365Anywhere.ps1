@@ -129,13 +129,13 @@ Function Get-OfficeCDNUrl() {
 Function Get-OfficeCTRRegPath() {
     $path15 = 'SOFTWARE\Microsoft\Office\15.0\ClickToRun'
     $path16 = 'SOFTWARE\Microsoft\Office\ClickToRun'
-
-    if (Test-Path "HKLM:\$path15") {
-      return $path15
-    } else {
-      if (Test-Path "HKLM:\$path16") {
-         return $path16
-      }
+    if (Test-Path "HKLM:\$path16") {
+        return $path16
+    }
+    else {
+        if (Test-Path "HKLM:\$path15") {
+            return $path15
+        }
     }
 }
 
@@ -257,6 +257,7 @@ Will generate the Office Deployment Tool (ODT) configuration XML based on the lo
     if ($UpdateToVersion) {
       $oc2rcParams += " updatetoversion=$UpdateToVersion"
     }
+
     
     $UpdateSource = "http"
     if ($currentUpdateSource) {
@@ -273,7 +274,7 @@ Will generate the Office Deployment Tool (ODT) configuration XML based on the lo
 	                $isAlive = Test-UpdateSource -UpdateSource $saveUpdateSource
                     if ($isAlive) {
                        Write-Log -Message "Restoring Saved Update Source $saveUpdateSource" -severity 1 -component "Office 365 Update Anywhere"
-                       Set-Reg -Hive "HKLM" -keyPath $officeRegPath -ValueName "UpdateUrl" -Value $saveUpdateSource -Type String
+                       Set-Reg -Hive "HKLM" -keyPath $configRegPath -ValueName "UpdateUrl" -Value $saveUpdateSource -Type String
                     }
                 }
             }
@@ -282,7 +283,7 @@ Will generate the Office Deployment Tool (ODT) configuration XML based on the lo
         if (!($currentUpdateSource)) {
            if ($officeUpdateCDN) {
                Write-Log -Message "No Update source is set so defaulting to Office CDN" -severity 1 -component "Office 365 Update Anywhere"
-               Set-Reg -Hive "HKLM" -keyPath $officeRegPath -ValueName "UpdateUrl" -Value $officeUpdateCDN -Type String
+               Set-Reg -Hive "HKLM" -keyPath $configRegPath -ValueName "UpdateUrl" -Value $officeUpdateCDN -Type String
                $currentUpdateSource = $officeUpdateCDN
            }
         }
@@ -291,11 +292,14 @@ Will generate the Office Deployment Tool (ODT) configuration XML based on the lo
             $isAlive = Test-UpdateSource -UpdateSource $currentUpdateSource
             if (!($isAlive)) {
                 if ($currentUpdateSource.ToLower() -ne $officeUpdateCDN.ToLower()) {
-                  Set-Reg -Hive "HKLM" -keyPath $officeRegPath -ValueName "SaveUpdateUrl" -Value $currentUpdateSource -Type String
+                  Set-Reg -Hive "HKLM" -keyPath $configRegPath -ValueName "SaveUpdateUrl" -Value $currentUpdateSource -Type String
                 }
 
+               Write-Host "Unable to use $currentUpdateSource. Will now use $officeUpdateCDN"
                Write-Log -Message "Unable to use $currentUpdateSource. Will now use $officeUpdateCDN" -severity 1 -component "Office 365 Update Anywhere"
-               Set-Reg -Hive "HKLM" -keyPath $officeRegPath -ValueName "UpdateUrl" -Value $officeUpdateCDN -Type String
+               Set-Reg -Hive "HKLM" -keyPath $configRegPath -ValueName "UpdateUrl" -Value $officeUpdateCDN -Type String
+
+                $isAlive = Test-UpdateSource -UpdateSource $officeUpdateCDN
             }
         }
     } else {
@@ -316,7 +320,7 @@ Will generate the Office Deployment Tool (ODT) configuration XML based on the lo
             Wait-ForOfficeCTRUpadate
        }
     } else {
-       $currentUpdateSource = (Get-ItemProperty HKLM:\$officeRegPath -Name UpdateUrl -ErrorAction SilentlyContinue).UpdateUrl
+       $currentUpdateSource = (Get-ItemProperty HKLM:\$configRegPath -Name UpdateUrl -ErrorAction SilentlyContinue).UpdateUrl
        Write-Host "Update Source '$currentUpdateSource' Unavailable"
        Write-Log -Message "Update Source '$currentUpdateSource' Unavailable" -severity 1 -component "Office 365 Update Anywhere"
     }
