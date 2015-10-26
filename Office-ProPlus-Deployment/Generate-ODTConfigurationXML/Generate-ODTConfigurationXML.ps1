@@ -294,13 +294,16 @@ process {
 
        odtAddProduct -ConfigDoc $ConfigFile -ProductId $productId -ExcludeApps $excludeApps -Version $officeConfig.Version `
                      -Platform $productPlatform -ClientCulture $primaryLanguage -AdditionalLanguages $additionalLanguages
-       
+
+
        if ($officeConfig) {
           if (($officeConfig.UpdatesEnabled) -or ($officeConfig.UpdateUrl) -or  ($officeConfig.UpdateDeadline)) {
             odtAddUpdates -ConfigDoc $ConfigFile -Enabled $officeConfig.UpdatesEnabled -UpdatePath $officeConfig.UpdateUrl -Deadline $officeConfig.UpdateDeadline
           }
        }
     }
+
+
     
     if ($IncludeUpdatePathAsSourcePath) {
       if ($officeConfig.UpdateUrl) {
@@ -327,13 +330,54 @@ process {
            if ($ComputerName.Length -eq 1) {
                $Result = $formattedXml
            }
-        }
 
-        $Result
+           $clickToRunKeys = 'SOFTWARE\Microsoft\Office\ClickToRun',
+                             'SOFTWARE\Microsoft\Office\15.0\ClickToRun'
+           foreach($key in $clickToRunKeys){
+               $configKeys = $regProv.EnumKey($HKLM, $key)
+               $clickToRunList = $configKeys.snames
+               foreach($list in $clickToRunList){
+                  if($list -match 'Configuration'){
+                     $configPath = Join-Path $key "Configuration"
+                     $sharedLicensePath = $regProv.GetStringValue($HKLM, $configPath, "SharedComputerLicensing").sValue
+                     [bool]$sharedComputerLicensing = $false
+                     if($sharedLicensePath -eq '1'){
+                        $sharedComputerLicensing = $true
+                        if($sharedComputerLicensing){
+                            Set-ODTConfigProperties -SharedComputerLicensing "1" -TargetFilePath $TargetFilePath
+                        }
+                     }
+                     else{$Result}
+                  }
+               }
+            }          
+         }
+
     } else {
         if ($TargetFilePath) {
            $formattedXml | Out-File -FilePath $TargetFilePath
         }
+
+        $clickToRunKeys = 'SOFTWARE\Microsoft\Office\ClickToRun',
+                          'SOFTWARE\Microsoft\Office\15.0\ClickToRun'
+        foreach($key in $clickToRunKeys){
+            $configKeys = $regProv.EnumKey($HKLM, $key)
+            $clickToRunList = $configKeys.snames
+            foreach($list in $clickToRunList){
+               if($list -match 'Configuration'){
+                  $configPath = Join-Path $key "Configuration"
+                  $sharedLicensePath = $regProv.GetStringValue($HKLM, $configPath, "SharedComputerLicensing").sValue
+                  [bool]$sharedComputerLicensing = $false
+                  if($sharedLicensePath -eq '1'){
+                     $sharedComputerLicensing = $true
+                     if($sharedComputerLicensing){
+                         Set-ODTConfigProperties -SharedComputerLicensing "1" -TargetFilePath $TargetFilePath
+                     }
+                  }
+                  else{$Result}
+               }
+            }
+         } 
 
         $allLanguages = Get-Unique -InputObject $allLanguages
 
@@ -1320,6 +1364,196 @@ Function odtSetAdd{
     }
 
 }
+
+Function Set-ODTConfigProperties{
+<#
+.SYNOPSIS
+Modifies an existing configuration xml file to set property values
+
+.PARAMETER AutoActivate
+If AUTOACTIVATE is set to 1, the specified products will attempt to activate automatically. 
+If AUTOACTIVATE is not set, the user may see the Activation Wizard UI.
+You must not set AUTOACTIVATE for Office 365 Click-to-Run products. 
+
+.PARAMETER ForceAppShutDown
+An installation or removal action may be blocked if Office applications are running. 
+Normally, such cases would start a process killer UI. Administrators can set 
+FORCEAPPSHUTDOWN value to TRUE to prevent dependence on user interaction. When 
+FORCEAPPSHUTDOWN is set to TRUE, any applications that block the action will be shut 
+down. Data loss may occur. When FORCEAPPSHUTDOWN is set to FALSE (default), the 
+action may fail if Office applications are running.
+
+.PARAMETER PackageGUID
+Optional. By default, all Office 2013 App-V packages created by using the Office 
+Deployment Tool share the same App-V Package ID. Administrators can use PACKAGEGUID 
+to specify a different Package ID. Also, PACKAGEGUID needs to be at least 25 
+characters in length and be separated into 5 sections, with each section separated by 
+a dash. The sections need to have the following number of characters: 8, 4, 4, 4, and 12. 
+
+.PARAMETER SharedComputerLicensing
+Optional. Set SharedComputerLicensing to 1 if you deploy Office 365 ProPlus to shared 
+computers by using Remote Desktop Services.
+
+.PARAMETER TargetFilePath
+Full file path for the file to be modified and be output to.
+
+.Example
+Set-ODTConfigProperties -AutoActivate "1" -TargetFilePath "$env:Public/Documents/config.xml"
+Sets config to automatically activate the products
+
+.Example
+Set-ODTConfigProperties -ForceAppShutDown "True" -PackageGUID "12345678-ABCD-1234-ABCD-1234567890AB" -TargetFilePath "$env:Public/Documents/config.xml"
+Sets the config so that apps are forced to shutdown during install and the package guid
+to "12345678-ABCD-1234-ABCD-1234567890AB"
+
+.Notes
+Here is what the portion of configuration file looks like when modified by this function:
+
+<Configuration>
+  ...
+  <Property Name="AUTOACTIVATE" Value="1" />
+  <Property Name="FORCEAPPSHUTDOWN" Value="TRUE" />
+  <Property Name="PACKAGEGUID" Value="12345678-ABCD-1234-ABCD-1234567890AB" />
+  <Property Name="SharedComputerLicensing" Value="0" />
+  ...
+</Configuration>
+
+#>
+    [CmdletBinding()]
+    Param(
+
+        [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
+        [string] $ConfigurationXML = $NULL,
+
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [string] $AutoActivate,
+
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [string] $ForceAppShutDown,
+
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [string] $PackageGUID,
+
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [string] $SharedComputerLicensing,
+
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [string] $TargetFilePath
+    )
+
+    Process{
+        $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
+
+        #Load file
+        [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
+
+        if ($TargetFilePath) {
+           $ConfigFile.Load($TargetFilePath) | Out-Null
+        } else {
+            if ($ConfigurationXml) 
+            {
+              $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
+              $global:saveLastConfigFile = $NULL
+              $global:saveLastFilePath = $NULL
+            }
+        }
+
+        $global:saveLastConfigFile = $ConfigFile.OuterXml
+
+        #Check for proper root element
+        if($ConfigFile.Configuration -eq $null){
+            throw $NoConfigurationElement
+        }
+
+        #Set each property as desired
+        if([string]::IsNullOrWhiteSpace($AutoActivate) -eq $false){
+            [System.XML.XMLElement]$AutoActivateElement = $ConfigFile.Configuration.Property | ?  Name -eq "AUTOACTIVATE"
+            if($AutoActivateElement -eq $null){
+                [System.XML.XMLElement]$AutoActivateElement=$ConfigFile.CreateElement("Property")
+            }
+                
+            $ConfigFile.Configuration.appendChild($AutoActivateElement) | Out-Null
+            $AutoActivateElement.SetAttribute("Name", "AUTOACTIVATE") | Out-Null
+            $AutoActivateElement.SetAttribute("Value", $AutoActivate) | Out-Null
+        }
+
+        if([string]::IsNullOrWhiteSpace($ForceAppShutDown) -eq $false){
+            [System.XML.XMLElement]$ForceAppShutDownElement = $ConfigFile.Configuration.Property | ?  Name -eq "FORCEAPPSHUTDOWN"
+            if($ForceAppShutDownElement -eq $null){
+                [System.XML.XMLElement]$ForceAppShutDownElement=$ConfigFile.CreateElement("Property")
+            }
+                
+            $ConfigFile.Configuration.appendChild($ForceAppShutDownElement) | Out-Null
+            $ForceAppShutDownElement.SetAttribute("Name", "FORCEAPPSHUTDOWN") | Out-Null
+            $ForceAppShutDownElement.SetAttribute("Value", $ForceAppShutDown) | Out-Null
+        }
+
+        if([string]::IsNullOrWhiteSpace($PackageGUID) -eq $false){
+            [System.XML.XMLElement]$PackageGUIDElement = $ConfigFile.Configuration.Property | ?  Name -eq "PACKAGEGUID"
+            if($PackageGUIDElement -eq $null){
+                [System.XML.XMLElement]$PackageGUIDElement=$ConfigFile.CreateElement("Property")
+            }
+                
+            $ConfigFile.Configuration.appendChild($PackageGUIDElement) | Out-Null
+            $PackageGUIDElement.SetAttribute("Name", "PACKAGEGUID") | Out-Null
+            $PackageGUIDElement.SetAttribute("Value", $PackageGUID) | Out-Null
+        }
+
+        if([string]::IsNullOrWhiteSpace($SharedComputerLicensing) -eq $false){
+            [System.XML.XMLElement]$SharedComputerLicensingElement = $ConfigFile.Configuration.Property | ?  Name -eq "SharedComputerLicensing"
+            if($SharedComputerLicensingElement -eq $null){
+                [System.XML.XMLElement]$SharedComputerLicensingElement=$ConfigFile.CreateElement("Property")
+            }
+                
+            $ConfigFile.Configuration.appendChild($SharedComputerLicensingElement) | Out-Null
+            $SharedComputerLicensingElement.SetAttribute("Name", "SharedComputerLicensing") | Out-Null
+            $SharedComputerLicensingElement.SetAttribute("Value", $SharedComputerLicensing) | Out-Null
+        }
+
+        $ConfigFile.Save($TargetFilePath) | Out-Null
+        $global:saveLastFilePath = $TargetFilePath
+
+        if (($PSCmdlet.MyInvocation.PipelineLength -eq 1) -or `
+            ($PSCmdlet.MyInvocation.PipelineLength -eq $PSCmdlet.MyInvocation.PipelinePosition)) {
+            Write-Host
+
+            Format-XML ([xml](cat $TargetFilePath)) -indent 4
+
+            Write-Host
+            Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+        } else {
+            $results = new-object PSObject[] 0;
+            $Result = New-Object –TypeName PSObject 
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "SharedComputerLicensing" -Value $SharedComputerLicensing
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "PackageGUID" -Value $PackageGUID
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "ForceAppShutDown" -Value $ForceAppShutDown
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "AutoActivate" -Value $AutoActivate
+            $Result
+        }
+    }
+} 
+
+Function GetFilePath() {
+    Param(
+       [Parameter(ValueFromPipelineByPropertyName=$true)]
+       [string] $TargetFilePath
+    )
+
+    if (!($TargetFilePath)) {
+        $TargetFilePath = $global:saveLastFilePath
+    }  
+
+    if (!($TargetFilePath)) {
+       Write-Host "Enter the path to the XML Configuration File: " -NoNewline
+       $TargetFilePath = Read-Host
+    } else {
+       #Write-Host "Target XML Configuration File: $TargetFilePath"
+    }
+
+    return $TargetFilePath
+}
+
 
 function Format-XML ([xml]$xml, $indent=2) { 
     $StringWriter = New-Object System.IO.StringWriter 
