@@ -303,7 +303,22 @@ process {
        }
     }
 
+    $clickToRunKeys = 'SOFTWARE\Microsoft\Office\ClickToRun',
+                        'SOFTWARE\Microsoft\Office\15.0\ClickToRun'
 
+    foreach($key in $clickToRunKeys){
+        $configKeys = $regProv.EnumKey($HKLM, $key)
+        $clickToRunList = $configKeys.snames
+        foreach($list in $clickToRunList){
+            if($list -match 'Configuration'){
+                $configPath = Join-Path $key "Configuration"
+                $sharedLicense = $regProv.GetStringValue($HKLM, $configPath, "SharedComputerLicensing").sValue
+                if($sharedLicense -eq '1'){
+                   Set-ODTConfigProperties -SharedComputerLicensing "1" -ConfigDoc $ConfigFile
+                }
+            }
+        }
+    }  
     
     if ($IncludeUpdatePathAsSourcePath) {
       if ($officeConfig.UpdateUrl) {
@@ -330,54 +345,14 @@ process {
            if ($ComputerName.Length -eq 1) {
                $Result = $formattedXml
            }
-
-           $clickToRunKeys = 'SOFTWARE\Microsoft\Office\ClickToRun',
-                             'SOFTWARE\Microsoft\Office\15.0\ClickToRun'
-           foreach($key in $clickToRunKeys){
-               $configKeys = $regProv.EnumKey($HKLM, $key)
-               $clickToRunList = $configKeys.snames
-               foreach($list in $clickToRunList){
-                  if($list -match 'Configuration'){
-                     $configPath = Join-Path $key "Configuration"
-                     $sharedLicensePath = $regProv.GetStringValue($HKLM, $configPath, "SharedComputerLicensing").sValue
-                     [bool]$sharedComputerLicensing = $false
-                     if($sharedLicensePath -eq '1'){
-                        $sharedComputerLicensing = $true
-                        if($sharedComputerLicensing){
-                            Set-ODTConfigProperties -SharedComputerLicensing "1" -TargetFilePath $TargetFilePath
-                        }
-                     }
-                     else{$Result}
-                  }
-               }
-            }          
-         }
+        
+        }
+        $Result
 
     } else {
         if ($TargetFilePath) {
            $formattedXml | Out-File -FilePath $TargetFilePath
         }
-
-        $clickToRunKeys = 'SOFTWARE\Microsoft\Office\ClickToRun',
-                          'SOFTWARE\Microsoft\Office\15.0\ClickToRun'
-        foreach($key in $clickToRunKeys){
-            $configKeys = $regProv.EnumKey($HKLM, $key)
-            $clickToRunList = $configKeys.snames
-            foreach($list in $clickToRunList){
-               if($list -match 'Configuration'){
-                  $configPath = Join-Path $key "Configuration"
-                  $sharedLicensePath = $regProv.GetStringValue($HKLM, $configPath, "SharedComputerLicensing").sValue
-                  [bool]$sharedComputerLicensing = $false
-                  if($sharedLicensePath -eq '1'){
-                     $sharedComputerLicensing = $true
-                     if($sharedComputerLicensing){
-                         Set-ODTConfigProperties -SharedComputerLicensing "1" -TargetFilePath $TargetFilePath
-                     }
-                  }
-                  else{$Result}
-               }
-            }
-         } 
 
         $allLanguages = Get-Unique -InputObject $allLanguages
 
@@ -1161,17 +1136,17 @@ function odtAddProduct() {
     )
 
     [System.XML.XMLElement]$ConfigElement=$NULL
-    if($ConfigFile.Configuration -eq $null){
-        $ConfigElement=$ConfigFile.CreateElement("Configuration")
-        $ConfigFile.appendChild($ConfigElement) | Out-Null
+    if($ConfigDoc.Configuration -eq $null){
+        $ConfigElement=$ConfigDoc.CreateElement("Configuration")
+        $ConfigDoc.appendChild($ConfigElement) | Out-Null
     }
 
     [System.XML.XMLElement]$AddElement=$NULL
     if($ConfigFile.Configuration.Add -eq $null){
-        $AddElement=$ConfigFile.CreateElement("Add")
-        $ConfigFile.DocumentElement.appendChild($AddElement) | Out-Null
+        $AddElement=$ConfigDoc.CreateElement("Add")
+        $ConfigDoc.DocumentElement.appendChild($AddElement) | Out-Null
     } else {
-        $AddElement = $ConfigFile.Configuration.Add 
+        $AddElement = $ConfigDoc.Configuration.Add 
     }
 
     if ($Version) {
@@ -1182,9 +1157,9 @@ function odtAddProduct() {
        $AddElement.SetAttribute("OfficeClientEdition", $Platform) | Out-Null
     }
 
-    [System.XML.XMLElement]$ProductElement = $ConfigFile.Configuration.Add.Product | ?  ID -eq $ProductId
+    [System.XML.XMLElement]$ProductElement = $ConfigDoc.Configuration.Add.Product | ?  ID -eq $ProductId
     if($ProductElement -eq $null){
-        [System.XML.XMLElement]$ProductElement=$ConfigFile.CreateElement("Product")
+        [System.XML.XMLElement]$ProductElement=$ConfigDoc.CreateElement("Product")
         $AddElement.appendChild($ProductElement) | Out-Null
         $ProductElement.SetAttribute("ID", $ProductId) | Out-Null
     }
@@ -1211,7 +1186,7 @@ function odtAddProduct() {
     foreach($ExcludeApp in $ExcludeApps){
         [System.XML.XMLElement]$ExcludeAppElement = $ProductElement.ExcludeApp | ?  ID -eq $ExcludeApp
         if($ExcludeAppElement -eq $null){
-            [System.XML.XMLElement]$ExcludeAppElement=$ConfigFile.CreateElement("ExcludeApp")
+            [System.XML.XMLElement]$ExcludeAppElement=$ConfigDoc.CreateElement("ExcludeApp")
             $ProductElement.appendChild($ExcludeAppElement) | Out-Null
             $ExcludeAppElement.SetAttribute("ID", $ExcludeApp) | Out-Null
         }
@@ -1422,8 +1397,8 @@ Here is what the portion of configuration file looks like when modified by this 
     [CmdletBinding()]
     Param(
 
-        [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
-        [string] $ConfigurationXML = $NULL,
+       [Parameter(Mandatory=$true,ValueFromPipelineByPropertyName=$true)]
+       [System.XML.XMLDocument]$ConfigDoc = $NULL,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $AutoActivate,
@@ -1442,23 +1417,8 @@ Here is what the portion of configuration file looks like when modified by this 
     )
 
     Process{
-        $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
-
         #Load file
-        [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
-
-        if ($TargetFilePath) {
-           $ConfigFile.Load($TargetFilePath) | Out-Null
-        } else {
-            if ($ConfigurationXml) 
-            {
-              $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
-              $global:saveLastConfigFile = $NULL
-              $global:saveLastFilePath = $NULL
-            }
-        }
-
-        $global:saveLastConfigFile = $ConfigFile.OuterXml
+        [System.XML.XMLDocument]$ConfigFile = $ConfigDoc
 
         #Check for proper root element
         if($ConfigFile.Configuration -eq $null){
@@ -1510,27 +1470,6 @@ Here is what the portion of configuration file looks like when modified by this 
             $SharedComputerLicensingElement.SetAttribute("Value", $SharedComputerLicensing) | Out-Null
         }
 
-        $ConfigFile.Save($TargetFilePath) | Out-Null
-        $global:saveLastFilePath = $TargetFilePath
-
-        if (($PSCmdlet.MyInvocation.PipelineLength -eq 1) -or `
-            ($PSCmdlet.MyInvocation.PipelineLength -eq $PSCmdlet.MyInvocation.PipelinePosition)) {
-            Write-Host
-
-            Format-XML ([xml](cat $TargetFilePath)) -indent 4
-
-            Write-Host
-            Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
-        } else {
-            $results = new-object PSObject[] 0;
-            $Result = New-Object –TypeName PSObject 
-            Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
-            Add-Member -InputObject $Result -MemberType NoteProperty -Name "SharedComputerLicensing" -Value $SharedComputerLicensing
-            Add-Member -InputObject $Result -MemberType NoteProperty -Name "PackageGUID" -Value $PackageGUID
-            Add-Member -InputObject $Result -MemberType NoteProperty -Name "ForceAppShutDown" -Value $ForceAppShutDown
-            Add-Member -InputObject $Result -MemberType NoteProperty -Name "AutoActivate" -Value $AutoActivate
-            $Result
-        }
     }
 } 
 
