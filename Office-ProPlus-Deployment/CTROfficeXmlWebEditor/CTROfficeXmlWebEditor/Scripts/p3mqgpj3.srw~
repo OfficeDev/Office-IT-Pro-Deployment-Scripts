@@ -864,9 +864,9 @@ function fileUploaded(e) {
             $('code#xmlText').text(xmlOutput).trigger('change');
             $.cookie("xmlcache", xmlOutput);
 
-            var configXml = loadUploadXmlFile();
-            var xmlDoc = createXmlDocument(configXml);
-            displayXml(xmlDoc);
+            getXmlDocument();
+
+            loadUploadXmlFile();
         };
         reader.onerror = function(event) {
             throw "File could not be read! Code " + event.target.error.code;
@@ -1223,7 +1223,7 @@ function resizeWindow() {
         rightPaneHeight = rightPaneHeight + 50;
     }
 
-    var offsetHeight = mainAreaDivHeight + 3;
+    var offsetHeight = mainAreaDivHeight + 5;
 
     $("#xmlText").height(rightPaneHeight - offsetHeight);
     $("#menuSec").height(bodyHeight - offsetHeight);

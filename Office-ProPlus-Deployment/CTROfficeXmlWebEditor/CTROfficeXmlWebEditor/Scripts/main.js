@@ -2,58 +2,102 @@
 var selectDate;
 
 $(document).ready(function () {
-
+    
+    $('#txtDeadline').datetimepicker({
+        sideBySide: true
+    }).on("dp.change", function (e) {
+        var date = e.date; //e.date is a moment object
+        if (date) {
+            selectDate = date.format("MM/DD/YYYY HH:mm");
+            var target = $(e.target).attr('name');
+        }
+    });
 
     var finput = document.getElementById('fileInput');
     finput.addEventListener('change', function (e) {
-        var hWCheck = $.cookie("hideWelcome");
-        if (!(hWCheck)) {
-            setCookie("hideWelcome", true, 1);
-        }
         fileUploaded(e);
+
+        document.getElementById("fileUploadForm").reset();
+
     });
+
+    document.getElementById("collapseOne").style.display = "block";
+    document.getElementById("collapseProperties").style.display = "block";
+
+    document.getElementById("pidkeySignal").style.display = "none";
+    document.getElementById("targetversionSignal").style.display = "none";
+    document.getElementById("updatepathSignal").style.display = "none";
 
     if (isInternetExplorer()) {
         document.getElementById("txtVersion").style.lineHeight = "0px";
         document.getElementById("txtTargetVersion").style.lineHeight = "0px";
     }
 
-    var hW = $.cookie("hideWelcome");
-    if (hW) {
-        $("#welcomeDialog").hide();
-        fadeBackground(false);
-    } else {
-        fadeBackground(true);
-        $("#welcomeDialog").draggable();
-        $("#welcomeDialog").css("display", "block");
-    }
-
-    $('code#xmlText').change(function () {
-
-            hljs.highlightBlock(document.getElementById('xmlText'));
-
-    });
-
-    changeExcludeApps("2016");
-
-    $("#commentDialog").draggable();
-
     $("#btRemoveProduct").prop("disabled", true);
     $("#btAddLanguage").prop("disabled", true);
     $("#btRemoveLanguage").prop("disabled", true);
 
-    odtToggleUpdate();
-    $("#updatesEnabled").change(odtToggleUpdate);
+    toggleTextBox("txtUpdatePath", false);
+    toggleTextBox("txtTargetVersion", false);
+    $("#inputDeadline").prop("disabled", true);
 
-    odtToggleLogging();
-    $("#loggingLevel").change(odtToggleLogging);
+    var collapse = $.cookie("optionalcollapse");
+    if (collapse == "true") {
+        $("#toggleExpand").removeClass('glyphicon-collapse-down');
+        $("#toggleExpand").addClass('glyphicon-collapse-up');
+        $("#collapseOne").collapse('show');
+        $("#collapseOne").css("height", "");
+    } else {
+        $("#toggleExpand").removeClass('glyphicon-collapse-up');
+        $("#toggleExpand").addClass('glyphicon-collapse-down');
+        $("#collapseOne").collapse('hide');
+        $("#collapseOne").css("height", "0");
+    }
 
-    odtToggleRemoveApp();
-    $("#removeAllProducts").change(odtToggleRemoveApp());
+    var collapseProperties = $.cookie("propertiescollapse");
+    if (collapseProperties == "true") {
+        $("#togglePropertiesExpand").removeClass('glyphicon-collapse-down');
+        $("#togglePropertiesExpand").addClass('glyphicon-collapse-up');
+        $("#collapseProperties").collapse('show');
+        $("#collapseProperties").css("height", "");
+    } else {
+        $("#togglePropertiesExpand").removeClass('glyphicon-collapse-up');
+        $("#togglePropertiesExpand").addClass('glyphicon-collapse-down');
+        $("#collapseProperties").collapse('hide');
+        $("#collapseProperties").css("height", "0");
+    }
+
+    $('#templateList li').click(function (e) {
+        e.preventDefault();
+        var $that = $(this);
+        var url = document.getElementById(this.id).getAttribute("href");
+        
+        var rawFile = new XMLHttpRequest();
+        rawFile.open("GET", url, true);
+        rawFile.onreadystatechange = function () {
+            if (rawFile.readyState === 4) {
+                var allText = rawFile.responseText;
+                if (allText) {
+                    $('textarea#xmlText').val(allText);
+                    loadUploadXmlFile();
+                }
+            }
+        }
+
+        rawFile.send();
+
+    });
+
+    $("#collapseOne").prop("height", "auto");
+    $("#collapseProperties").prop("height", "auto");
 
     setActiveTab();
 
     resizeWindow();
+
+    var xmlOutput = $.cookie("xmlcache");
+    $('textarea#xmlText').val(xmlOutput);
+    loadUploadXmlFile();
 
     $(window).resize(function () {
         resizeWindow();
@@ -186,231 +230,6 @@ $(document).ready(function () {
         }
     });
 
-    $("#btAddProduct").on('click', function () {
-        var xmlDoc = getXmlDocument();
-
-        odtAddProduct(xmlDoc);
-
-        displayXml(xmlDoc);
-
-        $("#btAddProduct").text('Edit Product');
-
-        return false;
-    });
-
-    $("#btRemoveProduct").on('click', function () {
-        var xmlDoc = getXmlDocument();
-
-        odtRemoveProduct(xmlDoc);
-
-        displayXml(xmlDoc);
-
-        return false;
-    });
-
-    $("#btAddLanguage").on('click', function () {
-        var xmlDoc = getXmlDocument();
-
-        odtAddLanguage(xmlDoc);
-
-        displayXml(xmlDoc);
-        return false;
-    });
-
-    $("#btRemoveLanguage").on('click', function () {
-        var xmlDoc = getXmlDocument();
-
-        odtRemoveLanguage(xmlDoc);
-
-        displayXml(xmlDoc);
-        return false;
-    });
-
-    $("#cbProduct").change(function () {
-        var end = this.value;
-        changeSelectedProduct();
-    });
-
-    $("#cbLanguage").change(function () {
-        var end = this.value;
-        changeSelectedLanguage();
-    });
-
-    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-        scrollXmlEditor();
-    
-        $.cookie("activeTab", e.target);
-
-        var mainTabs = document.getElementById("myTab");
-        if (mainTabs) {
-            var target = $(e.target).attr("href");
-            var liItems = mainTabs.getElementsByTagName("li");
-            if (liItems) {
-                
-                for (var i = 0; i < liItems.length; i++) {
-                    var liItem = liItems[i];
-                    if ($("#" + liItem.id).hasClass("active")) {
-                        
-                    }
-                }
-            }
-        }
-    });
-
-    $("#btAddExcludeApp").on('click', function () {
-        var xmlDoc = getXmlDocument();
-
-        odtAddExcludeApp(xmlDoc);
-
-        displayXml(xmlDoc);
-        return false;
-    });
-
-    $("#btRemoveExcludeApp").on('click', function () {
-        var xmlDoc = getXmlDocument();
-
-        odtRemoveExcludeApp(xmlDoc);
-
-        displayXml(xmlDoc);
-        return false;
-    });
-
-    $("#btAddRemoveProduct").on('click', function () {
-        var xmlDoc = getXmlDocument();
-
-        odtAddRemoveApp(xmlDoc);
-
-        displayXml(xmlDoc);
-        return false;
-    });
-
-    $("#btDeleteRemoveProduct").on('click', function () {
-        var xmlDoc = getXmlDocument();
-
-        odtDeleteRemoveApp(xmlDoc);
-
-        displayXml(xmlDoc);
-        return false;
-    });
-
-    $("#btAddRemoveLanguage").on('click', function () {
-        var xmlDoc = getXmlDocument();
-
-        odtAddRemoveLanguage(xmlDoc);
-
-        displayXml(xmlDoc);
-        return false;
-    });
-
-    $("#btRemoveRemoveLanguage").on('click', function () {
-        var xmlDoc = getXmlDocument();
-
-        odtRemoveRemoveLanguage(xmlDoc);
-
-        displayXml(xmlDoc);
-        return false;
-    });
-
-    $("#btSaveUpdates").on('click', function () {
-        var xmlDoc = getXmlDocument();
-
-        odtSaveUpdates(xmlDoc);
-
-        displayXml(xmlDoc);
-        return false;
-    });
-
-    $("#btRemovesUpdates").on('click', function () {
-        var xmlDoc = getXmlDocument();
-
-        odtRemoveUpdates(xmlDoc);
-
-        displayXml(xmlDoc);
-        return false;
-    });
-
-    $("#btSaveDisplay").on('click', function () {
-        var xmlDoc = getXmlDocument();
-
-        odtSaveDisplay(xmlDoc);
-
-        displayXml(xmlDoc);
-        return false;
-    });
-
-    $("#btRemoveDisplay").on('click', function () {
-        var xmlDoc = getXmlDocument();
-
-        odtRemoveDisplay(xmlDoc);
-
-        displayXml(xmlDoc);
-        return false;
-    });
-
-    $("#btSaveLogging").on('click', function () {
-        var xmlDoc = getXmlDocument();
-
-        odtSaveLogging(xmlDoc);
-
-        displayXml(xmlDoc);
-        return false;
-    });
-
-    $("#btRemoveLogging").on('click', function () {
-        var xmlDoc = getXmlDocument();
-
-        odtRemoveLogging(xmlDoc);
-
-        displayXml(xmlDoc);
-        return false;
-    });
-
-    $("#btSaveProperties").on('click', function () {
-        var xmlDoc = getXmlDocument();
-
-        odtSaveProperties(xmlDoc);
-
-        displayXml(xmlDoc);
-        return false;
-    });
-
-    $("#btRemoveProperties").on('click', function () {
-        var xmlDoc = getXmlDocument();
-
-        odtRemoveProperties(xmlDoc);
-
-        displayXml(xmlDoc);
-        return false;
-    });
-
-    $("#btViewOnGitHub").on('click', function () {
-        window.open("https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/master/Office-ProPlus-Deployment/CTROfficeXmlWebEditor");
-        return false;
-    });
-
-    $("#menuViewOnGitHub").on('click', function () {
-        window.open("https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/master/Office-ProPlus-Deployment/CTROfficeXmlWebEditor");
-        return false;
-    });
-
-    $("#menuGitHubIssues").on('click', function () {
-        window.open("https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/issues");
-        return false;
-    });
-
-    $(window).scroll(function() {
-        scrollXmlEditor();
-    });
-
-    changeVersions("2016");
-
-    $('#txtVersion').keydown(function (e) {
-        restrictToVersion(e);
-    });
-
-    $('#txtTargetVersion').keydown(function (e) {
-        restrictToVersion(e);
-    });
 
     $('txtPidKey').on('input propertychange paste focus click', function () {
         if (this.value.length == 0) {
@@ -468,276 +287,236 @@ $(document).ready(function () {
         }
     });
 
-    $(window).on('resize', function () {
-        $('#welcomeInner')[0].style.height = "";
-        var totH = welcomeMain.clientHeight;
-        var headerH = welcomeHeader.clientHeight;
-        var desH = (totH - headerH);
-        $('#welcomeInner')[0].style.height = desH + "px";
+    $("#btAddProduct").button().click(function () {
+        var xmlDoc = getXmlDocument();
+
+        odtAddProduct(xmlDoc);
+
+        displayXml(xmlDoc);
+
+        $("#btAddProduct").text('Edit Product');
+
+        return false;
     });
 
-    var totH = welcomeMain.clientHeight;
-    var headerH = welcomeHeader.clientHeight;
-    var desH = (totH - headerH);
-    $('#welcomeInner')[0].style.height = desH + "px";
+    $("#btRemoveProduct").button().click(function () {
+        var xmlDoc = getXmlDocument();
 
-    var xmlOutput = $.cookie("xmlcache");
-    $('code#xmlText').text(xmlOutput).trigger('change');
-    loadUploadXmlFile();
+        odtRemoveProduct(xmlDoc);
+
+        displayXml(xmlDoc);
+
+        return false;
+    });
+
+    $("#btAddLanguage").button().click(function () {
+        var xmlDoc = getXmlDocument();
+
+        odtAddLanguage(xmlDoc);
+
+        displayXml(xmlDoc);
+        return false;
+    });
+
+    $("#btRemoveLanguage").button().click(function () {
+        var xmlDoc = getXmlDocument();
+
+        odtRemoveLanguage(xmlDoc);
+
+        displayXml(xmlDoc);
+        return false;
+    });
+
+    $("#cbProduct").change(function () {
+        var end = this.value;
+        changeSelectedProduct();
+    });
+
+    $("#cbLanguage").change(function () {
+        var end = this.value;
+        changeSelectedLanguage();
+    });
+
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+        //e.target // activated tab
+        //e.relatedTarget // previous tab
+        scrollXmlEditor();
+
+        $.cookie("activeTab", e.target);
+
+        var mainTabs = document.getElementById("myTab");
+        if (mainTabs) {
+            var target = $(e.target).attr("href");
+            var liItems = mainTabs.getElementsByTagName("li");
+            if (liItems) {
+                
+                for (var i = 0; i < liItems.length; i++) {
+                    var liItem = liItems[i];
+                    if ($("#" + liItem.id).hasClass("active")) {
+                        
+                    }
+                }
+            }
+        }
+    });
+
+    $("#btAddExcludeApp").button().click(function () {
+        var xmlDoc = getXmlDocument();
+
+        odtAddExcludeApp(xmlDoc);
+
+        displayXml(xmlDoc);
+        return false;
+    });
+
+    $("#btRemoveExcludeApp").button().click(function () {
+        var xmlDoc = getXmlDocument();
+
+        odtRemoveExcludeApp(xmlDoc);
+
+        displayXml(xmlDoc);
+        return false;
+    });
+
+    $("#btAddRemoveProduct").button().click(function () {
+        var xmlDoc = getXmlDocument();
+
+        odtAddRemoveApp(xmlDoc);
+
+        displayXml(xmlDoc);
+        return false;
+    });
+
+    $("#btDeleteRemoveProduct").button().click(function () {
+        var xmlDoc = getXmlDocument();
+
+        odtDeleteRemoveApp(xmlDoc);
+
+        displayXml(xmlDoc);
+        return false;
+    });
+
+    $("#btAddRemoveLanguage").button().click(function () {
+        var xmlDoc = getXmlDocument();
+
+        odtAddRemoveLanguage(xmlDoc);
+
+        displayXml(xmlDoc);
+        return false;
+    });
+
+    $("#btRemoveRemoveLanguage").button().click(function () {
+        var xmlDoc = getXmlDocument();
+
+        odtRemoveRemoveLanguage(xmlDoc);
+
+        displayXml(xmlDoc);
+        return false;
+    });
+
+    $("#btSaveUpdates").button().click(function () {
+        var xmlDoc = getXmlDocument();
+
+        odtSaveUpdates(xmlDoc);
+
+        displayXml(xmlDoc);
+        return false;
+    });
+
+    $("#btRemovesUpdates").button().click(function () {
+        var xmlDoc = getXmlDocument();
+
+        odtRemoveUpdates(xmlDoc);
+
+        displayXml(xmlDoc);
+        return false;
+    });
+
+    $("#btSaveDisplay").button().click(function () {
+        var xmlDoc = getXmlDocument();
+
+        odtSaveDisplay(xmlDoc);
+
+        displayXml(xmlDoc);
+        return false;
+    });
+
+    $("#btRemoveDisplay").button().click(function () {
+        var xmlDoc = getXmlDocument();
+
+        odtRemoveDisplay(xmlDoc);
+
+        displayXml(xmlDoc);
+        return false;
+    });
+
+    $("#btSaveLogging").button().click(function () {
+        var xmlDoc = getXmlDocument();
+
+        odtSaveLogging(xmlDoc);
+
+        displayXml(xmlDoc);
+        return false;
+    });
+
+    $("#btRemoveLogging").button().click(function () {
+        var xmlDoc = getXmlDocument();
+
+        odtRemoveLogging(xmlDoc);
+
+        displayXml(xmlDoc);
+        return false;
+    });
+
+    $("#btSaveProperties").button().click(function () {
+        var xmlDoc = getXmlDocument();
+
+        odtSaveProperties(xmlDoc);
+
+        displayXml(xmlDoc);
+        return false;
+    });
+
+    $("#btRemoveProperties").button().click(function () {
+        var xmlDoc = getXmlDocument();
+
+        odtRemoveProperties(xmlDoc);
+
+        displayXml(xmlDoc);
+        return false;
+    });
+
+    $("#btViewOnGitHub").button().click(function () {
+        window.open("https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/master/Office-ProPlus-Deployment/CTROfficeXmlWebEditor");
+
+        return false;
+    });
+
+    $(window).scroll(function() {
+        scrollXmlEditor();
+    });
+    
+    $('#the-basics .typeahead').typeahead({
+        hint: true,
+        highlight: true,
+        minLength: 1
+    },
+    {
+        name: 'versions',
+        source: substringMatcher(versions)
+    });
+
+    $('#txtVersion').keydown(function (e) {
+        restrictToVersion(e);
+    });
+
+    $('#txtTargetVersion').keydown(function (e) {
+        restrictToVersion(e);
+    });
 
     setScrollBar();
 
-    fixDatePicker();
 });
-
-(function ($) {
-
-    $.fn.msdropdownval = function (value) {
-        var currentValue = this.val();
-
-        if (value) {
-            this.val(value);
-        }
-
-        var displayName = this.find('option:selected').text();
-
-        var parent = this[0].parentNode;
-        if (parent) {
-            var titles = parent.getElementsByClassName("ms-Dropdown-title");
-            if (titles) {
-                var ddTitle = titles[0];
-                if (ddTitle) {
-                    currentValue = ddTitle.innerText;
-                    if (value) {
-                        ddTitle.innerText = displayName;
-                    }
-                }
-            } 
-        }
-
-        if (value) {
-            currentValue = value;
-        }
-       
-        return currentValue;
-    };
-
-    $.fn.msdropdownvals = function (values) {
-        var currentValues = this.val();
-
-        var parent = this[0].parentNode;
-        if (parent) {
-            var selects = parent.getElementsByTagName("select");
-            var uls = parent.getElementsByClassName("ms-Dropdown-items");
-            var mySelect = $("#" + selects[0].id);
-
-            if (uls) {
-                var ddUl = uls[0];
-                if (ddUl) {
-                    var jqueryUl = $(ddUl);
-
-                    if (values) {
-                        jqueryUl.empty();
-
-                        $.each(values, function(val, text) {
-                            jqueryUl.append(
-                                $('<li class="ms-Dropdown-item">' + text + '</li>')
-                            );
-                        });
-
-                    }
-                }
-            }
-        } else {
-            mySelect = $(this);
-        }
-
-        mySelect.empty();
-
-        $.each(values, function (val, text) {
-            mySelect.append(
-                $('<option></option>').val(text).html(text)
-            );
-        });
-    };
-
-
-})(jQuery);
-
-function fixDatePicker() {
-    //ms-DatePicker
-    //ms-TextField
-    var datePickers = document.getElementsByClassName("ms-DatePicker");
-
-    for (var i = 0; i < datePickers.length; i++) {
-        var datePicker = datePickers[i];
-
-        var textFields = datePicker.childNodes;
-        for (var t = 0; t < textFields.length; t++) {
-            var childNode = textFields[t];
-
-            var className = childNode.className;
-            if (className) {
-                
-            }
-
-        }
-    }
-
-}
-
-function setCookie(name, value, minutes) {
-    var date = new Date();
-    date.setTime(date.getTime() + (minutes * 60 * 1000));
-    $.cookie(name, value, { expires: date });
-}
-
-function setPanel(panelId, buttonId) {
-    hideAllCallOuts();
-
-    $(".option-panel").removeClass('visible');
-    $(".navrow").removeClass('is-selected');
-    $("#" + buttonId).addClass('is-selected');
-    $("#" + panelId).addClass('visible');
-
-    var siblings = $("#" + panelId).siblings();
-
-    for (var i = 0; i < siblings.length; i++) {
-        var sibling = siblings[i];
-        $("#" + sibling.id).removeClass("ms-u-slideLeftIn400");
-    }
-
-    $("#" + panelId).addClass("ms-u-slideLeftIn400");
-}
-
-function setVersionPanel(buttonId) {
-    $(".navrowversion").removeClass('is-selected');
-    $("#" + buttonId).addClass('is-selected');
-
-    if (buttonId.toLowerCase() == "office2013select") {
-        changeVersions("2013");
-    }
-    if (buttonId.toLowerCase() == "office2016select") {
-        changeVersions("2016");
-    }
-}
-
-function changeVersions(version) {
-    if (version == "2013") {
-        //$("#pidKeyLabel").show("slow");
-        $("#branchSection").hide("slow");
-        $("#updateBranchSection").hide("slow");
-
-        //16.0.4229.1024
-
-        $('#versionTextBox .typeahead').typeahead('destroy', 'NoCached');
-        $('#updateVersionTextBox .typeahead').typeahead('destroy', 'NoCached');
-
-        $('#versionTextBox .typeahead').typeahead({
-            hint: true,
-            highlight: true,
-            minLength: 1
-        },
-        {
-            name: 'versions',
-            source: substringMatcher(versions)
-        });
-
-        $('#updateVersionTextBox .typeahead').typeahead({
-            hint: true,
-            highlight: true,
-            minLength: 1
-        },
-        {
-            name: 'versions',
-            source: substringMatcher(versions)
-        });
-
-        $("#txtVersion").attr("placeholder", versions[0]);
-        $("#txtTargetVersion").attr("placeholder", versions[0]);
-    }
-    if (version == "2016") {
-        //$("#pidKeyLabel").hide("slow");
-        $("#branchSection").show("slow");
-        $("#updateBranchSection").show("slow");
-        $("#txtPidKey").val("");
-
-        $('#versionTextBox .typeahead').typeahead('destroy', 'NoCached');
-        $('#updateVersionTextBox .typeahead').typeahead('destroy', 'NoCached');
-
-        $('#versionTextBox .typeahead').typeahead({
-            hint: true,
-            highlight: true,
-            minLength: 1
-        },
-        {
-            name: 'versions',
-            source: substringMatcher(versions2016)
-        });
-
-        $('#updateVersionTextBox .typeahead').typeahead({
-            hint: true,
-            highlight: true,
-            minLength: 1
-        },
-        {
-            name: 'versions',
-            source: substringMatcher(versions2016)
-        });
-
-        $("#txtVersion").attr("placeholder", versions2016[0]);
-        $("#txtTargetVersion").attr("placeholder", versions2016[0]);
-    }
-
-    odtToggleUpdate();
-
-    changeExcludeApps(version);
-}
-
-function changeExcludeApps(version) {
-    $("#cbExcludeApp").empty();
-    var mySelect = $('#cbExcludeApp');
-
-    if (version == "2013") {
-        mySelect.msdropdownvals(excludeApps2013);
-    }
-    if (version == "2016") {
-        mySelect.msdropdownvals(excludeApps2016);
-    }
-
-    mySelect.trigger("chosen:updated");
-}
-
-function addComment() {
-    var xmlDoc = getXmlDocument();
-
-    insertComment(xmlDoc);
-
-    displayXml(xmlDoc);
-
-    $("#commentDialog")[0].style.display = 'none';
-
-    return false;
-}
-
-function deleteComment() {
-    var xmlDoc = getXmlDocument();
-    $("#commentText").val("");
-    removeComment(xmlDoc);
-
-    displayXml(xmlDoc);
-}
-
-function fadeBackground(enabled) {
-    if (enabled) {
-        $('#screen').css({ opacity: 0.3, 'width': $(document).width(), 'height': $(document).height() });
-        $('body').css({ 'overflow': 'visible' });
-        //$('#box').css({ 'display': 'block' });
-    } else {
-        $('#screen').css({ opacity: 0, 'width': $(document).width(), 'height': $(document).height() });
-        $('#screen').hide();
-    }
-}
 
 function setScrollBar() {
     var optionDiv = document.getElementById("optionDiv");
@@ -745,13 +524,13 @@ function setScrollBar() {
         var optionDivHeight = optionDiv.clientHeight;
         var bodyHeight = window.innerHeight;
 
-        //if (optionDivHeight > bodyHeight - 100) {
-        //    document.body.style.overflow = "auto";
-        //} else {
-        //    if (isInternetExplorer()) {
-        //        document.body.style.overflow = "hidden";
-        //    }
-        //}
+        if (optionDivHeight > bodyHeight - 100) {
+            document.body.style.overflow = "auto";
+        } else {
+            if (isInternetExplorer()) {
+                document.body.style.overflow = "hidden";
+            }
+        }
     }
 }
 
@@ -831,20 +610,18 @@ function restrictToVersion(e) {
 }
 
 function setActiveTab() {
-    //var activeTab = $.cookie("activeTab");
+    var activeTab = $.cookie("activeTab");
 
-    //if (activeTab) {
-    //    if (activeTab.indexOf('#') > -1) {
-    //        var tabSplit = activeTab.split('#');
-    //        activeTab = tabSplit[tabSplit.length - 1];
-    //    }
-    //    //$('[data-toggle="tab"][href="#' + activeTab + '"]').tab('show');
-    //}
+    if (activeTab) {
+        if (activeTab.indexOf('#') > -1) {
+            var tabSplit = activeTab.split('#');
+            activeTab = tabSplit[tabSplit.length - 1];
+        }
+        $('[data-toggle="tab"][href="#' + activeTab + '"]').tab('show');
+    }
 }
 
 function clickUpload() {
-    $("#fileInput").val("");
-
     var finput = document.getElementById('fileInput');
     finput.click();
 }
@@ -855,24 +632,50 @@ function fileUploaded(e) {
     var i = 0,
     files = control.files;
     var file = files[i];
-    if (file) {
-        var reader = new FileReader();
-        reader.onload = function(event) {
-            var contents = event.target.result;
-            var xmlOutput = vkbeautify.xml(contents);
 
-            $('code#xmlText').text(xmlOutput).trigger('change');
-            $.cookie("xmlcache", xmlOutput);
+    var reader = new FileReader();
+    reader.onload = function (event) {
+        var contents = event.target.result;
+        var xmlOutput = vkbeautify.xml(contents);
 
-            var configXml = loadUploadXmlFile();
-            var xmlDoc = createXmlDocument(configXml);
-            displayXml(xmlDoc);
-        };
-        reader.onerror = function(event) {
-            throw "File could not be read! Code " + event.target.error.code;
-        };
-        reader.readAsText(file);
+        $('textarea#xmlText').val(xmlOutput);
+
+        loadUploadXmlFile();
+    };
+    reader.onerror = function (event) {
+        throw "File could not be read! Code " + event.target.error.code;
+    };
+    reader.readAsText(file);
+}
+
+function toggleExpandOptional(source) {
+
+    if ($("#toggleExpand").hasClass('glyphicon-collapse-up')) {
+        $("#toggleExpand").removeClass('glyphicon-collapse-up');
+        $("#toggleExpand").addClass('glyphicon-collapse-down');
+        $.cookie("optionalcollapse", "false");
+    } else {
+        $("#toggleExpand").addClass('glyphicon-collapse-up');
+        $("#toggleExpand").removeClass('glyphicon-collapse-down');
+        $.cookie("optionalcollapse", "true");
     }
+
+    setTimeout(setScrollBar, 500);
+}
+
+function toggleExpandProperties(source) {
+
+    if ($("#togglePropertiesExpand").hasClass('glyphicon-collapse-up')) {
+        $("#togglePropertiesExpand").removeClass('glyphicon-collapse-up');
+        $("#togglePropertiesExpand").addClass('glyphicon-collapse-down');
+        $.cookie("propertiescollapse", "false");
+    } else {
+        $("#togglePropertiesExpand").addClass('glyphicon-collapse-up');
+        $("#togglePropertiesExpand").removeClass('glyphicon-collapse-down');
+        $.cookie("propertiescollapse", "true");
+    }
+
+    setTimeout(setScrollBar, 500);
 }
 
 function download() {
@@ -1153,11 +956,10 @@ function changeSelectedLanguage() {
 
     if (addNode) {
         var productNode = getProductNode(addNode, selectedProduct);
-        if (productNode) {
-            var langNode = getLanguageNode(productNode, selectLanguage);
-            if (langNode) {
-                $("#btAddLanguage").prop("disabled", true);
-            }
+
+        var langNode = getLanguageNode(productNode, selectLanguage);
+        if (langNode) {
+            $("#btAddLanguage").prop("disabled", true);
         }
     }
 }
@@ -1213,8 +1015,6 @@ function resizeWindow() {
     var bodyHeight = window.innerHeight;
     var bodyWidth = window.innerWidth;
     var leftPaneHeight = bodyHeight - 180;
-    var mainAreaDiv = document.getElementById("mainArea");
-    var mainAreaDivHeight = mainAreaDiv.clientHeight;
 
     var rightPaneHeight = bodyHeight - 100;
 
@@ -1223,22 +1023,9 @@ function resizeWindow() {
         rightPaneHeight = rightPaneHeight + 50;
     }
 
-    var offsetHeight = mainAreaDivHeight + 3;
-
-    $("#xmlText").height(rightPaneHeight - offsetHeight);
-    $("#menuSec").height(bodyHeight - offsetHeight);
-    $("#xmlSec").height(bodyHeight - offsetHeight);
-
-    var menuWidth = $("#menuColumn").width();
-    var configWidth = $("#configColumn").width();
-
-    $("#xmlSection").width(bodyWidth - menuWidth - configWidth - 48);
+    $("#xmlText").height(rightPaneHeight - 90);
 
     setScrollBar();
-
-    if ($('#screen').is(":visible")) {
-        fadeBackground(true);
-    }
 }
 
 function cacheNodes(xmlDoc) {
@@ -1269,7 +1056,6 @@ function readdNodes(xmlDoc, nodeList) {
         xmlDoc.documentElement.appendChild(addPropNode);
     }
 }
-
 
 function odtAddProduct(xmlDoc) {
     var selectedProduct = $("#cbProduct").val();
@@ -1304,13 +1090,6 @@ function odtAddProduct(xmlDoc) {
     }
 
     addNode.setAttribute("OfficeClientEdition", selectBitness);
-
-    if ($("#office2016Select").hasClass("is-selected")) {
-        var selectedBranch = $("#cbBranch").val();
-        addNode.setAttribute("Branch", selectedBranch);
-    } else {
-        addNode.removeAttribute("Branch");
-    }
 
     var productNode = getProductNode(addNode, selectedProduct);
     if (!(productNode)) {
@@ -1358,8 +1137,6 @@ function odtAddProduct(xmlDoc) {
         $("#btRemoveProduct").prop("disabled", false);
         $("#btAddLanguage").prop("disabled", true);
     }
-
-    
 }
 
 function odtRemoveProduct(xmlDoc) {
@@ -1540,23 +1317,14 @@ function removeAllSections() {
     document.getElementById("btRemovesUpdates").click();
 }
 
-
-function odtToggleRemoveApp() {
-    var $RemoveApp = $("#removeAllProducts")[0];
-    if (!($RemoveApp.checked)) {
-        $("#cbRemoveProduct").removeProp("disabled");
-        $("#cbRemoveLanguage").removeProp("disabled");
-    } else {
-        $("#cbRemoveProduct").prop("disabled", "true");
-        $("#cbRemoveLanguage").prop("disabled", "true");
-    }
-}
-
 function odtAddRemoveApp(xmlDoc) {
     var selectedProduct = $("#cbRemoveProduct").val();
     var selectLanguage = $("#cbRemoveLanguage").val();
 
-    var $removeAll = $("#removeAllProducts")[0];
+    var $removeAll = $("#removeAllProducts");
+    if ($removeAll.hasClass('btn-primary')) {
+ 
+    }
 
     var removeNode = xmlDoc.createElement("Remove");
     var nodes = xmlDoc.documentElement.getElementsByTagName("Remove");
@@ -1566,11 +1334,10 @@ function odtAddRemoveApp(xmlDoc) {
         xmlDoc.documentElement.appendChild(removeNode);
     }
 
-    var removeAll = $removeAll.checked;
+    var removeAll = false;
 
-    //var $removeSelect = $("#removeSelectProducts");
-    //if ($removeSelect.hasClass('btn-primary')) {
-    if(!removeAll){
+    var $removeSelect = $("#removeSelectProducts");
+    if ($removeSelect.hasClass('btn-primary')) {
         removeNode.removeAttribute("All");
 
         var productNode = getProductNode(removeNode, selectedProduct);
@@ -1648,10 +1415,6 @@ function odtDeleteRemoveApp(xmlDoc) {
 
 
 function odtAddExcludeApp(xmlDoc) {
-
-
-    $("#cbExcludeApp").msdropdownval();
-
     var selectedProduct = $("#cbProduct").val();
     var selectExcludeApp = $("#cbExcludeApp").val();
 
@@ -1743,79 +1506,61 @@ function getExcludeAppNodeCount(xmlDoc, productId) {
 }
 
 
-function odtToggleUpdate() {
-    var $UpdatesEnabled = $("#updatesEnabled")[0];
-    if ($UpdatesEnabled.checked) {
-        $("#txtUpdatePath").removeProp("disabled");
-        $("#txtTargetVersion").removeProp("disabled");
-        $(".ms-DatePicker .ms-TextField input").removeProp("disabled"); //deadline textbox
-        $('#txtTargetVersion').css("background-color", "");
-        
-    } else {
-        $("#txtUpdatePath").prop("disabled", "true");
-        $("#txtTargetVersion").prop("disabled", "true");
-        $(".ms-DatePicker .ms-TextField input").prop("disabled", "true"); //deadline textbox
-        $('#txtTargetVersion').css("background-color", "#f0f0f0");
-    }
-}
-
 function odtSaveUpdates(xmlDoc) {
     var selectUpdatePath = $("#txtUpdatePath").val();
     var selectTargetVersion = $("#txtTargetVersion").val();
-    var date = $(".ms-DatePicker .ms-TextField input").val(); //deadline textbox
-    var $UpdatesEnabled = $("#updatesEnabled")[0];
-    if (date) {
-        date = new Date(date);
-        var options = {
-            year: "numeric", month: "2-digit",
-            day: "numeric", hour: "2-digit", minute: "2-digit", hour12: false
-        };
-        var selectedDate = date.toLocaleString("en-us", options);//.format("MM/DD/YYYY HH:mm");
+
+    var $btUpdatesEnabled = $("#btupdatesEnabled");
+    var $btUpdatesDisabled = $("#btupdatesDisabled");
+
+    if (!$btUpdatesEnabled.hasClass('btn-primary') && !$btUpdatesDisabled.hasClass('btn-primary')) {
+        $btUpdatesEnabled.addClass('btn-primary');
+
+        $("#txtUpdatePath").prop("disabled", false);
+        //$("#txtTargetVersion").prop("disabled", false);
+        $("#inputDeadline").prop("disabled", false);
     }
 
-    var updateNode = xmlDoc.createElement("Updates");
-    var nodes = xmlDoc.documentElement.getElementsByTagName("Updates");
-    if (nodes.length > 0) {
-        updateNode = xmlDoc.documentElement.getElementsByTagName("Updates")[0];
-    } else {
-        xmlDoc.documentElement.appendChild(updateNode);
-    }
+    if ($btUpdatesEnabled.hasClass('btn-primary') || $btUpdatesDisabled.hasClass('btn-primary')) {
 
-    if ($UpdatesEnabled.checked) {
-        updateNode.setAttribute("Enabled", "TRUE");
-
-        if ($("#office2016Select").hasClass("is-selected")) {
-            var selectedBranch = $("#cbUpdateBranch").val();
-            updateNode.setAttribute("Branch", selectedBranch);
+        var updateNode = xmlDoc.createElement("Updates");
+        var nodes = xmlDoc.documentElement.getElementsByTagName("Updates");
+        if (nodes.length > 0) {
+            updateNode = xmlDoc.documentElement.getElementsByTagName("Updates")[0];
         } else {
-            updateNode.removeAttribute("Branch");
+            xmlDoc.documentElement.appendChild(updateNode);
         }
-    } else {
-        updateNode.setAttribute("Enabled", "FALSE");
-        updateNode.removeAttribute("UpdatePath");
-        updateNode.removeAttribute("TargetVersion");
-        updateNode.removeAttribute("Deadline");
-        updateNode.removeAttribute("Branch");
-    }
 
-    if (selectUpdatePath) {
-        updateNode.setAttribute("UpdatePath", selectUpdatePath);
-    } else {
-        updateNode.removeAttribute("UpdatePath");
-    }
+        if (selectUpdatePath) {
+            updateNode.setAttribute("UpdatePath", selectUpdatePath);
+        } else {
+            updateNode.removeAttribute("UpdatePath");
+        }
 
-    if (selectTargetVersion) {
-        updateNode.setAttribute("TargetVersion", selectTargetVersion);
-    } else {
-        updateNode.removeAttribute("TargetVersion");
-    }
+        if (selectTargetVersion) {
+            updateNode.setAttribute("TargetVersion", selectTargetVersion);
+        } else {
+            updateNode.removeAttribute("TargetVersion");
+        }
 
-    if (selectedDate) {
-        updateNode.setAttribute("Deadline", selectedDate);
-    } else {
-        updateNode.removeAttribute("Deadline");
-    }
+        if (selectDate) {
+            updateNode.setAttribute("Deadline", selectDate);
+        } else {
+            updateNode.removeAttribute("Deadline");
+        }
 
+        if ($btUpdatesEnabled.hasClass('btn-primary')) {
+            updateNode.setAttribute("Enabled", "TRUE");
+        }
+
+        if ($btUpdatesDisabled.hasClass('btn-primary')) {
+            updateNode.setAttribute("Enabled", "FALSE");
+            updateNode.removeAttribute("UpdatePath");
+            updateNode.removeAttribute("TargetVersion");
+            updateNode.removeAttribute("Deadline");
+        }
+
+    }
 }
 
 function odtRemoveUpdates(xmlDoc) {
@@ -1828,8 +1573,14 @@ function odtRemoveUpdates(xmlDoc) {
         }
     }
 
-    $("#updatesEnabled")[0].checked = false;
-    odtToggleUpdate();
+    $("#btupdatesDisabled").removeClass('btn-primary');
+    $("#btupdatesEnabled").removeClass('btn-primary');
+    $("#btupdatesDisabled").removeClass('active');
+    $("#btupdatesEnabled").removeClass('active');
+
+    $("#inputDeadline").prop("disabled", true);
+    toggleTextBox("txtUpdatePath", false);
+    toggleTextBox("txtTargetVersion", false);
 }
 
 
@@ -1842,21 +1593,32 @@ function odtSaveDisplay(xmlDoc) {
         xmlDoc.documentElement.appendChild(addNode);
     }
 
-    var $displayLevel = $("#displayLevel")[0];
-    var $AcceptEula = $("#acceptEULA")[0];
+    var $displayLevelNone = $("#btLevelNone");
+    var $displayLevelFull = $("#btLevelFull");
+    var $AcceptEulaEnabled = $("#btAcceptEULAEnabled");
+    var $AcceptEulaDisabled = $("#btAcceptEULADisabled");
 
-    if ($displayLevel.checked) {
-        addNode.setAttribute("Level", "Full");
-    } else {
+    if (!$displayLevelNone.hasClass('btn-primary') && !$displayLevelFull.hasClass('btn-primary') &&
+        !$AcceptEulaEnabled.hasClass('btn-primary') && !$AcceptEulaDisabled.hasClass('btn-primary')) {
+        $displayLevelNone.addClass('btn-primary');
+        $AcceptEulaEnabled.addClass('btn-primary');
+    }
+
+    if ($displayLevelNone.hasClass('btn-primary')) {
         addNode.setAttribute("Level", "None");
     }
     
-    if ($AcceptEula.checked) {
-        addNode.setAttribute("AcceptEULA", "TRUE");
-    } else {
-        addNode.setAttribute("AcceptEULA", "FALSE");
+    if ($displayLevelFull.hasClass('btn-primary')) {
+        addNode.setAttribute("Level", "Full");
     }
     
+    if ($AcceptEulaEnabled.hasClass('btn-primary')) {
+        addNode.setAttribute("AcceptEULA", "TRUE");
+    }
+    
+    if ($AcceptEulaDisabled.hasClass('btn-primary')) {
+        addNode.setAttribute("AcceptEULA", "FALSE");
+    }
 }
 
 function odtRemoveDisplay(xmlDoc) {
@@ -1911,9 +1673,12 @@ function odtSaveProperties(xmlDoc) {
         }
     }
 
-    var $AutoActivate = $("#autoActivate")[0];
-    var $ForceAppShutdown = $("#forceAppShutdown")[0];
-    var $SharedComputerLicensing = $("#sharedComputerLicensing")[0];
+    var $btAutoActivateYes = $("#btAutoActivateYes");
+    var $btAutoActivateNo = $("#btAutoActivateNo");
+    var $btForceAppShutdownTrue = $("#btForceAppShutdownTrue");
+    var $btForceAppShutdownFalse = $("#btForceAppShutdownFalse");
+    var $btSharedComputerLicensingYes = $("#btSharedComputerLicensingYes");
+    var $btSharedComputerLicensingNo = $("#btSharedComputerLicensingNo");
 
     var packageguidVal = $("#txtPACKAGEGUID").val();
     if (packageguidVal) {
@@ -1930,43 +1695,55 @@ function odtSaveProperties(xmlDoc) {
         }   
     }
 
-    if (!(autoActivateNode)) {
-        autoActivateNode = xmlDoc.createElement("Property");
-        xmlDoc.documentElement.appendChild(autoActivateNode);
+    if ($btAutoActivateYes.hasClass('btn-primary') || $btAutoActivateNo.hasClass('btn-primary')) {
+        if (!(autoActivateNode)) {
+            autoActivateNode = xmlDoc.createElement("Property");
+            xmlDoc.documentElement.appendChild(autoActivateNode);
+        }
+
+        if ($btAutoActivateYes.hasClass('btn-primary')) {
+            autoActivateNode.setAttribute("Name", "AUTOACTIVATE");
+            autoActivateNode.setAttribute("Value", "1");
+        }
+
+        if ($btAutoActivateNo.hasClass('btn-primary')) {
+            autoActivateNode.setAttribute("Name", "AUTOACTIVATE");
+            autoActivateNode.setAttribute("Value", "0");
+        }
     }
 
-    if ($AutoActivate.checked) {
-        autoActivateNode.setAttribute("Name", "AUTOACTIVATE");
-        autoActivateNode.setAttribute("Value", "1");
-    } else {
-        autoActivateNode.setAttribute("Name", "AUTOACTIVATE");
-        autoActivateNode.setAttribute("Value", "0");
+    if ($btForceAppShutdownTrue.hasClass('btn-primary') || $btForceAppShutdownFalse.hasClass('btn-primary')) {
+        if (!(forceShutDownNode)) {
+            forceShutDownNode = xmlDoc.createElement("Property");
+            xmlDoc.documentElement.appendChild(forceShutDownNode);
+        }
+
+        if ($btForceAppShutdownTrue.hasClass('btn-primary')) {
+            forceShutDownNode.setAttribute("Name", "FORCEAPPSHUTDOWN");
+            forceShutDownNode.setAttribute("Value", "TRUE");
+        }
+
+        if ($btForceAppShutdownFalse.hasClass('btn-primary')) {
+            forceShutDownNode.setAttribute("Name", "FORCEAPPSHUTDOWN");
+            forceShutDownNode.setAttribute("Value", "FALSE");
+        }
     }
 
-    if (!(forceShutDownNode)) {
-        forceShutDownNode = xmlDoc.createElement("Property");
-        xmlDoc.documentElement.appendChild(forceShutDownNode);
-    }
+    if ($btSharedComputerLicensingYes.hasClass('btn-primary') || $btSharedComputerLicensingNo.hasClass('btn-primary')) {
+        if (!(sharedComputerLicensingNode)) {
+            sharedComputerLicensingNode = xmlDoc.createElement("Property");
+            xmlDoc.documentElement.appendChild(sharedComputerLicensingNode);
+        }
 
-    if ($ForceAppShutdown.checked) {
-        forceShutDownNode.setAttribute("Name", "FORCEAPPSHUTDOWN");
-        forceShutDownNode.setAttribute("Value", "TRUE");
-    } else {
-        forceShutDownNode.setAttribute("Name", "FORCEAPPSHUTDOWN");
-        forceShutDownNode.setAttribute("Value", "FALSE");
-    }
+        if ($btSharedComputerLicensingYes.hasClass('btn-primary')) {
+            sharedComputerLicensingNode.setAttribute("Name", "SharedComputerLicensing");
+            sharedComputerLicensingNode.setAttribute("Value", "1");
+        }
 
-    if (!(sharedComputerLicensingNode)) {
-        sharedComputerLicensingNode = xmlDoc.createElement("Property");
-        xmlDoc.documentElement.appendChild(sharedComputerLicensingNode);
-    }
-
-    if ($SharedComputerLicensing.checked) {
-        sharedComputerLicensingNode.setAttribute("Name", "SharedComputerLicensing");
-        sharedComputerLicensingNode.setAttribute("Value", "1");
-    } else {
-        sharedComputerLicensingNode.setAttribute("Name", "SharedComputerLicensing");
-        sharedComputerLicensingNode.setAttribute("Value", "0");
+        if ($btSharedComputerLicensingNo.hasClass('btn-primary')) {
+            sharedComputerLicensingNode.setAttribute("Name", "SharedComputerLicensing");
+            sharedComputerLicensingNode.setAttribute("Value", "0");
+        }
     }
 }
 
@@ -2000,36 +1777,38 @@ function odtRemoveProperties(xmlDoc) {
 }
 
 
-function odtToggleLogging() {
-    var $loggingLevel = $("#loggingLevel")[0];
-    if ($loggingLevel.checked) {
-        $("#txtLoggingUpdatePath").removeProp("disabled");
-    } else {
-        $("#txtLoggingUpdatePath").prop("disabled", "true");
-    }
-}
-
 function odtSaveLogging(xmlDoc) {
     var loggingUpdatePath = $("#txtLoggingUpdatePath").val();
-    var $loggingLevel = $("#loggingLevel")[0];
+    var $displayLevelNone = $("#btLoggingLevelOff");
+    var $displayLevelStandard = $("#btLoggingLevelStandard");
 
-    var addNode = xmlDoc.createElement("Logging");
-    var nodes = xmlDoc.documentElement.getElementsByTagName("Logging");
-    if (nodes.length > 0) {
-        addNode = xmlDoc.documentElement.getElementsByTagName("Logging")[0];
-    } else {
-        xmlDoc.documentElement.appendChild(addNode);
+    if (!$displayLevelNone.hasClass('btn-primary') && !$displayLevelStandard.hasClass('btn-primary')) {
+        $displayLevelNone.addClass('btn-primary');
+
+        $("#txtLoggingUpdatePath").prop("disabled", true);
     }
 
-    if ($loggingLevel.checked) {
-        addNode.setAttribute("Level", "Standard");
-
-        if (loggingUpdatePath) {
-            addNode.setAttribute("Path", loggingUpdatePath);
+    if ($displayLevelNone.hasClass('btn-primary') || $displayLevelStandard.hasClass('btn-primary')) {
+        var addNode = xmlDoc.createElement("Logging");
+        var nodes = xmlDoc.documentElement.getElementsByTagName("Logging");
+        if (nodes.length > 0) {
+            addNode = xmlDoc.documentElement.getElementsByTagName("Logging")[0];
+        } else {
+            xmlDoc.documentElement.appendChild(addNode);
         }
-    } else {
-        addNode.setAttribute("Level", "Off");
-        addNode.removeAttribute("Path");
+
+        if ($displayLevelNone.hasClass('btn-primary')) {
+            addNode.setAttribute("Level", "Off");
+            addNode.removeAttribute("Path");
+        }
+
+        if ($displayLevelStandard.hasClass('btn-primary')) {
+            addNode.setAttribute("Level", "Standard");
+
+            if (loggingUpdatePath) {
+                addNode.setAttribute("Path", loggingUpdatePath);
+            }
+        }
     }
 }
 
@@ -2042,9 +1821,11 @@ function odtRemoveLogging(xmlDoc) {
             xmlDoc.documentElement.removeChild(addNode);
         }
     }
-    var $loggingLevel = $("#loggingLevel")[0];
-    $loggingLevel.checked = false;
-    odtToggleLogging();
+
+    $("#btLoggingLevelOff").removeClass('btn-primary');
+    $("#btLoggingLevelOff").removeClass('active');
+    $("#btLoggingLevelStandard").removeClass('btn-primary');
+    $("#btLoggingLevelStandard").removeClass('active');
 }
 
 
@@ -2152,25 +1933,6 @@ function getRemoveLanguageNodeCount(xmlDoc, productId) {
 }
 
 
-function setDropDownValue(id, value) {
-    $('#' + id + ' option').each(function () {
-        var optionValue = $(this).attr('value');
-        if (optionValue.toLowerCase() == value.toLowerCase()) {
-            
-        } else {
-            $(this).prop("selected", false);
-        }
-    });
-    $('#' + id + ' option').each(function () {
-        var optionValue = $(this).attr('value');
-        if (optionValue.toLowerCase() == value.toLowerCase()) {
-            $(this).prop("selected", true);
-        } else {
-
-        }
-    });
-}
-
 function loadUploadXmlFile(inXmlDoc) {
     var xmlDoc = inXmlDoc;
     if (!(xmlDoc)) {
@@ -2183,14 +1945,14 @@ function loadUploadXmlFile(inXmlDoc) {
         addNode = xmlDoc.documentElement.getElementsByTagName("Add")[0];
 
         var selectBitness = addNode.getAttribute("OfficeClientEdition");
-        $("#cbEdition").msdropdownval(selectBitness);
+        $("#cbEdition").val(selectBitness);
 
         var products = addNode.getElementsByTagName("Product");
         if (products.length > 0) {
             var product = products[0];
             var productId = product.getAttribute("ID");
 
-            $("select#cbProduct").msdropdownval(productId);
+            $("#cbProduct").val(productId);
 
             var pidKey = product.getAttribute("PIDKEY");
             $("#txtPidKey").val(pidKey);
@@ -2199,7 +1961,7 @@ function loadUploadXmlFile(inXmlDoc) {
             if (exApps.length > 0) {
                 var exApp = exApps[0];
                 var excludeAppId = exApp.getAttribute("ID");
-                $("#cbExcludeApp").msdropdownval(excludeAppId);
+                $("#cbExcludeApp").val(excludeAppId);
 
                 $("#btRemoveExcludeApp").prop("disabled", false);
             } else {
@@ -2212,12 +1974,6 @@ function loadUploadXmlFile(inXmlDoc) {
 
         var version = addNode.getAttribute("SourcePath");
         $("#txtSourcePath").val(version);
-
-        var selectedBranch = addNode.getAttribute("Branch");
-        if (selectedBranch) {
-            $("#cbBranch").msdropdownval(selectedBranch);
-           // $("#office2016Select").addClass("is-selected");
-        }
     }
 
     var removeNode = null;
@@ -2230,19 +1986,18 @@ function loadUploadXmlFile(inXmlDoc) {
                 var removeproduct = removeProducts[0];
                 var removeproductId = removeproduct.getAttribute("ID");
 
-                $("#cbRemoveProduct").msdropdownval(removeproductId);
+                $("#cbRemoveProduct").val(removeproductId);
 
                 var removeLangs = removeproduct.getElementsByTagName("Language");
                 if (removeLangs.length > 0) {
                     var removeLangId = removeLangs[0].getAttribute("ID");
-                    $("#cbRemoveLanguage").msdropdownval(removeLangId);
+                    $("#cbRemoveLanguage").val(removeLangId);
                 }
 
-                $("#removeAllProducts")[0].checked = false;
+                toggleRemove("removeSelectProducts");
             } else {
-                $("#removeAllProducts")[0].checked = true;
+                toggleRemove("removeallproducts");
             }
-            odtToggleRemoveApp();
         }
     }
 
@@ -2256,23 +2011,16 @@ function loadUploadXmlFile(inXmlDoc) {
         var selectDeadline = updateNode.getAttribute("Deadline");
 
         if (updatesEnabled == "TRUE") {
-            $("#updatesEnabled")[0].checked = true;
+            toggleUpdatesEnabled("btupdatesEnabled");
             $("#txtUpdatePath").val(selectUpdatePath);
             $("#txtTargetVersion").val(selectTargetVersion);
-            $(".ms-DatePicker .ms-TextField input").val(selectDeadline);
+            $("#txtDeadline").val(selectDeadline);
         } else {
-            $("#updatesEnabled")[0].checked = false;
+            toggleUpdatesEnabled("btupdatesDisabled");
             $("#txtUpdatePath").val("");
             $("#txtTargetVersion").val("");
-            $(".ms-DatePicker .ms-TextField input").val("");
+            $("#txtDeadline").val("");
         }
-
-        var selectedUpdateBranch = updateNode.getAttribute("Branch");
-        if (selectedUpdateBranch) {
-            $("#cbUpdateBranch").msdropdownval(selectedUpdateBranch);
-        }
-
-        odtToggleUpdate();
     }
 
     var displayNodes = xmlDoc.documentElement.getElementsByTagName("Display");
@@ -2283,15 +2031,15 @@ function loadUploadXmlFile(inXmlDoc) {
         var acceptEula = displayNode.getAttribute("AcceptEULA");
 
         if (logLevel == "None") {
-            $("#displayLevel")[0].checked = false;
+            toggleDisplayLevelEnabled("btLevelNone");
         } else {
-            $("#displayLevel")[0].checked = true;
+            toggleDisplayLevelEnabled("btLevelFull");
         }
 
         if (acceptEula == "TRUE") {
-            $("#acceptEULA")[0].checked = true;
+            toggleDisplayEULAEnabled("btAcceptEULAEnabled");
         } else {
-            $("#acceptEULA")[0].checked = false;
+            toggleDisplayEULAEnabled("btAcceptEULADisabled");
         }
     }
 
@@ -2353,23 +2101,22 @@ function loadUploadXmlFile(inXmlDoc) {
         }
 
         if (autoActivate == "1") {
-            $("#autoActivate")[0].checked = true;
+            toggleAutoActivateEnabled("btAutoActivateYes");
         } else {
-            $("#autoActivate")[0].checked = false;
+            toggleAutoActivateEnabled("btAutoActivateNo");
         }
 
         if (forceShutDown == "TRUE") {
-            $("#forceAppShutdown")[0].checked = true;
+            toggleForceAppShutdownEnabled("btForceAppShutdownTrue");
         } else {
-            $("#forceAppShutdown")[0].checked = false;
+            toggleForceAppShutdownEnabled("btForceAppShutdownFalse");
         }
 
         if (sharedComputerLicensing == "1") {
-            $("#sharedComputerLicensing")[0].checked = true;
+            toggleSharedComputerLicensing("btSharedComputerLicensingYes");
         } else {
-            $("#sharedComputerLicensing")[0].checked = false;
+            toggleSharedComputerLicensing("btSharedComputerLicensingNo");
         }
-
     } else {
         document.getElementById("btRemoveProduct").click();
     }
@@ -2382,14 +2129,13 @@ function loadUploadXmlFile(inXmlDoc) {
         var path = loggingNode.getAttribute("Path");
 
         if (logLevel == "Off") {
-            $("#loggingLevel")[0].checked = false;
+            toggleLoggingEnabled("btLoggingLevelOff");
         } else {
-            $("#loggingLevel")[0].checked = true;
+            toggleLoggingEnabled("btLoggingLevelStandard");
         }
-        odtToggleLogging();
+
         $("#txtLoggingUpdatePath").val(path);
     }
-
 
     var productCount = getAddProductCount(xmlDoc);
     if (productCount == 0) {
@@ -2397,12 +2143,11 @@ function loadUploadXmlFile(inXmlDoc) {
     } else {
         $("#btRemoveProduct").prop("disabled", false);
     }
-    var strXml = (new XMLSerializer()).serializeToString(xmlDoc);
-    return strXml;
+
 }
 
 function sendMail() {
-    var xmlSource = $('code#xmlText').text();
+    var xmlSource = $('textarea#xmlText').val();
 
     var link = "mailto:"
              + "&subject=" + escape("Office Click-To-Run Configuration XML")
@@ -2414,8 +2159,8 @@ function sendMail() {
 
 
 function clearXml() {
-    $('code#xmlText').text("").trigger('change');
-    $(".ms-DatePicker .ms-TextField input").val("");
+    $('textarea#xmlText').val("");
+    $("#txtDeadline").val("");
     $("#txtLoggingUpdatePath").val("");
     $("#txtPidKey").val("");
     $("#txtSourcePath").val("");
@@ -2427,18 +2172,21 @@ function clearXml() {
     for (var t = 0; t < resetDropDowns.length; t++) {
         var dropDown = resetDropDowns[t];
         $("#" + dropDown.id).prop('selectedIndex', 0);
-        $("#" + dropDown.id).msdropdownval($("#" + dropDown.id).val());
     }
 
-    var resetToggles = $("input:checkbox");
-    for (var t = 0; t < resetToggles.length; t++) {
-        var toggle = resetToggles[t];
-        $("#" + toggle.id)[0].checked = false;
-    }
+    toggleRemove("removeAllProducts");
 
-    odtToggleLogging();
-    odtToggleRemoveApp();
-    odtToggleUpdate();
+    var clearButtons = ["#btLevelNone", "#btLevelFull", "#btLoggingLevelOff",
+        "#btLoggingLevelStandard", "#btAcceptEULAEnabled", "#btAcceptEULADisabled",
+        "#btLoggingLevelOff", "#btLoggingLevelStandard", "#btAutoActivateYes",
+        "#btAutoActivateNo", "#btForceAppShutdownTrue", "#btForceAppShutdownFalse",
+        "#btSharedComputerLicensingYes", "#btSharedComputerLicensingNo"];
+
+    for (var b = 0; b < clearButtons.length; b++) {
+        var buttonName = clearButtons[b];
+        $(buttonName).removeClass('active');
+        $(buttonName).removeClass('btn-primary');
+    }
 
     $.cookie("xmlcache", "");
 
@@ -2446,7 +2194,7 @@ function clearXml() {
 }
 
 function getXmlDocument() {
-    var xmlSource = $('code#xmlText').text();
+    var xmlSource = $('textarea#xmlText').val();
     if (!(xmlSource)) {
         xmlSource = "<Configuration></Configuration>";
     }
@@ -2456,7 +2204,6 @@ function getXmlDocument() {
 
 function createXmlDocument(string) {
     var doc;
-    //if (!detectIE()){
     if (window.DOMParser) {
         parser = new DOMParser();
         doc = parser.parseFromString(string, "application/xml");
@@ -2470,38 +2217,91 @@ function createXmlDocument(string) {
     return doc;
 }
 
-function detectIE() {
-    var ua = window.navigator.userAgent;
-
-    var msie = ua.indexOf('MSIE ');
-    if (msie > 0) {
-        // IE 10 or older => return version number
-        return parseInt(ua.substring(msie + 5, ua.indexOf('.', msie)), 10);
-    }
-
-    var trident = ua.indexOf('Trident/');
-    if (trident > 0) {
-        // IE 11 => return version number
-        var rv = ua.indexOf('rv:');
-        return parseInt(ua.substring(rv + 3, ua.indexOf('.', rv)), 10);
-    }
-
-    var edge = ua.indexOf('Edge/');
-    if (edge > 0) {
-        // IE 12 => return version number
-        return parseInt(ua.substring(edge + 5, ua.indexOf('.', edge)), 10);
-    }
-
-    // other browser
-    return false;
-}
-
 function displayXml(xmlDoc) {
     var xmlString = (new XMLSerializer().serializeToString(xmlDoc.documentElement));
     var xmlOutput = vkbeautify.xml(xmlString);
-
-    $('code#xmlText').text(xmlOutput).trigger('change');
+    $('textarea#xmlText').val(xmlOutput);
     $.cookie("xmlcache", xmlOutput);
+}
+
+
+function toggleRemove(sourceId) {
+
+    if (sourceId.toLowerCase() == "removeallproducts") {
+        $("#removeSelectProducts").removeClass('active');
+        $("#removeSelectProducts").removeClass('btn-primary');
+
+        var $this = $("#removeAllProducts");
+        if (!$this.hasClass('active')) {
+            $this.addClass('active');
+        }
+
+        if (!$this.hasClass('btn-primary')) {
+            $this.addClass('btn-primary');
+        }
+
+        $("#cbRemoveProduct").prop("disabled", true);
+        $("#cbRemoveLanguage").prop("disabled", true);
+        $("#btAddRemoveLanguage").prop("disabled", true);
+    } else {
+        $("#removeAllProducts").removeClass('active');
+        $("#removeAllProducts").removeClass('btn-primary');
+
+        var $this = $("#removeSelectProducts");
+        if (!$this.hasClass('active')) {
+            $this.addClass('active');
+        }
+
+        if (!$this.hasClass('btn-primary')) {
+            $this.addClass('btn-primary');
+        }
+
+        $("#cbRemoveProduct").prop("disabled", false);
+        $("#cbRemoveLanguage").prop("disabled", false);
+        $("#btAddRemoveLanguage").prop("disabled", false);
+    }
+
+}
+
+function toggleUpdatesEnabled(sourceId) {
+
+    if (sourceId.toLowerCase() == "btupdatesenabled") {
+        //$("#btupdatesDisabled").removeClass('active');
+        $("#btupdatesDisabled").removeClass('btn-primary');
+
+        var $this = $("#btupdatesEnabled");
+        //if (!$this.hasClass('active')) {
+        //    $this.addClass('active');
+        //}
+
+        if (!$this.hasClass('btn-primary')) {
+            $this.addClass('btn-primary');
+        }
+
+        $("#inputDeadline").prop("disabled", false);
+
+        toggleTextBox("txtUpdatePath", true);
+        toggleTextBox("txtTargetVersion", true);
+    } else {
+        //$("#btupdatesEnabled").removeClass('active');
+        $("#btupdatesEnabled").removeClass('btn-primary');
+
+        var $this = $("#btupdatesDisabled");
+        //if (!$this.hasClass('active')) {
+        //    $this.addClass('active');
+        //}
+
+        if (!$this.hasClass('btn-primary')) {
+            $this.addClass('btn-primary');
+        }
+
+        $("#inputDeadline").prop("disabled", true);
+
+        toggleTextBox("txtUpdatePath", false);
+        toggleTextBox("txtTargetVersion", false);
+
+    }
+    return false;
 }
 
 function toggleTextBox(id, enabled) {
@@ -2516,135 +2316,196 @@ function toggleTextBox(id, enabled) {
     }
 }
 
-function toggleInfo(calloutId, icon) {
-    var disp = $("#" + calloutId)[0].style.display;
-    if (disp == "none") {
-        showInfo(calloutId, icon);
+function toggleAutoActivateEnabled(sourceId) {
+
+    if (sourceId.toLowerCase() == "btautoactivateyes") {
+        $("#btAutoActivateNo").removeClass('active');
+        $("#btAutoActivateNo").removeClass('btn-primary');
+
+        var $this = $("#btAutoActivateYes");
+        if (!$this.hasClass('active')) {
+            $this.addClass('active');
+        }
+
+        if (!$this.hasClass('btn-primary')) {
+            $this.addClass('btn-primary');
+        }
     } else {
-        hideInfo(calloutId);
-    }
-}
+        $("#btAutoActivateYes").removeClass('active');
+        $("#btAutoActivateYes").removeClass('btn-primary');
 
-function showInfo(calloutId, icon) {
-    hideAllCallOuts();
+        var $this = $("#btAutoActivateNo");
+        if (!$this.hasClass('active')) {
+            $this.addClass('active');
+        }
 
-    var pos = $("#" + icon.id).offset();
-    var iconWidth = $("#" + icon.id).width();
-    var iconHeight = $("#" + icon.id).height();
-
-    var nTop = pos.top - 60;
-    var nLeft = pos.left + iconWidth - 5;
-
-    $("#" + calloutId)[0].style.top = nTop.toString() + "px";
-    $("#" + calloutId)[0].style.left = nLeft.toString() + "px";
-    $("#" + calloutId)[0].style.display = 'block';
-    $("#infoOverlay")[0].style.display = 'block';
-    $("#xmlText").css('z-index', 0);
-}
-
-function hideAllCallOuts() {
-    $("#infoOverlay")[0].style.display = 'none';
-    var callOuts = document.getElementsByClassName("ms-Callout");
-    for (var i = 0; i < callOuts.length; i++) {
-        var callOut = callOuts[i];
-        if (callOut) {
-            callOut.style.display = "none";
+        if (!$this.hasClass('btn-primary')) {
+            $this.addClass('btn-primary');
         }
     }
+
 }
 
-function hideInfo(calloutId) {
-    $("#" + calloutId)[0].style.display = 'none';
-}
+function toggleForceAppShutdownEnabled(sourceId) {
 
-function showAbout() {
-    $("#aboutDialog")[0].style.display = 'block';
-}
+    if (sourceId.toLowerCase() == "btforceappshutdowntrue") {
+        $("#btForceAppShutdownFalse").removeClass('active');
+        $("#btForceAppShutdownFalse").removeClass('btn-primary');
 
-function hideAbout() {
-    $("#aboutDialog")[0].style.display = 'none';
-}
+        var $this = $("#btForceAppShutdownTrue");
+        if (!$this.hasClass('active')) {
+            $this.addClass('active');
+        }
 
-function hideWelcome() {
-    $("#welcomeDialog").fadeOut("fast", function () {
-        fadeBackground(false);
-    });
-}
+        if (!$this.hasClass('btn-primary')) {
+            $this.addClass('btn-primary');
+        }
+    } else {
+        $("#btForceAppShutdownTrue").removeClass('active');
+        $("#btForceAppShutdownTrue").removeClass('btn-primary');
 
-function foreverHideWelcome() {
-    $("#welcomeDialog").fadeOut(function() {
-        fadeBackground(false);
-    });
-    $.cookie("hideWelcome", true);
-}
+        var $this = $("#btForceAppShutdownFalse");
+        if (!$this.hasClass('active')) {
+            $this.addClass('active');
+        }
 
-function openCommentDialog() {
-    //$("#commentDialog")[0].style.display = 'block';
-
-    $("textarea#commentText").val("");
-
-    var xmlDoc = getXmlDocument();
-    var config = xmlDoc.getElementsByTagName('Configuration')[0];
-    var childNodes = config.childNodes;
-    for (var i = 0; i < childNodes.length; i++) {
-        if (childNodes[i].nodeName == "#comment") {
-            var xmlComment = childNodes[i].nodeValue;
-            $("textarea#commentText").val(xmlComment);
+        if (!$this.hasClass('btn-primary')) {
+            $this.addClass('btn-primary');
         }
     }
+
 }
 
-function hideCommentDialog() {
-    $("#commentDialog")[0].style.display = 'none';
-}
+function toggleSharedComputerLicensing(sourceId) {
 
-function insertComment(xmldoc) {
-    removeComment(xmldoc);
-    var commenttxt = $("#commentText").val();
-    if (commenttxt) {
-        var comment = xmldoc.createComment(commenttxt);
-        xmldoc.getElementsByTagName('Configuration')[0].appendChild(comment);
-    }
-}
+    if (sourceId.toLowerCase() == "btsharedcomputerlicensingyes") {
+        $("#btSharedComputerLicensingNo").removeClass('active');
+        $("#btSharedComputerLicensingNo").removeClass('btn-primary');
 
-function removeComment(xmldoc) {
-    var config = xmldoc.getElementsByTagName('Configuration')[0];
-    var childNodes = config.childNodes;
-    for (var i = 0; i < childNodes.length; i++) {
-        if (childNodes[i].nodeName == "#comment") {
-            config.removeChild(childNodes[i]);
+        var $this = $("#btSharedComputerLicensingYes");
+        if (!$this.hasClass('active')) {
+            $this.addClass('active');
+        }
+
+        if (!$this.hasClass('btn-primary')) {
+            $this.addClass('btn-primary');
+        }
+    } else {
+        $("#btSharedComputerLicensingYes").removeClass('active');
+        $("#btSharedComputerLicensingYes").removeClass('btn-primary');
+
+        var $this = $("#btSharedComputerLicensingNo");
+        if (!$this.hasClass('active')) {
+            $this.addClass('active');
+        }
+
+        if (!$this.hasClass('btn-primary')) {
+            $this.addClass('btn-primary');
         }
     }
+
 }
+
+function toggleDisplayLevelEnabled(sourceId) {
+
+    if (sourceId.toLowerCase() == "btlevelnone") {
+        $("#btLevelFull").removeClass('active');
+        $("#btLevelFull").removeClass('btn-primary');
+
+        var $this = $("#btLevelNone");
+        if (!$this.hasClass('active')) {
+            $this.addClass('active');
+        }
+
+        if (!$this.hasClass('btn-primary')) {
+            $this.addClass('btn-primary');
+        }
+    } else {
+        $("#btLevelNone").removeClass('active');
+        $("#btLevelNone").removeClass('btn-primary');
+
+        var $this = $("#btLevelFull");
+        if (!$this.hasClass('active')) {
+            $this.addClass('active');
+        }
+
+        if (!$this.hasClass('btn-primary')) {
+            $this.addClass('btn-primary');
+        }
+    }
+
+}
+
+function toggleDisplayEULAEnabled(sourceId) {
+
+    if (sourceId.toLowerCase() == "btaccepteulaenabled") {
+        $("#btAcceptEULADisabled").removeClass('active');
+        $("#btAcceptEULADisabled").removeClass('btn-primary');
+
+        var $this = $("#btAcceptEULAEnabled");
+        if (!$this.hasClass('active')) {
+            $this.addClass('active');
+        }
+
+        if (!$this.hasClass('btn-primary')) {
+            $this.addClass('btn-primary');
+        }
+    } else {
+        $("#btAcceptEULAEnabled").removeClass('active');
+        $("#btAcceptEULAEnabled").removeClass('btn-primary');
+
+        var $this = $("#btAcceptEULADisabled");
+        if (!$this.hasClass('active')) {
+            $this.addClass('active');
+        }
+
+        if (!$this.hasClass('btn-primary')) {
+            $this.addClass('btn-primary');
+        }
+    }
+
+}
+
+function toggleLoggingEnabled(sourceId) {
+
+    if (sourceId.toLowerCase() == "btloggingleveloff") {
+        $("#btLoggingLevelStandard").removeClass('active');
+        $("#btLoggingLevelStandard").removeClass('btn-primary');
+
+        var $this = $("#btLoggingLevelOff");
+        if (!$this.hasClass('active')) {
+            $this.addClass('active');
+        }
+
+        if (!$this.hasClass('btn-primary')) {
+            $this.addClass('btn-primary');
+        }
+
+        $("#txtLoggingUpdatePath").prop("disabled", true);
+    } else {
+        $("#btLoggingLevelOff").removeClass('active');
+        $("#btLoggingLevelOff").removeClass('btn-primary');
+
+        var $this = $("#btLoggingLevelStandard");
+        if (!$this.hasClass('active')) {
+            $this.addClass('active');
+        }
+
+        if (!$this.hasClass('btn-primary')) {
+            $this.addClass('btn-primary');
+        }
+
+        $("#txtLoggingUpdatePath").prop("disabled", false);
+    }
+
+}
+
 
 function IsGuid(value) {
     var rGx = new RegExp("\\b(?:[A-F0-9]{8})(?:-[A-F0-9]{4}){3}-(?:[A-F0-9]{12})\\b");
     return rGx.exec(value) != null;
 }
 
-function setTemplate(template) {
-    $('code#xmlText').text("").trigger('change');
-
-    var url = document.getElementById(template.id).getAttribute("href");
-        
-    var rawFile = new XMLHttpRequest();
-    rawFile.open("GET", url, true);
-    rawFile.onreadystatechange = function () {
-        if (rawFile.readyState === 4) {
-            var allText = rawFile.responseText;
-            if (allText) {
-                $('code#xmlText').text(allText).trigger('change');
-                getXmlDocument();
-                var xml = loadUploadXmlFile();
-
-                $('code#xmlText').text(xml).trigger('change');
-            }
-        }
-    }
-
-    rawFile.send();
-
-}
 
 var versions = [
 '15.0.4745.1001',
@@ -2679,35 +2540,3 @@ var versions = [
 '15.0.4481.1510'
 ];
 
-var versions2016 = [
-    '16.0.4229.1024'
-];
-
-var excludeApps2013 = [
-    'Access',
-    'Excel',
-    'Groove',
-    'InfoPath',
-    'Lync',
-    'OneNote',
-    'Outlook',
-    'PowerPoint',
-    'Project',
-    'Publisher',
-    'Visio',
-    'Word'
-];
-
-var excludeApps2016 = [
-    'Access',
-    'Excel',
-    'Groove',
-    'Lync',
-    'OneNote',
-    'Outlook',
-    'PowerPoint',
-    'Project',
-    'Publisher',
-    'Visio',
-    'Word'
-];
