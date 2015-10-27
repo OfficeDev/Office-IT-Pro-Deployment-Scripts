@@ -28,7 +28,11 @@ $(document).ready(function () {
         $("#welcomeDialog").css("display", "block");
     }
 
-    
+    $('code#xmlText').change(function () {
+
+            hljs.highlightBlock(document.getElementById('xmlText'));
+
+    });
 
     changeExcludeApps("2016");
 
@@ -478,7 +482,7 @@ $(document).ready(function () {
     $('#welcomeInner')[0].style.height = desH + "px";
 
     var xmlOutput = $.cookie("xmlcache");
-    $('textarea#xmlText').val(xmlOutput);
+    $('code#xmlText').text(xmlOutput).trigger('change');
     loadUploadXmlFile();
 
     setScrollBar();
@@ -741,13 +745,13 @@ function setScrollBar() {
         var optionDivHeight = optionDiv.clientHeight;
         var bodyHeight = window.innerHeight;
 
-        if (optionDivHeight > bodyHeight - 100) {
-            document.body.style.overflow = "auto";
-        } else {
-            if (isInternetExplorer()) {
-                document.body.style.overflow = "hidden";
-            }
-        }
+        //if (optionDivHeight > bodyHeight - 100) {
+        //    document.body.style.overflow = "auto";
+        //} else {
+        //    if (isInternetExplorer()) {
+        //        document.body.style.overflow = "hidden";
+        //    }
+        //}
     }
 }
 
@@ -857,12 +861,12 @@ function fileUploaded(e) {
             var contents = event.target.result;
             var xmlOutput = vkbeautify.xml(contents);
 
-            $('textarea#xmlText').val(xmlOutput);
+            $('code#xmlText').text(xmlOutput).trigger('change');
             $.cookie("xmlcache", xmlOutput);
 
-            getXmlDocument();
-
-            loadUploadXmlFile();
+            var configXml = loadUploadXmlFile();
+            var xmlDoc = createXmlDocument(configXml);
+            displayXml(xmlDoc);
         };
         reader.onerror = function(event) {
             throw "File could not be read! Code " + event.target.error.code;
@@ -1209,6 +1213,8 @@ function resizeWindow() {
     var bodyHeight = window.innerHeight;
     var bodyWidth = window.innerWidth;
     var leftPaneHeight = bodyHeight - 180;
+    var mainAreaDiv = document.getElementById("mainArea");
+    var mainAreaDivHeight = mainAreaDiv.clientHeight;
 
     var rightPaneHeight = bodyHeight - 100;
 
@@ -1217,9 +1223,11 @@ function resizeWindow() {
         rightPaneHeight = rightPaneHeight + 50;
     }
 
-    $("#xmlText").height(rightPaneHeight - 30);
-    $("#menuSec").height(bodyHeight - 50);
-    $("#xmlSec").height(bodyHeight - 50);
+    var offsetHeight = mainAreaDivHeight + 3;
+
+    $("#xmlText").height(rightPaneHeight - offsetHeight);
+    $("#menuSec").height(bodyHeight - offsetHeight);
+    $("#xmlSec").height(bodyHeight - offsetHeight);
 
     var menuWidth = $("#menuColumn").width();
     var configWidth = $("#configColumn").width();
@@ -2394,7 +2402,7 @@ function loadUploadXmlFile(inXmlDoc) {
 }
 
 function sendMail() {
-    var xmlSource = $('textarea#xmlText').val();
+    var xmlSource = $('code#xmlText').text();
 
     var link = "mailto:"
              + "&subject=" + escape("Office Click-To-Run Configuration XML")
@@ -2406,7 +2414,7 @@ function sendMail() {
 
 
 function clearXml() {
-    $('textarea#xmlText').val("");
+    $('code#xmlText').text("").trigger('change');
     $(".ms-DatePicker .ms-TextField input").val("");
     $("#txtLoggingUpdatePath").val("");
     $("#txtPidKey").val("");
@@ -2438,7 +2446,7 @@ function clearXml() {
 }
 
 function getXmlDocument() {
-    var xmlSource = $('textarea#xmlText').val();
+    var xmlSource = $('code#xmlText').text();
     if (!(xmlSource)) {
         xmlSource = "<Configuration></Configuration>";
     }
@@ -2492,7 +2500,7 @@ function displayXml(xmlDoc) {
     var xmlString = (new XMLSerializer().serializeToString(xmlDoc.documentElement));
     var xmlOutput = vkbeautify.xml(xmlString);
 
-    $('textarea#xmlText').val(xmlOutput);
+    $('code#xmlText').text(xmlOutput).trigger('change');
     $.cookie("xmlcache", xmlOutput);
 }
 
@@ -2615,7 +2623,7 @@ function IsGuid(value) {
 }
 
 function setTemplate(template) {
-    $('textarea#xmlText').val("");
+    $('code#xmlText').text("").trigger('change');
 
     var url = document.getElementById(template.id).getAttribute("href");
         
@@ -2625,11 +2633,11 @@ function setTemplate(template) {
         if (rawFile.readyState === 4) {
             var allText = rawFile.responseText;
             if (allText) {
-                $('textarea#xmlText').val(allText);
+                $('code#xmlText').text(allText).trigger('change');
                 getXmlDocument();
                 var xml = loadUploadXmlFile();
 
-                $('textarea#xmlText').val(xml);
+                $('code#xmlText').text(xml).trigger('change');
             }
         }
     }
