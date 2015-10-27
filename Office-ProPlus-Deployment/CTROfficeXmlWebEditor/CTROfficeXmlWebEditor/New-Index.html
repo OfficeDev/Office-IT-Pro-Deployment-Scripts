@@ -29,11 +29,16 @@
     <script type="text/javascript" src="./Scripts/vkbeautify.0.99.00.beta.js"></script>
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.8.0/highlight.min.js"></script>
     <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+
+    <!-- HighlightJS addition for syntax highlighting in XML. See Highlightjs.org for usage information -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/languages/xml.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/solarized_light.min.css" rel="stylesheet" />
     
 
     <style type="text/css">
         body {
             margin: 0px 0px;
+            overflow: hidden;
         }
 
         h1 {
@@ -202,7 +207,7 @@
                 </div>
             </div>
         </div>
-        <div class="ms-CommandBar-mainArea">
+        <div id="mainArea" class="ms-CommandBar-mainArea">
             <div class="custom-cmditem">
                 <span class="ms-font-l ms-font-weight-regular ms-fontColor-white headerText" style="height:100%;width:100%;margin:0px 0px 0px 15px;border-right:1px solid #4c9cd6; padding-right:15px;">Office 365 ProPlus</span>
             </div>
@@ -327,7 +332,7 @@
                                                 <select id="cbBranch" class="ms-Dropdown-select">
                                                     <option value="Current">Current</option>
                                                     <option value="Business">Business</option>
-                                                    <option value="FirstReleaseBusiness">First Release Business</option>
+                                                    <option value="Validation">Validation</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -664,7 +669,7 @@
                                             <select id="cbUpdateBranch" class="ms-Dropdown-select">
                                                 <option value="Current">Current</option>
                                                 <option value="Business">Business</option>
-                                                <option value="FirstReleaseBusiness">First Release Business</option>
+                                                <option value="Validation">Validation</option>
                                             </select>
                                         </div>
                                     </div>
@@ -976,9 +981,11 @@
                                         </div>
 
                                     </div>
-                                    <div class="ms-TextField" style="margin-top:10px;margin-left: 30px;">
-                                        <textarea id="xmlText" class="ms-TextField-field ms-TextField--multiline"
-                                                  style="height:800px;font-size: 23px;border-width: 0;overflow-y: auto" readonly></textarea>
+                                    <div class="ms-TextField" style="margin-top:0px;margin-left: 30px;">
+                                        <pre style="border: white none 0;padding:0px;margin:0px;background-color: white;" >
+                                          <code id="xmlText" style="height:800px;font-size: 23px;border-width: 0;
+                                                                                overflow-y: auto; background-color: white;" readonly></code>
+                                        </pre>
                                     </div>
                                 </div>
                             </div>
