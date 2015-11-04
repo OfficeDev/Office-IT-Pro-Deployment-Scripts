@@ -16,7 +16,11 @@ Param(
     [bool] $DisplayLevel = $false,
 
     [Parameter()]
-    [string] $UpdateToVersion = $NULL
+    [string] $LogPath = $null,
+
+    [Parameter()]
+    [string] $LogName = $null
+
 )
 
 Function Write-Log {
@@ -24,23 +28,29 @@ Function Write-Log {
     PARAM
 	(
          [String]$Message,
-         [String]$Path = $LogFilePath,
+         [String]$Path = $Global:UpdateAnywhereLogPath,
+         [String]$LogName = $Global:UpdateAnywhereLogFileName,
          [int]$severity,
          [string]$component
 	)
  
     try {
-        # Get Windows Folder Path
-        $windowsDirectory = [Environment]::GetFolderPath("Windows")
+        $Path = $Global:UpdateAnywhereLogPath
+        $LogName = $Global:UpdateAnywhereLogFileName
+        if([String]::IsNullOrWhiteSpace($Path)){
+            # Get Windows Folder Path
+            $windowsDirectory = [Environment]::GetFolderPath("Windows")
 
-        # Build log folder
-        $logFolderPath = "$windowsDirectory\CCM\logs"
+            # Build log folder
+            $Path = "$windowsDirectory\CCM\logs"
+        }
 
-         # Set log file name
-        $LogFileName = "Office365UpdateAnywhere.log"
-
+        if([String]::IsNullOrWhiteSpace($LogName)){
+             # Set log file name
+            $LogName = "Office365UpdateAnywhere.log"
+        }
         # Build log path
-        $LogFilePath = Join-Path $logFolderPath $LogFileName
+        $LogFilePath = Join-Path $Path $LogName
 
         # Create log file
         If (!($(Test-Path $LogFilePath -PathType Leaf)))
@@ -53,8 +63,8 @@ Function Write-Log {
         $Date2= Get-Date -Format "MM-dd-yyyy"
         $type=1
  
-        if ($Path) {
-           "<![LOG[$Message]LOG]!><time=$([char]34)$date$($TimeZoneBias.bias)$([char]34) date=$([char]34)$date2$([char]34) component=$([char]34)$component$([char]34) context=$([char]34)$([char]34) type=$([char]34)$severity$([char]34) thread=$([char]34)$([char]34) file=$([char]34)$([char]34)>"| Out-File -FilePath $Path -Append -NoClobber -Encoding default
+        if ($LogFilePath) {
+           "<![LOG[$Message]LOG]!><time=$([char]34)$date$($TimeZoneBias.bias)$([char]34) date=$([char]34)$date2$([char]34) component=$([char]34)$component$([char]34) context=$([char]34)$([char]34) type=$([char]34)$severity$([char]34) thread=$([char]34)$([char]34) file=$([char]34)$([char]34)>"| Out-File -FilePath $LogFilePath -Append -NoClobber -Encoding default
         }
     } catch {
 
@@ -226,9 +236,18 @@ Will generate the Office Deployment Tool (ODT) configuration XML based on the lo
         [bool] $DisplayLevel = $false,
 
         [Parameter()]
-        [string] $UpdateToVersion = $NULL
+        [string] $UpdateToVersion = $NULL,
+
+        [Parameter()]
+        [string] $LogPath = $NULL,
+
+        [Parameter()]
+        [string] $LogName = $NULL
         
     )
+
+    $Global:UpdateAnywhereLogPath = $LogPath;
+    $Global:UpdateAnywhereLogFileName = $LogName;
 
     $mainRegPath = Get-OfficeCTRRegPath
     $configRegPath = $mainRegPath + "\Configuration"
@@ -527,7 +546,7 @@ Function Wait-ForOfficeCTRUpadate() {
     }
 }
 
-Update-Office365Anywhere -WaitForUpdateToFinish $WaitForUpdateToFinish -EnableUpdateAnywhere $EnableUpdateAnywhere -ForceAppShutdown $ForceAppShutdown -UpdatePromptUser $UpdatePromptUser -DisplayLevel $DisplayLevel -UpdateToVersion $UpdateToVersion
+Update-Office365Anywhere -WaitForUpdateToFinish $WaitForUpdateToFinish -EnableUpdateAnywhere $EnableUpdateAnywhere -ForceAppShutdown $ForceAppShutdown -UpdatePromptUser $UpdatePromptUser -DisplayLevel $DisplayLevel -UpdateToVersion $UpdateToVersion -LogPath $LogPath -LogName $LogName
 
 
 
