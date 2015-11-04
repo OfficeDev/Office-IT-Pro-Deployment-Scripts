@@ -147,7 +147,11 @@ Function Test-UpdateSource() {
     )
 
   	$uri = [System.Uri]$UpdateSource
-	$sourceIsAlive = Test-Connection -Count 1 -computername $uri.Host -Quiet
+    if($uri.Host -ne $NULL){
+	    $sourceIsAlive = Test-Connection -Count 1 -computername $uri.Host -Quiet
+    }else{
+        $sourceIsAlive = Test-Path $uri.LocalPath -ErrorAction SilentlyContinue
+    }
     return $sourceIsAlive
 }
 
