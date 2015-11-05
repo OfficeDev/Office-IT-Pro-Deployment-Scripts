@@ -100,7 +100,8 @@ if($VersionStart.Split(".")[0] -eq 15){
     if(!(Test-Path $keyPath)){
         New-Item -Path $keyPath -Force
     }
-    New-ItemProperty -Path $keyPath -Name "EnableAutomaticUpdates" -PropertyType DWORD -Value 1
+    New-ItemProperty -Path $keyPath -Name "EnableAutomaticUpdates" -PropertyType DWORD -Value 0 -ErrorAction SilentlyContinue
+    Set-ItemProperty -Path $keyPath -Name "EnableAutomaticUpdates" -PropertyType DWORD -Value 0 -ErrorAction SilentlyContinue
 
     #get bytes for net adapter
     $netstat1 = Get-NetAdapterStatistics
