@@ -67,7 +67,14 @@ process {
     Write-Output "Testing URL: $url Port: $port"
 
     $status = Test-NetConnection -ComputerName $url -Port $port -WarningAction SilentlyContinue | select -ExpandProperty TCPTestSucceeded
-    $result.Status = $status
+
+    Write-Output $status
+
+    if($status)
+    {
+        $result.Status = 'Pass'
+    }
+    
     
 
     }
