@@ -54,24 +54,26 @@ process {
 
 
     foreach ($result in $results) {
-      $result | Add-Member MemberSet PSStandardMembers $PSStandardMembers
+        $result | Add-Member MemberSet PSStandardMembers $PSStandardMembers
     }
 
-    
+   
+      
     foreach ($result in $results) {
     
     $url = $result | select -ExpandProperty Host
     $port = $result | select -ExpandProperty Port
 
-    $status = Test-NetConnection -ComputerName $url -Port $port
+    Write-Output "Testing URL: $url Port: $port"
 
-    Write-Output $status
-
+    $status = Test-NetConnection -ComputerName $url -Port $port -WarningAction SilentlyContinue | select -ExpandProperty TCPTestSucceeded
+    $result.Status = $status
+    
 
     }
 
 
-    #return $results;
+    return $results;
 }
 
 }
