@@ -61,19 +61,17 @@ process {
       
     foreach ($result in $results) {
     
-    $url = $result | select -ExpandProperty Host
-    $port = $result | select -ExpandProperty Port
+        $url = $result | select -ExpandProperty Host
+        $port = $result | select -ExpandProperty Port
 
-    Write-Output "Testing URL: $url Port: $port"
+        Write-Output "Testing URL: $url Port: $port"
 
-    $status = Test-NetConnection -ComputerName $url -Port $port -WarningAction SilentlyContinue | select -ExpandProperty TCPTestSucceeded
+        $status = Test-NetConnection -ComputerName $url -Port $port -WarningAction SilentlyContinue | select -ExpandProperty TCPTestSucceeded
 
-    Write-Output $status
-
-    if($status)
-    {
-        $result.Status = 'Pass'
-    }
+        if($status)
+        {
+            $result.Status = 'Pass'
+        }
     
     
 
