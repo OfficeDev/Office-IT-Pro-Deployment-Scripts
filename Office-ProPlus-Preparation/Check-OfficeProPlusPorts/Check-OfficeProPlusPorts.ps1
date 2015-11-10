@@ -3,6 +3,7 @@ Function Check-OfficeProPlusPorts {
 .Synopsis
 
 .DESCRIPTION
+Checks the availability of the various remote resources needed to install Office 365
 
 .NOTES   
 Name: Check-OfficeProPlusPorts
@@ -13,16 +14,8 @@ DateUpdated: 2015-11-10
 .LINK
 https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
 
-.EXAMPLE
-Get-OfficeVersion
-
 Description:
-Will return the locally installed Office product
-
-.EXAMPLE
-Check-OfficeProPlusPorts
-
-Description:
+Checks the availability of the various remote resources needed to install Office 365
 
 #>
 [CmdletBinding(SupportsShouldProcess=$true)]
@@ -49,7 +42,7 @@ process {
     $results += New-Object PSObject -Property @{Name = "Identity Configuration Services"; Host = "clientconfig.microsoftonline-p.net"; Port = 443; Status = "Fail"; }
     $results += New-Object PSObject -Property @{Name = "Office Licensing Service"; Host = "ols.officeapps.live.com"; Port = 443; Status = "Fail"; }
     $results += New-Object PSObject -Property @{Name = "Redirection Services"; Host = "office15client.microsoft.com"; Port = 443; Status = "Fail"; }
-    $results += New-Object PSObject -Property @{Name = "Installation/Update Contet"; Host = "officecdn.microsoft.com"; Port = 80; Status = "Fail"; }
+    $results += New-Object PSObject -Property @{Name = "Installation/Update Content"; Host = "officecdn.microsoft.com"; Port = 80; Status = "Fail"; }
     $results += New-Object PSObject -Property @{Name = "Online Help Services"; Host = "go.microsoft.com"; Port = 80; Status = "Fail"; }
 
 
