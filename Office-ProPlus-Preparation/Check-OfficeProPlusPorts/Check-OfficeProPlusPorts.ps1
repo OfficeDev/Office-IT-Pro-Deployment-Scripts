@@ -60,7 +60,6 @@ process {
         $url = $result | select -ExpandProperty Host
         $port = $result | select -ExpandProperty Port
 
-        Write-Output "Testing URL: $url Port: $port"
 
         $status = Test-NetConnection -ComputerName $url -Port $port -WarningAction SilentlyContinue | select -ExpandProperty TCPTestSucceeded
 
