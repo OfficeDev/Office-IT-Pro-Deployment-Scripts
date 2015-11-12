@@ -1,21 +1,24 @@
 Function Check-OfficeProPlusPorts {
 <#
 .Synopsis
+Checks the availability of the various remote resources needed to install Office 365
 
 .DESCRIPTION
 Checks the availability of the various remote resources needed to install Office 365
+
+.EXAMPLE
+Check-OfficeProPlusPorts
+
+.LINK
+https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
 
 .NOTES   
 Name: Check-OfficeProPlusPorts
 Version: 1.0.0
 DateCreated: 2015-11-10
-DateUpdated: 2015-11-10
+DateUpdated: 2015-11-12
 
-.LINK
-https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
 
-Description:
-Checks the availability of the various remote resources needed to install Office 365
 
 #>
 [CmdletBinding(SupportsShouldProcess=$true)]
