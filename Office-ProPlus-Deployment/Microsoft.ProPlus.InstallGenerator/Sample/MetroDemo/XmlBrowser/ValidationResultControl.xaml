@@ -1,0 +1,12 @@
+﻿<UserControl x:Class="MahApps.Metro.Controls.XmlBrowser.ValidationResultControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Height="150" Width="400">
+    <StackPanel>
+        <TextBox Name="ResultTextBox" IsReadOnly="True" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" TextWrapping="Wrap" Height="100" Margin="5"/>
+        <StackPanel Margin="5" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="Copy to Clipboard" Click="ButtonClick"/>
+            <Button Content="Close" Click="ButtonClick1"/>
+        </StackPanel>
+    </StackPanel>
+</UserControl>

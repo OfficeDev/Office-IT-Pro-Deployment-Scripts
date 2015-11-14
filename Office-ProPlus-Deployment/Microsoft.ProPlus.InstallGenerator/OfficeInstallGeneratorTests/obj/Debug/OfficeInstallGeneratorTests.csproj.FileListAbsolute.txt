@@ -1,0 +1,10 @@
+E:\OfficeAutomation\DEV\ManagedCode\OfficeInstallGenerator\OfficeInstallGeneratorTests\bin\Debug\InstallOffice.cs
+E:\OfficeAutomation\DEV\ManagedCode\OfficeInstallGenerator\OfficeInstallGeneratorTests\bin\Debug\OfficeInstallGeneratorTests.dll
+E:\OfficeAutomation\DEV\ManagedCode\OfficeInstallGenerator\OfficeInstallGeneratorTests\bin\Debug\OfficeInstallGeneratorTests.pdb
+E:\OfficeAutomation\DEV\ManagedCode\OfficeInstallGenerator\OfficeInstallGeneratorTests\bin\Debug\Micorosft.OfficeProPlus.ConfigurationXml.dll
+E:\OfficeAutomation\DEV\ManagedCode\OfficeInstallGenerator\OfficeInstallGeneratorTests\bin\Debug\OfficeInstallGenerator.exe
+E:\OfficeAutomation\DEV\ManagedCode\OfficeInstallGenerator\OfficeInstallGeneratorTests\bin\Debug\Micorosft.OfficeProPlus.ConfigurationXml.pdb
+E:\OfficeAutomation\DEV\ManagedCode\OfficeInstallGenerator\OfficeInstallGeneratorTests\bin\Debug\OfficeInstallGenerator.pdb
+E:\OfficeAutomation\DEV\ManagedCode\OfficeInstallGenerator\OfficeInstallGeneratorTests\obj\Debug\OfficeInstallGeneratorTests.csprojResolveAssemblyReference.cache
+E:\OfficeAutomation\DEV\ManagedCode\OfficeInstallGenerator\OfficeInstallGeneratorTests\obj\Debug\OfficeInstallGeneratorTests.dll
+E:\OfficeAutomation\DEV\ManagedCode\OfficeInstallGenerator\OfficeInstallGeneratorTests\obj\Debug\OfficeInstallGeneratorTests.pdb

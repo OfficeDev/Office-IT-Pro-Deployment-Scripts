@@ -1,0 +1,40 @@
+﻿<UserControl x:Class="MetroDemo.ExampleViews.GenerateView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:xmlBrowser="clr-namespace:MahApps.Metro.Controls.XmlBrowser"
+        xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+        xmlns:exampleViews="clr-namespace:MetroDemo.ExampleViews"
+        Loaded="GenerateView_OnLoaded" >
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="50" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <DockPanel Grid.Column="1" LastChildFill="True">
+            <Grid DockPanel.Dock="Top" Margin="10" HorizontalAlignment="Left" VerticalAlignment="Top">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+            </Grid>
+        
+            <controls:MetroAnimatedSingleRowTabControl Grid.Row="0" Grid.Column="0" x:Name="MainTabControl">
+                <TabItem Header="xml">
+                    <xmlBrowser:XmlBrowserControl x:Name="xmlBrowser" Margin="10" />
+                </TabItem>
+                <TabItem Header="executable">
+                    <xmlBrowser:XmlBrowserControl x:Name="xmlBrowser1" Margin="10" />
+                </TabItem>
+            </controls:MetroAnimatedSingleRowTabControl>
+
+        </DockPanel>
+ </Grid>
+
+</UserControl>

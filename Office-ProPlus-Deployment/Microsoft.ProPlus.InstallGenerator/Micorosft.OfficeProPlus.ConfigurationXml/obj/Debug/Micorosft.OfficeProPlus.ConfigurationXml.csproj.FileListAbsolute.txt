@@ -1,0 +1,9 @@
+E:\OfficeAutomation\DEV\ManagedCode\OfficeInstallGenerator\Micorosft.OfficeProPlus.ConfigurationXml\bin\Debug\Micorosft.OfficeProPlus.ConfigurationXml.dll
+E:\OfficeAutomation\DEV\ManagedCode\OfficeInstallGenerator\Micorosft.OfficeProPlus.ConfigurationXml\bin\Debug\Micorosft.OfficeProPlus.ConfigurationXml.pdb
+E:\OfficeAutomation\DEV\ManagedCode\OfficeInstallGenerator\Micorosft.OfficeProPlus.ConfigurationXml\obj\Debug\Micorosft.OfficeProPlus.ConfigurationXml.dll
+E:\OfficeAutomation\DEV\ManagedCode\OfficeInstallGenerator\Micorosft.OfficeProPlus.ConfigurationXml\obj\Debug\Micorosft.OfficeProPlus.ConfigurationXml.pdb
+E:\OfficeAutomation\DEV\ManagedCode\OfficeInstallGenerator\Micorosft.OfficeProPlus.ConfigurationXml\obj\Debug\Micorosft.OfficeProPlus.ConfigurationXml.csprojResolveAssemblyReference.cache
+E:\OfficeAutomation\DEV\ManagedCode\Microsoft.ProPlus.InstallGenerator\Micorosft.OfficeProPlus.ConfigurationXml\bin\Debug\Micorosft.OfficeProPlus.ConfigurationXml.dll
+E:\OfficeAutomation\DEV\ManagedCode\Microsoft.ProPlus.InstallGenerator\Micorosft.OfficeProPlus.ConfigurationXml\bin\Debug\Micorosft.OfficeProPlus.ConfigurationXml.pdb
+E:\OfficeAutomation\DEV\ManagedCode\Microsoft.ProPlus.InstallGenerator\Micorosft.OfficeProPlus.ConfigurationXml\obj\Debug\Micorosft.OfficeProPlus.ConfigurationXml.dll
+E:\OfficeAutomation\DEV\ManagedCode\Microsoft.ProPlus.InstallGenerator\Micorosft.OfficeProPlus.ConfigurationXml\obj\Debug\Micorosft.OfficeProPlus.ConfigurationXml.pdb

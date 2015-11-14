@@ -1,0 +1,150 @@
+﻿<UserControl x:Class="MetroDemo.ExampleViews.UpdateView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:MetroDemo="clr-namespace:MetroDemo"
+             xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+             mc:Ignorable="d"
+             d:DesignHeight="600"
+             d:DesignWidth="800"
+             d:DataContext="{d:DesignInstance MetroDemo:MainWindowViewModel}">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro.Resources;component/Icons.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <Thickness x:Key="ColumnMargin">10 5 10 5</Thickness>
+            <Thickness x:Key="ControlMargin">0 5 0 0</Thickness>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <AdornerDecorator>
+        <Grid >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="50" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50"></RowDefinition>
+                <RowDefinition Height="20"></RowDefinition>
+                <RowDefinition Height="250"></RowDefinition>
+                <RowDefinition Height="100"></RowDefinition>
+            </Grid.RowDefinitions>
+
+            <Label Grid.Row="0" Grid.Column="1" Content="Configure Updates" HorizontalAlignment="Left" Style="{StaticResource MetroLabelTopHeader}" />
+
+            <Grid Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="50"></RowDefinition>
+                    <RowDefinition Height="210"></RowDefinition>
+                    <RowDefinition Height="50"></RowDefinition>
+                </Grid.RowDefinitions>
+
+                <StackPanel Grid.Row="0" Grid.Column="0"
+                    HorizontalAlignment="Left">
+                    <StackPanel.Resources>
+                        <BooleanToVisibilityConverter x:Key="btv" />
+                    </StackPanel.Resources>
+
+                    <Controls:ToggleSwitch x:Name="EnabledSwitch"
+                                   IsChecked="false"
+                                   OnLabel="Enabled"
+                                   OffLabel="Disabled"
+                                   Margin="{StaticResource ControlMargin}" IsCheckedChanged="EnabledSwitch_OnIsCheckedChanged"  />
+
+                </StackPanel>
+
+                <StackPanel Orientation="Vertical"  HorizontalAlignment="Left" Grid.Row="1">
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200" />
+                            <ColumnDefinition Width="400" />
+                        </Grid.ColumnDefinitions>
+                        <Label Content="Branch" Style="{StaticResource MetroLabelHeader}" Grid.Column="0" />
+                        <ComboBox x:Name="UpdateBranch"  Width="400" Height="35" Margin="0, 10, 0, 0" SelectedIndex="0" 
+                                  FontSize="20" Grid.Column="1" >
+                            <ComboBoxItem Content="Current" Tag="Current" />
+                            <ComboBoxItem Content="Business" Tag="Business" />
+                            <ComboBoxItem Content="First Release Business" Tag="FirstReleaseBusiness" />
+                        </ComboBox>
+                    </Grid>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200" />
+                            <ColumnDefinition Width="400" />
+                        </Grid.ColumnDefinitions>
+                        <Label Content="Update Path" Style="{StaticResource MetroLabelHeader}" Grid.Column="0" />
+                        <TextBox x:Name="UpdateUpdatePath" Margin="{StaticResource ControlMargin}" FontSize="20" Grid.Column="1"
+                         Controls:TextBoxHelper.Watermark="Network, local or HTTP Path"
+                         Controls:TextBoxHelper.ClearTextButton="True"
+                         Text="">
+                        </TextBox>
+                    </Grid>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200" />
+                            <ColumnDefinition Width="400" />
+                        </Grid.ColumnDefinitions>
+                        <Label Content="Target Version" Style="{StaticResource MetroLabelHeader}" Grid.Column="0" />
+                        <ComboBox Width="400" x:Name="UpdateTargetVersion" Grid.Column="1" 
+                                          Height="35" HorizontalAlignment="Left"
+                                          Style="{DynamicResource VirtualisedMetroComboBox}"
+                                          Controls:TextBoxHelper.Watermark="16.0.4949.1003"
+                                          DisplayMemberPath="Version"
+                                          IsEditable="True"
+                                          ItemsSource="{Binding Builds}"
+                                          MaxDropDownHeight="125"
+                                          FontSize="20"
+                                          Text="{Binding Path=Version}" />
+                    </Grid>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="200" />
+                            <ColumnDefinition Width="400" />
+                        </Grid.ColumnDefinitions>
+                        <Label Content="Deadline" Style="{StaticResource MetroLabelHeader}" Grid.Column="0" />
+                        <TextBox x:Name="UpdateDeadline" Margin="{StaticResource ControlMargin}" FontSize="20" Grid.Column="1"
+                         Controls:TextBoxHelper.ClearTextButton="True"
+                         Text="">
+                        </TextBox>
+                    </Grid>
+
+
+                </StackPanel>
+
+            </Grid>
+
+            <Grid Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" >
+                <Grid.Resources>
+                    <ResourceDictionary>
+                        <ResourceDictionary.MergedDictionaries>
+                            <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/FlatButton.xaml" />
+                        </ResourceDictionary.MergedDictionaries>
+                    </ResourceDictionary>
+                </Grid.Resources>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition  />
+                    <ColumnDefinition Width="20"  />
+                    <ColumnDefinition  />
+                </Grid.ColumnDefinitions>
+                <Button Width="100" 
+                    Margin="{StaticResource ControlMargin}" Height="40" Grid.Column="0"
+                    Content="Previous" x:Name="PreviousButton" Click="PreviousButton_OnClick"  />
+                <Button Width="100"
+                    Margin="{StaticResource ControlMargin}" Height="40" Grid.Column="2"
+                    Content="Next" x:Name="NextButton" Click="NextButton_OnClick"  />
+            </Grid>
+        </Grid>
+    </AdornerDecorator>
+
+</UserControl>
