@@ -37,6 +37,7 @@ namespace MetroDemo
             UpdateView.TransitionTab += TransitionTab;
             DisplayView.TransitionTab += TransitionTab;
 
+            StartView.ViewModel = _viewModel;
             ProductView.ViewModel = _viewModel;
             UpdateView.ViewModel = _viewModel;
             DisplayView.ViewModel = _viewModel;
@@ -47,9 +48,15 @@ namespace MetroDemo
         {
             ThemeManager.TransitionsEnabled = MainTabControl.SelectedIndex != 4;
 
+            ProductView.LoadXml();
             ProductView.UpdateXml();
+
+
             DisplayView.UpdateXml();
+
+
             UpdateView.UpdateXml();
+
         }
 
         private void TransitionTab(object sender, Events.TransitionTabEventArgs e)

@@ -59,6 +59,8 @@ namespace MetroDemo.ExampleViews
                 }
 
                 LanguageList.ItemsSource = FormatLanguage(SelectedLanguages);
+
+                LoadXml();
             }
             catch (Exception ex)
             {
@@ -138,7 +140,87 @@ namespace MetroDemo.ExampleViews
                 languages.FirstOrDefault().Name += " (Primary)";
             }
             return languages.ToList();
-        } 
+        }
+
+        public void LoadXml()
+        {
+            var configXml = ViewModel.ConfigXmlParser.ConfigurationXml;
+            if (configXml.Add != null)
+            {
+                if (configXml.Add.OfficeClientEdition == OfficeClientEdition.Office32Bit)
+                {
+                    ProductEdition32Bit.IsChecked = true;
+                    ProductEdition64Bit.IsChecked = false;
+                }
+                if (configXml.Add.OfficeClientEdition == OfficeClientEdition.Office64Bit)
+                {
+                    ProductEdition32Bit.IsChecked = false;
+                    ProductEdition64Bit.IsChecked = true;
+                }
+
+                var branchIndex = 0;
+                foreach (ComboBoxItem branchItem in ProductBranch.Items)
+                {
+                    if (branchItem.Tag.ToString().ToUpper() == configXml.Add.Branch.ToString().ToUpper())
+                    {
+                        ProductBranch.SelectedIndex = branchIndex;
+                        break;
+                    }
+                    branchIndex++;
+                }
+
+                if (configXml.Add.Products != null && configXml.Add.Products.Count > 0)
+                {
+                    var languages = new List<Language>();
+                    foreach (var product in configXml.Add.Products)
+                    {
+                        var index = 0;
+                        foreach (Product item in MainProducts.Items)
+                        {
+                            if (item.Id.ToUpper() == product.ID.ToUpper())
+                            {
+                                break;
+                            }
+                            index ++;
+                        }
+
+                        MainProducts.SelectedIndex = index;
+
+                        foreach (var language in product.Languages)
+                        {
+                            var languageLookup =
+                                ViewModel.Languages.FirstOrDefault(l => l.Id.ToLower() == language.ID.ToLower());
+                            if (languageLookup != null)
+                            {
+                                languages.Add(new Language()
+                                {
+                                    Id = languageLookup.Id,
+                                    Name = languageLookup.Name
+                                });
+                            }
+                        }
+
+                    }
+
+                    LanguageList.ItemsSource = null;
+                    var distictList = languages.Distinct().ToList();
+                    LanguageList.ItemsSource = distictList;
+                }
+                else
+                {
+                    MainProducts.SelectedIndex = 0;
+                }
+            }
+            else
+            {
+                MainProducts.SelectedIndex = 0;
+                ProductEdition32Bit.IsChecked = true;
+                ProductEdition64Bit.IsChecked = false;
+                ProductBranch.SelectedIndex = 0;
+            }
+
+
+        }
 
         public void UpdateXml()
         {

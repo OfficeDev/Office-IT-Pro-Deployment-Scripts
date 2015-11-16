@@ -30,7 +30,17 @@
                     <xmlBrowser:XmlBrowserControl x:Name="xmlBrowser" Margin="10" />
                 </TabItem>
                 <TabItem Header="executable">
-                    <xmlBrowser:XmlBrowserControl x:Name="xmlBrowser1" Margin="10" />
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            
+                        </Grid.RowDefinitions>
+                    </Grid>
+                </TabItem>
+                <TabItem Header="msi">
+
                 </TabItem>
             </controls:MetroAnimatedSingleRowTabControl>
 

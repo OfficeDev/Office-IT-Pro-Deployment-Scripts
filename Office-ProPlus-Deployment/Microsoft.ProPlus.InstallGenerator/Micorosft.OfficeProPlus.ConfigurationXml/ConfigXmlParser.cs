@@ -20,6 +20,11 @@ namespace OfficeInstallGenerator
 
         public ConfigXmlParser(string xml)
         {
+            LoadXml(xml);
+        }
+
+        public void LoadXml(string xml)
+        {
             if (File.Exists(xml))
             {
                 xml = File.ReadAllText(xml);
@@ -30,7 +35,6 @@ namespace OfficeInstallGenerator
 
             LoadConfigurationXml();
         }
-
 
         public string Xml
         {

@@ -34,6 +34,7 @@ namespace MetroDemo.Models
             }
         }
 
+        public bool Selected { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
 

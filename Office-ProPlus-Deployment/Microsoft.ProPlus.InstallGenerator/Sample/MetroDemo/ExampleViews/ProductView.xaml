@@ -51,7 +51,7 @@
                                 <RowDefinition Height="300"></RowDefinition>
                             </Grid.RowDefinitions>
 
-                            <Grid Height="410" Width="800" Grid.Row="1">
+                            <Grid Height="410" Width="700" Grid.Row="1">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="260" />
                                     <ColumnDefinition Width="150" />
@@ -238,7 +238,7 @@
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <Controls:ToggleSwitch
-                                                       IsChecked="{Binding Included}"
+                                                       IsChecked="{Binding Path=Included, Mode=TwoWay}"
                                                        OnLabel="Included"
                                                        OffLabel="Excluded"
                                                        Margin="{StaticResource ControlMargin}" 
@@ -276,10 +276,10 @@
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <Controls:ToggleSwitch 
-                                       IsChecked="True"
-                                       OnLabel="Included"
-                                       OffLabel="Excluded"
-                                       Margin="{StaticResource ControlMargin}" HorizontalAlignment="Right" />
+                                                   IsChecked="True"
+                                                   OnLabel="Included"
+                                                   OffLabel="Excluded"
+                                                   Margin="{StaticResource ControlMargin}" HorizontalAlignment="Right" />
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
