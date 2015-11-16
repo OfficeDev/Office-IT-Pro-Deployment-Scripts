@@ -139,6 +139,10 @@ $xmlArray | %{
             $currentVersion = $Version
         }
 
+        if(!(Test-Path "$TargetDirectory\$($_.ToString())\Office\Data\$currentVersion")){
+            New-Item -Path "$TargetDirectory\$($_.ToString())\Office\Data\$currentVersion" -ItemType directory -Force | Out-Null
+        }
+
         #basic files
         $CurrentVersionXML.UpdateFiles.File | ? language -eq "0" | 
         %{
@@ -146,7 +150,7 @@ $xmlArray | %{
             $name = $_.name -replace "`%version`%", $currentVersion
             $relativePath = $_.relativePath -replace "`%version`%", $currentVersion
             $url = "$baseURL$relativePath$name"
-            $destination = "$TargetDirectory\$($currentBranch.ToString())\Office\Data\$name"
+            $destination = "$TargetDirectory\$($currentBranch.ToString())$relativePath$name"
             $webclient.DownloadFile($url,$destination)
             $j = $j + 1
             Write-Progress -Activity "Downloading Branch Files" -status "Branch: $($currentBranch.ToString())" -percentComplete ($j / $numberOfFiles *100)
@@ -163,7 +167,7 @@ $xmlArray | %{
                 $name = $_.name -replace "`%version`%", $currentVersion
                 $relativePath = $_.relativePath -replace "`%version`%", $currentVersion
                 $url = "$baseURL$relativePath$name"
-                $destination = "$TargetDirectory\$($currentBranch.ToString())\Office\Data\$name"
+                $destination = "$TargetDirectory\$($currentBranch.ToString())$relativePath$name"
                 $webclient.DownloadFile($url,$destination)
                 $j = $j + 1
                 Write-Progress -Activity "Downloading Branch Files" -status "Branch: $($currentBranch.ToString())" -percentComplete ($j / $numberOfFiles *100)
