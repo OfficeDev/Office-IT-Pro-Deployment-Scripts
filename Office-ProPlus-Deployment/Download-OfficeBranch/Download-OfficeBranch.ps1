@@ -29,23 +29,27 @@ Add-Type -TypeDefinition $enumDef
 function Download-OfficeBranch{
 <#
 .SYNOPSIS
-Copies Group Policies between Office Versions. Defaults to: 15 (Office 2013) to 16 (Office 2016)
+Downloads cab files for specified branches, versions, bitness, and languages
 .DESCRIPTION
-Given a source, target, and the filepath to C# support file, this cmdlet finds all the office 15 policies
-in the source that are associated with the source and copies them over to the target as office 16 policies.
-.PARAMETER SourceGPOName
-The Name of the GPO that you wish to transfer office policies from. Defaults to 15.0 (Office 2013)
-.PARAMETER TargetGPOName
-The Name of the GPO that you wish to transfer office policies to. Defaults to 16.0 (Office 2016)
-.PARAMETER SourceVersion
-The version number of the office settings to copy
-.PARAMETER TargetVersion
-The version number of the office settings to set
+Downloads cab files for specified branches, versions, bitness, and languages
+.PARAMETER version
+The version number you wish to download. For example: 16.0.6228.1010
+.PARAMETER baseDestination
+Required. Where all the branches will be downloaded. Each branch then goes into a folder of the same name as the branch.
+.PARAMETER languages
+Array of Microsoft language codes. Will throw error if provided values don't match the validation set. Defaults to "en-us"
+("en-us","ar-sa","bg-bg","zh-cn","zh-tw","hr-hr","cs-cz","da-dk","nl-nl","et-ee","fi-fi","fr-fr","de-de","el-gr","he-il","hi-in","hu-hu","id-id","it-it",
+"ja-jp","kk-kh","ko-kr","lv-lv","lt-lt","ms-my","nb-no","pl-pl","pt-br","pt-pt","ro-ro","ru-ru","sr-latn-rs","sk-sk","sl-si","es-es","sv-se","th-th",
+"tr-tr","uk-ua")
+.PARAMETER bitness
+v32, v64, or Both. What bitness of office you wish to download. Defaults to Both.
+.PARAMETER branches
+An array of the branches you wish to download. Defaults to all available branches (CMValidation currently not available)
 .Example
-./Copy-OfficeGPOSettings -SourceGPOName "Office Settings"
-Default copy the office 15.0 (2013) policies within 'Office Settings' to office 16.0 (2016) policies within 'Office Settings'
+Download-OfficeBranch -baseDestination "C:\Users\Public\Documents\"
+Default downloads all available branches of the most recent version for both bitnesses into public documents. Downloads the english language pack.
 .Example
-./Copy-OfficeGPOSettings -SourceGPOName "Office Settings" -SourceVersion "14.0" -TargetVersion "15.0"
+Download-OfficeBranch -baseDestination "C:\Users\Public\Documents\" -SourceVersion "14.0" -TargetVersion "15.0"
 Copy the office 14.0 (2010) policies within 'Office Settings' to office 15.0 (2013) policies within 'Office Settings'
 .Link
 https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
@@ -118,7 +122,7 @@ $xmlArray | %{
             $baseCabFile = $CurrentVersionXML.UpdateFiles.File | ? rename -ne $null
             $url = "$baseURL$($baseCabFile.relativePath)$($baseCabFile.rename)"
             $destination = "$baseDestination\$($_.ToString())\$($baseCabFile.rename)"
-            $webclient.DownloadFile($url,$destination) | Out-Null
+            $webclient.DownloadFile($url,$destination)
 
             expand $destination $env:TEMP -f:"VersionDescriptor.xml" | Out-Null
             $baseCabFileName = $env:TEMP + "\VersionDescriptor.xml"
@@ -137,7 +141,6 @@ $xmlArray | %{
             $relativePath = $_.relativePath -replace "`%version`%", $currentVersion
             $url = "$baseURL$relativePath$name"
             $destination = "$baseDestination\$($currentBranch.ToString())\$name"
-            $url, $destination
             $webclient.DownloadFile($url,$destination)
             $j = $j + 1
             Write-Progress -Activity "Downloading Branch Files" -status "Branch: $($currentBranch.ToString())" -percentComplete ($j / $numberOfFiles *100)
@@ -155,7 +158,6 @@ $xmlArray | %{
                 $relativePath = $_.relativePath -replace "`%version`%", $currentVersion
                 $url = "$baseURL$relativePath$name"
                 $destination = "$baseDestination\$($currentBranch.ToString())\$name"
-                $url, $destination
                 $webclient.DownloadFile($url,$destination)
                 $j = $j + 1
                 Write-Progress -Activity "Downloading Branch Files" -status "Branch: $($currentBranch.ToString())" -percentComplete ($j / $numberOfFiles *100)
