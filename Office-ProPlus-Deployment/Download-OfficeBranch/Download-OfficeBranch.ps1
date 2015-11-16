@@ -27,6 +27,29 @@ using System;
 Add-Type -TypeDefinition $enumDef
 
 function Download-OfficeBranch{
+<#
+.SYNOPSIS
+Copies Group Policies between Office Versions. Defaults to: 15 (Office 2013) to 16 (Office 2016)
+.DESCRIPTION
+Given a source, target, and the filepath to C# support file, this cmdlet finds all the office 15 policies
+in the source that are associated with the source and copies them over to the target as office 16 policies.
+.PARAMETER SourceGPOName
+The Name of the GPO that you wish to transfer office policies from. Defaults to 15.0 (Office 2013)
+.PARAMETER TargetGPOName
+The Name of the GPO that you wish to transfer office policies to. Defaults to 16.0 (Office 2016)
+.PARAMETER SourceVersion
+The version number of the office settings to copy
+.PARAMETER TargetVersion
+The version number of the office settings to set
+.Example
+./Copy-OfficeGPOSettings -SourceGPOName "Office Settings"
+Default copy the office 15.0 (2013) policies within 'Office Settings' to office 16.0 (2016) policies within 'Office Settings'
+.Example
+./Copy-OfficeGPOSettings -SourceGPOName "Office Settings" -SourceVersion "14.0" -TargetVersion "15.0"
+Copy the office 14.0 (2010) policies within 'Office Settings' to office 15.0 (2013) policies within 'Office Settings'
+.Link
+https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
+#>
 
 Param(
     [Parameter()]
@@ -36,6 +59,9 @@ Param(
     [string] $baseDestination,
 
     [Parameter()]
+    [ValidateSet("en-us","ar-sa","bg-bg","zh-cn","zh-tw","hr-hr","cs-cz","da-dk","nl-nl","et-ee","fi-fi","fr-fr","de-de","el-gr","he-il","hi-in","hu-hu","id-id","it-it",
+                "ja-jp","kk-kh","ko-kr","lv-lv","lt-lt","ms-my","nb-no","pl-pl","pt-br","pt-pt","ro-ro","ru-ru","sr-latn-rs","sk-sk","sl-si","es-es","sv-se","th-th",
+                "tr-tr","uk-ua")]
     [string[]] $languages = ("en-us"),
 
     [Parameter()]
