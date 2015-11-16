@@ -57,30 +57,30 @@ https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
 
 Param(
     [Parameter()]
-    [string] $version,
+    [string] $Version,
 
     [Parameter(Mandatory=$true)]
-    [string] $baseDestination,
+    [string] $TargetDirectory,
 
     [Parameter()]
     [ValidateSet("en-us","ar-sa","bg-bg","zh-cn","zh-tw","hr-hr","cs-cz","da-dk","nl-nl","et-ee","fi-fi","fr-fr","de-de","el-gr","he-il","hi-in","hu-hu","id-id","it-it",
                 "ja-jp","kk-kh","ko-kr","lv-lv","lt-lt","ms-my","nb-no","pl-pl","pt-br","pt-pt","ro-ro","ru-ru","sr-latn-rs","sk-sk","sl-si","es-es","sv-se","th-th",
                 "tr-tr","uk-ua")]
-    [string[]] $languages = ("en-us"),
+    [string[]] $Languages = ("en-us"),
 
     [Parameter()]
-    [Bitness] $bitness = 0,
+    [Bitness] $Bitness = 0,
 
     [Parameter()]
-    [OfficeBranch[]] $branches = (0, 1, 2, 3)#, 4)
+    [OfficeBranch[]] $Branches = (0, 1, 2, 3)#, 4)
 )
-$numberOfFiles = (($branches.Count + 1) * ((($languages.Count + 1)*3) + 5))
+$numberOfFiles = (($Branches.Count + 1) * ((($Languages.Count + 1)*3) + 5))
 
 $webclient = New-Object System.Net.WebClient
 $XMLFilePath = "$env:TEMP/ofl.cab"
 $XMLDownloadURL = "http://officecdn.microsoft.com/pr/wsus/ofl.cab"
 $webclient.DownloadFile($XMLDownloadURL,$XMLFilePath)
-if($bitness -eq [Bitness]::Both -or $bitness -eq [Bitness]::v32){
+if($Bitness -eq [Bitness]::Both -or $Bitness -eq [Bitness]::v32){
     $32XMLFileName = "o365client_32bit.xml"
     expand $XMLFilePath $env:TEMP -f:$32XMLFileName | Out-Null
     $32XMLFilePath = $env:TEMP + "\o365client_32bit.xml"
@@ -88,7 +88,7 @@ if($bitness -eq [Bitness]::Both -or $bitness -eq [Bitness]::v32){
     $xmlArray = ($32XML)
 }
 
-if($bitness -eq [Bitness]::Both -or $bitness -eq [Bitness]::v64){
+if($Bitness -eq [Bitness]::Both -or $Bitness -eq [Bitness]::v64){
     $64XMLFileName = "o365client_64bit.xml"
     expand $XMLFilePath $env:TEMP -f:$64XMLFileName | Out-Null
     $64XMLFilePath = $env:TEMP + "\o365client_64bit.xml"
@@ -109,19 +109,25 @@ $xmlArray | %{
     $CurrentVersionXML = $_
     
     #loop for each branch
-    $branches | %{
+    $Branches | %{
         $currentBranch = $_
         $baseURL = $CurrentVersionXML.UpdateFiles.baseURL | ? branch -eq $_.ToString() | %{$_.URL};
-        if(!(Test-Path "$baseDestination\$($_.ToString())\")){
-            New-Item -Path "$baseDestination\$($_.ToString())\"  -ItemType directory -Force
+        if(!(Test-Path "$TargetDirectory\$($_.ToString())\")){
+            New-Item -Path "$TargetDirectory\$($_.ToString())\" -ItemType directory -Force | Out-Null
+        }
+        if(!(Test-Path "$TargetDirectory\$($_.ToString())\Office")){
+            New-Item -Path "$TargetDirectory\$($_.ToString())\Office" -ItemType directory -Force | Out-Null
+        }
+        if(!(Test-Path "$TargetDirectory\$($_.ToString())\Office\Data")){
+            New-Item -Path "$TargetDirectory\$($_.ToString())\Office\Data" -ItemType directory -Force | Out-Null
         }
 
-        if([String]::IsNullOrWhiteSpace($version)){
+        if([String]::IsNullOrWhiteSpace($Version)){
             #get base .cab to get current version
             $webclient = New-Object System.Net.WebClient
             $baseCabFile = $CurrentVersionXML.UpdateFiles.File | ? rename -ne $null
             $url = "$baseURL$($baseCabFile.relativePath)$($baseCabFile.rename)"
-            $destination = "$baseDestination\$($_.ToString())\$($baseCabFile.rename)"
+            $destination = "$TargetDirectory\$($_.ToString())\Office\Data\$($baseCabFile.rename)"
             $webclient.DownloadFile($url,$destination)
 
             expand $destination $env:TEMP -f:"VersionDescriptor.xml" | Out-Null
@@ -130,7 +136,7 @@ $xmlArray | %{
             $currentVersion = $vdxml.Version.Available.Build;
             Remove-Item -Path $baseCabFileName
         }else{
-            $currentVersion = $version
+            $currentVersion = $Version
         }
 
         #basic files
@@ -140,14 +146,14 @@ $xmlArray | %{
             $name = $_.name -replace "`%version`%", $currentVersion
             $relativePath = $_.relativePath -replace "`%version`%", $currentVersion
             $url = "$baseURL$relativePath$name"
-            $destination = "$baseDestination\$($currentBranch.ToString())\$name"
+            $destination = "$TargetDirectory\$($currentBranch.ToString())\Office\Data\$name"
             $webclient.DownloadFile($url,$destination)
             $j = $j + 1
             Write-Progress -Activity "Downloading Branch Files" -status "Branch: $($currentBranch.ToString())" -percentComplete ($j / $numberOfFiles *100)
         }
 
         #language files
-        $languages | 
+        $Languages | 
         %{
             #LANGUAGE LOGIC HERE
             $languageId  = [globalization.cultureinfo]::GetCultures("allCultures") | ? Name -eq $_ | %{$_.LCID}
@@ -157,7 +163,7 @@ $xmlArray | %{
                 $name = $_.name -replace "`%version`%", $currentVersion
                 $relativePath = $_.relativePath -replace "`%version`%", $currentVersion
                 $url = "$baseURL$relativePath$name"
-                $destination = "$baseDestination\$($currentBranch.ToString())\$name"
+                $destination = "$TargetDirectory\$($currentBranch.ToString())\Office\Data\$name"
                 $webclient.DownloadFile($url,$destination)
                 $j = $j + 1
                 Write-Progress -Activity "Downloading Branch Files" -status "Branch: $($currentBranch.ToString())" -percentComplete ($j / $numberOfFiles *100)
