@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Microsoft.OfficeProPlus.InstallGenerator.Properties {
+namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Microsoft.OfficeProPlus.InstallGenerator.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Microsoft.OfficeProPlus.InstallGen.Presentation.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

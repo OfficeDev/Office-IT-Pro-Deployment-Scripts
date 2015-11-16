@@ -63,9 +63,9 @@
       <Project>{ce88a24e-73c3-4b1d-b72c-f41894485a14}</Project>
       <Name>Micorosft.OfficeProPlus.ConfigurationXml</Name>
     </ProjectReference>
-    <ProjectReference Include="..\OfficeInstallGenerator\OfficeInstallGenerator.csproj">
+    <ProjectReference Include="..\OfficeInstallGenerator\Microsoft.OfficeProPlus.InstallGenerator.csproj">
       <Project>{0702f643-0467-43a4-bdbc-b54f006e8244}</Project>
-      <Name>OfficeInstallGenerator</Name>
+      <Name>Microsoft.OfficeProPlus.InstallGenerator</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>

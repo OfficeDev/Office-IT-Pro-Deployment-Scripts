@@ -4,17 +4,13 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{0702F643-0467-43A4-BDBC-B54F006E8244}</ProjectGuid>
+    <ProjectGuid>{4DFCB792-F97F-461C-81B1-AFB177A550A7}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>OfficeInstallGenerator</RootNamespace>
-    <AssemblyName>OfficeInstallGenerator</AssemblyName>
+    <RootNamespace>OfficeProPlusInstallGenerator</RootNamespace>
+    <AssemblyName>OfficeProPlusInstallGenerator</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <SccProjectName>SAK</SccProjectName>
-    <SccLocalPath>SAK</SccLocalPath>
-    <SccAuxPath>SAK</SccAuxPath>
-    <SccProvider>SAK</SccProvider>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -25,7 +21,6 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -39,7 +34,6 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -47,47 +41,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="EmbeddedResources.cs" />
-    <Compile Include="Enums\OfficeVersion.cs" />
-    <Compile Include="ExecutableGenerator.cs" />
-    <Compile Include="FilePathCacher.cs" />
-    <Compile Include="GetArguments.cs" />
-    <Compile Include="InstallOffice.cs">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="defaultconfiguration.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Office2016Setup.exe" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Office2013Setup.exe" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Resources\" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Micorosft.OfficeProPlus.ConfigurationXml\Micorosft.OfficeProPlus.ConfigurationXml.csproj">
-      <Project>{ce88a24e-73c3-4b1d-b72c-f41894485a14}</Project>
-      <Name>Micorosft.OfficeProPlus.ConfigurationXml</Name>
+    <ProjectReference Include="..\OfficeInstallGenerator\Microsoft.OfficeProPlus.InstallGenerator.csproj">
+      <Project>{0702f643-0467-43a4-bdbc-b54f006e8244}</Project>
+      <Name>Microsoft.OfficeProPlus.InstallGenerator</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

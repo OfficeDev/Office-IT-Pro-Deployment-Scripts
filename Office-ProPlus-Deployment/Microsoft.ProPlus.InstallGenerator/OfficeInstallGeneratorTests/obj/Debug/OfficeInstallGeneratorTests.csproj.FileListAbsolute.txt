@@ -8,3 +8,13 @@ E:\OfficeAutomation\DEV\ManagedCode\OfficeInstallGenerator\OfficeInstallGenerato
 E:\OfficeAutomation\DEV\ManagedCode\OfficeInstallGenerator\OfficeInstallGeneratorTests\obj\Debug\OfficeInstallGeneratorTests.csprojResolveAssemblyReference.cache
 E:\OfficeAutomation\DEV\ManagedCode\OfficeInstallGenerator\OfficeInstallGeneratorTests\obj\Debug\OfficeInstallGeneratorTests.dll
 E:\OfficeAutomation\DEV\ManagedCode\OfficeInstallGenerator\OfficeInstallGeneratorTests\obj\Debug\OfficeInstallGeneratorTests.pdb
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGeneratorTests\bin\Debug\InstallOffice.cs
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGeneratorTests\bin\Debug\OfficeInstallGeneratorTests.dll
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGeneratorTests\bin\Debug\OfficeInstallGeneratorTests.pdb
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGeneratorTests\bin\Debug\Micorosft.OfficeProPlus.ConfigurationXml.dll
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGeneratorTests\bin\Debug\OfficeInstallGenerator.dll
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGeneratorTests\bin\Debug\Micorosft.OfficeProPlus.ConfigurationXml.pdb
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGeneratorTests\bin\Debug\OfficeInstallGenerator.pdb
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGeneratorTests\obj\Debug\OfficeInstallGeneratorTests.csprojResolveAssemblyReference.cache
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGeneratorTests\obj\Debug\OfficeInstallGeneratorTests.dll
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGeneratorTests\obj\Debug\OfficeInstallGeneratorTests.pdb

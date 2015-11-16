@@ -1,8 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Microsoft.OfficeProPlus.InstallGenerator.Implementation;
+using OfficeInstallGenerator;
 
-namespace OfficeInstallGenerator
+namespace OfficeProPlusInstallGenerator
 {
     class Program
     {
@@ -32,7 +37,12 @@ namespace OfficeInstallGenerator
                 }
 
                 var p = new OfficeInstallExecutableGenerator();
-                p.Generate(OfficeVersion.Office2016, xmlConfiguration, @"E:\Users\rsmith.VCG\Desktop");
+                p.Generate(new OfficeInstallProperties()
+                {
+                    OfficeVersion = OfficeVersion.Office2016,
+                    ConfigurationXmlPath = xmlConfiguration,
+                    SourceFilePath = null
+                });
             }
             catch (Exception ex)
             {
@@ -52,7 +62,5 @@ namespace OfficeInstallGenerator
                 Console.ReadLine();
             }
         }
-
-
     }
 }

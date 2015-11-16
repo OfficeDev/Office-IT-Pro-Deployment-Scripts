@@ -1,0 +1,11 @@
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeProPlusInstallGenerator\bin\Debug\InstallOffice.cs
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeProPlusInstallGenerator\bin\Debug\OfficeProPlusInstallGenerator.exe.config
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeProPlusInstallGenerator\bin\Debug\OfficeProPlusInstallGenerator.exe
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeProPlusInstallGenerator\bin\Debug\OfficeProPlusInstallGenerator.pdb
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeProPlusInstallGenerator\bin\Debug\OfficeInstallGenerator.dll
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeProPlusInstallGenerator\bin\Debug\Micorosft.OfficeProPlus.ConfigurationXml.dll
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeProPlusInstallGenerator\bin\Debug\OfficeInstallGenerator.pdb
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeProPlusInstallGenerator\bin\Debug\Micorosft.OfficeProPlus.ConfigurationXml.pdb
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeProPlusInstallGenerator\obj\Debug\OfficeProPlusInstallGenerator.csprojResolveAssemblyReference.cache
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeProPlusInstallGenerator\obj\Debug\OfficeProPlusInstallGenerator.exe
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeProPlusInstallGenerator\obj\Debug\OfficeProPlusInstallGenerator.pdb

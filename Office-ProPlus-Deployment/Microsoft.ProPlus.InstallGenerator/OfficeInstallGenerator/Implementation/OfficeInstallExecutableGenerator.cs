@@ -8,14 +8,16 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.CSharp;
+using Microsoft.OfficeProPlus.InstallGenerator;
+using Microsoft.OfficeProPlus.InstallGenerator.Implementation;
 using Microsoft.Win32;
 
 namespace OfficeInstallGenerator
 {
-    public class OfficeInstallExecutableGenerator
+    public class OfficeInstallExecutableGenerator : IOfficeInstallGenerator
     {
 
-        public string Generate(OfficeVersion officeVersion, string configurationXmlPath, string sourceFilePath = null)
+        public IOfficeInstallReturn Generate(IOfficeInstallProperties installProperties)
         {
             var currentDirectory = Directory.GetCurrentDirectory();
             var embededExeFiles = new List<string>();
@@ -38,10 +40,10 @@ namespace OfficeInstallGenerator
                 parameters.ReferencedAssemblies.Add("Microsoft.CSharp.dll");
 
                 embededExeFiles = EmbeddedResources.GetEmbeddedItems(currentDirectory, @"\.exe$");
-                File.Copy(configurationXmlPath, tmpPath + @"\configuration.xml", true);
+                File.Copy(installProperties.ConfigurationXmlPath, tmpPath + @"\configuration.xml", true);
 
                 parameters.EmbeddedResources.Add(tmpPath + @"\configuration.xml");
-                parameters.EmbeddedResources.Add(officeVersion == OfficeVersion.Office2013
+                parameters.EmbeddedResources.Add(installProperties.OfficeVersion == OfficeVersion.Office2013
                     ? @".\Office2013Setup.exe"
                     : @".\Office2016Setup.exe");
 
@@ -57,17 +59,17 @@ namespace OfficeInstallGenerator
                          "[assembly: AssemblyVersion(\"" + addNode.Version + "\")]");
                 }
 
-                if (sourceFilePath != null)
+                if (installProperties.SourceFilePath != null)
                 {
-                    if (!Directory.Exists(sourceFilePath + @"\Office"))
+                    if (!Directory.Exists(installProperties.SourceFilePath + @"\Office"))
                     {
-                        throw (new DirectoryNotFoundException("Invalid Source Path: " + sourceFilePath));
+                        throw (new DirectoryNotFoundException("Invalid Source Path: " + installProperties.SourceFilePath));
                     }
 
-                    EmbedSourceFiles(parameters, sourceFilePath + @"\Office");
+                    EmbedSourceFiles(parameters, installProperties.SourceFilePath + @"\Office");
                 }
 
-                if (officeVersion == OfficeVersion.Office2013)
+                if (installProperties.OfficeVersion == OfficeVersion.Office2013)
                 {
                     fileContents = fileContents.Replace("//[assembly: AssemblyTitle(\"\")]",
                         "[assembly: AssemblyTitle(\"" + "Office 365 ProPlus (2013)" + "\")]");
@@ -75,7 +77,7 @@ namespace OfficeInstallGenerator
                         "[assembly: AssemblyDescription(\"" + "Office 365 ProPlus (2013)" + "\")]");
                 }
 
-                if (officeVersion == OfficeVersion.Office2016)
+                if (installProperties.OfficeVersion == OfficeVersion.Office2016)
                 {
                     fileContents = fileContents.Replace("//[assembly: AssemblyTitle(\"\")]",
                         "[assembly: AssemblyTitle(\"" + "Office 365 ProPlus (2016)" + "\")]");
@@ -99,7 +101,10 @@ namespace OfficeInstallGenerator
                     throw (new Exception(strBuilder.ToString()));
                 }
 
-                return output;
+                return new OfficeInstallReturn()
+                {
+                    GeneratedFilePath = output
+                };
             }
             finally
             {
@@ -113,7 +118,7 @@ namespace OfficeInstallGenerator
             }
         }
 
-        public void EmbedSourceFiles(CompilerParameters parameters, string sourcePath)
+        private void EmbedSourceFiles(CompilerParameters parameters, string sourcePath)
         {
             var currentDirectory = Directory.GetCurrentDirectory();
             var xmlFilePath = currentDirectory + @"\Files.xml";

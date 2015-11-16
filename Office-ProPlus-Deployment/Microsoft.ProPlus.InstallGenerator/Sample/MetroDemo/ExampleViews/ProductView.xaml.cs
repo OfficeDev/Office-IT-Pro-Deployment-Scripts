@@ -144,6 +144,15 @@ namespace MetroDemo.ExampleViews
 
         public void LoadXml()
         {
+            var languages = new List<Language>
+                {
+                    new Language()
+                    {
+                        Id = "en-us",
+                        Name = "English"
+                    }
+                };
+
             var configXml = ViewModel.ConfigXmlParser.ConfigurationXml;
             if (configXml.Add != null)
             {
@@ -171,7 +180,7 @@ namespace MetroDemo.ExampleViews
 
                 if (configXml.Add.Products != null && configXml.Add.Products.Count > 0)
                 {
-                    var languages = new List<Language>();
+                    languages = new List<Language>();
                     foreach (var product in configXml.Add.Products)
                     {
                         var index = 0;
@@ -201,10 +210,6 @@ namespace MetroDemo.ExampleViews
                         }
 
                     }
-
-                    LanguageList.ItemsSource = null;
-                    var distictList = languages.Distinct().ToList();
-                    LanguageList.ItemsSource = distictList;
                 }
                 else
                 {
@@ -217,9 +222,12 @@ namespace MetroDemo.ExampleViews
                 ProductEdition32Bit.IsChecked = true;
                 ProductEdition64Bit.IsChecked = false;
                 ProductBranch.SelectedIndex = 0;
+
             }
 
-
+            LanguageList.ItemsSource = null;
+            var distictList = languages.Distinct().ToList();
+            LanguageList.ItemsSource = distictList;
         }
 
         public void UpdateXml()

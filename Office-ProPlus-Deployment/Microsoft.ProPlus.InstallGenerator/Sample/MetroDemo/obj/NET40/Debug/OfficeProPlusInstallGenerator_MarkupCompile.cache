@@ -5,7 +5,7 @@ winexe
 C#
 .cs
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Sample\MetroDemo\obj\NET40\Debug\
-Microsoft.OfficeProPlus.InstallGenerator
+Microsoft.OfficeProPlus.InstallGen.Presentation
 none
 false
 DEBUG;TRACE;NET4

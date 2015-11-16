@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Microsoft.OfficeProPlus.InstallGenerator.Properties {
+namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]

@@ -8,7 +8,7 @@
     <ProjectGuid>{56E8080F-FFEB-47CD-ADB9-92245F92565B}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Microsoft.OfficeProPlus.InstallGenerator</RootNamespace>
+    <RootNamespace>Microsoft.OfficeProPlus.InstallGen.Presentation</RootNamespace>
     <AssemblyName>OfficeProPlusInstallGenerator</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>
