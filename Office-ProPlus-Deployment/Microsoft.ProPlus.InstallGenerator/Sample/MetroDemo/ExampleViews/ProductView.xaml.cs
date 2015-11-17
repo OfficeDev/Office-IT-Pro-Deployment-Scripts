@@ -153,6 +153,8 @@ namespace MetroDemo.ExampleViews
                     }
                 };
 
+            AdditionalProducts.SelectedItems.Clear();
+
             var configXml = ViewModel.ConfigXmlParser.ConfigurationXml;
             if (configXml.Add != null)
             {
@@ -166,6 +168,9 @@ namespace MetroDemo.ExampleViews
                     ProductEdition32Bit.IsChecked = false;
                     ProductEdition64Bit.IsChecked = true;
                 }
+
+                ProductVersion.Text = configXml.Add.Version != null ? configXml.Add.Version.ToString() : "";
+                ProductUpdateSource.Text = configXml.Add.SourcePath != null ? configXml.Add.SourcePath.ToString() : "";
 
                 var branchIndex = 0;
                 foreach (ComboBoxItem branchItem in ProductBranch.Items)
@@ -194,6 +199,15 @@ namespace MetroDemo.ExampleViews
                         }
 
                         MainProducts.SelectedIndex = index;
+
+                        foreach (Product item in AdditionalProducts.Items)
+                        {
+                            if (item.Id.ToUpper() == product.ID.ToUpper())
+                            {
+                                AdditionalProducts.SelectedItems.Add(item);
+                                break;
+                            }
+                        }
 
                         foreach (var language in product.Languages)
                         {

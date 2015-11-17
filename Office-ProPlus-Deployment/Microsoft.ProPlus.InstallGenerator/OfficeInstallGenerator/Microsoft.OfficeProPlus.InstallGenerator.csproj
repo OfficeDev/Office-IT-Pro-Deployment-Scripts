@@ -50,12 +50,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Implementation\OfficeInstallMsiGenerator.cs" />
+    <Compile Include="Implementation\OfficeInstallProperties.cs" />
+    <Compile Include="Implementation\OfficeInstallReturn.cs" />
+    <Compile Include="IOfficeInstallGenerator.cs" />
+    <Compile Include="IOfficeInstallProperties.cs" />
+    <Compile Include="IOfficeInstallReturn.cs" />
     <Compile Include="Support\EmbeddedResources.cs" />
     <Compile Include="Enums\OfficeVersion.cs" />
-    <Compile Include="ExecutableGenerator.cs" />
+    <Compile Include="Implementation\OfficeInstallExecutableGenerator.cs" />
     <Compile Include="Support\FilePathCacher.cs" />
     <Compile Include="Support\GetArguments.cs" />
-    <Compile Include="InstallOffice.cs">
+    <Compile Include="Support\InstallOffice.cs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />

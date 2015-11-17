@@ -10,6 +10,7 @@ namespace Micorosft.OfficeProPlus.ConfigurationXml
     {
         Current=0,
         Business=1,
-        Validation=2
+        Validation=2,
+        FirstReleaseBusiness=3
     }
 }

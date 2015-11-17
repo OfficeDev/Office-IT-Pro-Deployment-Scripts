@@ -190,7 +190,7 @@
                                         <ColumnDefinition Width="400" />
                                     </Grid.ColumnDefinitions>
                                     <Label Content="Update Path" Style="{StaticResource MetroLabelHeader}" Grid.Column="0" />
-                                    <TextBox Margin="{StaticResource ControlMargin}" FontSize="20" Grid.Column="1"
+                                    <TextBox x:Name="ProductUpdateSource" Margin="{StaticResource ControlMargin}" FontSize="20" Grid.Column="1"
                                              Controls:TextBoxHelper.Watermark="Local, UNC or HTTP Path" Height="35"
                                              Controls:TextBoxHelper.ClearTextButton="True"
                                              Text="">

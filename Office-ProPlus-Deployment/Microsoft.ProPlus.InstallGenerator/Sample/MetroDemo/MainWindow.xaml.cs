@@ -50,13 +50,10 @@ namespace MetroDemo
 
             ProductView.LoadXml();
             ProductView.UpdateXml();
-
-
+            
             DisplayView.UpdateXml();
-
-
+            
             UpdateView.UpdateXml();
-
         }
 
         private void TransitionTab(object sender, Events.TransitionTabEventArgs e)
