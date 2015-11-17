@@ -32,18 +32,20 @@ function Download-OfficeBranch{
 Downloads cab files for specified branches, versions, bitness, and languages
 .DESCRIPTION
 Downloads cab files for specified branches, versions, bitness, and languages
-.PARAMETER version
+.PARAMETER Version
 The version number you wish to download. For example: 16.0.6228.1010
-.PARAMETER baseDestination
+.PARAMETER TargetDirectory
 Required. Where all the branches will be downloaded. Each branch then goes into a folder of the same name as the branch.
-.PARAMETER languages
+.PARAMETER Languages
 Array of Microsoft language codes. Will throw error if provided values don't match the validation set. Defaults to "en-us"
 ("en-us","ar-sa","bg-bg","zh-cn","zh-tw","hr-hr","cs-cz","da-dk","nl-nl","et-ee","fi-fi","fr-fr","de-de","el-gr","he-il","hi-in","hu-hu","id-id","it-it",
 "ja-jp","kk-kh","ko-kr","lv-lv","lt-lt","ms-my","nb-no","pl-pl","pt-br","pt-pt","ro-ro","ru-ru","sr-latn-rs","sk-sk","sl-si","es-es","sv-se","th-th",
 "tr-tr","uk-ua")
-.PARAMETER bitness
+.PARAMETER Bitness
 v32, v64, or Both. What bitness of office you wish to download. Defaults to Both.
-.PARAMETER branches
+.PARAMETER OverWrite
+v32, v64, or Both. What bitness of office you wish to download. Defaults to Both.
+.PARAMETER Branches
 An array of the branches you wish to download. Defaults to all available branches (CMValidation currently not available)
 .Example
 Download-OfficeBranch -baseDestination "C:\Users\Public\Documents\"
@@ -72,14 +74,19 @@ Param(
     [Bitness] $Bitness = 0,
 
     [Parameter()]
+    [bool] $OverWrite = $false,
+
+    [Parameter()]
     [OfficeBranch[]] $Branches = (0, 1, 2, 3)#, 4)
 )
-$numberOfFiles = (($Branches.Count + 1) * ((($Languages.Count + 1)*3) + 5))
+
+$numberOfFiles = (($Branches.Count) * ((($Languages.Count + 1)*3) + 5))
 
 $webclient = New-Object System.Net.WebClient
 $XMLFilePath = "$env:TEMP/ofl.cab"
 $XMLDownloadURL = "http://officecdn.microsoft.com/pr/wsus/ofl.cab"
 $webclient.DownloadFile($XMLDownloadURL,$XMLFilePath)
+
 if($Bitness -eq [Bitness]::Both -or $Bitness -eq [Bitness]::v32){
     $32XMLFileName = "o365client_32bit.xml"
     expand $XMLFilePath $env:TEMP -f:$32XMLFileName | Out-Null
@@ -102,15 +109,30 @@ if($Bitness -eq [Bitness]::Both -or $Bitness -eq [Bitness]::v64){
 }
 
 $j = 0
-Write-Progress -Activity "Downloading Branch Files" -status "Beginning" -percentComplete ($j / $numberOfFiles *100)
+$b = 0
+$BranchCount = $Branches.Count * 2
 
 #loop to download files
 $xmlArray | %{
     $CurrentVersionXML = $_
     
+    $currentBitness = "32-Bit"
+    if ($CurrentVersionXML.OuterXml.Contains("Architecture: 64 Bit")) {
+        $currentBitness = "64-Bit"
+    }
+
+    Write-Host
+    Write-Host "Downloading Bitness : $currentBitness"
+
     #loop for each branch
     $Branches | %{
         $currentBranch = $_
+        $b++
+
+        Write-Progress -id 1 -Activity "Downloading Branch" -status "Branch: $($currentBranch.ToString()) : $currentBitness" -percentComplete ($b / $BranchCount *100) 
+
+        Write-Host "`tDownloading Branch: $currentBranch"
+
         $baseURL = $CurrentVersionXML.UpdateFiles.baseURL | ? branch -eq $_.ToString() | %{$_.URL};
         if(!(Test-Path "$TargetDirectory\$($_.ToString())\")){
             New-Item -Path "$TargetDirectory\$($_.ToString())\" -ItemType directory -Force | Out-Null
@@ -128,6 +150,7 @@ $xmlArray | %{
             $baseCabFile = $CurrentVersionXML.UpdateFiles.File | ? rename -ne $null
             $url = "$baseURL$($baseCabFile.relativePath)$($baseCabFile.rename)"
             $destination = "$TargetDirectory\$($_.ToString())\Office\Data\$($baseCabFile.rename)"
+
             $webclient.DownloadFile($url,$destination)
 
             expand $destination $env:TEMP -f:"VersionDescriptor.xml" | Out-Null
@@ -137,11 +160,41 @@ $xmlArray | %{
             Remove-Item -Path $baseCabFileName
         }else{
             $currentVersion = $Version
+
+            $relativePath = $_.relativePath -replace "`%version`%", $currentVersion
+            $fileName = "/Office/Data/v32_$currentVersion.cab"
+            $url = "$baseURL$relativePath$fileName"
+
+            try {
+               Invoke-WebRequest -Uri $url -ErrorAction Stop | Out-Null
+            } catch {
+               Write-Host "`t`tVersion Not Found: $currentVersion"
+               return 
+            }
         }
 
         if(!(Test-Path "$TargetDirectory\$($_.ToString())\Office\Data\$currentVersion")){
             New-Item -Path "$TargetDirectory\$($_.ToString())\Office\Data\$currentVersion" -ItemType directory -Force | Out-Null
         }
+
+        $numberOfFiles = 0
+        $j = 0
+
+        $CurrentVersionXML.UpdateFiles.File | ? language -eq "0" | 
+        %{
+           $numberOfFiles ++
+        }
+
+        $Languages | 
+        %{
+            #LANGUAGE LOGIC HERE
+            $languageId  = [globalization.cultureinfo]::GetCultures("allCultures") | ? Name -eq $_ | %{$_.LCID}
+            $CurrentVersionXML.UpdateFiles.File | ? language -eq $languageId | 
+            %{
+               $numberOfFiles ++
+            }
+        }
+
 
         #basic files
         $CurrentVersionXML.UpdateFiles.File | ? language -eq "0" | 
@@ -151,9 +204,13 @@ $xmlArray | %{
             $relativePath = $_.relativePath -replace "`%version`%", $currentVersion
             $url = "$baseURL$relativePath$name"
             $destination = "$TargetDirectory\$($currentBranch.ToString())$relativePath$name"
-            $webclient.DownloadFile($url,$destination)
+
+            if (!(Test-Path -Path $destination) -or $OverWrite) {
+               $webclient.DownloadFile($url,$destination)
+            }
+
             $j = $j + 1
-            Write-Progress -Activity "Downloading Branch Files" -status "Branch: $($currentBranch.ToString())" -percentComplete ($j / $numberOfFiles *100)
+            Write-Progress -id 2 -ParentId 1 -Activity "Downloading Branch Files" -status "Branch: $($currentBranch.ToString())" -percentComplete ($j / $numberOfFiles *100)
         }
 
         #language files
@@ -169,10 +226,13 @@ $xmlArray | %{
                 $url = "$baseURL$relativePath$name"
                 $destination = "$TargetDirectory\$($currentBranch.ToString())$relativePath$name"
                 $webclient.DownloadFile($url,$destination)
+
                 $j = $j + 1
-                Write-Progress -Activity "Downloading Branch Files" -status "Branch: $($currentBranch.ToString())" -percentComplete ($j / $numberOfFiles *100)
+                Write-Progress -id 2 -ParentId 1 -Activity "Downloading Branch Files" -status "Branch: $($currentBranch.ToString())" -percentComplete ($j / $numberOfFiles *100)
             }
         }
+
+
     }
 
 }

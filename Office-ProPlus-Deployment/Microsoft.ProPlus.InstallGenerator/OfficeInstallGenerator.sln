@@ -1,0 +1,75 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.OfficeProPlus.InstallGenerator", "OfficeInstallGenerator\Microsoft.OfficeProPlus.InstallGenerator.csproj", "{0702F643-0467-43A4-BDBC-B54F006E8244}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OfficeInstallGeneratorTests", "OfficeInstallGeneratorTests\OfficeInstallGeneratorTests.csproj", "{FC7461AC-28CF-4F50-8FB5-D771A69D636A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Micorosft.OfficeProPlus.ConfigurationXml", "Micorosft.OfficeProPlus.ConfigurationXml\Micorosft.OfficeProPlus.ConfigurationXml.csproj", "{CE88A24E-73C3-4B1D-B72C-F41894485A14}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{B0D3B2E7-3861-4F98-BA5F-99ABA76C8573}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\NuGet.exe = .nuget\NuGet.exe
+		.nuget\NuGet.targets = .nuget\NuGet.targets
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MahApps.Metro", "MahApps.Metro\MahApps.Metro.csproj", "{5B1710D2-5DC8-4754-91B2-19165DE49B3D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MahApps.Metro.Resources", "MahApps.Metro.Resources\MahApps.Metro.Resources.csproj", "{E708AC99-605B-42A0-8D20-ABCA8FE42DD2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.OfficeProPlus.InstallGen.Presentation", "Sample\MetroDemo\Microsoft.OfficeProPlus.InstallGen.Presentation.csproj", "{56E8080F-FFEB-47CD-ADB9-92245F92565B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Business", "Business", "{6676105C-F83B-4B9F-B055-7056C8695E8A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Presentation", "Presentation", "{5B15E1D7-8BC7-4388-A02A-346BCEB9B089}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OfficeProPlusInstallGenerator", "OfficeProPlusInstallGenerator\OfficeProPlusInstallGenerator.csproj", "{4DFCB792-F97F-461C-81B1-AFB177A550A7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0702F643-0467-43A4-BDBC-B54F006E8244}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0702F643-0467-43A4-BDBC-B54F006E8244}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0702F643-0467-43A4-BDBC-B54F006E8244}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0702F643-0467-43A4-BDBC-B54F006E8244}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FC7461AC-28CF-4F50-8FB5-D771A69D636A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FC7461AC-28CF-4F50-8FB5-D771A69D636A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FC7461AC-28CF-4F50-8FB5-D771A69D636A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FC7461AC-28CF-4F50-8FB5-D771A69D636A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CE88A24E-73C3-4B1D-B72C-F41894485A14}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CE88A24E-73C3-4B1D-B72C-F41894485A14}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CE88A24E-73C3-4B1D-B72C-F41894485A14}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CE88A24E-73C3-4B1D-B72C-F41894485A14}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5B1710D2-5DC8-4754-91B2-19165DE49B3D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5B1710D2-5DC8-4754-91B2-19165DE49B3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5B1710D2-5DC8-4754-91B2-19165DE49B3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5B1710D2-5DC8-4754-91B2-19165DE49B3D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E708AC99-605B-42A0-8D20-ABCA8FE42DD2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E708AC99-605B-42A0-8D20-ABCA8FE42DD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E708AC99-605B-42A0-8D20-ABCA8FE42DD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E708AC99-605B-42A0-8D20-ABCA8FE42DD2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{56E8080F-FFEB-47CD-ADB9-92245F92565B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{56E8080F-FFEB-47CD-ADB9-92245F92565B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{56E8080F-FFEB-47CD-ADB9-92245F92565B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{56E8080F-FFEB-47CD-ADB9-92245F92565B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4DFCB792-F97F-461C-81B1-AFB177A550A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4DFCB792-F97F-461C-81B1-AFB177A550A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4DFCB792-F97F-461C-81B1-AFB177A550A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4DFCB792-F97F-461C-81B1-AFB177A550A7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{0702F643-0467-43A4-BDBC-B54F006E8244} = {6676105C-F83B-4B9F-B055-7056C8695E8A}
+		{CE88A24E-73C3-4B1D-B72C-F41894485A14} = {6676105C-F83B-4B9F-B055-7056C8695E8A}
+		{56E8080F-FFEB-47CD-ADB9-92245F92565B} = {5B15E1D7-8BC7-4388-A02A-346BCEB9B089}
+		{4DFCB792-F97F-461C-81B1-AFB177A550A7} = {5B15E1D7-8BC7-4388-A02A-346BCEB9B089}
+	EndGlobalSection
+EndGlobal
