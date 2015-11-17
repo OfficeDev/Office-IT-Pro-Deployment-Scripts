@@ -39,7 +39,7 @@ namespace OfficeProPlusInstallGenerator
                     throw (new Exception("File Does Not Exist: " + xmlConfiguration));
                 }
 
-                var p = new OfficeInstallExecutableGenerator();
+                var p = new OfficeInstallMsiGenerator();
                 p.Generate(new OfficeInstallProperties()
                 {
                     OfficeVersion = OfficeVersion.Office2016,
