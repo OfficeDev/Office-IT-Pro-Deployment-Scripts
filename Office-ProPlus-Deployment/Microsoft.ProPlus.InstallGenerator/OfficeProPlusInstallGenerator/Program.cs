@@ -15,6 +15,9 @@ namespace OfficeProPlusInstallGenerator
         {
             try
             {
+                //var installOffice = new InstallOffice();
+                //installOffice.RunProgram();
+
                 var xmlConfiguration = "";
 
                 var cmdArgs = CmdArguments.GetArguments();

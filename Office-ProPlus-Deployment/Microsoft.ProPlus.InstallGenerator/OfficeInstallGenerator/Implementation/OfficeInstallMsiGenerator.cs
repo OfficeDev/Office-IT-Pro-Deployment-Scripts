@@ -16,7 +16,7 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
 
             var exeFilePath = exeReturn.GeneratedFilePath;
 
-
+            return null;
         }
 
     }

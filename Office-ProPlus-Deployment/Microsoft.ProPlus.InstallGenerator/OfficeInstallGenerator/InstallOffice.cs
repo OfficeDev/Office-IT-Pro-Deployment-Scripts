@@ -15,7 +15,7 @@ using Microsoft.Win32;
 //[assembly: AssemblyVersion("")]
 //[assembly: AssemblyFileVersion("")]
 
-class InstallOffice
+public class InstallOffice
 {
 
     private XmlDocument _xmlDoc = null;
@@ -48,8 +48,11 @@ class InstallOffice
             Directory.CreateDirectory(installDir);
 
             var filesXml = GetTextFileContents("files.xml");
-            _xmlDoc = new XmlDocument();
-            _xmlDoc.LoadXml(filesXml);
+            if (!string.IsNullOrEmpty(filesXml))
+            {
+                _xmlDoc = new XmlDocument();
+                _xmlDoc.LoadXml(filesXml);
+            }
 
             Console.Write("Extracting Install Files...");
             fileNames = GetEmbeddedItems(installDir);
@@ -85,7 +88,7 @@ class InstallOffice
 
     public string GetTextFileContents(string fileName)
     {
-        var resourceName = fileName;
+        var resourceName = "";
         var resourceNames = Assembly.GetExecutingAssembly().GetManifestResourceNames();
         foreach (var name in resourceNames)
         {
@@ -95,13 +98,17 @@ class InstallOffice
             }
         }
 
-        var strReturn = "";
-        using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName))
-        using (var reader = new StreamReader(stream))
+        if (!string.IsNullOrEmpty(resourceName))
         {
-            strReturn = reader.ReadToEnd();
+            var strReturn = "";
+            using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName))
+            using (var reader = new StreamReader(stream))
+            {
+                strReturn = reader.ReadToEnd();
+            }
+            return strReturn;
         }
-        return strReturn;
+        return null;
     }
 
     public List<string> GetEmbeddedItems(string targetDirectory)
@@ -141,6 +148,7 @@ class InstallOffice
 
     public void MoveFile(string rootDirectory, string md5Hash, string fileName)
     {
+        if (_xmlDoc == null) return;
         var fileNode = _xmlDoc.SelectSingleNode("//File[@Hash='" + md5Hash + "' and @FileName='" + fileName + "']");
         if (fileNode == null) return;
 

@@ -35,6 +35,9 @@ namespace OfficeInstallGenerator
                         if (!match.Success) continue;
                     }
 
+                    var nameSplit = fileName.Split('.');
+                    fileName = nameSplit[nameSplit.Length - 2] + "." + nameSplit[nameSplit.Length - 1];
+
                     returnFiles.Add(fileName);
 
                     var filePath = Path.Combine(targetDirectory, fileName);

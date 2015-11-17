@@ -61,7 +61,7 @@
     <Compile Include="Implementation\OfficeInstallExecutableGenerator.cs" />
     <Compile Include="Support\FilePathCacher.cs" />
     <Compile Include="Support\GetArguments.cs" />
-    <Compile Include="Support\InstallOffice.cs">
+    <Compile Include="InstallOffice.cs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
