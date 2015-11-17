@@ -18,3 +18,17 @@ D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGeneratorTests\obj\Debug\OfficeInstallGeneratorTests.csprojResolveAssemblyReference.cache
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGeneratorTests\obj\Debug\OfficeInstallGeneratorTests.dll
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGeneratorTests\obj\Debug\OfficeInstallGeneratorTests.pdb
+C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGeneratorTests\bin\Debug\InstallOffice.cs
+C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGeneratorTests\bin\Debug\OfficeInstallGeneratorTests.dll
+C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGeneratorTests\bin\Debug\OfficeInstallGeneratorTests.pdb
+C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGeneratorTests\bin\Debug\Micorosft.OfficeProPlus.ConfigurationXml.dll
+C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGeneratorTests\bin\Debug\OfficeInstallGenerator.dll
+C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGeneratorTests\bin\Debug\WixSharp.dll
+C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGeneratorTests\bin\Debug\Microsoft.Deployment.WindowsInstaller.dll
+C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGeneratorTests\bin\Debug\Micorosft.OfficeProPlus.ConfigurationXml.pdb
+C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGeneratorTests\bin\Debug\OfficeInstallGenerator.pdb
+C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGeneratorTests\bin\Debug\WixSharp.xml
+C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGeneratorTests\bin\Debug\Microsoft.Deployment.WindowsInstaller.xml
+C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGeneratorTests\obj\Debug\OfficeInstallGeneratorTests.csprojResolveAssemblyReference.cache
+C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGeneratorTests\obj\Debug\OfficeInstallGeneratorTests.dll
+C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGeneratorTests\obj\Debug\OfficeInstallGeneratorTests.pdb

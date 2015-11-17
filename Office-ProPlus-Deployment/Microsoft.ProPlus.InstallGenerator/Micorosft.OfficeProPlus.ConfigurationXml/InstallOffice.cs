@@ -15,7 +15,7 @@ using Microsoft.Win32;
 //[assembly: AssemblyVersion("")]
 //[assembly: AssemblyFileVersion("")]
 
-public class InstallOffice
+class InstallOffice
 {
 
     private XmlDocument _xmlDoc = null;
@@ -35,6 +35,7 @@ public class InstallOffice
         {
             Console.WriteLine();
         }
+
     }
 
     public void RunProgram()
@@ -48,11 +49,8 @@ public class InstallOffice
             Directory.CreateDirectory(installDir);
 
             var filesXml = GetTextFileContents("files.xml");
-            if (!string.IsNullOrEmpty(filesXml))
-            {
-                _xmlDoc = new XmlDocument();
-                _xmlDoc.LoadXml(filesXml);
-            }
+            _xmlDoc = new XmlDocument();
+            _xmlDoc.LoadXml(filesXml);
 
             Console.Write("Extracting Install Files...");
             fileNames = GetEmbeddedItems(installDir);
@@ -88,7 +86,7 @@ public class InstallOffice
 
     public string GetTextFileContents(string fileName)
     {
-        var resourceName = "";
+        var resourceName = fileName;
         var resourceNames = Assembly.GetExecutingAssembly().GetManifestResourceNames();
         foreach (var name in resourceNames)
         {
@@ -98,17 +96,13 @@ public class InstallOffice
             }
         }
 
-        if (!string.IsNullOrEmpty(resourceName))
+        var strReturn = "";
+        using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName))
+        using (var reader = new StreamReader(stream))
         {
-            var strReturn = "";
-            using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName))
-            using (var reader = new StreamReader(stream))
-            {
-                strReturn = reader.ReadToEnd();
-            }
-            return strReturn;
+            strReturn = reader.ReadToEnd();
         }
-        return null;
+        return strReturn;
     }
 
     public List<string> GetEmbeddedItems(string targetDirectory)
@@ -148,7 +142,6 @@ public class InstallOffice
 
     public void MoveFile(string rootDirectory, string md5Hash, string fileName)
     {
-        if (_xmlDoc == null) return;
         var fileNode = _xmlDoc.SelectSingleNode("//File[@Hash='" + md5Hash + "' and @FileName='" + fileName + "']");
         if (fileNode == null) return;
 
