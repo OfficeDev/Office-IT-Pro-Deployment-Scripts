@@ -26,12 +26,12 @@ using System;
 
 Add-Type -TypeDefinition $enumDef
 
-function Download-OfficeBranch{
+function Download-OfficeProPlusBranch{
 <#
 .SYNOPSIS
-Downloads cab files for specified branches, versions, bitness, and languages
+Downloads each Office ProPlus Branch with installation files
 .DESCRIPTION
-Downloads cab files for specified branches, versions, bitness, and languages
+This script will dynamically downloaded the most current Office ProPlus version for each deployment Branch
 .PARAMETER Version
 The version number you wish to download. For example: 16.0.6228.1010
 .PARAMETER TargetDirectory
@@ -44,15 +44,12 @@ Array of Microsoft language codes. Will throw error if provided values don't mat
 .PARAMETER Bitness
 v32, v64, or Both. What bitness of office you wish to download. Defaults to Both.
 .PARAMETER OverWrite
-v32, v64, or Both. What bitness of office you wish to download. Defaults to Both.
+If this parameter is specified then existing files will be overwritten.
 .PARAMETER Branches
 An array of the branches you wish to download. Defaults to all available branches (CMValidation currently not available)
 .Example
-Download-OfficeBranch -baseDestination "C:\Users\Public\Documents\"
-Default downloads all available branches of the most recent version for both bitnesses into public documents. Downloads the english language pack.
-.Example
-Download-OfficeBranch -baseDestination "C:\Users\Public\Documents\" -SourceVersion "14.0" -TargetVersion "15.0"
-Copy the office 14.0 (2010) policies within 'Office Settings' to office 15.0 (2013) policies within 'Office Settings'
+Download-OfficeBranch -baseDestination "\\server\updateshare"
+Default downloads all available branches of the most recent version for both bitnesses into an update source. Downloads the English language pack by default if language is not specified.
 .Link
 https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
 #>
