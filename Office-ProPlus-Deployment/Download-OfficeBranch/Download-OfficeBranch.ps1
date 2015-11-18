@@ -199,14 +199,12 @@ $xmlArray | %{
         #basic files
         $CurrentVersionXML.UpdateFiles.File | ? language -eq "0" | 
         %{
-            $webclient = New-Object System.Net.WebClient
             $name = $_.name -replace "`%version`%", $currentVersion
             $relativePath = $_.relativePath -replace "`%version`%", $currentVersion
             $url = "$baseURL$relativePath$name"
             $destination = "$TargetDirectory\$($currentBranch.ToString())$relativePath$name"
 
             if (!(Test-Path -Path $destination) -or $OverWrite) {
-               #$webclient.DownloadFile($url,$destination)
                DownloadFile -url $url -targetFile $destination
             }
 
@@ -221,14 +219,14 @@ $xmlArray | %{
             $languageId  = [globalization.cultureinfo]::GetCultures("allCultures") | ? Name -eq $_ | %{$_.LCID}
             $CurrentVersionXML.UpdateFiles.File | ? language -eq $languageId | 
             %{
-                $webclient = New-Object System.Net.WebClient
                 $name = $_.name -replace "`%version`%", $currentVersion
                 $relativePath = $_.relativePath -replace "`%version`%", $currentVersion
                 $url = "$baseURL$relativePath$name"
                 $destination = "$TargetDirectory\$($currentBranch.ToString())$relativePath$name"
-                #$webclient.DownloadFile($url,$destination)
 
-                DownloadFile -url $url -targetFile $destination
+                if (!(Test-Path -Path $destination) -or $OverWrite) {
+                   DownloadFile -url $url -targetFile $destination
+                }
 
                 $j = $j + 1
                 Write-Progress -id 2 -ParentId 1 -Activity "Downloading Branch Files" -status "Branch: $($currentBranch.ToString())" -percentComplete ($j / $numberOfFiles *100)
