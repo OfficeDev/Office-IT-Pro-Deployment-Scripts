@@ -214,7 +214,7 @@
     <Content Include="images\info.png" />
     <Content Include="images\Office.png" />
     <Content Include="index.html" />
-    <Content Include="New-Index.html" />
+    <Content Include="XmlEditor.html" />
     <Content Include="Scripts\FileSaver.js" />
     <Content Include="Scripts\FileSaver.min.js" />
     <Content Include="Scripts\jquery.fabric.js" />
