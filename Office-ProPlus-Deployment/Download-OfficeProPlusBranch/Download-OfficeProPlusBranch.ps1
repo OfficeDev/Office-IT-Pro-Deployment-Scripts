@@ -26,7 +26,9 @@ using System;
 
 Add-Type -TypeDefinition $enumDef
 
-function Download-OfficeProPlusBranch{
+
+
+function Download-OfficeProPlusBranch {
 <#
 .SYNOPSIS
 Downloads each Office ProPlus Branch with installation files
@@ -56,7 +58,7 @@ https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
 
 Param(
     [Parameter()]
-    [string] $Version,
+    [string] $Version = $null,
 
     [Parameter(Mandatory=$true)]
     [string] $TargetDirectory,
