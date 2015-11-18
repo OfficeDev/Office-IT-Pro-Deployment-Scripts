@@ -264,6 +264,10 @@ process {
     foreach ($productId in $splitProducts) { 
        $excludeApps = $NULL
 
+       if ($Languages -eq "CurrentOfficeLanguages") {
+           $additionalLanguages = New-Object System.Collections.ArrayList
+       }
+
        if ($officeConfig.ClickToRunInstalled) {
              $officeKeyPath = $officeConfig.OfficeKeyPath
            
@@ -281,6 +285,8 @@ process {
             $additionalLanguages.Add($officeLang) | Out-Null
          }
        }
+
+      write-host $officeAddLangs
 
        if (($Languages -eq "CurrentOfficeLanguages") -or ($Languages -eq "AllInUseLanguages")) {
            $additionalLanguages += $officeAddLangs
@@ -1083,27 +1089,29 @@ function odtGetExcludedApps() {
     }
 
     process {
-        $productsPath = join-path $officeKeyPath "ProductReleaseIDs\Active\$ProductId\x-none"
+        $configPath = join-path $officeKeyPath "Configuration"
 
         $appsToExclude = @() 
 
-        $installedItems = $regProv.EnumKey($HKLM, $productsPath)
+        $keyValues = $regProv.EnumValues($HKLM, $configPath)
 
-        if ($installedItems.Count -gt 0) {
-            foreach ($appName in $allExcludeApps) {
-               [bool]$appInstalled = $false
-               foreach ($installedItem in $installedItems.sNames) {
-                   if ($installedItem.ToLower().StartsWith($appName.ToLower())) {
-                      $appInstalled = $true
-                      break;
-                   }
-               }
-           
-               if (!($appInstalled)) {
-                  $appsToExclude += $appName
-               }
+        foreach ($keyValue in $keyValues.sNames) {
+            $checkValue = $ProductId + ".ExcludedApps"
+
+            if ($keyValue.ToLower() -eq $checkValue.ToLower()) {
+                $excludeApps = $regProv.GetStringValue($HKLM, $configPath, $checkValue).sValue
+
+                $appSplit = $excludeApps.Split(',');
+
+                foreach ($app in $appSplit){
+                    $app = (Get-Culture).textinfo.totitlecase($app)
+
+                    $appsToExclude += $app
+                }
             }
+          
         }
+        
         
         return $appsToExclude;
     }
