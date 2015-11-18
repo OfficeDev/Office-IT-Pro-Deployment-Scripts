@@ -206,7 +206,8 @@ $xmlArray | %{
             $destination = "$TargetDirectory\$($currentBranch.ToString())$relativePath$name"
 
             if (!(Test-Path -Path $destination) -or $OverWrite) {
-               $webclient.DownloadFile($url,$destination)
+               #$webclient.DownloadFile($url,$destination)
+               DownloadFile -url $url -targetFile $destination
             }
 
             $j = $j + 1
@@ -225,7 +226,9 @@ $xmlArray | %{
                 $relativePath = $_.relativePath -replace "`%version`%", $currentVersion
                 $url = "$baseURL$relativePath$name"
                 $destination = "$TargetDirectory\$($currentBranch.ToString())$relativePath$name"
-                $webclient.DownloadFile($url,$destination)
+                #$webclient.DownloadFile($url,$destination)
+
+                DownloadFile -url $url -targetFile $destination
 
                 $j = $j + 1
                 Write-Progress -id 2 -ParentId 1 -Activity "Downloading Branch Files" -status "Branch: $($currentBranch.ToString())" -percentComplete ($j / $numberOfFiles *100)
@@ -236,4 +239,52 @@ $xmlArray | %{
     }
 
 }
+}
+
+function DownloadFile($url, $targetFile) {
+
+   $uri = New-Object "System.Uri" "$url"
+
+   $request = [System.Net.HttpWebRequest]::Create($uri)
+
+   $request.set_Timeout(15000) #15 second timeout
+
+   $response = $request.GetResponse()
+
+   $totalLength = [System.Math]::Floor($response.get_ContentLength()/1024)
+
+   $responseStream = $response.GetResponseStream()
+
+   $targetStream = New-Object -TypeName System.IO.FileStream -ArgumentList $targetFile, Create
+
+   $buffer = new-object byte[] 10KB
+
+   $count = $responseStream.Read($buffer,0,$buffer.length)
+
+   $downloadedBytes = $count
+
+   while ($count -gt 0)
+
+   {
+
+       $targetStream.Write($buffer, 0, $count)
+
+       $count = $responseStream.Read($buffer,0,$buffer.length)
+
+       $downloadedBytes = $downloadedBytes + $count
+
+       Write-Progress -id 3 -ParentId 2 -activity "Downloading file '$($url.split('/') | Select -Last 1)'" -status "Downloaded ($([System.Math]::Floor($downloadedBytes/1024))K of $($totalLength)K): " -PercentComplete ((([System.Math]::Floor($downloadedBytes/1024)) / $totalLength)  * 100)
+
+   }
+
+   Write-Progress -id 3 -ParentId 2 -activity "Finished downloading file '$($url.split('/') | Select -Last 1)'"
+
+   $targetStream.Flush()
+
+   $targetStream.Close()
+
+   $targetStream.Dispose()
+
+   $responseStream.Dispose()
+
 }
