@@ -8,6 +8,7 @@ using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Xml;
+//using System.Xml.Linq;
 using Microsoft.Win32;
 //[assembly: AssemblyTitle("")]
 //[assembly: AssemblyProduct("")]
@@ -43,6 +44,7 @@ public class InstallOffice
         var installDir = "";
         try
         {
+  
             var currentDirectory = Environment.ExpandEnvironmentVariables("%temp%");
             installDir = currentDirectory + @"\Office365ProPlus";
             Directory.CreateDirectory(installDir);
@@ -67,7 +69,34 @@ public class InstallOffice
             if (!File.Exists(odtFilePath)) { throw (new Exception("Cannot find ODT Executable")); }
             if (!File.Exists(xmlFilePath)) { throw (new Exception("Cannot find Configuration Xml file")); }
 
-            Console.WriteLine("Installing Office 365 ProPlus...");
+            if (GetArguments().Any(a => a.Key.ToLower() == "/uninstall"))
+            {
+                Console.WriteLine("Uninstalling Office 365 ProPlus...");
+
+
+                XmlDocument doc = new XmlDocument();
+
+                XmlElement root = doc.CreateElement("Configuration");
+
+                XmlElement remove1 = doc.CreateElement("Remove");
+                XmlAttribute all = doc.CreateAttribute("All");
+                all.Value = "TRUE";
+
+                remove1.Attributes.Append(all);
+                root.AppendChild(remove1);
+
+                doc.AppendChild(root);
+
+                doc.Save(installDir+@"\configuration.xml");
+
+                xmlFilePath = installDir + @"\" + fileNames.FirstOrDefault(f => f.ToLower().EndsWith(".xml"));
+
+            }
+            else
+            {
+                Console.WriteLine("Installing Office 365 ProPlus...");
+            }
+
             var p = new Process
             {
                 StartInfo = new ProcessStartInfo()
@@ -385,6 +414,28 @@ public class InstallOffice
         catch { }
     }
 
+    public List<CmdArgument> GetArguments()
+    {
+        var returnList = new List<CmdArgument>();
+        foreach (var arg in Environment.GetCommandLineArgs())
+        {
+            var key = arg;
+            var value = "";
+            if (arg.Contains("="))
+            {
+                key = arg.Split('=')[0];
+                value = arg.Split('=')[1];
+            }
+
+            returnList.Add(new CmdArgument()
+            {
+                Key = key,
+                Value = value
+            });
+        }
+        return returnList;
+    } 
+
 }
 
 public enum CurrentOperation
@@ -402,4 +453,12 @@ public class ExecutingScenario
 
     public string State { get; set; }
 
+}
+
+
+public class CmdArgument
+{
+    public string Key { get; set; }
+
+    public string Value { get; set; }
 }

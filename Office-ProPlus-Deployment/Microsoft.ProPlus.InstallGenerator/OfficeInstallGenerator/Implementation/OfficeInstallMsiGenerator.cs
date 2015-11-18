@@ -44,6 +44,10 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
                 new BinaryFileAction("MSOfficeOneClickInstall","", Return.check, When.After, Step.InstallFiles, Condition.NOT_Installed)
                 {
                         Execute = Execute.immediate
+                },
+                 new BinaryFileAction("MSOfficeOneClickInstall","/uninstall", Return.check, When.After, Step.InstallFiles, Condition.Installed)
+                {
+                        Execute = Execute.immediate
                 }
             }
 

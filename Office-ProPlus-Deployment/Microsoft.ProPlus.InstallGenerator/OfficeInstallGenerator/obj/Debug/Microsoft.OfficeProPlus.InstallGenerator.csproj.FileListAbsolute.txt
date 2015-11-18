@@ -9,6 +9,14 @@ D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGenerator\obj\Debug\Microsoft.OfficeProPlus.InstallGenerator.csproj.GenerateResource.Cache
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGenerator\obj\Debug\OfficeInstallGenerator.dll
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGenerator\obj\Debug\OfficeInstallGenerator.pdb
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGenerator\bin\Debug\Microsoft.Deployment.WindowsInstaller.dll
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGenerator\bin\Debug\WixSharp.dll
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGenerator\bin\Debug\WixSharp.UI.dll
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGenerator\bin\Debug\BootstrapperCore.dll
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGenerator\bin\Debug\Microsoft.Deployment.WindowsInstaller.xml
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGenerator\bin\Debug\WixSharp.xml
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGenerator\bin\Debug\WixSharp.UI.xml
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGenerator\bin\Debug\BootstrapperCore.xml
 C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGenerator\bin\Debug\InstallOffice.cs
 C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGenerator\bin\Debug\OfficeInstallGenerator.dll.config
 C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGenerator\bin\Debug\OfficeInstallGenerator.dll
@@ -28,11 +36,3 @@ C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deploy
 C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGenerator\obj\Debug\Microsoft.OfficeProPlus.InstallGenerator.csproj.GenerateResource.Cache
 C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGenerator\obj\Debug\OfficeInstallGenerator.dll
 C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGenerator\obj\Debug\OfficeInstallGenerator.pdb
-D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGenerator\bin\Debug\Microsoft.Deployment.WindowsInstaller.dll
-D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGenerator\bin\Debug\WixSharp.dll
-D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGenerator\bin\Debug\WixSharp.UI.dll
-D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGenerator\bin\Debug\BootstrapperCore.dll
-D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGenerator\bin\Debug\Microsoft.Deployment.WindowsInstaller.xml
-D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGenerator\bin\Debug\WixSharp.xml
-D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGenerator\bin\Debug\WixSharp.UI.xml
-D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGenerator\bin\Debug\BootstrapperCore.xml

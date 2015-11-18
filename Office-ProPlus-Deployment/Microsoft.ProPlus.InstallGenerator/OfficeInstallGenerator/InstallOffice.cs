@@ -8,6 +8,7 @@ using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Xml;
+//using System.Xml.Linq;
 using Microsoft.Win32;
 //[assembly: AssemblyTitle("")]
 //[assembly: AssemblyProduct("")]
@@ -71,7 +72,24 @@ public class InstallOffice
             if (GetArguments().Any(a => a.Key.ToLower() == "/uninstall"))
             {
                 Console.WriteLine("Uninstalling Office 365 ProPlus...");
-                //Generate RemoveAll XML and create xml file and then change xmlFilePath variable to point to that xml file
+
+
+                XmlDocument doc = new XmlDocument();
+
+                XmlElement root = doc.CreateElement("Configuration");
+
+                XmlElement remove1 = doc.CreateElement("Remove");
+                XmlAttribute all = doc.CreateAttribute("All");
+                all.Value = "TRUE";
+
+                remove1.Attributes.Append(all);
+                root.AppendChild(remove1);
+
+                doc.AppendChild(root);
+
+                doc.Save(installDir+@"\configuration.xml");
+
+                xmlFilePath = installDir + @"\" + fileNames.FirstOrDefault(f => f.ToLower().EndsWith(".xml"));
 
             }
             else
