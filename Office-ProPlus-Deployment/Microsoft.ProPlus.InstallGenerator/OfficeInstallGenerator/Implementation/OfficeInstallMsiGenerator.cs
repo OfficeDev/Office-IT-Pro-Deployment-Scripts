@@ -5,12 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using OfficeInstallGenerator;
 using WixSharp;
+using System.IO;
 
 namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
 {
     public class OfficeInstallMsiGenerator : IOfficeInstallGenerator
     {
-
 
 
         //TODO : Add function that gets the bitness of the install...for now assume
@@ -25,7 +25,7 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
             {
 
                 Name = "Microsoft Office 365 ProPlus Installer",
-                UI = WUI.WixUI_Minimal,
+                UI = WUI.WixUI_ProgressOnly,
 
                 Dirs = new[]
             {
@@ -44,6 +44,7 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
                 new BinaryFileAction("MSOfficeOneClickInstall","", Return.check, When.After, Step.InstallFiles, Condition.NOT_Installed)
                 {
                         Execute = Execute.immediate
+                        
                 },
                  new BinaryFileAction("MSOfficeOneClickInstall","/uninstall", Return.check, When.After, Step.InstallFiles, Condition.Installed)
                 {
@@ -54,8 +55,15 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
             };
 
 
-
+            
             project.GUID = Guid.NewGuid();
+
+
+            project.ControlPanelInfo.Manufacturer = "Microsoft Corporation";
+     
+           
+            
+            Compiler.WixLocation = @"wixTools\";
 
             Compiler.BuildMsi(project);
 

@@ -12,6 +12,8 @@ using Microsoft.OfficeProPlus.InstallGenerator;
 using Microsoft.OfficeProPlus.InstallGenerator.Implementation;
 using Microsoft.Win32;
 
+
+
 namespace OfficeInstallGenerator
 {
     public class OfficeInstallExecutableGenerator : IOfficeInstallGenerator
@@ -39,13 +41,21 @@ namespace OfficeInstallGenerator
                 parameters.ReferencedAssemblies.Add("System.Core.dll");
                 parameters.ReferencedAssemblies.Add("Microsoft.CSharp.dll");
 
+                
+
+
+
                 embededExeFiles = EmbeddedResources.GetEmbeddedItems(currentDirectory, @"\.exe$");
                 File.Copy(installProperties.ConfigurationXmlPath, tmpPath + @"\configuration.xml", true);
 
                 parameters.EmbeddedResources.Add(tmpPath + @"\configuration.xml");
+
+               // parameters.EmbeddedResources.Add(@"\tools\");
+                
                 parameters.EmbeddedResources.Add(installProperties.OfficeVersion == OfficeVersion.Office2013
                     ? @".\Office2013Setup.exe"
                     : @".\Office2016Setup.exe");
+
 
                 var fileContents = File.ReadAllText("InstallOffice.cs");
                 fileContents = fileContents.Replace("public static void Main1(string[] args)",
@@ -136,6 +146,7 @@ namespace OfficeInstallGenerator
 
             parameters.EmbeddedResources.Add(xmlFilePath);
         }
+
 
     }
 

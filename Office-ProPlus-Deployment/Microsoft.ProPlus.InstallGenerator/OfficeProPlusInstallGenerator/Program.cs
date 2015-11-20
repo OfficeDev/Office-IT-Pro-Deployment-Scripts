@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.OfficeProPlus.InstallGenerator.Implementation;
 using OfficeInstallGenerator;
+using System.IO.Compression; 
 
 namespace OfficeProPlusInstallGenerator
 {

@@ -8,7 +8,6 @@ using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Xml;
-using System.Xml.Linq;
 using Microsoft.Win32;
 //[assembly: AssemblyTitle("")]
 //[assembly: AssemblyProduct("")]
@@ -73,15 +72,23 @@ public class InstallOffice
             {
                 Console.WriteLine("Uninstalling Office 365 ProPlus...");
 
-                new XDocument(
-                    new XElement("Configuration",
-                        new XElement("Remove",
-                            new XAttribute("All", "TRUE")))
-                    ).Save("uninstall.xml");
 
-                xmlFilePath = installDir + @"\uninstall.xml";
+                XmlDocument doc = new XmlDocument();
 
-                //Generate RemoveAll XML and create xml file and then change xmlFilePath variable to point to that xml file
+                XmlElement root = doc.CreateElement("Configuration");
+
+                XmlElement remove1 = doc.CreateElement("Remove");
+                XmlAttribute all = doc.CreateAttribute("All");
+                all.Value = "TRUE";
+
+                remove1.Attributes.Append(all);
+                root.AppendChild(remove1);
+
+                doc.AppendChild(root);
+
+                doc.Save(installDir+@"\configuration.xml");
+
+                xmlFilePath = installDir + @"\" + fileNames.FirstOrDefault(f => f.ToLower().EndsWith(".xml"));
 
             }
             else
@@ -426,9 +433,26 @@ public class InstallOffice
             });
         }
         return returnList;
-    } 
+    }
+
+    //private void extractWixTools(string installDir)
+    //{
+    //    string zipPath = installDir + @"\tools.zip";
+    //    string extractPath = "\tools";
+
+    //    using (ZipArchive archive = ZipFile.OpenRead(zipPath))
+    //    {
+    //        foreach (ZipArchiveEntry entry in archive.Entries)
+    //        {
+    //            entry.ExtractToFile(Path.Combine(extractPath+entry.FullName));
+    //        }
+    //    }
+    //}
+
 
 }
+
+
 
 public enum CurrentOperation
 {

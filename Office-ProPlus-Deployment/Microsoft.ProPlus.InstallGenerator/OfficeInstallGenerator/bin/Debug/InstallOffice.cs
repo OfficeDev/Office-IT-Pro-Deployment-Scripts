@@ -8,7 +8,6 @@ using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Xml;
-//using System.Xml.Linq;
 using Microsoft.Win32;
 //[assembly: AssemblyTitle("")]
 //[assembly: AssemblyProduct("")]
@@ -434,9 +433,26 @@ public class InstallOffice
             });
         }
         return returnList;
-    } 
+    }
+
+    //private void extractWixTools(string installDir)
+    //{
+    //    string zipPath = installDir + @"\tools.zip";
+    //    string extractPath = "\tools";
+
+    //    using (ZipArchive archive = ZipFile.OpenRead(zipPath))
+    //    {
+    //        foreach (ZipArchiveEntry entry in archive.Entries)
+    //        {
+    //            entry.ExtractToFile(Path.Combine(extractPath+entry.FullName));
+    //        }
+    //    }
+    //}
+
 
 }
+
+
 
 public enum CurrentOperation
 {

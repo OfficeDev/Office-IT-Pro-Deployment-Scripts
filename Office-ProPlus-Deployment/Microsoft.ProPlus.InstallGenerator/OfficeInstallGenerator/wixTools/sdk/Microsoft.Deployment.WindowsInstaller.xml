@@ -22,36 +22,6 @@
             </summary>
             <param name="view">view that contains the columns</param>
         </member>
-        <member name="P:Microsoft.Deployment.WindowsInstaller.ColumnCollection.Count">
-            <summary>
-            Gets the number of columns in the collection.
-            </summary>
-            <value>number of columns in the collection</value>
-        </member>
-        <member name="P:Microsoft.Deployment.WindowsInstaller.ColumnCollection.IsReadOnly">
-            <summary>
-            Gets a boolean value indicating whether the collection is read-only.
-            A ColumnCollection is read-only if it is associated with a <see cref="T:Microsoft.Deployment.WindowsInstaller.View"/>
-            or a read-only <see cref="T:Microsoft.Deployment.WindowsInstaller.Database"/>.
-            </summary>
-            <value>read-only status of the collection</value>
-        </member>
-        <member name="P:Microsoft.Deployment.WindowsInstaller.ColumnCollection.Item(System.Int32)">
-            <summary>
-            Gets information about a specific column in the collection.
-            </summary>
-            <param name="columnIndex">1-based index into the column collection</param>
-            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="columnIndex"/> is less
-            than 1 or greater than the number of columns in the collection</exception>
-        </member>
-        <member name="P:Microsoft.Deployment.WindowsInstaller.ColumnCollection.Item(System.String)">
-            <summary>
-            Gets information about a specific column in the collection.
-            </summary>
-            <param name="columnName">case-sensitive name of a column collection</param>
-            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="columnName"/> does
-            not exist in the collection</exception>
-        </member>
         <member name="M:Microsoft.Deployment.WindowsInstaller.ColumnCollection.Add(Microsoft.Deployment.WindowsInstaller.ColumnInfo)">
             <summary>
             Not supported because the collection is read-only.
@@ -107,11 +77,6 @@
             </summary>
             <returns>An enumerator of ColumnInfo objects.</returns>
         </member>
-        <member name="P:Microsoft.Deployment.WindowsInstaller.ColumnCollection.FormatString">
-            <summary>
-            Gets a string suitable for printing all the values of a record containing these columns.
-            </summary>
-        </member>
         <member name="M:Microsoft.Deployment.WindowsInstaller.ColumnCollection.System#Collections#IEnumerable#GetEnumerator">
             <summary>
             Gets an enumerator over the columns in the collection.
@@ -133,6 +98,41 @@
             <param name="types">true to return types (column definition strings),
             false to return names</param>
             <returns>list of column names or types</returns>
+        </member>
+        <member name="P:Microsoft.Deployment.WindowsInstaller.ColumnCollection.Count">
+            <summary>
+            Gets the number of columns in the collection.
+            </summary>
+            <value>number of columns in the collection</value>
+        </member>
+        <member name="P:Microsoft.Deployment.WindowsInstaller.ColumnCollection.IsReadOnly">
+            <summary>
+            Gets a boolean value indicating whether the collection is read-only.
+            A ColumnCollection is read-only if it is associated with a <see cref="T:Microsoft.Deployment.WindowsInstaller.View"/>
+            or a read-only <see cref="T:Microsoft.Deployment.WindowsInstaller.Database"/>.
+            </summary>
+            <value>read-only status of the collection</value>
+        </member>
+        <member name="P:Microsoft.Deployment.WindowsInstaller.ColumnCollection.Item(System.Int32)">
+            <summary>
+            Gets information about a specific column in the collection.
+            </summary>
+            <param name="columnIndex">1-based index into the column collection</param>
+            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="columnIndex"/> is less
+            than 1 or greater than the number of columns in the collection</exception>
+        </member>
+        <member name="P:Microsoft.Deployment.WindowsInstaller.ColumnCollection.Item(System.String)">
+            <summary>
+            Gets information about a specific column in the collection.
+            </summary>
+            <param name="columnName">case-sensitive name of a column collection</param>
+            <exception cref="T:System.ArgumentOutOfRangeException"><paramref name="columnName"/> does
+            not exist in the collection</exception>
+        </member>
+        <member name="P:Microsoft.Deployment.WindowsInstaller.ColumnCollection.FormatString">
+            <summary>
+            Gets a string suitable for printing all the values of a record containing these columns.
+            </summary>
         </member>
         <member name="T:Microsoft.Deployment.WindowsInstaller.ComponentAttributes">
             <summary>
@@ -821,6 +821,12 @@
             <param name="isLocalizable">for String columns, indicates the column
             is localizable; ignored for other column types</param>
         </member>
+        <member name="M:Microsoft.Deployment.WindowsInstaller.ColumnInfo.ToString">
+            <summary>
+            Gets the name of the column.
+            </summary>
+            <returns>Name of the column.</returns>
+        </member>
         <member name="P:Microsoft.Deployment.WindowsInstaller.ColumnInfo.Name">
             <summary>
             Gets the name of the column.
@@ -907,23 +913,10 @@
             </list>
             </p></remarks>
         </member>
-        <member name="M:Microsoft.Deployment.WindowsInstaller.ColumnInfo.ToString">
-            <summary>
-            Gets the name of the column.
-            </summary>
-            <returns>Name of the column.</returns>
-        </member>
         <member name="T:Microsoft.Deployment.WindowsInstaller.ComponentInfoCollection">
             <summary>
             Accessor for information about components within the context of an installation session.
             </summary>
-        </member>
-        <member name="P:Microsoft.Deployment.WindowsInstaller.ComponentInfoCollection.Item(System.String)">
-            <summary>
-            Gets information about a component within the context of an installation session.
-            </summary>
-            <param name="component">name of the component</param>
-            <returns>component object</returns>
         </member>
         <member name="M:Microsoft.Deployment.WindowsInstaller.ComponentInfoCollection.Contains(System.String)">
             <summary>
@@ -939,21 +932,39 @@
             <param name="array">array that receives the features</param>
             <param name="arrayIndex">offset into the array</param>
         </member>
-        <member name="P:Microsoft.Deployment.WindowsInstaller.ComponentInfoCollection.Count">
-            <summary>
-            Gets the number of components defined for the product.
-            </summary>
-        </member>
         <member name="M:Microsoft.Deployment.WindowsInstaller.ComponentInfoCollection.GetEnumerator">
             <summary>
             Enumerates the components in the collection.
             </summary>
             <returns>an enumerator over all features in the collection</returns>
         </member>
+        <member name="P:Microsoft.Deployment.WindowsInstaller.ComponentInfoCollection.Item(System.String)">
+            <summary>
+            Gets information about a component within the context of an installation session.
+            </summary>
+            <param name="component">name of the component</param>
+            <returns>component object</returns>
+        </member>
+        <member name="P:Microsoft.Deployment.WindowsInstaller.ComponentInfoCollection.Count">
+            <summary>
+            Gets the number of components defined for the product.
+            </summary>
+        </member>
         <member name="T:Microsoft.Deployment.WindowsInstaller.ComponentInfo">
             <summary>
             Provides access to information about a component within the context of an installation session.
             </summary>
+        </member>
+        <member name="M:Microsoft.Deployment.WindowsInstaller.ComponentInfo.GetCost(Microsoft.Deployment.WindowsInstaller.InstallState)">
+            <summary>
+            Gets disk space per drive required to install a component.
+            </summary>
+            <param name="installState">Requested component state</param>
+            <returns>A list of InstallCost structures, specifying the cost for each drive for the component</returns>
+            <remarks><p>
+            Win32 MSI API:
+            <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msienumcomponentcosts.asp">MsiEnumComponentCosts</a>
+            </p></remarks>
         </member>
         <member name="P:Microsoft.Deployment.WindowsInstaller.ComponentInfo.Name">
             <summary>
@@ -984,31 +995,26 @@
             <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msisetcomponentstate.asp">MsiSetComponentState</a>
             </p></remarks>
         </member>
-        <member name="M:Microsoft.Deployment.WindowsInstaller.ComponentInfo.GetCost(Microsoft.Deployment.WindowsInstaller.InstallState)">
-            <summary>
-            Gets disk space per drive required to install a component.
-            </summary>
-            <param name="installState">Requested component state</param>
-            <returns>A list of InstallCost structures, specifying the cost for each drive for the component</returns>
-            <remarks><p>
-            Win32 MSI API:
-            <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msienumcomponentcosts.asp">MsiEnumComponentCosts</a>
-            </p></remarks>
-        </member>
         <member name="T:Microsoft.Deployment.WindowsInstaller.ComponentInstallation">
             <summary>
             Represents an instance of a registered component.
             </summary>
         </member>
-        <member name="P:Microsoft.Deployment.WindowsInstaller.ComponentInstallation.AllComponents">
+        <member name="T:Microsoft.Deployment.WindowsInstaller.InstallationPart">
             <summary>
-            Gets the set of installed components for all products.
+            Subclasses of this abstract class represent an instance
+            of a registered feature or component.
             </summary>
-            <exception cref="T:Microsoft.Deployment.WindowsInstaller.InstallerException">The installer configuration data is corrupt</exception>
-            <remarks><p>
-            Win32 MSI API:
-            <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msienumcomponents.asp">MsiEnumComponents</a>
-            </p></remarks>
+        </member>
+        <member name="P:Microsoft.Deployment.WindowsInstaller.InstallationPart.Product">
+            <summary>
+            Gets the product that this item is a part of.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Deployment.WindowsInstaller.InstallationPart.State">
+            <summary>
+            Gets the current installation state of the item.
+            </summary>
         </member>
         <member name="M:Microsoft.Deployment.WindowsInstaller.ComponentInstallation.Components(System.String,Microsoft.Deployment.WindowsInstaller.UserContexts)">
             <summary>
@@ -1057,6 +1063,16 @@
             <param name="productCode">ProductCode GUID</param>
             <param name="szUserSid">context user SID</param>
             <param name="dwContext">user contexts</param>
+        </member>
+        <member name="P:Microsoft.Deployment.WindowsInstaller.ComponentInstallation.AllComponents">
+            <summary>
+            Gets the set of installed components for all products.
+            </summary>
+            <exception cref="T:Microsoft.Deployment.WindowsInstaller.InstallerException">The installer configuration data is corrupt</exception>
+            <remarks><p>
+            Win32 MSI API:
+            <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msienumcomponents.asp">MsiEnumComponents</a>
+            </p></remarks>
         </member>
         <member name="P:Microsoft.Deployment.WindowsInstaller.ComponentInstallation.ComponentCode">
             <summary>
@@ -1184,7 +1200,7 @@
             immediate and deferred/rollback/commit custom actions.
             </summary>
             <remarks>
-            Call the <see cref="M:Microsoft.Deployment.WindowsInstaller.CustomActionData.ToString" /> method to get a string
+            Call the <see cref="M:Microsoft.Deployment.WindowsInstaller.CustomActionData.ToString"/> method to get a string
             suitable for storing in a property and reconstructing the custom action data later.
             </remarks>
             <seealso cref="P:Microsoft.Deployment.WindowsInstaller.Session.CustomActionData"/>
@@ -1205,7 +1221,7 @@
             Reconstructs a custom action data object from data that was previously
             persisted in a string.
             </summary>
-            <param name="keyValueList">Previous output from <see cref="M:Microsoft.Deployment.WindowsInstaller.CustomActionData.ToString" />.</param>
+            <param name="keyValueList">Previous output from <see cref="M:Microsoft.Deployment.WindowsInstaller.CustomActionData.ToString"/>.</param>
         </member>
         <member name="M:Microsoft.Deployment.WindowsInstaller.CustomActionData.Add(System.String,System.String)">
             <summary>
@@ -1241,11 +1257,6 @@
             <param name="key">Case-sensitive data key.</param>
             <returns>true if the data contains an item with the key; otherwise, false</returns>
         </member>
-        <member name="P:Microsoft.Deployment.WindowsInstaller.CustomActionData.Keys">
-            <summary>
-            Gets a collection object containing all the keys of the data.
-            </summary>
-        </member>
         <member name="M:Microsoft.Deployment.WindowsInstaller.CustomActionData.Remove(System.String)">
             <summary>
             Removes the item with the specified key from the data.
@@ -1262,19 +1273,6 @@
             <param name="value">Value associated with the specified key, or
             null if an item with the specified key was not found</param>
             <returns>true if the data contains an item with the specified key; otherwise, false.</returns>
-        </member>
-        <member name="P:Microsoft.Deployment.WindowsInstaller.CustomActionData.Values">
-            <summary>
-            Gets a collection containing all the values of the data.
-            </summary>
-        </member>
-        <member name="P:Microsoft.Deployment.WindowsInstaller.CustomActionData.Item(System.String)">
-            <summary>
-            Gets or sets a data value with a specified key.
-            </summary>
-            <param name="key">Case-sensitive data key.</param>
-            <exception cref="T:System.ArgumentException">the key does not consist solely of letters,
-            numbers, and the period, underscore, and space characters.</exception>
         </member>
         <member name="M:Microsoft.Deployment.WindowsInstaller.CustomActionData.Add(System.Collections.Generic.KeyValuePair{System.String,System.String})">
             <summary>
@@ -1302,16 +1300,6 @@
             </summary>
             <param name="array">Destination array.</param>
             <param name="arrayIndex">Index in the array at which copying begins.</param>
-        </member>
-        <member name="P:Microsoft.Deployment.WindowsInstaller.CustomActionData.Count">
-            <summary>
-            Gets the number of items in the data.
-            </summary>
-        </member>
-        <member name="P:Microsoft.Deployment.WindowsInstaller.CustomActionData.IsReadOnly">
-            <summary>
-            Gets a value indicating whether the data is read-only.
-            </summary>
         </member>
         <member name="M:Microsoft.Deployment.WindowsInstaller.CustomActionData.Remove(System.Collections.Generic.KeyValuePair{System.String,System.String})">
             <summary>
@@ -1382,6 +1370,34 @@
             Loads key-value pairs from a string into the data collection.
             </summary>
             <param name="keyValueList">key-value pair list of the form returned by <see cref="M:Microsoft.Deployment.WindowsInstaller.CustomActionData.ToString"/></param>
+        </member>
+        <member name="P:Microsoft.Deployment.WindowsInstaller.CustomActionData.Keys">
+            <summary>
+            Gets a collection object containing all the keys of the data.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Deployment.WindowsInstaller.CustomActionData.Values">
+            <summary>
+            Gets a collection containing all the values of the data.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Deployment.WindowsInstaller.CustomActionData.Item(System.String)">
+            <summary>
+            Gets or sets a data value with a specified key.
+            </summary>
+            <param name="key">Case-sensitive data key.</param>
+            <exception cref="T:System.ArgumentException">the key does not consist solely of letters,
+            numbers, and the period, underscore, and space characters.</exception>
+        </member>
+        <member name="P:Microsoft.Deployment.WindowsInstaller.CustomActionData.Count">
+            <summary>
+            Gets the number of items in the data.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Deployment.WindowsInstaller.CustomActionData.IsReadOnly">
+            <summary>
+            Gets a value indicating whether the data is read-only.
+            </summary>
         </member>
         <member name="T:Microsoft.Deployment.WindowsInstaller.CustomActionProxy">
             <summary>
@@ -1471,6 +1487,96 @@
             </list>
             </p></remarks>
         </member>
+        <member name="T:Microsoft.Deployment.WindowsInstaller.InstallerHandle">
+            <summary>
+            Base class for Windows Installer handle types (Database, View, Record, SummaryInfo).
+            </summary>
+            <remarks><p>
+            These classes implement the <see cref="T:System.IDisposable"/> interface, because they
+            hold unmanaged resources (MSI handles) that should be properly disposed
+            when no longer needed.
+            </p></remarks>
+        </member>
+        <member name="M:Microsoft.Deployment.WindowsInstaller.InstallerHandle.#ctor(System.IntPtr,System.Boolean)">
+            <summary>
+            Constructs a handle object from a native integer handle.
+            </summary>
+            <param name="handle">Native integer handle.</param>
+            <param name="ownsHandle">true to close the handle when this object is disposed or finalized</param>
+        </member>
+        <member name="M:Microsoft.Deployment.WindowsInstaller.InstallerHandle.Dispose">
+            <summary>
+            Closes the handle.  After closing a handle, further method calls may throw an <see cref="T:Microsoft.Deployment.WindowsInstaller.InvalidHandleException"/>.
+            </summary>
+            <remarks><p>
+            The finalizer of this class will NOT close the handle if it is still open,
+            because finalization can run on a separate thread from the application,
+            resulting in potential problems if handles are closed from that thread.
+            It is best that the handle be closed manually as soon as it is no longer needed,
+            as leaving lots of unused handles open can degrade performance.
+            </p><p>
+            Win32 MSI API:
+            <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msiclosehandle.asp">MsiCloseHandle</a>
+            </p></remarks>
+            <seealso cref="M:Microsoft.Deployment.WindowsInstaller.InstallerHandle.Close"/>
+        </member>
+        <member name="M:Microsoft.Deployment.WindowsInstaller.InstallerHandle.Close">
+            <summary>
+            Closes the handle.  After closing a handle, further method calls may throw an <see cref="T:Microsoft.Deployment.WindowsInstaller.InvalidHandleException"/>.
+            </summary>
+            <remarks><p>
+            The finalizer of this class will NOT close the handle if it is still open,
+            because finalization can run on a separate thread from the application,
+            resulting in potential problems if handles are closed from that thread.
+            It is best that the handle be closed manually as soon as it is no longer needed,
+            as leaving lots of unused handles open can degrade performance.
+            </p><p>
+            This method is merely an alias for the <see cref="M:Microsoft.Deployment.WindowsInstaller.InstallerHandle.Dispose"/> method.
+            </p><p>
+            Win32 MSI API:
+            <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msiclosehandle.asp">MsiCloseHandle</a>
+            </p></remarks>
+        </member>
+        <member name="M:Microsoft.Deployment.WindowsInstaller.InstallerHandle.Equals(System.Object)">
+            <summary>
+            Tests whether this handle object is equal to another handle object.  Two handle objects are equal
+            if their types are the same and their native integer handles are the same.
+            </summary>
+            <param name="obj">The handle object to compare with the current handle object.</param>
+            <returns>true if the specified handle object is equal to the current handle object; otherwise false</returns>
+        </member>
+        <member name="M:Microsoft.Deployment.WindowsInstaller.InstallerHandle.GetHashCode">
+            <summary>
+            Gets a hash value for the handle object.
+            </summary>
+            <returns>A hash code for the handle object.</returns>
+            <remarks><p>
+            The hash code is derived from the native integer handle.
+            </p></remarks>
+        </member>
+        <member name="M:Microsoft.Deployment.WindowsInstaller.InstallerHandle.Dispose(System.Boolean)">
+            <summary>
+            Closes the handle.  After closing a handle, further method calls may throw an <see cref="T:Microsoft.Deployment.WindowsInstaller.InvalidHandleException"/>.
+            </summary>
+            <param name="disposing">If true, the method has been called directly or indirectly by a user's code,
+            so managed and unmanaged resources will be disposed. If false, the method has been called by the 
+            runtime from inside the finalizer, and only unmanaged resources will be disposed.</param>
+        </member>
+        <member name="P:Microsoft.Deployment.WindowsInstaller.InstallerHandle.Handle">
+            <summary>
+            Gets the native integer handle.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Deployment.WindowsInstaller.InstallerHandle.IsClosed">
+            <summary>
+            Checks if the handle is closed. When closed, method calls on the handle object may throw an <see cref="T:Microsoft.Deployment.WindowsInstaller.InvalidHandleException"/>.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Deployment.WindowsInstaller.InstallerHandle.Sync">
+            <summary>
+            Gets an object that can be used internally for safe syncronization.
+            </summary>
+        </member>
         <member name="M:Microsoft.Deployment.WindowsInstaller.Database.#ctor(System.String)">
             <summary>
             Opens an existing database in read-only mode.
@@ -1507,7 +1613,7 @@
             It is best that the handle be closed manually as soon as it is no longer
             needed, as leaving lots of unused handles open can degrade performance.
             </p><p>
-            The database is opened in <see cref="F:Microsoft.Deployment.WindowsInstaller.DatabaseOpenMode.CreateDirect" /> mode, and will be
+            The database is opened in <see cref="F:Microsoft.Deployment.WindowsInstaller.DatabaseOpenMode.CreateDirect"/> mode, and will be
             automatically commited when it is closed.
             </p><p>
             Win32 MSI API:
@@ -1531,10 +1637,10 @@
             nature of finalization it is best that the handle be closed manually as soon as it is no
             longer needed, as leaving lots of unused handles open can degrade performance.
             </p><p>
-            A database opened in <see cref="F:Microsoft.Deployment.WindowsInstaller.DatabaseOpenMode.CreateDirect" /> or
-            <see cref="F:Microsoft.Deployment.WindowsInstaller.DatabaseOpenMode.Direct" /> mode will be automatically commited when it is
-            closed. However a database opened in <see cref="F:Microsoft.Deployment.WindowsInstaller.DatabaseOpenMode.Create" /> or
-            <see cref="F:Microsoft.Deployment.WindowsInstaller.DatabaseOpenMode.Transact" /> mode must have the <see cref="M:Microsoft.Deployment.WindowsInstaller.Database.Commit" /> method
+            A database opened in <see cref="F:Microsoft.Deployment.WindowsInstaller.DatabaseOpenMode.CreateDirect"/> or
+            <see cref="F:Microsoft.Deployment.WindowsInstaller.DatabaseOpenMode.Direct"/> mode will be automatically commited when it is
+            closed. However a database opened in <see cref="F:Microsoft.Deployment.WindowsInstaller.DatabaseOpenMode.Create"/> or
+            <see cref="F:Microsoft.Deployment.WindowsInstaller.DatabaseOpenMode.Transact"/> mode must have the <see cref="M:Microsoft.Deployment.WindowsInstaller.Database.Commit"/> method
             called before it is closed, otherwise no changes will be persisted.
             </p><p>
             Win32 MSI API:
@@ -1550,55 +1656,6 @@
             when the database object is disposed</param>
             <param name="filePath">Path of the database file, if known</param>
             <param name="openMode">Mode the handle was originally opened in</param>
-        </member>
-        <member name="P:Microsoft.Deployment.WindowsInstaller.Database.FilePath">
-            <summary>
-            Gets the file path the Database was originally opened from, or null if not known.
-            </summary>
-        </member>
-        <member name="P:Microsoft.Deployment.WindowsInstaller.Database.OpenMode">
-            <summary>
-            Gets the open mode for the database.
-            </summary>
-        </member>
-        <member name="P:Microsoft.Deployment.WindowsInstaller.Database.IsReadOnly">
-            <summary>
-            Gets a boolean value indicating whether this database was opened in read-only mode.
-            </summary>
-            <remarks><p>
-            Win32 MSI API:
-            <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msigetdatabasestate.asp">MsiGetDatabaseState</a>
-            </p></remarks>
-        </member>
-        <member name="P:Microsoft.Deployment.WindowsInstaller.Database.Tables">
-            <summary>
-            Gets the collection of tables in the Database.
-            </summary>
-        </member>
-        <member name="P:Microsoft.Deployment.WindowsInstaller.Database.CodePage">
-            <summary>
-            Gets or sets the code page of the Database.
-            </summary>
-            <exception cref="T:System.IO.IOException">error exporting/importing the codepage data</exception>
-            <exception cref="T:Microsoft.Deployment.WindowsInstaller.InvalidHandleException">the Database handle is invalid</exception>
-            <remarks><p>
-            Getting or setting the code page is a slow operation because it involves an export or import
-            of the codepage data to/from a temporary file.
-            </p></remarks>
-        </member>
-        <member name="P:Microsoft.Deployment.WindowsInstaller.Database.SummaryInfo">
-            <summary>
-            Gets the SummaryInfo object for this database that can be used to examine and modify properties
-            to the summary information stream.
-            </summary>
-            <exception cref="T:Microsoft.Deployment.WindowsInstaller.InvalidHandleException">the Database handle is invalid</exception>
-            <remarks><p>
-            The object returned from this property does not need to be explicitly persisted or closed.
-            Any modifications will be automatically saved when the database is committed.
-            </p><p>
-            Win32 MSI API:
-            <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msigetsummaryinformation.asp">MsiGetSummaryInformation</a>
-            </p></remarks>
         </member>
         <member name="M:Microsoft.Deployment.WindowsInstaller.Database.FromHandle(System.IntPtr,System.Boolean)">
             <summary>
@@ -1761,12 +1818,12 @@
             <remarks><p>
             For a database open in <see cref="F:Microsoft.Deployment.WindowsInstaller.DatabaseOpenMode.ReadOnly"/> mode, this method has no effect.
             </p><p>
-            For a database open in <see cref="F:Microsoft.Deployment.WindowsInstaller.DatabaseOpenMode.CreateDirect" /> or <see cref="F:Microsoft.Deployment.WindowsInstaller.DatabaseOpenMode.Direct" />
+            For a database open in <see cref="F:Microsoft.Deployment.WindowsInstaller.DatabaseOpenMode.CreateDirect"/> or <see cref="F:Microsoft.Deployment.WindowsInstaller.DatabaseOpenMode.Direct"/>
             mode, it is not necessary to call this method because the database will be automatically committed
             when it is closed. However this method may be called at any time to persist the current state of tables
             loaded into memory.
             </p><p>
-            For a database open in <see cref="F:Microsoft.Deployment.WindowsInstaller.DatabaseOpenMode.Create" /> or <see cref="F:Microsoft.Deployment.WindowsInstaller.DatabaseOpenMode.Transact" />
+            For a database open in <see cref="F:Microsoft.Deployment.WindowsInstaller.DatabaseOpenMode.Create"/> or <see cref="F:Microsoft.Deployment.WindowsInstaller.DatabaseOpenMode.Transact"/>
             mode, no changes will be persisted until this method is called. If the database object is closed without
             calling this method, the database file remains unmodified.
             </p><p>
@@ -1834,7 +1891,7 @@
             The maximum number of fields in a record is limited to 65535.</param>
             <returns>A new record object that can be used with the database.</returns>
             <remarks><p>
-            This method is equivalent to directly calling the <see cref="T:Microsoft.Deployment.WindowsInstaller.Record" />
+            This method is equivalent to directly calling the <see cref="T:Microsoft.Deployment.WindowsInstaller.Record"/>
             constructor in all cases outside of a custom action context. When in a
             custom action session, this method allows creation of a record that can
             work with a database other than the session database.
@@ -2184,6 +2241,55 @@
             <returns>true if the transform can be validly applied to this Database; false otherwise</returns>
             <exception cref="T:Microsoft.Deployment.WindowsInstaller.InstallerException">error processing summary info</exception>
             <exception cref="T:Microsoft.Deployment.WindowsInstaller.InvalidHandleException">the Database or SummaryInfo handle is invalid</exception>
+        </member>
+        <member name="P:Microsoft.Deployment.WindowsInstaller.Database.FilePath">
+            <summary>
+            Gets the file path the Database was originally opened from, or null if not known.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Deployment.WindowsInstaller.Database.OpenMode">
+            <summary>
+            Gets the open mode for the database.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Deployment.WindowsInstaller.Database.IsReadOnly">
+            <summary>
+            Gets a boolean value indicating whether this database was opened in read-only mode.
+            </summary>
+            <remarks><p>
+            Win32 MSI API:
+            <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msigetdatabasestate.asp">MsiGetDatabaseState</a>
+            </p></remarks>
+        </member>
+        <member name="P:Microsoft.Deployment.WindowsInstaller.Database.Tables">
+            <summary>
+            Gets the collection of tables in the Database.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Deployment.WindowsInstaller.Database.CodePage">
+            <summary>
+            Gets or sets the code page of the Database.
+            </summary>
+            <exception cref="T:System.IO.IOException">error exporting/importing the codepage data</exception>
+            <exception cref="T:Microsoft.Deployment.WindowsInstaller.InvalidHandleException">the Database handle is invalid</exception>
+            <remarks><p>
+            Getting or setting the code page is a slow operation because it involves an export or import
+            of the codepage data to/from a temporary file.
+            </p></remarks>
+        </member>
+        <member name="P:Microsoft.Deployment.WindowsInstaller.Database.SummaryInfo">
+            <summary>
+            Gets the SummaryInfo object for this database that can be used to examine and modify properties
+            to the summary information stream.
+            </summary>
+            <exception cref="T:Microsoft.Deployment.WindowsInstaller.InvalidHandleException">the Database handle is invalid</exception>
+            <remarks><p>
+            The object returned from this property does not need to be explicitly persisted or closed.
+            Any modifications will be automatically saved when the database is committed.
+            </p><p>
+            Win32 MSI API:
+            <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msigetsummaryinformation.asp">MsiGetSummaryInformation</a>
+            </p></remarks>
         </member>
         <member name="T:Microsoft.Deployment.WindowsInstaller.EmbeddedUIProxy">
             <summary>
@@ -3108,17 +3214,6 @@
             <param name="info">The SerializationInfo that holds the serialized object data about the exception being thrown.</param>
             <param name="context">The StreamingContext that contains contextual information about the source or destination.</param>
         </member>
-        <member name="P:Microsoft.Deployment.WindowsInstaller.InstallerException.ErrorCode">
-            <summary>
-            Gets the system error code that resulted in this exception, or 0 if not applicable.
-            </summary>
-        </member>
-        <member name="P:Microsoft.Deployment.WindowsInstaller.InstallerException.Message">
-            <summary>
-            Gets a message that describes the exception.  This message may contain detailed
-            formatted error data if it was available.
-            </summary>
-        </member>
         <member name="M:Microsoft.Deployment.WindowsInstaller.InstallerException.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
             <summary>
             Sets the SerializationInfo with information about the exception.
@@ -3193,6 +3288,17 @@
             Win32 MSI API:
             <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msigetlasterrorrecord.asp">MsiGetLastErrorRecord</a>
             </p></remarks>
+        </member>
+        <member name="P:Microsoft.Deployment.WindowsInstaller.InstallerException.ErrorCode">
+            <summary>
+            Gets the system error code that resulted in this exception, or 0 if not applicable.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Deployment.WindowsInstaller.InstallerException.Message">
+            <summary>
+            Gets a message that describes the exception.  This message may contain detailed
+            formatted error data if it was available.
+            </summary>
         </member>
         <member name="T:Microsoft.Deployment.WindowsInstaller.InstallCanceledException">
             <summary>
@@ -3327,6 +3433,13 @@
             <param name="info">The SerializationInfo that holds the serialized object data about the exception being thrown.</param>
             <param name="context">The StreamingContext that contains contextual information about the source or destination.</param>
         </member>
+        <member name="M:Microsoft.Deployment.WindowsInstaller.MergeException.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Sets the SerializationInfo with information about the exception.
+            </summary>
+            <param name="info">The SerializationInfo that holds the serialized object data about the exception being thrown.</param>
+            <param name="context">The StreamingContext that contains contextual information about the source or destination.</param>
+        </member>
         <member name="P:Microsoft.Deployment.WindowsInstaller.MergeException.ConflictCounts">
             <summary>
             Gets the number of merge conflicts in each table, corresponding to the tables returned by
@@ -3342,13 +3455,6 @@
             <summary>
             Gets a message that describes the merge conflits.
             </summary>
-        </member>
-        <member name="M:Microsoft.Deployment.WindowsInstaller.MergeException.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
-            <summary>
-            Sets the SerializationInfo with information about the exception.
-            </summary>
-            <param name="info">The SerializationInfo that holds the serialized object data about the exception being thrown.</param>
-            <param name="context">The StreamingContext that contains contextual information about the source or destination.</param>
         </member>
         <member name="T:Microsoft.Deployment.WindowsInstaller.ExternalUIHandler">
             <summary>
@@ -3426,16 +3532,6 @@
             Win32 MSI API:
             <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msisetexternaluirecord.asp">MsiSetExternalUIRecord</a>
             </p></remarks>
-        </member>
-        <member name="P:Microsoft.Deployment.WindowsInstaller.Installer.RebootRequired">
-            <summary>
-            Indicates whether a system reboot is required after running an installation or configuration operation.
-            </summary>
-        </member>
-        <member name="P:Microsoft.Deployment.WindowsInstaller.Installer.RebootInitiated">
-            <summary>
-            Indicates whether a system reboot has been initiated after running an installation or configuration operation.
-            </summary>
         </member>
         <member name="M:Microsoft.Deployment.WindowsInstaller.Installer.SetInternalUI(Microsoft.Deployment.WindowsInstaller.InstallUIOptions,System.IntPtr@)">
             <summary>
@@ -4031,11 +4127,6 @@
             <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msigetproductinfofromscript.asp">MsiGetProductInfoFromScript</a>
             </p></remarks>
         </member>
-        <member name="P:Microsoft.Deployment.WindowsInstaller.Installer.Version">
-            <summary>
-            Gets the current version of the installer.
-            </summary>
-        </member>
         <member name="M:Microsoft.Deployment.WindowsInstaller.Installer.GetErrorMessage(System.Int32)">
             <summary>
             Gets a Windows Installer error message in the system default language.
@@ -4171,17 +4262,25 @@
             <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msigetpatchfilelist.asp">MsiGetPatchFileList</a>
             </p></remarks>
         </member>
+        <member name="P:Microsoft.Deployment.WindowsInstaller.Installer.RebootRequired">
+            <summary>
+            Indicates whether a system reboot is required after running an installation or configuration operation.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Deployment.WindowsInstaller.Installer.RebootInitiated">
+            <summary>
+            Indicates whether a system reboot has been initiated after running an installation or configuration operation.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Deployment.WindowsInstaller.Installer.Version">
+            <summary>
+            Gets the current version of the installer.
+            </summary>
+        </member>
         <member name="T:Microsoft.Deployment.WindowsInstaller.FeatureInfoCollection">
             <summary>
             Accessor for information about features within the context of an installation session.
             </summary>
-        </member>
-        <member name="P:Microsoft.Deployment.WindowsInstaller.FeatureInfoCollection.Item(System.String)">
-            <summary>
-            Gets information about a feature within the context of an installation session.
-            </summary>
-            <param name="feature">name of the feature</param>
-            <returns>feature object</returns>
         </member>
         <member name="M:Microsoft.Deployment.WindowsInstaller.FeatureInfoCollection.Contains(System.String)">
             <summary>
@@ -4197,21 +4296,41 @@
             <param name="array">array that receives the features</param>
             <param name="arrayIndex">offset into the array</param>
         </member>
-        <member name="P:Microsoft.Deployment.WindowsInstaller.FeatureInfoCollection.Count">
-            <summary>
-            Gets the number of features defined for the product.
-            </summary>
-        </member>
         <member name="M:Microsoft.Deployment.WindowsInstaller.FeatureInfoCollection.GetEnumerator">
             <summary>
             Enumerates the features in the collection.
             </summary>
             <returns>an enumerator over all features in the collection</returns>
         </member>
+        <member name="P:Microsoft.Deployment.WindowsInstaller.FeatureInfoCollection.Item(System.String)">
+            <summary>
+            Gets information about a feature within the context of an installation session.
+            </summary>
+            <param name="feature">name of the feature</param>
+            <returns>feature object</returns>
+        </member>
+        <member name="P:Microsoft.Deployment.WindowsInstaller.FeatureInfoCollection.Count">
+            <summary>
+            Gets the number of features defined for the product.
+            </summary>
+        </member>
         <member name="T:Microsoft.Deployment.WindowsInstaller.FeatureInfo">
             <summary>
             Provides access to information about a feature within the context of an installation session.
             </summary>
+        </member>
+        <member name="M:Microsoft.Deployment.WindowsInstaller.FeatureInfo.GetCost(System.Boolean,System.Boolean,Microsoft.Deployment.WindowsInstaller.InstallState)">
+            <summary>
+            Calculates the disk space required by the feature and its selected children and parent features.
+            </summary>
+            <param name="includeParents">If true, the parent features are included in the cost.</param>
+            <param name="includeChildren">If true, the child features are included in the cost.</param>
+            <param name="installState">Specifies the installation state.</param>
+            <returns>The disk space requirement in bytes.</returns>
+            <remarks><p>
+            Win32 MSI API:
+            <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msigetfeaturecost.asp">MsiGetFeatureCost</a>
+            </p></remarks>
         </member>
         <member name="P:Microsoft.Deployment.WindowsInstaller.FeatureInfo.Name">
             <summary>
@@ -4300,19 +4419,6 @@
             <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msigetfeatureinfo.asp">MsiGetFeatureInfo</a>
             </p></remarks>
         </member>
-        <member name="M:Microsoft.Deployment.WindowsInstaller.FeatureInfo.GetCost(System.Boolean,System.Boolean,Microsoft.Deployment.WindowsInstaller.InstallState)">
-            <summary>
-            Calculates the disk space required by the feature and its selected children and parent features.
-            </summary>
-            <param name="includeParents">If true, the parent features are included in the cost.</param>
-            <param name="includeChildren">If true, the child features are included in the cost.</param>
-            <param name="installState">Specifies the installation state.</param>
-            <returns>The disk space requirement in bytes.</returns>
-            <remarks><p>
-            Win32 MSI API:
-            <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msigetfeaturecost.asp">MsiGetFeatureCost</a>
-            </p></remarks>
-        </member>
         <member name="T:Microsoft.Deployment.WindowsInstaller.FeatureInstallation">
             <summary>
             Represents an instance of a feature of an installed product.
@@ -4353,7 +4459,7 @@
             Gets the usage metrics for the feature.
             </summary>
             <remarks><p>
-            If no usage metrics are recorded, the <see cref="P:Microsoft.Deployment.WindowsInstaller.FeatureInstallation.UsageData.UseCount" /> value is 0.
+            If no usage metrics are recorded, the <see cref="P:Microsoft.Deployment.WindowsInstaller.FeatureInstallation.UsageData.UseCount"/> value is 0.
             </p><p>
             Win32 MSI API:
             <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msigetfeatureusage.asp">MsiGetFeatureUsage</a>
@@ -4373,96 +4479,6 @@
             <summary>
             Gets the date the feature was last used.
             </summary>
-        </member>
-        <member name="T:Microsoft.Deployment.WindowsInstaller.InstallerHandle">
-            <summary>
-            Base class for Windows Installer handle types (Database, View, Record, SummaryInfo).
-            </summary>
-            <remarks><p>
-            These classes implement the <see cref="T:System.IDisposable"/> interface, because they
-            hold unmanaged resources (MSI handles) that should be properly disposed
-            when no longer needed.
-            </p></remarks>
-        </member>
-        <member name="M:Microsoft.Deployment.WindowsInstaller.InstallerHandle.#ctor(System.IntPtr,System.Boolean)">
-            <summary>
-            Constructs a handle object from a native integer handle.
-            </summary>
-            <param name="handle">Native integer handle.</param>
-            <param name="ownsHandle">true to close the handle when this object is disposed or finalized</param>
-        </member>
-        <member name="P:Microsoft.Deployment.WindowsInstaller.InstallerHandle.Handle">
-            <summary>
-            Gets the native integer handle.
-            </summary>
-        </member>
-        <member name="P:Microsoft.Deployment.WindowsInstaller.InstallerHandle.IsClosed">
-            <summary>
-            Checks if the handle is closed. When closed, method calls on the handle object may throw an <see cref="T:Microsoft.Deployment.WindowsInstaller.InvalidHandleException"/>.
-            </summary>
-        </member>
-        <member name="M:Microsoft.Deployment.WindowsInstaller.InstallerHandle.Dispose">
-            <summary>
-            Closes the handle.  After closing a handle, further method calls may throw an <see cref="T:Microsoft.Deployment.WindowsInstaller.InvalidHandleException"/>.
-            </summary>
-            <remarks><p>
-            The finalizer of this class will NOT close the handle if it is still open,
-            because finalization can run on a separate thread from the application,
-            resulting in potential problems if handles are closed from that thread.
-            It is best that the handle be closed manually as soon as it is no longer needed,
-            as leaving lots of unused handles open can degrade performance.
-            </p><p>
-            Win32 MSI API:
-            <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msiclosehandle.asp">MsiCloseHandle</a>
-            </p></remarks>
-            <seealso cref="M:Microsoft.Deployment.WindowsInstaller.InstallerHandle.Close"/>
-        </member>
-        <member name="M:Microsoft.Deployment.WindowsInstaller.InstallerHandle.Close">
-            <summary>
-            Closes the handle.  After closing a handle, further method calls may throw an <see cref="T:Microsoft.Deployment.WindowsInstaller.InvalidHandleException"/>.
-            </summary>
-            <remarks><p>
-            The finalizer of this class will NOT close the handle if it is still open,
-            because finalization can run on a separate thread from the application,
-            resulting in potential problems if handles are closed from that thread.
-            It is best that the handle be closed manually as soon as it is no longer needed,
-            as leaving lots of unused handles open can degrade performance.
-            </p><p>
-            This method is merely an alias for the <see cref="M:Microsoft.Deployment.WindowsInstaller.InstallerHandle.Dispose"/> method.
-            </p><p>
-            Win32 MSI API:
-            <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msiclosehandle.asp">MsiCloseHandle</a>
-            </p></remarks>
-        </member>
-        <member name="M:Microsoft.Deployment.WindowsInstaller.InstallerHandle.Equals(System.Object)">
-            <summary>
-            Tests whether this handle object is equal to another handle object.  Two handle objects are equal
-            if their types are the same and their native integer handles are the same.
-            </summary>
-            <param name="obj">The handle object to compare with the current handle object.</param>
-            <returns>true if the specified handle object is equal to the current handle object; otherwise false</returns>
-        </member>
-        <member name="M:Microsoft.Deployment.WindowsInstaller.InstallerHandle.GetHashCode">
-            <summary>
-            Gets a hash value for the handle object.
-            </summary>
-            <returns>A hash code for the handle object.</returns>
-            <remarks><p>
-            The hash code is derived from the native integer handle.
-            </p></remarks>
-        </member>
-        <member name="P:Microsoft.Deployment.WindowsInstaller.InstallerHandle.Sync">
-            <summary>
-            Gets an object that can be used internally for safe syncronization.
-            </summary>
-        </member>
-        <member name="M:Microsoft.Deployment.WindowsInstaller.InstallerHandle.Dispose(System.Boolean)">
-            <summary>
-            Closes the handle.  After closing a handle, further method calls may throw an <see cref="T:Microsoft.Deployment.WindowsInstaller.InvalidHandleException"/>.
-            </summary>
-            <param name="disposing">If true, the method has been called directly or indirectly by a user's code,
-            so managed and unmanaged resources will be disposed. If false, the method has been called by the 
-            runtime from inside the finalizer, and only unmanaged resources will be disposed.</param>
         </member>
         <member name="T:Microsoft.Deployment.WindowsInstaller.IEmbeddedUI">
             <summary>
@@ -4552,22 +4568,6 @@
             <param name="propertyName">Name of the property being retrieved.</param>
             <returns></returns>
         </member>
-        <member name="T:Microsoft.Deployment.WindowsInstaller.InstallationPart">
-            <summary>
-            Subclasses of this abstract class represent an instance
-            of a registered feature or component.
-            </summary>
-        </member>
-        <member name="P:Microsoft.Deployment.WindowsInstaller.InstallationPart.Product">
-            <summary>
-            Gets the product that this item is a part of.
-            </summary>
-        </member>
-        <member name="P:Microsoft.Deployment.WindowsInstaller.InstallationPart.State">
-            <summary>
-            Gets the current installation state of the item.
-            </summary>
-        </member>
         <member name="T:Microsoft.Deployment.WindowsInstaller.InstallCost">
             <summary>
             Represents a per-drive disk space cost for an installation.
@@ -4656,16 +4656,6 @@
             <param name="handle">Integer transaction handle</param>
             <param name="ownsHandle">true to close the handle when this object is disposed</param>
         </member>
-        <member name="P:Microsoft.Deployment.WindowsInstaller.Transaction.Name">
-            <summary>
-            Gets the name of the transaction.
-            </summary>
-        </member>
-        <member name="E:Microsoft.Deployment.WindowsInstaller.Transaction.OwnerChanged">
-            <summary>
-            Notifies listeners when the process that owns the transaction changed.
-            </summary>
-        </member>
         <member name="M:Microsoft.Deployment.WindowsInstaller.Transaction.Join(Microsoft.Deployment.WindowsInstaller.TransactionAttributes)">
             <summary>
             Makes the current process the owner of the multi-package installation transaction.
@@ -4706,6 +4696,16 @@
             <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msiendtransaction.asp">MsiEndTransaction</a>
             </p></remarks>
         </member>
+        <member name="P:Microsoft.Deployment.WindowsInstaller.Transaction.Name">
+            <summary>
+            Gets the name of the transaction.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Deployment.WindowsInstaller.Transaction.OwnerChanged">
+            <summary>
+            Notifies listeners when the process that owns the transaction changed.
+            </summary>
+        </member>
         <member name="T:Microsoft.Deployment.WindowsInstaller.MediaDisk">
             <summary>
             Represents a media disk source of a product or a patch.
@@ -4739,16 +4739,6 @@
             The Patch object represents a unique instance of a patch that has been
             registered or applied.
             </summary>
-        </member>
-        <member name="P:Microsoft.Deployment.WindowsInstaller.PatchInstallation.AllPatches">
-            <summary>
-            Enumerates all patch installations on the system.
-            </summary>
-            <returns>Enumeration of patch objects.</returns>
-            <remarks><p>
-            Win32 MSI API:
-            <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msienumpatches.asp">MsiEnumPatches</a>
-            </p></remarks>
         </member>
         <member name="M:Microsoft.Deployment.WindowsInstaller.PatchInstallation.GetPatches(System.String,System.String,System.String,Microsoft.Deployment.WindowsInstaller.UserContexts,Microsoft.Deployment.WindowsInstaller.PatchStates)">
             <summary>
@@ -4805,6 +4795,16 @@
             <remarks><p>
             If the <paramref name="productCode"/> is null, the Patch object may
             only be used to read and update the patch's SourceList information.
+            </p></remarks>
+        </member>
+        <member name="P:Microsoft.Deployment.WindowsInstaller.PatchInstallation.AllPatches">
+            <summary>
+            Enumerates all patch installations on the system.
+            </summary>
+            <returns>Enumeration of patch objects.</returns>
+            <remarks><p>
+            Win32 MSI API:
+            <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msienumpatches.asp">MsiEnumPatches</a>
             </p></remarks>
         </member>
         <member name="P:Microsoft.Deployment.WindowsInstaller.PatchInstallation.PatchCode">
@@ -4913,16 +4913,6 @@
             <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msienumrelatedproducts.asp">MsiEnumRelatedProducts</a>
             </p></remarks>
         </member>
-        <member name="P:Microsoft.Deployment.WindowsInstaller.ProductInstallation.AllProducts">
-            <summary>
-            Enumerates all product installations on the system.
-            </summary>
-            <returns>An enumeration of product objects.</returns>
-            <remarks><p>
-            Win32 MSI API:
-            <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msienumproducts.asp">MsiEnumProducts</a>,
-            </p></remarks>
-        </member>
         <member name="M:Microsoft.Deployment.WindowsInstaller.ProductInstallation.GetProducts(System.String,System.String,Microsoft.Deployment.WindowsInstaller.UserContexts)">
             <summary>
             Enumerates product installations based on certain criteria.
@@ -4966,6 +4956,71 @@
             <param name="context">The user context. The calling process must have administrative
             privileges to get information for a product installed for a user other than the
             current user.</param>
+        </member>
+        <member name="M:Microsoft.Deployment.WindowsInstaller.ProductInstallation.GetFeatureState(System.String)">
+            <summary>
+            Gets the installed state for a product feature.
+            </summary>
+            <param name="feature">The feature being queried; identifier from the
+            Feature table</param>
+            <returns>Installation state of the feature for the product instance: either
+            <see cref="F:Microsoft.Deployment.WindowsInstaller.InstallState.Local"/>, <see cref="F:Microsoft.Deployment.WindowsInstaller.InstallState.Source"/>,
+            or <see cref="F:Microsoft.Deployment.WindowsInstaller.InstallState.Advertised"/>.</returns>
+            <remarks><p>
+            Win32 MSI APIs:
+            <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msiqueryfeaturestate.asp">MsiQueryFeatureState</a>,
+            <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msiqueryfeaturestateex.asp">MsiQueryFeatureStateEx</a>
+            </p></remarks>
+        </member>
+        <member name="M:Microsoft.Deployment.WindowsInstaller.ProductInstallation.GetComponentState(System.String)">
+            <summary>
+            Gets the installed state for a product component.
+            </summary>
+            <param name="component">The component being queried; GUID of the component
+            as found in the ComponentId column of the Component table.</param>
+            <returns>Installation state of the component for the product instance: either
+            <see cref="F:Microsoft.Deployment.WindowsInstaller.InstallState.Local"/> or <see cref="F:Microsoft.Deployment.WindowsInstaller.InstallState.Source"/>.</returns>
+            <remarks><p>
+            Win32 MSI API:
+            <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msiquerycomponnetstate.asp">MsiQueryComponentState</a>
+            </p></remarks>
+        </member>
+        <member name="M:Microsoft.Deployment.WindowsInstaller.ProductInstallation.CollectUserInfo">
+            <summary>
+            Obtains and stores the user information and product ID from an installation wizard.
+            </summary>
+            <remarks><p>
+            This method is typically called by an application during the first run of the application. The application
+            first gets the <see cref="P:Microsoft.Deployment.WindowsInstaller.ProductInstallation.ProductId"/> or <see cref="P:Microsoft.Deployment.WindowsInstaller.ProductInstallation.RegOwner"/>.
+            If those properties are missing, the application calls CollectUserInfo.
+            CollectUserInfo opens the product's installation package and invokes a wizard sequence that collects
+            user information. Upon completion of the sequence, user information is registered. Since this API requires
+            an authored user interface, the user interface level should be set to full by calling
+            <see cref="M:Microsoft.Deployment.WindowsInstaller.Installer.SetInternalUI(Microsoft.Deployment.WindowsInstaller.InstallUIOptions)"/> as <see cref="F:Microsoft.Deployment.WindowsInstaller.InstallUIOptions.Full"/>.
+            </p><p>
+            The CollectUserInfo method invokes a FirstRun dialog from the product installation database.
+            </p><p>
+            Win32 MSI API:
+            <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msicollectuserinfo.asp">MsiCollectUserInfo</a>
+            </p></remarks>
+        </member>
+        <member name="M:Microsoft.Deployment.WindowsInstaller.ProductInstallation.ParseVersion(System.String)">
+            <summary>
+            Some products might write some invalid/nonstandard version strings to the registry.
+            This method tries to get the best data it can.
+            </summary>
+            <param name="ver">Version string retrieved from the registry.</param>
+            <returns>Version object, or null if the version string is completely invalid.</returns>
+        </member>
+        <member name="P:Microsoft.Deployment.WindowsInstaller.ProductInstallation.AllProducts">
+            <summary>
+            Enumerates all product installations on the system.
+            </summary>
+            <returns>An enumeration of product objects.</returns>
+            <remarks><p>
+            Win32 MSI API:
+            <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msienumproducts.asp">MsiEnumProducts</a>,
+            </p></remarks>
         </member>
         <member name="P:Microsoft.Deployment.WindowsInstaller.ProductInstallation.Features">
             <summary>
@@ -5146,61 +5201,6 @@
             <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msigetproductinfoex.asp">MsiGetProductInfoEx</a>
             </p></remarks>
         </member>
-        <member name="M:Microsoft.Deployment.WindowsInstaller.ProductInstallation.GetFeatureState(System.String)">
-            <summary>
-            Gets the installed state for a product feature.
-            </summary>
-            <param name="feature">The feature being queried; identifier from the
-            Feature table</param>
-            <returns>Installation state of the feature for the product instance: either
-            <see cref="F:Microsoft.Deployment.WindowsInstaller.InstallState.Local"/>, <see cref="F:Microsoft.Deployment.WindowsInstaller.InstallState.Source"/>,
-            or <see cref="F:Microsoft.Deployment.WindowsInstaller.InstallState.Advertised"/>.</returns>
-            <remarks><p>
-            Win32 MSI APIs:
-            <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msiqueryfeaturestate.asp">MsiQueryFeatureState</a>,
-            <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msiqueryfeaturestateex.asp">MsiQueryFeatureStateEx</a>
-            </p></remarks>
-        </member>
-        <member name="M:Microsoft.Deployment.WindowsInstaller.ProductInstallation.GetComponentState(System.String)">
-            <summary>
-            Gets the installed state for a product component.
-            </summary>
-            <param name="component">The component being queried; GUID of the component
-            as found in the ComponentId column of the Component table.</param>
-            <returns>Installation state of the component for the product instance: either
-            <see cref="F:Microsoft.Deployment.WindowsInstaller.InstallState.Local"/> or <see cref="F:Microsoft.Deployment.WindowsInstaller.InstallState.Source"/>.</returns>
-            <remarks><p>
-            Win32 MSI API:
-            <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msiquerycomponnetstate.asp">MsiQueryComponentState</a>
-            </p></remarks>
-        </member>
-        <member name="M:Microsoft.Deployment.WindowsInstaller.ProductInstallation.CollectUserInfo">
-            <summary>
-            Obtains and stores the user information and product ID from an installation wizard.
-            </summary>
-            <remarks><p>
-            This method is typically called by an application during the first run of the application. The application
-            first gets the <see cref="P:Microsoft.Deployment.WindowsInstaller.ProductInstallation.ProductId"/> or <see cref="P:Microsoft.Deployment.WindowsInstaller.ProductInstallation.RegOwner"/>.
-            If those properties are missing, the application calls CollectUserInfo.
-            CollectUserInfo opens the product's installation package and invokes a wizard sequence that collects
-            user information. Upon completion of the sequence, user information is registered. Since this API requires
-            an authored user interface, the user interface level should be set to full by calling
-            <see cref="M:Microsoft.Deployment.WindowsInstaller.Installer.SetInternalUI(Microsoft.Deployment.WindowsInstaller.InstallUIOptions)"/> as <see cref="F:Microsoft.Deployment.WindowsInstaller.InstallUIOptions.Full"/>.
-            </p><p>
-            The CollectUserInfo method invokes a FirstRun dialog from the product installation database.
-            </p><p>
-            Win32 MSI API:
-            <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msicollectuserinfo.asp">MsiCollectUserInfo</a>
-            </p></remarks>
-        </member>
-        <member name="M:Microsoft.Deployment.WindowsInstaller.ProductInstallation.ParseVersion(System.String)">
-            <summary>
-            Some products might write some invalid/nonstandard version strings to the registry.
-            This method tries to get the best data it can.
-            </summary>
-            <param name="ver">Version string retrieved from the registry.</param>
-            <returns>Version object, or null if the version string is completely invalid.</returns>
-        </member>
         <member name="T:Microsoft.Deployment.WindowsInstaller.Record">
             <summary>
             The Record object is a container for holding and transferring a variable number of values.
@@ -5213,12 +5213,6 @@
             Record is directly returned from a query on a database. For other records, attempting
             to access a field by name will result in an InvalidOperationException.
             </p></remarks>
-        </member>
-        <member name="P:Microsoft.Deployment.WindowsInstaller.Record.IsFormatStringInvalid">
-            <summary>
-            IsFormatStringInvalid is set from several View methods that invalidate the FormatString
-            and used to determine behavior during Record.ToString().
-            </summary>
         </member>
         <member name="M:Microsoft.Deployment.WindowsInstaller.Record.#ctor(System.Int32)">
             <summary>
@@ -5247,66 +5241,6 @@
             </p><p>
             Win32 MSI API:
             <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msicreaterecord.asp">MsiCreateRecord</a>
-            </p></remarks>
-        </member>
-        <member name="P:Microsoft.Deployment.WindowsInstaller.Record.FieldCount">
-            <summary>
-            Gets the number of fields in a record.
-            </summary>
-            <remarks><p>
-            Win32 MSI API:
-            <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msirecordgetfieldcount.asp">MsiRecordGetFieldCount</a>
-            </p></remarks>
-        </member>
-        <member name="P:Microsoft.Deployment.WindowsInstaller.Record.FormatString">
-            <summary>
-            Gets or sets field 0 of the Record, which is the format string.
-            </summary>
-        </member>
-        <member name="P:Microsoft.Deployment.WindowsInstaller.Record.Item(System.String)">
-            <summary>
-            Gets or sets a record field value.
-            </summary>
-            <param name="fieldName">Specifies the name of the field of the Record to get or set.</param>
-            <exception cref="T:System.ArgumentOutOfRangeException">The name does not match any known field of the Record.</exception>
-            <remarks><p>
-            When getting a field, the type of the object returned depends on the type of the Record field.
-            The object will be one of: Int16, Int32, String, Stream, or null.
-            </p><p>
-            When setting a field, the type of the object provided will be converted to match the View
-            query that returned the record, or if Record was not returned from a view then the type of
-            the object provided will determine the type of the Record field. The object should be one of:
-            Int16, Int32, String, Stream, or null.
-            </p></remarks>
-        </member>
-        <member name="P:Microsoft.Deployment.WindowsInstaller.Record.Item(System.Int32)">
-            <summary>
-            Gets or sets a record field value.
-            </summary>
-            <param name="field">Specifies the field of the Record to get or set.</param>
-            <exception cref="T:System.ArgumentOutOfRangeException">The field is less than 0 or greater than the
-            number of fields in the Record.</exception>
-            <remarks><p>
-            Record fields are indexed starting with 1.  Field 0 is a special format field.
-            </p><p>
-            When getting a field, the type of the object returned depends on the type of the Record field.
-            The object will be one of: Int16, Int32, String, Stream, or null.  If the Record was returned
-            from a View, the type will match that of the field from the View query.  Otherwise, the type
-            will match the type of the last value set for the field.
-            </p><p>
-            When setting a field, the type of the object provided will be converted to match the View
-            query that returned the Record, or if Record was not returned from a View then the type of
-            the object provided will determine the type of the Record field. The object should be one of:
-            Int16, Int32, String, Stream, or null.
-            </p><p>
-            The type-specific getters and setters are slightly more efficient than this property, since
-            they don't have to do the extra work to infer the value's type every time.
-            </p><p>
-            Win32 MSI APIs:
-            <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msirecordgetinteger.asp">MsiRecordGetInteger</a>,
-            <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msirecordgetstring.asp">MsiRecordGetString</a>,
-            <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msirecordsetinteger.asp">MsiRecordSetInteger</a>,
-            <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msirecordsetstring.asp">MsiRecordSetString</a>
             </p></remarks>
         </member>
         <member name="M:Microsoft.Deployment.WindowsInstaller.Record.FromHandle(System.IntPtr,System.Boolean)">
@@ -5723,6 +5657,72 @@
             <seealso cref="P:Microsoft.Deployment.WindowsInstaller.Record.FormatString"/>
             <seealso cref="M:Microsoft.Deployment.WindowsInstaller.Session.FormatRecord(Microsoft.Deployment.WindowsInstaller.Record)"/>
         </member>
+        <member name="P:Microsoft.Deployment.WindowsInstaller.Record.IsFormatStringInvalid">
+            <summary>
+            IsFormatStringInvalid is set from several View methods that invalidate the FormatString
+            and used to determine behavior during Record.ToString().
+            </summary>
+        </member>
+        <member name="P:Microsoft.Deployment.WindowsInstaller.Record.FieldCount">
+            <summary>
+            Gets the number of fields in a record.
+            </summary>
+            <remarks><p>
+            Win32 MSI API:
+            <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msirecordgetfieldcount.asp">MsiRecordGetFieldCount</a>
+            </p></remarks>
+        </member>
+        <member name="P:Microsoft.Deployment.WindowsInstaller.Record.FormatString">
+            <summary>
+            Gets or sets field 0 of the Record, which is the format string.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Deployment.WindowsInstaller.Record.Item(System.String)">
+            <summary>
+            Gets or sets a record field value.
+            </summary>
+            <param name="fieldName">Specifies the name of the field of the Record to get or set.</param>
+            <exception cref="T:System.ArgumentOutOfRangeException">The name does not match any known field of the Record.</exception>
+            <remarks><p>
+            When getting a field, the type of the object returned depends on the type of the Record field.
+            The object will be one of: Int16, Int32, String, Stream, or null.
+            </p><p>
+            When setting a field, the type of the object provided will be converted to match the View
+            query that returned the record, or if Record was not returned from a view then the type of
+            the object provided will determine the type of the Record field. The object should be one of:
+            Int16, Int32, String, Stream, or null.
+            </p></remarks>
+        </member>
+        <member name="P:Microsoft.Deployment.WindowsInstaller.Record.Item(System.Int32)">
+            <summary>
+            Gets or sets a record field value.
+            </summary>
+            <param name="field">Specifies the field of the Record to get or set.</param>
+            <exception cref="T:System.ArgumentOutOfRangeException">The field is less than 0 or greater than the
+            number of fields in the Record.</exception>
+            <remarks><p>
+            Record fields are indexed starting with 1.  Field 0 is a special format field.
+            </p><p>
+            When getting a field, the type of the object returned depends on the type of the Record field.
+            The object will be one of: Int16, Int32, String, Stream, or null.  If the Record was returned
+            from a View, the type will match that of the field from the View query.  Otherwise, the type
+            will match the type of the last value set for the field.
+            </p><p>
+            When setting a field, the type of the object provided will be converted to match the View
+            query that returned the Record, or if Record was not returned from a View then the type of
+            the object provided will determine the type of the Record field. The object should be one of:
+            Int16, Int32, String, Stream, or null.
+            </p><p>
+            The type-specific getters and setters are slightly more efficient than this property, since
+            they don't have to do the extra work to infer the value's type every time.
+            </p><p>
+            Win32 MSI APIs:
+            <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msirecordgetinteger.asp">MsiRecordGetInteger</a>,
+            <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msirecordgetstring.asp">MsiRecordGetString</a>,
+            <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msirecordsetinteger.asp">MsiRecordSetInteger</a>,
+            <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msirecordsetstring.asp">MsiRecordSetString</a>
+            </p></remarks>
+        </member>
         <member name="T:Microsoft.Deployment.WindowsInstaller.RemoteMsiFunctionId">
             <summary>
             Assigns ID numbers to the MSI APIs that are remotable.
@@ -5774,43 +5774,6 @@
             for processing, usually dialog box sequences.
             </p><p>
             Note that only one Session object can be opened by a single process.
-            </p></remarks>
-        </member>
-        <member name="P:Microsoft.Deployment.WindowsInstaller.Session.Database">
-            <summary>
-            Gets the Database for the install session.
-            </summary>
-            <exception cref="T:Microsoft.Deployment.WindowsInstaller.InvalidHandleException">the Session handle is invalid</exception>
-            <exception cref="T:Microsoft.Deployment.WindowsInstaller.InstallerException">the Database cannot be accessed</exception>
-            <remarks><p>
-            Normally there is no need to close this Database object.  The same object can be
-            used throughout the lifetime of the Session, and it will be closed when the Session
-            is closed.
-            </p><p>
-            Win32 MSI API:
-            <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msigetactivedatabase.asp">MsiGetActiveDatabase</a>
-            </p></remarks>
-        </member>
-        <member name="P:Microsoft.Deployment.WindowsInstaller.Session.Language">
-            <summary>
-            Gets the numeric language ID used by the current install session.
-            </summary>
-            <remarks><p>
-            Win32 MSI API:
-            <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msigetlanguage.asp">MsiGetLanguage</a>
-            </p></remarks>
-        </member>
-        <member name="P:Microsoft.Deployment.WindowsInstaller.Session.Item(System.String)">
-            <summary>
-            Gets or sets the string value of a named installer property, as maintained by the
-            Session object in the in-memory Property table, or, if it is prefixed with a percent
-            sign (%), the value of a system environment variable for the current process.
-            </summary>
-            <exception cref="T:Microsoft.Deployment.WindowsInstaller.InvalidHandleException">the Session handle is invalid</exception>
-            <remarks><p>
-            Win32 MSI APIs:
-            <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msigetproperty.asp">MsiGetProperty</a>,
-            <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msisetproperty.asp">MsiSetProperty</a>
             </p></remarks>
         </member>
         <member name="M:Microsoft.Deployment.WindowsInstaller.Session.FromHandle(System.IntPtr,System.Boolean)">
@@ -5958,16 +5921,6 @@
             Win32 MSI API:
             <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msigetproductproperty.asp">MsiGetProductProperty</a>
             </p></remarks>
-        </member>
-        <member name="P:Microsoft.Deployment.WindowsInstaller.Session.Components">
-            <summary>
-            Gets an accessor for components in the current session.
-            </summary>
-        </member>
-        <member name="P:Microsoft.Deployment.WindowsInstaller.Session.Features">
-            <summary>
-            Gets an accessor for features in the current session.
-            </summary>
         </member>
         <member name="M:Microsoft.Deployment.WindowsInstaller.Session.VerifyDiskSpace">
             <summary>
@@ -6170,15 +6123,9 @@
             <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msisequence.asp">MsiSequence</a>
             </p></remarks>
         </member>
-        <member name="P:Microsoft.Deployment.WindowsInstaller.Session.CustomActionData">
-            <summary>
-            Gets custom action data for the session that was supplied by the caller.
-            </summary>
-            <seealso cref="M:Microsoft.Deployment.WindowsInstaller.Session.DoAction(System.String,Microsoft.Deployment.WindowsInstaller.CustomActionData)"/>
-        </member>
         <member name="M:Microsoft.Deployment.WindowsInstaller.Session.System#IFormatProvider#GetFormat(System.Type)">
             <summary>
-            Implements formatting for <see cref="T:Microsoft.Deployment.WindowsInstaller.Record" /> data.
+            Implements formatting for <see cref="T:Microsoft.Deployment.WindowsInstaller.Record"/> data.
             </summary>
             <param name="formatType">Type of format object to get.</param>
             <returns>The the current instance, if <paramref name="formatType"/> is the same type
@@ -6193,34 +6140,72 @@
             or indirectly by a user's code, so managed and unmanaged resources will
             be disposed. If false, only unmanaged resources will be disposed.</param>
         </member>
-        <member name="P:Microsoft.Deployment.WindowsInstaller.Session.NonImmediatePropertyNames">
-            <summary>
-            Gets the (short) list of properties that are available from non-immediate custom actions.
-            </summary>
-        </member>
         <member name="M:Microsoft.Deployment.WindowsInstaller.Session.ValidateSessionAccess">
             <summary>
             Throws an exception if the custom action is not able to access immedate session details.
             </summary>
         </member>
+        <member name="P:Microsoft.Deployment.WindowsInstaller.Session.Database">
+            <summary>
+            Gets the Database for the install session.
+            </summary>
+            <exception cref="T:Microsoft.Deployment.WindowsInstaller.InvalidHandleException">the Session handle is invalid</exception>
+            <exception cref="T:Microsoft.Deployment.WindowsInstaller.InstallerException">the Database cannot be accessed</exception>
+            <remarks><p>
+            Normally there is no need to close this Database object.  The same object can be
+            used throughout the lifetime of the Session, and it will be closed when the Session
+            is closed.
+            </p><p>
+            Win32 MSI API:
+            <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msigetactivedatabase.asp">MsiGetActiveDatabase</a>
+            </p></remarks>
+        </member>
+        <member name="P:Microsoft.Deployment.WindowsInstaller.Session.Language">
+            <summary>
+            Gets the numeric language ID used by the current install session.
+            </summary>
+            <remarks><p>
+            Win32 MSI API:
+            <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msigetlanguage.asp">MsiGetLanguage</a>
+            </p></remarks>
+        </member>
+        <member name="P:Microsoft.Deployment.WindowsInstaller.Session.Item(System.String)">
+            <summary>
+            Gets or sets the string value of a named installer property, as maintained by the
+            Session object in the in-memory Property table, or, if it is prefixed with a percent
+            sign (%), the value of a system environment variable for the current process.
+            </summary>
+            <exception cref="T:Microsoft.Deployment.WindowsInstaller.InvalidHandleException">the Session handle is invalid</exception>
+            <remarks><p>
+            Win32 MSI APIs:
+            <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msigetproperty.asp">MsiGetProperty</a>,
+            <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msisetproperty.asp">MsiSetProperty</a>
+            </p></remarks>
+        </member>
+        <member name="P:Microsoft.Deployment.WindowsInstaller.Session.Components">
+            <summary>
+            Gets an accessor for components in the current session.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Deployment.WindowsInstaller.Session.Features">
+            <summary>
+            Gets an accessor for features in the current session.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Deployment.WindowsInstaller.Session.CustomActionData">
+            <summary>
+            Gets custom action data for the session that was supplied by the caller.
+            </summary>
+            <seealso cref="M:Microsoft.Deployment.WindowsInstaller.Session.DoAction(System.String,Microsoft.Deployment.WindowsInstaller.CustomActionData)"/>
+        </member>
+        <member name="P:Microsoft.Deployment.WindowsInstaller.Session.NonImmediatePropertyNames">
+            <summary>
+            Gets the (short) list of properties that are available from non-immediate custom actions.
+            </summary>
+        </member>
         <member name="T:Microsoft.Deployment.WindowsInstaller.ShortcutTarget">
             <summary>
             Holds information about the target of a shortcut file.
-            </summary>
-        </member>
-        <member name="P:Microsoft.Deployment.WindowsInstaller.ShortcutTarget.ProductCode">
-            <summary>
-            Gets the target product code of the shortcut, or null if not available.
-            </summary>
-        </member>
-        <member name="P:Microsoft.Deployment.WindowsInstaller.ShortcutTarget.Feature">
-            <summary>
-            Gets the name of the target feature of the shortcut, or null if not available.
-            </summary>
-        </member>
-        <member name="P:Microsoft.Deployment.WindowsInstaller.ShortcutTarget.ComponentCode">
-            <summary>
-            Gets the target component code of the shortcut, or null if not available.
             </summary>
         </member>
         <member name="M:Microsoft.Deployment.WindowsInstaller.ShortcutTarget.op_Equality(Microsoft.Deployment.WindowsInstaller.ShortcutTarget,Microsoft.Deployment.WindowsInstaller.ShortcutTarget)">
@@ -6252,28 +6237,25 @@
             </summary>
             <returns>An integer suitable for hashing the shortcut target.</returns>
         </member>
+        <member name="P:Microsoft.Deployment.WindowsInstaller.ShortcutTarget.ProductCode">
+            <summary>
+            Gets the target product code of the shortcut, or null if not available.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Deployment.WindowsInstaller.ShortcutTarget.Feature">
+            <summary>
+            Gets the name of the target feature of the shortcut, or null if not available.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Deployment.WindowsInstaller.ShortcutTarget.ComponentCode">
+            <summary>
+            Gets the target component code of the shortcut, or null if not available.
+            </summary>
+        </member>
         <member name="T:Microsoft.Deployment.WindowsInstaller.SourceList">
             <summary>
             A list of sources for an installed product or patch.
             </summary>
-        </member>
-        <member name="P:Microsoft.Deployment.WindowsInstaller.SourceList.MediaList">
-            <summary>
-            Gets the list of disks registered for the media source of
-            the patch or product installation.
-            </summary>
-        </member>
-        <member name="P:Microsoft.Deployment.WindowsInstaller.SourceList.Count">
-            <summary>
-            Gets the number of network and URL sources in the list.
-            </summary>
-        </member>
-        <member name="P:Microsoft.Deployment.WindowsInstaller.SourceList.IsReadOnly">
-            <summary>
-            Gets a boolean value indicating whether the list is read-only.
-            A SourceList is never read-only.
-            </summary>
-            <value>read-only status of the list</value>
         </member>
         <member name="M:Microsoft.Deployment.WindowsInstaller.SourceList.Add(System.String)">
             <summary>
@@ -6402,6 +6384,24 @@
             <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msisourcelistforceresolutionex.asp">MsiSourceListForceResolutionEx</a>
             </p></remarks>
         </member>
+        <member name="P:Microsoft.Deployment.WindowsInstaller.SourceList.MediaList">
+            <summary>
+            Gets the list of disks registered for the media source of
+            the patch or product installation.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Deployment.WindowsInstaller.SourceList.Count">
+            <summary>
+            Gets the number of network and URL sources in the list.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Deployment.WindowsInstaller.SourceList.IsReadOnly">
+            <summary>
+            Gets a boolean value indicating whether the list is read-only.
+            A SourceList is never read-only.
+            </summary>
+            <value>read-only status of the list</value>
+        </member>
         <member name="P:Microsoft.Deployment.WindowsInstaller.SourceList.MediaPackagePath">
             <summary>
             Gets or sets the path relative to the root of the installation media.
@@ -6452,18 +6452,6 @@
             <summary>
             A list of source media for an installed product or patch.
             </summary>
-        </member>
-        <member name="P:Microsoft.Deployment.WindowsInstaller.SourceMediaList.Count">
-            <summary>
-            Gets the number of source media in the list.
-            </summary>
-        </member>
-        <member name="P:Microsoft.Deployment.WindowsInstaller.SourceMediaList.IsReadOnly">
-            <summary>
-            Gets a boolean value indicating whether the list is read-only.
-            A SourceMediaList is never read-only.
-            </summary>
-            <value>read-only status of the list</value>
         </member>
         <member name="M:Microsoft.Deployment.WindowsInstaller.SourceMediaList.Add(Microsoft.Deployment.WindowsInstaller.MediaDisk)">
             <summary>
@@ -6516,6 +6504,18 @@
             <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msisourcelistenummediadisks.asp">MsiSourceListEnumMediaDisks</a>
             </p></remarks>
         </member>
+        <member name="P:Microsoft.Deployment.WindowsInstaller.SourceMediaList.Count">
+            <summary>
+            Gets the number of source media in the list.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Deployment.WindowsInstaller.SourceMediaList.IsReadOnly">
+            <summary>
+            Gets a boolean value indicating whether the list is read-only.
+            A SourceMediaList is never read-only.
+            </summary>
+            <value>read-only status of the list</value>
+        </member>
         <member name="T:Microsoft.Deployment.WindowsInstaller.SummaryInfo">
             <summary>
             Provides access to summary information of a Windows Installer database.
@@ -6537,6 +6537,19 @@
             </p><p>
             Win32 MSI API:
             <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msigetsummaryinformation.asp">MsiGetSummaryInformation</a>
+            </p></remarks>
+        </member>
+        <member name="M:Microsoft.Deployment.WindowsInstaller.SummaryInfo.Persist">
+            <summary>
+            Formats and writes the previously stored properties into the standard summary information stream.
+            </summary>
+            <exception cref="T:Microsoft.Deployment.WindowsInstaller.InstallerException">The stream cannot be successfully written.</exception>
+            <remarks><p>
+            This method may only be called once after all the property values have been set. Properties may
+            still be read after the stream is written.
+            </p><p>
+            Win32 MSI API:
+            <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msisummaryinfopersist.asp">MsiSummaryInfoPersist</a>
             </p></remarks>
         </member>
         <member name="P:Microsoft.Deployment.WindowsInstaller.SummaryInfo.Title">
@@ -6846,42 +6859,10 @@
             <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msisummaryinfosetproperty.asp">MsiSummaryInfoSetProperty</a>
             </p></remarks>
         </member>
-        <member name="M:Microsoft.Deployment.WindowsInstaller.SummaryInfo.Persist">
-            <summary>
-            Formats and writes the previously stored properties into the standard summary information stream.
-            </summary>
-            <exception cref="T:Microsoft.Deployment.WindowsInstaller.InstallerException">The stream cannot be successfully written.</exception>
-            <remarks><p>
-            This method may only be called once after all the property values have been set. Properties may
-            still be read after the stream is written.
-            </p><p>
-            Win32 MSI API:
-            <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msisummaryinfopersist.asp">MsiSummaryInfoPersist</a>
-            </p></remarks>
-        </member>
         <member name="T:Microsoft.Deployment.WindowsInstaller.TableCollection">
             <summary>
             Contains information about all the tables in a Windows Installer database.
             </summary>
-        </member>
-        <member name="P:Microsoft.Deployment.WindowsInstaller.TableCollection.Count">
-            <summary>
-            Gets the number of tables in the database.
-            </summary>
-        </member>
-        <member name="P:Microsoft.Deployment.WindowsInstaller.TableCollection.IsReadOnly">
-            <summary>
-            Gets a boolean value indicating whether the collection is read-only.
-            A TableCollection is read-only when the database is read-only.
-            </summary>
-            <value>read-only status of the collection</value>
-        </member>
-        <member name="P:Microsoft.Deployment.WindowsInstaller.TableCollection.Item(System.String)">
-            <summary>
-            Gets information about a given table.
-            </summary>
-            <param name="table">case-sensitive name of the table</param>
-            <returns>information about the requested table, or null if the table does not exist in the database</returns>
         </member>
         <member name="M:Microsoft.Deployment.WindowsInstaller.TableCollection.Add(Microsoft.Deployment.WindowsInstaller.TableInfo)">
             <summary>
@@ -6921,6 +6902,25 @@
             Enumerates the tables in the database.
             </summary>
         </member>
+        <member name="P:Microsoft.Deployment.WindowsInstaller.TableCollection.Count">
+            <summary>
+            Gets the number of tables in the database.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Deployment.WindowsInstaller.TableCollection.IsReadOnly">
+            <summary>
+            Gets a boolean value indicating whether the collection is read-only.
+            A TableCollection is read-only when the database is read-only.
+            </summary>
+            <value>read-only status of the collection</value>
+        </member>
+        <member name="P:Microsoft.Deployment.WindowsInstaller.TableCollection.Item(System.String)">
+            <summary>
+            Gets information about a given table.
+            </summary>
+            <param name="table">case-sensitive name of the table</param>
+            <returns>information about the requested table, or null if the table does not exist in the database</returns>
+        </member>
         <member name="T:Microsoft.Deployment.WindowsInstaller.TableInfo">
             <summary>
             Defines a table in an installation database.
@@ -6933,6 +6933,12 @@
             <param name="name">Name of the table.</param>
             <param name="columns">Columns in the table.</param>
             <param name="primaryKeys">The primary keys of the table.</param>
+        </member>
+        <member name="M:Microsoft.Deployment.WindowsInstaller.TableInfo.ToString">
+            <summary>
+            Gets a string representation of the table.
+            </summary>
+            <returns>The name of the table.</returns>
         </member>
         <member name="P:Microsoft.Deployment.WindowsInstaller.TableInfo.Name">
             <summary>
@@ -6975,12 +6981,6 @@
             The columns are listed explicitly in the SELECT string, as opposed to using "SELECT *".
             </p></remarks>
         </member>
-        <member name="M:Microsoft.Deployment.WindowsInstaller.TableInfo.ToString">
-            <summary>
-            Gets a string representation of the table.
-            </summary>
-            <returns>The name of the table.</returns>
-        </member>
         <member name="T:Microsoft.Deployment.WindowsInstaller.ValidationErrorInfo">
             <summary>
             Contains specific information about an error encountered by the <see cref="M:Microsoft.Deployment.WindowsInstaller.View.Validate(Microsoft.Deployment.WindowsInstaller.Record)"/>,
@@ -7006,33 +7006,6 @@
             the query must be executed using the <see cref="M:Microsoft.Deployment.WindowsInstaller.View.Execute(Microsoft.Deployment.WindowsInstaller.Record)"/> method, passing to
             it all replaceable parameters designated within the SQL query string.
             </summary>
-        </member>
-        <member name="P:Microsoft.Deployment.WindowsInstaller.View.Database">
-            <summary>
-            Gets the Database on which this View was opened.
-            </summary>
-        </member>
-        <member name="P:Microsoft.Deployment.WindowsInstaller.View.QueryString">
-            <summary>
-            Gets the SQL query string used to open this View.
-            </summary>
-        </member>
-        <member name="P:Microsoft.Deployment.WindowsInstaller.View.Tables">
-            <summary>
-            Gets the set of tables that were included in the SQL query for this View.
-            </summary>
-        </member>
-        <member name="P:Microsoft.Deployment.WindowsInstaller.View.Columns">
-            <summary>
-            Gets the set of columns that were included in the query for this View,
-            or null if this view is not a SELECT query.
-            </summary>
-            <exception cref="T:Microsoft.Deployment.WindowsInstaller.InstallerException">the View is not in an active state</exception>
-            <exception cref="T:Microsoft.Deployment.WindowsInstaller.InvalidHandleException">the View handle is invalid</exception>
-            <remarks><p>
-            Win32 MSI API:
-            <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msiviewgetcolumninfo.asp">MsiViewGetColumnInfo</a>
-            </p></remarks>
         </member>
         <member name="M:Microsoft.Deployment.WindowsInstaller.View.Execute(Microsoft.Deployment.WindowsInstaller.Record)">
             <summary>
@@ -7378,6 +7351,33 @@
             </p><p>
             Win32 MSI API:
             <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msiviewfetch.asp">MsiViewFetch</a>
+            </p></remarks>
+        </member>
+        <member name="P:Microsoft.Deployment.WindowsInstaller.View.Database">
+            <summary>
+            Gets the Database on which this View was opened.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Deployment.WindowsInstaller.View.QueryString">
+            <summary>
+            Gets the SQL query string used to open this View.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Deployment.WindowsInstaller.View.Tables">
+            <summary>
+            Gets the set of tables that were included in the SQL query for this View.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Deployment.WindowsInstaller.View.Columns">
+            <summary>
+            Gets the set of columns that were included in the query for this View,
+            or null if this view is not a SELECT query.
+            </summary>
+            <exception cref="T:Microsoft.Deployment.WindowsInstaller.InstallerException">the View is not in an active state</exception>
+            <exception cref="T:Microsoft.Deployment.WindowsInstaller.InvalidHandleException">the View handle is invalid</exception>
+            <remarks><p>
+            Win32 MSI API:
+            <a href="http://msdn.microsoft.com/library/en-us/msi/setup/msiviewgetcolumninfo.asp">MsiViewGetColumnInfo</a>
             </p></remarks>
         </member>
         <member name="T:Microsoft.Tools.WindowsInstallerXml.WixDistribution">
