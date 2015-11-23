@@ -20,9 +20,9 @@ specified in the
 
 .NOTES   
 Name: Generate-ODTConfigurationXm
-Version: 1.0.1
+Version: 1.0.3
 DateCreated: 2015-08-24
-DateUpdated: 2015-09-02
+DateUpdated: 2015-11-23
 
 .LINK
 https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
@@ -212,7 +212,7 @@ process {
     
     $primaryLanguage = checkForLanguage -langId $machinelangId
 
-    [System.Collections.ArrayList]$additionalLanguages = New-Object System.Collections.ArrayList
+    $additionalLanguages = @()
     [String[]]$allLanguages = @()
 
     switch ($Languages) {
@@ -220,7 +220,14 @@ process {
       {
          if ($officeConfig) {
             $primaryLanguage = $officeConfig.ClientCulture
-         } else {
+         } 
+
+         if (!($primaryLanguage)) {
+            $msiPrimaryLanguage = msiGetOfficeUILanguage -regProv $regProv
+            if ($msiPrimaryLanguage) {
+               $primaryLanguage =  $msiPrimaryLanguage
+            }
+
             $primaryLanguage = checkForLanguage -langId $machinelangId
          }
       }
@@ -240,13 +247,16 @@ process {
          $returnLangs = getLanguages -regProv $regProv
 
          foreach ($returnLang in $returnLangs) {
-            $additionalLanguages.Add($returnLang) | Out-Null
+            $additionalLanguages += $returnLang
          }
          
       }
     }
 
-    $allLanguages += $primaryLanguage.ToLower()
+    if ($primaryLanguage) {
+        $allLanguages += $primaryLanguage.ToLower()
+    }
+
     foreach ($lang in $additionalLanguages) {
       if ($lang.GetType().Name.ToLower().Contains("string")) {
         if ($lang.Contains("-")) {
@@ -281,12 +291,14 @@ process {
              $excludeApps = officeGetExcludedApps -OfficeProducts $officeProducts
          }
 
-         foreach ($officeLang in $officeLangs) {
-            $additionalLanguages.Add($officeLang) | Out-Null
+         $additionalLanguages = msiGetOfficeLanguages -regProv $regProv
+         
+         if (!($additionalLanguages)) {
+             foreach ($officeLang in $officeLangs) {
+                $additionalLanguages += $officeLang
+             }
          }
        }
-
-      write-host $officeAddLangs
 
        if (($Languages -eq "CurrentOfficeLanguages") -or ($Languages -eq "AllInUseLanguages")) {
            $additionalLanguages += $officeAddLangs
@@ -450,7 +462,6 @@ begin {
     $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet(‘DefaultDisplayPropertySet’,[string[]]$defaultDisplaySet)
     $PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultDisplayPropertySet)
 }
-
 
 process {
 
@@ -922,13 +933,120 @@ function odtGetOfficeLanguages() {
 
         if ($appLanguages1.Count) {
             $productsPath = join-path $officeKeyPath "ProductReleaseIDs\Active\$ProductId"
-
-
-
         }
 
         return $appLanguages1;
     }
+}
+
+function msiGetOfficeUILanguage() {
+    param(
+       [Parameter(ValueFromPipelineByPropertyName=$true)]
+       $regProv = $NULL
+    )
+
+    begin {
+        $HKU = [UInt32] "0x80000003"
+    }
+
+    process {
+     $computer = "."
+
+     $msiUILanguages = @()
+
+     $localUsers = $regProv.EnumKey($HKU, "")
+
+     foreach ($localUser in $localUsers.sNames) {
+        $regPathLangResource = "$localUser\SOFTWARE\Microsoft\Office\15.0\Common\LanguageResources"
+        $UILanguage = $regProv.GetDWordValue($HKU, $regPathLangResource, "UILanguage").uValue
+
+        if ($UILanguage) {
+            $langCulture = [globalization.cultureinfo]::GetCultures("allCultures") | where {$_.LCID -eq $UILanguage}
+            $convertLang = checkForLanguage -langId $langCulture.Name
+
+            if ($convertLang) {
+                $msiUILanguages += $convertLang
+            }
+        }
+     }
+
+     $primaryLanguage = ($msiUILanguages | Group-Object | Sort-Object Count -descending | Select-Object -First 1).Name
+
+     return $primaryLanguage
+   }
+}
+
+function msiGetOfficeLanguages() {
+    param(
+       [Parameter(ValueFromPipelineByPropertyName=$true)]
+       $regProv = $NULL
+    )
+
+    begin {
+        $HKU = [UInt32] "0x80000003"
+    }
+
+    process {
+     $computer = "."
+
+     $msiLanguages = @()
+
+     if (!($regProv)) {
+        $regProv = Get-Wmiobject -list "StdRegProv" -namespace root\default -computername $computer -ErrorAction Stop
+     }
+
+     $localUsers = $regProv.EnumKey($HKU, "")
+
+     foreach ($localUser in $localUsers.sNames) {
+        $regPathLangResource = "$localUser\SOFTWARE\Microsoft\Office\15.0\Common\LanguageResources"
+        $regPathEnabledLangs = "$localUser\SOFTWARE\Microsoft\Office\15.0\Common\LanguageResources\EnabledLanguages"
+
+        $UILanguageNum = $regProv.GetDWordValue($HKU, $regPathLangResource, "UILanguage").uValue
+        if ($UILanguageNum) {
+            $langCulture = [globalization.cultureinfo]::GetCultures("allCultures") | where {$_.LCID -eq $UILanguageNum}
+            $UILanguage = checkForLanguage -langId $langCulture
+        } else {
+            $UILanguage = ""
+        }
+
+        $enabledLanguages = $regProv.EnumValues($HKU, $regPathEnabledLangs)
+
+        foreach ($enabledLanguage in $enabledLanguages.sNames) {
+
+           $languageStatus = $regProv.GetStringValue($HKU, $regPathEnabledLangs, $enabledLanguage).sValue
+           
+           if ($languageStatus.ToLower() -eq "on") {
+               $langCulture = [globalization.cultureinfo]::GetCultures("allCultures") | where {$_.LCID -eq $enabledLanguage}
+               $convertLang = checkForLanguage -langId $langCulture 
+
+               if ($convertLang) {
+                   $flgInclude = $true
+
+                   if ($convertLang) {
+                       if ($UILanguage) {
+                           if ($UILanguage.ToLower() -eq $convertLang.ToLower()) {
+                               $flgInclude = $false
+                           }
+                       }
+
+                       if ($flgInclude) {
+                           $msiLanguages += $convertLang
+                       }
+                   }
+               }
+           }
+        }
+     }
+
+     $msiLanguages = $msiLanguages | Get-Unique
+
+     if (!($msiLanguages)) {
+        $msiLanguages = @()
+     }
+
+     return $msiLanguages
+
+   }
 }
 
 function getLanguages() {
