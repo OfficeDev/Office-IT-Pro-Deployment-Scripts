@@ -20,9 +20,9 @@ specified in the
 
 .NOTES   
 Name: Generate-ODTConfigurationXm
-Version: 1.0.1
+Version: 1.0.3
 DateCreated: 2015-08-24
-DateUpdated: 2015-09-02
+DateUpdated: 2015-11-23
 
 .LINK
 https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
