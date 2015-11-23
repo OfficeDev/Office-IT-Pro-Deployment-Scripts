@@ -145,6 +145,12 @@
                                     <Button Name="SetPrimaryButton" Content="Set Primary" Margin="2" Height="20" Click="SetPrimaryButton_OnClick" />
                                 </StackPanel>
 
+                                <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Right">
+                                    <Label>Use same Languages for all Products</Label>
+                                    <CheckBox></CheckBox>
+                                    <ComboBox Height="20" Width="180"></ComboBox>
+                                </StackPanel>
+                                
                             </Grid>
                         </StackPanel>
 
