@@ -93,11 +93,7 @@ namespace MetroDemo.ExampleViews
 
                         var selectedLangs = FormatLanguage(currentItems2.Distinct().ToList()).ToList();
 
-                        string selectProductId = null;
-                        if (LanguageUnique.IsEnabled)
-                        {
-                            selectProductId = ((Product)LanguageUnique.SelectedItem).Id;
-                        }
+                        var selectProductId = GetSelectedProduct();
 
                         foreach (var languages in selectedLangs)
                         {
@@ -123,28 +119,12 @@ namespace MetroDemo.ExampleViews
         private void LanguageChange()
         {
             LanguageList.ItemsSource = null;
-
-            string selectedProductId = null;
-            if (LanguageUnique.IsEnabled)
-            {
-                var selectProduct = (Product) LanguageUnique.SelectedItem;
-                if (selectProduct != null)
-                {
-                    selectedProductId = selectProduct.Id;
-                }
-            }
-
-            var languages = GlobalObjects.ViewModel.GetLanguages(selectedProductId);
-            LanguageList.ItemsSource = languages;
+            LanguageList.ItemsSource = GlobalObjects.ViewModel.GetLanguages(GetSelectedProduct());
         }
 
         private void RemoveSelectedLanguage()
         {
-            string selectProductId = null;
-            if (LanguageUnique.IsEnabled)
-            {
-                selectProductId = ((Product)LanguageUnique.SelectedItem).Id;
-            }
+            var selectProductId = GetSelectedProduct();
 
             var currentItems = (List<Language>)LanguageList.ItemsSource ?? new List<Language>();
             foreach (Language language in LanguageList.SelectedItems)
@@ -170,11 +150,7 @@ namespace MetroDemo.ExampleViews
 
             var selectedLanguage = LanguageList.SelectedItems.Cast<Language>().FirstOrDefault();
 
-            string selectProductId = null;
-            if (LanguageUnique.IsEnabled)
-            {
-                selectProductId = ((Product)LanguageUnique.SelectedItem).Id;
-            }
+            var selectProductId = GetSelectedProduct();
 
             GlobalObjects.ViewModel.ChangePrimaryLanguage(selectProductId, selectedLanguage);
 
@@ -351,7 +327,9 @@ namespace MetroDemo.ExampleViews
                 {
                     product.Languages = new List<ODTLanguage>();
 
-                    foreach (Language language in LanguageList.Items)
+                    var productLanguages = GlobalObjects.ViewModel.GetLanguages(product.ID);
+
+                    foreach (Language language in productLanguages)
                     {
                         product.Languages.Add(new ODTLanguage()
                         {
@@ -410,6 +388,18 @@ namespace MetroDemo.ExampleViews
             return languages.ToList();
         }
 
+
+        private string GetSelectedProduct()
+        {
+            string selectedProductId = null;
+            if (!LanguageUnique.IsEnabled) return null;
+            var selectProduct = (Product)LanguageUnique.SelectedItem;
+            if (selectProduct != null)
+            {
+                selectedProductId = selectProduct.Id;
+            }
+            return selectedProductId;
+        }
 
         #region "Events"
 
