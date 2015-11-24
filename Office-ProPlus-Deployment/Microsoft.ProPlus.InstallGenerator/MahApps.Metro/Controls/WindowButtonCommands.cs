@@ -312,7 +312,10 @@ namespace MahApps.Metro.Controls
                 }
 
                 if (null == this.ParentWindow) return;
-                this.ParentWindow.Close();
+                if (this.ParentWindow != null)
+                {
+                    this.ParentWindow.Close();
+                }
             }
             catch { }
         }

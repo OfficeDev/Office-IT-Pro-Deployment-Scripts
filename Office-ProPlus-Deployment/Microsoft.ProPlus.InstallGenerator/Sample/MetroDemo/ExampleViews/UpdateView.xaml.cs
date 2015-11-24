@@ -22,7 +22,6 @@ namespace MetroDemo.ExampleViews
     /// </summary>
     public partial class UpdateView : UserControl
     {
-        public MainWindowViewModel ViewModel { get; set; }
 
         public UpdateView()
         {
@@ -36,7 +35,7 @@ namespace MetroDemo.ExampleViews
 
         public void UpdateXml()
         {
-            var configXml = ViewModel.ConfigXmlParser.ConfigurationXml;
+            var configXml = GlobalObjects.ViewModel.ConfigXmlParser.ConfigurationXml;
             if (configXml.Updates == null)
             {
                 configXml.Updates = new ODTUpdates();
@@ -61,7 +60,7 @@ namespace MetroDemo.ExampleViews
                 configXml.Updates.TargetVersion = targetVersion;
             }
 
-            var xml = ViewModel.ConfigXmlParser.Xml;
+            var xml = GlobalObjects.ViewModel.ConfigXmlParser.Xml;
             if (xml != null)
             {
 

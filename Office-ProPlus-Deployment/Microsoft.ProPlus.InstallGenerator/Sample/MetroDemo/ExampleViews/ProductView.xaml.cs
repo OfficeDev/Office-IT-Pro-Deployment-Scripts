@@ -29,10 +29,9 @@ namespace MetroDemo.ExampleViews
     public partial class ProductView : UserControl
     {
         private LanguagesDialog languagesDialog = null;
+        public List<Language> SelectedLanguages { get; set; }
+        public event TransitionTabEventHandler TransitionTab;
 
-        public MainWindowViewModel ViewModel { get; set; }
-
-        public List<Language> SelectedLanguages { get; set; } 
 
         public ProductView()
         {
@@ -43,9 +42,9 @@ namespace MetroDemo.ExampleViews
         {
             try
             {
-                var splitCount = Convert.ToInt32(Math.Round((double)this.ViewModel.ExcludeProducts.Count / 2, 0));
-                ExcludedApps1.ItemsSource = this.ViewModel.ExcludeProducts.Take(splitCount).ToList();
-                ExcludedApps2.ItemsSource = this.ViewModel.ExcludeProducts.Skip(splitCount).ToList();
+                var splitCount = Convert.ToInt32(Math.Round((double)GlobalObjects.ViewModel.ExcludeProducts.Count / 2, 0));
+                ExcludedApps1.ItemsSource = GlobalObjects.ViewModel.ExcludeProducts.Take(splitCount).ToList();
+                ExcludedApps2.ItemsSource = GlobalObjects.ViewModel.ExcludeProducts.Skip(splitCount).ToList();
 
                 MainTabControl.SelectedIndex = 0;
 
@@ -55,7 +54,8 @@ namespace MetroDemo.ExampleViews
                 }
                 if (SelectedLanguages.Count == 0)
                 {
-                    SelectedLanguages = ViewModel.Languages.Where(l => l.Id.ToLower() == "en-us").ToList();
+                    SelectedLanguages = GlobalObjects.ViewModel.Languages.Where(l => l.Id.ToLower() == "en-us").ToList();
+                    var viewModelSelectLangs = GlobalObjects.ViewModel.SelectedLanguages;
                 }
 
                 LanguageList.ItemsSource = FormatLanguage(SelectedLanguages);
@@ -76,7 +76,7 @@ namespace MetroDemo.ExampleViews
                 {
                     var currentItems1 = (List<Language>)LanguageList.ItemsSource ?? new List<Language>();
 
-                    var languageList = this.ViewModel.Languages.ToList();
+                    var languageList = GlobalObjects.ViewModel.Languages.ToList();
                     foreach (var language in currentItems1)
                     {
                         languageList.Remove(language);
@@ -94,13 +94,39 @@ namespace MetroDemo.ExampleViews
                     {
                         var currentItems2 = (List<Language>) LanguageList.ItemsSource ?? new List<Language>();
 
-                        if (languagesDialog.SelectedItems.Count > 0)
+                        if (languagesDialog.SelectedItems != null)
                         {
-                            currentItems2.AddRange(languagesDialog.SelectedItems);
+                            if (languagesDialog.SelectedItems.Count > 0)
+                            {
+                                currentItems2.AddRange(languagesDialog.SelectedItems);
+                            }
                         }
 
+                        var selectedLangs = FormatLanguage(currentItems2.Distinct().ToList()).ToList();
+
+                        string selectProductId = null;
+                        if (LanguageUnique.IsEnabled)
+                        {
+                            selectProductId = ((Product)LanguageUnique.SelectedItem).Id;
+                        }
+
+                        foreach (var languages in selectedLangs)
+                        {
+                            languages.ProductId = selectProductId;
+                        }
+
+                        var currentLangs = GlobalObjects.ViewModel.SelectedLanguages.Where(
+                                            l => l.ProductId == selectProductId);
+
+                        foreach (var language in currentLangs)
+                        {
+                            GlobalObjects.ViewModel.SelectedLanguages.Remove(language);
+                        }
+
+                        GlobalObjects.ViewModel.SelectedLanguages.AddRange(selectedLangs);
+
                         LanguageList.ItemsSource = null;
-                        LanguageList.ItemsSource = FormatLanguage(currentItems2.Distinct().ToList());
+                        LanguageList.ItemsSource = selectedLangs;
 
                         languagesDialog = null;
                     };
@@ -114,6 +140,39 @@ namespace MetroDemo.ExampleViews
             }
         }
 
+        private void LanguageChange()
+        {
+            LanguageList.ItemsSource = null;
+
+            string selectedProductId = null;
+            if (LanguageUnique.IsEnabled)
+            {
+                var selectProduct = (Product) LanguageUnique.SelectedItem;
+                if (selectProduct != null)
+                {
+                    selectedProductId = selectProduct.Id;
+                }
+            }
+
+            var defaultLangs = GlobalObjects.ViewModel.SelectedLanguages.Where(
+                              l => l.ProductId == null).ToList();
+
+            var currentLangs = GlobalObjects.ViewModel.SelectedLanguages.Where(
+                                l => l.ProductId == selectedProductId).ToList();
+
+            if (!currentLangs.Any())
+            {
+                currentLangs = defaultLangs;
+            }
+
+            if (currentLangs.Any())
+            {
+                var selectedLangs = FormatLanguage(currentLangs.Distinct().ToList()).ToList();
+                LanguageList.ItemsSource = selectedLangs;
+            }
+         
+        }
+
         private void RemoveSelectedLanguage()
         {
             var currentItems = (List<Language>)LanguageList.ItemsSource ?? new List<Language>();
@@ -123,24 +182,25 @@ namespace MetroDemo.ExampleViews
                 {
                     currentItems.Remove(language);
                 }
+
+                string selectProductId = null;
+                if (LanguageUnique.IsEnabled)
+                {
+                    selectProductId = ((Product)LanguageUnique.SelectedItem).Id;
+                }
+
+                var currentLangs = GlobalObjects.ViewModel.SelectedLanguages.Where(
+                        l => l.ProductId == selectProductId && l.Id == language.Id).ToList();
+
+                foreach (var removelanguage in currentLangs)
+                {
+                    GlobalObjects.ViewModel.SelectedLanguages.Remove(removelanguage);
+                }
             }
             LanguageList.ItemsSource = null;
             LanguageList.ItemsSource = FormatLanguage(currentItems);
         }
 
-        private IEnumerable<Language> FormatLanguage(List<Language> languages)
-        {
-            if (languages == null) return new List<Language>();
-            foreach (var language in languages)
-            {
-                language.Name = Regex.Replace(language.Name, @"\s\(Primary\)", "", RegexOptions.IgnoreCase);
-            }
-            if (languages.Any())
-            {
-                languages.FirstOrDefault().Name += " (Primary)";
-            }
-            return languages.ToList();
-        }
 
         public void LoadXml()
         {
@@ -155,7 +215,12 @@ namespace MetroDemo.ExampleViews
 
             AdditionalProducts.SelectedItems.Clear();
 
-            var configXml = ViewModel.ConfigXmlParser.ConfigurationXml;
+            MainProducts.SelectedIndex = 0;
+            ProductEdition32Bit.IsChecked = true;
+            ProductEdition64Bit.IsChecked = false;
+            ProductBranch.SelectedIndex = 0;
+
+            var configXml = GlobalObjects.ViewModel.ConfigXmlParser.ConfigurationXml;
             if (configXml.Add != null)
             {
                 if (configXml.Add.OfficeClientEdition == OfficeClientEdition.Office32Bit)
@@ -202,26 +267,28 @@ namespace MetroDemo.ExampleViews
 
                         foreach (Product item in AdditionalProducts.Items)
                         {
-                            if (item.Id.ToUpper() == product.ID.ToUpper())
+                            if (item.Id.ToUpper() != product.ID.ToUpper()) continue;
+                            AdditionalProducts.SelectedItems.Add(item);
+                            break;
+                        }
+
+                        if (product.Languages != null)
+                        {
+                            foreach (var language in product.Languages)
                             {
-                                AdditionalProducts.SelectedItems.Add(item);
-                                break;
+                                var languageLookup =
+                                    GlobalObjects.ViewModel.Languages.FirstOrDefault(l => l.Id.ToLower() == language.ID.ToLower());
+                                if (languageLookup != null)
+                                {
+                                    languages.Add(new Language()
+                                    {
+                                        Id = languageLookup.Id,
+                                        Name = languageLookup.Name
+                                    });
+                                }
                             }
                         }
 
-                        foreach (var language in product.Languages)
-                        {
-                            var languageLookup =
-                                ViewModel.Languages.FirstOrDefault(l => l.Id.ToLower() == language.ID.ToLower());
-                            if (languageLookup != null)
-                            {
-                                languages.Add(new Language()
-                                {
-                                    Id = languageLookup.Id,
-                                    Name = languageLookup.Name
-                                });
-                            }
-                        }
 
                     }
                 }
@@ -241,12 +308,12 @@ namespace MetroDemo.ExampleViews
 
             LanguageList.ItemsSource = null;
             var distictList = languages.Distinct().ToList();
-            LanguageList.ItemsSource = distictList;
+            LanguageList.ItemsSource = FormatLanguage(distictList);
         }
 
         public void UpdateXml()
         {
-            var configXml = ViewModel.ConfigXmlParser.ConfigurationXml;
+            var configXml = GlobalObjects.ViewModel.ConfigXmlParser.ConfigurationXml;
             if (configXml.Add == null)
             {
                 configXml.Add = new ODTAdd();
@@ -276,15 +343,23 @@ namespace MetroDemo.ExampleViews
             var mainProduct = (Product) MainProducts.SelectedItem;
             if (mainProduct != null)
             {
-                var existingProduct = configXml.Add.Products.FirstOrDefault(p => p.ID == mainProduct.Id);
-                if (existingProduct == null)
+                configXml.Add.Products.Clear();
+
+                var existingProduct = new ODTProduct()
                 {
-                    existingProduct = new ODTProduct()
+                    ID = mainProduct.Id
+                };
+
+                configXml.Add.Products.Add(existingProduct);
+
+                foreach (Product addProduct in AdditionalProducts.SelectedItems)
+                {
+                    var additionalProduct = new ODTProduct()
                     {
-                        ID = mainProduct.Id
+                        ID = addProduct.Id
                     };
 
-                    configXml.Add.Products.Add(existingProduct);
+                    configXml.Add.Products.Add(additionalProduct);
                 }
 
                 if (existingProduct.Languages == null)
@@ -292,12 +367,17 @@ namespace MetroDemo.ExampleViews
                     existingProduct.Languages = new List<ODTLanguage>();
                 }
 
-                foreach (Language language in LanguageList.Items)
+                foreach (var product in configXml.Add.Products)
                 {
-                    existingProduct.Languages.Add(new ODTLanguage()
+                    product.Languages = new List<ODTLanguage>();
+
+                    foreach (Language language in LanguageList.Items)
                     {
-                        ID = language.Id
-                    });
+                        product.Languages.Add(new ODTLanguage()
+                        {
+                            ID = language.Id
+                        });
+                    }
                 }
 
                 var excludedApps = ExcludeProducts();
@@ -317,12 +397,13 @@ namespace MetroDemo.ExampleViews
 
             }
 
-            var xml = ViewModel.ConfigXmlParser.Xml;
+            var xml = GlobalObjects.ViewModel.ConfigXmlParser.Xml;
             if (xml != null)
             {
 
             }
         }
+
 
         private IEnumerable<ExcludeProduct> ExcludeProducts()
         {
@@ -335,9 +416,102 @@ namespace MetroDemo.ExampleViews
             return new List<ExcludeProduct>();
         }
 
-        public event TransitionTabEventHandler TransitionTab;
+        private IEnumerable<Language> FormatLanguage(List<Language> languages)
+        {
+            if (languages == null) return new List<Language>();
+            foreach (var language in languages)
+            {
+                language.Name = Regex.Replace(language.Name, @"\s\(Primary\)", "", RegexOptions.IgnoreCase);
+            }
+            if (languages.Any())
+            {
+                languages.FirstOrDefault().Name += " (Primary)";
+            }
+            return languages.ToList();
+        }
+
 
         #region "Events"
+
+        private void LanguageUnique_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            try
+            {
+                LanguageChange();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("ERROR: " + ex.Message);
+            }
+        }
+
+        private void UseLangForAllProducts_OnChecked(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (LanguageUnique == null) return;
+
+                if (UseLangForAllProducts.IsChecked.HasValue)
+                {
+                    GlobalObjects.ViewModel.UseSameLanguagesForAllProducts = UseLangForAllProducts.IsChecked.Value;
+                    LanguageUnique.IsEnabled = !(UseLangForAllProducts.IsChecked.Value);
+                }
+                else
+                {
+                    GlobalObjects.ViewModel.UseSameLanguagesForAllProducts = false;
+                    LanguageUnique.IsEnabled = true;
+                }
+
+                LanguageChange();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("ERROR: " + ex.Message);
+            }
+        }
+
+        private void Products_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            try
+            {
+                LanguageUnique.ItemsSource = null;
+
+                var products = new List<Product>();
+
+                foreach (Product product in MainProducts.SelectedItems)
+                {
+                    products.Add(product);
+                }
+
+                foreach (Product product in AdditionalProducts.SelectedItems)
+                {
+                    products.Add(product);
+                }
+
+                LanguageUnique.DisplayMemberPath = "DisplayName";
+                LanguageUnique.ItemsSource = products;
+                if (products.Count > 0)
+                {
+                    LanguageUnique.SelectedIndex = 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("ERROR: " + ex.Message);
+            }
+        }
+
+        private void MainTabControl_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            try
+            {
+ 
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("ERROR: " + ex.Message);
+            }
+        }
 
         private void ToggleSwitch_OnIsCheckedChanged(object sender, EventArgs e)
         {
@@ -458,6 +632,7 @@ namespace MetroDemo.ExampleViews
         public BranchChangedEventHandler BranchChanged { get; set; }
 
         #endregion
+
 
     }
 }

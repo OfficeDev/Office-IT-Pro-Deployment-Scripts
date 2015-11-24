@@ -35,6 +35,13 @@
         <Setter Property="FontWeight" Value="Thin"></Setter>
     </Style>
 
+    <Style TargetType="{x:Type Label}" x:Key="MetroLabelTextSmall" BasedOn="{StaticResource MetroLabel}">
+        <Setter Property="Foreground" Value="{DynamicResource LabelTextBrushCustom}" />
+        <Setter Property="FontSize" Value="12"></Setter>
+        <Setter Property="FontFamily" Value="{StaticResource DefaultFont}"></Setter>
+        <Setter Property="FontWeight" Value="Thin"></Setter>
+    </Style>
+
     <Style TargetType="DataGridCell" x:Key="DGCellStyle">
         <Setter Property="Foreground" Value="{DynamicResource LabelTextBrushCustom}"/>
         <Setter Property="FontSize" Value="20"/>

@@ -23,7 +23,6 @@ namespace MetroDemo.ExampleViews
     /// </summary>
     public partial class DisplayView : UserControl
     {
-        public MainWindowViewModel ViewModel { get; set; }
 
         public DisplayView()
         {
@@ -39,7 +38,7 @@ namespace MetroDemo.ExampleViews
 
         private void UpdateDisplayXml()
         {
-            var configXml = ViewModel.ConfigXmlParser.ConfigurationXml;
+            var configXml = GlobalObjects.ViewModel.ConfigXmlParser.ConfigurationXml;
             if (configXml.Display == null)
             {
                 configXml.Display = new ODTDisplay();
@@ -64,7 +63,7 @@ namespace MetroDemo.ExampleViews
                 configXml.Display.AcceptEULA = AcceptEula.IsChecked.Value;
             }
 
-            var xml = ViewModel.ConfigXmlParser.Xml;
+            var xml = GlobalObjects.ViewModel.ConfigXmlParser.Xml;
             if (xml != null)
             {
 
@@ -73,7 +72,7 @@ namespace MetroDemo.ExampleViews
 
         private void UpdatePropertiesXml()
         {
-            var configXml = ViewModel.ConfigXmlParser.ConfigurationXml;
+            var configXml = GlobalObjects.ViewModel.ConfigXmlParser.ConfigurationXml;
             if (configXml.Properties == null)
             {
                 configXml.Properties = new ODTProperties();
@@ -104,7 +103,7 @@ namespace MetroDemo.ExampleViews
                 configXml.Properties.SharedComputerLicensing = SharedComputerLicensing.IsChecked.Value;
             }
 
-            var xml = ViewModel.ConfigXmlParser.Xml;
+            var xml = GlobalObjects.ViewModel.ConfigXmlParser.Xml;
             if (xml != null)
             {
 

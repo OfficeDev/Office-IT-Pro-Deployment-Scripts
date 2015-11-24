@@ -20,7 +20,6 @@ namespace MetroDemo.ExampleViews
     /// </summary>
     public partial class StartView : UserControl
     {
-        public MainWindowViewModel ViewModel { get; set; }
 
         public StartView()
         {
@@ -33,7 +32,8 @@ namespace MetroDemo.ExampleViews
         {
             try
             {
-                ViewModel.ConfigXmlParser.LoadXml("<Configuration></Configuration>");
+                GlobalObjects.ViewModel.ConfigXmlParser.LoadXml(GlobalObjects.ViewModel.DefaultXml);
+                GlobalObjects.ViewModel.ResetXml = true;
 
                 this.TransitionTab(this, new TransitionTabEventArgs()
                 {
@@ -64,7 +64,7 @@ namespace MetroDemo.ExampleViews
                 {
                     var filename = dlg.FileName;
 
-                    ViewModel.ConfigXmlParser.LoadXml(filename);
+                    GlobalObjects.ViewModel.ConfigXmlParser.LoadXml(filename);
 
                     this.TransitionTab(this, new TransitionTabEventArgs()
                     {

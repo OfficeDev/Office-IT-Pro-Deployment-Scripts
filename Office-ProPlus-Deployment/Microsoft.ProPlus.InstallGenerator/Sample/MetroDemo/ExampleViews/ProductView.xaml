@@ -39,7 +39,7 @@
                     <ColumnDefinition />
                     <ColumnDefinition Width="50" />
                 </Grid.ColumnDefinitions>
-                <Controls:MetroAnimatedSingleRowTabControl Grid.Row="0" Grid.Column="1" x:Name="MainTabControl">
+                <Controls:MetroAnimatedSingleRowTabControl Grid.Row="0" Grid.Column="1" x:Name="MainTabControl" SelectionChanged="MainTabControl_OnSelectionChanged">
                     <TabItem Header="products">
                         <Grid>
                             <Grid.ColumnDefinitions>
@@ -77,12 +77,13 @@
 
                                     <ListBox x:Name="MainProducts" Grid.Column="0" Grid.Row="1" Style="{StaticResource VirtualisedMetroListBox}"
                                          ItemsSource="{Binding MainProducts}"
-                                         DisplayMemberPath="DisplayName"
-                                         SelectedIndex="0" SelectionMode="Single" FontSize="20" />
+                                         DisplayMemberPath="DisplayName" 
+                                         SelectedIndex="0" SelectionMode="Single" FontSize="20" SelectionChanged="Products_OnSelectionChanged" />
+                                    
                                     <ListBox x:Name="AdditionalProducts" Grid.Column="0" Grid.Row="2" Style="{StaticResource VirtualisedMetroListBox}"
                                          ItemsSource="{Binding AdditionalProducts}"
                                          DisplayMemberPath="DisplayName"
-                                         SelectedIndex="-1" SelectionMode="Multiple" FontSize="20"  />
+                                         SelectedIndex="-1" SelectionMode="Multiple" FontSize="20" SelectionChanged="Products_OnSelectionChanged"  />
                                 </Grid>
 
                                 <StackPanel Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center">
@@ -146,9 +147,9 @@
                                 </StackPanel>
 
                                 <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Right">
-                                    <Label>Use same Languages for all Products</Label>
-                                    <CheckBox></CheckBox>
-                                    <ComboBox Height="20" Width="180"></ComboBox>
+                                    <Label Style="{StaticResource MetroLabelTextSmall}" VerticalAlignment="Center" >Use Languages for all Products</Label>
+                                    <CheckBox x:Name="UseLangForAllProducts" Checked="UseLangForAllProducts_OnChecked" Unchecked="UseLangForAllProducts_OnChecked" IsChecked="True"></CheckBox>
+                                    <ComboBox x:Name="LanguageUnique" Height="20" Width="180" IsEnabled="False" SelectionChanged="LanguageUnique_OnSelectionChanged"></ComboBox>
                                 </StackPanel>
                                 
                             </Grid>

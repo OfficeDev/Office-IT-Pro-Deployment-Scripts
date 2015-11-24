@@ -12,6 +12,8 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Models
 
         public string Name { get; set; }
 
+        public string ProductId { get; set; }
+
         public bool Equals(Language other)
         {
             var localId = Id;

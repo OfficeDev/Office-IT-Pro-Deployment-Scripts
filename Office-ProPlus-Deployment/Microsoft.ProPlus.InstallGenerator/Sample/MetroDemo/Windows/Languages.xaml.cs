@@ -48,6 +48,11 @@ namespace MetroDemo.ExampleWindows
 
         private void LanguagesDialog_OnLoaded(object sender, RoutedEventArgs e)
         {
+            foreach (var language in LanguageSource)
+            {
+                language.Name = language.Name.Replace(" (Primary)", "");
+            }
+
             LanguageList.ItemsSource = LanguageSource;
         }
 

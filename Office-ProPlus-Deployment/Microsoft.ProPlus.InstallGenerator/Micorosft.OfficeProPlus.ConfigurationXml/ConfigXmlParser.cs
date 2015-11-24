@@ -17,9 +17,13 @@ namespace OfficeInstallGenerator
     {
         private XmlDocument _xmlDoc = null;
         public ConfigurationXml ConfigurationXml { get; set; }
+        public Guid ObjectId;
+
 
         public ConfigXmlParser(string xml)
         {
+            ObjectId = Guid.NewGuid();
+
             LoadXml(xml);
         }
 

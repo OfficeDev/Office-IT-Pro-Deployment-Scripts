@@ -19,12 +19,12 @@ namespace MetroDemo
 
         public MainWindow()
         {
-            _viewModel = new MainWindowViewModel(DialogCoordinator.Instance)
+            GlobalObjects.ViewModel = new MainWindowViewModel(DialogCoordinator.Instance)
             {
                 ConfigXmlParser = new OfficeInstallGenerator.ConfigXmlParser("<Configuration></Configuration>")
             };
 
-            DataContext = _viewModel;
+            DataContext = GlobalObjects.ViewModel;
 
             InitializeComponent();
 
@@ -36,24 +36,26 @@ namespace MetroDemo
             ProductView.TransitionTab += TransitionTab;
             UpdateView.TransitionTab += TransitionTab;
             DisplayView.TransitionTab += TransitionTab;
-
-            StartView.ViewModel = _viewModel;
-            ProductView.ViewModel = _viewModel;
-            UpdateView.ViewModel = _viewModel;
-            DisplayView.ViewModel = _viewModel;
-            GenerateView.ViewModel = _viewModel;
         }
+
+        private int _cacheIndex = -1;
 
         private void MainTabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ThemeManager.TransitionsEnabled = MainTabControl.SelectedIndex != 4;
 
-            ProductView.LoadXml();
-            ProductView.UpdateXml();
-            
-            DisplayView.UpdateXml();
-            
-            UpdateView.UpdateXml();
+            if (_cacheIndex != MainTabControl.SelectedIndex)
+            {
+                if (!GlobalObjects.ViewModel.ResetXml)
+                {
+                    ProductView.UpdateXml();
+                    DisplayView.UpdateXml();
+                    UpdateView.UpdateXml();
+                }
+                GlobalObjects.ViewModel.ResetXml = false;
+
+                _cacheIndex = MainTabControl.SelectedIndex;
+            }
         }
 
         private void TransitionTab(object sender, Events.TransitionTabEventArgs e)

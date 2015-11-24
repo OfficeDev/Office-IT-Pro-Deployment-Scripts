@@ -19,44 +19,27 @@ using OfficeInstallGenerator;
 
 namespace MetroDemo
 {
-    public class AccentColorMenuData
+
+    public static class GlobalObjects
     {
-        public string Name { get; set; }
-        public Brush BorderColorBrush { get; set; }
-        public Brush ColorBrush { get; set; }
-
-        private ICommand changeAccentCommand;
-
-        public ICommand ChangeAccentCommand
-        {
-            get { return null; }
-        }
-
-        protected virtual void DoChangeTheme(object sender)
-        {
-            var theme = ThemeManager.DetectAppStyle(Application.Current);
-            var accent = ThemeManager.GetAccent(this.Name);
-            ThemeManager.ChangeAppStyle(Application.Current, accent, theme.Item1);
-        }
-    }
-
-    public class AppThemeMenuData : AccentColorMenuData
-    {
-        protected override void DoChangeTheme(object sender)
-        {
-            var theme = ThemeManager.DetectAppStyle(Application.Current);
-            var appTheme = ThemeManager.GetAppTheme(this.Name);
-            ThemeManager.ChangeAppStyle(Application.Current, theme.Item2, appTheme);
-        }
+        public static MainWindowViewModel ViewModel { get; set; }
     }
 
     public class MainWindowViewModel : INotifyPropertyChanged
     {
         private readonly IDialogCoordinator _dialogCoordinator;
 
+        private List<Language> _selectedLanguages = null; 
+
         public MainWindowViewModel(IDialogCoordinator dialogCoordinator)
         {
             _dialogCoordinator = dialogCoordinator;
+
+            UseSameLanguagesForAllProducts = true;
+            _selectedLanguages = new List<Language>()
+            {
+                new Language { Id="en-us", Name="English" },
+            });
 
             Builds = new List<Build>()
             {
@@ -195,10 +178,25 @@ namespace MetroDemo
 
         public List<Language> Languages { get; set; }
 
+        public List<Language> SelectedLanguages
+        {
+            get { return _selectedLanguages ?? (_selectedLanguages = new List<Language>()
+            {
+                new Language { Id="en-us", Name="English" },
+            }); }
+            set { _selectedLanguages = value; }
+        }
+
+        public bool UseSameLanguagesForAllProducts { get; set; }
+
         public List<Build> Builds { get; set; } 
 
         public ConfigXmlParser ConfigXmlParser { get; set; }
 
+        public string DefaultXml =
+            "<Configuration></Configuration>";
+
+        public bool ResetXml { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -216,5 +214,36 @@ namespace MetroDemo
 
         public string Error { get { return string.Empty; } }
 
+    }
+
+    public class AccentColorMenuData
+    {
+        public string Name { get; set; }
+        public Brush BorderColorBrush { get; set; }
+        public Brush ColorBrush { get; set; }
+
+        private ICommand changeAccentCommand;
+
+        public ICommand ChangeAccentCommand
+        {
+            get { return null; }
+        }
+
+        protected virtual void DoChangeTheme(object sender)
+        {
+            var theme = ThemeManager.DetectAppStyle(Application.Current);
+            var accent = ThemeManager.GetAccent(this.Name);
+            ThemeManager.ChangeAppStyle(Application.Current, accent, theme.Item1);
+        }
+    }
+
+    public class AppThemeMenuData : AccentColorMenuData
+    {
+        protected override void DoChangeTheme(object sender)
+        {
+            var theme = ThemeManager.DetectAppStyle(Application.Current);
+            var appTheme = ThemeManager.GetAppTheme(this.Name);
+            ThemeManager.ChangeAppStyle(Application.Current, theme.Item2, appTheme);
+        }
     }
 }

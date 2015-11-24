@@ -23,8 +23,6 @@ namespace MetroDemo.ExampleViews
     /// </summary>
     public partial class GenerateView : UserControl
     {
-        public MainWindowViewModel ViewModel { get; set; }
-
 
         public GenerateView()
         {
@@ -45,11 +43,11 @@ namespace MetroDemo.ExampleViews
 
         public void LoadCurrentXml()
         {
-            if (ViewModel.ConfigXmlParser != null)
+            if (GlobalObjects.ViewModel.ConfigXmlParser != null)
             {
-                if (!string.IsNullOrEmpty(ViewModel.ConfigXmlParser.Xml))
+                if (!string.IsNullOrEmpty(GlobalObjects.ViewModel.ConfigXmlParser.Xml))
                 {
-                    xmlBrowser.XmlDoc = ViewModel.ConfigXmlParser.Xml;
+                    xmlBrowser.XmlDoc = GlobalObjects.ViewModel.ConfigXmlParser.Xml;
                 }
             }
         }
