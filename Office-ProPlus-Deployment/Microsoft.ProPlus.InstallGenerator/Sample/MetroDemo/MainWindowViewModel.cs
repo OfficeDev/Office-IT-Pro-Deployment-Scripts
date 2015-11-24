@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.ComponentModel;
 using System.Globalization;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -29,17 +30,32 @@ namespace MetroDemo
     {
         private readonly IDialogCoordinator _dialogCoordinator;
 
-        private List<Language> _selectedLanguages = null; 
+        private List<Language> _selectedLanguages = null;
+
+        
 
         public MainWindowViewModel(IDialogCoordinator dialogCoordinator)
         {
             _dialogCoordinator = dialogCoordinator;
 
-            UseSameLanguagesForAllProducts = true;
-            _selectedLanguages = new List<Language>()
+            if (DefaultLanguage == null)
             {
-                new Language { Id="en-us", Name="English" },
-            });
+                DefaultLanguage = new Language()
+                {
+                    Id = "en-us",
+                    Name = "English",
+                    Order = 1
+                };
+            }
+
+            UseSameLanguagesForAllProducts = true;
+            if (_selectedLanguages == null)
+            {
+                _selectedLanguages = new List<Language>()
+                    {
+                        DefaultLanguage,
+                    };
+            }
 
             Builds = new List<Build>()
             {
@@ -170,6 +186,8 @@ namespace MetroDemo
 
         }
 
+        public Language DefaultLanguage = null;
+
         public List<Product> MainProducts { get; set; }
 
         public List<Product> AdditionalProducts { get; set; }
@@ -178,14 +196,7 @@ namespace MetroDemo
 
         public List<Language> Languages { get; set; }
 
-        public List<Language> SelectedLanguages
-        {
-            get { return _selectedLanguages ?? (_selectedLanguages = new List<Language>()
-            {
-                new Language { Id="en-us", Name="English" },
-            }); }
-            set { _selectedLanguages = value; }
-        }
+
 
         public bool UseSameLanguagesForAllProducts { get; set; }
 
@@ -213,6 +224,124 @@ namespace MetroDemo
         }
 
         public string Error { get { return string.Empty; } }
+
+
+
+        public List<Language> SelectedLanguages
+        {
+            get
+            {
+                if (_selectedLanguages == null)
+                {
+                    _selectedLanguages = new List<Language>()
+                    {
+                        DefaultLanguage,
+                    };
+                }
+
+                return _selectedLanguages.OrderBy(l => l.Order).ToList();
+            }
+            set { _selectedLanguages = value; }
+        }
+
+        public List<Language> GetLanguages(string productId)
+        {
+            var languages = _selectedLanguages.Where(
+                    l => l.ProductId == productId);
+
+            if (!languages.Any())
+            {
+                foreach (var language in _selectedLanguages.Where(l => l.ProductId == null).OrderBy(l => l.Order).ToList())
+                {
+                    _selectedLanguages.Add(new Language()
+                    {
+                        Id = language.Id,
+                        Name = language.Name,
+                        Order = 1,
+                        ProductId = productId
+                    });  
+                }
+
+                languages = _selectedLanguages.Where(
+                    l => l.ProductId == productId);
+            }
+
+            languages = FormatLanguage(languages.Distinct().OrderBy(l => l.Order).ToList());
+
+            return languages.ToList();
+        }
+
+        public Language GetLanguage(string productId, string languageId)
+        {
+            var language = _selectedLanguages.FirstOrDefault(
+                    l => l.ProductId == productId && l.Id == languageId);
+            return language;
+        }
+
+        public void AddLanguages(string productId, List<Language> languages)
+        {
+            var currentLangs = _selectedLanguages.Where(
+                                l => l.ProductId == productId).ToList();
+
+            foreach (var language in currentLangs)
+            {
+                _selectedLanguages.Remove(language);
+            }
+
+            var order = 1;
+            foreach (var language in languages.Where(l => l.Order != 1))
+            {
+                order ++;
+                language.Order = order;
+            }
+
+            _selectedLanguages.AddRange(languages);
+        }
+
+        public void ChangePrimaryLanguage(string productId, Language primaryLanguage)
+        {
+            var languageItem = _selectedLanguages.FirstOrDefault(
+                                l => l.ProductId == productId && l.Id == primaryLanguage.Id);
+            var otherProductLanguages = _selectedLanguages.Where(
+                l => l.ProductId == productId && l.Id != primaryLanguage.Id);
+
+            if (languageItem != null)
+            {
+                languageItem.Order = 1; 
+            }
+            
+            var order = 1;
+            foreach (var productLanguage in otherProductLanguages)
+            {
+                order++;
+                productLanguage.Order = order;
+            }
+        }
+
+        public void RemoveLanguage(string productId, string languageId)
+        {
+            var currentLangs = _selectedLanguages.Where(
+                 l => l.ProductId == productId && l.Id == languageId).ToList();
+
+            foreach (var removelanguage in currentLangs)
+            {
+                _selectedLanguages.Remove(removelanguage);
+            }
+        }
+
+        private List<Language> FormatLanguage(List<Language> languages)
+        {
+            if (languages == null) return new List<Language>();
+            foreach (var language in languages)
+            {
+                language.Name = Regex.Replace(language.Name, @"\s\(Primary\)", "", RegexOptions.IgnoreCase);
+            }
+            if (languages.Any())
+            {
+                languages.FirstOrDefault().Name += " (Primary)";
+            }
+            return languages;
+        }
 
     }
 

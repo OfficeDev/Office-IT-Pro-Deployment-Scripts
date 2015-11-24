@@ -29,7 +29,6 @@ namespace MetroDemo.ExampleViews
     public partial class ProductView : UserControl
     {
         private LanguagesDialog languagesDialog = null;
-        public List<Language> SelectedLanguages { get; set; }
         public event TransitionTabEventHandler TransitionTab;
 
 
@@ -48,17 +47,7 @@ namespace MetroDemo.ExampleViews
 
                 MainTabControl.SelectedIndex = 0;
 
-                if (SelectedLanguages == null)
-                {
-                    SelectedLanguages= new List<Language>();
-                }
-                if (SelectedLanguages.Count == 0)
-                {
-                    SelectedLanguages = GlobalObjects.ViewModel.Languages.Where(l => l.Id.ToLower() == "en-us").ToList();
-                    var viewModelSelectLangs = GlobalObjects.ViewModel.SelectedLanguages;
-                }
-
-                LanguageList.ItemsSource = FormatLanguage(SelectedLanguages);
+                LanguageList.ItemsSource = GlobalObjects.ViewModel.GetLanguages(null);
 
                 LoadXml();
             }
@@ -92,7 +81,7 @@ namespace MetroDemo.ExampleViews
                     };
                     languagesDialog.Closing += (o, args) =>
                     {
-                        var currentItems2 = (List<Language>) LanguageList.ItemsSource ?? new List<Language>();
+                        var currentItems2 = (List<Language>)LanguageList.ItemsSource ?? new List<Language>();
 
                         if (languagesDialog.SelectedItems != null)
                         {
@@ -115,20 +104,11 @@ namespace MetroDemo.ExampleViews
                             languages.ProductId = selectProductId;
                         }
 
-                        var currentLangs = GlobalObjects.ViewModel.SelectedLanguages.Where(
-                                            l => l.ProductId == selectProductId);
-
-                        foreach (var language in currentLangs)
-                        {
-                            GlobalObjects.ViewModel.SelectedLanguages.Remove(language);
-                        }
-
-                        GlobalObjects.ViewModel.SelectedLanguages.AddRange(selectedLangs);
+                        GlobalObjects.ViewModel.AddLanguages(selectProductId, selectedLangs);
 
                         LanguageList.ItemsSource = null;
                         LanguageList.ItemsSource = selectedLangs;
 
-                        languagesDialog = null;
                     };
                 }
                 languagesDialog.Launch();
@@ -154,27 +134,18 @@ namespace MetroDemo.ExampleViews
                 }
             }
 
-            var defaultLangs = GlobalObjects.ViewModel.SelectedLanguages.Where(
-                              l => l.ProductId == null).ToList();
-
-            var currentLangs = GlobalObjects.ViewModel.SelectedLanguages.Where(
-                                l => l.ProductId == selectedProductId).ToList();
-
-            if (!currentLangs.Any())
-            {
-                currentLangs = defaultLangs;
-            }
-
-            if (currentLangs.Any())
-            {
-                var selectedLangs = FormatLanguage(currentLangs.Distinct().ToList()).ToList();
-                LanguageList.ItemsSource = selectedLangs;
-            }
-         
+            var languages = GlobalObjects.ViewModel.GetLanguages(selectedProductId);
+            LanguageList.ItemsSource = languages;
         }
 
         private void RemoveSelectedLanguage()
         {
+            string selectProductId = null;
+            if (LanguageUnique.IsEnabled)
+            {
+                selectProductId = ((Product)LanguageUnique.SelectedItem).Id;
+            }
+
             var currentItems = (List<Language>)LanguageList.ItemsSource ?? new List<Language>();
             foreach (Language language in LanguageList.SelectedItems)
             {
@@ -183,24 +154,33 @@ namespace MetroDemo.ExampleViews
                     currentItems.Remove(language);
                 }
 
-                string selectProductId = null;
-                if (LanguageUnique.IsEnabled)
-                {
-                    selectProductId = ((Product)LanguageUnique.SelectedItem).Id;
-                }
 
-                var currentLangs = GlobalObjects.ViewModel.SelectedLanguages.Where(
-                        l => l.ProductId == selectProductId && l.Id == language.Id).ToList();
 
-                foreach (var removelanguage in currentLangs)
-                {
-                    GlobalObjects.ViewModel.SelectedLanguages.Remove(removelanguage);
-                }
+                GlobalObjects.ViewModel.RemoveLanguage(selectProductId, language.Id);
             }
             LanguageList.ItemsSource = null;
-            LanguageList.ItemsSource = FormatLanguage(currentItems);
+            LanguageList.ItemsSource = GlobalObjects.ViewModel.GetLanguages(selectProductId);
         }
 
+        private void ChangePrimaryLanguage()
+        {
+            var currentItems = (List<Language>)LanguageList.ItemsSource ?? new List<Language>();
+            if (currentItems.Count <= 0) return;
+            if (LanguageList.SelectedItems.Count != 1) return;
+
+            var selectedLanguage = LanguageList.SelectedItems.Cast<Language>().FirstOrDefault();
+
+            string selectProductId = null;
+            if (LanguageUnique.IsEnabled)
+            {
+                selectProductId = ((Product)LanguageUnique.SelectedItem).Id;
+            }
+
+            GlobalObjects.ViewModel.ChangePrimaryLanguage(selectProductId, selectedLanguage);
+
+            LanguageList.ItemsSource = null;
+            LanguageList.ItemsSource = GlobalObjects.ViewModel.GetLanguages(selectProductId);
+        }
 
         public void LoadXml()
         {
@@ -558,24 +538,7 @@ namespace MetroDemo.ExampleViews
         {
             try
             {
-                var currentItems = (List<Language>)LanguageList.ItemsSource ?? new List<Language>();
-                if (currentItems.Count <= 0) return;
-                if (LanguageList.SelectedItems.Count != 1) return;
-
-                var selectedLanguage = LanguageList.SelectedItems.Cast<Language>().FirstOrDefault();
-                if (selectedLanguage != null)
-                {
-                    currentItems.Remove(selectedLanguage);
-                }
-
-                var newLangList = new List<Language>
-                {
-                    selectedLanguage
-                };
-                newLangList.AddRange(currentItems);
-
-                LanguageList.ItemsSource = null;
-                LanguageList.ItemsSource = FormatLanguage(newLangList);
+                ChangePrimaryLanguage();
             }
             catch (Exception ex)
             {

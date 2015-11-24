@@ -14,20 +14,23 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Models
 
         public string ProductId { get; set; }
 
+        public int Order { get; set; }
+
         public bool Equals(Language other)
         {
             var localId = Id;
             var localName = Name;
+            var localProductId = ProductId;
             if (localId == null) localId = "";
             if (localName == null) localName = "";
 
             var otherId = other.Id;
             var otherName = other.Name;
+            var otherProductId = other.ProductId;
             if (otherId == null) otherId = "";
             if (otherName == null) otherName = "";
 
-
-            if (localId.ToLower() == otherId.ToLower() && localName.ToUpper() == otherName.ToUpper())
+            if (localId.ToLower() == otherId.ToLower() && localName.ToUpper() == otherName.ToUpper() && localProductId == otherProductId)
                 return true;
 
             return false;

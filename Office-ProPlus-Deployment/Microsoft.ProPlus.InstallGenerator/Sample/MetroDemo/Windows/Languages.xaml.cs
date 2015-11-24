@@ -24,7 +24,7 @@ namespace MetroDemo.ExampleWindows
 
         public LanguagesDialog()
         {
-            this.DataContext = new MainWindowViewModel(DialogCoordinator.Instance);
+            this.DataContext = GlobalObjects.ViewModel;
             this.InitializeComponent();
             this.Closing += (s, e) =>
                 {
