@@ -48,9 +48,9 @@ namespace MetroDemo
             {
                 if (!GlobalObjects.ViewModel.ResetXml)
                 {
-                    ProductView.UpdateXml();
-                    DisplayView.UpdateXml();
-                    UpdateView.UpdateXml();
+                   ProductView.UpdateXml();
+                   DisplayView.UpdateXml();
+                   UpdateView.UpdateXml();
                 }
                 GlobalObjects.ViewModel.ResetXml = false;
 

@@ -128,6 +128,7 @@
     <Compile Include="Models\Enums.cs" />
     <Compile Include="Models\ExcludeProduct.cs" />
     <Compile Include="Models\Language.cs" />
+    <Compile Include="Models\OfficeBranch.cs" />
     <Compile Include="Models\Product.cs" />
     <Compile Include="Models\Build.cs" />
     <Compile Include="Navigation\HomePage.xaml.cs">

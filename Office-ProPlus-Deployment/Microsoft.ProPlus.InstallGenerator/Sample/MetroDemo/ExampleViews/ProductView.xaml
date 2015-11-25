@@ -101,10 +101,7 @@
                                 <StackPanel Grid.Row="0" Grid.Column="2" HorizontalAlignment="Left">
                                     <Label Content="Branch" Style="{StaticResource MetroLabelHeader}" />
                                     <ComboBox x:Name="ProductBranch" Width="240" Height="35" Margin="0, 10, 0, 0" SelectedIndex="0" 
-                                      FontSize="20">
-                                        <ComboBoxItem Content="Current" Tag="Current" />
-                                        <ComboBoxItem Content="Business" Tag="Business" />
-                                        <ComboBoxItem Content="First Release Business" Tag="FirstReleaseBusiness" />
+                                              FontSize="20" ItemsSource="{Binding Branches}" DisplayMemberPath="Name" >
                                     </ComboBox>
                                 </StackPanel>
 

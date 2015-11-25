@@ -52,7 +52,7 @@
     <Compile Include="Model\ConfigurationXml.cs" />
     <Compile Include="Model\ODTAdd.cs" />
     <Compile Include="Model\ODTDisplay.cs" />
-    <Compile Include="Model\ODTExcludedApp.cs" />
+    <Compile Include="Model\ODTExcludeApp.cs" />
     <Compile Include="Model\ODTProperties.cs" />
     <Compile Include="Model\ODTLogging.cs" />
     <Compile Include="Model\ODTLanguage.cs" />

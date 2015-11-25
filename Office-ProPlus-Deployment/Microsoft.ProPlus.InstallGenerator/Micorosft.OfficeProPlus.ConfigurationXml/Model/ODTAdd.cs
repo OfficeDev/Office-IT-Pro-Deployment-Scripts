@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
 using Micorosft.OfficeProPlus.ConfigurationXml;
@@ -20,5 +21,10 @@ namespace OfficeInstallGenerator.Model
 
         public List<ODTProduct> Products { get; set; }
 
+        public bool IsLanguagesSameForAllProducts()
+        {
+            return this.Products.All(productMain => !this.Products.Where(p => !String.Equals(p.ID, productMain.ID, StringComparison.CurrentCultureIgnoreCase))
+                   .Any(productComp => productMain.Languages.Any(languageMain => productComp.Languages.All(l => l.ID.ToLower() != languageMain.ID.ToLower()))));
+        }
     }
 }

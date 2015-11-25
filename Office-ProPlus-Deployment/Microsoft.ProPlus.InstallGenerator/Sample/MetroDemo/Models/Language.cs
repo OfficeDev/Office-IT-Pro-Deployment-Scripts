@@ -30,7 +30,7 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Models
             if (otherId == null) otherId = "";
             if (otherName == null) otherName = "";
 
-            if (localId.ToLower() == otherId.ToLower() && localName.ToUpper() == otherName.ToUpper() && localProductId == otherProductId)
+            if (localId.ToLower() == otherId.ToLower() && localProductId == otherProductId)
                 return true;
 
             return false;

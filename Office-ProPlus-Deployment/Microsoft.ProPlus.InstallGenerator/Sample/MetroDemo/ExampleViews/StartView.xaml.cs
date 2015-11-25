@@ -64,6 +64,7 @@ namespace MetroDemo.ExampleViews
                 {
                     var filename = dlg.FileName;
 
+                    GlobalObjects.ViewModel.ResetXml = true;
                     GlobalObjects.ViewModel.ConfigXmlParser.LoadXml(filename);
 
                     this.TransitionTab(this, new TransitionTabEventArgs()

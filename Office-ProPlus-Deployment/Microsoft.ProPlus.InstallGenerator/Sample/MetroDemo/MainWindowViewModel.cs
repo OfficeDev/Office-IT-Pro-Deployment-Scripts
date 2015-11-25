@@ -15,6 +15,8 @@ using MetroDemo.Models;
 using System.Windows.Input;
 using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
+using Micorosft.OfficeProPlus.ConfigurationXml;
+using Microsoft.OfficeProPlus.InstallGen.Presentation.Models;
 using Microsoft.OfficeProPlus.InstallGenerator.Models;
 using OfficeInstallGenerator;
 
@@ -62,6 +64,28 @@ namespace MetroDemo
                 new Build()
                 {
                     Version = "16.0.4949.1003"
+                }
+            };
+
+            Branches = new List<OfficeBranch>()
+            {
+                new OfficeBranch()
+                {
+                    Branch = Branch.Current,
+                    Name = "Current",
+                    Id = "Current"
+                },
+                new OfficeBranch()
+                {
+                    Branch = Branch.Business,
+                    Name = "Business",
+                    Id = "Business"
+                },
+                new OfficeBranch()
+                {
+                    Branch = Branch.FirstReleaseBusiness,
+                    Name = "First Release Business",
+                    Id = "FirstReleaseBusiness"
                 }
             };
 
@@ -196,7 +220,7 @@ namespace MetroDemo
 
         public List<Language> Languages { get; set; }
 
-
+        public List<OfficeBranch> Branches { get; set; }
 
         public bool UseSameLanguagesForAllProducts { get; set; }
 
@@ -246,8 +270,20 @@ namespace MetroDemo
 
         public List<Language> GetLanguages(string productId)
         {
+            if (productId != null) productId = productId.ToLower();
+
             var languages = _selectedLanguages.Where(
                     l => l.ProductId == productId);
+
+            if (!languages.Any())
+            {
+                languages = _selectedLanguages.Where(l => l.ProductId == "O365ProPlusRetail".ToLower());
+            }
+
+            if (!languages.Any())
+            {
+                languages = _selectedLanguages.Where(l => l.ProductId == "O365BusinessRetail".ToLower());
+            }
 
             if (!languages.Any())
             {
@@ -266,6 +302,29 @@ namespace MetroDemo
                     l => l.ProductId == productId);
             }
 
+            if (!languages.Any())
+            {
+                _selectedLanguages.Add(new Language()
+                {
+                    Id = DefaultLanguage.Id,
+                    Name = DefaultLanguage.Name,
+                    Order = 1,
+                    ProductId = productId
+                });  
+            }
+
+            foreach (var language in languages)
+            {
+                if (language.Name == null)
+                {
+                    var langLookup = this.Languages.FirstOrDefault(l => l.Id.ToLower() == language.Id.ToLower());
+                    if (langLookup != null)
+                    {
+                        language.Name = langLookup.Name;
+                    }
+                }
+            }
+
             languages = FormatLanguage(languages.Distinct().OrderBy(l => l.Order).ToList());
 
             return languages.ToList();
@@ -273,6 +332,8 @@ namespace MetroDemo
 
         public Language GetLanguage(string productId, string languageId)
         {
+            if (productId != null) productId = productId.ToLower();
+
             var language = _selectedLanguages.FirstOrDefault(
                     l => l.ProductId == productId && l.Id == languageId);
             return language;
@@ -280,6 +341,8 @@ namespace MetroDemo
 
         public void AddLanguages(string productId, List<Language> languages)
         {
+            if (productId != null) productId = productId.ToLower();
+
             var currentLangs = _selectedLanguages.Where(
                                 l => l.ProductId == productId).ToList();
 
@@ -295,11 +358,40 @@ namespace MetroDemo
                 language.Order = order;
             }
 
+            foreach (var language in languages)
+            {
+                language.ProductId = language.ProductId != null ? language.ProductId.ToLower() : language.ProductId;
+            }
+
             _selectedLanguages.AddRange(languages);
+        }
+
+        public void AddLanguage(string productId, Language language)
+        {
+            if (productId != null) productId = productId.ToLower();
+
+            var currentLangs = _selectedLanguages.Where(
+                                l => l.ProductId == productId).ToList();
+
+            if (currentLangs.Any(l => l.Id.ToLower() == language.Id.ToLower()))
+            {
+                return;
+            }
+           
+            if (currentLangs.Count > 0)
+            {
+                language.Order = 2;
+            }
+
+            language.ProductId = language.ProductId != null ? language.ProductId.ToLower() : language.ProductId;
+
+            _selectedLanguages.Add(language);
         }
 
         public void ChangePrimaryLanguage(string productId, Language primaryLanguage)
         {
+            if (productId != null) productId = productId.ToLower();
+
             var languageItem = _selectedLanguages.FirstOrDefault(
                                 l => l.ProductId == productId && l.Id == primaryLanguage.Id);
             var otherProductLanguages = _selectedLanguages.Where(
@@ -320,6 +412,8 @@ namespace MetroDemo
 
         public void RemoveLanguage(string productId, string languageId)
         {
+            if (productId != null) productId = productId.ToLower();
+
             var currentLangs = _selectedLanguages.Where(
                  l => l.ProductId == productId && l.Id == languageId).ToList();
 
@@ -329,12 +423,34 @@ namespace MetroDemo
             }
         }
 
+        public void ClearLanguages()
+        {
+            _selectedLanguages = new List<Language>();
+        }
+
+
+        public void ResetExcludedApps()
+        {
+            foreach (var excludedApp in ExcludeProducts)
+            {
+                excludedApp.Included = true;
+            }
+        }
+
+
         private List<Language> FormatLanguage(List<Language> languages)
         {
             if (languages == null) return new List<Language>();
             foreach (var language in languages)
             {
-                language.Name = Regex.Replace(language.Name, @"\s\(Primary\)", "", RegexOptions.IgnoreCase);
+                if (language.Name != null)
+                {
+                    language.Name = Regex.Replace(language.Name, @"\s\(Primary\)", "", RegexOptions.IgnoreCase);
+                }
+                else
+                {
+                    var test = "";
+                }
             }
             if (languages.Any())
             {
@@ -342,6 +458,7 @@ namespace MetroDemo
             }
             return languages;
         }
+
 
     }
 

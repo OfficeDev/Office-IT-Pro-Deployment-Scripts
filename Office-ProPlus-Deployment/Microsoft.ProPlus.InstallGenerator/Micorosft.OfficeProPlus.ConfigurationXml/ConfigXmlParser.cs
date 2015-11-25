@@ -67,7 +67,6 @@ namespace OfficeInstallGenerator
             LoadUpdates();
 
             LoadDisplay();
-            
         }
 
         private void LoadAdds()
@@ -240,6 +239,7 @@ namespace OfficeInstallGenerator
                 }
             }
         }
+
 
         private void LoadExcludedApps(XmlNode xmlNode, ODTProduct addItem)
         {
@@ -500,10 +500,26 @@ namespace OfficeInstallGenerator
                     SetAttribute(forceAppShutdownNode, "Value",
                         this.ConfigurationXml.Properties.ForceAppShutdown.Value.ToString().ToUpper());
                 }
+
+
+                if (this.ConfigurationXml.Properties.SharedComputerLicensing.HasValue)
+                {
+                    var sharedComputerLicensing =
+                        _xmlDoc.DocumentElement.SelectSingleNode("./Property[@Name='SharedComputerLicensing']");
+                    if (sharedComputerLicensing == null)
+                    {
+                        sharedComputerLicensing = _xmlDoc.CreateElement("Property");
+                        SetAttribute(sharedComputerLicensing, "Name", "SharedComputerLicensing");
+                        _xmlDoc.DocumentElement.AppendChild(sharedComputerLicensing);
+                    }
+
+                    SetAttribute(sharedComputerLicensing, "Value",
+                         this.ConfigurationXml.Properties.SharedComputerLicensing == true ? "1" : "0");
+                }
+
+
             }
         }
-
-
 
 
         private void LoadLogging()

@@ -18,6 +18,7 @@ using MetroDemo.ExampleWindows;
 using MetroDemo.Models;
 using Micorosft.OfficeProPlus.ConfigurationXml;
 using Micorosft.OfficeProPlus.ConfigurationXml.Model;
+using Microsoft.OfficeProPlus.InstallGen.Presentation.Models;
 using Microsoft.OfficeProPlus.InstallGenerator.Models;
 using OfficeInstallGenerator.Model;
 
@@ -36,20 +37,22 @@ namespace MetroDemo.ExampleViews
             InitializeComponent();
         }
 
-        private void ProductView_Loaded(object sender, RoutedEventArgs e)
+        private void ProductView_Loaded(object sender, RoutedEventArgs e)             
         {
             try
             {
-                var splitCount = Convert.ToInt32(Math.Round((double)GlobalObjects.ViewModel.ExcludeProducts.Count / 2, 0));
-
-                ExcludedApps1.ItemsSource = GlobalObjects.ViewModel.ExcludeProducts.Take(splitCount).ToList();
-                ExcludedApps2.ItemsSource = GlobalObjects.ViewModel.ExcludeProducts.Skip(splitCount).ToList();
+                //GlobalObjects.ViewModel.ResetExcludedApps();
+                LoadExcludedProducts();
 
                 MainTabControl.SelectedIndex = 0;
 
                 LanguageList.ItemsSource = GlobalObjects.ViewModel.GetLanguages(null);
 
+                LanguageUnique.SelectionChanged -= LanguageUnique_OnSelectionChanged;
+
                 LoadXml();
+
+                LanguageUnique.SelectionChanged += LanguageUnique_OnSelectionChanged;
             }
             catch (Exception ex)
             {
@@ -118,8 +121,10 @@ namespace MetroDemo.ExampleViews
 
         private void LanguageChange()
         {
+            var languages = GlobalObjects.ViewModel.GetLanguages(GetSelectedProduct());
+
             LanguageList.ItemsSource = null;
-            LanguageList.ItemsSource = GlobalObjects.ViewModel.GetLanguages(GetSelectedProduct());
+            LanguageList.ItemsSource = languages;
         }
 
         private void RemoveSelectedLanguage()
@@ -161,13 +166,9 @@ namespace MetroDemo.ExampleViews
         public void LoadXml()
         {
             var languages = new List<Language>
-                {
-                    new Language()
-                    {
-                        Id = "en-us",
-                        Name = "English"
-                    }
-                };
+            {
+                GlobalObjects.ViewModel.DefaultLanguage
+            };
 
             AdditionalProducts.SelectedItems.Clear();
 
@@ -194,9 +195,9 @@ namespace MetroDemo.ExampleViews
                 ProductUpdateSource.Text = configXml.Add.SourcePath != null ? configXml.Add.SourcePath.ToString() : "";
 
                 var branchIndex = 0;
-                foreach (ComboBoxItem branchItem in ProductBranch.Items)
+                foreach (OfficeBranch branchItem in ProductBranch.Items)
                 {
-                    if (branchItem.Tag.ToString().ToUpper() == configXml.Add.Branch.ToString().ToUpper())
+                    if (branchItem.Id.ToUpper() == configXml.Add.Branch.ToString().ToUpper())
                     {
                         ProductBranch.SelectedIndex = branchIndex;
                         break;
@@ -206,7 +207,11 @@ namespace MetroDemo.ExampleViews
 
                 if (configXml.Add.Products != null && configXml.Add.Products.Count > 0)
                 {
-                    languages = new List<Language>();
+                    LanguageList.ItemsSource = null;
+
+                    GlobalObjects.ViewModel.ClearLanguages();
+
+                    var n = 0;
                     foreach (var product in configXml.Add.Products)
                     {
                         var index = 0;
@@ -230,22 +235,55 @@ namespace MetroDemo.ExampleViews
 
                         if (product.Languages != null)
                         {
+                            if (n == 0) languages.Clear();
+
+                            var order = 1;
                             foreach (var language in product.Languages)
                             {
-                                var languageLookup =
-                                    GlobalObjects.ViewModel.Languages.FirstOrDefault(l => l.Id.ToLower() == language.ID.ToLower());
-                                if (languageLookup != null)
+                                var languageLookup = GlobalObjects.ViewModel.Languages.FirstOrDefault(
+                                                        l => l.Id.ToLower() == language.ID.ToLower());
+                                if (languageLookup == null) continue;
+                                string productId = null;
+
+                                if (!configXml.Add.IsLanguagesSameForAllProducts())
                                 {
-                                    languages.Add(new Language()
-                                    {
-                                        Id = languageLookup.Id,
-                                        Name = languageLookup.Name
-                                    });
+                                    productId = product.ID;
+                                }
+
+                                var newLanguage = new Language()
+                                {
+                                    Id = languageLookup.Id,
+                                    Name = languageLookup.Name,
+                                    Order = order,
+                                    ProductId = productId
+                                };
+
+                                GlobalObjects.ViewModel.AddLanguage(productId, newLanguage);
+
+                                if (n == 0) languages.Add(newLanguage);
+                                order++;
+                            }
+
+                            n++;
+                          
+                            UseLangForAllProducts.IsChecked = configXml.Add.IsLanguagesSameForAllProducts();
+                        }
+
+                        if (product.ExcludeApps != null)
+                        {
+                            foreach (var excludedApp in product.ExcludeApps)
+                            {
+                                var vmExcludedApp =
+                                    GlobalObjects.ViewModel.ExcludeProducts.FirstOrDefault(
+                                        e => e.DisplayName.ToLower() == excludedApp.ID.ToLower());
+                                if (vmExcludedApp != null)
+                                {
+                                    vmExcludedApp.Included = false;
                                 }
                             }
                         }
 
-
+                        LoadExcludedProducts();
                     }
                 }
                 else
@@ -262,7 +300,6 @@ namespace MetroDemo.ExampleViews
 
             }
 
-            LanguageList.ItemsSource = null;
             var distictList = languages.Distinct().ToList();
             LanguageList.ItemsSource = FormatLanguage(distictList);
         }
@@ -287,8 +324,8 @@ namespace MetroDemo.ExampleViews
 
             if (ProductBranch.SelectedItem != null)
             {
-                var selectedItem = (ComboBoxItem) ProductBranch.SelectedItem;
-                configXml.Add.Branch = (Branch) Enum.Parse(typeof(Branch), selectedItem.Tag.ToString());
+                var selectedItem = (OfficeBranch) ProductBranch.SelectedItem;
+                configXml.Add.Branch = selectedItem.Branch;
             }
 
             if (configXml.Add.Products == null)
@@ -370,12 +407,12 @@ namespace MetroDemo.ExampleViews
 
                 foreach (var excludedApp in excludedApps)
                 {
-                    if (existingProduct.ExcludedApps == null)
+                    if (existingProduct.ExcludeApps == null)
                     {
-                        existingProduct.ExcludedApps = new List<ODTExcludedApp>();
+                        existingProduct.ExcludeApps = new List<ODTExcludeApp>();
                     }
 
-                    existingProduct.ExcludedApps.Add(new ODTExcludedApp()
+                    existingProduct.ExcludeApps.Add(new ODTExcludeApp()
                     {
                         ID = excludedApp.DisplayName
                     });
@@ -390,6 +427,16 @@ namespace MetroDemo.ExampleViews
             }
         }
 
+
+        private void LoadExcludedProducts()
+        {
+            ExcludedApps1.ItemsSource = null;
+            ExcludedApps2.ItemsSource = null;
+
+            var splitCount = Convert.ToInt32(Math.Round((double)GlobalObjects.ViewModel.ExcludeProducts.Count / 2, 0));
+            ExcludedApps1.ItemsSource = GlobalObjects.ViewModel.ExcludeProducts.Take(splitCount).ToList();
+            ExcludedApps2.ItemsSource = GlobalObjects.ViewModel.ExcludeProducts.Skip(splitCount).ToList();
+        }
 
         private IEnumerable<ExcludeProduct> ExcludeProducts()
         {

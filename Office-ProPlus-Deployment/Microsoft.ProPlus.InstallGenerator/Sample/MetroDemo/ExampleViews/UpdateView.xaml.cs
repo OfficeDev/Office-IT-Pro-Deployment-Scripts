@@ -14,6 +14,7 @@ using System.Windows.Shapes;
 using MetroDemo.Events;
 using Micorosft.OfficeProPlus.ConfigurationXml;
 using Micorosft.OfficeProPlus.ConfigurationXml.Model;
+using Microsoft.OfficeProPlus.InstallGen.Presentation.Models;
 
 namespace MetroDemo.ExampleViews
 {
@@ -47,12 +48,16 @@ namespace MetroDemo.ExampleViews
                updatesEnabled = EnabledSwitch.IsChecked.Value;
             }
            
-            var updateBranch = UpdateBranch.Text;
+            var updateBranch = (OfficeBranch) UpdateBranch.SelectedItem;
             var txtTargetVersion = UpdateTargetVersion.Text;
             Version targetVersion = null;
 
+            if (updateBranch != null)
+            {
+                configXml.Updates.Branch = updateBranch.Branch;
+            }
+
             configXml.Updates.Enabled = updatesEnabled;
-            configXml.Updates.Branch = (Branch)Enum.Parse(typeof(Branch), updateBranch);
             configXml.Updates.UpdatePath = UpdateUpdatePath.Text;
 
             if (Version.TryParse(txtTargetVersion, out targetVersion))
