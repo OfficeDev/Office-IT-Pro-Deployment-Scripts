@@ -148,7 +148,11 @@ namespace OfficeInstallGenerator
                 addItem.Products.Add(product);
 
                 LoadLanguages(productNode, product);
+
+                LoadExcludedApps(productNode, product);
             }
+
+
         }
 
         private void SaveProducts()
@@ -167,10 +171,28 @@ namespace OfficeInstallGenerator
 
             if (this.ConfigurationXml.Add != null)
             {
+                if (this.ConfigurationXml.Add.Version != null)
+                {
+                    SetAttribute(addNode, "Version", this.ConfigurationXml.Add.Version.ToString());
+                }
+                else
+                {
+                    RemoveAttribute(addNode, "Version");
+                }
+
                 SetAttribute(addNode, "OfficeClientEdition",
                     this.ConfigurationXml.Add.OfficeClientEdition == OfficeClientEdition.Office32Bit ? "32" : "64");
 
                 SetAttribute(addNode, "Branch", this.ConfigurationXml.Add.Branch.ToString());
+
+                if (this.ConfigurationXml.Add.SourcePath != null)
+                {
+                    SetAttribute(addNode, "SourcePath", this.ConfigurationXml.Add.SourcePath);
+                }
+                else
+                {
+                    RemoveAttribute(addNode, "SourcePath");
+                }
             }
 
             if (this.ConfigurationXml.Add != null && this.ConfigurationXml.Add.Products != null)
@@ -198,15 +220,15 @@ namespace OfficeInstallGenerator
                             }
                         }
 
-                        if (product.ExcludedApps != null)
+                        if (product.ExcludeApps != null)
                         {
-                            foreach (var excludedApp in product.ExcludedApps)
+                            foreach (var excludedApp in product.ExcludeApps)
                             {
                                 var excludeAppNode =
-                                    productNode.SelectSingleNode("./ExcludedApp[@ID='" + excludedApp.ID + "']");
+                                    productNode.SelectSingleNode("./ExcludeApp[@ID='" + excludedApp.ID + "']");
                                 if (excludeAppNode == null)
                                 {
-                                    excludeAppNode = _xmlDoc.CreateElement("Language");
+                                    excludeAppNode = _xmlDoc.CreateElement("ExcludeApp");
                                     SetAttribute(excludeAppNode, "ID", excludedApp.ID);
                                     productNode.AppendChild(excludeAppNode);
                                 }
@@ -216,6 +238,30 @@ namespace OfficeInstallGenerator
 
                     }
                 }
+            }
+        }
+
+        private void LoadExcludedApps(XmlNode xmlNode, ODTProduct addItem)
+        {
+            var excludeApps = xmlNode.SelectNodes("./ExcludeApp");
+            foreach (XmlNode excludeAppNode in excludeApps)
+            {
+                var excludedApp = new ODTExcludeApp();
+
+                if (excludeAppNode.Attributes["ID"] == null) continue;
+
+                var productId = excludeAppNode.Attributes["ID"].Value;
+                if (!string.IsNullOrEmpty(productId))
+                {
+                    excludedApp.ID = productId;
+                }
+
+                if (addItem.ExcludeApps == null)
+                {
+                    addItem.ExcludeApps = new List<ODTExcludeApp>();
+                }
+
+                addItem.ExcludeApps.Add(excludedApp);
             }
         }
 

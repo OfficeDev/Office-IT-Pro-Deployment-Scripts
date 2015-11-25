@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Micorosft.OfficeProPlus.ConfigurationXml.Model
 {
-    public class ODTExcludedApp
+    public class ODTExcludeApp
     {
 
         public string ID { get; set; }

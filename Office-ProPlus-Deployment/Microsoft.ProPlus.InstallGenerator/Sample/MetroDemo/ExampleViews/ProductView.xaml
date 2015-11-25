@@ -6,6 +6,7 @@
              xmlns:MetroDemo="clr-namespace:MetroDemo"
              xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:exampleViews="clr-namespace:MetroDemo.ExampleViews"
+             xmlns:models="clr-namespace:MetroDemo.Models"
              mc:Ignorable="d"
              d:DesignHeight="600"
              d:DesignWidth="800"
@@ -241,11 +242,10 @@
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="Product" Binding="{Binding DisplayName}" Width="100" 
                                         IsReadOnly="True" FontSize="20" Foreground="{DynamicResource LabelTextBrushCustom}" />
-                                    <DataGridTemplateColumn Header="Status"   >
+                                    <DataGridTemplateColumn Header="Status" >
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
-                                                <Controls:ToggleSwitch
-                                                       IsChecked="{Binding Path=Included, Mode=TwoWay}"
+                                                <Controls:ToggleSwitch DataContext="{Binding}" IsChecked="{Binding Included, Mode=TwoWay}"
                                                        OnLabel="Included"
                                                        OffLabel="Excluded"
                                                        Margin="{StaticResource ControlMargin}" 
@@ -283,10 +283,11 @@
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <Controls:ToggleSwitch 
-                                                   IsChecked="True"
+                                                   DataContext="{Binding}" IsChecked="{Binding Included, Mode=TwoWay}"
                                                    OnLabel="Included"
                                                    OffLabel="Excluded"
-                                                   Margin="{StaticResource ControlMargin}" HorizontalAlignment="Right" />
+                                                   Margin="{StaticResource ControlMargin}" HorizontalAlignment="Right" 
+                                                   IsCheckedChanged="ToggleSwitch_OnIsCheckedChanged" />
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>

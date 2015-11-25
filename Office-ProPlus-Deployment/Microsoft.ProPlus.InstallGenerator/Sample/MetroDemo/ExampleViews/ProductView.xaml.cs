@@ -30,8 +30,7 @@ namespace MetroDemo.ExampleViews
     {
         private LanguagesDialog languagesDialog = null;
         public event TransitionTabEventHandler TransitionTab;
-
-
+        
         public ProductView()
         {
             InitializeComponent();
@@ -42,6 +41,7 @@ namespace MetroDemo.ExampleViews
             try
             {
                 var splitCount = Convert.ToInt32(Math.Round((double)GlobalObjects.ViewModel.ExcludeProducts.Count / 2, 0));
+
                 ExcludedApps1.ItemsSource = GlobalObjects.ViewModel.ExcludeProducts.Take(splitCount).ToList();
                 ExcludedApps2.ItemsSource = GlobalObjects.ViewModel.ExcludeProducts.Skip(splitCount).ToList();
 
@@ -296,6 +296,34 @@ namespace MetroDemo.ExampleViews
                 configXml.Add.Products = new List<ODTProduct>();   
             }
 
+            var versionText = "";
+            if (ProductVersion.SelectedIndex > -1)
+            {
+                var version = (Build) ProductVersion.SelectedValue;
+                versionText = version.Version;
+            }
+            else
+            {
+                versionText = ProductVersion.Text;
+            }
+
+            try
+            {
+                if (!string.IsNullOrEmpty(versionText))
+                {
+                    Version productVersion = null;
+                    Version.TryParse(versionText, out productVersion);
+                    configXml.Add.Version = productVersion;
+                }
+                else
+                {
+                    configXml.Add.Version = null;
+                }
+            }
+            catch { }
+
+            configXml.Add.SourcePath = ProductUpdateSource.Text.Length > 0 ? ProductUpdateSource.Text : null;
+
             var mainProduct = (Product) MainProducts.SelectedItem;
             if (mainProduct != null)
             {
@@ -349,7 +377,7 @@ namespace MetroDemo.ExampleViews
 
                     existingProduct.ExcludedApps.Add(new ODTExcludedApp()
                     {
-                        ID = excludedApp.Id
+                        ID = excludedApp.DisplayName
                     });
                 }
 
@@ -366,7 +394,7 @@ namespace MetroDemo.ExampleViews
         private IEnumerable<ExcludeProduct> ExcludeProducts()
         {
             if (ExcludedApps1.Items != null && ExcludedApps2.Items != null)
-            {                
+            {
                 var excludedProducts = ExcludedApps1.Items.Cast<ExcludeProduct>().ToList();
                 excludedProducts.AddRange(ExcludedApps2.Items.Cast<ExcludeProduct>().ToList());
                 return excludedProducts.Where(e => e.Status == ExcludedStatus.Excluded).ToList();
@@ -488,10 +516,17 @@ namespace MetroDemo.ExampleViews
             try
             {
                 var toggleSwitch = (ToggleSwitch) sender;
-
                 if (toggleSwitch != null)
                 {
-                    
+                    var context = (ExcludeProduct) toggleSwitch.DataContext;
+                    if (context != null)
+                    {
+                        if (toggleSwitch.IsChecked.HasValue)
+                        {
+                            context.Included = toggleSwitch.IsChecked.Value;
+
+                        }
+                    }
                 }
             }
             catch (Exception ex)
@@ -589,3 +624,4 @@ namespace MetroDemo.ExampleViews
 
     }
 }
+
