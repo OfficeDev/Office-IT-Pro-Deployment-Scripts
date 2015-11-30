@@ -5,13 +5,13 @@
                       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                       xmlns:converters="http://metro.mahapps.com/winfx/xaml/shared"
-                      Title="Information"
+                      Title=""
                       WindowStartupLocation="CenterOwner"
                       BorderThickness="1"
                       BorderBrush="{DynamicResource AccentColorBrush}"
                       mc:Ignorable="d"
                       x:Name="InformationDialogWindow" Loaded="InformationDialog_OnLoaded"
-                      TitlebarHeight="0" >
+                       IsMaxRestoreButtonEnabled="False" IsMinButtonEnabled="False"  ShowMinButton="True" ShowMaxRestoreButton="False " >
 
     <Window.Resources>
         <ResourceDictionary>
@@ -37,26 +37,18 @@
     </controls:MetroWindow.TitleTemplate>
 
     <Grid>
-
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="30" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <Button Width="30" Height="30" Grid.Column="0" Grid.Row="0" Content="X" HorizontalAlignment="Right"
-               x:Name="CloseWindow" Click="CloseWindow_OnClick" Background="Transparent"   ></Button>
-
-        <Border Grid.Row="1" BorderThickness="1">
-            <WebBrowser  Name="HelpInfo" Margin="5" >
-                
-                
-                
+        <Border Grid.Row="0" BorderThickness="1">
+            <WebBrowser  Name="HelpInfo" Margin="5"   >
+ 
             </WebBrowser>
         </Border>
-
     </Grid>
 
 </controls:MetroWindow>

@@ -65,18 +65,16 @@ namespace MetroDemo.ExampleViews
             }
         }
 
-        private void LaunchInformationDialog()
+        private void LaunchInformationDialog(string sourceName)
         {
             try
             {
-             
-
                 if (informationDialog == null)
                 {
 
                     informationDialog = new InformationDialog
                     {
-                        Height = 300,
+                        Height = 500,
                         Width = 400
                     };
                     informationDialog.Closed += (o, args) =>
@@ -89,7 +87,7 @@ namespace MetroDemo.ExampleViews
                     };
                 }
 
-                var filePath = AppDomain.CurrentDomain.BaseDirectory + @"HelpFiles\Product.html";
+                var filePath = AppDomain.CurrentDomain.BaseDirectory + @"HelpFiles\" + sourceName + ".html";
                 var helpFile = File.ReadAllText(filePath);
 
                 informationDialog.HelpInfo.NavigateToString(helpFile);
@@ -101,8 +99,7 @@ namespace MetroDemo.ExampleViews
                 MessageBox.Show("ERROR: " + ex.Message);
             }
         }
-
-
+        
         private void LaunchLanguageDialog()
         {
             try
@@ -161,6 +158,7 @@ namespace MetroDemo.ExampleViews
                 MessageBox.Show("ERROR: " + ex.Message);
             }
         }
+
 
         private void LanguageChange()
         {
@@ -742,7 +740,8 @@ namespace MetroDemo.ExampleViews
         {
             try
             {
-                LaunchInformationDialog();
+                var sourceName = ((dynamic) sender).Name;
+                LaunchInformationDialog(sourceName);
             }
             catch (Exception ex)
             {

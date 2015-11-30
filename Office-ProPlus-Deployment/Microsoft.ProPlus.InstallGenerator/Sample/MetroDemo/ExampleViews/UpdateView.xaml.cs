@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -13,6 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using MetroDemo.Events;
+using MetroDemo.ExampleWindows;
 using Micorosft.OfficeProPlus.ConfigurationXml;
 using Micorosft.OfficeProPlus.ConfigurationXml.Model;
 using Microsoft.OfficeProPlus.InstallGen.Presentation.Models;
@@ -74,6 +76,7 @@ namespace MetroDemo.ExampleViews
 
             }
         }
+
 
 
         public event TransitionTabEventHandler TransitionTab;
@@ -156,6 +159,59 @@ namespace MetroDemo.ExampleViews
 
         #endregion
 
+        #region "Info"
+
+        private InformationDialog informationDialog = null;
+
+        private void LaunchInformationDialog(string sourceName)
+        {
+            try
+            {
+                if (informationDialog == null)
+                {
+
+                    informationDialog = new InformationDialog
+                    {
+                        Height = 500,
+                        Width = 400
+                    };
+                    informationDialog.Closed += (o, args) =>
+                    {
+                        informationDialog = null;
+                    };
+                    informationDialog.Closing += (o, args) =>
+                    {
+
+                    };
+                }
+
+                var filePath = AppDomain.CurrentDomain.BaseDirectory + @"HelpFiles\" + sourceName + ".html";
+                var helpFile = File.ReadAllText(filePath);
+
+                informationDialog.HelpInfo.NavigateToString(helpFile);
+                informationDialog.Launch();
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("ERROR: " + ex.Message);
+            }
+        }
+        
+        private void ProductInfo_OnClick(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var sourceName = ((dynamic)sender).Name;
+                LaunchInformationDialog(sourceName);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("ERROR: " + ex.Message);
+            }
+        }
+
+        #endregion
 
     }
 }

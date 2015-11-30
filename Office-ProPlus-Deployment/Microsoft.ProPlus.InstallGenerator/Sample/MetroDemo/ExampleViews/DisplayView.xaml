@@ -53,11 +53,18 @@
 
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="200" />
-                            <ColumnDefinition Width="200" />
+                            <ColumnDefinition Width="140" />
+                            <ColumnDefinition Width="30" />
+                            <ColumnDefinition Width="230" />
                         </Grid.ColumnDefinitions>
                         <Label Content="Display Level" Style="{StaticResource MetroLabelHeader}" Grid.Column="0" />
-                        <Controls:ToggleSwitch x:Name="DisplayLevel" Grid.Column="1" 
+                        <Button Grid.Column="1" x:Name="DisplayLevelInfo" Width="30" Height="32" HorizontalAlignment="Left" Margin="0 0 0 0" 
+                                                Focusable="False"  Style="{StaticResource MetroInfoButton}" Click="ProductInfo_OnClick" >
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="../images/info.png" Width="20" Height="20"/>
+                            </StackPanel>
+                        </Button>
+                        <Controls:ToggleSwitch x:Name="DisplayLevel" Grid.Column="2" 
                                        IsChecked="True"
                                        OnLabel="Full"
                                        OffLabel="None"
@@ -66,13 +73,19 @@
 
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="200" />
-                            <ColumnDefinition Width="161.017" />
-                            <ColumnDefinition Width="38.983"/>
+                            <ColumnDefinition Width="140" />
+                            <ColumnDefinition Width="30" />
+                            <ColumnDefinition Width="230" />
                         </Grid.ColumnDefinitions>
                         <Label Content="Accept EULA" Style="{StaticResource MetroLabelHeader}" 
                            HorizontalAlignment="Left" Grid.Column="0" />
-                        <Controls:ToggleSwitch x:Name="AcceptEula" Grid.Column="1"
+                        <Button Grid.Column="1" x:Name="AcceptEulaInfo" Width="30" Height="32" HorizontalAlignment="Left" Margin="0 0 0 0" 
+                                                Focusable="False"  Style="{StaticResource MetroInfoButton}" Click="ProductInfo_OnClick" >
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="../images/info.png" Width="20" Height="20"/>
+                            </StackPanel>
+                        </Button>
+                        <Controls:ToggleSwitch x:Name="AcceptEula" Grid.Column="2"
                                    IsChecked="False"
                                    OnLabel="True"
                                    OffLabel="False"
@@ -81,12 +94,19 @@
 
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="200" />
-                            <ColumnDefinition Width="200" />
+                            <ColumnDefinition Width="150" />
+                            <ColumnDefinition Width="30" />
+                            <ColumnDefinition Width="250" />
                         </Grid.ColumnDefinitions>
                         <Label Content="Auto Activate" Style="{StaticResource MetroLabelHeader}" 
                            HorizontalAlignment="Left" Grid.Column="0" />
-                        <Controls:ToggleSwitch x:Name="AutoActivate" Grid.Column="1"
+                        <Button Grid.Column="1" x:Name="AutoActivateInfo" Width="30" Height="32" HorizontalAlignment="Left" Margin="0 0 0 0" 
+                                                Focusable="False"  Style="{StaticResource MetroInfoButton}" Click="ProductInfo_OnClick" >
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="../images/info.png" Width="20" Height="20"/>
+                            </StackPanel>
+                        </Button>
+                        <Controls:ToggleSwitch x:Name="AutoActivate" Grid.Column="2"
                                    IsChecked="False"
                                    OnLabel="Yes"
                                    OffLabel="No"
@@ -95,12 +115,19 @@
 
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="250" />
-                            <ColumnDefinition Width="150" />
+                            <ColumnDefinition Width="220" />
+                            <ColumnDefinition Width="30" />
+                            <ColumnDefinition Width="175" />
                         </Grid.ColumnDefinitions>
                         <Label Content="Force App Shutdown" Style="{StaticResource MetroLabelHeader}" 
                            HorizontalAlignment="Left"  Grid.Column="0"/>
-                        <Controls:ToggleSwitch x:Name="ForceAppShutdown" Grid.Column="1"
+                        <Button Grid.Column="1" x:Name="ForceAppShutdownInfo" Width="30" Height="32" HorizontalAlignment="Left" Margin="0 0 0 0" 
+                                                Focusable="False"  Style="{StaticResource MetroInfoButton}" Click="ProductInfo_OnClick" >
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="../images/info.png" Width="20" Height="20"/>
+                            </StackPanel>
+                        </Button>
+                        <Controls:ToggleSwitch x:Name="ForceAppShutdown" Grid.Column="2"
                                    IsChecked="False"
                                    OnLabel="True"
                                    OffLabel="False"
@@ -109,12 +136,19 @@
 
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="300" />
-                            <ColumnDefinition Width="100" />
+                            <ColumnDefinition Width="290" />
+                            <ColumnDefinition Width="30" />
+                            <ColumnDefinition Width="110" />
                         </Grid.ColumnDefinitions>
                         <Label Content="Shared Computer Licensing" Style="{StaticResource MetroLabelHeader}" 
                            HorizontalAlignment="Left"  Grid.Column="0"/>
-                        <Controls:ToggleSwitch x:Name="SharedComputerLicensing" Grid.Column="1"
+                        <Button Grid.Column="1" x:Name="SharedComputerLicensingInfo" Width="30" Height="32" HorizontalAlignment="Left" Margin="0 0 0 0" 
+                                                Focusable="False"  Style="{StaticResource MetroInfoButton}" Click="ProductInfo_OnClick" >
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="../images/info.png" Width="20" Height="20"/>
+                            </StackPanel>
+                        </Button>
+                        <Controls:ToggleSwitch x:Name="SharedComputerLicensing" Grid.Column="2"
                                    IsChecked="False"
                                    OnLabel="True"
                                    OffLabel="False"
