@@ -37,11 +37,13 @@
                         <Grid.RowDefinitions>
                             <RowDefinition Height="20" />
                             <RowDefinition Height="50" />
+                            <RowDefinition Height="40" />
+                            <RowDefinition Height="50" />
                             <RowDefinition Height="50" />
                             <RowDefinition Height="50" />
                         </Grid.RowDefinitions>
 
-                            <Grid Grid.Column="0" Grid.Row="1">
+                        <Grid Grid.Column="0" Grid.Row="1">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="50"></RowDefinition>
                                 </Grid.RowDefinitions>
@@ -59,37 +61,61 @@
                                          GroupName="1" FontSize="20" />
                             </Grid>
                             
-                            <Grid Grid.Column="0" Grid.Row="2">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="50"></RowDefinition>
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="180" />
-                                    <ColumnDefinition Width="450" />
-                                    <ColumnDefinition Width="120" />
-                                </Grid.ColumnDefinitions>
-                                <Label Content="Save Path" Style="{StaticResource MetroLabelHeader}" Grid.Column="0" />
-                                <TextBox x:Name="FileSavePath" Margin="{StaticResource ControlMargin}" FontSize="20" Grid.Column="1"
-                                             controls:TextBoxHelper.Watermark="Local or UNC Path" Height="35"
-                                             controls:TextBoxHelper.ClearTextButton="True"
-                                             Text="">
-                                </TextBox>
-                                <Button Width="100" 
-                                            Margin="{StaticResource ControlMargin}" Height="40" Grid.Column="2"
-                                            Content="Browse" x:Name="SaveButton" Click="SaveButton_Click"   />
-                            </Grid>
+                        <Grid Grid.Column="0" Grid.Row="2">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="40"></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="360" />
+                                <ColumnDefinition Width="30" />
+                            </Grid.ColumnDefinitions>
+
+                            <CheckBox Style="{StaticResource MetroCheckBox}" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center"></CheckBox>
+                            <Label Content="Include Build files in installation file" Style="{StaticResource MetroLabelHeader}" FontSize="18" Grid.Column="0" />
+                        </Grid>
 
                         <Grid Grid.Column="0" Grid.Row="3">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="50"></RowDefinition>
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="200" />
+                                <ColumnDefinition Width="30" />
+                                <ColumnDefinition Width="150" />
+                                <ColumnDefinition Width="450" />
+                                <ColumnDefinition Width="80" />
+                                <ColumnDefinition Width="90" />
+                            </Grid.ColumnDefinitions>
+
+                            <Label Content="Source Path" Style="{StaticResource MetroLabelHeader}" Grid.Column="1" />
+                            
+                            <TextBox x:Name="BuildFilePath" Margin="{StaticResource ControlMargin}" FontSize="20" Grid.Column="2"
+                                             controls:TextBoxHelper.Watermark="Local or UNC Path" Height="35"
+                                             controls:TextBoxHelper.ClearTextButton="True"
+                                             Text="">
+                            </TextBox>
+                            <Button Width="70" Margin="{StaticResource ControlMargin}" Height="40" Grid.Column="3"
+                                            Content="Browse" x:Name="BrowseSourcePathButton" Click="SaveButton_Click"   />
+                            <Button Width="80" Margin="{StaticResource ControlMargin}" Height="40" Grid.Column="4"
+                                            Content="Download" x:Name="DownloadButton" Click="SaveButton_Click"   />
+                        </Grid>
+
+                        <Grid Grid.Column="0" Grid.Row="5">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="50"></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="180" />
                                 <ColumnDefinition Width="450" />
                                 <ColumnDefinition Width="120" />
                             </Grid.ColumnDefinitions>
-                            <Label Content="Include Install Files" Style="{StaticResource MetroLabelHeader}" Grid.Column="0" />
-                            <CheckBox Style="{StaticResource MetroCheckBox}" Grid.Column="1" ></CheckBox>
+                            <Label Content="Save Path" Style="{StaticResource MetroLabelHeader}" Grid.Column="0" />
+                            <TextBox x:Name="FileSavePath" Margin="{StaticResource ControlMargin}" FontSize="20" Grid.Column="1"
+                                             controls:TextBoxHelper.Watermark="Local or UNC Path" Height="35"
+                                             controls:TextBoxHelper.ClearTextButton="True"
+                                             Text="">
+                            </TextBox>
+                            <Button Width="100" Margin="{StaticResource ControlMargin}" Height="40" Grid.Column="2"
+                                            Content="Browse" x:Name="SaveButton" Click="SaveButton_Click"   />
                         </Grid>
 
                     </Grid>

@@ -141,10 +141,10 @@
                                 <Image Source="../images/info.png" Width="20" Height="20"/>
                             </StackPanel>
                         </Button>
-                        <TextBox x:Name="UpdateDeadline" Margin="{StaticResource ControlMargin}" FontSize="20" Grid.Column="2"
-                         Controls:TextBoxHelper.ClearTextButton="True"
-                         Text="">
-                        </TextBox>
+                        <DatePicker x:Name="UpdateDeadline" Height="35" Grid.Column="2"
+                            Width="400"
+                            HorizontalAlignment="Left" FontSize="20"
+                            Controls:TextBoxHelper.Watermark="Select a date" />
                     </Grid>
 
 
