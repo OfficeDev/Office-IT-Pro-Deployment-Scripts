@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -15,6 +16,8 @@ using MetroDemo.Events;
 using Micorosft.OfficeProPlus.ConfigurationXml;
 using Micorosft.OfficeProPlus.ConfigurationXml.Model;
 using Microsoft.OfficeProPlus.InstallGen.Presentation.Models;
+using MessageBox = System.Windows.MessageBox;
+using UserControl = System.Windows.Controls.UserControl;
 
 namespace MetroDemo.ExampleViews
 {
@@ -74,6 +77,31 @@ namespace MetroDemo.ExampleViews
 
 
         public event TransitionTabEventHandler TransitionTab;
+
+        private void UpdatePath_OnClick(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var openDialog = new OpenFileDialog
+                {
+                    Filter = "v32.cab File|v32.cab|v64.cab File|v64.cab",
+                    Multiselect = false
+                };
+
+                if (openDialog.ShowDialog() == DialogResult.OK)
+                {
+                    var filePath = openDialog.FileName;
+                    filePath = Regex.Replace(filePath, @"\\Office\\Data\\v32.cab", "", RegexOptions.IgnoreCase);
+                    filePath = Regex.Replace(filePath, @"\\Office\\Data\\v64.cab", "", RegexOptions.IgnoreCase);
+
+                    UpdateUpdatePath.Text = filePath;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("ERROR: " + ex.Message);
+            }
+        }
 
         private void PreviousButton_OnClick(object sender, RoutedEventArgs e)
         {

@@ -24,23 +24,75 @@
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
             </Grid>
-        
-            <controls:MetroAnimatedSingleRowTabControl Grid.Row="0" Grid.Column="0" x:Name="MainTabControl">
-                <TabItem Header="xml">
+
+            <controls:MetroAnimatedSingleRowTabControl Grid.Row="0" Grid.Column="0" x:Name="MainTabControl" >
+                <TabItem Header="Configuration xml">
                     <xmlBrowser:XmlBrowserControl x:Name="xmlBrowser" Margin="10" />
                 </TabItem>
-                <TabItem Header="executable">
+                <TabItem Header="Install wrapper">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
-                            
+                            <RowDefinition Height="20" />
+                            <RowDefinition Height="50" />
+                            <RowDefinition Height="50" />
+                            <RowDefinition Height="50" />
                         </Grid.RowDefinitions>
-                    </Grid>
-                </TabItem>
-                <TabItem Header="msi">
 
+                            <Grid Grid.Column="0" Grid.Row="1">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="50"></RowDefinition>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="180" />
+                                    <ColumnDefinition Width="150" />
+                                    <ColumnDefinition Width="150" />
+                                </Grid.ColumnDefinitions>
+                                <Label Content="Install Type" Style="{StaticResource MetroLabelHeader}" HorizontalAlignment="Left" Grid.Column="0" />
+                                <RadioButton x:Name="InstallExecutable" Grid.Column="1"
+                                         Content="Executable"
+                                         GroupName="1" IsChecked="True"  FontSize="20" />
+                                <RadioButton x:Name="InstallMsi" Grid.Column="2"
+                                         Content="MSI"
+                                         GroupName="1" FontSize="20" />
+                            </Grid>
+                            
+                            <Grid Grid.Column="0" Grid.Row="2">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="50"></RowDefinition>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="180" />
+                                    <ColumnDefinition Width="450" />
+                                    <ColumnDefinition Width="120" />
+                                </Grid.ColumnDefinitions>
+                                <Label Content="Save Path" Style="{StaticResource MetroLabelHeader}" Grid.Column="0" />
+                                <TextBox x:Name="FileSavePath" Margin="{StaticResource ControlMargin}" FontSize="20" Grid.Column="1"
+                                             controls:TextBoxHelper.Watermark="Local or UNC Path" Height="35"
+                                             controls:TextBoxHelper.ClearTextButton="True"
+                                             Text="">
+                                </TextBox>
+                                <Button Width="100" 
+                                            Margin="{StaticResource ControlMargin}" Height="40" Grid.Column="2"
+                                            Content="Browse" x:Name="SaveButton" Click="SaveButton_Click"   />
+                            </Grid>
+
+                        <Grid Grid.Column="0" Grid.Row="3">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="50"></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="200" />
+                                <ColumnDefinition Width="450" />
+                                <ColumnDefinition Width="120" />
+                            </Grid.ColumnDefinitions>
+                            <Label Content="Include Install Files" Style="{StaticResource MetroLabelHeader}" Grid.Column="0" />
+                            <CheckBox Style="{StaticResource MetroCheckBox}" Grid.Column="1" ></CheckBox>
+                        </Grid>
+
+                    </Grid>
                 </TabItem>
             </controls:MetroAnimatedSingleRowTabControl>
 

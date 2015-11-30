@@ -29,6 +29,7 @@
                 <Setter Property="CloseOnMouseLeftButtonDown"
                         Value="False" />
             </Style>
+            <Thickness x:Key="ControlMargin" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

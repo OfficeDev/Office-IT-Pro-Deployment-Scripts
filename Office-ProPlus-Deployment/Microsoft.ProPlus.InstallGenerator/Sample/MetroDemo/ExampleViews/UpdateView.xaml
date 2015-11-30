@@ -30,7 +30,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="50"></RowDefinition>
                 <RowDefinition Height="20"></RowDefinition>
-                <RowDefinition Height="250"></RowDefinition>
+                <RowDefinition Height="300"></RowDefinition>
                 <RowDefinition Height="100"></RowDefinition>
             </Grid.RowDefinitions>
 
@@ -77,6 +77,7 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="200" />
                             <ColumnDefinition Width="400" />
+                            <ColumnDefinition Width="120" />
                         </Grid.ColumnDefinitions>
                         <Label Content="Update Path" Style="{StaticResource MetroLabelHeader}" Grid.Column="0" />
                         <TextBox x:Name="UpdateUpdatePath" Margin="{StaticResource ControlMargin}" FontSize="20" Grid.Column="1"
@@ -84,6 +85,9 @@
                          Controls:TextBoxHelper.ClearTextButton="True"
                          Text="">
                         </TextBox>
+                        <Button Width="100" 
+                                            Margin="{StaticResource ControlMargin}" Height="40" Grid.Column="2"
+                                            Content="Browse" x:Name="UpdatePath" Click="UpdatePath_OnClick" />
                     </Grid>
 
                     <Grid>

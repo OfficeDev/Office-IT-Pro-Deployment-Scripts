@@ -166,11 +166,14 @@ namespace MahApps.Metro.Controls.Dialogs
                     {
                         Message = message,
                         Title = title,
-                        ButtonStyle = style
+                        ButtonStyle = style,
+                        
                     };
 
                     SizeChangedEventHandler sizeHandler = SetupAndOpenDialog(window, dialog);
                     dialog.SizeChangedHandler = sizeHandler;
+
+                   // dialog.Style.Setters.Add(new Setter());
 
                     return dialog.WaitForLoadAsync().ContinueWith(x =>
                     {

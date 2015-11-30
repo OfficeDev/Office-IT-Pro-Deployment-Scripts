@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.IO;
 using System.Security.Cryptography;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Xml;
@@ -62,59 +63,78 @@ public class InstallOffice
             var odtFilePath = installDir + @"\" + fileNames.FirstOrDefault(f => f.ToLower().EndsWith(".exe"));
             var xmlFilePath = installDir + @"\" + fileNames.FirstOrDefault(f => f.ToLower().EndsWith(".xml"));
 
-            Console.WriteLine("ODT File Path: " + odtFilePath);
-            Console.WriteLine("XML File Path: " + xmlFilePath);
-
             if (!File.Exists(odtFilePath)) { throw (new Exception("Cannot find ODT Executable")); }
             if (!File.Exists(xmlFilePath)) { throw (new Exception("Cannot find Configuration Xml file")); }
 
+            var runInstall = false;
             if (GetArguments().Any(a => a.Key.ToLower() == "/uninstall"))
             {
-                Console.WriteLine("Uninstalling Office 365 ProPlus...");
-
-
-                XmlDocument doc = new XmlDocument();
-
-                XmlElement root = doc.CreateElement("Configuration");
-
-                XmlElement remove1 = doc.CreateElement("Remove");
-                XmlAttribute all = doc.CreateAttribute("All");
-                all.Value = "TRUE";
-
-                remove1.Attributes.Append(all);
-                root.AppendChild(remove1);
-
-                doc.AppendChild(root);
-
-                doc.Save(installDir+@"\configuration.xml");
-
-                xmlFilePath = installDir + @"\" + fileNames.FirstOrDefault(f => f.ToLower().EndsWith(".xml"));
-
+                xmlFilePath = UninstallOfficeProPlus(installDir, fileNames);
+                runInstall = true;
+            }
+            else if (GetArguments().Any(a => a.Key.ToLower() == "/showxml"))
+            {
+                Console.Clear();
+                var configXml = File.ReadAllText(xmlFilePath);
+                Console.WriteLine(BeautifyXml(configXml));
+            }
+            else if (GetArguments().Any(a => a.Key.ToLower() == "/extractxml"))
+            {
+                var arg = GetArguments().FirstOrDefault(a => a.Key.ToLower() == "/extractxml");
+                var configXml = BeautifyXml(File.ReadAllText(xmlFilePath));
+                File.WriteAllText(arg.Value, configXml);
             }
             else
             {
                 Console.WriteLine("Installing Office 365 ProPlus...");
+                runInstall = true;
             }
 
-            var p = new Process
+            if (runInstall)
             {
-                StartInfo = new ProcessStartInfo()
+                var p = new Process
                 {
-                    FileName = odtFilePath,
-                    Arguments = "/configure " + xmlFilePath,
-                    CreateNoWindow = true,
-                    UseShellExecute = false
-                },
-            };
-            p.Start();
-            p.WaitForExit();
+                    StartInfo = new ProcessStartInfo()
+                    {
+                        FileName = odtFilePath,
+                        Arguments = "/configure " + xmlFilePath,
+                        CreateNoWindow = true,
+                        UseShellExecute = false
+                    },
+                };
+                p.Start();
+                p.WaitForExit();
 
-            WaitForOfficeCtrUpadate();
+                WaitForOfficeCtrUpadate();
+            }
         }
         finally
         {
             CleanUp(installDir);
         }
+    }
+
+
+    private string UninstallOfficeProPlus(string installationDirectory, IEnumerable<string> fileNames)
+    {
+        Console.WriteLine("Uninstalling Office 365 ProPlus...");
+
+        var doc = new XmlDocument();
+
+        var root = doc.CreateElement("Configuration");
+
+        var remove1 = doc.CreateElement("Remove");
+        var all = doc.CreateAttribute("All");
+        all.Value = "TRUE";
+
+        remove1.Attributes.Append(all);
+        root.AppendChild(remove1);
+
+        doc.AppendChild(root);
+
+        doc.Save(installationDirectory + @"\configuration.xml");
+
+        return installationDirectory + @"\" + fileNames.FirstOrDefault(f => f.ToLower().EndsWith(".xml"));
     }
 
     public string GetTextFileContents(string fileName)
@@ -449,10 +469,34 @@ public class InstallOffice
     //    }
     //}
 
+    private string Beautify(XmlDocument doc)
+    {
+        var sb = new StringBuilder();
+        var settings = new XmlWriterSettings
+        {
+            Indent = true,
+            IndentChars = "  ",
+            NewLineChars = "\r\n",
+            NewLineHandling = NewLineHandling.Replace,
+            OmitXmlDeclaration = true
+        };
+        using (var writer = XmlWriter.Create(sb, settings))
+        {
+            doc.Save(writer);
+        }
+
+        var xml = sb.ToString();
+        return xml;
+    }
+
+    private string BeautifyXml(string xml)
+    {
+        var doc = new XmlDocument();
+        doc.LoadXml(xml);
+        return Beautify(doc);
+    }
 
 }
-
-
 
 public enum CurrentOperation
 {
@@ -470,7 +514,6 @@ public class ExecutingScenario
     public string State { get; set; }
 
 }
-
 
 public class CmdArgument
 {

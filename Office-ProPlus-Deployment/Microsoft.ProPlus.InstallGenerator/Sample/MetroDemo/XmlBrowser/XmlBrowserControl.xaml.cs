@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows;
@@ -6,6 +7,9 @@ using System.Windows.Controls;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Xsl;
+using MetroDemo.Events;
+using Microsoft.OfficeProPlus.InstallGenerator.Extensions;
+using Microsoft.Win32;
 using WPFXmlBrowser.Controls;
 
 namespace MahApps.Metro.Controls.XmlBrowser
@@ -81,14 +85,14 @@ namespace MahApps.Metro.Controls.XmlBrowser
             if (browserControl == null) return;
             if (isEditMode)
             {
-                browserControl.EditButton.Content = "_save";
+                //browserControl.EditButton.Content = "_save";
                 browserControl.WebBrowser.Visibility = Visibility.Collapsed;
                 //browserControl.EditText.Visibility = Visibility.Visible;
 
             }
             else
             {
-                browserControl.EditButton.Content = "_edit";
+                //browserControl.EditButton.Content = "_edit";
                 browserControl.WebBrowser.Visibility = Visibility.Visible;
                 //browserControl.EditText.Visibility = Visibility.Collapsed;
             }
@@ -142,7 +146,7 @@ namespace MahApps.Metro.Controls.XmlBrowser
 
                 //browserControl.EditText.Text = xmlString;
                 browserControl.WebBrowser.NavigateToString(xmlDocStyled.ToString());
-                browserControl.EditButton.Visibility = System.Windows.Visibility.Visible;
+                //browserControl.EditButton.Visibility = System.Windows.Visibility.Visible;
                 browserControl.CopyClipButton.Visibility = System.Windows.Visibility.Visible;
             }
             catch (Exception ex)
@@ -171,16 +175,57 @@ namespace MahApps.Metro.Controls.XmlBrowser
         }
         #endregion
 
+        public InstallOfficeEventHandler InstallOffice { get; set; }
+
         #region Button Events
-        /// <summary>
-        /// Edit Button Click Event
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+
+        private void SaveToFileButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var fileSave = new SaveFileDialog
+                {
+                    Filter = "Xml Files (*.xml)|*.xml",
+                    FileName = "configuration.xml"
+                };
+
+                var saveResult = fileSave.ShowDialog();
+
+                if (saveResult.HasValue && saveResult.Value)
+                {
+                    File.WriteAllText(fileSave.FileName, XmlDoc.BeautifyXml());
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("ERROR: " + ex.Message);
+            }
+        }
+
+        private void InstallOfficeButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (InstallOffice != null)
+                {
+                    InstallOffice(this, new InstallOfficeEventArgs()
+                    {
+                        Xml = XmlDoc
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("ERROR: " + ex.Message);
+            }
+        }
+
         private void EditButtonClick(object sender, RoutedEventArgs e)
         {
             if (!IsEditMode)
+            {
                 IsEditMode = true;
+            }
             else
             {
                 // since user is navigating from edit mode, set the edited Text to the xmldoc
@@ -189,23 +234,14 @@ namespace MahApps.Metro.Controls.XmlBrowser
             }
         }
 
-        /// <summary>
-        /// Copy to Clipboard Button Click Event
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void CopyClipButtonClick(object sender, RoutedEventArgs e)
         {
             if (XmlDoc != null)
-                Clipboard.SetText(XmlDoc);
+            {
+                Clipboard.SetText(XmlDoc.BeautifyXml());
+            }
         }
 
-
-        /// <summary>
-        /// Validate Button Click Event
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void ValidateXmlButtonClick(object sender, RoutedEventArgs e)
         {
             var xDoc = XDocument.Parse(XmlDoc);
@@ -233,5 +269,6 @@ namespace MahApps.Metro.Controls.XmlBrowser
         }
 
         #endregion
+
     }
 }

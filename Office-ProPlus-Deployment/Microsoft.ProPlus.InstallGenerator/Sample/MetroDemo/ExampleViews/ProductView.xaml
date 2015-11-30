@@ -34,6 +34,8 @@
                 <RowDefinition Height="100"></RowDefinition>
             </Grid.RowDefinitions>
 
+
+
             <Grid Grid.Row="1" >
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="50" />
@@ -41,8 +43,8 @@
                     <ColumnDefinition Width="50" />
                 </Grid.ColumnDefinitions>
                 <Controls:MetroAnimatedSingleRowTabControl Grid.Row="0" Grid.Column="1" x:Name="MainTabControl" SelectionChanged="MainTabControl_OnSelectionChanged">
-                    <TabItem Header="products">
-                        <Grid>
+                    <TabItem Header="Products">
+                        <Grid HorizontalAlignment="Left">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition />
                             </Grid.ColumnDefinitions>
@@ -52,7 +54,7 @@
                                 <RowDefinition Height="300"></RowDefinition>
                             </Grid.RowDefinitions>
 
-                            <Grid Height="410" Width="700" Grid.Row="1">
+                            <Grid Height="410" Width="700" Grid.Row="1" HorizontalAlignment="Left">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="260" />
                                     <ColumnDefinition Width="150" />
@@ -74,13 +76,19 @@
                                         <RowDefinition Height="75" />
                                     </Grid.RowDefinitions>
 
-                                    <Label Grid.Row="0" Content="Product" Style="{StaticResource MetroLabelHeader}"  HorizontalAlignment="Left"/>
+                                    <Label Grid.Row="0" Content="Product" Style="{StaticResource MetroLabelHeader}"  HorizontalAlignment="Left" />
+                                    <Button x:Name="ProductInfo" Width="30" Height="32" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" Margin="90 0 0 0"
+                                            Focusable="False"  Style="{StaticResource MetroInfoButton}" Click="ProductInfo_OnClick" >
+                                        <StackPanel Orientation="Horizontal">
+                                            <Image Source="../images/info.png" Width="20" Height="20"/>
+                                        </StackPanel>
+                                    </Button>
 
                                     <ListBox x:Name="MainProducts" Grid.Column="0" Grid.Row="1" Style="{StaticResource VirtualisedMetroListBox}"
                                          ItemsSource="{Binding MainProducts}"
                                          DisplayMemberPath="DisplayName" 
                                          SelectedIndex="0" SelectionMode="Single" FontSize="20" SelectionChanged="Products_OnSelectionChanged" />
-                                    
+
                                     <ListBox x:Name="AdditionalProducts" Grid.Column="0" Grid.Row="2" Style="{StaticResource VirtualisedMetroListBox}"
                                          ItemsSource="{Binding AdditionalProducts}"
                                          DisplayMemberPath="DisplayName"
@@ -109,7 +117,7 @@
 
                         </Grid>
                     </TabItem>
-                    <TabItem Header="languages">
+                    <TabItem Header="Languages">
                         <StackPanel>
                             <Grid >
                                 <Grid.RowDefinitions>
@@ -128,14 +136,14 @@
                                           Style="{DynamicResource MetroDataGrid}"
                                           AutoGenerateColumns="False" HeadersVisibility="Column"
                                           CanUserAddRows="False">
-                                <DataGrid.Columns>
-                                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="400" 
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="400" 
                                                   IsReadOnly="True" FontSize="20" Foreground="{DynamicResource LabelTextBrushCustom}" />
-                                    <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="100" 
+                                        <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="100" 
                                                   IsReadOnly="True" FontSize="20" Foreground="{DynamicResource LabelTextBrushCustom}" />
-                                </DataGrid.Columns>
-                                    
-                                
+                                    </DataGrid.Columns>
+
+
                                 </DataGrid>
 
                                 <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal">
@@ -149,12 +157,12 @@
                                     <CheckBox x:Name="UseLangForAllProducts" Checked="UseLangForAllProducts_OnChecked" Unchecked="UseLangForAllProducts_OnChecked" IsChecked="True"></CheckBox>
                                     <ComboBox x:Name="LanguageUnique" Height="20" Width="180" IsEnabled="False" SelectionChanged="LanguageUnique_OnSelectionChanged"></ComboBox>
                                 </StackPanel>
-                                
+
                             </Grid>
                         </StackPanel>
 
                     </TabItem>
-                    <TabItem Header="optional">
+                    <TabItem Header="Optional">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition />
@@ -170,7 +178,7 @@
                                         <RowDefinition Height="50"></RowDefinition>
                                     </Grid.RowDefinitions>
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="200" />
+                                        <ColumnDefinition Width="180" />
                                         <ColumnDefinition Width="400" />
                                     </Grid.ColumnDefinitions>
                                     <Label Content="Version" Style="{StaticResource MetroLabelHeader}" Grid.Column="0" />
@@ -191,25 +199,30 @@
                                         <RowDefinition Height="50"></RowDefinition>
                                     </Grid.RowDefinitions>
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="200" />
+                                        <ColumnDefinition Width="180" />
                                         <ColumnDefinition Width="400" />
+                                        <ColumnDefinition Width="120" />
                                     </Grid.ColumnDefinitions>
-                                    <Label Content="Update Path" Style="{StaticResource MetroLabelHeader}" Grid.Column="0" />
+                                    <Label Content="Source Path" Style="{StaticResource MetroLabelHeader}" Grid.Column="0" />
                                     <TextBox x:Name="ProductUpdateSource" Margin="{StaticResource ControlMargin}" FontSize="20" Grid.Column="1"
                                              Controls:TextBoxHelper.Watermark="Local, UNC or HTTP Path" Height="35"
                                              Controls:TextBoxHelper.ClearTextButton="True"
                                              Text="">
                                     </TextBox>
+                                    <Button Width="100" 
+                                            Margin="{StaticResource ControlMargin}" Height="40" Grid.Column="2"
+                                            Content="Browse" x:Name="UpdatePath" Click="UpdatePath_OnClick" />
                                 </Grid>
                             </StackPanel>
 
 
                         </Grid>
                     </TabItem>
-                    <TabItem Header="excluded">
+                    <TabItem Header="Excluded">
                         <Grid>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="300" />
+                                <ColumnDefinition Width="75" />
+                                <ColumnDefinition Width="226"/>
                                 <ColumnDefinition Width="300"/>
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
@@ -224,7 +237,7 @@
                                   ItemsSource="{Binding Path=ExcludeProducts}"
                                   Style="{DynamicResource MetroDataGrid}"
                                   AutoGenerateColumns="False" HeadersVisibility="None"
-                                  CanUserAddRows="False">
+                                  CanUserAddRows="False" Grid.ColumnSpan="2">
                                 <DataGrid.RowStyle>
                                     <Style TargetType="{x:Type DataGridRow}">
                                         <Style.Triggers>
@@ -254,7 +267,7 @@
                                 </DataGrid.Columns>
                             </DataGrid>
 
-                            <DataGrid x:Name="ExcludedApps2" Grid.Column="1" Grid.Row="1" Height="350"
+                            <DataGrid x:Name="ExcludedApps2" Grid.Column="2" Grid.Row="1" Height="350"
                                   RenderOptions.ClearTypeHint="Enabled"
                                   TextOptions.TextFormattingMode="Display"
                                   Margin="5"
@@ -295,7 +308,7 @@
                     </TabItem>
                 </Controls:MetroAnimatedSingleRowTabControl>
             </Grid>
-            
+
             <Grid Grid.Row="2" Grid.Column="0" HorizontalAlignment="Center" >
                 <Grid.Resources>
                     <ResourceDictionary>
@@ -317,6 +330,11 @@
                     Content="Next" x:Name="NextButton" Click="NextButton_Click" />
             </Grid>
         </Grid>
+
+
+
     </AdornerDecorator>
+
+
 
 </UserControl>

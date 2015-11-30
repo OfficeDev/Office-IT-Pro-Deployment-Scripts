@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -7,6 +8,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -21,6 +23,8 @@ using Micorosft.OfficeProPlus.ConfigurationXml.Model;
 using Microsoft.OfficeProPlus.InstallGen.Presentation.Models;
 using Microsoft.OfficeProPlus.InstallGenerator.Models;
 using OfficeInstallGenerator.Model;
+using MessageBox = System.Windows.MessageBox;
+using UserControl = System.Windows.Controls.UserControl;
 
 namespace MetroDemo.ExampleViews
 {
@@ -30,6 +34,7 @@ namespace MetroDemo.ExampleViews
     public partial class ProductView : UserControl
     {
         private LanguagesDialog languagesDialog = null;
+        private InformationDialog informationDialog = null;
         public event TransitionTabEventHandler TransitionTab;
         
         public ProductView()
@@ -59,6 +64,44 @@ namespace MetroDemo.ExampleViews
                 MessageBox.Show("ERROR: " + ex.Message);
             }
         }
+
+        private void LaunchInformationDialog()
+        {
+            try
+            {
+             
+
+                if (informationDialog == null)
+                {
+
+                    informationDialog = new InformationDialog
+                    {
+                        Height = 300,
+                        Width = 400
+                    };
+                    informationDialog.Closed += (o, args) =>
+                    {
+                        informationDialog = null;
+                    };
+                    informationDialog.Closing += (o, args) =>
+                    {
+
+                    };
+                }
+
+                var filePath = AppDomain.CurrentDomain.BaseDirectory + @"HelpFiles\Product.html";
+                var helpFile = File.ReadAllText(filePath);
+
+                informationDialog.HelpInfo.NavigateToString(helpFile);
+                informationDialog.Launch();
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("ERROR: " + ex.Message);
+            }
+        }
+
 
         private void LaunchLanguageDialog()
         {
@@ -478,6 +521,31 @@ namespace MetroDemo.ExampleViews
 
         #region "Events"
 
+        private void UpdatePath_OnClick(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var openDialog = new OpenFileDialog
+                {
+                    Filter = "v32.cab File|v32.cab|v64.cab File|v64.cab",
+                    Multiselect = false
+                };
+
+                if (openDialog.ShowDialog() == DialogResult.OK)
+                {
+                    var filePath = openDialog.FileName;
+                    filePath = Regex.Replace(filePath, @"\\Office\\Data\\v32.cab", "", RegexOptions.IgnoreCase);
+                    filePath = Regex.Replace(filePath, @"\\Office\\Data\\v64.cab", "", RegexOptions.IgnoreCase);
+
+                    ProductUpdateSource.Text = filePath;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("ERROR: " + ex.Message);
+            }
+        }
+
         private void LanguageUnique_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             try
@@ -668,6 +736,21 @@ namespace MetroDemo.ExampleViews
 
         #endregion
 
+        #region "Info"
+
+        private void ProductInfo_OnClick(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                LaunchInformationDialog();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("ERROR: " + ex.Message);
+            }
+        }
+
+        #endregion
 
     }
 }

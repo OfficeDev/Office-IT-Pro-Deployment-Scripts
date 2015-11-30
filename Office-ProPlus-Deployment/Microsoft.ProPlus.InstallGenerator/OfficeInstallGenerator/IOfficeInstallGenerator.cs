@@ -11,5 +11,7 @@ namespace Microsoft.OfficeProPlus.InstallGenerator
 
         IOfficeInstallReturn Generate(IOfficeInstallProperties installProperties);
 
+        void InstallOffice(string configurationXml);
+
     }
 }

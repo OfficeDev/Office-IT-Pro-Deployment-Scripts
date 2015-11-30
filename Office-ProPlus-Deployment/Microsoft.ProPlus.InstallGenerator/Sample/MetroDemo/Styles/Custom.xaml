@@ -47,6 +47,15 @@
         <Setter Property="FontSize" Value="20"/>
     </Style>
 
+    <Style TargetType="{x:Type Button}" x:Key="MetroInfoButton" BasedOn="{StaticResource MetroButton}">
+        <Setter Property="Foreground" Value="{DynamicResource LabelTextBrushCustom}" />
+        <Setter Property="FontSize" Value="15"></Setter>
+        <Setter Property="FontFamily" Value="{StaticResource DefaultFont}"></Setter>
+        <Setter Property="FontWeight" Value="Thin"></Setter>
+        <Setter Property="Background" Value="Transparent"></Setter>
+        <Setter Property="BorderThickness" Value="0"></Setter>
+    </Style>
+
     <SolidColorBrush x:Key="LabelTextBrushCustom" Color="{DynamicResource Gray2}" />
 
     <Color x:Key="TopBarColor">#0072c5</Color>

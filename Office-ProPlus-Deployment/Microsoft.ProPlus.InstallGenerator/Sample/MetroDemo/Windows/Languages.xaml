@@ -49,19 +49,12 @@
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="60" />
             <RowDefinition Height="*" />
             <RowDefinition Height="50" />
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Column="0"
-                   Grid.Row="0"
-                   Margin="10"
-                   FontSize="30"
-                   Text="Languages" />
-
-        <StackPanel Grid.Column="0" Grid.Row="1">
-            <DataGrid x:Name="LanguageList" Height="350"
+        <StackPanel Grid.Column="0" Grid.Row="0">
+            <DataGrid x:Name="LanguageList" Height="400"
                     RenderOptions.ClearTypeHint="Enabled"
                     TextOptions.TextFormattingMode="Display"
                     Margin="5"
@@ -82,7 +75,7 @@
 
         </StackPanel>
 
-        <StackPanel Grid.Column="0" Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="5"  >
+        <StackPanel Grid.Column="0" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="5"  >
             <Button Name="OkButton" Content="OK" Margin="2" Height="30" Click="OkButton_Click"  />
             <Button Name="CancelButton" Content="Cancel" Margin="2" Height="30" Click="CancelButton_OnClick"  />
         </StackPanel>

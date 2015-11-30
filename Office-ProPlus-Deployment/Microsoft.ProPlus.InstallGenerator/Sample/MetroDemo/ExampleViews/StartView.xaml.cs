@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows;
@@ -35,6 +37,11 @@ namespace MetroDemo.ExampleViews
                 GlobalObjects.ViewModel.ConfigXmlParser.LoadXml(GlobalObjects.ViewModel.DefaultXml);
                 GlobalObjects.ViewModel.ResetXml = true;
 
+                if (RestartWorkflow != null)
+                {
+                    this.RestartWorkflow(this, new EventArgs());
+                }
+
                 this.TransitionTab(this, new TransitionTabEventArgs()
                 {
                     Direction = TransitionTabDirection.Forward,
@@ -65,7 +72,18 @@ namespace MetroDemo.ExampleViews
                     var filename = dlg.FileName;
 
                     GlobalObjects.ViewModel.ResetXml = true;
+
+                    if (filename.ToLower().EndsWith(".exe"))
+                    {
+                        filename = ExtractXmlFromExecutable(filename);
+                    }
+
                     GlobalObjects.ViewModel.ConfigXmlParser.LoadXml(filename);
+
+                    if (RestartWorkflow != null)
+                    {
+                        this.RestartWorkflow(this, new EventArgs());
+                    }
 
                     this.TransitionTab(this, new TransitionTabEventArgs()
                     {
@@ -79,6 +97,29 @@ namespace MetroDemo.ExampleViews
                 MessageBox.Show("ERROR: " + ex.Message);
             }
         }
+
+        private string ExtractXmlFromExecutable(string fileName)
+        {
+            var tmpDir = Environment.ExpandEnvironmentVariables("%temp%");
+
+            var p = new Process
+            {
+                StartInfo = new ProcessStartInfo()
+                {
+                    FileName = fileName,
+                    Arguments = "/extractxml=" + tmpDir + @"\configuration.xml",
+                    CreateNoWindow = true,
+                    UseShellExecute = false,
+                },
+            };
+            p.Start();
+            p.WaitForExit();
+
+            var xml = File.ReadAllText(tmpDir + @"\configuration.xml");
+            return xml;
+        }
+
+        public RestartEventHandler RestartWorkflow  { get; set; }
 
     }
 }

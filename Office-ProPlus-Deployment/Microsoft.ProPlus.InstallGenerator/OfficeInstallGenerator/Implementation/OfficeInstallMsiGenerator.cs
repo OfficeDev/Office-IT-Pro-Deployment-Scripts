@@ -67,13 +67,18 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
 
             Compiler.BuildMsi(project);
 
-            OfficeInstallReturn installDirectory = new OfficeInstallReturn();
-
-            installDirectory.GeneratedFilePath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            var installDirectory = new OfficeInstallReturn
+            {
+                GeneratedFilePath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop)
+            };
 
             return installDirectory;
 
         }
 
+        public void InstallOffice(string configurationXml)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

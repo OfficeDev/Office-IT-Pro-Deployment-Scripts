@@ -96,20 +96,20 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <Controls:MetroAnimatedSingleRowTabControl Grid.Row="1" x:Name="MainTabControl" SelectionChanged="MainTabControl_SelectionChanged">
-                <TabItem Header="start">
+            <Controls:MetroAnimatedSingleRowTabControl Grid.Row="1" x:Name="MainTabControl" SelectionChanged="MainTabControl_SelectionChanged" >
+                <TabItem Header="Start">
                     <exampleViews:StartView x:Name="StartView" DataContext="{Binding}" Loaded="StartView_Loaded" Tag="0" />
                 </TabItem>
-                <TabItem Header="products">
+                <TabItem Header="Products" IsEnabled="False">
                     <exampleViews:ProductView x:Name="ProductView"  DataContext="{Binding}" Tag="1" />
                 </TabItem>
-                <TabItem Header="updates">
+                <TabItem Header="Updates" IsEnabled="False">
                     <exampleViews:UpdateView x:Name="UpdateView" DataContext="{Binding}" Tag="2" />
                 </TabItem>
-                <TabItem Header="options">
+                <TabItem Header="Options" IsEnabled="False">
                     <exampleViews:DisplayView x:Name="DisplayView" DataContext="{Binding}" Tag="3"  />
                 </TabItem>
-                <TabItem Header="generate">
+                <TabItem Header="Generate" IsEnabled="False">
                     <exampleViews:GenerateView x:Name="GenerateView" DataContext="{Binding}" Tag="4"  />
                 </TabItem>
             </Controls:MetroAnimatedSingleRowTabControl>

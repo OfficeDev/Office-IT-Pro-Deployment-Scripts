@@ -67,6 +67,10 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Gat.Controls.OpenDialog, Version=1.1.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\OpenDialog.1.1.1\lib\net45\Gat.Controls.OpenDialog.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="GrayscaleEffect">
       <HintPath>..\..\Lib\GrayscaleEffect.dll</HintPath>
     </Reference>
@@ -108,6 +112,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Engine\OfficeInstaller.cs" />
     <Compile Include="Events\Events.cs" />
     <Compile Include="ExampleViews\GenerateView.xaml.cs">
       <DependentUpon>GenerateView.xaml</DependentUpon>
@@ -141,6 +146,9 @@
     <Compile Include="ValueConverter\AlbumPriceIsTooMuchConverter.cs" />
     <Compile Include="Viewer.xaml.cs">
       <DependentUpon>Viewer.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\InformationDialog.xaml.cs">
+      <DependentUpon>InformationDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\Languages.xaml.cs">
       <DependentUpon>Languages.xaml</DependentUpon>
@@ -203,6 +211,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Viewer.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Windows\InformationDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -284,6 +296,10 @@
       <Project>{ce88a24e-73c3-4b1d-b72c-f41894485a14}</Project>
       <Name>Micorosft.OfficeProPlus.ConfigurationXml</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\OfficeInstallGenerator\Microsoft.OfficeProPlus.InstallGenerator.csproj">
+      <Project>{0702f643-0467-43a4-bdbc-b54f006e8244}</Project>
+      <Name>Microsoft.OfficeProPlus.InstallGenerator</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="images\placeholder_person.gif" />
@@ -296,6 +312,14 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="1447297750_gear_settings_cog_preferences.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\info.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="HelpFiles\Product.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

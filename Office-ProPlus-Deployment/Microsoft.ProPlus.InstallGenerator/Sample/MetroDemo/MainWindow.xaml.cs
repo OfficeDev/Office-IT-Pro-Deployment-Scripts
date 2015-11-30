@@ -42,7 +42,19 @@ namespace MetroDemo
 
         private void MainTabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            StartView.RestartWorkflow += RestartWorkflow;
+
             ThemeManager.TransitionsEnabled = MainTabControl.SelectedIndex != 4;
+
+            if (MainTabControl.SelectedIndex > -1)
+            {
+                ((TabItem) MainTabControl.Items[MainTabControl.SelectedIndex]).IsEnabled = true;
+
+                if (MainTabControl.SelectedIndex < (MainTabControl.Items.Count - 1))
+                {
+                    ((TabItem) MainTabControl.Items[MainTabControl.SelectedIndex + 1]).IsEnabled = true;
+                }
+            }
 
             if (_cacheIndex != MainTabControl.SelectedIndex)
             {
@@ -55,6 +67,15 @@ namespace MetroDemo
                 GlobalObjects.ViewModel.ResetXml = false;
 
                 _cacheIndex = MainTabControl.SelectedIndex;
+            }
+        }
+
+        private void RestartWorkflow(object sender, EventArgs eventArgs)
+        {
+            for (var i = 1; i < MainTabControl.Items.Count; i++)
+            {
+                var tabItem = (TabItem)MainTabControl.Items[i];
+                tabItem.IsEnabled = false;
             }
         }
 
@@ -155,6 +176,8 @@ namespace MetroDemo
                 AnimateHide = false
             };
 
+            GenerateView.xmlBrowser.Visibility = Visibility.Hidden;
+
             var result = await this.ShowMessageAsync("Quit application?",
                 "Sure you want to quit application?",
                 MessageDialogStyle.AffirmativeAndNegative, mySettings);
@@ -162,7 +185,14 @@ namespace MetroDemo
             _shutdown = result == MessageDialogResult.Affirmative;
 
             if (_shutdown)
+            {
                 Application.Current.Shutdown();
+            }
+            else
+            {
+                GenerateView.xmlBrowser.Visibility = Visibility.Visible;
+            }
+                
         }
 
         private void StartView_Loaded(object sender, RoutedEventArgs e)

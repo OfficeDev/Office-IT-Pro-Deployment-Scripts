@@ -3,13 +3,17 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:converters="clr-namespace:MetroDemo.XmlBrowser.Converters"
     x:Name="thisControl">
+    
+
     <UserControl.Resources>
         <converters:NullToBooleanConverter x:Key="NullToBooleanConverter" />
     </UserControl.Resources>
+
     <DockPanel LastChildFill="True"  Margin="5">
         <StackPanel DockPanel.Dock="Right" IsEnabled="{Binding ElementName=thisControl, Path=XmlDoc, Converter={StaticResource NullToBooleanConverter}}">
-            <Button Name="EditButton" Content="_edit" Click="EditButtonClick" Visibility="Collapsed" Margin="2" />
-            <Button Name="CopyClipButton" Content="_copy to clipboard" Visibility="Collapsed" Margin="2" Click="CopyClipButtonClick"/>
+            <Button Name="InstallOfficeButton" Content="_Install Office" Margin="2" Click="InstallOfficeButton_OnClick" />
+            <Button Name="CopyClipButton" Content="_copy to clipboard" Margin="2" Click="CopyClipButtonClick" />
+            <Button Name="SaveToFileButton" Content="_save to file" Margin="2" Click="SaveToFileButton_OnClick" />
             <Button Name="ValidateXmlButton" Content="_validate xml" Visibility="Collapsed" Margin="2" Click="ValidateXmlButtonClick"/>
         </StackPanel>
         <Grid DockPanel.Dock="Left">

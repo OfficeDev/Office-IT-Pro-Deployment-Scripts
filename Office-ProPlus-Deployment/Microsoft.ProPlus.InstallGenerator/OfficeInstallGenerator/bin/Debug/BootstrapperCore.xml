@@ -9,14 +9,318 @@
             The default bootstrapper application.
             </summary>
         </member>
-        <member name="T:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.IBootstrapperApplication">
-            <summary>
-            Allows customization of the bootstrapper application.
-            </summary>
-        </member>
         <member name="M:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.#ctor">
             <summary>
             Creates a new instance of the <see cref="T:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication"/> class.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.Startup">
+            <summary>
+            Fired when the engine is starting up the bootstrapper application.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.Shutdown">
+            <summary>
+            Fired when the engine is shutting down the bootstrapper application.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.SystemShutdown">
+            <summary>
+            Fired when the system is shutting down or user is logging off.
+            </summary>
+            <remarks>
+            <para>To prevent shutting down or logging off, set <see cref="P:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.ResultEventArgs.Result"/> to
+            <see cref="F:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.Result.Cancel"/>; otherwise, set it to <see cref="F:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.Result.Ok"/>.</para>
+            <para>By default setup will prevent shutting down or logging off between
+            <see cref="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.ApplyBegin"/> and <see cref="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.ApplyComplete"/>.
+            Derivatives can change this behavior by overriding <see cref="M:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.OnSystemShutdown(Microsoft.Tools.WindowsInstallerXml.Bootstrapper.SystemShutdownEventArgs)"/>
+            or handling <see cref="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.SystemShutdown"/>.</para>
+            <para>If <see cref="P:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.SystemShutdownEventArgs.Reasons"/> contains <see cref="F:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.EndSessionReasons.Critical"/>
+            the bootstrapper cannot prevent the shutdown and only has a few seconds to save state or perform any other
+            critical operations before being closed by the operating system.</para>
+            <para>This event may be fired on a different thread.</para>
+            </remarks>
+        </member>
+        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.DetectBegin">
+            <summary>
+            Fired when the overall detection phase has begun.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.DetectForwardCompatibleBundle">
+            <summary>
+            Fired when a forward compatible bundle is detected.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.DetectUpdateBegin">
+            <summary>
+            Fired when the update detection phase has begun.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.DetectUpdate">
+            <summary>
+            Fired when the update detection has found a potential update candidate.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.DetectUpdateComplete">
+            <summary>
+            Fired when the update detection phase has completed.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.DetectPriorBundle">
+            <summary>
+            Fired when the detection for a prior bundle has begun.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.DetectRelatedBundle">
+            <summary>
+            Fired when a related bundle has been detected for a bundle.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.DetectPackageBegin">
+            <summary>
+            Fired when the detection for a specific package has begun.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.DetectCompatiblePackage">
+            <summary>
+            Fired when a package was not detected but a package using the same provider key was.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.DetectRelatedMsiPackage">
+            <summary>
+            Fired when a related MSI package has been detected for a package.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.DetectTargetMsiPackage">
+            <summary>
+            Fired when an MSP package detects a target MSI has been detected.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.DetectMsiFeature">
+            <summary>
+            Fired when a feature in an MSI package has been detected.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.DetectPackageComplete">
+            <summary>
+            Fired when the detection for a specific package has completed.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.DetectComplete">
+            <summary>
+            Fired when the detection phase has completed.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.PlanBegin">
+            <summary>
+            Fired when the engine has begun planning the installation.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.PlanRelatedBundle">
+            <summary>
+            Fired when the engine has begun planning for a related bundle.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.PlanPackageBegin">
+            <summary>
+            Fired when the engine has begun planning the installation of a specific package.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.PlanCompatiblePackage">
+            <summary>
+            Fired when the engine plans a new, compatible package using the same provider key.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.PlanTargetMsiPackage">
+            <summary>
+            Fired when the engine is about to plan the target MSI of a MSP package.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.PlanMsiFeature">
+            <summary>
+            Fired when the engine is about to plan a feature in an MSI package.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.PlanPackageComplete">
+            <summary>
+            Fired when the engine has completed planning the installation of a specific package.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.PlanComplete">
+            <summary>
+            Fired when the engine has completed planning the installation.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.ApplyBegin">
+            <summary>
+            Fired when the engine has begun installing the bundle.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.ApplyPhaseCount">
+            <summary>
+            DEPRECATED: This event will be merged with ApplyBegin in wix4.
+            Fired right after ApplyBegin, providing the number of phases that the engine will go through in apply.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.Elevate">
+            <summary>
+            Fired when the engine is about to start the elevated process.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.RegisterBegin">
+            <summary>
+            Fired when the engine has begun registering the location and visibility of the bundle.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.RegisterComplete">
+            <summary>
+            Fired when the engine has completed registering the location and visibility of the bundle.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.UnregisterBegin">
+            <summary>
+            Fired when the engine has begun removing the registration for the location and visibility of the bundle.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.UnregisterComplete">
+            <summary>
+            Fired when the engine has completed removing the registration for the location and visibility of the bundle.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.CacheBegin">
+            <summary>
+            Fired when the engine has begun caching the installation sources.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.CachePackageBegin">
+            <summary>
+            Fired when the engine has begun caching a specific package.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.CacheAcquireBegin">
+            <summary>
+            Fired when the engine has begun acquiring the installation sources.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.CacheAcquireProgress">
+            <summary>
+            Fired when the engine has progress acquiring the installation sources.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.ResolveSource">
+            <summary>
+            Fired by the engine to allow the user experience to change the source
+            using <see cref="M:Engine.SetLocalSource"/> or <see cref="M:Engine.SetDownloadSource"/>.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.CacheAcquireComplete">
+            <summary>
+            Fired when the engine has completed the acquisition of the installation sources.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.CacheVerifyBegin">
+            <summary>
+            Fired when the engine begins the verification of the acquired installation sources.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.CacheVerifyComplete">
+            <summary>
+            Fired when the engine complete the verification of the acquired installation sources.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.CachePackageComplete">
+            <summary>
+            Fired when the engine has completed caching a specific package.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.CacheComplete">
+            <summary>
+            Fired after the engine has cached the installation sources.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.ExecuteBegin">
+            <summary>
+            Fired when the engine has begun installing packages.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.ExecutePackageBegin">
+            <summary>
+            Fired when the engine has begun installing a specific package.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.ExecutePatchTarget">
+            <summary>
+            Fired when the engine executes one or more patches targeting a product.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.Error">
+            <summary>
+            Fired when the engine has encountered an error.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.Progress">
+            <summary>
+            Fired when the engine has changed progress for the bundle installation.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.ExecuteMsiMessage">
+            <summary>
+            Fired when Windows Installer sends an installation message.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.ExecuteFilesInUse">
+            <summary>
+            Fired when Windows Installer sends a files in use installation message.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.ExecutePackageComplete">
+            <summary>
+            Fired when the engine has completed installing a specific package.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.ExecuteComplete">
+            <summary>
+            Fired when the engine has completed installing packages.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.RestartRequired">
+            <summary>
+            Fired by the engine to request a restart now or inform the user a manual restart is required later.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.ApplyComplete">
+            <summary>
+            Fired when the engine has completed installing the bundle.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.ExecuteProgress">
+            <summary>
+            Fired by the engine while executing on payload.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.LaunchApprovedExeBegin">
+            <summary>
+            Fired when the engine is about to launch the preapproved executable.
+            </summary>
+        </member>
+        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.LaunchApprovedExeComplete">
+            <summary>
+            Fired when the engine has completed launching the preapproved executable.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.AsyncExecution">
+            <summary>
+            Specifies whether this bootstrapper should run asynchronously. The default is true.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.Command">
+            <summary>
+            Gets the <see cref="P:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.Command"/> information for how the UX should be started.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.Engine">
+            <summary>
+            Gets the <see cref="P:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.Engine"/> for interaction with the Engine.
             </summary>
         </member>
         <member name="M:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.Run">
@@ -373,315 +677,6 @@
             </summary>
             <param name="args">Additional arguments for this event.</param>
         </member>
-        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.Startup">
-            <summary>
-            Fired when the engine is starting up the bootstrapper application.
-            </summary>
-        </member>
-        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.Shutdown">
-            <summary>
-            Fired when the engine is shutting down the bootstrapper application.
-            </summary>
-        </member>
-        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.SystemShutdown">
-            <summary>
-            Fired when the system is shutting down or user is logging off.
-            </summary>
-            <remarks>
-            <para>To prevent shutting down or logging off, set <see cref="P:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.ResultEventArgs.Result"/> to
-            <see cref="F:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.Result.Cancel"/>; otherwise, set it to <see cref="F:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.Result.Ok"/>.</para>
-            <para>By default setup will prevent shutting down or logging off between
-            <see cref="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.ApplyBegin"/> and <see cref="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.ApplyComplete"/>.
-            Derivatives can change this behavior by overriding <see cref="M:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.OnSystemShutdown(Microsoft.Tools.WindowsInstallerXml.Bootstrapper.SystemShutdownEventArgs)"/>
-            or handling <see cref="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.SystemShutdown"/>.</para>
-            <para>If <see cref="P:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.SystemShutdownEventArgs.Reasons"/> contains <see cref="F:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.EndSessionReasons.Critical"/>
-            the bootstrapper cannot prevent the shutdown and only has a few seconds to save state or perform any other
-            critical operations before being closed by the operating system.</para>
-            <para>This event may be fired on a different thread.</para>
-            </remarks>
-        </member>
-        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.DetectBegin">
-            <summary>
-            Fired when the overall detection phase has begun.
-            </summary>
-        </member>
-        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.DetectForwardCompatibleBundle">
-            <summary>
-            Fired when a forward compatible bundle is detected.
-            </summary>
-        </member>
-        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.DetectUpdateBegin">
-            <summary>
-            Fired when the update detection phase has begun.
-            </summary>
-        </member>
-        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.DetectUpdate">
-            <summary>
-            Fired when the update detection has found a potential update candidate.
-            </summary>
-        </member>
-        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.DetectUpdateComplete">
-            <summary>
-            Fired when the update detection phase has completed.
-            </summary>
-        </member>
-        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.DetectPriorBundle">
-            <summary>
-            Fired when the detection for a prior bundle has begun.
-            </summary>
-        </member>
-        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.DetectRelatedBundle">
-            <summary>
-            Fired when a related bundle has been detected for a bundle.
-            </summary>
-        </member>
-        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.DetectPackageBegin">
-            <summary>
-            Fired when the detection for a specific package has begun.
-            </summary>
-        </member>
-        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.DetectCompatiblePackage">
-            <summary>
-            Fired when a package was not detected but a package using the same provider key was.
-            </summary>
-        </member>
-        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.DetectRelatedMsiPackage">
-            <summary>
-            Fired when a related MSI package has been detected for a package.
-            </summary>
-        </member>
-        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.DetectTargetMsiPackage">
-            <summary>
-            Fired when an MSP package detects a target MSI has been detected.
-            </summary>
-        </member>
-        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.DetectMsiFeature">
-            <summary>
-            Fired when a feature in an MSI package has been detected.
-            </summary>
-        </member>
-        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.DetectPackageComplete">
-            <summary>
-            Fired when the detection for a specific package has completed.
-            </summary>
-        </member>
-        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.DetectComplete">
-            <summary>
-            Fired when the detection phase has completed.
-            </summary>
-        </member>
-        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.PlanBegin">
-            <summary>
-            Fired when the engine has begun planning the installation.
-            </summary>
-        </member>
-        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.PlanRelatedBundle">
-            <summary>
-            Fired when the engine has begun planning for a related bundle.
-            </summary>
-        </member>
-        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.PlanPackageBegin">
-            <summary>
-            Fired when the engine has begun planning the installation of a specific package.
-            </summary>
-        </member>
-        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.PlanCompatiblePackage">
-            <summary>
-            Fired when the engine plans a new, compatible package using the same provider key.
-            </summary>
-        </member>
-        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.PlanTargetMsiPackage">
-            <summary>
-            Fired when the engine is about to plan the target MSI of a MSP package.
-            </summary>
-        </member>
-        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.PlanMsiFeature">
-            <summary>
-            Fired when the engine is about to plan a feature in an MSI package.
-            </summary>
-        </member>
-        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.PlanPackageComplete">
-            <summary>
-            Fired when the engine has completed planning the installation of a specific package.
-            </summary>
-        </member>
-        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.PlanComplete">
-            <summary>
-            Fired when the engine has completed planning the installation.
-            </summary>
-        </member>
-        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.ApplyBegin">
-            <summary>
-            Fired when the engine has begun installing the bundle.
-            </summary>
-        </member>
-        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.ApplyPhaseCount">
-            <summary>
-            DEPRECATED: This event will be merged with ApplyBegin in wix4.
-            Fired right after ApplyBegin, providing the number of phases that the engine will go through in apply.
-            </summary>
-        </member>
-        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.Elevate">
-            <summary>
-            Fired when the engine is about to start the elevated process.
-            </summary>
-        </member>
-        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.RegisterBegin">
-            <summary>
-            Fired when the engine has begun registering the location and visibility of the bundle.
-            </summary>
-        </member>
-        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.RegisterComplete">
-            <summary>
-            Fired when the engine has completed registering the location and visibility of the bundle.
-            </summary>
-        </member>
-        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.UnregisterBegin">
-            <summary>
-            Fired when the engine has begun removing the registration for the location and visibility of the bundle.
-            </summary>
-        </member>
-        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.UnregisterComplete">
-            <summary>
-            Fired when the engine has completed removing the registration for the location and visibility of the bundle.
-            </summary>
-        </member>
-        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.CacheBegin">
-            <summary>
-            Fired when the engine has begun caching the installation sources.
-            </summary>
-        </member>
-        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.CachePackageBegin">
-            <summary>
-            Fired when the engine has begun caching a specific package.
-            </summary>
-        </member>
-        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.CacheAcquireBegin">
-            <summary>
-            Fired when the engine has begun acquiring the installation sources.
-            </summary>
-        </member>
-        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.CacheAcquireProgress">
-            <summary>
-            Fired when the engine has progress acquiring the installation sources.
-            </summary>
-        </member>
-        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.ResolveSource">
-            <summary>
-            Fired by the engine to allow the user experience to change the source
-            using <see cref="M:Engine.SetLocalSource"/> or <see cref="M:Engine.SetDownloadSource"/>.
-            </summary>
-        </member>
-        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.CacheAcquireComplete">
-            <summary>
-            Fired when the engine has completed the acquisition of the installation sources.
-            </summary>
-        </member>
-        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.CacheVerifyBegin">
-            <summary>
-            Fired when the engine begins the verification of the acquired installation sources.
-            </summary>
-        </member>
-        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.CacheVerifyComplete">
-            <summary>
-            Fired when the engine complete the verification of the acquired installation sources.
-            </summary>
-        </member>
-        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.CachePackageComplete">
-            <summary>
-            Fired when the engine has completed caching a specific package.
-            </summary>
-        </member>
-        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.CacheComplete">
-            <summary>
-            Fired after the engine has cached the installation sources.
-            </summary>
-        </member>
-        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.ExecuteBegin">
-            <summary>
-            Fired when the engine has begun installing packages.
-            </summary>
-        </member>
-        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.ExecutePackageBegin">
-            <summary>
-            Fired when the engine has begun installing a specific package.
-            </summary>
-        </member>
-        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.ExecutePatchTarget">
-            <summary>
-            Fired when the engine executes one or more patches targeting a product.
-            </summary>
-        </member>
-        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.Error">
-            <summary>
-            Fired when the engine has encountered an error.
-            </summary>
-        </member>
-        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.Progress">
-            <summary>
-            Fired when the engine has changed progress for the bundle installation.
-            </summary>
-        </member>
-        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.ExecuteMsiMessage">
-            <summary>
-            Fired when Windows Installer sends an installation message.
-            </summary>
-        </member>
-        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.ExecuteFilesInUse">
-            <summary>
-            Fired when Windows Installer sends a files in use installation message.
-            </summary>
-        </member>
-        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.ExecutePackageComplete">
-            <summary>
-            Fired when the engine has completed installing a specific package.
-            </summary>
-        </member>
-        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.ExecuteComplete">
-            <summary>
-            Fired when the engine has completed installing packages.
-            </summary>
-        </member>
-        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.RestartRequired">
-            <summary>
-            Fired by the engine to request a restart now or inform the user a manual restart is required later.
-            </summary>
-        </member>
-        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.ApplyComplete">
-            <summary>
-            Fired when the engine has completed installing the bundle.
-            </summary>
-        </member>
-        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.ExecuteProgress">
-            <summary>
-            Fired by the engine while executing on payload.
-            </summary>
-        </member>
-        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.LaunchApprovedExeBegin">
-            <summary>
-            Fired when the engine is about to launch the preapproved executable.
-            </summary>
-        </member>
-        <member name="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.LaunchApprovedExeComplete">
-            <summary>
-            Fired when the engine has completed launching the preapproved executable.
-            </summary>
-        </member>
-        <member name="P:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.AsyncExecution">
-            <summary>
-            Specifies whether this bootstrapper should run asynchronously. The default is true.
-            </summary>
-        </member>
-        <member name="P:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.Command">
-            <summary>
-            Gets the <see cref="P:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.Command"/> information for how the UX should be started.
-            </summary>
-        </member>
-        <member name="P:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.Engine">
-            <summary>
-            Gets the <see cref="P:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.Engine"/> for interaction with the Engine.
-            </summary>
-        </member>
         <member name="T:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplicationAttribute">
             <summary>
             Identifies the bootstrapper application class.
@@ -782,6 +777,38 @@
             Creates a new instance of the <see cref="T:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.Engine"/> container class.
             </summary>
             <param name="engine">The <see cref="T:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.IBootstrapperEngine"/> to contain.</param>
+        </member>
+        <member name="P:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.Engine.NumericVariables">
+            <summary>
+            Gets or sets numeric variables for the engine.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.Engine.PackageCount">
+            <summary>
+            Gets the number of packages in the bundle.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.Engine.SecureStringVariables">
+            <summary>
+            Gets or sets string variables for the engine using SecureStrings.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.Engine.StringVariables">
+            <summary>
+            Gets or sets string variables for the engine.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.Engine.VersionVariables">
+            <summary>
+            Gets or sets <see cref="T:System.Version"/> variables for the engine.
+            
+            The <see cref="T:System.Version"/> class can keep track of when the build and revision fields are undefined, but the engine can't.
+            Therefore, the build and revision fields must be defined when setting a <see cref="T:System.Version"/> variable.
+            Use the NormalizeVersion method to make sure the engine can accept the Version.
+            
+            To keep track of versions without build or revision fields, use StringVariables instead.
+            </summary>
+            <exception cref="T:System.OverflowException">The given <see cref="T:System.Version"/> was invalid.</exception>
         </member>
         <member name="M:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.Engine.Apply(System.IntPtr)">
             <summary>
@@ -916,6 +943,26 @@
             </summary>
             <param name="exitCode">Exit code indicating reason for shut down.</param>
         </member>
+        <member name="T:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.Engine.Variables`1">
+            <summary>
+            An accessor for numeric, string, and version variables for the engine.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.Engine.Variables`1.Item(System.String)">
+            <summary>
+            Gets or sets the variable given by <paramref name="name"/>.
+            </summary>
+            <param name="name">The name of the variable to get/set.</param>
+            <returns>The value of the given variable.</returns>
+            <exception cref="T:System.Exception">An error occurred getting the variable.</exception>
+        </member>
+        <member name="M:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.Engine.Variables`1.Contains(System.String)">
+            <summary>
+            Gets whether the variable given by <paramref name="name"/> exists.
+            </summary>
+            <param name="name">The name of the variable to check.</param>
+            <returns>True if the variable given by <paramref name="name"/> exists; otherwise, false.</returns>
+        </member>
         <member name="M:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.Engine.containsVariable(System.String)">
             <summary>
             Gets whether the variable given by <paramref name="name"/> exists.
@@ -944,58 +991,6 @@
             Verifies that VersionVariables can pass on the given Version to the engine.
             If the Build or Revision fields are undefined, they are set to zero.
             </summary>
-        </member>
-        <member name="P:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.Engine.NumericVariables">
-            <summary>
-            Gets or sets numeric variables for the engine.
-            </summary>
-        </member>
-        <member name="P:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.Engine.PackageCount">
-            <summary>
-            Gets the number of packages in the bundle.
-            </summary>
-        </member>
-        <member name="P:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.Engine.SecureStringVariables">
-            <summary>
-            Gets or sets string variables for the engine using SecureStrings.
-            </summary>
-        </member>
-        <member name="P:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.Engine.StringVariables">
-            <summary>
-            Gets or sets string variables for the engine.
-            </summary>
-        </member>
-        <member name="P:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.Engine.VersionVariables">
-            <summary>
-            Gets or sets <see cref="T:System.Version"/> variables for the engine.
-            
-            The <see cref="T:System.Version"/> class can keep track of when the build and revision fields are undefined, but the engine can't.
-            Therefore, the build and revision fields must be defined when setting a <see cref="T:System.Version"/> variable.
-            Use the NormalizeVersion method to make sure the engine can accept the Version.
-            
-            To keep track of versions without build or revision fields, use StringVariables instead.
-            </summary>
-            <exception cref="T:System.OverflowException">The given <see cref="T:System.Version"/> was invalid.</exception>
-        </member>
-        <member name="T:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.Engine.Variables`1">
-            <summary>
-            An accessor for numeric, string, and version variables for the engine.
-            </summary>
-        </member>
-        <member name="M:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.Engine.Variables`1.Contains(System.String)">
-            <summary>
-            Gets whether the variable given by <paramref name="name"/> exists.
-            </summary>
-            <param name="name">The name of the variable to check.</param>
-            <returns>True if the variable given by <paramref name="name"/> exists; otherwise, false.</returns>
-        </member>
-        <member name="P:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.Engine.Variables`1.Item(System.String)">
-            <summary>
-            Gets or sets the variable given by <paramref name="name"/>.
-            </summary>
-            <param name="name">The name of the variable to get/set.</param>
-            <returns>The value of the given variable.</returns>
-            <exception cref="T:System.Exception">An error occurred getting the variable.</exception>
         </member>
         <member name="T:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.ResultEventArgs">
             <summary>
@@ -1085,14 +1080,10 @@
             <para>To prevent shutting down or logging off, set <see cref="P:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.ResultEventArgs.Result"/> to
             <see cref="F:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.Result.Cancel"/>; otherwise, set it to <see cref="F:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.Result.Ok"/>.</para>
             <para>By default setup will prevent shutting down or logging off between
-            <see cref="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.ApplyBegin"/> and <see cref="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.ApplyComplete"/>.
-            Derivatives can change this behavior by overriding <see cref="M:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.OnSystemShutdown(Microsoft.Tools.WindowsInstallerXml.Bootstrapper.SystemShutdownEventArgs)"/>
-            or handling <see cref="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.SystemShutdown"/>.</para>
+            <see cref="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.ApplyBegin"/> and <see cref="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.ApplyComplete"/>.</para>
             <para>If <see cref="P:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.SystemShutdownEventArgs.Reasons"/> contains <see cref="F:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.EndSessionReasons.Critical"/>
             the bootstrapper cannot prevent the shutdown and only has a few seconds to save state or perform any other
             critical operations before being closed by the operating system.</para>
-            <seealso cref="E:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.SystemShutdown"/>
-            <seealso cref="M:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.BootstrapperApplication.OnSystemShutdown(Microsoft.Tools.WindowsInstallerXml.Bootstrapper.SystemShutdownEventArgs)"/>
             </remarks>
         </member>
         <member name="M:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.SystemShutdownEventArgs.#ctor(Microsoft.Tools.WindowsInstallerXml.Bootstrapper.EndSessionReasons,System.Int32)">
@@ -2446,6 +2437,11 @@
             Gets the <see cref="T:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.SupportedFrameworkElementCollection"/> of supported frameworks for the host configuration.
             </summary>
         </member>
+        <member name="T:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.IBootstrapperApplication">
+            <summary>
+            Allows customization of the bootstrapper application.
+            </summary>
+        </member>
         <member name="T:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.Display">
             <summary>
             The display level for the UX.
@@ -2636,18 +2632,6 @@
             Command information passed from the engine for the user experience to perform.
             </summary>
         </member>
-        <member name="M:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.Command.GetCommandLineArgs">
-            <summary>
-            Gets the command line arguments as a string array.
-            </summary>
-            <returns>
-            Array of command line arguments not handled by the engine.
-            </returns>
-            <exception type="Win32Exception">The command line could not be parsed into an array.</exception>
-            <remarks>
-            This method uses the same parsing as the operating system which handles quotes and spaces correctly.
-            </remarks>
-        </member>
         <member name="P:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.Command.Action">
             <summary>
             Gets the action for the user experience to perform.
@@ -2692,6 +2676,18 @@
             <summary>
             If this was run from a backward compatible bundle.
             </summary>
+        </member>
+        <member name="M:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.Command.GetCommandLineArgs">
+            <summary>
+            Gets the command line arguments as a string array.
+            </summary>
+            <returns>
+            Array of command line arguments not handled by the engine.
+            </returns>
+            <exception type="Win32Exception">The command line could not be parsed into an array.</exception>
+            <remarks>
+            This method uses the same parsing as the operating system which handles quotes and spaces correctly.
+            </remarks>
         </member>
         <member name="T:Microsoft.Tools.WindowsInstallerXml.Bootstrapper.IBootstrapperEngine">
             <summary>

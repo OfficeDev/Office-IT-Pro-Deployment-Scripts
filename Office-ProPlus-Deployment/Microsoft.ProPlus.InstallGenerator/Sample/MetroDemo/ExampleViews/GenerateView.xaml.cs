@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -14,7 +15,10 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using MetroDemo.Events;
 using MetroDemo.ExampleWindows;
-using Microsoft.Win32;
+using OfficeInstallGenerator;
+using MessageBox = System.Windows.MessageBox;
+using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
+using UserControl = System.Windows.Controls.UserControl;
 
 namespace MetroDemo.ExampleViews
 {
@@ -34,10 +38,30 @@ namespace MetroDemo.ExampleViews
             try
             {
                 LoadCurrentXml();
+
+                if (xmlBrowser.InstallOffice == null)
+                {
+                    xmlBrowser.InstallOffice += InstallOffice;
+                }
+
+                InstallExecutable.IsChecked = true;
             }
             catch (Exception ex)
             {
-                
+                MessageBox.Show("ERROR: " + ex.Message);
+            }
+        }
+
+        private void InstallOffice(object sender, InstallOfficeEventArgs args)
+        {
+            try
+            {
+                var installGenerator = new OfficeInstallExecutableGenerator();
+                installGenerator.InstallOffice(args.Xml);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("ERROR: " + ex.Message);
             }
         }
 
@@ -62,6 +86,33 @@ namespace MetroDemo.ExampleViews
                 {
                     Direction = TransitionTabDirection.Forward
                 });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("ERROR: " + ex.Message);
+            }
+        }
+
+        private void SaveButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var openDialog = new SaveFileDialog()
+                {
+                    Filter = "Executable|*.exe"
+                };
+
+                if (InstallMsi.IsChecked.HasValue && InstallMsi.IsChecked.Value)
+                {
+                    openDialog.Filter = "MSI|*.msi";
+                }
+
+                if (openDialog.ShowDialog() == DialogResult.OK)
+                {
+                    var filePath = openDialog.FileName;
+                    FileSavePath.Text = filePath;
+
+                }
             }
             catch (Exception ex)
             {

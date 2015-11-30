@@ -1,6 +1,7 @@
 ﻿using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -41,11 +42,9 @@ namespace OfficeInstallGenerator
                 parameters.ReferencedAssemblies.Add("System.Core.dll");
                 parameters.ReferencedAssemblies.Add("Microsoft.CSharp.dll");
 
-                
-
-
 
                 embededExeFiles = EmbeddedResources.GetEmbeddedItems(currentDirectory, @"\.exe$");
+
                 File.Copy(installProperties.ConfigurationXmlPath, tmpPath + @"\configuration.xml", true);
 
                 parameters.EmbeddedResources.Add(tmpPath + @"\configuration.xml");
@@ -125,6 +124,45 @@ namespace OfficeInstallGenerator
                         File.Delete(currentDirectory + @"\" + fileName);
                     }
                 }
+            }
+        }
+
+        public void InstallOffice(string configurationXml)
+        {
+            var tmpPath = Environment.ExpandEnvironmentVariables("%temp%");
+            var embededExeFiles = EmbeddedResources.GetEmbeddedItems(tmpPath, @"\.exe$");
+
+            var installExe = tmpPath + @"\" + embededExeFiles.FirstOrDefault(f => f.ToLower().Contains("2016"));
+            var xmlPath = tmpPath + @"\configuration.xml";
+
+            if (File.Exists(xmlPath)) File.Delete(xmlPath);
+            File.WriteAllText(xmlPath, configurationXml);
+
+            var p = new Process
+            {
+                StartInfo = new ProcessStartInfo()
+                {
+                    FileName = installExe,
+                    Arguments = "/configure " + tmpPath + @"\configuration.xml",
+                    CreateNoWindow = true,
+                    UseShellExecute = false
+                },
+            };
+            p.Start();
+            p.WaitForExit();
+
+            if (File.Exists(xmlPath)) File.Delete(xmlPath);
+
+            foreach (var exeFilePath in embededExeFiles)
+            {
+                try
+                {
+                    if (File.Exists(tmpPath + @"\" + exeFilePath))
+                    {
+                        File.Delete(tmpPath + @"\" + exeFilePath);
+                    }
+                }
+                catch { }
             }
         }
 
