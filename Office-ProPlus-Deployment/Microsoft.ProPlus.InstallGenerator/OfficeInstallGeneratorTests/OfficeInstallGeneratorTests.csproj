@@ -63,6 +63,10 @@
       <Project>{ce88a24e-73c3-4b1d-b72c-f41894485a14}</Project>
       <Name>Micorosft.OfficeProPlus.ConfigurationXml</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Microsoft.OfficeProPlus.Downloader\Microsoft.OfficeProPlus.Downloader.csproj">
+      <Project>{ea30b98d-401b-46ee-ba77-31efc287e9af}</Project>
+      <Name>Microsoft.OfficeProPlus.Downloader</Name>
+    </ProjectReference>
     <ProjectReference Include="..\OfficeInstallGenerator\Microsoft.OfficeProPlus.InstallGenerator.csproj">
       <Project>{0702f643-0467-43a4-bdbc-b54f006e8244}</Project>
       <Name>Microsoft.OfficeProPlus.InstallGenerator</Name>

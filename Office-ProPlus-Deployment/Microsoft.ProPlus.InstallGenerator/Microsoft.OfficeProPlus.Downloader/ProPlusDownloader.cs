@@ -1,0 +1,229 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using System.Xml;
+using Microsoft.OfficeProPlus.Downloader.Model;
+using File = System.IO.File;
+
+namespace Microsoft.OfficeProPlus.Downloader
+{
+    public class ProPlusDownloader
+    {
+        private const string OfficeVersionUrl = "http://officecdn.microsoft.com/pr/wsus/ofl.cab";
+
+        private List<UpdateFiles> _updateFiles { get; set; }
+
+        public async Task DownloadBranch(DownloadBranchProperties properties)
+        {
+            var fd = new FileDownloader();
+
+            if (properties.Languages == null) properties.Languages = new List<string>() { "en-us" };
+
+            if (_updateFiles == null)
+            {
+                _updateFiles = await DownloadCab();
+            }
+
+            var selectUpdateFile = properties.OfficeEdition == OfficeEdition.Office32Bit ? _updateFiles.FirstOrDefault(u => u.OfficeEdition == OfficeEdition.Office32Bit) :
+                                                                _updateFiles.FirstOrDefault(u => u.OfficeEdition == OfficeEdition.Office64Bit);
+            if (selectUpdateFile == null) throw (new Exception("Cannot Find Office Files"));
+
+            var branch = selectUpdateFile.BaseURL.FirstOrDefault(b => b.Branch.ToLower() == properties.BranchName.ToLower());
+            var version = properties.Version ?? await GetLatestVersionAsync(branch, properties.OfficeEdition);
+
+            var allFiles = new List<Model.File>();
+            foreach (var language in properties.Languages)
+            {
+                var langCode = language.GetLanguageNumber();
+                var langfiles = selectUpdateFile.Files.Where(f => f.Language == 0 || f.Language == langCode);
+
+                foreach (var file in langfiles)
+                {
+                    file.Name = Regex.Replace(file.Name, "%version%", version, RegexOptions.IgnoreCase);
+                    file.RelativePath = Regex.Replace(file.RelativePath, "%version%", version, RegexOptions.IgnoreCase);
+                    file.RemoteUrl = branch.URL + @"/" + file.RelativePath + file.Name;
+                    file.FileSize = await fd.GetFileSizeAsync(file.RemoteUrl);
+
+                    allFiles.Add(file);
+                }
+            }
+
+            fd = new FileDownloader();
+
+            double totalSize = 0;
+
+            foreach (var file in allFiles)
+            {
+                var downloadFile = true;
+                var localFilePath = properties.TargetDirectory + file.RelativePath.Replace("/", "\\") + file.Name;
+                if (File.Exists(localFilePath))
+                {
+                    var fInfo = new FileInfo(localFilePath);
+                    if (file.FileSize == fInfo.Length)
+                    {
+                        downloadFile = false;
+                    }
+                }
+                if (downloadFile)
+                {
+                    totalSize += file.FileSize;
+                }
+            }
+
+            double downloadedSize = 0;
+
+            foreach (var file in allFiles)
+            {
+                var localFilePath = properties.TargetDirectory + file.RelativePath.Replace("/", "\\") + file.Name;
+
+                fd.DownloadFileProgress += (sender, progress) =>
+                {
+                    if (DownloadFileProgress == null) return;
+                    double bytesIn = downloadedSize + progress.BytesRecieved;
+                    double percentage = bytesIn / totalSize * 100;
+
+                    DownloadFileProgress(this, new Events.DownloadFileProgress()
+                    {
+                        BytesRecieved = (long)(downloadedSize + progress.BytesRecieved),
+                        PercentageComplete = Math.Truncate(percentage),
+                        TotalBytesToRecieve = (long)totalSize
+                    });
+                };
+
+                var downloadFile = true;
+                if (File.Exists(localFilePath))
+                {
+                    var fInfo = new FileInfo(localFilePath);
+                    if (file.FileSize == fInfo.Length)
+                    {
+                        downloadFile = false;
+                    }
+                }
+
+                if (downloadFile)
+                {
+                    await fd.DownloadAsync(file.RemoteUrl, localFilePath);
+                    downloadedSize += file.FileSize;
+
+                    if (!string.IsNullOrEmpty(file.Rename))
+                    {
+                        var fInfo = new FileInfo(localFilePath);
+                        File.Copy(localFilePath, fInfo.Directory.FullName + @"\" + file.Rename);
+                    }
+                }
+            }
+        }
+
+        public async Task<List<UpdateFiles>> DownloadCab()
+        {
+            var localCabPath = Environment.ExpandEnvironmentVariables(@"%temp%\ofl.cab");
+            if (File.Exists(localCabPath)) File.Delete(localCabPath);
+
+            var fd = new FileDownloader();
+            await fd.DownloadAsync(OfficeVersionUrl, localCabPath);
+
+            var cabExtractor = new CabExtractor(localCabPath);
+            cabExtractor.ExtractCabFiles();
+
+            var xml32Path = Environment.ExpandEnvironmentVariables(@"%temp%\ExtractedFiles\o365client_32bit.xml");
+            var xml64Path = Environment.ExpandEnvironmentVariables(@"%temp%\ExtractedFiles\o365client_64bit.xml");
+
+            var updateFiles32 = GenerateUpdateFiles(xml32Path);
+            var updateFiles64 = GenerateUpdateFiles(xml64Path);
+
+            return new List<UpdateFiles>()
+            {
+                updateFiles32,
+                updateFiles64
+            };
+        }
+
+        public async Task<string> GetLatestVersionAsync(baseURL branchUrl, OfficeEdition officeEdition)
+        {
+            var fileName = "v32.cab";
+            if (officeEdition == OfficeEdition.Office64Bit)
+            {
+                fileName = "v64.cab";
+            }
+
+            var vcabFileDir = Environment.ExpandEnvironmentVariables(@"%temp%\OfficeProPlus\" + branchUrl.Branch);
+            var vcabFilePath = vcabFileDir + @"\" + fileName;
+            var vcabExtFilePath = vcabFileDir + @"\ExtractedFiles\VersionDescriptor.xml";
+            Directory.CreateDirectory(vcabFileDir);
+
+            var fd = new FileDownloader();
+            await fd.DownloadAsync(branchUrl.URL + @"/Office/Data/v32.cab", vcabFilePath);
+
+            var cabExtractor = new CabExtractor(vcabFilePath);
+            cabExtractor.ExtractCabFiles();
+
+            var version = GetCabVersion(vcabExtFilePath);
+            return version;
+        }
+
+        private UpdateFiles GenerateUpdateFiles(string xmlFilePath)
+        {
+            var updateFiles = new UpdateFiles
+            {
+                OfficeEdition = OfficeEdition.Office64Bit
+            };
+
+            if (xmlFilePath.Contains("32"))
+            {
+                updateFiles.OfficeEdition = OfficeEdition.Office32Bit;
+            }
+
+            var xmlDoc = new XmlDocument();
+            xmlDoc.Load(xmlFilePath);
+
+            var baseUrlNodes = xmlDoc.SelectNodes("/UpdateFiles/baseURL");
+            foreach (XmlNode baseUrlNode in baseUrlNodes)
+            {
+                var branch = baseUrlNode.GetAttributeValue("branch");
+                var url = baseUrlNode.GetAttributeValue("URL");
+                updateFiles.BaseURL.Add(new baseURL()
+                {
+                    Branch = branch,
+                    URL = url
+                });
+            }
+
+            var fileNodes = xmlDoc.SelectNodes("/UpdateFiles/File");
+            foreach (XmlNode fileNode in fileNodes)
+            {
+                var name = fileNode.GetAttributeValue("name");
+                var rename = fileNode.GetAttributeValue("rename");
+                var relativePath = fileNode.GetAttributeValue("relativePath");
+                var language = Convert.ToInt32(fileNode.GetAttributeValue("language"));
+                updateFiles.Files.Add(new Model.File()
+                {
+                    Name = name,
+                    Rename = rename,
+                    RelativePath = relativePath,
+                    Language = language
+                });
+            }
+            return updateFiles;
+        }
+
+        private string GetCabVersion(string xmlFilePath)
+        {
+            var xmlDoc = new XmlDocument();
+            xmlDoc.Load(xmlFilePath);
+
+            var availableNode = xmlDoc.DocumentElement.SelectSingleNode("./Available");
+            if (availableNode == null) return null;
+
+            var buildVersion = availableNode.GetAttributeValue("Build");
+            return buildVersion;
+        }
+
+        public Events.DownloadFileProgressEventHandler DownloadFileProgress { get; set; }
+
+    }
+}
