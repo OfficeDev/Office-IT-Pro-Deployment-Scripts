@@ -26,7 +26,7 @@
     <AdornerDecorator>
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition />
+                <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="20"></RowDefinition>
@@ -37,9 +37,12 @@
 
 
             <Grid Grid.Row="1" >
+                <Grid.RowDefinitions>
+                    <RowDefinition></RowDefinition>
+                </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="50" />
-                    <ColumnDefinition />
+                    <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="50" />
                 </Grid.ColumnDefinitions>
                 <Controls:MetroAnimatedSingleRowTabControl Grid.Row="0" Grid.Column="1" x:Name="MainTabControl" SelectionChanged="MainTabControl_OnSelectionChanged">
@@ -241,23 +244,34 @@
                                         <ColumnDefinition Width="130" />
                                         <ColumnDefinition Width="40" />
                                         <ColumnDefinition Width="400" />
-                                        <ColumnDefinition Width="120" />
+                                        <ColumnDefinition Width="60" />
+                                        <ColumnDefinition Width="60"/>
+                                        <ColumnDefinition Width="75" />
+                                        <ColumnDefinition Width="70" />
                                     </Grid.ColumnDefinitions>
                                     <Label Content="Source Path" Style="{StaticResource MetroLabelHeader}" Grid.Column="0" />
-                                    <Button Grid.Column="1" x:Name="SourcePathInfo" Width="30" Height="32" HorizontalAlignment="Left" Margin="0 0 0 0" 
+                                    <Button Grid.Column="1" x:Name="SourcePathInfo" Width="30" Height="32" HorizontalAlignment="Left" 
                                                 Focusable="False"  Style="{StaticResource MetroInfoButton}" Click="ProductInfo_OnClick" >
                                         <StackPanel Orientation="Horizontal">
                                             <Image Source="../images/info.png" Width="20" Height="20"/>
                                         </StackPanel>
                                     </Button>
-                                    <TextBox x:Name="ProductUpdateSource" Margin="{StaticResource ControlMargin}" FontSize="20" Grid.Column="2"
+
+                                    <Controls:MetroProgressBar x:Name="DownloadProgressBar"  Grid.Column="2" Height="35" Background="White" />
+                                    <TextBox x:Name="ProductUpdateSource" Background="#00ffffff" FontSize="20" Grid.Column="2"
                                              Controls:TextBoxHelper.Watermark="Local, UNC or HTTP Path" Height="35"
-                                             Controls:TextBoxHelper.ClearTextButton="True"
+                                             Controls:TextBoxHelper.ClearTextButton="True" TextChanged="BuildFilePath_OnTextChanged"
                                              Text="">
                                     </TextBox>
-                                    <Button Width="100" 
-                                            Margin="{StaticResource ControlMargin}" Height="40" Grid.Column="3"
+                                    <Button Width="55" 
+                                            Height="40" Grid.Column="3"
                                             Content="Browse" x:Name="UpdatePath" Click="UpdatePath_OnClick" />
+                                    <Button Width="50" Height="40" Grid.Column="4"
+                                            Content="Open" x:Name="OpenFolderButton" IsEnabled="False" Click="OpenFolderButton_OnClick"   />
+                                    <Button Width="70" Height="40" Grid.Column="5"
+                                            Content="Download" x:Name="DownloadButton" Click="DownloadButton_OnClick" IsEnabled="False"   />
+
+                                    <Label x:Name="DownloadPercent" Content="" Style="{StaticResource MetroLabelHeader}" Grid.Column="6" />
                                 </Grid>
                             </StackPanel>
 

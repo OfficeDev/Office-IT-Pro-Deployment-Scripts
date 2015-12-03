@@ -4,7 +4,10 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Forms;
@@ -15,6 +18,9 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using MetroDemo.Events;
 using MetroDemo.ExampleWindows;
+using Micorosft.OfficeProPlus.ConfigurationXml;
+using Microsoft.OfficeProPlus.Downloader;
+using Microsoft.OfficeProPlus.Downloader.Model;
 using OfficeInstallGenerator;
 using MessageBox = System.Windows.MessageBox;
 using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
@@ -27,6 +33,10 @@ namespace MetroDemo.ExampleViews
     /// </summary>
     public partial class GenerateView : UserControl
     {
+
+        public event TransitionTabEventHandler TransitionTab;
+        private CancellationTokenSource _tokenSource = new CancellationTokenSource();
+        private Task _downloadTask = null;
 
         public GenerateView()
         {
@@ -65,6 +75,79 @@ namespace MetroDemo.ExampleViews
             }
         }
 
+        private async Task DownloadOfficeFiles()
+        {
+            try
+            {
+                _tokenSource = new CancellationTokenSource();
+
+                BuildFilePath.IsReadOnly = true;
+                BrowseSourcePathButton.IsEnabled = false;
+
+                DownloadProgressBar.Maximum = 100;
+                DownloadPercent.Content = "";
+
+                var proPlusDownloader = new ProPlusDownloader();
+                proPlusDownloader.DownloadFileProgress += async (senderfp, progress) =>
+                {
+                    var percent = progress.PercentageComplete;
+                    if (percent > 0)
+                    {
+                        Dispatcher.Invoke(() => { 
+                            DownloadPercent.Content = percent + "%";
+                            DownloadProgressBar.Value = Convert.ToInt32(Math.Round(percent, 0));
+                        });
+                    }
+                };
+
+                var buildPath = BuildFilePath.Text;
+                if (string.IsNullOrEmpty(buildPath)) return;
+
+                var configXml = GlobalObjects.ViewModel.ConfigXmlParser.ConfigurationXml;
+                var languages =
+                    (from product in configXml.Add.Products
+                        from language in product.Languages
+                        select language.ID.ToLower()).Distinct().ToList();
+
+                string branch = null;
+                if (configXml.Add.Branch.HasValue)
+                {
+                    branch = configXml.Add.Branch.Value.ToString();
+                }
+
+                var officeEdition = OfficeEdition.Office32Bit;
+                if (configXml.Add.OfficeClientEdition == OfficeClientEdition.Office64Bit)
+                {
+                    officeEdition = OfficeEdition.Office64Bit;
+                }
+
+                buildPath = GlobalObjects.SetBranchFolderPath(branch, buildPath);
+                Directory.CreateDirectory(buildPath);
+
+                BuildFilePath.Text = buildPath;
+
+                await proPlusDownloader.DownloadBranch(new DownloadBranchProperties()
+                {
+                    BranchName = branch,
+                    OfficeEdition = officeEdition,
+                    TargetDirectory = buildPath,
+                    Languages = languages
+                }, _tokenSource.Token);
+
+                MessageBox.Show("Download Complete");
+            }
+            finally
+            {
+                BuildFilePath.IsReadOnly = false;
+                BrowseSourcePathButton.IsEnabled = true;
+                DownloadProgressBar.Value = 0;
+                DownloadPercent.Content = "";
+
+                DownloadButton.Content = "Download";
+                _tokenSource = new CancellationTokenSource();
+            }
+        }
+
         public void LoadCurrentXml()
         {
             if (GlobalObjects.ViewModel.ConfigXmlParser != null)
@@ -76,7 +159,7 @@ namespace MetroDemo.ExampleViews
             }
         }
 
-        public event TransitionTabEventHandler TransitionTab;
+        #region "Events"
 
         private void displayNext_Click(object sender, RoutedEventArgs e)
         {
@@ -120,7 +203,95 @@ namespace MetroDemo.ExampleViews
             }
         }
 
+        private async void DownloadButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (_tokenSource != null)
+                {
+                    if (_tokenSource.IsCancellationRequested)
+                    {
+                        return;
+                    }
+                    if (_downloadTask.IsActive())
+                    {
+                        _tokenSource.Cancel();
+                        return;
+                    }
+                }
 
+                DownloadButton.Content = "Stop";
+
+                _downloadTask = DownloadOfficeFiles();
+                await _downloadTask;
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message.ToLower().Contains("aborted") ||
+                    ex.Message.ToLower().Contains("canceled"))
+                {
+
+                }
+                else
+                {
+                    MessageBox.Show("ERROR: " + ex.Message);
+                }
+            }
+        }
+        
+        private void BuildFilePath_OnTextChanged(object sender, TextChangedEventArgs e)
+        {
+            try
+            {
+                var enabled = false;
+                if (BuildFilePath.Text.Length > 0)
+                {
+                    var match = Regex.Match(BuildFilePath.Text, @"^\w:\\|\\\\.*\\..*");
+                    if (match.Success)
+                    {
+                        enabled = true;
+                    } 
+                }
+
+                DownloadButton.IsEnabled = enabled;
+                
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("ERROR: " + ex.Message);
+            }
+        }
+
+        private void BrowseSourcePathButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var dlg1 = new Ionic.Utils.FolderBrowserDialogEx
+                {
+                    Description = "Select a folder to download files to:",
+                    ShowNewFolderButton = true,
+                    ShowEditBox = true,
+                    SelectedPath = BuildFilePath.Text,
+                    ShowFullPathInEditBox = true,
+                    RootFolder = System.Environment.SpecialFolder.MyComputer
+                };
+                //dlg1.NewStyle = false;
+
+                // Show the FolderBrowserDialog.
+                DialogResult result = dlg1.ShowDialog();
+                if (result == DialogResult.OK)
+                {
+                    BuildFilePath.Text = dlg1.SelectedPath;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("ERROR: " + ex.Message);
+            }
+        }
+        
+
+        #endregion
 
     }
 }

@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using Microsoft.OfficeProPlus.Downloader.Model;
@@ -18,7 +19,7 @@ namespace Microsoft.OfficeProPlus.Downloader
 
         private List<UpdateFiles> _updateFiles { get; set; }
 
-        public async Task DownloadBranch(DownloadBranchProperties properties)
+        public async Task DownloadBranch(DownloadBranchProperties properties, CancellationToken token = new CancellationToken())
         {
             var fd = new FileDownloader();
 
@@ -50,32 +51,25 @@ namespace Microsoft.OfficeProPlus.Downloader
                     file.FileSize = await fd.GetFileSizeAsync(file.RemoteUrl);
 
                     allFiles.Add(file);
+
+                    if (token.IsCancellationRequested)
+                    {
+                        return;
+                    }
                 }
             }
+
+            allFiles = allFiles.Distinct().ToList();
 
             fd = new FileDownloader();
 
-            double totalSize = 0;
-
             foreach (var file in allFiles)
             {
-                var downloadFile = true;
-                var localFilePath = properties.TargetDirectory + file.RelativePath.Replace("/", "\\") + file.Name;
-                if (File.Exists(localFilePath))
-                {
-                    var fInfo = new FileInfo(localFilePath);
-                    if (file.FileSize == fInfo.Length)
-                    {
-                        downloadFile = false;
-                    }
-                }
-                if (downloadFile)
-                {
-                    totalSize += file.FileSize;
-                }
+                file.LocalFilePath = properties.TargetDirectory + file.RelativePath.Replace("/", "\\") + file.Name;
             }
 
             double downloadedSize = 0;
+            double totalSize = allFiles.Where(f => !f.Exists).Sum(f => f.FileSize);
 
             foreach (var file in allFiles)
             {
@@ -84,8 +78,15 @@ namespace Microsoft.OfficeProPlus.Downloader
                 fd.DownloadFileProgress += (sender, progress) =>
                 {
                     if (DownloadFileProgress == null) return;
+                    if (progress.PercentageComplete == 100.0) return;
+
                     double bytesIn = downloadedSize + progress.BytesRecieved;
                     double percentage = bytesIn / totalSize * 100;
+
+                    if (percentage > 100)
+                    {
+                        percentage = 100;
+                    }
 
                     DownloadFileProgress(this, new Events.DownloadFileProgress()
                     {
@@ -95,28 +96,34 @@ namespace Microsoft.OfficeProPlus.Downloader
                     });
                 };
 
-                var downloadFile = true;
-                if (File.Exists(localFilePath))
+                if (file.Exists)
                 {
-                    var fInfo = new FileInfo(localFilePath);
-                    if (file.FileSize == fInfo.Length)
-                    {
-                        downloadFile = false;
-                    }
+                    continue;
                 }
 
-                if (downloadFile)
-                {
-                    await fd.DownloadAsync(file.RemoteUrl, localFilePath);
-                    downloadedSize += file.FileSize;
+                await fd.DownloadAsync(file.RemoteUrl, localFilePath, token);
+                downloadedSize += file.FileSize;
 
-                    if (!string.IsNullOrEmpty(file.Rename))
-                    {
-                        var fInfo = new FileInfo(localFilePath);
-                        File.Copy(localFilePath, fInfo.Directory.FullName + @"\" + file.Rename);
-                    }
+                if (token.IsCancellationRequested)
+                {
+                    return;
                 }
+
+                if (string.IsNullOrEmpty(file.Rename)) continue;
+                var fInfo = new FileInfo(localFilePath);
+                File.Copy(localFilePath, fInfo.Directory.FullName + @"\" + file.Rename);
             }
+
+
+            double percentageEnd = downloadedSize / totalSize * 100;
+            if (percentageEnd == 99.0) percentageEnd = 100;
+            DownloadFileProgress(this, new Events.DownloadFileProgress()
+            {
+                BytesRecieved = (long)(downloadedSize),
+                PercentageComplete = Math.Truncate(percentageEnd),
+                TotalBytesToRecieve = (long)totalSize
+            });
+
         }
 
         public async Task<List<UpdateFiles>> DownloadCab()

@@ -20,6 +20,19 @@ namespace Microsoft.OfficeProPlus.Downloader.Model
 
         public long FileSize { get; set; }
 
+        public string LocalFilePath { get; set; }
+
+        public bool Exists
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(LocalFilePath)) return false;
+                if (!System.IO.File.Exists(LocalFilePath)) return false;
+
+                var fInfo = new System.IO.FileInfo(LocalFilePath);
+                return this.FileSize == fInfo.Length;
+            }
+        }
 
     }
 }

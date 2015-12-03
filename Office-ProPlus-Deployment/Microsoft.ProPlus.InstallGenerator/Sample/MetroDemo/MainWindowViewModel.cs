@@ -26,6 +26,24 @@ namespace MetroDemo
     public static class GlobalObjects
     {
         public static MainWindowViewModel ViewModel { get; set; }
+
+        public static string SetBranchFolderPath(string selectBranch, string folderPath)
+        {
+            foreach (var branch in ViewModel.Branches)
+            {
+                var branchName = branch.Branch.ToString();
+                if (folderPath.ToLower().EndsWith(@"\" + branchName.ToLower()))
+                {
+                    folderPath = Regex.Replace(folderPath, @"\\" + branchName + "$", @"\" + selectBranch, RegexOptions.IgnoreCase);
+                }
+            }
+            if (!folderPath.ToLower().EndsWith(@"\" + selectBranch.ToLower()))
+            {
+                folderPath += @"\" + selectBranch;
+            }
+            return folderPath;
+        }
+
     }
 
     public class MainWindowViewModel : INotifyPropertyChanged

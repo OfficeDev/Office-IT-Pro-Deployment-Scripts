@@ -84,19 +84,23 @@
                                 <ColumnDefinition Width="450" />
                                 <ColumnDefinition Width="80" />
                                 <ColumnDefinition Width="90" />
+                                <ColumnDefinition Width="80" />
                             </Grid.ColumnDefinitions>
 
                             <Label Content="Source Path" Style="{StaticResource MetroLabelHeader}" Grid.Column="1" />
-                            
-                            <TextBox x:Name="BuildFilePath" Margin="{StaticResource ControlMargin}" FontSize="20" Grid.Column="2"
+
+                            <controls:MetroProgressBar x:Name="DownloadProgressBar"  Grid.Column="2" Height="35" Background="White" />
+                            <TextBox x:Name="BuildFilePath" Margin="{StaticResource ControlMargin}" Background="#00ffffff" FontSize="20" Grid.Column="2"
                                              controls:TextBoxHelper.Watermark="Local or UNC Path" Height="35"
                                              controls:TextBoxHelper.ClearTextButton="True"
-                                             Text="">
+                                             Text="" TextChanged="BuildFilePath_OnTextChanged" >
                             </TextBox>
                             <Button Width="70" Margin="{StaticResource ControlMargin}" Height="40" Grid.Column="3"
-                                            Content="Browse" x:Name="BrowseSourcePathButton" Click="SaveButton_Click"   />
+                                            Content="Browse" x:Name="BrowseSourcePathButton" Click="BrowseSourcePathButton_OnClick"   />
                             <Button Width="80" Margin="{StaticResource ControlMargin}" Height="40" Grid.Column="4"
-                                            Content="Download" x:Name="DownloadButton" Click="SaveButton_Click"   />
+                                            Content="Download" x:Name="DownloadButton" Click="DownloadButton_OnClick" IsEnabled="False"   />
+
+                            <Label x:Name="DownloadPercent" Content="" Style="{StaticResource MetroLabelHeader}" Grid.Column="5" />
                         </Grid>
 
                         <Grid Grid.Column="0" Grid.Row="5">

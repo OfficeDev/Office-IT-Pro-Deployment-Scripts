@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -20,9 +23,13 @@ using MetroDemo.ExampleWindows;
 using MetroDemo.Models;
 using Micorosft.OfficeProPlus.ConfigurationXml;
 using Micorosft.OfficeProPlus.ConfigurationXml.Model;
+using Microsoft.OfficeProPlus.Downloader;
+using Microsoft.OfficeProPlus.Downloader.Model;
 using Microsoft.OfficeProPlus.InstallGen.Presentation.Models;
 using Microsoft.OfficeProPlus.InstallGenerator.Models;
 using OfficeInstallGenerator.Model;
+using Shell32;
+using File = System.IO.File;
 using MessageBox = System.Windows.MessageBox;
 using UserControl = System.Windows.Controls.UserControl;
 
@@ -35,7 +42,9 @@ namespace MetroDemo.ExampleViews
     {
         private LanguagesDialog languagesDialog = null;
         private InformationDialog informationDialog = null;
+        private CancellationTokenSource _tokenSource = new CancellationTokenSource();
         public event TransitionTabEventHandler TransitionTab;
+        private Task _downloadTask = null;
         
         public ProductView()
         {
@@ -156,6 +165,82 @@ namespace MetroDemo.ExampleViews
             catch (Exception ex)
             {
                 MessageBox.Show("ERROR: " + ex.Message);
+            }
+        }
+
+        private async Task DownloadOfficeFiles()
+        {
+            try
+            {
+                _tokenSource = new CancellationTokenSource();
+
+                UpdateXml();
+
+                ProductUpdateSource.IsReadOnly = true;
+                UpdatePath.IsEnabled = false;
+
+                DownloadProgressBar.Maximum = 100;
+                DownloadPercent.Content = "";
+
+                var proPlusDownloader = new ProPlusDownloader();
+                proPlusDownloader.DownloadFileProgress += async (senderfp, progress) =>
+                {
+                    var percent = progress.PercentageComplete;
+                    if (percent > 0)
+                    {
+                        Dispatcher.Invoke(() =>
+                        {
+                            DownloadPercent.Content = percent + "%";
+                            DownloadProgressBar.Value = Convert.ToInt32(Math.Round(percent, 0));
+                        });
+                    }
+                };
+
+                var buildPath = ProductUpdateSource.Text;
+                if (string.IsNullOrEmpty(buildPath)) return;
+
+                var configXml = GlobalObjects.ViewModel.ConfigXmlParser.ConfigurationXml;
+                var languages =
+                    (from product in configXml.Add.Products
+                     from language in product.Languages
+                     select language.ID.ToLower()).Distinct().ToList();
+
+                string branch = null;
+                if (configXml.Add.Branch.HasValue)
+                {
+                    branch = configXml.Add.Branch.Value.ToString();
+                }
+
+                var officeEdition = OfficeEdition.Office32Bit;
+                if (configXml.Add.OfficeClientEdition == OfficeClientEdition.Office64Bit)
+                {
+                    officeEdition = OfficeEdition.Office64Bit;
+                }
+
+                buildPath = GlobalObjects.SetBranchFolderPath(branch, buildPath);
+                Directory.CreateDirectory(buildPath);
+
+                ProductUpdateSource.Text = buildPath;
+
+                await proPlusDownloader.DownloadBranch(new DownloadBranchProperties()
+                {
+                    BranchName = branch,
+                    OfficeEdition = officeEdition,
+                    TargetDirectory = buildPath,
+                    Languages = languages
+                }, _tokenSource.Token);
+
+                MessageBox.Show("Download Complete");
+            }
+            finally
+            {
+                ProductUpdateSource.IsReadOnly = false;
+                UpdatePath.IsEnabled = true;
+                DownloadProgressBar.Value = 0;
+                DownloadPercent.Content = "";
+
+                DownloadButton.Content = "Download";
+                _tokenSource = new CancellationTokenSource();
             }
         }
 
@@ -519,23 +604,108 @@ namespace MetroDemo.ExampleViews
 
         #region "Events"
 
+        private async void DownloadButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (_tokenSource != null)
+                {
+                    if (_tokenSource.IsCancellationRequested)
+                    {
+                        return;
+                    }
+                    if (_downloadTask.IsActive())
+                    {
+                        _tokenSource.Cancel();
+                        return;
+                    }
+                }
+
+                DownloadButton.Content = "Stop";
+
+                _downloadTask = DownloadOfficeFiles();
+                await _downloadTask;
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message.ToLower().Contains("aborted") ||
+                    ex.Message.ToLower().Contains("canceled"))
+                {
+
+                }
+                else
+                {
+                    MessageBox.Show("ERROR: " + ex.Message);
+                }
+            }
+        }
+
+        private void BuildFilePath_OnTextChanged(object sender, TextChangedEventArgs e)
+        {
+            try
+            {
+                var enabled = false;
+                if (ProductUpdateSource.Text.Length > 0)
+                {
+                    var match = Regex.Match(ProductUpdateSource.Text, @"^\w:\\|\\\\.*\\..*");
+                    if (match.Success)
+                    {
+                        enabled = true;
+                    }
+
+                    OpenFolderButton.IsEnabled = Directory.Exists(ProductUpdateSource.Text);
+                }
+                else
+                {
+                    OpenFolderButton.IsEnabled = false;
+                }
+
+                DownloadButton.IsEnabled = enabled;
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("ERROR: " + ex.Message);
+            }
+        }
+        
+        private void OpenFolderButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var folderPath = ProductUpdateSource.Text;
+                if (!string.IsNullOrEmpty(folderPath))
+                {
+                    Process.Start("explorer", folderPath);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("ERROR: " + ex.Message);
+            }
+        }
+
+
         private void UpdatePath_OnClick(object sender, RoutedEventArgs e)
         {
             try
             {
-                var openDialog = new OpenFileDialog
+                var dlg1 = new Ionic.Utils.FolderBrowserDialogEx
                 {
-                    Filter = "v32.cab File|v32.cab|v64.cab File|v64.cab",
-                    Multiselect = false
+                    Description = "Select a folder:",
+                    ShowNewFolderButton = true,
+                    ShowEditBox = true,
+                    SelectedPath = ProductUpdateSource.Text,
+                    ShowFullPathInEditBox = true,
+                    RootFolder = System.Environment.SpecialFolder.MyComputer
                 };
+                //dlg1.NewStyle = false;
 
-                if (openDialog.ShowDialog() == DialogResult.OK)
+                // Show the FolderBrowserDialog.
+                var result = dlg1.ShowDialog();
+                if (result == DialogResult.OK)
                 {
-                    var filePath = openDialog.FileName;
-                    filePath = Regex.Replace(filePath, @"\\Office\\Data\\v32.cab", "", RegexOptions.IgnoreCase);
-                    filePath = Regex.Replace(filePath, @"\\Office\\Data\\v64.cab", "", RegexOptions.IgnoreCase);
-
-                    ProductUpdateSource.Text = filePath;
+                    ProductUpdateSource.Text = dlg1.SelectedPath;
                 }
             }
             catch (Exception ex)
@@ -750,6 +920,8 @@ namespace MetroDemo.ExampleViews
         }
 
         #endregion
+
+
 
     }
 }

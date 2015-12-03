@@ -15,5 +15,7 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Models
 
         public string Id { get; set; }
 
+        public string Version { get; set; }
+
     }
 }

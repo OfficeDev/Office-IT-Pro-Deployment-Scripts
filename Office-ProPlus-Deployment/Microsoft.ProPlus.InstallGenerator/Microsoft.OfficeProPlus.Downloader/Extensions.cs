@@ -31,5 +31,22 @@ namespace Microsoft.OfficeProPlus.Downloader
             return value;
         }
 
+        public static bool IsActive(this Task task)
+        {
+            if (task == null) return false;
+            if (task.IsCanceled || task.IsCompleted || task.IsFaulted)
+            {
+                return false;
+            }
+
+            if (task.Status == TaskStatus.Canceled || task.Status == TaskStatus.Faulted ||
+                task.Status == TaskStatus.RanToCompletion)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
     }
 }

@@ -7,6 +7,7 @@ using System.Net;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Microsoft.OfficeProPlus.Downloader
@@ -14,7 +15,7 @@ namespace Microsoft.OfficeProPlus.Downloader
     public class FileDownloader
     {
 
-        public async Task DownloadAsync(string url, string filePath)
+        public async Task DownloadAsync(string url, string filePath, CancellationToken token = new CancellationToken())
         {
             var fSplit = filePath.Split('\\');
             var fileName = fSplit[fSplit.Length - 1];
@@ -22,12 +23,25 @@ namespace Microsoft.OfficeProPlus.Downloader
             var directory = Regex.Replace(filePath, @"\\" + fileName + "$", "");
             Directory.CreateDirectory(directory);
 
-            using (var client = new WebClient())
+            await Task.Run(async () =>
             {
-                client.DownloadProgressChanged += new DownloadProgressChangedEventHandler(client_DownloadProgressChanged);
-                client.DownloadFileCompleted += new AsyncCompletedEventHandler(client_DownloadFileCompleted);
-                await client.DownloadFileTaskAsync(new Uri(url), filePath);
-            }
+                using (var client = new WebClient())
+                {
+                    client.DownloadProgressChanged +=
+                        new DownloadProgressChangedEventHandler(client_DownloadProgressChanged);
+                    client.DownloadFileCompleted += new AsyncCompletedEventHandler(client_DownloadFileCompleted);
+                   
+
+                    if (!token.IsCancellationRequested)
+                    {
+                        // Register the callback to a method that can unblock.
+                        using (var ctr = token.Register(() => client.CancelAsync()))
+                        {
+                            await client.DownloadFileTaskAsync(new Uri(url), filePath);
+                        }
+                    }
+                }
+            }, token);
         }
 
         public async Task<long> GetFileSizeAsync(string url)

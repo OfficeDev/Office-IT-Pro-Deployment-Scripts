@@ -220,3 +220,5 @@ D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Sample\MetroDemo\bin\NET40\Debug\HelpFiles\AutoActivateInfo.html
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Sample\MetroDemo\bin\NET40\Debug\HelpFiles\SharedComputerLicensingInfo.html
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Sample\MetroDemo\bin\NET40\Debug\HelpFiles\PackageGuidInfo.html
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Sample\MetroDemo\bin\NET40\Debug\Microsoft.OfficeProPlus.Downloader.dll
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Sample\MetroDemo\bin\NET40\Debug\Microsoft.OfficeProPlus.Downloader.pdb
