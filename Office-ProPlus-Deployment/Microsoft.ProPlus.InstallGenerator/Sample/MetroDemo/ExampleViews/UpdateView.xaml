@@ -76,7 +76,7 @@
                             </StackPanel>
                         </Button>
                         <ComboBox x:Name="UpdateBranch"  Width="400" Height="35" Margin="0, 10, 0, 0" SelectedIndex="0" 
-                                  FontSize="20" Grid.Column="2"  ItemsSource="{Binding Branches}" DisplayMemberPath="Name">
+                                  FontSize="20" Grid.Column="2"  ItemsSource="{Binding Branches}" DisplayMemberPath="Name" SelectionChanged="UpdateBranch_OnSelectionChanged" >
                         </ComboBox>
                     </Grid>
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.Remoting.Channels;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -55,7 +56,6 @@ namespace MetroDemo.ExampleViews
         {
             try
             {
-                //GlobalObjects.ViewModel.ResetExcludedApps();
                 LoadExcludedProducts();
 
                 MainTabControl.SelectedIndex = 0;
@@ -182,6 +182,14 @@ namespace MetroDemo.ExampleViews
                 DownloadProgressBar.Maximum = 100;
                 DownloadPercent.Content = "";
 
+                var configXml = GlobalObjects.ViewModel.ConfigXmlParser.ConfigurationXml;
+
+                string branch = null;
+                if (configXml.Add.Branch.HasValue)
+                {
+                    branch = configXml.Add.Branch.Value.ToString();
+                }
+
                 var proPlusDownloader = new ProPlusDownloader();
                 proPlusDownloader.DownloadFileProgress += async (senderfp, progress) =>
                 {
@@ -195,21 +203,26 @@ namespace MetroDemo.ExampleViews
                         });
                     }
                 };
+                proPlusDownloader.VersionDetected += (sender, version) =>
+                {
+                    if (branch == null) return;
+                    var modelBranch = GlobalObjects.ViewModel.Branches.FirstOrDefault(b => b.Branch.ToString().ToLower() == branch.ToLower());
+                    if (modelBranch == null) return;
+                    if (modelBranch.Versions.Any(v => v.Version == version.Version)) return;
+                    modelBranch.Versions.Insert(0, new Build() { Version = version.Version });
+                    modelBranch.CurrentVersion = version.Version;
+
+                    ProductVersion.ItemsSource = modelBranch.Versions;
+                    ProductVersion.SetValue(TextBoxHelper.WatermarkProperty, modelBranch.CurrentVersion);
+                };
 
                 var buildPath = ProductUpdateSource.Text;
                 if (string.IsNullOrEmpty(buildPath)) return;
 
-                var configXml = GlobalObjects.ViewModel.ConfigXmlParser.ConfigurationXml;
                 var languages =
                     (from product in configXml.Add.Products
                      from language in product.Languages
                      select language.ID.ToLower()).Distinct().ToList();
-
-                string branch = null;
-                if (configXml.Add.Branch.HasValue)
-                {
-                    branch = configXml.Add.Branch.Value.ToString();
-                }
 
                 var officeEdition = OfficeEdition.Office32Bit;
                 if (configXml.Add.OfficeClientEdition == OfficeClientEdition.Office64Bit)
@@ -554,6 +567,21 @@ namespace MetroDemo.ExampleViews
         }
 
 
+        public async Task UpdateVersions()
+        {
+            var branch = (OfficeBranch)ProductBranch.SelectedItem;
+            ProductVersion.ItemsSource = branch.Versions;
+            ProductVersion.SetValue(TextBoxHelper.WatermarkProperty, branch.CurrentVersion);
+
+            var officeEdition = OfficeEdition.Office32Bit;
+            if (ProductEdition64Bit.IsChecked.HasValue && ProductEdition64Bit.IsChecked.Value)
+            {
+                officeEdition = OfficeEdition.Office64Bit;
+            }
+
+            await GetBranchVersion(branch, officeEdition);
+        }
+
         private void LoadExcludedProducts()
         {
             ExcludedApps1.ItemsSource = null;
@@ -602,7 +630,45 @@ namespace MetroDemo.ExampleViews
             return selectedProductId;
         }
 
+        private async Task GetBranchVersion(OfficeBranch branch, OfficeEdition officeEdition)
+        {
+            try
+            {
+                if (branch.Updated) return;
+                var ppDownload = new ProPlusDownloader();
+                var latestVersion = await ppDownload.GetLatestVersionAsync(branch.Branch.ToString(), officeEdition);
+
+                var modelBranch = GlobalObjects.ViewModel.Branches.FirstOrDefault(b =>
+                    b.Branch.ToString().ToLower() == branch.Branch.ToString().ToLower());
+                if (modelBranch == null) return;
+                if (modelBranch.Versions.Any(v => v.Version == latestVersion)) return;
+                modelBranch.Versions.Insert(0, new Build() { Version = latestVersion });
+                modelBranch.CurrentVersion = latestVersion;
+
+                ProductVersion.ItemsSource = modelBranch.Versions;
+                ProductVersion.SetValue(TextBoxHelper.WatermarkProperty, modelBranch.CurrentVersion);
+
+                modelBranch.Updated = true;
+            }
+            catch (Exception)
+            {
+
+            }
+        }
+
         #region "Events"
+
+        private async void ProductBranch_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            try
+            {
+                await UpdateVersions();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("ERROR: " + ex.Message);
+            }
+        }
 
         private async void DownloadButton_OnClick(object sender, RoutedEventArgs e)
         {
@@ -920,7 +986,6 @@ namespace MetroDemo.ExampleViews
         }
 
         #endregion
-
 
 
     }

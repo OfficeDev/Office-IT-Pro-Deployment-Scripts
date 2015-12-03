@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Micorosft.OfficeProPlus.ConfigurationXml;
+using Microsoft.OfficeProPlus.InstallGenerator.Models;
 
 namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Models
 {
@@ -15,7 +16,11 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Models
 
         public string Id { get; set; }
 
-        public string Version { get; set; }
+        public string CurrentVersion { get; set; }
+
+        public List<Build> Versions { get; set; }
+
+        public bool Updated { get; set; }
 
     }
 }

@@ -35,7 +35,19 @@ namespace Microsoft.OfficeProPlus.Downloader
             if (selectUpdateFile == null) throw (new Exception("Cannot Find Office Files"));
 
             var branch = selectUpdateFile.BaseURL.FirstOrDefault(b => b.Branch.ToLower() == properties.BranchName.ToLower());
-            var version = properties.Version ?? await GetLatestVersionAsync(branch, properties.OfficeEdition);
+
+            var version = properties.Version;
+            if (properties.Version == null)
+            {
+                version = await GetLatestVersionAsync(branch, properties.OfficeEdition);
+                if (VersionDetected != null)
+                {
+                    VersionDetected(this, new Events.BuildVersion()
+                    {
+                        Version = version
+                    });
+                }
+            }
 
             var allFiles = new List<Model.File>();
             foreach (var language in properties.Languages)
@@ -128,7 +140,9 @@ namespace Microsoft.OfficeProPlus.Downloader
 
         public async Task<List<UpdateFiles>> DownloadCab()
         {
-            var localCabPath = Environment.ExpandEnvironmentVariables(@"%temp%\ofl.cab");
+            var guid = Guid.NewGuid().ToString();
+
+            var localCabPath = Environment.ExpandEnvironmentVariables(@"%temp%\" + guid + ".cab");
             if (File.Exists(localCabPath)) File.Delete(localCabPath);
 
             var fd = new FileDownloader();
@@ -150,6 +164,20 @@ namespace Microsoft.OfficeProPlus.Downloader
             };
         }
 
+        public async Task<string> GetLatestVersionAsync(string branch, OfficeEdition officeEdition)
+        {
+            if (_updateFiles == null)
+            {
+                _updateFiles = await DownloadCab();
+            }
+
+            var selectUpdateFiles = _updateFiles.FirstOrDefault(f => f.OfficeEdition == officeEdition);
+            if (selectUpdateFiles == null) return null;
+
+            var branchBaseUrl = selectUpdateFiles.BaseURL.FirstOrDefault(b => b.Branch.ToLower() == branch.ToLower());
+            return await GetLatestVersionAsync(branchBaseUrl, officeEdition);
+        }
+
         public async Task<string> GetLatestVersionAsync(baseURL branchUrl, OfficeEdition officeEdition)
         {
             var fileName = "v32.cab";
@@ -158,13 +186,17 @@ namespace Microsoft.OfficeProPlus.Downloader
                 fileName = "v64.cab";
             }
 
-            var vcabFileDir = Environment.ExpandEnvironmentVariables(@"%temp%\OfficeProPlus\" + branchUrl.Branch);
+            var guid = Guid.NewGuid().ToString();
+
+            var vcabFileDir = Environment.ExpandEnvironmentVariables(@"%temp%\OfficeProPlus\" + branchUrl.Branch + @"\" + guid);
+
             var vcabFilePath = vcabFileDir + @"\" + fileName;
             var vcabExtFilePath = vcabFileDir + @"\ExtractedFiles\VersionDescriptor.xml";
+
             Directory.CreateDirectory(vcabFileDir);
 
             var fd = new FileDownloader();
-            await fd.DownloadAsync(branchUrl.URL + @"/Office/Data/v32.cab", vcabFilePath);
+            await fd.DownloadAsync(branchUrl.URL + @"/Office/Data/" + fileName, vcabFilePath);
 
             var cabExtractor = new CabExtractor(vcabFilePath);
             cabExtractor.ExtractCabFiles();
@@ -231,6 +263,8 @@ namespace Microsoft.OfficeProPlus.Downloader
         }
 
         public Events.DownloadFileProgressEventHandler DownloadFileProgress { get; set; }
+
+        public Events.VersionDetectedEventHandler VersionDetected { get; set; }
 
     }
 }

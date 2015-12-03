@@ -91,19 +91,37 @@ namespace MetroDemo
                 {
                     Branch = Branch.Current,
                     Name = "Current",
-                    Id = "Current"
+                    Id = "Current",
+                    CurrentVersion = "16.0.6001.1038",
+                    Versions = new List<Build>()
+                    {
+                        new Build() { Version = "16.0.6001.1038"},
+                        new Build() { Version = "16.0.4229.1029"},
+                        new Build() { Version = "16.0.4229.1024"}
+                    }
                 },
                 new OfficeBranch()
                 {
                     Branch = Branch.Business,
                     Name = "Business",
-                    Id = "Business"
+                    Id = "Business",
+                    CurrentVersion = "",
+                    Versions = new List<Build>()
+                    {
+                    }
                 },
                 new OfficeBranch()
                 {
                     Branch = Branch.FirstReleaseBusiness,
                     Name = "First Release Business",
-                    Id = "FirstReleaseBusiness"
+                    Id = "FirstReleaseBusiness",
+                    CurrentVersion = "16.0.6001.1038",
+                    Versions = new List<Build>()
+                    {
+                        new Build() { Version = "16.0.6001.1038"},
+                        new Build() { Version = "16.0.4229.1029"},
+                        new Build() { Version = "16.0.4229.1024"}
+                    }
                 }
             };
 

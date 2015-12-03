@@ -12,6 +12,8 @@ namespace Microsoft.OfficeProPlus.Downloader
 
         public delegate void DownloadFileProgressEventHandler(object sender, DownloadFileProgress e);
 
+        public delegate void VersionDetectedEventHandler(object sender, BuildVersion e);
+
         public class DownloadFileProgress : EventArgs
         {
             public double PercentageComplete { get; set; }
@@ -19,6 +21,11 @@ namespace Microsoft.OfficeProPlus.Downloader
             public long BytesRecieved { get; set; }
 
             public long TotalBytesToRecieve { get; set; }
+        }
+
+        public class BuildVersion : EventArgs
+        {
+            public string Version { get; set; }
         }
     }
 }
