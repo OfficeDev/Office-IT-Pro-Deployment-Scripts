@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.ComponentModel;
 using System.Globalization;
@@ -44,16 +45,18 @@ namespace MetroDemo
             return folderPath;
         }
 
+        public async static Task<bool> DirectoryExists(string path)
+        {
+            var task = Task.Run(() => Directory.Exists(path));
+            return await Task.WhenAny(task, Task.Delay(1000)) == task && task.Result;
+        }
     }
 
     public class MainWindowViewModel : INotifyPropertyChanged
     {
         private readonly IDialogCoordinator _dialogCoordinator;
-
         private List<Language> _selectedLanguages = null;
-
         
-
         public MainWindowViewModel(IDialogCoordinator dialogCoordinator)
         {
             _dialogCoordinator = dialogCoordinator;
@@ -98,6 +101,17 @@ namespace MetroDemo
                         new Build() { Version = "16.0.6001.1038"},
                         new Build() { Version = "16.0.4229.1029"},
                         new Build() { Version = "16.0.4229.1024"}
+                    }
+                },
+                new OfficeBranch()
+                {
+                    Branch = Branch.FirstReleaseCurrent,
+                    Name = "First Release Current",
+                    Id = "FirstReleaseCurrent",
+                    CurrentVersion = "",
+                    Versions = new List<Build>()
+                    {
+
                     }
                 },
                 new OfficeBranch()
@@ -260,7 +274,29 @@ namespace MetroDemo
 
         public bool UseSameLanguagesForAllProducts { get; set; }
 
-        public List<Build> Builds { get; set; } 
+        public List<Build> Builds { get; set; }
+
+        private string _updatePath = "";
+        public string UpdatePath
+        {
+            get { return _updatePath; }
+            set
+            {
+                _updatePath = value;
+                RaisePropertyChanged("UpdatePath");
+            }
+        }
+
+        private string _selectedBranch = "";
+        public string SelectedBranch
+        {
+            get { return _selectedBranch; }
+            set
+            {
+                _selectedBranch = value;
+                RaisePropertyChanged("SelectedBranch");
+            }
+        }
 
         public ConfigXmlParser ConfigXmlParser { get; set; }
 
@@ -271,10 +307,6 @@ namespace MetroDemo
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        /// <summary>
-        /// Raises the PropertyChanged event if needed.
-        /// </summary>
-        /// <param name="propertyName">The name of the property that changed.</param>
         protected virtual void RaisePropertyChanged(string propertyName)
         {
             if (PropertyChanged != null)

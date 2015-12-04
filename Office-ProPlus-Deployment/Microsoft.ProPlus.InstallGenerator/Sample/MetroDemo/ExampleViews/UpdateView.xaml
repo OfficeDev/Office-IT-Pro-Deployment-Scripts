@@ -8,7 +8,7 @@
              mc:Ignorable="d"
              d:DesignHeight="600"
              d:DesignWidth="800"
-             d:DataContext="{d:DesignInstance MetroDemo:MainWindowViewModel}">
+             d:DataContext="{d:DesignInstance MetroDemo:MainWindowViewModel}" Loaded="UpdateView_OnLoaded" >
 
     <UserControl.Resources>
         <ResourceDictionary>
@@ -96,8 +96,8 @@
                         </Button>
                         <TextBox x:Name="UpdateUpdatePath" Margin="{StaticResource ControlMargin}" FontSize="20" Grid.Column="2"
                          Controls:TextBoxHelper.Watermark="Network, local or HTTP Path"
-                         Controls:TextBoxHelper.ClearTextButton="True"
-                         Text="">
+                         Controls:TextBoxHelper.ClearTextButton="True" TextChanged="UpdateUpdatePath_OnTextChanged"
+                         Text="" Height="35" >
                         </TextBox>
                         <Button Width="100" Margin="{StaticResource ControlMargin}" Height="40" Grid.Column="3"
                                             Content="Browse" x:Name="UpdatePath" Click="UpdatePath_OnClick" />

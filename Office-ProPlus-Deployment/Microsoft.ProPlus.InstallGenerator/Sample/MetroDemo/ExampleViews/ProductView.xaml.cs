@@ -216,7 +216,7 @@ namespace MetroDemo.ExampleViews
                     ProductVersion.SetValue(TextBoxHelper.WatermarkProperty, modelBranch.CurrentVersion);
                 };
 
-                var buildPath = ProductUpdateSource.Text;
+                var buildPath = ProductUpdateSource.Text.Trim();
                 if (string.IsNullOrEmpty(buildPath)) return;
 
                 var languages =
@@ -315,6 +315,10 @@ namespace MetroDemo.ExampleViews
             ProductEdition32Bit.IsChecked = true;
             ProductEdition64Bit.IsChecked = false;
             ProductBranch.SelectedIndex = 0;
+            ProductVersion.Text = "";
+            ProductUpdateSource.Text = "";
+
+            LoadExcludedProducts();
 
             var configXml = GlobalObjects.ViewModel.ConfigXmlParser.ConfigurationXml;
             if (configXml.Add != null)
@@ -436,7 +440,7 @@ namespace MetroDemo.ExampleViews
                 ProductEdition32Bit.IsChecked = true;
                 ProductEdition64Bit.IsChecked = false;
                 ProductBranch.SelectedIndex = 0;
-
+                ProductVersion.Text = "";
             }
 
             var distictList = languages.Distinct().ToList();
@@ -587,6 +591,11 @@ namespace MetroDemo.ExampleViews
             ExcludedApps1.ItemsSource = null;
             ExcludedApps2.ItemsSource = null;
 
+            foreach (var excludeApp in GlobalObjects.ViewModel.ExcludeProducts)
+            {
+                excludeApp.Included = true;
+            }
+
             var splitCount = Convert.ToInt32(Math.Round((double)GlobalObjects.ViewModel.ExcludeProducts.Count / 2, 0));
             ExcludedApps1.ItemsSource = GlobalObjects.ViewModel.ExcludeProducts.Take(splitCount).ToList();
             ExcludedApps2.ItemsSource = GlobalObjects.ViewModel.ExcludeProducts.Skip(splitCount).ToList();
@@ -662,6 +671,12 @@ namespace MetroDemo.ExampleViews
         {
             try
             {
+                if (ProductBranch.SelectedItem != null)
+                {
+                    var branch = (OfficeBranch) ProductBranch.SelectedItem;
+                    GlobalObjects.ViewModel.SelectedBranch = branch.Branch.ToString();
+                }
+
                 await UpdateVersions();
             }
             catch (Exception ex)
@@ -706,28 +721,30 @@ namespace MetroDemo.ExampleViews
             }
         }
 
-        private void BuildFilePath_OnTextChanged(object sender, TextChangedEventArgs e)
+        private async void BuildFilePath_OnTextChanged(object sender, TextChangedEventArgs e)
         {
             try
             {
                 var enabled = false;
-                if (ProductUpdateSource.Text.Length > 0)
+                var openFolderEnabled = false;
+                if (ProductUpdateSource.Text.Trim().Length > 0)
                 {
                     var match = Regex.Match(ProductUpdateSource.Text, @"^\w:\\|\\\\.*\\..*");
                     if (match.Success)
                     {
                         enabled = true;
+                        var folderExists = await GlobalObjects.DirectoryExists(ProductUpdateSource.Text);
+                        if (!folderExists)
+                        {
+                            folderExists = await GlobalObjects.DirectoryExists(ProductUpdateSource.Text);
+                        }
+
+                        openFolderEnabled = folderExists;  
                     }
-
-                    OpenFolderButton.IsEnabled = Directory.Exists(ProductUpdateSource.Text);
-                }
-                else
-                {
-                    OpenFolderButton.IsEnabled = false;
                 }
 
+                OpenFolderButton.IsEnabled = openFolderEnabled;
                 DownloadButton.IsEnabled = enabled;
-
             }
             catch (Exception ex)
             {
@@ -735,14 +752,20 @@ namespace MetroDemo.ExampleViews
             }
         }
         
-        private void OpenFolderButton_OnClick(object sender, RoutedEventArgs e)
+        private async void OpenFolderButton_OnClick(object sender, RoutedEventArgs e)
         {
             try
             {
-                var folderPath = ProductUpdateSource.Text;
-                if (!string.IsNullOrEmpty(folderPath))
+                var folderPath = ProductUpdateSource.Text.Trim();
+                if (string.IsNullOrEmpty(folderPath)) return;
+
+                if (await GlobalObjects.DirectoryExists(folderPath))
                 {
                     Process.Start("explorer", folderPath);
+                }
+                else
+                {
+                    MessageBox.Show("Directory path does not exist.");
                 }
             }
             catch (Exception ex)

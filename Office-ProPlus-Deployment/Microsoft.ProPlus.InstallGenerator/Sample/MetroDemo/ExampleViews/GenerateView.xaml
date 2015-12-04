@@ -83,6 +83,7 @@
                                 <ColumnDefinition Width="150" />
                                 <ColumnDefinition Width="450" />
                                 <ColumnDefinition Width="80" />
+                                <ColumnDefinition Width="60" />
                                 <ColumnDefinition Width="90" />
                                 <ColumnDefinition Width="80" />
                             </Grid.ColumnDefinitions>
@@ -97,7 +98,9 @@
                             </TextBox>
                             <Button Width="70" Margin="{StaticResource ControlMargin}" Height="40" Grid.Column="3"
                                             Content="Browse" x:Name="BrowseSourcePathButton" Click="BrowseSourcePathButton_OnClick"   />
-                            <Button Width="80" Margin="{StaticResource ControlMargin}" Height="40" Grid.Column="4"
+                            <Button Width="50" Height="40" Grid.Column="4"
+                                            Content="Open" x:Name="OpenFolderButton" IsEnabled="False" Click="OpenFolderButton_OnClick"  />
+                            <Button Width="80" Margin="{StaticResource ControlMargin}" Height="40" Grid.Column="5"
                                             Content="Download" x:Name="DownloadButton" Click="DownloadButton_OnClick" IsEnabled="False"   />
 
                             <Label x:Name="DownloadPercent" Content="" Style="{StaticResource MetroLabelHeader}" Grid.Column="5" />

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 
@@ -31,6 +32,15 @@ namespace MetroDemo.Events
 
         public TransitionTabDirection Direction { get; set; }
 
+    }
+
+    public delegate void PropertyValueChangedEventHandler(object sender, PropertyValueChangedEventArgs e);
+
+    public class PropertyValueChangedEventArgs : EventArgs
+    {
+        public string Name { get; set; }
+
+        public string Value { get; set; }
     }
 
 

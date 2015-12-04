@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -100,7 +101,7 @@ namespace MetroDemo.ExampleViews
                     }
                 };
 
-                var buildPath = BuildFilePath.Text;
+                var buildPath = BuildFilePath.Text.Trim();
                 if (string.IsNullOrEmpty(buildPath)) return;
 
                 var configXml = GlobalObjects.ViewModel.ConfigXmlParser.ConfigurationXml;
@@ -156,10 +157,38 @@ namespace MetroDemo.ExampleViews
                 {
                     xmlBrowser.XmlDoc = GlobalObjects.ViewModel.ConfigXmlParser.Xml;
                 }
+
+                if (GlobalObjects.ViewModel.ConfigXmlParser.ConfigurationXml.Add != null)
+                {
+                    BuildFilePath.Text = GlobalObjects.ViewModel.ConfigXmlParser.ConfigurationXml.Add.SourcePath;
+                }
             }
         }
 
         #region "Events"
+
+        private async void OpenFolderButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var folderPath = BuildFilePath.Text.Trim();
+                if (!string.IsNullOrEmpty(folderPath))
+                {
+                    if (await GlobalObjects.DirectoryExists(folderPath))
+                    {
+                        Process.Start("explorer", folderPath);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Directory path does not exist.");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("ERROR: " + ex.Message);
+            }
+        }
 
         private void displayNext_Click(object sender, RoutedEventArgs e)
         {
@@ -239,22 +268,31 @@ namespace MetroDemo.ExampleViews
             }
         }
         
-        private void BuildFilePath_OnTextChanged(object sender, TextChangedEventArgs e)
+        private async void BuildFilePath_OnTextChanged(object sender, TextChangedEventArgs e)
         {
             try
             {
                 var enabled = false;
+                var openFolderEnabled = false;
                 if (BuildFilePath.Text.Length > 0)
                 {
                     var match = Regex.Match(BuildFilePath.Text, @"^\w:\\|\\\\.*\\..*");
                     if (match.Success)
                     {
                         enabled = true;
-                    } 
+
+                        var folderExists = await GlobalObjects.DirectoryExists(BuildFilePath.Text);
+                        if (!folderExists)
+                        {
+                            folderExists = await GlobalObjects.DirectoryExists(BuildFilePath.Text);
+                        }
+
+                        openFolderEnabled = folderExists;  
+                    }
                 }
 
+                OpenFolderButton.IsEnabled = openFolderEnabled;
                 DownloadButton.IsEnabled = enabled;
-                
             }
             catch (Exception ex)
             {
@@ -292,6 +330,7 @@ namespace MetroDemo.ExampleViews
         
 
         #endregion
+
 
     }
 }

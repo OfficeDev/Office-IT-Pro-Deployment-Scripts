@@ -9,6 +9,7 @@ namespace Micorosft.OfficeProPlus.ConfigurationXml
     public enum Branch
     {
         Current=0,
+        FirstReleaseCurrent=4,
         Business=1,
         Validation=2,
         FirstReleaseBusiness=3

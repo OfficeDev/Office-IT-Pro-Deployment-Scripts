@@ -98,6 +98,7 @@ namespace OfficeInstallGenerator
                     }
                 }
 
+                odtAdd.SourcePath = null;
                 if (addNode.Attributes["SourcePath"] != null)
                 {
                     var sourcePath = addNode.Attributes["SourcePath"].Value;
@@ -107,6 +108,7 @@ namespace OfficeInstallGenerator
                     }
                 }
 
+                odtAdd.Version = null;
                 if (addNode.Attributes["Version"] != null)
                 {
                     var version = addNode.Attributes["Version"].Value;

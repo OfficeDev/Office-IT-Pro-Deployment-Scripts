@@ -77,6 +77,8 @@ namespace MetroDemo
                 var tabItem = (TabItem)MainTabControl.Items[i];
                 tabItem.IsEnabled = false;
             }
+
+            UpdateView.Reset();
         }
 
         private void TransitionTab(object sender, Events.TransitionTabEventArgs e)

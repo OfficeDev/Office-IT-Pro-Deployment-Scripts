@@ -35,14 +35,23 @@ namespace MetroDemo.ExampleViews
     public partial class UpdateView : UserControl
     {
 
+        private bool _updatePathChanged = false;
+
         public UpdateView()
         {
             InitializeComponent();
         }
 
-        private void ToggleControls(bool enabled)
+        private void UpdateView_OnLoaded(object sender, RoutedEventArgs e)
         {
-
+            try
+            {
+                GlobalObjects.ViewModel.PropertyChanged += ViewModel_PropertyChanged;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("ERROR: " + ex.Message);
+            }
         }
 
         public void UpdateXml()
@@ -71,6 +80,7 @@ namespace MetroDemo.ExampleViews
             configXml.Updates.Enabled = updatesEnabled;
             configXml.Updates.UpdatePath = UpdateUpdatePath.Text;
 
+            configXml.Updates.TargetVersion = null;
             if (Version.TryParse(txtTargetVersion, out targetVersion))
             {
                 configXml.Updates.TargetVersion = targetVersion;
@@ -81,6 +91,11 @@ namespace MetroDemo.ExampleViews
             {
 
             }
+        }
+
+        public void Reset()
+        {
+            _updatePathChanged = false;
         }
 
         private async Task GetBranchVersion(OfficeBranch branch, OfficeEdition officeEdition)
@@ -121,13 +136,24 @@ namespace MetroDemo.ExampleViews
             UpdateTargetVersion.ItemsSource = branch.Versions;
             UpdateTargetVersion.SetValue(TextBoxHelper.WatermarkProperty, branch.CurrentVersion);
 
-            var configXml = GlobalObjects.ViewModel.ConfigXmlParser.ConfigurationXml;
-            if (configXml.Add == null) return;
-
             var officeEdition = OfficeEdition.Office32Bit;
-            if (configXml.Add.OfficeClientEdition == OfficeClientEdition.Office64Bit)
+
+            var configXml = GlobalObjects.ViewModel.ConfigXmlParser.ConfigurationXml;
+            if (configXml.Add != null)
             {
-                officeEdition = OfficeEdition.Office64Bit;
+                if (configXml.Add.OfficeClientEdition == OfficeClientEdition.Office64Bit)
+                {
+                    officeEdition = OfficeEdition.Office64Bit;
+                }
+            }
+
+            if (UpdateUpdatePath.Text.Length > 0)
+            {
+                var otherFolder = GlobalObjects.SetBranchFolderPath(branch.Branch.ToString(), UpdateUpdatePath.Text);
+                if (await GlobalObjects.DirectoryExists(otherFolder))
+                {
+                    UpdateUpdatePath.Text = GlobalObjects.SetBranchFolderPath(branch.Branch.ToString(), UpdateUpdatePath.Text);
+                }
             }
 
             await GetBranchVersion(branch, officeEdition);
@@ -139,11 +165,43 @@ namespace MetroDemo.ExampleViews
         {
             try
             {
+                UpdateXml();
+
                 var openDialog = new OpenFileDialog
                 {
                     Filter = "v32.cab File|v32.cab|v64.cab File|v64.cab",
                     Multiselect = false
                 };
+
+                var configXml = GlobalObjects.ViewModel.ConfigXmlParser.ConfigurationXml;
+                if (configXml != null)
+                {
+                    if (configXml.Add.OfficeClientEdition == OfficeClientEdition.Office64Bit)
+                    {
+                        if (configXml.Updates.TargetVersion != null)
+                        {
+                            openDialog.Filter = "v64_" + configXml.Updates.TargetVersion +
+                                                ".cab|v64_" + configXml.Updates.TargetVersion + ".cab";
+                        }
+                        else
+                        {
+                            openDialog.Filter = "v64.cab File|v64.cab";
+                        }
+                    }
+                    else
+                    {
+                        if (configXml.Updates.TargetVersion != null)
+                        {
+                            openDialog.Filter = "v32_" + configXml.Updates.TargetVersion + ".cab|v32_" + configXml.Updates.TargetVersion + ".cab";
+                        }
+                        else
+                        {
+                            openDialog.Filter = "v32.cab File|v32.cab";
+                        }
+                    }
+
+
+                }
 
                 if (openDialog.ShowDialog() == DialogResult.OK)
                 {
@@ -195,6 +253,49 @@ namespace MetroDemo.ExampleViews
         }
 
         #region "Events"
+
+        private void UpdateUpdatePath_OnTextChanged(object sender, TextChangedEventArgs e)
+        {
+            try
+            {
+                _updatePathChanged = true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("ERROR: " + ex.Message);
+            }
+        }
+
+        private void ViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            try
+            {
+                switch (e.PropertyName.ToLower())
+                {
+                    case "updatepath":
+                        if (_updatePathChanged) return;
+                        UpdateUpdatePath.TextChanged -= UpdateUpdatePath_OnTextChanged;
+                        UpdateUpdatePath.Text = GlobalObjects.ViewModel.UpdatePath;
+                        UpdateUpdatePath.TextChanged += UpdateUpdatePath_OnTextChanged;
+                        break;
+                    case "selectedbranch":
+                        for (var i = 0; i < UpdateBranch.Items.Count; i++)
+                        {
+                            var branch = (OfficeBranch) UpdateBranch.Items[i];
+                            if (branch.Branch.ToString().ToLower() == GlobalObjects.ViewModel.SelectedBranch.ToLower())
+                            {
+                                UpdateBranch.SelectedIndex = i;
+                                break;
+                            }
+                        }
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("ERROR: " + ex.Message);
+            }
+        }
 
         private async void UpdateBranch_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -278,8 +379,6 @@ namespace MetroDemo.ExampleViews
         }
 
         #endregion
-
-
 
 
     }
