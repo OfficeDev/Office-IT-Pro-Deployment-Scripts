@@ -32,6 +32,11 @@ namespace OfficeInstallGenerator
                 var tmpPath = Environment.ExpandEnvironmentVariables("%temp%");
                 var output = currentDirectory + @"\InstallOffice365ProPlus.exe";
 
+                if (!string.IsNullOrEmpty(installProperties.ExecutablePath))
+                {
+                    output = installProperties.ExecutablePath;
+                }
+
                 var parameters = new CompilerParameters
                 {
                     GenerateExecutable = true,
@@ -41,7 +46,6 @@ namespace OfficeInstallGenerator
                 parameters.ReferencedAssemblies.Add("System.Xml.dll");
                 parameters.ReferencedAssemblies.Add("System.Core.dll");
                 parameters.ReferencedAssemblies.Add("Microsoft.CSharp.dll");
-
 
                 embededExeFiles = EmbeddedResources.GetEmbeddedItems(currentDirectory, @"\.exe$");
 
@@ -184,7 +188,6 @@ namespace OfficeInstallGenerator
 
             parameters.EmbeddedResources.Add(xmlFilePath);
         }
-
 
     }
 

@@ -20,8 +20,11 @@ using System.Windows.Shapes;
 using MetroDemo.Events;
 using MetroDemo.ExampleWindows;
 using Micorosft.OfficeProPlus.ConfigurationXml;
+using Micorosft.OfficeProPlus.ConfigurationXml.Enums;
+using Micorosft.OfficeProPlus.ConfigurationXml.Model;
 using Microsoft.OfficeProPlus.Downloader;
 using Microsoft.OfficeProPlus.Downloader.Model;
+using Microsoft.OfficeProPlus.InstallGenerator.Implementation;
 using OfficeInstallGenerator;
 using MessageBox = System.Windows.MessageBox;
 using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
@@ -149,23 +152,306 @@ namespace MetroDemo.ExampleViews
             }
         }
 
+        private async Task GenerateInstall()
+        {
+            await Task.Run(async () =>
+            {
+                try
+                {
+                    var executablePath = "";
+                    await Dispatcher.InvokeAsync(() =>
+                    {
+                        executablePath = FileSavePath.Text.Trim();
+                        WaitImage.Visibility = Visibility.Visible;
+                        GenerateButton.IsEnabled = false;
+                        GenerateButton.Content = "";
+                    });
+
+                    if (string.IsNullOrEmpty(executablePath)) return;
+
+                    var configFilePath =
+                        Environment.ExpandEnvironmentVariables(@"%temp%\OfficeProPlus\" + Guid.NewGuid().ToString() +
+                                                               ".xml");
+                    Directory.CreateDirectory(Environment.ExpandEnvironmentVariables(@"%temp%\OfficeProPlus"));
+
+                    GlobalObjects.ViewModel.ConfigXmlParser.ConfigurationXml.Logging = new ODTLogging
+                    {
+                        Level = LoggingLevel.Standard,
+                        Path = @"%temp%"
+                    };
+
+                    System.IO.File.WriteAllText(configFilePath, GlobalObjects.ViewModel.ConfigXmlParser.Xml);
+
+                    string sourceFilePath = null;
+                    await Dispatcher.InvokeAsync(() =>
+                    {
+                        if (IncludeBuild.IsChecked.HasValue && IncludeBuild.IsChecked.Value)
+                        {
+                            sourceFilePath = BuildFilePath.Text.Trim();
+                            if (string.IsNullOrEmpty(sourceFilePath)) sourceFilePath = null;
+                        }
+                    });
+
+                    var isInstallExe = false;
+                    await Dispatcher.InvokeAsync(() =>
+                    {
+                        isInstallExe = InstallExecutable.IsChecked.HasValue && InstallExecutable.IsChecked.Value;
+                    });
+
+                    if (isInstallExe)
+                    {
+                        var generateExe = new OfficeInstallExecutableGenerator();
+                        generateExe.Generate(new OfficeInstallProperties()
+                        {
+                            ConfigurationXmlPath = configFilePath,
+                            OfficeVersion = OfficeVersion.Office2016,
+                            ExecutablePath = executablePath,
+                            SourceFilePath = sourceFilePath
+                        });
+                    }
+                    else
+                    {
+                        var generateMsi = new OfficeInstallMsiGenerator();
+                        generateMsi.Generate(new OfficeInstallProperties()
+                        {
+                            ConfigurationXmlPath = configFilePath,
+                            OfficeVersion = OfficeVersion.Office2016,
+                            ExecutablePath = executablePath,
+                            SourceFilePath = sourceFilePath
+                        });
+                    }
+
+                    await Task.Delay(500);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("ERROR: " + ex.Message);
+                }
+                finally
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        WaitImage.Visibility = Visibility.Hidden;
+                        GenerateButton.IsEnabled = true;
+                        GenerateButton.Content = "Generate";
+                    });
+                }
+            });
+        }
+
         public void LoadCurrentXml()
         {
             if (GlobalObjects.ViewModel.ConfigXmlParser != null)
             {
-                if (!string.IsNullOrEmpty(GlobalObjects.ViewModel.ConfigXmlParser.Xml))
+                var configXml = GlobalObjects.ViewModel.ConfigXmlParser;
+
+                if (!string.IsNullOrEmpty(configXml.Xml))
                 {
-                    xmlBrowser.XmlDoc = GlobalObjects.ViewModel.ConfigXmlParser.Xml;
+                    xmlBrowser.XmlDoc = configXml.Xml;
                 }
 
-                if (GlobalObjects.ViewModel.ConfigXmlParser.ConfigurationXml.Add != null)
+                if (configXml.ConfigurationXml.Add != null)
                 {
-                    BuildFilePath.Text = GlobalObjects.ViewModel.ConfigXmlParser.ConfigurationXml.Add.SourcePath;
+                    BuildFilePath.Text = configXml.ConfigurationXml.Add.SourcePath;
                 }
+
+                var silentInstall = false;
+                if (configXml.ConfigurationXml.Display.Level.HasValue &&
+                    configXml.ConfigurationXml.Display.Level == DisplayLevel.None)
+                {
+                    if (configXml.ConfigurationXml.Display.AcceptEULA.HasValue &&
+                        configXml.ConfigurationXml.Display.AcceptEULA == true)
+                    {
+                        silentInstall = true;
+                    }
+                }
+
+                SilentInstall.IsChecked = silentInstall;
             }
         }
 
+        private void EnableGenerateButton()
+        {
+            var saveFileExists = false;
+            var buildFolderExists = false;
+
+            var filePath = FileSavePath.Text.Trim();
+            if (!string.IsNullOrEmpty(filePath))
+            {
+                saveFileExists = true;
+            }
+
+            if (IncludeBuild.IsChecked.HasValue && IncludeBuild.IsChecked.Value)
+            {
+                var buildFolder = BuildFilePath.Text.Trim();
+                if (!string.IsNullOrEmpty(buildFolder))
+                {
+                    if (Directory.Exists(buildFolder))
+                    {
+                        buildFolderExists = true;
+                    }
+                }
+            }
+            else
+            {
+                buildFolderExists = true;
+            }
+
+
+            if (saveFileExists && buildFolderExists)
+            {
+                GenerateButton.IsEnabled = true;
+            }
+            else
+            {
+                GenerateButton.IsEnabled = false;
+            }
+
+        }
+
         #region "Events"
+
+        private void SilentInstall_OnChecked(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (GlobalObjects.ViewModel.ConfigXmlParser != null)
+                {
+                    var configXml = GlobalObjects.ViewModel.ConfigXmlParser;
+
+                    var silentInstall = SilentInstall.IsChecked.HasValue && SilentInstall.IsChecked.Value;
+
+                    if (silentInstall)
+                    {
+                        configXml.ConfigurationXml.Display.AcceptEULA = true;
+                        configXml.ConfigurationXml.Display.Level = DisplayLevel.None;
+                    }
+                    else
+                    {
+                        configXml.ConfigurationXml.Display.AcceptEULA = false;
+                        configXml.ConfigurationXml.Display.Level = DisplayLevel.Full;
+                    }
+
+                    GlobalObjects.ViewModel.SilentInstall = silentInstall;
+
+                    LoadCurrentXml();
+
+                    if (!string.IsNullOrEmpty(configXml.Xml))
+                    {
+                        xmlBrowser.XmlDoc = configXml.Xml;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("ERROR: " + ex.Message);
+            }
+            finally
+            {
+                EnableGenerateButton();
+            }
+        }
+
+        private void FileSavePath_OnTextChanged(object sender, TextChangedEventArgs e)
+        {
+            try
+            {
+                var openEnabled = false;
+                var filePath = FileSavePath.Text.Trim();
+                if (!string.IsNullOrEmpty(filePath))
+                {
+                    var folderPath = System.IO.Path.GetDirectoryName(filePath);
+                    openEnabled = Directory.Exists(folderPath);
+                }
+
+                OpenExeFolderButton.IsEnabled = openEnabled;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("ERROR: " + ex.Message);
+            }
+            finally
+            {
+                EnableGenerateButton();
+            }
+        }
+
+        private async void OpenExeFolderButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var filePath = FileSavePath.Text.Trim();
+                if (string.IsNullOrEmpty(filePath)) return;
+
+                var folderPath = System.IO.Path.GetDirectoryName(filePath);
+                if (await GlobalObjects.DirectoryExists(folderPath))
+                {
+                    Process.Start("explorer", folderPath);
+                }
+                else
+                {
+                    MessageBox.Show("Directory path does not exist.");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("ERROR: " + ex.Message);
+            }
+        }
+
+        private async void GenerateButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                await GenerateInstall();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("ERROR: " + ex.Message);
+            }
+        }
+        
+        private async void IncludeBuild_OnChecked(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var enabled = IncludeBuild.IsChecked.HasValue && IncludeBuild.IsChecked.Value;
+
+                SourcePathLabel.IsEnabled = enabled;
+                BuildFilePath.IsEnabled = enabled;
+                BrowseSourcePathButton.IsEnabled = enabled;
+
+                OpenFolderButton.IsEnabled = enabled;
+                DownloadButton.IsEnabled = enabled;
+
+                var buildFilePath = BuildFilePath.Text.Trim();
+                if (enabled && !string.IsNullOrEmpty(buildFilePath))
+                {
+                    DownloadButton.IsEnabled = true;
+                    if (await GlobalObjects.DirectoryExists(buildFilePath))
+                    {
+                        OpenFolderButton.IsEnabled = true;
+                    }
+                    else
+                    {
+                        OpenFolderButton.IsEnabled = false;
+                    }
+                }
+                else
+                {
+                    OpenFolderButton.IsEnabled = false;
+                    DownloadButton.IsEnabled = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("ERROR: " + ex.Message);
+            }
+            finally
+            {
+                EnableGenerateButton();
+            }
+        }
 
         private async void OpenFolderButton_OnClick(object sender, RoutedEventArgs e)
         {
@@ -189,6 +475,8 @@ namespace MetroDemo.ExampleViews
                 MessageBox.Show("ERROR: " + ex.Message);
             }
         }
+
+
 
         private void displayNext_Click(object sender, RoutedEventArgs e)
         {
@@ -287,7 +575,7 @@ namespace MetroDemo.ExampleViews
                             folderExists = await GlobalObjects.DirectoryExists(BuildFilePath.Text);
                         }
 
-                        openFolderEnabled = folderExists;  
+                        openFolderEnabled = folderExists;
                     }
                 }
 
@@ -297,6 +585,10 @@ namespace MetroDemo.ExampleViews
             catch (Exception ex)
             {
                 MessageBox.Show("ERROR: " + ex.Message);
+            }
+            finally
+            {
+                EnableGenerateButton();
             }
         }
 
@@ -313,6 +605,7 @@ namespace MetroDemo.ExampleViews
                     ShowFullPathInEditBox = true,
                     RootFolder = System.Environment.SpecialFolder.MyComputer
                 };
+
                 //dlg1.NewStyle = false;
 
                 // Show the FolderBrowserDialog.

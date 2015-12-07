@@ -31,6 +31,18 @@ namespace MetroDemo.ExampleViews
             InitializeComponent();
         }
 
+        private void DisplayView_OnLoaded(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                GlobalObjects.ViewModel.PropertyChanged += ViewModel_PropertyChanged;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("ERROR: " + ex.Message);
+            }
+        }
+
         public void UpdateXml()
         {
             UpdateDisplayXml();
@@ -114,6 +126,43 @@ namespace MetroDemo.ExampleViews
 
         public event TransitionTabEventHandler TransitionTab;
 
+        #region Events
+
+        private void ViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            try
+            {
+                if (e.PropertyName.ToUpper() == "SilentInstall".ToUpper())
+                {
+                    var configXml = GlobalObjects.ViewModel.ConfigXmlParser.ConfigurationXml;
+
+                    if (configXml.Display.Level.HasValue &&
+                        configXml.Display.Level.Value ==
+                        Micorosft.OfficeProPlus.ConfigurationXml.Enums.DisplayLevel.None)
+                    {
+                        DisplayLevel.IsChecked = false;
+                    }
+                    else
+                    {
+                        DisplayLevel.IsChecked = true;
+                    }
+
+                    if (configXml.Display.AcceptEULA.HasValue && configXml.Display.AcceptEULA.Value)
+                    {
+                        AcceptEula.IsChecked = true;
+                    }
+                    else
+                    {
+                        AcceptEula.IsChecked = false;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("ERROR: " + ex.Message);
+            }
+        }
+
         private void NextButton_OnClick(object sender, RoutedEventArgs e)
         {
             try
@@ -152,7 +201,9 @@ namespace MetroDemo.ExampleViews
             }
         }
 
-        #region "Info"
+        #endregion
+
+        #region Info
 
         private InformationDialog informationDialog = null;
 
@@ -205,6 +256,7 @@ namespace MetroDemo.ExampleViews
         }
 
         #endregion
+
 
     }
 }

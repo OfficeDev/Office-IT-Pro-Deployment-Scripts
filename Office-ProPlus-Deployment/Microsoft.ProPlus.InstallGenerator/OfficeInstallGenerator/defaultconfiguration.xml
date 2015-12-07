@@ -1,5 +1,5 @@
 <Configuration>
-    <Add SourcePath=".\" OfficeClientEdition="32" Branch="Current">
+    <Add OfficeClientEdition="32" Branch="Current">
         <Product ID="O365ProPlusRetail">
             <Language ID="en-us"/>
         </Product>

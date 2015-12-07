@@ -9,6 +9,8 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
 {
     public class OfficeInstallProperties : IOfficeInstallProperties
     {
+        public string ExecutablePath { get; set; }
+
         public OfficeVersion OfficeVersion { get; set; }
 
         public string ConfigurationXmlPath { get; set; }

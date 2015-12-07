@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using OfficeInstallGenerator;
 using WixSharp;
@@ -17,55 +18,55 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
         public IOfficeInstallReturn Generate(IOfficeInstallProperties installProperties)
         {
             var exeGenerator = new OfficeInstallExecutableGenerator();
-            var exeReturn = exeGenerator.Generate(installProperties);
 
+            installProperties.ExecutablePath = Regex.Replace(installProperties.ExecutablePath, ".msi$", ".exe",
+                RegexOptions.IgnoreCase);
+            var exeReturn = exeGenerator.Generate(installProperties);
             var exeFilePath = exeReturn.GeneratedFilePath;
 
-            var project = new Project()
-            {
+            installProperties.ExecutablePath = Regex.Replace(installProperties.ExecutablePath, ".exe$", "",
+                RegexOptions.IgnoreCase);
 
+            var project = new Project
+            {
                 Name = "Microsoft Office 365 ProPlus Installer",
                 UI = WUI.WixUI_ProgressOnly,
-
                 Dirs = new[]
-            {
-                new Dir(@"%ProgramFiles%\MS\Microsoft Office 365 ProPlus Installer")
-            },
-
-                Binaries = new[]
-            {
-                new Binary(new Id("MSOfficeOneClickInstall"),exeFilePath)
-            },
-
-
-                Actions = new WixSharp.Action[]
-            {
-                //Install needs silent tag
-                new BinaryFileAction("MSOfficeOneClickInstall","", Return.check, When.After, Step.InstallFiles, Condition.NOT_Installed)
                 {
-                        Execute = Execute.immediate
-                        
+                    new Dir(@"%ProgramFiles%\MS\Microsoft Office 365 ProPlus Installer")
                 },
-                 new BinaryFileAction("MSOfficeOneClickInstall","/uninstall", Return.check, When.After, Step.InstallFiles, Condition.Installed)
+                Binaries = new[]
                 {
+                    new Binary(new Id("MSOfficeOneClickInstall"), exeFilePath)
+                },
+                Actions = new WixSharp.Action[]
+                {
+                    //Install needs silent tag
+                    new BinaryFileAction("MSOfficeOneClickInstall", "", Return.check, When.After, Step.InstallFiles,
+                        Condition.NOT_Installed)
+                    {
                         Execute = Execute.immediate
-                }
-            }
 
+                    },
+                    new BinaryFileAction("MSOfficeOneClickInstall", "/uninstall", Return.check, When.After,
+                        Step.InstallFiles, Condition.Installed)
+                    {
+                        Execute = Execute.immediate
+                    }
+                },
+                GUID = Guid.NewGuid(),
+                ControlPanelInfo = {Manufacturer = "Microsoft Corporation"},
+                OutFileName = installProperties.ExecutablePath,
             };
 
-
-            
-            project.GUID = Guid.NewGuid();
-
-
-            project.ControlPanelInfo.Manufacturer = "Microsoft Corporation";
-     
-           
-            
             Compiler.WixLocation = @"wixTools\";
-
             Compiler.BuildMsi(project);
+
+            try
+            {
+                //System.IO.File.Delete(exeFilePath);
+            }
+            catch { }
 
             var installDirectory = new OfficeInstallReturn
             {

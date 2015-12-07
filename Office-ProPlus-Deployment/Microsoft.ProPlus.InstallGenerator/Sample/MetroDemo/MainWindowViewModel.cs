@@ -274,6 +274,17 @@ namespace MetroDemo
 
         public bool UseSameLanguagesForAllProducts { get; set; }
 
+        private bool _silentInstall = false;
+        public bool SilentInstall
+        {
+            get { return _silentInstall; }
+            set
+            {
+                _silentInstall = value;
+                RaisePropertyChanged("SilentInstall");
+            }
+        }
+
         public List<Build> Builds { get; set; }
 
         private string _updatePath = "";

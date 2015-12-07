@@ -63,9 +63,7 @@ namespace MetroDemo.ExampleViews
                 LanguageList.ItemsSource = GlobalObjects.ViewModel.GetLanguages(null);
 
                 LanguageUnique.SelectionChanged -= LanguageUnique_OnSelectionChanged;
-
                 LoadXml();
-
                 LanguageUnique.SelectionChanged += LanguageUnique_OnSelectionChanged;
             }
             catch (Exception ex)
@@ -675,6 +673,15 @@ namespace MetroDemo.ExampleViews
                 {
                     var branch = (OfficeBranch) ProductBranch.SelectedItem;
                     GlobalObjects.ViewModel.SelectedBranch = branch.Branch.ToString();
+
+                    if (ProductUpdateSource.Text.Length > 0)
+                    {
+                        var otherFolder = GlobalObjects.SetBranchFolderPath(branch.Branch.ToString(), ProductUpdateSource.Text);
+                        if (await GlobalObjects.DirectoryExists(otherFolder))
+                        {
+                            ProductUpdateSource.Text = GlobalObjects.SetBranchFolderPath(branch.Branch.ToString(), ProductUpdateSource.Text);
+                        }
+                    }
                 }
 
                 await UpdateVersions();
