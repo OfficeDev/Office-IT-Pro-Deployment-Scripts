@@ -47,6 +47,8 @@ Array of Microsoft language codes. Will throw error if provided values don't mat
 v32, v64, or Both. What bitness of office you wish to download. Defaults to Both.
 .PARAMETER OverWrite
 If this parameter is specified then existing files will be overwritten.
+.PARAMETER NumVersionsToKeep
+Specifies the number of versions to keep, defaults to 2.  All other versions of the download will be deleted, keeping the newest versions.
 .PARAMETER Branches
 An array of the branches you wish to download. Defaults to all available branches (CMValidation currently not available)
 .Example
@@ -85,7 +87,10 @@ Param(
 )
 
 
-
+if($NumVersionsToKeep -le 0)#Throws an error if parameter is 0 or less, we don't want to delete every version
+{
+    throw "Parameter NumVersionsToKeep must be greater than 0!"
+}
        
 
 $numberOfFiles = (($Branches.Count) * ((($Languages.Count + 1)*3) + 5))
