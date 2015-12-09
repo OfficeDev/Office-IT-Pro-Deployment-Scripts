@@ -33,23 +33,24 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Deployment.WindowsInstaller, Version=3.0.0.0, Culture=neutral, PublicKeyToken=ce35f76fcda82bad, processorArchitecture=MSIL">
-      <HintPath>..\packages\WixSharp.bin.1.0.30.0\lib\Microsoft.Deployment.WindowsInstaller.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
+    <Reference Include="Microsoft.Deployment.WindowsInstaller, Version=3.0.0.0, Culture=neutral, PublicKeyToken=ce35f76fcda82bad, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="WixSharp, Version=1.0.30.0, Culture=neutral, PublicKeyToken=3775edd25acc43c2, processorArchitecture=MSIL">
-      <HintPath>..\packages\WixSharp.bin.1.0.30.0\lib\WixSharp.dll</HintPath>
-      <Private>True</Private>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\ProjectFiles\WixSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="WixSharp.Msi">
+      <HintPath>..\ProjectFiles\WixSharp.Msi.dll</HintPath>
     </Reference>
     <Reference Include="WixSharp.UI, Version=1.0.27.3, Culture=neutral, PublicKeyToken=3775edd25acc43c2, processorArchitecture=MSIL">
-      <HintPath>..\packages\WixSharp.bin.1.0.30.0\lib\WixSharp.UI.dll</HintPath>
-      <Private>True</Private>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\ProjectFiles\WixSharp.UI.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -59,399 +60,1158 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="wixTools\candle.exe">
+    <Content Include="wixTools\candle.exe" />
+    <Content Include="wixTools\dark.exe" />
+    <Content Include="wixTools\difxapp_x64.wixlib" />
+    <Content Include="wixTools\difxapp_x86.wixlib" />
+    <Content Include="wixTools\heat.exe" />
+    <Content Include="wixTools\IncludeFile.ico" />
+    <Content Include="wixTools\insignia.exe" />
+    <Content Include="wixTools\light.exe" />
+    <Content Include="wixTools\lit.exe" />
+    <Content Include="wixTools\LocalizationFile.ico" />
+    <Content Include="wixTools\lux.exe" />
+    <Content Include="wixTools\LuxTasks.dll" />
+    <Content Include="wixTools\melt.exe" />
+    <Content Include="wixTools\mergemod.dll" />
+    <Content Include="wixTools\Microsoft.Deployment.Compression.Cab.dll" />
+    <Content Include="wixTools\Microsoft.Deployment.Compression.dll" />
+    <Content Include="wixTools\Microsoft.Deployment.Resources.dll" />
+    <Content Include="wixTools\Microsoft.Deployment.WindowsInstaller.dll" />
+    <Content Include="wixTools\Microsoft.Deployment.WindowsInstaller.Package.dll" />
+    <Content Include="wixTools\mspatchc.dll" />
+    <Content Include="wixTools\nit.exe" />
+    <Content Include="wixTools\ProductFile.ico" />
+    <Content Include="wixTools\ProjectFile.ico" />
+    <Content Include="wixTools\pyro.exe" />
+    <Content Include="wixTools\sdk\BootstrapperCore.xml" />
+    <Content Include="wixTools\sdk\inc\aclutil.h" />
+    <Content Include="wixTools\sdk\inc\apuputil.h" />
+    <Content Include="wixTools\sdk\inc\atomutil.h" />
+    <Content Include="wixTools\sdk\inc\BalBaseBootstrapperApplication.h" />
+    <Content Include="wixTools\sdk\inc\balcondition.h" />
+    <Content Include="wixTools\sdk\inc\balinfo.h" />
+    <Content Include="wixTools\sdk\inc\balretry.h" />
+    <Content Include="wixTools\sdk\inc\balutil.h" />
+    <Content Include="wixTools\sdk\inc\buffutil.h" />
+    <Content Include="wixTools\sdk\inc\butil.h" />
+    <Content Include="wixTools\sdk\inc\cabcutil.h" />
+    <Content Include="wixTools\sdk\inc\cabutil.h" />
+    <Content Include="wixTools\sdk\inc\certutil.h" />
+    <Content Include="wixTools\sdk\inc\conutil.h" />
+    <Content Include="wixTools\sdk\inc\cryputil.h" />
+    <Content Include="wixTools\sdk\inc\custommsierrors.h" />
+    <Content Include="wixTools\sdk\inc\deputil.h" />
+    <Content Include="wixTools\sdk\inc\dictutil.h" />
+    <Content Include="wixTools\sdk\inc\dirutil.h" />
+    <Content Include="wixTools\sdk\inc\dlutil.h" />
+    <Content Include="wixTools\sdk\inc\dutil.h" />
+    <Content Include="wixTools\sdk\inc\eseutil.h" />
+    <Content Include="wixTools\sdk\inc\fileutil.h" />
+    <Content Include="wixTools\sdk\inc\gdiputil.h" />
+    <Content Include="wixTools\sdk\inc\IBootstrapperApplication.h" />
+    <Content Include="wixTools\sdk\inc\IBootstrapperBAFunction.h" />
+    <Content Include="wixTools\sdk\inc\IBootstrapperEngine.h" />
+    <Content Include="wixTools\sdk\inc\iis7util.h" />
+    <Content Include="wixTools\sdk\inc\inetutil.h" />
+    <Content Include="wixTools\sdk\inc\iniutil.h" />
+    <Content Include="wixTools\sdk\inc\jsonutil.h" />
+    <Content Include="wixTools\sdk\inc\locutil.h" />
+    <Content Include="wixTools\sdk\inc\logutil.h" />
+    <Content Include="wixTools\sdk\inc\memutil.h" />
+    <Content Include="wixTools\sdk\inc\metautil.h" />
+    <Content Include="wixTools\sdk\inc\osutil.h" />
+    <Content Include="wixTools\sdk\inc\pathutil.h" />
+    <Content Include="wixTools\sdk\inc\perfutil.h" />
+    <Content Include="wixTools\sdk\inc\polcutil.h" />
+    <Content Include="wixTools\sdk\inc\procutil.h" />
+    <Content Include="wixTools\sdk\inc\regutil.h" />
+    <Content Include="wixTools\sdk\inc\resrutil.h" />
+    <Content Include="wixTools\sdk\inc\reswutil.h" />
+    <Content Include="wixTools\sdk\inc\rexutil.h" />
+    <Content Include="wixTools\sdk\inc\rmutil.h" />
+    <Content Include="wixTools\sdk\inc\rssutil.h" />
+    <Content Include="wixTools\sdk\inc\sceutil.h" />
+    <Content Include="wixTools\sdk\inc\shelutil.h" />
+    <Content Include="wixTools\sdk\inc\sqlutil.h" />
+    <Content Include="wixTools\sdk\inc\srputil.h" />
+    <Content Include="wixTools\sdk\inc\strutil.h" />
+    <Content Include="wixTools\sdk\inc\svcutil.h" />
+    <Content Include="wixTools\sdk\inc\thmutil.h" />
+    <Content Include="wixTools\sdk\inc\timeutil.h" />
+    <Content Include="wixTools\sdk\inc\uriutil.h" />
+    <Content Include="wixTools\sdk\inc\userutil.h" />
+    <Content Include="wixTools\sdk\inc\wcalog.h" />
+    <Content Include="wixTools\sdk\inc\wcautil.h" />
+    <Content Include="wixTools\sdk\inc\wcawow64.h" />
+    <Content Include="wixTools\sdk\inc\wcawrapquery.h" />
+    <Content Include="wixTools\sdk\inc\wiutil.h" />
+    <Content Include="wixTools\sdk\inc\wuautil.h" />
+    <Content Include="wixTools\sdk\inc\xmlutil.h" />
+    <Content Include="wixTools\sdk\Microsoft.Deployment.Compression.Cab.xml" />
+    <Content Include="wixTools\sdk\Microsoft.Deployment.Compression.xml" />
+    <Content Include="wixTools\sdk\Microsoft.Deployment.Compression.Zip.xml" />
+    <Content Include="wixTools\sdk\Microsoft.Deployment.Resources.xml" />
+    <Content Include="wixTools\sdk\Microsoft.Deployment.WindowsInstaller.Linq.xml" />
+    <Content Include="wixTools\sdk\Microsoft.Deployment.WindowsInstaller.Package.xml" />
+    <Content Include="wixTools\sdk\Microsoft.Deployment.WindowsInstaller.xml" />
+    <Content Include="wixTools\shine.exe" />
+    <Content Include="wixTools\smoke.exe" />
+    <Content Include="wixTools\ThmViewer.exe" />
+    <Content Include="wixTools\torch.exe" />
+    <Content Include="wixTools\votive2010.dll" />
+    <Content Include="wixTools\wconsole.dll" />
+    <Content Include="wixTools\winterop.dll" />
+    <Content Include="wixTools\wix.dll" />
+    <Content Include="wixTools\WixBalExtension.dll" />
+    <Content Include="wixTools\WixComPlusExtension.dll" />
+    <Content Include="wixTools\WixCop.exe" />
+    <Content Include="wixTools\WixDependencyExtension.dll" />
+    <Content Include="wixTools\WixDifxAppExtension.dll" />
+    <Content Include="wixTools\WixDirectXExtension.dll" />
+    <Content Include="wixTools\WixFirewallExtension.dll" />
+    <Content Include="wixTools\WixGamingExtension.dll" />
+    <Content Include="wixTools\WixHttpExtension.dll" />
+    <Content Include="wixTools\WixIIsExtension.dll" />
+    <Content Include="wixTools\WixLibraryFile.ico" />
+    <Content Include="wixTools\WixLuxExtension.dll" />
+    <Content Include="wixTools\WixMsmqExtension.dll" />
+    <Content Include="wixTools\WixNetFxExtension.dll" />
+    <Content Include="wixTools\WixPSExtension.dll" />
+    <Content Include="wixTools\WixSqlExtension.dll" />
+    <Content Include="wixTools\WixTagExtension.dll" />
+    <Content Include="wixTools\WixTasks.dll" />
+    <Content Include="wixTools\WixUIExtension.dll" />
+    <Content Include="wixTools\WixUtilExtension.dll" />
+    <Content Include="wixTools\WixVSExtension.dll" />
+    <Content Include="wixTools\WixVSExtension.MSBuild12.dll" />
+    <Content Include="wixTools\WixVSExtension.MSBuild14.dll" />
+    <Content Include="wixTools\x86\burn.exe" />
+    <Content Include="Wix_bin\bin\candle.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\dark.exe">
+    <Content Include="Wix_bin\bin\dark.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\difxapp_x64.wixlib">
+    <Content Include="Wix_bin\bin\difxapp_ia64.wixlib">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\difxapp_x86.wixlib">
+    <Content Include="Wix_bin\bin\difxapp_x64.wixlib">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\heat.exe">
+    <Content Include="Wix_bin\bin\difxapp_x86.wixlib">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\IncludeFile.ico">
+    <Content Include="Wix_bin\bin\heat.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\insignia.exe">
+    <Content Include="Wix_bin\bin\IncludeFile.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\light.exe">
+    <Content Include="Wix_bin\bin\insignia.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\lit.exe">
+    <Content Include="Wix_bin\bin\light.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\LocalizationFile.ico">
+    <Content Include="Wix_bin\bin\lit.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\lux.exe">
+    <Content Include="Wix_bin\bin\LocalizationFile.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\LuxTasks.dll">
+    <Content Include="Wix_bin\bin\lux.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\melt.exe">
+    <Content Include="Wix_bin\bin\LuxTasks.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\mergemod.dll">
+    <Content Include="Wix_bin\bin\melt.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\Microsoft.Deployment.Compression.Cab.dll">
+    <Content Include="Wix_bin\bin\mergemod.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\Microsoft.Deployment.Compression.dll">
+    <Content Include="Wix_bin\bin\Microsoft.Deployment.Compression.Cab.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\Microsoft.Deployment.Resources.dll">
+    <Content Include="Wix_bin\bin\Microsoft.Deployment.Compression.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\Microsoft.Deployment.WindowsInstaller.dll">
+    <Content Include="Wix_bin\bin\Microsoft.Deployment.Resources.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\Microsoft.Deployment.WindowsInstaller.Package.dll">
+    <Content Include="Wix_bin\bin\Microsoft.Deployment.WindowsInstaller.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\mspatchc.dll">
+    <Content Include="Wix_bin\bin\Microsoft.Deployment.WindowsInstaller.Package.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\nit.exe">
+    <Content Include="Wix_bin\bin\Microsoft.Tools.WindowsInstallerXml.NAntTasks.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\ProductFile.ico">
+    <Content Include="Wix_bin\bin\mspatchc.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\ProjectFile.ico">
+    <Content Include="Wix_bin\bin\nit.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\pyro.exe">
+    <Content Include="Wix_bin\bin\ProductFile.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\BootstrapperCore.xml">
+    <Content Include="Wix_bin\bin\ProjectFile.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\inc\aclutil.h">
+    <Content Include="Wix_bin\bin\pyro.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\inc\apuputil.h">
+    <Content Include="Wix_bin\bin\sconce2010.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\inc\atomutil.h">
+    <Content Include="Wix_bin\bin\setup.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\inc\BalBaseBootstrapperApplication.h">
+    <Content Include="Wix_bin\bin\setupbld.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\inc\balcondition.h">
+    <Content Include="Wix_bin\bin\SetupBuilder.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\inc\balinfo.h">
+    <Content Include="Wix_bin\bin\shine.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\inc\balretry.h">
+    <Content Include="Wix_bin\bin\smoke.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\inc\balutil.h">
+    <Content Include="Wix_bin\bin\ThmViewer.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\inc\buffutil.h">
+    <Content Include="Wix_bin\bin\torch.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\inc\butil.h">
+    <Content Include="Wix_bin\bin\votive2010.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\inc\cabcutil.h">
+    <Content Include="Wix_bin\bin\wconsole.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\inc\cabutil.h">
+    <Content Include="Wix_bin\bin\winterop.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\inc\certutil.h">
+    <Content Include="Wix_bin\bin\wix.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\inc\conutil.h">
+    <Content Include="Wix_bin\bin\WixBalExtension.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\inc\cryputil.h">
+    <Content Include="Wix_bin\bin\WixComPlusExtension.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\inc\custommsierrors.h">
+    <Content Include="Wix_bin\bin\WixCop.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\inc\deputil.h">
+    <Content Include="Wix_bin\bin\WixDependencyExtension.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\inc\dictutil.h">
+    <Content Include="Wix_bin\bin\WixDifxAppExtension.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\inc\dirutil.h">
+    <Content Include="Wix_bin\bin\WixDirectXExtension.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\inc\dlutil.h">
+    <Content Include="Wix_bin\bin\WixFirewallExtension.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\inc\dutil.h">
+    <Content Include="Wix_bin\bin\WixGamingExtension.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\inc\eseutil.h">
+    <Content Include="Wix_bin\bin\WixHttpExtension.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\inc\fileutil.h">
+    <Content Include="Wix_bin\bin\WixIIsExtension.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\inc\gdiputil.h">
+    <Content Include="Wix_bin\bin\WixLibraryFile.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\inc\IBootstrapperApplication.h">
+    <Content Include="Wix_bin\bin\WixLuxExtension.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\inc\IBootstrapperBAFunction.h">
+    <Content Include="Wix_bin\bin\WixMsmqExtension.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\inc\IBootstrapperEngine.h">
+    <Content Include="Wix_bin\bin\WixNetFxExtension.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\inc\iis7util.h">
+    <Content Include="Wix_bin\bin\WixPSExtension.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\inc\inetutil.h">
+    <Content Include="Wix_bin\bin\WixSqlExtension.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\inc\iniutil.h">
+    <Content Include="Wix_bin\bin\WixTagExtension.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\inc\jsonutil.h">
+    <Content Include="Wix_bin\bin\WixTasks.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\inc\locutil.h">
+    <Content Include="Wix_bin\bin\WixUIExtension.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\inc\logutil.h">
+    <Content Include="Wix_bin\bin\WixUnit.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\inc\memutil.h">
+    <Content Include="Wix_bin\bin\WixUtilExtension.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\inc\metautil.h">
+    <Content Include="Wix_bin\bin\WixVSExtension.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\inc\osutil.h">
+    <Content Include="Wix_bin\bin\WixVSExtension.MSBuild12.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\inc\pathutil.h">
+    <Content Include="Wix_bin\bin\WixVSExtension.MSBuild14.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\inc\perfutil.h">
+    <Content Include="Wix_bin\bin\wui.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\inc\polcutil.h">
+    <Content Include="Wix_bin\bin\x86\burn.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\inc\procutil.h">
+    <Content Include="Wix_bin\SDK\BootstrapperCore.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\inc\regutil.h">
+    <Content Include="Wix_bin\SDK\BootstrapperCore.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\inc\resrutil.h">
+    <Content Include="Wix_bin\SDK\DocCompiler.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\inc\reswutil.h">
+    <Content Include="Wix_bin\SDK\inc\aclutil.h">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\inc\rexutil.h">
+    <Content Include="Wix_bin\SDK\inc\apuputil.h">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\inc\rmutil.h">
+    <Content Include="Wix_bin\SDK\inc\atomutil.h">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\inc\rssutil.h">
+    <Content Include="Wix_bin\SDK\inc\BalBaseBootstrapperApplication.h">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\inc\sceutil.h">
+    <Content Include="Wix_bin\SDK\inc\balcondition.h">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\inc\shelutil.h">
+    <Content Include="Wix_bin\SDK\inc\balinfo.h">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\inc\sqlutil.h">
+    <Content Include="Wix_bin\SDK\inc\balretry.h">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\inc\srputil.h">
+    <Content Include="Wix_bin\SDK\inc\balutil.h">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\inc\strutil.h">
+    <Content Include="Wix_bin\SDK\inc\buffutil.h">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\inc\svcutil.h">
+    <Content Include="Wix_bin\SDK\inc\butil.h">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\inc\thmutil.h">
+    <Content Include="Wix_bin\SDK\inc\cabcutil.h">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\inc\timeutil.h">
+    <Content Include="Wix_bin\SDK\inc\cabutil.h">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\inc\uriutil.h">
+    <Content Include="Wix_bin\SDK\inc\certutil.h">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\inc\userutil.h">
+    <Content Include="Wix_bin\SDK\inc\conutil.h">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\inc\wcalog.h">
+    <Content Include="Wix_bin\SDK\inc\cryputil.h">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\inc\wcautil.h">
+    <Content Include="Wix_bin\SDK\inc\custommsierrors.h">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\inc\wcawow64.h">
+    <Content Include="Wix_bin\SDK\inc\deputil.h">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\inc\wcawrapquery.h">
+    <Content Include="Wix_bin\SDK\inc\dictutil.h">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\inc\wiutil.h">
+    <Content Include="Wix_bin\SDK\inc\dirutil.h">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\inc\wuautil.h">
+    <Content Include="Wix_bin\SDK\inc\dlutil.h">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\inc\xmlutil.h">
+    <Content Include="Wix_bin\SDK\inc\dutil.h">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\Microsoft.Deployment.Compression.Cab.xml">
+    <Content Include="Wix_bin\SDK\inc\eseutil.h">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\Microsoft.Deployment.Compression.xml">
+    <Content Include="Wix_bin\SDK\inc\fileutil.h">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\Microsoft.Deployment.Compression.Zip.xml">
+    <Content Include="Wix_bin\SDK\inc\gdiputil.h">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\Microsoft.Deployment.Resources.xml">
+    <Content Include="Wix_bin\SDK\inc\IBootstrapperApplication.h">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\Microsoft.Deployment.WindowsInstaller.Linq.xml">
+    <Content Include="Wix_bin\SDK\inc\IBootstrapperBAFunction.h">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\Microsoft.Deployment.WindowsInstaller.Package.xml">
+    <Content Include="Wix_bin\SDK\inc\IBootstrapperEngine.h">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\sdk\Microsoft.Deployment.WindowsInstaller.xml">
+    <Content Include="Wix_bin\SDK\inc\iis7util.h">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\shine.exe">
+    <Content Include="Wix_bin\SDK\inc\inetutil.h">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\smoke.exe">
+    <Content Include="Wix_bin\SDK\inc\iniutil.h">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\ThmViewer.exe">
+    <Content Include="Wix_bin\SDK\inc\jsonutil.h">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\torch.exe">
+    <Content Include="Wix_bin\SDK\inc\locutil.h">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\votive2010.dll">
+    <Content Include="Wix_bin\SDK\inc\logutil.h">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\wconsole.dll">
+    <Content Include="Wix_bin\SDK\inc\memutil.h">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\winterop.dll">
+    <Content Include="Wix_bin\SDK\inc\metautil.h">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\wix.dll">
+    <Content Include="Wix_bin\SDK\inc\osutil.h">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\WixBalExtension.dll">
+    <Content Include="Wix_bin\SDK\inc\pathutil.h">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\WixComPlusExtension.dll">
+    <Content Include="Wix_bin\SDK\inc\perfutil.h">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\WixCop.exe">
+    <Content Include="Wix_bin\SDK\inc\polcutil.h">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\WixDependencyExtension.dll">
+    <Content Include="Wix_bin\SDK\inc\procutil.h">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\WixDifxAppExtension.dll">
+    <Content Include="Wix_bin\SDK\inc\regutil.h">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\WixDirectXExtension.dll">
+    <Content Include="Wix_bin\SDK\inc\resrutil.h">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\WixFirewallExtension.dll">
+    <Content Include="Wix_bin\SDK\inc\reswutil.h">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\WixGamingExtension.dll">
+    <Content Include="Wix_bin\SDK\inc\rexutil.h">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\WixHttpExtension.dll">
+    <Content Include="Wix_bin\SDK\inc\rmutil.h">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\WixIIsExtension.dll">
+    <Content Include="Wix_bin\SDK\inc\rssutil.h">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\WixLibraryFile.ico">
+    <Content Include="Wix_bin\SDK\inc\sceutil.h">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\WixLuxExtension.dll">
+    <Content Include="Wix_bin\SDK\inc\shelutil.h">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\WixMsmqExtension.dll">
+    <Content Include="Wix_bin\SDK\inc\sqlutil.h">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\WixNetFxExtension.dll">
+    <Content Include="Wix_bin\SDK\inc\srputil.h">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\WixPSExtension.dll">
+    <Content Include="Wix_bin\SDK\inc\strutil.h">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\WixSqlExtension.dll">
+    <Content Include="Wix_bin\SDK\inc\svcutil.h">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\WixTagExtension.dll">
+    <Content Include="Wix_bin\SDK\inc\thmutil.h">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\WixTasks.dll">
+    <Content Include="Wix_bin\SDK\inc\timeutil.h">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\WixUIExtension.dll">
+    <Content Include="Wix_bin\SDK\inc\uriutil.h">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\WixUtilExtension.dll">
+    <Content Include="Wix_bin\SDK\inc\userutil.h">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\WixVSExtension.dll">
+    <Content Include="Wix_bin\SDK\inc\wcalog.h">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\WixVSExtension.MSBuild12.dll">
+    <Content Include="Wix_bin\SDK\inc\wcautil.h">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\WixVSExtension.MSBuild14.dll">
+    <Content Include="Wix_bin\SDK\inc\wcawow64.h">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="wixTools\x86\burn.exe">
+    <Content Include="Wix_bin\SDK\inc\wcawrapquery.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\inc\wiutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\inc\wuautil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\inc\xmlutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\MakeSfxCA.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\Microsoft.Deployment.Compression.Cab.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\Microsoft.Deployment.Compression.Cab.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\Microsoft.Deployment.Compression.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\Microsoft.Deployment.Compression.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\Microsoft.Deployment.Compression.Zip.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\Microsoft.Deployment.Compression.Zip.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\Microsoft.Deployment.Resources.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\Microsoft.Deployment.Resources.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\Microsoft.Deployment.WindowsInstaller.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\Microsoft.Deployment.WindowsInstaller.Linq.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\Microsoft.Deployment.WindowsInstaller.Linq.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\Microsoft.Deployment.WindowsInstaller.Package.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\Microsoft.Deployment.WindowsInstaller.Package.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\Microsoft.Deployment.WindowsInstaller.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\MsgGen.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2010\inc\aclutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2010\inc\apuputil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2010\inc\atomutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2010\inc\BalBaseBootstrapperApplication.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2010\inc\balcondition.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2010\inc\balinfo.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2010\inc\balretry.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2010\inc\balutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2010\inc\buffutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2010\inc\butil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2010\inc\cabcutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2010\inc\cabutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2010\inc\certutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2010\inc\conutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2010\inc\cryputil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2010\inc\custommsierrors.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2010\inc\deputil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2010\inc\dictutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2010\inc\dirutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2010\inc\dlutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2010\inc\dutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2010\inc\eseutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2010\inc\fileutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2010\inc\gdiputil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2010\inc\IBootstrapperApplication.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2010\inc\IBootstrapperBAFunction.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2010\inc\IBootstrapperEngine.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2010\inc\iis7util.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2010\inc\inetutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2010\inc\iniutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2010\inc\jsonutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2010\inc\locutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2010\inc\logutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2010\inc\memutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2010\inc\metautil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2010\inc\osutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2010\inc\pathutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2010\inc\perfutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2010\inc\polcutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2010\inc\procutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2010\inc\regutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2010\inc\resrutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2010\inc\reswutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2010\inc\rexutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2010\inc\rmutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2010\inc\rssutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2010\inc\sceutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2010\inc\shelutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2010\inc\sqlutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2010\inc\srputil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2010\inc\strutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2010\inc\svcutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2010\inc\thmutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2010\inc\timeutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2010\inc\uriutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2010\inc\userutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2010\inc\wcalog.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2010\inc\wcautil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2010\inc\wcawow64.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2010\inc\wcawrapquery.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2010\inc\wiutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2010\inc\wuautil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2010\inc\xmlutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2012\inc\aclutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2012\inc\apuputil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2012\inc\atomutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2012\inc\BalBaseBootstrapperApplication.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2012\inc\balcondition.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2012\inc\balinfo.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2012\inc\balretry.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2012\inc\balutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2012\inc\buffutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2012\inc\butil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2012\inc\cabcutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2012\inc\cabutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2012\inc\certutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2012\inc\conutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2012\inc\cryputil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2012\inc\custommsierrors.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2012\inc\deputil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2012\inc\dictutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2012\inc\dirutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2012\inc\dlutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2012\inc\dutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2012\inc\eseutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2012\inc\fileutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2012\inc\gdiputil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2012\inc\IBootstrapperApplication.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2012\inc\IBootstrapperBAFunction.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2012\inc\IBootstrapperEngine.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2012\inc\iis7util.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2012\inc\inetutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2012\inc\iniutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2012\inc\jsonutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2012\inc\locutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2012\inc\logutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2012\inc\memutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2012\inc\metautil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2012\inc\osutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2012\inc\pathutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2012\inc\perfutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2012\inc\polcutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2012\inc\procutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2012\inc\regutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2012\inc\resrutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2012\inc\reswutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2012\inc\rexutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2012\inc\rmutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2012\inc\rssutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2012\inc\sceutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2012\inc\shelutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2012\inc\sqlutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2012\inc\srputil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2012\inc\strutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2012\inc\svcutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2012\inc\thmutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2012\inc\timeutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2012\inc\uriutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2012\inc\userutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2012\inc\wcalog.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2012\inc\wcautil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2012\inc\wcawow64.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2012\inc\wcawrapquery.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2012\inc\wiutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2012\inc\wuautil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2012\inc\xmlutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2013\inc\aclutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2013\inc\apuputil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2013\inc\atomutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2013\inc\BalBaseBootstrapperApplication.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2013\inc\balcondition.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2013\inc\balinfo.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2013\inc\balretry.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2013\inc\balutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2013\inc\buffutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2013\inc\butil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2013\inc\cabcutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2013\inc\cabutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2013\inc\certutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2013\inc\conutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2013\inc\cryputil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2013\inc\custommsierrors.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2013\inc\deputil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2013\inc\dictutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2013\inc\dirutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2013\inc\dlutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2013\inc\dutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2013\inc\eseutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2013\inc\fileutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2013\inc\gdiputil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2013\inc\IBootstrapperApplication.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2013\inc\IBootstrapperBAFunction.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2013\inc\IBootstrapperEngine.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2013\inc\iis7util.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2013\inc\inetutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2013\inc\iniutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2013\inc\jsonutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2013\inc\locutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2013\inc\logutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2013\inc\memutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2013\inc\metautil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2013\inc\osutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2013\inc\pathutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2013\inc\perfutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2013\inc\polcutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2013\inc\procutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2013\inc\regutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2013\inc\resrutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2013\inc\reswutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2013\inc\rexutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2013\inc\rmutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2013\inc\rssutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2013\inc\sceutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2013\inc\shelutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2013\inc\sqlutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2013\inc\srputil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2013\inc\strutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2013\inc\svcutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2013\inc\thmutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2013\inc\timeutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2013\inc\uriutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2013\inc\userutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2013\inc\wcalog.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2013\inc\wcautil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2013\inc\wcawow64.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2013\inc\wcawrapquery.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2013\inc\wiutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2013\inc\wuautil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\VS2013\inc\xmlutil.h">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\x64\sfxca.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\x86\sfxca.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\XsdGen.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\SDK\XsdStitch.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Wix_bin\version.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-    <None Include="wixTools\candle.exe.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="wixTools\darice.cub">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="wixTools\dark.exe.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <None Include="wixTools\candle.exe.config" />
+    <None Include="wixTools\darice.cub" />
+    <None Include="wixTools\dark.exe.config" />
     <None Include="wixTools\doc\bal.xsd">
       <SubType>Designer</SubType>
     </None>
@@ -509,73 +1269,204 @@
     <None Include="wixTools\doc\wixloc.xsd">
       <SubType>Designer</SubType>
     </None>
-    <None Include="wixTools\heat.exe.config">
+    <None Include="wixTools\heat.exe.config" />
+    <None Include="wixTools\insignia.exe.config" />
+    <None Include="wixTools\light.exe.config" />
+    <None Include="wixTools\lit.exe.config" />
+    <None Include="wixTools\lux.exe.config" />
+    <None Include="wixTools\lux.targets" />
+    <None Include="wixTools\melt.exe.config" />
+    <None Include="wixTools\mergemod.cub" />
+    <None Include="wixTools\nit.exe.config" />
+    <None Include="wixTools\OfficeProPlusInstallGenerator.exe.config" />
+    <None Include="wixTools\OfficeProPlusInstallGenerator.vshost.exe.manifest" />
+    <None Include="wixTools\pyro.exe.config" />
+    <None Include="wixTools\retina.exe.config" />
+    <None Include="wixTools\sdk\BootstrapperCore.config" />
+    <None Include="wixTools\sdk\MakeSfxCA.exe.config" />
+    <None Include="wixTools\sdk\wix.ca.targets" />
+    <None Include="wixTools\setup.msi" />
+    <None Include="wixTools\shine.exe.config" />
+    <None Include="wixTools\smoke.exe.config" />
+    <None Include="wixTools\torch.exe.config" />
+    <None Include="wixTools\wix.targets" />
+    <None Include="wixTools\wix200x.targets" />
+    <None Include="wixTools\wix2010.targets" />
+    <None Include="Wix_bin\bin\candle.exe.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="wixTools\insignia.exe.config">
+    <None Include="Wix_bin\bin\darice.cub">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="wixTools\light.exe.config">
+    <None Include="Wix_bin\bin\dark.exe.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="wixTools\lit.exe.config">
+    <None Include="Wix_bin\bin\heat.exe.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="wixTools\lux.exe.config">
+    <None Include="Wix_bin\bin\insignia.exe.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="wixTools\lux.targets">
+    <None Include="Wix_bin\bin\light.exe.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="wixTools\melt.exe.config">
+    <None Include="Wix_bin\bin\lit.exe.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="wixTools\mergemod.cub">
+    <None Include="Wix_bin\bin\lux.exe.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="wixTools\nit.exe.config">
+    <None Include="Wix_bin\bin\melt.exe.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="wixTools\OfficeProPlusInstallGenerator.exe.config">
+    <None Include="Wix_bin\bin\mergemod.cub">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="wixTools\OfficeProPlusInstallGenerator.vshost.exe.manifest">
+    <None Include="Wix_bin\bin\nit.exe.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="wixTools\pyro.exe.config">
+    <None Include="Wix_bin\bin\pyro.exe.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="wixTools\retina.exe.config">
+    <None Include="Wix_bin\bin\shine.exe.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="wixTools\sdk\BootstrapperCore.config">
+    <None Include="Wix_bin\bin\smoke.exe.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="wixTools\sdk\MakeSfxCA.exe.config">
+    <None Include="Wix_bin\bin\torch.exe.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="wixTools\sdk\wix.ca.targets">
+    <None Include="Wix_bin\bin\WixUnit.exe.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="wixTools\setup.msi">
+    <None Include="Wix_bin\SDK\BootstrapperCore.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="wixTools\shine.exe.config">
+    <None Include="Wix_bin\SDK\lib\dutil_2005.lib">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="wixTools\smoke.exe.config">
+    <None Include="Wix_bin\SDK\lib\dutil_2005_ia64.lib">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="wixTools\torch.exe.config">
+    <None Include="Wix_bin\SDK\lib\dutil_2005_x64.lib">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="wixTools\wix.targets">
+    <None Include="Wix_bin\SDK\lib\dutil_2008.lib">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="wixTools\wix200x.targets">
+    <None Include="Wix_bin\SDK\lib\dutil_2008_ia64.lib">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="wixTools\wix2010.targets">
+    <None Include="Wix_bin\SDK\lib\dutil_2008_x64.lib">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Wix_bin\SDK\lib\dutil_2010.lib">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Wix_bin\SDK\lib\dutil_2010_ia64.lib">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Wix_bin\SDK\lib\dutil_2010_x64.lib">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Wix_bin\SDK\lib\wcautil_2005.lib">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Wix_bin\SDK\lib\wcautil_2005_ia64.lib">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Wix_bin\SDK\lib\wcautil_2005_x64.lib">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Wix_bin\SDK\lib\wcautil_2008.lib">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Wix_bin\SDK\lib\wcautil_2008_ia64.lib">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Wix_bin\SDK\lib\wcautil_2008_x64.lib">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Wix_bin\SDK\lib\wcautil_2010.lib">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Wix_bin\SDK\lib\wcautil_2010_ia64.lib">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Wix_bin\SDK\lib\wcautil_2010_x64.lib">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Wix_bin\SDK\MakeSfxCA.exe.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Wix_bin\SDK\VS2010\lib\x64\deputil.lib">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Wix_bin\SDK\VS2010\lib\x64\dutil.lib">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Wix_bin\SDK\VS2010\lib\x64\wcautil.lib">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Wix_bin\SDK\VS2010\lib\x86\balutil.lib">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Wix_bin\SDK\VS2010\lib\x86\deputil.lib">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Wix_bin\SDK\VS2010\lib\x86\dutil.lib">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Wix_bin\SDK\VS2010\lib\x86\wcautil.lib">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Wix_bin\SDK\VS2012\lib\x64\deputil.lib">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Wix_bin\SDK\VS2012\lib\x64\dutil.lib">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Wix_bin\SDK\VS2012\lib\x64\wcautil.lib">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Wix_bin\SDK\VS2012\lib\x86\balutil.lib">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Wix_bin\SDK\VS2012\lib\x86\deputil.lib">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Wix_bin\SDK\VS2012\lib\x86\dutil.lib">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Wix_bin\SDK\VS2012\lib\x86\wcautil.lib">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Wix_bin\SDK\VS2013\lib\x64\deputil.lib">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Wix_bin\SDK\VS2013\lib\x64\dutil.lib">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Wix_bin\SDK\VS2013\lib\x64\wcautil.lib">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Wix_bin\SDK\VS2013\lib\x86\balutil.lib">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Wix_bin\SDK\VS2013\lib\x86\deputil.lib">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Wix_bin\SDK\VS2013\lib\x86\dutil.lib">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Wix_bin\SDK\VS2013\lib\x86\wcautil.lib">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Wix_bin\SDK\wix.ca.targets">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Wix_bin\Wix_bin.7z">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

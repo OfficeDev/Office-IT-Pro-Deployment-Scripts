@@ -12,39 +12,52 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
     public class OfficeInstallMsiGenerator : IOfficeInstallGenerator
     {
 
-
-        //TODO : Add function that gets the bitness of the install...for now assume
         public IOfficeInstallReturn Generate(IOfficeInstallProperties installProperties)
         {
-            var exeGenerator = new OfficeInstallExecutableGenerator();
-
-            installProperties.ExecutablePath = Regex.Replace(installProperties.ExecutablePath, ".msi$", ".exe",
-                RegexOptions.IgnoreCase);
-
-            var exeReturn = exeGenerator.Generate(installProperties);
-            var exeFilePath = exeReturn.GeneratedFilePath;
-
-            installProperties.ExecutablePath = Regex.Replace(installProperties.ExecutablePath, ".exe$", "",
-                RegexOptions.IgnoreCase);
-
-
-            var msiGenerator = new MsiGenerator();
-
-            msiGenerator.Generate(new MsiGeneratorProperties()
+            var msiPath = installProperties.ExecutablePath;
+            var exePath = Path.GetDirectoryName(installProperties.ExecutablePath) + @"\InstallOfficeProPlus.exe";
+            try
             {
-                ExecutablePath = exeFilePath,
-                Manufacturer = "Microsoft Corporation",
-                Name = "Microsoft Office 365 ProPlus Installer",
-                ProgramFilesPath = @"%ProgramFiles%\MS\Microsoft Office 365 ProPlus Installer"
-            });
+                var exeGenerator = new OfficeInstallExecutableGenerator();
+                installProperties.ExecutablePath = exePath;
 
-            var installDirectory = new OfficeInstallReturn
+                var exeReturn = exeGenerator.Generate(installProperties);
+                var exeFilePath = exeReturn.GeneratedFilePath;
+
+                var msiCreatePath = Regex.Replace(msiPath, ".msi$", "", RegexOptions.IgnoreCase);
+
+                var msiGenerator = new MsiGenerator();
+                msiGenerator.Generate(new MsiGeneratorProperties()
+                {
+                    MsiPath = msiCreatePath,
+                    ExecutablePath = exePath,
+                    Manufacturer = "Microsoft Corporation",
+                    Name = "Microsoft Office 365 ProPlus Installer",
+                    ProgramFilesPath = @"%ProgramFiles%\Microsoft Office 365 ProPlus Installer",
+                    ProgramFiles = new List<string>()
+                    {
+                        installProperties.ConfigurationXmlPath
+                    }
+                });
+
+                var installDirectory = new OfficeInstallReturn
+                {
+                    GeneratedFilePath = msiPath
+                };
+
+                return installDirectory;
+            }
+            finally
             {
-                GeneratedFilePath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop)
-            };
-
-            return installDirectory;
-
+                try
+                {
+                    if (File.Exists(exePath))
+                    {
+                        File.Delete(exePath);
+                    }
+                }
+                catch { }
+            }
         }
 
         public void InstallOffice(string configurationXml)

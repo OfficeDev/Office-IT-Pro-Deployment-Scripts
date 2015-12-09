@@ -495,9 +495,16 @@ public class InstallOffice
     private void SetLoggingPath(string xmlFilePath)
     {
         var tempPath = Environment.ExpandEnvironmentVariables("%temp%");
-        var logFolderName = Guid.NewGuid().ToString();
+        const string logFolderName = "OfficeProPlusLogs";
         LoggingPath = tempPath + @"\" + logFolderName;
-
+        if (Directory.Exists(LoggingPath))
+        {
+            try
+            {
+                Directory.Delete(LoggingPath);
+            }
+            catch { }
+        }
         Directory.CreateDirectory(LoggingPath);
 
         var xmlDoc = new XmlDocument();

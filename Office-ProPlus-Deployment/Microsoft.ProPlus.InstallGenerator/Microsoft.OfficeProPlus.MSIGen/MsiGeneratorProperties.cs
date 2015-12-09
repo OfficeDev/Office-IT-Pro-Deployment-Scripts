@@ -12,9 +12,13 @@ namespace Microsoft.OfficeProPlus.InstallGenerator
 
         public string ExecutablePath { get; set; }
 
+        public string MsiPath { get; set; }
+
         public string ProgramFilesPath { get; set; }
 
         public string Manufacturer { get; set; }
+
+        public List<string> ProgramFiles { get; set; } 
 
     }
 }

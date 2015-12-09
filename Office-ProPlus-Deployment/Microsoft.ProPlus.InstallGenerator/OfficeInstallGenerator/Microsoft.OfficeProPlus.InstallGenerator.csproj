@@ -56,6 +56,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Extensions\Extensions.cs" />
+    <Compile Include="Implementation\OfficeConfigXMLExtractor.cs" />
     <Compile Include="Implementation\OfficeInstallMsiGenerator.cs" />
     <Compile Include="Implementation\OfficeInstallProperties.cs" />
     <Compile Include="Implementation\OfficeInstallReturn.cs" />

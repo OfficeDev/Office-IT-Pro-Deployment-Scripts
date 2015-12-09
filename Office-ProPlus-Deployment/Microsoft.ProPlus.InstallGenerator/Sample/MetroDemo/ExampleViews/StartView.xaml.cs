@@ -14,6 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using MetroDemo.Events;
+using Microsoft.OfficeProPlus.InstallGenerator.Implementation;
 
 namespace MetroDemo.ExampleViews
 {
@@ -73,10 +74,8 @@ namespace MetroDemo.ExampleViews
 
                     GlobalObjects.ViewModel.ResetXml = true;
 
-                    if (filename.ToLower().EndsWith(".exe"))
-                    {
-                        filename = ExtractXmlFromExecutable(filename);
-                    }
+                    var configExtractor = new OfficeConfigXmlExtractor();
+                    filename = configExtractor.ExtractXml(filename);
 
                     GlobalObjects.ViewModel.ConfigXmlParser.LoadXml(filename);
 
@@ -98,26 +97,7 @@ namespace MetroDemo.ExampleViews
             }
         }
 
-        private string ExtractXmlFromExecutable(string fileName)
-        {
-            var tmpDir = Environment.ExpandEnvironmentVariables("%temp%");
 
-            var p = new Process
-            {
-                StartInfo = new ProcessStartInfo()
-                {
-                    FileName = fileName,
-                    Arguments = "/extractxml=" + tmpDir + @"\configuration.xml",
-                    CreateNoWindow = true,
-                    UseShellExecute = false,
-                },
-            };
-            p.Start();
-            p.WaitForExit();
-
-            var xml = File.ReadAllText(tmpDir + @"\configuration.xml");
-            return xml;
-        }
 
         public RestartEventHandler RestartWorkflow  { get; set; }
 
