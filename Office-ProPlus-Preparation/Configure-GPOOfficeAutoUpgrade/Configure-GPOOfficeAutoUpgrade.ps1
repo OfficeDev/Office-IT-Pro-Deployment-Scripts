@@ -11,33 +11,26 @@
 <#
 
 .SYNOPSIS
-Create the Telemetry GPO on the Domain Controller
+Create the Suppress MS Office 2016 Update GPO on the Domain Controller
 
 .DESCRIPTION
-Creates a group policy that that specifies the 
-Telemetry agent file share location and allows
-the agent to log and upload.
+Creates a group policy that that prevents Office 2013
+from upgrading to Office 2016
 
 .PARAMETER GpoName
-The name of the GPO to be created.
+Required, The name of the GPO to be created.
+.PARAMETER Domain
+Optional, The name of the domain the GPO will
+belong to
 
-.PARAMETER CommonFileShare
-The name of the Shared Drive hosting the telemetry database.
-
-.PARAMETER OfficeVersion
-The version of office used in your environment. If a version
-earlier than 2013 is used do not use this parameter.
 
 .EXAMPLE
-./Create-TelemetryGpo -GpoName "Office Telemetry" -CommonFileShare "Server1" -officeVersion 2013
-A GPO named "Office Telemetry" will be created. Registry keys will be
-created to enable telemetry agent logging, uploading, and the commonfileshare 
-path set to \\Server1\TDShared. 
+. C:\Users\name\Documents\PreventOfficeUpgrade.ps1 -GpoName SuppressMSOffice2016 -Domain er.mobap.com
+Will create the GPO named "SuppressMSOffice2016" on the domain "er.mobap.com"
 
 .EXAMPLE
-./Create-TelemetryGpo -GpoName "Office Telemetry"
-A GPO named "Office Telemetry" will be created.
-
+. C:\Users\emsadmin\Documents\PreventOfficeUpgrade.ps1 -GpoName SuppressMSOffice2016
+Will create the GPO named "SuppressMSOffice2016" no domain will be assigned
 #>
     Write-Host
     
@@ -62,19 +55,18 @@ A GPO named "Office Telemetry" will be created.
        Write-Host "Group Policy Already Exists..."
     }
 
+    #New-GPLink -Name $GpoName -Target GroupAUsers
+
     
     Write-Host "Configuring Group Policy '$gpoName': " -NoNewline
 
-    #Office 2013
+    #keys for turning off update
     
-    Set-GPRegistryValue -Name $GpoName -Key "HKCU\Software\Policies\Microsoft\office\15.0\osm" -ValueName Enablelogging -Type Dword -Value 1 | Out-Null
-    Set-GPRegistryValue -Name $GpoName -Key "HKCU\Software\Policies\Microsoft\office\15.0\osm" -ValueName EnableUpload -Type Dword -Value 1 | Out-Null
+    Set-GPRegistryValue -Name $GpoName -Key "HKLM\Software\Policies\Microsoft\office\15.0\common\officeupdate" -ValueName enableautomaticupgrade -Type DWord -Value 0 | Out-Null
 
     Write-Host "Done"
 
-    Write-Host
-    Write-Host "The Group Policy '$gpoName' has been set to configure client to submit telemetry"
-    Write-Host
+    
 
     if (!($existingGPO)) 
     {
