@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -44,10 +45,23 @@ public class InstallOffice
         var installDir = "";
         try
         {
-  
+            MinimizeWindow();
+
             var currentDirectory = Environment.ExpandEnvironmentVariables("%temp%");
-            installDir = currentDirectory + @"\Office365ProPlus";
+            installDir = currentDirectory + @"\OfficeProPlus";
+
             Directory.CreateDirectory(installDir);
+            //Directory.CreateDirectory(Environment.ExpandEnvironmentVariables(@"%temp%\OfficeProPlus\LogFiles"));
+
+            var args = GetArguments();
+            if (args.Any())
+            {
+                if (!HasValidArguments())
+                {
+                    ShowHelp();
+                    return;
+                }
+            }
 
             var filesXml = GetTextFileContents("files.xml");
             if (!string.IsNullOrEmpty(filesXml))
@@ -62,6 +76,8 @@ public class InstallOffice
 
             var odtFilePath = installDir + @"\" + fileNames.FirstOrDefault(f => f.ToLower().EndsWith(".exe"));
             var xmlFilePath = installDir + @"\" + fileNames.FirstOrDefault(f => f.ToLower().EndsWith(".xml"));
+
+            SetLoggingPath(xmlFilePath);
 
             if (!File.Exists(odtFilePath)) { throw (new Exception("Cannot find ODT Executable")); }
             if (!File.Exists(xmlFilePath)) { throw (new Exception("Cannot find Configuration Xml file")); }
@@ -81,6 +97,7 @@ public class InstallOffice
             else if (GetArguments().Any(a => a.Key.ToLower() == "/extractxml"))
             {
                 var arg = GetArguments().FirstOrDefault(a => a.Key.ToLower() == "/extractxml");
+                if (string.IsNullOrEmpty(arg.Value)) Console.WriteLine("ERROR: Invalid File Path");
                 var configXml = BeautifyXml(File.ReadAllText(xmlFilePath));
                 File.WriteAllText(arg.Value, configXml);
             }
@@ -106,14 +123,44 @@ public class InstallOffice
                 p.WaitForExit();
 
                 WaitForOfficeCtrUpadate();
+
+                var errorMessage = GetOdtErrorMessage();
+                if (!string.IsNullOrEmpty(errorMessage))
+                {
+                    Console.Error.WriteLine(errorMessage.Trim());
+                }
             }
         }
         finally
         {
-            CleanUp(installDir);
+           CleanUp(installDir);
         }
     }
 
+    private void ShowHelp()
+    {
+        Console.WriteLine("Usage: " + Process.GetCurrentProcess().ProcessName + " [/uninstall] [/showxml] [/extractxml={File Path}]");
+        Console.WriteLine();
+        Console.WriteLine("  /uninstall\t\t\tRemoves all installed Office 365 ProPlus");
+        Console.WriteLine("  \t\t\t\tproducts.");
+        Console.WriteLine("  /showxml\t\t\tDisplays the current Office 365 ProPlus");
+        Console.WriteLine("  \t\t\t\tconfiguration xml.");
+        Console.WriteLine("  /extractxml={File Path}\tExtracts the current Office 365 ProPlus");
+        Console.WriteLine("  \t\t\t\tconfiguration xml to the specified file path.");
+    }
+
+    private void MinimizeWindow()
+    {
+        IntPtr winHandle = System.Diagnostics.Process.GetCurrentProcess().MainWindowHandle;
+        ShowWindow(winHandle, SW_SHOWMINIMIZED);
+    }
+
+    private bool HasValidArguments()
+    {
+        return !GetArguments().Any(a => (a.Key.ToLower() != "/uninstall" &&
+                                         a.Key.ToLower() != "/showxml" &&
+                                         a.Key.ToLower() != "/extractxml"));
+    }
 
     private string UninstallOfficeProPlus(string installationDirectory, IEnumerable<string> fileNames)
     {
@@ -140,7 +187,7 @@ public class InstallOffice
     public string GetTextFileContents(string fileName)
     {
         var resourceName = "";
-        var resourceNames = Assembly.GetExecutingAssembly().GetManifestResourceNames();
+        var resourceNames = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceNames();
         foreach (var name in resourceNames)
         {
             if (name.ToLower().EndsWith(fileName.ToLower()))
@@ -152,7 +199,7 @@ public class InstallOffice
         if (!string.IsNullOrEmpty(resourceName))
         {
             var strReturn = "";
-            using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName))
+            using (var stream = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName))
             using (var reader = new StreamReader(stream))
             {
                 strReturn = reader.ReadToEnd();
@@ -165,11 +212,11 @@ public class InstallOffice
     public List<string> GetEmbeddedItems(string targetDirectory)
     {
         var returnFiles = new List<string>();
-        var assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetName().CodeBase);
+        var assemblyPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
         if (assemblyPath == null) return returnFiles;
 
         //var appRoot = new Uri(assemblyPath).LocalPath;
-        var assembly = Assembly.GetExecutingAssembly();
+        var assembly = System.Reflection.Assembly.GetExecutingAssembly();
         var assemblyName = assembly.GetName().Name;
 
         foreach (var resourceStreamName in assembly.GetManifestResourceNames())
@@ -358,6 +405,7 @@ public class InstallOffice
     public string GetExecutingScenario()
     {
         var mainRegPath = GetOfficeCtrRegPath();
+        if (mainRegPath == null) return null;
         var configKey = Registry.LocalMachine.OpenSubKey(mainRegPath);
         if (configKey == null) return null;
         var execScenario = configKey.GetValue("ExecutingScenario");
@@ -387,6 +435,86 @@ public class InstallOffice
         }
         return null;
     }
+
+    public string GetOdtErrorMessage()
+    {
+        var dirInfo = new DirectoryInfo(LoggingPath);
+        try
+        {
+
+            foreach (var file in dirInfo.GetFiles("*.log"))
+            {
+                using (var reader = new StreamReader(file.FullName))
+                {
+                    do
+                    {
+                        var found = false;
+                        var line = reader.ReadLine();
+                        if (!line.ToLower().Contains("Prereq::ShowPrereqFailure:".ToLower())) continue;
+
+                        var lineSplit = line.Split(':');
+                        foreach (var part in lineSplit)
+                        {
+                            if (found)
+                            {
+                                return part;
+                            }
+                            else
+                            {
+                                if (part.ToLower().Contains("showprereqfailure"))
+                                {
+                                    found = true;
+                                }
+                            }
+                        }
+                    } while (reader.Peek() > -1);
+                }
+
+            }
+        }
+        catch {}
+        finally
+        {
+            try
+            {
+                foreach (var file in dirInfo.GetFiles("*.log"))
+                {
+                    File.Copy(file.FullName, Environment.ExpandEnvironmentVariables(@"%temp%\" + file.Name), true);
+                }
+
+                if (Directory.Exists(LoggingPath))
+                {
+                    Directory.Delete(LoggingPath);
+                }
+            }
+            catch { }
+        }
+        return null;
+    }
+
+    private void SetLoggingPath(string xmlFilePath)
+    {
+        var tempPath = Environment.ExpandEnvironmentVariables("%temp%");
+        var logFolderName = Guid.NewGuid().ToString();
+        LoggingPath = tempPath + @"\" + logFolderName;
+
+        Directory.CreateDirectory(LoggingPath);
+
+        var xmlDoc = new XmlDocument();
+        xmlDoc.Load(xmlFilePath);
+
+        var loggingNode = xmlDoc.SelectSingleNode("/Configuration/Logging");
+        if (loggingNode == null)
+        {
+            loggingNode = xmlDoc.CreateElement("Logging");
+            xmlDoc.DocumentElement.AppendChild(loggingNode);
+        }
+
+        SetAttribute(loggingNode, "Path", LoggingPath);
+        xmlDoc.Save(xmlFilePath);
+    }
+
+    public string LoggingPath { get; set; }
 
     public CurrentOperation GetCurrentOperation(List<ExecutingScenario> executingTasks)
     {
@@ -436,8 +564,11 @@ public class InstallOffice
     public List<CmdArgument> GetArguments()
     {
         var returnList = new List<CmdArgument>();
+        var n = -1;
         foreach (var arg in Environment.GetCommandLineArgs())
         {
+            n++;
+            if (n == 0) continue;
             var key = arg;
             var value = "";
             if (arg.Contains("="))
@@ -496,6 +627,28 @@ public class InstallOffice
         return Beautify(doc);
     }
 
+    [DllImport("user32.dll")]
+    public static extern bool ShowWindow( IntPtr hWnd, int nCmdShow );
+
+    public const int SW_SHOWMINIMIZED = 2;
+
+    private void SetAttribute(XmlNode xmlNode, string name, string value)
+    {
+        var pathAttr = xmlNode.Attributes[name];
+        if (pathAttr == null)
+        {
+            pathAttr = _xmlDoc.CreateAttribute(name);
+            xmlNode.Attributes.Append(pathAttr);
+        }
+        pathAttr.Value = value;
+    }
+}
+
+public class ODTLogFile
+{
+    public string FilePath { get; set; }
+
+    public DateTime ModifiedTime { get; set; }
 }
 
 public enum CurrentOperation

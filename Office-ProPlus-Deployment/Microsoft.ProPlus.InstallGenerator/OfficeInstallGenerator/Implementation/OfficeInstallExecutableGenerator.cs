@@ -8,6 +8,8 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Micorosft.OfficeProPlus.ConfigurationXml.Enums;
+using Micorosft.OfficeProPlus.ConfigurationXml.Model;
 using Microsoft.CSharp;
 using Microsoft.OfficeProPlus.InstallGenerator;
 using Microsoft.OfficeProPlus.InstallGenerator.Implementation;
@@ -71,6 +73,14 @@ namespace OfficeInstallGenerator
                     fileContents = fileContents.Replace("//[assembly: AssemblyVersion(\"\")]",
                          "[assembly: AssemblyVersion(\"" + addNode.Version + "\")]");
                 }
+
+                if (configXml.ConfigurationXml.Logging == null)
+                {
+                    configXml.ConfigurationXml.Logging = new ODTLogging();
+                }
+
+                configXml.ConfigurationXml.Logging.Level = LoggingLevel.Standard;
+                configXml.ConfigurationXml.Logging.Path = "%temp%";
 
                 if (installProperties.SourceFilePath != null)
                 {

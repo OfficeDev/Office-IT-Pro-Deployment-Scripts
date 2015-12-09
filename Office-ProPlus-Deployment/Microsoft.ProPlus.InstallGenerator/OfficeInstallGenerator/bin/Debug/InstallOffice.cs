@@ -48,7 +48,7 @@ public class InstallOffice
             MinimizeWindow();
 
             var currentDirectory = Environment.ExpandEnvironmentVariables("%temp%");
-            installDir = currentDirectory + @"\Office365ProPlus";
+            installDir = currentDirectory + @"\OfficeProPlus";
 
             Directory.CreateDirectory(installDir);
             //Directory.CreateDirectory(Environment.ExpandEnvironmentVariables(@"%temp%\OfficeProPlus\LogFiles"));
@@ -124,7 +124,7 @@ public class InstallOffice
 
                 WaitForOfficeCtrUpadate();
 
-                var errorMessage = GetODTErrorMessage();
+                var errorMessage = GetOdtErrorMessage();
                 if (!string.IsNullOrEmpty(errorMessage))
                 {
                     Console.Error.WriteLine(errorMessage.Trim());
@@ -187,7 +187,7 @@ public class InstallOffice
     public string GetTextFileContents(string fileName)
     {
         var resourceName = "";
-        var resourceNames = Assembly.GetExecutingAssembly().GetManifestResourceNames();
+        var resourceNames = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceNames();
         foreach (var name in resourceNames)
         {
             if (name.ToLower().EndsWith(fileName.ToLower()))
@@ -199,7 +199,7 @@ public class InstallOffice
         if (!string.IsNullOrEmpty(resourceName))
         {
             var strReturn = "";
-            using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName))
+            using (var stream = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName))
             using (var reader = new StreamReader(stream))
             {
                 strReturn = reader.ReadToEnd();
@@ -212,11 +212,11 @@ public class InstallOffice
     public List<string> GetEmbeddedItems(string targetDirectory)
     {
         var returnFiles = new List<string>();
-        var assemblyPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetName().CodeBase);
+        var assemblyPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
         if (assemblyPath == null) return returnFiles;
 
         //var appRoot = new Uri(assemblyPath).LocalPath;
-        var assembly = Assembly.GetExecutingAssembly();
+        var assembly = System.Reflection.Assembly.GetExecutingAssembly();
         var assemblyName = assembly.GetName().Name;
 
         foreach (var resourceStreamName in assembly.GetManifestResourceNames())
@@ -436,36 +436,58 @@ public class InstallOffice
         return null;
     }
 
-    public string GetODTErrorMessage()
+    public string GetOdtErrorMessage()
     {
         var dirInfo = new DirectoryInfo(LoggingPath);
-        foreach (var file in dirInfo.GetFiles("*.log"))
+        try
         {
-            using (var reader = new StreamReader(file.FullName))
-            {
-                do
-                {
-                    var found = false;
-                    var line = reader.ReadLine();
-                    if (!line.ToLower().Contains("Prereq::ShowPrereqFailure:".ToLower())) continue;
 
-                    var lineSplit = line.Split(':');
-                    foreach (var part in lineSplit)
+            foreach (var file in dirInfo.GetFiles("*.log"))
+            {
+                using (var reader = new StreamReader(file.FullName))
+                {
+                    do
                     {
-                        if (found)
+                        var found = false;
+                        var line = reader.ReadLine();
+                        if (!line.ToLower().Contains("Prereq::ShowPrereqFailure:".ToLower())) continue;
+
+                        var lineSplit = line.Split(':');
+                        foreach (var part in lineSplit)
                         {
-                            return part;
-                        }
-                        else
-                        {
-                            if (part.ToLower().Contains("showprereqfailure"))
+                            if (found)
                             {
-                                found = true;
-                            }  
+                                return part;
+                            }
+                            else
+                            {
+                                if (part.ToLower().Contains("showprereqfailure"))
+                                {
+                                    found = true;
+                                }
+                            }
                         }
-                    }
-                } while (reader.Peek() > -1);
+                    } while (reader.Peek() > -1);
+                }
+
             }
+        }
+        catch {}
+        finally
+        {
+            try
+            {
+                foreach (var file in dirInfo.GetFiles("*.log"))
+                {
+                    File.Copy(file.FullName, Environment.ExpandEnvironmentVariables(@"%temp%\" + file.Name), true);
+                }
+
+                if (Directory.Exists(LoggingPath))
+                {
+                    Directory.Delete(LoggingPath);
+                }
+            }
+            catch { }
         }
         return null;
     }
@@ -482,6 +504,12 @@ public class InstallOffice
         xmlDoc.Load(xmlFilePath);
 
         var loggingNode = xmlDoc.SelectSingleNode("/Configuration/Logging");
+        if (loggingNode == null)
+        {
+            loggingNode = xmlDoc.CreateElement("Logging");
+            xmlDoc.DocumentElement.AppendChild(loggingNode);
+        }
+
         SetAttribute(loggingNode, "Path", LoggingPath);
         xmlDoc.Save(xmlFilePath);
     }

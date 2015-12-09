@@ -30,6 +30,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OfficeProPlusInstallGenerat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.OfficeProPlus.Downloader", "Microsoft.OfficeProPlus.Downloader\Microsoft.OfficeProPlus.Downloader.csproj", "{EA30B98D-401B-46EE-BA77-31EFC287E9AF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.OfficeProPlus.MSIGen", "Microsoft.OfficeProPlus.MSIGen\Microsoft.OfficeProPlus.MSIGen.csproj", "{57E3E5C7-FF48-4538-8B90-5AB106D87C6D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -68,6 +70,10 @@ Global
 		{EA30B98D-401B-46EE-BA77-31EFC287E9AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EA30B98D-401B-46EE-BA77-31EFC287E9AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EA30B98D-401B-46EE-BA77-31EFC287E9AF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{57E3E5C7-FF48-4538-8B90-5AB106D87C6D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{57E3E5C7-FF48-4538-8B90-5AB106D87C6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{57E3E5C7-FF48-4538-8B90-5AB106D87C6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{57E3E5C7-FF48-4538-8B90-5AB106D87C6D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -78,5 +84,6 @@ Global
 		{56E8080F-FFEB-47CD-ADB9-92245F92565B} = {5B15E1D7-8BC7-4388-A02A-346BCEB9B089}
 		{4DFCB792-F97F-461C-81B1-AFB177A550A7} = {5B15E1D7-8BC7-4388-A02A-346BCEB9B089}
 		{EA30B98D-401B-46EE-BA77-31EFC287E9AF} = {6676105C-F83B-4B9F-B055-7056C8695E8A}
+		{57E3E5C7-FF48-4538-8B90-5AB106D87C6D} = {6676105C-F83B-4B9F-B055-7056C8695E8A}
 	EndGlobalSection
 EndGlobal

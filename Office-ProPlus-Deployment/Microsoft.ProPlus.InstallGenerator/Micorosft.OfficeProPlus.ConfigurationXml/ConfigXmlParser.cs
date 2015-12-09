@@ -48,6 +48,7 @@ namespace OfficeInstallGenerator
                 SaveUpdates();
                 SaveDisplay();
                 SaveProperties();
+                SaveLogging();
                 
                 return _xmlDoc.OuterXml;
             }
@@ -67,6 +68,8 @@ namespace OfficeInstallGenerator
             LoadUpdates();
 
             LoadDisplay();
+
+            LoadLogging();
         }
 
         private void LoadAdds()
@@ -551,6 +554,35 @@ namespace OfficeInstallGenerator
                 }
             }
         }
+
+        private void SaveLogging()
+        {
+            var loggingNode = _xmlDoc.DocumentElement.SelectSingleNode("./Logging");
+            if (loggingNode == null)
+            {
+                loggingNode = _xmlDoc.CreateElement("Logging");
+                _xmlDoc.DocumentElement.AppendChild(loggingNode);
+            }
+
+            if (!string.IsNullOrEmpty(this.ConfigurationXml.Logging.Level.ToString()))
+            {
+                SetAttribute(loggingNode, "Level", this.ConfigurationXml.Logging.Level.ToString());
+            }
+            else
+            {
+                RemoveAttribute(loggingNode, "Level");
+            }
+
+            if (!string.IsNullOrEmpty(this.ConfigurationXml.Logging.Path))
+            {
+                SetAttribute(loggingNode, "Path", this.ConfigurationXml.Logging.Path);
+            }
+            else
+            {
+                RemoveAttribute(loggingNode, "Path");
+            }
+        }
+
 
 
         private void SetAttribute(XmlNode xmlNode, string name, string value)

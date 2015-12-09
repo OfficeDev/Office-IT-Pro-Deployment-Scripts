@@ -91,7 +91,9 @@
         </member>
         <member name="F:WixSharp.Action.Impersonate">
             <summary>
-            This attribute specifies whether the Windows Installer, which executes as LocalSystem, should impersonate the user context of the installing user when executing this custom action. Typically the value should be <c>true</c>, except when the custom action needs elevated privileges to apply changes to the machine.
+            This attribute specifies whether the Windows Installer, which executes as LocalSystem, should impersonate the user context of the
+            installing user when executing this custom action. Typically the value should be <c>true</c>, except when the custom action needs 
+            elevated privileges to apply changes to the machine.
             </summary>
         </member>
         <member name="F:WixSharp.Action.Sequence">
@@ -610,9 +612,9 @@
             <summary>
             Binds the LaunchCondition to the <c>version</c> condition based on WiXNetFxExtension properties.
             <para>The typical conditions are:</para>
-            <para>   NETFRAMEWORK20="#1"</para>
-            <para>   NETFRAMEWORK40FULL="#1"</para>
-            <para>   NETFRAMEWORK35="#1"</para>
+            <para>   NETFRAMEWORK20='#1'</para>
+            <para>   NETFRAMEWORK40FULL='#1'</para>
+            <para>   NETFRAMEWORK35='#1'</para>
             <para>   NETFRAMEWORK30_SP_LEVEL and NOT NETFRAMEWORK30_SP_LEVEL='#0'</para>
             <para>   ...</para>
             The full list of names and values can be found here http://wixtoolset.org/documentation/manual/v3/customactions/wixnetfxextension.html
@@ -854,7 +856,7 @@
         </member>
         <member name="F:WixSharp.AutoElements.DisableAutoKeyPath">
             <summary>
-            The disable automatic insertion of <c>KeyPath=yes</c> attribute for the Component element.
+            Disables automatic insertion of <c>KeyPath=yes</c> attribute for the Component element.
             Required for: NativeBootstrapper, EmbeddedMultipleActions,  EmptyDirectories, InstallDir, Properties,
             ReleaseFolder, Shortcuts and WildCardFiles samples.
             <para>Can also be managed by disabling ICE validation via Light.exe command line arguments.</para>
@@ -863,6 +865,11 @@
             See: http://stackoverflow.com/questions/10358989/wix-using-keypath-on-components-directories-files-registry-etc-etc 
             for some background info.
             </para>
+            </summary>
+        </member>
+        <member name="F:WixSharp.AutoElements.ForceCDataForConditions">
+            <summary>
+            Forces all <see cref="T:WixSharp.Condition"/> values to be always encoded as CDATA.
             </summary>
         </member>
         <member name="F:WixSharp.AutoElements.DisableAutoUserProfileRegistry">
@@ -2082,6 +2089,17 @@
             <param name="embeddedUI">if set to <c>true</c> the assembly as an 'EmbeddedUI' assembly.</param>
             <returns>Package file path.</returns>
         </member>
+        <member name="T:WixSharp.Compiler.ToolsOutputReceivedEventHandler">
+            <summary>
+            Delegate for receiving WiX tools output (e.g. compiler/linker).
+            </summary>
+            <param name="data">The data.</param>
+        </member>
+        <member name="E:WixSharp.Compiler.ToolsOutputReceived">
+            <summary>
+            Occurs when WiX tools (e.g. compiler/linker) output received.
+            </summary>
+        </member>
         <member name="T:WixSharp.Compiler.Wildcard">
             <summary>
             Represents a wildcard running on the
@@ -2112,6 +2130,83 @@
             </summary>
             <param name="pattern">The wildcard pattern to convert.</param>
             <returns>A regex equivalent of the given wildcard.</returns>
+        </member>
+        <member name="T:WixSharp.FontFile">
+             <summary>
+             Defines file to be installed.
+             </summary>
+             
+            <example>The following is an example of installing <c>MyApp.exe</c> file.
+            <code>
+             var project = 
+                     new Project("MyProduct",
+                         new Dir(@"%ProgramFiles%\My Company\My Product",
+                             new File("readme.txt")),
+                         new Dir("%Fonts%",
+                             new FontFile("FreeSansBold.ttf")));
+                     ...
+                     
+             project.BuildMsi();
+             </code>
+             </example>
+        </member>
+        <member name="M:WixSharp.FontFile.ToString">
+            <summary>
+            Returns a <see cref="T:System.String"/> that represents the <see cref="T:WixSharp.FontFile"/>.
+            <para>This property is designed to produce a friendlier string representation of the <see cref="T:WixSharp.FontFile"/>
+            for debugging purposes.</para>
+            </summary>
+            <returns>
+            A <see cref="T:System.String"/> that represents the <see cref="T:WixSharp.FontFile"/>.
+            </returns>
+        </member>
+        <member name="M:WixSharp.FontFile.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:WixSharp.FontFile"/> class.
+            </summary>
+        </member>
+        <member name="M:WixSharp.FontFile.#ctor(WixSharp.Feature,System.String)">
+            <summary>
+            Creates instance of the <see cref="T:WixSharp.FontFile"></see> class with properties initialized with specified parameters.
+            </summary>
+            <param name="feature"><see cref="T:WixSharp.Feature"></see> the file should be included in.</param>
+            <param name="sourcePath">Relative path to the file to be taken for building the MSI.</param>
+        </member>
+        <member name="P:WixSharp.FontFile.TrueType">
+            <summary>
+            Gets or sets a value indicating whether the font file is a TrueType font. Default value is <c>true</c>
+            <para>Causes an entry to be generated for the file in the Font table with no FontTitle specified. This attribute is intended to be used to register the file as a TrueType font.</para>
+            </summary>
+            <value><c>true</c> if TrueType font otherwise, <c>false</c>.</value>
+        </member>
+        <member name="P:WixSharp.FontFile.FontTitle">
+            <summary>
+            Gets or sets the font title.
+            <para>Causes an entry to be generated for the file in the Font 
+            table with the specified FontTitle. This attribute is intended to be used to register the file as a non-TrueType font.</para>
+            </summary>
+            <value>The font title.</value>
+        </member>
+        <member name="M:WixSharp.FontFile.#ctor(WixSharp.Id,WixSharp.Feature,System.String)">
+            <summary>
+            Creates instance of the <see cref="T:WixSharp.FontFile"></see> class with properties initialized with specified parameters.
+            </summary>
+            <param name="id">The explicit <see cref="T:WixSharp.Id"></see> to be associated with <see cref="T:WixSharp.FontFile"/> instance.</param>
+            <param name="feature"><see cref="T:WixSharp.Feature"></see> the file should be included in.</param>
+            <param name="sourcePath">Relative path to the file to be taken for building the MSI.</param>
+        </member>
+        <member name="M:WixSharp.FontFile.#ctor(System.String)">
+            <summary>
+            Creates instance of the <see cref="T:WixSharp.FontFile"></see> class with properties initialized with specified parameters.
+            </summary>
+            <param name="sourcePath">Relative path to the file to be taken for building the MSI.</param>
+        </member>
+        <member name="M:WixSharp.FontFile.#ctor(WixSharp.Id,System.String)">
+            <summary>
+            Creates instance of the <see cref="T:WixSharp.FontFile"></see> class with properties initialized with specified parameters.
+            </summary>
+            <param name="id">The explicit <see cref="T:WixSharp.Id"></see> to be associated with <see cref="T:WixSharp.FontFile"/> instance.</param>
+            <param name="sourcePath">Relative path to the file to be taken for building the MSI.</param>
         </member>
         <member name="T:WixSharp.MajorUpgrade">
             <summary>
@@ -2802,6 +2897,13 @@
             definition are the same as for <see cref="P:WixSharp.WixEntity.AttributesDefinition"/>.</param>
             <returns></returns>
         </member>
+        <member name="M:WixSharp.Extensions.ToXAttributes(System.String)">
+            <summary>
+            Converts AttributesDefinition into XAttribute array. Rules of the composing the
+            definition are the same as for <see cref="P:WixSharp.WixEntity.AttributesDefinition"/>
+            </summary>
+            <param name="attributesDefinition">The attributes definition.</param>
+        </member>
         <member name="M:WixSharp.Extensions.SetAttribute(System.Xml.Linq.XElement,System.String,System.Object)">
             <summary>
             Sets the value of the attribute. This is a fluent version of XElement.SetAttributeValue. 
@@ -2995,6 +3097,13 @@
             Safely converts string to IntPtr.
             </summary>
             <param name="value">The value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:WixSharp.Extensions.ToXValue(System.Object)">
+            <summary>
+            Returns the string data as a <see cref="T:System.Xml.Linq.XCData"/> if the value contains 
+            XML tags begin and end characters and it is not already a CDATA expression.
+            </summary>
             <returns></returns>
         </member>
         <member name="M:WixSharp.Extensions.ToLcidList(System.String)">
@@ -3239,6 +3348,28 @@
             <param name="parentElement">The parent element.</param>
             <returns></returns>
         </member>
+        <member name="M:WixSharp.Extensions.AddWixFragment(System.Xml.Linq.XElement,System.Xml.Linq.XElement[])">
+            <summary>
+            Adds the specified XML content as a WiX Fragment/FragmentRef elements combination.
+            </summary>
+            <param name="element">The element the reference to the fragment should bel placed at.</param>
+            <param name="content">The fragment content.</param>
+            <returns></returns>
+        </member>
+        <member name="M:WixSharp.Extensions.IncludeWixExtension(WixSharp.WixProject,WixSharp.WixExtension)">
+            <summary>
+            Adds the specified extension to  <see cref="T:WixSharp.WixProject"/>
+            </summary>
+            <param name="extension">The extension.</param>
+        </member>
+        <member name="M:WixSharp.Extensions.IncludeWixExtension(WixSharp.WixProject,System.String,System.String,System.String)">
+            <summary>
+            Adds the specified extension to  <see cref="T:WixSharp.WixProject" />
+            </summary>
+            <param name="extensionAssembly">The extension assembly.</param>
+            <param name="namespacePrefix">The namespace prefix.</param>
+            <param name="namespace">The namespace.</param>
+        </member>
         <member name="M:WixSharp.Extensions.FindSingle(System.Xml.Linq.XContainer,System.String)">
             <summary>
             Selects single descendant element with a given name (LocalName). Throws if no or more then one match found
@@ -3372,6 +3503,10 @@
         <member name="M:WixSharp.Extensions.IsInstalled(Microsoft.Deployment.WindowsInstaller.Session)">
             <summary>
             Determines whether the product associated with the session is installed.
+            <para>
+            This method will fail to retrieve the correct value if called from the deferred custom action and the session properties
+            that it depends on are not preserved with 'UsesProperties' or 'DefaultUsesProperties'.
+            </para>
             </summary>
             <param name="session">The session.</param>
             <returns></returns>
@@ -3379,6 +3514,10 @@
         <member name="M:WixSharp.Extensions.IsInstalling(Microsoft.Deployment.WindowsInstaller.Session)">
             <summary>
             Gets a value indicating whether the product is being installed.
+            <para>
+            This method will fail to retrieve the correct value if called from the deferred custom action and the session properties
+            that it depends on are not preserved with 'UsesProperties' or 'DefaultUsesProperties'.
+            </para>
             </summary>
             <value>
             <c>true</c> if installing; otherwise, <c>false</c>.
@@ -3386,12 +3525,20 @@
         </member>
         <member name="M:WixSharp.Extensions.IsRepairing(Microsoft.Deployment.WindowsInstaller.Session)">
             <summary>
-            Gets a value indicating whether the product is being repaired.
+            Gets a value indicating whether the product is being repaired. 
+            <para>
+            This method will fail to retrieve the correct value if called from the deferred custom action and the session properties
+            that it depends on are not preserved with 'UsesProperties' or 'DefaultUsesProperties'.
+            </para>
             </summary>
         </member>
         <member name="M:WixSharp.Extensions.IsModifying(Microsoft.Deployment.WindowsInstaller.Session)">
             <summary>
             Determines whether MSI is running in "modifying" mode.
+            <para>
+            This method will fail to retrieve the correct value if called from the deferred custom action and the session properties
+            that it depends on are not preserved with 'UsesProperties' or 'DefaultUsesProperties'.
+            </para>
             </summary>
             <param name="session">The session.</param>
             <returns></returns>
@@ -3399,8 +3546,10 @@
         <member name="M:WixSharp.Extensions.IsUninstalling(Microsoft.Deployment.WindowsInstaller.Session)">
             <summary>
             Determines whether MSI is running in "uninstalling" mode.
-            </summary>
-            <summary>
+            <para>
+            This method will fail to retrieve the correct value if called from the deferred custom action and the session properties
+            that it depends on are not preserved with 'UsesProperties' or 'DefaultUsesProperties'.
+            </para>
             </summary>
             <param name="session">The session.</param>
             <returns></returns>
@@ -3409,6 +3558,10 @@
             <summary>
             Determines whether the feature is selected in the feature tree of the Features dialog
             and will be installed.
+            <para>
+            This method will fail to retreive the correct value if called from the deferred custom action and the session properties
+            that it depends on are not preserved with 'UsesProperties' or 'DefaultUsesProperties'.
+            </para>
             </summary>
             <param name="session">The session.</param>
             <param name="featureName">Name of the feature.</param>
@@ -4394,20 +4547,6 @@
             <para>Note: if <see cref="T:WixSharp.Compiler"/> fails to build MSI the <c>PreserveTempFiles</c>
             value is ignored and all temporary files are preserved.</para>
             </summary>
-        </member>
-        <member name="M:WixSharp.WixProject.IncludeWixExtension(WixSharp.WixExtension)">
-            <summary>
-            Adds the specified extension to  <see cref="T:WixSharp.WixProject"/>
-            </summary>
-            <param name="extension">The extension.</param>
-        </member>
-        <member name="M:WixSharp.WixProject.IncludeWixExtension(System.String,System.String,System.String)">
-            <summary>
-            Adds the specified extension to  <see cref="T:WixSharp.WixProject" />
-            </summary>
-            <param name="extensionAssembly">The extension assembly.</param>
-            <param name="namespacePrefix">The namespace prefix.</param>
-            <param name="namespace">The namespace.</param>
         </member>
         <member name="T:WixSharp.Controls.Control">
             <summary>
@@ -5561,37 +5700,37 @@
             <param name="location">The directory where the shortcut should be installed.</param>
         </member>
         <member name="T:WixSharp.LaunchCondition">
-            <summary>
-            Defines WiX <c>Condition</c>. <c>Condition</c> is normally associated with <c>CustomActions</c> or WiX elements (e.g. <c>Shortcut</c>). 
-            <para>
-            <see cref="T:WixSharp.Condition"/> is nothing else but an XML friendly string wrapper, containing 
-            some predefined (commonly used) condition values. You can either use one of the 
-            predefined condition values (static members) or define your by specifying full string representation of 
-            the required WiX condition when calling the constructor or static method <c>Create</c>.
-            </para>
-            </summary>
-            <example>The following is an example of initializing the Shortcut.<see cref="F:WixSharp.Shortcut.Condition"/>  
-            with custom value <c>INSTALLDESKTOPSHORTCUT="yes"</c> and 
-            the InstalledFileAction.<see cref="T:WixSharp.InstalledFileAction.Condition"/> with perefined value <c>NOT_Installed</c>:
-            <code>
-            var project =
-                new Project("My Product",
-                ...
-                new Dir(@"%Desktop%",
-                    new WixSharp.Shortcut("MyApp", "[INSTALL_DIR]MyApp.exe", "")
-                    {
-                       Condition = new Condition("INSTALLDESKTOPSHORTCUT=\"yes\"") 
-                    }),
-                    
-                new InstalledFileAction("MyApp.exe", "", 
-                                         Return.check, 
-                                         When.After, 
-                                         Step.InstallFinalize, 
-                                         Condition.NOT_Installed),
-                    ...
-                    
-            </code>
-            </example>
+             <summary>
+             Defines WiX <c>Condition</c>. <c>Condition</c> is normally associated with <c>CustomActions</c> or WiX elements (e.g. <c>Shortcut</c>).
+             <para>
+             <see cref="T:WixSharp.Condition"/> is nothing else but an XML friendly string wrapper, containing
+             some predefined (commonly used) condition values. You can either use one of the
+             predefined condition values (static members) or define your by specifying full string representation of
+             the required WiX condition when calling the constructor or static method <c>Create</c>.
+             </para>
+             </summary>
+             <example>The following is an example of initializing the Shortcut.<see cref="F:WixSharp.Shortcut.Condition"/>
+             with custom value <c>INSTALLDESKTOPSHORTCUT="yes"</c> and
+             the InstalledFileAction.<see cref="T:WixSharp.InstalledFileAction.Condition"/> with perefined value <c>NOT_Installed</c>:
+             <code>
+             var project =
+                 new Project("My Product",
+                 ...
+                 new Dir(@"%Desktop%",
+                     new WixSharp.Shortcut("MyApp", "[INSTALL_DIR]MyApp.exe", "")
+                     {
+                        Condition = new Condition("INSTALLDESKTOPSHORTCUT=\"yes\"")
+                     }),
+            
+                 new InstalledFileAction("MyApp.exe", "",
+                                          Return.check,
+                                          When.After,
+                                          Step.InstallFinalize,
+                                          Condition.NOT_Installed),
+                     ...
+            
+             </code>
+             </example>
         </member>
         <member name="M:WixSharp.LaunchCondition.#ctor">
             <summary>
@@ -5619,7 +5758,7 @@
              <remarks> Normally <c>Condition</c> is not designed to be parsed by the XML parser thus it should be embedded as CDATA</remarks>
             <code>
             &lt;Condition&gt;&lt;![CDATA[NETFRAMEWORK20="#0"]]&gt;&lt;/Condition&gt;
-            </code> 
+            </code>
             </summary>
             <returns>A CDATA string representing the condition.</returns>
         </member>
@@ -5683,6 +5822,18 @@
             Called when MSI execution progress is changed.
             </summary>
             <param name="progressPercentage">The progress percentage.</param>
+        </member>
+        <member name="T:WixSharp.IShellView">
+            <summary>
+            The interface representing main window of the embedded UI.
+            </summary>
+        </member>
+        <member name="M:WixSharp.IShellView.SetSize(System.Int32,System.Int32)">
+            <summary>
+            Sets the size of the main window of the embedded UI.
+            </summary>
+            <param name="width">The width.</param>
+            <param name="height">The height.</param>
         </member>
         <member name="T:WixSharp.IManagedUIShell">
             <summary>
@@ -5751,7 +5902,6 @@
             <summary>
             Moves to the UI Dialog by the specified index in the <see cref="T:WixSharp.IManagedUIShell.Dialogs"/> sequence.
             </summary>
-            <param name="index">The index.</param>
         </member>
         <member name="M:WixSharp.IManagedUIShell.Cancel">
             <summary>
@@ -5915,6 +6065,18 @@
             <param name="name">The name of the project. Typically it is the name of the product to be installed.</param>
             <param name="items">The project installable items (e.g. directories, files, registry keys, Custom Actions).</param>
         </member>
+        <member name="P:WixSharp.ManagedProject.MinimalCustomDrawing">
+            <summary>
+            Gets or sets a value indicating whether the full or reduced custom drawing algorithm should be used for rendering the Features dialog 
+            tree view control. The reduced algorithm involves no manual positioning of the visual elements so it handles better custom screen resolutions.
+            However it also leads to the slightly less intuitive tree view item appearance.
+            <para>Reduced custom drawing will render disabled tree view items with the text grayed out.</para>
+            <para>Full custom drawing will render disabled tree view items with the checkbox grayed out.</para>
+            </summary>
+            <value>
+            <c>true</c> (default) if custom drawing should be reduced otherwise, <c>false</c>.
+            </value>
+        </member>
         <member name="T:WixSharp.ManagedProject.SetupEventHandler">
             <summary>
             Event handler of the ManagedSetup for the MSI runtime events.
@@ -5923,7 +6085,16 @@
         </member>
         <member name="E:WixSharp.ManagedProject.UIInitialized">
             <summary>
-            Occurs on EmbeddedUI initialized but before first dialog is displayed. It is only invoked if ManagedUI is set.
+            Occurs on EmbeddedUI initialized but before the first dialog is displayed. It is only invoked if ManagedUI is set.
+            </summary>
+        </member>
+        <member name="E:WixSharp.ManagedProject.UILoaded">
+            <summary>
+            Occurs on EmbeddedUI loaded and ShellView (main window) is displayed but before first dialog is positioned within ShellView. 
+            It is only invoked if ManagedUI is set.
+            <para>Note that this event is fired on the loading the UI main window thus it's not a good stage for any decision regarding 
+            aborting/continuing the whole setup process. That is UILoaded event will ignore any value set to SetupEventArgs.Result by the user.
+            </para>
             </summary>
         </member>
         <member name="E:WixSharp.ManagedProject.Load">
@@ -5947,7 +6118,7 @@
             replaced by managed ones.
             </summary>
         </member>
-        <member name="F:WixSharp.ManagedProject.DefaultDeferredProperties">
+        <member name="P:WixSharp.ManagedProject.DefaultDeferredProperties">
             <summary>
             The default properties mapped for use with the deferred custom actions. See <see cref="F:WixSharp.ManagedAction.UsesProperties"/> for the details.
             <para>The default value is "INSTALLDIR,UILevel"</para>
@@ -6033,6 +6204,13 @@
             The UI level.
             </value>
         </member>
+        <member name="F:WixSharp.SetupEventArgs.ManagedUIShell">
+            <summary>
+            The managed UI main window object. It is a main System.Windows.Forms.Form window of the standard Wix# embedded UI.
+            <para>This member is only populated when it is handled by the <see cref="T:WixSharp.ManagedProject.UILoaded"/> event handler.
+            It has the default <c>null</c> value for all other events.</para>   
+            </summary>
+        </member>
         <member name="P:WixSharp.SetupEventArgs.IsElevated">
             <summary>
             Gets a value indicating whether the event handler is executed from the elevated context.
@@ -6103,6 +6281,14 @@
             </summary>
             <value>
             The install dir.
+            </value>
+        </member>
+        <member name="P:WixSharp.SetupEventArgs.IsManagedUISession">
+            <summary>
+            Gets a value indicating whether this session is started via ManagedUI.
+            </summary>
+            <value>
+            <c>true</c> if this session is a managed UI session; otherwise, <c>false</c>.
             </value>
         </member>
         <member name="P:WixSharp.SetupEventArgs.Data">
@@ -6582,6 +6768,15 @@
         <member name="M:WixSharp.Condition.op_Implicit(WixSharp.Condition)~System.String">
             <summary>
             Performs an implicit conversion from <see cref="T:WixSharp.Condition"/> to <see cref="T:System.String"/>.
+            </summary>
+            <param name="obj">The object.</param>
+            <returns>
+            The result of the conversion.
+            </returns>
+        </member>
+        <member name="M:WixSharp.Condition.op_Implicit(System.String)~WixSharp.Condition">
+            <summary>
+            Performs an implicit conversion from <see cref="T:System.String"/> to <see cref="T:WixSharp.Condition"/>.
             </summary>
             <param name="obj">The object.</param>
             <returns>
@@ -7760,7 +7955,7 @@
         </member>
         <member name="F:WixSharp.ManagedAction.UsesProperties">
             <summary>
-            Comma separated list of properties which the custom action is intended to use. Set this property if you are implementing the deferred action. 
+            Comma separated list of properties which the custom action is intended to use. Set this property if you are implementing the 'deferred' (as well as 'rollback'  and 'commit')  action. 
             <remarks>
             <para>Deferred custom actions cannot access any session property as the session is terminated at the time of the action execution (limitation of MSI).
             The standard way of overcoming this limitation is to create a new custom action for setting the property, set the property name to the name of the deferred action,
@@ -7800,7 +7995,7 @@
         </member>
         <member name="F:WixSharp.ManagedAction.DefaultUsesProperties">
             <summary>
-            The default properties mapped for use with the deferred custom actions. See <see cref="F:WixSharp.ManagedAction.UsesProperties"/> for the details.
+            The default properties mapped for use with the 'deferred' (as well as 'rollback'  and 'commit') custom actions. See <see cref="F:WixSharp.ManagedAction.UsesProperties"/> for the details.
             <para>The default value is "INSTALLDIR,UILevel"</para>
             </summary>
         </member>
@@ -8110,6 +8305,10 @@
              Defines Major Upgrade behavior. By default it is <c>null</c> thus upgrade is not supported.
              <para>If you need to implement Major Upgrade define this member to appropriate 
              <see cref="F:WixSharp.Project.MajorUpgradeStrategy"/> instance.</para>
+             <para><c>Note</c>: <see cref="F:WixSharp.Project.MajorUpgradeStrategy"/> yields WiX UpgradeVersion element, which is arguably the most comprehensive
+             upgrade definition. However in the later versions of WiX a simplified upgrade definition has bee introduced. It relies 
+             on MajorUpgrade WiX element. For most of the upgrade scenarios you will find MajorUpgrade allows achieve the same result with 
+             much less effort. Wix# supports MajorUpgrade element via  <see cref="F:WixSharp.Project.MajorUpgrade"/> member.</para>
              </summary>
             <example>The following is an example of building product MSI with auto uninstalling any older version of the product 
             and preventing downgrading.
@@ -8504,6 +8703,14 @@
         <member name="F:WixSharp.Property.Value">
             <summary>
             The initial value of the property.
+            </summary>
+        </member>
+        <member name="F:WixSharp.Property.IsDeferred">
+            <summary>
+            The flag indicating if the property needs to be 'preserved' for use with the deferred custom actions.
+            <para>
+            Setting this flag to 'true' has the same effect as adding the property name to <see cref="F:WixSharp.ManagedAction.UsesProperties"/>.
+            </para>
             </summary>
         </member>
         <member name="M:WixSharp.Property.ToString">
