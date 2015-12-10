@@ -245,6 +245,11 @@ namespace MetroDemo.ExampleViews
             {
                 var configXml = GlobalObjects.ViewModel.ConfigXmlParser;
 
+                if (!string.IsNullOrEmpty(GlobalObjects.ViewModel.ImportFile))
+                {
+                    FileSavePath.Text = GlobalObjects.ViewModel.ImportFile;
+                }
+
                 if (!string.IsNullOrEmpty(configXml.Xml))
                 {
                     xmlBrowser.XmlDoc = configXml.Xml;

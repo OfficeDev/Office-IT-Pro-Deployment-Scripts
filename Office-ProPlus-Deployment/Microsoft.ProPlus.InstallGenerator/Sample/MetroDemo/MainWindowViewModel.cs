@@ -274,6 +274,17 @@ namespace MetroDemo
 
         public bool UseSameLanguagesForAllProducts { get; set; }
 
+        private string _importFile = "";
+        public string ImportFile
+        {
+            get { return _importFile; }
+            set
+            {
+                _importFile = value;
+                RaisePropertyChanged("ImportFile");
+            }
+        }
+
         private bool _silentInstall = false;
         public bool SilentInstall
         {

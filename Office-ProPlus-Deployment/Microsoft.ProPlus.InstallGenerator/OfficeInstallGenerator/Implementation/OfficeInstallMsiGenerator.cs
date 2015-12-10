@@ -37,7 +37,8 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
                     ProgramFiles = new List<string>()
                     {
                         installProperties.ConfigurationXmlPath
-                    }
+                    },
+                    ProductId = new Guid("8AA11E8A-A882-45CC-B52C-80149B4CF47A")
                 });
 
                 var installDirectory = new OfficeInstallReturn

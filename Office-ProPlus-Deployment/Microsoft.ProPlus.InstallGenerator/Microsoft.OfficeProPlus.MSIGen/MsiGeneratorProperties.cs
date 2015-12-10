@@ -18,7 +18,9 @@ namespace Microsoft.OfficeProPlus.InstallGenerator
 
         public string Manufacturer { get; set; }
 
-        public List<string> ProgramFiles { get; set; } 
+        public List<string> ProgramFiles { get; set; }
+
+        public Guid ProductId { get; set; }
 
     }
 }

@@ -9,6 +9,8 @@ using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using Microsoft.Deployment.WindowsInstaller;
 using Microsoft.OfficeProPlus.InstallGenerator;
+using Microsoft.Win32;
+using RegistryReader;
 using WixSharp;
 using System;
 using File = WixSharp.File;
@@ -20,12 +22,12 @@ public class MsiGenerator
     {
         var project = new ManagedProject(installProperties.Name)
         {
-            UI = WUI.WixUI_ProgressOnly,
+            UI = WUI.WixUI_Minimal,
             Actions = new WixSharp.Action[]
             {
                 new SetPropertyAction("InstallDirectory", installProperties.ProgramFilesPath),
                 new ElevatedManagedAction("InstallOffice", Return.check, When.After, Step.InstallFiles, Condition.NOT_Installed), 
-                new ElevatedManagedAction("UninstallOffice", Return.check, When.After, Step.InstallFiles, Condition.Installed), 
+                new ElevatedManagedAction("UninstallOffice", Return.check, When.Before, Step.RemoveFiles, Condition.BeingRemoved), 
             },
             Properties = new[] 
             { 
@@ -46,7 +48,7 @@ public class MsiGenerator
             new Dir(installProperties.ProgramFilesPath, files.ToArray())
         };
 
-        project.GUID = Guid.NewGuid();
+        project.GUID = installProperties.ProductId;
         project.ControlPanelInfo = new ProductInfo() {Manufacturer = "Microsoft Corporation"};
         project.OutFileName = installProperties.MsiPath;
 
@@ -79,9 +81,13 @@ public class MsiGenerator
             if (errorMessage != null)
             {
                 //MessageBox.Show(errorMessage);
-                e.Result = ActionResult.Failure;
-                return;
+                //e.Result = ActionResult.Failure;
+                //return;
             }
+        }
+        else if (e.IsRepairing)
+        {
+            RepairOffice(e);
         }
 
         e.Result = ActionResult.Success;
@@ -147,6 +153,51 @@ public class MsiGenerator
         return null;
     }
 
+    public void RepairOffice(SetupEventArgs e)
+    {
+        string officePath = null;
+
+        const string regPath = @"SOFTWARE\Microsoft\Office\ClickToRun\Configuration";
+
+        var officeRegKey = Registry.LocalMachine.OpenSubKey(regPath);
+        if (officeRegKey != null)
+        {
+            officePath = officeRegKey.GetValue("ClientFolder").ToString();
+        }
+        else
+        {
+            officePath = RegistryWOW6432.GetRegKey64(RegHive.HKEY_LOCAL_MACHINE, regPath, "ClientFolder") ??
+                         RegistryWOW6432.GetRegKey32(RegHive.HKEY_LOCAL_MACHINE, regPath, "ClientFolder");
+        }
+
+        if (officePath == null)
+        {
+            e.Result = ActionResult.Success;
+            return;
+        }
+
+        var officeFilePath = officePath + @"\OfficeClickToRun.exe";
+
+        if (!System.IO.File.Exists(officeFilePath))
+        {
+            e.Result = ActionResult.Success;
+            return;
+        }
+
+        var p = new Process
+        {
+            StartInfo = new ProcessStartInfo()
+            {
+                FileName = officeFilePath,
+                Arguments = "scenario=Repair DisplayLevel=True",
+                CreateNoWindow = true,
+                UseShellExecute = false
+            },
+        };
+        p.Start();
+        p.WaitForExit();
+    }
+
 }
 
 public class CustomActions
@@ -207,4 +258,6 @@ public class CustomActions
             return ActionResult.Failure;
         }
     }
+
+
 }

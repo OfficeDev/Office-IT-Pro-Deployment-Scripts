@@ -589,9 +589,29 @@ namespace MetroDemo.ExampleViews
             ExcludedApps1.ItemsSource = null;
             ExcludedApps2.ItemsSource = null;
 
+            var configXml = GlobalObjects.ViewModel.ConfigXmlParser;
+
             foreach (var excludeApp in GlobalObjects.ViewModel.ExcludeProducts)
             {
-                excludeApp.Included = true;
+                var appIncluded = true;
+
+                if (configXml.ConfigurationXml.Add != null && configXml.ConfigurationXml.Add.Products != null)
+                {
+                    foreach (var product in configXml.ConfigurationXml.Add.Products)
+                    {
+                        if (product.ExcludeApps == null) continue;
+
+                        foreach (var e in product.ExcludeApps)
+                        {
+                            if (e.ID.ToUpper() == excludeApp.DisplayName.ToUpper())
+                            {
+                                appIncluded = false;
+                            }
+                        }
+                    }
+                }
+
+                excludeApp.Included = appIncluded;
             }
 
             var splitCount = Convert.ToInt32(Math.Round((double)GlobalObjects.ViewModel.ExcludeProducts.Count / 2, 0));

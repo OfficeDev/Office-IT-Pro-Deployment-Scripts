@@ -21,6 +21,10 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
             {
                 return ExtractXmlFromMsi(filePath);
             }
+            if (filePath.ToLower().EndsWith(".xml"))
+            {
+                return File.ReadAllText(filePath);
+            }
             throw (new Exception("Configuration XML Not Found"));
         }
 

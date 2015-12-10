@@ -54,6 +54,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="RegistryReader.cs" />
     <Compile Include="MsiGeneratorProperties.cs" />
     <Compile Include="MsiGeneratorReturn.cs" />
     <Compile Include="OfficeInstallMsiGenerator.cs" />

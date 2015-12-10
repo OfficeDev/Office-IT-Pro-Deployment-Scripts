@@ -37,6 +37,7 @@ namespace MetroDemo.ExampleViews
             {
                 GlobalObjects.ViewModel.ConfigXmlParser.LoadXml(GlobalObjects.ViewModel.DefaultXml);
                 GlobalObjects.ViewModel.ResetXml = true;
+                GlobalObjects.ViewModel.ImportFile = null;
 
                 if (RestartWorkflow != null)
                 {
@@ -63,7 +64,7 @@ namespace MetroDemo.ExampleViews
                 {
                     DefaultExt = ".png",
                     Filter =
-                        "XML Configuation (*.xml)|*.xml|Executable (*.exe)|*.exe|MSI Installer (*.msi)|*.msi"
+                        "Generated Files (*.xml,*.exe,*.msi)|*.xml;*.exe;*.msi|XML Configuation (*.xml)|*.xml|Executable (*.exe)|*.exe|MSI Installer (*.msi)|*.msi"
                 };
 
                 var result = dlg.ShowDialog();
@@ -75,6 +76,8 @@ namespace MetroDemo.ExampleViews
                     GlobalObjects.ViewModel.ResetXml = true;
 
                     var configExtractor = new OfficeConfigXmlExtractor();
+                    GlobalObjects.ViewModel.ImportFile = filename;
+
                     filename = configExtractor.ExtractXml(filename);
 
                     GlobalObjects.ViewModel.ConfigXmlParser.LoadXml(filename);
