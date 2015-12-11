@@ -62,7 +62,6 @@ C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deploy
 C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Sample\MetroDemo\obj\NET40\Debug\Microsoft.OfficeProPlus.InstallGen.Presentation.csproj.GenerateResource.Cache
 C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Sample\MetroDemo\obj\NET40\Debug\OfficeProPlusInstallGenerator.exe
 C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Sample\MetroDemo\obj\NET40\Debug\OfficeProPlusInstallGenerator.pdb
-D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Sample\MetroDemo\bin\NET40\Debug\OfficeProPlusInstallGenerator.exe.config
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Sample\MetroDemo\bin\NET40\Debug\InstallOffice.cs
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Sample\MetroDemo\bin\NET40\Debug\wixTools.zip
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Sample\MetroDemo\bin\NET40\Debug\HelpFiles\ForceAppShutdownInfo.html
@@ -84,6 +83,7 @@ D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Sample\MetroDemo\bin\NET40\Debug\HelpFiles\BranchInfo.html
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Sample\MetroDemo\bin\NET40\Debug\HelpFiles\EditionInfo.html
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Sample\MetroDemo\bin\NET40\Debug\HelpFiles\ProductInfo.html
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Sample\MetroDemo\bin\NET40\Debug\OfficeProPlusInstallGenerator.exe.config
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Sample\MetroDemo\bin\NET40\Debug\OfficeProPlusInstallGenerator.exe.manifest
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Sample\MetroDemo\bin\NET40\Debug\OfficeProPlusInstallGenerator.application
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Sample\MetroDemo\bin\NET40\Debug\OfficeProPlusInstallGenerator.exe
