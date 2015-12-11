@@ -22,7 +22,7 @@ public class MsiGenerator
     {
         var project = new ManagedProject(installProperties.Name)
         {
-            UI = WUI.WixUI_Minimal,
+            UI = WUI.WixUI_ProgressOnly,
             Actions = new WixSharp.Action[]
             {
                 new SetPropertyAction("InstallDirectory", installProperties.ProgramFilesPath),

@@ -98,7 +98,7 @@
 
             <Controls:MetroAnimatedSingleRowTabControl Grid.Row="1" x:Name="MainTabControl" SelectionChanged="MainTabControl_SelectionChanged" >
                 <TabItem Header="Start">
-                    <exampleViews:StartView x:Name="StartView" DataContext="{Binding}" Loaded="StartView_Loaded" Tag="0" />
+                    <exampleViews:StartView x:Name="StartView" DataContext="{Binding}"  Tag="0" />
                 </TabItem>
                 <TabItem Header="Products" IsEnabled="False">
                     <exampleViews:ProductView x:Name="ProductView"  DataContext="{Binding}" Tag="1" />

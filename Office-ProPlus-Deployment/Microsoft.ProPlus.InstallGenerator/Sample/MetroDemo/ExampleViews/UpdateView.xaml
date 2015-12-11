@@ -7,7 +7,7 @@
              xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
              mc:Ignorable="d"
              d:DesignHeight="600"
-             d:DesignWidth="800"
+             d:DesignWidth="900"
              d:DataContext="{d:DesignInstance MetroDemo:MainWindowViewModel}" Loaded="UpdateView_OnLoaded" >
 
     <UserControl.Resources>
@@ -81,12 +81,19 @@
                     </Grid>
 
                     <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="50"></RowDefinition>
+                        </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="150" />
                             <ColumnDefinition Width="50" />
                             <ColumnDefinition Width="400" />
-                            <ColumnDefinition Width="120" />
+                            <ColumnDefinition Width="70" />
+                            <ColumnDefinition Width="60"/>
+                            <ColumnDefinition Width="75" />
+                            <ColumnDefinition Width="70" />
                         </Grid.ColumnDefinitions>
+                        
                         <Label Content="Update Path" Style="{StaticResource MetroLabelHeader}" Grid.Column="0" />
                         <Button Grid.Column="1" x:Name="UpdatePathInfo" Width="30" Height="32" HorizontalAlignment="Left" Margin="0 0 0 0" 
                                                 Focusable="False"  Style="{StaticResource MetroInfoButton}" Click="ProductInfo_OnClick" >
@@ -94,13 +101,23 @@
                                 <Image Source="../images/info.png" Width="20" Height="20"/>
                             </StackPanel>
                         </Button>
-                        <TextBox x:Name="UpdateUpdatePath" Margin="{StaticResource ControlMargin}" FontSize="20" Grid.Column="2"
+
+                        <Controls:MetroProgressBar x:Name="DownloadProgressBar" Margin="{StaticResource ControlMargin}"  Grid.Column="2" Height="35" Background="White"  />
+                        <TextBox x:Name="UpdateUpdatePath" Background="#00ffffff" Margin="{StaticResource ControlMargin}" FontSize="20" Grid.Column="2"
                          Controls:TextBoxHelper.Watermark="Network, local or HTTP Path"
                          Controls:TextBoxHelper.ClearTextButton="True" TextChanged="UpdateUpdatePath_OnTextChanged"
                          Text="" Height="35" >
+                            
                         </TextBox>
-                        <Button Width="100" Margin="{StaticResource ControlMargin}" Height="40" Grid.Column="3"
+                        
+                        <Button Width="60" Margin="{StaticResource ControlMargin}" Height="40" Grid.Column="3"
                                             Content="Browse" x:Name="UpdatePath" Click="UpdatePath_OnClick" />
+
+                        <Button Width="50" Height="40" Grid.Column="4" Margin="{StaticResource ControlMargin}"
+                                            Content="Open" x:Name="OpenFolderButton" IsEnabled="False" Click="OpenFolderButton_OnClick"   />
+                        <Button Width="70" Height="40" Grid.Column="5" Margin="{StaticResource ControlMargin}"
+                                            Content="Download" x:Name="DownloadButton" Click="DownloadButton_OnClick" IsEnabled="False"   />
+                        <Label x:Name="DownloadPercent" Content="" Style="{StaticResource MetroLabelHeader}" Margin="{StaticResource ControlMargin}" Grid.Column="6" />
                     </Grid>
 
                     <Grid>
@@ -141,12 +158,21 @@
                                 <Image Source="../images/info.png" Width="20" Height="20"/>
                             </StackPanel>
                         </Button>
-                        <DatePicker x:Name="UpdateDeadline" Height="35" Grid.Column="2"
-                            Width="400"
+                        <DatePicker x:Name="UpdateDeadline" Height="35" Grid.Column="2" PreviewKeyUp="UpdateDeadline_OnPreviewKeyUp"
+                            Width="300" SelectedDateChanged="UpdateDeadline_OnSelectedDateChanged"
                             HorizontalAlignment="Left" FontSize="20"
                             Controls:TextBoxHelper.Watermark="Select a date" />
-                    </Grid>
+                        
+                        <TextBox x:Name="DeadlineTimeHour" FontSize="20" Grid.Column="2" PreviewKeyDown="DeadlineTimeHour_OnKeyDown"
+                         Controls:TextBoxHelper.Watermark="00" TextChanged="DeadlineTimeHour_OnTextChanged"
+                         Text="" Height="35" Width="38" Margin="260 0 0 0" > 
+                        </TextBox>
 
+                        <TextBox x:Name="DeadlineTimeMinute" FontSize="20" Grid.Column="2" PreviewKeyDown="DeadlineTimeMinute_OnPreviewKeyDown"
+                         Controls:TextBoxHelper.Watermark="00" TextChanged="DeadlineTimeMinute_OnTextChanged"
+                         Text="" Height="35" Width="38" Margin="360 0 0 0" >
+                        </TextBox>
+                    </Grid>
 
                 </StackPanel>
 

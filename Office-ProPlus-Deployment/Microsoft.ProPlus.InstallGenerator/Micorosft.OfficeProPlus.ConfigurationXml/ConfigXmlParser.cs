@@ -70,6 +70,8 @@ namespace OfficeInstallGenerator
             LoadDisplay();
 
             LoadLogging();
+
+            LoadProperties();
         }
 
         private void LoadAdds()
@@ -404,7 +406,7 @@ namespace OfficeInstallGenerator
 
             if (this.ConfigurationXml.Updates.Deadline.HasValue && !string.IsNullOrEmpty(this.ConfigurationXml.Updates.Deadline.Value.ToString()))
             {
-                SetAttribute(updatesNode, "Deadline", this.ConfigurationXml.Updates.Deadline.Value.ToString("MM/DD/YYYY, HH:mm"));
+                SetAttribute(updatesNode, "Deadline", this.ConfigurationXml.Updates.Deadline.Value.ToString("MM/dd/yyyy, HH:mm"));
             }
             else
             {
@@ -469,6 +471,43 @@ namespace OfficeInstallGenerator
             else
             {
                 RemoveAttribute(displayNode, "AcceptEULA");
+            }
+        }
+
+
+
+
+        private void LoadProperties()
+        {
+            var properties = new ODTProperties();
+            ConfigurationXml.Properties = properties;
+
+            var autoActivateNode = _xmlDoc.DocumentElement.SelectSingleNode("./Property[@Name='AUTOACTIVATE']");
+            if (autoActivateNode != null)
+            {
+                if (autoActivateNode.Attributes["Value"] != null)
+                {
+                    properties.AutoActivate = YesNo.No;
+                    var value = autoActivateNode.Attributes["Value"].Value.ToString();
+                    if (value == "1") properties.AutoActivate = YesNo.Yes; 
+                }
+            }
+
+            var forceAppShutdownNode = _xmlDoc.DocumentElement.SelectSingleNode("./Property[@Name='FORCEAPPSHUTDOWN']");
+            if (forceAppShutdownNode != null)
+            {
+                properties.ForceAppShutdown = false;
+                var value = forceAppShutdownNode.Attributes["Value"].Value.ToString();
+                if (value.ToUpper() == "TRUE") properties.ForceAppShutdown = true; 
+            }
+
+
+            var sharedComputerLicensing = _xmlDoc.DocumentElement.SelectSingleNode("./Property[@Name='SharedComputerLicensing']");
+            if (sharedComputerLicensing != null)
+            {
+                properties.SharedComputerLicensing = false;
+                var value = sharedComputerLicensing.Attributes["Value"].Value.ToString();
+                if (value.ToUpper() == "1") properties.SharedComputerLicensing = true; 
             }
         }
 

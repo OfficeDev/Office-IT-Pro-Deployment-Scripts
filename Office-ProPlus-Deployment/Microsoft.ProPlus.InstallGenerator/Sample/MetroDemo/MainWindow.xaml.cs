@@ -15,7 +15,7 @@ namespace MetroDemo
     public partial class MainWindow
     {
         private bool _shutdown;
-        private readonly MainWindowViewModel _viewModel;
+        private int _cacheIndex = -1;
 
         public MainWindow()
         {
@@ -33,12 +33,13 @@ namespace MetroDemo
             MainTabControl.SelectionChanged += MainTabControl_SelectionChanged;
 
             StartView.TransitionTab += TransitionTab;
+            StartView.XmlImported += XmlImported;
+
             ProductView.TransitionTab += TransitionTab;
             UpdateView.TransitionTab += TransitionTab;
             DisplayView.TransitionTab += TransitionTab;
-        }
 
-        private int _cacheIndex = -1;
+        }
 
         private void MainTabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -78,7 +79,23 @@ namespace MetroDemo
                 tabItem.IsEnabled = false;
             }
 
+            ProductView.Reset();
             UpdateView.Reset();
+            DisplayView.Reset();
+        }
+
+        private void XmlImported(object sender, EventArgs eventArgs)
+        {
+            try
+            {
+                ProductView.LoadXml();
+                DisplayView.LoadXml();
+                UpdateView.LoadXml();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("ERROR: " + ex.Message);
+            }
         }
 
         private void TransitionTab(object sender, Events.TransitionTabEventArgs e)
@@ -102,11 +119,14 @@ namespace MetroDemo
             }
         }
 
+
+
+        #region Other
         public static readonly DependencyProperty ToggleFullScreenProperty =
-            DependencyProperty.Register("ToggleFullScreen",
-                                        typeof(bool),
-                                        typeof(MainWindow),
-                                        new PropertyMetadata(default(bool), ToggleFullScreenPropertyChangedCallback));
+    DependencyProperty.Register("ToggleFullScreen",
+                                typeof(bool),
+                                typeof(MainWindow),
+                                new PropertyMetadata(default(bool), ToggleFullScreenPropertyChangedCallback));
 
         private static void ToggleFullScreenPropertyChangedCallback(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
         {
@@ -194,14 +214,9 @@ namespace MetroDemo
             {
                 GenerateView.xmlBrowser.Visibility = Visibility.Visible;
             }
-                
-        }
-
-        private void StartView_Loaded(object sender, RoutedEventArgs e)
-        {
 
         }
-
+        #endregion
 
 
     }

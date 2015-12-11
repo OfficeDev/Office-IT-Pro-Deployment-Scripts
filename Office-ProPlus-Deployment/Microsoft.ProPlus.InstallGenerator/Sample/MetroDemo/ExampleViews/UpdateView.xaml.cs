@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -15,6 +19,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using MahApps.Metro.Controls;
+using MahApps.Metro.Converters;
+using MetroDemo.Annotations;
 using MetroDemo.Events;
 using MetroDemo.ExampleWindows;
 using Micorosft.OfficeProPlus.ConfigurationXml;
@@ -23,7 +29,9 @@ using Microsoft.OfficeProPlus.Downloader;
 using Microsoft.OfficeProPlus.Downloader.Model;
 using Microsoft.OfficeProPlus.InstallGen.Presentation.Models;
 using Microsoft.OfficeProPlus.InstallGenerator.Models;
+using Microsoft.VisualBasic;
 using File = System.IO.File;
+using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 using MessageBox = System.Windows.MessageBox;
 using UserControl = System.Windows.Controls.UserControl;
 
@@ -36,6 +44,12 @@ namespace MetroDemo.ExampleViews
     {
 
         private bool _updatePathChanged = false;
+        private CancellationTokenSource _tokenSource = new CancellationTokenSource();
+        private Task _downloadTask = null;
+        public event TransitionTabEventHandler TransitionTab;
+        private string ddTimeHour = "00";
+        private string ddTimeMinute = "00";
+
 
         public UpdateView()
         {
@@ -51,6 +65,42 @@ namespace MetroDemo.ExampleViews
             catch (Exception ex)
             {
                 MessageBox.Show("ERROR: " + ex.Message);
+            }
+        }
+
+        public void LoadXml()
+        {
+            var configXml = GlobalObjects.ViewModel.ConfigXmlParser.ConfigurationXml;
+            if (configXml.Updates != null)
+            {
+                EnabledSwitch.IsChecked = configXml.Updates.Enabled;
+                UpdateUpdatePath.Text = configXml.Updates.UpdatePath;
+
+                if (configXml.Updates.TargetVersion != null)
+                {
+                    var targetVersion = configXml.Updates.TargetVersion.ToString();
+
+                    var targetVersionIndex = -1;
+                    for (var i = 0; i < UpdateTargetVersion.Items.Count; i++)
+                    {
+                        var item = (Build) UpdateTargetVersion.Items[i];
+                        if (item.Version.ToLower() == targetVersion.ToLower())
+                        {
+                            targetVersionIndex = i;
+                        }
+                    }
+
+                    UpdateTargetVersion.SelectedIndex = targetVersionIndex;
+                    if (targetVersionIndex == -1)
+                    {
+                        UpdateTargetVersion.Text = targetVersion;
+                    }
+                }
+
+                if (configXml.Updates.Deadline.HasValue)
+                {
+                    DeadlineInfo.Content = configXml.Updates.Deadline.Value;
+                }
             }
         }
 
@@ -86,17 +136,131 @@ namespace MetroDemo.ExampleViews
                 configXml.Updates.TargetVersion = targetVersion;
             }
 
-            var xml = GlobalObjects.ViewModel.ConfigXmlParser.Xml;
-            if (xml != null)
+            configXml.Updates.Deadline = null;
+            if (UpdateDeadline.SelectedDate.HasValue)
             {
+                DateTime? deadLine = null;
+                UpdateDeadline.SelectedDateFormat = DatePickerFormat.Short;
 
+                var dl = UpdateDeadline.SelectedDate.Value;
+                var hour = 0;
+                var minute = 0;
+
+                if (!string.IsNullOrEmpty(DeadlineTimeHour.Text) && 
+                    !string.IsNullOrEmpty(DeadlineTimeMinute.Text))
+                {
+                    hour = Convert.ToInt32(DeadlineTimeHour.Text);
+                    minute = Convert.ToInt32(DeadlineTimeMinute.Text);
+                }
+
+                deadLine = new DateTime(dl.Year, dl.Month, dl.Day, hour, minute, 0);
+
+                configXml.Updates.Deadline = deadLine;
             }
         }
 
         public void Reset()
         {
             _updatePathChanged = false;
+            UpdateBranch.SelectedIndex = 0;
+            EnabledSwitch.IsChecked = false;
+            UpdateTargetVersion.Text = "";
+            UpdateUpdatePath.Text = "";
+            UpdateDeadline.Text = "";
+            DeadlineTimeHour.Text = "";
+            DeadlineTimeMinute.Text = "";
         }
+
+
+        private async Task DownloadOfficeFiles()
+        {
+            try
+            {
+                _tokenSource = new CancellationTokenSource();
+
+                UpdateXml();
+
+                UpdateUpdatePath.IsReadOnly = true;
+                UpdatePath.IsEnabled = false;
+
+                DownloadProgressBar.Maximum = 100;
+                DownloadPercent.Content = "";
+
+                var configXml = GlobalObjects.ViewModel.ConfigXmlParser.ConfigurationXml;
+
+                string branch = null;
+                if (configXml.Updates.Branch.HasValue)
+                {
+                    branch = configXml.Updates.Branch.Value.ToString();
+                }
+
+                var proPlusDownloader = new ProPlusDownloader();
+                proPlusDownloader.DownloadFileProgress += async (senderfp, progress) =>
+                {
+                    var percent = progress.PercentageComplete;
+                    if (percent > 0)
+                    {
+                        Dispatcher.Invoke(() =>
+                        {
+                            DownloadPercent.Content = percent + "%";
+                            DownloadProgressBar.Value = Convert.ToInt32(Math.Round(percent, 0));
+                        });
+                    }
+                };
+                proPlusDownloader.VersionDetected += (sender, version) =>
+                {
+                    if (branch == null) return;
+                    var modelBranch = GlobalObjects.ViewModel.Branches.FirstOrDefault(b => b.Branch.ToString().ToLower() == branch.ToLower());
+                    if (modelBranch == null) return;
+                    if (modelBranch.Versions.Any(v => v.Version == version.Version)) return;
+                    modelBranch.Versions.Insert(0, new Build() { Version = version.Version });
+                    modelBranch.CurrentVersion = version.Version;
+
+                    UpdateTargetVersion.ItemsSource = modelBranch.Versions;
+                    UpdateTargetVersion.SetValue(TextBoxHelper.WatermarkProperty, modelBranch.CurrentVersion);
+                };
+
+                var buildPath = UpdateUpdatePath.Text.Trim();
+                if (string.IsNullOrEmpty(buildPath)) return;
+
+                var languages =
+                    (from product in configXml.Add.Products
+                     from language in product.Languages
+                     select language.ID.ToLower()).Distinct().ToList();
+
+                var officeEdition = OfficeEdition.Office32Bit;
+                if (configXml.Add.OfficeClientEdition == OfficeClientEdition.Office64Bit)
+                {
+                    officeEdition = OfficeEdition.Office64Bit;
+                }
+
+                buildPath = GlobalObjects.SetBranchFolderPath(branch, buildPath);
+                Directory.CreateDirectory(buildPath);
+
+                UpdateUpdatePath.Text = buildPath;
+
+                await proPlusDownloader.DownloadBranch(new DownloadBranchProperties()
+                {
+                    BranchName = branch,
+                    OfficeEdition = officeEdition,
+                    TargetDirectory = buildPath,
+                    Languages = languages
+                }, _tokenSource.Token);
+
+                MessageBox.Show("Download Complete");
+            }
+            finally
+            {
+                UpdateUpdatePath.IsReadOnly = false;
+                UpdatePath.IsEnabled = true;
+                DownloadProgressBar.Value = 0;
+                DownloadPercent.Content = "";
+
+                DownloadButton.Content = "Download";
+                _tokenSource = new CancellationTokenSource();
+            }
+        }
+
 
         private async Task GetBranchVersion(OfficeBranch branch, OfficeEdition officeEdition)
         {
@@ -152,14 +316,43 @@ namespace MetroDemo.ExampleViews
                 var otherFolder = GlobalObjects.SetBranchFolderPath(branch.Branch.ToString(), UpdateUpdatePath.Text);
                 if (await GlobalObjects.DirectoryExists(otherFolder))
                 {
-                    UpdateUpdatePath.Text = GlobalObjects.SetBranchFolderPath(branch.Branch.ToString(), UpdateUpdatePath.Text);
+                    if (!string.IsNullOrEmpty(UpdateUpdatePath.Text))
+                    {
+                        UpdateUpdatePath.Text = GlobalObjects.SetBranchFolderPath(branch.Branch.ToString(),
+                            UpdateUpdatePath.Text);
+                    }
                 }
             }
 
             await GetBranchVersion(branch, officeEdition);
         }
 
-        public event TransitionTabEventHandler TransitionTab;
+        private string AllowHours(string text)
+        {
+            var newHour = "";
+
+            if (string.IsNullOrEmpty(text)) return newHour;
+            if (!Microsoft.VisualBasic.Information.IsNumeric(text)) return ddTimeHour;
+            var numHours = Convert.ToInt32(text);
+            if (numHours > 23) newHour = "23";
+            if (numHours < 0) newHour = "00";
+
+            if (newHour.Length == 1)
+            {
+                newHour = "0" + newHour;
+            }
+            return newHour;
+        }
+
+        private string AllowMinute(string text)
+        {
+            if (string.IsNullOrEmpty(text)) return "";
+            if (!Microsoft.VisualBasic.Information.IsNumeric(text)) return ddTimeMinute;
+            var numHours = Convert.ToInt32(text);
+            if (numHours > 59) return "59";
+            if (numHours < 0) return "00";
+            return "";
+        }
 
         private void UpdatePath_OnClick(object sender, RoutedEventArgs e)
         {
@@ -167,49 +360,22 @@ namespace MetroDemo.ExampleViews
             {
                 UpdateXml();
 
-                var openDialog = new OpenFileDialog
+                var dlg1 = new Ionic.Utils.FolderBrowserDialogEx
                 {
-                    Filter = "v32.cab File|v32.cab|v64.cab File|v64.cab",
-                    Multiselect = false
+                    Description = "Select a folder:",
+                    ShowNewFolderButton = true,
+                    ShowEditBox = true,
+                    SelectedPath = UpdateUpdatePath.Text,
+                    ShowFullPathInEditBox = true,
+                    RootFolder = System.Environment.SpecialFolder.MyComputer
                 };
+                //dlg1.NewStyle = false;
 
-                var configXml = GlobalObjects.ViewModel.ConfigXmlParser.ConfigurationXml;
-                if (configXml != null)
+                // Show the FolderBrowserDialog.
+                var result = dlg1.ShowDialog();
+                if (result == DialogResult.OK)
                 {
-                    if (configXml.Add.OfficeClientEdition == OfficeClientEdition.Office64Bit)
-                    {
-                        if (configXml.Updates.TargetVersion != null)
-                        {
-                            openDialog.Filter = "v64_" + configXml.Updates.TargetVersion +
-                                                ".cab|v64_" + configXml.Updates.TargetVersion + ".cab";
-                        }
-                        else
-                        {
-                            openDialog.Filter = "v64.cab File|v64.cab";
-                        }
-                    }
-                    else
-                    {
-                        if (configXml.Updates.TargetVersion != null)
-                        {
-                            openDialog.Filter = "v32_" + configXml.Updates.TargetVersion + ".cab|v32_" + configXml.Updates.TargetVersion + ".cab";
-                        }
-                        else
-                        {
-                            openDialog.Filter = "v32.cab File|v32.cab";
-                        }
-                    }
-
-
-                }
-
-                if (openDialog.ShowDialog() == DialogResult.OK)
-                {
-                    var filePath = openDialog.FileName;
-                    filePath = Regex.Replace(filePath, @"\\Office\\Data\\v32.cab", "", RegexOptions.IgnoreCase);
-                    filePath = Regex.Replace(filePath, @"\\Office\\Data\\v64.cab", "", RegexOptions.IgnoreCase);
-
-                    UpdateUpdatePath.Text = filePath;
+                    UpdateUpdatePath.Text = dlg1.SelectedPath;
                 }
             }
             catch (Exception ex)
@@ -254,11 +420,240 @@ namespace MetroDemo.ExampleViews
 
         #region "Events"
 
-        private void UpdateUpdatePath_OnTextChanged(object sender, TextChangedEventArgs e)
+        private void UpdateDeadline_OnPreviewKeyUp(object sender, KeyEventArgs e)
+        {
+            try
+            {
+                if (UpdateDeadline.Text.Trim().Length == 0)
+                {
+                    DeadlineTimeHour.Text = "";
+                    DeadlineTimeMinute.Text = "";
+                }
+
+            }
+            catch { }
+        }
+
+        private void UpdateDeadline_OnSelectedDateChanged(object sender, SelectionChangedEventArgs e)
+        {
+            try
+            {
+                if (UpdateDeadline.Text.Trim().Length > 0)
+                {
+                    if (DeadlineTimeHour.Text.Trim().Length == 0)
+                    {
+                        DeadlineTimeHour.Text = "00";    
+                    }
+                    if (DeadlineTimeMinute.Text.Trim().Length == 0)
+                    {
+                        DeadlineTimeMinute.Text = "00";
+                    }
+                }
+            }
+            catch { }
+        }
+
+        private void DeadlineTimeMinute_OnPreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            try
+            {
+                var ddMinute = DeadlineTimeMinute.Text;
+                if (string.IsNullOrEmpty(ddMinute)) ddMinute = "00";
+                if (Information.IsNumeric(ddMinute))
+                {
+                    var minute = Convert.ToInt32(ddMinute);
+                    if (e.Key == Key.Up)
+                    {
+                        if (minute < 59)
+                        {
+                            var newMinute = (minute + 1).ToString();
+                            if (newMinute.Length == 1)
+                            {
+                                newMinute = "0" + newMinute;
+                            }
+
+                            DeadlineTimeMinute.Text = newMinute;
+                        }
+                    }
+                    if (e.Key == Key.Down)
+                    {
+                        if (minute > 0)
+                        {
+                            var newMinute = (minute - 1).ToString();
+                            if (newMinute.Length == 1)
+                            {
+                                newMinute = "0" + newMinute;
+                            }
+
+                            DeadlineTimeMinute.Text = newMinute;
+                        }
+                    }
+                }
+            }
+            catch { }
+        }
+
+        private void DeadlineTimeHour_OnKeyDown(object sender, KeyEventArgs e)
+        {
+            try
+            {
+                var ddHour = DeadlineTimeHour.Text;
+                if (string.IsNullOrEmpty(ddHour)) ddHour = "00";
+                if (Information.IsNumeric(ddHour))
+                {
+                    var hour = Convert.ToInt32(ddHour);
+                    if (e.Key == Key.Up)
+                    {
+                        if (hour < 23)
+                        {
+                            var newHour = (hour + 1).ToString();
+                            if (newHour.Length == 1)
+                            {
+                                newHour = "0" + newHour;
+                            }
+
+                            DeadlineTimeHour.Text = newHour;
+                        }
+                    }
+                    if (e.Key == Key.Down)
+                    {
+                        if (hour > 0)
+                        {
+                            var newHour = (hour - 1).ToString();
+                            if (newHour.Length == 1)
+                            {
+                                newHour = "0" + newHour;
+                            }
+
+                            DeadlineTimeHour.Text = newHour;
+                        }
+                    }
+                }
+            }
+            catch { }
+        }
+        
+        private void DeadlineTimeHour_OnTextChanged(object sender, TextChangedEventArgs e)
+        {
+            try
+            {
+                if (DeadlineTimeHour.Text.Contains("."))
+                {
+                    DeadlineTimeHour.Text = DeadlineTimeHour.Text.Replace(".", "");
+                }
+
+                var hourConvert = AllowHours(DeadlineTimeHour.Text);
+                if (string.IsNullOrEmpty(hourConvert)) return;
+
+                var newHour = hourConvert.Replace(".", "");
+                DeadlineTimeHour.Text = newHour;
+                ddTimeHour = DeadlineTimeHour.Text;
+            }
+            catch { }
+        }
+
+        private void DeadlineTimeMinute_OnTextChanged(object sender, TextChangedEventArgs e)
+        {
+            try
+            {
+                if (DeadlineTimeMinute.Text.Contains("."))
+                {
+                    DeadlineTimeMinute.Text = DeadlineTimeMinute.Text.Replace(".", "");
+                }
+
+                var minConvert = AllowMinute(DeadlineTimeMinute.Text);
+                if (string.IsNullOrEmpty(minConvert)) return;
+
+                DeadlineTimeMinute.Text = minConvert.Replace(".", "");
+                ddTimeMinute = DeadlineTimeHour.Text;
+            }
+            catch { }
+        }
+
+        private async void DownloadButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (_tokenSource != null)
+                {
+                    if (_tokenSource.IsCancellationRequested)
+                    {
+                        return;
+                    }
+                    if (_downloadTask.IsActive())
+                    {
+                        _tokenSource.Cancel();
+                        return;
+                    }
+                }
+
+                DownloadButton.Content = "Stop";
+
+                _downloadTask = DownloadOfficeFiles();
+                await _downloadTask;
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message.ToLower().Contains("aborted") ||
+                    ex.Message.ToLower().Contains("canceled"))
+                {
+
+                }
+                else
+                {
+                    MessageBox.Show("ERROR: " + ex.Message);
+                }
+            }
+        }
+
+        private async void OpenFolderButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var folderPath = UpdateUpdatePath.Text.Trim();
+                if (string.IsNullOrEmpty(folderPath)) return;
+
+                if (await GlobalObjects.DirectoryExists(folderPath))
+                {
+                    Process.Start("explorer", folderPath);
+                }
+                else
+                {
+                    MessageBox.Show("Directory path does not exist.");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("ERROR: " + ex.Message);
+            }
+        }
+
+        private async void UpdateUpdatePath_OnTextChanged(object sender, TextChangedEventArgs e)
         {
             try
             {
                 _updatePathChanged = true;
+
+                var enabled = false;
+                var openFolderEnabled = false;
+                if (UpdateUpdatePath.Text.Trim().Length > 0)
+                {
+                    var match = Regex.Match(UpdateUpdatePath.Text, @"^\w:\\|\\\\.*\\..*");
+                    if (match.Success)
+                    {
+                        enabled = true;
+                        var folderExists = await GlobalObjects.DirectoryExists(UpdateUpdatePath.Text);
+                        if (!folderExists)
+                        {
+                            folderExists = await GlobalObjects.DirectoryExists(UpdateUpdatePath.Text);
+                        }
+
+                        openFolderEnabled = folderExists;
+                    }
+                }
+
+                OpenFolderButton.IsEnabled = openFolderEnabled;
+                DownloadButton.IsEnabled = enabled;
             }
             catch (Exception ex)
             {

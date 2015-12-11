@@ -80,11 +80,16 @@ namespace MetroDemo.ExampleViews
 
                     filename = configExtractor.ExtractXml(filename);
 
-                    GlobalObjects.ViewModel.ConfigXmlParser.LoadXml(filename);
-
                     if (RestartWorkflow != null)
                     {
                         this.RestartWorkflow(this, new EventArgs());
+                    }
+
+                    GlobalObjects.ViewModel.ConfigXmlParser.LoadXml(filename);
+
+                    if (this.XmlImported != null)
+                    {
+                        this.XmlImported(this, new EventArgs());
                     }
 
                     this.TransitionTab(this, new TransitionTabEventArgs()
@@ -100,9 +105,9 @@ namespace MetroDemo.ExampleViews
             }
         }
 
-
-
         public RestartEventHandler RestartWorkflow  { get; set; }
+
+        public XmlImportedEventHandler XmlImported { get; set; }
 
     }
 }

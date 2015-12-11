@@ -88,7 +88,7 @@
               </xsl:comment>
             </SCRIPT>
             <STYLE>
-              BODY {font-size:22px ;font-family:'Menlo,Monaco,Consolas,monospace'; margin-right:1.5em}
+              BODY {font-size:20px ;font-family:'Menlo,Monaco,Consolas,monospace'; margin-right:1.5em}
               .c  {}
               .b  {color:red; font-family:'Menlo,Monaco,Consolas,monospace'; font-weight:normal;text-decoration:none}
               .e  {margin-left:1em; text-indent:-1em; margin-right:1em}

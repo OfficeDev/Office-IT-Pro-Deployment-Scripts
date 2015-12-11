@@ -14,6 +14,9 @@ namespace MetroDemo.Events
 
     public delegate void TransitionTabEventHandler(object sender, TransitionTabEventArgs e);
 
+    public delegate void XmlImportedEventHandler(object sender, EventArgs e);
+
+
     public class InstallOfficeEventArgs : EventArgs
     {
         public string Xml { get; set; }

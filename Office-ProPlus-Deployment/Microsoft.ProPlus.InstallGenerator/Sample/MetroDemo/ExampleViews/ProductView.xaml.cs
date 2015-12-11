@@ -300,13 +300,8 @@ namespace MetroDemo.ExampleViews
             LanguageList.ItemsSource = GlobalObjects.ViewModel.GetLanguages(selectProductId);
         }
 
-        public void LoadXml()
+        public void Reset()
         {
-            var languages = new List<Language>
-            {
-                GlobalObjects.ViewModel.DefaultLanguage
-            };
-
             AdditionalProducts.SelectedItems.Clear();
 
             MainProducts.SelectedIndex = 0;
@@ -317,6 +312,16 @@ namespace MetroDemo.ExampleViews
             ProductUpdateSource.Text = "";
 
             LoadExcludedProducts();
+        }
+
+        public void LoadXml()
+        {
+            var languages = new List<Language>
+            {
+                GlobalObjects.ViewModel.DefaultLanguage
+            };
+
+            Reset();
 
             var configXml = GlobalObjects.ViewModel.ConfigXmlParser.ConfigurationXml;
             if (configXml.Add != null)
@@ -560,12 +565,6 @@ namespace MetroDemo.ExampleViews
                 }
 
             }
-
-            var xml = GlobalObjects.ViewModel.ConfigXmlParser.Xml;
-            if (xml != null)
-            {
-
-            }
         }
 
 
@@ -748,6 +747,29 @@ namespace MetroDemo.ExampleViews
             }
         }
 
+        private async void OpenFolderButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var folderPath = ProductUpdateSource.Text.Trim();
+                if (string.IsNullOrEmpty(folderPath)) return;
+
+                if (await GlobalObjects.DirectoryExists(folderPath))
+                {
+                    Process.Start("explorer", folderPath);
+                }
+                else
+                {
+                    MessageBox.Show("Directory path does not exist.");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("ERROR: " + ex.Message);
+            }
+        }
+
+
         private async void BuildFilePath_OnTextChanged(object sender, TextChangedEventArgs e)
         {
             try
@@ -779,27 +801,6 @@ namespace MetroDemo.ExampleViews
             }
         }
         
-        private async void OpenFolderButton_OnClick(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                var folderPath = ProductUpdateSource.Text.Trim();
-                if (string.IsNullOrEmpty(folderPath)) return;
-
-                if (await GlobalObjects.DirectoryExists(folderPath))
-                {
-                    Process.Start("explorer", folderPath);
-                }
-                else
-                {
-                    MessageBox.Show("Directory path does not exist.");
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("ERROR: " + ex.Message);
-            }
-        }
 
 
         private void UpdatePath_OnClick(object sender, RoutedEventArgs e)

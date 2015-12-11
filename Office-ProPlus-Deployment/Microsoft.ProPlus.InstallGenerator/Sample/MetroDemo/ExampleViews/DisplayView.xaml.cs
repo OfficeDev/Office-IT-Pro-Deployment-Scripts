@@ -43,6 +43,35 @@ namespace MetroDemo.ExampleViews
             }
         }
 
+        public void LoadXml()
+        {
+            var configXml = GlobalObjects.ViewModel.ConfigXmlParser.ConfigurationXml;
+            if (configXml.Display != null)
+            {
+
+                DisplayLevel.IsChecked = (configXml.Display.Level.HasValue &&
+                    configXml.Display.Level.Value == Micorosft.OfficeProPlus.ConfigurationXml.Enums.DisplayLevel.Full);
+
+                AcceptEula.IsChecked = configXml.Display.AcceptEULA.HasValue && configXml.Display.AcceptEULA.Value;
+            }
+
+            if (configXml.Properties != null)
+            {
+                AutoActivate.IsChecked = configXml.Properties.AutoActivate.HasValue && configXml.Properties.AutoActivate.Value == YesNo.Yes;
+                ForceAppShutdown.IsChecked = configXml.Properties.ForceAppShutdown.HasValue && configXml.Properties.ForceAppShutdown.Value;
+                SharedComputerLicensing.IsChecked = configXml.Properties.SharedComputerLicensing.HasValue && configXml.Properties.SharedComputerLicensing.Value;
+            }
+        }
+
+        public void Reset()
+        {
+            DisplayLevel.IsChecked = true;
+            AcceptEula.IsChecked = false;
+            AutoActivate.IsChecked = false;
+            ForceAppShutdown.IsChecked = false;
+            SharedComputerLicensing.IsChecked = false;
+        }
+
         public void UpdateXml()
         {
             UpdateDisplayXml();
@@ -75,12 +104,6 @@ namespace MetroDemo.ExampleViews
             if (AcceptEula.IsChecked.HasValue)
             {
                 configXml.Display.AcceptEULA = AcceptEula.IsChecked.Value;
-            }
-
-            var xml = GlobalObjects.ViewModel.ConfigXmlParser.Xml;
-            if (xml != null)
-            {
-
             }
         }
 
@@ -117,11 +140,6 @@ namespace MetroDemo.ExampleViews
                 configXml.Properties.SharedComputerLicensing = SharedComputerLicensing.IsChecked.Value;
             }
 
-            var xml = GlobalObjects.ViewModel.ConfigXmlParser.Xml;
-            if (xml != null)
-            {
-
-            }
         }
 
         public event TransitionTabEventHandler TransitionTab;
