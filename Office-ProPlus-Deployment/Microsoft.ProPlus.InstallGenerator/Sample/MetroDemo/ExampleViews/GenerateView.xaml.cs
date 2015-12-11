@@ -316,6 +316,34 @@ namespace MetroDemo.ExampleViews
 
         #region "Events"
 
+        private void InstallExecutable_OnChecked(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var currentPath = FileSavePath.Text;
+                if (InstallExecutable.IsChecked.HasValue && InstallExecutable.IsChecked.Value)
+                {
+                    var match = Regex.Match(currentPath, ".msi$");
+                    if (match.Success)
+                    {
+                        FileSavePath.Text = Regex.Replace(currentPath, ".msi$", ".exe");
+                    }
+                }
+                else
+                {
+                    var match = Regex.Match(currentPath, ".exe$");
+                    if (match.Success)
+                    {
+                        FileSavePath.Text = Regex.Replace(currentPath, ".exe$", ".msi");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("ERROR: " + ex.Message);
+            }
+        }
+
         private void SilentInstall_OnChecked(object sender, RoutedEventArgs e)
         {
             try
@@ -629,6 +657,6 @@ namespace MetroDemo.ExampleViews
 
         #endregion
 
-
+ 
     }
 }

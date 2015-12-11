@@ -56,10 +56,10 @@
                                     <ColumnDefinition Width="150" />
                                 </Grid.ColumnDefinitions>
                                 <Label Content="Install Type" Style="{StaticResource MetroLabelHeader}" HorizontalAlignment="Left" Grid.Column="0" />
-                                <RadioButton x:Name="InstallExecutable" Grid.Column="1"
+                                <RadioButton x:Name="InstallExecutable" Grid.Column="1" Checked="InstallExecutable_OnChecked"
                                          Content="Executable"
                                          GroupName="1" IsChecked="True"  FontSize="20" />
-                                <RadioButton x:Name="InstallMsi" Grid.Column="2"
+                            <RadioButton x:Name="InstallMsi" Grid.Column="2" Checked="InstallExecutable_OnChecked"
                                          Content="MSI"
                                          GroupName="1" FontSize="20" />
                         </Grid>

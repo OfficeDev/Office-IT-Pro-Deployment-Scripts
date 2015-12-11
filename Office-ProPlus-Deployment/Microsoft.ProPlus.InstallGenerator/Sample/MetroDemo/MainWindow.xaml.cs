@@ -119,14 +119,14 @@ namespace MetroDemo
             }
         }
 
-
+        
 
         #region Other
         public static readonly DependencyProperty ToggleFullScreenProperty =
-    DependencyProperty.Register("ToggleFullScreen",
-                                typeof(bool),
-                                typeof(MainWindow),
-                                new PropertyMetadata(default(bool), ToggleFullScreenPropertyChangedCallback));
+            DependencyProperty.Register("ToggleFullScreen",
+                                        typeof(bool),
+                                        typeof(MainWindow),
+                                        new PropertyMetadata(default(bool), ToggleFullScreenPropertyChangedCallback));
 
         private static void ToggleFullScreenPropertyChangedCallback(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
         {
@@ -187,37 +187,39 @@ namespace MetroDemo
 
         private async void MetroWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            e.Cancel = !_shutdown;
-            if (_shutdown) return;
-
-            var mySettings = new MetroDialogSettings()
+            try
             {
-                AffirmativeButtonText = "Quit",
-                NegativeButtonText = "Cancel",
-                AnimateShow = true,
-                AnimateHide = false
-            };
+                e.Cancel = !_shutdown;
+                if (_shutdown) return;
 
-            GenerateView.xmlBrowser.Visibility = Visibility.Hidden;
+                var mySettings = new MetroDialogSettings()
+                {
+                    AffirmativeButtonText = "Quit",
+                    NegativeButtonText = "Cancel",
+                    AnimateShow = true,
+                    AnimateHide = false
+                };
 
-            var result = await this.ShowMessageAsync("Quit application?",
-                "Sure you want to quit application?",
-                MessageDialogStyle.AffirmativeAndNegative, mySettings);
+                GenerateView.xmlBrowser.Visibility = Visibility.Hidden;
 
-            _shutdown = result == MessageDialogResult.Affirmative;
+                var result = await this.ShowMessageAsync("Quit application?",
+                    "Sure you want to quit application?",
+                    MessageDialogStyle.AffirmativeAndNegative, mySettings);
 
-            if (_shutdown)
-            {
-                Application.Current.Shutdown();
+                _shutdown = result == MessageDialogResult.Affirmative;
+
+                if (_shutdown)
+                {
+                    Application.Current.Shutdown();
+                }
+                else
+                {
+                    GenerateView.xmlBrowser.Visibility = Visibility.Visible;
+                }
             }
-            else
-            {
-                GenerateView.xmlBrowser.Visibility = Visibility.Visible;
-            }
-
+            catch { }
         }
         #endregion
-
-
+        
     }
 }

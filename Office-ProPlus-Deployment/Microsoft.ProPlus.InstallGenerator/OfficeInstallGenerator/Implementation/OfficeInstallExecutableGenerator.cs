@@ -62,6 +62,7 @@ namespace OfficeInstallGenerator
                     : @".\Office2016Setup.exe");
 
 
+
                 var fileContents = File.ReadAllText("InstallOffice.cs");
                 fileContents = fileContents.Replace("public static void Main1(string[] args)",
                     "public static void Main(string[] args)");

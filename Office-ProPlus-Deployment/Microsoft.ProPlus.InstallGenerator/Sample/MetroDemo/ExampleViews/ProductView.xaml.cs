@@ -29,7 +29,6 @@ using Microsoft.OfficeProPlus.Downloader.Model;
 using Microsoft.OfficeProPlus.InstallGen.Presentation.Models;
 using Microsoft.OfficeProPlus.InstallGenerator.Models;
 using OfficeInstallGenerator.Model;
-using Shell32;
 using File = System.IO.File;
 using MessageBox = System.Windows.MessageBox;
 using UserControl = System.Windows.Controls.UserControl;
@@ -852,6 +851,12 @@ namespace MetroDemo.ExampleViews
                 if (UseLangForAllProducts.IsChecked.HasValue)
                 {
                     GlobalObjects.ViewModel.UseSameLanguagesForAllProducts = UseLangForAllProducts.IsChecked.Value;
+
+                    if (GlobalObjects.ViewModel.UseSameLanguagesForAllProducts)
+                    {
+                        GlobalObjects.ViewModel.SetProductLanguagesForAll(GetSelectedProduct());
+                    }
+
                     LanguageUnique.IsEnabled = !(UseLangForAllProducts.IsChecked.Value);
                 }
                 else

@@ -18,6 +18,13 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
             var exePath = Path.GetDirectoryName(installProperties.ExecutablePath) + @"\InstallOfficeProPlus.exe";
             try
             {
+                var wixDirectory = ZipExtractor.AssemblyDirectory + @"\wixTools";
+                var wixZip = ZipExtractor.AssemblyDirectory + @"\wixTools.zip";
+                if (!Directory.Exists(wixDirectory))
+                {
+                    ZipExtractor.Extract(wixZip, ZipExtractor.AssemblyDirectory);
+                }
+
                 var exeGenerator = new OfficeInstallExecutableGenerator();
                 installProperties.ExecutablePath = exePath;
 

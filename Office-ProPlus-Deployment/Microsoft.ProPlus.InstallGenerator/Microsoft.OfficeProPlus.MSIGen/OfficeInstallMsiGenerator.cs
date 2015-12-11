@@ -75,22 +75,31 @@ public class MsiGenerator
     private void project_AfterInstall(SetupEventArgs e)
     {
         var errorMessage = GetOdtErrorMessage();
-
         if (e.IsInstalling)
         {
             if (errorMessage != null)
             {
                 //MessageBox.Show(errorMessage);
-                //e.Result = ActionResult.Failure;
-                //return;
+                e.Result = ActionResult.Failure;
+                return;
+            }
+            else
+            {
+                e.Result = ActionResult.Success;  
             }
         }
         else if (e.IsRepairing)
         {
             RepairOffice(e);
         }
-
-        e.Result = ActionResult.Success;
+        else if (e.IsUninstalling)
+        {
+            VerifyOfficeUninstalled(e);
+        }
+        else
+        {
+            e.Result = ActionResult.Success;
+        }
     }
 
     public string GetOdtErrorMessage()
@@ -153,6 +162,35 @@ public class MsiGenerator
         return null;
     }
 
+
+    public void VerifyOfficeUninstalled(SetupEventArgs e)
+    {
+        string officePath = null;
+        const string regPath = @"SOFTWARE\Microsoft\Office\ClickToRun\Configuration";
+        try
+        {
+            var officeRegKey = Registry.LocalMachine.OpenSubKey(regPath);
+            if (officeRegKey != null)
+            {
+                officePath = officeRegKey.GetValue("ClientFolder").ToString();
+            }
+            else
+            {
+                officePath = RegistryWOW6432.GetRegKey64(RegHive.HKEY_LOCAL_MACHINE, regPath, "ClientFolder") ??
+                             RegistryWOW6432.GetRegKey32(RegHive.HKEY_LOCAL_MACHINE, regPath, "ClientFolder");
+            }
+        }
+        catch { }
+
+        if (officePath == null)
+        {
+            e.Result = ActionResult.Success;
+            return;
+        }
+
+        e.Result = ActionResult.Failure;
+    }
+
     public void RepairOffice(SetupEventArgs e)
     {
         string officePath = null;
@@ -196,6 +234,8 @@ public class MsiGenerator
         };
         p.Start();
         p.WaitForExit();
+
+        e.Result = ActionResult.Success;
     }
 
 }

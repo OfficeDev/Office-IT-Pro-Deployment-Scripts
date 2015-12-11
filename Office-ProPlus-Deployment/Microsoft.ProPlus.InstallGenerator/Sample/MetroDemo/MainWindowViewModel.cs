@@ -358,26 +358,37 @@ namespace MetroDemo
             set { _selectedLanguages = value; }
         }
 
+        public void SetProductLanguagesForAll(string productId)
+        {
+            _selectedLanguages = _selectedLanguages.Where(l => (l.ProductId == productId) ||
+                            ((l.ProductId != null && productId != null) && l.ProductId.ToLower() == productId.ToLower())).ToList();
+            foreach (var language in _selectedLanguages)
+            {
+                language.ProductId = null;
+            }
+        }
+
         public List<Language> GetLanguages(string productId)
         {
             if (productId != null) productId = productId.ToLower();
 
-            var languages = _selectedLanguages.Where(
-                    l => l.ProductId == productId);
+            var languages = _selectedLanguages.Where(l => (l.ProductId == productId) ||
+                ((l.ProductId != null && productId != null) && l.ProductId.ToLower() == productId.ToLower()));
+            
 
             if (!languages.Any())
             {
-                languages = _selectedLanguages.Where(l => l.ProductId == "O365ProPlusRetail".ToLower());
-            }
+                var defaultLanguages = _selectedLanguages.Where(l => l.ProductId == null);
+                if (!defaultLanguages.Any())
+                {
+                    defaultLanguages = _selectedLanguages.Where(l => l.ProductId == "O365ProPlusRetail".ToLower());
+                }
+                if (!defaultLanguages.Any())
+                {
+                    defaultLanguages = _selectedLanguages.Where(l => l.ProductId == "O365BusinessRetail".ToLower());
+                }
 
-            if (!languages.Any())
-            {
-                languages = _selectedLanguages.Where(l => l.ProductId == "O365BusinessRetail".ToLower());
-            }
-
-            if (!languages.Any())
-            {
-                foreach (var language in _selectedLanguages.Where(l => l.ProductId == null).OrderBy(l => l.Order).ToList())
+                foreach (var language in defaultLanguages.OrderBy(l => l.Order).ToList())
                 {
                     _selectedLanguages.Add(new Language()
                     {
@@ -528,7 +539,7 @@ namespace MetroDemo
         }
 
 
-        private List<Language> FormatLanguage(List<Language> languages)
+        private IEnumerable<Language> FormatLanguage(List<Language> languages)
         {
             if (languages == null) return new List<Language>();
             foreach (var language in languages)
