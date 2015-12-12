@@ -43,12 +43,6 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Microsoft.OfficeProPlus.MSIGen\Microsoft.OfficeProPlus.MSIGen.csproj">
-      <Project>{57e3e5c7-ff48-4538-8b90-5ab106d87c6d}</Project>
-      <Name>Microsoft.OfficeProPlus.MSIGen</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

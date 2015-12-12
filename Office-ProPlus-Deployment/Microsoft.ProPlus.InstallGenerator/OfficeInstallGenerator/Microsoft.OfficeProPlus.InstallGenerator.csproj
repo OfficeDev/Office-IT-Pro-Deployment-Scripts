@@ -107,7 +107,7 @@
       <Project>{ce88a24e-73c3-4b1d-b72c-f41894485a14}</Project>
       <Name>Micorosft.OfficeProPlus.ConfigurationXml</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Microsoft.OfficeProPlus.MSIGen\Microsoft.OfficeProPlus.MSIGen.csproj">
+    <ProjectReference Include="..\Microsoft.OfficeProPlus.MSIGenerator\Microsoft.OfficeProPlus.MSIGen.csproj">
       <Project>{57e3e5c7-ff48-4538-8b90-5ab106d87c6d}</Project>
       <Name>Microsoft.OfficeProPlus.MSIGen</Name>
     </ProjectReference>
