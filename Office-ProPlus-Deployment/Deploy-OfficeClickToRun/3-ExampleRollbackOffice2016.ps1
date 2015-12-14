@@ -3,11 +3,12 @@
 #  This script demonstrates how utilize the scripts in OfficeDev/Office-IT-Pro-Deployment-Scripts repository together to create
 #  Office ProPlus Click-To-Run deployment script that will be adaptive to the configuration of the computer it is run from
 
+Process {
 #Importing all required functions
-. .\Generate-ODTConfigurationXML.ps1
-. .\Edit-OfficeConfigurationFile.ps1
-. .\Install-OfficeClickToRun.ps1
-. .\Remove-OfficeClickToRun.ps1
+. $PSScriptRoot\Generate-ODTConfigurationXML.ps1
+. $PSScriptRoot\Edit-OfficeConfigurationFile.ps1
+. $PSScriptRoot\Install-OfficeClickToRun.ps1
+. $PSScriptRoot\Remove-OfficeClickToRun.ps1
 
 $targetFilePath = "configuration.xml"
 
@@ -18,3 +19,5 @@ $targetFilePath = "configuration.xml"
 Generate-ODTConfigurationXml -Languages AllInUseLanguages -TargetFilePath $targetFilePath | Remove-OfficeClickToRun | Set-ODTAdd -Version $NULL | Install-OfficeClickToRun -OfficeVersion Office2013
 
 # Configuration.xml file for Click-to-Run for Office 365 products reference. https://technet.microsoft.com/en-us/library/JJ219426.aspx
+
+}

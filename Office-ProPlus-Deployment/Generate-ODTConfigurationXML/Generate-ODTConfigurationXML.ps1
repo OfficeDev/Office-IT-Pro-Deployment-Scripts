@@ -306,8 +306,10 @@ process {
 
        $additionalLanguages = Get-Unique -InputObject $additionalLanguages -OnType
     
-       if ($additionalLanguages.Contains($primaryLanguage)) {
-           $additionalLanguages.Remove($primaryLanguage)
+       if ($additionalLanguages) {
+           if ($additionalLanguages.Contains($primaryLanguage)) {
+               $additionalLanguages.Remove($primaryLanguage)
+           }
        }
 
        odtAddProduct -ConfigDoc $ConfigFile -ProductId $productId -ExcludeApps $excludeApps -Version $officeConfig.Version `

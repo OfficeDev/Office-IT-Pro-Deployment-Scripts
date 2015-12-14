@@ -1,7 +1,11 @@
 <Configuration>
-    <Add OfficeClientEdition="64" Branch="Current" SourcePath="E:\UpdateTarget4\Current">
-        <Product ID="O365ProPlusRetail">
-            <Language ID="en-us"/>
-        </Product>
-    </Add>
+  <Add OfficeClientEdition="64" Branch="Current">
+    <Product ID="O365ProPlusRetail">
+      <Language ID="en-us" />
+      <Language ID="es-es" />
+      <Language ID="fr-fr" />
+    </Product>
+  </Add>
+  <Updates Enabled="True" />
+  <Display Level="Full" AcceptEULA="True" />
 </Configuration>
