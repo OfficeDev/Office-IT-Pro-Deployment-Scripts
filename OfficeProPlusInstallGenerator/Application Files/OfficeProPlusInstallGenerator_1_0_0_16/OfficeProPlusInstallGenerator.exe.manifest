@@ -80,13 +80,6 @@
   <dependency>
     <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="OfficeInstallGenerator.dll" size="4036608">
       <assemblyIdentity name="OfficeInstallGenerator" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
-      <hash>
-        <dsig:Transforms>
-          <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
-        </dsig:Transforms>
-        <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>P312cZZYlfrJwFiVeA54jd3neXGcI+59Js2ipN6EJ8w=</dsig:DigestValue>
-      </hash>
     </dependentAssembly>
   </dependency>
   <dependency>
@@ -202,13 +195,6 @@
   <file name="InstallOffice.cs" size="22103">
   </file>
   <file name="OfficeProPlusInstallGenerator.exe.config" size="756">
-    <hash>
-      <dsig:Transforms>
-        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
-      </dsig:Transforms>
-      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>GieiOH2rVwegyRinQLKWctnRQ1ZQ/uLQ11n8nuxZags=</dsig:DigestValue>
-    </hash>
   </file>
   <file name="wixTools.zip" size="39973772">
   </file>
@@ -219,4 +205,4 @@
       <!--<supportedOS Id="{35138b9a-5d96-4fbd-8e2d-a2440225f93a}"/>-->
     </application>
   </compatibility>
-<publisherIdentity name="CN=VCG\rsmith" issuerKeyHash="32ffa5954d1260e5fb3891879a8efd978cead7db" /><Signature Id="StrongNameSignature" xmlns="http://www.w3.org/2000/09/xmldsig#"><SignedInfo><CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" /><SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha256" /><Reference URI=""><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature" /><Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" /></Transforms><DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" /><DigestValue>I6CkSoTD994r7WCPgLA9hqzto9ykIxNVB5wTdE+KUjQ=</DigestValue></Reference></SignedInfo><SignatureValue>VH6zgnfyTxa+brvNuD0X4rS0AgzcbZNjppQMDf9+oeqx4NoS5ItCgeKvquxPqdVc6kBH0mZiRZtQhrO/+OPlSo+gZL2T29LbMN6D/FXY/IdRAZQQ1M6fk5HTl1BB3tlGzJm+hSJud8+R4ZKRRN9E23rMUsWkjaPjZgxw4K5s2UY=</SignatureValue><KeyInfo Id="StrongNameKeyInfo"><KeyValue><RSAKeyValue><Modulus>vsvMA787bgulTv2Y8hYhkM/iflTTBQMD/DkA60rNCaww9EaMj6B+vXOgFBHIsOzwaQXjWe/7KPQ06+ZXrMPqoO4KTNEN9ZfFYgx2eMsJLQV5kbbSAUYhTXil84jEAtAYzPJfSJl1C3KfGEiVE35dEb7yfoNse95f3XGZk1bhiQ0=</Modulus><Exponent>AQAB</Exponent></RSAKeyValue></KeyValue><msrel:RelData xmlns:msrel="http://schemas.microsoft.com/windows/rel/2005/reldata"><r:license xmlns:r="urn:mpeg:mpeg21:2003:01-REL-R-NS" xmlns:as="http://schemas.microsoft.com/windows/pki/2005/Authenticode"><r:grant><as:ManifestInformation Hash="34528a4f74139c07551323a4dca3edac863db0808f60ed2bdef7c3844aa4a023" Description="" Url=""><as:assemblyIdentity name="OfficeProPlusInstallGenerator.exe" version="1.0.0.16" publicKeyToken="9480503a6c446caa" language="neutral" processorArchitecture="msil" type="win32" /></as:ManifestInformation><as:SignedBy /><as:AuthenticodePublisher><as:X509SubjectName>CN=VCG\rsmith</as:X509SubjectName></as:AuthenticodePublisher></r:grant><r:issuer><Signature Id="AuthenticodeSignature" xmlns="http://www.w3.org/2000/09/xmldsig#"><SignedInfo><CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" /><SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha256" /><Reference URI=""><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature" /><Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" /></Transforms><DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" /><DigestValue>8G/qs7ZBE04gblDdpyHu97LvLGpkEQimxpAnYsLWGKY=</DigestValue></Reference></SignedInfo><SignatureValue>StqQLZVCnWuiSEb2icGPOm42sDof+gEjkMHpJ5DuFy/PX8mMkpMlISWCR6D9an0R02mIAg17aSYpIPn8Avv+S2mF4xrgX3jJaiR23IQyRrGTooJ5rbzfVY3Z6e3HahiTqlK7x8npQFzM1BhYzUU1/fs3h1zNNGFuq5mP+bcxyfc=</SignatureValue><KeyInfo><KeyValue><RSAKeyValue><Modulus>vsvMA787bgulTv2Y8hYhkM/iflTTBQMD/DkA60rNCaww9EaMj6B+vXOgFBHIsOzwaQXjWe/7KPQ06+ZXrMPqoO4KTNEN9ZfFYgx2eMsJLQV5kbbSAUYhTXil84jEAtAYzPJfSJl1C3KfGEiVE35dEb7yfoNse95f3XGZk1bhiQ0=</Modulus><Exponent>AQAB</Exponent></RSAKeyValue></KeyValue><X509Data><X509Certificate>MIIBwTCCASqgAwIBAgIQZy0rS2G335dDmsz0vcalWzANBgkqhkiG9w0BAQsFADAfMR0wGwYDVQQDHhQAVgBDAEcAXAByAHMAbQBpAHQAaDAeFw0xNTEyMTExODIxNTBaFw0xNjEyMTEwMDIxNTBaMB8xHTAbBgNVBAMeFABWAEMARwBcAHIAcwBtAGkAdABoMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC+y8wDvztuC6VO/ZjyFiGQz+J+VNMFAwP8OQDrSs0JrDD0RoyPoH69c6AUEciw7PBpBeNZ7/so9DTr5lesw+qg7gpM0Q31l8ViDHZ4ywktBXmRttIBRiFNeKXziMQC0BjM8l9ImXULcp8YSJUTfl0RvvJ+g2x73l/dcZmTVuGJDQIDAQABMA0GCSqGSIb3DQEBCwUAA4GBAAdkAUSV5vcN3W32T0EwHkaY8ngiJ04U8cnLgrlUbF7Pr2+JNj+Bq/GWTH9tULK7zbtBZ1dOSlxM4OZmx+ZNot06QLHGvqNbncNocvJ+2adb1YyEHDxtFnWDPz6X4BIvgDU1eswrvVGe5wHph+CfVk0mEoJAibJc01WQqb0nbixU</X509Certificate></X509Data></KeyInfo></Signature></r:issuer></r:license></msrel:RelData></KeyInfo></Signature></asmv1:assembly>
+</asmv1:assembly>
