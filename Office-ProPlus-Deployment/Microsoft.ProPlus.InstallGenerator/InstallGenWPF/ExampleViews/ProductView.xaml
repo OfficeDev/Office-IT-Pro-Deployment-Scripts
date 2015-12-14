@@ -34,8 +34,6 @@
                 <RowDefinition Height="100"></RowDefinition>
             </Grid.RowDefinitions>
 
-
-
             <Grid Grid.Row="1" >
                 <Grid.RowDefinitions>
                     <RowDefinition></RowDefinition>
@@ -398,10 +396,5 @@
             </Grid>
         </Grid>
 
-
-
     </AdornerDecorator>
-
-
-
 </UserControl>

@@ -170,7 +170,7 @@
          <xsl:value-of select="name(.)"/>
       </SPAN>
       <SPAN class="m">="</SPAN>
-      <B style="color:#657b83">
+      <B style="color:#2aa1ae">
          <xsl:value-of select="."/>
       </B>
       <SPAN class="m">" </SPAN>
