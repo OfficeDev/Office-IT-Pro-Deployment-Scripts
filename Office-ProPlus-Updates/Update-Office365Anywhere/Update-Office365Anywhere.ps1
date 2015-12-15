@@ -157,12 +157,67 @@ Function Test-UpdateSource() {
     )
 
   	$uri = [System.Uri]$UpdateSource
-    if($uri.Host -ne $NULL){
+
+    [bool]$sourceIsAlive = $false
+
+    if($uri.Host){
 	    $sourceIsAlive = Test-Connection -Count 1 -computername $uri.Host -Quiet
     }else{
         $sourceIsAlive = Test-Path $uri.LocalPath -ErrorAction SilentlyContinue
     }
+
+    if ($sourceIsAlive) {
+        $sourceIsAlive = Validate-UpdateSource -UpdateSource $UpdateSource
+    }
+
     return $sourceIsAlive
+}
+
+Function Validate-UpdateSource() {
+    [CmdletBinding()]
+    Param(
+        [Parameter(Mandatory=$true)]
+        [string] $UpdateSource = $NULL
+    )
+
+    [bool]$validUpdateSource = $false
+    [string]$cabPath = ""
+
+    if ($UpdateSource) {
+        $mainRegPath = Get-OfficeCTRRegPath
+        $configRegPath = $mainRegPath + "\Configuration"
+        $currentplatform = (Get-ItemProperty HKLM:\$configRegPath -Name Platform -ErrorAction SilentlyContinue).Platform
+        $updateToVersion = (Get-ItemProperty HKLM:\$configRegPath -Name UpdateToVersion -ErrorAction SilentlyContinue).UpdateToVersion
+
+        if ($updateToVersion) {
+            if ($currentplatform.ToLower() -eq "x86") {
+               $cabPath = $UpdateSource + "\Office\Data\v32_" + $updateToVersion + ".cab"
+            }
+            if ($currentplatform.ToLower() -eq "x64") {
+               $cabPath = $UpdateSource + "\Office\Data\v64_" + $updateToVersion + ".cab"
+            }
+        } else {
+            if ($currentplatform.ToLower() -eq "x86") {
+               $cabPath = $UpdateSource + "\Office\Data\v32.cab"
+            }
+            if ($currentplatform.ToLower() -eq "x64") {
+               $cabPath = $UpdateSource + "\Office\Data\v64.cab"
+            }
+        }
+
+        if ($cabPath.ToLower().StartsWith("http")) {
+           $cabPath = $cabPath.Replace("\", "/")
+           $validUpdateSource = Test-URL -url $cabPath
+        } else {
+           $validUpdateSource = Test-Path -Path $cabPath
+        }
+        
+        if (!$validUpdateSource) {
+           throw "Invalid UpdateSource. File Not Found: $cabPath"
+        }
+    }
+
+    return $validUpdateSource
 }
 
 Function Update-Office365Anywhere() {
@@ -336,6 +391,7 @@ Will generate the Office Deployment Tool (ODT) configuration XML based on the lo
 
     if ($isAlive) {
        Write-Host "Starting Update process"
+       Write-Host "Update Source: $currentUpdateSource" 
        Write-Log -Message "Will now execute $oc2rcFilePath $oc2rcParams" -severity 1 -component "Office 365 Update Anywhere"
        StartProcess -execFilePath $oc2rcFilePath -execParams $oc2rcParams
 
@@ -544,6 +600,29 @@ Function Wait-ForOfficeCTRUpadate() {
           Write-Host "Update Not Running"
        } 
     }
+}
+
+function Test-URL {
+   param( 
+      [string]$url = $NULL
+   )
+
+   [bool]$validUrl = $false
+   try {
+     $req = [System.Net.HttpWebRequest]::Create($url);
+     $res = $req.GetResponse()
+
+     if($res.StatusCode -eq "OK") {
+        $validUrl = $true
+     }
+     $res.Close(); 
+   } catch {
+      Write-Host "Invalid UpdateSource. File Not Found: $url" -ForegroundColor Red
+      $validUrl = $false
+      throw;
+   }
+
+   return $validUrl
 }
 
 Update-Office365Anywhere -WaitForUpdateToFinish $WaitForUpdateToFinish -EnableUpdateAnywhere $EnableUpdateAnywhere -ForceAppShutdown $ForceAppShutdown -UpdatePromptUser $UpdatePromptUser -DisplayLevel $DisplayLevel -UpdateToVersion $UpdateToVersion -LogPath $LogPath -LogName $LogName
