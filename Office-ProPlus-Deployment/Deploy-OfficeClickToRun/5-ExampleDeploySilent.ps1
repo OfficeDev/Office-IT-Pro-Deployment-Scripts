@@ -4,10 +4,18 @@
 #  Office ProPlus Click-To-Run deployment script that will be adaptive to the configuration of the computer it is run from
 
 Process {
+ $scriptPath = "."
+
+ if ($PSScriptRoot) {
+   $scriptPath = $PSScriptRoot
+ } else {
+   $scriptPath = split-path -parent $MyInvocation.MyCommand.Definition
+ }
+
 #Importing all required functions
-. $PSScriptRoot\Generate-ODTConfigurationXML.ps1
-. $PSScriptRoot\Edit-OfficeConfigurationFile.ps1
-. $PSScriptRoot\Install-OfficeClickToRun.ps1
+. $scriptPath\Generate-ODTConfigurationXML.ps1
+. $scriptPath\Edit-OfficeConfigurationFile.ps1
+. $scriptPath\Install-OfficeClickToRun.ps1
 
 $targetFilePath = "configuration.xml"
 
