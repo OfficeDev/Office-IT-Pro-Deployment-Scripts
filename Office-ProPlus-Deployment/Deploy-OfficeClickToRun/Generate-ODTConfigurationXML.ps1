@@ -300,14 +300,18 @@ process {
          }
        }
 
-       if (($Languages -eq "CurrentOfficeLanguages") -or ($Languages -eq "AllInUseLanguages")) {
-           $additionalLanguages += $officeAddLangs
+       if ($officeAddLangs) {
+           if (($Languages -eq "CurrentOfficeLanguages") -or ($Languages -eq "AllInUseLanguages")) {
+               $additionalLanguages += $officeAddLangs
+           }
        }
 
-       $additionalLanguages = Get-Unique -InputObject $additionalLanguages -OnType
+       if ($additionalLanguages) {
+           $additionalLanguages = Get-Unique -InputObject $additionalLanguages -OnType
     
-       if ($additionalLanguages.Contains($primaryLanguage)) {
-           $additionalLanguages.Remove($primaryLanguage)
+           if ($additionalLanguages.Contains($primaryLanguage)) {
+               $additionalLanguages.Remove($primaryLanguage)
+           }
        }
 
        odtAddProduct -ConfigDoc $ConfigFile -ProductId $productId -ExcludeApps $excludeApps -Version $officeConfig.Version `

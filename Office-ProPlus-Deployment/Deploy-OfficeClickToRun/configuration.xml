@@ -2,8 +2,6 @@
   <Add OfficeClientEdition="64" Branch="Current">
     <Product ID="O365ProPlusRetail">
       <Language ID="en-us" />
-      <Language ID="es-es" />
-      <Language ID="fr-fr" />
     </Product>
   </Add>
   <Updates Enabled="True" />
