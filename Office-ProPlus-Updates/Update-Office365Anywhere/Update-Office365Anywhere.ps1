@@ -236,7 +236,7 @@ in certain scenarios it may be useful to have the update process wait for the up
 
 .NOTES   
 Name: Update-Office365Anywhere
-Version: 1.0.1
+Version: 1.1.0
 DateCreated: 2015-08-28
 DateUpdated: 2015-09-03
 
@@ -301,6 +301,7 @@ Will generate the Office Deployment Tool (ODT) configuration XML based on the lo
         
     )
 
+    try {
     $Global:UpdateAnywhereLogPath = $LogPath;
     $Global:UpdateAnywhereLogFileName = $LogName;
 
@@ -392,7 +393,7 @@ Will generate the Office Deployment Tool (ODT) configuration XML based on the lo
     if ($isAlive) {
        Write-Host "Starting Update process"
        Write-Host "Update Source: $currentUpdateSource" 
-       Write-Log -Message "Will now execute $oc2rcFilePath $oc2rcParams" -severity 1 -component "Office 365 Update Anywhere"
+       Write-Log -Message "Will now execute $oc2rcFilePath $oc2rcParams with UpdateSource:$currentUpdateSource" -severity 1 -component "Office 365 Update Anywhere"
        StartProcess -execFilePath $oc2rcFilePath -execParams $oc2rcParams
 
        if ($WaitForUpdateToFinish) {
@@ -402,6 +403,10 @@ Will generate the Office Deployment Tool (ODT) configuration XML based on the lo
        $currentUpdateSource = (Get-ItemProperty HKLM:\$configRegPath -Name UpdateUrl -ErrorAction SilentlyContinue).UpdateUrl
        Write-Host "Update Source '$currentUpdateSource' Unavailable"
        Write-Log -Message "Update Source '$currentUpdateSource' Unavailable" -severity 1 -component "Office 365 Update Anywhere"
+    }
+    } catch {
+       Write-Log -Message $_.Exception.Message -severity 1 -component $LogFileName
+       throw;
     }
 }
 
