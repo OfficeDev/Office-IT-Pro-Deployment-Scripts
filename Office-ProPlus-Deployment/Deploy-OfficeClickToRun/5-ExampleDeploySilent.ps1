@@ -15,7 +15,9 @@ $targetFilePath = "configuration.xml"
 #from which the script is run.  It will then remove the Version attribute from the XML to ensure the installation gets the latest version
 #when updating an existing install and then it will initiate a install
 
-Generate-ODTConfigurationXml -Languages AllInUseLanguages -TargetFilePath $targetFilePath | Set-ODTAdd -Version $NULL | Install-OfficeClickToRun
+#This script additionally sets the "AcceptEULA" to "True" and the display "Level" to "None" so the install is silent.
+
+Generate-ODTConfigurationXml -Languages AllInUseLanguages -TargetFilePath $targetFilePath | Set-ODTAdd -Version $NULL | Set-ODTDisplay -AcceptEULA $true -Level None | Install-OfficeClickToRun
 
 # Configuration.xml file for Click-to-Run for Office 365 products reference. https://technet.microsoft.com/en-us/library/JJ219426.aspx
 }
