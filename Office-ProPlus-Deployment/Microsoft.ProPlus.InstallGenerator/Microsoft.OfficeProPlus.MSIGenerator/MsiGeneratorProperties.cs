@@ -22,5 +22,7 @@ namespace Microsoft.OfficeProPlus.InstallGenerator
 
         public Guid ProductId { get; set; }
 
+        public string WixToolsPath { get; set; }
+
     }
 }

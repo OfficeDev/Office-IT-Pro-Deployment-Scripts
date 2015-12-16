@@ -55,8 +55,17 @@ public class MsiGenerator
         project.Load += project_Load;
         project.AfterInstall += project_AfterInstall;
 
-        Compiler.WixSdkLocation = @"wixTools\sdk";
-        Compiler.WixLocation = @"wixTools\";
+        if (!string.IsNullOrEmpty(installProperties.WixToolsPath))
+        {
+            Compiler.WixLocation = installProperties.WixToolsPath + @"\";
+            Compiler.WixSdkLocation = installProperties.WixToolsPath + @"\sdk\";
+        }
+        else
+        {
+            Compiler.WixLocation = @"wixTools\";
+            Compiler.WixSdkLocation = @"wixTools\sdk\";
+        }
+
         Compiler.BuildMsi(project);
 
         var installDirectory = new MsiGeneratorReturn

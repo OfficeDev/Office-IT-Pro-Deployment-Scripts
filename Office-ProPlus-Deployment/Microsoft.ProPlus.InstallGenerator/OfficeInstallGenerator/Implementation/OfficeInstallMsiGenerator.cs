@@ -18,11 +18,13 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
             var exePath = Path.GetDirectoryName(installProperties.ExecutablePath) + @"\InstallOfficeProPlus.exe";
             try
             {
-                var wixDirectory = ZipExtractor.AssemblyDirectory + @"\wixTools";
+                var tmpDir = Environment.ExpandEnvironmentVariables("%temp%");
+
+                var wixDirectory = tmpDir + @"\wixTools";
                 var wixZip = ZipExtractor.AssemblyDirectory + @"\wixTools.zip";
                 if (!Directory.Exists(wixDirectory))
                 {
-                    ZipExtractor.Extract(wixZip, ZipExtractor.AssemblyDirectory);
+                    ZipExtractor.Extract(wixZip, tmpDir);
                 }
 
                 var exeGenerator = new OfficeInstallExecutableGenerator();
@@ -45,7 +47,8 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
                     {
                         installProperties.ConfigurationXmlPath
                     },
-                    ProductId = new Guid("8AA11E8A-A882-45CC-B52C-80149B4CF47A")
+                    ProductId = new Guid("8AA11E8A-A882-45CC-B52C-80149B4CF47A"),
+                    WixToolsPath = wixDirectory
                 });
 
                 var installDirectory = new OfficeInstallReturn
