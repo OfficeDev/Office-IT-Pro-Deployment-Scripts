@@ -19,7 +19,7 @@ and the local languages that are used on the local computer.  If Office isn't in
 specified in the 
 
 .NOTES   
-Name: Generate-ODTConfigurationXm
+Name: Generate-ODTConfigurationXml
 Version: 1.0.3
 DateCreated: 2015-08-24
 DateUpdated: 2015-11-23
@@ -96,7 +96,7 @@ param(
     [bool]$IncludeUpdatePathAsSourcePath = $false,
 
     [Parameter(ValueFromPipelineByPropertyName=$true)]
-    [string]$DefaultConfigurationXml = (Join-Path $PSScriptRoot "DefaultConfiguration.xml") 
+    [string]$DefaultConfigurationXml = $NULL
 )
 
 begin {
@@ -111,6 +111,12 @@ begin {
 
     $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet(‘DefaultDisplayPropertySet’,[string[]]$defaultDisplaySet)
     $PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultDisplayPropertySet)
+
+    $scriptPath = GetScriptPath
+
+    if (!($DefaultConfigurationXml)) {
+      $DefaultConfigurationXml = (Join-Path $scriptPath "DefaultConfiguration.xml") 
+    }
 }
 
 process {
@@ -1623,6 +1629,19 @@ Function GetFilePath() {
     return $TargetFilePath
 }
 
+Function GetScriptPath() {
+ process {
+     [string]$scriptPath = "."
+
+     if ($PSScriptRoot) {
+       $scriptPath = $PSScriptRoot
+     } else {
+       $scriptPath = split-path -parent $MyInvocation.MyCommand.Definition
+     }
+
+     return $scriptPath
+ }
+}
 
 function Format-XML ([xml]$xml, $indent=2) { 
     $StringWriter = New-Object System.IO.StringWriter 
