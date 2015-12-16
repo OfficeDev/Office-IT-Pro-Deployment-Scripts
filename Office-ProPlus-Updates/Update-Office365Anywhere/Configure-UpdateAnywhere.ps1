@@ -79,6 +79,8 @@ Configure-UpdateAnywhere -GpoName UpdateGPO
 
     Process {
 
+    $scriptRoot = GetScriptRoot
+
     if ($Domain) {
       $Root = [ADSI]"LDAP://$Domain/RootDSE"
     } else {
@@ -122,12 +124,12 @@ Configure-UpdateAnywhere -GpoName UpdateGPO
    
 	Set-Location $scriptsPath
 
-    $sourceFileXmlPath = Join-Path $PSScriptRoot "Files.xml"
+    $sourceFileXmlPath = Join-Path $scriptRoot "Files.xml"
     $targetFileXmlPath = Join-Path $filesPath "Files.xml"
 
     Copy-Item -Path $sourceFileXmlPath -Destination $targetFileXmlPath -Force
 
-    $sourceXmlPath = Join-Path $PSScriptRoot "ScheduledTasks.xml"
+    $sourceXmlPath = Join-Path $scriptRoot "ScheduledTasks.xml"
     $targetXmlPath = Join-Path $scriptsPath "ScheduledTasks.xml"
 
     [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
@@ -143,7 +145,7 @@ Configure-UpdateAnywhere -GpoName UpdateGPO
      
     Copy-Item -Path $sourceXmlPath -Destination $targetXmlPath -Force
 
-    $sourcePsPath = Join-Path $PSScriptRoot "Update-Office365Anywhere.ps1"
+    $sourcePsPath = Join-Path $scriptRoot "Update-Office365Anywhere.ps1"
     $targetPsPath = Join-Path $netlogonPath "Update-Office365Anywhere.ps1"
     Copy-Item -Path $sourcePsPath -Destination $targetPsPath -Force
 
@@ -229,4 +231,18 @@ Configure-UpdateAnywhere -GpoName UpdateGPO
 
     }
 
+}
+
+Function GetScriptRoot() {
+ process {
+     [string]$scriptPath = "."
+
+     if ($PSScriptRoot) {
+       $scriptPath = $PSScriptRoot
+     } else {
+       $scriptPath = split-path -parent $MyInvocation.MyCommand.Definition
+     }
+
+     return $scriptPath
+ }
 }

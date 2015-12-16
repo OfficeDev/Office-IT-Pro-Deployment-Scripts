@@ -54,6 +54,8 @@ function Install-OfficeClickToRun {
 
     )
 
+    $scriptRoot = GetScriptRoot
+
     #Load the file
     [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
         
@@ -71,14 +73,14 @@ function Install-OfficeClickToRun {
     [string]$officeCtrPath = ""
 
     if ($OfficeVersion -eq "Office2013") {
-        $officeCtrPath = Join-Path $PSScriptRoot "Office2013Setup.exe"
+        $officeCtrPath = Join-Path $scriptRoot "Office2013Setup.exe"
         if (!(Test-Path -Path $officeCtrPath)) {
            throw "Cannot find the Office 2013 Setup executable"
         }
     }
 
     if ($OfficeVersion -eq "Office2016") {
-        $officeCtrPath = Join-Path $PSScriptRoot "Office2016Setup.exe"
+        $officeCtrPath = Join-Path $scriptRoot "Office2016Setup.exe"
         if (!(Test-Path -Path $officeCtrPath)) {
            throw "Cannot find the Office 2016 Setup executable"
         }
@@ -86,7 +88,7 @@ function Install-OfficeClickToRun {
     
     if (!($TargetFilePath)) {
       if ($ConfigurationXML) {
-         $TargetFilePath = Join-Path $PSScriptRoot "configuration.xml"
+         $TargetFilePath = Join-Path $scriptRoot "configuration.xml"
          New-Item -Path $TargetFilePath -ItemType "File" -Value $ConfigurationXML -Force | Out-Null
       }
     }
@@ -134,19 +136,21 @@ Function checkForLanguagesInSourceFiles() {
         [string]$Edition = $NULL
     )
 
+    $scriptRoot = GetScriptRoot
+
     $returnLanguages = @()
 
     if (!($SourcePath)) {
-      $localSource = Join-Path $PSScriptRoot "Office\Data"
+      $localSource = Join-Path $scriptRoot "Office\Data"
       if (Test-Path -Path $localSource) {
-         $SourcePath = $PSScriptRoot
+         $SourcePath = $scriptRoot
       }
     }
 
     if (!($Version)) {
        $localPath = $env:TEMP
-       $cabPath = Join-Path $PSScriptRoot "Office\Data\v$Edition.cab"
-       $cabFolderPath = Join-Path $PSScriptRoot "Office\Data"
+       $cabPath = Join-Path $scriptRoot "Office\Data\v$Edition.cab"
+       $cabFolderPath = Join-Path $scriptRoot "Office\Data"
        $vdXmlPath = Join-Path $localPath "\VersionDescriptor.xml"
        
        if (Test-Path -Path $cabPath) {
@@ -156,7 +160,7 @@ Function checkForLanguagesInSourceFiles() {
        }
     }
 
-    $verionDir = Join-Path $PSScriptRoot "Office\Data\$Version"
+    $verionDir = Join-Path $scriptRoot "Office\Data\$Version"
     
     if (Test-Path -Path $verionDir) {
        foreach ($lang in $Languages) {
@@ -874,5 +878,17 @@ Function StartProcess {
     }
 }
 
+Function GetScriptRoot() {
+ process {
+     [string]$scriptPath = "."
 
+     if ($PSScriptRoot) {
+       $scriptPath = $PSScriptRoot
+     } else {
+       $scriptPath = split-path -parent $MyInvocation.MyCommand.Definition
+     }
+
+     return $scriptPath
+ }
+}
 
