@@ -42,11 +42,19 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ProjectFiles", "ProjectFile
 		ProjectFiles\WixSharp.UI.dll = ProjectFiles\WixSharp.UI.dll
 		ProjectFiles\WixSharp.UI.xml = ProjectFiles\WixSharp.UI.xml
 		ProjectFiles\WixSharp.xml = ProjectFiles\WixSharp.xml
+		ProjectFiles\WpfAnimatedGif.dll = ProjectFiles\WpfAnimatedGif.dll
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.OfficeProPlus.MSIGen", "Microsoft.OfficeProPlus.MSIGenerator\Microsoft.OfficeProPlus.MSIGen.csproj", "{57E3E5C7-FF48-4538-8B90-5AB106D87C6D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.OfficeProPlus.InstallGen.Presentation", "InstallGenWPF\Microsoft.OfficeProPlus.InstallGen.Presentation.csproj", "{56E8080F-FFEB-47CD-ADB9-92245F92565B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WixSharp45", "WixSharp45", "{F9C55054-8605-4ED6-9A6C-8101035D65BC}"
+	ProjectSection(SolutionItems) = preProject
+		ProjectFiles\WixSharp45\WixSharp.dll = ProjectFiles\WixSharp45\WixSharp.dll
+		ProjectFiles\WixSharp45\WixSharp.Msi.dll = ProjectFiles\WixSharp45\WixSharp.Msi.dll
+		ProjectFiles\WixSharp45\WixSharp.UI.dll = ProjectFiles\WixSharp45\WixSharp.UI.dll
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -106,5 +114,6 @@ Global
 		{B633E804-DC0C-4D9D-9E61-DD3D9975AE58} = {FFAC36EF-E398-487F-BD4A-6BCE7F77D319}
 		{57E3E5C7-FF48-4538-8B90-5AB106D87C6D} = {6676105C-F83B-4B9F-B055-7056C8695E8A}
 		{56E8080F-FFEB-47CD-ADB9-92245F92565B} = {5B15E1D7-8BC7-4388-A02A-346BCEB9B089}
+		{F9C55054-8605-4ED6-9A6C-8101035D65BC} = {0DBDAE31-AE63-4704-893E-ACBF5064379F}
 	EndGlobalSection
 EndGlobal
