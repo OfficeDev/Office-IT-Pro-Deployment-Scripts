@@ -5,6 +5,7 @@
                     mc:Ignorable="options">
 
     <Color x:Key="BlackColor">#FFFFFFFF</Color>
+    <Color x:Key="RedColor">#FFC80000</Color>
     <Color x:Key="WhiteColor">#FF252525</Color>
 
     <Color x:Key="Gray1">#FFF9F9F9</Color>
@@ -23,6 +24,7 @@
     <SolidColorBrush x:Key="TextBrush" Color="{StaticResource BlackColor}" options:Freeze="True" />
     <SolidColorBrush x:Key="LabelTextBrush" Color="{StaticResource BlackColor}" options:Freeze="True" />
     <SolidColorBrush x:Key="BlackColorBrush" Color="{StaticResource BlackColor}" options:Freeze="True" />
+    <SolidColorBrush x:Key="RedColorBrush" Color="{StaticResource RedColor}" options:Freeze="True" />
     <SolidColorBrush x:Key="TextBoxMouseOverInnerBorderBrush" Color="{StaticResource BlackColor}" options:Freeze="True" />
     <SolidColorBrush x:Key="TextBoxFocusBorderBrush" Color="{StaticResource BlackColor}" options:Freeze="True" />
     <SolidColorBrush x:Key="ButtonMouseOverBorderBrush" Color="{StaticResource BlackColor}" options:Freeze="True" />

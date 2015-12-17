@@ -27,9 +27,6 @@
             </Grid>
 
             <controls:MetroAnimatedSingleRowTabControl Grid.Row="0" Grid.Column="0" x:Name="MainTabControl" >
-                <TabItem Header="Configuration xml">
-                    <xmlBrowser:XmlBrowserControl x:Name="xmlBrowser" Margin="10" />
-                </TabItem>
                 <TabItem Header="Install wrapper">
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -47,34 +44,35 @@
                         </Grid.RowDefinitions>
 
                         <Grid Grid.Column="0" Grid.Row="1">
-                                <Grid.RowDefinitions>
-                                <RowDefinition Height="50"></RowDefinition>
-                            </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="180" />
-                                    <ColumnDefinition Width="150" />
-                                    <ColumnDefinition Width="150" />
-                                </Grid.ColumnDefinitions>
-                                <Label Content="Install Type" Style="{StaticResource MetroLabelHeader}" HorizontalAlignment="Left" Grid.Column="0" />
-                                <RadioButton x:Name="InstallExecutable" Grid.Column="1" Checked="InstallExecutable_OnChecked"
-                                         Content="Executable"
-                                         GroupName="1" IsChecked="True"  FontSize="20" />
-                            <RadioButton x:Name="InstallMsi" Grid.Column="2" Checked="InstallExecutable_OnChecked"
-                                         Content="MSI"
-                                         GroupName="1" FontSize="20" />
-                        </Grid>
-
-                        <Border Grid.Column="0" Grid.Row="3" BorderBrush="Gainsboro" BorderThickness="1" Width="870" HorizontalAlignment="Left">
-                        <Grid>
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="50"></RowDefinition>
                                 <RowDefinition Height="50"></RowDefinition>
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="180" />
+                                <ColumnDefinition Width="150" />
+                                <ColumnDefinition Width="150" />
                             </Grid.ColumnDefinitions>
+                            <Label Content="Install Type" Style="{StaticResource MetroLabelHeader}" HorizontalAlignment="Left" Grid.Column="0" />
+                            <RadioButton x:Name="InstallMsi" Grid.Column="1" Checked="InstallExecutable_OnChecked"
+                                         Content="MSI" IsChecked="True"
+                                         GroupName="1" FontSize="20"  />
+                            
+                            <RadioButton x:Name="InstallExecutable" Grid.Column="2" Checked="InstallExecutable_OnChecked"
+                                         Content="Executable" IsChecked="False"
+                                         GroupName="1" FontSize="20"  />
+                        </Grid>
 
-                            <Grid Grid.Row="0" Grid.Column="0">
+                        <Border Grid.Column="0" Grid.Row="3" BorderBrush="Gainsboro" BorderThickness="1" Width="870" HorizontalAlignment="Left">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="50"></RowDefinition>
+                                    <RowDefinition Height="50"></RowDefinition>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <Grid Grid.Row="0" Grid.Column="0">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="50"></RowDefinition>
                                     </Grid.RowDefinitions>
@@ -86,8 +84,8 @@
                                      x:Name="IncludeBuild" Checked="IncludeBuild_OnChecked" Unchecked="IncludeBuild_OnChecked" IsEnabled="True" ></CheckBox>
                                     <Label Content="Include build files in installation file"  HorizontalAlignment="Center" VerticalAlignment="Center"
                                            Style="{StaticResource MetroLabelHeader}" FontSize="18" Grid.Column="0"  />
-                            </Grid>
-                            <Grid  Grid.Row="1" Grid.Column="0">
+                                </Grid>
+                                <Grid  Grid.Row="1" Grid.Column="0">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="50"></RowDefinition>
                                     </Grid.RowDefinitions>
@@ -100,26 +98,26 @@
                                         <ColumnDefinition Width="90" />
                                         <ColumnDefinition Width="80" />
                                     </Grid.ColumnDefinitions>
-                                
+
                                     <Label x:Name="SourcePathLabel" Content="Source Path" Style="{StaticResource MetroLabelHeader}" Grid.Column="0" Grid.Row="0" 
                                    HorizontalAlignment="Right" />
 
-                                <controls:MetroProgressBar x:Name="DownloadProgressBar"  Grid.Column="2" Grid.Row="0" Height="35" Background="White" />
-                                <TextBox x:Name="BuildFilePath" Margin="{StaticResource ControlMargin}" Background="#00ffffff" FontSize="20" Grid.Column="2" Grid.Row="0"
+                                    <controls:MetroProgressBar x:Name="DownloadProgressBar"  Grid.Column="2" Grid.Row="0" Height="35" Background="White" />
+                                    <TextBox x:Name="BuildFilePath" Margin="{StaticResource ControlMargin}" Background="#00ffffff" FontSize="20" Grid.Column="2" Grid.Row="0"
                                              controls:TextBoxHelper.Watermark="Local or UNC Path" Height="35"
                                              controls:TextBoxHelper.ClearTextButton="True"
                                              Text="" TextChanged="BuildFilePath_OnTextChanged" IsEnabled="False" >
-                                </TextBox>
-                                <Button Width="70" Margin="{StaticResource ControlMargin}" Height="40" Grid.Column="3" IsEnabled="False" Grid.Row="0"
+                                    </TextBox>
+                                    <Button Width="70" Margin="{StaticResource ControlMargin}" Height="40" Grid.Column="3" IsEnabled="False" Grid.Row="0"
                                             Content="Browse" x:Name="BrowseSourcePathButton" Click="BrowseSourcePathButton_OnClick"   />
-                                <Button Width="50" Height="40" Grid.Column="4" Grid.Row="0"
+                                    <Button Width="50" Height="40" Grid.Column="4" Grid.Row="0"
                                             Content="Open" x:Name="OpenFolderButton" IsEnabled="False" Click="OpenFolderButton_OnClick"  />
-                                <Button Width="80" Margin="{StaticResource ControlMargin}" Height="40" Grid.Column="5" Grid.Row="0"
+                                    <Button Width="80" Margin="{StaticResource ControlMargin}" Height="40" Grid.Column="5" Grid.Row="0"
                                             Content="Download" x:Name="DownloadButton" Click="DownloadButton_OnClick" IsEnabled="False"   />
 
-                                <Label x:Name="DownloadPercent" Content="" Style="{StaticResource MetroLabelHeader}" Grid.Column="5" Grid.Row="0" />
+                                    <Label x:Name="DownloadPercent" Content="" Style="{StaticResource MetroLabelHeader}" Grid.Column="5" Grid.Row="0" />
                                 </Grid>
-                        </Grid>
+                            </Grid>
                         </Border>
 
                         <Grid Grid.Column="0" Grid.Row="5">
@@ -152,9 +150,9 @@
                                 <ColumnDefinition Width="80" />
                                 <ColumnDefinition Width="60" />
                             </Grid.ColumnDefinitions>
-                            <Label Content="Save Path" Style="{StaticResource MetroLabelHeader}" Grid.Column="0" />
+                            <Label Content="File Path" Style="{StaticResource MetroLabelHeader}" Grid.Column="0" />
                             <TextBox x:Name="FileSavePath" Margin="{StaticResource ControlMargin}" FontSize="20" Grid.Column="1"
-                                             controls:TextBoxHelper.Watermark="Local or UNC Path" Height="35" Grid.Row="0"
+                                             controls:TextBoxHelper.Watermark="Office365ProPlus.msi" Height="35" Grid.Row="0"
                                              controls:TextBoxHelper.ClearTextButton="True" TextChanged="FileSavePath_OnTextChanged"
                                              Text="">
                             </TextBox>
@@ -173,13 +171,17 @@
                                 <RowDefinition Height="80" />
                             </Grid.RowDefinitions>
                             <Button Width="150" Height="65" Grid.Row="0" Grid.Column="0" FontSize="15" HorizontalAlignment="Right"
-                                    Margin="{StaticResource ControlMargin}" IsEnabled="False"
+                                    Margin="{StaticResource ControlMargin}" IsEnabled="True"
                                     Content="Generate" x:Name="GenerateButton" Click="GenerateButton_OnClick"  />
                             <Image x:Name="WaitImage" Visibility="Hidden" HorizontalAlignment="Right" Margin="0 0 45 0" gif:ImageBehavior.RepeatBehavior="Forever" 
                                    Height="60"  Grid.Row="0" Grid.Column="0" gif:ImageBehavior.AnimatedSource="../images/wait.GIF" />
                         </Grid>
-                     </Grid>
+                    </Grid>
                 </TabItem>
+                <TabItem Header="Configuration xml">
+                    <xmlBrowser:XmlBrowserControl x:Name="xmlBrowser" Margin="10" />
+                </TabItem>
+
             </controls:MetroAnimatedSingleRowTabControl>
 
         </DockPanel>

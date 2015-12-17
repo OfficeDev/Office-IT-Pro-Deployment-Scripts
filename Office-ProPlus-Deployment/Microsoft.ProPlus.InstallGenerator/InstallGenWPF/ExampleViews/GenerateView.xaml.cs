@@ -17,6 +17,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using MahApps.Metro.Controls;
+using MahApps.Metro.Controls.Dialogs;
 using MetroDemo.Events;
 using MetroDemo.ExampleWindows;
 using Micorosft.OfficeProPlus.ConfigurationXml;
@@ -40,8 +42,12 @@ namespace MetroDemo.ExampleViews
     {
 
         public event TransitionTabEventHandler TransitionTab;
+        public event MessageEventHandler InfoMessage;
+        public event MessageEventHandler ErrorMessage;
+
         private CancellationTokenSource _tokenSource = new CancellationTokenSource();
         private Task _downloadTask = null;
+
 
         public GenerateView()
         {
@@ -59,11 +65,11 @@ namespace MetroDemo.ExampleViews
                     xmlBrowser.InstallOffice += InstallOffice;
                 }
 
-                InstallExecutable.IsChecked = true;
+                InstallMsi.IsChecked = true;
             }
             catch (Exception ex)
             {
-                ex.LogException();
+                LogErrorMessage(ex);
             }
         }
 
@@ -76,7 +82,7 @@ namespace MetroDemo.ExampleViews
             }
             catch (Exception ex)
             {
-                ex.LogException();
+                LogErrorMessage(ex);
             }
         }
 
@@ -162,15 +168,43 @@ namespace MetroDemo.ExampleViews
                     FixFileExtension();
 
                     var executablePath = "";
-                    await Dispatcher.InvokeAsync(() =>
-                    {
-                        executablePath = FileSavePath.Text.Trim();
-                        WaitImage.Visibility = Visibility.Visible;
-                        GenerateButton.IsEnabled = false;
-                        GenerateButton.Content = "";
-                    });
 
-                    if (string.IsNullOrEmpty(executablePath)) return;
+                    for (var i = 1; i <= 2; i++)
+                    {
+                        await Dispatcher.InvokeAsync(() =>
+                        {
+                            executablePath = FileSavePath.Text.Trim();
+                            WaitImage.Visibility = Visibility.Visible;
+                            GenerateButton.IsEnabled = false;
+                            GenerateButton.Content = "";
+
+                            if (string.IsNullOrEmpty(executablePath))
+                            {
+                                if (i == 1)
+                                {
+                                    GetSaveFilePath();
+                                }
+                            }
+                        });
+
+                        if (!string.IsNullOrEmpty(executablePath))
+                        {
+                            if (executablePath.ToLower().EndsWith(".exe") ||
+                                executablePath.ToLower().EndsWith(".msi"))
+                            {
+                                break;
+                            }
+                            else
+                            {
+                                await Dispatcher.InvokeAsync(GetSaveFilePath);
+                            }
+                        }
+                    }
+
+                    if (string.IsNullOrEmpty(executablePath))
+                    {
+                        throw (new Exception("File Path Required"));
+                    }
 
                     var configFilePath =
                         Environment.ExpandEnvironmentVariables(@"%temp%\OfficeProPlus\" + Guid.NewGuid().ToString() +
@@ -224,11 +258,32 @@ namespace MetroDemo.ExampleViews
                         });
                     }
 
+                    if (InfoMessage != null)
+                    {
+                        if (isInstallExe)
+                        {
+                            InfoMessage(this, new MessageEventArgs()
+                            {
+                                Title = "Generate Executable",
+                                Message = "File Generation Complete"
+                            });
+                        }
+                        else
+                        {
+                            InfoMessage(this, new MessageEventArgs()
+                            {
+                                Title = "Generate MSI",
+                                Message = "File Generation Complete"
+                            });
+                        }
+
+                    }
+
                     await Task.Delay(500);
                 }
                 catch (Exception ex)
                 {
-                    ex.LogException();
+                    LogErrorMessage(ex);
                 }
                 finally
                 {
@@ -339,6 +394,8 @@ namespace MetroDemo.ExampleViews
                     {
                         FileSavePath.Text = Regex.Replace(currentPath, @"\.\w{3}$", ".exe");
                     }
+
+                    FileSavePath.SetValue(TextBoxHelper.WatermarkProperty, "Office365ProPlus.exe");
                 }
                 else
                 {
@@ -347,8 +404,72 @@ namespace MetroDemo.ExampleViews
                     {
                         FileSavePath.Text = Regex.Replace(currentPath, @"\.\w{3}$", ".msi");
                     }
+
+                    FileSavePath.SetValue(TextBoxHelper.WatermarkProperty, "Office365ProPlus.msi");
                 }
             });
+        }
+
+        private void GetSaveFilePath()
+        {
+            var openDialog = new SaveFileDialog()
+            {
+                Filter = "Executable|*.exe"
+            };
+
+            var fileName = "";
+            if (InstallMsi.IsChecked.HasValue && InstallMsi.IsChecked.Value)
+            {
+                fileName = "OfficeProPlus.msi";
+            }
+            else
+            {
+                fileName = "OfficeProPlus.exe";
+            }
+
+            var currentFilePath = FileSavePath.Text;
+            if (string.IsNullOrEmpty(currentFilePath))
+            {
+                openDialog.FileName = fileName;
+            }
+            else
+            {
+                var directoryPath = currentFilePath;
+                if (currentFilePath.ToLower().EndsWith(".exe") || currentFilePath.ToLower().EndsWith(".msi"))
+                {
+                    directoryPath = System.IO.Path.GetDirectoryName(currentFilePath);
+                    fileName = System.IO.Path.GetFileName(currentFilePath);
+                }
+                if (!string.IsNullOrEmpty(directoryPath))
+                {
+                    openDialog.InitialDirectory = directoryPath;
+                    openDialog.FileName = fileName;
+                }
+            }
+
+            if (InstallMsi.IsChecked.HasValue && InstallMsi.IsChecked.Value)
+            {
+                openDialog.Filter = "MSI|*.msi";
+            }
+
+            if (openDialog.ShowDialog() == DialogResult.OK)
+            {
+                var filePath = openDialog.FileName;
+                FileSavePath.Text = filePath;
+            }
+        }
+
+        private void LogErrorMessage(Exception ex)
+        {
+            ex.LogException(false);
+            if (ErrorMessage != null)
+            {
+                ErrorMessage(this, new MessageEventArgs()
+                {
+                    Title = "Error",
+                    Message = ex.Message
+                });
+            }
         }
 
         #region "Events"
@@ -361,7 +482,7 @@ namespace MetroDemo.ExampleViews
             }
             catch (Exception ex)
             {
-                ex.LogException();
+                LogErrorMessage(ex);
             }
         }
 
@@ -398,7 +519,7 @@ namespace MetroDemo.ExampleViews
             }
             catch (Exception ex)
             {
-                ex.LogException();
+                LogErrorMessage(ex);
             }
             finally
             {
@@ -410,7 +531,8 @@ namespace MetroDemo.ExampleViews
         {
             try
             {
-                var openEnabled = false;
+                var openEnabled = true;
+
                 var filePath = FileSavePath.Text.Trim();
                 if (!string.IsNullOrEmpty(filePath))
                 {
@@ -422,7 +544,7 @@ namespace MetroDemo.ExampleViews
             }
             catch (Exception ex)
             {
-                ex.LogException();
+                LogErrorMessage(ex);
             }
             finally
             {
@@ -449,7 +571,7 @@ namespace MetroDemo.ExampleViews
             }
             catch (Exception ex)
             {
-                ex.LogException();
+                LogErrorMessage(ex);
             }
         }
 
@@ -461,7 +583,7 @@ namespace MetroDemo.ExampleViews
             }
             catch (Exception ex)
             {
-                ex.LogException();
+                LogErrorMessage(ex);
             }
         }
         
@@ -499,7 +621,7 @@ namespace MetroDemo.ExampleViews
             }
             catch (Exception ex)
             {
-                ex.LogException();
+                LogErrorMessage(ex);
             }
             finally
             {
@@ -526,11 +648,9 @@ namespace MetroDemo.ExampleViews
             }
             catch (Exception ex)
             {
-                ex.LogException();
+                LogErrorMessage(ex);
             }
         }
-
-
 
         private void displayNext_Click(object sender, RoutedEventArgs e)
         {
@@ -543,7 +663,7 @@ namespace MetroDemo.ExampleViews
             }
             catch (Exception ex)
             {
-                ex.LogException();
+                LogErrorMessage(ex);
             }
         }
 
@@ -551,26 +671,11 @@ namespace MetroDemo.ExampleViews
         {
             try
             {
-                var openDialog = new SaveFileDialog()
-                {
-                    Filter = "Executable|*.exe"
-                };
-
-                if (InstallMsi.IsChecked.HasValue && InstallMsi.IsChecked.Value)
-                {
-                    openDialog.Filter = "MSI|*.msi";
-                }
-
-                if (openDialog.ShowDialog() == DialogResult.OK)
-                {
-                    var filePath = openDialog.FileName;
-                    FileSavePath.Text = filePath;
-
-                }
+                GetSaveFilePath();
             }
             catch (Exception ex)
             {
-                ex.LogException();
+                LogErrorMessage(ex);
             }
         }
 
@@ -605,7 +710,7 @@ namespace MetroDemo.ExampleViews
                 }
                 else
                 {
-                    ex.LogException();
+                    LogErrorMessage(ex);
                 }
             }
         }
@@ -638,7 +743,7 @@ namespace MetroDemo.ExampleViews
             }
             catch (Exception ex)
             {
-                ex.LogException();
+                LogErrorMessage(ex);
             }
             finally
             {
@@ -671,11 +776,10 @@ namespace MetroDemo.ExampleViews
             }
             catch (Exception ex)
             {
-                ex.LogException();
+                LogErrorMessage(ex);
             }
         }
         
-
         #endregion
 
  

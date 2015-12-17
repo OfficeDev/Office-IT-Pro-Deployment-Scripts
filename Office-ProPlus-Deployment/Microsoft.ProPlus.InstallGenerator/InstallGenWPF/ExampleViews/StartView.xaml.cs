@@ -25,12 +25,27 @@ namespace MetroDemo.ExampleViews
     public partial class StartView : UserControl
     {
 
+        public event MessageEventHandler InfoMessage;
+        public event MessageEventHandler ErrorMessage;
+        public event TransitionTabEventHandler TransitionTab;
+
         public StartView()
         {
             InitializeComponent();
         }
         
-        public event TransitionTabEventHandler TransitionTab;
+        private void LogErrorMessage(Exception ex)
+        {
+            ex.LogException(false);
+            if (ErrorMessage != null)
+            {
+                ErrorMessage(this, new MessageEventArgs()
+                {
+                    Title = "Error",
+                    Message = ex.Message
+                });
+            }
+        }
 
         private void StartNew_Click(object sender, RoutedEventArgs e)
         {
@@ -53,7 +68,7 @@ namespace MetroDemo.ExampleViews
             }
             catch (Exception ex)
             {
-                ex.LogException();
+                LogErrorMessage(ex);
             }
         }
 
@@ -102,7 +117,7 @@ namespace MetroDemo.ExampleViews
             }
             catch (Exception ex)
             {
-                ex.LogException();
+                LogErrorMessage(ex);
             }
         }
 

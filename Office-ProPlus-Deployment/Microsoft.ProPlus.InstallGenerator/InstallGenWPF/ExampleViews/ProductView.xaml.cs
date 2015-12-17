@@ -44,7 +44,11 @@ namespace MetroDemo.ExampleViews
         private LanguagesDialog languagesDialog = null;
         private InformationDialog informationDialog = null;
         private CancellationTokenSource _tokenSource = new CancellationTokenSource();
+
         public event TransitionTabEventHandler TransitionTab;
+        public event MessageEventHandler InfoMessage;
+        public event MessageEventHandler ErrorMessage;
+
         private Task _downloadTask = null;
         
         public ProductView()
@@ -70,7 +74,7 @@ namespace MetroDemo.ExampleViews
             }
             catch (Exception ex)
             {
-                ex.LogException();
+                LogErrorMessage(ex);
             }
         }
 
@@ -105,7 +109,7 @@ namespace MetroDemo.ExampleViews
             }
             catch (Exception ex)
             {
-                ex.LogException();
+                LogErrorMessage(ex);
             }
         }
         
@@ -164,7 +168,7 @@ namespace MetroDemo.ExampleViews
             }
             catch (Exception ex)
             {
-                ex.LogException();
+                LogErrorMessage(ex);
             }
         }
 
@@ -688,6 +692,47 @@ namespace MetroDemo.ExampleViews
             }
         }
 
+        private bool TransitionProductTabs(TransitionTabDirection direction)
+        {
+            if (direction == TransitionTabDirection.Forward)
+            {
+                if (MainTabControl.SelectedIndex < MainTabControl.Items.Count - 1)
+                {
+                    MainTabControl.SelectedIndex++;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                if (MainTabControl.SelectedIndex > 0)
+                {
+                    MainTabControl.SelectedIndex--;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private void LogErrorMessage(Exception ex)
+        {
+            ex.LogException(false);
+            if (ErrorMessage != null)
+            {
+                ErrorMessage(this, new MessageEventArgs()
+                {
+                    Title = "Error",
+                    Message = ex.Message
+                });
+            }
+        }
+
         #region "Events"
 
         private async void ProductBranch_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -713,7 +758,7 @@ namespace MetroDemo.ExampleViews
             }
             catch (Exception ex)
             {
-                ex.LogException();
+                LogErrorMessage(ex);
             }
         }
 
@@ -748,7 +793,7 @@ namespace MetroDemo.ExampleViews
                 }
                 else
                 {
-                    ex.LogException();
+                    LogErrorMessage(ex);
                 }
             }
         }
@@ -771,7 +816,7 @@ namespace MetroDemo.ExampleViews
             }
             catch (Exception ex)
             {
-                ex.LogException();
+                LogErrorMessage(ex);
             }
         }
 
@@ -803,7 +848,7 @@ namespace MetroDemo.ExampleViews
             }
             catch (Exception ex)
             {
-                ex.LogException();
+                LogErrorMessage(ex);
             }
         }
         
@@ -833,7 +878,7 @@ namespace MetroDemo.ExampleViews
             }
             catch (Exception ex)
             {
-                ex.LogException();
+                LogErrorMessage(ex);
             }
         }
 
@@ -845,7 +890,7 @@ namespace MetroDemo.ExampleViews
             }
             catch (Exception ex)
             {
-                ex.LogException();
+                LogErrorMessage(ex);
             }
         }
 
@@ -876,7 +921,7 @@ namespace MetroDemo.ExampleViews
             }
             catch (Exception ex)
             {
-                ex.LogException();
+                LogErrorMessage(ex);
             }
         }
 
@@ -907,7 +952,7 @@ namespace MetroDemo.ExampleViews
             }
             catch (Exception ex)
             {
-                ex.LogException();
+                LogErrorMessage(ex);
             }
         }
 
@@ -919,7 +964,7 @@ namespace MetroDemo.ExampleViews
             }
             catch (Exception ex)
             {
-                ex.LogException();
+                LogErrorMessage(ex);
             }
         }
 
@@ -943,7 +988,7 @@ namespace MetroDemo.ExampleViews
             }
             catch (Exception ex)
             {
-                ex.LogException();
+                LogErrorMessage(ex);
             }
         }
 
@@ -955,7 +1000,7 @@ namespace MetroDemo.ExampleViews
             }
             catch (Exception ex)
             {
-                ex.LogException();
+                LogErrorMessage(ex);
             }
         }
 
@@ -967,7 +1012,7 @@ namespace MetroDemo.ExampleViews
             }
             catch (Exception ex)
             {
-                ex.LogException();
+                LogErrorMessage(ex);
             }
         }
 
@@ -979,7 +1024,7 @@ namespace MetroDemo.ExampleViews
             }
             catch (Exception ex)
             {
-                ex.LogException();
+                LogErrorMessage(ex);
             }
         }
 
@@ -999,15 +1044,18 @@ namespace MetroDemo.ExampleViews
             {
                 UpdateXml();
 
-                this.TransitionTab(this, new TransitionTabEventArgs()
+                if (TransitionProductTabs(TransitionTabDirection.Forward))
                 {
-                    Direction = TransitionTabDirection.Forward,
-                    Index = 1
-                });
+                    this.TransitionTab(this, new TransitionTabEventArgs()
+                    {
+                        Direction = TransitionTabDirection.Forward,
+                        Index = 1
+                    });
+                }
             }
             catch (Exception ex)
             {
-                ex.LogException();
+                LogErrorMessage(ex);
             }
         }
 
@@ -1017,15 +1065,18 @@ namespace MetroDemo.ExampleViews
             {
                 UpdateXml();
 
-                this.TransitionTab(this, new TransitionTabEventArgs()
+                if (TransitionProductTabs(TransitionTabDirection.Back))
                 {
-                    Direction = TransitionTabDirection.Back,
-                    Index = 1
-                });
+                    this.TransitionTab(this, new TransitionTabEventArgs()
+                    {
+                        Direction = TransitionTabDirection.Back,
+                        Index = 1
+                    });
+                }
             }
             catch (Exception ex)
             {
-                ex.LogException();
+                LogErrorMessage(ex);
             }
         }
         
@@ -1044,7 +1095,7 @@ namespace MetroDemo.ExampleViews
             }
             catch (Exception ex)
             {
-                ex.LogException();
+                LogErrorMessage(ex);
             }
         }
 

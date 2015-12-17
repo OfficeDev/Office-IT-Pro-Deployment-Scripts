@@ -11,7 +11,7 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Logging
     public static class ErrorLogger
     {
 
-        public static void LogException(this Exception ex)
+        public static void LogException(this Exception ex, bool showError = true)
         {
             var tmpDir = Environment.ExpandEnvironmentVariables("%temp%");
             var logDir = tmpDir + @"\OfficeProPlusInstallGeneratorLogs";
@@ -33,7 +33,10 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Logging
                 sw.Close();
             }
 
-            MessageBox.Show("ERROR: " + ex.Message);
+            if (showError)
+            {
+                MessageBox.Show("ERROR: " + ex.Message);
+            }
         }
 
         private static string ConvertDate(string datePart)

@@ -47,7 +47,11 @@ namespace MetroDemo.ExampleViews
         private bool _updatePathChanged = false;
         private CancellationTokenSource _tokenSource = new CancellationTokenSource();
         private Task _downloadTask = null;
+
         public event TransitionTabEventHandler TransitionTab;
+        public event MessageEventHandler InfoMessage;
+        public event MessageEventHandler ErrorMessage;
+
         private string ddTimeHour = "00";
         private string ddTimeMinute = "00";
 
@@ -65,7 +69,7 @@ namespace MetroDemo.ExampleViews
             }
             catch (Exception ex)
             {
-                ex.LogException();
+                LogErrorMessage(ex);
             }
         }
 
@@ -381,7 +385,7 @@ namespace MetroDemo.ExampleViews
             }
             catch (Exception ex)
             {
-                ex.LogException();
+                LogErrorMessage(ex);
             }
         }
 
@@ -398,7 +402,7 @@ namespace MetroDemo.ExampleViews
             }
             catch (Exception ex)
             {
-                ex.LogException();
+                LogErrorMessage(ex);
             }
         }
 
@@ -415,7 +419,20 @@ namespace MetroDemo.ExampleViews
             }
             catch (Exception ex)
             {
-                ex.LogException();
+                LogErrorMessage(ex);
+            }
+        }
+
+        private void LogErrorMessage(Exception ex)
+        {
+            ex.LogException(false);
+            if (ErrorMessage != null)
+            {
+                ErrorMessage(this, new MessageEventArgs()
+                {
+                    Title = "Error",
+                    Message = ex.Message
+                });
             }
         }
 
@@ -602,7 +619,7 @@ namespace MetroDemo.ExampleViews
                 }
                 else
                 {
-                    ex.LogException();
+                    LogErrorMessage(ex);
                 }
             }
         }
@@ -625,7 +642,7 @@ namespace MetroDemo.ExampleViews
             }
             catch (Exception ex)
             {
-                ex.LogException();
+                LogErrorMessage(ex);
             }
         }
 
@@ -658,7 +675,7 @@ namespace MetroDemo.ExampleViews
             }
             catch (Exception ex)
             {
-                ex.LogException();
+                LogErrorMessage(ex);
             }
         }
 
@@ -689,7 +706,7 @@ namespace MetroDemo.ExampleViews
             }
             catch (Exception ex)
             {
-                ex.LogException();
+                LogErrorMessage(ex);
             }
         }
 
@@ -701,7 +718,7 @@ namespace MetroDemo.ExampleViews
             }
             catch (Exception ex)
             {
-                ex.LogException();
+                LogErrorMessage(ex);
             }
         }
 
@@ -757,7 +774,7 @@ namespace MetroDemo.ExampleViews
             }
             catch (Exception ex)
             {
-                ex.LogException();
+                LogErrorMessage(ex);
             }
         }
         
@@ -770,7 +787,7 @@ namespace MetroDemo.ExampleViews
             }
             catch (Exception ex)
             {
-                ex.LogException();
+                LogErrorMessage(ex);
             }
         }
 

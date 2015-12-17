@@ -40,7 +40,24 @@ namespace MetroDemo
             UpdateView.TransitionTab += TransitionTab;
             DisplayView.TransitionTab += TransitionTab;
 
+            GenerateView.InfoMessage += GenerateViewInfoMessage;
+            GenerateView.ErrorMessage += GenerateView_ErrorMessage;
+
+            DisplayView.InfoMessage += GenerateViewInfoMessage;
+            DisplayView.ErrorMessage += GenerateView_ErrorMessage;
+
+            ProductView.InfoMessage += GenerateViewInfoMessage;
+            ProductView.ErrorMessage += GenerateView_ErrorMessage;
+
+            UpdateView.InfoMessage += GenerateViewInfoMessage;
+            UpdateView.ErrorMessage += GenerateView_ErrorMessage;
+
+            StartView.InfoMessage += GenerateViewInfoMessage;
+            StartView.ErrorMessage += GenerateView_ErrorMessage;
         }
+
+
+
 
         private void MainTabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -120,6 +137,59 @@ namespace MetroDemo
             }
         }
 
+        private async Task ShowMessageDialogAsync(string title, string message)
+        {
+            await Dispatcher.InvokeAsync(async () =>
+            {
+                var result = await this.ShowMessageAsync(title, message, 
+                    MessageDialogStyle.Affirmative, new MetroDialogSettings()
+                {
+                    ColorScheme = MetroDialogColorScheme.Theme
+                });
+            });
+        }
+
+
+
+        private async Task ShowErrorDialogAsync(string title, string message)
+        {
+            await Dispatcher.InvokeAsync(async () =>
+            {
+                var result = await this.ShowMessageAsync(title, message,
+                    MessageDialogStyle.Affirmative, new MetroDialogSettings()
+                    {
+                        ColorScheme = MetroDialogColorScheme.Error
+                    });
+            });
+        }
+
+        #region Events
+
+        private async void GenerateViewInfoMessage(object sender, MessageEventArgs e)
+        {
+            try
+            {
+                await ShowMessageDialogAsync(e.Title, e.Message);
+            }
+            catch (Exception ex)
+            {
+                ShowErrorDialogAsync("ERROR", ex.Message).ConfigureAwait(false);
+            }
+        }
+
+        private async void GenerateView_ErrorMessage(object sender, MessageEventArgs e)
+        {
+            try
+            {
+                await ShowErrorDialogAsync(e.Title, e.Message);
+            }
+            catch (Exception ex)
+            {
+                ShowErrorDialogAsync("ERROR", ex.Message).ConfigureAwait(false);
+            }
+        }
+
+        #endregion
 
         #region Other
         public static readonly DependencyProperty ToggleFullScreenProperty =

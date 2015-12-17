@@ -16,6 +16,14 @@ namespace MetroDemo.Events
 
     public delegate void XmlImportedEventHandler(object sender, EventArgs e);
 
+    public delegate void MessageEventHandler(object sender, MessageEventArgs e);
+
+    public class MessageEventArgs : EventArgs
+    {
+        public string Title { get; set; }
+
+        public string Message { get; set; }
+    }
 
     public class InstallOfficeEventArgs : EventArgs
     {

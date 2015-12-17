@@ -65,6 +65,20 @@
                         Value="{Binding Name, Mode=OneWay}" />
             </Style>
 
+            <Dialog:CustomDialog x:Key="MessageDialog"
+                                 Title="Message"
+                                 x:Name="MessageDialog">
+
+                <StackPanel>
+                    <TextBlock Height="30" Text="" 
+                               TextWrapping="Wrap"
+                               Foreground="{DynamicResource AccentColorBrush}" />
+                    <Button Content="Ok" Click="CloseCustomDialog"/>
+                </StackPanel>
+
+
+            </Dialog:CustomDialog>
+
             <Dialog:CustomDialog x:Key="CustomDialogTest"
                                  Title="This dialog allows arbitrary content."
                                  x:Name="CustomTestDialog">

@@ -155,6 +155,11 @@ namespace MahApps.Metro.Controls.Dialogs
                         this.SetValue(BackgroundProperty, ThemeManager.GetResourceFromAppStyle(this.OwningWindow ?? Application.Current.MainWindow, "HighlightBrush"));
                         this.SetValue(ForegroundProperty, ThemeManager.GetResourceFromAppStyle(this.OwningWindow ?? Application.Current.MainWindow, "IdealForegroundColorBrush"));
                         break;
+                    case MetroDialogColorScheme.Error:
+                        ThemeManager.ChangeAppStyle(this.Resources, windowAccent, theme);
+                        this.SetValue(BackgroundProperty, ThemeManager.GetResourceFromAppStyle(this.OwningWindow ?? Application.Current.MainWindow, "RedColorBrush"));
+                        this.SetValue(ForegroundProperty, ThemeManager.GetResourceFromAppStyle(this.OwningWindow ?? Application.Current.MainWindow, "WhiteColorBrush"));
+                        break;
                 }
             }
 
@@ -421,6 +426,7 @@ namespace MahApps.Metro.Controls.Dialogs
     {
         Theme = 0,
         Accented = 1,
-        Inverted = 2
+        Inverted = 2,
+        Error=3
     }
 }

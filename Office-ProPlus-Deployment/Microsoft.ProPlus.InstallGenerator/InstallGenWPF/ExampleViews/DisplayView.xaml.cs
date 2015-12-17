@@ -27,6 +27,10 @@ namespace MetroDemo.ExampleViews
     public partial class DisplayView : UserControl
     {
 
+        public event MessageEventHandler InfoMessage;
+        public event MessageEventHandler ErrorMessage;
+        public event TransitionTabEventHandler TransitionTab;
+
         public DisplayView()
         {
             InitializeComponent();
@@ -41,7 +45,7 @@ namespace MetroDemo.ExampleViews
             }
             catch (Exception ex)
             {
-                ex.LogException();
+                LogErrorMessage(ex);
             }
         }
 
@@ -144,7 +148,18 @@ namespace MetroDemo.ExampleViews
 
         }
 
-        public event TransitionTabEventHandler TransitionTab;
+        private void LogErrorMessage(Exception ex)
+        {
+            ex.LogException(false);
+            if (ErrorMessage != null)
+            {
+                ErrorMessage(this, new MessageEventArgs()
+                {
+                    Title = "Error",
+                    Message = ex.Message
+                });
+            }
+        }
 
         #region Events
 
@@ -179,7 +194,7 @@ namespace MetroDemo.ExampleViews
             }
             catch (Exception ex)
             {
-                ex.LogException();
+                LogErrorMessage(ex);
             }
         }
 
@@ -198,7 +213,7 @@ namespace MetroDemo.ExampleViews
             }
             catch (Exception ex)
             {
-                ex.LogException();
+                LogErrorMessage(ex);
             }
         }
 
@@ -217,7 +232,7 @@ namespace MetroDemo.ExampleViews
             }
             catch (Exception ex)
             {
-                ex.LogException();
+                LogErrorMessage(ex);
             }
         }
 
@@ -258,7 +273,7 @@ namespace MetroDemo.ExampleViews
             }
             catch (Exception ex)
             {
-                ex.LogException();
+                LogErrorMessage(ex);
             }
         }
 
@@ -271,7 +286,7 @@ namespace MetroDemo.ExampleViews
             }
             catch (Exception ex)
             {
-                ex.LogException();
+                LogErrorMessage(ex);
             }
         }
 
