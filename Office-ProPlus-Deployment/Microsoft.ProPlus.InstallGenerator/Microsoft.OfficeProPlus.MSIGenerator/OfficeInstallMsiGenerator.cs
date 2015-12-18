@@ -191,13 +191,13 @@ public class MsiGenerator
         }
         catch { }
 
-        if (officePath == null)
+        if (!string.IsNullOrEmpty(officePath))
         {
-            e.Result = ActionResult.Success;
+            e.Result = ActionResult.Failure;
             return;
         }
 
-        e.Result = ActionResult.Failure;
+        e.Result = ActionResult.Success;
     }
 
     public void RepairOffice(SetupEventArgs e)

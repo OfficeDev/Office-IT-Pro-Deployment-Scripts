@@ -206,6 +206,24 @@ namespace MetroDemo.ExampleViews
                         throw (new Exception("File Path Required"));
                     }
 
+                    var directoryPath = System.IO.Path.GetDirectoryName(executablePath);
+                    if (directoryPath != null)
+                    {
+                        if (!Directory.Exists(directoryPath))
+                        {
+
+                            var result = MessageBox.Show("The directory '" + directoryPath + "' does not exist." +
+                                Environment.NewLine + Environment.NewLine + "Create Directory?", "Create Directory", MessageBoxButton.YesNo,
+                                MessageBoxImage.Question, MessageBoxResult.Yes);
+                            Directory.CreateDirectory(directoryPath);
+
+                            await Dispatcher.InvokeAsync(() =>
+                            {
+                                OpenExeFolderButton.IsEnabled = true;
+                            });
+                        }
+                    }
+
                     var configFilePath =
                         Environment.ExpandEnvironmentVariables(@"%temp%\OfficeProPlus\" + Guid.NewGuid().ToString() +
                                                                ".xml");
@@ -369,7 +387,7 @@ namespace MetroDemo.ExampleViews
             }
 
 
-            if (saveFileExists && buildFolderExists)
+            if (buildFolderExists)
             {
                 GenerateButton.IsEnabled = true;
             }
@@ -531,7 +549,7 @@ namespace MetroDemo.ExampleViews
         {
             try
             {
-                var openEnabled = true;
+                var openEnabled = false;
 
                 var filePath = FileSavePath.Text.Trim();
                 if (!string.IsNullOrEmpty(filePath))

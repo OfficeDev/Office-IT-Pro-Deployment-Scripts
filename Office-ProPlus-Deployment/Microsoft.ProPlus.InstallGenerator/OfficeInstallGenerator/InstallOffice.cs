@@ -79,6 +79,8 @@ public class InstallOffice
 
             SetLoggingPath(xmlFilePath);
 
+            SetSourcePath(xmlFilePath);
+
             if (!File.Exists(odtFilePath)) { throw (new Exception("Cannot find ODT Executable")); }
             if (!File.Exists(xmlFilePath)) { throw (new Exception("Cannot find Configuration Xml file")); }
 
@@ -517,8 +519,28 @@ public class InstallOffice
             xmlDoc.DocumentElement.AppendChild(loggingNode);
         }
 
-        SetAttribute(loggingNode, "Path", LoggingPath);
+        SetAttribute(xmlDoc, loggingNode, "Path", LoggingPath);
         xmlDoc.Save(xmlFilePath);
+    }
+
+    private void SetSourcePath(string xmlFilePath)
+    {
+        var tempPath = Environment.ExpandEnvironmentVariables("%temp%");
+        const string officeFolderName = "OfficeProPlus";
+
+        var officeFolderPath = tempPath + @"\" + officeFolderName;
+        if (Directory.Exists(officeFolderPath + @"\Office"))
+        {
+            var xmlDoc = new XmlDocument();
+            xmlDoc.Load(xmlFilePath);
+
+            var addNode = xmlDoc.SelectSingleNode("/Configuration/Add");
+            if (addNode != null)
+            {
+                SetAttribute(xmlDoc, addNode, "SourcePath", officeFolderPath);
+                xmlDoc.Save(xmlFilePath);
+            }
+        }
     }
 
     public string LoggingPath { get; set; }
@@ -639,12 +661,12 @@ public class InstallOffice
 
     public const int SW_SHOWMINIMIZED = 2;
 
-    private void SetAttribute(XmlNode xmlNode, string name, string value)
+    private void SetAttribute(XmlDocument xmlDoc, XmlNode xmlNode, string name, string value)
     {
         var pathAttr = xmlNode.Attributes[name];
         if (pathAttr == null)
         {
-            pathAttr = _xmlDoc.CreateAttribute(name);
+            pathAttr = xmlDoc.CreateAttribute(name);
             xmlNode.Attributes.Append(pathAttr);
         }
         pathAttr.Value = value;

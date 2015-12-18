@@ -56,9 +56,6 @@ namespace MetroDemo
             StartView.ErrorMessage += GenerateView_ErrorMessage;
         }
 
-
-
-
         private void MainTabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             StartView.RestartWorkflow += RestartWorkflow;
@@ -148,8 +145,6 @@ namespace MetroDemo
                 });
             });
         }
-
-
 
         private async Task ShowErrorDialogAsync(string title, string message)
         {
