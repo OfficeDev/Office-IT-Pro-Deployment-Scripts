@@ -104,7 +104,9 @@ namespace MetroDemo.ExampleViews
 
                 if (configXml.Updates.Deadline.HasValue)
                 {
-                    DeadlineInfo.Content = configXml.Updates.Deadline.Value;
+                    UpdateDeadline.SelectedDate = configXml.Updates.Deadline.Value;
+                    DeadlineTimeHour.Text = configXml.Updates.Deadline.Value.Hour.ToString();
+                    DeadlineTimeMinute.Text = configXml.Updates.Deadline.Value.Minute.ToString();
                 }
             }
         }

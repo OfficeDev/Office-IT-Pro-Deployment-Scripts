@@ -82,7 +82,7 @@
                                     </Grid.ColumnDefinitions>
                                     <CheckBox Style="{StaticResource MetroCheckBox}" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center"
                                      x:Name="IncludeBuild" Checked="IncludeBuild_OnChecked" Unchecked="IncludeBuild_OnChecked" IsEnabled="True" ></CheckBox>
-                                    <Label Content="Include build files in installation file"  HorizontalAlignment="Center" VerticalAlignment="Center"
+                                    <Label Content="Embed Office installation files"  HorizontalAlignment="Center" VerticalAlignment="Center"
                                            Style="{StaticResource MetroLabelHeader}" FontSize="18" Grid.Column="0"  />
                                 </Grid>
                                 <Grid  Grid.Row="1" Grid.Column="0">

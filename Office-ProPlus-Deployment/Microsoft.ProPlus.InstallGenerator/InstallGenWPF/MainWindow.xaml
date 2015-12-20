@@ -15,6 +15,7 @@
                       ShowTitleBar="True"
                       WindowStartupLocation="CenterScreen" 
                       NonActiveGlowBrush="#CDFF0000"
+                      GlowBrush="{DynamicResource AccentColorBrush}"
                       mc:Ignorable="d"
                       TitlebarHeight="58"
                       d:DesignHeight="600"

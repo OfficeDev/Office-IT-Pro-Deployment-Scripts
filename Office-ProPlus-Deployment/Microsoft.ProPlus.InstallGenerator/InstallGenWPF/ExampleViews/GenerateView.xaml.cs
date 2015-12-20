@@ -203,7 +203,8 @@ namespace MetroDemo.ExampleViews
 
                     if (string.IsNullOrEmpty(executablePath))
                     {
-                        throw (new Exception("File Path Required"));
+                        //throw (new Exception("File Path Required"));
+                        return;
                     }
 
                     var directoryPath = System.IO.Path.GetDirectoryName(executablePath);
@@ -338,7 +339,11 @@ namespace MetroDemo.ExampleViews
 
                 if (configXml.ConfigurationXml.Add != null)
                 {
-                    BuildFilePath.Text = configXml.ConfigurationXml.Add.SourcePath;
+                    var currentBuildFilePath = BuildFilePath.Text;
+                    if (string.IsNullOrEmpty(currentBuildFilePath))
+                    {
+                        BuildFilePath.Text = configXml.ConfigurationXml.Add.SourcePath;
+                    }
                 }
 
                 var silentInstall = false;
