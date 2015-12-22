@@ -15,7 +15,7 @@
   </compatibleFrameworks>
   <dependency>
     <dependentAssembly dependencyType="install" codebase="Application Files\OfficeProPlusInstallGenerator_1_0_0_25\OfficeProPlusInstallGenerator.exe.manifest" size="2301">
-      <assemblyIdentity name="Microsoft.CIE.Run.exe" version="1.0.0.24" publicKeyToken="0000000000000000" language="neutral" processorArchitecture="msil" type="win32" />
+      <assemblyIdentity name="OfficeProPlusInstallGenerator.exe" version="1.0.0.24" publicKeyToken="0000000000000000" language="neutral" processorArchitecture="msil" type="win32" />
     </dependentAssembly>
   </dependency>
 </asmv1:assembly>
