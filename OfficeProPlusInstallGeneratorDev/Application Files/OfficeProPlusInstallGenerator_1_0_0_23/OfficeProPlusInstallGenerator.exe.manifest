@@ -1,16 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<asmv1:assembly xsi:schemaLocation="urn:schemas-microsoft-com:asm.v1 assembly.adaptive.xsd" manifestVersion="1.0" xmlns:asmv1="urn:schemas-microsoft-com:asm.v1" xmlns="urn:schemas-microsoft-com:asm.v2" xmlns:asmv2="urn:schemas-microsoft-com:asm.v2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:co.v1="urn:schemas-microsoft-com:clickonce.v1" xmlns:asmv3="urn:schemas-microsoft-com:asm.v3" xmlns:dsig="http://www.w3.org/2000/09/xmldsig#" xmlns:co.v2="urn:schemas-microsoft-com:clickonce.v2">
-  <asmv1:assemblyIdentity name="OfficeProPlusInstallGenerator.exe" version="1.0.0.23" publicKeyToken="0000000000000000" language="neutral" processorArchitecture="msil" type="win32" />
-  <description asmv2:iconFile="1447297750_gear_settings_cog_preferences.ico" xmlns="urn:schemas-microsoft-com:asm.v1" />
+<asmv1:assembly xsi:schemaLocation="urn:schemas-microsoft-com:asm.v1 assembly.adaptive.xsd" manifestVersion="1.0" xmlns:asmv3="urn:schemas-microsoft-com:asm.v3" xmlns:dsig="http://www.w3.org/2000/09/xmldsig#" xmlns="urn:schemas-microsoft-com:asm.v2" xmlns:asmv1="urn:schemas-microsoft-com:asm.v1" xmlns:asmv2="urn:schemas-microsoft-com:asm.v2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:co.v1="urn:schemas-microsoft-com:clickonce.v1">
+  <asmv1:assemblyIdentity name="Office ProPlus Install Generator.exe" version="1.0.0.23" publicKeyToken="0000000000000000" language="neutral" processorArchitecture="msil" type="win32" />
+  <description asmv2:iconFile="Project\1447297750_gear_settings_cog_preferences.ico" xmlns="urn:schemas-microsoft-com:asm.v1" />
   <application />
   <entryPoint>
-    <assemblyIdentity name="OfficeProPlusInstallGenerator" version="1.0.0.1" language="neutral" processorArchitecture="msil" />
-    <commandLine file="OfficeProPlusInstallGenerator.exe" parameters="" />
+    <assemblyIdentity name="Microsoft.CIE.Run" version="2.0.0.0" language="neutral" processorArchitecture="msil" />
+    <commandLine file="Microsoft.CIE.Run.exe" parameters="" />
   </entryPoint>
   <trustInfo>
     <security>
       <applicationRequestMinimum>
-        <PermissionSet class="System.Security.PermissionSet" version="1" ID="Custom" SameSite="site" Unrestricted="true" />
+        <PermissionSet class="System.Security.PermissionSet" version="1" Unrestricted="true" ID="Custom" SameSite="site" />
         <defaultAssemblyRequest permissionSetReference="Custom" />
       </applicationRequestMinimum>
       <requestedPrivileges xmlns="urn:schemas-microsoft-com:asm.v3">
@@ -43,164 +43,152 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Garlic.dll" size="15360">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Microsoft.CIE.Run.exe" size="229528">
+      <assemblyIdentity name="Microsoft.CIE.Run" version="2.0.0.0" language="neutral" processorArchitecture="msil" />
+    </dependentAssembly>
+  </dependency>
+  <dependency>
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Project\OfficeProPlusInstallGenerator.vshost.application" size="2284">
+      <assemblyIdentity name="OfficeProPlusInstallGenerator.application" version="1.0.0.20" publicKeyToken="0000000000000000" language="neutral" processorArchitecture="msil" />
+    </dependentAssembly>
+  </dependency>
+  <dependency>
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Project\OfficeProPlusInstallGenerator.vshost.exe.manifest" size="28405">
+      <assemblyIdentity name="OfficeProPlusInstallGenerator.exe" version="1.0.0.20" publicKeyToken="0000000000000000" language="neutral" processorArchitecture="msil" type="win32" />
+    </dependentAssembly>
+  </dependency>
+  <dependency>
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Project\WpfAnimatedGif.dll" size="39424">
+      <assemblyIdentity name="WpfAnimatedGif" version="1.4.13.0" language="neutral" processorArchitecture="msil" />
+    </dependentAssembly>
+  </dependency>
+  <dependency>
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Project\Garlic.dll" size="15360">
       <assemblyIdentity name="Garlic" version="2.1.0.0" language="neutral" processorArchitecture="msil" />
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="MahApps.Metro.dll" size="1147904">
-      <assemblyIdentity name="MahApps.Metro" version="1.1.3.0" language="neutral" processorArchitecture="msil" />
-    </dependentAssembly>
-  </dependency>
-  <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="MahApps.Metro.Resources.dll" size="1155584">
-      <assemblyIdentity name="MahApps.Metro.Resources" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
-    </dependentAssembly>
-  </dependency>
-  <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Micorosft.OfficeProPlus.ConfigurationXml.dll" size="22528">
-      <assemblyIdentity name="Micorosft.OfficeProPlus.ConfigurationXml" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
-    </dependentAssembly>
-  </dependency>
-  <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Microsoft.Deployment.WindowsInstaller.dll" size="176128">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Project\Microsoft.Deployment.WindowsInstaller.dll" size="176128">
       <assemblyIdentity name="Microsoft.Deployment.WindowsInstaller" version="3.0.0.0" publicKeyToken="CE35F76FCDA82BAD" language="neutral" processorArchitecture="msil" />
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Microsoft.OfficeProPlus.Downloader.dll" size="39424">
-      <assemblyIdentity name="Microsoft.OfficeProPlus.Downloader" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
-    </dependentAssembly>
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Microsoft.CIE.Run.exe" />
   </dependency>
-  <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Microsoft.OfficeProPlus.MSIGen.dll" size="13312">
-      <assemblyIdentity name="Microsoft.OfficeProPlus.MSIGen" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
-    </dependentAssembly>
-  </dependency>
-  <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="OfficeInstallGenerator.dll" size="4225536">
-      <assemblyIdentity name="OfficeInstallGenerator" version="1.0.0.1" language="neutral" processorArchitecture="msil" />
-    </dependentAssembly>
-  </dependency>
-  <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="OfficeProPlusInstallGenerator.exe" size="638528">
-      <assemblyIdentity name="OfficeProPlusInstallGenerator" version="1.0.0.1" language="neutral" processorArchitecture="msil" />
-    </dependentAssembly>
-  </dependency>
-  <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="System.Windows.Interactivity.dll" size="55904">
-      <assemblyIdentity name="System.Windows.Interactivity" version="4.5.0.0" publicKeyToken="31BF3856AD364E35" language="neutral" processorArchitecture="msil" />
-    </dependentAssembly>
-  </dependency>
-  <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="de\System.Windows.Interactivity.resources.dll" size="22704">
-      <assemblyIdentity name="System.Windows.Interactivity.resources" version="4.5.0.0" publicKeyToken="31BF3856AD364E35" language="de" processorArchitecture="msil" />
-    </dependentAssembly>
-  </dependency>
-  <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="en\System.Windows.Interactivity.resources.dll" size="22704">
-      <assemblyIdentity name="System.Windows.Interactivity.resources" version="4.5.0.0" publicKeyToken="31BF3856AD364E35" language="en" processorArchitecture="msil" />
-    </dependentAssembly>
-  </dependency>
-  <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="es\System.Windows.Interactivity.resources.dll" size="22688">
-      <assemblyIdentity name="System.Windows.Interactivity.resources" version="4.5.0.0" publicKeyToken="31BF3856AD364E35" language="es" processorArchitecture="msil" />
-    </dependentAssembly>
-  </dependency>
-  <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="fr\System.Windows.Interactivity.resources.dll" size="22688">
-      <assemblyIdentity name="System.Windows.Interactivity.resources" version="4.5.0.0" publicKeyToken="31BF3856AD364E35" language="fr" processorArchitecture="msil" />
-    </dependentAssembly>
-  </dependency>
-  <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="it\System.Windows.Interactivity.resources.dll" size="22688">
-      <assemblyIdentity name="System.Windows.Interactivity.resources" version="4.5.0.0" publicKeyToken="31BF3856AD364E35" language="it" processorArchitecture="msil" />
-    </dependentAssembly>
-  </dependency>
-  <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="ja\System.Windows.Interactivity.resources.dll" size="23200">
-      <assemblyIdentity name="System.Windows.Interactivity.resources" version="4.5.0.0" publicKeyToken="31BF3856AD364E35" language="ja" processorArchitecture="msil" />
-    </dependentAssembly>
-  </dependency>
-  <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="ko\System.Windows.Interactivity.resources.dll" size="22688">
-      <assemblyIdentity name="System.Windows.Interactivity.resources" version="4.5.0.0" publicKeyToken="31BF3856AD364E35" language="ko" processorArchitecture="msil" />
-    </dependentAssembly>
-  </dependency>
-  <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="ru\System.Windows.Interactivity.resources.dll" size="23216">
-      <assemblyIdentity name="System.Windows.Interactivity.resources" version="4.5.0.0" publicKeyToken="31BF3856AD364E35" language="ru" processorArchitecture="msil" />
-    </dependentAssembly>
-  </dependency>
-  <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="zh-Hans\System.Windows.Interactivity.resources.dll" size="22176">
-      <assemblyIdentity name="System.Windows.Interactivity.resources" version="4.5.0.0" publicKeyToken="31BF3856AD364E35" language="zh-Hans" processorArchitecture="msil" />
-    </dependentAssembly>
-  </dependency>
-  <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="zh-Hant\System.Windows.Interactivity.resources.dll" size="22176">
-      <assemblyIdentity name="System.Windows.Interactivity.resources" version="4.5.0.0" publicKeyToken="31BF3856AD364E35" language="zh-Hant" processorArchitecture="msil" />
-    </dependentAssembly>
-  </dependency>
-  <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="WixSharp.dll" size="299008">
-      <assemblyIdentity name="WixSharp" version="1.0.30.1" publicKeyToken="3775EDD25ACC43C2" language="neutral" processorArchitecture="msil" />
-    </dependentAssembly>
-  </dependency>
-  <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="WpfAnimatedGif.dll" size="39424">
-      <assemblyIdentity name="WpfAnimatedGif" version="1.4.13.0" language="neutral" processorArchitecture="msil" />
-    </dependentAssembly>
-  </dependency>
-  <file name="1447297750_gear_settings_cog_preferences.ico" size="106775">
+  <file name="Microsoft.CIE.Run.exe.config" size="273">
   </file>
-  <file name="HelpFiles\AcceptEulaInfo.html" size="2052">
+  <file name="Project\1447297750_gear_settings_cog_preferences.ico" size="106775">
   </file>
-  <file name="HelpFiles\AutoActivateInfo.html" size="1802">
+  <file name="Project\de\System.Windows.Interactivity.resources.dll" size="22704">
   </file>
-  <file name="HelpFiles\BranchInfo.html" size="1815">
+  <file name="Project\en\System.Windows.Interactivity.resources.dll" size="22704">
   </file>
-  <file name="HelpFiles\DeadlineInfo.html" size="3382">
+  <file name="Project\es\System.Windows.Interactivity.resources.dll" size="22688">
   </file>
-  <file name="HelpFiles\DisplayLevelInfo.html" size="1747">
+  <file name="Project\Files.xml" size="1601">
   </file>
-  <file name="HelpFiles\EditionInfo.html" size="1665">
+  <file name="Project\fr\System.Windows.Interactivity.resources.dll" size="22688">
   </file>
-  <file name="HelpFiles\EmbedOfficeInstall.html" size="1930">
+  <file name="Project\HelpFiles\AcceptEulaInfo.html" size="2052">
   </file>
-  <file name="HelpFiles\ExcludeAppInfo.html" size="2490">
+  <file name="Project\HelpFiles\AutoActivateInfo.html" size="1802">
   </file>
-  <file name="HelpFiles\ForceAppShutdownInfo.html" size="1873">
+  <file name="Project\HelpFiles\BranchInfo.html" size="1815">
   </file>
-  <file name="HelpFiles\LanguageInfo.html" size="2365">
+  <file name="Project\HelpFiles\DeadlineInfo.html" size="3382">
   </file>
-  <file name="HelpFiles\LogLevelInfo.html" size="1363">
+  <file name="Project\HelpFiles\DisplayLevelInfo.html" size="1747">
   </file>
-  <file name="HelpFiles\LogPathInfo.html" size="1417">
+  <file name="Project\HelpFiles\EditionInfo.html" size="1665">
   </file>
-  <file name="HelpFiles\PackageGuidInfo.html" size="2771">
+  <file name="Project\HelpFiles\EmbedOfficeInstall.html" size="1930">
   </file>
-  <file name="HelpFiles\PidKeyInfo.html" size="1843">
+  <file name="Project\HelpFiles\ExcludeAppInfo.html" size="2490">
   </file>
-  <file name="HelpFiles\ProductInfo.html" size="2283">
+  <file name="Project\HelpFiles\ForceAppShutdownInfo.html" size="1873">
   </file>
-  <file name="HelpFiles\SharedComputerLicensingInfo.html" size="1662">
+  <file name="Project\HelpFiles\LanguageInfo.html" size="2365">
   </file>
-  <file name="HelpFiles\SourcePathInfo.html" size="2833">
+  <file name="Project\HelpFiles\LogLevelInfo.html" size="1363">
   </file>
-  <file name="HelpFiles\TargetVersionInfo.html" size="3153">
+  <file name="Project\HelpFiles\LogPathInfo.html" size="1417">
   </file>
-  <file name="HelpFiles\UpdatePathInfo.html" size="2334">
+  <file name="Project\HelpFiles\PackageGuidInfo.html" size="2771">
   </file>
-  <file name="HelpFiles\VersionInfo.html" size="2157">
+  <file name="Project\HelpFiles\PidKeyInfo.html" size="1843">
   </file>
-  <file name="InstallOffice.cs" size="22874">
+  <file name="Project\HelpFiles\ProductInfo.html" size="2283">
   </file>
-  <file name="OfficeProPlusInstallGenerator.exe.config" size="756">
+  <file name="Project\HelpFiles\SharedComputerLicensingInfo.html" size="1662">
   </file>
-  <file name="wixTools.zip" size="39973772">
+  <file name="Project\HelpFiles\SourcePathInfo.html" size="2833">
   </file>
-  <compatibility xmlns="urn:schemas-microsoft-com:compatibility.v1">
+  <file name="Project\HelpFiles\TargetVersionInfo.html" size="3153">
+  </file>
+  <file name="Project\HelpFiles\UpdatePathInfo.html" size="2334">
+  </file>
+  <file name="Project\HelpFiles\VersionInfo.html" size="2157">
+  </file>
+  <file name="Project\InstallOffice.cs" size="22874">
+  </file>
+  <file name="Project\it\System.Windows.Interactivity.resources.dll" size="22688">
+  </file>
+  <file name="Project\ja\System.Windows.Interactivity.resources.dll" size="23200">
+  </file>
+  <file name="Project\ko\System.Windows.Interactivity.resources.dll" size="22688">
+  </file>
+  <file name="Project\MahApps.Metro.dll" size="1147904">
+  </file>
+  <file name="Project\MahApps.Metro.pdb" size="1302016">
+  </file>
+  <file name="Project\MahApps.Metro.Resources.dll" size="1155584">
+  </file>
+  <file name="Project\MahApps.Metro.Resources.pdb" size="19968">
+  </file>
+  <file name="Project\MahApps.Metro.xml" size="339077">
+  </file>
+  <file name="Project\Micorosft.OfficeProPlus.ConfigurationXml.dll" size="22528">
+  </file>
+  <file name="Project\Micorosft.OfficeProPlus.ConfigurationXml.pdb" size="34304">
+  </file>
+  <file name="Project\Microsoft.Deployment.WindowsInstaller.xml" size="486900">
+  </file>
+  <file name="Project\Microsoft.OfficeProPlus.Downloader.dll" size="39424">
+  </file>
+  <file name="Project\Microsoft.OfficeProPlus.Downloader.pdb" size="62976">
+  </file>
+  <file name="Project\Microsoft.OfficeProPlus.MSIGen.dll" size="13312">
+  </file>
+  <file name="Project\Microsoft.OfficeProPlus.MSIGen.pdb" size="24064">
+  </file>
+  <file name="Project\OfficeInstallGenerator.dll" size="4225536">
+  </file>
+  <file name="Project\OfficeInstallGenerator.pdb" size="79360">
+
+  </file>
+  <file name="Project\OfficeProPlusInstallGenerator.exe" size="638496">
+  </file>
+  <file name="Project\OfficeProPlusInstallGenerator.exe.config" size="756">
+  </file>
+  <file name="Project\OfficeProPlusInstallGenerator.pdb" size="423424">
+  </file>
+  <file name="Project\OfficeProPlusInstallGenerator.vshost.exe" size="22656">
+  </file>
+  <file name="Project\OfficeProPlusInstallGenerator.vshost.exe.config" size="756">
+  </file>
+  <file name="Project\ru\System.Windows.Interactivity.resources.dll" size="23216">
+  </file>
+  <file name="Project\System.Windows.Interactivity.dll" size="55904">
+  </file>
+  <file name="Project\WixSharp.dll" size="299008">
+  </file>
+  <file name="Project\wixTools.zip" size="39973772">
+  </file>
+  <file name="Project\zh-Hans\System.Windows.Interactivity.resources.dll" size="22176">
+  </file>
+  <file name="Project\zh-Hant\System.Windows.Interactivity.resources.dll" size="22176">
+  </file>
+  <compatibility xmlns:co.v2="urn:schemas-microsoft-com:clickonce.v2" xmlns="urn:schemas-microsoft-com:compatibility.v1">
     <application>
       <!-- A list of all Windows versions that this application is designed to work with. Windows will automatically select the most compatible environment.-->
       <!-- If your application is designed to work with Windows 7, uncomment the following supportedOS node-->
