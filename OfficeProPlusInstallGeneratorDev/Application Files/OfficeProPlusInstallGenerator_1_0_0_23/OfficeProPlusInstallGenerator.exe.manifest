@@ -43,11 +43,6 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Microsoft.CIE.Run.exe" size="229528">
-      <assemblyIdentity name="Microsoft.CIE.Run" version="2.0.0.0" language="neutral" processorArchitecture="msil" />
-    </dependentAssembly>
-  </dependency>
-  <dependency>
     <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Project\OfficeProPlusInstallGenerator.vshost.application" size="2284">
       <assemblyIdentity name="OfficeProPlusInstallGenerator.application" version="1.0.0.20" publicKeyToken="0000000000000000" language="neutral" processorArchitecture="msil" />
     </dependentAssembly>
@@ -73,7 +68,9 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Microsoft.CIE.Run.exe" />
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Microsoft.CIE.Run.exe">
+      <assemblyIdentity name="Microsoft.CIE.Run" version="2.0.0.0" language="neutral" processorArchitecture="msil" />
+    </dependentAssembly>
   </dependency>
   <file name="Microsoft.CIE.Run.exe.config" size="273">
   </file>
