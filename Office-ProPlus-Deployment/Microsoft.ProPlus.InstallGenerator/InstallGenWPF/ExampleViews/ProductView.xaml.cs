@@ -59,8 +59,6 @@ namespace MetroDemo.ExampleViews
         {
             try
             {
-                
-
                 LoadExcludedProducts();
 
                 if (MainTabControl == null) return;
