@@ -33,7 +33,19 @@ namespace MetroDemo.ExampleViews
         {
             InitializeComponent();
         }
-        
+
+        private void StartView_OnLoaded(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                LogAnaylytics("/", "StartView");
+            }
+            catch (Exception ex)
+            {
+                ex.LogException();
+            }
+        }
+
         private void LogErrorMessage(Exception ex)
         {
             ex.LogException(false);
@@ -65,6 +77,8 @@ namespace MetroDemo.ExampleViews
                     Direction = TransitionTabDirection.Forward,
                     Index = 0
                 });
+
+                LogAnaylytics("/StartView", "StartNew");
             }
             catch (Exception ex)
             {
@@ -113,6 +127,8 @@ namespace MetroDemo.ExampleViews
                         Direction = TransitionTabDirection.Forward,
                         Index = 0
                     });
+
+                    LogAnaylytics("/StartView", "ImportExisting");
                 }
             }
             catch (Exception ex)
@@ -124,6 +140,15 @@ namespace MetroDemo.ExampleViews
         public RestartEventHandler RestartWorkflow  { get; set; }
 
         public XmlImportedEventHandler XmlImported { get; set; }
+
+        private void LogAnaylytics(string path, string pageName)
+        {
+            try
+            {
+                GoogleAnalytics.Log(path, pageName);
+            }
+            catch { }
+        }
 
     }
 }

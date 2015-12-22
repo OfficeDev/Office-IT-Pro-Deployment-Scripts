@@ -47,6 +47,8 @@ public class InstallOffice
         {
             MinimizeWindow();
 
+            SilentInstall = false;
+
             var currentDirectory = Environment.ExpandEnvironmentVariables("%temp%");
             installDir = currentDirectory + @"\OfficeProPlus";
 
@@ -89,6 +91,11 @@ public class InstallOffice
             {
                 xmlFilePath = UninstallOfficeProPlus(installDir, fileNames);
                 runInstall = true;
+
+                if (GetArguments().Any(a => a.Key.ToLower() == "/silent"))
+                {
+                    SilentInstall = true;
+                }
             }
             else if (GetArguments().Any(a => a.Key.ToLower() == "/showxml"))
             {
@@ -111,6 +118,15 @@ public class InstallOffice
 
             if (runInstall)
             {
+
+                if (SilentInstall)
+                {
+                    var doc = new XmlDocument();
+                    doc.Load(xmlFilePath);
+                    SetConfigSilent(doc);
+                    doc.Save(xmlFilePath);
+                }
+
                 var p = new Process
                 {
                     StartInfo = new ProcessStartInfo()
@@ -181,9 +197,27 @@ public class InstallOffice
 
         doc.AppendChild(root);
 
+        if (SilentInstall)
+        {
+            SetConfigSilent(doc);
+        }
+
         doc.Save(installationDirectory + @"\configuration.xml");
 
         return installationDirectory + @"\" + fileNames.FirstOrDefault(f => f.ToLower().EndsWith(".xml"));
+    }
+
+    private void SetConfigSilent(XmlDocument doc)
+    {
+        var display = doc.SelectSingleNode("/Configuration/Display");
+        if (display == null)
+        {
+            display = doc.CreateElement("Display");
+            doc.AppendChild(display);
+        }
+
+        SetAttribute(doc, display, "Level", "None");
+        SetAttribute(doc, display, "AcceptEULA", "TRUE");
     }
 
     public string GetTextFileContents(string fileName)
@@ -544,6 +578,8 @@ public class InstallOffice
     }
 
     public string LoggingPath { get; set; }
+
+    public bool SilentInstall { get; set; }
 
     public CurrentOperation GetCurrentOperation(List<ExecutingScenario> executingTasks)
     {

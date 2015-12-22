@@ -86,8 +86,8 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Gat.Controls.OpenDialog, Version=1.1.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\OpenDialog.1.1.1\lib\net45\Gat.Controls.OpenDialog.dll</HintPath>
+    <Reference Include="Garlic, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Garlic.2.1.0.0\lib\net35\Garlic.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="GrayscaleEffect">
@@ -142,10 +142,14 @@
     <Compile Include="ExampleViews\ProductView.xaml.cs">
       <DependentUpon>ProductView.xaml</DependentUpon>
     </Compile>
+    <Content Include="HelpFiles\EmbedOfficeInstall.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="InstallOffice.cs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Compile Include="Logging\ErrorLogger.cs" />
+    <Compile Include="Logging\GoogleAnalytics.cs" />
     <Compile Include="MainWindowViewModel.cs" />
     <Compile Include="Models\Enums.cs" />
     <Compile Include="Models\ExcludeProduct.cs" />

@@ -120,12 +120,16 @@ namespace Microsoft.OfficeProPlus.Downloader
                 {
                     return;
                 }
+            }
+
+            foreach (var file in allFiles)
+            {
+                var localFilePath = properties.TargetDirectory + file.RelativePath.Replace("/", "\\") + file.Name;
 
                 if (string.IsNullOrEmpty(file.Rename)) continue;
                 var fInfo = new FileInfo(localFilePath);
-                File.Copy(localFilePath, fInfo.Directory.FullName + @"\" + file.Rename);
+                File.Copy(localFilePath, fInfo.Directory.FullName + @"\" + file.Rename, true);
             }
-
 
             double percentageEnd = downloadedSize / totalSize * 100;
             if (percentageEnd == 99.0) percentageEnd = 100;

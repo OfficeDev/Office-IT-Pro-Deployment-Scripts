@@ -8,6 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("helpfiles/embedofficeinstall.html")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("installoffice.cs")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("wixtools.zip")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("helpfiles/forceappshutdowninfo.html")]

@@ -25,9 +25,11 @@ namespace MetroDemo.ExampleWindows
 
         public InformationDialog()
         {
-            this.DataContext = GlobalObjects.ViewModel;
-            this.InitializeComponent();
-            this.Closing += (s, e) =>
+            try
+            {
+                this.DataContext = GlobalObjects.ViewModel;
+                this.InitializeComponent();
+                this.Closing += (s, e) =>
                 {
                     if (_hideOnClose)
                     {
@@ -35,16 +37,20 @@ namespace MetroDemo.ExampleWindows
                         e.Cancel = true;
                     }
                 };
-            
-            var mainWindow = (MetroWindow)this;
-            var windowPlacementSettings = mainWindow.GetWindowPlacementSettings();
-            if (windowPlacementSettings.UpgradeSettings)
-            {
-                windowPlacementSettings.Upgrade();
-                windowPlacementSettings.UpgradeSettings = false;
-                windowPlacementSettings.Save();
-            }
 
+                var mainWindow = (MetroWindow) this;
+                var windowPlacementSettings = mainWindow.GetWindowPlacementSettings();
+                if (windowPlacementSettings.UpgradeSettings)
+                {
+                    windowPlacementSettings.Upgrade();
+                    windowPlacementSettings.UpgradeSettings = false;
+                    windowPlacementSettings.Save();
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.LogException(true);
+            }
         }
 
         private void InformationDialog_OnLoaded(object sender, RoutedEventArgs e)
@@ -54,6 +60,7 @@ namespace MetroDemo.ExampleWindows
 
         public void Launch()
         {
+            try { 
             Owner = Application.Current.MainWindow;
             // only for this window, because we allow minimizing
             if (WindowState == WindowState.Minimized)
@@ -61,6 +68,11 @@ namespace MetroDemo.ExampleWindows
                 WindowState = WindowState.Normal;
             }
             Show();
+            }
+            catch (Exception ex)
+            {
+                ex.LogException(true);
+            }
         }
 
         private void CloseWindow_OnClick(object sender, RoutedEventArgs e)

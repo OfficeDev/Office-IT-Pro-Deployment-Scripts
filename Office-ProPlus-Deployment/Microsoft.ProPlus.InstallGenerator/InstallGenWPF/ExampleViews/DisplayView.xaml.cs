@@ -42,6 +42,8 @@ namespace MetroDemo.ExampleViews
             {
                 if (GlobalObjects.ViewModel == null) return;
                 GlobalObjects.ViewModel.PropertyChanged += ViewModel_PropertyChanged;
+
+                LogAnaylytics("/DisplayView", "Load");
             }
             catch (Exception ex)
             {
@@ -161,6 +163,15 @@ namespace MetroDemo.ExampleViews
             }
         }
 
+        private void LogAnaylytics(string path, string pageName)
+        {
+            try
+            {
+                GoogleAnalytics.Log(path, pageName);
+            }
+            catch { }
+        }
+
         #region Events
 
         private void ViewModel_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -263,6 +274,9 @@ namespace MetroDemo.ExampleViews
 
                     };
                 }
+
+                informationDialog.Height = 500;
+                informationDialog.Width = 400;
 
                 var filePath = AppDomain.CurrentDomain.BaseDirectory + @"HelpFiles\" + sourceName + ".html";
                 var helpFile = File.ReadAllText(filePath);

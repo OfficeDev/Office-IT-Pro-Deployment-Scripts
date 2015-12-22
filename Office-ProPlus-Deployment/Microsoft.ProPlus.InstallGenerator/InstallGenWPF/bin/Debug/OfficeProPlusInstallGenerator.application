@@ -14,14 +14,14 @@
     <framework targetVersion="4.5" profile="Full" supportedRuntime="4.0.30319" />
   </compatibleFrameworks>
   <dependency>
-    <dependentAssembly dependencyType="install" codebase="OfficeProPlusInstallGenerator.exe.manifest" size="27353">
+    <dependentAssembly dependencyType="install" codebase="OfficeProPlusInstallGenerator.exe.manifest" size="28394">
       <assemblyIdentity name="OfficeProPlusInstallGenerator.exe" version="1.0.0.20" publicKeyToken="0000000000000000" language="neutral" processorArchitecture="msil" type="win32" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>HLN9aYu15gvdcZrJrQ77FlkMSrG7gz2nqExeZuGgpVo=</dsig:DigestValue>
+        <dsig:DigestValue>ao5bilAvPlibTL9IRSNGAVTSFpmRbe7LBXn5B03MLJY=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

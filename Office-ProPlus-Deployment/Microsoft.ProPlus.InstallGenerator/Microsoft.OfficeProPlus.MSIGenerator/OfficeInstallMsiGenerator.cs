@@ -78,7 +78,10 @@ public class MsiGenerator
 
     private void project_Load(SetupEventArgs e)
     {
-
+        if (e.IsUISupressed)
+        {
+            
+        }
     }
 
     private void project_AfterInstall(SetupEventArgs e)
@@ -259,6 +262,24 @@ public class CustomActions
             var installDir = session.CustomActionData["INSTALLDIR"];
             if (installDir == null) return ActionResult.Failure;
 
+            var isSilent = false;
+
+            try
+            {
+                var uiLevel = session.CustomActionData["UILevel"];
+
+                MessageBox.Show(uiLevel);
+
+                if (uiLevel == "2" || uiLevel == "3")
+                {
+                    isSilent = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
             var p = new Process
             {
                 StartInfo = new ProcessStartInfo()
@@ -268,6 +289,12 @@ public class CustomActions
                     UseShellExecute = false
                 },
             };
+
+            if (isSilent)
+            {
+                p.StartInfo.Arguments = "/silent";
+            }
+
             p.Start();
             p.WaitForExit();
 

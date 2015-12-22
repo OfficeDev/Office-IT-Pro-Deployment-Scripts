@@ -79,11 +79,18 @@
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="280" />
                                         <ColumnDefinition Width="20" />
+                                        <ColumnDefinition Width="50" />
                                     </Grid.ColumnDefinitions>
                                     <CheckBox Style="{StaticResource MetroCheckBox}" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center"
                                      x:Name="IncludeBuild" Checked="IncludeBuild_OnChecked" Unchecked="IncludeBuild_OnChecked" IsEnabled="True" ></CheckBox>
                                     <Label Content="Embed Office installation files"  HorizontalAlignment="Center" VerticalAlignment="Center"
                                            Style="{StaticResource MetroLabelHeader}" FontSize="18" Grid.Column="0"  />
+                                    <Button x:Name="EmbedOfficeInstall" Width="30" Height="32" Grid.Row="0" Grid.Column="2" HorizontalAlignment="Left" Margin="10 0 0 0"
+                                            Focusable="False"  Style="{StaticResource MetroInfoButton}" Click="ProductInfo_OnClick" >
+                                        <StackPanel Orientation="Horizontal">
+                                            <Image Source="../images/info.png" Width="20" Height="20"/>
+                                        </StackPanel>
+                                    </Button>
                                 </Grid>
                                 <Grid  Grid.Row="1" Grid.Column="0">
                                     <Grid.RowDefinitions>

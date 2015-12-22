@@ -274,6 +274,8 @@ namespace MetroDemo
 
         public bool UseSameLanguagesForAllProducts { get; set; }
 
+        public bool PropertyChangeEventEnabled { get; set; }
+
         private string _importFile = "";
         public string ImportFile
         {
@@ -331,6 +333,7 @@ namespace MetroDemo
 
         protected virtual void RaisePropertyChanged(string propertyName)
         {
+            if (!PropertyChangeEventEnabled) return;
             if (PropertyChanged != null)
             {
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));

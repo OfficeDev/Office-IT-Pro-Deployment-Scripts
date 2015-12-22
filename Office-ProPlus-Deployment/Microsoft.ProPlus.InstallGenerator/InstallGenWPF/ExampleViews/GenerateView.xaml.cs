@@ -65,7 +65,11 @@ namespace MetroDemo.ExampleViews
                     xmlBrowser.InstallOffice += InstallOffice;
                 }
 
+                MainTabControl.SelectedIndex = 0;
+
                 InstallMsi.IsChecked = true;
+
+                LogAnaylytics("/GenerateView", "Load");
             }
             catch (Exception ex)
             {
@@ -146,6 +150,8 @@ namespace MetroDemo.ExampleViews
                 }, _tokenSource.Token);
 
                 MessageBox.Show("Download Complete");
+
+                LogAnaylytics("/GenerateView", "Download." + branch);
             }
             finally
             {
@@ -264,6 +270,8 @@ namespace MetroDemo.ExampleViews
                             ExecutablePath = executablePath,
                             SourceFilePath = sourceFilePath
                         });
+
+                        LogAnaylytics("/GenerateView", "GenerateExe");
                     }
                     else
                     {
@@ -275,6 +283,8 @@ namespace MetroDemo.ExampleViews
                             ExecutablePath = executablePath,
                             SourceFilePath = sourceFilePath
                         });
+
+                        LogAnaylytics("/GenerateView", "GenerateMSI");
                     }
 
                     if (InfoMessage != null)
@@ -493,6 +503,15 @@ namespace MetroDemo.ExampleViews
                     Message = ex.Message
                 });
             }
+        }
+
+        private void LogAnaylytics(string path, string pageName)
+        {
+            try
+            {
+                GoogleAnalytics.Log(path, pageName);
+            }
+            catch { }
         }
 
         #region "Events"
@@ -805,6 +824,62 @@ namespace MetroDemo.ExampleViews
         
         #endregion
 
- 
+        #region "Info"
+
+        private void ProductInfo_OnClick(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var sourceName = ((dynamic)sender).Name;
+                LaunchInformationDialog(sourceName);
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
+
+        private InformationDialog informationDialog = null;
+
+        private void LaunchInformationDialog(string sourceName)
+        {
+            try
+            {
+                if (informationDialog == null)
+                {
+
+                    informationDialog = new InformationDialog
+                    {
+                        Height = 500,
+                        Width = 400
+                    };
+                    informationDialog.Closed += (o, args) =>
+                    {
+                        informationDialog = null;
+                    };
+                    informationDialog.Closing += (o, args) =>
+                    {
+
+                    };
+                }
+
+                informationDialog.Height = 500;
+                informationDialog.Width = 400;
+
+                var filePath = AppDomain.CurrentDomain.BaseDirectory + @"HelpFiles\" + sourceName + ".html";
+                var helpFile = System.IO.File.ReadAllText(filePath);
+
+                informationDialog.HelpInfo.NavigateToString(helpFile);
+                informationDialog.Launch();
+
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
+
+
+        #endregion
     }
 }

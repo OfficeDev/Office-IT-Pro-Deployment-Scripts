@@ -103,6 +103,7 @@ namespace MetroDemo
         {
             try
             {
+                GlobalObjects.ViewModel.PropertyChangeEventEnabled = false;
                 ProductView.LoadXml();
                 DisplayView.LoadXml();
                 UpdateView.LoadXml();
@@ -110,6 +111,10 @@ namespace MetroDemo
             catch (Exception ex)
             {
                 ex.LogException();
+            }
+            finally
+            {
+                GlobalObjects.ViewModel.PropertyChangeEventEnabled = true;
             }
         }
 

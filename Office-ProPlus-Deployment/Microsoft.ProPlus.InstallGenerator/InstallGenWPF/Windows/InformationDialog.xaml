@@ -11,7 +11,7 @@
                       BorderBrush="{DynamicResource AccentColorBrush}"
                       mc:Ignorable="d"
                       x:Name="InformationDialogWindow" Loaded="InformationDialog_OnLoaded"
-                       IsMaxRestoreButtonEnabled="False" IsMinButtonEnabled="False"  ShowMinButton="True" ShowMaxRestoreButton="False " >
+                       IsMaxRestoreButtonEnabled="True" IsMinButtonEnabled="True"  ShowMinButton="True" ShowMaxRestoreButton="True" >
 
     <Window.Resources>
         <ResourceDictionary>
