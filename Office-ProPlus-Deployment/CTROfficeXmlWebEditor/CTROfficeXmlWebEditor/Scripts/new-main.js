@@ -398,6 +398,12 @@ $(document).ready(function () {
         return false;
     });
 
+    $('#btrClickToRun').on('click', function (e) {
+        e.preventDefault();
+        //will need to update this with the location of the click to run exe. for now we will use notepad++
+        window.open("http://officedev.github.io/Office-IT-Pro-Deployment-Scripts/OfficeProPlusInstallGeneratorDev/OfficeProPlusInstallGenerator.application");
+    });
+
     $(window).scroll(function() {
         scrollXmlEditor();
     });

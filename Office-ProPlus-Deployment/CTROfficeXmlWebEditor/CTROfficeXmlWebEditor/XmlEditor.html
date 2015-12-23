@@ -22,6 +22,17 @@
     <link rel="stylesheet" href="https://appsforoffice.microsoft.com/fabric/1.0.1/fabric.min.css">
     <link rel="stylesheet" href="https://appsforoffice.microsoft.com/fabric/1.0.1/fabric.components.min.css">
 
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-70271323-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
     <script type='text/javascript' src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
     <script type="text/javascript" src="./components/TextField/Jquery.TextField.js"></script>
     <script type="text/javascript" src="./components/NavBar/Jquery.NavBar.js"></script>
@@ -173,6 +184,15 @@
             max-height: 200px;
         }
 
+        .ctr-button{
+            margin-top:20%;
+            margin-left:25%;
+            margin-right:auto;
+            width:50%;
+            
+            
+        }
+
     </style>
 </head>
 
@@ -268,6 +288,18 @@
                                             <span class="ms-Table-cell" onclick="setPanel('TemplatesPanel', 'templatesRow')">Templates</span>
                                         </div>
                                     </div>
+                                    
+                                    <br />
+                                    
+                                    <div class="ms-Table">
+                                        <div class="ms-Table-row">
+                                            <span class="ms-font-xl">Tools</span>
+                                        </div>
+                                        <div id="installRow" class="ms-Table-row navrow">
+                                            <span class="ms-Table-cell" onclick="setPanel('GenerateInstallPanel', 'installRow')">Install Generator (Preview)</span>
+                                        </div>
+                                    </div>
+
                                 </div>
                             </div>
                         </td>
@@ -929,6 +961,17 @@
                                     </ul>
                                 </div>
                                 <!-- End Templates Panel -->
+                                <!--Start Generate Install Panel-->
+                                <div id="GenerateInstallPanel" class="option-panel">
+                                    <h1 class="ms-font-xxl">Generate your Installation</h1>
+                                    <div class="ms-font-m">
+                                        The Install Generator is an application that will package an Office 365 ProPlus installation into a single
+                                        Executable or Windows Installer Package (MSI) file. The XML configuration file in embedded in the file which allows
+                                        you to easily distribute Office 365 ProPlus with a custom configuration.
+                                    </div>
+                                    <button id="btrClickToRun" class="ms-Button ctr-button">Launch Installation</button>
+                                </div>
+                                <!-- End Generate Install Panel -->
                             </div>
                         </td>
                         <td style="vertical-align: top;">
