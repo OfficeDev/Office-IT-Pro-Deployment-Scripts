@@ -16,13 +16,6 @@
   <dependency>
     <dependentAssembly dependencyType="install" codebase="Application Files\OfficeProPlusInstallGenerator_1_0_0_42\OfficeProPlusInstallGenerator.exe.manifest" size="2283">
       <assemblyIdentity name="Microsoft.CIE.Run.exe" version="1.0.0.41" publicKeyToken="0000000000000000" language="neutral" processorArchitecture="msil" type="win32" />
-      <hash>
-        <dsig:Transforms>
-          <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
-        </dsig:Transforms>
-        <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
-        <dsig:DigestValue>W0xFRk9wZnhq7SkDvjUVKLAwn2M=</dsig:DigestValue>
-      </hash>
     </dependentAssembly>
   </dependency>
 </asmv1:assembly>
