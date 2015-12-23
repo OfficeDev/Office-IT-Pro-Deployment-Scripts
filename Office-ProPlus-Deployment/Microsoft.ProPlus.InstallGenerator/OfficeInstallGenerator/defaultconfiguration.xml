@@ -1,0 +1,8 @@
+<Configuration>
+    <Add OfficeClientEdition="32" Branch="Current">
+        <Product ID="O365ProPlusRetail">
+            <Language ID="en-us"/>
+        </Product>
+    </Add>
+    <Logging Level="Standard" Path="%temp%"/>
+</Configuration>

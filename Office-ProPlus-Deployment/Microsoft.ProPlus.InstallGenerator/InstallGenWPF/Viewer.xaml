@@ -1,0 +1,87 @@
+﻿<UserControl x:Class="XMLViewer.Viewer"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:xmlstack="clr-namespace:System.Xml;assembly=System.Xml"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <UserControl.Resources>
+        <SolidColorBrush Color="Blue" x:Key="xmlValueBrush"/>
+        <SolidColorBrush Color="Red" x:Key="xmAttributeBrush"/>
+        <SolidColorBrush Color="DarkMagenta" x:Key="xmlTagBrush"/>
+        <SolidColorBrush Color="Blue" x:Key="xmlMarkBrush"/>
+
+        <DataTemplate x:Key="attributeTemplate">
+            <StackPanel Orientation="Horizontal" 
+                        Margin="3,0,0,0" HorizontalAlignment="Center">
+                <TextBlock Text="{Binding Path=Name}" 
+                           Foreground="{StaticResource xmAttributeBrush}"/>
+                <TextBlock Text="=&quot;" 
+                           Foreground="{StaticResource xmlMarkBrush}"/>
+                <TextBlock Text="{Binding Path=Value}" 
+                           Foreground="{StaticResource xmlValueBrush}"/>
+                <TextBlock Text="&quot;" 
+                           Foreground="{StaticResource xmlMarkBrush}"/>
+            </StackPanel>
+        </DataTemplate>
+
+        <Style TargetType="{x:Type TreeViewItem}">
+            <Setter Property="IsExpanded" Value="True"/>
+        </Style>
+
+        <HierarchicalDataTemplate x:Key="treeViewTemplate" 
+                                  ItemsSource="{Binding XPath=child::node()}">
+            <StackPanel Orientation="Horizontal" Margin="3,0,0,0" 
+                        HorizontalAlignment="Center">
+                <TextBlock Text="&lt;" HorizontalAlignment="Center" 
+                           Foreground="{StaticResource xmlMarkBrush}" 
+                           x:Name="startTag"/>
+
+                <TextBlock Text="{Binding Path=Name}"
+                    Margin="0"
+                    HorizontalAlignment="Center"
+                    x:Name="xmlTag"
+                    Foreground="{StaticResource xmlTagBrush}"/>
+
+                <ItemsControl
+                    ItemTemplate="{StaticResource attributeTemplate}"
+                    ItemsSource="{Binding Path=Attributes}"
+                    HorizontalAlignment="Center">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+
+                <TextBlock Text="&gt;" HorizontalAlignment="Center" 
+                           Foreground="{StaticResource xmlMarkBrush}" 
+                           x:Name="endTag"/>
+            </StackPanel>
+
+            <HierarchicalDataTemplate.Triggers>
+                <DataTrigger Binding="{Binding NodeType}">
+                    <DataTrigger.Value>
+                        <xmlstack:XmlNodeType>Text</xmlstack:XmlNodeType>
+                    </DataTrigger.Value>
+                    <Setter Property="Text" Value="{Binding InnerText}" 
+                            TargetName="xmlTag"/>
+                    <Setter Property="Foreground" Value="Blue" 
+                            TargetName="xmlTag"/>
+                    <Setter Property="Visibility" Value="Collapsed" 
+                            TargetName="startTag"/>
+                    <Setter Property="Visibility" Value="Collapsed" 
+                            TargetName="endTag"/>
+                </DataTrigger>
+
+                <DataTrigger Binding="{Binding HasChildNodes}" Value="False">
+                    <Setter Property="Text" Value="/&gt;" TargetName="endTag"/>
+                </DataTrigger>
+            </HierarchicalDataTemplate.Triggers>
+        </HierarchicalDataTemplate>
+    </UserControl.Resources>
+
+    <Grid>
+        <TreeView Grid.Row="2" Grid.ColumnSpan="2" Name="xmlTree" 
+                  ItemTemplate="{StaticResource treeViewTemplate}"/>
+    </Grid>
+</UserControl>
+

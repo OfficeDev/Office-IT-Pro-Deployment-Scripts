@@ -1,0 +1,400 @@
+﻿<UserControl x:Class="MetroDemo.ExampleViews.ProductView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:MetroDemo="clr-namespace:MetroDemo"
+             xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:exampleViews="clr-namespace:MetroDemo.ExampleViews"
+             xmlns:models="clr-namespace:MetroDemo.Models"
+             mc:Ignorable="d"
+             d:DesignHeight="600"
+             d:DesignWidth="900"
+             d:DataContext="{d:DesignInstance MetroDemo:MainWindowViewModel}" Loaded="ProductView_Loaded" >
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro.Resources;component/Icons.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <Thickness x:Key="ColumnMargin">10 5 10 5</Thickness>
+            <Thickness x:Key="ControlMargin">0 5 0 0</Thickness>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <AdornerDecorator>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="20"></RowDefinition>
+                <RowDefinition Height="350"></RowDefinition>
+                <RowDefinition Height="100"></RowDefinition>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="1" >
+                <Grid.RowDefinitions>
+                    <RowDefinition></RowDefinition>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="50" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="50" />
+                </Grid.ColumnDefinitions>
+                <Controls:MetroAnimatedSingleRowTabControl Grid.Row="0" Grid.Column="1" x:Name="MainTabControl" SelectionChanged="MainTabControl_OnSelectionChanged">
+                    <TabItem Header="Products">
+                        <Grid HorizontalAlignment="Left">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="20"></RowDefinition>
+                                <RowDefinition Height="250"></RowDefinition>
+                                <RowDefinition Height="300"></RowDefinition>
+                            </Grid.RowDefinitions>
+
+                            <Grid Height="410" Width="700" Grid.Row="1" HorizontalAlignment="Left">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="260" />
+                                    <ColumnDefinition Width="150" />
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="200"></RowDefinition>
+                                    <RowDefinition Height="200"></RowDefinition>
+                                </Grid.RowDefinitions>
+
+                                <Grid Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="250" />
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="50" />
+                                        <RowDefinition Height="60" />
+                                        <RowDefinition Height="75" />
+                                    </Grid.RowDefinitions>
+
+                                    <Label Grid.Row="0" Content="Product" Style="{StaticResource MetroLabelHeader}"  HorizontalAlignment="Left" />
+                                    <Button x:Name="ProductInfo" Width="30" Height="32" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" Margin="90 0 0 0"
+                                            Focusable="False"  Style="{StaticResource MetroInfoButton}" Click="ProductInfo_OnClick" >
+                                        <StackPanel Orientation="Horizontal">
+                                            <Image Source="../images/info.png" Width="20" Height="20"/>
+                                        </StackPanel>
+                                    </Button>
+
+                                    <ListBox x:Name="MainProducts" Grid.Column="0" Grid.Row="1" Style="{StaticResource VirtualisedMetroListBox}"
+                                         ItemsSource="{Binding MainProducts}"
+                                         DisplayMemberPath="DisplayName" 
+                                         SelectedIndex="0" SelectionMode="Single" FontSize="20" SelectionChanged="Products_OnSelectionChanged" />
+
+                                    <ListBox x:Name="AdditionalProducts" Grid.Column="0" Grid.Row="2" Style="{StaticResource VirtualisedMetroListBox}"
+                                         ItemsSource="{Binding AdditionalProducts}"
+                                         DisplayMemberPath="DisplayName"
+                                         SelectedIndex="-1" SelectionMode="Multiple" FontSize="20" SelectionChanged="Products_OnSelectionChanged"  />
+                                </Grid>
+
+                                <StackPanel Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="80" />
+                                            <ColumnDefinition Width="30" />
+                                        </Grid.ColumnDefinitions>
+                                        <Label Content="Edition" Style="{StaticResource MetroLabelHeader}" HorizontalAlignment="Left" Grid.Column="0" />
+                                        <Button x:Name="EditionInfo" Width="30" Height="32" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" Margin="0 8 0 0" 
+                                                Focusable="False"  Style="{StaticResource MetroInfoButton}" Click="ProductInfo_OnClick" >
+                                            <StackPanel Orientation="Horizontal">
+                                                <Image Source="../images/info.png" Width="20" Height="20"/>
+                                            </StackPanel>
+                                        </Button>
+                                    </Grid>
+                                    <RadioButton Margin="{StaticResource ControlMargin}" x:Name="ProductEdition32Bit"
+                                         Content="32-Bit"
+                                         GroupName="1" 
+                                         IsChecked="True" FontSize="20" />
+                                    <RadioButton Margin="{StaticResource ControlMargin}"  x:Name="ProductEdition64Bit"
+                                         Content="64-Bit"
+                                         GroupName="1" FontSize="20" />
+                                </StackPanel>
+
+                                <StackPanel Grid.Row="0" Grid.Column="2" HorizontalAlignment="Left">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="80" />
+                                            <ColumnDefinition Width="30" />
+                                        </Grid.ColumnDefinitions>
+                                        <Label Content="Branch" Style="{StaticResource MetroLabelHeader}" HorizontalAlignment="Left" Grid.Column="0" />
+                                        <Button x:Name="BranchInfo" Width="30" Height="32" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" Margin="0 8 0 0" 
+                                                Focusable="False"  Style="{StaticResource MetroInfoButton}" Click="ProductInfo_OnClick" >
+                                            <StackPanel Orientation="Horizontal">
+                                                <Image Source="../images/info.png" Width="20" Height="20"/>
+                                            </StackPanel>
+                                        </Button>
+                                    </Grid>
+
+
+                                    <ComboBox x:Name="ProductBranch" Width="240" Height="35" Margin="0, 10, 0, 0" SelectedIndex="0" 
+                                              FontSize="20" ItemsSource="{Binding Branches}" DisplayMemberPath="Name" SelectionChanged="ProductBranch_OnSelectionChanged" >
+                                    </ComboBox>
+                                </StackPanel>
+
+                            </Grid>
+
+                        </Grid>
+                    </TabItem>
+                    <TabItem Header="Languages">
+                        <StackPanel>
+                            <Grid >
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="20" />
+                                    <RowDefinition Height="50" />
+                                    <RowDefinition />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition  />
+                                </Grid.ColumnDefinitions>
+
+                                <DataGrid x:Name="LanguageList" Height="320" Grid.Column="0" Grid.Row="2"
+                                          RenderOptions.ClearTypeHint="Enabled"
+                                          TextOptions.TextFormattingMode="Display"
+                                          Margin="5"
+                                          Style="{DynamicResource MetroDataGrid}"
+                                          AutoGenerateColumns="False" HeadersVisibility="Column"
+                                          CanUserAddRows="False">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="400" 
+                                                  IsReadOnly="True" FontSize="20" Foreground="{DynamicResource LabelTextBrushCustom}" />
+                                        <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="100" 
+                                                  IsReadOnly="True" FontSize="20" Foreground="{DynamicResource LabelTextBrushCustom}" />
+                                    </DataGrid.Columns>
+
+
+                                </DataGrid>
+
+                                <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal">
+                                    <Button Name="AddLanguageButton" Content="Add Language" Margin="2" Height="20" Click="AddLanguageButton_Click" />
+                                    <Button Name="RemoveLanguageButton" Content="Remove Language" Margin="2" Height="20" Click="RemoveLanguageButton_Click" />
+                                    <Button Name="SetPrimaryButton" Content="Set Primary" Margin="2" Height="20" Click="SetPrimaryButton_OnClick" />
+                                    <Button x:Name="LanguageInfo" Width="30" Height="32" HorizontalAlignment="Left" Margin="0 0 0 0" 
+                                                Focusable="False"  Style="{StaticResource MetroInfoButton}" Click="ProductInfo_OnClick" >
+                                        <StackPanel Orientation="Horizontal">
+                                            <Image Source="../images/info.png" Width="20" Height="20"/>
+                                        </StackPanel>
+                                    </Button>
+                                </StackPanel>
+
+                                <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Right">
+                                    <Label Style="{StaticResource MetroLabelTextSmall}" VerticalAlignment="Center" >Use Languages for all Products</Label>
+                                    <CheckBox x:Name="UseLangForAllProducts" Checked="UseLangForAllProducts_OnChecked" Unchecked="UseLangForAllProducts_OnChecked" IsChecked="True"></CheckBox>
+                                    <ComboBox x:Name="LanguageUnique" Height="20" Width="180" IsEnabled="False" SelectionChanged="LanguageUnique_OnSelectionChanged"></ComboBox>
+                                </StackPanel>
+
+                            </Grid>
+                        </StackPanel>
+
+                    </TabItem>
+                    <TabItem Header="Optional">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="30"></RowDefinition>
+                                <RowDefinition Height="500"></RowDefinition>
+                            </Grid.RowDefinitions>
+
+                            <StackPanel Grid.Column="0" Grid.Row="1">
+                                <Grid >
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="50"></RowDefinition>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="130" />
+                                        <ColumnDefinition Width="40" />
+                                        <ColumnDefinition Width="400" />
+                                    </Grid.ColumnDefinitions>
+                                    <Label Content="Version" Style="{StaticResource MetroLabelHeader}" Grid.Column="0" />
+                                    <Button Grid.Column="1" x:Name="VersionInfo" Width="30" Height="32" HorizontalAlignment="Left" Margin="0 0 0 0" 
+                                                Focusable="False"  Style="{StaticResource MetroInfoButton}" Click="ProductInfo_OnClick" >
+                                        <StackPanel Orientation="Horizontal">
+                                            <Image Source="../images/info.png" Width="20" Height="20"/>
+                                        </StackPanel>
+                                    </Button>
+                                    <ComboBox Width="400" x:Name="ProductVersion" Grid.Column="2" 
+                                          Height="35" HorizontalAlignment="Left"
+                                          Style="{DynamicResource VirtualisedMetroComboBox}"
+                                          Controls:TextBoxHelper.Watermark="16.0.4949.1003"
+                                          DisplayMemberPath="Version"
+                                          IsEditable="True"
+                                          ItemsSource="{Binding Builds}"
+                                          MaxDropDownHeight="125"
+                                          FontSize="20"
+                                          Text="{Binding Path=Version}" />
+                                </Grid>
+
+                                <Grid Grid.Column="0" Grid.Row="1">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="50"></RowDefinition>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="130" />
+                                        <ColumnDefinition Width="40" />
+                                        <ColumnDefinition Width="400" />
+                                        <ColumnDefinition Width="60" />
+                                        <ColumnDefinition Width="60"/>
+                                        <ColumnDefinition Width="75" />
+                                        <ColumnDefinition Width="70" />
+                                    </Grid.ColumnDefinitions>
+                                    <Label Content="Source Path" Style="{StaticResource MetroLabelHeader}" Grid.Column="0" />
+                                    <Button Grid.Column="1" x:Name="SourcePathInfo" Width="30" Height="32" HorizontalAlignment="Left" 
+                                                Focusable="False"  Style="{StaticResource MetroInfoButton}" Click="ProductInfo_OnClick" >
+                                        <StackPanel Orientation="Horizontal">
+                                            <Image Source="../images/info.png" Width="20" Height="20"/>
+                                        </StackPanel>
+                                    </Button>
+
+                                    <Controls:MetroProgressBar x:Name="DownloadProgressBar"  Grid.Column="2" Height="35" Background="White" />
+                                    <TextBox x:Name="ProductUpdateSource" Background="#00ffffff" FontSize="20" Grid.Column="2"
+                                             Controls:TextBoxHelper.Watermark="Local, UNC or HTTP Path" Height="35"
+                                             Controls:TextBoxHelper.ClearTextButton="True" TextChanged="BuildFilePath_OnTextChanged"
+                                             Text="">
+                                    </TextBox>
+                                    <Button Width="55" 
+                                            Height="40" Grid.Column="3"
+                                            Content="Browse" x:Name="UpdatePath" Click="UpdatePath_OnClick" />
+                                    <Button Width="50" Height="40" Grid.Column="4"
+                                            Content="Open" x:Name="OpenFolderButton" IsEnabled="False" Click="OpenFolderButton_OnClick"   />
+                                    <Button Width="70" Height="40" Grid.Column="5"
+                                            Content="Download" x:Name="DownloadButton" Click="DownloadButton_OnClick" IsEnabled="False"   />
+
+                                    <Label x:Name="DownloadPercent" Content="" Style="{StaticResource MetroLabelHeader}" Grid.Column="6" />
+                                </Grid>
+                            </StackPanel>
+
+
+                        </Grid>
+                    </TabItem>
+                    <TabItem Header="Excluded">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="75" />
+                                <ColumnDefinition Width="226"/>
+                                <ColumnDefinition Width="300"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="30"></RowDefinition>
+                                <RowDefinition Height="Auto"></RowDefinition>
+                            </Grid.RowDefinitions>
+
+                            <Button x:Name="ExcludeAppInfo" Width="30" Height="32" HorizontalAlignment="Left" Margin="0 0 0 0" 
+                                                Focusable="False"  Style="{StaticResource MetroInfoButton}" Click="ProductInfo_OnClick" >
+                                <StackPanel Orientation="Horizontal">
+                                    <Image Source="../images/info.png" Width="20" Height="20"/>
+                                </StackPanel>
+                            </Button>
+
+                            <DataGrid x:Name="ExcludedApps1" Grid.Column="0" Grid.Row="1" Height="350"
+                                  RenderOptions.ClearTypeHint="Enabled"
+                                  TextOptions.TextFormattingMode="Display"
+                                  Margin="5"
+                                  ItemsSource="{Binding Path=ExcludeProducts}"
+                                  Style="{DynamicResource MetroDataGrid}"
+                                  AutoGenerateColumns="False" HeadersVisibility="None"
+                                  CanUserAddRows="False" Grid.ColumnSpan="2">
+                                <DataGrid.RowStyle>
+                                    <Style TargetType="{x:Type DataGridRow}">
+                                        <Style.Triggers>
+                                            <Trigger Property="IsSelected" Value="True" >
+                                                <Setter Property="Background" Value="White" />
+                                                <Setter Property="Foreground" Value="Black" />
+                                                <Setter Property="BorderThickness" Value="0" />
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </DataGrid.RowStyle>
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Product" Binding="{Binding DisplayName}" Width="100" 
+                                        IsReadOnly="True" FontSize="20" Foreground="{DynamicResource LabelTextBrushCustom}" />
+                                    <DataGridTemplateColumn Header="Status" >
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Controls:ToggleSwitch DataContext="{Binding}" IsChecked="{Binding Included, Mode=TwoWay}"
+                                                       OnLabel="Included"
+                                                       OffLabel="Excluded"
+                                                       Margin="{StaticResource ControlMargin}" 
+                                                       HorizontalAlignment="Right" 
+                                                       IsCheckedChanged="ToggleSwitch_OnIsCheckedChanged" />
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+
+                            <DataGrid x:Name="ExcludedApps2" Grid.Column="2" Grid.Row="1" Height="350"
+                                  RenderOptions.ClearTypeHint="Enabled"
+                                  TextOptions.TextFormattingMode="Display"
+                                  Margin="5"
+                                  ItemsSource="{Binding Path=ExcludeProducts}"
+                                  Style="{DynamicResource MetroDataGrid}"
+                                  AutoGenerateColumns="False" HeadersVisibility="None" 
+                                  CanUserAddRows="False" FontSize="20" >
+                                <DataGrid.RowStyle>
+                                    <Style TargetType="{x:Type DataGridRow}">
+                                        <Style.Triggers>
+                                            <Trigger Property="IsSelected" Value="True" >
+                                                <Setter Property="Background" Value="White" />
+                                                <Setter Property="Foreground" Value="Black" />
+                                                <Setter Property="BorderThickness" Value="0" />
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </DataGrid.RowStyle>
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Product" Binding="{Binding DisplayName}" Width="120" 
+                                        IsReadOnly="True" FontSize="20" Foreground="{DynamicResource LabelTextBrushCustom}" />
+                                    <DataGridTemplateColumn Header="Status" >
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Controls:ToggleSwitch 
+                                                   DataContext="{Binding}" IsChecked="{Binding Included, Mode=TwoWay}"
+                                                   OnLabel="Included"
+                                                   OffLabel="Excluded"
+                                                   Margin="{StaticResource ControlMargin}" HorizontalAlignment="Right" 
+                                                   IsCheckedChanged="ToggleSwitch_OnIsCheckedChanged" />
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+
+                        </Grid>
+                    </TabItem>
+                </Controls:MetroAnimatedSingleRowTabControl>
+            </Grid>
+
+            <Grid Grid.Row="2" Grid.Column="0" HorizontalAlignment="Center" >
+                <Grid.Resources>
+                    <ResourceDictionary>
+                        <ResourceDictionary.MergedDictionaries>
+                            <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/FlatButton.xaml" />
+                        </ResourceDictionary.MergedDictionaries>
+                    </ResourceDictionary>
+                </Grid.Resources>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition  />
+                    <ColumnDefinition Width="20"  />
+                    <ColumnDefinition  />
+                </Grid.ColumnDefinitions>
+                <Button Width="100" 
+                    Margin="{StaticResource ControlMargin}" Height="40" Grid.Column="0"
+                    Content="Previous" x:Name="PreviousButton" Click="PreviousButton_Click" />
+                <Button Width="100"
+                    Margin="{StaticResource ControlMargin}" Height="40" Grid.Column="2"
+                    Content="Next" x:Name="NextButton" Click="NextButton_Click" />
+            </Grid>
+        </Grid>
+
+    </AdornerDecorator>
+</UserControl>

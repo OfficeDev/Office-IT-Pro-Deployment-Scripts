@@ -1,0 +1,54 @@
+﻿<controls:MetroWindow x:Class="MetroDemo.ExampleWindows.InformationDialog"
+                      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                      xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+                      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                      xmlns:converters="http://metro.mahapps.com/winfx/xaml/shared"
+                      Title=""
+                      WindowStartupLocation="CenterOwner"
+                      BorderThickness="1"
+                      BorderBrush="{DynamicResource AccentColorBrush}"
+                      mc:Ignorable="d"
+                      x:Name="InformationDialogWindow" Loaded="InformationDialog_OnLoaded"
+                       IsMaxRestoreButtonEnabled="True" IsMinButtonEnabled="True"  ShowMinButton="True" ShowMaxRestoreButton="True" >
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/FlatButton.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro.Resources;component/Icons.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+        </ResourceDictionary>
+    </Window.Resources>
+
+
+    <controls:MetroWindow.TitleTemplate>
+        <DataTemplate>
+            <TextBlock Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Content, Converter={converters:ToUpperConverter}}"
+                       TextTrimming="CharacterEllipsis"
+                       HorizontalAlignment="Left"
+                       VerticalAlignment="Center"
+                       Margin="10 0 8 0"
+                       FontSize="{DynamicResource WindowTitleFontSize}"
+                       FontFamily="{DynamicResource HeaderFontFamily}" />
+        </DataTemplate>
+    </controls:MetroWindow.TitleTemplate>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0" BorderThickness="1">
+            <WebBrowser  Name="HelpInfo" Margin="5"   >
+ 
+            </WebBrowser>
+        </Border>
+    </Grid>
+
+</controls:MetroWindow>
