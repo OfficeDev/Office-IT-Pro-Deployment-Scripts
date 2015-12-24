@@ -22,6 +22,15 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
 
                 var wixDirectory = tmpDir + @"\wixTools";
                 var wixZip = ZipExtractor.AssemblyDirectory + @"\wixTools.zip";
+                if (!File.Exists(wixZip))
+                {
+                    var projectPath = Directory.GetCurrentDirectory() + @"\Project\wixTools.zip";
+                    if (File.Exists(projectPath))
+                    {
+                        wixZip = projectPath;
+                    }
+                }
+
                 if (!Directory.Exists(wixDirectory))
                 {
                     ZipExtractor.Extract(wixZip, tmpDir);

@@ -58,7 +58,18 @@ namespace MetroDemo
 
         private void MainTabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            StartView.RestartWorkflow += RestartWorkflow;
+            if (StartView.RestartWorkflow == null)
+            {
+                StartView.RestartWorkflow += RestartWorkflow;
+            }
+
+            e.Handled = false;
+
+            if (GlobalObjects.ViewModel.BlockNavigation)
+            {
+                MainTabControl.SelectedIndex = _cacheIndex;
+                return;
+            }
 
             ThemeManager.TransitionsEnabled = MainTabControl.SelectedIndex != 4;
 

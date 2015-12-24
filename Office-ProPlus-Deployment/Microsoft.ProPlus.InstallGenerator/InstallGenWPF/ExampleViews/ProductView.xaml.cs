@@ -49,6 +49,7 @@ namespace MetroDemo.ExampleViews
         public event MessageEventHandler ErrorMessage;
 
         private Task _downloadTask = null;
+        private int _cachedIndex = 0;
         
         public ProductView()
         {
@@ -92,6 +93,8 @@ namespace MetroDemo.ExampleViews
         {
             try
             {
+                SetTabStatus(false);
+                GlobalObjects.ViewModel.BlockNavigation = true;
                 _tokenSource = new CancellationTokenSource();
 
                 UpdateXml();
@@ -169,6 +172,8 @@ namespace MetroDemo.ExampleViews
             }
             finally
             {
+                SetTabStatus(true);
+                GlobalObjects.ViewModel.BlockNavigation = false;
                 ProductUpdateSource.IsReadOnly = false;
                 UpdatePath.IsEnabled = true;
                 DownloadProgressBar.Value = 0;
@@ -661,6 +666,17 @@ namespace MetroDemo.ExampleViews
             }
         }
 
+        private void SetTabStatus(bool enabled)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                ProductTab.IsEnabled = enabled;
+                LanguagesTab.IsEnabled = enabled;
+                OptionalTab.IsEnabled = enabled;
+                ExcludedTab.IsEnabled = enabled;
+            });
+        }
+
         #region "Events"
 
         private async void ProductBranch_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -698,10 +714,14 @@ namespace MetroDemo.ExampleViews
                 {
                     if (_tokenSource.IsCancellationRequested)
                     {
+                        GlobalObjects.ViewModel.BlockNavigation = false;
+                        SetTabStatus(true);
                         return;
                     }
                     if (_downloadTask.IsActive())
                     {
+                        GlobalObjects.ViewModel.BlockNavigation = false;
+                        SetTabStatus(true);
                         _tokenSource.Cancel();
                         return;
                     }
@@ -717,7 +737,8 @@ namespace MetroDemo.ExampleViews
                 if (ex.Message.ToLower().Contains("aborted") ||
                     ex.Message.ToLower().Contains("canceled"))
                 {
-
+                    GlobalObjects.ViewModel.BlockNavigation = false;
+                    SetTabStatus(true);
                 }
                 else
                 {
@@ -888,6 +909,12 @@ namespace MetroDemo.ExampleViews
         {
             try
             {
+                if (GlobalObjects.ViewModel.BlockNavigation)
+                {
+                    MainTabControl.SelectedIndex = _cachedIndex;
+                    return;
+                }
+
                 switch (MainTabControl.SelectedIndex)
                 {
                     case 0:
@@ -903,6 +930,8 @@ namespace MetroDemo.ExampleViews
                         LogAnaylytics("/ProductView", "Excluded");
                         break;
                 }
+
+                _cachedIndex = MainTabControl.SelectedIndex;
             }
             catch (Exception ex)
             {

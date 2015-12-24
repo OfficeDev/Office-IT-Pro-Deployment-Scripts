@@ -94,8 +94,10 @@ namespace MetroDemo.ExampleViews
         {
             try
             {
+                GlobalObjects.ViewModel.BlockNavigation = true;
                 _tokenSource = new CancellationTokenSource();
 
+                GenerateButton.IsEnabled = false;
                 BuildFilePath.IsReadOnly = true;
                 BrowseSourcePathButton.IsEnabled = false;
 
@@ -155,6 +157,8 @@ namespace MetroDemo.ExampleViews
             }
             finally
             {
+                GlobalObjects.ViewModel.BlockNavigation = false;
+                GenerateButton.IsEnabled = true;
                 BuildFilePath.IsReadOnly = false;
                 BrowseSourcePathButton.IsEnabled = true;
                 DownloadProgressBar.Value = 0;
@@ -404,7 +408,10 @@ namespace MetroDemo.ExampleViews
 
             if (buildFolderExists)
             {
-                GenerateButton.IsEnabled = true;
+                if (!_downloadTask.IsActive())
+                {
+                    GenerateButton.IsEnabled = true;
+                }
             }
             else
             {
@@ -729,10 +736,12 @@ namespace MetroDemo.ExampleViews
                 {
                     if (_tokenSource.IsCancellationRequested)
                     {
+                        GlobalObjects.ViewModel.BlockNavigation = false;
                         return;
                     }
                     if (_downloadTask.IsActive())
                     {
+                        GlobalObjects.ViewModel.BlockNavigation = false;
                         _tokenSource.Cancel();
                         return;
                     }
@@ -748,7 +757,7 @@ namespace MetroDemo.ExampleViews
                 if (ex.Message.ToLower().Contains("aborted") ||
                     ex.Message.ToLower().Contains("canceled"))
                 {
-
+                    GlobalObjects.ViewModel.BlockNavigation = false;
                 }
                 else
                 {

@@ -57,6 +57,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Extensions\DirectoryHelper.cs" />
     <Compile Include="Extensions\Extensions.cs" />
     <Compile Include="Implementation\OfficeConfigXMLExtractor.cs" />
     <Compile Include="Implementation\OfficeInstallMsiGenerator.cs" />

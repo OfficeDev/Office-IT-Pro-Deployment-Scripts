@@ -44,7 +44,7 @@
                     <ColumnDefinition Width="50" />
                 </Grid.ColumnDefinitions>
                 <Controls:MetroAnimatedSingleRowTabControl Grid.Row="0" Grid.Column="1" x:Name="MainTabControl" SelectionChanged="MainTabControl_OnSelectionChanged">
-                    <TabItem Header="Products">
+                    <TabItem Header="Products" x:Name="ProductTab">
                         <Grid HorizontalAlignment="Left">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition />
@@ -144,7 +144,7 @@
 
                         </Grid>
                     </TabItem>
-                    <TabItem Header="Languages">
+                    <TabItem Header="Languages" x:Name="LanguagesTab">
                         <StackPanel>
                             <Grid >
                                 <Grid.RowDefinitions>
@@ -195,7 +195,7 @@
                         </StackPanel>
 
                     </TabItem>
-                    <TabItem Header="Optional">
+                    <TabItem Header="Optional" x:Name="OptionalTab">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition />
@@ -276,7 +276,7 @@
 
                         </Grid>
                     </TabItem>
-                    <TabItem Header="Excluded">
+                    <TabItem Header="Excluded" x:Name="ExcludedTab">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="75" />

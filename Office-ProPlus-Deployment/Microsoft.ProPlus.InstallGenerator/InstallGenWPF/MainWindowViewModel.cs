@@ -342,7 +342,7 @@ namespace MetroDemo
 
         public string Error { get { return string.Empty; } }
 
-
+        public bool BlockNavigation { get; set; }
 
         public List<Language> SelectedLanguages
         {

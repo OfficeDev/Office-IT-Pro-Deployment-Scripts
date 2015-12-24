@@ -161,6 +161,7 @@ public class InstallOffice
         Console.WriteLine();
         Console.WriteLine("  /uninstall\t\t\tRemoves all installed Office 365 ProPlus");
         Console.WriteLine("  \t\t\t\tproducts.");
+        Console.WriteLine("  /silent\t\t\tInstalls with prompts");
         Console.WriteLine("  /showxml\t\t\tDisplays the current Office 365 ProPlus");
         Console.WriteLine("  \t\t\t\tconfiguration xml.");
         Console.WriteLine("  /extractxml={File Path}\tExtracts the current Office 365 ProPlus");

@@ -662,4 +662,3 @@ D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\MahApps.Metro\obj\NET4\Debug\MahApps.Metro.g.resources
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\MahApps.Metro\obj\NET4\Debug\MahApps.Metro.dll
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\MahApps.Metro\obj\NET4\Debug\MahApps.Metro.pdb
-D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\MahApps.Metro\obj\NET4\Debug\MahApps.Metro.csprojResolveAssemblyReference.cache

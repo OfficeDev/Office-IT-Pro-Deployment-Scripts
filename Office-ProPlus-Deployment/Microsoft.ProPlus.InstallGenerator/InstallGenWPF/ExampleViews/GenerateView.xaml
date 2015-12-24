@@ -122,7 +122,7 @@
                                     <Button Width="80" Margin="{StaticResource ControlMargin}" Height="40" Grid.Column="5" Grid.Row="0"
                                             Content="Download" x:Name="DownloadButton" Click="DownloadButton_OnClick" IsEnabled="False"   />
 
-                                    <Label x:Name="DownloadPercent" Content="" Style="{StaticResource MetroLabelHeader}" Grid.Column="5" Grid.Row="0" />
+                                    <Label x:Name="DownloadPercent" Content="" Style="{StaticResource MetroLabelHeader}" Grid.Column="6" Grid.Row="0" />
                                 </Grid>
                             </Grid>
                         </Border>

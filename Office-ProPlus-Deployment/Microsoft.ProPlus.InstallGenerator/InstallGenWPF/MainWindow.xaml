@@ -131,7 +131,6 @@
             
             <StatusBar Grid.Row="2">
                 <StatusBarItem></StatusBarItem>
-                <Separator Style="{StaticResource MetroStatusBarSeparator}" />
                 <StatusBarItem></StatusBarItem>
                 <StatusBarItem Content="   " />
             </StatusBar>

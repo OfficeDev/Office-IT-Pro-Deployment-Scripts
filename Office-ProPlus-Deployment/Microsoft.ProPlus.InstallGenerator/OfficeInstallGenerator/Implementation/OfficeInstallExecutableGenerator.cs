@@ -12,6 +12,7 @@ using Micorosft.OfficeProPlus.ConfigurationXml.Enums;
 using Micorosft.OfficeProPlus.ConfigurationXml.Model;
 using Microsoft.CSharp;
 using Microsoft.OfficeProPlus.InstallGenerator;
+using Microsoft.OfficeProPlus.InstallGenerator.Extensions;
 using Microsoft.OfficeProPlus.InstallGenerator.Implementation;
 using Microsoft.Win32;
 
@@ -28,6 +29,11 @@ namespace OfficeInstallGenerator
             var embededExeFiles = new List<string>();
             try
             {
+                if (Directory.Exists(currentDirectory + @"\Project"))
+                {
+                    currentDirectory = currentDirectory + @"\Project";
+                }
+
                 var codeProvider = new CSharpCodeProvider();
                 var icc = codeProvider.CreateCompiler();
 
@@ -56,14 +62,17 @@ namespace OfficeInstallGenerator
                 parameters.EmbeddedResources.Add(tmpPath + @"\configuration.xml");
 
                // parameters.EmbeddedResources.Add(@"\tools\");
-                
+
+                var office2013Setup = DirectoryHelper.GetCurrentDirectoryFilePath("Office2013Setup.exe");
+                var office2016Setup = DirectoryHelper.GetCurrentDirectoryFilePath("Office2016Setup.exe"); 
+
                 parameters.EmbeddedResources.Add(installProperties.OfficeVersion == OfficeVersion.Office2013
-                    ? @".\Office2013Setup.exe"
-                    : @".\Office2016Setup.exe");
+                    ? office2013Setup
+                    : office2016Setup);
 
+                var installOfficeFp = DirectoryHelper.GetCurrentDirectoryFilePath("InstallOffice.cs"); 
 
-
-                var fileContents = File.ReadAllText("InstallOffice.cs");
+                var fileContents = File.ReadAllText(installOfficeFp);
                 fileContents = fileContents.Replace("public static void Main1(string[] args)",
                     "public static void Main(string[] args)");
 
@@ -183,8 +192,7 @@ namespace OfficeInstallGenerator
 
         private void EmbedSourceFiles(CompilerParameters parameters, string sourcePath)
         {
-            var currentDirectory = Directory.GetCurrentDirectory();
-            var xmlFilePath = currentDirectory + @"\Files.xml";
+            var xmlFilePath = DirectoryHelper.GetCurrentDirectoryFilePath("Files.xml"); 
 
             var dirInfo = new DirectoryInfo(sourcePath);
             var sourceFiles = dirInfo.GetFiles("*.*", SearchOption.AllDirectories);

@@ -267,9 +267,6 @@ public class CustomActions
             try
             {
                 var uiLevel = session.CustomActionData["UILevel"];
-
-                MessageBox.Show(uiLevel);
-
                 if (uiLevel == "2" || uiLevel == "3")
                 {
                     isSilent = true;
