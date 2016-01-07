@@ -111,6 +111,8 @@ begin {
 
     $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet(‘DefaultDisplayPropertySet’,[string[]]$defaultDisplaySet)
     $PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultDisplayPropertySet)
+    
+    [string]$tempStr = $MyInvocation.MyCommand.Path
 
     $scriptPath = GetScriptPath
 
@@ -266,7 +268,7 @@ process {
     foreach ($lang in $additionalLanguages) {
       if ($lang.GetType().Name.ToLower().Contains("string")) {
         if ($lang.Contains("-")) {
-          if (!$allLanguages.Contains($lang.ToLower())) {
+          if (!$allLanguages -contains ($lang.ToLower())) {
              $allLanguages += $lang.ToLower()
           }
         }
@@ -314,9 +316,18 @@ process {
 
        if ($additionalLanguages) {
            $additionalLanguages = Get-Unique -InputObject $additionalLanguages -OnType
-    
-           if ($additionalLanguages.Contains($primaryLanguage)) {
-               $additionalLanguages.Remove($primaryLanguage)
+           
+           
+                          
+           if ($additionalLanguages -contains ($primaryLanguage)) {
+           $tempLanguages = $additionalLanguages
+           $additionalLanguages = New-Object System.Collections.ArrayList
+           foreach($tempL in $tempLanguages){
+               if($tempL -ne $primaryLanguage){
+                    $additionalLanguages.Add($tempL)
+               }
+               #$additionalLanguages.Remove($primaryLanguage)
+               }
            }
        }
 
@@ -936,8 +947,10 @@ function odtGetOfficeLanguages() {
         $installedCultures = $regProv.EnumKey($HKLM, $productsPath)
       
         foreach ($installedCulture in $installedCultures.sNames) {
+        if($installedCulture){
             if ($installedCulture.Contains("-") -and !($installedCulture.ToLower() -eq "x-none")) {
                 $addItem = $appLanguages1.Add($installedCulture) 
+            }
             }
         }
 
@@ -1024,7 +1037,7 @@ function msiGetOfficeLanguages() {
         foreach ($enabledLanguage in $enabledLanguages.sNames) {
 
            $languageStatus = $regProv.GetStringValue($HKU, $regPathEnabledLangs, $enabledLanguage).sValue
-           
+           if($languageStatus){
            if ($languageStatus.ToLower() -eq "on") {
                $langCulture = [globalization.cultureinfo]::GetCultures("allCultures") | where {$_.LCID -eq $enabledLanguage}
                $convertLang = checkForLanguage -langId $langCulture 
@@ -1044,6 +1057,7 @@ function msiGetOfficeLanguages() {
                        }
                    }
                }
+           }
            }
         }
      }
@@ -1075,7 +1089,9 @@ function getLanguages() {
        [string]$userProfilePath = join-path $userKey "Control Panel\International\User Profile"
        [string[]]$userLanguages = $regProv.GetMultiStringValue($HKU, $userProfilePath, "Languages").sValue
        foreach ($userLang in $userLanguages) {
+       if($userLang){
          $convertLang = checkForLanguage -langId $userLang 
+         }
          if ($convertLang) {
              $returnLangs.Add($convertLang.ToLower()) | Out-Null
          }
@@ -1107,7 +1123,7 @@ function checkForLanguage() {
        [string]$langId = $NULL
     )
 
-    if ($availableLangs.Contains($langId.Trim().ToLower())) {
+    if ($availableLangs -contains ($langId.Trim().ToLower())) {
        return $langId
     } else {
        $langStart = $langId.Split('-')[0]
@@ -1293,11 +1309,13 @@ function odtAddProduct() {
        $AddElement.SetAttribute("OfficeClientEdition", $Platform) | Out-Null
     }
 
-    [System.XML.XMLElement]$ProductElement = $ConfigDoc.Configuration.Add.Product | ?  ID -eq $ProductId
+    [System.XML.XMLElement]$ProductElement = $ConfigDoc.Configuration.Add.Product #| ?  ID -eq $ProductId
+    if($ProductId){
     if($ProductElement -eq $null){
         [System.XML.XMLElement]$ProductElement=$ConfigDoc.CreateElement("Product")
         $AddElement.appendChild($ProductElement) | Out-Null
         $ProductElement.SetAttribute("ID", $ProductId) | Out-Null
+    }
     }
 
     $LanguageIds = @($ClientCulture)
@@ -1306,10 +1324,10 @@ function odtAddProduct() {
        $LanguageIds += $addLang 
     }
 
-    foreach($LanguageId in $LanguageIds){
+    foreach($LanguageId in $LanguageIds){    
        if ($LanguageId) {
           if ($LanguageId.Length -gt 0) {
-            [System.XML.XMLElement]$LanguageElement = $ProductElement.Language | ?  ID -eq $LanguageId
+            [System.XML.XMLElement]$LanguageElement = $ProductElement.Language #| ?  ID -eq $LanguageId
             if($LanguageElement -eq $null){
                 [System.XML.XMLElement]$LanguageElement=$ConfigFile.CreateElement("Language")
                 $ProductElement.appendChild($LanguageElement) | Out-Null
@@ -1320,12 +1338,14 @@ function odtAddProduct() {
     }
 
     foreach($ExcludeApp in $ExcludeApps){
-        [System.XML.XMLElement]$ExcludeAppElement = $ProductElement.ExcludeApp | ?  ID -eq $ExcludeApp
+    if($ExcludeApp){
+        [System.XML.XMLElement]$ExcludeAppElement = $ProductElement.ExcludeApp #| ?  ID -eq $ExcludeApp
         if($ExcludeAppElement -eq $null){
             [System.XML.XMLElement]$ExcludeAppElement=$ConfigDoc.CreateElement("ExcludeApp")
             $ProductElement.appendChild($ExcludeAppElement) | Out-Null
             $ExcludeAppElement.SetAttribute("ID", $ExcludeApp) | Out-Null
         }
+    }
     }
 
 }
@@ -1358,8 +1378,11 @@ function odtAddUpdates{
             throw $NoConfigurationElement
         }
         [bool]$addUpdates = $false
-        $hasEnabled = [string]::IsNullOrWhiteSpace($Enabled)
-        $hasUpdatePath = [string]::IsNullOrWhiteSpace($UpdatePath)
+        $hasEnabled = $false
+        if($Enabled){$hasEnabled = $true}else{$hasEnabled = $false}
+        
+        $hasUpdatePath = $false
+        if($UpdatePath){$hasUpdatePath = $true}else{$hasUpdatePath = $false}
         if(($hasEnabled -ne $true) -or ($hasUpdatePath -ne $true)){
            $addUpdates = $true
         }
@@ -1373,7 +1396,7 @@ function odtAddUpdates{
             }
 
             #Set the desired values
-            if([string]::IsNullOrWhiteSpace($Enabled) -eq $false){
+            if($Enabled){
                 $UpdateElement.SetAttribute("Enabled", $Enabled) | Out-Null
             } else {
               if ($PSBoundParameters.ContainsKey('Enabled')) {
@@ -1383,7 +1406,7 @@ function odtAddUpdates{
               }
             }
 
-            if([string]::IsNullOrWhiteSpace($UpdatePath) -eq $false){
+            if($UpdatePath){
                 $UpdateElement.SetAttribute("UpdatePath", $UpdatePath) | Out-Null
             } else {
               if ($PSBoundParameters.ContainsKey('UpdatePath')) {
@@ -1393,7 +1416,7 @@ function odtAddUpdates{
               }
             }
 
-            if([string]::IsNullOrWhiteSpace($TargetVersion) -eq $false){
+            if($TargetVersion){
                 $UpdateElement.SetAttribute("TargetVersion", $TargetVersion) | Out-Null
             } else {
               if ($PSBoundParameters.ContainsKey('TargetVersion')) {
@@ -1403,7 +1426,7 @@ function odtAddUpdates{
               }
             }
 
-            if([string]::IsNullOrWhiteSpace($Deadline) -eq $false){
+            if($Deadline){
                 $UpdateElement.SetAttribute("Deadline", $Deadline) | Out-Null
             } else {
               if ($PSBoundParameters.ContainsKey('Deadline')) {
@@ -1449,7 +1472,7 @@ Function odtSetAdd{
         }
 
         #Set values as desired
-        if([string]::IsNullOrWhiteSpace($SourcePath) -eq $false){
+        if($SourcePath){
             $ConfigFile.Configuration.Add.SetAttribute("SourcePath", $SourcePath) | Out-Null
         } else {
             if ($PSBoundParameters.ContainsKey('SourcePath')) {
@@ -1457,7 +1480,7 @@ Function odtSetAdd{
             }
         }
 
-        if([string]::IsNullOrWhiteSpace($Version) -eq $false){
+        if($Version){
             $ConfigDoc.Configuration.Add.SetAttribute("Version", $Version) | Out-Null
         } else {
             if ($PSBoundParameters.ContainsKey('Version')) {
@@ -1465,7 +1488,7 @@ Function odtSetAdd{
             }
         }
 
-        if([string]::IsNullOrWhiteSpace($Bitness) -eq $false){
+        if($Bitness){
             $ConfigDoc.Configuration.Add.SetAttribute("OfficeClientEdition", $Bitness) | Out-Null
         } else {
             if ($PSBoundParameters.ContainsKey('OfficeClientEdition')) {
@@ -1562,8 +1585,8 @@ Here is what the portion of configuration file looks like when modified by this 
         }
 
         #Set each property as desired
-        if([string]::IsNullOrWhiteSpace($AutoActivate) -eq $false){
-            [System.XML.XMLElement]$AutoActivateElement = $ConfigFile.Configuration.Property | ?  Name -eq "AUTOACTIVATE"
+        if(($AutoActivate)){
+            [System.XML.XMLElement]$AutoActivateElement = $ConfigFile.Configuration.Property #| ?  Name -eq "AUTOACTIVATE"
             if($AutoActivateElement -eq $null){
                 [System.XML.XMLElement]$AutoActivateElement=$ConfigFile.CreateElement("Property")
             }
@@ -1573,8 +1596,8 @@ Here is what the portion of configuration file looks like when modified by this 
             $AutoActivateElement.SetAttribute("Value", $AutoActivate) | Out-Null
         }
 
-        if([string]::IsNullOrWhiteSpace($ForceAppShutDown) -eq $false){
-            [System.XML.XMLElement]$ForceAppShutDownElement = $ConfigFile.Configuration.Property | ?  Name -eq "FORCEAPPSHUTDOWN"
+        if(($ForceAppShutDown)){
+            [System.XML.XMLElement]$ForceAppShutDownElement = $ConfigFile.Configuration.Property #| ?  Name -eq "FORCEAPPSHUTDOWN"
             if($ForceAppShutDownElement -eq $null){
                 [System.XML.XMLElement]$ForceAppShutDownElement=$ConfigFile.CreateElement("Property")
             }
@@ -1584,8 +1607,8 @@ Here is what the portion of configuration file looks like when modified by this 
             $ForceAppShutDownElement.SetAttribute("Value", $ForceAppShutDown) | Out-Null
         }
 
-        if([string]::IsNullOrWhiteSpace($PackageGUID) -eq $false){
-            [System.XML.XMLElement]$PackageGUIDElement = $ConfigFile.Configuration.Property | ?  Name -eq "PACKAGEGUID"
+        if(($PackageGUID)){
+            [System.XML.XMLElement]$PackageGUIDElement = $ConfigFile.Configuration.Property #| ?  Name -eq "PACKAGEGUID"
             if($PackageGUIDElement -eq $null){
                 [System.XML.XMLElement]$PackageGUIDElement=$ConfigFile.CreateElement("Property")
             }
@@ -1595,8 +1618,8 @@ Here is what the portion of configuration file looks like when modified by this 
             $PackageGUIDElement.SetAttribute("Value", $PackageGUID) | Out-Null
         }
 
-        if([string]::IsNullOrWhiteSpace($SharedComputerLicensing) -eq $false){
-            [System.XML.XMLElement]$SharedComputerLicensingElement = $ConfigFile.Configuration.Property | ?  Name -eq "SharedComputerLicensing"
+        if(($SharedComputerLicensing)){
+            [System.XML.XMLElement]$SharedComputerLicensingElement = $ConfigFile.Configuration.Property #| ?  Name -eq "SharedComputerLicensing"
             if($SharedComputerLicensingElement -eq $null){
                 [System.XML.XMLElement]$SharedComputerLicensingElement=$ConfigFile.CreateElement("Property")
             }
@@ -1636,7 +1659,8 @@ Function GetScriptPath() {
      if ($PSScriptRoot) {
        $scriptPath = $PSScriptRoot
      } else {
-       $scriptPath = split-path -parent $MyInvocation.MyCommand.Definition
+       #$scriptPath = (Split-Path $MyInvocation.MyCommand.Path) + "\"
+       $scriptPath = (Get-Location).Path
      }
 
      return $scriptPath
@@ -1653,6 +1677,13 @@ function Format-XML ([xml]$xml, $indent=2) {
     $StringWriter.Flush() 
     Write-Output $StringWriter.ToString() 
 }
+
+function Win7Join([string]$st1, [string]$st2){
+    [string]$tempStr = $st1 + "\" + $st2
+    return $tempStr
+}
+
+
 
 $availableLangs = @("en-us",
 "ar-sa","bg-bg","zh-cn","zh-tw","hr-hr","cs-cz","da-dk","nl-nl","et-ee",
