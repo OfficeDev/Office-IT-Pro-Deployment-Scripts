@@ -49,6 +49,8 @@ v32, v64, or Both. What bitness of office you wish to download. Defaults to Both
 If this parameter is specified then existing files will be overwritten.
 .PARAMETER NumVersionsToKeep
 Specifies the number of versions to keep, defaults to 2.  All other versions of the download will be deleted, keeping the newest versions.
+.PARAMETER NumOfRetries
+Specifies the number of times to retry the download, defaults to 2.  After specified number of retries are met, the download will fail.
 .PARAMETER Branches
 An array of the branches you wish to download. Defaults to all available branches (CMValidation currently not available)
 .Example
@@ -81,7 +83,10 @@ Param(
     [OfficeBranch[]] $Branches = (0, 1, 2, 3),#, 4)
     
     [Parameter()]
-    [int] $NumVersionsToKeep = 2
+    [int] $NumVersionsToKeep = 2,
+
+    [Parameter()]
+    [int] $NumOfRetries = 2
 
 
 )
@@ -95,6 +100,10 @@ if($NumVersionsToKeep -le 0)#Throws an error if parameter is 0 or less, we don't
 
 $numberOfFiles = (($Branches.Count) * ((($Languages.Count + 1)*3) + 5))
 
+[bool]$downloadSuccess = $TRUE;
+For($i=0; $i -le $NumOfRetries; $i++){#loops through download process in the event of a failure in order to retry
+try{
+$downloadSuccess = $TRUE;#resets var to true in the event that the download doesn't fail again
 $webclient = New-Object System.Net.WebClient
 $XMLFilePath = "$env:TEMP/ofl.cab"
 $XMLDownloadURL = "http://officecdn.microsoft.com/pr/wsus/ofl.cab"
@@ -250,6 +259,15 @@ $xmlArray | %{
     }
 
 }
+} catch {#if download fails, displays error, continues loop
+    $errorMessage = $computer + ": " + $_
+    Write-Host $errorMessage
+    $downloadSuccess = $FALSE;
+}
+    if($downloadSuccess){#if download succeeds, breaks out of loop
+    break
+    }
+}#end of for loop
 #After downloads finish, purge older versions
 PurgeOlderVersions $TargetDirectory $NumVersionsToKeep $Branches
 
