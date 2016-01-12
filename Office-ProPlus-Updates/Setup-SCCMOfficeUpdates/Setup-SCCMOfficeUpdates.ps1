@@ -10,8 +10,6 @@ The path to the UNC share to download the Office updates to
 The version of Office 2013 you wish to update to. E.g. 15.0.4737.1003
 .PARAMETER Bitness
 Specifies if the target installation is 32 bit or 64 bit. Defaults to 64 bit.
-.PARAMETER ProductVersion
-Specifies Office 2013 vs Office 2016, defaults to 2013, type in either 2013 or 2016 to specify.
 .Example
 Download-OfficeUpdates 
 Default without parameters specified this will create a local folder named 'OfficeUpdates' on the system drive and then create a hidden share named 'OfficeUpdates$'. It will then download the latest Office update to that folder.
@@ -25,9 +23,6 @@ If you specify a Version then the script will download that version.  You can se
     [CmdletBinding(SupportsShouldProcess=$true)]
     Param
     (
-        [Parameter(Mandatory=$True)]
-	    [String]$ProductVersion = '2013',
-
 	    [Parameter()]
 	    [String]$Path = $NULL,
 
@@ -54,11 +49,6 @@ If you specify a Version then the script will download that version.  You can se
         CreateDownloadXmlFile -Path $path -ConfigFileName $UpdateSourceConfigFileName64 -Bitness 64 -Version $version
 
         $c2rFileName = "Office2013Setup.exe"
-        
-        if($ProductVersion.Contains('2016')){
-        $c2rFileName = "Office2016Setup.exe"
-        }
-
 
         Set-Location $PSScriptRoot
 
