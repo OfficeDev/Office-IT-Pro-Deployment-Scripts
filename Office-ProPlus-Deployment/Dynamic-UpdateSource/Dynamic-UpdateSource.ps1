@@ -1,3 +1,19 @@
+$enum3 = "
+using System;
+
+namespace Microsoft.Office
+{
+    [FlagsAttribute]
+    public enum Branches
+    {
+        Current=0,
+        Business=1,
+        Validation=2
+    }
+}
+"
+Add-Type -TypeDefinition $enum3
+
 Function Dynamic-UpdateSource {
 <#
 .Synopsis
@@ -10,12 +26,12 @@ products.
 
 .PARAMETER TargetFilePath
 Specifies file path and name for the resulting XML file, for example "\\comp1\folder\config.xml".  Is also the source of the XML that will be updated.
-.PARAMETER UpdateSourcePath
-Specifies the source of the csv that contains domains with their corresponding SourcePath, for example "\\comp1\folder\sources.csv"
+.PARAMETER LookupFilePath
+Specifies the source of the csv that contains ADSites with their corresponding SourcePath, for example "\\comp1\folder\sources.csv"
 
 
 .EXAMPLE
-Dynamic-UpdateSource -TargetFilePath "\\comp1\folder\config.xml" -UpdateSourcePath "\\comp1\folder\sources.csv"
+Dynamic-UpdateSource -TargetFilePath "\\comp1\folder\config.xml" -LookupFilePath "\\comp1\folder\sources.csv"
 
 Description:
 Will Dynamically set the Update Source based a list Provided
@@ -26,75 +42,35 @@ Will Dynamically set the Update Source based a list Provided
         [string] $ConfigurationXML = $NULL,
         [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $TargetFilePath = $NULL,
-        [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [string] $UpdateSourcePath = $NULL
+        [Parameter(Mandatory=$true,ValueFromPipelineByPropertyName=$true)]
+        [string] $LookupFilePath = $NULL
     )
 
      Process{
 
-     #get computer domain
-     $computerDomain = "testcomp"
+     #get computer ADSite
+     $computerADSite = "testcomp"
      $SourceValue = "\\server\folder2"
      
      try{
-        $computerDomain = [System.DirectoryServices.ActiveDirectory.ActiveDirectorySite]::GetComputerSite().Name
+        $computerADSite = [System.DirectoryServices.ActiveDirectory.ActiveDirectorySite]::GetComputerSite().Name
      } catch {
 
      }
 
+     $computerADSite
 
      #get csv file for "SourcePath update"
-     $importedSource = Import-Csv -Path $UpdateSourcePath -Delimiter ","
+     $importedSource = Import-Csv -Path $LookupFilePath -Delimiter ","
 
      foreach($imp in $importedSource){
-        if($imp.ADSite -eq $computerDomain){#try to match source from the domain gathered from csv
+        if($imp.ADSite -eq $computerADSite){#try to match source from the ADSite gathered from csv
             $SourceValue = $imp.source
         }
      }     
 
+     Set-ODTAdd -TargetFilePath $TargetFilePath -SourcePath $SourceValue
 
-     #update source attribute
-     [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
-    
-        if ($TargetFilePath) {
-           $ConfigFile.Load($TargetFilePath) | Out-Null
-           }
-           Write-Host $ConfigFile.OuterXml
-           #Get Add element if it exists
-        if($ConfigFile.OuterXml -ne $null){
-            [System.Xml.XmlNodeList]$AddElement=$ConfigFile.GetElementsByTagName("Add")
-        }        
-        
-
-        if($AddElement -ne $NULL){
-
-            [bool]$FoundElement = $false
-            
-            
-            [System.Xml.XmlNode]$node = $NULL
-            foreach($nod in $AddElement){ #for windows 7 compatibility, win 7 doesn't like to read indexes
-                $node = $nod
-            }
-
-            if($node -ne $NULL){
-             
-             foreach($attr in $node.Attributes){
-                if($attr.Name -eq "SourcePath"){   #if "Source Path exists, update it
-                    $attr.Value = $SourceValue
-                    $FoundElement = $true
-                }
-             }
-             if(!$FoundElement){
-                [System.Xml.XmlAttribute]$sAttr = $ConfigFile.CreateAttribute("SourcePath") #otherwise, make one
-                $sAttr.Value = $SourceValue
-                $node.Attributes.Append($sAttr)
-             }
-
-        }
-        }
-
-            $ConfigFile.Save($TargetFilePath) | Out-Null
-            $global:saveLastFilePath = $TargetFilePath
     }
 }
 
@@ -110,9 +86,9 @@ Click-to-Run source. Environment variables can be used for network or local path
 SourcePath indicates the location to save the Click-to-Run installation source 
 when you run the Office Deployment Tool in download mode.
 SourcePath indicates the installation source path from which to install Office 
-when you run the Office Deployment Tool in configure mode. If you donâ€™t specify 
+when you run the Office Deployment Tool in configure mode. If you don’t specify 
 SourcePath in configure mode, Setup will look in the current folder for the Office 
-source files. If the Office source files arenâ€™t found in the current folder, Setup 
+source files. If the Office source files aren’t found in the current folder, Setup 
 will look on Office 365 for them.
 SourcePath specifies the path of the Click-to-Run Office source from which the 
 App-V package will be made when you run the Office Deployment Tool in packager mode.
@@ -178,6 +154,8 @@ Here is what the portion of configuration file looks like when modified by this 
 
     Process{
         $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
+
+
 
         #Load file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
@@ -248,7 +226,7 @@ Here is what the portion of configuration file looks like when modified by this 
             Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
         } else {
             $results = new-object PSObject[] 0;
-            $Result = New-Object â€“TypeName PSObject 
+            $Result = New-Object –TypeName PSObject 
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "SourcePath" -Value $SourcePath
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "Version" -Value $Version
@@ -308,4 +286,35 @@ file.
         $ConfigFile.Configuration.GetElementsByTagName("Add") | Select OfficeClientEdition, SourcePath, Version, Branch
     }
 
+}
+
+Function GetFilePath() {
+    Param(
+       [Parameter(ValueFromPipelineByPropertyName=$true)]
+       [string] $TargetFilePath
+    )
+
+    if (!($TargetFilePath)) {
+        $TargetFilePath = $global:saveLastFilePath
+    }  
+
+    if (!($TargetFilePath)) {
+       Write-Host "Enter the path to the XML Configuration File: " -NoNewline
+       $TargetFilePath = Read-Host
+    } else {
+       #Write-Host "Target XML Configuration File: $TargetFilePath"
+    }
+
+    return $TargetFilePath
+}
+
+Function Format-XML ([xml]$xml, $indent=2) { 
+    $StringWriter = New-Object System.IO.StringWriter 
+    $XmlWriter = New-Object System.XMl.XmlTextWriter $StringWriter 
+    $xmlWriter.Formatting = "indented" 
+    $xmlWriter.Indentation = $Indent 
+    $xml.WriteContentTo($XmlWriter) 
+    $XmlWriter.Flush() 
+    $StringWriter.Flush() 
+    Write-Output $StringWriter.ToString() 
 }
