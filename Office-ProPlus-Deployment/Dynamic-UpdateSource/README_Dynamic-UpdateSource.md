@@ -24,7 +24,7 @@ This PowerShell function will update a configuration XML file to add or update t
 		Dynamic-UpdateSource -TargetFilePath "\\server\msoffice\configuration.xml" -UpdateSourcePath
 		"\\server\msoffice\site.csv"
 
-5. Have a csv file which have the header row "ADSite,source" note the sample content below, this file can either have a .csv or .txt extension
+5. Have a csv file which has the header row "ADSite,source" note the sample content below, this file can either have a .csv or .txt extension
 
 		ADSite,source
 		MS-HQ1,\\MS-HQ1\MSOfficeSource
