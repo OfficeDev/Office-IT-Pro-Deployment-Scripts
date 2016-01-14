@@ -54,7 +54,7 @@ Will Dynamically set the Update Source based a list Provided
 
      $computerADSite
 
-     #looks for sourcepathlookup.csv file in local directory if parameter was not entered.
+     #create sourcepathlookup.csv file if none exists, or parameter was not entered
      if(!$LookupFilePath){
         $LookupFilePath = GetScriptPath
         $LookupFilePath+= "\SourcePathLookup.csv"
