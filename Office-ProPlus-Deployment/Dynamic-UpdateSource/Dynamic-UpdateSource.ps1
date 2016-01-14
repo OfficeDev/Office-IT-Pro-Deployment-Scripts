@@ -8,10 +8,8 @@ If Office Click-to-Run is installed the administrator will be prompted to confir
 uninstallation. A configuration file will be generated and used to remove all Office CTR 
 products.
 
-.PARAMETER ConfigurationXML
-XML for modification.  Can be piped in with an XML generator
 .PARAMETER TargetFilePath
-Specifies file path and name for the resulting XML file, for example "\\comp1\folder\config.xml"
+Specifies file path and name for the resulting XML file, for example "\\comp1\folder\config.xml".  Is also the source of the XML that will be updated.
 .PARAMETER UpdateSourcePath
 Specifies the source of the csv that contains domains with their corresponding SourcePath, for example "\\comp1\folder\sources.csv"
 

@@ -12,18 +12,21 @@ Process {
    $scriptPath = split-path -parent $MyInvocation.MyCommand.Definition
  }
 
+ $UpdateSourcePath = Split-Path -Parent $scriptPath
+
 #Importing all required functions
 . $scriptPath\Generate-ODTConfigurationXML.ps1
 . $scriptPath\Edit-OfficeConfigurationFile.ps1
 . $scriptPath\Install-OfficeClickToRun.ps1
+. $UpdateSourcePath\Dynamic-UpdateSource\Dynamic-UpdateSource.ps1
 
-$targetFilePath = "configuration.xml"
+$targetFilePath = "C:\Users\sc_admin\Documents\Dynamic-Update\configuration.xml"
 
 #This example will create an Office Deployment Tool (ODT) configuration file and include all of the Languages currently in use on the computer
 #from which the script is run.  It will then remove the Version attribute from the XML to ensure the installation gets the latest version
 #when updating an existing install and then it will initiate a install
 
-Generate-ODTConfigurationXml -Languages AllInUseLanguages -TargetFilePath $targetFilePath | Set-ODTAdd -Version $NULL | Install-OfficeClickToRun
+Generate-ODTConfigurationXml -Languages AllInUseLanguages -TargetFilePath $targetFilePath | Set-ODTAdd -Version $NULL | Dynamic-UpdateSource -UpdateSourcePath "C:\Users\sc_admin\Documents\Dynamic-Update\sources.txt"
 
 # Configuration.xml file for Click-to-Run for Office 365 products reference. https://technet.microsoft.com/en-us/library/JJ219426.aspx
 }
