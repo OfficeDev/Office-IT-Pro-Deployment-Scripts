@@ -8,42 +8,95 @@ If Office Click-to-Run is installed the administrator will be prompted to confir
 uninstallation. A configuration file will be generated and used to remove all Office CTR 
 products.
 
-.PARAMETER ComputerName
-The computer or list of computers from which to query 
+.PARAMETER ConfigurationXML
+XML for modification.  Can be piped in with an XML generator
+.PARAMETER TargetFilePath
+Specifies file path and name for the resulting XML file, for example "\\comp1\folder\config.xml"
+.PARAMETER UpdateSourcePath
+Specifies the source of the csv that contains domains with their corresponding SourcePath, for example "\\comp1\folder\sources.csv"
+
 
 .EXAMPLE
-Dynamic-UpdateSource
+Dynamic-UpdateSource -TargetFilePath "\\comp1\folder\config.xml" -UpdateSourcePath "\\comp1\folder\sources.csv"
 
 Description:
 Will Dynamically set the Update Source based a list Provided
 #>
     [CmdletBinding()]
     Param(
+        [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
+        [string] $ConfigurationXML = $NULL,
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [string] $TargetFilePath = $NULL
+        [string] $TargetFilePath = $NULL,
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [string] $UpdateSourcePath = $NULL
     )
 
      Process{
-    
-        $scriptRoot = GetScriptRoot
 
-        newCTRRemoveXml | Out-File $RemoveCTRXmlPath
-    
-        [bool] $isInPipe = $true
-        if (($PSCmdlet.MyInvocation.PipelineLength -eq 1) -or ($PSCmdlet.MyInvocation.PipelineLength -eq $PSCmdlet.MyInvocation.PipelinePosition)) {
-            $isInPipe = $false
+     #get computer domain
+     $computerDomain = "testcomp"
+     $SourceValue = "\\server\folder2"
+     
+     try{
+        $computerDomain = [System.DirectoryServices.ActiveDirectory.ActiveDirectorySite]::GetComputerSite().Name
+     } catch {
+
+     }
+
+
+     #get csv file for "SourcePath update"
+     $importedSource = Import-Csv -Path $UpdateSourcePath -Delimiter ","
+
+     foreach($imp in $importedSource){
+        if($imp.domain -eq $computerDomain){#try to match source from the domain gathered from csv
+            $SourceValue = $imp.source
         }
-                
-               
-                                               
-                                                                               
-        if ($isInPipe) {
-            $results = new-object PSObject[] 0;
-            $Result = New-Object –TypeName PSObject 
-            Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
-            $Result
-        } 
+     }     
 
+
+     #update source attribute
+     [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
+    
+        if ($TargetFilePath) {
+           $ConfigFile.Load($TargetFilePath) | Out-Null
+           }
+           Write-Host $ConfigFile.OuterXml
+           #Get Add element if it exists
+        if($ConfigFile.OuterXml -ne $null){
+            [System.Xml.XmlNodeList]$AddElement=$ConfigFile.GetElementsByTagName("Add")
+        }        
+        
+
+        if($AddElement -ne $NULL){
+
+            [bool]$FoundElement = $false
+            
+            
+            [System.Xml.XmlNode]$node = $NULL
+            foreach($nod in $AddElement){ #for windows 7 compatibility, win 7 doesn't like to read indexes
+                $node = $nod
+            }
+
+            if($node -ne $NULL){
+             
+             foreach($attr in $node.Attributes){
+                if($attr.Name -eq "SourcePath"){   #if "Source Path exists, update it
+                    $attr.Value = $SourceValue
+                    $FoundElement = $true
+                }
+             }
+             if(!$FoundElement){
+                [System.Xml.XmlAttribute]$sAttr = $ConfigFile.CreateAttribute("SourcePath") #otherwise, make one
+                $sAttr.Value = $SourceValue
+                $node.Attributes.Append($sAttr)
+             }
+
+        }
+        }
+
+            $ConfigFile.Save($TargetFilePath) | Out-Null
+            $global:saveLastFilePath = $TargetFilePath
     }
 }
 
