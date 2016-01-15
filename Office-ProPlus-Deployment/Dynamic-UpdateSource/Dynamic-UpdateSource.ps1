@@ -11,7 +11,7 @@ namespace Microsoft.Office
     }
 }
 "
-Add-Type -TypeDefinition $enum3
+Add-Type -TypeDefinition $enum3 -ErrorAction SilentlyContinue
 
 Function Dynamic-UpdateSource {
 <#
@@ -43,16 +43,15 @@ Will Dynamically set the Update Source based a list Provided
      Process{
 
      #get computer ADSite
-     $computerADSite = "testcomp"
-     $SourceValue = "\\server\folder2"
+     $computerADSite = "ADSite"
+     $SourceValue = ""
      
-     try{
-        $computerADSite = [System.DirectoryServices.ActiveDirectory.ActiveDirectorySite]::GetComputerSite().Name
-     } catch {
-
+     [bool] $isInPipe = $true
+     if (($PSCmdlet.MyInvocation.PipelineLength -eq 1) -or ($PSCmdlet.MyInvocation.PipelineLength -eq $PSCmdlet.MyInvocation.PipelinePosition)) {
+        $isInPipe = $false
      }
 
-     $computerADSite
+     $computerADSite = [System.DirectoryServices.ActiveDirectory.ActiveDirectorySite]::GetComputerSite().Name
 
      #looks for sourcepathlookup.csv file in local directory if parameter was not entered.
      if(!$LookupFilePath){
@@ -63,7 +62,6 @@ Will Dynamically set the Update Source based a list Provided
      #get csv file for "SourcePath update"
      
      $importedSource = Import-Csv -Path $LookupFilePath -Delimiter ","
-     
 
      foreach($imp in $importedSource){
         if($imp.ADSite -eq $computerADSite){#try to match source from the ADSite gathered from csv
@@ -71,7 +69,18 @@ Will Dynamically set the Update Source based a list Provided
         }
      }     
 
-     Set-ODTAdd -TargetFilePath $TargetFilePath -SourcePath $SourceValue
+     if ($SourceValue) {
+        Set-ODTAdd -TargetFilePath $TargetFilePath -SourcePath $SourceValue
+     } else {
+        if ($isInPipe) {
+            $results = new-object PSObject[] 0;
+            $Result = New-Object –TypeName PSObject 
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
+            $Result
+        } 
+     }
+
+
 
     }
 }
