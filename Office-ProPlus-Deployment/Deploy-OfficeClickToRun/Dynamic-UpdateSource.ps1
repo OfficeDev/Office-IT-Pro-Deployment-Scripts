@@ -11,7 +11,9 @@ namespace Microsoft.Office
     }
 }
 "
+try {
 Add-Type -TypeDefinition $enum3 -ErrorAction SilentlyContinue
+} catch {}
 
 Function Dynamic-UpdateSource {
 <#

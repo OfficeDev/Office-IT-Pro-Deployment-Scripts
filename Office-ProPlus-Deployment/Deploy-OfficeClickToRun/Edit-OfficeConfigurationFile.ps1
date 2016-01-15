@@ -20,7 +20,9 @@ namespace Microsoft.Office
      }
 }
 "
-Add-Type -TypeDefinition $enum
+try {
+Add-Type -TypeDefinition $enum -ErrorAction SilentlyContinue
+} catch {}
 
 $enum2 = "
 using System;
@@ -32,7 +34,9 @@ using System;
         Full=1
     }
 "
-Add-Type -TypeDefinition $enum2
+try {
+Add-Type -TypeDefinition $enum2 -ErrorAction SilentlyContinue
+} catch {}
 
 $enum3 = "
 using System;
@@ -48,7 +52,9 @@ namespace Microsoft.Office
     }
 }
 "
-Add-Type -TypeDefinition $enum3
+try {
+Add-Type -TypeDefinition $enum3 -ErrorAction SilentlyContinue
+} catch {}
 
 $validLanguages = @(
 "English|en-us",
