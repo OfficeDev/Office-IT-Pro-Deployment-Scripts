@@ -1,6 +1,6 @@
 #Remove Office Click-to-Run
 
-This PowerShell function will update a configuration XML file to add or update the "SourcePath" attribute
+This PowerShell function works with the other deployment scripts to provide a way to dynamically set the SourcePath for the Office Click-To-Run configuration xml.  The script uses the computers Active Directory site to lookup the SourcePath location from the LookupFilePath.  The LookupFilePath is a CSV file that you will need to populate with the Active Directory site and cooresponding SourcePath.
 
 ###Example
 
@@ -19,15 +19,15 @@ This PowerShell function will update a configuration XML file to add or update t
 		the PowerShell function in the script into your PowerShell session which will allow you to 
 		run the function from the console.
 		
+5. Update the SourcePathLookup.csv with the Active Directory Site name and the update source for that site.
+		ADSite,source
+		Site1,\\Site1Server\OfficeSource
+		Site2,\\Site2Server\OfficeSource
+		Site3,\\Site3Server\OfficeSource
+		
 4. Run the function against the local computer, be sure to include the parameters TargetFilePath and UpdateSourcePath.
 
 		Dynamic-UpdateSource -TargetFilePath "\\server\msoffice\configuration.xml" -UpdateSourcePath
 		"\\server\msoffice\site.csv"
 
-5. Have a csv file which has the header row "ADSite,source" note the sample content below, this file can either have a .csv or .txt extension
 
-		ADSite,source
-		MS-HQ1,\\MS-HQ1\MSOfficeSource
-		MS-HQ2,\\Server1\MSOfficeSource
-		MS-HQ3,\\Server2\MSOfficeSource
-		
