@@ -9,6 +9,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Configuration;
 
 namespace Microsoft.OfficeProPlus.Downloader
 {
@@ -20,28 +21,54 @@ namespace Microsoft.OfficeProPlus.Downloader
             var fSplit = filePath.Split('\\');
             var fileName = fSplit[fSplit.Length - 1];
 
-            var directory = Regex.Replace(filePath, @"\\" + fileName + "$", "");
-            Directory.CreateDirectory(directory);
+            var numAttempts = 0;
+            var downloadSuccessful = false; //variables for redownload attempts to retry, or kick out of loop if necessary
 
-            await Task.Run(async () =>
+            var numAllowedRetries = Convert.ToInt32(ConfigurationSettings.AppSettings["NumDownloadRetries"]);
+            while (numAttempts <= numAllowedRetries && !downloadSuccessful)//loop for checking number of attempts and if attempt was a success
             {
-                using (var client = new WebClient())
+                try
                 {
-                    client.DownloadProgressChanged +=
-                        new DownloadProgressChangedEventHandler(client_DownloadProgressChanged);
-                    client.DownloadFileCompleted += new AsyncCompletedEventHandler(client_DownloadFileCompleted);
-                   
-
-                    if (!token.IsCancellationRequested)
+                    var directory = Regex.Replace(filePath, @"\\" + fileName + "$", "");
+                    Directory.CreateDirectory(directory);
+                    await Task.Run(async () =>
                     {
-                        // Register the callback to a method that can unblock.
-                        using (var ctr = token.Register(() => client.CancelAsync()))
+                        using (var client = new WebClient())
                         {
-                            await client.DownloadFileTaskAsync(new Uri(url), filePath);
+                            client.DownloadProgressChanged +=
+                                new DownloadProgressChangedEventHandler(client_DownloadProgressChanged);
+                            client.DownloadFileCompleted += new AsyncCompletedEventHandler(client_DownloadFileCompleted);
+                            
+                            if (!token.IsCancellationRequested)
+                            {
+                                // Register the callback to a method that can unblock.                        
+                                using (var ctr = token.Register(() => client.CancelAsync()))
+                                {
+                                    //actual download, will retry if fails                            
+                                    await client.DownloadFileTaskAsync(new Uri(url), filePath);
+                                    downloadSuccessful = true;                                      //flag as downloaded to kick out of loop
+                                    //end of file download                        
+                                }
+                            }
                         }
+                    }, token);
+                    return;
+                }
+                catch (Exception ex)
+                {
+                    numAttempts++;
+                    if (ex.Message.Contains("The request was aborted"))//If user aborts, will kick out without attempting re-download, also prevents app for displaying "download complete" if user clicks stop
+                    {
+                        throw ex;
+                    }
+                    else if (numAttempts >= numAllowedRetries)
+                    {
+                        
+                        throw ex;// on final attempt, throw an error.
                     }
                 }
-            }, token);
+                await Task.Delay(new TimeSpan(0, 0, 3), token);
+            }
         }
 
         public async Task<long> GetFileSizeAsync(string url)
