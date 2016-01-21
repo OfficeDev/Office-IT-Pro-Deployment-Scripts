@@ -10,8 +10,8 @@ namespace TestWixGeneration
         static void Main(string[] args)
         {
 
-            var script = new Script();
-            script.Run();
+            //var script = new Script();
+            //script.Run();
         }
     }
 }

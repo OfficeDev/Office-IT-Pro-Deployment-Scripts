@@ -7,7 +7,7 @@
                       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                       xmlns:exampleViews="clr-namespace:MetroDemo.ExampleViews"
-                      Title="Office 365 ProPlus | Install Generator"
+                      Title=""
                       Width="960"
                       Height="600"
                       Icon="1447297750_gear_settings_cog_preferences.ico"
@@ -17,12 +17,11 @@
                       NonActiveGlowBrush="#CDFF0000"
                       GlowBrush="{DynamicResource AccentColorBrush}"
                       mc:Ignorable="d"
-                      TitlebarHeight="58"
                       d:DesignHeight="600"
                       d:DesignWidth="800"
                       d:DataContext="{d:DesignInstance MetroDemo:MainWindowViewModel}"
                       Closing="MetroWindow_Closing"
-                      Dialog:DialogParticipation.Register="{Binding}">
+                      Dialog:DialogParticipation.Register="{Binding}" TitleAlignment="Left" TitleCaps="False" TitlebarHeight="29">
 
     <Window.Resources>
         <ResourceDictionary>
@@ -105,13 +104,17 @@
 
     <Controls:MetroContentControl>
         <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="787*"/>
+                <ColumnDefinition Width="167*"/>
+            </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <Controls:MetroAnimatedSingleRowTabControl Grid.Row="1" x:Name="MainTabControl" SelectionChanged="MainTabControl_SelectionChanged" >
+            <Controls:MetroAnimatedSingleRowTabControl Grid.Row="1" x:Name="MainTabControl" SelectionChanged="MainTabControl_SelectionChanged" Grid.ColumnSpan="2" Margin="0,0,-0.4,0.44" >
                 <TabItem Header="Start">
                     <exampleViews:StartView x:Name="StartView" DataContext="{Binding}"  Tag="0" />
                 </TabItem>
@@ -126,14 +129,18 @@
                 </TabItem>
                 <TabItem Header="Generate" IsEnabled="False">
                     <exampleViews:GenerateView x:Name="GenerateView" DataContext="{Binding}" Tag="4"  />
+                </TabItem>       
+                <TabItem Header="About" IsEnabled="True">
+                    <exampleViews:AboutView x:Name="AboutView" DataContext="{Binding}" Tag="5" />
                 </TabItem>
             </Controls:MetroAnimatedSingleRowTabControl>
-            
-            <StatusBar Grid.Row="2">
+
+            <StatusBar Grid.Row="1" Grid.ColumnSpan="2" Margin="0,548,-0.4,0.4" Grid.RowSpan="2">
                 <StatusBarItem></StatusBarItem>
                 <StatusBarItem></StatusBarItem>
                 <StatusBarItem Content="   " />
             </StatusBar>
+            <TextBlock HorizontalAlignment="Left" Height="28" Margin="0,-23,0,0" Grid.RowSpan="2" TextWrapping="Wrap" Text="  Office 365 ProPlus | Install Generator" VerticalAlignment="Top" Width="400" Foreground="White" FontSize="14" IsEnabled="False" IsHitTestVisible="False"/>
 
         </Grid>
     </Controls:MetroContentControl>

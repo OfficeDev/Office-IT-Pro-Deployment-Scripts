@@ -84,7 +84,7 @@
     <GenerateManifests>true</GenerateManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <SignManifests>true</SignManifests>
+    <SignManifests>false</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>false</SignAssembly>
@@ -134,6 +134,9 @@
     </ApplicationDefinition>
     <Compile Include="Engine\OfficeInstaller.cs" />
     <Compile Include="Events\Events.cs" />
+    <Compile Include="ExampleViews\AboutView.xaml.cs">
+      <DependentUpon>AboutView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ExampleViews\GenerateView.xaml.cs">
       <DependentUpon>GenerateView.xaml</DependentUpon>
     </Compile>
@@ -192,6 +195,10 @@
       <DependentUpon>XmlBrowserControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="XmlBrowser\XmlValidator.cs" />
+    <Page Include="ExampleViews\AboutView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="ExampleViews\GenerateView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -281,6 +288,7 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <None Include="app.config" />
+    <None Include="ClassDiagram1.cd" />
     <None Include="Microsoft.OfficeProPlus.InstallGen.Presentation_TemporaryKey.pfx" />
     <None Include="packages.config" />
     <None Include="Properties\app.manifest" />
