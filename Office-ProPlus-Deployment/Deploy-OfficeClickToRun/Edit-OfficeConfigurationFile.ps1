@@ -20,9 +20,7 @@ namespace Microsoft.Office
      }
 }
 "
-try {
-Add-Type -TypeDefinition $enum -ErrorAction SilentlyContinue
-} catch {}
+Add-Type -TypeDefinition $enum
 
 $enum2 = "
 using System;
@@ -34,9 +32,7 @@ using System;
         Full=1
     }
 "
-try {
-Add-Type -TypeDefinition $enum2 -ErrorAction SilentlyContinue
-} catch {}
+Add-Type -TypeDefinition $enum2
 
 $enum3 = "
 using System;
@@ -52,9 +48,7 @@ namespace Microsoft.Office
     }
 }
 "
-try {
-Add-Type -TypeDefinition $enum3 -ErrorAction SilentlyContinue
-} catch {}
+Add-Type -TypeDefinition $enum3
 
 $validLanguages = @(
 "English|en-us",
@@ -670,8 +664,7 @@ Language and Exclude values
     Param(
         [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
         [string] $ConfigurationXML = $NULL,
-
-        [Parameter(ParameterSetName="ID",Mandatory=$true)]
+        
         [Microsoft.Office.Products] $ProductId = "Unknown",
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
@@ -1315,7 +1308,7 @@ Here is what the portion of configuration file looks like when modified by this 
             $UpdateElement.SetAttribute("Branch", $Branch);
         }
 
-        if([string]::IsNullOrWhiteSpace($Enabled) -eq $false){
+        if($Enabled){
             $UpdateElement.SetAttribute("Enabled", $Enabled) | Out-Null
         } else {
           if ($PSBoundParameters.ContainsKey('Enabled')) {
@@ -1323,7 +1316,7 @@ Here is what the portion of configuration file looks like when modified by this 
           }
         }
 
-        if([string]::IsNullOrWhiteSpace($UpdatePath) -eq $false){
+        if($UpdatePath){
             $UpdateElement.SetAttribute("UpdatePath", $UpdatePath) | Out-Null
         } else {
           if ($PSBoundParameters.ContainsKey('UpdatePath')) {
@@ -1331,7 +1324,7 @@ Here is what the portion of configuration file looks like when modified by this 
           }
         }
 
-        if([string]::IsNullOrWhiteSpace($TargetVersion) -eq $false){
+        if($TargetVersion){
             $UpdateElement.SetAttribute("TargetVersion", $TargetVersion) | Out-Null
         } else {
           if ($PSBoundParameters.ContainsKey('TargetVersion')) {
@@ -1339,7 +1332,7 @@ Here is what the portion of configuration file looks like when modified by this 
           }
         }
 
-        if([string]::IsNullOrWhiteSpace($Deadline) -eq $false){
+        if($Deadline){
             $UpdateElement.SetAttribute("Deadline", $Deadline) | Out-Null
         } else {
           if ($PSBoundParameters.ContainsKey('Deadline')) {
@@ -1606,7 +1599,7 @@ Here is what the portion of configuration file looks like when modified by this 
         }
 
         #Set each property as desired
-        if([string]::IsNullOrWhiteSpace($AutoActivate) -eq $false){
+        if($AutoActivate){
             [System.XML.XMLElement]$AutoActivateElement = $ConfigFile.Configuration.Property | ?  Name -eq "AUTOACTIVATE"
             if($AutoActivateElement -eq $null){
                 [System.XML.XMLElement]$AutoActivateElement=$ConfigFile.CreateElement("Property")
@@ -1617,7 +1610,7 @@ Here is what the portion of configuration file looks like when modified by this 
             $AutoActivateElement.SetAttribute("Value", $AutoActivate) | Out-Null
         }
 
-        if([string]::IsNullOrWhiteSpace($ForceAppShutDown) -eq $false){
+        if($ForceAppShutDown){
             [System.XML.XMLElement]$ForceAppShutDownElement = $ConfigFile.Configuration.Property | ?  Name -eq "FORCEAPPSHUTDOWN"
             if($ForceAppShutDownElement -eq $null){
                 [System.XML.XMLElement]$ForceAppShutDownElement=$ConfigFile.CreateElement("Property")
@@ -1628,7 +1621,7 @@ Here is what the portion of configuration file looks like when modified by this 
             $ForceAppShutDownElement.SetAttribute("Value", $ForceAppShutDown) | Out-Null
         }
 
-        if([string]::IsNullOrWhiteSpace($PackageGUID) -eq $false){
+        if($PackageGUID){
             [System.XML.XMLElement]$PackageGUIDElement = $ConfigFile.Configuration.Property | ?  Name -eq "PACKAGEGUID"
             if($PackageGUIDElement -eq $null){
                 [System.XML.XMLElement]$PackageGUIDElement=$ConfigFile.CreateElement("Property")
@@ -1639,7 +1632,7 @@ Here is what the portion of configuration file looks like when modified by this 
             $PackageGUIDElement.SetAttribute("Value", $PackageGUID) | Out-Null
         }
 
-        if([string]::IsNullOrWhiteSpace($SharedComputerLicensing) -eq $false){
+        if($SharedComputerLicensing){
             [System.XML.XMLElement]$SharedComputerLicensingElement = $ConfigFile.Configuration.Property | ?  Name -eq "SharedComputerLicensing"
             if($SharedComputerLicensingElement -eq $null){
                 [System.XML.XMLElement]$SharedComputerLicensingElement=$ConfigFile.CreateElement("Property")
@@ -1907,7 +1900,12 @@ Here is what the portion of configuration file looks like when modified by this 
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
 
         if ($TargetFilePath) {
-           $ConfigFile.Load($TargetFilePath) | Out-Null
+           if (!(Test-Path $TargetFilePath)) {
+              $TargetFilePath = GetScriptRoot + "\" + $TargetFilePath
+           }
+        
+           $content = Get-Content $TargetFilePath
+           $ConfigFile.LoadXml($content) | Out-Null
         } else {
             if ($ConfigurationXml) 
             {
@@ -1935,7 +1933,7 @@ Here is what the portion of configuration file looks like when modified by this 
             $ConfigFile.Configuration.Add.SetAttribute("Branch", $Branch);
         }
 
-        if([string]::IsNullOrWhiteSpace($SourcePath) -eq $false){
+        if($SourcePath){
             $ConfigFile.Configuration.Add.SetAttribute("SourcePath", $SourcePath) | Out-Null
         } else {
             if ($PSBoundParameters.ContainsKey('SourcePath')) {
@@ -1943,7 +1941,7 @@ Here is what the portion of configuration file looks like when modified by this 
             }
         }
 
-        if([string]::IsNullOrWhiteSpace($Version) -eq $false){
+        if($Version){
             $ConfigFile.Configuration.Add.SetAttribute("Version", $Version) | Out-Null
         } else {
             if ($PSBoundParameters.ContainsKey('Version')) {
@@ -1951,7 +1949,7 @@ Here is what the portion of configuration file looks like when modified by this 
             }
         }
 
-        if([string]::IsNullOrWhiteSpace($Bitness) -eq $false){
+        if($Bitness){
             $ConfigFile.Configuration.Add.SetAttribute("OfficeClientEdition", $Bitness) | Out-Null
         } else {
             if ($PSBoundParameters.ContainsKey('OfficeClientEdition')) {
@@ -2014,7 +2012,8 @@ file.
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
 
         if ($TargetFilePath) {
-           $ConfigFile.Load($TargetFilePath) | Out-Null
+           $content = Get-Content $TargetFilePath
+           $ConfigFile.LoadXml($content) | Out-Null
         } else {
             if ($ConfigurationXml) 
             {
@@ -2066,7 +2065,8 @@ Removes the Add node from the xml congfiguration file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
 
         if ($TargetFilePath) {
-           $ConfigFile.Load($TargetFilePath) | Out-Null
+           $content = Get-Content $TargetFilePath
+           $ConfigFile.LoadXml($content) | Out-Null
         } else {
             if ($ConfigurationXml) 
             {
@@ -2166,7 +2166,8 @@ Here is what the portion of configuration file looks like when modified by this 
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
  
         if ($TargetFilePath) {
-           $ConfigFile.Load($TargetFilePath) | Out-Null
+           $content = Get-Content $TargetFilePath
+           $ConfigFile.LoadXml($content) | Out-Null
         } else {
             if ($ConfigurationXml) 
             {
@@ -2191,7 +2192,7 @@ Here is what the portion of configuration file looks like when modified by this 
         }
 
         #Set values
-        if([string]::IsNullOrWhiteSpace($Level) -eq $false){
+        if($Level){
             $LoggingElement.SetAttribute("Level", $Level) | Out-Null
         } else {
             if ($PSBoundParameters.ContainsKey('Level')) {
@@ -2199,7 +2200,7 @@ Here is what the portion of configuration file looks like when modified by this 
             }
         }
 
-        if([string]::IsNullOrWhiteSpace($Path) -eq $false){
+        if($Path){
             $LoggingElement.SetAttribute("Path", $Path) | Out-Null
         } else {
             if ($PSBoundParameters.ContainsKey('Path')) {
@@ -2259,7 +2260,8 @@ file.
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
  
         if ($TargetFilePath) {
-           $ConfigFile.Load($TargetFilePath) | Out-Null
+           $content = Get-Content $TargetFilePath
+           $ConfigFile.LoadXml($content) | Out-Null
         } else {
             if ($ConfigurationXml) 
             {
@@ -2318,7 +2320,8 @@ Here is what the portion of configuration file that will be removed by this func
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
 
         if ($TargetFilePath) {
-           $ConfigFile.Load($TargetFilePath) | Out-Null
+           $content = Get-Content $TargetFilePath
+           $ConfigFile.LoadXml($content) | Out-Null
         } else {
             if ($ConfigurationXml) 
             {
@@ -2424,7 +2427,8 @@ Here is what the portion of configuration file looks like when modified by this 
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
 
         if ($TargetFilePath) {
-           $ConfigFile.Load($TargetFilePath) | Out-Null
+           $content = Get-Content $TargetFilePath
+           $ConfigFile.LoadXml($content) | Out-Null
         } else {
             if ($ConfigurationXml) 
             {
@@ -2449,7 +2453,7 @@ Here is what the portion of configuration file looks like when modified by this 
         }
 
         #Set values
-        if([string]::IsNullOrWhiteSpace($Level) -eq $false){
+        if($Level){
             $DisplayElement.SetAttribute("Level", $Level) | Out-Null
         } else {
             if ($PSBoundParameters.ContainsKey('Level')) {
@@ -2457,7 +2461,7 @@ Here is what the portion of configuration file looks like when modified by this 
             }
         }
 
-        if([string]::IsNullOrWhiteSpace($Path) -eq $AcceptEULA){
+        if((!($Path)) -eq $AcceptEULA){
             $DisplayElement.SetAttribute("AcceptEULA", $AcceptEULA) | Out-Null
         } else {
             if ($PSBoundParameters.ContainsKey('AcceptEULA')) {
@@ -2519,7 +2523,8 @@ file.
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
 
         if ($TargetFilePath) {
-           $ConfigFile.Load($TargetFilePath) | Out-Null
+           $content = Get-Content $TargetFilePath
+           $ConfigFile.LoadXml($content) | Out-Null
         } else {
             if ($ConfigurationXml) 
             {
@@ -2578,7 +2583,8 @@ Here is what the removed portion of configuration file looks like:
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
 
         if ($TargetFilePath) {
-           $ConfigFile.Load($TargetFilePath) | Out-Null
+           $content = Get-Content $TargetFilePath
+           $ConfigFile.LoadXml($content) | Out-Null
         } else {
             if ($ConfigurationXml) 
             {
@@ -2639,7 +2645,12 @@ Function GetFilePath() {
     } else {
        #Write-Host "Target XML Configuration File: $TargetFilePath"
     }
-
+    
+    $locationPath = (Get-Location).Path
+    
+    if (!($TargetFilePath.IndexOf("\") -gt -1)) {
+      $TargetFilePath = $locationPath + "\" + $TargetFilePath
+    }
     return $TargetFilePath
 }
 
@@ -2835,4 +2846,18 @@ Function IsValidProductId() {
         }
 
         return $ProductId
+}
+
+Function GetScriptRoot() {
+ process {
+     [string]$scriptPath = "."
+
+     if ($PSScriptRoot) {
+       $scriptPath = $PSScriptRoot
+     } else {
+       $scriptPath = split-path -parent $MyInvocation.MyCommand.Definition
+       $scriptPath = (Get-Item -Path ".\").FullName
+     }
+     return $scriptPath
+ }
 }
