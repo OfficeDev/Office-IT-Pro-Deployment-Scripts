@@ -519,15 +519,15 @@ Function Wait-ForOfficeCTRUpadate() {
                     if (($status.ToUpper() -eq "TASKSTATE_COMPLETED") -or`
                         ($status.ToUpper() -eq "TASKSTATE_CANCELLED") -or`
                         ($status.ToUpper() -eq "TASKSTATE_FAILED")) {
-                        if ($trackProgress.Contains($keyValue) -and !$trackComplete.Contains($keyValue)) {
+                        if (($trackProgress -contains $keyValue) -and !($trackComplete -contains $keyValue)) {
                             $displayValue = $operation + "`t" + $status + "`t" + (Get-Date).ToString('yyyy-MM-dd HH:mm:ss')
                             #Write-Host $displayValue
                             $trackComplete += $keyValue 
 
                             $statusName = $status.Split('_')[1];
 
-                            if ($operation.ToUpper().Contains("DOWNLOAD") -or `
-                                $operation.ToUpper().Contains("APPLY")) {
+                            if (($operation.ToUpper().IndexOf("DOWNLOAD") -gt -1) -or `
+                                ($operation.ToUpper().IndexOf("APPLY") -gt -1)) {
 
                                 $operationTime = getOperationTime -OperationStart $operationStart
 
@@ -541,21 +541,21 @@ Function Wait-ForOfficeCTRUpadate() {
                         $updateRunning=$true
 
 
-                        if (!$trackProgress.Contains($keyValue)) {
+                        if (!($trackProgress -contains $keyValue)) {
                              $trackProgress += $keyValue 
                              $displayValue = $operation + "`t" + $status + "`t" + (Get-Date).ToString('yyyy-MM-dd HH:mm:ss')
 
                              $operationStart = Get-Date
 
-                             if ($operation.ToUpper().Contains("DOWNLOAD")) {
+                             if ($operation.ToUpper().IndexOf("DOWNLOAD") -gt -1) {
                                 Write-Host "Downloading Update: " -NoNewline
                              }
 
-                             if ($operation.ToUpper().Contains("APPLY")) {
+                             if ($operation.ToUpper().IndexOf("APPLY") -gt -1) {
                                 Write-Host "Applying Update: " -NoNewline
                              }
 
-                             if ($operation.ToUpper().Contains("FINALIZE")) {
+                             if ($operation.ToUpper().IndexOf("FINALIZE") -gt -1) {
                                 Write-Host "Finalizing Update: " -NoNewline
                              }
 
