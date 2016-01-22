@@ -80,7 +80,7 @@ function Install-OfficeClickToRun {
     }
 
     if ($OfficeVersion -eq "Office2016") {
-        $officeCtrPath = Join-Path $scriptRoot "Office2016Setup.exe"
+        $officeCtrPath = $scriptRoot + "\Office2016Setup.exe"
         if (!(Test-Path -Path $officeCtrPath)) {
            throw "Cannot find the Office 2016 Setup executable"
         }
@@ -88,10 +88,15 @@ function Install-OfficeClickToRun {
     
     if (!($TargetFilePath)) {
       if ($ConfigurationXML) {
-         $TargetFilePath = Join-Path $scriptRoot "configuration.xml"
+         $TargetFilePath = $scriptRoot + "\configuration.xml"
          New-Item -Path $TargetFilePath -ItemType "File" -Value $ConfigurationXML -Force | Out-Null
       }
     }
+    
+    if (!(Test-Path -Path $TargetFilePath)) {
+       $TargetFilePath = $scriptRoot + "\configuration.xml"
+    }
+    
     $products = Get-ODTProductToAdd -TargetFilePath $TargetFilePath 
     $addNode = Get-ODTAdd -TargetFilePath $TargetFilePath 
 
@@ -101,9 +106,13 @@ function Install-OfficeClickToRun {
 
     foreach ($product in $products)
     {
-        $languages = getProductLanguages -Product $product 
-        $existingLangs = checkForLanguagesInSourceFiles -Languages $languages -SourcePath $sourcePath -Version $version -Edition $edition
-        Set-ODTProductToAdd -TargetFilePath $TargetFilePath -ProductId $product.ProductId -LanguageIds $existingLangs | Out-Null
+        if ($product) {
+          $languages = getProductLanguages -Product $product 
+          $existingLangs = checkForLanguagesInSourceFiles -Languages $languages -SourcePath $sourcePath -Version $version -Edition $edition
+          if ($product.ProductId) {
+              Set-ODTProductToAdd -TargetFilePath $TargetFilePath -ProductId $product.ProductId -LanguageIds $existingLangs | Out-Null
+          }
+        }
     }
 
     Set-ODTDisplay -TargetFilePath $TargetFilePath -Level Full -AcceptEULA $true | Out-Null
@@ -141,7 +150,7 @@ Function checkForLanguagesInSourceFiles() {
     $returnLanguages = @()
 
     if (!($SourcePath)) {
-      $localSource = Join-Path $scriptRoot "Office\Data"
+      $localSource = $scriptRoot + "\Office\Data"
       if (Test-Path -Path $localSource) {
          $SourcePath = $scriptRoot
       }
@@ -149,9 +158,9 @@ Function checkForLanguagesInSourceFiles() {
 
     if (!($Version)) {
        $localPath = $env:TEMP
-       $cabPath = Join-Path $scriptRoot "Office\Data\v$Edition.cab"
-       $cabFolderPath = Join-Path $scriptRoot "Office\Data"
-       $vdXmlPath = Join-Path $localPath "\VersionDescriptor.xml"
+       $cabPath = $scriptRoot + "\Office\Data\v$Edition.cab"
+       $cabFolderPath = $scriptRoot + "\Office\Data"
+       $vdXmlPath = $localPath + "\VersionDescriptor.xml"
        
        if (Test-Path -Path $cabPath) {
           Invoke-Expression -Command "Expand $cabPath -F:VersionDescriptor.xml $localPath" | Out-Null
@@ -160,7 +169,7 @@ Function checkForLanguagesInSourceFiles() {
        }
     }
 
-    $verionDir = Join-Path $scriptRoot "Office\Data\$Version"
+    $verionDir = $scriptRoot + "\Office\Data\$Version"
     
     if (Test-Path -Path $verionDir) {
        foreach ($lang in $Languages) {
@@ -169,7 +178,7 @@ Function checkForLanguagesInSourceFiles() {
              $fileName = "stream.x64.$lang.dat"
           }
           
-          $langFile = Join-Path $verionDir $fileName 
+          $langFile = $verionDir + "\" + $fileName 
           
           if (Test-Path -Path $langFile) {
              $returnLanguages += $lang
@@ -206,7 +215,7 @@ Function getProductLanguages() {
 
     foreach ($language in $Product.Languages)
     {
-      if (!($languages.Contains($language))) {
+      if (!($languages -contains ($language))) {
           $languages += $language
       }
     }
@@ -226,7 +235,7 @@ Function getUniqueLanguages() {
     {
        foreach ($language in $product.Languages)
        {
-          if (!($languages.Contains($language))) {
+          if (!($languages -contains $language)) {
             $languages += $language
           }
        }
@@ -266,7 +275,6 @@ Language and Exclude values
         [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
         [string] $ConfigurationXML = $NULL,
 
-        [Parameter(ParameterSetName="ID",Mandatory=$true)]
         [Microsoft.Office.Products] $ProductId = "Unknown",
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
@@ -318,17 +326,26 @@ Language and Exclude values
                 $Result
             }
         }else{
-            [System.XML.XMLElement]$ProductElement = $ConfigFile.Configuration.Add.Product | ?  ID -eq $ProductId
-            $Result = New-Object –TypeName PSObject 
-            Add-Member -InputObject $Result -MemberType NoteProperty -Name "ProductId" -Value ($ProductElement.GetAttribute("ID"))
-            if($ProductElement.Language -ne $null){
-                Add-Member -InputObject $Result -MemberType NoteProperty -Name "Languages" -Value ($ProductElement.Language.GetAttribute("ID"))
-            }
+            if ($ProductId) {
+            
 
-            if($ProductElement.ExcludeApp -ne $null){
-                Add-Member -InputObject $Result -MemberType NoteProperty -Name "ExcludedApps" -Value ($ProductElement.ExcludeApp.GetAttribute("ID"))
+                [System.XML.XMLElement]$ProductElement = $ConfigFile.Configuration.Add.Product | where { $_.ID -eq $ProductId }
+                if ($ProductElement) {
+                $tempId = $ProductElement.GetAttribute("ID")
+                
+                
+                $Result = New-Object –TypeName PSObject 
+                Add-Member -InputObject $Result -MemberType NoteProperty -Name "ProductId" -Value $tempId 
+                if($ProductElement.Language -ne $null){
+                    Add-Member -InputObject $Result -MemberType NoteProperty -Name "Languages" -Value ($ProductElement.Language.GetAttribute("ID"))
+                }
+
+                if($ProductElement.ExcludeApp -ne $null){
+                    Add-Member -InputObject $Result -MemberType NoteProperty -Name "ExcludedApps" -Value ($ProductElement.ExcludeApp.GetAttribute("ID"))
+                }
+                $Result
+                }
             }
-            $Result
         }
 
     }
@@ -446,9 +463,10 @@ Here is what the portion of configuration file looks like when modified by this 
 
         #Load file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
-
+write-Host $TargetFilePath
         if ($TargetFilePath) {
-           $ConfigFile.Load($TargetFilePath) | Out-Null
+           $content = Get-Content $TargetFilePath
+           $ConfigFile.LoadXml($content) | Out-Null
         } else {
             if ($ConfigurationXml) 
             {
@@ -473,7 +491,7 @@ Here is what the portion of configuration file looks like when modified by this 
         }
 
         #Set values
-        if([string]::IsNullOrWhiteSpace($Level) -eq $false){
+        if($Level){
             $DisplayElement.SetAttribute("Level", $Level) | Out-Null
         } else {
             if ($PSBoundParameters.ContainsKey('Level')) {
@@ -481,7 +499,7 @@ Here is what the portion of configuration file looks like when modified by this 
             }
         }
 
-        if([string]::IsNullOrWhiteSpace($Path) -eq $AcceptEULA){
+        if((!($Path)) -eq $AcceptEULA){
             $DisplayElement.SetAttribute("AcceptEULA", $AcceptEULA) | Out-Null
         } else {
             if ($PSBoundParameters.ContainsKey('AcceptEULA')) {
@@ -527,6 +545,12 @@ Function GetFilePath() {
        $TargetFilePath = Read-Host
     } else {
        #Write-Host "Target XML Configuration File: $TargetFilePath"
+    }
+    
+   $locationPath = (Get-Location).Path
+    
+    if (!($TargetFilePath.IndexOf('\') -gt -1)) {
+      $TargetFilePath = $locationPath + "\" + $TargetFilePath
     }
 
     return $TargetFilePath
@@ -632,7 +656,8 @@ Here is what the portion of configuration file looks like when modified by this 
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
         
         if ($TargetFilePath) {
-           $ConfigFile.Load($TargetFilePath) | Out-Null
+           $content = Get-Content $TargetFilePath
+           $ConfigFile.LoadXml($content) | Out-Null
         } else {
             if ($ConfigurationXml) 
             {
@@ -742,7 +767,7 @@ Function Wait-ForOfficeCTRInstall() {
        Start-Sleep -Seconds 5
 
        $mainRegPath = Get-OfficeCTRRegPath 
-       $scenarioPath = Join-Path $mainRegPath "scenario"
+       $scenarioPath = $mainRegPath + "\scenario"
 
        $regProv = Get-Wmiobject -list "StdRegProv" -namespace root\default -ErrorAction Stop
 
@@ -766,7 +791,7 @@ Function Wait-ForOfficeCTRInstall() {
            foreach ($scenarioKey in $scenarioKeys.sNames) {
               if (!($executingScenario)) { continue }
               if ($scenarioKey.ToLower() -eq $executingScenario.ToLower()) {
-                $taskKeyPath = Join-Path $scenarioPath "$scenarioKey\TasksState"
+                $taskKeyPath = $scenarioPath + "\$scenarioKey\TasksState"
                 $taskValues = $regProv.EnumValues($HKLM, $taskKeyPath).sNames
 
                 foreach ($taskValue in $taskValues) {
@@ -783,7 +808,7 @@ Function Wait-ForOfficeCTRInstall() {
                     if (($status.ToUpper() -eq "TASKSTATE_COMPLETED") -or`
                         ($status.ToUpper() -eq "TASKSTATE_CANCELLED") -or`
                         ($status.ToUpper() -eq "TASKSTATE_FAILED")) {
-                        if ($trackProgress.Contains($keyValue) -and !$trackComplete.Contains($keyValue)) {
+                        if (($trackProgress -contains $keyValue) -and !($trackComplete -contains $keyValue) ) {
                             $displayValue
                             $trackComplete += $keyValue 
                         }
@@ -791,7 +816,7 @@ Function Wait-ForOfficeCTRInstall() {
                         $allComplete = $false
                         $updateRunning=$true
 
-                        if (!$trackProgress.Contains($keyValue)) {
+                        if (!$trackProgress -contains $keyValue) {
                             $trackProgress += $keyValue 
                             $displayValue
                         }
@@ -886,9 +911,14 @@ Function GetScriptRoot() {
        $scriptPath = $PSScriptRoot
      } else {
        $scriptPath = split-path -parent $MyInvocation.MyCommand.Definition
+       $scriptPath = (Get-Item -Path ".\").FullName
      }
-
      return $scriptPath
  }
 }
+
+Function GetScriptPath() {
+ return GetScriptRoot
+}
+
 

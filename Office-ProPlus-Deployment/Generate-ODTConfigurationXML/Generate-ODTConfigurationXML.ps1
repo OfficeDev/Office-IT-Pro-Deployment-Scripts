@@ -113,9 +113,8 @@ begin {
     $PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultDisplayPropertySet)
 
     $scriptPath = GetScriptPath
-
     if (!($DefaultConfigurationXml)) {
-      $DefaultConfigurationXml = (Join-Path $scriptPath "DefaultConfiguration.xml") 
+      $DefaultConfigurationXml = ($scriptPath + "\DefaultConfiguration.xml") 
     }
 }
 
@@ -266,7 +265,7 @@ process {
     foreach ($lang in $additionalLanguages) {
       if ($lang.GetType().Name.ToLower().Contains("string")) {
         if ($lang.Contains("-")) {
-          if (!$allLanguages.Contains($lang.ToLower())) {
+          if (!$allLanguages -contains $lang.ToLower()) {
              $allLanguages += $lang.ToLower()
           }
         }
@@ -320,9 +319,10 @@ process {
            }
        }
 
-       odtAddProduct -ConfigDoc $ConfigFile -ProductId $productId -ExcludeApps $excludeApps -Version $officeConfig.Version `
+       if ($productId) {
+           odtAddProduct -ConfigDoc $ConfigFile -ProductId $productId -ExcludeApps $excludeApps -Version $officeConfig.Version `
                      -Platform $productPlatform -ClientCulture $primaryLanguage -AdditionalLanguages $additionalLanguages
-
+       }
 
        if ($officeConfig) {
           if (($officeConfig.UpdatesEnabled) -or ($officeConfig.UpdateUrl) -or  ($officeConfig.UpdateDeadline)) {
@@ -1024,7 +1024,7 @@ function msiGetOfficeLanguages() {
         foreach ($enabledLanguage in $enabledLanguages.sNames) {
 
            $languageStatus = $regProv.GetStringValue($HKU, $regPathEnabledLangs, $enabledLanguage).sValue
-           
+           if ($languageStatus) {
            if ($languageStatus.ToLower() -eq "on") {
                $langCulture = [globalization.cultureinfo]::GetCultures("allCultures") | where {$_.LCID -eq $enabledLanguage}
                $convertLang = checkForLanguage -langId $langCulture 
@@ -1044,6 +1044,7 @@ function msiGetOfficeLanguages() {
                        }
                    }
                }
+           }
            }
         }
      }
@@ -1075,9 +1076,11 @@ function getLanguages() {
        [string]$userProfilePath = join-path $userKey "Control Panel\International\User Profile"
        [string[]]$userLanguages = $regProv.GetMultiStringValue($HKU, $userProfilePath, "Languages").sValue
        foreach ($userLang in $userLanguages) {
+         if ($userLang) {       
          $convertLang = checkForLanguage -langId $userLang 
          if ($convertLang) {
              $returnLangs.Add($convertLang.ToLower()) | Out-Null
+         }
          }
        }
         
@@ -1107,7 +1110,7 @@ function checkForLanguage() {
        [string]$langId = $NULL
     )
 
-    if ($availableLangs.Contains($langId.Trim().ToLower())) {
+    if ($availableLangs -contains $langId.Trim().ToLower()) {
        return $langId
     } else {
        $langStart = $langId.Split('-')[0]
@@ -1292,8 +1295,10 @@ function odtAddProduct() {
     if ($Platform) {
        $AddElement.SetAttribute("OfficeClientEdition", $Platform) | Out-Null
     }
-
-    [System.XML.XMLElement]$ProductElement = $ConfigDoc.Configuration.Add.Product | ?  ID -eq $ProductId
+    
+    [System.XML.XMLElement]$ProductElement = $ConfigDoc.Configuration.Add.Product | where {$_.ID -like $ProductId}
+    
+    
     if($ProductElement -eq $null){
         [System.XML.XMLElement]$ProductElement=$ConfigDoc.CreateElement("Product")
         $AddElement.appendChild($ProductElement) | Out-Null
@@ -1309,7 +1314,7 @@ function odtAddProduct() {
     foreach($LanguageId in $LanguageIds){
        if ($LanguageId) {
           if ($LanguageId.Length -gt 0) {
-            [System.XML.XMLElement]$LanguageElement = $ProductElement.Language | ?  ID -eq $LanguageId
+            [System.XML.XMLElement]$LanguageElement = $ProductElement.Language | where {$_.ID -like $LanguageId}
             if($LanguageElement -eq $null){
                 [System.XML.XMLElement]$LanguageElement=$ConfigFile.CreateElement("Language")
                 $ProductElement.appendChild($LanguageElement) | Out-Null
@@ -1320,7 +1325,7 @@ function odtAddProduct() {
     }
 
     foreach($ExcludeApp in $ExcludeApps){
-        [System.XML.XMLElement]$ExcludeAppElement = $ProductElement.ExcludeApp | ?  ID -eq $ExcludeApp
+        [System.XML.XMLElement]$ExcludeAppElement = $ProductElement.ExcludeApp | where {$_.ID -like $ExcludeApp}
         if($ExcludeAppElement -eq $null){
             [System.XML.XMLElement]$ExcludeAppElement=$ConfigDoc.CreateElement("ExcludeApp")
             $ProductElement.appendChild($ExcludeAppElement) | Out-Null
@@ -1637,11 +1642,13 @@ Function GetScriptPath() {
        $scriptPath = $PSScriptRoot
      } else {
        $scriptPath = split-path -parent $MyInvocation.MyCommand.Definition
+       $scriptPath = (Get-Item -Path ".\").FullName
      }
-
      return $scriptPath
  }
 }
+
+
 
 function Format-XML ([xml]$xml, $indent=2) { 
     $StringWriter = New-Object System.IO.StringWriter 
