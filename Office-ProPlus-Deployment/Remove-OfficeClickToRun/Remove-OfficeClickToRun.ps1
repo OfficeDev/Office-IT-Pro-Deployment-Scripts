@@ -182,9 +182,12 @@ process {
             $path = join-path $regKey $key
 
             $configPath = join-path $path "Common\Config"
+            
             $configItems = $regProv.EnumKey($HKLM, $configPath)
             foreach ($configId in $configItems.sNames) {
-               $Add = $ConfigItemList.Add($configId.ToUpper())
+               if ($configId) {
+                 $Add = $ConfigItemList.Add($configId.ToUpper())
+               }
             }
 
             $cltr = New-Object -TypeName PSObject
@@ -236,9 +239,10 @@ process {
             foreach ($packageGuid in $packageItems.sNames) {
               $packageItemPath = join-path $packagePath $packageGuid
               $packageName = $regProv.GetStringValue($HKLM, $packageItemPath, "").sValue
-            
-              if (!$PackageList.Contains($packageName)) {
-                $AddItem = $PackageList.Add($packageName.Replace(' ', '').ToLower())
+              if ($packageName) {
+                 if (!$PackageList.Contains($packageName)) {
+                    $AddItem = $PackageList.Add($packageName.Replace(' ', '').ToLower())
+                 }
               }
             }
 
@@ -287,7 +291,7 @@ process {
            $primaryOfficeProduct = $false
            $officeProduct = $false
            foreach ($officeInstallPath in $PathList) {
-             if ($officeInstallPath) {
+             if (($officeInstallPath) -and ($installPath)) {
                 $installReg = "^" + $installPath.Replace('\', '\\')
                 $installReg = $installReg.Replace('(', '\(')
                 $installReg = $installReg.Replace(')', '\)')
@@ -376,6 +380,9 @@ Function GetScriptRoot() {
        $scriptPath = $PSScriptRoot
      } else {
        $scriptPath = split-path -parent $MyInvocation.MyCommand.Definition
+       if (!($scriptPath)) {
+          $scriptPath = (Get-Location).Path
+       }
      }
 
      return $scriptPath
