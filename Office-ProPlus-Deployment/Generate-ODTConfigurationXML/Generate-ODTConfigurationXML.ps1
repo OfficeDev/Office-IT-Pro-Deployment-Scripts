@@ -12,35 +12,27 @@ Function Generate-ODTConfigurationXml {
 <#
 .Synopsis
 Generates the Office Deployment Tool (ODT) Configuration XML from the current configuration of the target computer
-
 .DESCRIPTION
 This function will query the local or a remote computer and Generate the ODT configuration xml based on the local Office install
 and the local languages that are used on the local computer.  If Office isn't installed then it will utilize the configuration file
 specified in the 
-
 .NOTES   
 Name: Generate-ODTConfigurationXml
 Version: 1.0.3
 DateCreated: 2015-08-24
 DateUpdated: 2015-11-23
-
 .LINK
 https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
-
 .PARAMETER ComputerName
 The computer or list of computers from which to query 
-
 .PARAMETER Languages
 Will expand the output to include all installed Office products
-
 .PARAMETER TargetFilePath
 The path and file name of the file to save the Configuration xml
-
 .PARAMETER IncludeUpdatePathAsSourcePath
 If this parameter is set to $true then the SourcePath in the Configuration xml will be set to 
 the current UpdatePath on the local computer.  This assumes that the UpdatePath location has 
 the required files needed to run the installation 
-
 .PARAMETER DefaultConfigurationXml
 This parameter sets the path to the Default Configuration XML file.  If Office is not installed on
 the computer that this script is run against it will default to this file in order to generate the 
@@ -48,38 +40,27 @@ ODT Configuration XML.  The default file should have the products that you would
 a workstation if Office isn't currently installed.  If this parameter is set to $NULL then it will
 not generate configuration XML if Office is not installed.  By default the script looks for a file
 called "DefaultConfiguration.xml" in the same directory as the script
-
 .EXAMPLE
 Generate-ODTConfigurationXml | fl
-
 Description:
 Will generate the Office Deployment Tool (ODT) configuration XML based on the local computer
-
 .EXAMPLE
 Generate-ODTConfigurationXml  -ComputerName client01,client02 | fl
-
 Description:
 Will generate the Office Deployment Tool (ODT) configuration XML based on the configuration of the remote computers client01 and client02
-
 .EXAMPLE
 Generate-ODTConfigurationXml -Languages OSandUserLanguages
-
 Description:
 Will generate the Office Deployment Tool (ODT) configuration XML based on the local computer and add the languages that the Operating System and the local users
 are currently using.
-
 .EXAMPLE
 Generate-ODTConfigurationXml -Languages OSLanguage
-
 Description:
 Will generate the Office Deployment Tool (ODT) configuration XML based on the local computer and add the Current UI Culture language of the Operating System
-
 .EXAMPLE
 Generate-ODTConfigurationXml -Languages CurrentOfficeLanguages
-
 Description:
 Will generate the Office Deployment Tool (ODT) configuration XML based on the local computer and add only add the Languages currently in use by the current Office installation
-
 #>
 [CmdletBinding(SupportsShouldProcess=$true)]
 param(
@@ -111,10 +92,13 @@ begin {
 
     $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet(‘DefaultDisplayPropertySet’,[string[]]$defaultDisplaySet)
     $PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultDisplayPropertySet)
+    
+    [string]$tempStr = $MyInvocation.MyCommand.Path
 
     $scriptPath = GetScriptPath
+
     if (!($DefaultConfigurationXml)) {
-      $DefaultConfigurationXml = ($scriptPath + "\DefaultConfiguration.xml") 
+      $DefaultConfigurationXml = (Join-Path $scriptPath "DefaultConfiguration.xml") 
     }
 }
 
@@ -265,7 +249,7 @@ process {
     foreach ($lang in $additionalLanguages) {
       if ($lang.GetType().Name.ToLower().Contains("string")) {
         if ($lang.Contains("-")) {
-          if (!$allLanguages -contains $lang.ToLower()) {
+          if (!($allLanguages -contains $lang.ToLower())) {
              $allLanguages += $lang.ToLower()
           }
         }
@@ -295,8 +279,11 @@ process {
          if ($officeExists) {
              $excludeApps = officeGetExcludedApps -OfficeProducts $officeProducts
          }
-
-         $additionalLanguages = msiGetOfficeLanguages -regProv $regProv
+  
+         $msiLanguages = msiGetOfficeLanguages -regProv $regProv
+         foreach ($msiLanguage in $msiLanguages) {
+            $additionalLanguages += $msiLanguage
+         }
          
          if (!($additionalLanguages)) {
              foreach ($officeLang in $officeLangs) {
@@ -313,16 +300,24 @@ process {
 
        if ($additionalLanguages) {
            $additionalLanguages = Get-Unique -InputObject $additionalLanguages -OnType
-    
-           if ($additionalLanguages.Contains($primaryLanguage)) {
-               $additionalLanguages.Remove($primaryLanguage)
+           
+           
+                          
+           if ($additionalLanguages -contains ($primaryLanguage)) {
+           $tempLanguages = $additionalLanguages
+           $additionalLanguages = New-Object System.Collections.ArrayList
+           foreach($tempL in $tempLanguages){
+               if($tempL -ne $primaryLanguage){
+                    $additionalLanguages.Add($tempL) | Out-Null
+               }
+               #$additionalLanguages.Remove($primaryLanguage)
+               }
            }
        }
 
-       if ($productId) {
-           odtAddProduct -ConfigDoc $ConfigFile -ProductId $productId -ExcludeApps $excludeApps -Version $officeConfig.Version `
+       odtAddProduct -ConfigDoc $ConfigFile -ProductId $productId -ExcludeApps $excludeApps -Version $officeConfig.Version `
                      -Platform $productPlatform -ClientCulture $primaryLanguage -AdditionalLanguages $additionalLanguages
-       }
+
 
        if ($officeConfig) {
           if (($officeConfig.UpdatesEnabled) -or ($officeConfig.UpdateUrl) -or  ($officeConfig.UpdateDeadline)) {
@@ -408,43 +403,31 @@ Function Get-OfficeVersion {
 <#
 .Synopsis
 Gets the Office Version installed on the computer
-
 .DESCRIPTION
 This function will query the local or a remote computer and return the information about Office Products installed on the computer
-
 .NOTES   
 Name: Get-OfficeVersion
 Version: 1.0.4
 DateCreated: 2015-07-01
 DateUpdated: 2015-08-28
-
 .LINK
 https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
-
 .PARAMETER ComputerName
 The computer or list of computers from which to query 
-
 .PARAMETER ShowAllInstalledProducts
 Will expand the output to include all installed Office products
-
 .EXAMPLE
 Get-OfficeVersion
-
 Description:
 Will return the locally installed Office product
-
 .EXAMPLE
 Get-OfficeVersion -ComputerName client01,client02
-
 Description:
 Will return the installed Office product on the remote computers
-
 .EXAMPLE
 Get-OfficeVersion | select *
-
 Description:
 Will return the locally installed Office product with all of the available properties
-
 #>
 [CmdletBinding(SupportsShouldProcess=$true)]
 param(
@@ -936,8 +919,10 @@ function odtGetOfficeLanguages() {
         $installedCultures = $regProv.EnumKey($HKLM, $productsPath)
       
         foreach ($installedCulture in $installedCultures.sNames) {
+        if($installedCulture){
             if ($installedCulture.Contains("-") -and !($installedCulture.ToLower() -eq "x-none")) {
                 $addItem = $appLanguages1.Add($installedCulture) 
+            }
             }
         }
 
@@ -1024,7 +1009,7 @@ function msiGetOfficeLanguages() {
         foreach ($enabledLanguage in $enabledLanguages.sNames) {
 
            $languageStatus = $regProv.GetStringValue($HKU, $regPathEnabledLangs, $enabledLanguage).sValue
-           if ($languageStatus) {
+           if($languageStatus){
            if ($languageStatus.ToLower() -eq "on") {
                $langCulture = [globalization.cultureinfo]::GetCultures("allCultures") | where {$_.LCID -eq $enabledLanguage}
                $convertLang = checkForLanguage -langId $langCulture 
@@ -1066,7 +1051,7 @@ function getLanguages() {
        $regProv = $NULL
     )
 
-  [System.Collections.ArrayList] $returnLangs = New-Object System.Collections.ArrayList
+  $returnLangs = @() 
 
   $HKU = [UInt32] "0x80000003"
   $userKeys = $regProv.EnumKey($HKU, "");
@@ -1076,21 +1061,21 @@ function getLanguages() {
        [string]$userProfilePath = join-path $userKey "Control Panel\International\User Profile"
        [string[]]$userLanguages = $regProv.GetMultiStringValue($HKU, $userProfilePath, "Languages").sValue
        foreach ($userLang in $userLanguages) {
-         if ($userLang) {       
+       if($userLang){
          $convertLang = checkForLanguage -langId $userLang 
-         if ($convertLang) {
-             $returnLangs.Add($convertLang.ToLower()) | Out-Null
          }
+         if ($convertLang) {
+             $returnLangs += $convertLang.ToLower()
          }
        }
         
      }
   }
-
+  
   $langPacks = $regProv.EnumKey($HKLM, "SYSTEM\CurrentControlSet\Control\MUI\UILanguages");
   foreach ($langPackName in $langPacks.sNames) {
-     if (!$returnLangs.Contains($langPackName.ToLower())) {
-        $returnLangs.Add($langPackName.ToLower()) | Out-Null
+     if (!$returnLangs -contains $langPackName.ToLower()) {
+        $returnLangs += $langPackName.ToLower() 
      }
   }
 
@@ -1110,7 +1095,7 @@ function checkForLanguage() {
        [string]$langId = $NULL
     )
 
-    if ($availableLangs -contains $langId.Trim().ToLower()) {
+    if ($availableLangs -contains ($langId.Trim().ToLower())) {
        return $langId
     } else {
        $langStart = $langId.Split('-')[0]
@@ -1295,14 +1280,14 @@ function odtAddProduct() {
     if ($Platform) {
        $AddElement.SetAttribute("OfficeClientEdition", $Platform) | Out-Null
     }
-    
-    [System.XML.XMLElement]$ProductElement = $ConfigDoc.Configuration.Add.Product | where {$_.ID -like $ProductId}
-    
-    
+
+    [System.XML.XMLElement]$ProductElement = $ConfigDoc.Configuration.Add.Product | where { $_.ID -eq $ProductId }
+    if($ProductId){
     if($ProductElement -eq $null){
         [System.XML.XMLElement]$ProductElement=$ConfigDoc.CreateElement("Product")
         $AddElement.appendChild($ProductElement) | Out-Null
         $ProductElement.SetAttribute("ID", $ProductId) | Out-Null
+    }
     }
 
     $LanguageIds = @($ClientCulture)
@@ -1311,10 +1296,10 @@ function odtAddProduct() {
        $LanguageIds += $addLang 
     }
 
-    foreach($LanguageId in $LanguageIds){
+    foreach($LanguageId in $LanguageIds){    
        if ($LanguageId) {
           if ($LanguageId.Length -gt 0) {
-            [System.XML.XMLElement]$LanguageElement = $ProductElement.Language | where {$_.ID -like $LanguageId}
+            [System.XML.XMLElement]$LanguageElement = $ProductElement.Language | where { $_.ID -eq $LanguageId }
             if($LanguageElement -eq $null){
                 [System.XML.XMLElement]$LanguageElement=$ConfigFile.CreateElement("Language")
                 $ProductElement.appendChild($LanguageElement) | Out-Null
@@ -1325,12 +1310,14 @@ function odtAddProduct() {
     }
 
     foreach($ExcludeApp in $ExcludeApps){
-        [System.XML.XMLElement]$ExcludeAppElement = $ProductElement.ExcludeApp | where {$_.ID -like $ExcludeApp}
+    if($ExcludeApp){
+        [System.XML.XMLElement]$ExcludeAppElement = $ProductElement.ExcludeApp | where { $_.ID -eq $ExcludeApp }
         if($ExcludeAppElement -eq $null){
             [System.XML.XMLElement]$ExcludeAppElement=$ConfigDoc.CreateElement("ExcludeApp")
             $ProductElement.appendChild($ExcludeAppElement) | Out-Null
             $ExcludeAppElement.SetAttribute("ID", $ExcludeApp) | Out-Null
         }
+    }
     }
 
 }
@@ -1363,8 +1350,11 @@ function odtAddUpdates{
             throw $NoConfigurationElement
         }
         [bool]$addUpdates = $false
-        $hasEnabled = [string]::IsNullOrWhiteSpace($Enabled)
-        $hasUpdatePath = [string]::IsNullOrWhiteSpace($UpdatePath)
+        $hasEnabled = $false
+        if($Enabled){$hasEnabled = $true}else{$hasEnabled = $false}
+        
+        $hasUpdatePath = $false
+        if($UpdatePath){$hasUpdatePath = $true}else{$hasUpdatePath = $false}
         if(($hasEnabled -ne $true) -or ($hasUpdatePath -ne $true)){
            $addUpdates = $true
         }
@@ -1378,7 +1368,7 @@ function odtAddUpdates{
             }
 
             #Set the desired values
-            if([string]::IsNullOrWhiteSpace($Enabled) -eq $false){
+            if($Enabled){
                 $UpdateElement.SetAttribute("Enabled", $Enabled) | Out-Null
             } else {
               if ($PSBoundParameters.ContainsKey('Enabled')) {
@@ -1388,7 +1378,7 @@ function odtAddUpdates{
               }
             }
 
-            if([string]::IsNullOrWhiteSpace($UpdatePath) -eq $false){
+            if($UpdatePath){
                 $UpdateElement.SetAttribute("UpdatePath", $UpdatePath) | Out-Null
             } else {
               if ($PSBoundParameters.ContainsKey('UpdatePath')) {
@@ -1398,7 +1388,7 @@ function odtAddUpdates{
               }
             }
 
-            if([string]::IsNullOrWhiteSpace($TargetVersion) -eq $false){
+            if($TargetVersion){
                 $UpdateElement.SetAttribute("TargetVersion", $TargetVersion) | Out-Null
             } else {
               if ($PSBoundParameters.ContainsKey('TargetVersion')) {
@@ -1408,7 +1398,7 @@ function odtAddUpdates{
               }
             }
 
-            if([string]::IsNullOrWhiteSpace($Deadline) -eq $false){
+            if($Deadline){
                 $UpdateElement.SetAttribute("Deadline", $Deadline) | Out-Null
             } else {
               if ($PSBoundParameters.ContainsKey('Deadline')) {
@@ -1454,7 +1444,7 @@ Function odtSetAdd{
         }
 
         #Set values as desired
-        if([string]::IsNullOrWhiteSpace($SourcePath) -eq $false){
+        if($SourcePath){
             $ConfigFile.Configuration.Add.SetAttribute("SourcePath", $SourcePath) | Out-Null
         } else {
             if ($PSBoundParameters.ContainsKey('SourcePath')) {
@@ -1462,7 +1452,7 @@ Function odtSetAdd{
             }
         }
 
-        if([string]::IsNullOrWhiteSpace($Version) -eq $false){
+        if($Version){
             $ConfigDoc.Configuration.Add.SetAttribute("Version", $Version) | Out-Null
         } else {
             if ($PSBoundParameters.ContainsKey('Version')) {
@@ -1470,7 +1460,7 @@ Function odtSetAdd{
             }
         }
 
-        if([string]::IsNullOrWhiteSpace($Bitness) -eq $false){
+        if($Bitness){
             $ConfigDoc.Configuration.Add.SetAttribute("OfficeClientEdition", $Bitness) | Out-Null
         } else {
             if ($PSBoundParameters.ContainsKey('OfficeClientEdition')) {
@@ -1485,12 +1475,10 @@ Function Set-ODTConfigProperties{
 <#
 .SYNOPSIS
 Modifies an existing configuration xml file to set property values
-
 .PARAMETER AutoActivate
 If AUTOACTIVATE is set to 1, the specified products will attempt to activate automatically. 
 If AUTOACTIVATE is not set, the user may see the Activation Wizard UI.
 You must not set AUTOACTIVATE for Office 365 Click-to-Run products. 
-
 .PARAMETER ForceAppShutDown
 An installation or removal action may be blocked if Office applications are running. 
 Normally, such cases would start a process killer UI. Administrators can set 
@@ -1498,33 +1486,26 @@ FORCEAPPSHUTDOWN value to TRUE to prevent dependence on user interaction. When
 FORCEAPPSHUTDOWN is set to TRUE, any applications that block the action will be shut 
 down. Data loss may occur. When FORCEAPPSHUTDOWN is set to FALSE (default), the 
 action may fail if Office applications are running.
-
 .PARAMETER PackageGUID
 Optional. By default, all Office 2013 App-V packages created by using the Office 
 Deployment Tool share the same App-V Package ID. Administrators can use PACKAGEGUID 
 to specify a different Package ID. Also, PACKAGEGUID needs to be at least 25 
 characters in length and be separated into 5 sections, with each section separated by 
 a dash. The sections need to have the following number of characters: 8, 4, 4, 4, and 12. 
-
 .PARAMETER SharedComputerLicensing
 Optional. Set SharedComputerLicensing to 1 if you deploy Office 365 ProPlus to shared 
 computers by using Remote Desktop Services.
-
 .PARAMETER TargetFilePath
 Full file path for the file to be modified and be output to.
-
 .Example
 Set-ODTConfigProperties -AutoActivate "1" -TargetFilePath "$env:Public/Documents/config.xml"
 Sets config to automatically activate the products
-
 .Example
 Set-ODTConfigProperties -ForceAppShutDown "True" -PackageGUID "12345678-ABCD-1234-ABCD-1234567890AB" -TargetFilePath "$env:Public/Documents/config.xml"
 Sets the config so that apps are forced to shutdown during install and the package guid
 to "12345678-ABCD-1234-ABCD-1234567890AB"
-
 .Notes
 Here is what the portion of configuration file looks like when modified by this function:
-
 <Configuration>
   ...
   <Property Name="AUTOACTIVATE" Value="1" />
@@ -1533,7 +1514,6 @@ Here is what the portion of configuration file looks like when modified by this 
   <Property Name="SharedComputerLicensing" Value="0" />
   ...
 </Configuration>
-
 #>
     [CmdletBinding()]
     Param(
@@ -1567,8 +1547,8 @@ Here is what the portion of configuration file looks like when modified by this 
         }
 
         #Set each property as desired
-        if([string]::IsNullOrWhiteSpace($AutoActivate) -eq $false){
-            [System.XML.XMLElement]$AutoActivateElement = $ConfigFile.Configuration.Property | ?  Name -eq "AUTOACTIVATE"
+        if(($AutoActivate)){
+            [System.XML.XMLElement]$AutoActivateElement = $ConfigFile.Configuration.Property | where { $_.Name -eq "AUTOACTIVATE" }
             if($AutoActivateElement -eq $null){
                 [System.XML.XMLElement]$AutoActivateElement=$ConfigFile.CreateElement("Property")
             }
@@ -1578,8 +1558,8 @@ Here is what the portion of configuration file looks like when modified by this 
             $AutoActivateElement.SetAttribute("Value", $AutoActivate) | Out-Null
         }
 
-        if([string]::IsNullOrWhiteSpace($ForceAppShutDown) -eq $false){
-            [System.XML.XMLElement]$ForceAppShutDownElement = $ConfigFile.Configuration.Property | ?  Name -eq "FORCEAPPSHUTDOWN"
+        if(($ForceAppShutDown)){
+            [System.XML.XMLElement]$ForceAppShutDownElement = $ConfigFile.Configuration.Property | where { $_.Name -eq "FORCEAPPSHUTDOWN" }
             if($ForceAppShutDownElement -eq $null){
                 [System.XML.XMLElement]$ForceAppShutDownElement=$ConfigFile.CreateElement("Property")
             }
@@ -1589,8 +1569,8 @@ Here is what the portion of configuration file looks like when modified by this 
             $ForceAppShutDownElement.SetAttribute("Value", $ForceAppShutDown) | Out-Null
         }
 
-        if([string]::IsNullOrWhiteSpace($PackageGUID) -eq $false){
-            [System.XML.XMLElement]$PackageGUIDElement = $ConfigFile.Configuration.Property | ?  Name -eq "PACKAGEGUID"
+        if(($PackageGUID)){
+            [System.XML.XMLElement]$PackageGUIDElement = $ConfigFile.Configuration.Property | where { $_.Name -eq "PACKAGEGUID" }
             if($PackageGUIDElement -eq $null){
                 [System.XML.XMLElement]$PackageGUIDElement=$ConfigFile.CreateElement("Property")
             }
@@ -1600,8 +1580,8 @@ Here is what the portion of configuration file looks like when modified by this 
             $PackageGUIDElement.SetAttribute("Value", $PackageGUID) | Out-Null
         }
 
-        if([string]::IsNullOrWhiteSpace($SharedComputerLicensing) -eq $false){
-            [System.XML.XMLElement]$SharedComputerLicensingElement = $ConfigFile.Configuration.Property | ?  Name -eq "SharedComputerLicensing"
+        if(($SharedComputerLicensing)){
+            [System.XML.XMLElement]$SharedComputerLicensingElement = $ConfigFile.Configuration.Property | where { $_.Name -eq "SharedComputerLicensing" }
             if($SharedComputerLicensingElement -eq $null){
                 [System.XML.XMLElement]$SharedComputerLicensingElement=$ConfigFile.CreateElement("Property")
             }
@@ -1641,14 +1621,13 @@ Function GetScriptPath() {
      if ($PSScriptRoot) {
        $scriptPath = $PSScriptRoot
      } else {
-       $scriptPath = split-path -parent $MyInvocation.MyCommand.Definition
-       $scriptPath = (Get-Item -Path ".\").FullName
+       #$scriptPath = (Split-Path $MyInvocation.MyCommand.Path) + "\"
+       $scriptPath = (Get-Location).Path
      }
+
      return $scriptPath
  }
 }
-
-
 
 function Format-XML ([xml]$xml, $indent=2) { 
     $StringWriter = New-Object System.IO.StringWriter 
@@ -1660,6 +1639,13 @@ function Format-XML ([xml]$xml, $indent=2) {
     $StringWriter.Flush() 
     Write-Output $StringWriter.ToString() 
 }
+
+function Win7Join([string]$st1, [string]$st2){
+    [string]$tempStr = $st1 + "\" + $st2
+    return $tempStr
+}
+
+
 
 $availableLangs = @("en-us",
 "ar-sa","bg-bg","zh-cn","zh-tw","hr-hr","cs-cz","da-dk","nl-nl","et-ee",
