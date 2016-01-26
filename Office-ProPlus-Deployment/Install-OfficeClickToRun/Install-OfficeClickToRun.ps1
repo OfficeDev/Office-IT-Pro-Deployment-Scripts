@@ -291,7 +291,8 @@ Language and Exclude values
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
 
         if ($TargetFilePath) {
-           $ConfigFile.Load($TargetFilePath) | Out-Null
+           $content = Get-Content $TargetFilePath
+           $ConfigFile.LoadXml($content) | Out-Null
         } else {
             if ($ConfigurationXml) 
             {
@@ -383,7 +384,8 @@ file.
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
 
         if ($TargetFilePath) {
-           $ConfigFile.Load($TargetFilePath) | Out-Null
+           $content = Get-Content $TargetFilePath
+           $ConfigFile.LoadXml($content) | Out-Null
         } else {
             if ($ConfigurationXml) 
             {
@@ -463,7 +465,7 @@ Here is what the portion of configuration file looks like when modified by this 
 
         #Load file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
-write-Host $TargetFilePath
+
         if ($TargetFilePath) {
            $content = Get-Content $TargetFilePath
            $ConfigFile.LoadXml($content) | Out-Null
@@ -764,7 +766,7 @@ Function Wait-ForOfficeCTRInstall() {
     process {
        Write-Host "Waiting for Update to Complete..."
 
-       Start-Sleep -Seconds 5
+       Start-Sleep -Seconds 20
 
        $mainRegPath = Get-OfficeCTRRegPath 
        $scenarioPath = $mainRegPath + "\scenario"

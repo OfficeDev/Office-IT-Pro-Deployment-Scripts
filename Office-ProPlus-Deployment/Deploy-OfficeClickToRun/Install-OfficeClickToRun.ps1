@@ -766,7 +766,7 @@ Function Wait-ForOfficeCTRInstall() {
     process {
        Write-Host "Waiting for Update to Complete..."
 
-       Start-Sleep -Seconds 5
+       Start-Sleep -Seconds 20
 
        $mainRegPath = Get-OfficeCTRRegPath 
        $scenarioPath = $mainRegPath + "\scenario"
