@@ -1,4 +1,4 @@
-Add-Type -TypeDefinition @"
+Add-Type  -ErrorAction SilentlyContinue -TypeDefinition @"
    public enum OfficeCTRVersion
    {
       Office2013,
@@ -23,7 +23,7 @@ namespace Microsoft.Office
      }
 }
 "
-Add-Type -TypeDefinition $enum
+Add-Type -TypeDefinition $enum -ErrorAction SilentlyContinue
 
 $enum2 = "
 using System;
@@ -35,7 +35,7 @@ using System;
         Full=1
     }
 "
-Add-Type -TypeDefinition $enum2
+Add-Type -TypeDefinition $enum2 -ErrorAction SilentlyContinue
 
 function Install-OfficeClickToRun {
     [CmdletBinding()]
@@ -712,14 +712,14 @@ Here is what the portion of configuration file looks like when modified by this 
                 foreach ($exclude in $existingLangs) {
                   $ProductElement.removeChild($exclude) | Out-Null
                 }
+            }
 
-                foreach($ExcludeApp in $ExcludeApps){
-                    [System.XML.XMLElement]$ExcludeAppElement = $ProductElement.ExcludeApp | ?  ID -eq $ExcludeApp
-                    if($ExcludeAppElement -eq $null){
-                        [System.XML.XMLElement]$ExcludeAppElement=$ConfigFile.CreateElement("ExcludeApp")
-                        $ProductElement.appendChild($ExcludeAppElement) | Out-Null
-                        $ExcludeAppElement.SetAttribute("ID", $ExcludeApp) | Out-Null
-                    }
+            foreach($ExcludeApp in $ExcludeApps){
+                [System.XML.XMLElement]$ExcludeAppElement = $ProductElement.ExcludeApp | ?  ID -eq $ExcludeApp
+                if($ExcludeAppElement -eq $null){
+                    [System.XML.XMLElement]$ExcludeAppElement=$ConfigFile.CreateElement("ExcludeApp")
+                    $ProductElement.appendChild($ExcludeAppElement) | Out-Null
+                    $ExcludeAppElement.SetAttribute("ID", $ExcludeApp) | Out-Null
                 }
             }
         }
