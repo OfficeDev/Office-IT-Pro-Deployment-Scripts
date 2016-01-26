@@ -1,4 +1,4 @@
-Add-Type -TypeDefinition @"
+Add-Type -ErrorAction SilentlyContinue -TypeDefinition @"
    public enum OfficeLanguages
    {
       CurrentOfficeLanguages,
