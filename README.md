@@ -3,6 +3,18 @@ This repo is a collection of useful PowerShell scripts to make deploying Office 
 
 Read more about it here: [Office Blogs](https://blogs.office.com/2015/08/19/introducing-the-office-it-pro-deployment-script-project/)
 
+Based on customer feedback, we’ve changed how we refer to our update branches. The name changes are as follows:
+
+•	Current Branch is now called Current Channel
+•	Current Branch for Business is now called Deferred Channel
+•	First Release for Current Branch is now called First Release for Current Channel
+•	First Release for Current Branch for Business is now called First Release for Deferred Channel
+
+Only the names are changing. The servicing model for each of these channels remains the same. 
+
+We are in the process of updating our content, so you will continue to see the previous naming during this transition. 
+
+
 ## Scripts
 For more detailed documentation of each script, check the [Wiki](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/wiki) or the readme file in the corresponding folder
 
