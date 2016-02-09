@@ -3,6 +3,8 @@ This repo is a collection of useful PowerShell scripts to make deploying Office 
 
 Read more about it here: [Office Blogs](https://blogs.office.com/2015/08/19/introducing-the-office-it-pro-deployment-script-project/)
 
+## Update branch name change
+
 Based on customer feedback, we’ve changed how we refer to our update branches. The name changes are as follows:
 
 •	Current Branch is now called Current Channel
