@@ -7,10 +7,10 @@ Read more about it here: [Office Blogs](https://blogs.office.com/2015/08/19/intr
 
 Based on customer feedback, we’ve changed how we refer to our update branches. The name changes are as follows:
 <UL>
-<LI>Current Branch is now called Current Channel
-<LI>Current Branch for Business is now called Deferred Channel
-<LI>First Release for Current Branch is now called First Release for Current Channel
-<LI>First Release for Current Branch for Business is now called First Release for Deferred Channel
+<LI>Current Branch is now called **Current Channel**
+<LI>Current Branch for Business is now called **Deferred Channel**
+<LI>First Release for Current Branch is now called **First Release for Current Channel**
+<LI>First Release for Current Branch for Business is now called **First Release for Deferred Channel**
 </UL>
 Only the names are changing. The servicing model for each of these channels remains the same. 
 
