@@ -642,7 +642,7 @@ function changeVersions(version) {
         //$("#pidKeyLabel").show("slow");
         $("#branchSection").hide("slow");
         $("#updateBranchSection").hide("slow");
-        $("#autoUpgradeToggle").show("slow");
+
         //16.0.4229.1024
 
         $('#versionTextBox .typeahead').typeahead('destroy', 'NoCached');
@@ -675,8 +675,6 @@ function changeVersions(version) {
         //$("#pidKeyLabel").hide("slow");
         $("#branchSection").show("slow");
         $("#updateBranchSection").show("slow");
-        $("#autoUpgradeToggle").hide("slow");
-
         $("#txtPidKey").val("");
 
         $('#versionTextBox .typeahead').typeahead('destroy', 'NoCached');
@@ -1795,7 +1793,6 @@ function odtToggleUpdate() {
 function odtSaveUpdates(xmlDoc) {
     var selectUpdatePath = $("#txtUpdatePath").val();
     var selectTargetVersion = $("#txtTargetVersion").val();
-    var autoUpdate = $("#autoUpgradeEnable").is(":checked");
     var date = $(".ms-DatePicker .ms-TextField input").val(); //deadline textbox
     var $UpdatesEnabled = $("#updatesEnabled")[0];
     if (date) {
@@ -1821,11 +1818,8 @@ function odtSaveUpdates(xmlDoc) {
         if ($("#office2016Select").hasClass("is-selected")) {
             var selectedBranch = $("#cbUpdateBranch").val();
             updateNode.setAttribute("Branch", selectedBranch);
-            updateNode.removeAttribute("AutoUpgrade");
         } else {
             updateNode.removeAttribute("Branch");
-            //updateNode.AddAttribute("AutoUpgrade");
-            //updateNode.setAttribute("AutoUpgrade","FALSE");
         }
     } else {
         updateNode.setAttribute("Enabled", "FALSE");
@@ -1833,8 +1827,6 @@ function odtSaveUpdates(xmlDoc) {
         updateNode.removeAttribute("TargetVersion");
         updateNode.removeAttribute("Deadline");
         updateNode.removeAttribute("Branch");
-        updateNode.removeAttribute("AutoUpgrade");
-
     }
 
     if (selectUpdatePath) {
@@ -1855,17 +1847,6 @@ function odtSaveUpdates(xmlDoc) {
         updateNode.removeAttribute("Deadline");
     }
 
-    if (!$("#office2016Select").hasClass("is-selected")) {
-        if (autoUpdate) {
-            updateNode.setAttribute("AutoUpgrade", "TRUE");
-        } else {
-            updateNode.setAttribute("AutoUpgrade", "FALSE");
-    }
-   
-
-    }
-
-
 }
 
 function odtRemoveUpdates(xmlDoc) {
@@ -1879,7 +1860,6 @@ function odtRemoveUpdates(xmlDoc) {
     }
 
     $("#updatesEnabled")[0].checked = false;
-    $("#autoUpgradeEnable")[0].checked = false;
     odtToggleUpdate();
 }
 
@@ -2706,22 +2686,6 @@ function setTemplate(template) {
 
     rawFile.send();
 
-}
-
-function dialogNext() {
-    $('#disclaimer').css('display', 'none');
-    $('#dialogNext').css('display', 'none');
-
-    $('#info').css('display', 'block');
-    $('#dialogBack').css('display', 'block');
-}
-
-function dialogBack() {
-    $('#disclaimer').css('display', 'block');
-    $('#dialogNext').css('display', 'block');
-
-    $('#info').css('display', 'none');
-    $('#dialogBack').css('display', 'none');
 }
 
 var versions = [
