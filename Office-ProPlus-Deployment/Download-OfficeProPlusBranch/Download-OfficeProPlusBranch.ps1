@@ -28,6 +28,22 @@ Add-Type -TypeDefinition $enumDef
 
 
 
+$enumDef = "
+using System;
+       [FlagsAttribute]
+       public enum OfficeChannel
+       {
+          FirstReleaseCurrent = 0,
+          Current = 1,
+          FirstReleaseDeferred = 2,
+          Deferred = 3,
+          CMValidation = 4
+       }
+"
+
+Add-Type -TypeDefinition $enumDef
+
+
 function Download-OfficeProPlusBranch {
 <#
 .SYNOPSIS
@@ -80,7 +96,10 @@ Param(
     [bool] $OverWrite = $false,
 
     [Parameter()]
-    [OfficeBranch[]] $Branches = (0, 1, 2, 3),#, 4)
+    [OfficeBranch[]] $Branches,#, 4)
+
+    [Parameter()]
+    [OfficeChannel[]] $Channels,
     
     [Parameter()]
     [int] $NumVersionsToKeep = 2,
@@ -92,13 +111,25 @@ Param(
 )
 
 
+
+
 if($NumVersionsToKeep -le 0)#Throws an error if parameter is 0 or less, we don't want to delete every version
 {
     throw "Parameter NumVersionsToKeep must be greater than 0!"
 }
+
+$BranchesOrChannels = @()
+
+if($Branches.Count -gt 0)
+{
+    $BranchesOrChannels = $Branches
+}
+else{
+    $BranchesOrChannels = $Channels
+}
        
 
-$numberOfFiles = (($Branches.Count) * ((($Languages.Count + 1)*3) + 5))
+$numberOfFiles = (($BranchesOrChannels.Count) * ((($Languages.Count + 1)*3) + 5))
 
 [bool]$downloadSuccess = $TRUE;
 For($i=0; $i -le $NumOfRetries; $i++){#loops through download process in the event of a failure in order to retry
@@ -132,7 +163,7 @@ if($Bitness -eq [Bitness]::Both -or $Bitness -eq [Bitness]::v64){
 
 $j = 0
 $b = 0
-$BranchCount = $Branches.Count * 2
+$BranchOrChannelCount = $BranchesOrChannels.Count * 2
 
 #loop to download files
 $xmlArray | %{
@@ -147,13 +178,13 @@ $xmlArray | %{
     Write-Host "Downloading Bitness : $currentBitness"
 
     #loop for each branch
-    $Branches | %{
-        $currentBranch = $_
+    $BranchesOrChannels | %{
+        $currentBranchOrChannel = $_
         $b++
 
-        Write-Progress -id 1 -Activity "Downloading Branch" -status "Branch: $($currentBranch.ToString()) : $currentBitness" -percentComplete ($b / $BranchCount *100) 
+        Write-Progress -id 1 -Activity "Downloading Channel" -status "Channel: $($currentBranchOrChannel.ToString()) : $currentBitness" -percentComplete ($b / $BranchOrChannelCount *100) 
 
-        Write-Host "`tDownloading Branch: $currentBranch"
+        Write-Host "`tDownloading Channel: $currentBranchOrChannel"
 
         $baseURL = $CurrentVersionXML.UpdateFiles.baseURL | ? branch -eq $_.ToString() | %{$_.URL};
         if(!(Test-Path "$TargetDirectory\$($_.ToString())\")){
@@ -224,14 +255,14 @@ $xmlArray | %{
             $name = $_.name -replace "`%version`%", $currentVersion
             $relativePath = $_.relativePath -replace "`%version`%", $currentVersion
             $url = "$baseURL$relativePath$name"
-            $destination = "$TargetDirectory\$($currentBranch.ToString())$relativePath$name"
+            $destination = "$TargetDirectory\$($currentBranchOrChannel.ToString())$relativePath$name"
 
             if (!(Test-Path -Path $destination) -or $OverWrite) {
                DownloadFile -url $url -targetFile $destination
             }
 
             $j = $j + 1
-            Write-Progress -id 2 -ParentId 1 -Activity "Downloading Branch Files" -status "Branch: $($currentBranch.ToString())" -percentComplete ($j / $numberOfFiles *100)
+            Write-Progress -id 2 -ParentId 1 -Activity "Downloading Channel Files" -status "Channel: $($currentBranchOrChannel.ToString())" -percentComplete ($j / $numberOfFiles *100)
         }
 
         #language files
@@ -244,14 +275,14 @@ $xmlArray | %{
                 $name = $_.name -replace "`%version`%", $currentVersion
                 $relativePath = $_.relativePath -replace "`%version`%", $currentVersion
                 $url = "$baseURL$relativePath$name"
-                $destination = "$TargetDirectory\$($currentBranch.ToString())$relativePath$name"
+                $destination = "$TargetDirectory\$($currentBranchOrChannel.ToString())$relativePath$name"
 
                 if (!(Test-Path -Path $destination) -or $OverWrite) {
                    DownloadFile -url $url -targetFile $destination
                 }
 
                 $j = $j + 1
-                Write-Progress -id 2 -ParentId 1 -Activity "Downloading Branch Files" -status "Branch: $($currentBranch.ToString())" -percentComplete ($j / $numberOfFiles *100)
+                Write-Progress -id 2 -ParentId 1 -Activity "Downloading Channel Files" -status "Channel: $($currentBranchOrChannel.ToString())" -percentComplete ($j / $numberOfFiles *100)
             }
         }
 
@@ -269,7 +300,7 @@ $xmlArray | %{
     }
 }#end of for loop
 #After downloads finish, purge older versions
-PurgeOlderVersions $TargetDirectory $NumVersionsToKeep $Branches
+PurgeOlderVersions $TargetDirectory $NumVersionsToKeep $BranchesOrChannels
 
 }
 
