@@ -3,6 +3,8 @@ This repo is a collection of useful PowerShell scripts to make deploying Office 
 
 Read more about it here: [Office Blogs](https://blogs.office.com/2015/08/19/introducing-the-office-it-pro-deployment-script-project/)
 
+The software is licensed “as-is.” under the [MIT License](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/master/LICENSE).
+
 ## Scripts
 For more detailed documentation of each script, check the [Wiki](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/wiki) or the readme file in the corresponding folder
 
@@ -16,7 +18,6 @@ Check out [PowerShell for Office 365](http://powershell.office.com) for advice o
 
 ##Questions and comments
 If you have any trouble running this sample, please log an issue.
-For more general feedback, send an email to o16scripts@microsoft.com.
 
 ## How to Contribute to this project
 This is high level plan for contributing and the structure that we have in place for pulling changes.
