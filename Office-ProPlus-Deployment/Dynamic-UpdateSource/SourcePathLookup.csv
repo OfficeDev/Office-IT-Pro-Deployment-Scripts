@@ -1,4 +1,4 @@
-ADSite,Source
-Site1,\\Site1Server\office
-Site2,\\Site2Server\office
-Site3,\\Site3Server\office
+ADSite,Subnet,Source
+Site1,192.168.1.0/24,\\Site1Server\office
+Site2,12.10.0.0/16,\\Site2Server\office
+Site3,10.0.0.0/8,\\Site3Server\office

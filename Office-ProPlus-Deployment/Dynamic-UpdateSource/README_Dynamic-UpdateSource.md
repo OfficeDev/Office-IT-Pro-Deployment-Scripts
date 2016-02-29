@@ -25,9 +25,8 @@ This PowerShell function works with the other deployment scripts to provide a wa
 		Site2,\\Site2Server\OfficeSource
 		Site3,\\Site3Server\OfficeSource
 		
-4. Run the function against the local computer, be sure to include the parameters TargetFilePath and UpdateSourcePath.
+4. Run the function against the local computer, be sure to include the parameters TargetFilePath and IncludeUpdatePath.
 
-		Dynamic-UpdateSource -TargetFilePath "\\server\msoffice\configuration.xml" -UpdateSourcePath
-		"\\server\msoffice\site.csv"
+		Dynamic-UpdateSource -TargetFilePath "\\server\msoffice\configuration.xml" -IncludeUpdatePath $true
 
 
