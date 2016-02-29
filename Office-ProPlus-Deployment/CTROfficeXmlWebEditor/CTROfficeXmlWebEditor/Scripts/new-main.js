@@ -225,6 +225,16 @@ $(document).ready(function () {
         displayXml(xmlDoc);
         return false;
     });
+    
+
+    $("#cbBranch").change(function () {
+        //office2016Select
+        if ($("#office2016Select").hasClass('is-selected')) {
+            setVersionPanel("office2016Select");
+        } else {
+            setVersionPanel("office2013Select");
+        }
+    });
 
     $("#cbProduct").change(function () {
         var end = this.value;
@@ -395,6 +405,11 @@ $(document).ready(function () {
 
     $("#menuGitHubIssues").on('click', function () {
         window.open("https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/issues");
+        return false;
+    });
+
+    $('#btrClickToRun').on('click', function (e) {
+        window.location = "http://officedev.github.io/Office-IT-Pro-Deployment-Scripts/OfficeProPlusInstallGenerator/OfficeProPlusInstallGenerator.application";
         return false;
     });
 
@@ -627,7 +642,7 @@ function changeVersions(version) {
         //$("#pidKeyLabel").show("slow");
         $("#branchSection").hide("slow");
         $("#updateBranchSection").hide("slow");
-
+        $("#autoUpgradeToggle").show("slow");
         //16.0.4229.1024
 
         $('#versionTextBox .typeahead').typeahead('destroy', 'NoCached');
@@ -660,10 +675,28 @@ function changeVersions(version) {
         //$("#pidKeyLabel").hide("slow");
         $("#branchSection").show("slow");
         $("#updateBranchSection").show("slow");
+        $("#autoUpgradeToggle").hide("slow");
+
         $("#txtPidKey").val("");
 
         $('#versionTextBox .typeahead').typeahead('destroy', 'NoCached');
         $('#updateVersionTextBox .typeahead').typeahead('destroy', 'NoCached');
+
+        var selectVersions = [];
+
+        var selectedBranch = $("#cbBranch").val();
+
+        if (selectedBranch == "Current") {
+            selectVersions = versionsCurrent2016;
+        } else if (selectedBranch == "Business") {
+            selectVersions = versionsBusiness2016;
+        } else if (selectedBranch == "Validation" || selectedBranch == "FirstReleaseBusiness") {
+            selectVersions = versionsFRBusiness2016;
+        } else if (selectedBranch == "FirstReleaseCurrent") {
+            selectVersions = versionsFRCurrent2016;
+        } else {
+            selectVersions = versionsCurrent2016;
+        }
 
         $('#versionTextBox .typeahead').typeahead({
             hint: true,
@@ -672,7 +705,7 @@ function changeVersions(version) {
         },
         {
             name: 'versions',
-            source: substringMatcher(versions2016)
+            source: substringMatcher(selectVersions)
         });
 
         $('#updateVersionTextBox .typeahead').typeahead({
@@ -682,11 +715,11 @@ function changeVersions(version) {
         },
         {
             name: 'versions',
-            source: substringMatcher(versions2016)
+            source: substringMatcher(selectVersions)
         });
 
-        $("#txtVersion").attr("placeholder", versions2016[0]);
-        $("#txtTargetVersion").attr("placeholder", versions2016[0]);
+        $("#txtVersion").attr("placeholder", selectVersions[0]);
+        $("#txtTargetVersion").attr("placeholder", selectVersions[0]);
     }
 
     odtToggleUpdate();
@@ -1762,6 +1795,7 @@ function odtToggleUpdate() {
 function odtSaveUpdates(xmlDoc) {
     var selectUpdatePath = $("#txtUpdatePath").val();
     var selectTargetVersion = $("#txtTargetVersion").val();
+    var autoUpdate = $("#autoUpgradeEnable").is(":checked");
     var date = $(".ms-DatePicker .ms-TextField input").val(); //deadline textbox
     var $UpdatesEnabled = $("#updatesEnabled")[0];
     if (date) {
@@ -1787,8 +1821,11 @@ function odtSaveUpdates(xmlDoc) {
         if ($("#office2016Select").hasClass("is-selected")) {
             var selectedBranch = $("#cbUpdateBranch").val();
             updateNode.setAttribute("Branch", selectedBranch);
+            updateNode.removeAttribute("AutoUpgrade");
         } else {
             updateNode.removeAttribute("Branch");
+            //updateNode.AddAttribute("AutoUpgrade");
+            //updateNode.setAttribute("AutoUpgrade","FALSE");
         }
     } else {
         updateNode.setAttribute("Enabled", "FALSE");
@@ -1796,6 +1833,8 @@ function odtSaveUpdates(xmlDoc) {
         updateNode.removeAttribute("TargetVersion");
         updateNode.removeAttribute("Deadline");
         updateNode.removeAttribute("Branch");
+        updateNode.removeAttribute("AutoUpgrade");
+
     }
 
     if (selectUpdatePath) {
@@ -1816,6 +1855,17 @@ function odtSaveUpdates(xmlDoc) {
         updateNode.removeAttribute("Deadline");
     }
 
+    if (!$("#office2016Select").hasClass("is-selected")) {
+        if (autoUpdate) {
+            updateNode.setAttribute("AutoUpgrade", "TRUE");
+        } else {
+            updateNode.setAttribute("AutoUpgrade", "FALSE");
+    }
+   
+
+    }
+
+
 }
 
 function odtRemoveUpdates(xmlDoc) {
@@ -1829,6 +1879,7 @@ function odtRemoveUpdates(xmlDoc) {
     }
 
     $("#updatesEnabled")[0].checked = false;
+    $("#autoUpgradeEnable")[0].checked = false;
     odtToggleUpdate();
 }
 
@@ -2215,6 +2266,9 @@ function loadUploadXmlFile(inXmlDoc) {
 
         var selectedBranch = addNode.getAttribute("Branch");
         if (selectedBranch) {
+            if (selectedBranch.toLowerCase() == "validation") {
+                selectedBranch = "FirstReleaseBusiness";
+            }
             $("#cbBranch").msdropdownval(selectedBranch);
            // $("#office2016Select").addClass("is-selected");
         }
@@ -2269,6 +2323,10 @@ function loadUploadXmlFile(inXmlDoc) {
 
         var selectedUpdateBranch = updateNode.getAttribute("Branch");
         if (selectedUpdateBranch) {
+            if (selectedUpdateBranch.toLowerCase() == "validation") {
+                selectedUpdateBranch = "FirstReleaseBusiness";
+            }
+
             $("#cbUpdateBranch").msdropdownval(selectedUpdateBranch);
         }
 
@@ -2282,16 +2340,20 @@ function loadUploadXmlFile(inXmlDoc) {
         var logLevel = displayNode.getAttribute("Level");
         var acceptEula = displayNode.getAttribute("AcceptEULA");
 
-        if (logLevel == "None") {
-            $("#displayLevel")[0].checked = false;
-        } else {
-            $("#displayLevel")[0].checked = true;
+        if (logLevel) {
+            if (logLevel.toUpperCase() == "NONE") {
+                $("#displayLevel")[0].checked = false;
+            } else {
+                $("#displayLevel")[0].checked = true;
+            }
         }
 
-        if (acceptEula == "TRUE") {
-            $("#acceptEULA")[0].checked = true;
-        } else {
-            $("#acceptEULA")[0].checked = false;
+        if (acceptEula) {
+            if (acceptEula.toUpperCase() == "TRUE") {
+                $("#acceptEULA")[0].checked = true;
+            } else {
+                $("#acceptEULA")[0].checked = false;
+            }
         }
     }
 
@@ -2646,6 +2708,22 @@ function setTemplate(template) {
 
 }
 
+function dialogNext() {
+    $('#disclaimer').css('display', 'none');
+    $('#dialogNext').css('display', 'none');
+
+    $('#info').css('display', 'block');
+    $('#dialogBack').css('display', 'block');
+}
+
+function dialogBack() {
+    $('#disclaimer').css('display', 'block');
+    $('#dialogNext').css('display', 'block');
+
+    $('#info').css('display', 'none');
+    $('#dialogBack').css('display', 'none');
+}
+
 var versions = [
 '15.0.4745.1001',
 '15.0.4727.1003',
@@ -2677,6 +2755,31 @@ var versions = [
 '15.0.4505.1510',
 '15.0.4505.1006',
 '15.0.4481.1510'
+];
+
+var versionsFRCurrent2016 = [
+'16.0.6366.2047'
+];
+
+var versionsCurrent2016 = [
+'16.0.6366.2036',
+'16.0.6001.1043',
+'16.0.6001.1038',
+'16.0.6001.1034',
+'16.0.4229.1029',
+'16.0.4229.1024'
+];
+
+var versionsBusiness2016 = [
+'16.0.6001.1043'
+];
+
+var versionsFRBusiness2016 = [
+'16.0.6001.1043',
+'16.0.6001.1038',
+'16.0.6001.1034',
+'16.0.4229.1029',
+'16.0.4229.1024'
 ];
 
 var versions2016 = [

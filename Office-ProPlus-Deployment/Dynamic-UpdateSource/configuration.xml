@@ -1,0 +1,9 @@
+<Configuration>
+  <Add OfficeClientEdition="64" SourcePath="\\Site1Server\office">
+    <Product ID="O365ProPlusRetail">
+      <Language ID="en-us" />
+    </Product>
+  </Add>
+  <Display Level="Full" AcceptEULA="True" />
+  <Updates UpdatePath="\\Site1Server\office" />
+</Configuration>
