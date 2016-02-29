@@ -193,6 +193,14 @@
             
         }
 
+        /*#info {
+            display: none;
+        }*/
+
+        #disclaimer {
+            padding-top: 5%;
+        }
+
     </style>
 </head>
 
@@ -210,7 +218,7 @@
             </div>
             <div id="menuGitHubIssues" class="ms-CommandBarItem ms-CommandBarItem--iconOnly ms-CommandBarItemTop" style="border-left:1px solid #4c9cd6;border-right:1px solid #4c9cd6;
                             margin-right:-5px;height: 50px;width:50px" title="Issues">
-                <div class= "ms-commandbaritem-linkwrapper">
+                <div class="ms-commandbaritem-linkwrapper">
                     <div class="ms-CommandBarItem-link">
                         <span class="ms-CommandBarItem-icon ms-Icon ms-Icon--support ms-fontColor-white" style="font-size: 20px;margin-top: 15px"></span>
                         <span class="ms-CommandBarItem-commandText ms-font-m ms-font-weight-regular ms-fontColor-white">Issues</span>
@@ -288,9 +296,9 @@
                                             <span class="ms-Table-cell" onclick="setPanel('TemplatesPanel', 'templatesRow')">Templates</span>
                                         </div>
                                     </div>
-                                    
+
                                     <br />
-                                    
+
                                     <div class="ms-Table">
                                         <div class="ms-Table-row">
                                             <span class="ms-font-xl">Tools</span>
@@ -362,10 +370,14 @@
                                             <div class="ms-Dropdown">
                                                 <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
                                                 <select id="cbBranch" class="ms-Dropdown-select">
-                                                    <option value="Business">Business</option>
-                                                    <option value="FirstReleaseBusiness">First Release for Current Branch for Business</option>
-                                                    <option value="Current">Current</option>
-                                                    <option value="FirstReleaseCurrent">First Release Current</option>                                                   
+                                            <!--    <option oldvalue="Business" value="DeferredChannel">Deferred Channel</option>
+                                                    <option oldvalue="FirstReleaseBusiness" value="FirstReleaseDeferredChannel"> First Release Deferred Channel</option>
+                                                    <option oldvalue="Current" value="CurrentChannel">Current Channel</option>
+                                                    <option oldvalue="FirstReleaseCurrent" value="FirstReleaseCurrentChannel"> First Release Current Channel</option> -->
+                                                    <option oldvalue="Current" value="Current">Current</option>
+                                                    <option oldvalue="Business" value="Business">Deferred</option>
+                                                    <option oldvalue="FirstReleaseCurrent" value="FirstReleaseCurrent"> First Release Current</option>
+                                                    <option oldvalue="FirstReleaseBusiness" value="FirstReleaseBusiness"> First Release Deferred</option>                                                                                                        
                                                 </select>
                                             </div>
                                         </div>
@@ -534,8 +546,7 @@
                                                         <td style="width: 100%; padding-right: 10px">
                                                             <div class="ms-Dropdown">
                                                                 <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
-                                                                <select id="cbExcludeApp" class="ms-Dropdown-select">
-                                                                </select>
+                                                                <select id="cbExcludeApp" class="ms-Dropdown-select"></select>
                                                             </div>
                                                         </td>
                                                         <td style="width: 150px;text-align: right; padding-right: 10px; padding-bottom:10px">
@@ -700,10 +711,14 @@
                                         <div class="ms-Dropdown">
                                             <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
                                             <select id="cbUpdateBranch" class="ms-Dropdown-select">
-                                                <option value="Business">Business</option>
-                                                <option value="FirstReleaseBusiness">First Release for Current Branch for Business</option>
+                                          <!--  <option oldvalue="Business" value="DeferredChannel">Deferred Channel</option>
+                                                <option oldvalue="FirstReleaseBusiness" value="FirstReleaseDeferredChannel"> First Release Deferred Channel</option>
+                                                <option oldvalue="Current" value="CurrentChannel">Current Channel</option>
+                                                <option oldvalue="FirstReleaseCurrent" value="FirstReleaseCurrentChannel"> First Release Current Channel</option>  -->
                                                 <option value="Current">Current</option>
-                                                <option value="FirstReleaseCurrent">First Release Current</option>   
+                                                <option value="Business">Deferred</option>
+                                                <option value="FirstReleaseCurrent"> First Release Current</option>
+                                                <option value="FirstReleaseBusiness"> First Release Deferred</option>                                                                                                
                                             </select>
                                         </div>
                                     </div>
@@ -747,6 +762,20 @@
                                     </div>
 
                                     <div class="ms-DatePicker">
+                                    </div>
+
+                                    <div id="autoUpgradeToggle" class="ms-Toggle">
+                                        <span class="ms-Toggle-description">Enable Auto Update</span>
+                                        <input type="checkbox" id="autoUpgradeEnable" class="ms-Toggle-input" />
+                                        <label for="autoUpgradeEnable" class="ms-Toggle-field">
+                                            <span class="ms-Label ms-Label--off">Disabled</span>
+                                            <span class="ms-Label ms-Label--on">Enabled</span>
+                                        </label>
+                                        <p class="ms-font-m">
+                                            For Enterprise Customers using Office 365 ProPlus, users will be migrated to the latest version in February of 2016.
+                                            If you want your users to stay on Office 2013 and continue to receive 2013 security updates, you can delay their migration to
+                                            Office 2016 ProPlus.  For more information please visit <a href="http://blogs.technet.com/b/odsupport/archive/2015/09/23/how-can-i-delay-the-migration-from-office-365-proplus-2013-to-office-365-proplus-2016.aspx">this page.</a>
+                                        </p>
                                     </div>
 
                                     <div class="controls">
@@ -969,17 +998,17 @@
                                         Executable or Windows Installer Package (MSI) file. The XML configuration file is embedded in the file which allows
                                         you to easily distribute Office 365 ProPlus with a custom configuration.
                                     </div>
-                                    
+
                                     <br />
                                     <div class="ms-font-m" style="margin: 0px 10px 0px 10px">
-                                        The Install Generator allows you to select installation options. If you would like to use the configuration xml generated by this 
+                                        The Install Generator allows you to select installation options. If you would like to use the configuration xml generated by this
                                         website you can export it as an xml file and import it into the application.
                                     </div>
 
                                     <br />
                                     <div class="ms-font-m" style="margin: 0px 10px 0px 10px">
                                         The Install Generator is a desktop application that is installed via Microsoft ClickOnce.  To install the application click the
-                                        button below.
+                                        button below or compile the application yourself using the source code <a href="https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/Development/Office-ProPlus-Deployment/Microsoft.ProPlus.InstallGenerator">here.</a>
                                     </div>
 
 
@@ -1034,15 +1063,15 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            
-                            
+
+
 
                                         </div>
 
                                     </div>
                                     <div class="ms-TextField" style="margin-top:0px;margin-left: 30px;">
-                                        <pre style="border: white none 0;padding:0px;margin:0px;background-color: white;" >
-                                          <code id="xmlText" style="height:800px;font-size: 23px;border-width: 0;
+                                        <pre style="border: white none 0;padding:0px;margin:0px;background-color: white;">
+                                        <code id="xmlText" style="height:800px;font-size: 23px;border-width: 0;
                                                                                 overflow-y: auto; background-color: white;" readonly></code>
                                         </pre>
                                     </div>
@@ -1057,7 +1086,7 @@
         <form id="fileuploadform" style="width:200px;display: none;width: 100px;">
             <input type="file" id="fileInput" size="10">
         </form>
-                
+
     </div>
 
     <div id="aboutDialog" class="ms-Dialog" style="display:none;position:fixed;width:100%;top:-10%">
@@ -1117,83 +1146,118 @@
         </div>
     </div>
 
-    <div id="welcomeDialog" class="ms-Dialog" style="position:fixed;width:100%;max-height:90%;display:none">
-        <div id="welcomeMain" class="ms-Dialog-main" style="width:90%;max-height:90%;max-width:1200px;">
+    <div id="welcomeDialog" class="ms-Dialog" style="position:fixed;width:100%;height:90%;display:none">
+        <div id="welcomeMain" class="ms-Dialog-main" style="width: 90%; height: 90%; max-width: 1200px;">
             <div id="welcomeHeader" class="ms-Dialog-header ms-bgColor-themeDark ms-bgColor-themeSecondary ms-fontColor-white">
-                <p class="ms-Dialog-title" style="width:90%; padding-left:20px; margin-right:auto">Welcome to the Office Click-To-Run Configuration XML Editor</p>
+                <i id="dialogNext" class="ms-Icon ms-Icon--arrowRight"  style="float: right; height: 10px; font-size: 20px; cursor: pointer;" onclick="dialogNext()"></i>
+                <i id="dialogBack" class="ms-Icon ms-Icon--arrowLeft" style="float: right; height: 10px; font-size: 20px; cursor: pointer;display:none" onclick="dialogBack()"></i>
+
+                <p class="ms-Dialog-title" style="width: 90%; padding-left: 20px; margin-right: auto">Welcome to the Office Click-To-Run Configuration XML Editor
+                </p>
             </div>
-            <div id="welcomeInner" class="ms-Dialog-inner" style="overflow-y:auto;height:auto; max-height:90%">
-                <div class="ms-Dialog-content" style="width:98%; padding-left:20px;padding-top: 10px;">
-                    <p class="ms-font-m">
-                        This page provides a graphical method to generate and edit the Office Click-to-Run configuration.xml file.  The configuration.xml file is used to specify Click-to-Run installation and update options.
-                    </p>
-                    <br />
-                    <p class="ms-font-m">
-                        <a href="https://technet.microsoft.com/en-us/library/JJ219426.aspx">Reference for Click-to-Run configuration.xml file</a>
-                    </p>
-                    <br />
-                    <p class="ms-font-m">
-                        The <a href="https://technet.microsoft.com/en-us/library/jj219422.aspx" id="A_2">Office Deployment Tool</a> is a downloadable tool. 
-                        (<a href="https://www.microsoft.com/en-us/download/details.aspx?id=49117">Office 365 ProPlus 2016</a>,
-                        <a href="http://www.microsoft.com/en-us/download/details.aspx?id=36778">Office 365 ProPlus 2013</a>) 
-                    </p>
-                    <hr />
-                    <p class="ms-font-xl" style="margin-top:10px">How to use this site</p>
+            <div id="welcomeInner" class="ms-Dialog-inner" style="overflow-y: auto; height: auto; max-height: 90%">
+                <div class="ms-Dialog-content" style="width: 98%; padding-left: 20px; padding-top: 10px; height:100%">
+                    <div id="disclaimer">
+                        <p class="ms-font-l ms-fontWeight-semibold">
+                            Updated Branch Names
+                            <p class="ms-font-m">Based on customer feedback, we’ve changed how we refer to our update branches. The name changes are as follows:</p>
+                            <ul class="ms-font-m">
+                                <li>Current Branch is now called <strong>Current Channel</strong></li>
+                                <li>Current Branch for Business is now called <strong>Deferred Channel</strong></li>
+                                <li>First Release for Current Branch is now called <strong>First Release for Current Channel</strong></li>
+                                <li>First Release for Current Branch for Business is now called <strong>First Release for Deferred Channel</strong></li>
+                            </ul>
+                            <p class="ms-font-m">
+                                Only the names are changing. The servicing model for each of these channels remains the same.<br/>
+                                We are in the process of updating our content, so you will continue to see the previous naming during this transition.
+                            </p>
+                        </p>
+                        <hr/>
+                        <div class="ms-Dialog-actions" style="width: 98%; margin-right: 30px; bottom: 20px;position:absolute">
+                            <div class="ms-Dialog-actionsRight">
+                                <button class="ms-Dialog-action ms-Button" onclick="hideWelcome();">
+                                    <span class="ms-Button-label">Close</span>
+                                </button>
+                                <button class="ms-Dialog-action ms-Button" onclick="dialogNext()">
+                                    <span class="ms-Button-label">Next</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
 
-                    <p class="ms-font-l" style="margin-top:10px">Start</p>
-                    <p class="ms-font-m">
-                        <ul class="ms-font-m">
-                            <li>Start a new configuration XML</li>
-                            <li>Upload an existing XML file</li>
-                            <li>Select an available Template</li>
-                        </ul>
-                    </p>
+                    <div id="info" style="display: none;">
+                        <p class="ms-font-m">
+                            This page provides a graphical method to generate and edit the Office Click-to-Run configuration.xml file. The configuration.xml file is used to specify Click-to-Run installation and update options.
+                        </p>
+                        <br />
+                        <p class="ms-font-m">
+                            <a href="https://technet.microsoft.com/en-us/library/JJ219426.aspx">Reference for Click-to-Run configuration.xml file</a>
+                        </p>
+                        <br />
+                        <p class="ms-font-m">
+                            The <a href="https://technet.microsoft.com/en-us/library/jj219422.aspx" id="A_2">Office Deployment Tool</a> is a downloadable tool.
+                            (<a href="https://www.microsoft.com/en-us/download/details.aspx?id=49117">Office 365 ProPlus 2016</a>,
+                            <a href="http://www.microsoft.com/en-us/download/details.aspx?id=36778">Office 365 ProPlus 2013</a>)
+                        </p>
+                        <br />
+                        <hr />
+                        <p class="ms-font-xl" style="margin-top: 10px">How to use this site</p>
 
-                    <br />
-                    
-                    <p class="ms-font-l" style="margin-top:10px">Configure</p>
-                    <p class="ms-font-m">
-                        <ul class="ms-font-m">
-                            <li>Add or Remote Office Products</li>
-                            <li>Configure Updates</li>
-                            <li>Control installation behavior</li>
-                        </ul>
-                    </p>
-                    
-                    <br />
-                    
-                    <p class="ms-font-l" style="margin-top:10px">Save</p>
-                    <p class="ms-font-m">
-                        <ul class="ms-font-m">
-                            <li>Download the file, 
-                            <li>Email it
-                            <li>Copy the text to save it.</li>
-                        </ul>
-                    </p>
-                    
-                    <hr />
+                        <p class="ms-font-l" style="margin-top: 10px">Start</p>
+                        <p class="ms-font-m">
+                            <ul class="ms-font-m">
+                                <li>Start a new configuration XML</li>
+                                <li>Upload an existing XML file</li>
+                                <li>Select an available Template</li>
+                            </ul>
+                        </p>
 
-                    <p class="ms-font-m">
-                        For more scripts and tools for automating Office ProPlus deployments you can go to the <a href="https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts" id="A_2">Office IT Pro Deployment Scripts</a>
-                        respository in the <a href="https://github.com/OfficeDev" id="A_2">OfficeDev</a> GitHub Site.
-                        
-                        
-                    </p>
-                </div>
-                <div class="ms-Dialog-actions" style="width:98%;margin-right:30px;padding-bottom: 20px;">
-                    <div class="ms-Dialog-actionsRight">
-                        <button class="ms-Dialog-action ms-Button" onclick="foreverHideWelcome();">
-                            <span class="ms-Button-label">Don't Show This Again</span>
-                        </button>
-                        <button class="ms-Dialog-action ms-Button" onclick="hideWelcome();">
-                            <span class="ms-Button-label">Close</span>
-                        </button>
+                        <br />
+
+                        <p class="ms-font-l" style="margin-top: 10px">Configure</p>
+                        <p class="ms-font-m">
+                            <ul class="ms-font-m">
+                                <li>Add or Remote Office Products</li>
+                                <li>Configure Updates</li>
+                                <li>Control installation behavior</li>
+                            </ul>
+                        </p>
+
+                        <br />
+
+                        <p class="ms-font-l" style="margin-top: 10px">Save</p>
+                        <p class="ms-font-m">
+                            <ul class="ms-font-m">
+                                <li>Download the file,
+                                <li>Email it
+                                <li>Copy the text to save it.</li>
+                            </ul>
+                        </p>
+
+                        <hr />
+
+                        <p class="ms-font-m">
+                            For more scripts and tools for automating Office ProPlus deployments you can go to the <a href="https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts" id="A_2">Office IT Pro Deployment Scripts</a>
+                            respository in the <a href="https://github.com/OfficeDev" id="A_2">OfficeDev</a> GitHub Site.
+
+
+                        </p>
+
+                        <div class="ms-Dialog-actions" style="width: 98%; margin-right: 30px;bottom: 20px;position:absolute">
+                            <div class="ms-Dialog-actionsRight">
+                                <button class="ms-Dialog-action ms-Button" onclick="foreverHideWelcome();">
+                                    <span class="ms-Button-label">Don't Show This Again</span>
+                                </button>
+                                <button class="ms-Dialog-action ms-Button" onclick="hideWelcome();">
+                                    <span class="ms-Button-label">Close</span>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
     <div id="commentDialog" class="ms-Dialog" style="display:none;position:fixed;width:100%;top:-100%">
         <div class="ms-Overlay"></div>
         <div class="ms-Dialog-main" style="min-width:50%">
@@ -1210,7 +1274,7 @@
                         <button class="ms-Dialog-action ms-Button" onclick="hideCommentDialog()">
                             <span class="ms-Button-label">Cancel</span>
                         </button>
-                        <button  id="addCommentbt" class="ms-Dialog-action  ">
+                        <button id="addCommentbt" class="ms-Dialog-action  ">
                             <span class="ms-Button-label">Add Comment</span>
                         </button>
                     </div>
@@ -1733,7 +1797,7 @@
             </div>
         </div>
     </div>
-    
+
     <div class="ms-Panel">
         <div class="ms-Overlay ms-Overlay--dark js-togglePanel"></div>
         <div class="ms-Panel-main">
@@ -1775,7 +1839,7 @@
             </div>
         </div>
     </div>
-    
+
     <div id="confirmDelete" class="ms-Dialog" style="display:none;position:fixed;width:100%;top:-100%">
         <div class="ms-Overlay"></div>
         <div class="ms-Dialog-main">
@@ -1814,7 +1878,7 @@
     <div id='screen' style="width: 100%">
     </div>
 
-    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.bundle.min.js"></script>
     <script type="text/javascript" src="./Scripts/FileSaver.js"></script>
     <script type="text/javascript" src="./Scripts/new-main.js"></script>
