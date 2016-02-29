@@ -47,6 +47,10 @@ Array of Microsoft language codes. Will throw error if provided values don't mat
 v32, v64, or Both. What bitness of office you wish to download. Defaults to Both.
 .PARAMETER OverWrite
 If this parameter is specified then existing files will be overwritten.
+.PARAMETER NumVersionsToKeep
+Specifies the number of versions to keep, defaults to 2.  All other versions of the download will be deleted, keeping the newest versions.
+.PARAMETER NumOfRetries
+Specifies the number of times to retry the download, defaults to 2.  After specified number of retries are met, the download will fail.
 .PARAMETER Branches
 An array of the branches you wish to download. Defaults to all available branches (CMValidation currently not available)
 .Example
@@ -76,11 +80,30 @@ Param(
     [bool] $OverWrite = $false,
 
     [Parameter()]
-    [OfficeBranch[]] $Branches = (0, 1, 2, 3)#, 4)
+    [OfficeBranch[]] $Branches = (0, 1, 2, 3),#, 4)
+    
+    [Parameter()]
+    [int] $NumVersionsToKeep = 2,
+
+    [Parameter()]
+    [int] $NumOfRetries = 2
+
+
 )
+
+
+if($NumVersionsToKeep -le 0)#Throws an error if parameter is 0 or less, we don't want to delete every version
+{
+    throw "Parameter NumVersionsToKeep must be greater than 0!"
+}
+       
 
 $numberOfFiles = (($Branches.Count) * ((($Languages.Count + 1)*3) + 5))
 
+[bool]$downloadSuccess = $TRUE;
+For($i=0; $i -le $NumOfRetries; $i++){#loops through download process in the event of a failure in order to retry
+try{
+$downloadSuccess = $TRUE;#resets var to true in the event that the download doesn't fail again
 $webclient = New-Object System.Net.WebClient
 $XMLFilePath = "$env:TEMP/ofl.cab"
 $XMLDownloadURL = "http://officecdn.microsoft.com/pr/wsus/ofl.cab"
@@ -236,6 +259,18 @@ $xmlArray | %{
     }
 
 }
+} catch {#if download fails, displays error, continues loop
+    $errorMessage = $computer + ": " + $_
+    Write-Host $errorMessage
+    $downloadSuccess = $FALSE;
+}
+    if($downloadSuccess){#if download succeeds, breaks out of loop
+    break
+    }
+}#end of for loop
+#After downloads finish, purge older versions
+PurgeOlderVersions $TargetDirectory $NumVersionsToKeep $Branches
+
 }
 
 function DownloadFile($url, $targetFile) {
@@ -284,4 +319,49 @@ function DownloadFile($url, $targetFile) {
 
    $responseStream.Dispose()
 
+}
+
+
+#This function will get rid of older versions of downloads, the number of older versions it keeps depends on the parameter passed in
+function PurgeOlderVersions([string]$targetDirectory, [int]$numVersionsToKeep, [array]$branches){
+                                                    #note branch, will
+                                                    #have to retrieve
+    for($k = 0; $k -lt $branches.Count; $k++)
+    {
+    [array]$totalVersions = @()#declare empty array so each folder can be purged of older versions individually
+
+    $directoryPath = $TargetDirectory.ToString() + '\'+ $branches[$k] +'\Office\Data'
+    $files = Get-ChildItem $directoryPath  
+    Foreach($file in $files)
+    {        
+        
+        if($file.GetType().Name -eq 'DirectoryInfo')
+        {
+            $totalVersions+=$file.Name
+        }
+    }
+
+    #check if number of versions is greater than number of versions to hold onto, if not, then we don't need to do anything
+    if($totalVersions.Length -gt $numVersionsToKeep)
+    {
+        #sort array in numerical order
+        $totalVersions = $totalVersions | Sort-Object
+        
+        #delete older versions
+        $numToDelete = $totalVersions.Length - $numVersionsToKeep
+        for($i = 1; $i -le $numToDelete; $i++)#loop through versions
+        {
+             Foreach($file in $files)#loop through files
+             {                                         #array is 0 based
+                if($file.Name.Contains($totalVersions[($i-1)]))
+                {                    
+                    Remove-Item -Recurse -Force $directoryPath"\"$file
+                }
+             }
+        }
+        
+
+    }
+    }    
+      
 }
