@@ -21,10 +21,10 @@ $targetFilePath = "configuration.xml"
 
 #This example will create an Office Deployment Tool (ODT) configuration file and include all of the Languages currently in use on the computer
 #from which the script is run.  It will then remove the Version attribute from the XML to ensure the installation gets the latest version and 
-#will set the branch to 'Business'.  It will then detect if O365ProPlusRetail or O365BusinessRetail is in the configuration file and if so
+#will set the Channel to 'Deferred'.  It will then detect if O365ProPlusRetail or O365BusinessRetail is in the configuration file and if so
 #it will add Lync and Groove to the excluded apps. It will then initiate a install
 
-Generate-ODTConfigurationXml -Languages AllInUseLanguages -TargetFilePath $targetFilePath | Set-ODTAdd -Version $NULL -Branch Business | Out-Null
+Generate-ODTConfigurationXml -Languages AllInUseLanguages -TargetFilePath $targetFilePath | Set-ODTAdd -Version $NULL -Channel Deferred | Out-Null
 
 if ((Get-ODTProductToAdd -TargetFilePath $targetFilePath -ProductId O365ProPlusRetail)) {
      Set-ODTProductToAdd -ProductId "O365ProPlusRetail" -TargetFilePath $targetFilePath -ExcludeApps ("Lync", "Groove") | Out-Null
