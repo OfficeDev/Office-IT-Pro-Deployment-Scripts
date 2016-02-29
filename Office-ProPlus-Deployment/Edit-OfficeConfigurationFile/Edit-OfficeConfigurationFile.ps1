@@ -52,6 +52,25 @@ namespace Microsoft.Office
 "
 Add-Type -TypeDefinition $enum3 -ErrorAction SilentlyContinue
 
+$enum4 = "
+using System;
+
+namespace Microsoft.Office
+{
+    [FlagsAttribute]
+    public enum Channel
+    {
+        Current=0,
+        Deferred=1,
+        Validation=2,
+        FirstReleaseCurrent=3,
+        FirstReleaseDeferred=4
+    }
+}
+"
+Add-Type -TypeDefinition $enum4 -ErrorAction SilentlyContinue
+
+
 $validLanguages = @(
 "English|en-us",
 "Arabic|ar-sa",
@@ -1336,7 +1355,10 @@ to install the updates.
 Full file path for the file to be modified and be output to.
 
 .PARAMETER Branch
-Optional. Specifies the update branch for the product that you want to download or install.
+Optional. Depreicated as of 2-29-16 replaced with Channel. Specifies the update branch for the product that you want to download or install.
+
+.PARAMETER Channel
+Optional. Specifies the update Channel for the product that you want to download or install.
 
 .Example
 Set-ODTUpdates -Enabled "False" -TargetFilePath "$env:Public/Documents/config.xml"
@@ -1375,7 +1397,10 @@ Here is what the portion of configuration file looks like when modified by this 
         [string] $TargetVersion,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [Microsoft.Office.Branches] $Branch = "Current",
+        [Microsoft.Office.Branches] $Branch,
+
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [Microsoft.Office.Channel] $Channel,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $Deadline
@@ -1416,6 +1441,10 @@ Here is what the portion of configuration file looks like when modified by this 
         #Set the desired values
         if($Branch -ne $null){
             $UpdateElement.SetAttribute("Branch", $Branch);
+        }
+
+        if($Channel -ne $null){
+            $UpdateElement.SetAttribute("Channel", $Channel);
         }
 
         if($Enabled){
@@ -1999,7 +2028,10 @@ Here is what the portion of configuration file looks like when modified by this 
         [string] $TargetFilePath,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [Microsoft.Office.Branches] $Branch = "Current"
+        [Microsoft.Office.Branches] $Branch,
+
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [Microsoft.Office.Channel] $Channel
 
     )
 
@@ -2041,6 +2073,10 @@ Here is what the portion of configuration file looks like when modified by this 
         #Set values as desired
         if($Branch -ne $null){
             $ConfigFile.Configuration.Add.SetAttribute("Branch", $Branch);
+        }
+
+        if($Channel -ne $null){
+            $ConfigFile.Configuration.Add.SetAttribute("Channel", $Channel);
         }
 
         if($SourcePath){
@@ -2138,7 +2174,7 @@ file.
             throw $NoConfigurationElement
         }
         
-        $ConfigFile.Configuration.GetElementsByTagName("Add") | Select OfficeClientEdition, SourcePath, Version, Branch
+        $ConfigFile.Configuration.GetElementsByTagName("Add") | Select OfficeClientEdition, SourcePath, Version, Branch, Channel
     }
 
 }
