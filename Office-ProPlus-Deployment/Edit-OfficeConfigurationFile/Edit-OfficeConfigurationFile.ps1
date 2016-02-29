@@ -99,6 +99,7 @@ $validExcludeAppIds = @(
 "Groove",
 "InfoPath",
 "Lync",
+"OneDrive",
 "OneNote",
 "Outlook",
 "PowerPoint",
