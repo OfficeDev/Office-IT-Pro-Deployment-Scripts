@@ -2834,10 +2834,11 @@ var excludeApps2016 = [
     'Groove',
     'Lync',
     'OneNote',
+    'OneDrive',
     'Outlook',
     'PowerPoint',
     'Project',
     'Publisher',
     'Visio',
-    'Word'
+    'Word'    
 ];
