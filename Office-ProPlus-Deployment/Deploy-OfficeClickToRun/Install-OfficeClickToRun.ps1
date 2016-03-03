@@ -115,8 +115,6 @@ function Install-OfficeClickToRun {
         }
     }
 
-    Set-ODTDisplay -TargetFilePath $TargetFilePath -Level Full -AcceptEULA $true | Out-Null
-
     $cmdLine = $officeCtrPath
     $cmdArgs = "/configure " + $TargetFilePath
 
@@ -766,7 +764,7 @@ Function Wait-ForOfficeCTRInstall() {
     process {
        Write-Host "Waiting for Update to Complete..."
 
-       Start-Sleep -Seconds 5
+       Start-Sleep -Seconds 20
 
        $mainRegPath = Get-OfficeCTRRegPath 
        $scenarioPath = $mainRegPath + "\scenario"
