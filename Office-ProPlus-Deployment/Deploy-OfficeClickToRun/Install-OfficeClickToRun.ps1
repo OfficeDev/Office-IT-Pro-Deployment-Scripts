@@ -115,8 +115,6 @@ function Install-OfficeClickToRun {
         }
     }
 
-    Set-ODTDisplay -TargetFilePath $TargetFilePath -Level Full -AcceptEULA $true | Out-Null
-
     $cmdLine = $officeCtrPath
     $cmdArgs = "/configure " + $TargetFilePath
 
