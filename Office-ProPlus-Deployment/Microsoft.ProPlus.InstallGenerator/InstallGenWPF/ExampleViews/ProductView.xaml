@@ -24,7 +24,7 @@
     </UserControl.Resources>
 
     <AdornerDecorator>
-        <Grid>
+        <Grid Margin="10,0,-10,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
@@ -39,8 +39,8 @@
                     <RowDefinition></RowDefinition>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="50" />
-                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="180" />
+                    <ColumnDefinition />
                     <ColumnDefinition Width="50" />
                 </Grid.ColumnDefinitions>
                 <Controls:MetroAnimatedSingleRowTabControl Grid.Row="0" Grid.Column="1" x:Name="MainTabControl" SelectionChanged="MainTabControl_OnSelectionChanged">

@@ -13,8 +13,8 @@
              Loaded="AboutView_OnLoaded">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="50" />
-            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="180" />
+            <ColumnDefinition />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"></RowDefinition>
@@ -32,22 +32,23 @@
 
             <Controls:MetroAnimatedSingleRowTabControl Grid.Row="0" Grid.Column="0" x:Name="MainTabControl">
                 <TabItem Header="About Github">
-                    <Grid>
+                    <Grid Margin="0,-2,0,1.527">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition />
+                            <ColumnDefinition Width="97*" />
+                            <ColumnDefinition Width="47*"/>
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="20" />
-                            <RowDefinition Height="50" />
-                            <RowDefinition Height="10" />
-                            <RowDefinition Height="100" />
+                            <RowDefinition Height="42" />
+                            <RowDefinition Height="9" />
+                            <RowDefinition Height="109" />
                             <RowDefinition Height="20" />
                             <RowDefinition Height="50" />
                             <RowDefinition Height="50" />
                             <RowDefinition Height="150" />
                         </Grid.RowDefinitions>
 
-                        <Grid Grid.Column="0" Grid.Row="1">
+                        <Grid Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="50"></RowDefinition>
                             </Grid.RowDefinitions>
@@ -56,14 +57,14 @@
                                 <ColumnDefinition Width="150" />
                                 <ColumnDefinition Width="150" />
                             </Grid.ColumnDefinitions>
-                            <Label Content="About Github" Style="{StaticResource MetroLabelHeader}" HorizontalAlignment="Left" Grid.Column="0" />
+                            <Label Content="About Github" Style="{StaticResource MetroLabelHeader}" HorizontalAlignment="Left" Grid.Column="0" Margin="24,0,0,0" />
 
 
 
                         </Grid>
 
-                        <Border Grid.Column="0" Grid.Row="3" BorderBrush="Gainsboro" BorderThickness="1" Width="870" HorizontalAlignment="Left">
-                            <Grid>
+                        <Border Grid.Column="0" Grid.Row="3" BorderBrush="Gainsboro" BorderThickness="1" Width="684" HorizontalAlignment="Left" Margin="26,10,0,30" Grid.RowSpan="3"  Grid.ColumnSpan="2">
+                            <Grid Margin="0,0,164,0">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="50"></RowDefinition>
                                     <RowDefinition Height="50"></RowDefinition>
@@ -72,7 +73,7 @@
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
 
-                                <Grid Grid.Row="0" Grid.Column="0">
+                                <Grid Grid.Row="0" Grid.Column="0" Margin="0,0,113,0">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="50"></RowDefinition>
                                     </Grid.RowDefinitions>
@@ -85,30 +86,30 @@
 
 
                                 </Grid>
-                                <Grid  Grid.Row="1" Grid.Column="0">
+                                <Grid  Grid.Row="1" Grid.Column="0" Margin="0,0,-154,-12">
                                     <Grid.RowDefinitions>
-                                        <RowDefinition Height="50"></RowDefinition>
+                                        <RowDefinition Height="75"></RowDefinition>
                                     </Grid.RowDefinitions>
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="170" />
-                                        <ColumnDefinition Width="20" />
-                                        <ColumnDefinition Width="400" />
+                                        <ColumnDefinition Width="180" />
+                                        <ColumnDefinition Width="285" />
+                                        <ColumnDefinition Width="130" />
                                         <ColumnDefinition Width="80" />
                                         <ColumnDefinition Width="60" />
                                         <ColumnDefinition Width="90" />
                                         <ColumnDefinition Width="80" />
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.ColumnSpan="6" Margin="10,19,19,-22.4">
+                                    <TextBlock Grid.ColumnSpan="6" Margin="10,30,0,0" TextWrapping="Wrap" RenderTransformOrigin="0.568,0.425" Grid.RowSpan="2">
                                         <Hyperlink NavigateUri="https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/Development/Office-ProPlus-Deployment/Microsoft.ProPlus.InstallGenerator" RequestNavigate="Hyperlink_RequestNavigate">
-                                        https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/Development/Office-ProPlus-Deployment/Microsoft.ProPlus.InstallGenerator
+                                        Github Repository
                                         </Hyperlink>
                                     </TextBlock>
-                                    
+
                                 </Grid>
                             </Grid>
                         </Border>
 
-                        <Grid Grid.Column="0" Grid.Row="5">
+                        <Grid Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="2">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="50"></RowDefinition>
                                 <RowDefinition Height="250"></RowDefinition>
@@ -122,7 +123,7 @@
 
                         </Grid>
 
-                        <Grid Grid.Column="0" Grid.Row="6">
+                        <Grid Grid.Column="0" Grid.Row="6" Grid.ColumnSpan="2">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="50"></RowDefinition>
                                 <RowDefinition Height="250"></RowDefinition>
@@ -137,7 +138,7 @@
 
                         </Grid>
 
-                        <Grid Grid.Column="0" Grid.Row="7">
+                        <Grid Grid.Column="0" Grid.Row="7" Grid.ColumnSpan="2">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="500" />
                                 <ColumnDefinition />
@@ -148,7 +149,7 @@
 
 
                         </Grid>
-                        <TextBlock HorizontalAlignment="Left" Height="68" Margin="26,10.4,0,0" Style="{StaticResource MetroTextBlock}" Grid.Row="3" TextWrapping="Wrap" Text="  Github is a code repository for developers to collaborate on any software based project from web projects to windows desktop applications.  Different branches of a project allow for separate versions of the project which can be useful when variations which will impact how the project can run on different platforms.  You can visit the site for our project at the link below" VerticalAlignment="Top" Width="770"/>
+                        <TextBlock HorizontalAlignment="Left" Height="68" Margin="45,20,0,0" Style="{StaticResource MetroTextBlock}" Grid.Row="3" TextWrapping="Wrap" Text="  Github is a code repository for developers to collaborate on any software based project from web projects to windows desktop applications.  Different branches of a project allow for separate versions of the project which can be useful when variations which will impact how the project can run on different platforms.  You can visit the site for our project at the link below" VerticalAlignment="Top" Width="646" Grid.ColumnSpan="2"/>
 
                     </Grid>
                 </TabItem>
@@ -218,7 +219,7 @@
                                         <ColumnDefinition Width="60" />
                                         <ColumnDefinition Width="90" />
                                         <ColumnDefinition Width="80" />
-                                    </Grid.ColumnDefinitions>                                    
+                                    </Grid.ColumnDefinitions>
                                 </Grid>
                             </Grid>
                         </Border>

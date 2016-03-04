@@ -23,10 +23,10 @@
     </UserControl.Resources>
 
     <AdornerDecorator>
-        <Grid>
+        <Grid >
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="50" />
-                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="130" />
+                <ColumnDefinition />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="10"></RowDefinition>
@@ -35,9 +35,9 @@
                 <RowDefinition Height="*"></RowDefinition>
             </Grid.RowDefinitions>
 
-            <Label Grid.Row="1" Grid.Column="1" Content="Office 365 ProPlus Installation Generator" HorizontalAlignment="Left" Style="{StaticResource MetroLabelTopHeader}" />
+            <Label Grid.Row="1" Grid.Column="1" Content="Office 365 ProPlus Installation Generator" HorizontalAlignment="Left" Style="{StaticResource MetroLabelTopHeader}" Width="439" Margin="50,0,0,0" />
 
-            <Grid Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="50 20 0 0">
+            <Grid Grid.Row="3" Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,50,0,0" Height="190" Width="600">
                 <Grid.Resources>
                     <ResourceDictionary>
                         <ResourceDictionary.MergedDictionaries>
@@ -57,10 +57,10 @@
 
                 <Button Width="150" Height="75" Grid.Row="0" Grid.Column="0"
                     Margin="{StaticResource ControlMargin}"
-                    Content="Start New" x:Name="StartNew" Click="StartNew_Click" />
+                    Content="Start New" x:Name="StartNew" Click="StartNew_Click"/>
 
                 <TextBlock Grid.Row="0" Grid.Column="1" TextWrapping="WrapWithOverflow" Style="{StaticResource MetroLabelTextBlock}">
-                     Select this option if you would like to start a new or reset an installation.  
+                     Select this option if you would like to start a new or reset an installation.
                 </TextBlock>
 
                 <Button Width="150" Height="75" Grid.Row="2" Grid.Column="0"

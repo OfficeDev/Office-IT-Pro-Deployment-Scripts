@@ -14,9 +14,17 @@ namespace MahApps.Metro.Actions
             set { SetValue(ValueProperty, value); }
         }
 
+        public bool oldValue
+        {
+            get { return (bool)GetValue(ValueProperty); }
+            set { SetValue(ValueProperty, value); }
+        }
+
         protected override void Invoke(object parameter)
         {
-            ((Flyout) TargetObject).IsOpen = Value;
+            ((Flyout)TargetObject).IsOpen = Value;
+
+
         }
     }
 }

@@ -24,8 +24,8 @@
     <AdornerDecorator>
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="50" />
-                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="180" />
+                <ColumnDefinition />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="50"></RowDefinition>
@@ -34,7 +34,7 @@
                 <RowDefinition Height="100"></RowDefinition>
             </Grid.RowDefinitions>
 
-            <Label Grid.Row="0" Grid.Column="1" Content="Additional Configuration Options" HorizontalAlignment="Left" Style="{StaticResource MetroLabelTopHeader}" />
+            <Label Grid.Row="0" Grid.Column="1" Content="Additional Configuration Options" HorizontalAlignment="Left" Style="{StaticResource MetroLabelTopHeader}" Width="359" />
 
             <Grid Grid.Column="1" Grid.Row="2">
                 <Grid.ColumnDefinitions>
@@ -161,7 +161,7 @@
 
             </Grid>
 
-            <Grid Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" >
+            <Grid Grid.Row="3" Grid.Column="1" HorizontalAlignment="Center" Margin="158,0,242,0" Width="220" >
                 <Grid.Resources>
                     <ResourceDictionary>
                         <ResourceDictionary.MergedDictionaries>

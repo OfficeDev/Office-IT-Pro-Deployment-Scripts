@@ -9,14 +9,14 @@
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="50" />
-            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="180" />
+            <ColumnDefinition />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <DockPanel Grid.Column="1" LastChildFill="True">
+        <DockPanel Grid.Column="1" LastChildFill="True" Margin="0,0,0,32.637">
             <Grid DockPanel.Dock="Top" Margin="10" HorizontalAlignment="Left" VerticalAlignment="Top">
                 <Grid.RowDefinitions>
                     <RowDefinition/>
@@ -56,7 +56,7 @@
                             <RadioButton x:Name="InstallMsi" Grid.Column="1" Checked="InstallExecutable_OnChecked"
                                          Content="MSI" IsChecked="True"
                                          GroupName="1" FontSize="20"  />
-                            
+
                             <RadioButton x:Name="InstallExecutable" Grid.Column="2" Checked="InstallExecutable_OnChecked"
                                          Content="Executable" IsChecked="False"
                                          GroupName="1" FontSize="20"  />
@@ -192,6 +192,6 @@
             </controls:MetroAnimatedSingleRowTabControl>
 
         </DockPanel>
- </Grid>
+    </Grid>
 
 </UserControl>

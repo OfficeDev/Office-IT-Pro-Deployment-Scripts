@@ -75,25 +75,30 @@ namespace MetroDemo
 
             if (MainTabControl.SelectedIndex > -1)
             {
-                ((TabItem) MainTabControl.Items[MainTabControl.SelectedIndex]).IsEnabled = true;
-
-                if (MainTabControl.SelectedIndex < (MainTabControl.Items.Count - 1))
+                var selected = MainTabControl.SelectedIndex; 
+                
+                foreach(TabItem item in MainWindowTabs.Items)
                 {
-                    ((TabItem) MainTabControl.Items[MainTabControl.SelectedIndex + 1]).IsEnabled = true;
+                    item.IsEnabled = false;
+
                 }
+
+                ((TabItem) MainWindowTabs.Items[MainTabControl.SelectedIndex]).IsSelected = true;
+                ((TabItem) MainWindowTabs.Items[MainTabControl.SelectedIndex]).IsEnabled = true;
+
             }
 
             if (_cacheIndex != MainTabControl.SelectedIndex)
             {
                 if (!GlobalObjects.ViewModel.ResetXml)
                 {
-                   ProductView.UpdateXml();
-                   DisplayView.UpdateXml();
-                   UpdateView.UpdateXml();
+                    ProductView.UpdateXml();
+                    DisplayView.UpdateXml();
+                    UpdateView.UpdateXml();
                 }
                 GlobalObjects.ViewModel.ResetXml = false;
 
-                _cacheIndex = MainTabControl.SelectedIndex;
+                _cacheIndex = MainWindowTabs.SelectedIndex;
             }
         }
 
@@ -301,6 +306,12 @@ namespace MetroDemo
             catch { }
         }
         #endregion
+      
+        
+
+
+
+   
         
     }
 }

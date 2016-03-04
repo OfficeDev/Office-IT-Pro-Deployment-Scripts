@@ -65,6 +65,20 @@
                         Value="{Binding Name, Mode=OneWay}" />
             </Style>
 
+            <Style  TargetType="{x:Type Controls:MetroTabItem}">
+                <Style.Triggers>
+                    <Trigger Property="Controls:MetroTabItem.IsSelected" Value="true">
+                        <Setter Property="Background" Value="#c7e0f4"/>
+                    </Trigger>
+                    <Trigger Property="Controls:MetroTabItem.IsSelected" Value="false">
+                        <Setter Property="Background" Value="#f4f4f4"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+            
+            
+
+
             <Dialog:CustomDialog x:Key="MessageDialog"
                                  Title="Message"
                                  x:Name="MessageDialog">
@@ -114,34 +128,122 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <Controls:MetroAnimatedSingleRowTabControl Grid.Row="1" x:Name="MainTabControl" SelectionChanged="MainTabControl_SelectionChanged" Grid.ColumnSpan="2" Margin="0,0,-0.4,0.44" >
-                <TabItem Header="Start">
-                    <exampleViews:StartView x:Name="StartView" DataContext="{Binding}"  Tag="0" />
+
+            <Controls:Flyout  HorizontalAlignment="Left" IsEnabled="True" Grid.Row="1" Grid.Column="0" VerticalAlignment="Top" Height="570" Width="160" Background="#f4f4f4" Foreground="#7F8387"   IsOpen="True">
+                <Controls:MetroAnimatedTabControl  TabStripPlacement="Left" Height="500" SelectionChanged="MainTabControl_SelectionChanged" x:Name="MainTabControl" >
+                    <Controls:MetroTabItem IsEnabled="True" Width="160">
+                        <Controls:MetroTabItem.Header>
+                            <DockPanel Margin="10" >
+                                <Rectangle Height="24" Width="24">
+                                    <Rectangle.Fill>
+                                        <VisualBrush   Visual="{StaticResource appbar_home_empty_grey}"  >
+                                        </VisualBrush>
+                                    </Rectangle.Fill>
+                                </Rectangle>
+                                <Label FontSize="24" Foreground="#4a4d4f">Start</Label>
+                            </DockPanel>
+                        </Controls:MetroTabItem.Header>
+
+                    </Controls:MetroTabItem>
+                    <Controls:MetroTabItem  IsEnabled="True" IsSelected="False"  Width="160">
+                        <Controls:MetroTabItem.Header>
+                            <DockPanel Margin="10">
+                                <Rectangle Height="24" Width="24" >
+                                    <Rectangle.Fill >
+                                        <VisualBrush  Visual="{StaticResource appbar_barcode_grey}" ></VisualBrush>
+                                    </Rectangle.Fill>
+                                </Rectangle>
+                                <Label FontSize="24" Foreground="#4a4d4f">Products</Label>
+                            </DockPanel>
+                        </Controls:MetroTabItem.Header>
+                    </Controls:MetroTabItem>
+                    <Controls:MetroTabItem IsEnabled="True" Width="160">
+                        <Controls:MetroTabItem.Header>
+                            <DockPanel Margin="10">
+                                <Rectangle Height="24" Width="24">
+                                    <Rectangle.Fill>
+                                        <VisualBrush  Visual="{StaticResource appbar_new_window_grey}" ></VisualBrush>
+                                    </Rectangle.Fill>
+                                </Rectangle>
+                                <Label FontSize="24" Foreground="#4a4d4f">Updates</Label>
+                            </DockPanel>
+                        </Controls:MetroTabItem.Header>
+                    </Controls:MetroTabItem>
+                    <Controls:MetroTabItem IsEnabled="True" Width="160">
+                        <Controls:MetroTabItem.Header>
+                            <DockPanel Margin="10">
+                                <Rectangle Height="24" Width="24">
+                                    <Rectangle.Fill>
+                                        <VisualBrush  Visual="{StaticResource appbar_scale_grey}" ></VisualBrush>
+                                    </Rectangle.Fill>
+                                </Rectangle>
+                                <Label FontSize="24" Foreground="#4a4d4f">Options</Label>
+                            </DockPanel>
+                        </Controls:MetroTabItem.Header>
+                    </Controls:MetroTabItem>
+                    <Controls:MetroTabItem IsEnabled="True" Width="160">
+                        <Controls:MetroTabItem.Header>
+                            <DockPanel Margin="10">
+                                <Rectangle Height="24" Width="24">
+                                    <Rectangle.Fill>
+                                        <VisualBrush  Visual="{StaticResource appbar_potion_grey}" ></VisualBrush>
+                                    </Rectangle.Fill>
+                                </Rectangle>
+                                <Label FontSize="24" Foreground="#4a4d4f" >Generate</Label>
+                            </DockPanel>
+                        </Controls:MetroTabItem.Header>
+                    </Controls:MetroTabItem>
+                    <Controls:MetroTabItem IsEnabled="True" >
+                        <Controls:MetroTabItem.Header>
+                            <DockPanel Margin="10">
+                                <Rectangle Height="24" Width="24">
+                                    <Rectangle.Fill>
+                                        <VisualBrush  Visual="{StaticResource appbar_question_grey}" ></VisualBrush>
+                                    </Rectangle.Fill>
+                                </Rectangle>
+                                <Label FontSize="24" Foreground="#4a4d4f">About</Label>
+                            </DockPanel>
+                        </Controls:MetroTabItem.Header>
+                    </Controls:MetroTabItem>
+                </Controls:MetroAnimatedTabControl>
+            </Controls:Flyout>
+
+     
+
+
+
+            <Controls:MetroAnimatedSingleRowTabControl Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="10,0,10,0" x:Name="MainWindowTabs" Background="#6f7376" >
+                <TabItem>
+                    <exampleViews:StartView x:Name="StartView" DataContext="{Binding}"  Tag="0"  IsEnabled="true" />
                 </TabItem>
-                <TabItem Header="Products" IsEnabled="False">
-                    <exampleViews:ProductView x:Name="ProductView"  DataContext="{Binding}" Tag="1" />
+                <TabItem>
+                    <exampleViews:ProductView x:Name="ProductView"  DataContext="{Binding}" Tag="1"  IsEnabled="false"/>
                 </TabItem>
-                <TabItem Header="Updates" IsEnabled="False">
-                    <exampleViews:UpdateView x:Name="UpdateView" DataContext="{Binding}" Tag="2" />
+                <TabItem>
+                    <exampleViews:UpdateView x:Name="UpdateView" DataContext="{Binding}" Tag="2"  IsEnabled="False"/>
                 </TabItem>
-                <TabItem Header="Options" IsEnabled="False">
-                    <exampleViews:DisplayView x:Name="DisplayView" DataContext="{Binding}" Tag="3"  />
+                <TabItem>
+                    <exampleViews:DisplayView x:Name="DisplayView" DataContext="{Binding}" Tag="3"  IsEnabled="False" />
                 </TabItem>
-                <TabItem Header="Generate" IsEnabled="False">
-                    <exampleViews:GenerateView x:Name="GenerateView" DataContext="{Binding}" Tag="4"  />
-                </TabItem>       
-                <TabItem Header="About" IsEnabled="True">
-                    <exampleViews:AboutView x:Name="AboutView" DataContext="{Binding}" Tag="5" />
+                <TabItem>
+                    <exampleViews:GenerateView x:Name="GenerateView" DataContext="{Binding}" Tag="4"   IsEnabled="False"/>
+                </TabItem>
+                <TabItem>
+                    <exampleViews:AboutView x:Name="AboutView" DataContext="{Binding}" Tag="5"  IsEnabled="False" />
                 </TabItem>
             </Controls:MetroAnimatedSingleRowTabControl>
+            
 
             <StatusBar Grid.Row="1" Grid.ColumnSpan="2" Margin="0,548,-0.4,0.4" Grid.RowSpan="2">
                 <StatusBarItem></StatusBarItem>
                 <StatusBarItem></StatusBarItem>
                 <StatusBarItem Content="   " />
             </StatusBar>
-            <TextBlock HorizontalAlignment="Left" Height="28" Margin="0,-23,0,0" Grid.RowSpan="2" TextWrapping="Wrap" Text="  Office 365 ProPlus | Install Generator" VerticalAlignment="Top" Width="400" Foreground="White" FontSize="14" IsEnabled="False" IsHitTestVisible="False"/>
-
+            <TextBlock HorizontalAlignment="Left" Height="28" Margin="0,0,0,0" Grid.RowSpan="2" TextWrapping="Wrap" Text="  Office 365 ProPlus | Install Generator" VerticalAlignment="Top" Width="400" Foreground="White" FontSize="14" IsEnabled="False" IsHitTestVisible="False"/>
+            
         </Grid>
     </Controls:MetroContentControl>
 </Controls:MetroWindow>
+
+
+
