@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using MahApps.Metro;
 using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
@@ -10,6 +13,7 @@ using MetroDemo.Events;
 using MetroDemo.ExampleViews;
 using MetroDemo.ExampleWindows;
 using Microsoft.OfficeProPlus.InstallGen.Presentation.Logging;
+using Microsoft.VisualBasic;
 
 namespace MetroDemo
 {
@@ -179,7 +183,12 @@ namespace MetroDemo
             });
         }
 
+        
+
+
         #region Events
+
+       
 
         private async void GenerateViewInfoMessage(object sender, MessageEventArgs e)
         {
@@ -203,6 +212,56 @@ namespace MetroDemo
             {
                 ShowErrorDialogAsync("ERROR", ex.Message).ConfigureAwait(false);
             }
+        }
+
+
+        private void Nav_OnClick(object sender, RoutedEventArgs e)
+        {
+
+            if (OptionsFlyout.Width == 160)
+            {
+                Duration xtran = new Duration(TimeSpan.FromMilliseconds(100));
+                DoubleAnimation widthAnimation = new DoubleAnimation(45, xtran);
+                OptionsFlyout.AreAnimationsEnabled = true;
+                OptionsFlyout.BeginAnimation(WidthProperty, widthAnimation);
+                OptionsFlyout.Width = 45;
+
+                lblStart.Visibility = Visibility.Collapsed;
+                lblOptions.Visibility = Visibility.Collapsed;
+                lblProducts.Visibility = Visibility.Collapsed;
+                lblGenerate.Visibility = Visibility.Collapsed;
+                lblUpdate.Visibility = Visibility.Collapsed;
+                lblAbout.Visibility = Visibility.Collapsed;
+
+                Thickness margin = ((Button)sender).Margin;
+                margin.Left = 0;
+                ((Button) sender).Margin = margin; 
+
+
+            }
+            else
+            {
+                Duration xtran = new Duration(TimeSpan.FromMilliseconds(100));
+                DoubleAnimation widthAnimation = new DoubleAnimation(160, xtran);
+                OptionsFlyout.AreAnimationsEnabled = true;
+                OptionsFlyout.BeginAnimation(WidthProperty, widthAnimation);
+                OptionsFlyout.Width = 160;
+
+                lblStart.Visibility = Visibility.Visible;
+                lblOptions.Visibility = Visibility.Visible;
+                lblProducts.Visibility = Visibility.Visible;
+                lblGenerate.Visibility = Visibility.Visible;
+                lblUpdate.Visibility = Visibility.Visible;
+                lblAbout.Visibility = Visibility.Visible;
+
+
+                Thickness margin = ((Button)sender).Margin;
+                margin.Left = 100;
+                ((Button)sender).Margin = margin; 
+
+            }
+           
+
         }
 
         #endregion
@@ -306,12 +365,7 @@ namespace MetroDemo
             catch { }
         }
         #endregion
-      
-        
-
-
 
    
-        
     }
 }
