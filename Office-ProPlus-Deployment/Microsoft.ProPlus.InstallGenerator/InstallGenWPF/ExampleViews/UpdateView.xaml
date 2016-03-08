@@ -22,9 +22,9 @@
     </UserControl.Resources>
 
     <AdornerDecorator>
-        <Grid Margin="0,-10,0,10" >
+        <Grid Background="#e6e6e6" >
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="180" />
+                <ColumnDefinition Width="50" />
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>

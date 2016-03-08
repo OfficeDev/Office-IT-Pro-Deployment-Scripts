@@ -122,7 +122,7 @@
     </Window.Resources>
 
     <Controls:MetroContentControl>
-        <Grid Name="MyGrid" VerticalAlignment="Stretch" Height="Auto">
+        <Grid Name="MyGrid" VerticalAlignment="Stretch" Height="Auto" >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="787*"/>
                 <ColumnDefinition Width="167*"/>
@@ -134,8 +134,8 @@
             </Grid.RowDefinitions>
 
 
-            <Controls:Flyout x:Name="OptionsFlyout" AreAnimationsEnabled="true" HorizontalAlignment="Left" IsEnabled="True" Grid.Row="1" Grid.Column="0" VerticalAlignment="Top" MinHeight="570"  Height="Auto" Width="160" Background="#f4f4f4" Foreground="#7F8387"   IsOpen="True">
-                <Controls:Flyout.HeaderTemplate>
+            <Controls:Flyout x:Name="OptionsFlyout"   AreAnimationsEnabled="true" HorizontalAlignment="Left" IsEnabled="True" Grid.Row="1" Grid.Column="0" VerticalAlignment="Top" MinHeight="570"  Height="Auto" Width="160" Background="#f4f4f4" Foreground="#7F8387"   IsOpen="True">
+                <Controls:Flyout.HeaderTemplate >
                     <DataTemplate>
                         <DockPanel x:Name="dpOptions"
                             Margin="0,25,10,10"
@@ -274,7 +274,7 @@
                 </Controls:MetroAnimatedTabControl>
             </Controls:Flyout>
 
-            <Controls:MetroAnimatedSingleRowTabControl Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="10,0,10,0" x:Name="MainWindowTabs" Background="#6f7376" >
+            <Controls:MetroAnimatedSingleRowTabControl Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="150, -5 ,0, 0" x:Name="MainWindowTabs" >
                 <TabItem>
                     <exampleViews:StartView x:Name="StartView" DataContext="{Binding}"  Tag="0"  IsEnabled="true"/>
                 </TabItem>
@@ -301,7 +301,7 @@
                 <StatusBarItem></StatusBarItem>
                 <StatusBarItem Content="   " />
             </StatusBar>-->
-            <TextBlock HorizontalAlignment="Left" Height="28" TextWrapping="Wrap" Text="  Office 365 ProPlus | Install Generator" VerticalAlignment="Top" Width="400" Foreground="White" FontSize="14" IsEnabled="False" IsHitTestVisible="False" Margin="0,-28,0,0"/>
+            <TextBlock HorizontalAlignment="Left" Height="Auto"  TextWrapping="Wrap" Text="  Office 365 ProPlus | Install Generator" VerticalAlignment="Top" Width="400" Foreground="White" FontSize="14" IsEnabled="False" IsHitTestVisible="False" Margin="0,-25,0,0"/>
 
         </Grid>
     </Controls:MetroContentControl>

@@ -11,9 +11,9 @@
              mc:Ignorable="d" 
              d:DesignHeight="600" d:DesignWidth="900"
              Loaded="AboutView_OnLoaded">
-    <Grid>
+    <Grid Background="#e6e6e6">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="180" />
+            <ColumnDefinition Width="50" />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>

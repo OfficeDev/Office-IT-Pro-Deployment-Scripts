@@ -27,9 +27,11 @@ namespace MetroDemo
             GlobalObjects.ViewModel = new MainWindowViewModel(DialogCoordinator.Instance)
             {
                 ConfigXmlParser = new OfficeInstallGenerator.ConfigXmlParser("<Configuration></Configuration>")
+                
             };
 
             DataContext = GlobalObjects.ViewModel;
+            
 
             InitializeComponent();
 
@@ -231,7 +233,11 @@ namespace MetroDemo
                 Thickness margin = ((Button)sender).Margin;
                 margin.Left = -1;
                 margin.Right = -10;
-                ((Button) sender).Margin = margin; 
+                ((Button) sender).Margin = margin;
+
+                Thickness mainMargin = ((MetroAnimatedSingleRowTabControl) MainWindowTabs).Margin;
+                mainMargin.Left = 45;
+                ((MetroAnimatedSingleRowTabControl) MainWindowTabs).Margin = mainMargin;
 
 
             }
@@ -253,7 +259,11 @@ namespace MetroDemo
 
                 Thickness margin = ((Button)sender).Margin;
                 margin.Left = 100;
-                ((Button)sender).Margin = margin; 
+                ((Button)sender).Margin = margin;
+
+                Thickness mainMargin = ((MetroAnimatedSingleRowTabControl)MainWindowTabs).Margin;
+                mainMargin.Left = 150;
+                ((MetroAnimatedSingleRowTabControl)MainWindowTabs).Margin = mainMargin;
 
             }
            

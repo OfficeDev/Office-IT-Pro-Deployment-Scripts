@@ -24,7 +24,7 @@
     </UserControl.Resources>
 
     <AdornerDecorator>
-        <Grid Margin="10,0,-10,0">
+        <Grid Background="#e6e6e6">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
@@ -39,7 +39,7 @@
                     <RowDefinition></RowDefinition>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="180" />
+                    <ColumnDefinition Width="50" />
                     <ColumnDefinition />
                     <ColumnDefinition Width="50" />
                 </Grid.ColumnDefinitions>
@@ -233,44 +233,36 @@
                                           FontSize="20"
                                           Text="{Binding Path=Version}" />
                                 </Grid>
-
-                                <Grid Grid.Column="0" Grid.Row="1">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="50"></RowDefinition>
-                                    </Grid.RowDefinitions>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="130" />
-                                        <ColumnDefinition Width="40" />
-                                        <ColumnDefinition Width="400" />
-                                        <ColumnDefinition Width="60" />
-                                        <ColumnDefinition Width="60"/>
-                                        <ColumnDefinition Width="75" />
-                                        <ColumnDefinition Width="70" />
-                                    </Grid.ColumnDefinitions>
-                                    <Label Content="Source Path" Style="{StaticResource MetroLabelHeader}" Grid.Column="0" />
-                                    <Button Grid.Column="1" x:Name="SourcePathInfo" Width="30" Height="32" HorizontalAlignment="Left" 
+                                <WrapPanel>
+                                    
+                                    <Label Content="Source Path" Style="{StaticResource MetroLabelHeader}" />
+                                    <Button x:Name="SourcePathInfo" Width="30" Height="32" HorizontalAlignment="Left" 
                                                 Focusable="False"  Style="{StaticResource MetroInfoButton}" Click="ProductInfo_OnClick" >
                                         <StackPanel Orientation="Horizontal">
                                             <Image Source="../images/info.png" Width="20" Height="20"/>
                                         </StackPanel>
                                     </Button>
-
-                                    <Controls:MetroProgressBar x:Name="DownloadProgressBar"  Grid.Column="2" Height="35" Background="White" />
-                                    <TextBox x:Name="ProductUpdateSource" Background="#00ffffff" FontSize="20" Grid.Column="2"
-                                             Controls:TextBoxHelper.Watermark="Local, UNC or HTTP Path" Height="35"
+                                    <Grid Margin="10,0,0,0">
+                                        <Controls:MetroProgressBar x:Name="DownloadProgressBar"   Height="35"  Margin="0,0,10,0"  Background="White" />
+                                        <TextBox x:Name="ProductUpdateSource" Background="#00ffffff" FontSize="20" 
+                                             Controls:TextBoxHelper.Watermark="Local, UNC or HTTP Path" Height="35" Width="300" Margin="0,0,10,0"
                                              Controls:TextBoxHelper.ClearTextButton="True" TextChanged="BuildFilePath_OnTextChanged"
                                              Text="">
-                                    </TextBox>
+                                        </TextBox>
+                                    </Grid>
+                                   
                                     <Button Width="55" 
-                                            Height="40" Grid.Column="3"
+                                            Height="40" 
+                                            Margin="0,0,10,0"
                                             Content="Browse" x:Name="UpdatePath" Click="UpdatePath_OnClick" />
-                                    <Button Width="50" Height="40" Grid.Column="4"
+                                    <Button Width="50" Height="40" 
+                                            Margin="0,0,10,0"
                                             Content="Open" x:Name="OpenFolderButton" IsEnabled="False" Click="OpenFolderButton_OnClick"   />
-                                    <Button Width="70" Height="40" Grid.Column="5"
+                                    <Button Width="70" Height="40" 
                                             Content="Download" x:Name="DownloadButton" Click="DownloadButton_OnClick" IsEnabled="False"   />
 
-                                    <Label x:Name="DownloadPercent" Content="" Style="{StaticResource MetroLabelHeader}" Grid.Column="6" />
-                                </Grid>
+                                    <Label x:Name="DownloadPercent" Content="" Style="{StaticResource MetroLabelHeader}" />
+                                </WrapPanel>
                             </StackPanel>
 
 
@@ -299,15 +291,18 @@
                                   RenderOptions.ClearTypeHint="Enabled"
                                   TextOptions.TextFormattingMode="Display"
                                   Margin="5"
+                                  Background="#e6e6e6"
                                   ItemsSource="{Binding Path=ExcludeProducts}"
                                   Style="{DynamicResource MetroDataGrid}"
                                   AutoGenerateColumns="False" HeadersVisibility="None"
                                   CanUserAddRows="False" Grid.ColumnSpan="2">
                                 <DataGrid.RowStyle>
                                     <Style TargetType="{x:Type DataGridRow}">
+                                        <Setter Property="Background" Value="#e6e6e6" />
+
                                         <Style.Triggers>
                                             <Trigger Property="IsSelected" Value="True" >
-                                                <Setter Property="Background" Value="White" />
+                                                <Setter Property="Background" Value="#e6e6e6" />
                                                 <Setter Property="Foreground" Value="Black" />
                                                 <Setter Property="BorderThickness" Value="0" />
                                             </Trigger>
@@ -338,13 +333,15 @@
                                   Margin="5"
                                   ItemsSource="{Binding Path=ExcludeProducts}"
                                   Style="{DynamicResource MetroDataGrid}"
+                                  Background="#e6e6e6"
                                   AutoGenerateColumns="False" HeadersVisibility="None" 
                                   CanUserAddRows="False" FontSize="20" >
                                 <DataGrid.RowStyle>
                                     <Style TargetType="{x:Type DataGridRow}">
+                                        <Setter Property="Background" Value="#e6e6e6" />
                                         <Style.Triggers>
                                             <Trigger Property="IsSelected" Value="True" >
-                                                <Setter Property="Background" Value="White" />
+                                                <Setter Property="Background" Value="#e6e6e6" />
                                                 <Setter Property="Foreground" Value="Black" />
                                                 <Setter Property="BorderThickness" Value="0" />
                                             </Trigger>

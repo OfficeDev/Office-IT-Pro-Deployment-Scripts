@@ -22,9 +22,9 @@
     </UserControl.Resources>
 
     <AdornerDecorator>
-        <Grid>
+        <Grid Background="#e6e6e6">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="180" />
+                <ColumnDefinition Width="50" />
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
@@ -161,7 +161,7 @@
 
             </Grid>
 
-            <Grid Grid.Row="3" Grid.Column="1" HorizontalAlignment="Center" Margin="158,0,242,0" Width="220" >
+            <Grid Grid.Row="3" Grid.Column="1" HorizontalAlignment="Center" Margin="189,0,268,0" Width="220" >
                 <Grid.Resources>
                     <ResourceDictionary>
                         <ResourceDictionary.MergedDictionaries>
