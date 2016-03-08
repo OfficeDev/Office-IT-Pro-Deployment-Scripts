@@ -79,17 +79,12 @@ namespace MetroDemo
 
             if (MainTabControl.SelectedIndex > -1)
             {
-                var selected = MainTabControl.SelectedIndex; 
+
+              
+                ((TabItem)MainWindowTabs.Items[MainTabControl.SelectedIndex]).IsSelected = true;
+                ((TabItem)MainWindowTabs.Items[MainTabControl.SelectedIndex]).IsEnabled = true;
+
                 
-                foreach(TabItem item in MainWindowTabs.Items)
-                {
-                    item.IsEnabled = false;
-
-                }
-
-                ((TabItem) MainWindowTabs.Items[MainTabControl.SelectedIndex]).IsSelected = true;
-                ((TabItem) MainWindowTabs.Items[MainTabControl.SelectedIndex]).IsEnabled = true;
-
             }
 
             if (_cacheIndex != MainTabControl.SelectedIndex)
@@ -234,7 +229,8 @@ namespace MetroDemo
                 lblAbout.Visibility = Visibility.Collapsed;
 
                 Thickness margin = ((Button)sender).Margin;
-                margin.Left = 0;
+                margin.Left = -1;
+                margin.Right = -10;
                 ((Button) sender).Margin = margin; 
 
 

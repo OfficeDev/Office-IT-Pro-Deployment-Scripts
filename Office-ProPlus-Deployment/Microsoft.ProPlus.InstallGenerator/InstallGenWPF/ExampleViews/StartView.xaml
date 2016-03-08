@@ -23,21 +23,21 @@
     </UserControl.Resources>
 
     <AdornerDecorator>
-        <Grid >
+        <Grid VerticalAlignment="Stretch">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="130" />
+                <ColumnDefinition MinWidth="130" Width="Auto" />
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="10"></RowDefinition>
-                <RowDefinition Height="50"></RowDefinition>
-                <RowDefinition Height="50"></RowDefinition>
-                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition MinHeight="10" Height="Auto"></RowDefinition>
+                <RowDefinition MinHeight="50"  Height="Auto"></RowDefinition>
+                <RowDefinition MinHeight="50"  Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
             </Grid.RowDefinitions>
 
             <Label Grid.Row="1" Grid.Column="1" Content="Office 365 ProPlus Installation Generator" HorizontalAlignment="Left" Style="{StaticResource MetroLabelTopHeader}" Width="439" Margin="50,0,0,0" />
 
-            <Grid Grid.Row="3" Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,50,0,0" Height="190" Width="600">
+            <Grid Grid.Row="3" Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,50,0,0" MinHeight="190" Height="Auto" MinWidth="600" Width="Auto">
                 <Grid.Resources>
                     <ResourceDictionary>
                         <ResourceDictionary.MergedDictionaries>

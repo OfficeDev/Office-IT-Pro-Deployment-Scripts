@@ -43,7 +43,7 @@
                     <ColumnDefinition />
                     <ColumnDefinition Width="50" />
                 </Grid.ColumnDefinitions>
-                <Controls:MetroAnimatedSingleRowTabControl Grid.Row="0" Grid.Column="1" x:Name="MainTabControl" SelectionChanged="MainTabControl_OnSelectionChanged">
+                <Controls:MetroAnimatedSingleRowTabControl Grid.Row="0" Grid.Column="1" x:Name="MainTabControl" SelectionChanged="MainTabControl_OnSelectionChanged" >
                     <TabItem Header="Products" x:Name="ProductTab">
                         <Grid HorizontalAlignment="Left">
                             <Grid.ColumnDefinitions>

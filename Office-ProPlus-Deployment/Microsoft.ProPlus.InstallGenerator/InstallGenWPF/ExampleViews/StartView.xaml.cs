@@ -8,12 +8,14 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Forms.VisualStyles;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using MetroDemo.Events;
+using MetroDemo.Models;
 using Microsoft.OfficeProPlus.InstallGen.Presentation.Logging;
 using Microsoft.OfficeProPlus.InstallGenerator.Implementation;
 
@@ -67,6 +69,7 @@ namespace MetroDemo.ExampleViews
                 GlobalObjects.ViewModel.ResetXml = true;
                 GlobalObjects.ViewModel.ImportFile = null;
 
+
                 if (RestartWorkflow != null)
                 {
                     this.RestartWorkflow(this, new EventArgs());
@@ -79,12 +82,15 @@ namespace MetroDemo.ExampleViews
                 });
 
                 LogAnaylytics("/StartView", "StartNew");
+
             }
             catch (Exception ex)
             {
                 LogErrorMessage(ex);
             }
         }
+
+     
 
         private void ImportExisting_Click_1(object sender, RoutedEventArgs e)
         {

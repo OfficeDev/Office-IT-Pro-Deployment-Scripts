@@ -122,7 +122,7 @@
     </Window.Resources>
 
     <Controls:MetroContentControl>
-        <Grid Name="MyGrid" >
+        <Grid Name="MyGrid" VerticalAlignment="Stretch" Height="Auto">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="787*"/>
                 <ColumnDefinition Width="167*"/>
@@ -134,72 +134,70 @@
             </Grid.RowDefinitions>
 
 
-            <Controls:Flyout x:Name="OptionsFlyout" AreAnimationsEnabled="true" HorizontalAlignment="Left" IsEnabled="True" Grid.Row="1" Grid.Column="0" VerticalAlignment="Top" Height="570" Width="160" Background="#f4f4f4" Foreground="#7F8387"   IsOpen="True">
+            <Controls:Flyout x:Name="OptionsFlyout" AreAnimationsEnabled="true" HorizontalAlignment="Left" IsEnabled="True" Grid.Row="1" Grid.Column="0" VerticalAlignment="Top" MinHeight="570"  Height="Auto" Width="160" Background="#f4f4f4" Foreground="#7F8387"   IsOpen="True">
                 <Controls:Flyout.HeaderTemplate>
                     <DataTemplate>
                         <DockPanel x:Name="dpOptions"
-                           Margin="0,25,10,10"
-                           VerticalAlignment="Center"
+                            Margin="0,25,10,10"
+                           VerticalAlignment="Top"
                            LastChildFill="True">
                             <Button x:Name="nav"
                             Margin="100,0,0,0"
                             Click="Nav_OnClick"
                             DockPanel.Dock="Left" 
-                            Style="{DynamicResource MetroCircleButtonStyle}"
+                            BorderThickness="0"
                             Height="40"
-                            Width="40"
+                            MinWidth="40"
+                            Width="Auto"
                             FontFamily="Segoe UI Symbol"
-                            Foreground="{Binding RelativeSource={RelativeSource AncestorType={x:Type Controls:Flyout}}, Path=Foreground}"
                             FontSize="16"
-                            VerticalAlignment="Bottom"
-                            RenderTransformOrigin="0.5,0.5">
-                                <Button.RenderTransform>
-                                    <RotateTransform x:Name="AnimatedRotateTransform" Angle="0" />
-                                </Button.RenderTransform>
-                                <Button.Triggers>
-                                    <EventTrigger RoutedEvent="ToggleButton.Click">
-                                        <BeginStoryboard>
-                                            <Storyboard>
-                                                <DoubleAnimation 
-                                                Storyboard.TargetName="AnimatedRotateTransform"
-                                                Storyboard.TargetProperty="Angle"
-                                                By="180"/>
-                                            </Storyboard>
-                                        </BeginStoryboard>
-                                    </EventTrigger>
-                                </Button.Triggers>
-
-                                
-                                <Rectangle Width="20"
-                           Height="15"
-    
+                            VerticalAlignment="Bottom" >
+                            <Button.Style>
+                                    <Style TargetType="{x:Type Button}">
+                                        <Setter Property="Background" Value="#f4f4f4"/>
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="{x:Type Button}">
+                                                    <Border Background="{TemplateBinding Background}">
+                                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                    </Border>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                        <Style.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background" Value="#C7E0F4"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                                <Rectangle HorizontalAlignment="Center" Width="25" Height="20"
                            Fill="{Binding RelativeSource={RelativeSource AncestorType={x:Type Controls:Flyout}}, Path=Foreground}">
                                     <Rectangle.OpacityMask>
                                         <VisualBrush Stretch="Fill">
                                             <VisualBrush.Visual>
                                                 <Canvas Width="48"
-                                        Height="48"
-                                        Clip="F1 M 0,0L 48,0L 48,48L 0,48L 0,0"
-                                        UseLayoutRounding="False">
-                                                    <Path Width="25"
-                                          Height="18"
-                                          Canvas.Left="12"
-                                          Canvas.Top="15"
-                                          Stretch="Fill"
-                                          Fill="Black"
-                                          Data="F1 M 57,42L 57,34L 32.25,34L 42.25,24L 31.75,24L 17.75,38L 31.75,52L 42.25,52L 32.25,42L 57,42 Z" />
+                                                    Height="48"
+                                                    Clip="F1 M 0,0L 48,0L 48,48L 0,48L 0,0"
+                                                    UseLayoutRounding="False">
+                                                    <Path Width="45"
+                                                      Height="18"
+                                                      Canvas.Left="12"
+                                                      Canvas.Top="15"
+                                                      Stretch="Fill"
+                                                      Fill="#f4f4f4"
+                                                      Data="F1 M 19,20.5833L 57,20.5833L 57,26.9167L 19,26.9167L 19,20.5833 Z M 19,30.0833L 57,30.0833L 57,36.4167L 19,36.4167L 19,30.0833 Z M 19,39.5833L 57,39.5833L 57,45.9167L 19,45.9167L 19,39.5833 Z "/>
                                                 </Canvas>
                                             </VisualBrush.Visual>
                                         </VisualBrush>
                                     </Rectangle.OpacityMask>
                                 </Rectangle>
                             </Button>
-
                         </DockPanel>
                     </DataTemplate>
                 </Controls:Flyout.HeaderTemplate>
-                <Controls:MetroAnimatedTabControl  TabStripPlacement="Left" Height="500" SelectionChanged="MainTabControl_SelectionChanged" x:Name="MainTabControl" >
-                    <Controls:MetroTabItem IsEnabled="True" Width="160">
+                <Controls:MetroAnimatedTabControl  TabStripPlacement="Left" Height="500" SelectionChanged="MainTabControl_SelectionChanged" x:Name="MainTabControl" VerticalAlignment="Top" >
+                    <Controls:MetroTabItem  Width="160" IsEnabled="True">
                         <Controls:MetroTabItem.Header>
                             <DockPanel Margin="10" >
                                 <Rectangle Height="16" Width="16">
@@ -212,8 +210,8 @@
                             </DockPanel>
                         </Controls:MetroTabItem.Header>
 
-                    </Controls:MetroTabItem>
-                    <Controls:MetroTabItem  IsEnabled="True" IsSelected="False"  Width="160">
+                    </Controls:MetroTabItem >
+                    <Controls:MetroTabItem  IsEnabled="False" IsSelected="False"  Width="160">
                         <Controls:MetroTabItem.Header>
                             <DockPanel Margin="10">
                                 <Rectangle Height="16" Width="16" >
@@ -224,8 +222,8 @@
                                 <Label FontSize="16" Foreground="#4a4d4f" x:Name="lblProducts">Products</Label>
                             </DockPanel>
                         </Controls:MetroTabItem.Header>
-                    </Controls:MetroTabItem>
-                    <Controls:MetroTabItem IsEnabled="True" Width="160">
+                    </Controls:MetroTabItem >
+                    <Controls:MetroTabItem IsEnabled="False" Width="160">
                         <Controls:MetroTabItem.Header>
                             <DockPanel Margin="10">
                                 <Rectangle Height="16" Width="16">
@@ -236,8 +234,8 @@
                                 <Label FontSize="16" Foreground="#4a4d4f"  x:Name="lblUpdate">Updates</Label>
                             </DockPanel>
                         </Controls:MetroTabItem.Header>
-                    </Controls:MetroTabItem>
-                    <Controls:MetroTabItem IsEnabled="True" Width="160">
+                    </Controls:MetroTabItem >
+                    <Controls:MetroTabItem IsEnabled="False" Width="160">
                         <Controls:MetroTabItem.Header>
                             <DockPanel Margin="10">
                                 <Rectangle Height="16" Width="16">
@@ -248,8 +246,8 @@
                                 <Label FontSize="16" Foreground="#4a4d4f" x:Name="lblOptions">Options</Label>
                             </DockPanel>
                         </Controls:MetroTabItem.Header>
-                    </Controls:MetroTabItem>
-                    <Controls:MetroTabItem IsEnabled="True" Width="160">
+                    </Controls:MetroTabItem >
+                    <Controls:MetroTabItem IsEnabled="False" Width="160">
                         <Controls:MetroTabItem.Header>
                             <DockPanel Margin="10">
                                 <Rectangle Height="16" Width="16">
@@ -261,7 +259,7 @@
                             </DockPanel>
                         </Controls:MetroTabItem.Header>
                     </Controls:MetroTabItem>
-                    <Controls:MetroTabItem IsEnabled="True" >
+                    <Controls:MetroTabItem IsEnabled="True">
                         <Controls:MetroTabItem.Header>
                             <DockPanel Margin="10">
                                 <Rectangle Height="16" Width="16">
@@ -281,28 +279,28 @@
                     <exampleViews:StartView x:Name="StartView" DataContext="{Binding}"  Tag="0"  IsEnabled="true"/>
                 </TabItem>
                 <TabItem>
-                    <exampleViews:ProductView x:Name="ProductView"  DataContext="{Binding}" Tag="1"  IsEnabled="false"/>
+                    <exampleViews:ProductView x:Name="ProductView"  DataContext="{Binding}" Tag="1"  IsEnabled="true"/>
                 </TabItem>
                 <TabItem>
-                    <exampleViews:UpdateView x:Name="UpdateView" DataContext="{Binding}" Tag="2"  IsEnabled="False"/>
+                    <exampleViews:UpdateView x:Name="UpdateView" DataContext="{Binding}" Tag="2"  IsEnabled="true"/>
                 </TabItem>
                 <TabItem>
-                    <exampleViews:DisplayView x:Name="DisplayView" DataContext="{Binding}" Tag="3"  IsEnabled="False" />
+                    <exampleViews:DisplayView x:Name="DisplayView" DataContext="{Binding}" Tag="3"  IsEnabled="true" />
                 </TabItem>
                 <TabItem>
-                    <exampleViews:GenerateView x:Name="GenerateView" DataContext="{Binding}" Tag="4"   IsEnabled="False"/>
+                    <exampleViews:GenerateView x:Name="GenerateView" DataContext="{Binding}" Tag="4"   IsEnabled="true"/>
                 </TabItem>
                 <TabItem>
-                    <exampleViews:AboutView x:Name="AboutView" DataContext="{Binding}" Tag="5"  IsEnabled="False" />
+                    <exampleViews:AboutView x:Name="AboutView" DataContext="{Binding}" Tag="5"  IsEnabled="True" />
                 </TabItem>
             </Controls:MetroAnimatedSingleRowTabControl>
 
 
-            <StatusBar Grid.Row="1" Grid.ColumnSpan="2" Margin="0,548,-0.4,0.4" Grid.RowSpan="2">
+            <!--<StatusBar Grid.Row="1" Grid.ColumnSpan="2" Margin="0,548,-0.4,0.4" Grid.RowSpan="2">
                 <StatusBarItem></StatusBarItem>
                 <StatusBarItem></StatusBarItem>
                 <StatusBarItem Content="   " />
-            </StatusBar>
+            </StatusBar>-->
             <TextBlock HorizontalAlignment="Left" Height="28" TextWrapping="Wrap" Text="  Office 365 ProPlus | Install Generator" VerticalAlignment="Top" Width="400" Foreground="White" FontSize="14" IsEnabled="False" IsHitTestVisible="False" Margin="0,-28,0,0"/>
 
         </Grid>
