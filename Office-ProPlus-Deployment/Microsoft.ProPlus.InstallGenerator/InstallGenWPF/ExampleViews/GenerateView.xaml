@@ -162,7 +162,7 @@
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="180" />
-                                <ColumnDefinition Width="450" />
+                                <ColumnDefinition Width="400" />
                                 <ColumnDefinition Width="80" />
                                 <ColumnDefinition Width="60" />
                             </Grid.ColumnDefinitions>

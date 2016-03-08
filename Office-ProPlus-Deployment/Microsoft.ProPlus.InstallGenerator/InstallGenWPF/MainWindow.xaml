@@ -259,7 +259,7 @@
                             </DockPanel>
                         </Controls:MetroTabItem.Header>
                     </Controls:MetroTabItem>
-                    <Controls:MetroTabItem IsEnabled="True">
+                    <Controls:MetroTabItem IsEnabled="True" IsEnabledChanged="UIElement_OnIsEnabledChanged">
                         <Controls:MetroTabItem.Header>
                             <DockPanel Margin="10">
                                 <Rectangle Height="16" Width="16">
