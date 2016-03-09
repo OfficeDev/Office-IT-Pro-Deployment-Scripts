@@ -52,7 +52,7 @@
     <SolidColorBrush x:Key="WhiteColorBrush" Color="{DynamicResource WhiteColor}" />
     <SolidColorBrush x:Key="BlackColorBrush" Color="{DynamicResource BlackColor}" />
 
-    <SolidColorBrush x:Key="WindowTitleColorBrush" Color="{DynamicResource AccentColor}" />
+    <SolidColorBrush x:Key="WindowTitleColorBrush" Color="#333333" />
     <SolidColorBrush x:Key="HighlightBrush" Color="{DynamicResource HighlightColor}" />
     <SolidColorBrush x:Key="DisabledWhiteBrush" Color="{DynamicResource WhiteColor}" />
 
