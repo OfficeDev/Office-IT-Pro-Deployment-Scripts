@@ -193,6 +193,7 @@ $(document).ready(function () {
 
         displayXml(xmlDoc);
 
+     
         $("#btAddProduct").text('Edit Product');
 
         return false;
@@ -642,6 +643,10 @@ function changeVersions(version) {
         //$("#pidKeyLabel").show("slow");
         $("#branchSection").hide("slow");
         $("#updateBranchSection").hide("slow");
+        $("#mgtToggleGroup").hide("slow");
+        $('#mgtToggle').prop("checked", false);
+
+
         $("#autoUpgradeToggle").show("slow");
         //16.0.4229.1024
 
@@ -675,6 +680,7 @@ function changeVersions(version) {
         //$("#pidKeyLabel").hide("slow");
         $("#branchSection").show("slow");
         $("#updateBranchSection").show("slow");
+        $("#mgtToggleGroup").show("slow");
         $("#autoUpgradeToggle").hide("slow");
 
         $("#txtPidKey").val("");
@@ -1311,9 +1317,15 @@ function odtAddProduct(xmlDoc) {
     var selectSourcePath = $("#txtSourcePath").val();
     var selectLanguage = $("#cbLanguage").val();
     var selectPidKey = $("#txtPidKey").val();
+    var mgtCOM = $('#mgtToggle')[0].checked;
+
 
     var addNode = xmlDoc.createElement("Add");
     var nodes = xmlDoc.documentElement.getElementsByTagName("Add");
+
+
+    
+
     if (nodes.length > 0) {
         addNode = xmlDoc.documentElement.getElementsByTagName("Add")[0];
     } else {
@@ -1343,6 +1355,8 @@ function odtAddProduct(xmlDoc) {
         addNode.setAttribute("Branch", selectedBranch);
     } else {
         addNode.removeAttribute("Branch");
+        addNode.removeAttribute("OfficeMgmtCOM");
+
     }
 
     var productNode = getProductNode(addNode, selectedProduct);
@@ -1381,6 +1395,13 @@ function odtAddProduct(xmlDoc) {
             xmlDoc.documentElement.removeChild(removeNode);
         }
     }
+
+    if (mgtCOM) {
+        addNode.setAttribute("OfficeMgmtCOM", "TRUE");
+    } else {
+        addNode.removeAttribute("OfficeMgmtCOM");
+    }
+
 
     var productCount = getAddProductCount(xmlDoc);
     if (productCount == 0) {
@@ -1693,6 +1714,9 @@ function odtAddExcludeApp(xmlDoc) {
     var nodes = xmlDoc.documentElement.getElementsByTagName("Add");
     if (nodes.length > 0) {
         addNode = xmlDoc.documentElement.getElementsByTagName("Add")[0];
+
+      
+
 
         var productNode = getProductNode(addNode, selectedProduct);
         if (productNode) {
