@@ -54,66 +54,64 @@
                                          GroupName="1" FontSize="20"  />
                         </Grid>
 
-                        <Border Grid.Column="0" Grid.Row="3" BorderBrush="Gainsboro" BorderThickness="1" Width="870" HorizontalAlignment="Left">
-                            <Grid>
+                        <Grid Grid.Column="0" Grid.Row="3"  Width="870" HorizontalAlignment="Left">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="50"></RowDefinition>
+                                <RowDefinition Height="50"></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <Grid Grid.Row="0" Grid.Column="0">
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="50"></RowDefinition>
                                     <RowDefinition Height="50"></RowDefinition>
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="280" />
+                                    <ColumnDefinition Width="20" />
+                                    <ColumnDefinition Width="50" />
+                                </Grid.ColumnDefinitions>
+                                <CheckBox Style="{StaticResource MetroCheckBox}" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                     x:Name="IncludeBuild" Checked="IncludeBuild_OnChecked" Unchecked="IncludeBuild_OnChecked" IsEnabled="True" ></CheckBox>
+                                <Label Content="Embed Office installation files"  HorizontalAlignment="Center" VerticalAlignment="Center"
+                                           Style="{StaticResource MetroLabelHeader}" FontSize="18" Grid.Column="0"  />
+                                <Button x:Name="EmbedOfficeInstall" Width="30" Height="32" Grid.Row="0" Grid.Column="2" HorizontalAlignment="Left" Margin="10 0 0 0"
+                                            Focusable="False"  Style="{StaticResource MetroInfoButton}" Click="ProductInfo_OnClick" >
+                                    <StackPanel Orientation="Horizontal">
+                                        <Image Source="../images/info.png" Width="20" Height="20"/>
+                                    </StackPanel>
+                                </Button>
+                            </Grid>
+                            <Grid  Grid.Row="1" Grid.Column="0" Margin="0,0,0,-40">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="50"></RowDefinition>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="170" />
+                                    <ColumnDefinition Width="20" />
+                                    <ColumnDefinition Width="400" />
+                                    <ColumnDefinition Width="80" />
+                                    <ColumnDefinition Width="60" />
+                                    <ColumnDefinition Width="90" />
+                                    <ColumnDefinition Width="80" />
                                 </Grid.ColumnDefinitions>
 
-                                <Grid Grid.Row="0" Grid.Column="0">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="50"></RowDefinition>
-                                    </Grid.RowDefinitions>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="280" />
-                                        <ColumnDefinition Width="20" />
-                                        <ColumnDefinition Width="50" />
-                                    </Grid.ColumnDefinitions>
-                                    <CheckBox Style="{StaticResource MetroCheckBox}" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center"
-                                     x:Name="IncludeBuild" Checked="IncludeBuild_OnChecked" Unchecked="IncludeBuild_OnChecked" IsEnabled="True" ></CheckBox>
-                                    <Label Content="Embed Office installation files"  HorizontalAlignment="Center" VerticalAlignment="Center"
-                                           Style="{StaticResource MetroLabelHeader}" FontSize="18" Grid.Column="0"  />
-                                    <Button x:Name="EmbedOfficeInstall" Width="30" Height="32" Grid.Row="0" Grid.Column="2" HorizontalAlignment="Left" Margin="10 0 0 0"
-                                            Focusable="False"  Style="{StaticResource MetroInfoButton}" Click="ProductInfo_OnClick" >
-                                        <StackPanel Orientation="Horizontal">
-                                            <Image Source="../images/info.png" Width="20" Height="20"/>
-                                        </StackPanel>
-                                    </Button>
-                                </Grid>
-                                <Grid  Grid.Row="1" Grid.Column="0">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="50"></RowDefinition>
-                                    </Grid.RowDefinitions>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="170" />
-                                        <ColumnDefinition Width="20" />
-                                        <ColumnDefinition Width="400" />
-                                        <ColumnDefinition Width="80" />
-                                        <ColumnDefinition Width="60" />
-                                        <ColumnDefinition Width="90" />
-                                        <ColumnDefinition Width="80" />
-                                    </Grid.ColumnDefinitions>
-
-                                    <Label x:Name="SourcePathLabel" Content="Source Path" Style="{StaticResource MetroLabelHeader}" Grid.Column="0" Grid.Row="0" 
+                                <Label x:Name="SourcePathLabel" Content="Source Path" Style="{StaticResource MetroLabelHeader}" Grid.Column="0" Grid.Row="0" 
                                    HorizontalAlignment="Right" Margin="0,0,41,0" />
 
-                                    <controls:MetroProgressBar x:Name="DownloadProgressBar"  Grid.Column="2" Grid.Row="0" Height="35" Background="White" />
-                                    <TextBox x:Name="BuildFilePath" Margin="{StaticResource ControlMargin}" Background="#00ffffff" FontSize="20" Grid.Column="2" Grid.Row="0"
+                                <controls:MetroProgressBar x:Name="DownloadProgressBar"  Grid.Column="2" Grid.Row="0" Height="35" Background="White" />
+                                <TextBox x:Name="BuildFilePath" Margin="{StaticResource ControlMargin}" Background="#00ffffff" FontSize="20" Grid.Column="2" Grid.Row="0"
                                              controls:TextBoxHelper.Watermark="Local or UNC Path" Height="35"
                                              controls:TextBoxHelper.ClearTextButton="True"
                                              Text="" TextChanged="BuildFilePath_OnTextChanged" IsEnabled="False" >
-                                    </TextBox>
-
-                                </Grid>
-
-
+                                </TextBox>
 
                             </Grid>
-                        </Border>
+
+
+
+                        </Grid>
 
                         <Grid  Grid.Row="4" Grid.Column="0" Margin="190,-10,0,0">
                             <Grid.RowDefinitions>
@@ -185,9 +183,9 @@
                                 <RowDefinition Height="80"/>
                             </Grid.RowDefinitions>
                             <Button Grid.Column="0" Grid.Row="0"
-                                            Content="Browse" x:Name="SaveButton" Click="SaveButton_Click" RenderTransformOrigin="0.479,-0.987" Margin="2,20,3,20" Grid.RowSpan="2"/>
+                                            Content="Browse" x:Name="SaveButton" Click="SaveButton_Click" RenderTransformOrigin="0.479,-0.987" Margin="5,20,0,20" Grid.RowSpan="2"/>
                             <Button Grid.Column="1" Grid.Row="0"
-                                            Content="Open" x:Name="OpenExeFolderButton" IsEnabled="False" Click="OpenExeFolderButton_OnClick" Margin="5,20" Grid.RowSpan="2"/>
+                                            Content="Open" x:Name="OpenExeFolderButton" IsEnabled="False" Click="OpenExeFolderButton_OnClick" Margin="10,20,0,20" Grid.RowSpan="2"/>
                         </Grid>
 
 
@@ -199,11 +197,14 @@
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="80" />
                             </Grid.RowDefinitions>
-                            <Button Width="150" Height="65" Grid.Row="0" Grid.Column="0" FontSize="15" HorizontalAlignment="Right"
-                                    Margin="{StaticResource ControlMargin}" IsEnabled="True"
-                                    Content="Generate" x:Name="GenerateButton" Click="GenerateButton_OnClick"  />
-                            <Image x:Name="WaitImage" Visibility="Hidden" HorizontalAlignment="Right" Margin="0 0 45 0" gif:ImageBehavior.RepeatBehavior="Forever" 
-                                   Height="60"  Grid.Row="0" Grid.Column="0" gif:ImageBehavior.AnimatedSource="../images/wait.GIF" />
+                            <Button Width="100" 
+                            Margin="390,20,10,21" Height="40" Grid.Column="0"
+                            Content="Previous" x:Name="PreviousButton" Click="PreviousButton_Click"  />
+                            <Button Width="100"
+                            Margin="0,20,270,21" Height="40"
+                            Content="Generate" x:Name="GenerateButton" Click="GenerateButton_OnClick" Grid.Column="1" />
+                            <Image x:Name="WaitImage" Visibility="Visible" HorizontalAlignment="Right" Margin="0,10,344,11" gif:ImageBehavior.RepeatBehavior="Forever" 
+                                   Height="60"  Grid.Row="0" Grid.Column="0" gif:ImageBehavior.AnimatedSource="../images/wait.GIF" Grid.ColumnSpan="2" />
                         </Grid>
                     </Grid>
                 </TabItem>

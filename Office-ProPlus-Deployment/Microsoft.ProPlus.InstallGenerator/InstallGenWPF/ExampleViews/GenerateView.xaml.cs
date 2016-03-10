@@ -186,6 +186,7 @@ namespace MetroDemo.ExampleViews
                             executablePath = FileSavePath.Text.Trim();
                             WaitImage.Visibility = Visibility.Visible;
                             GenerateButton.IsEnabled = false;
+                            PreviousButton.IsEnabled = false;
                             GenerateButton.Content = "";
 
                             if (string.IsNullOrEmpty(executablePath))
@@ -324,6 +325,8 @@ namespace MetroDemo.ExampleViews
                     {
                         WaitImage.Visibility = Visibility.Hidden;
                         GenerateButton.IsEnabled = true;
+                        PreviousButton.IsEnabled = true;
+
                         GenerateButton.Content = "Generate";
                     });
                 }
@@ -523,6 +526,19 @@ namespace MetroDemo.ExampleViews
 
         #region "Events"
 
+        private void PreviousButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                  
+
+           
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
         private void InstallExecutable_OnChecked(object sender, RoutedEventArgs e)
         {
             try

@@ -188,7 +188,7 @@
                                                       Canvas.Top="15"
                                                       Stretch="Fill"
                                                       Fill="#333333"
-                                                      Data="F1 M 19,20.5833L 57,20.5833L 57,26.9167L 19,26.9167L 19,20.5833 Z M 19,30.0833L 57,30.0833L 57,36.4167L 19,36.4167L 19,30.0833 Z M 19,39.5833L 57,39.5833L 57,45.9167L 19,45.9167L 19,39.5833 Z "/>
+                                                      Data="F1 M 19,25.5833L 57,25.5833L 57,26.9167L 19,26.9167L 19,20.5833 Z M 19,35.0833L 57,35.0833L 57,36.4167L 19,36.4167L 19,30.0833 Z M 19,43.5833L 57,43.5833L 57,44.9167L 19,44.9167L 19,39.5833 Z "/>
                                                 </Canvas>
                                             </VisualBrush.Visual>
                                         </VisualBrush>
@@ -320,7 +320,7 @@
                 <StatusBarItem></StatusBarItem>
                 <StatusBarItem Content="   " />
             </StatusBar>-->
-            <TextBlock HorizontalAlignment="Stretch" Height="28"   TextWrapping="Wrap" Text="Office 365 ProPlus | Install Generator" VerticalAlignment="Top"  Foreground="White" Background="#333333" FontSize="14" IsEnabled="False" IsHitTestVisible="False" Margin="0,-28,-81,0" Grid.ColumnSpan="2"/>
+            <TextBlock HorizontalAlignment="Stretch" Height="28"   TextWrapping="Wrap" Text="Office 365 ProPlus | Install Generator" VerticalAlignment="Top"  Foreground="White" Background="#333333" FontSize="14" IsEnabled="False" IsHitTestVisible="False" Margin="0,-28,-81,0" Padding="10,0,0,0"  Grid.ColumnSpan="2"/>
 
         </Grid>
     </Controls:MetroContentControl>
