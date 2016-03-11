@@ -320,7 +320,7 @@ function DownloadFile($url, $targetFile) {
 
    $targetStream = New-Object -TypeName System.IO.FileStream -ArgumentList $targetFile, Create
 
-   $buffer = new-object byte[] 10KB
+   $buffer = new-object byte[] 8192KB
 
    $count = $responseStream.Read($buffer,0,$buffer.length)
 
