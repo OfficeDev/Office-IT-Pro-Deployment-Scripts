@@ -139,14 +139,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="OfficeProPlusInstallGenerator.exe" size="650240">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="OfficeProPlusInstallGenerator.exe" size="650752">
       <assemblyIdentity name="OfficeProPlusInstallGenerator" version="1.0.0.1" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>vaxrP9LmW2QT34S2gDd68V4VJ+SP1W3WklVnB5Tcw0o=</dsig:DigestValue>
+        <dsig:DigestValue>6zGc8Z5lEMkOR/PJ+IeO+huliVwRMNlpP3G9BKYTC04=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

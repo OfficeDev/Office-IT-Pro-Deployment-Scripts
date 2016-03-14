@@ -36,6 +36,7 @@
                         </Grid.RowDefinitions>
 
                         <Grid Grid.Column="0" Grid.Row="1">
+                            
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="50"></RowDefinition>
                             </Grid.RowDefinitions>
@@ -190,6 +191,13 @@
 
 
                         <Grid Grid.Column="0" Grid.Row="8">
+                            <Grid.Resources>
+                                <ResourceDictionary>
+                                    <ResourceDictionary.MergedDictionaries>
+                                        <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/FlatButton.xaml" />
+                                    </ResourceDictionary.MergedDictionaries>
+                                </ResourceDictionary>
+                            </Grid.Resources>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="500" />
                                 <ColumnDefinition Width="170" />

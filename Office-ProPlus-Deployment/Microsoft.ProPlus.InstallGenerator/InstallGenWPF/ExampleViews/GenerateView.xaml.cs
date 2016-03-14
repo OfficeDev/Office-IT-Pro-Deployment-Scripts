@@ -188,6 +188,7 @@ namespace MetroDemo.ExampleViews
                             GenerateButton.IsEnabled = false;
                             PreviousButton.IsEnabled = false;
                             GenerateButton.Content = "";
+                            PreviousButton.Content = "";
 
                             if (string.IsNullOrEmpty(executablePath))
                             {
@@ -328,6 +329,7 @@ namespace MetroDemo.ExampleViews
                         PreviousButton.IsEnabled = true;
 
                         GenerateButton.Content = "Generate";
+                        PreviousButton.Content = "Previous";
                     });
                 }
             });
@@ -523,6 +525,7 @@ namespace MetroDemo.ExampleViews
             }
             catch { }
         }
+
 
         #region "Events"
 
