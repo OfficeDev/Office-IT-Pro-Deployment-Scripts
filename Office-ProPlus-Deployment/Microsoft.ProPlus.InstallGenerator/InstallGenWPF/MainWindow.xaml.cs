@@ -45,6 +45,7 @@ namespace MetroDemo
             ProductView.TransitionTab += TransitionTab;
             UpdateView.TransitionTab += TransitionTab;
             DisplayView.TransitionTab += TransitionTab;
+            GenerateView.TransitionTab += TransitionTab;
 
             GenerateView.InfoMessage += GenerateViewInfoMessage;
             GenerateView.ErrorMessage += GenerateView_ErrorMessage;

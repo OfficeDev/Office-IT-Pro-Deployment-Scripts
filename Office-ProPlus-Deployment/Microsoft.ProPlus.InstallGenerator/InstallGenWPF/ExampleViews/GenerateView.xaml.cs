@@ -530,8 +530,11 @@ namespace MetroDemo.ExampleViews
         {
             try
             {
-                  
-
+                
+                this.TransitionTab(this, new TransitionTabEventArgs()
+                {
+                    Direction = TransitionTabDirection.Back
+                });
            
             }
             catch (Exception ex)
