@@ -401,7 +401,7 @@
                     <ColumnDefinition  />
                 </Grid.ColumnDefinitions>
                 <Button Width="100" 
-                    Margin="{StaticResource ControlMargin}" Height="40" Grid.Column="0"
+                    Margin="0,32,0,28" Height="40" Grid.Column="0"
                     Content="Previous" x:Name="PreviousButton" Click="PreviousButton_Click" />
                 <Button Width="100"
                     Margin="{StaticResource ControlMargin}" Height="40" Grid.Column="2"
