@@ -350,10 +350,17 @@ Will generate the Office Deployment Tool (ODT) configuration XML based on the lo
             }
 
              if ($EnableUpdateAnywhere) {
+
                 if ($currentUpdateSource) {
                     [bool]$isAlive = $false
                     if ($currentUpdateSource.ToLower() -eq $officeUpdateCDN.ToLower() -and ($saveUpdateSource)) {
                         if ($currentUpdateSource -ne $saveUpdateSource) {
+                            $channelUpdateSource = Change-UpdatePathToChannel -UpdatePath $saveUpdateSource
+
+                            if ($channelUpdateSource -ne $saveUpdateSource) {
+                                $saveUpdateSource = $channelUpdateSource
+                            }
+
 	                        $isAlive = Test-UpdateSource -UpdateSource $saveUpdateSource
                             if ($isAlive) {
                                Write-Log -Message "Restoring Saved Update Source $saveUpdateSource" -severity 1 -component "Office 365 Update Anywhere"
@@ -372,6 +379,12 @@ Will generate the Office Deployment Tool (ODT) configuration XML based on the lo
                 }
 
                 if (!$isAlive) {
+                    $channelUpdateSource = Change-UpdatePathToChannel -UpdatePath $currentUpdateSource
+
+                    if ($channelUpdateSource -ne $currentUpdateSource) {
+                        $currentUpdateSource = $channelUpdateSource
+                    }
+
                     $isAlive = Test-UpdateSource -UpdateSource $currentUpdateSource
                     if (!($isAlive)) {
                         if ($currentUpdateSource.ToLower() -ne $officeUpdateCDN.ToLower()) {
@@ -388,7 +401,14 @@ Will generate the Office Deployment Tool (ODT) configuration XML based on the lo
 
             } else {
                 if($currentUpdateSource -ne $null){
+                    $channelUpdateSource = Change-UpdatePathToChannel -UpdatePath $currentUpdateSource
+
+                    if ($channelUpdateSource -ne $currentUpdateSource) {
+                        $currentUpdateSource= $channelUpdateSource
+                    }
+
                     $isAlive = Test-UpdateSource -UpdateSource $currentUpdateSource
+
                 }else{
                     $isAlive = Test-UpdateSource -UpdateSource $officeUpdateCDN
                     $currentUpdateSource = $officeUpdateCDN;
@@ -396,12 +416,19 @@ Will generate the Office Deployment Tool (ODT) configuration XML based on the lo
             }
 
            if ($isAlive) {
+               $channelUpdateSource = Change-UpdatePathToChannel -UpdatePath $currentUpdateSource
+
+               if ($channelUpdateSource -ne $currentUpdateSource) {
+                   Set-Reg -Hive "HKLM" -keyPath $configRegPath -ValueName "UpdateUrl" -Value $channelUpdateSource -Type String
+                   $channelUpdateSource = $channelUpdateSource
+               }
+
+               $channelUpdateSource
 
                Write-Host "Starting Update process"
                Write-Host "Update Source: $currentUpdateSource" 
                Write-Log -Message "Will now execute $oc2rcFilePath $oc2rcParams with UpdateSource:$currentUpdateSource" -severity 1 -component "Office 365 Update Anywhere"
                StartProcess -execFilePath $oc2rcFilePath -execParams $oc2rcParams
-
 
                if ($WaitForUpdateToFinish) {
                     Wait-ForOfficeCTRUpadate
@@ -640,19 +667,83 @@ function Test-URL {
    return $validUrl
 }
 
-function Change-UpdatePath {
+function Change-UpdatePathToChannel {
    [CmdletBinding()]
    param( 
      [Parameter()]
      [string] $UpdatePath
    )
 
+   $newUpdatePath = $UpdatePath
+
    $detectedChannel = Detect-Channel
 
    $branchName = $detectedChannel.branch
 
-   
+   $branchShortName = "DC"
+   if ($branchName.ToLower() -eq "current") {
+      $branchShortName = "CC"
+   }
+   if ($branchName.ToLower() -eq "firstreleasecurrent") {
+      $branchShortName = "FRCC"
+   }
+   if ($branchName.ToLower() -eq "firstreleasedeferred") {
+      $branchShortName = "FRDC"
+   }
+   if ($branchName.ToLower() -eq "deferred") {
+      $branchShortName = "DC"
+   }
 
+   $channelNames = @("FRCC", "CC", "FRDC", "DC")
+
+   $madeChange = $false
+   foreach ($channelName in $channelNames) {
+      if ($UpdatePath.ToUpper().EndsWith("\$channelName")) {
+         $newUpdatePath = $newUpdatePath -replace "\\$channelName", "\$branchShortName"
+         $madeChange = $true
+      } 
+      if ($UpdatePath.ToUpper().Contains("\$channelName\")) {
+         $newUpdatePath = $newUpdatePath -replace "\\$channelName\\", "\$branchShortName\"
+         $madeChange = $true
+      } 
+      if ($UpdatePath.ToUpper().EndsWith("/$channelName")) {
+         $newUpdatePath = $newUpdatePath -replace "\/$channelName", "/$branchShortName"
+         $madeChange = $true
+      }
+      if ($UpdatePath.ToUpper().Contains("/$channelName/")) {
+         $newUpdatePath = $newUpdatePath -replace "\/$channelName\/", "/$branchShortName/"
+         $madeChange = $true
+      }
+   }
+
+   if (!($madeChange)) {
+      if ($newUpdatePath.Contains("/")) {
+         if ($newUpdatePath.EndsWith("/")) {
+           $newUpdatePath += "$branchShortName"
+         } else {
+           $newUpdatePath += "/$branchShortName"
+         }
+      }
+      if ($newUpdatePath.Contains("\")) {
+         if ($newUpdatePath.EndsWith("\")) {
+           $newUpdatePath += "$branchShortName"
+         } else {
+           $newUpdatePath += "\$branchShortName"
+         }
+      }
+   }
+
+   try {
+     $pathAlive = Test-UpdateSource -UpdateSource $newUpdatePath
+   } catch {
+     $pathAlive = $false
+   }
+   
+   if ($pathAlive) {
+     return $newUpdatePath
+   } else {
+     return $UpdatePath
+   }
 }
 
 function Detect-Channel {
@@ -696,7 +787,7 @@ function Get-ChannelXml {
 
 }
 
-#Update-Office365Anywhere -WaitForUpdateToFinish $WaitForUpdateToFinish -EnableUpdateAnywhere $EnableUpdateAnywhere -ForceAppShutdown $ForceAppShutdown -UpdatePromptUser $UpdatePromptUser -DisplayLevel $DisplayLevel -UpdateToVersion $UpdateToVersion -LogPath $LogPath -LogName $LogName
+Update-Office365Anywhere -WaitForUpdateToFinish $WaitForUpdateToFinish -EnableUpdateAnywhere $EnableUpdateAnywhere -ForceAppShutdown $ForceAppShutdown -UpdatePromptUser $UpdatePromptUser -DisplayLevel $DisplayLevel -UpdateToVersion $UpdateToVersion -LogPath $LogPath -LogName $LogName
 
 
 
