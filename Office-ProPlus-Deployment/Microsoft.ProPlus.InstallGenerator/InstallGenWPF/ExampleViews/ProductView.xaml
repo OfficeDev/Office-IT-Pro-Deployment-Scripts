@@ -177,9 +177,16 @@
                                 </DataGrid>
 
                                 <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal">
-                                    <Button Name="AddLanguageButton" Content="Add Language" Margin="2" Height="20" Click="AddLanguageButton_Click" />
-                                    <Button Name="RemoveLanguageButton" Content="Remove Language" Margin="2" Height="20" Click="RemoveLanguageButton_Click" />
-                                    <Button Name="SetPrimaryButton" Content="Set Primary" Margin="2" Height="20" Click="SetPrimaryButton_OnClick" />
+                                    <StackPanel.Resources>
+                                        <ResourceDictionary>
+                                            <ResourceDictionary.MergedDictionaries>
+                                                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/FlatButton.xaml" />
+                                            </ResourceDictionary.MergedDictionaries>
+                                        </ResourceDictionary>
+                                    </StackPanel.Resources>
+                                    <Button x:Name="AddLanguageButton" Content="Add Language" Margin="2,10,2,9" Click="AddLanguageButton_Click" />
+                                    <Button x:Name="RemoveLanguageButton" Content="Remove Language" Margin="2,10,2,9" Click="RemoveLanguageButton_Click" />
+                                    <Button x:Name="SetPrimaryButton" Content="Set Primary" Margin="2,10" Click="SetPrimaryButton_OnClick" />
                                     <Button x:Name="LanguageInfo" Width="30" Height="32" HorizontalAlignment="Left" Margin="0 0 0 0" 
                                                 Focusable="False"  Style="{StaticResource MetroInfoButton}" Click="ProductInfo_OnClick" >
                                         <StackPanel Orientation="Horizontal">
@@ -204,7 +211,7 @@
                                 <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,0,0,0">Optional</Label>
                             </DockPanel>
                         </TabItem.Header>
-                        
+
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="30"></RowDefinition>

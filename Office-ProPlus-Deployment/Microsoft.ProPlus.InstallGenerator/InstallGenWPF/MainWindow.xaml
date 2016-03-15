@@ -312,7 +312,8 @@
                 <StatusBarItem></StatusBarItem>
                 <StatusBarItem Content="   " />
             </StatusBar>-->
-            <TextBlock HorizontalAlignment="Stretch" Height="28"   TextWrapping="Wrap" Text="Office 365 ProPlus | Install Generator" VerticalAlignment="Top"  Foreground="White" Background="#333333" FontSize="14" IsEnabled="False" IsHitTestVisible="False" Margin="0,-28,-81,0" Padding="10,0,0,0"  Grid.ColumnSpan="2"/>
+            <TextBlock HorizontalAlignment="Stretch" Height="28"   TextWrapping="Wrap" Text="Office 365 ProPlus | Install Generator" VerticalAlignment="Top"  
+                       Foreground="White" Background="#333333" FontSize="14" IsEnabled="False" IsHitTestVisible="False" Margin="0,-28,-81,0" Padding="10,0,0,0"  Grid.ColumnSpan="2"/>
 
         </Grid>
     </Controls:MetroContentControl>
