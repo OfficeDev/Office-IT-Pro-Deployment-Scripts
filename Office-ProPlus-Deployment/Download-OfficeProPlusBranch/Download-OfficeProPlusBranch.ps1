@@ -110,9 +110,6 @@ Param(
 
 )
 
-
-
-
 if($NumVersionsToKeep -le 0)#Throws an error if parameter is 0 or less, we don't want to delete every version
 {
     throw "Parameter NumVersionsToKeep must be greater than 0!"
@@ -127,8 +124,7 @@ if($Branches.Count -gt 0)
 else{
     $BranchesOrChannels = $Channels
 }
-       
-
+      
 $numberOfFiles = (($BranchesOrChannels.Count) * ((($Languages.Count + 1)*3) + 5))
 
 [bool]$downloadSuccess = $TRUE;
