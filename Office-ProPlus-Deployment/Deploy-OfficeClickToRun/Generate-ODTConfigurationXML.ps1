@@ -1145,7 +1145,7 @@ function officeGetExcludedApps() {
         $HKLM = [UInt32] "0x80000002"
         $HKCR = [UInt32] "0x80000000"
 
-        $allExcludeApps = 'Access','Excel','Groove','InfoPath','OneNote','Outlook',
+        $allExcludeApps = 'Access','Excel','Groove','InfoPath','OneDrive','OneNote','Outlook',
                        'PowerPoint','Publisher','Word'
         #"SharePointDesigner","Visio", 'Project'
     }
@@ -1221,7 +1221,7 @@ function odtGetExcludedApps() {
         $HKLM = [UInt32] "0x80000002"
         $HKCR = [UInt32] "0x80000000"
 
-        $allExcludeApps = 'Access','Excel','Groove','InfoPath','Lync','OneNote','Outlook',
+        $allExcludeApps = 'Access','Excel','Groove','InfoPath','Lync','OneDrive','OneNote','Outlook',
                        'PowerPoint','Publisher','Word'
         #"SharePointDesigner","Visio", 'Project'
     }
