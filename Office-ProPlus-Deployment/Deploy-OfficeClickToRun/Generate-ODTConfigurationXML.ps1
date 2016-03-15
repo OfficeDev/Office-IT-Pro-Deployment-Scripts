@@ -1391,7 +1391,7 @@ function odtAddUpdates{
 
             #Set the desired values
             if($Enabled){
-                $UpdateElement.SetAttribute("Enabled", $Enabled) | Out-Null
+                $UpdateElement.SetAttribute("Enabled", $Enabled.ToString().ToUpper()) | Out-Null
             } else {
               if ($PSBoundParameters.ContainsKey('Enabled')) {
                  if ($ConfigDoc.Configuration.Updates) {
