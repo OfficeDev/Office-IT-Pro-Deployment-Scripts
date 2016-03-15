@@ -20,7 +20,7 @@
         <Setter Property="FontFamily" Value="{StaticResource DefaultFont}"></Setter>
         <Setter Property="FontWeight" Value="Normal"></Setter>
         <Setter Property="VerticalAlignment" Value="Center"></Setter>
-        <Setter Property="Padding" Value="10 0 10 5"></Setter>
+        <Setter Property="Padding" Value="10 10 10 5"></Setter>
     </Style>
 
     <Style TargetType="{x:Type Label}" x:Key="CustomMetroLabelTopHeader" BasedOn="{StaticResource MetroLabel}">
@@ -28,7 +28,7 @@
         <Setter Property="Background" Value="#666666"></Setter>
         <Setter Property="FontSize" Value="16"></Setter>
         <Setter Property="FontFamily" Value="{StaticResource DefaultFont}"></Setter>
-        <Setter Property="FontWeight" Value="Normal"></Setter>
+        <Setter Property="FontWeight" Value="SemiBold"></Setter>
         <Setter Property="Padding" Value="0 10 0 0"></Setter>
         
         <Style.Triggers>
@@ -47,6 +47,13 @@
         <Setter Property="FontSize" Value="24"></Setter>
         <Setter Property="FontFamily" Value="{StaticResource DefaultFont}"></Setter>
         <Setter Property="FontWeight" Value="Thin"></Setter>
+    </Style>
+
+    <Style TargetType="{x:Type Label}" x:Key="CustomMetroLabelHeader" BasedOn="{StaticResource MetroLabel}">
+        <Setter Property="Foreground" Value="#333333" />
+        <Setter Property="FontSize" Value="18"></Setter>
+        <Setter Property="FontFamily" Value="{StaticResource DefaultFont}"></Setter>
+        <Setter Property="FontWeight" Value="SemiBold"></Setter>
     </Style>
 
     <Style TargetType="{x:Type Label}" x:Key="MetroLabelText" BasedOn="{StaticResource MetroLabel}">
@@ -78,6 +85,15 @@
     <Style TargetType="{x:Type Button}" x:Key="MetroInfoButton" BasedOn="{StaticResource MetroButton}">
         <Setter Property="Foreground" Value="{DynamicResource LabelTextBrushCustom}" />
         <Setter Property="FontSize" Value="15"></Setter>
+        <Setter Property="FontFamily" Value="{StaticResource DefaultFont}"></Setter>
+        <Setter Property="FontWeight" Value="Thin"></Setter>
+        <Setter Property="Background" Value="Transparent"></Setter>
+        <Setter Property="BorderThickness" Value="0"></Setter>
+    </Style>
+
+    <Style TargetType="{x:Type Button}" x:Key="CustomMetroInfoButton" BasedOn="{StaticResource MetroButton}">
+        <Setter Property="Foreground" Value="#333333" />
+        <Setter Property="FontSize" Value="10"></Setter>
         <Setter Property="FontFamily" Value="{StaticResource DefaultFont}"></Setter>
         <Setter Property="FontWeight" Value="Thin"></Setter>
         <Setter Property="Background" Value="Transparent"></Setter>

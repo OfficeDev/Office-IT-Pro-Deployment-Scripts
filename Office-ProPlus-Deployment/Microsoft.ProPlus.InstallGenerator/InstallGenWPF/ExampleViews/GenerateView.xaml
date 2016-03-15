@@ -15,7 +15,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
-        <StackPanel Grid.Row="0" Grid.Column="1"  Background="#666666" Width="auto" Height="30"  HorizontalAlignment="Stretch" VerticalAlignment="Top"/>
+        <StackPanel Grid.Row="0" Grid.Column="1"  Background="#666666" Width="auto" Height="40"  HorizontalAlignment="Stretch" VerticalAlignment="Top"/>
 
         <DockPanel Grid.Column="1" LastChildFill="True" Margin="0,-20,0.037,8.041" HorizontalAlignment="Stretch"   >
 
@@ -23,9 +23,9 @@
             </Grid>
 
             <controls:MetroAnimatedSingleRowTabControl Grid.Row="0" Grid.Column="0" x:Name="MainTabControl" >
-                <TabItem Background="#666666">
+                <TabItem Background="#666666" Height="40">
                     <TabItem.Header>
-                        <DockPanel Margin="0,-3,0,0">
+                        <DockPanel Margin="0,5,0,0">
                             <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,0,0,0">Install wrapper</Label>
                         </DockPanel>
                     </TabItem.Header>
@@ -224,9 +224,9 @@
                         </Grid>
                     </Grid>
                 </TabItem>
-                <TabItem  Background="#666666" >
+                <TabItem  Background="#666666" Height="40" >
                     <TabItem.Header>
-                        <DockPanel Margin="0,-3,0,0">
+                        <DockPanel Margin="0,5,0,0">
                             <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,0,0,0">Configuration</Label>
                         </DockPanel>
                     </TabItem.Header>
