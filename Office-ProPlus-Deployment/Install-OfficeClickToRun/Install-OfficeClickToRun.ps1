@@ -499,8 +499,8 @@ Here is what the portion of configuration file looks like when modified by this 
             }
         }
 
-        if((!($Path)) -eq $AcceptEULA){
-            $DisplayElement.SetAttribute("AcceptEULA", $AcceptEULA) | Out-Null
+        if($AcceptEULA -ne $NULL){
+            $DisplayElement.SetAttribute("AcceptEULA", $AcceptEULA.ToString().ToUpper()) | Out-Null
         } else {
             if ($PSBoundParameters.ContainsKey('AcceptEULA')) {
                 $ConfigFile.Configuration.Add.RemoveAttribute("AcceptEULA")
@@ -921,4 +921,13 @@ Function GetScriptPath() {
  return GetScriptRoot
 }
 
-
+Function Format-XML ([xml]$xml, $indent=2) { 
+    $StringWriter = New-Object System.IO.StringWriter 
+    $XmlWriter = New-Object System.XMl.XmlTextWriter $StringWriter 
+    $xmlWriter.Formatting = "indented" 
+    $xmlWriter.Indentation = $Indent 
+    $xml.WriteContentTo($XmlWriter) 
+    $XmlWriter.Flush() 
+    $StringWriter.Flush() 
+    Write-Output $StringWriter.ToString() 
+}
