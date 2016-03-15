@@ -8,7 +8,7 @@ Param(
 
     [Parameter()]
     [bool] $ForceAppShutdown = $false,
-
+    m
     [Parameter()]
     [bool] $UpdatePromptUser = $false,
 
@@ -422,8 +422,6 @@ Will generate the Office Deployment Tool (ODT) configuration XML based on the lo
                    Set-Reg -Hive "HKLM" -keyPath $configRegPath -ValueName "UpdateUrl" -Value $channelUpdateSource -Type String
                    $channelUpdateSource = $channelUpdateSource
                }
-
-               $channelUpdateSource
 
                Write-Host "Starting Update process"
                Write-Host "Update Source: $currentUpdateSource" 
