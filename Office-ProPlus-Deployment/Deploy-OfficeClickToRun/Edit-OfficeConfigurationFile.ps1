@@ -93,6 +93,22 @@ $validLanguages = @(
 "Turkish|tr-tr",
 "Ukrainian|uk-ua")
 
+$validExcludeAppIds = @(
+"Access",
+"Excel",
+"Groove",
+"InfoPath",
+"Lync",
+"OneDrive",
+"OneNote",
+"Outlook",
+"PowerPoint",
+"Project",
+"Publisher",
+"SharePointDesigner",
+"Visio",
+"Word")
+
 Function New-ODTConfiguration{
 <#
 .SYNOPSIS
@@ -841,6 +857,99 @@ Removes the ProductToAdd with the ProductId 'O365ProPlusRetail' from the XML Con
 
 }
 
+Function Remove-ODTExcludeApp{
+<#
+.SYNOPSIS
+Removes an existing ExcludeApp-entry from the configuration file
+
+.PARAMETER ExcludeAppID
+Required. ID must be set to a valid ExcludeApp ID.
+See https://technet.microsoft.com/en-us/library/jj219426.aspx for valid ids.
+
+.PARAMETER TargetFilePath
+Full file path for the file to be modified and be output to.
+
+.Example
+Remove-ODÊxcludeApp -ExcludeAppId "Lync" -TargetFilePath "$env:Public/Documents/config.xml"
+Removes the ExcludeApp with the Id 'Lync' (which is Skype for Business) from the XML Configuration file
+
+</Configuration>
+
+#>
+    [CmdletBinding()]
+    Param(
+        [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
+        [string] $ConfigurationXML = $NULL,
+
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [string] $ExcludeAppId = "Unknown",
+
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [string] $TargetFilePath,
+
+        #$All is not implemented at the moment
+        [Parameter(ParameterSetName="All", ValueFromPipelineByPropertyName=$true)]
+        [switch] $All
+    )
+
+    Process{
+        $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
+
+        if ($ExcludeAppId -eq "Unknown") {
+            $ExcludeAppId = SelectExcludeAppId
+        }
+        $ExcludeAppId = IsValidExcludeAppId -ExcludeAppId $ExcludeAppId
+
+        #Load the file
+        [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
+        if ($TargetFilePath) {
+           $ConfigFile.Load($TargetFilePath) | Out-Null
+        } else {
+            if ($ConfigurationXml) 
+            {
+              $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
+              $global:saveLastConfigFile = $NULL
+              $global:saveLastFilePath = $NULL
+            }
+        }
+
+        $global:saveLastConfigFile = $ConfigFile.OuterXml
+
+        #Check that the file is properly formatted
+        if($ConfigFile.Configuration -eq $null){
+            throw $NoConfigurationElement
+        }
+
+        if($ConfigFile.Configuration.Add -eq $null){
+            throw $NoAddElement
+        }
+
+        #Search matching ExcludeApp element and remove it
+        [System.XML.XMLElement]$ExcludeAppElement = $ConfigFile.Configuration.Add.Product.ExcludeApp | ?  ID -eq $ExcludeAppId
+        if($ExcludeAppElement -ne $null){
+            $ConfigFile.Configuration.Add.Product.removeChild($ExcludeAppElement) | Out-Null
+        }
+
+        $ConfigFile.Save($TargetFilePath) | Out-Null
+        $global:saveLastFilePath = $TargetFilePath
+
+        if (($PSCmdlet.MyInvocation.PipelineLength -eq 1) -or `
+            ($PSCmdlet.MyInvocation.PipelineLength -eq $PSCmdlet.MyInvocation.PipelinePosition)) {
+            Write-Host
+
+            Format-XML ([xml](cat $TargetFilePath)) -indent 4
+
+            Write-Host
+            Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+        } else {
+            $results = new-object PSObject[] 0;
+            $Result = New-Object –TypeName PSObject 
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
+            $Result
+        }
+    }
+
+}
 
 Function Add-ODTProductToRemove{
 <#
@@ -950,7 +1059,7 @@ Here is what the portion of configuration file looks like when modified by this 
 
         #Set the desired values
         if($All){
-             $RemoveElement.SetAttribute("All", "True") | Out-Null
+             $RemoveElement.SetAttribute("All", "TRUE") | Out-Null
         }else{
             [System.XML.XMLElement]$ProductElement = $RemoveElement.Product | ?  ID -eq $ProductId
             if($ProductElement -eq $null){
@@ -1311,7 +1420,7 @@ Here is what the portion of configuration file looks like when modified by this 
         }
 
         if($Enabled){
-            $UpdateElement.SetAttribute("Enabled", $Enabled) | Out-Null
+            $UpdateElement.SetAttribute("Enabled", $Enabled.ToString().ToUpper()) | Out-Null
         } else {
           if ($PSBoundParameters.ContainsKey('Enabled')) {
               $ConfigFile.Configuration.Updates.RemoveAttribute("Enabled")
@@ -1620,7 +1729,7 @@ Here is what the portion of configuration file looks like when modified by this 
                 
             $ConfigFile.Configuration.appendChild($ForceAppShutDownElement) | Out-Null
             $ForceAppShutDownElement.SetAttribute("Name", "FORCEAPPSHUTDOWN") | Out-Null
-            $ForceAppShutDownElement.SetAttribute("Value", $ForceAppShutDown) | Out-Null
+            $ForceAppShutDownElement.SetAttribute("Value", $ForceAppShutDown.ToString().ToUpper()) | Out-Null
         }
 
         if($PackageGUID){
@@ -2194,7 +2303,7 @@ Here is what the portion of configuration file looks like when modified by this 
         }
 
         #Set values
-        if($Level){
+        if($Level -ne $null){
             $LoggingElement.SetAttribute("Level", $Level) | Out-Null
         } else {
             if ($PSBoundParameters.ContainsKey('Level')) {
@@ -2415,7 +2524,7 @@ Here is what the portion of configuration file looks like when modified by this 
         [LogLevel] $Level,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [bool] $AcceptEULA,
+        [bool] $AcceptEULA = $true,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $TargetFilePath
@@ -2455,7 +2564,7 @@ Here is what the portion of configuration file looks like when modified by this 
         }
 
         #Set values
-        if($Level){
+        if($Level -ne $null){
             $DisplayElement.SetAttribute("Level", $Level) | Out-Null
         } else {
             if ($PSBoundParameters.ContainsKey('Level')) {
@@ -2463,8 +2572,8 @@ Here is what the portion of configuration file looks like when modified by this 
             }
         }
 
-        if((!($Path)) -eq $AcceptEULA){
-            $DisplayElement.SetAttribute("AcceptEULA", $AcceptEULA) | Out-Null
+        if($AcceptEULA -ne $null){
+            $DisplayElement.SetAttribute("AcceptEULA", $AcceptEULA.ToString().ToUpper()) | Out-Null
         } else {
             if ($PSBoundParameters.ContainsKey('AcceptEULA')) {
                 $ConfigFile.Configuration.Add.RemoveAttribute("AcceptEULA")
@@ -2797,6 +2906,42 @@ Function SelectBitness() {
   } while($true);
 }
 
+Function SelectExcludeAppId() {
+  do {
+   Write-Host
+   Write-Host "Office Deployment Tool for Click-to-Run ExcludeApp Ids"
+   Write-Host
+
+   $index = 1;
+   foreach ($app in $validExcludeAppIds) {
+      Write-Host "`t$index - $app"
+      $index++
+   }
+
+   Write-Host
+   Write-Host "Select an ExcludeAppId:" -NoNewline
+   $selection = Read-Host
+
+   $load = [reflection.assembly]::LoadWithPartialName("'Microsoft.VisualBasic")
+   $isNumeric = [Microsoft.VisualBasic.Information]::isnumeric($selection)
+
+   if (!($isNumeric)) {
+      Write-Host "Invalid Selection" -BackgroundColor Red
+   } else {
+
+     [int] $numSelection = $selection
+
+     if ($numSelection -gt 0 -and $numSelection -lt $index) {
+        return $validExcludeAppIds[$numSelection - 1]
+        break;
+     }
+
+     Write-Host "Invalid Selection" -BackgroundColor Red
+   }
+
+  } while($true);
+}
+
 Function Format-XML ([xml]$xml, $indent=2) { 
     $StringWriter = New-Object System.IO.StringWriter 
     $XmlWriter = New-Object System.XMl.XmlTextWriter $StringWriter 
@@ -2848,6 +2993,21 @@ Function IsValidProductId() {
         }
 
         return $ProductId
+}
+
+Function IsValidExcludeAppId() {
+    Param(
+           [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName=$true)]
+           [string] $ExcludeAppId
+        )
+
+        $exclude = $validExcludeAppIds | where {$_.ToString().ToUpper().Equals("$ExcludeAppId".ToUpper())}
+          
+        if (!($exclude)) {
+            throw "Invalid or Unsupported ExcludeAppId: $ExcludeAppId"
+        }
+
+        return $ExcludeAppId
 }
 
 Function GetScriptRoot() {

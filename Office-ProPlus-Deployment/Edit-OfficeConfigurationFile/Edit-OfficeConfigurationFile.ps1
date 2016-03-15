@@ -1059,7 +1059,7 @@ Here is what the portion of configuration file looks like when modified by this 
 
         #Set the desired values
         if($All){
-             $RemoveElement.SetAttribute("All", "True") | Out-Null
+             $RemoveElement.SetAttribute("All", "TRUE") | Out-Null
         }else{
             [System.XML.XMLElement]$ProductElement = $RemoveElement.Product | ?  ID -eq $ProductId
             if($ProductElement -eq $null){
@@ -1420,7 +1420,7 @@ Here is what the portion of configuration file looks like when modified by this 
         }
 
         if($Enabled){
-            $UpdateElement.SetAttribute("Enabled", $Enabled) | Out-Null
+            $UpdateElement.SetAttribute("Enabled", $Enabled.ToString().ToUpper()) | Out-Null
         } else {
           if ($PSBoundParameters.ContainsKey('Enabled')) {
               $ConfigFile.Configuration.Updates.RemoveAttribute("Enabled")
@@ -1729,7 +1729,7 @@ Here is what the portion of configuration file looks like when modified by this 
                 
             $ConfigFile.Configuration.appendChild($ForceAppShutDownElement) | Out-Null
             $ForceAppShutDownElement.SetAttribute("Name", "FORCEAPPSHUTDOWN") | Out-Null
-            $ForceAppShutDownElement.SetAttribute("Value", $ForceAppShutDown) | Out-Null
+            $ForceAppShutDownElement.SetAttribute("Value", $ForceAppShutDown.ToString().ToUpper()) | Out-Null
         }
 
         if($PackageGUID){
@@ -2303,7 +2303,7 @@ Here is what the portion of configuration file looks like when modified by this 
         }
 
         #Set values
-        if($Level){
+        if($Level -ne $null){
             $LoggingElement.SetAttribute("Level", $Level) | Out-Null
         } else {
             if ($PSBoundParameters.ContainsKey('Level')) {
@@ -2524,7 +2524,7 @@ Here is what the portion of configuration file looks like when modified by this 
         [LogLevel] $Level,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [bool] $AcceptEULA,
+        [bool] $AcceptEULA = $true,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $TargetFilePath
@@ -2564,7 +2564,7 @@ Here is what the portion of configuration file looks like when modified by this 
         }
 
         #Set values
-        if($Level){
+        if($Level -ne $null){
             $DisplayElement.SetAttribute("Level", $Level) | Out-Null
         } else {
             if ($PSBoundParameters.ContainsKey('Level')) {
@@ -2572,8 +2572,8 @@ Here is what the portion of configuration file looks like when modified by this 
             }
         }
 
-        if((!($Path)) -eq $AcceptEULA){
-            $DisplayElement.SetAttribute("AcceptEULA", $AcceptEULA) | Out-Null
+        if($AcceptEULA -ne $null){
+            $DisplayElement.SetAttribute("AcceptEULA", $AcceptEULA.ToString().ToUpper()) | Out-Null
         } else {
             if ($PSBoundParameters.ContainsKey('AcceptEULA')) {
                 $ConfigFile.Configuration.Add.RemoveAttribute("AcceptEULA")
