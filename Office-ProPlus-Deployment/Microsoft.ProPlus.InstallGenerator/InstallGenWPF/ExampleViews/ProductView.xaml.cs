@@ -54,6 +54,7 @@ namespace MetroDemo.ExampleViews
         public ProductView()
         {
             InitializeComponent();
+         
         }
 
         private void ProductView_Loaded(object sender, RoutedEventArgs e)             

@@ -14,6 +14,34 @@
         <Setter Property="Padding" Value="0 10 0 0"></Setter>
     </Style>
 
+    <Style TargetType="{x:Type TabItem}" x:Key="CustomMetroTabLabelTopHeader" BasedOn="{StaticResource MetroTabItem}">
+        <Setter Property="Foreground" Value="#ADAEB0" />
+        <Setter Property="FontSize" Value="24"></Setter>
+        <Setter Property="FontFamily" Value="{StaticResource DefaultFont}"></Setter>
+        <Setter Property="FontWeight" Value="Normal"></Setter>
+        <Setter Property="VerticalAlignment" Value="Center"></Setter>
+        <Setter Property="Padding" Value="10 0 10 5"></Setter>
+    </Style>
+
+    <Style TargetType="{x:Type Label}" x:Key="CustomMetroLabelTopHeader" BasedOn="{StaticResource MetroLabel}">
+        <Setter Property="Foreground" Value="#ADAEB0" />
+        <Setter Property="Background" Value="#666666"></Setter>
+        <Setter Property="FontSize" Value="26"></Setter>
+        <Setter Property="FontFamily" Value="{StaticResource DefaultFont}"></Setter>
+        <Setter Property="FontWeight" Value="Normal"></Setter>
+        <Setter Property="Padding" Value="0 10 0 0"></Setter>
+        
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type TabItem}},Path=IsSelected}" Value="True">
+                <Setter Property="Foreground" Value="#0078D7"></Setter>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type TabItem}},Path=IsSelected}" Value="False">
+                <Setter Property="Foreground" Value="#ADAEB0"></Setter>
+            </DataTrigger>
+        </Style.Triggers>
+
+    </Style>
+
     <Style TargetType="{x:Type Label}" x:Key="MetroLabelHeader" BasedOn="{StaticResource MetroLabel}">
         <Setter Property="Foreground" Value="{DynamicResource LabelTextBrushCustom}" />
         <Setter Property="FontSize" Value="24"></Setter>

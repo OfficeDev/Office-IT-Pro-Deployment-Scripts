@@ -11,7 +11,9 @@
                       xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
                       Title=""
                       Width="960"
+                      MinWidth="960"
                       Height="600"
+                      MinHeight="600"
                       Icon="1447297750_gear_settings_cog_preferences.ico"
                       ShowIconOnTitleBar="false"
                       ShowTitleBar="True"
@@ -67,18 +69,8 @@
                         Value="{Binding Name, Mode=OneWay}" />
             </Style>
 
-            <!--<Style  TargetType="{x:Type Controls:MetroTabItem}">
-                <Style.Triggers>
-                    <Trigger Property="Controls:MetroTabItem.IsSelected" Value="true">
-                        <Setter Property="Background" Value="#0078D7"/>
-                    </Trigger>
-                    <Trigger Property="Controls:MetroTabItem.IsSelected" Value="false">
-                        <Setter Property="Background" Value="#333333"/>
-                    </Trigger>
-                </Style.Triggers>
-            </Style>-->
 
-            
+
 
 
 

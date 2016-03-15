@@ -35,7 +35,8 @@
                 <RowDefinition Height="Auto"></RowDefinition>
             </Grid.RowDefinitions>
 
-            <Label Grid.Row="1" Grid.Column="1" Content="Office 365 ProPlus Installation Generator" HorizontalAlignment="Left" Style="{StaticResource MetroLabelTopHeader}" Width="439" Margin="50,0,0,0" />
+            <Label Grid.Column="1" Content="Office 365 ProPlus Installation Generator" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Background="#666666" 
+                   Height="40" Style="{StaticResource CustomMetroLabelTopHeader}" Padding="5,0,0,0" Grid.RowSpan="2" Margin="0,0,0,25"  />
 
             <Grid Grid.Row="3" Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Left" MinHeight="190" Height="190" MinWidth="600" Width="600">
                 <Grid.Resources>

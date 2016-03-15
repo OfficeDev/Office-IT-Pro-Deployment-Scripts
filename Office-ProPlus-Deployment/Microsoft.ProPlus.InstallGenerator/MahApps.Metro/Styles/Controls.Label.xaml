@@ -7,4 +7,5 @@
                 Value="{DynamicResource LabelTextBrush}" />
     </Style>
 
+  
 </ResourceDictionary>

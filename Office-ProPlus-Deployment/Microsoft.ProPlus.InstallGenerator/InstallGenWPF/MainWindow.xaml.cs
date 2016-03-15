@@ -104,6 +104,12 @@ namespace MetroDemo
             }
         }
 
+        public  string WindowWidth()
+        {
+
+            return ((Panel)Application.Current.MainWindow.Content).ToString(); 
+        }
+
         private void RestartWorkflow(object sender, EventArgs eventArgs)
         {
             for (var i = 1; i < MainTabControl.Items.Count; i++)
