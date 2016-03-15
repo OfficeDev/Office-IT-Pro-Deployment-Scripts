@@ -15,19 +15,21 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0" Grid.Column="1"  Background="#666666" Width="auto" Height="30"  HorizontalAlignment="Stretch" VerticalAlignment="Top"/>
 
         <DockPanel Grid.Column="1" LastChildFill="True" Margin="0,-20,0.037,8.041" HorizontalAlignment="Stretch"   >
-            
-            <Grid DockPanel.Dock="Top" Margin="10" HorizontalAlignment="Left" VerticalAlignment="Top">
+
+            <Grid Grid.Row="1" DockPanel.Dock="Top" Margin="10" HorizontalAlignment="Left" VerticalAlignment="Top">
             </Grid>
 
             <controls:MetroAnimatedSingleRowTabControl Grid.Row="0" Grid.Column="0" x:Name="MainTabControl" >
                 <TabItem Background="#666666">
                     <TabItem.Header>
-                        <DockPanel>
+                        <DockPanel Margin="0,-3,0,0">
                             <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,0,0,0">Install wrapper</Label>
                         </DockPanel>
                     </TabItem.Header>
+                    
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="20" />
@@ -224,16 +226,16 @@
                 </TabItem>
                 <TabItem  Background="#666666" >
                     <TabItem.Header>
-                        <DockPanel>
+                        <DockPanel Margin="0,-3,0,0">
                             <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,0,0,0">Configuration</Label>
                         </DockPanel>
                     </TabItem.Header>
-                    
+
                     <xmlBrowser:XmlBrowserControl x:Name="xmlBrowser" Margin="10" />
                 </TabItem>
 
             </controls:MetroAnimatedSingleRowTabControl>
-            <StackPanel  Background="#666666"  Height="40" HorizontalAlignment="Center" />
+
         </DockPanel>
     </Grid>
 

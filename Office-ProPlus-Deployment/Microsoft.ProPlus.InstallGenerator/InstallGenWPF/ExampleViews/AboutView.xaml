@@ -19,24 +19,26 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
-        <StackPanel Grid.Row="0" Grid.Column="0"  Background="#666666" Width="{Binding Source={x:Static Application.Current}}"  Height="40" HorizontalAlignment="Stretch" Margin="0,0,0,450"/>
+        <StackPanel Grid.Row="0" Grid.Column="1"  Background="#666666" Width="auto" Height="30"  HorizontalAlignment="Stretch" VerticalAlignment="Top"/>
 
         <DockPanel Grid.Column="1" LastChildFill="True">
             <Grid DockPanel.Dock="Top" Margin="10" HorizontalAlignment="Left" VerticalAlignment="Top">
 
 
 
-                <Controls:MetroAnimatedSingleRowTabControl Grid.Row="0" Grid.Column="0" x:Name="MainTabControl" Margin="-9,-10,0,0">
-                    <TabItem Background="#666666" Height="40">
-                        <TabItem.Header>
-                            <DockPanel>
+                <Controls:MetroAnimatedSingleRowTabControl Grid.Row="0" Grid.Column="0" x:Name="MainTabControl" Margin="-9,-10,-29.6,0">
+                    <TabItem Background="#666666" Height="30">
+                        <TabItem.Header >
+                            <DockPanel Margin="0,-3,0,0" >
                                 <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,0,0,0">About Github</Label>
                             </DockPanel>
                         </TabItem.Header>
-                        <Grid>
+                        <Grid Width="715">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="97*" />
-                                <ColumnDefinition Width="47*"/>
+                                <ColumnDefinition Width="187*" />
+                                <ColumnDefinition Width="43*"/>
+                                <ColumnDefinition Width="270*"/>
+                                <ColumnDefinition Width="270*"/>
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="20" />
@@ -49,7 +51,7 @@
                                 <RowDefinition Height="150" />
                             </Grid.RowDefinitions>
 
-                            <Grid Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2">
+                            <Grid Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="4">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="50"></RowDefinition>
                                 </Grid.RowDefinitions>
@@ -63,7 +65,7 @@
 
                             </Grid>
 
-                            <Border Grid.Column="0" Grid.Row="3" BorderBrush="Gainsboro" BorderThickness="1" Width="684" HorizontalAlignment="Left" Margin="26,10,0,30" Grid.RowSpan="3"  Grid.ColumnSpan="2">
+                            <Border Grid.Column="0" Grid.Row="3" BorderBrush="Gainsboro" BorderThickness="1" Width="684" HorizontalAlignment="Left" Margin="25,10,0,30" Grid.RowSpan="3"  Grid.ColumnSpan="4">
                                 <Grid Margin="0,0,164,0">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="50"></RowDefinition>
@@ -109,7 +111,7 @@
                                 </Grid>
                             </Border>
 
-                            <Grid Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="2">
+                            <Grid Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="4">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="50"></RowDefinition>
                                     <RowDefinition Height="250"></RowDefinition>
@@ -123,7 +125,7 @@
 
                             </Grid>
 
-                            <Grid Grid.Column="0" Grid.Row="6" Grid.ColumnSpan="2">
+                            <Grid Grid.Column="0" Grid.Row="6" Grid.ColumnSpan="4">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="50"></RowDefinition>
                                     <RowDefinition Height="250"></RowDefinition>
@@ -138,7 +140,7 @@
 
                             </Grid>
 
-                            <Grid Grid.Column="0" Grid.Row="7" Grid.ColumnSpan="2">
+                            <Grid Grid.Column="0" Grid.Row="7" Grid.ColumnSpan="4">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="500" />
                                     <ColumnDefinition />
@@ -149,17 +151,17 @@
 
 
                             </Grid>
-                            <TextBlock HorizontalAlignment="Left" Height="68" Margin="45,20,0,0" Style="{StaticResource MetroTextBlock}" Grid.Row="3" TextWrapping="Wrap" Text="  Github is a code repository for developers to collaborate on any software based project from web projects to windows desktop applications.  Different branches of a project allow for separate versions of the project which can be useful when variations which will impact how the project can run on different platforms.  You can visit the site for our project at the link below" VerticalAlignment="Top" Width="646" Grid.ColumnSpan="2"/>
+                            <TextBlock HorizontalAlignment="Left" Height="68" Margin="45,20,0,0" Style="{StaticResource MetroTextBlock}" Grid.Row="3" TextWrapping="Wrap" Text="  Github is a code repository for developers to collaborate on any software based project from web projects to windows desktop applications.  Different branches of a project allow for separate versions of the project which can be useful when variations which will impact how the project can run on different platforms.  You can visit the site for our project at the link below" VerticalAlignment="Top" Width="646" Grid.ColumnSpan="4"/>
 
                         </Grid>
                     </TabItem>
-                    <TabItem Background="#666666" Height="40" >
+                    <TabItem Background="#666666" Height="30" >
                         <TabItem.Header>
-                            <DockPanel>
+                            <DockPanel Margin="0,-3,0,0">
                                 <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,0,0,0">About Install Generator</Label>
                             </DockPanel>
                         </TabItem.Header>
-                        <Grid Margin="50,0,0,0">
+                        <Grid Margin="50,0,0,0" Width="715">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="18*"/>
                                 <ColumnDefinition Width="811*"/>
@@ -189,7 +191,7 @@
 
                             </Grid>
 
-                            <Border Grid.Column="0" Grid.Row="2" BorderBrush="Gainsboro" BorderThickness="1" Width="829" HorizontalAlignment="Left" Margin="0,9.4,-0.6,10.4" Grid.RowSpan="5" Grid.ColumnSpan="2">
+                            <Border Grid.Column="0" Grid.Row="2" BorderBrush="Gainsboro" BorderThickness="1" Width="715" HorizontalAlignment="Left" Margin="0,9,0,10" Grid.RowSpan="5" Grid.ColumnSpan="2">
                                 <Grid Margin="0,0,37,0">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="50"></RowDefinition>
@@ -269,7 +271,7 @@
 
 
                             </Grid>
-                            <TextBlock HorizontalAlignment="Left" Height="80" Margin="8.4,9.8,0,0" Style="{StaticResource MetroTextBlock}" Grid.Row="3" TextWrapping="Wrap" Text="	Office 365 ProPlus Install Generator is a project that allows the ability to install Microsoft Office using different methods, along with selecting different options.  Options include languages, excluding certain products, choosing the download source path, and specifying 32-bit versus 64-bit.  Install options include creating an MSI or EXE file, or installing directly from the generator application itself." VerticalAlignment="Top" Width="770" Grid.Column="1"/>
+                            <TextBlock HorizontalAlignment="Left" Height="80" Margin="8.475,10,-1,0" Style="{StaticResource MetroTextBlock}" Grid.Row="3" TextWrapping="Wrap" Text="	Office 365 ProPlus Install Generator is a project that allows the ability to install Microsoft Office using different methods, along with selecting different options.  Options include languages, excluding certain products, choosing the download source path, and specifying 32-bit versus 64-bit.  Install options include creating an MSI or EXE file, or installing directly from the generator application itself." VerticalAlignment="Top" Width="692" Grid.Column="1"/>
 
                         </Grid>
                     </TabItem>

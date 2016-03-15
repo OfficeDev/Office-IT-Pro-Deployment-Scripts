@@ -40,11 +40,11 @@
                     <ColumnDefinition />
                     <ColumnDefinition Width="0"/>
                 </Grid.ColumnDefinitions>
-                <StackPanel Grid.Row="0" Grid.Column="1"  Background="#666666" Width="auto" HorizontalAlignment="Stretch" Margin="0,-20,0,330"/>
+                <StackPanel Grid.Row="0" Grid.Column="1"  Background="#666666" Width="auto" Height="30" HorizontalAlignment="Stretch" Margin="0,-20,0,340"/>
                 <Controls:MetroAnimatedSingleRowTabControl Grid.Row="0" Grid.Column="1"  x:Name="MainTabControl"  SelectionChanged="MainTabControl_OnSelectionChanged" Height="370" VerticalAlignment="Bottom" Margin="0,-20,0,0" >
-                    <TabItem x:Name="ProductTab" Height="40" >
+                    <TabItem x:Name="ProductTab" Height="30" >
                         <TabItem.Header>
-                            <DockPanel>
+                            <DockPanel Margin="0,-3,0,0">
                                 <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,0,0,0">Products</Label>
                             </DockPanel>
                         </TabItem.Header>
@@ -147,7 +147,7 @@
                     </TabItem>
                     <TabItem x:Name="LanguagesTab">
                         <TabItem.Header>
-                            <DockPanel>
+                            <DockPanel Margin="0,-3,0,0">
                                 <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,0,0,0">Languages</Label>
                             </DockPanel>
                         </TabItem.Header>
@@ -200,7 +200,7 @@
                     </TabItem>
                     <TabItem x:Name="OptionalTab"  >
                         <TabItem.Header>
-                            <DockPanel>
+                            <DockPanel Margin="0,-3,0,0">
                                 <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,0,0,0">Optional</Label>
                             </DockPanel>
                         </TabItem.Header>
@@ -276,7 +276,7 @@
                     </TabItem>
                     <TabItem  x:Name="ExcludedTab"  >
                         <TabItem.Header>
-                            <DockPanel>
+                            <DockPanel Margin="0,-3,0,0">
                                 <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,0,0,0">Excluded</Label>
                             </DockPanel>
                         </TabItem.Header>
