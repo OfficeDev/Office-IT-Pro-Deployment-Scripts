@@ -20,11 +20,11 @@
         <Setter Property="Padding"
                 Value="6,0,0,0" />
         <Setter Property="BorderThickness"
-                Value="1" />
+                Value="2" />
         <Setter Property="BorderBrush"
-                Value="{DynamicResource CheckBoxBrush}" />
+                Value="#767676" />
         <Setter Property="Background"
-                Value="{DynamicResource WhiteBrush}" />
+                Value="#f4f4f4" />
         <Setter Property="Controls:ControlsHelper.FocusBorderBrush"
                 Value="{DynamicResource HighlightBrush}" />
         <Setter Property="Controls:ControlsHelper.MouseOverBorderBrush"

@@ -266,21 +266,20 @@
         <Setter Property="Foreground"
                 Value="{DynamicResource TextBrush}" />
         <Setter Property="Background"
-                Value="{DynamicResource ControlBackgroundBrush}" />
+                Value="#f4f4f4" />
         <Setter Property="HorizontalContentAlignment"
                 Value="Left" />
         <Setter Property="VerticalContentAlignment"
                 Value="Center" />
         <Setter Property="BorderThickness"
-                Value="1" />
+                Value="2" />
+        <Setter Property="BorderBrush" Value="#767676"/>
         <Setter Property="Padding"
                 Value="0" />
         <Setter Property="ScrollViewer.HorizontalScrollBarVisibility"
                 Value="Auto" />
         <Setter Property="ScrollViewer.VerticalScrollBarVisibility"
                 Value="Auto" />
-        <Setter Property="BorderBrush"
-                Value="{DynamicResource TextBoxBorderBrush}" />
         <Setter Property="Controls:ControlsHelper.FocusBorderBrush"
                 Value="{DynamicResource ComboBoxMouseOverInnerBorderBrush}" />
         <Setter Property="Controls:ControlsHelper.MouseOverBorderBrush"
@@ -454,9 +453,9 @@
                                           SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
                                           Foreground="{TemplateBinding Foreground}"
                                           BorderBrush="{TemplateBinding BorderBrush}"
-                                          BorderThickness="{TemplateBinding BorderThickness}"
+                                          BorderThickness="2,3,2,2"
                                           Background="{TemplateBinding Background}"
-                                          Margin="0"
+                                          Margin="0,0,1,0"
                                           IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
                                           VerticalAlignment="Stretch"
                                           KeyboardNavigation.IsTabStop="False" />
@@ -474,9 +473,10 @@
                                          SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
                                          HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                                         BorderThickness="0"
-                                         Background="{x:Null}"
-                                         Margin="0,0,0,-2"
+                                         BorderThickness="2,2,0,2"
+                                         Background="#f4f4f4"
+                                         
+                                         Margin="-1,0,0,-1"
                                          Controls:TextBoxHelper.Watermark="{TemplateBinding Controls:TextBoxHelper.Watermark}"
                                          MaxLength="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(Controls:ComboBoxHelper.MaxLength), Mode=OneWay}"
                                          CharacterCasing="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(Controls:ComboBoxHelper.CharacterCasing), Mode=OneWay}"
@@ -621,6 +621,12 @@
                             <Setter TargetName="PART_DropDownToggle"
                                     Property="Focusable"
                                     Value="False" />
+                            <!--<Setter TargetName="PART_EditableTextBox" Property="BorderThickness" 
+                                    Value="2"/>
+                            <Setter TargetName="PART_EditableTextBox"
+                                    Property="BorderBrush" 
+                                    Value="#767676"/>-->
+                            
                             <!-- #1037 : don't know why we set this to transparent ???
                             <Setter TargetName="PART_DropDownToggle"
                                     Property="Background"
