@@ -527,6 +527,7 @@ namespace MetroDemo.ExampleViews
         }
 
 
+
         #region "Events"
 
         private void PreviousButton_Click(object sender, RoutedEventArgs e)
@@ -549,6 +550,7 @@ namespace MetroDemo.ExampleViews
         {
             try
             {
+
                 FixFileExtension();
             }
             catch (Exception ex)
@@ -852,6 +854,42 @@ namespace MetroDemo.ExampleViews
                 LogErrorMessage(ex);
             }
         }
+
+        private void SignWithCert_OnCheck(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (SignInstaller.IsChecked.Value)
+                {
+                    OpenCertificateBrowser.IsEnabled = true;
+
+                }
+                else
+                {
+                    OpenCertificateBrowser.IsEnabled = false;
+
+
+                }
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+          
+        }
+
+
+        private void OpenCertificateBrowser_OnClick(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                
+            }
+             catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
         
         #endregion
 
@@ -912,5 +950,7 @@ namespace MetroDemo.ExampleViews
 
 
         #endregion
+
+     
     }
 }
