@@ -57,9 +57,9 @@
                             <ColumnDefinition Width="30" />
                             <ColumnDefinition Width="260" />
                         </Grid.ColumnDefinitions>
-                        <Label Content="Display Level" Style="{StaticResource MetroLabelHeader}" Grid.Column="0" Margin="50,0,0,0" />
-                        <Button Grid.Column="1" x:Name="DisplayLevelInfo" Width="30" Height="32" HorizontalAlignment="Left" Margin="0 0 0 0" 
-                                                Focusable="False"  Style="{StaticResource MetroInfoButton}" Click="ProductInfo_OnClick" >
+                        <Label Content="Display Level" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="0" Margin="50,0,0,0" Grid.ColumnSpan="2" />
+                        <Button Grid.Column="2" x:Name="DisplayLevelInfo" Width="30" Height="32" HorizontalAlignment="Left" Margin="5,0,0,8" 
+                                                Focusable="False"  Style="{StaticResource CustomMetroInfoButton}" Click="ProductInfo_OnClick" >
                             <StackPanel Orientation="Horizontal">
                                 <Image Source="../images/info.png" Width="20" Height="20"/>
                             </StackPanel>
@@ -77,10 +77,10 @@
                             <ColumnDefinition Width="30" />
                             <ColumnDefinition Width="260" />
                         </Grid.ColumnDefinitions>
-                        <Label Content="Accept EULA" Style="{StaticResource MetroLabelHeader}" 
+                        <Label Content="Accept EULA" Style="{StaticResource CustomMetroLabelHeader}" 
                            HorizontalAlignment="Left" Grid.Column="0"  Margin="50,0,0,-0.154" Grid.ColumnSpan="3" Width="143" />
-                        <Button Grid.Column="2" x:Name="AcceptEulaInfo" Width="30" Height="32" HorizontalAlignment="Left" Margin="28,10,0,-0.154" 
-                                                Focusable="False"  Style="{StaticResource MetroInfoButton}" Click="ProductInfo_OnClick" >
+                        <Button Grid.Column="2" x:Name="AcceptEulaInfo" Width="30" Height="32" HorizontalAlignment="Left" Margin="10,0,0,10" 
+                                                Focusable="False"  Style="{StaticResource CustomMetroInfoButton}" Click="ProductInfo_OnClick" >
                             <StackPanel Orientation="Horizontal">
                                 <Image Source="../images/info.png" Width="20" Height="20"/>
                             </StackPanel>
@@ -95,13 +95,13 @@
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="150" />
-                            <ColumnDefinition Width="30" />
-                            <ColumnDefinition Width="250" />
+                            <ColumnDefinition Width="17" />
+                            <ColumnDefinition Width="263" />
                         </Grid.ColumnDefinitions>
-                        <Label Content="Auto Activate" Style="{StaticResource MetroLabelHeader}"  Margin="50,0,0,-0.077" 
+                        <Label Content="Auto Activate" Style="{StaticResource CustomMetroLabelHeader}"  Margin="50,0,0,0" 
                            HorizontalAlignment="Left" Grid.Column="0" Grid.ColumnSpan="3" Width="158" />
-                        <Button Grid.Column="2" x:Name="AutoActivateInfo" Width="30" Height="32" HorizontalAlignment="Left" Margin="10,10,0,-0.154" 
-                                                Focusable="False"  Style="{StaticResource MetroInfoButton}" Click="ProductInfo_OnClick" >
+                        <Button Grid.Column="2" x:Name="AutoActivateInfo" Width="30" HorizontalAlignment="Left" Margin="10,0,0,10" 
+                                                Focusable="False"  Style="{StaticResource CustomMetroInfoButton}" Click="ProductInfo_OnClick" >
                             <StackPanel Orientation="Horizontal">
                                 <Image Source="../images/info.png" Width="20" Height="20"/>
                             </StackPanel>
@@ -110,19 +110,19 @@
                                    IsChecked="False"
                                    OnLabel="Yes"
                                    OffLabel="No"
-                                   Margin="0,5,-95,-0.154" HorizontalAlignment="Right" />
+                                   Margin="0,5,-95,0" HorizontalAlignment="Right" Width="90" />
                     </Grid>
 
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="220" />
-                            <ColumnDefinition Width="30" />
-                            <ColumnDefinition Width="180" />
+                            <ColumnDefinition Width="10" />
+                            <ColumnDefinition Width="200" />
                         </Grid.ColumnDefinitions>
-                        <Label Content="Force App Shutdown" Style="{StaticResource MetroLabelHeader}"  Margin="50,0,0,-0.154" 
-                           HorizontalAlignment="Left"  Grid.Column="0" Grid.ColumnSpan="3" Width="220"/>
-                        <Button Grid.Column="2" x:Name="ForceAppShutdownInfo" Width="30" Height="32" HorizontalAlignment="Left" Margin="20,5,0,4.846" 
-                                                Focusable="False"  Style="{StaticResource MetroInfoButton}" Click="ProductInfo_OnClick" >
+                        <Label Content="Force App Shutdown" Style="{StaticResource CustomMetroLabelHeader}"  Margin="50,0,0,0" 
+                           HorizontalAlignment="Left"  Grid.Column="0" Grid.ColumnSpan="2" Width="180"/>
+                        <Button Grid.Column="2" x:Name="ForceAppShutdownInfo" Width="30" HorizontalAlignment="Left" Margin="10,0,0,10" 
+                                                Focusable="False"  Style="{StaticResource CustomMetroInfoButton}" Click="ProductInfo_OnClick" >
                             <StackPanel Orientation="Horizontal">
                                 <Image Source="../images/info.png" Width="20" Height="20"/>
                             </StackPanel>
@@ -131,19 +131,19 @@
                                    IsChecked="False"
                                    OnLabel="True"
                                    OffLabel="False"
-                                   Margin="0,0,-95,4.846" HorizontalAlignment="Right" Width="103" />
+                                   Margin="0,0,-95,5" HorizontalAlignment="Right" Width="103" />
                     </Grid>
 
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="290" />
-                            <ColumnDefinition Width="30" />
-                            <ColumnDefinition Width="110" />
+                            <ColumnDefinition Width="1" />
+                            <ColumnDefinition Width="139" />
                         </Grid.ColumnDefinitions>
-                        <Label Content="Shared Computer Licensing" Style="{StaticResource MetroLabelHeader}"  Margin="50,0,0,-0.077" 
+                        <Label Content="Shared Computer Licensing" Style="{StaticResource CustomMetroLabelHeader}"  Margin="50,0,0,0" 
                            HorizontalAlignment="Left"  Grid.Column="0" Grid.ColumnSpan="3" Width="310"/>
-                        <Button Grid.Column="2" x:Name="SharedComputerLicensingInfo" Width="30" Height="32" HorizontalAlignment="Left" Margin="10,10,0,-0.154" 
-                                                Focusable="False"  Style="{StaticResource MetroInfoButton}" Click="ProductInfo_OnClick" >
+                        <Button Grid.Column="1" x:Name="SharedComputerLicensingInfo" Width="30" HorizontalAlignment="Left" Margin="0,0,0,10" 
+                                                Focusable="False"  Style="{StaticResource CustomMetroInfoButton}" Click="ProductInfo_OnClick" Grid.ColumnSpan="2" >
                             <StackPanel Orientation="Horizontal">
                                 <Image Source="../images/info.png" Width="20" Height="20"/>
                             </StackPanel>
@@ -152,7 +152,7 @@
                                    IsChecked="False"
                                    OnLabel="True"
                                    OffLabel="False"
-                                   Margin="0,0,-93,4.846" HorizontalAlignment="Right" Width="104" />
+                                   Margin="0,0,-93,5" HorizontalAlignment="Right" Width="104" />
                     </Grid>
 
 
