@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.ComponentModel;
 using System.Globalization;
+using System.Security.Cryptography.X509Certificates;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -258,6 +259,8 @@ namespace MetroDemo
                 new Language { Id="uk-ua", Name="Ukrainian" }
             };
 
+            Certificates = new List<Certificate>();
+
         }
 
         public Language DefaultLanguage = null;
@@ -269,6 +272,8 @@ namespace MetroDemo
         public List<ExcludeProduct> ExcludeProducts { get; set; }
 
         public List<Language> Languages { get; set; }
+
+        public List<Certificate> Certificates { get; set; } 
 
         public List<OfficeBranch> Branches { get; set; }
 
@@ -369,6 +374,74 @@ namespace MetroDemo
             {
                 language.ProductId = null;
             }
+        }
+
+        public void SetCertificates()
+        {
+            try
+            {
+                X509Store localStore = new X509Store(StoreLocation.CurrentUser);
+                X509Store machineStore = new X509Store(StoreLocation.LocalMachine);
+
+                localStore.Open(OpenFlags.ReadOnly);
+                if (localStore.Certificates.Count > 0)
+                {
+                    foreach (var certificate in localStore.Certificates)
+                    {
+                        var cert = new Certificate();
+
+                        if (String.IsNullOrEmpty(certificate.FriendlyName))
+                        {
+
+                            cert.FriendlyName = certificate.SubjectName.Name; 
+                        }
+                        else
+                        {
+                            cert.FriendlyName = certificate.FriendlyName;
+                        }
+
+                        cert.IssuerName = certificate.IssuerName.Name;
+                        cert.ThumbPrint = certificate.Thumbprint;
+
+                        this.Certificates.Add(cert);
+
+                    }
+                }
+
+                machineStore.Open(OpenFlags.ReadOnly);
+                if (machineStore.Certificates.Count > 0)
+                {
+                    foreach (var certificate in machineStore.Certificates)
+                    {
+                        Certificate cert = new Certificate();
+
+                        if (String.IsNullOrEmpty(certificate.FriendlyName))
+                        {
+
+                            cert.FriendlyName = certificate.SubjectName.Name;
+                        }
+                        else
+                        {
+                            cert.FriendlyName = certificate.FriendlyName;
+                        }
+
+                        cert.IssuerName = certificate.IssuerName.Name;
+                        cert.ThumbPrint = certificate.Thumbprint;
+
+                        this.Certificates.Add(cert);
+
+                    }
+                }
+                localStore.Close();
+                machineStore.Close();
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            
+                
         }
 
         public List<Language> GetLanguages(string productId)

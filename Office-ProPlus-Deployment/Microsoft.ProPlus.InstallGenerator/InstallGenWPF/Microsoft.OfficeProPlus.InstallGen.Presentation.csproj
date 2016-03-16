@@ -185,8 +185,8 @@
     <Compile Include="Windows\InformationDialog.xaml.cs">
       <DependentUpon>InformationDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\Certificates.xaml.cs">
-      <DependentUpon>Certificates.xaml</DependentUpon>
+    <Compile Include="Windows\CertificatesDialog.xaml.cs">
+      <DependentUpon>CertificatesDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\Languages.xaml.cs">
       <DependentUpon>Languages.xaml</DependentUpon>
@@ -260,7 +260,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Windows\Certificates.xaml">
+    <Page Include="Windows\CertificatesDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

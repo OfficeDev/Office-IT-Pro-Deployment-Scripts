@@ -49,8 +49,12 @@ namespace MetroDemo.ExampleWindows
 
         private void CertificatesDialog_OnLoaded(object sender, RoutedEventArgs e)
         {
-           
-            CertificateList.ItemsSource = Certificatesource;
+            //foreach (var Certificate in Certificatesource)
+            //{
+            //    Certificate.FriendlyName = Certificate.FriendlyName.Replace(" (Primary)", "");
+            //}
+
+            //CertificateList.ItemsSource = Certificatesource;
         }
 
         public void Launch()

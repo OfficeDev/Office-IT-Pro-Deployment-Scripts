@@ -878,11 +878,23 @@ namespace MetroDemo.ExampleViews
           
         }
 
+        private CertificatesDialog certificatesDialog = null; 
+
         private void OpenCertificateBrowser_OnClick(object sender, RoutedEventArgs e)
         {
             try
             {
-                
+                certificatesDialog = new CertificatesDialog();
+
+                GlobalObjects.ViewModel.SetCertificates();
+                if (GlobalObjects.ViewModel.Certificates != null)
+                {
+                    var certificateList = GlobalObjects.ViewModel.Certificates;
+                    certificatesDialog.CertificateList.ItemsSource = certificateList;
+                }
+
+               
+                certificatesDialog.Launch();
             }
              catch (Exception ex)
             {

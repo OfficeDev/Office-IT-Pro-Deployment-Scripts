@@ -67,19 +67,22 @@
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3">
-            <DataGrid x:Name="CertificateList" Height="413"
+            <DataGrid x:Name="CertificateList" Height="Auto"
+                    VerticalAlignment="Stretch"
                     RenderOptions.ClearTypeHint="Enabled"
                     TextOptions.TextFormattingMode="Display"
                     Margin="5"
-                    ItemsSource="{Binding Path=Languages}"
+                    ItemsSource="{Binding Path=Cetificates}"
                     Style="{DynamicResource MetroDataGrid}"
                     AutoGenerateColumns="False" HeadersVisibility="Column"
                     CanUserAddRows="False">
 
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="300" 
+                    <DataGridTextColumn Header="Display Name" Binding="{Binding FriendlyName}" Width="200" 
+                                                      IsReadOnly="True" FontSize="20" Foreground="{DynamicResource LabelTextBrushCustom}"  />
+                    <DataGridTextColumn Header="Issuer Name" Binding="{Binding IssuerName}" Width="200" 
                                                       IsReadOnly="True" FontSize="20" Foreground="{DynamicResource LabelTextBrushCustom}" />
-                    <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="100" 
+                    <DataGridTextColumn Header="Thumbprint" Binding="{Binding ThumbPrint}" Width="300" 
                                                       IsReadOnly="True" FontSize="20" Foreground="{DynamicResource LabelTextBrushCustom}" />
                 </DataGrid.Columns>
 
