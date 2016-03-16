@@ -117,7 +117,7 @@
 
     </Window.Resources>
 
-    <Controls:MetroContentControl>
+    <ContentControl>
         <Grid Name="MyGrid" VerticalAlignment="Stretch" Height="Auto" >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="787*"/>
@@ -130,7 +130,9 @@
             </Grid.RowDefinitions>
 
 
-            <Controls:Flyout x:Name="OptionsFlyout"   AreAnimationsEnabled="true" HorizontalAlignment="Left" IsEnabled="True" Grid.Row="1" Grid.Column="0" VerticalAlignment="Top" MinHeight="570"  Height="Auto" Width="160" Background="#333333" Foreground="white"   IsOpen="True" Margin="0,0,0,-1" Grid.RowSpan="2">
+            <Controls:Flyout x:Name="OptionsFlyout"   AreAnimationsEnabled="True" HorizontalAlignment="Left" IsEnabled="True" Grid.Row="1" Grid.Column="0" 
+                             VerticalAlignment="Top" MinHeight="570"  Height="Auto" Width="160" Background="#333333" Foreground="white"   IsOpen="True" Margin="0,0,0,-1" 
+                             Grid.RowSpan="2">
                 <Controls:Flyout.HeaderTemplate >
                     <DataTemplate>
                         <DockPanel x:Name="dpOptions"
@@ -318,7 +320,7 @@
                        Foreground="#333333" Background="#f4f4f4" FontSize="14" IsEnabled="False" IsHitTestVisible="False" Margin="0,-28,-81,0" Padding="10,10,0,0"  Grid.ColumnSpan="2" FontWeight="SemiBold"/>
 
         </Grid>
-    </Controls:MetroContentControl>
+    </ContentControl>
 </Controls:MetroWindow>
 
 
