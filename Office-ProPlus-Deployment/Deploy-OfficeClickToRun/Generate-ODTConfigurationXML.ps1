@@ -928,6 +928,28 @@ function odtGetOfficeLanguages() {
 
         if ($appLanguages1.Count) {
             $productsPath = join-path $officeKeyPath "ProductReleaseIDs\Active\$ProductId"
+        } else {
+            $productReleasePath = Join-Path $officeKeyPath "ProductReleaseIDs"
+            $guids= $regProv.EnumKey($HKLM, $productReleasePath)
+
+            foreach ($guid in $guids.sNames) {
+
+                $productsPath = Join-Path $officeKeyPath "ProductReleaseIDs\$guid\$ProductId.16"
+                $installedCultures = $regProv.EnumKey($HKLM, $productsPath)
+      
+                foreach ($installedCulture in $installedCultures.sNames) {
+                   if($installedCulture){
+                      if ($installedCulture.Contains("-") -and !($installedCulture.ToLower() -eq "x-none")) {
+                            $addItem = $appLanguages1.Add($installedCulture) 
+                      }
+                   }
+                }
+
+                if ($appLanguages1.Count) {
+                   $productsPath = Join-Path $officeKeyPath "ProductReleaseIDs\Culture\$ProductId"
+                }
+ 
+            }
         }
 
         return $appLanguages1;
@@ -1123,7 +1145,7 @@ function officeGetExcludedApps() {
         $HKLM = [UInt32] "0x80000002"
         $HKCR = [UInt32] "0x80000000"
 
-        $allExcludeApps = 'Access','Excel','Groove','InfoPath','OneNote','Outlook',
+        $allExcludeApps = 'Access','Excel','Groove','InfoPath','OneDrive','OneNote','Outlook',
                        'PowerPoint','Publisher','Word'
         #"SharePointDesigner","Visio", 'Project'
     }
@@ -1199,7 +1221,7 @@ function odtGetExcludedApps() {
         $HKLM = [UInt32] "0x80000002"
         $HKCR = [UInt32] "0x80000000"
 
-        $allExcludeApps = 'Access','Excel','Groove','InfoPath','Lync','OneNote','Outlook',
+        $allExcludeApps = 'Access','Excel','Groove','InfoPath','Lync','OneDrive','OneNote','Outlook',
                        'PowerPoint','Publisher','Word'
         #"SharePointDesigner","Visio", 'Project'
     }
@@ -1369,7 +1391,7 @@ function odtAddUpdates{
 
             #Set the desired values
             if($Enabled){
-                $UpdateElement.SetAttribute("Enabled", $Enabled) | Out-Null
+                $UpdateElement.SetAttribute("Enabled", $Enabled.ToString().ToUpper()) | Out-Null
             } else {
               if ($PSBoundParameters.ContainsKey('Enabled')) {
                  if ($ConfigDoc.Configuration.Updates) {
