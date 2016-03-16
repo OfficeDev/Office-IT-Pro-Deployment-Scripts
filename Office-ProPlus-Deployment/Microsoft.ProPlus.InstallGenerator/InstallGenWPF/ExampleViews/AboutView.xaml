@@ -151,7 +151,7 @@
 
 
                             </Grid>
-                            <TextBlock HorizontalAlignment="Left" Height="68" Margin="45,20,0,0" Style="{StaticResource MetroTextBlock}" Grid.Row="3" TextWrapping="Wrap" Text="  Github is a code repository for developers to collaborate on any software based project from web projects to windows desktop applications.  Different branches of a project allow for separate versions of the project which can be useful when variations which will impact how the project can run on different platforms.  You can visit the site for our project at the link below" VerticalAlignment="Top" Width="646" Grid.ColumnSpan="4"/>
+                            <TextBlock HorizontalAlignment="Left" Height="68" Margin="45,20,0,0" Style="{StaticResource CustomMetroLabelTextBlock}" FontSize="12" Grid.Row="3" TextWrapping="Wrap" Text="  Github is a code repository for developers to collaborate on any software based project from web projects to windows desktop applications.  Different branches of a project allow for separate versions of the project which can be useful when variations which will impact how the project can run on different platforms.  You can visit the site for our project at the link below" VerticalAlignment="Top" Width="646" Grid.ColumnSpan="4"/>
 
                         </Grid>
                     </TabItem>
@@ -191,7 +191,7 @@
 
                             </Grid>
 
-                            <Border Grid.Column="0" Grid.Row="2" BorderBrush="Gainsboro" BorderThickness="1" Width="715" HorizontalAlignment="Left" Margin="0,9,0,10" Grid.RowSpan="5" Grid.ColumnSpan="2">
+                            <Border Grid.Column="0" Grid.Row="2" BorderBrush="Gainsboro" BorderThickness="1" Width="715" HorizontalAlignment="Left" Margin="0,9,0,0" Grid.RowSpan="2" Grid.ColumnSpan="2">
                                 <Grid Margin="0,0,37,0">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="50"></RowDefinition>
@@ -271,7 +271,7 @@
 
 
                             </Grid>
-                            <TextBlock HorizontalAlignment="Left" Height="80" Margin="8.475,10,-1,0" Style="{StaticResource MetroTextBlock}" Grid.Row="3" TextWrapping="Wrap" Text="	Office 365 ProPlus Install Generator is a project that allows the ability to install Microsoft Office using different methods, along with selecting different options.  Options include languages, excluding certain products, choosing the download source path, and specifying 32-bit versus 64-bit.  Install options include creating an MSI or EXE file, or installing directly from the generator application itself." VerticalAlignment="Top" Width="692" Grid.Column="1"/>
+                            <TextBlock HorizontalAlignment="Left" Height="80" Margin="8.475,10,-1,0" Style="{StaticResource CustomMetroLabelTextBlock}" FontSize="12" Grid.Row="3" TextWrapping="Wrap" Text="	Office 365 ProPlus Install Generator is a project that allows the ability to install Microsoft Office using different methods, along with selecting different options.  Options include languages, excluding certain products, choosing the download source path, and specifying 32-bit versus 64-bit.  Install options include creating an MSI or EXE file, or installing directly from the generator application itself." VerticalAlignment="Top" Width="692" Grid.Column="1"/>
 
                         </Grid>
                     </TabItem>

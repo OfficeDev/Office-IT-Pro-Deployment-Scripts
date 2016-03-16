@@ -70,6 +70,13 @@
         <Setter Property="FontWeight" Value="Thin"></Setter>
     </Style>
 
+    <Style TargetType="{x:Type TextBlock}" x:Key="CustomMetroLabelTextBlock" BasedOn="{StaticResource MetroTextBlock}">
+        <Setter Property="Foreground" Value="#333333" />
+        <Setter Property="FontSize" Value="14"></Setter>
+        <Setter Property="FontFamily" Value="{StaticResource DefaultFont}"></Setter>
+        <Setter Property="FontWeight" Value="Normal"></Setter>
+    </Style>
+
     <Style TargetType="{x:Type Label}" x:Key="MetroLabelTextSmall" BasedOn="{StaticResource MetroLabel}">
         <Setter Property="Foreground" Value="{DynamicResource LabelTextBrushCustom}" />
         <Setter Property="FontSize" Value="12"></Setter>

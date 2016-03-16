@@ -453,9 +453,9 @@
                                           SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
                                           Foreground="{TemplateBinding Foreground}"
                                           BorderBrush="{TemplateBinding BorderBrush}"
-                                          BorderThickness="2,3,2,2"
+                                          BorderThickness="2,2,2,2"
                                           Background="{TemplateBinding Background}"
-                                          Margin="0,0,1,0"
+                                          Margin="0,0,0,-1"
                                           IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
                                           VerticalAlignment="Stretch"
                                           KeyboardNavigation.IsTabStop="False" />

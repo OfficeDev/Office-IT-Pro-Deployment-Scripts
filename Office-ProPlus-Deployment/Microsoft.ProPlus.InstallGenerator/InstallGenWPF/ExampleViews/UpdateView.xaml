@@ -69,7 +69,7 @@
                             <ColumnDefinition Width="400" />
                         </Grid.ColumnDefinitions>
                         <Label Content="Branch" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="0" Margin="50,10,0,-10" />
-                        <Button Grid.Column="2" x:Name="BranchInfo" Width="30" Height="32" HorizontalAlignment="Left" Margin="20,13,0,0" 
+                        <Button Grid.Column="1" x:Name="BranchInfo" Width="30" Height="32" HorizontalAlignment="Left" Margin="0,10,0,3" 
                                                 Focusable="False"  Style="{StaticResource CustomMetroInfoButton}" Click="ProductInfo_OnClick" >
                             <StackPanel Orientation="Horizontal">
                                 <Image Source="../images/info.png" Width="20" Height="20"/>
@@ -94,7 +94,7 @@
                         </Grid.ColumnDefinitions>
 
                         <Label Content="Update Path" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="0" Margin="52,10,53,10" Grid.ColumnSpan="2"/>
-                        <Button Grid.Column="1" x:Name="UpdatePathInfo" Width="30" HorizontalAlignment="Left" Margin="221,11,0,107" 
+                        <Button Grid.Column="1" x:Name="UpdatePathInfo" Width="30" HorizontalAlignment="Left" Margin="168,11,0,107" 
                                                 Focusable="False"  Style="{StaticResource CustomMetroInfoButton}" Click="ProductInfo_OnClick" >
                             <StackPanel Orientation="Horizontal">
                                 <Image Source="../images/info.png" Width="20" Height="20"/>
@@ -123,8 +123,8 @@
                             <ColumnDefinition Width="36" />
                             <ColumnDefinition Width="351" />
                         </Grid.ColumnDefinitions>
-                        <Label Content="Target Version" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="0" Margin="50,10,0,-10"/>
-                        <Button Grid.Column="1" x:Name="TargetVersionInfo" Width="30" HorizontalAlignment="Left" Margin="6,6,0,3.923" 
+                        <Label Content="Target Version" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="0" Margin="50,0,0,-7.477"/>
+                        <Button x:Name="TargetVersionInfo" Width="30" HorizontalAlignment="Left" Margin="183,3,0,6.523" 
                                                 Focusable="False"  Style="{StaticResource CustomMetroInfoButton}" Click="ProductInfo_OnClick" >
                             <StackPanel Orientation="Horizontal">
                                 <Image Source="../images/info.png" Width="20" Height="20"/>
@@ -147,7 +147,7 @@
                             <ColumnDefinition Width="400" />
                         </Grid.ColumnDefinitions>
                         <Label Content="Deadline" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="0" Margin="50,10,0,-10" />
-                        <Button Grid.Column="2" x:Name="DeadlineInfo" Width="30" Height="32" HorizontalAlignment="Left" Margin="19,3,0,6.923" 
+                        <Button Grid.Column="1" x:Name="DeadlineInfo" Width="30" Height="32" HorizontalAlignment="Left" Margin="0,6,0,3.923" 
                     		Focusable="False"  Style="{StaticResource CustomMetroInfoButton}" Click="ProductInfo_OnClick" >
                             <StackPanel Orientation="Horizontal">
                                 <Image Source="../images/info.png" Width="20" Height="20"/>

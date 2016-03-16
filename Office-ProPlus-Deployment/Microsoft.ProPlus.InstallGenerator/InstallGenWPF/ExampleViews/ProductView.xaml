@@ -339,7 +339,7 @@
                                 </DataGrid.RowStyle>
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="Product" Binding="{Binding DisplayName}" Width="100" 
-                                        IsReadOnly="True" FontSize="16" Foreground="#333333" FontWeight="SemiBold"  />
+                                        IsReadOnly="True" FontSize="20" Foreground="#333333" FontWeight="SemiBold"  />
                                     <DataGridTemplateColumn Header="Status" >
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
