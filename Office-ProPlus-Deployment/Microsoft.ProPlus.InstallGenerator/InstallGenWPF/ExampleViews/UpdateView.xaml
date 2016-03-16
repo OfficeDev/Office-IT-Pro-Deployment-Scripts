@@ -107,13 +107,13 @@
                          Controls:TextBoxHelper.ClearTextButton="True" TextChanged="UpdateUpdatePath_OnTextChanged"
                          Text="" Grid.ColumnSpan="2"  Style="{StaticResource MetroTextBox}"/>
 
-                        <Button Margin="0,51,321.64,59" Grid.Column="2"
-                                            Content="Browse" x:Name="UpdatePath" Click="UpdatePath_OnClick" />
+                        <Button Margin="7,9,2,101" Grid.Column="3"
+                                            Content="Browse" x:Name="UpdatePath" Click="UpdatePath_OnClick" RenderTransformOrigin="6.866,-0.575" />
 
-                        <Button Grid.Column="2" Margin="66,49,263.64,61"
+                        <Button Grid.Column="4" Margin="3,10,4,100"
                                             Content="Open" x:Name="OpenFolderButton" IsEnabled="False" Click="OpenFolderButton_OnClick"   />
-                        <Button Grid.Column="2" Margin="124,51,174.64,59"
-                                            Content="Download" x:Name="DownloadButton" Click="DownloadButton_OnClick" IsEnabled="False"   />
+                        <Button Grid.Column="5" Margin="1,11,61,99"
+                                            Content="Download" x:Name="DownloadButton" Click="DownloadButton_OnClick" IsEnabled="False" Grid.ColumnSpan="2"   />
                         <Label x:Name="DownloadPercent" Content="" Style="{StaticResource CustomMetroLabelHeader}" Margin="0.36,5,-0.36,0" Grid.Column="6" />
                     </Grid>
 
@@ -123,14 +123,14 @@
                             <ColumnDefinition Width="36" />
                             <ColumnDefinition Width="351" />
                         </Grid.ColumnDefinitions>
-                        <Label Content="Target Version" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="0" Margin="50,0,0,-7.477"/>
-                        <Button x:Name="TargetVersionInfo" Width="30" HorizontalAlignment="Left" Margin="183,3,0,6.523" 
+                        <Label Content="Target Version" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="0" Margin="50,-42,0,-7"/>
+                        <Button x:Name="TargetVersionInfo" Width="30" HorizontalAlignment="Left" Margin="184,-39,0,49" 
                                                 Focusable="False"  Style="{StaticResource CustomMetroInfoButton}" Click="ProductInfo_OnClick" >
                             <StackPanel Orientation="Horizontal">
                                 <Image Source="../images/info.png" Width="20" Height="20"/>
                             </StackPanel>
                         </Button>
-                        <ComboBox Width="400" x:Name="UpdateTargetVersion" Grid.Column="2" HorizontalAlignment="Left"
+                        <ComboBox Width="388" x:Name="UpdateTargetVersion" Grid.Column="2" HorizontalAlignment="Left"
                                           Style="{DynamicResource VirtualisedMetroComboBox}"
                                           Controls:TextBoxHelper.Watermark="16.0.4949.1003"
                                           DisplayMemberPath="Version"
@@ -138,7 +138,7 @@
                                           ItemsSource="{Binding Builds}"
                                           MaxDropDownHeight="125"
                                           FontSize="20"
-                                          Text="{Binding Path=Version}" Margin="0,3,-49,3.923" />
+                                          Text="{Binding Path=Version}" Margin="0,-42,-36,49" />
                     </Grid>
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -146,26 +146,26 @@
                             <ColumnDefinition Width="50" />
                             <ColumnDefinition Width="400" />
                         </Grid.ColumnDefinitions>
-                        <Label Content="Deadline" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="0" Margin="50,10,0,-10" />
-                        <Button Grid.Column="1" x:Name="DeadlineInfo" Width="30" Height="32" HorizontalAlignment="Left" Margin="0,6,0,3.923" 
+                        <Label Content="Deadline" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="0" Margin="50,-36,0,36" />
+                        <Button Grid.Column="1" x:Name="DeadlineInfo" Width="30" Height="32" HorizontalAlignment="Left" Margin="0,-33,0,43" 
                     		Focusable="False"  Style="{StaticResource CustomMetroInfoButton}" Click="ProductInfo_OnClick" >
                             <StackPanel Orientation="Horizontal">
                                 <Image Source="../images/info.png" Width="20" Height="20"/>
                             </StackPanel>
                         </Button>
                         <DatePicker x:Name="UpdateDeadline" Height="35" Grid.Column="2" PreviewKeyUp="UpdateDeadline_OnPreviewKeyUp"
-                    		Width="251" SelectedDateChanged="UpdateDeadline_OnSelectedDateChanged"
+                    		Width="252" SelectedDateChanged="UpdateDeadline_OnSelectedDateChanged"
                     		HorizontalAlignment="Left" FontSize="20"
-                    		Controls:TextBoxHelper.Watermark="Select a date" Margin="49,3,0,3.923"
+                    		Controls:TextBoxHelper.Watermark="Select a date" Margin="48,-36,0,43"
                             Background="#f4f4f4" BorderThickness="2" BorderBrush="#767676"/>
 
                         <TextBox x:Name="DeadlineTimeHour" FontSize="20" Grid.Column="2" PreviewKeyDown="DeadlineTimeHour_OnKeyDown"
                     		Controls:TextBoxHelper.Watermark="00" TextChanged="DeadlineTimeHour_OnTextChanged"
-                    		Text="" Height="35" Width="38" Margin="260 0 0 0" />
+                    		Text="" Height="35" Width="38" Margin="306,-36,57,42" />
 
                         <TextBox x:Name="DeadlineTimeMinute" FontSize="20" Grid.Column="2" PreviewKeyDown="DeadlineTimeMinute_OnPreviewKeyDown"
                     		Controls:TextBoxHelper.Watermark="00" TextChanged="DeadlineTimeMinute_OnTextChanged"
-                    		Text="" Height="35" Width="38" Margin="360 0 0 0" />
+                    		Text="" Height="35" Width="38" Margin="350,-35,13,42" />
                     </Grid>
 
                 </StackPanel>

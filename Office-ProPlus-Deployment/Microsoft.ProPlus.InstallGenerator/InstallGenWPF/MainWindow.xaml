@@ -11,7 +11,7 @@
                       xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
                       Title=""
                       Width="960"
-                      MinWidth="960"
+                      MinWidth="1025"
                       Height="600"
                       MinHeight="600"
                       Icon="1447297750_gear_settings_cog_preferences.ico"

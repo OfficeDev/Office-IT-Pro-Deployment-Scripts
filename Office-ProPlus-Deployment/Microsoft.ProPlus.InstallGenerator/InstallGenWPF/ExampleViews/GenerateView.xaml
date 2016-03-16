@@ -13,13 +13,13 @@
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="21*"/>
-            <RowDefinition Height="21*"/>
-            <RowDefinition Height="17*"/>
-            <RowDefinition Height="28*"/>
-            <RowDefinition Height="28*"/>
-            <RowDefinition Height="28*"/>
-            <RowDefinition Height="28*"/>
+            <RowDefinition Height="133*"/>
+            <RowDefinition Height="62*"/>
+            <RowDefinition Height="124*"/>
+            <RowDefinition Height="93*"/>
+            <RowDefinition Height="93*"/>
+            <RowDefinition Height="93*"/>
+            <RowDefinition Height="0*"/>
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0" Grid.Column="1"  Background="#666666" Width="auto" Height="40"  HorizontalAlignment="Stretch" VerticalAlignment="Top"/>
 
@@ -45,8 +45,8 @@
                             <RowDefinition Height="50" />
                             <RowDefinition Height="50" />
                             <RowDefinition Height="50" />
-                            <RowDefinition Height="70" />
-                            <RowDefinition Height="150" />
+                            <RowDefinition Height="179" />
+                            <RowDefinition Height="41" />
                         </Grid.RowDefinitions>
 
                         <Grid Grid.Column="0" Grid.Row="1">
@@ -99,7 +99,7 @@
                                 </Button>
                             </Grid>
 
-                            <Grid Grid.Row="1" Grid.Column="0">
+                            <Grid Grid.Row="1" Grid.Column="0" Margin="0,10,0,-10">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="50"></RowDefinition>
                                 </Grid.RowDefinitions>
@@ -117,9 +117,11 @@
                                             Focusable="False" Content="Select Certificate" Style="{StaticResource MetroButton}" Click="OpenCertificateBrowser_OnClick" IsEnabled="False" >
                                 </Button>
                             </Grid>
-                            <Grid Grid.Column="0" Margin="0,50,0,-90" Grid.Row="1">
+                            <Grid Grid.Column="0" Margin="0,79,0,-156" Grid.Row="1">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="50"></RowDefinition>
+                                    <RowDefinition Height="50"></RowDefinition>
+
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="170" />
@@ -129,10 +131,12 @@
                                     <ColumnDefinition Width="60" />
                                     <ColumnDefinition Width="90" />
                                     <ColumnDefinition Width="80" />
+                                    <ColumnDefinition Width="200" />
+
                                 </Grid.ColumnDefinitions>
 
                                 <Label x:Name="SourcePathLabel" Content="Source Path" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="0" Grid.Row="0" 
-                                   HorizontalAlignment="Right" Width="166" Grid.ColumnSpan="3" Margin="0,15,374,0" />
+                                   HorizontalAlignment="Right" Width="166" Grid.ColumnSpan="3" Margin="0,8,372,7" />
 
                                 <controls:MetroProgressBar x:Name="DownloadProgressBar"  Grid.Column="2" Grid.Row="0" Height="35" Background="White" />
                                 <TextBox x:Name="BuildFilePath" Margin="{StaticResource ControlMargin}" Background="#00ffffff" FontSize="20" Grid.Column="2" Grid.Row="0"
@@ -141,13 +145,23 @@
                                              Text="" TextChanged="BuildFilePath_OnTextChanged" IsEnabled="False" >
                                 </TextBox>
 
+                                <Button Width="70"  Height="40" Margin="0,6,5,5" Grid.Column="3" IsEnabled="False" Grid.Row="0"
+                                            Content="Browse" x:Name="BrowseSourcePathButton" Click="BrowseSourcePathButton_OnClick"   />
+                                <Button Width="50" Height="40"  Margin="78,6,12,5" Grid.Column="3" Grid.Row="0"
+                                            Content="Open" x:Name="OpenFolderButton" IsEnabled="False" Click="OpenFolderButton_OnClick" Grid.ColumnSpan="2"  />
+                                <Button Width="80" Margin="53,8,17,3" Height="40" Grid.Column="4" Grid.Row="0"
+                                            Content="Download" x:Name="DownloadButton" Click="DownloadButton_OnClick" IsEnabled="False" Grid.ColumnSpan="2"   />
+
+                                <Label x:Name="DownloadPercent" Content="" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="2" Grid.Row="1" Margin="0,0,297,0" />
+
+
                             </Grid>
 
 
 
                         </Grid>
 
-                        <Grid  Grid.Row="4" Grid.Column="0" Margin="190,40,0,0" Grid.RowSpan="2">
+                        <Grid  Grid.Row="5" Grid.Column="0" Margin="190,19,0,21" Grid.RowSpan="2">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="50"></RowDefinition>
                             </Grid.RowDefinitions>
@@ -156,19 +170,13 @@
                                 <ColumnDefinition Width="60" />
                                 <ColumnDefinition Width="100" />
                                 <ColumnDefinition Width="50" />
+                                <ColumnDefinition Width="38*"/>
+                                <ColumnDefinition Width="357*"/>
                             </Grid.ColumnDefinitions>
-                            <Button Width="70"  Height="40" Margin="0,0,5,0" Grid.Column="0" IsEnabled="False" Grid.Row="0"
-                                            Content="Browse" x:Name="BrowseSourcePathButton" Click="BrowseSourcePathButton_OnClick"   />
-                            <Button Width="50" Height="40"  Margin="0,0,5,0" Grid.Column="1" Grid.Row="0"
-                                            Content="Open" x:Name="OpenFolderButton" IsEnabled="False" Click="OpenFolderButton_OnClick"  />
-                            <Button Width="80" Margin="0,0,20,0" Height="40" Grid.Column="2" Grid.Row="0"
-                                            Content="Download" x:Name="DownloadButton" Click="DownloadButton_OnClick" IsEnabled="False"   />
-
-                            <Label x:Name="DownloadPercent" Content="" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="3" Grid.Row="0" />
 
                         </Grid>
 
-                        <Grid Grid.Column="0" Grid.Row="5" Margin="0,32,0,18" Grid.RowSpan="2">
+                        <Grid Grid.Column="0" Grid.Row="5" Margin="0,29,0,21" Grid.RowSpan="2">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="50"></RowDefinition>
                                 <RowDefinition Height="250"></RowDefinition>
@@ -187,7 +195,7 @@
 
                         </Grid>
 
-                        <Grid Grid.Column="0" Grid.Row="6" Margin="0,32,0,38" Grid.RowSpan="2">
+                        <Grid Grid.Column="0" Grid.Row="6" Margin="0,29,0,41" Grid.RowSpan="2">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="50"></RowDefinition>
                                 <RowDefinition Height="250"></RowDefinition>
@@ -198,15 +206,19 @@
                                 <ColumnDefinition Width="80" />
                                 <ColumnDefinition Width="60" />
                             </Grid.ColumnDefinitions>
-                            <Label Content="File Path" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="0" Margin="50,12,0,0" />
+                            <Label Content="File Path" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="0" Margin="50,5,0,7" />
                             <TextBox x:Name="FileSavePath" Margin="10,5,70,10" FontSize="20" Grid.Column="1"
                                              controls:TextBoxHelper.Watermark="Office365ProPlus.msi" Height="35" Grid.Row="0"
                                              controls:TextBoxHelper.ClearTextButton="True" TextChanged="FileSavePath_OnTextChanged"
                                              Text="" Grid.ColumnSpan="2">
                             </TextBox>
+                            <Button Grid.Column="2"  Height="40"
+                                            Content="Browse" x:Name="SaveButton" Click="SaveButton_Click" RenderTransformOrigin="0.479,-0.987" Margin="16,5,50,5" Grid.ColumnSpan="2"/>
+                            <Button Grid.Column="3" Height="40"
+                                            Content="Open" x:Name="OpenExeFolderButton" IsEnabled="False" Click="OpenExeFolderButton_OnClick" Margin="16,5,-6,5"/>
                         </Grid>
 
-                        <Grid Grid.Column="0" Grid.Row="7" Margin="186,10,-11,143" Grid.RowSpan="2">
+                        <Grid Grid.Column="0" Grid.Row="7" Margin="185,64,-10,45">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="75" />
                                 <ColumnDefinition Width="60" />
@@ -216,14 +228,11 @@
                                 <RowDefinition Height="0" />
                                 <RowDefinition Height="80"/>
                             </Grid.RowDefinitions>
-                            <Button Grid.Column="0" Grid.Row="0"
-                                            Content="Browse" x:Name="SaveButton" Click="SaveButton_Click" RenderTransformOrigin="0.479,-0.987" Margin="5,20,0,20" Grid.RowSpan="2"/>
-                            <Button Grid.Column="1" Grid.Row="0"
-                                            Content="Open" x:Name="OpenExeFolderButton" IsEnabled="False" Click="OpenExeFolderButton_OnClick" Margin="10,20,0,20" Grid.RowSpan="2"/>
+
                         </Grid>
 
 
-                        <Grid Grid.Column="0" Grid.Row="8">
+                        <Grid Grid.Column="0" Grid.Row="7" Height="70" VerticalAlignment="Top" Margin="10,109,-10,0">
                             <Grid.Resources>
                                 <ResourceDictionary>
                                     <ResourceDictionary.MergedDictionaries>
