@@ -163,6 +163,7 @@
     <Compile Include="MainWindowViewModel.cs" />
     <Compile Include="Models\Enums.cs" />
     <Compile Include="Models\ExcludeProduct.cs" />
+    <Compile Include="Models\Certificate.cs" />
     <Compile Include="Models\Language.cs" />
     <Compile Include="Models\OfficeBranch.cs" />
     <Compile Include="Models\Product.cs" />
@@ -183,6 +184,9 @@
     </Compile>
     <Compile Include="Windows\InformationDialog.xaml.cs">
       <DependentUpon>InformationDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\Certificates.xaml.cs">
+      <DependentUpon>Certificates.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\Languages.xaml.cs">
       <DependentUpon>Languages.xaml</DependentUpon>
@@ -253,6 +257,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Windows\InformationDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Windows\Certificates.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

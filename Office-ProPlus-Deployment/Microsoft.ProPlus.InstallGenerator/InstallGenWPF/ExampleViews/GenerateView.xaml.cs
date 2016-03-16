@@ -878,7 +878,6 @@ namespace MetroDemo.ExampleViews
           
         }
 
-
         private void OpenCertificateBrowser_OnClick(object sender, RoutedEventArgs e)
         {
             try

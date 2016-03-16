@@ -109,7 +109,7 @@
                                     <ColumnDefinition Width="0" />
                                 </Grid.ColumnDefinitions>
                                 <CheckBox Style="{StaticResource MetroCheckBox}" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center"
-                                     x:Name="SignInstaller" Checked="IncludeBuild_OnChecked" Unchecked="SignWithCert_OnCheck" IsEnabled="True" Height="18" Margin="42,16,10,16" Width="19" ></CheckBox>
+                                     x:Name="SignInstaller" Checked="SignWithCert_OnCheck" Unchecked="SignWithCert_OnCheck" IsEnabled="True" Height="18" Margin="42,16,10,16" Width="19" ></CheckBox>
                                 <Label Content="Sign MSI With Certificate"  HorizontalAlignment="Center" VerticalAlignment="Center" Margin="50,8,48,8"
                                            Style="{StaticResource CustomMetroLabelHeader}" FontSize="18" Grid.Column="0" Height="34" Width="254" Grid.ColumnSpan="2"  />
                                 <Button x:Name="OpenCertificateBrowser" Width="120" Height="40" Grid.Row="0" Grid.Column="2" HorizontalAlignment="Left"
