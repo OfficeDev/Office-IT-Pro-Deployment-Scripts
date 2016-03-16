@@ -290,6 +290,8 @@
            BasedOn="{StaticResource BaseMetroWindowButtonStyle}">
         <Setter Property="FocusVisualStyle"
                 Value="{x:Null}" />
+        <Setter Property="Foreground"
+                Value="#333333"/>
         <Setter Property="IsTabStop"
                 Value="False" />
         <Setter Property="Width"

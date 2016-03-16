@@ -15,7 +15,7 @@
                 <Setter Property="Background"
                         Value="{DynamicResource CleanWindowCloseButtonBackgroundBrush}" />
                 <Setter Property="Foreground"
-                        Value="{DynamicResource WhiteBrush}" />
+                        Value="#333333" />
             </Trigger>
             <Trigger Property="IsPressed"
                      Value="True">
@@ -55,7 +55,7 @@
                 <Setter Property="Background"
                         Value="{DynamicResource AccentColorBrush}" />
                 <Setter Property="Foreground"
-                        Value="White" />
+                        Value="#333333" />
             </Trigger>
             <Trigger Property="IsEnabled"
                      Value="false">
@@ -75,7 +75,7 @@
                 <Setter Property="Background"
                         Value="#EB2F2F" />
                 <Setter Property="Foreground"
-                        Value="{DynamicResource WhiteBrush}" />
+                        Value="#333333" />
             </Trigger>
             <Trigger Property="IsPressed"
                      Value="True">

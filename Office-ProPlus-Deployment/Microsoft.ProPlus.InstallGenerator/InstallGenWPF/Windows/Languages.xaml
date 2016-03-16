@@ -9,8 +9,8 @@
                       xmlns:converters="http://metro.mahapps.com/winfx/xaml/shared"
                       xmlns:dialogs="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
                       Title="Languages"
-                      TitleForeground="White"
-                      WindowTitleBrush="#333333"
+                      TitleForeground="#333333"
+                      WindowTitleBrush="#f4f4f4"
                       Background="#e6e6e6"
                       MinWidth="700"
                       Width="700"
@@ -24,8 +24,7 @@
                       mc:Ignorable="d"
                       d:DataContext="{d:DesignInstance metroDemo:MainWindowViewModel}"
                       x:Name="LanguagesSelectionDialog" Loaded="LanguagesDialog_OnLoaded" 
-                      TitleCaps="False"
-                      FontWeight="Bold">
+                      TitleCaps="False">
 
 
     <Window.Resources>
@@ -47,7 +46,7 @@
                        VerticalAlignment="Center"
                        Margin="0,5,-81,0" 
                        Padding="10,0,0,0" 
-                       Background="#333333"
+                       Background="#f4f4f4"
                        Height="28"
                        FontSize="14"
                        FontWeight="Bold"

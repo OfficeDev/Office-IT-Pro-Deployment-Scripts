@@ -68,16 +68,15 @@
                             <ColumnDefinition Width="50" />
                             <ColumnDefinition Width="400" />
                         </Grid.ColumnDefinitions>
-                        <Label Content="Branch" Style="{StaticResource MetroLabelHeader}" Grid.Column="0" Margin="50,0,0,0" />
+                        <Label Content="Branch" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="0" Margin="50,10,0,-10" />
                         <Button Grid.Column="2" x:Name="BranchInfo" Width="30" Height="32" HorizontalAlignment="Left" Margin="20,13,0,0" 
-                                                Focusable="False"  Style="{StaticResource MetroInfoButton}" Click="ProductInfo_OnClick" >
+                                                Focusable="False"  Style="{StaticResource CustomMetroInfoButton}" Click="ProductInfo_OnClick" >
                             <StackPanel Orientation="Horizontal">
                                 <Image Source="../images/info.png" Width="20" Height="20"/>
                             </StackPanel>
                         </Button>
-                        <ComboBox x:Name="UpdateBranch"  Width="400" Height="35" Margin="50, 10, 0, 0" SelectedIndex="0" 
-                                  FontSize="20" Grid.Column="2"  ItemsSource="{Binding Branches}" DisplayMemberPath="Name" SelectionChanged="UpdateBranch_OnSelectionChanged" >
-                        </ComboBox>
+                        <ComboBox x:Name="UpdateBranch" Height="35" Margin="50,10,-37,0" SelectedIndex="0" 
+                                  FontSize="20" Grid.Column="2"  ItemsSource="{Binding Branches}" DisplayMemberPath="Name" SelectionChanged="UpdateBranch_OnSelectionChanged" />
                     </Grid>
 
                     <Grid Margin="0,0,-349,0" Height="99">
@@ -94,19 +93,19 @@
                             <ColumnDefinition Width="70" />
                         </Grid.ColumnDefinitions>
 
-                        <Label Content="Update Path" Style="{StaticResource MetroLabelHeader}" Grid.Column="0" Margin="52,10,53,10" Grid.ColumnSpan="2"/>
+                        <Label Content="Update Path" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="0" Margin="52,10,53,10" Grid.ColumnSpan="2"/>
                         <Button Grid.Column="1" x:Name="UpdatePathInfo" Width="30" HorizontalAlignment="Left" Margin="221,11,0,107" 
-                                                Focusable="False"  Style="{StaticResource MetroInfoButton}" Click="ProductInfo_OnClick" >
+                                                Focusable="False"  Style="{StaticResource CustomMetroInfoButton}" Click="ProductInfo_OnClick" >
                             <StackPanel Orientation="Horizontal">
                                 <Image Source="../images/info.png" Width="20" Height="20"/>
                             </StackPanel>
                         </Button>
 
-                        <Controls:MetroProgressBar x:Name="DownloadProgressBar" Margin="0,11,69.64,104"  Grid.Column="2" Height="35" Background="White" Grid.ColumnSpan="2"  />
-                        <TextBox x:Name="UpdateUpdatePath" Background="#00ffffff" Margin="0,10,69.64,105" FontSize="20" Grid.Column="2"
+                        <Controls:MetroProgressBar x:Name="DownloadProgressBar" Margin="0,11,69.64,104"  Grid.Column="2" Height="35" Background="#f4f4f4" Grid.ColumnSpan="2"  />
+                        <TextBox x:Name="UpdateUpdatePath" Background="#00ffffff" Margin="0,11,69,104" FontSize="20" Grid.Column="2"
                          Controls:TextBoxHelper.Watermark="Network, local or HTTP Path"
                          Controls:TextBoxHelper.ClearTextButton="True" TextChanged="UpdateUpdatePath_OnTextChanged"
-                         Text="" Grid.ColumnSpan="2" />
+                         Text="" Grid.ColumnSpan="2"  Style="{StaticResource MetroTextBox}"/>
 
                         <Button Margin="0,51,321.64,59" Grid.Column="2"
                                             Content="Browse" x:Name="UpdatePath" Click="UpdatePath_OnClick" />
@@ -115,7 +114,7 @@
                                             Content="Open" x:Name="OpenFolderButton" IsEnabled="False" Click="OpenFolderButton_OnClick"   />
                         <Button Grid.Column="2" Margin="124,51,174.64,59"
                                             Content="Download" x:Name="DownloadButton" Click="DownloadButton_OnClick" IsEnabled="False"   />
-                        <Label x:Name="DownloadPercent" Content="" Style="{StaticResource MetroLabelHeader}" Margin="0.36,5,-0.36,0" Grid.Column="6" />
+                        <Label x:Name="DownloadPercent" Content="" Style="{StaticResource CustomMetroLabelHeader}" Margin="0.36,5,-0.36,0" Grid.Column="6" />
                     </Grid>
 
                     <Grid>
@@ -124,9 +123,9 @@
                             <ColumnDefinition Width="36" />
                             <ColumnDefinition Width="351" />
                         </Grid.ColumnDefinitions>
-                        <Label Content="Target Version" Style="{StaticResource MetroLabelHeader}" Grid.Column="0" Margin="50,0,0,-0.077"/>
+                        <Label Content="Target Version" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="0" Margin="50,10,0,-10"/>
                         <Button Grid.Column="1" x:Name="TargetVersionInfo" Width="30" HorizontalAlignment="Left" Margin="6,6,0,3.923" 
-                                                Focusable="False"  Style="{StaticResource MetroInfoButton}" Click="ProductInfo_OnClick" >
+                                                Focusable="False"  Style="{StaticResource CustomMetroInfoButton}" Click="ProductInfo_OnClick" >
                             <StackPanel Orientation="Horizontal">
                                 <Image Source="../images/info.png" Width="20" Height="20"/>
                             </StackPanel>
@@ -147,9 +146,9 @@
                             <ColumnDefinition Width="50" />
                             <ColumnDefinition Width="400" />
                         </Grid.ColumnDefinitions>
-                        <Label Content="Deadline" Style="{StaticResource MetroLabelHeader}" Grid.Column="0" Margin="50,0,0,0" />
+                        <Label Content="Deadline" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="0" Margin="50,10,0,-10" />
                         <Button Grid.Column="2" x:Name="DeadlineInfo" Width="30" Height="32" HorizontalAlignment="Left" Margin="19,3,0,6.923" 
-                    		Focusable="False"  Style="{StaticResource MetroInfoButton}" Click="ProductInfo_OnClick" >
+                    		Focusable="False"  Style="{StaticResource CustomMetroInfoButton}" Click="ProductInfo_OnClick" >
                             <StackPanel Orientation="Horizontal">
                                 <Image Source="../images/info.png" Width="20" Height="20"/>
                             </StackPanel>
@@ -157,7 +156,8 @@
                         <DatePicker x:Name="UpdateDeadline" Height="35" Grid.Column="2" PreviewKeyUp="UpdateDeadline_OnPreviewKeyUp"
                     		Width="251" SelectedDateChanged="UpdateDeadline_OnSelectedDateChanged"
                     		HorizontalAlignment="Left" FontSize="20"
-                    		Controls:TextBoxHelper.Watermark="Select a date" Margin="49,3,0,3.923" />
+                    		Controls:TextBoxHelper.Watermark="Select a date" Margin="49,3,0,3.923"
+                            Background="#f4f4f4" BorderThickness="2" BorderBrush="#767676"/>
 
                         <TextBox x:Name="DeadlineTimeHour" FontSize="20" Grid.Column="2" PreviewKeyDown="DeadlineTimeHour_OnKeyDown"
                     		Controls:TextBoxHelper.Watermark="00" TextChanged="DeadlineTimeHour_OnTextChanged"
