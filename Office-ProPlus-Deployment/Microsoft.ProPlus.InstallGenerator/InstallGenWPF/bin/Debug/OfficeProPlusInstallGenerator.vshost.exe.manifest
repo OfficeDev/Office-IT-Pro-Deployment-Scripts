@@ -55,14 +55,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="MahApps.Metro.dll" size="1148928">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="MahApps.Metro.dll" size="1147904">
       <assemblyIdentity name="MahApps.Metro" version="1.1.3.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>fxkhSYWHpJ0dxQbmvpNuzL+gn1HWp1kqiH3KBYUxdho=</dsig:DigestValue>
+        <dsig:DigestValue>llBdp66vIyIZOCg54vvtn7YiuRGUupPLq70hus2Xvao=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -74,7 +74,7 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>2flcm+k0JQk+kIVPAh94kPaXlmbkClSSgvwm8DeM/VA=</dsig:DigestValue>
+        <dsig:DigestValue>kUeHWJwKhNoRYm6mGphIGMQ488r1tjMoYMzfVBtUcFU=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -86,7 +86,7 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>7gJIpX5U9UIbwW2u9AC0hWPK7pRCI47YBN/I/UdDQR8=</dsig:DigestValue>
+        <dsig:DigestValue>y3eyYSElGz8Fphd6daN636x4BdbNa8X8c+xcoHLw3t0=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -110,7 +110,7 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>RpUpfNPNmw5cBM/VRDHDML2Eq/qi+M8W2xAgwmVROpU=</dsig:DigestValue>
+        <dsig:DigestValue>lhv1dCOz7jDuP3ERB5bD8YHMLAQmDK3x5ACi6SkqubQ=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -122,7 +122,7 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>uO8mHaRkHctWnUyh3VX+niRD/9B7iyKjZRG3TbO9zWQ=</dsig:DigestValue>
+        <dsig:DigestValue>gXoC4B0ksE7egs/v7InlllitJa5xp1gz6Zha544mLJE=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -134,19 +134,19 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>E3aoEDkSIMDMQkrhvaaKOmyI3PuGJ9oIsUP4cbrUcfg=</dsig:DigestValue>
+        <dsig:DigestValue>shSkSuG8ufTNHnYjHCo9UL2J4EpAcp21REXeq7VK6s0=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="OfficeProPlusInstallGenerator.exe" size="667136">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="OfficeProPlusInstallGenerator.exe" size="2119680">
       <assemblyIdentity name="OfficeProPlusInstallGenerator" version="1.0.0.1" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>SiKLDeplADfRK1tk5iyYzUEiesjgFj1GQOROFw+LxhY=</dsig:DigestValue>
+        <dsig:DigestValue>upNh9urnGAFODS7qgF3fd3ihDChhUNT6q4xGb7uiKlk=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

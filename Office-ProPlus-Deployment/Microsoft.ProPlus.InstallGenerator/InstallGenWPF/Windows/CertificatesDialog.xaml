@@ -23,7 +23,7 @@
                       NonActiveGlowBrush="#333333"
                       mc:Ignorable="d"
                       d:DataContext="{d:DesignInstance metroDemo:MainWindowViewModel}"
-                      x:Name="LanguagesSelectionDialog" Loaded="CertificatesDialog_OnLoaded" 
+                      x:Name="LanguagesSelectionDialog" 
                       TitleCaps="False">
 
 

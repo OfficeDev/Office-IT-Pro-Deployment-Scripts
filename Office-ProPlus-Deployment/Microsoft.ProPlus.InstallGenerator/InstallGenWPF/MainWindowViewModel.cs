@@ -261,7 +261,12 @@ namespace MetroDemo
 
             Certificates = new List<Certificate>();
 
+            SelectedCertificate = new Certificate();
+             
+
         }
+
+        public Certificate SelectedCertificate { get; set; }
 
         public Language DefaultLanguage = null;
 

@@ -16,8 +16,6 @@ namespace MetroDemo.ExampleWindows
     public partial class CertificatesDialog : IDisposable
     {
 
-        public List<Certificate> SelectedItems { get; set; }
-
         public List<Certificate> Certificatesource { get; set; } 
 
         private bool _disposed;
@@ -47,15 +45,6 @@ namespace MetroDemo.ExampleWindows
 
         }
 
-        private void CertificatesDialog_OnLoaded(object sender, RoutedEventArgs e)
-        {
-            //foreach (var Certificate in Certificatesource)
-            //{
-            //    Certificate.FriendlyName = Certificate.FriendlyName.Replace(" (Primary)", "");
-            //}
-
-            //CertificateList.ItemsSource = Certificatesource;
-        }
 
         public void Launch()
         {
@@ -74,11 +63,17 @@ namespace MetroDemo.ExampleWindows
             {
                 if (CertificateList.SelectedItems.Count > 0)
                 {
-                    SelectedItems = (List<Certificate>) CertificateList.SelectedItems.Cast<Certificate>().ToList();
+                    var tempCert = (Certificate) CertificateList.SelectedItem; 
+                    
+                    GlobalObjects.ViewModel.SelectedCertificate.FriendlyName = tempCert.FriendlyName ;
+                    GlobalObjects.ViewModel.SelectedCertificate.IssuerName = tempCert.IssuerName;
+                    GlobalObjects.ViewModel.SelectedCertificate.ThumbPrint = tempCert.ThumbPrint;
+
+
                 }
                 else
                 {
-                    SelectedItems = new List<Certificate>();
+                    GlobalObjects.ViewModel.SelectedCertificate = new Certificate();
                 }
 
                 this.Close();
@@ -91,7 +86,7 @@ namespace MetroDemo.ExampleWindows
 
         private void CancelButton_OnClick(object sender, RoutedEventArgs e)
         {
-            SelectedItems = new List<Certificate>();
+            GlobalObjects.ViewModel.SelectedCertificate = new Certificate();
             this.Close();
         }
 

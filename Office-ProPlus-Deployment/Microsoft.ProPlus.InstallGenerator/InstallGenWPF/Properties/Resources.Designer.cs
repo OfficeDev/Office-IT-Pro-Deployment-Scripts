@@ -59,5 +59,15 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] signtool {
+            get {
+                object obj = ResourceManager.GetObject("signtool", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
     }
 }

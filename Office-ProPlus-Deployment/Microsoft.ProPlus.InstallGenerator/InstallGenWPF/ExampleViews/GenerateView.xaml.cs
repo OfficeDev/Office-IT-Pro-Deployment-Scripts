@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -12,6 +13,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Forms;
+using System.Windows.Forms.VisualStyles;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -169,8 +171,36 @@ namespace MetroDemo.ExampleViews
             }
         }
 
-        private async Task GenerateInstall()
+        private async Task InstallerSign(string path)
         {
+
+
+            var signPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "signtool.exe");
+            System.IO.File.WriteAllBytes(signPath, Microsoft.OfficeProPlus.InstallGen.Presentation.Properties.Resources.signtool);
+
+            var thumbprint = GlobalObjects.ViewModel.SelectedCertificate.ThumbPrint;
+
+            path = path.Replace("\\\\", "\\");
+
+            Process signProcess = new Process
+            {
+                StartInfo = new ProcessStartInfo()
+                {
+                    FileName = signPath,
+                    Arguments = " sign /sha1 " + thumbprint + " " + path,
+                    CreateNoWindow = true,
+                    UseShellExecute = false
+                }
+            };
+
+
+            signProcess.Start();
+
+        }
+
+        private async Task GenerateInstall(bool sign)
+        {                   
+
             await Task.Run(async () =>
             {
                 try
@@ -178,6 +208,7 @@ namespace MetroDemo.ExampleViews
                     FixFileExtension();
 
                     var executablePath = "";
+
 
                     for (var i = 1; i <= 2; i++)
                     {
@@ -266,6 +297,7 @@ namespace MetroDemo.ExampleViews
                         isInstallExe = InstallExecutable.IsChecked.HasValue && InstallExecutable.IsChecked.Value;
                     });
 
+
                     if (isInstallExe)
                     {
                         var generateExe = new OfficeInstallExecutableGenerator();
@@ -276,6 +308,8 @@ namespace MetroDemo.ExampleViews
                             ExecutablePath = executablePath,
                             SourceFilePath = sourceFilePath
                         });
+
+
 
                         LogAnaylytics("/GenerateView", "GenerateExe");
                     }
@@ -290,9 +324,23 @@ namespace MetroDemo.ExampleViews
                             SourceFilePath = sourceFilePath
                         });
 
+
+                        
+
                         LogAnaylytics("/GenerateView", "GenerateMSI");
                     }
 
+
+                    await Task.Delay(500);
+
+                    if (!String.IsNullOrEmpty(GlobalObjects.ViewModel.SelectedCertificate.ThumbPrint) && sign)
+                    {
+                        await InstallerSign(executablePath);
+
+                    }
+
+
+                  
                     if (InfoMessage != null)
                     {
                         if (isInstallExe)
@@ -314,14 +362,17 @@ namespace MetroDemo.ExampleViews
 
                     }
 
+
+
                     await Task.Delay(500);
                 }
                 catch (Exception ex)
                 {
                     LogErrorMessage(ex);
+                    Console.WriteLine(ex.StackTrace);
                 }
                 finally
-                {
+               { 
                     Dispatcher.Invoke(() =>
                     {
                         WaitImage.Visibility = Visibility.Hidden;
@@ -652,7 +703,10 @@ namespace MetroDemo.ExampleViews
         {
             try
             {
-                await GenerateInstall();
+                var sign = SignInstaller.IsChecked.Value; 
+                await GenerateInstall(sign);
+
+
             }
             catch (Exception ex)
             {
