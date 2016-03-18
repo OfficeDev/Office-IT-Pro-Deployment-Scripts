@@ -62,12 +62,12 @@
             <ColumnDefinition Width="531*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="1*" />
+            <RowDefinition Height="*" />
             <RowDefinition Height="50" />
         </Grid.RowDefinitions>
 
-        <StackPanel Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" VerticalAlignment="Stretch">
-            <DataGrid x:Name="CertificateList"  Height="Auto"
+        <StackPanel Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" >
+            <DataGrid x:Name="CertificateList"   Height="{Binding RelativeSource={RelativeSource AncestorType={x:Type StackPanel}},Path=ActualHeight}"
                     VerticalAlignment="Stretch"
                     RenderOptions.ClearTypeHint="Enabled"
                     Background="White"
