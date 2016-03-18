@@ -15,7 +15,7 @@
                       MinWidth="700"
                       Width="700"
                       MinHeight="500"
-                      Height="500"
+                      Height="auto"
                       SaveWindowPosition="True"
                       WindowStartupLocation="CenterScreen"
                       BorderThickness="1"
@@ -23,7 +23,7 @@
                       NonActiveGlowBrush="#333333"
                       mc:Ignorable="d"
                       d:DataContext="{d:DesignInstance metroDemo:MainWindowViewModel}"
-                      x:Name="LanguagesSelectionDialog" 
+                      x:Name="LanguagesSelectionDialog"  
                       TitleCaps="False">
 
 
@@ -62,14 +62,15 @@
             <ColumnDefinition Width="531*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
+            <RowDefinition Height="1*" />
             <RowDefinition Height="50" />
         </Grid.RowDefinitions>
 
-        <StackPanel Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3">
-            <DataGrid x:Name="CertificateList" Height="Auto"
+        <StackPanel Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" VerticalAlignment="Stretch">
+            <DataGrid x:Name="CertificateList"  Height="Auto"
                     VerticalAlignment="Stretch"
                     RenderOptions.ClearTypeHint="Enabled"
+                    Background="White"
                     TextOptions.TextFormattingMode="Display"
                     Margin="5"
                     ItemsSource="{Binding Path=Cetificates}"
@@ -91,7 +92,7 @@
 
         </StackPanel>
 
-        <StackPanel Grid.Column="2" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,5,5,5"  >
+        <StackPanel Grid.Column="2" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,5,5,5" Height="50"  >
             <Button Name="OkButton" Content="OK" Margin="2" Height="30" Click="OkButton_Click"  />
             <Button Name="CancelButton" Content="Cancel" Margin="2" Height="30" Click="CancelButton_OnClick"  />
         </StackPanel>

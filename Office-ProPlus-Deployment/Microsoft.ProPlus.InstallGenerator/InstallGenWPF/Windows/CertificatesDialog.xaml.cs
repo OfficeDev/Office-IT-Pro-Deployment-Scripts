@@ -77,6 +77,7 @@ namespace MetroDemo.ExampleWindows
                 }
 
                 this.Close();
+              
             }
             catch (Exception ex)
             {
@@ -88,6 +89,7 @@ namespace MetroDemo.ExampleWindows
         {
             GlobalObjects.ViewModel.SelectedCertificate = new Certificate();
             this.Close();
+
         }
 
         public void Dispose()

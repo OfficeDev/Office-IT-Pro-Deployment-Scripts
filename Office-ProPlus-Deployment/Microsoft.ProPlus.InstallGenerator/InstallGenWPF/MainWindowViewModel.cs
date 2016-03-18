@@ -381,10 +381,32 @@ namespace MetroDemo
             }
         }
 
+        public bool IsSigningCert(X509Certificate2 certificate)
+        {
+
+
+            foreach (var ext in certificate.Extensions)
+            {
+                var eku = ext as X509EnhancedKeyUsageExtension;
+                if (eku != null)
+                {
+                    foreach (var oid in eku.EnhancedKeyUsages)
+                    {
+                        if (oid.FriendlyName.Contains("Code Signing"))
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            return false; 
+        }
         public void SetCertificates()
         {
             try
             {
+                Certificates.Clear();
                 X509Store localStore = new X509Store(StoreLocation.CurrentUser);
                 X509Store machineStore = new X509Store(StoreLocation.LocalMachine);
 
@@ -395,20 +417,23 @@ namespace MetroDemo
                     {
                         var cert = new Certificate();
 
-                        if (String.IsNullOrEmpty(certificate.FriendlyName))
+                        if(IsSigningCert(certificate))
                         {
+                            if (String.IsNullOrEmpty(certificate.FriendlyName))
+                            {
 
-                            cert.FriendlyName = certificate.SubjectName.Name; 
+                                cert.FriendlyName = certificate.SubjectName.Name; 
+                            }
+                            else
+                            {
+                                cert.FriendlyName = certificate.FriendlyName;
+                            }
+
+                            cert.IssuerName = certificate.IssuerName.Name;
+                            cert.ThumbPrint = certificate.Thumbprint;
+
+                            Certificates.Add(cert);
                         }
-                        else
-                        {
-                            cert.FriendlyName = certificate.FriendlyName;
-                        }
-
-                        cert.IssuerName = certificate.IssuerName.Name;
-                        cert.ThumbPrint = certificate.Thumbprint;
-
-                        this.Certificates.Add(cert);
 
                     }
                 }
@@ -420,20 +445,23 @@ namespace MetroDemo
                     {
                         Certificate cert = new Certificate();
 
-                        if (String.IsNullOrEmpty(certificate.FriendlyName))
+                        if (IsSigningCert(certificate))
                         {
+                            if (String.IsNullOrEmpty(certificate.FriendlyName))
+                                {
 
-                            cert.FriendlyName = certificate.SubjectName.Name;
-                        }
-                        else
-                        {
-                            cert.FriendlyName = certificate.FriendlyName;
-                        }
+                                    cert.FriendlyName = certificate.SubjectName.Name;
+                                }
+                                else
+                                {
+                                    cert.FriendlyName = certificate.FriendlyName;
+                                }
 
-                        cert.IssuerName = certificate.IssuerName.Name;
-                        cert.ThumbPrint = certificate.Thumbprint;
+                                cert.IssuerName = certificate.IssuerName.Name;
+                                cert.ThumbPrint = certificate.Thumbprint;
 
-                        this.Certificates.Add(cert);
+                                Certificates.Add(cert);
+                                }
 
                     }
                 }
