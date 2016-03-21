@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Windows;
 using System.Windows.Input;
 using MahApps.Metro.Controls;
@@ -58,15 +59,54 @@ namespace MetroDemo.ExampleWindows
             Show();
         }
 
-        private void CreateCertificate(string publisher)
+        private string GetThumbPrint(string publisher, string startDate, string endDate, int serialNumber)
         {
+            X509Store localStore = new X509Store(StoreLocation.CurrentUser);
+            var thumbprint = "";
+
+           
+            localStore.Open(OpenFlags.ReadOnly);
+            if (localStore.Certificates.Count > 0)
+            {
+                int count = 0; 
+                foreach (var certificate in localStore.Certificates)
+                {
+                    var currentSerialNumber = certificate.SerialNumber;
+                    var matchSerialNumber = serialNumber.ToString("X6");
+
+                    Console.WriteLine(count);
+                    Console.WriteLine(currentSerialNumber);
+                    Console.WriteLine( matchSerialNumber);
+                    Console.WriteLine(currentSerialNumber == matchSerialNumber);
+
+                    if (currentSerialNumber == matchSerialNumber)
+                    {
+                        thumbprint = certificate.Thumbprint;
+                        return thumbprint;
+
+                    }
+                    count = count+1;
+                }
+            }
+
+            localStore.Close();
+            return thumbprint;
+
+        }
+
+        private string  CreateCertificate(string publisher)
+        {
+            var thumbprint = "";
+
+
             try
             {
 
-
+                Random getRandom = new Random();
                 var makeCertPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "makecert.exe");
                 var startDate = DateTime.Now.AddDays(-1).ToString("MM/dd/yyyy").Split(' ')[0];
                 var endDate = DateTime.Now.AddYears(2).ToString("MM/dd/yyyy").Split(' ')[0];
+                var serialNumber = getRandom.Next(0, 1000000);
 
                 Console.WriteLine(startDate);
 
@@ -79,8 +119,8 @@ namespace MetroDemo.ExampleWindows
                     {
                         FileName = makeCertPath,
                         Arguments =
-                            " -r -pe -n CN=" + publisher +" -b " + startDate + " -e " + endDate +
-                            " -eku 1.3.6.1.5.5.7.3.3 -ss My",
+                            " -r -pe -n CN=" + publisher + " -b " + startDate + " -e " + endDate +
+                            " -eku 1.3.6.1.5.5.7.3.3 -ss My -# " + serialNumber,
                         CreateNoWindow = true,
                         UseShellExecute = false
                     }
@@ -88,11 +128,18 @@ namespace MetroDemo.ExampleWindows
 
                 createProcess.Start();
 
+                createProcess.WaitForExit();
+                thumbprint = GetThumbPrint(publisher, startDate, endDate, serialNumber);
+
+
+
             }
             catch (Exception ex)
             {
                 ex.LogException();
             }
+          
+            return thumbprint;
 
         }
 
@@ -100,10 +147,16 @@ namespace MetroDemo.ExampleWindows
         {
             try
             {
+                GlobalObjects.ViewModel.SelectedCertificate = new Certificate();
                 var publisher = CertPublisher.Text;
                 if (!String.IsNullOrEmpty(publisher))
                 {
-                    CreateCertificate(publisher);
+                    var thumbprint = CreateCertificate(publisher);
+                    if (!String.IsNullOrEmpty(thumbprint))
+                    {
+                        GlobalObjects.ViewModel.SelectedCertificate.ThumbPrint = thumbprint;
+                    }
+
                     this.Close();
  
                 }
