@@ -68,16 +68,10 @@ namespace MetroDemo.ExampleWindows
             localStore.Open(OpenFlags.ReadOnly);
             if (localStore.Certificates.Count > 0)
             {
-                int count = 0; 
                 foreach (var certificate in localStore.Certificates)
                 {
                     var currentSerialNumber = certificate.SerialNumber;
                     var matchSerialNumber = serialNumber.ToString("X6");
-
-                    Console.WriteLine(count);
-                    Console.WriteLine(currentSerialNumber);
-                    Console.WriteLine( matchSerialNumber);
-                    Console.WriteLine(currentSerialNumber == matchSerialNumber);
 
                     if (currentSerialNumber == matchSerialNumber)
                     {
@@ -85,7 +79,6 @@ namespace MetroDemo.ExampleWindows
                         return thumbprint;
 
                     }
-                    count = count+1;
                 }
             }
 
@@ -108,7 +101,6 @@ namespace MetroDemo.ExampleWindows
                 var endDate = DateTime.Now.AddYears(2).ToString("MM/dd/yyyy").Split(' ')[0];
                 var serialNumber = getRandom.Next(0, 1000000);
 
-                Console.WriteLine(startDate);
 
                 System.IO.File.WriteAllBytes(makeCertPath,
                     Microsoft.OfficeProPlus.InstallGen.Presentation.Properties.Resources.makecert);
