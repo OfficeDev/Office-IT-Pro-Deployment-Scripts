@@ -387,7 +387,6 @@ namespace MetroDemo
             
             foreach (X509Extension ext in certificate.Extensions)
             {
-                Console.WriteLine(ext.Oid.FriendlyName);
                 if (ext.Oid.FriendlyName == "Enhanced Key Usage")
                 {
                     var ku = ext as X509EnhancedKeyUsageExtension;

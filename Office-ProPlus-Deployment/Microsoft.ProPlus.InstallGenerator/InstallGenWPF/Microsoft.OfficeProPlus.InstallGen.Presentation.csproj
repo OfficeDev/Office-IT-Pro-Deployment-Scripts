@@ -179,6 +179,9 @@
     <Compile Include="Viewer.xaml.cs">
       <DependentUpon>Viewer.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Windows\GenerateCertificate.xaml.cs">
+      <DependentUpon>GenerateCertificate.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\FolderBrowserDialogEx.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -257,6 +260,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Viewer.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Windows\GenerateCertificate.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

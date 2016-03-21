@@ -935,7 +935,8 @@ namespace MetroDemo.ExampleViews
           
         }
 
-        private CertificatesDialog certificatesDialog = null; 
+        private CertificatesDialog certificatesDialog = null;
+        private GenerateCertificate generateCertificateDialog = null;
 
         private void OpenCertificateBrowser_OnClick(object sender, RoutedEventArgs e)
         {
@@ -961,7 +962,17 @@ namespace MetroDemo.ExampleViews
 
         private void OpenCertGenerator_OnClick(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
+            try
+            {
+                generateCertificateDialog = new GenerateCertificate();
+
+
+                generateCertificateDialog.Launch();
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
         }
         
         #endregion
