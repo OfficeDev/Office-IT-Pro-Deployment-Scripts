@@ -8,7 +8,7 @@ Param(
 
     [Parameter()]
     [bool] $ForceAppShutdown = $false,
-    m
+    
     [Parameter()]
     [bool] $UpdatePromptUser = $false,
 
@@ -196,11 +196,21 @@ Function Validate-UpdateSource() {
             if ($currentplatform.ToLower() -eq "x64") {
                $cabPath = $UpdateSource + "\Office\Data\v64_" + $updateToVersion + ".cab"
             }
-        } else {
+        } 
+        
+        if($UpdateSource.ToLower().StartsWith("http")){        
             if ($currentplatform.ToLower() -eq "x86") {
                $cabPath = $UpdateSource + "\Office\Data\v32.cab"
             }
-            if ($currentplatform.ToLower() -eq "x64") {
+            else {
+               $cabPath = $UpdateSource + "\Office\Data\v64.cab"
+            }            
+        }
+        else{
+            if ($currentplatform.ToLower() -eq "x86") {
+               $cabPath = $UpdateSource + "\Office\Data\v32.cab"
+            }
+            else {
                $cabPath = $UpdateSource + "\Office\Data\v64.cab"
             }
         }
@@ -213,7 +223,7 @@ Function Validate-UpdateSource() {
         }
         
         if (!$validUpdateSource) {
-           throw "Invalid UpdateSource. File Not Found: $cabPath"
+           Write-Host "Invalid UpdateSource. File Not Found: $cabPath"
         }
     }
 
@@ -416,7 +426,13 @@ Will generate the Office Deployment Tool (ODT) configuration XML based on the lo
             }
 
            if ($isAlive) {
-               $channelUpdateSource = Change-UpdatePathToChannel -UpdatePath $currentUpdateSource
+               $currentUpdateSource = (Get-ItemProperty HKLM:\$configRegPath -Name UpdateUrl -ErrorAction SilentlyContinue).UpdateUrl
+               if($currentUpdateSource.ToLower().StartsWith("http")){
+                   $channelUpdateSource = $currentUpdateSource
+               }
+               else{
+                   $channelUpdateSource = Change-UpdatePathToChannel -UpdatePath $currentUpdateSource
+               }
 
                if ($channelUpdateSource -ne $currentUpdateSource) {
                    Set-Reg -Hive "HKLM" -keyPath $configRegPath -ValueName "UpdateUrl" -Value $channelUpdateSource -Type String
