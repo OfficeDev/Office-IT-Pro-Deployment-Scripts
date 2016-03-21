@@ -916,11 +916,14 @@ namespace MetroDemo.ExampleViews
                 if (SignInstaller.IsChecked.Value)
                 {
                     OpenCertificateBrowser.IsEnabled = true;
+                    OpenCertGenerator.IsEnabled = true;
 
                 }
                 else
                 {
                     OpenCertificateBrowser.IsEnabled = false;
+                    OpenCertGenerator.IsEnabled = false;
+
 
 
                 }
@@ -954,6 +957,11 @@ namespace MetroDemo.ExampleViews
             {
                 LogErrorMessage(ex);
             }
+        }
+
+        private void OpenCertGenerator_OnClick(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
         }
         
         #endregion
@@ -1016,6 +1024,6 @@ namespace MetroDemo.ExampleViews
 
         #endregion
 
-     
+      
     }
 }

@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Forms.Design;
 using System.Windows.Media;
 using MahApps.Metro;
 using MetroDemo;
@@ -383,24 +384,25 @@ namespace MetroDemo
 
         public bool IsSigningCert(X509Certificate2 certificate)
         {
-
-
-            foreach (var ext in certificate.Extensions)
+            
+            foreach (X509Extension ext in certificate.Extensions)
             {
-                var eku = ext as X509EnhancedKeyUsageExtension;
-                if (eku != null)
+                Console.WriteLine(ext.Oid.FriendlyName);
+                if (ext.Oid.FriendlyName == "Enhanced Key Usage")
                 {
-                    foreach (var oid in eku.EnhancedKeyUsages)
+                    var ku = ext as X509EnhancedKeyUsageExtension;
+                    foreach (var eku in ku.EnhancedKeyUsages)
                     {
-                        if (oid.FriendlyName.Contains("Code Signing"))
+                        if (eku.FriendlyName == "Code Signing")
                         {
                             return true;
                         }
-                    }
+                    }  
                 }
             }
 
             return false; 
+
         }
         public void SetCertificates()
         {
@@ -416,6 +418,8 @@ namespace MetroDemo
                     foreach (var certificate in localStore.Certificates)
                     {
                         var cert = new Certificate();
+
+                        Console.WriteLine(certificate.SubjectName.Name);
 
                         if(IsSigningCert(certificate))
                         {
@@ -448,20 +452,20 @@ namespace MetroDemo
                         if (IsSigningCert(certificate))
                         {
                             if (String.IsNullOrEmpty(certificate.FriendlyName))
-                                {
+                            {
 
-                                    cert.FriendlyName = certificate.SubjectName.Name;
-                                }
-                                else
-                                {
-                                    cert.FriendlyName = certificate.FriendlyName;
-                                }
+                                cert.FriendlyName = certificate.SubjectName.Name;
+                            }
+                            else
+                            {
+                                cert.FriendlyName = certificate.FriendlyName;
+                            }
 
-                                cert.IssuerName = certificate.IssuerName.Name;
-                                cert.ThumbPrint = certificate.Thumbprint;
+                            cert.IssuerName = certificate.IssuerName.Name;
+                            cert.ThumbPrint = certificate.Thumbprint;
 
-                                Certificates.Add(cert);
-                                }
+                            Certificates.Add(cert);
+                        }
 
                     }
                 }

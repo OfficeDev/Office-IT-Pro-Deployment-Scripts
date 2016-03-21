@@ -10,6 +10,7 @@
 
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("helpfiles/embedofficeinstall.html")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("installoffice.cs")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("resources/makecert.exe")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("wixtools.zip")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("helpfiles/forceappshutdowninfo.html")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("helpfiles/loglevelinfo.html")]

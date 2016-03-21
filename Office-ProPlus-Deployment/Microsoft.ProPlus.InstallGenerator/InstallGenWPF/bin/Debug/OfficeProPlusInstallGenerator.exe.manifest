@@ -139,14 +139,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="OfficeProPlusInstallGenerator.exe" size="2120192">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="OfficeProPlusInstallGenerator.exe" size="2185216">
       <assemblyIdentity name="OfficeProPlusInstallGenerator" version="1.0.0.1" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>gT6UkHPigxK0i28rTvjhDtkhE40MTGjsQyv89m2qSf4=</dsig:DigestValue>
+        <dsig:DigestValue>y7S8fFz8Vu+ODnte2qrk/GCqJRGCoqGSWgYSFwP8TlQ=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -511,6 +511,15 @@
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
       <dsig:DigestValue>RsS7FWY7zkDwuaeWk0nPICi4GRKy/XQc+ZEr8/XQtsY=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Resources\makecert.exe" size="64144">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>9KlJ5OKLsLqgunkzwulKQMrfLcLm29gZuU0JHHGGHss=</dsig:DigestValue>
     </hash>
   </file>
   <file name="wixTools.zip" size="39973772">

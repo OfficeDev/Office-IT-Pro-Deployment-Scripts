@@ -63,6 +63,16 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] makecert {
+            get {
+                object obj = ResourceManager.GetObject("makecert", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] signtool {
             get {
                 object obj = ResourceManager.GetObject("signtool", resourceCulture);

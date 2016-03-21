@@ -67,7 +67,7 @@
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" >
-            <DataGrid x:Name="CertificateList"   Height="{Binding RelativeSource={RelativeSource AncestorType={x:Type StackPanel}},Path=ActualHeight}"
+            <DataGrid x:Name="CertificateList"   Height="Auto"
                     VerticalAlignment="Stretch"
                     RenderOptions.ClearTypeHint="Enabled"
                     Background="White"

@@ -312,6 +312,7 @@
     <Resource Include="Resources\Entypo-license.txt" />
     <Resource Include="Resources\WindowsIcons-license.txt" />
     <None Include="Resources\signtool.exe" />
+    <Content Include="Resources\makecert.exe" />
     <Content Include="wixTools.zip">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
