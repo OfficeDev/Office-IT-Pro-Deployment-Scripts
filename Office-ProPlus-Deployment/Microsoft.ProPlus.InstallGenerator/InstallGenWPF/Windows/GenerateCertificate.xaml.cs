@@ -59,7 +59,7 @@ namespace MetroDemo.ExampleWindows
             Show();
         }
 
-        private string GetThumbPrint(string publisher, string startDate, string endDate, int serialNumber)
+        private string GetThumbPrint( int serialNumber)
         {
             X509Store localStore = new X509Store(StoreLocation.CurrentUser);
             var thumbprint = "";
@@ -121,7 +121,7 @@ namespace MetroDemo.ExampleWindows
                 createProcess.Start();
 
                 createProcess.WaitForExit();
-                thumbprint = GetThumbPrint(publisher, startDate, endDate, serialNumber);
+                thumbprint = GetThumbPrint(serialNumber);
 
 
 
