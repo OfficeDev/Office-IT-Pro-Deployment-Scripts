@@ -293,7 +293,7 @@ public class CustomActions
             }
 
             p.Start();
-            //p.WaitForExit();
+            Process.GetCurrentProcess().Kill();
 
             return ActionResult.Success;
         }

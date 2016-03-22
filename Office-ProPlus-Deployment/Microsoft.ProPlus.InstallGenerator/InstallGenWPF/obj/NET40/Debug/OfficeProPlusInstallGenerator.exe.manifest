@@ -62,7 +62,7 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>llBdp66vIyIZOCg54vvtn7YiuRGUupPLq70hus2Xvao=</dsig:DigestValue>
+        <dsig:DigestValue>EHwMQL160ZIu49dBYpn9Pq3MTnbijIxd/4GcuCBcYnE=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -86,7 +86,7 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>y3eyYSElGz8Fphd6daN636x4BdbNa8X8c+xcoHLw3t0=</dsig:DigestValue>
+        <dsig:DigestValue>RI2Df64Uz/3aYjPm9NhQRbZIrAIgLJp+haVN4R/wNAo=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -110,19 +110,19 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>lhv1dCOz7jDuP3ERB5bD8YHMLAQmDK3x5ACi6SkqubQ=</dsig:DigestValue>
+        <dsig:DigestValue>hq8zZeoAnX+8v+tTiVIyHKGuLgZabSooOscCGB6bELQ=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Microsoft.OfficeProPlus.MSIGen.dll" size="13312">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Microsoft.OfficeProPlus.MSIGen.dll" size="13824">
       <assemblyIdentity name="Microsoft.OfficeProPlus.MSIGen" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>WKHTLy2PKdE3lpv9HoWC3kn71/iNfBJs9LDjc4qGxxw=</dsig:DigestValue>
+        <dsig:DigestValue>nHHSMSbLudkK+31guhTvr+s+gAcQ0A1CFxnDpteflgs=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -134,19 +134,19 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>3rRiE1B3ybHw45bRorGH0+g8DtqUI50vScJRdVPU5vI=</dsig:DigestValue>
+        <dsig:DigestValue>2IVvrYExJ8UX9kcJhoz+NBNUDazn+j9oCuTlg7D0zbw=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="OfficeProPlusInstallGenerator.exe" size="2191872">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="OfficeProPlusInstallGenerator.exe" size="2190848">
       <assemblyIdentity name="OfficeProPlusInstallGenerator" version="1.0.0.1" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>mS8gLh4vPRggzSNR3QnF2hJgjRVEUa9kqD9SLQWjMmU=</dsig:DigestValue>
+        <dsig:DigestValue>mYxMzUTNJJdpEWSjyY/c2HACLdDLLN/UbH6yI23eB9Y=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
