@@ -103,14 +103,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Microsoft.OfficeProPlus.Downloader.dll" size="40448">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Microsoft.OfficeProPlus.Downloader.dll" size="40960">
       <assemblyIdentity name="Microsoft.OfficeProPlus.Downloader" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>hq8zZeoAnX+8v+tTiVIyHKGuLgZabSooOscCGB6bELQ=</dsig:DigestValue>
+        <dsig:DigestValue>k6v2jW8ZF8M3fnDpYcuAJpXFOolXURbwLra1Axx6hWg=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -146,7 +146,7 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>mYxMzUTNJJdpEWSjyY/c2HACLdDLLN/UbH6yI23eB9Y=</dsig:DigestValue>
+        <dsig:DigestValue>ZGt3MGw1Yw0G280xwp5WuIVOAI4JKMQH42QfusfkaQ0=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
