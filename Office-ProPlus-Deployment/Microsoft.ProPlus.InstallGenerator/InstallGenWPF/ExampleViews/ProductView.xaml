@@ -128,7 +128,7 @@
                                             <ColumnDefinition Width="80" />
                                             <ColumnDefinition Width="30" />
                                         </Grid.ColumnDefinitions>
-                                        <Label Content="Branch" Style="{StaticResource CustomMetroLabelHeader}" HorizontalAlignment="Left" Grid.Column="0" Padding="0,20,0,0"/>
+                                        <Label Content="Channel" Style="{StaticResource CustomMetroLabelHeader}" HorizontalAlignment="Left" Grid.Column="0" Padding="0,20,0,0"/>
                                         <Button x:Name="BranchInfo" Width="30" Height="32" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" Margin="0 8 0 0" Padding="0,10,0,0" 
                                                 Focusable="False"  Style="{StaticResource MetroInfoButton}" Click="ProductInfo_OnClick" >
                                             <StackPanel Orientation="Horizontal">

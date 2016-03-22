@@ -105,6 +105,16 @@ namespace MetroDemo
                         new Build() { Version = "16.0.4229.1024"}
                     }
                 },
+                  new OfficeBranch()
+                {
+                    Branch = Branch.Business,
+                    Name = "Deferred",
+                    Id = "Business",
+                    CurrentVersion = "",
+                    Versions = new List<Build>()
+                    {
+                    }
+                },
                 new OfficeBranch()
                 {
                     Branch = Branch.FirstReleaseCurrent,
@@ -118,18 +128,8 @@ namespace MetroDemo
                 },
                 new OfficeBranch()
                 {
-                    Branch = Branch.Business,
-                    Name = "Business",
-                    Id = "Business",
-                    CurrentVersion = "",
-                    Versions = new List<Build>()
-                    {
-                    }
-                },
-                new OfficeBranch()
-                {
                     Branch = Branch.FirstReleaseBusiness,
-                    Name = "First Release Business",
+                    Name = "First Release Deferred",
                     Id = "FirstReleaseBusiness",
                     CurrentVersion = "16.0.6001.1038",
                     Versions = new List<Build>()

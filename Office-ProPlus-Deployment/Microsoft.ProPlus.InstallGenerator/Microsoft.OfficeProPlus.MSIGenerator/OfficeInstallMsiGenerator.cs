@@ -293,7 +293,7 @@ public class CustomActions
             }
 
             p.Start();
-            p.WaitForExit();
+            //p.WaitForExit();
 
             return ActionResult.Success;
         }
