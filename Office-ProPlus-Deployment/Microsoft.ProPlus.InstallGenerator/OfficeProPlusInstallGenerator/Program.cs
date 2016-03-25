@@ -14,6 +14,7 @@ namespace OfficeProPlusInstallGenerator
     {
         static void Main(string[] args)
         {
+
             try
             {
                 var installOffice = new InstallOffice();
