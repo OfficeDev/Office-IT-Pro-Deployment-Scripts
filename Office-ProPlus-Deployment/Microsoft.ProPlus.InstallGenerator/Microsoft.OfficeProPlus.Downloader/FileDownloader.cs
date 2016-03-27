@@ -41,26 +41,35 @@ namespace Microsoft.OfficeProPlus.Downloader
                             
                             if (!token.IsCancellationRequested)
                             {
-                                // Register the callback to a method that can unblock.                        
+
                                 using (var ctr = token.Register(() => client.CancelAsync()))
-                                using (var file = File.Create(filePath))
-                                using(Stream stream = await client.OpenReadTaskAsync(new Uri(url)))
                                 {
-                                    var buffer = new byte[8192];
-                                    int bytesReceived; 
-
-
-                                    //actual download, will retry if fails                   
-                                    while ((bytesReceived = await stream.ReadAsync(buffer,0,buffer.Length,token)) != 0)
-                                    {
-                                        file.Write(buffer,0,bytesReceived);
-                                    }
-
-                                    stream.Close();
-                                    downloadSuccessful = true;  //flag as downloaded to kick out of loop
-
+                                    //actual download, will retry if fails                            
+                                    await client.DownloadFileTaskAsync(new Uri(url), filePath);
+                                    downloadSuccessful = true;                                      //flag as downloaded to kick out of loop
                                     //end of file download                        
                                 }
+
+                                //// Register the callback to a method that can unblock.                        
+                                //using (var ctr = token.Register(() => client.CancelAsync()))
+                                //using (var file = File.Create(filePath))
+                                //using(Stream stream = await client.OpenReadTaskAsync(new Uri(url)))
+                                //{
+                                //    var buffer = new byte[8192];
+                                //    int bytesReceived; 
+                                //    //actual download, will retry if fails                   
+                                //    while ((bytesReceived = await stream.ReadAsync(buffer,0,buffer.Length,token)) != 0)
+                                //    {
+                                //        file.Write(buffer,0,bytesReceived);
+                                //    }
+
+                                //    stream.Close();
+                                //    downloadSuccessful = true;  //flag as downloaded to kick out of loop
+
+                                //    //end of file download                        
+                                //}
+
+
                             }
                         }
                     }, token);

@@ -20,13 +20,12 @@
                       WindowStartupLocation="CenterScreen" 
                       NonActiveGlowBrush="#333333"
                       WindowTransitionsEnabled="False"
-                      GlowBrush="{DynamicResource WindowTitleColorBrush}"
                       mc:Ignorable="d"
                       d:DesignHeight="600"
                       d:DesignWidth="800"
                       d:DataContext="{d:DesignInstance MetroDemo:MainWindowViewModel}"
                       Closing="MetroWindow_Closing"
-            
+             
                       Dialog:DialogParticipation.Register="{Binding}" TitleAlignment="Left" TitleCaps="False" TitlebarHeight="29">
 
     <Window.Resources>
@@ -136,9 +135,10 @@
                 <Controls:Flyout.HeaderTemplate >
                     <DataTemplate>
                         <DockPanel x:Name="dpOptions"
-                            Margin="0,25,10,10"
+                            Margin="0,0,10,0"
                            VerticalAlignment="Top"
                            LastChildFill="True">
+                            
                             <Button x:Name="nav"
                             Margin="100,0,0,0"
                             Click="Nav_OnClick"
@@ -163,9 +163,7 @@
                                             </Setter.Value>
                                         </Setter>
                                         <Style.Triggers>
-                                            <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter Property="Background" Value="#0078D7"/>
-                                            </Trigger>
+                   
                                         </Style.Triggers>
                                     </Style>
                                 </Button.Style>
@@ -194,9 +192,9 @@
                         </DockPanel>
                     </DataTemplate>
                 </Controls:Flyout.HeaderTemplate>
-                <Controls:MetroAnimatedTabControl  TabStripPlacement="Left" Height="500" SelectionChanged="MainTabControl_SelectionChanged" 
+                <Controls:MetroTabControl  TabStripPlacement="Left" Height="500" SelectionChanged="MainTabControl_SelectionChanged" 
                                                    x:Name="MainTabControl" VerticalAlignment="Top"  >
-                    <Controls:MetroAnimatedTabControl.Resources>
+                    <Controls:MetroTabControl.Resources>
                         <Style TargetType="{x:Type Controls:MetroTabItem}">
                             <Setter Property="Background" Value="#333333"/>
                             <Setter Property="Foreground" Value="white"/>
@@ -208,13 +206,11 @@
                                     <Setter Property="Background" Value="#333333"/>
                                 </Trigger>
                             </Style.Triggers>
-
-
                         </Style>
-                    </Controls:MetroAnimatedTabControl.Resources>
+                    </Controls:MetroTabControl.Resources>
                     <Controls:MetroTabItem  Width="160" IsEnabled="True">
                         <Controls:MetroTabItem.Header >
-                            <DockPanel Margin="10" >
+                            <DockPanel Margin="10" Height="30" >
                                 <Rectangle Height="16" Width="16">
                                     <Rectangle.Fill>
                                         <VisualBrush   Visual="{StaticResource appbar_home_empty_white}"  >
@@ -226,9 +222,9 @@
                         </Controls:MetroTabItem.Header>
 
                     </Controls:MetroTabItem >
-                    <Controls:MetroTabItem  IsEnabled="False" IsSelected="False"  Width="160">
+                    <Controls:MetroTabItem IsEnabled="True" IsSelected="False"  Width="160">
                         <Controls:MetroTabItem.Header>
-                            <DockPanel Margin="10">
+                            <DockPanel Margin="10" Height="30">
                                 <Rectangle Height="16" Width="16" >
                                     <Rectangle.Fill >
                                         <VisualBrush  Visual="{StaticResource appbar_barcode_white}" ></VisualBrush>
@@ -238,9 +234,9 @@
                             </DockPanel>
                         </Controls:MetroTabItem.Header>
                     </Controls:MetroTabItem >
-                    <Controls:MetroTabItem IsEnabled="False" Width="160" >
+                    <Controls:MetroTabItem IsEnabled="True" Width="160" >
                         <Controls:MetroTabItem.Header>
-                            <DockPanel Margin="10">
+                            <DockPanel Margin="10" Height="30">
                                 <Rectangle Height="16" Width="16">
                                     <Rectangle.Fill>
                                         <VisualBrush  Visual="{StaticResource appbar_new_window_white}" ></VisualBrush>
@@ -250,9 +246,9 @@
                             </DockPanel>
                         </Controls:MetroTabItem.Header>
                     </Controls:MetroTabItem >
-                    <Controls:MetroTabItem IsEnabled="False" Width="160" >
+                    <Controls:MetroTabItem IsEnabled="True" Width="160" >
                         <Controls:MetroTabItem.Header>
-                            <DockPanel Margin="10">
+                            <DockPanel Margin="10" Height="30">
                                 <Rectangle Height="16" Width="16">
                                     <Rectangle.Fill>
                                         <VisualBrush  Visual="{StaticResource appbar_scale_white}" ></VisualBrush>
@@ -262,9 +258,9 @@
                             </DockPanel>
                         </Controls:MetroTabItem.Header>
                     </Controls:MetroTabItem >
-                    <Controls:MetroTabItem IsEnabled="False" Width="160" >
+                    <Controls:MetroTabItem IsEnabled="True" Width="160" >
                         <Controls:MetroTabItem.Header>
-                            <DockPanel Margin="10">
+                            <DockPanel Margin="10" Height="30">
                                 <Rectangle Height="16" Width="16">
                                     <Rectangle.Fill>
                                         <VisualBrush  Visual="{StaticResource appbar_potion_white}" ></VisualBrush>
@@ -276,7 +272,7 @@
                     </Controls:MetroTabItem>
                     <Controls:MetroTabItem IsEnabled="True" IsEnabledChanged="UIElement_OnIsEnabledChanged" >
                         <Controls:MetroTabItem.Header>
-                            <DockPanel Margin="10">
+                            <DockPanel Margin="10" Height="30">
                                 <Rectangle Height="16" Width="16">
                                     <Rectangle.Fill>
                                         <VisualBrush  Visual="{StaticResource appbar_question_white}" ></VisualBrush>
@@ -286,12 +282,13 @@
                             </DockPanel>
                         </Controls:MetroTabItem.Header>
                     </Controls:MetroTabItem>
-                </Controls:MetroAnimatedTabControl>
+                </Controls:MetroTabControl>
             </Controls:Flyout>
 
             <Controls:MetroAnimatedSingleRowTabControl Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="150, -5 ,0, 0" x:Name="MainWindowTabs" >
                 <TabItem>
-                    <exampleViews:StartView x:Name="StartView" DataContext="{Binding}"  Tag="0"  IsEnabled="true"/>
+                    
+                    <exampleViews:StartView x:Name="StartView" DataContext="{Binding}"  Tag="0"  IsEnabled="true" />
                 </TabItem>
                 <TabItem>
                     <exampleViews:ProductView x:Name="ProductView"  DataContext="{Binding}" Tag="1"  IsEnabled="true"/>

@@ -34,7 +34,8 @@
                 <RowDefinition Height="100"></RowDefinition>
             </Grid.RowDefinitions>
 
-            <Label Grid.Row="0" Grid.Column="1" Content="Configure Updates" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Foreground="#ADAEB0" Height="40" Style="{StaticResource CustomMetroLabelTopHeader}" Padding="5,10,0,0" Margin="0,0,0,15" />
+            <Label Grid.Row="0" Grid.Column="1" Content="Configure Updates" VerticalAlignment="Top" HorizontalAlignment="Stretch" Foreground="#ADAEB0" Height="40" Style="{StaticResource CustomMetroLabelTopHeader}"
+                    />
 
             <Grid Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" Margin="0,0,-114,0" Width="1014">
                 <Grid.ColumnDefinitions>

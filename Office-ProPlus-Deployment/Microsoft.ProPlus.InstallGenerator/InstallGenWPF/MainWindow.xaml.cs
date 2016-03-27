@@ -35,7 +35,7 @@ namespace MetroDemo
 
             InitializeComponent();
 
-            ThemeManager.TransitionsEnabled = true;
+            ThemeManager.TransitionsEnabled = false;
 
             MainTabControl.SelectionChanged += MainTabControl_SelectionChanged;
 
@@ -77,17 +77,14 @@ namespace MetroDemo
                 MainTabControl.SelectedIndex = _cacheIndex;
                 return;
             }
-
+            
             ThemeManager.TransitionsEnabled = MainTabControl.SelectedIndex != 4;
+            ThemeManager.TransitionsEnabled = false;
 
             if (MainTabControl.SelectedIndex > -1)
             {
-
-              
                 ((TabItem)MainWindowTabs.Items[MainTabControl.SelectedIndex]).IsSelected = true;
                 ((TabItem)MainWindowTabs.Items[MainTabControl.SelectedIndex]).IsEnabled = true;
-
-                
             }
 
             if (_cacheIndex != MainTabControl.SelectedIndex)
@@ -115,7 +112,7 @@ namespace MetroDemo
             for (var i = 1; i < MainTabControl.Items.Count; i++)
             {
                 var tabItem = (TabItem)MainTabControl.Items[i];
-                tabItem.IsEnabled = false;
+                //tabItem.IsEnabled = false;
             }
 
             ProductView.Reset();
@@ -224,8 +221,8 @@ namespace MetroDemo
 
             if (OptionsFlyout.Width == 160)
             {
-                Duration xtran = new Duration(TimeSpan.FromMilliseconds(100));
-                DoubleAnimation widthAnimation = new DoubleAnimation(45, xtran);
+                var xtran = new Duration(TimeSpan.FromMilliseconds(100));
+                var widthAnimation = new DoubleAnimation(45, xtran);
                 OptionsFlyout.AreAnimationsEnabled = true;
                 OptionsFlyout.BeginAnimation(WidthProperty, widthAnimation);
                 OptionsFlyout.Width = 45;
@@ -237,12 +234,16 @@ namespace MetroDemo
                 lblUpdate.Visibility = Visibility.Collapsed;
                 lblAbout.Visibility = Visibility.Collapsed;
 
-                Thickness margin = ((Button)sender).Margin;
+                var margin = ((Button)sender).Margin;
                 margin.Left = -1;
                 margin.Right = -10;
                 ((Button) sender).Margin = margin;
 
                 Thickness mainMargin = ((MetroAnimatedSingleRowTabControl) MainWindowTabs).Margin;
+
+
+
+
                 mainMargin.Left = 45;
                 ((MetroAnimatedSingleRowTabControl) MainWindowTabs).Margin = mainMargin;
 
@@ -250,8 +251,8 @@ namespace MetroDemo
             }
             else
             {
-                Duration xtran = new Duration(TimeSpan.FromMilliseconds(100));
-                DoubleAnimation widthAnimation = new DoubleAnimation(160, xtran);
+                var xtran = new Duration(TimeSpan.FromMilliseconds(100));
+                var widthAnimation = new DoubleAnimation(160, xtran);
                 OptionsFlyout.AreAnimationsEnabled = true;
                 OptionsFlyout.BeginAnimation(WidthProperty, widthAnimation);
                 OptionsFlyout.Width = 160;
@@ -383,5 +384,7 @@ namespace MetroDemo
         {
             ((MetroTabItem)sender).IsEnabled=true;
         }
+
+
     }
 }

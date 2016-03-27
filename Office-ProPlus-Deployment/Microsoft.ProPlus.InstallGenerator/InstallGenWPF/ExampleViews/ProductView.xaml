@@ -29,22 +29,22 @@
                 <ColumnDefinition Width="*"  />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="30"></RowDefinition>
-                <RowDefinition Height="350"></RowDefinition>
-                <RowDefinition Height="100"></RowDefinition>
+                <RowDefinition Height="450"></RowDefinition>
+                <RowDefinition></RowDefinition>
             </Grid.RowDefinitions>
 
-            <Grid Grid.Row="1" HorizontalAlignment="Stretch">
+            <Grid Grid.Row="0" HorizontalAlignment="Stretch">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition />
                     <ColumnDefinition Width="0"/>
                 </Grid.ColumnDefinitions>
-                <StackPanel Grid.Row="0" Grid.Column="1"  Background="#666666" Width="auto" Height="40" HorizontalAlignment="Stretch" Margin="0,-40,0,340"/>
-                <Controls:MetroAnimatedSingleRowTabControl Grid.Row="0" Grid.Column="1"  x:Name="MainTabControl"  SelectionChanged="MainTabControl_OnSelectionChanged" Height="370" VerticalAlignment="Bottom" Margin="0,-70,0,0" >
-                    <TabItem x:Name="ProductTab" Height="40" >
+                <StackPanel Grid.Row="0" Grid.Column="1"  Background="#666666" Width="auto" Height="40" HorizontalAlignment="Stretch" VerticalAlignment="Top" />
+                <Controls:MetroAnimatedSingleRowTabControl Grid.Row="0" Grid.Column="1"  x:Name="MainTabControl"  SelectionChanged="MainTabControl_OnSelectionChanged"
+                                                           Height="600" VerticalAlignment="Top" >
+                    <TabItem x:Name="ProductTab" Height="50" >
                         <TabItem.Header>
-                            <DockPanel Margin="0,-5,0,0">
+                            <DockPanel Margin="0,5,0,0">
                                 <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,0,0,0" Height="19">Products</Label>
                             </DockPanel>
                         </TabItem.Header>
@@ -56,89 +56,86 @@
                                 <RowDefinition Height="300"></RowDefinition>
                             </Grid.RowDefinitions>
 
-                            <Grid Height="410" Width="700" Grid.Row="1" HorizontalAlignment="Left">
+                            <Grid Height="410" Width="900" Grid.Row="1" HorizontalAlignment="Left">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="260" />
-                                    <ColumnDefinition Width="150" />
-                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="390" />
+                                    <ColumnDefinition Width="120" />
+                                    <ColumnDefinition Width="280" />
                                 </Grid.ColumnDefinitions>
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="200"></RowDefinition>
+                                    <RowDefinition Height="250"></RowDefinition>
                                     <RowDefinition Height="200"></RowDefinition>
                                 </Grid.RowDefinitions>
 
-                                <Grid Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" Margin="50,0,0,0">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="210" />
-                                        <ColumnDefinition />
-                                    </Grid.ColumnDefinitions>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="50" />
-                                        <RowDefinition Height="60" />
-                                        <RowDefinition Height="75" />
-                                    </Grid.RowDefinitions>
+                                <StackPanel Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" Margin="0,0,0,0">
 
-                                    <Label Grid.Row="0" Content="Product" Style="{StaticResource CustomMetroLabelHeader}"  HorizontalAlignment="Left" Margin="0,0,0,10" Padding="0,20,0,0" Width="64"/>
-                                    <Button x:Name="ProductInfo" Width="30" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" Margin="90,10,0,9" Padding="0,10,0,0"
-                                            Focusable="False"  Style="{StaticResource MetroInfoButton}" Click="ProductInfo_OnClick" >
-                                        <StackPanel Orientation="Horizontal">
-                                            <Image Source="../images/info.png" Width="20" Height="20"/>
-                                        </StackPanel>
-                                    </Button>
-
-                                    <ListBox x:Name="MainProducts" Grid.Column="0" Grid.Row="1" Style="{StaticResource VirtualisedMetroListBox}"
-                                         ItemsSource="{Binding MainProducts}"
-                                         DisplayMemberPath="DisplayName" 
-                                         SelectedIndex="0" SelectionMode="Single" FontSize="20" SelectionChanged="Products_OnSelectionChanged" BorderThickness="2,2,2,0"/>
-
-
-
-                                    <ListBox x:Name="AdditionalProducts" Grid.Column="0" Grid.Row="2" Style="{StaticResource VirtualisedMetroListBox}"
-                                         ItemsSource="{Binding AdditionalProducts}"
-                                         DisplayMemberPath="DisplayName"
-                                         SelectedIndex="-1" SelectionMode="Multiple" FontSize="20" SelectionChanged="Products_OnSelectionChanged" BorderThickness="2,0,2,2" />
-                                </Grid>
-
-                                <StackPanel Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center">
-                                    <Grid>
+                                    <Grid Margin="35 0 0 0" >
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="80" />
                                             <ColumnDefinition Width="30" />
+                                            <ColumnDefinition Width="400" />
                                         </Grid.ColumnDefinitions>
-                                        <Label Content="Edition" Style="{StaticResource CustomMetroLabelHeader}" HorizontalAlignment="Left" Grid.Column="0" Padding="0,20,0,0"/>
-                                        <Button x:Name="EditionInfo" Width="30" Height="32" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" Margin="0 8 0 0" Padding="0,10,0,0" 
+                                        <Button x:Name="ProductInfo" Width="30" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" 
                                                 Focusable="False"  Style="{StaticResource MetroInfoButton}" Click="ProductInfo_OnClick" >
                                             <StackPanel Orientation="Horizontal">
                                                 <Image Source="../images/info.png" Width="20" Height="20"/>
                                             </StackPanel>
                                         </Button>
+                                        <Label Grid.Row="0" Grid.Column="1" Content="Product" Style="{StaticResource CustomMetroLabelHeader}"  
+                                               HorizontalAlignment="Left"  Width="100" VerticalAlignment="Center"/>
                                     </Grid>
-                                    <RadioButton Margin="{StaticResource ControlMargin}" x:Name="ProductEdition32Bit"
-                                         Content="32-Bit"
+
+                                    <ListBox x:Name="MainProducts"  Style="{StaticResource VirtualisedMetroListBox}"
+                                         ItemsSource="{Binding MainProducts}"
+                                         DisplayMemberPath="DisplayName" Width="320" Height="60"
+                                         SelectedIndex="0" SelectionMode="Single" FontSize="20" SelectionChanged="Products_OnSelectionChanged" BorderThickness="2,2,2,0"/>
+
+                                    <ListBox x:Name="AdditionalProducts"  Style="{StaticResource VirtualisedMetroListBox}"
+                                         ItemsSource="{Binding AdditionalProducts}"
+                                         DisplayMemberPath="DisplayName" Width="320" Height="60"
+                                         SelectedIndex="-1" SelectionMode="Multiple" FontSize="20" SelectionChanged="Products_OnSelectionChanged" BorderThickness="2,0,2,2" />
+                                </StackPanel>
+
+                                <StackPanel Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" Margin="0,0,0,0">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="30" />
+                                            <ColumnDefinition Width="80" />
+                                        </Grid.ColumnDefinitions>
+                                        <Button x:Name="EditionInfo" Width="30" Height="32" Margin="0 0 0 0" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" 
+                                                Focusable="False"  Style="{StaticResource MetroInfoButton}" Click="ProductInfo_OnClick" >
+                                            <StackPanel Orientation="Horizontal">
+                                                <Image Source="../images/info.png" Width="20" Height="20"/>
+                                            </StackPanel>
+                                        </Button>
+                                        <Label Content="Edition" Style="{StaticResource CustomMetroLabelHeader}" HorizontalAlignment="Left" Grid.Column="1"/>
+                                    </Grid>
+                                    <RadioButton Margin="{StaticResource ControlMargin}" x:Name="ProductEdition32Bit" HorizontalAlignment="Center"
+                                         Content="32-Bit" Width="100"
                                          GroupName="1" 
                                          IsChecked="True" FontSize="20" />
-                                    <RadioButton Margin="{StaticResource ControlMargin}"  x:Name="ProductEdition64Bit"
-                                         Content="64-Bit"
+                                    <RadioButton Margin="{StaticResource ControlMargin}"  x:Name="ProductEdition64Bit" HorizontalAlignment="Center"
+                                         Content="64-Bit" Width="100"
                                          GroupName="1" FontSize="20" />
                                 </StackPanel>
 
                                 <StackPanel Grid.Row="0" Grid.Column="2" HorizontalAlignment="Left">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="80" />
                                             <ColumnDefinition Width="30" />
+                                            <ColumnDefinition Width="80" />
                                         </Grid.ColumnDefinitions>
-                                        <Label Content="Channel" Style="{StaticResource CustomMetroLabelHeader}" HorizontalAlignment="Left" Grid.Column="0" Padding="0,20,0,0"/>
-                                        <Button x:Name="BranchInfo" Width="30" Height="32" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" Margin="0 8 0 0" Padding="0,10,0,0" 
+
+                                        <Button x:Name="BranchInfo" Width="30" Height="32" Margin="0 0 0 0"  Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" 
                                                 Focusable="False"  Style="{StaticResource MetroInfoButton}" Click="ProductInfo_OnClick" >
                                             <StackPanel Orientation="Horizontal">
                                                 <Image Source="../images/info.png" Width="20" Height="20"/>
                                             </StackPanel>
                                         </Button>
+                                        <Label Content="Channel" Style="{StaticResource CustomMetroLabelHeader}" HorizontalAlignment="Left" Grid.Column="1" />
                                     </Grid>
 
 
-                                    <ComboBox x:Name="ProductBranch" Width="240" Height="35" Margin="0, 10, 0, 0" SelectedIndex="0" 
+                                    <ComboBox x:Name="ProductBranch" Width="270" Height="35" Margin="0, 10, 0, 0" SelectedIndex="0" BorderThickness="2" BorderBrush="Gray"
                                               FontSize="20" ItemsSource="{Binding Branches}" DisplayMemberPath="Name" SelectionChanged="ProductBranch_OnSelectionChanged" 
                                               Style="{StaticResource MetroComboBox}">
                                     </ComboBox>
@@ -148,9 +145,9 @@
 
                         </Grid>
                     </TabItem>
-                    <TabItem x:Name="LanguagesTab" Height="40">
+                    <TabItem x:Name="LanguagesTab" Height="50">
                         <TabItem.Header>
-                            <DockPanel Margin="0,-5,0,0">
+                            <DockPanel Margin="0,5,0,0">
                                 <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,0,0,0">Languages</Label>
                             </DockPanel>
                         </TabItem.Header>
@@ -159,25 +156,24 @@
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="20" />
                                     <RowDefinition Height="50" />
-                                    <RowDefinition />
+                                    <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
 
-                                <DataGrid x:Name="LanguageList" Height="320" Grid.Column="0" Grid.Row="2" 
-                                          RenderOptions.ClearTypeHint="Enabled"
-                                          TextOptions.TextFormattingMode="Display"
-                                          
-                                          Style="{DynamicResource MetroDataGrid}"
-                                          AutoGenerateColumns="False" HeadersVisibility="Column"
-                                          CanUserAddRows="False" Margin="0,0.4,35.6,0.4">
-                                    <DataGrid.Columns>
-                                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="400" 
-                                                  IsReadOnly="True" FontSize="20" Foreground="{DynamicResource LabelTextBrushCustom}" />
-                                        <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="100" 
-                                                  IsReadOnly="True" FontSize="20" Foreground="{DynamicResource LabelTextBrushCustom}" />
-                                    </DataGrid.Columns>
-
-
-                                </DataGrid>
+                                <Border Grid.Column="0" Grid.Row="2" BorderThickness="2" BorderBrush="Gray"  Margin="0 0 35 0" >
+                                    <DataGrid x:Name="LanguageList" Height="320" 
+                                              RenderOptions.ClearTypeHint="Enabled" Background="White"
+                                              TextOptions.TextFormattingMode="Display" BorderThickness="0" BorderBrush="Gray"
+                                              Margin="0 0 0 0"  Style="{DynamicResource MetroDataGrid}"
+                                              AutoGenerateColumns="False" HeadersVisibility="Column"
+                                              CanUserAddRows="False">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="400" 
+                                                      IsReadOnly="True" FontSize="20" Foreground="{DynamicResource LabelTextBrushCustom}" />
+                                            <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="100" 
+                                                      IsReadOnly="True" FontSize="20" Foreground="{DynamicResource LabelTextBrushCustom}" />
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </Border>
 
                                 <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal">
                                     <StackPanel.Resources>
@@ -210,9 +206,9 @@
                         </StackPanel>
 
                     </TabItem>
-                    <TabItem x:Name="OptionalTab"  >
+                    <TabItem x:Name="OptionalTab" Height="50" >
                         <TabItem.Header>
-                            <DockPanel Margin="0,-5,0,0">
+                            <DockPanel Margin="0,5,0,0">
                                 <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,0,0,0">Optional</Label>
                             </DockPanel>
                         </TabItem.Header>
@@ -224,98 +220,112 @@
                             </Grid.RowDefinitions>
 
                             <StackPanel Grid.Column="0" Grid.Row="1">
-                                <Grid >
+                                <Grid Margin="50 0 0 0" >
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="50"></RowDefinition>
                                     </Grid.RowDefinitions>
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="130" />
-                                        <ColumnDefinition Width="40" />
-                                        <ColumnDefinition Width="400" />
+                                        <ColumnDefinition Width="30" />
+                                        <ColumnDefinition Width="120" />
+                                        <ColumnDefinition Width="360" />
                                     </Grid.ColumnDefinitions>
-                                    <Label Content="Version" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="0" Margin="50,0,21,0" Padding="0,20,0,0"/>
-                                    <Button x:Name="VersionInfo" Width="30" Height="32" HorizontalAlignment="Left" Margin="115,8,0,10"  Padding="0,10,0,0"
-                                                Focusable="False"  Style="{StaticResource MetroInfoButton}" Click="ProductInfo_OnClick" Grid.ColumnSpan="2" >
+                                    <Button x:Name="VersionInfo" Width="30" Height="32" HorizontalAlignment="Center"  
+                                                Focusable="False"  Style="{StaticResource MetroInfoButton}" Click="ProductInfo_OnClick"  >
                                         <StackPanel Orientation="Horizontal">
                                             <Image Source="../images/info.png" Width="20" Height="20"/>
                                         </StackPanel>
                                     </Button>
-                                    <ComboBox Width="402" x:Name="ProductVersion" Grid.Column="2" 
-                                          Height="35" HorizontalAlignment="Left"
-                                          Style="{DynamicResource MetroComboBox}"
-                                         
-                                          Controls:TextBoxHelper.Watermark="16.0.4949.1003"
-                                          DisplayMemberPath="Version"
-                                          IsEditable="True"
-                                          ItemsSource="{Binding Builds}"
-                                          MaxDropDownHeight="125"
-                                          FontSize="20"
-                                          Text="{Binding Path=Version}" Margin="15,9,-16,6" />
-                                </Grid>
-                                <WrapPanel>
+                                    <Label Content="Version" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" />
 
-                                    <Label Content="Source Path" Style="{StaticResource CustomMetroLabelHeader}"  Margin="50,0,0,0" Padding="0,20,0,0" Height="51"/>
-                                    <Button x:Name="SourcePathInfo" Width="30" Height="32" HorizontalAlignment="Left" Padding="0,10,0,0" 
+                                    <Border BorderThickness="2" BorderBrush="Gray" Grid.Column="2" Height="38">
+                                        <ComboBox Width="360" x:Name="ProductVersion" Grid.Column="2" BorderThickness="0"
+                                              Height="35" HorizontalAlignment="Left" 
+                                              Style="{DynamicResource MetroComboBox}"
+                                              Controls:TextBoxHelper.Watermark="16.0.4949.1003"
+                                              DisplayMemberPath="Version"
+                                              IsEditable="True"
+                                              ItemsSource="{Binding Builds}"
+                                              MaxDropDownHeight="125"
+                                              FontSize="20"
+                                              Text="{Binding Path=Version}"  />
+                                    </Border>
+                                </Grid>
+                                <Grid Margin="50 0 0 0" >
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="50"></RowDefinition>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="30" />
+                                        <ColumnDefinition Width="120" />
+                                        <ColumnDefinition Width="620" />
+                                    </Grid.ColumnDefinitions>
+                                    <Button x:Name="SourcePathInfo" Width="30" Height="32" HorizontalAlignment="Left"  Grid.Column="0" Margin="0 5 0 0"
                                                 Focusable="False"  Style="{StaticResource MetroInfoButton}" Click="ProductInfo_OnClick" >
                                         <StackPanel Orientation="Horizontal">
                                             <Image Source="../images/info.png" Width="20" Height="20"/>
                                         </StackPanel>
                                     </Button>
-                                    <Grid Margin="10,0,0,0">
-                                        <Controls:MetroProgressBar x:Name="DownloadProgressBar"   Height="35"  Margin="0,0,10,0"  Background="#f4f4f4" />
-                                        <TextBox x:Name="ProductUpdateSource" Background="#00ffffff" FontSize="20" 
-                                             Controls:TextBoxHelper.Watermark="Local, UNC or HTTP Path" Height="35" Width="300" Margin="0,0,10,0"
-                                             Controls:TextBoxHelper.ClearTextButton="True" TextChanged="BuildFilePath_OnTextChanged"
-                                             Text="" Style="{StaticResource MetroTextBox}">
-                                        </TextBox>
-                                    </Grid>
+                                    <Label Content="Source Path" Style="{StaticResource CustomMetroLabelHeader}" Margin="0 10 0 0" Grid.Column="1"  Height="51"/>
 
-                                    <Button Width="55" 
+                                    <Grid Margin="0,0,0,0" Grid.Column="2">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="370" />
+                                            <ColumnDefinition Width="60" />
+                                            <ColumnDefinition Width="60" />
+                                            <ColumnDefinition Width="75" />
+                                            <ColumnDefinition Width="75" />
+                                        </Grid.ColumnDefinitions>
+        
+
+                                        <Controls:MetroProgressBar x:Name="DownloadProgressBar"  Grid.Column="0" Height="37" Background="White" Width="360" HorizontalAlignment="Left" />
+                                        <TextBox x:Name="ProductUpdateSource" Background="#00ffffff" FontSize="20" Grid.Column="0" HorizontalAlignment="Left"
+                                             Controls:TextBoxHelper.Watermark="Local, UNC or HTTP Path" Height="37" Width="360"
+                                             Controls:TextBoxHelper.ClearTextButton="True" TextChanged="BuildFilePath_OnTextChanged"
+                                             Text="">
+                                        </TextBox>
+
+                                        <Button Width="55" Grid.Column="1"
                                             Height="40" 
-                                            Margin="0,0,10,0"
                                             Content="Browse" x:Name="UpdatePath" Click="UpdatePath_OnClick" />
-                                    <Button Width="50" Height="40" 
-                                            Margin="0,0,10,0"
+                                        <Button Width="50" Height="40" Grid.Column="2" 
                                             Content="Open" x:Name="OpenFolderButton" IsEnabled="False" Click="OpenFolderButton_OnClick"   />
-                                    <Button Width="70" Height="40" 
+                                        <Button Width="70" Height="40" Grid.Column="3"
                                             Content="Download" x:Name="DownloadButton" Click="DownloadButton_OnClick" IsEnabled="False"   />
 
-                                    <Label x:Name="DownloadPercent" Content="" Style="{StaticResource CustomMetroLabelHeader}" />
-                                </WrapPanel>
+                                        <Label x:Name="DownloadPercent" Grid.Column="4" Content="" Margin="0 8 0 0" Style="{StaticResource CustomMetroLabelHeader}" />
+                                    </Grid>
+
+
+                                </Grid>
                             </StackPanel>
 
 
                         </Grid>
                     </TabItem>
-                    <TabItem  x:Name="ExcludedTab" Height="40"  >
+                    <TabItem x:Name="ExcludedTab" Height="50">
                         <TabItem.Header>
-                            <DockPanel Margin="0,-5,0,0">
+                            <DockPanel Margin="0,5,0,0">
                                 <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,0,0,0">Excluded</Label>
                             </DockPanel>
                         </TabItem.Header>
-                        <Grid Margin="50,0,0,0">
+                        <Grid Margin="-30,0,0,0" HorizontalAlignment="Center">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="75" />
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="45.6"/>
-                                <ColumnDefinition Width="263.2"/>
-                                <ColumnDefinition Width="36.8"/>
-                                <ColumnDefinition Width="283*"/>
-                                <ColumnDefinition Width="15*"/>
+                                <ColumnDefinition Width="30" />
+                                <ColumnDefinition Width="300"/>
+                                <ColumnDefinition Width="300"/>
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="30"></RowDefinition>
                                 <RowDefinition Height="Auto"></RowDefinition>
                             </Grid.RowDefinitions>
 
-                            <Button x:Name="ExcludeAppInfo" Width="30" Height="32" HorizontalAlignment="Left" Margin="0,0,0,358.4" 
-                                                Focusable="False"  Style="{StaticResource MetroInfoButton}" Click="ProductInfo_OnClick" Grid.RowSpan="2" >
+                            <Button x:Name="ExcludeAppInfo" Width="30" Height="32" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0 10 0 0"
+                                                Focusable="False"  Style="{StaticResource MetroInfoButton}" Click="ProductInfo_OnClick"  >
                                 <StackPanel Orientation="Horizontal">
                                     <Image Source="../images/info.png" Width="20" Height="20"/>
                                 </StackPanel>
                             </Button>
 
-                            <DataGrid x:Name="ExcludedApps1" Grid.Column="0" Grid.Row="1" Height="350"
+                            <DataGrid x:Name="ExcludedApps1" Grid.Column="1" Grid.Row="0" Height="350" 
                                   RenderOptions.ClearTypeHint="Enabled"
                                   TextOptions.TextFormattingMode="Display"
                                   Margin="5,4.6,2.6,5.4"
@@ -355,7 +365,7 @@
                                 </DataGrid.Columns>
                             </DataGrid>
 
-                            <DataGrid x:Name="ExcludedApps2" Grid.Column="3" Grid.Row="1" Height="350"
+                            <DataGrid x:Name="ExcludedApps2" Grid.Column="2" Grid.Row="0" Height="350"
                                   RenderOptions.ClearTypeHint="Enabled"
                                   TextOptions.TextFormattingMode="Display"
                                   Margin="7.4,4.6,1.6,5.4"
@@ -396,11 +406,10 @@
 
                         </Grid>
                     </TabItem>
-
                 </Controls:MetroAnimatedSingleRowTabControl>
             </Grid>
 
-            <Grid Grid.Row="2" Grid.Column="0" HorizontalAlignment="Center" >
+            <Grid Grid.Row="2" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Bottom" >
                 <Grid.Resources>
                     <ResourceDictionary>
                         <ResourceDictionary.MergedDictionaries>
