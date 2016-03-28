@@ -319,7 +319,10 @@ Will generate the Office Deployment Tool (ODT) configuration XML based on the lo
             $mainRegPath = Get-OfficeCTRRegPath
             $configRegPath = $mainRegPath + "\Configuration"
 
+            $currentUpdateSource = (Get-ItemProperty HKLM:\Software\Policies\Microsoft\Office\16.0\common\officeupdate -Name updatepath -ErrorAction SilentlyContinue).updatepath
+            if(!($currentUpdateSource)){
             $currentUpdateSource = (Get-ItemProperty HKLM:\$configRegPath -Name UpdateUrl -ErrorAction SilentlyContinue).UpdateUrl
+            }
             $saveUpdateSource = (Get-ItemProperty HKLM:\$configRegPath -Name SaveUpdateUrl -ErrorAction SilentlyContinue).SaveUpdateUrl
             $clientFolder = (Get-ItemProperty HKLM:\$configRegPath -Name ClientFolder -ErrorAction SilentlyContinue).ClientFolder
 
