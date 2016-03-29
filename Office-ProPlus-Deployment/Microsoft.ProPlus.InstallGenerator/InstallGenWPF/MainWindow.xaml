@@ -25,7 +25,6 @@
                       d:DesignWidth="800"
                       d:DataContext="{d:DesignInstance MetroDemo:MainWindowViewModel}"
                       Closing="MetroWindow_Closing"
-             
                       Dialog:DialogParticipation.Register="{Binding}" TitleAlignment="Left" TitleCaps="False" TitlebarHeight="29">
 
     <Window.Resources>
@@ -69,10 +68,6 @@
                 <Setter Property="Header"
                         Value="{Binding Name, Mode=OneWay}" />
             </Style>
-
-
-
-
 
 
 
@@ -239,6 +234,18 @@
                             <DockPanel Margin="10" Height="30">
                                 <Rectangle Height="16" Width="16">
                                     <Rectangle.Fill>
+                                        <VisualBrush  Visual="{StaticResource appbar_download}" ></VisualBrush>
+                                    </Rectangle.Fill>
+                                </Rectangle>
+                                <Label FontSize="16" Foreground="white"  x:Name="lblDownload">Download</Label>
+                            </DockPanel>
+                        </Controls:MetroTabItem.Header>
+                    </Controls:MetroTabItem >
+                    <Controls:MetroTabItem IsEnabled="True" Width="160" >
+                        <Controls:MetroTabItem.Header>
+                            <DockPanel Margin="10" Height="30">
+                                <Rectangle Height="16" Width="16">
+                                    <Rectangle.Fill>
                                         <VisualBrush  Visual="{StaticResource appbar_new_window_white}" ></VisualBrush>
                                     </Rectangle.Fill>
                                 </Rectangle>
@@ -287,11 +294,13 @@
 
             <Controls:MetroAnimatedSingleRowTabControl Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="150, -5 ,0, 0" x:Name="MainWindowTabs" >
                 <TabItem>
-                    
                     <exampleViews:StartView x:Name="StartView" DataContext="{Binding}"  Tag="0"  IsEnabled="true" />
                 </TabItem>
                 <TabItem>
                     <exampleViews:ProductView x:Name="ProductView"  DataContext="{Binding}" Tag="1"  IsEnabled="true"/>
+                </TabItem>
+                <TabItem>
+                    <exampleViews:DownloadView x:Name="DownloadView"  DataContext="{Binding}" Tag="1"  IsEnabled="true"/>
                 </TabItem>
                 <TabItem>
                     <exampleViews:UpdateView x:Name="UpdateView" DataContext="{Binding}" Tag="2"  IsEnabled="true"/>

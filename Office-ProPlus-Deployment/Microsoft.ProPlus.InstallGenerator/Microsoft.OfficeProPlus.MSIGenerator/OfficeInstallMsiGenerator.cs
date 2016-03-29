@@ -116,7 +116,7 @@ public class MsiGenerator
 
     public string GetOdtErrorMessage()
     {
-        var tempPath = Environment.ExpandEnvironmentVariables("%temp%");
+        var tempPath = Environment.ExpandEnvironmentVariables("%public%");
         const string logFolderName = "OfficeProPlusLogs";
         var loggingPath = tempPath + @"\" + logFolderName;
 
@@ -257,12 +257,18 @@ public class CustomActions
     [CustomAction]
     public static ActionResult InstallOffice(Session session)
     {
+       
+
         try
         {
+           
             var installDir = session.CustomActionData["INSTALLDIR"];
+
+
             if (installDir == null) return ActionResult.Failure;
 
             var isSilent = false;
+
 
             try
             {
@@ -290,17 +296,23 @@ public class CustomActions
             if (isSilent)
             {
                 p.StartInfo.Arguments = "/silent";
+               
             }
+            
 
             p.Start();
-            Process.GetCurrentProcess().Kill();
+            Process.GetCurrentProcess().Close();
 
+
+
+           
             return ActionResult.Success;
         }
         catch (Exception ex)
         {
             return ActionResult.Failure;
         }
+        
     }
 
     [CustomAction]

@@ -140,6 +140,9 @@
     <Compile Include="ExampleViews\GenerateView.xaml.cs">
       <DependentUpon>GenerateView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ExampleViews\DownloadView.xaml.cs">
+      <DependentUpon>DownloadView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ExampleViews\StartView.xaml.cs">
       <DependentUpon>StartView.xaml</DependentUpon>
     </Compile>
@@ -207,6 +210,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ExampleViews\GenerateView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="ExampleViews\DownloadView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

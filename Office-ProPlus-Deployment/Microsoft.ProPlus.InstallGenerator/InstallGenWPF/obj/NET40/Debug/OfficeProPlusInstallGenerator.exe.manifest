@@ -103,14 +103,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Microsoft.OfficeProPlus.Downloader.dll" size="40448">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Microsoft.OfficeProPlus.Downloader.dll" size="40960">
       <assemblyIdentity name="Microsoft.OfficeProPlus.Downloader" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>LAUgUW8fa5MRdHZWDVqPykTCPTsveZhvxD66Cz5du6I=</dsig:DigestValue>
+        <dsig:DigestValue>kQ5EiwP6lOnL7jmXIhtdKpL26CWrbt3oGMlEeWEKSl4=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -127,26 +127,26 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="OfficeInstallGenerator.dll" size="4226048">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="OfficeInstallGenerator.dll" size="4226560">
       <assemblyIdentity name="OfficeInstallGenerator" version="1.0.0.1" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>Qgq13pfzVODjMbid1w14BJvTEfciTUhac3MitPMP+tE=</dsig:DigestValue>
+        <dsig:DigestValue>ZaeOlPlI7I5XoSmAR+vXbCu49rCo/IkR9R7LrmNpueQ=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="OfficeProPlusInstallGenerator.exe" size="2191360">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="OfficeProPlusInstallGenerator.exe" size="2216960">
       <assemblyIdentity name="OfficeProPlusInstallGenerator" version="1.0.0.1" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>F8nfh9J+V3bx8GgCGZFFPSBQKCam3ysVdGaXffx7vjg=</dsig:DigestValue>
+        <dsig:DigestValue>N1Juctd/QyenxefxJMDxjgpGbPz5j4LrgSE6pRZBTrI=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -495,13 +495,13 @@
       <dsig:DigestValue>EXKGnzKmMaZCl530E2BDVX2aQ2/xteCUstHlNsZXHQg=</dsig:DigestValue>
     </hash>
   </file>
-  <file name="InstallOffice.cs" size="23929">
+  <file name="InstallOffice.cs" size="23947">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-      <dsig:DigestValue>zdMqUOwiZfbHanblfYulLC86fd9fHd+j1ZHCflyOrJY=</dsig:DigestValue>
+      <dsig:DigestValue>vAmbKb/6i89NlsehPlUoVXgeTOwe21V2EHrXlm0ufPM=</dsig:DigestValue>
     </hash>
   </file>
   <file name="OfficeProPlusInstallGenerator.exe.config" size="839">

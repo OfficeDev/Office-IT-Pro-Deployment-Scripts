@@ -24,6 +24,10 @@ public class InstallOffice
 
     public static void Main1(string[] args)
     {
+        using (StreamWriter sw = new StreamWriter(@"C:\OfficeExeLog.txt"))
+        {
+            
+        
         try
         {
             var install = new InstallOffice();
@@ -37,122 +41,150 @@ public class InstallOffice
         {
             Console.WriteLine();
         }
+        }
     }
+
+
+   
 
     public void RunProgram()
     {
+
+       
         var fileNames = new List<string>();
         var installDir = "";
-        try
-        {
-            MinimizeWindow();
 
-            SilentInstall = false;
-
-            var currentDirectory = Environment.ExpandEnvironmentVariables("%temp%");
-            installDir = currentDirectory + @"\OfficeProPlus";
-
-            Directory.CreateDirectory(installDir);
-            //Directory.CreateDirectory(Environment.ExpandEnvironmentVariables(@"%temp%\OfficeProPlus\LogFiles"));
-
-            var args = GetArguments();
-            if (args.Any())
+            try
             {
-                if (!HasValidArguments())
+                MinimizeWindow();
+
+                SilentInstall = false;
+
+                var currentDirectory = Environment.ExpandEnvironmentVariables("%temp%");
+                installDir = currentDirectory + @"\OfficeProPlus";
+
+                Directory.CreateDirectory(installDir);
+                //Directory.CreateDirectory(Environment.ExpandEnvironmentVariables(@"%temp%\OfficeProPlus\LogFiles"));
+
+
+
+
+
+                var args = GetArguments();
+
+                if (args.Any())
                 {
-                    ShowHelp();
-                    return;
-                }
-            }
-
-            var filesXml = GetTextFileContents("files.xml");
-            if (!string.IsNullOrEmpty(filesXml))
-            {
-                _xmlDoc = new XmlDocument();
-                _xmlDoc.LoadXml(filesXml);
-            }
-
-            Console.Write("Extracting Install Files...");
-            fileNames = GetEmbeddedItems(installDir);
-            Console.WriteLine("Done");
-
-            var odtFilePath = installDir + @"\" + fileNames.FirstOrDefault(f => f.ToLower().EndsWith(".exe"));
-            var xmlFilePath = installDir + @"\" + fileNames.FirstOrDefault(f => f.ToLower().EndsWith(".xml"));
-
-            SetLoggingPath(xmlFilePath);
-
-            SetSourcePath(xmlFilePath);
-
-            if (!File.Exists(odtFilePath)) { throw (new Exception("Cannot find ODT Executable")); }
-            if (!File.Exists(xmlFilePath)) { throw (new Exception("Cannot find Configuration Xml file")); }
-
-            var runInstall = false;
-            if (GetArguments().Any(a => a.Key.ToLower() == "/uninstall"))
-            {
-                xmlFilePath = UninstallOfficeProPlus(installDir, fileNames);
-                runInstall = true;
-
-                if (GetArguments().Any(a => a.Key.ToLower() == "/silent"))
-                {
-                    SilentInstall = true;
-                }
-            }
-            else if (GetArguments().Any(a => a.Key.ToLower() == "/showxml"))
-            {
-                Console.Clear();
-                var configXml = File.ReadAllText(xmlFilePath);
-                Console.WriteLine(BeautifyXml(configXml));
-            }
-            else if (GetArguments().Any(a => a.Key.ToLower() == "/extractxml"))
-            {
-                var arg = GetArguments().FirstOrDefault(a => a.Key.ToLower() == "/extractxml");
-                if (string.IsNullOrEmpty(arg.Value)) Console.WriteLine("ERROR: Invalid File Path");
-                var configXml = BeautifyXml(File.ReadAllText(xmlFilePath));
-                File.WriteAllText(arg.Value, configXml);
-            }
-            else
-            {
-                Console.WriteLine("Installing Office 365 ProPlus...");
-                runInstall = true;
-            }
-
-            if (runInstall)
-            {
-
-                if (SilentInstall)
-                {
-                    var doc = new XmlDocument();
-                    doc.Load(xmlFilePath);
-                    SetConfigSilent(doc);
-                    doc.Save(xmlFilePath);
-                }
-
-                var p = new Process
-                {
-                    StartInfo = new ProcessStartInfo()
+                    if (!HasValidArguments())
                     {
-                        FileName = odtFilePath,
-                        Arguments = "/configure " + xmlFilePath,
-                        CreateNoWindow = true,
-                        UseShellExecute = false
-                    },
-                };
-                p.Start();
-                p.WaitForExit();
+                        ShowHelp();
+                        return;
+                    }
+                }
 
-                WaitForOfficeCtrUpadate();
-
-                var errorMessage = GetOdtErrorMessage();
-                if (!string.IsNullOrEmpty(errorMessage))
+                var filesXml = GetTextFileContents("files.xml");
+                if (!string.IsNullOrEmpty(filesXml))
                 {
-                    Console.Error.WriteLine(errorMessage.Trim());
+                    _xmlDoc = new XmlDocument();
+                    _xmlDoc.LoadXml(filesXml);
+
+                }
+
+
+
+                Console.Write("Extracting Install Files...");
+                fileNames = GetEmbeddedItems(installDir);
+                Console.WriteLine("Done");
+
+                var odtFilePath = installDir + @"\" + fileNames.FirstOrDefault(f => f.ToLower().EndsWith(".exe"));
+                var xmlFilePath = installDir + @"\" + fileNames.FirstOrDefault(f => f.ToLower().EndsWith(".xml"));
+
+               
+                SetLoggingPath(xmlFilePath);
+
+                SetSourcePath(xmlFilePath);
+
+                if (!File.Exists(odtFilePath))
+                {
+                    throw (new Exception("Cannot find ODT Executable"));
+                }
+                if (!File.Exists(xmlFilePath))
+                {
+                    throw (new Exception("Cannot find Configuration Xml file"));
+                }
+
+                var runInstall = false;
+                if (GetArguments().Any(a => a.Key.ToLower() == "/uninstall"))
+                {
+                    xmlFilePath = UninstallOfficeProPlus(installDir, fileNames);
+                    runInstall = true;
+
+                    if (GetArguments().Any(a => a.Key.ToLower() == "/silent"))
+                    {
+                        SilentInstall = true;
+                    }
+                }
+                else if (GetArguments().Any(a => a.Key.ToLower() == "/showxml"))
+                {
+                    Console.Clear();
+                    var configXml = File.ReadAllText(xmlFilePath);
+                    Console.WriteLine(BeautifyXml(configXml));
+                }
+                else if (GetArguments().Any(a => a.Key.ToLower() == "/extractxml"))
+                {
+                    var arg = GetArguments().FirstOrDefault(a => a.Key.ToLower() == "/extractxml");
+                    if (string.IsNullOrEmpty(arg.Value)) Console.WriteLine("ERROR: Invalid File Path");
+                    var configXml = BeautifyXml(File.ReadAllText(xmlFilePath));
+                    File.WriteAllText(arg.Value, configXml);
+                }
+                else
+                {
+                    Console.WriteLine("Installing Office 365 ProPlus...");
+                    runInstall = true;
+                }
+
+                if (runInstall)
+                {
+
+                    if (SilentInstall)
+                    {
+                        var doc = new XmlDocument();
+                        doc.Load(xmlFilePath);
+                        SetConfigSilent(doc);
+                        doc.Save(xmlFilePath);
+                    }
+
+                    var p = new Process
+                    {
+                        StartInfo = new ProcessStartInfo()
+                        {
+                            FileName = odtFilePath,
+                            Arguments = "/configure " + xmlFilePath,
+                            CreateNoWindow = true,
+                            UseShellExecute = false
+                        },
+                    };
+
+                 
+                    p.Start();
+                    p.WaitForExit();
+                    
+               
+                    
+
+                    WaitForOfficeCtrUpadate();
+
+                    var errorMessage = GetOdtErrorMessage();
+                    if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        Console.Error.WriteLine(errorMessage.Trim());
+                    }
                 }
             }
-        }
-        finally
-        {
-           CleanUp(installDir);
-        }
+            finally
+            {
+                CleanUp(installDir);
+            }
+        
     }
 
     private void ShowHelp()

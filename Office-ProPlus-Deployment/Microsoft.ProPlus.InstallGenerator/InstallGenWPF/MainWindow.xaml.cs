@@ -63,43 +63,6 @@ namespace MetroDemo
             StartView.ErrorMessage += GenerateView_ErrorMessage;
         }
 
-        private void MainTabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (StartView.RestartWorkflow == null)
-            {
-                StartView.RestartWorkflow += RestartWorkflow;
-            }
-
-            e.Handled = false;
-
-            if (GlobalObjects.ViewModel.BlockNavigation)
-            {
-                MainTabControl.SelectedIndex = _cacheIndex;
-                return;
-            }
-            
-            ThemeManager.TransitionsEnabled = MainTabControl.SelectedIndex != 4;
-            ThemeManager.TransitionsEnabled = false;
-
-            if (MainTabControl.SelectedIndex > -1)
-            {
-                ((TabItem)MainWindowTabs.Items[MainTabControl.SelectedIndex]).IsSelected = true;
-                ((TabItem)MainWindowTabs.Items[MainTabControl.SelectedIndex]).IsEnabled = true;
-            }
-
-            if (_cacheIndex != MainTabControl.SelectedIndex)
-            {
-                if (!GlobalObjects.ViewModel.ResetXml)
-                {
-                    ProductView.UpdateXml();
-                    DisplayView.UpdateXml();
-                    UpdateView.UpdateXml();
-                }
-                GlobalObjects.ViewModel.ResetXml = false;
-
-                _cacheIndex = MainWindowTabs.SelectedIndex;
-            }
-        }
 
         public  string WindowWidth()
         {
@@ -184,13 +147,52 @@ namespace MetroDemo
             });
         }
 
-        
-
-
         #region Events
 
-       
+        private void MainTabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (StartView.RestartWorkflow == null)
+            {
+                StartView.RestartWorkflow += RestartWorkflow;
+            }
 
+            e.Handled = false;
+
+            if (GlobalObjects.ViewModel.BlockNavigation)
+            {
+                MainTabControl.SelectedIndex = _cacheIndex;
+                return;
+            }
+
+            ThemeManager.TransitionsEnabled = MainTabControl.SelectedIndex != 4;
+            ThemeManager.TransitionsEnabled = false;
+
+            if (MainTabControl.SelectedIndex > -1)
+            {
+                ((TabItem)MainWindowTabs.Items[MainTabControl.SelectedIndex]).IsSelected = true;
+                ((TabItem)MainWindowTabs.Items[MainTabControl.SelectedIndex]).IsEnabled = true;
+            }
+
+            if (_cacheIndex != MainTabControl.SelectedIndex)
+            {
+                if (!GlobalObjects.ViewModel.ResetXml)
+                {
+                    ProductView.UpdateXml();
+                    DisplayView.UpdateXml();
+                    UpdateView.UpdateXml();
+                }
+                GlobalObjects.ViewModel.ResetXml = false;
+
+                _cacheIndex = MainWindowTabs.SelectedIndex;
+            }
+        }
+
+
+        private void UIElement_OnIsEnabledChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            ((MetroTabItem)sender).IsEnabled = true;
+        }
+        
         private async void GenerateViewInfoMessage(object sender, MessageEventArgs e)
         {
             try
@@ -380,10 +382,6 @@ namespace MetroDemo
         }
         #endregion
 
-        private void UIElement_OnIsEnabledChanged(object sender, DependencyPropertyChangedEventArgs e)
-        {
-            ((MetroTabItem)sender).IsEnabled=true;
-        }
 
 
     }

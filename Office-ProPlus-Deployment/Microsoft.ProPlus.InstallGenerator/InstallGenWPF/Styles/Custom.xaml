@@ -42,6 +42,7 @@
 
     </Style>
 
+
     <Style TargetType="{x:Type Label}" x:Key="MetroLabelHeader" BasedOn="{StaticResource MetroLabel}">
         <Setter Property="Foreground" Value="{DynamicResource LabelTextBrushCustom}" />
         <Setter Property="FontSize" Value="24"></Setter>
@@ -51,6 +52,13 @@
 
     <Style TargetType="{x:Type Label}" x:Key="CustomMetroLabelHeader" BasedOn="{StaticResource MetroLabel}">
         <Setter Property="Foreground" Value="#333333" />
+        <Setter Property="FontSize" Value="18"></Setter>
+        <Setter Property="FontFamily" Value="{StaticResource DefaultFont}"></Setter>
+        <Setter Property="FontWeight" Value="SemiBold"></Setter>
+    </Style>
+
+    <Style TargetType="{x:Type CheckBox}" x:Key="MetroCheckBox" BasedOn="{StaticResource MetroCheckBox}">
+        <Setter Property="Foreground" Value="{DynamicResource BlackBrush}" />
         <Setter Property="FontSize" Value="18"></Setter>
         <Setter Property="FontFamily" Value="{StaticResource DefaultFont}"></Setter>
         <Setter Property="FontWeight" Value="SemiBold"></Setter>
@@ -119,5 +127,64 @@
         <Setter Property="VerticalAlignment"
                 Value="Top" />
     </Style>
+
+
+
+
+
+
+    <Style TargetType="{x:Type ListViewItem}" x:Key="{x:Type ListViewItem}" >
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+        <Setter Property="Foreground" Value="Black"/>
+        <Setter Property="UIElement.SnapsToDevicePixels" Value="True"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ListViewItem}">
+
+                    <Border SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    Background="{TemplateBinding Background}">
+
+                        <Grid>
+
+                            <!-- This is used when GridView is put inside the ListView -->
+                            <GridViewRowPresenter Content="{TemplateBinding ContentControl.Content}"
+                                          HorizontalAlignment="{TemplateBinding Control.HorizontalContentAlignment}"
+                                          VerticalAlignment="{TemplateBinding Control.VerticalContentAlignment}"
+                                          SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}"/>
+
+                            <!-- This is used for ListView that does not use GridView -->
+                            <ContentPresenter x:Name="contentPresenter"
+                                      Content="{TemplateBinding ContentControl.Content}"
+                                      Visibility="Collapsed"
+                                      ContentTemplate="{TemplateBinding ContentControl.ContentTemplate}"
+                                      ContentStringFormat="{TemplateBinding ContentControl.ContentStringFormat}"
+                                      HorizontalAlignment="{TemplateBinding Control.HorizontalContentAlignment}"
+                                      VerticalAlignment="{TemplateBinding Control.VerticalContentAlignment}"
+                                      SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}"/>
+                        </Grid>
+
+                    </Border>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="GridView.ColumnCollection" Value="{x:Null}">
+                            <Setter TargetName="contentPresenter" Property="Visibility" Value="Visible"/>
+                        </Trigger>
+
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Background" Value="Transparent" />
+                        </Trigger>
+
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
 
 </ResourceDictionary>

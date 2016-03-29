@@ -176,13 +176,6 @@
                                 </Border>
 
                                 <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal">
-                                    <StackPanel.Resources>
-                                        <ResourceDictionary>
-                                            <ResourceDictionary.MergedDictionaries>
-                                                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/FlatButton.xaml" />
-                                            </ResourceDictionary.MergedDictionaries>
-                                        </ResourceDictionary>
-                                    </StackPanel.Resources>
                                     <Button x:Name="AddLanguageButton" Content="Add Language" Margin="2,10,2,9" Click="AddLanguageButton_Click" />
                                     <Button x:Name="RemoveLanguageButton" Content="Remove Language" Margin="2,10,2,9" Click="RemoveLanguageButton_Click" />
                                     <Button x:Name="SetPrimaryButton" Content="Set Primary" Margin="2,10" Click="SetPrimaryButton_OnClick" />

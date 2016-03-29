@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -30,8 +31,27 @@ namespace Microsoft.OfficeProPlus.Downloader
                 _updateFiles = await DownloadCab();
             }
 
-            var selectUpdateFile = properties.OfficeEdition == OfficeEdition.Office32Bit ? _updateFiles.FirstOrDefault(u => u.OfficeEdition == OfficeEdition.Office32Bit) :
-                                                                _updateFiles.FirstOrDefault(u => u.OfficeEdition == OfficeEdition.Office64Bit);
+            var selectUpdateFile = new UpdateFiles();
+
+
+            if (properties.OfficeEdition == OfficeEdition.Office32Bit)
+            {
+                selectUpdateFile = _updateFiles.FirstOrDefault(u => u.OfficeEdition == OfficeEdition.Office32Bit);
+            }
+            else if (properties.OfficeEdition == OfficeEdition.Office32Bit)
+            {
+                selectUpdateFile = _updateFiles.FirstOrDefault(u => u.OfficeEdition == OfficeEdition.Office64Bit);
+            }
+            else if (properties.OfficeEdition == OfficeEdition.Both)
+            {
+                var selectUpdateFile32 = _updateFiles.FirstOrDefault(u => u.OfficeEdition == OfficeEdition.Office32Bit);
+                var selectUpdateFile64 = _updateFiles.FirstOrDefault(u => u.OfficeEdition == OfficeEdition.Office64Bit);
+
+                selectUpdateFile32.Files.AddRange(selectUpdateFile64.Files);
+                selectUpdateFile = selectUpdateFile32;
+            }
+
+
             if (selectUpdateFile == null) throw (new Exception("Cannot Find Office Files"));
 
             var branch = selectUpdateFile.BaseURL.FirstOrDefault(b => b.Branch.ToLower() == properties.BranchName.ToLower());
@@ -133,12 +153,26 @@ namespace Microsoft.OfficeProPlus.Downloader
 
             double percentageEnd = downloadedSize / totalSize * 100;
             if (percentageEnd == 99.0) percentageEnd = 100;
-            DownloadFileProgress(this, new Events.DownloadFileProgress()
+
+            if (DownloadFileProgress != null)
             {
-                BytesRecieved = (long)(downloadedSize),
-                PercentageComplete = Math.Truncate(percentageEnd),
-                TotalBytesToRecieve = (long)totalSize
-            });
+                DownloadFileProgress(this, new Events.DownloadFileProgress()
+                {
+                    BytesRecieved = (long) (downloadedSize),
+                    PercentageComplete = Math.Truncate(percentageEnd),
+                    TotalBytesToRecieve = (long) totalSize
+                });
+            }
+
+            if (DownloadFileComplete != null)
+            {
+                DownloadFileComplete(this, new Events.DownloadFileProgress()
+                {
+                    BytesRecieved = (long) (downloadedSize),
+                    PercentageComplete = Math.Truncate(percentageEnd),
+                    TotalBytesToRecieve = (long) totalSize
+                });
+            }
 
         }
 
@@ -265,6 +299,8 @@ namespace Microsoft.OfficeProPlus.Downloader
             var buildVersion = availableNode.GetAttributeValue("Build");
             return buildVersion;
         }
+
+        public Events.DownloadFileProgressEventHandler DownloadFileComplete { get; set; }
 
         public Events.DownloadFileProgressEventHandler DownloadFileProgress { get; set; }
 
