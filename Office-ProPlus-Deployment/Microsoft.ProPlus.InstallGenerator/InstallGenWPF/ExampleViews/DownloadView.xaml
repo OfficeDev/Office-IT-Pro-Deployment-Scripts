@@ -21,11 +21,7 @@
             <Thickness x:Key="ColumnMargin">10 5 10 5</Thickness>
             <Thickness x:Key="ControlMargin">0 5 0 0</Thickness>
             <exampleViews:NegateConverter x:Key="negate" />
-            
-            
-            
-            
-            
+
         </ResourceDictionary>
     </UserControl.Resources>
 
@@ -146,23 +142,30 @@
                                                     <GridViewColumn.CellTemplate>
                                                         <DataTemplate>
                                                             <Grid Margin="0 1 0 1">
-                                                                <Controls:MetroProgressBar x:Name="DownloadProgressBar"  Grid.Column="0" Height="35" 
+                                                                    <Controls:MetroProgressBar x:Name="DownloadProgressBar"  Grid.Column="0" Height="35" Foreground="{Binding ForeGround}" 
                                                                                             Background="White" Width="250" HorizontalAlignment="Left" Value="{Binding PercentDownload}" />
                                                                 <ComboBox Width="250" x:Name="ProductVersion" BorderThickness="0" Grid.Column="0" Background="Transparent"
                                                                         Height="35" HorizontalAlignment="Left" 
                                                                         Style="{DynamicResource MetroComboBox}"
-                                                                        Controls:TextBoxHelper.Watermark="Latest"
+                                                                        Controls:TextBoxHelper.Watermark="{Binding Version}"
                                                                         DisplayMemberPath="Version"
                                                                         IsEditable="True"
                                                                         ItemsSource="{Binding Builds}"
                                                                         MaxDropDownHeight="125"
                                                                         FontSize="20"
-                                                                        Text="{Binding Path=Version}"  />
+                                                                        Text="{Binding DisplayVersion}"  />
                                                             </Grid>
                                                         </DataTemplate>
                                                     </GridViewColumn.CellTemplate>
                                                 </GridViewColumn>
-                                                    <GridViewColumn Header="" Width="50" DisplayMemberBinding="{Binding PercentDownloadText}" />
+                                                <GridViewColumn Header="" Width="55" >
+                                                    <GridViewColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                                <Label HorizontalAlignment="Center" Content="{Binding PercentDownloadText}"></Label>
+                                                        </DataTemplate>
+                                                    </GridViewColumn.CellTemplate>
+                                                </GridViewColumn>
+                                                    
                                             </GridView>
                                         </ListView.View>
                                         </ListView>
@@ -170,8 +173,8 @@
                                 </Grid>
 
                                 <Grid Margin="50 10 0 0" HorizontalAlignment="Left">
-                                    <Button Width="70" Height="40" Grid.Column="3"
-                                            Content="Download" x:Name="DownloadButton" Click="DownloadButton_OnClick" IsEnabled="True"   />
+                                    <Button Width="70" Height="40" 
+                                            Content="Download" x:Name="DownloadButton" Click="DownloadButton_OnClick" IsEnabled="False"   />
                                 </Grid>
 
                             </StackPanel>

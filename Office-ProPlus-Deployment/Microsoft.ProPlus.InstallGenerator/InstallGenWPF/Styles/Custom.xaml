@@ -128,11 +128,6 @@
                 Value="Top" />
     </Style>
 
-
-
-
-
-
     <Style TargetType="{x:Type ListViewItem}" x:Key="{x:Type ListViewItem}" >
         <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
         <Setter Property="Foreground" Value="Black"/>

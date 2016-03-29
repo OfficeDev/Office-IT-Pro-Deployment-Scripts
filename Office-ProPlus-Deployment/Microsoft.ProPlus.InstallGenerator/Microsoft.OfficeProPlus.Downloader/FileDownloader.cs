@@ -33,8 +33,11 @@ namespace Microsoft.OfficeProPlus.Downloader
                     Directory.CreateDirectory(directory);
                     await Task.Run(async () =>
                     {
+
                         using (var client = new WebClient())
                         {
+                            
+
                             client.DownloadProgressChanged +=
                                 new DownloadProgressChangedEventHandler(client_DownloadProgressChanged);
                             client.DownloadFileCompleted += new AsyncCompletedEventHandler(client_DownloadFileCompleted);
@@ -50,25 +53,39 @@ namespace Microsoft.OfficeProPlus.Downloader
                                     //end of file download                        
                                 }
 
-                                //// Register the callback to a method that can unblock.                        
+                                //8192
+                                //const int bufferSize = 8192;
+                                //var receivedBytes = 0;
+
                                 //using (var ctr = token.Register(() => client.CancelAsync()))
+                                //using (var stream = await client.OpenReadTaskAsync(url))
                                 //using (var file = File.Create(filePath))
-                                //using(Stream stream = await client.OpenReadTaskAsync(new Uri(url)))
                                 //{
-                                //    var buffer = new byte[8192];
-                                //    int bytesReceived; 
-                                //    //actual download, will retry if fails                   
-                                //    while ((bytesReceived = await stream.ReadAsync(buffer,0,buffer.Length,token)) != 0)
+                                //    var buffer = new byte[bufferSize];
+                                //    var read = 0;
+                                //    var totalBytes = Int32.Parse(client.ResponseHeaders[HttpResponseHeader.ContentLength]);
+
+                                //    while ((read = await stream.ReadAsync(buffer, 0, buffer.Length, token)) > 0)
                                 //    {
-                                //        file.Write(buffer,0,bytesReceived);
-                                //    }
+                                //        file.Write(buffer, 0, read);
 
+                                //        receivedBytes += read;
+                                //        double dProgress = (receivedBytes/totalBytes)*100;
+
+                                //        if (DownloadFileProgress != null)
+                                //        {
+                                //            DownloadFileProgress(this, new Events.DownloadFileProgress()
+                                //            {
+                                //                PercentageComplete = Math.Truncate(dProgress),
+                                //                BytesRecieved = receivedBytes,
+                                //                TotalBytesToRecieve = totalBytes
+                                //            });
+                                //        }
+                                //    }    
+                             
                                 //    stream.Close();
-                                //    downloadSuccessful = true;  //flag as downloaded to kick out of loop
-
-                                //    //end of file download                        
+                                //    downloadSuccessful = true;
                                 //}
-
 
                             }
                         }
@@ -94,21 +111,33 @@ namespace Microsoft.OfficeProPlus.Downloader
 
         public async Task<long> GetFileSizeAsync(string url)
         {
-            var request = WebRequest.Create(url);
-            using (var response = await request.GetResponseAsync())
+            for (var z=1;z<=10;z++)
             {
                 try
                 {
-                    var webResponse = (HttpWebResponse) response;
-                    if (webResponse.StatusCode != HttpStatusCode.OK)
-                        throw (new Exception(webResponse.StatusDescription));
-                    return webResponse.ContentLength;
+                    var request = WebRequest.Create(url);
+                    using (var response = await request.GetResponseAsync())
+                    {
+                        try
+                        {
+                            var webResponse = (HttpWebResponse) response;
+                            if (webResponse.StatusCode != HttpStatusCode.OK)
+                                throw (new Exception(webResponse.StatusDescription));
+                            return webResponse.ContentLength;
+                        }
+                        finally
+                        {
+                            response.Close();
+                        }
+                    }
                 }
-                finally
+                catch (Exception ex)
                 {
-                    response.Close();
+                    if (z >= 10) throw;
                 }
+                await Task.Delay(100);
             }
+            return 0;
         }
 
         private void client_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)

@@ -64,9 +64,8 @@ namespace MetroDemo
         }
 
 
-        public  string WindowWidth()
+        public string WindowWidth()
         {
-
             return ((Panel)Application.Current.MainWindow.Content).ToString(); 
         }
 

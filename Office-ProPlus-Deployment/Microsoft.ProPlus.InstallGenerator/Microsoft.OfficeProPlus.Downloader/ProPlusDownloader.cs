@@ -20,6 +20,10 @@ namespace Microsoft.OfficeProPlus.Downloader
 
         private List<UpdateFiles> _updateFiles { get; set; }
 
+
+        private static AsyncLock myLock = new AsyncLock();
+        private static AsyncLock myLock2 = new AsyncLock();
+
         public async Task DownloadBranch(DownloadBranchProperties properties, CancellationToken token = new CancellationToken())
         {
             var fd = new FileDownloader();
@@ -28,7 +32,19 @@ namespace Microsoft.OfficeProPlus.Downloader
 
             if (_updateFiles == null)
             {
-                _updateFiles = await DownloadCab();
+                for (var t = 1; t <= 20; t++)
+                {
+                    try
+                    {
+                        _updateFiles = await DownloadCab();
+                        break;
+                    }
+                    catch (Exception ex)
+                    {
+                       
+                    }
+                    await Task.Delay(1000, token);
+                }
             }
 
             var selectUpdateFile = new UpdateFiles();
@@ -57,7 +73,7 @@ namespace Microsoft.OfficeProPlus.Downloader
             var branch = selectUpdateFile.BaseURL.FirstOrDefault(b => b.Branch.ToLower() == properties.BranchName.ToLower());
 
             var version = properties.Version;
-            if (properties.Version == null)
+            if (string.IsNullOrEmpty(properties.Version))
             {
                 version = await GetLatestVersionAsync(branch, properties.OfficeEdition);
                 if (VersionDetected != null)
@@ -180,20 +196,48 @@ namespace Microsoft.OfficeProPlus.Downloader
         {
             var guid = Guid.NewGuid().ToString();
 
-            var localCabPath = Environment.ExpandEnvironmentVariables(@"%temp%\" + guid + ".cab");
+            var cabPath = Environment.ExpandEnvironmentVariables(@"%temp%\" + guid);
+            Directory.CreateDirectory(cabPath);
+            var localCabPath = Environment.ExpandEnvironmentVariables(@"%temp%\" + guid + @"\" + guid + ".cab");
             if (File.Exists(localCabPath)) File.Delete(localCabPath);
 
-            var fd = new FileDownloader();
-            await fd.DownloadAsync(OfficeVersionUrl, localCabPath);
+            using (var releaser = await myLock.LockAsync())
+            {
+                var now = DateTime.Now;
+                var tmpFile = Environment.ExpandEnvironmentVariables(@"%temp%\" +now.Year + now.Month + now.Day + now.Hour + ".cab");
+
+                if (File.Exists(tmpFile))
+                {
+                    Retry.Block(10, 1, () => File.Copy(tmpFile, localCabPath));
+                }
+
+                if (!File.Exists(localCabPath))
+                {
+                    var fd = new FileDownloader();
+                    await fd.DownloadAsync(OfficeVersionUrl, localCabPath);
+                    try
+                    {
+                        File.Copy(localCabPath, tmpFile);
+                    }
+                    catch { }
+                }
+            }
 
             var cabExtractor = new CabExtractor(localCabPath);
             cabExtractor.ExtractCabFiles();
-
-            var xml32Path = Environment.ExpandEnvironmentVariables(@"%temp%\ExtractedFiles\o365client_32bit.xml");
-            var xml64Path = Environment.ExpandEnvironmentVariables(@"%temp%\ExtractedFiles\o365client_64bit.xml");
+       
+            var xml32Path = Environment.ExpandEnvironmentVariables(@"%temp%\" + guid + @"\ExtractedFiles\o365client_32bit.xml");
+            var xml64Path = Environment.ExpandEnvironmentVariables(@"%temp%\" + guid + @"\ExtractedFiles\o365client_64bit.xml");
 
             var updateFiles32 = GenerateUpdateFiles(xml32Path);
             var updateFiles64 = GenerateUpdateFiles(xml64Path);
+
+            try
+            {
+                if (File.Exists(localCabPath)) File.Delete(localCabPath);
+                if (Directory.Exists(cabPath)) Directory.Delete(cabPath, true);
+            }
+            catch { }
 
             return new List<UpdateFiles>()
             {
@@ -206,7 +250,13 @@ namespace Microsoft.OfficeProPlus.Downloader
         {
             if (_updateFiles == null)
             {
-                _updateFiles = await DownloadCab();
+                using (var releaser = await myLock2.LockAsync())
+                {
+                    if (_updateFiles == null)
+                    {
+                        _updateFiles = await DownloadCab();
+                    }
+                }
             }
 
             var selectUpdateFiles = _updateFiles.FirstOrDefault(f => f.OfficeEdition == officeEdition);

@@ -269,7 +269,6 @@
                                             <ColumnDefinition Width="75" />
                                         </Grid.ColumnDefinitions>
         
-
                                         <Controls:MetroProgressBar x:Name="DownloadProgressBar"  Grid.Column="0" Height="37" Background="White" Width="360" HorizontalAlignment="Left" />
                                         <TextBox x:Name="ProductUpdateSource" Background="#00ffffff" FontSize="20" Grid.Column="0" HorizontalAlignment="Left"
                                              Controls:TextBoxHelper.Watermark="Local, UNC or HTTP Path" Height="37" Width="360"
@@ -282,10 +281,6 @@
                                             Content="Browse" x:Name="UpdatePath" Click="UpdatePath_OnClick" />
                                         <Button Width="50" Height="40" Grid.Column="2" 
                                             Content="Open" x:Name="OpenFolderButton" IsEnabled="False" Click="OpenFolderButton_OnClick"   />
-                                        <Button Width="70" Height="40" Grid.Column="3"
-                                            Content="Download" x:Name="DownloadButton" Click="DownloadButton_OnClick" IsEnabled="False"   />
-
-                                        <Label x:Name="DownloadPercent" Grid.Column="4" Content="" Margin="0 8 0 0" Style="{StaticResource CustomMetroLabelHeader}" />
                                     </Grid>
 
 

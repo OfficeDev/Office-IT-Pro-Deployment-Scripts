@@ -90,102 +90,6 @@ namespace MetroDemo.ExampleViews
             catch { }
         }
 
-        private async Task DownloadOfficeFiles()
-        {
-            try
-            {
-                SetTabStatus(false);
-                GlobalObjects.ViewModel.BlockNavigation = true;
-                _tokenSource = new CancellationTokenSource();
-
-                UpdateXml();
-
-                ProductUpdateSource.IsReadOnly = true;
-                UpdatePath.IsEnabled = false;
-
-                DownloadProgressBar.Maximum = 100;
-                DownloadPercent.Content = "";
-
-                var configXml = GlobalObjects.ViewModel.ConfigXmlParser.ConfigurationXml;
-
-                string branch = null;
-                if (configXml.Add.Branch.HasValue)
-                {
-                    branch = configXml.Add.Branch.Value.ToString();
-                }
-
-                var proPlusDownloader = new ProPlusDownloader();
-                proPlusDownloader.DownloadFileProgress += async (senderfp, progress) =>
-                {
-                    var percent = progress.PercentageComplete;
-                    if (percent > 0)
-                    {
-                        Dispatcher.Invoke(() =>
-                        {
-                            DownloadPercent.Content = percent + "%";
-                            DownloadProgressBar.Value = Convert.ToInt32(Math.Round(percent, 0));
-                        });
-                    }
-                };
-                proPlusDownloader.VersionDetected += (sender, version) =>
-                {
-                    if (branch == null) return;
-                    var modelBranch = GlobalObjects.ViewModel.Branches.FirstOrDefault(b => b.Branch.ToString().ToLower() == branch.ToLower());
-                    if (modelBranch == null) return;
-                    if (modelBranch.Versions.Any(v => v.Version == version.Version)) return;
-                    modelBranch.Versions.Insert(0, new Build() { Version = version.Version });
-                    modelBranch.CurrentVersion = version.Version;
-
-                    ProductVersion.ItemsSource = modelBranch.Versions;
-                    ProductVersion.SetValue(TextBoxHelper.WatermarkProperty, modelBranch.CurrentVersion);
-                };
-
-                var buildPath = ProductUpdateSource.Text.Trim();
-                if (string.IsNullOrEmpty(buildPath)) return;
-
-                var languages =
-                    (from product in configXml.Add.Products
-                     from language in product.Languages
-                     select language.ID.ToLower()).Distinct().ToList();
-
-                var officeEdition = OfficeEdition.Office32Bit;
-                if (configXml.Add.OfficeClientEdition == OfficeClientEdition.Office64Bit)
-                {
-                    officeEdition = OfficeEdition.Office64Bit;
-                }
-
-                buildPath = GlobalObjects.SetBranchFolderPath(branch, buildPath);
-                Directory.CreateDirectory(buildPath);
-
-                ProductUpdateSource.Text = buildPath;
-
-                await proPlusDownloader.DownloadBranch(new DownloadBranchProperties()
-                {
-                    BranchName = branch,
-                    OfficeEdition = officeEdition,
-                    TargetDirectory = buildPath,
-                    Languages = languages
-                }, _tokenSource.Token);
-
-                MessageBox.Show("Download Complete");
-
-                LogAnaylytics("/ProductView", "Download." + branch);
-            }
-            finally
-            {
-                SetTabStatus(true);
-                GlobalObjects.ViewModel.BlockNavigation = false;
-                ProductUpdateSource.IsReadOnly = false;
-                UpdatePath.IsEnabled = true;
-                DownloadProgressBar.Value = 0;
-                DownloadPercent.Content = "";
-
-                DownloadButton.Content = "Download";
-                _tokenSource = new CancellationTokenSource();
-            }
-        }
-
-
         private void LanguageChange()
         {
             var languages = GlobalObjects.ViewModel.GetLanguages(GetSelectedProduct());
@@ -707,47 +611,6 @@ namespace MetroDemo.ExampleViews
             }
         }
 
-        private async void DownloadButton_OnClick(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                if (_tokenSource != null)
-                {
-                    if (_tokenSource.IsCancellationRequested)
-                    {
-                        GlobalObjects.ViewModel.BlockNavigation = false;
-                        SetTabStatus(true);
-                        return;
-                    }
-                    if (_downloadTask.IsActive())
-                    {
-                        GlobalObjects.ViewModel.BlockNavigation = false;
-                        SetTabStatus(true);
-                        _tokenSource.Cancel();
-                        return;
-                    }
-                }
-
-                DownloadButton.Content = "Stop";
-
-                _downloadTask = DownloadOfficeFiles();
-                await _downloadTask;
-            }
-            catch (Exception ex)
-            {
-                if (ex.Message.ToLower().Contains("aborted") ||
-                    ex.Message.ToLower().Contains("canceled"))
-                {
-                    GlobalObjects.ViewModel.BlockNavigation = false;
-                    SetTabStatus(true);
-                }
-                else
-                {
-                    LogErrorMessage(ex);
-                }
-            }
-        }
-
         private async void OpenFolderButton_OnClick(object sender, RoutedEventArgs e)
         {
             try
@@ -794,7 +657,6 @@ namespace MetroDemo.ExampleViews
                 }
 
                 OpenFolderButton.IsEnabled = openFolderEnabled;
-                DownloadButton.IsEnabled = enabled;
             }
             catch (Exception ex)
             {

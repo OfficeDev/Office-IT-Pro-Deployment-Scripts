@@ -51,6 +51,7 @@ namespace MetroDemo.ExampleViews
 
         private Task _downloadTask = null;
         private int _cachedIndex = 0;
+        private DateTime _lastUpdated;
 
         private List<Channel> items = null; 
 
@@ -84,17 +85,31 @@ namespace MetroDemo.ExampleViews
         {
             var configXml = GlobalObjects.ViewModel.ConfigXmlParser.ConfigurationXml;
 
+            if (ProductUpdateSource.Text.Length == 0)
+            {
+                if (!string.IsNullOrEmpty(configXml.Add.SourcePath))
+                {
+                    ProductUpdateSource.Text = configXml.Add.SourcePath;
+                }
+            }
+
+            var currentBranch = GlobalObjects.ViewModel.Branches.FirstOrDefault(b => b.NewName.ToLower() == "Current".ToLower());
+
             items = new List<Channel>
             {
-                new Channel() {Name = "Current", ChannelName = "Current" },
-                new Channel() {Name = "Deferred", ChannelName = "Deferred" },
-                new Channel() {Name = "First Release Deferred", ChannelName = "FirstReleaseDeferred" },
-                new Channel() {Name = "First Release Current", ChannelName = "FirstReleaseCurrent" }
+                new Channel() {Name = "Current", ChannelName = "Current", Version = "Latest", Builds = currentBranch.Versions, ForeGround = "Gray"},
+                new Channel() {Name = "Deferred", ChannelName = "Deferred" , Version = "Latest", ForeGround = "Gray"},
+                new Channel() {Name = "First Release Deferred", ChannelName = "FirstReleaseDeferred" , Version = "Latest", ForeGround = "Gray"},
+                new Channel() {Name = "First Release Current", ChannelName = "FirstReleaseCurrent" , Version = "Latest", ForeGround = "Gray"}
             };
 
             if (configXml.Add.Branch.HasValue)
             {
-                var selectedChannel = items.FirstOrDefault(c => c.ChannelName == configXml.Add.Branch.Value.ToString());
+                var branchName = configXml.Add.Branch.Value.ToString();
+                if (branchName.ToLower() == "Business".ToLower()) branchName = "Deferred";
+                if (branchName.ToLower() == "FirstReleaseBusiness".ToLower()) branchName = "FirstReleaseDeferred";
+
+                var selectedChannel = items.FirstOrDefault(c => c.ChannelName == branchName);
                 if (selectedChannel != null)
                 {
                     selectedChannel.Editable = true;
@@ -152,99 +167,80 @@ namespace MetroDemo.ExampleViews
 
                 var channelItems = (List<Channel>)lvUsers.ItemsSource;
 
+                var taskList = new List<Task>();
+                _lastUpdated = DateTime.Now.AddDays(-10);
+                var startTime = DateTime.Now;
+
                 foreach (var channelItem in channelItems)
                 {
                     if (!channelItem.Selected) continue;
                     var branch = channelItem.ChannelName;
 
-                    var proPlusDownloader = new ProPlusDownloader();
-                    proPlusDownloader.DownloadFileProgress += async (senderfp, progress) =>
-                    {
-                        var percent = progress.PercentageComplete;
-                        if (percent > 0)
+                    var task = Task.Run(async () =>
+                    { 
+                        try
                         {
-                            Dispatcher.Invoke(() =>
+                            var proPlusDownloader = new ProPlusDownloader();
+                            proPlusDownloader.DownloadFileProgress += async (senderfp, progress) =>
                             {
-                                channelItem.PercentDownload = percent;
+                                DownloadFileProgress(progress, channelItems, channelItem);
+                            };
 
-                                var newList = channelItems.ToList();
-                                var tempItem = newList.FirstOrDefault(c => c.Name == channelItem.Name);
-                                if (tempItem != null)
-                                {
-                                    tempItem.PercentDownload = percent;
-                                    tempItem.PercentDownloadText = percent + "%";
-                                }
-                                lvUsers.ItemsSource = newList;
+                            proPlusDownloader.VersionDetected += (sender, version) =>
+                            {
+                                UpdateVersion(channelItems, channelItem, version.Version);
+                            };
 
-                                //DownloadPercent.Content = percent + "%";
-                                //DownloadProgressBar.Value = Convert.ToInt32(Math.Round(percent, 0));
-                            });
+                            if (string.IsNullOrEmpty(startPath)) return;
+
+                            var languages =
+                                (from product in configXml.Add.Products
+                                    from language in product.Languages
+                                    select language.ID.ToLower()).Distinct().ToList();
+
+                            var officeEdition = GetSelectedEdition();
+
+                            var buildPath = GlobalObjects.SetBranchFolderPath(branch, startPath);
+                            Directory.CreateDirectory(buildPath);
+
+                            var setVersion = channelItem.DisplayVersion;
+
+                            await proPlusDownloader.DownloadBranch(new DownloadBranchProperties()
+                            {
+                                BranchName = branch,
+                                OfficeEdition = officeEdition,
+                                TargetDirectory = buildPath,
+                                Languages = languages,
+                                Version = setVersion
+                            }, _tokenSource.Token);
+
+                            UpdatePercentage(channelItems, channelItem.Name);
+                            
+                            LogAnaylytics("/ProductView", "Download." + branch);
                         }
-                    };
-                    
-                    proPlusDownloader.VersionDetected += (sender, version) =>
-                    {
-                        if (branch == null) return;
-                        var modelBranch =
-                            GlobalObjects.ViewModel.Branches.FirstOrDefault(
-                                b => b.Branch.ToString().ToLower() == branch.ToLower());
-                        if (modelBranch == null) return;
-                        if (modelBranch.Versions.Any(v => v.Version == version.Version)) return;
-                        modelBranch.Versions.Insert(0, new Build() {Version = version.Version});
-                        modelBranch.CurrentVersion = version.Version;
-
-                        //ProductVersion.ItemsSource = modelBranch.Versions;
-                        //ProductVersion.SetValue(TextBoxHelper.WatermarkProperty, modelBranch.CurrentVersion);
-                    };
-
-
-                    if (string.IsNullOrEmpty(startPath)) return;
-
-                    var languages =
-                        (from product in configXml.Add.Products
-                            from language in product.Languages
-                            select language.ID.ToLower()).Distinct().ToList();
-
-                    var officeEdition = OfficeEdition.Office32Bit;
-
-                    if ((Download32Bit.IsChecked.HasValue && Download32Bit.IsChecked.Value) &&
-                        (Download64Bit.IsChecked.HasValue && Download64Bit.IsChecked.Value))
-                    {
-                        officeEdition = OfficeEdition.Both;
-                    }
-                    else
-                    {
-                        if (Download32Bit.IsChecked.HasValue && Download32Bit.IsChecked.Value)
+                        catch (Exception ex)
                         {
-                            officeEdition = OfficeEdition.Office32Bit;
+                            if (!ex.Message.ToLower().Contains("aborted"))
+                            {
+                                var strError = ex.Message;
+                            }
                         }
-                        else
-                        {
-                            officeEdition = OfficeEdition.Office64Bit;
-                        }
-                    }
+                    });
+                    //await task;
 
-                    var buildPath = GlobalObjects.SetBranchFolderPath(branch, startPath);
-                    Directory.CreateDirectory(buildPath);
+                    var timeTaken = DateTime.Now - startTime;
 
-                    await proPlusDownloader.DownloadBranch(new DownloadBranchProperties()
+                    taskList.Add(task);
+                    await Task.Delay(1000);
+                }
+
+                foreach (var task in taskList)
+                {
+                    if (task.Exception != null)
                     {
-                        BranchName = branch,
-                        OfficeEdition = officeEdition,
-                        TargetDirectory = buildPath,
-                        Languages = languages
-                    }, _tokenSource.Token);
-
-
-                    var newTmpList = channelItems.ToList();
-                    var tempItem2 = newTmpList.FirstOrDefault(c => c.Name == channelItem.Name);
-                    if (tempItem2 != null)
-                    {
-                        tempItem2.PercentDownload = 100.00;
+                        
                     }
-                    lvUsers.ItemsSource = newTmpList;
-
-                    LogAnaylytics("/ProductView", "Download." + branch);
+                    await task;
                 }
 
                 //MessageBox.Show("Download Complete");
@@ -263,12 +259,107 @@ namespace MetroDemo.ExampleViews
             }
         }
 
+        private void UpdateVersion(IEnumerable<Channel> channelItems, Channel channelItem, string version)
+        {
+            if (channelItem.ChannelName == null) return;
+            var modelBranch =
+                GlobalObjects.ViewModel.Branches.FirstOrDefault(b => b.NewName.ToString().ToLower() == channelItem.ChannelName.ToLower());
+            if (modelBranch == null) return;
+
+            ChangeVersion(channelItems, channelItem.Name, version);
+
+            if (modelBranch.Versions.Any(v => v.Version == version)) return;
+            modelBranch.Versions.Insert(0, new Build() { Version = version });
+            modelBranch.CurrentVersion = version;
+        }
+
+        private void DownloadFileProgress(Microsoft.OfficeProPlus.Downloader.Events.DownloadFileProgress progress, IEnumerable<Channel> channelItems, Channel channelItem)
+        {
+            var percent = progress.PercentageComplete;
+            if (percent > 0)
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    channelItem.PercentDownload = percent;
+
+                    var newList = channelItems.ToList();
+                    var tempItem = newList.FirstOrDefault(c => c.Name == channelItem.Name);
+                    if (tempItem != null)
+                    {
+                        tempItem.PercentDownload = percent;
+                        tempItem.PercentDownloadText = percent + "%";
+                    }
+
+                    if (_lastUpdated < DateTime.Now.AddSeconds(-2))
+                    {
+                        lvUsers.ItemsSource = newList;
+                        _lastUpdated = DateTime.Now;
+                    }
+                });
+            }
+        }
+
+        private void ChangeVersion(IEnumerable<Channel> channelItems, string channelName, string version)
+        {
+            var newList = channelItems.ToList();
+            var tempItem = newList.FirstOrDefault(c => c.Name == channelName);
+            if (tempItem != null)
+            {
+                tempItem.DisplayVersion = version;
+            }
+            Dispatcher.Invoke(() =>
+            {
+                lvUsers.ItemsSource = newList;
+            });
+        }
+
+        private void UpdatePercentage(IEnumerable<Channel> channelItems, string channelName)
+        {
+            var newTmpList = channelItems.ToList();
+            var tempItem2 = newTmpList.FirstOrDefault(c => c.Name == channelName);
+            if (tempItem2 != null)
+            {
+                tempItem2.PercentDownload = 100.00;
+                tempItem2.PercentDownloadText = "100%";
+                Dispatcher.Invoke(() =>
+                {
+                    lvUsers.ItemsSource = newTmpList;
+                });
+            }
+        }
+
+        private OfficeEdition GetSelectedEdition()
+        {
+            var officeEdition = OfficeEdition.Office32Bit;
+
+            Dispatcher.Invoke(() =>
+            {
+                if ((Download32Bit.IsChecked.HasValue && Download32Bit.IsChecked.Value) &&
+                    (Download64Bit.IsChecked.HasValue && Download64Bit.IsChecked.Value))
+                {
+                    officeEdition = OfficeEdition.Both;
+                }
+                else
+                {
+                    if (Download32Bit.IsChecked.HasValue && Download32Bit.IsChecked.Value)
+                    {
+                        officeEdition = OfficeEdition.Office32Bit;
+                    }
+                    else
+                    {
+                        officeEdition = OfficeEdition.Office64Bit;
+                    }
+                }
+            });
+
+            return officeEdition;
+        }
+
 
         public void Reset()
         {
             //ProductVersion.Text = "";
             ProductUpdateSource.Text = "";
-            GlobalObjects.ViewModel.ClearLanguages();
         }
 
         public void LoadXml()
@@ -685,6 +776,8 @@ namespace MetroDemo.ExampleViews
 
         public string Version { get; set; }
 
+        public string DisplayVersion { get; set; }
+
         public bool Selected { get; set; }
 
         public bool Editable { get; set; }
@@ -692,6 +785,10 @@ namespace MetroDemo.ExampleViews
         public double PercentDownload { get; set; }
 
         public string PercentDownloadText { get; set; }
+
+        public List<Build> Builds { get; set; }
+
+        public string ForeGround { get; set; }
 
     }
 
