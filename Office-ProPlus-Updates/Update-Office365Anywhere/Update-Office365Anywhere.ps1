@@ -318,11 +318,16 @@ Will generate the Office Deployment Tool (ODT) configuration XML based on the lo
 
             $mainRegPath = Get-OfficeCTRRegPath
             $configRegPath = $mainRegPath + "\Configuration"
+            $GPORegPath = "HKLM:\Software\Policies\Microsoft\Office\16.0\common\officeupdate"
 
-            $currentUpdateSource = (Get-ItemProperty HKLM:\Software\Policies\Microsoft\Office\16.0\common\officeupdate -Name updatepath -ErrorAction SilentlyContinue).updatepath
+            $GPOUpdateSource = $true
+            $currentUpdateSource = (Get-ItemProperty $GPORegPath -Name updatepath -ErrorAction SilentlyContinue).updatepath
+
             if(!($currentUpdateSource)){
-            $currentUpdateSource = (Get-ItemProperty HKLM:\$configRegPath -Name UpdateUrl -ErrorAction SilentlyContinue).UpdateUrl
+              $currentUpdateSource = (Get-ItemProperty HKLM:\$configRegPath -Name UpdateUrl -ErrorAction SilentlyContinue).UpdateUrl
+              $GPOUpdateSource = $false
             }
+
             $saveUpdateSource = (Get-ItemProperty HKLM:\$configRegPath -Name SaveUpdateUrl -ErrorAction SilentlyContinue).SaveUpdateUrl
             $clientFolder = (Get-ItemProperty HKLM:\$configRegPath -Name ClientFolder -ErrorAction SilentlyContinue).ClientFolder
 
@@ -362,7 +367,7 @@ Will generate the Office Deployment Tool (ODT) configuration XML based on the lo
               }
             }
 
-             if ($EnableUpdateAnywhere) {
+            if ($EnableUpdateAnywhere) {
 
                 if ($currentUpdateSource) {
                     [bool]$isAlive = $false
@@ -377,7 +382,12 @@ Will generate the Office Deployment Tool (ODT) configuration XML based on the lo
 	                        $isAlive = Test-UpdateSource -UpdateSource $saveUpdateSource
                             if ($isAlive) {
                                Write-Log -Message "Restoring Saved Update Source $saveUpdateSource" -severity 1 -component "Office 365 Update Anywhere"
-                               Set-Reg -Hive "HKLM" -keyPath $configRegPath -ValueName "UpdateUrl" -Value $saveUpdateSource -Type String
+
+                               if ($GPOUpdateSource) {
+                                   Set-Reg -Hive "HKLM" -keyPath $GPORegPath -ValueName "updatepath" -Value $saveUpdateSource -Type String
+                               } else {
+                                    Set-Reg -Hive "HKLM" -keyPath $configRegPath -ValueName "UpdateUrl" -Value $saveUpdateSource -Type String
+                               }
                             }
                         }
                     }
@@ -386,7 +396,13 @@ Will generate the Office Deployment Tool (ODT) configuration XML based on the lo
                 if (!($currentUpdateSource)) {
                    if ($officeUpdateCDN) {
                        Write-Log -Message "No Update source is set so defaulting to Office CDN" -severity 1 -component "Office 365 Update Anywhere"
-                       Set-Reg -Hive "HKLM" -keyPath $configRegPath -ValueName "UpdateUrl" -Value $officeUpdateCDN -Type String
+
+                       if ($GPOUpdateSource) {
+                           Set-Reg -Hive "HKLM" -keyPath $GPORegPath -ValueName "updatepath" -Value $officeUpdateCDN -Type String
+                       } else {
+                           Set-Reg -Hive "HKLM" -keyPath $configRegPath -ValueName "UpdateUrl" -Value $officeUpdateCDN -Type String
+                       }
+
                        $currentUpdateSource = $officeUpdateCDN
                    }
                 }
@@ -401,12 +417,17 @@ Will generate the Office Deployment Tool (ODT) configuration XML based on the lo
                     $isAlive = Test-UpdateSource -UpdateSource $currentUpdateSource
                     if (!($isAlive)) {
                         if ($currentUpdateSource.ToLower() -ne $officeUpdateCDN.ToLower()) {
-                          Set-Reg -Hive "HKLM" -keyPath $configRegPath -ValueName "SaveUpdateUrl" -Value $currentUpdateSource -Type String
+                            Set-Reg -Hive "HKLM" -keyPath $configRegPath -ValueName "SaveUpdateUrl" -Value $currentUpdateSource -Type String
                         }
 
                         Write-Host "Unable to use $currentUpdateSource. Will now use $officeUpdateCDN"
                         Write-Log -Message "Unable to use $currentUpdateSource. Will now use $officeUpdateCDN" -severity 1 -component "Office 365 Update Anywhere"
-                        Set-Reg -Hive "HKLM" -keyPath $configRegPath -ValueName "UpdateUrl" -Value $officeUpdateCDN -Type String
+
+                        if ($GPOUpdateSource) {
+                            Set-Reg -Hive "HKLM" -keyPath $GPORegPath -ValueName "updatepath" -Value $officeUpdateCDN -Type String
+                        } else {
+                            Set-Reg -Hive "HKLM" -keyPath $configRegPath -ValueName "UpdateUrl" -Value $officeUpdateCDN -Type String
+                        }
 
                         $isAlive = Test-UpdateSource -UpdateSource $officeUpdateCDN
                     }
@@ -438,7 +459,12 @@ Will generate the Office Deployment Tool (ODT) configuration XML based on the lo
                }
 
                if ($channelUpdateSource -ne $currentUpdateSource) {
-                   Set-Reg -Hive "HKLM" -keyPath $configRegPath -ValueName "UpdateUrl" -Value $channelUpdateSource -Type String
+                   if ($GPOUpdateSource) {
+                     Set-Reg -Hive "HKLM" -keyPath $GPORegPath -ValueName "updatepath" -Value $channelUpdateSource -Type String
+                   } else {
+                     Set-Reg -Hive "HKLM" -keyPath $configRegPath -ValueName "UpdateUrl" -Value $channelUpdateSource -Type String
+                   }
+                  
                    $channelUpdateSource = $channelUpdateSource
                }
 
@@ -804,7 +830,7 @@ function Get-ChannelXml {
 
 }
 
-Update-Office365Anywhere -WaitForUpdateToFinish $WaitForUpdateToFinish -EnableUpdateAnywhere $EnableUpdateAnywhere -ForceAppShutdown $ForceAppShutdown -UpdatePromptUser $UpdatePromptUser -DisplayLevel $DisplayLevel -UpdateToVersion $UpdateToVersion -LogPath $LogPath -LogName $LogName
+#Update-Office365Anywhere -WaitForUpdateToFinish $WaitForUpdateToFinish -EnableUpdateAnywhere $EnableUpdateAnywhere -ForceAppShutdown $ForceAppShutdown -UpdatePromptUser $UpdatePromptUser -DisplayLevel $DisplayLevel -UpdateToVersion $UpdateToVersion -LogPath $LogPath -LogName $LogName
 
 
 
