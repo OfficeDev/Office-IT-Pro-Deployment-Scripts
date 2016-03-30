@@ -158,6 +158,8 @@
     <Content Include="HelpFiles\EmbedOfficeInstall.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Resource Include="images\Import.png" />
+    <Resource Include="images\new.png" />
     <Content Include="InstallOffice.cs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

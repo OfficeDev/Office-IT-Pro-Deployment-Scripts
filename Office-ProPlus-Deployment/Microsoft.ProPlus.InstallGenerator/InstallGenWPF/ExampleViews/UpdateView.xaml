@@ -22,171 +22,178 @@
     </UserControl.Resources>
 
     <AdornerDecorator>
-        <Grid Background="#e6e6e6" Margin="0">
+        <Grid Background="#e6e6e6" x:Name="Product" HorizontalAlignment="Stretch">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition />
+                <ColumnDefinition Width="*"  />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="450"></RowDefinition>
                 <RowDefinition></RowDefinition>
             </Grid.RowDefinitions>
 
-            <Grid >
+            <Grid Grid.Row="0" HorizontalAlignment="Stretch">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="0" />
+                    <ColumnDefinition Width="Auto" />
                     <ColumnDefinition />
+                    <ColumnDefinition Width="0"/>
                 </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="50"></RowDefinition>
-                    <RowDefinition Height="20"></RowDefinition>
-                    <RowDefinition Height="390"></RowDefinition>
-                    <RowDefinition Height="100"></RowDefinition>
-                </Grid.RowDefinitions>
-
-                <Label Grid.Row="0" Grid.Column="1" Content="Configure Updates" VerticalAlignment="Top" HorizontalAlignment="Stretch" Foreground="#ADAEB0"
-                   Height="40" Style="{StaticResource CustomMetroLabelTopHeader}" />
-
-                <Grid Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" Margin="0,0,-114,0" Width="1014">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="50"></RowDefinition>
-                        <RowDefinition Height="238"></RowDefinition>
-                        <RowDefinition Height="22"></RowDefinition>
-                    </Grid.RowDefinitions>
-
-                    <StackPanel Grid.Row="0" Grid.Column="0" Margin="50,0,0,0"
-                    HorizontalAlignment="Left" Width="128">
-                        <StackPanel.Resources>
-                            <BooleanToVisibilityConverter x:Key="btv" />
-                        </StackPanel.Resources>
-
-                        <Controls:ToggleSwitch x:Name="EnabledSwitch"
-                                   IsChecked="false"
-                                   OnLabel="Enabled"
-                                   OffLabel="Disabled"
-                                   Margin="{StaticResource ControlMargin}" IsCheckedChanged="EnabledSwitch_OnIsCheckedChanged"  />
-
-                    </StackPanel>
-
-                    <StackPanel Orientation="Vertical"  HorizontalAlignment="Left" Grid.Row="1" Width="850">
-
-                        <Grid Margin="50 0 0 10">
+                <StackPanel Grid.Row="0" Grid.Column="1"  Background="#666666" Width="auto" Height="40" HorizontalAlignment="Stretch" VerticalAlignment="Top" />
+                <Controls:MetroAnimatedSingleRowTabControl Grid.Row="0" Grid.Column="1"  x:Name="MainTabControl" 
+                                                           Height="600" VerticalAlignment="Top" >
+                    <TabItem x:Name="OptionalTab" Height="50" >
+                        <TabItem.Header>
+                            <DockPanel Margin="0,5,0,0">
+                                <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,0,0,0">Configure Updates</Label>
+                            </DockPanel>
+                        </TabItem.Header>
+                        <Grid >
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="30" />
-                                <ColumnDefinition Width="148" />
-                                <ColumnDefinition Width="400" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition />
                             </Grid.ColumnDefinitions>
-                            <Label Content="Channel" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="1" />
-                            <Button Grid.Column="0" x:Name="BranchInfo" Width="30" Height="32" HorizontalAlignment="Left" 
-                                                Focusable="False"  Style="{StaticResource CustomMetroInfoButton}" Click="ProductInfo_OnClick" >
-                                <StackPanel Orientation="Horizontal">
-                                    <Image Source="../images/info.png" Width="20" Height="20"/>
-                                </StackPanel>
-                            </Button>
-                            <Border BorderThickness="2" BorderBrush="Gray" Grid.Column="2" Height="38">
-                                <ComboBox x:Name="UpdateBranch" Height="35" SelectedIndex="0" 
-                                  FontSize="20" Grid.Column="2"  ItemsSource="{Binding Branches}" DisplayMemberPath="Name" SelectionChanged="UpdateBranch_OnSelectionChanged" />
-                            </Border>
-                        </Grid>
-
-                        <Grid Margin="50 0 0 10">
                             <Grid.RowDefinitions>
-                                <RowDefinition ></RowDefinition>
+                                <RowDefinition Height="20"></RowDefinition>
+                                <RowDefinition Height="390"></RowDefinition>
+                                <RowDefinition Height="100"></RowDefinition>
                             </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="30" />
-                                <ColumnDefinition Width="150" />
-                                <ColumnDefinition Width="400" />
-                                <ColumnDefinition Width="70" />
-                                <ColumnDefinition Width="60"/>
-                                <ColumnDefinition Width="75" />
-                                <ColumnDefinition Width="70" />
-                            </Grid.ColumnDefinitions>
 
-                            <Label Content="Update Path" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="1" />
-                            <Button Grid.Column="0" x:Name="UpdatePathInfo" Width="30" HorizontalAlignment="Left" 
-                                                Focusable="False"  Style="{StaticResource CustomMetroInfoButton}" Click="ProductInfo_OnClick" >
-                                <StackPanel Orientation="Horizontal">
-                                    <Image Source="../images/info.png" Width="20" Height="20"/>
+                            <Grid Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" Width="1014">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="50"></RowDefinition>
+                                    <RowDefinition Height="238"></RowDefinition>
+                                    <RowDefinition Height="22"></RowDefinition>
+                                </Grid.RowDefinitions>
+
+                                <StackPanel Grid.Row="0" Grid.Column="0" Margin="50,0,0,0"
+                                HorizontalAlignment="Left" Width="128">
+                                    <StackPanel.Resources>
+                                        <BooleanToVisibilityConverter x:Key="btv" />
+                                    </StackPanel.Resources>
+
+                                    <Controls:ToggleSwitch x:Name="EnabledSwitch"
+                                               IsChecked="false"
+                                               OnLabel="Enabled"
+                                               OffLabel="Disabled"
+                                               Margin="{StaticResource ControlMargin}" IsCheckedChanged="EnabledSwitch_OnIsCheckedChanged"  />
+
                                 </StackPanel>
-                            </Button>
 
-                            <Controls:MetroProgressBar x:Name="DownloadProgressBar"  Grid.Column="2" Height="38" Background="#f4f4f4"  />
-                            <TextBox x:Name="UpdateUpdatePath" Background="#00ffffff" FontSize="20" Grid.Column="2"
-                         Controls:TextBoxHelper.Watermark="Network, local or HTTP Path" 
-                         Controls:TextBoxHelper.ClearTextButton="True" TextChanged="UpdateUpdatePath_OnTextChanged"
-                         Text=""  Style="{StaticResource MetroTextBox}" Height="38" />
+                                <StackPanel Orientation="Vertical"  HorizontalAlignment="Left" Grid.Row="1" Width="850">
 
-                            <Button  Grid.Column="3" Margin="10 0 0 0"
-                                            Content="Browse" x:Name="UpdatePath" Click="UpdatePath_OnClick"  />
+                                    <Grid Margin="50 0 0 10">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="30" />
+                                            <ColumnDefinition Width="148" />
+                                            <ColumnDefinition Width="400" />
+                                        </Grid.ColumnDefinitions>
+                                        <Label Content="Channel" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="1" />
+                                        <Button Grid.Column="0" x:Name="BranchInfo" Width="30" Height="32" HorizontalAlignment="Left" 
+                                                            Focusable="False"  Style="{StaticResource CustomMetroInfoButton}" Click="ProductInfo_OnClick" >
+                                            <StackPanel Orientation="Horizontal">
+                                                <Image Source="../images/info.png" Width="20" Height="20"/>
+                                            </StackPanel>
+                                        </Button>
+                            
+                                        <ComboBox x:Name="UpdateBranch" Height="35" SelectedIndex="0"  Grid.Column="2"  Style="{StaticResource MetroComboBoxStyle}"
+                                            FontSize="20" ItemsSource="{Binding Branches}" DisplayMemberPath="Name" SelectionChanged="UpdateBranch_OnSelectionChanged" />
+                                   
+                                    </Grid>
 
-                            <Button Grid.Column="4" Content="Open" x:Name="OpenFolderButton" IsEnabled="False" Click="OpenFolderButton_OnClick"  Margin="10 0 0 0"  />
-                        </Grid>
+                                    <Grid Margin="50 0 0 10">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition ></RowDefinition>
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="30" />
+                                            <ColumnDefinition Width="148" />
+                                            <ColumnDefinition Width="400" />
+                                            <ColumnDefinition Width="70" />
+                                            <ColumnDefinition Width="60"/>
+                                            <ColumnDefinition Width="75" />
+                                            <ColumnDefinition Width="70" />
+                                        </Grid.ColumnDefinitions>
 
-                        <Grid Margin="50 0 0 10">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="30" />
-                                <ColumnDefinition Width="148" />
-                                <ColumnDefinition Width="400" />
-                            </Grid.ColumnDefinitions>
-                            <Label Content="Target Version" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="1" />
-                            <Button x:Name="TargetVersionInfo" Width="30" HorizontalAlignment="Left" Grid.Column="0"
-                                                Focusable="False"  Style="{StaticResource CustomMetroInfoButton}" Click="ProductInfo_OnClick" >
-                                <StackPanel Orientation="Horizontal">
-                                    <Image Source="../images/info.png" Width="20" Height="20"/>
+                                        <Label Content="Update Path" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="1" />
+                                        <Button Grid.Column="0" x:Name="UpdatePathInfo" Width="30" HorizontalAlignment="Left" 
+                                                            Focusable="False"  Style="{StaticResource CustomMetroInfoButton}" Click="ProductInfo_OnClick" >
+                                            <StackPanel Orientation="Horizontal">
+                                                <Image Source="../images/info.png" Width="20" Height="20"/>
+                                            </StackPanel>
+                                        </Button>
+
+                                        <TextBox x:Name="UpdateUpdatePath" Background="White" FontSize="20" Grid.Column="2"
+                                     Controls:TextBoxHelper.Watermark="Network, local or HTTP Path"
+                                     Controls:TextBoxHelper.ClearTextButton="True" TextChanged="UpdateUpdatePath_OnTextChanged"
+                                     Text=""  Style="{StaticResource MetroTextBox}" Height="38" />
+
+                                        <Button  Grid.Column="3" Margin="10 0 0 0"
+                                                        Content="Browse" x:Name="UpdatePath" Click="UpdatePath_OnClick"  />
+
+                                        <Button Grid.Column="4" Content="Open" x:Name="OpenFolderButton" IsEnabled="False" Click="OpenFolderButton_OnClick"  Margin="10 0 0 0"  />
+                                    </Grid>
+
+                                    <Grid Margin="50 0 0 10">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="30" />
+                                            <ColumnDefinition Width="148" />
+                                            <ColumnDefinition Width="400" />
+                                        </Grid.ColumnDefinitions>
+                                        <Label Content="Target Version" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="1" />
+                                        <Button x:Name="TargetVersionInfo" Width="30" HorizontalAlignment="Left" Grid.Column="0"
+                                                            Focusable="False"  Style="{StaticResource CustomMetroInfoButton}" Click="ProductInfo_OnClick" >
+                                            <StackPanel Orientation="Horizontal">
+                                                <Image Source="../images/info.png" Width="20" Height="20"/>
+                                            </StackPanel>
+                                        </Button>
+
+                                     <ComboBox x:Name="UpdateTargetVersion" Height="35" Controls:TextBoxHelper.Watermark="16.0.4949.1003"
+                                                  SelectedIndex="0" MaxDropDownHeight="125"  Grid.Column="2" Text="{Binding Path=Version}" 
+                                                  Style="{StaticResource MetroComboBoxStyle}"   ItemsSource="{Binding Builds}"  
+                                            FontSize="20"  DisplayMemberPath="Version" SelectionChanged="UpdateBranch_OnSelectionChanged" />
+                                    </Grid>
+
+                                    <Grid Margin="50 0 0 10">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="30" />
+                                            <ColumnDefinition Width="148" />
+                                            <ColumnDefinition Width="310" />
+                                            <ColumnDefinition Width="45" />
+                                            <ColumnDefinition Width="45" />
+                                        </Grid.ColumnDefinitions>
+                                        <Label Content="Deadline" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="1"  />
+                                        <Button Grid.Column="0" x:Name="DeadlineInfo" Width="30" Height="32" HorizontalAlignment="Left" 
+                    		            Focusable="False"  Style="{StaticResource CustomMetroInfoButton}" Click="ProductInfo_OnClick" >
+                                            <StackPanel Orientation="Horizontal">
+                                                <Image Source="../images/info.png" Width="20" Height="20"/>
+                                            </StackPanel>
+                                        </Button>
+                                        <DatePicker x:Name="UpdateDeadline" Height="35" Grid.Column="2" PreviewKeyUp="UpdateDeadline_OnPreviewKeyUp"
+                    		            Width="310" SelectedDateChanged="UpdateDeadline_OnSelectedDateChanged"
+                    		            HorizontalAlignment="Left" FontSize="20"
+                    		            Controls:TextBoxHelper.Watermark="Select a date" 
+                                        Background="White" BorderThickness="2" BorderBrush="#767676"/>
+
+                                        <TextBox x:Name="DeadlineTimeHour" FontSize="20" Grid.Column="3" Background="White" PreviewKeyDown="DeadlineTimeHour_OnKeyDown"
+                    		            Controls:TextBoxHelper.Watermark="00" TextChanged="DeadlineTimeHour_OnTextChanged"
+                    		            Text="" Height="35" Width="38" />
+
+                                        <TextBox x:Name="DeadlineTimeMinute" FontSize="20" Grid.Column="4" Background="White" PreviewKeyDown="DeadlineTimeMinute_OnPreviewKeyDown"
+                    		            Controls:TextBoxHelper.Watermark="00" TextChanged="DeadlineTimeMinute_OnTextChanged"
+                    		            Text="" Height="35" Width="38"  />
+                                    </Grid>
+
                                 </StackPanel>
-                            </Button>
-                            <Border BorderThickness="2" BorderBrush="Gray" Grid.Column="2" Height="38">
-                                <ComboBox  x:Name="UpdateTargetVersion" 
-                                          Style="{DynamicResource VirtualisedMetroComboBox}"
-                                          Controls:TextBoxHelper.Watermark="16.0.4949.1003"
-                                          DisplayMemberPath="Version"
-                                          IsEditable="True"
-                                          ItemsSource="{Binding Builds}"
-                                          MaxDropDownHeight="125"
-                                          FontSize="20"
-                                          Text="{Binding Path=Version}"  />
-                            </Border>
-                        </Grid>
 
-                        <Grid Margin="50 0 0 10">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="30" />
-                                <ColumnDefinition Width="150" />
-                                <ColumnDefinition Width="255" />
-                                <ColumnDefinition Width="45" />
-                                <ColumnDefinition Width="45" />
-                            </Grid.ColumnDefinitions>
-                            <Label Content="Deadline" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="1"  />
-                            <Button Grid.Column="0" x:Name="DeadlineInfo" Width="30" Height="32" HorizontalAlignment="Left" 
-                    		Focusable="False"  Style="{StaticResource CustomMetroInfoButton}" Click="ProductInfo_OnClick" >
-                                <StackPanel Orientation="Horizontal">
-                                    <Image Source="../images/info.png" Width="20" Height="20"/>
-                                </StackPanel>
-                            </Button>
-                            <DatePicker x:Name="UpdateDeadline" Height="35" Grid.Column="2" PreviewKeyUp="UpdateDeadline_OnPreviewKeyUp"
-                    		Width="252" SelectedDateChanged="UpdateDeadline_OnSelectedDateChanged"
-                    		HorizontalAlignment="Left" FontSize="20"
-                    		Controls:TextBoxHelper.Watermark="Select a date" 
-                            Background="#f4f4f4" BorderThickness="2" BorderBrush="#767676"/>
-
-                            <TextBox x:Name="DeadlineTimeHour" FontSize="20" Grid.Column="3" PreviewKeyDown="DeadlineTimeHour_OnKeyDown"
-                    		Controls:TextBoxHelper.Watermark="00" TextChanged="DeadlineTimeHour_OnTextChanged"
-                    		Text="" Height="35" Width="38" />
-
-                            <TextBox x:Name="DeadlineTimeMinute" FontSize="20" Grid.Column="4" PreviewKeyDown="DeadlineTimeMinute_OnPreviewKeyDown"
-                    		Controls:TextBoxHelper.Watermark="00" TextChanged="DeadlineTimeMinute_OnTextChanged"
-                    		Text="" Height="35" Width="38"  />
-                        </Grid>
-
-                    </StackPanel>
-
-                </Grid>
+                            </Grid>
+                       </Grid>
+                    </TabItem>
+                </Controls:MetroAnimatedSingleRowTabControl>
             </Grid>
 
-            <Grid Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Bottom" >
+            <Grid Grid.Row="1" Margin="0 0 0 30" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Bottom" >
                 <Grid.Resources>
                     <ResourceDictionary>
                         <ResourceDictionary.MergedDictionaries>
@@ -199,12 +206,8 @@
                     <ColumnDefinition Width="20"  />
                     <ColumnDefinition  />
                 </Grid.ColumnDefinitions>
-                <Button Width="100" 
-                    Margin="0,32,0,28" Height="40" Grid.Column="0"
-                    Content="Previous" x:Name="PreviousButton" Click="PreviousButton_OnClick" />
-                <Button Width="100"
-                    Margin="{StaticResource ControlMargin}" Height="40" Grid.Column="2"
-                    Content="Next" x:Name="NextButton" Click="NextButton_OnClick" />
+                <Button x:Name="PreviousButton" Width="100" Height="40" Grid.Column="0" Content="Previous"  Click="PreviousButton_OnClick" />
+                <Button x:Name="NextButton" Width="100" Height="40" Grid.Column="2" Content="Next" Click="NextButton_OnClick" />
             </Grid>
 
         </Grid>

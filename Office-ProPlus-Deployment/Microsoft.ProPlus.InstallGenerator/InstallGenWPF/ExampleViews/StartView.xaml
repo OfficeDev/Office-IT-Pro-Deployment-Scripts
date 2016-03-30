@@ -23,55 +23,88 @@
     </UserControl.Resources>
 
     <AdornerDecorator>
-        <Grid VerticalAlignment="Stretch" Background="#e6e6e6">
+        <Grid Background="#e6e6e6" x:Name="Product" HorizontalAlignment="Stretch">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition />
+                <ColumnDefinition Width="*"  />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition MinHeight="10" Height="Auto"></RowDefinition>
-                <RowDefinition MinHeight="50"  Height="Auto"></RowDefinition>
-                <RowDefinition MinHeight="50"  Height="Auto"></RowDefinition>
-                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="450"></RowDefinition>
+                <RowDefinition></RowDefinition>
             </Grid.RowDefinitions>
 
-            <Label Grid.Column="1" Content="Office 365 ProPlus Installation Generator" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Background="#666666" 
-                   Height="40" Style="{StaticResource CustomMetroLabelTopHeader}" Padding="5,10,0,0" Grid.RowSpan="2" Margin="0,0,0,30"  />
-
-            <Grid Grid.Row="3" Grid.Column="1" VerticalAlignment="Top" HorizontalAlignment="Left" MinHeight="190" Height="190" MinWidth="600" Width="600">
-                <Grid.Resources>
-                    <ResourceDictionary>
-                        <ResourceDictionary.MergedDictionaries>
-                            <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/FlatButton.xaml" />
-                        </ResourceDictionary.MergedDictionaries>
-                    </ResourceDictionary>
-                </Grid.Resources>
+            <Grid Grid.Row="0" HorizontalAlignment="Stretch">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="250" />
-                    <ColumnDefinition Width="350" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="0"/>
                 </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition />
-                    <RowDefinition Height="30" />
-                    <RowDefinition />
-                </Grid.RowDefinitions>
+                <StackPanel Grid.Row="0" Grid.Column="1"  Background="#666666" Width="auto" Height="40" HorizontalAlignment="Stretch" VerticalAlignment="Top" />
+                <Controls:MetroAnimatedSingleRowTabControl Grid.Row="0" Grid.Column="1"  x:Name="MainTabControl" 
+                                                           Height="600" VerticalAlignment="Top" >
+                    <TabItem x:Name="OptionalTab" Height="50" >
+                        <TabItem.Header>
+                            <DockPanel Margin="0,5,0,0">
+                                <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,0,0,0">Office 365 ProPlus Install Toolkit</Label>
+                            </DockPanel>
+                        </TabItem.Header>
 
-                <Button Width="150" Height="75" Grid.Row="0" Grid.Column="0"
-                    Margin="{StaticResource ControlMargin}"
-                    Content="Start New" x:Name="StartNew" Click="StartNew_Click"/>
+                        <Grid  Margin="30 30 0 0" VerticalAlignment="Top" HorizontalAlignment="Left"  Height="260" Width="700">
+                            <Grid.Resources>
+                                <ResourceDictionary>
+                                    <ResourceDictionary.MergedDictionaries>
+                                        <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/FlatButton.xaml" />
+                                    </ResourceDictionary.MergedDictionaries>
+                                </ResourceDictionary>
+                            </Grid.Resources>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="250" />
+                                <ColumnDefinition Width="450" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition Height="30" />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
 
-                <TextBlock Grid.Row="0" Grid.Column="1" TextWrapping="WrapWithOverflow" Style="{StaticResource CustomMetroLabelTextBlock}">
-                     Select this option if you would like to start a new or reset an installation.
-                </TextBlock>
+                            <Button Width="210" Height="100" VerticalAlignment="Center" Grid.Row="0" Grid.Column="0"
+                                Margin="{StaticResource ControlMargin}"
+                                x:Name="StartNew" Click="StartNew_Click">
+                    
+                                <Grid Margin="-20 0 0 0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="50" />
+                                        <ColumnDefinition Width="110" />
+                                    </Grid.ColumnDefinitions>
+                                    <Image Source="../images/new.png" Grid.Column="0" Height="40" Margin="0 0 0 0"  ></Image>
+                                    <Label Content="Start new" Grid.Column="1" VerticalAlignment="Center"  Style="{StaticResource CustomMetroLabelHeader}"></Label>
+                                </Grid>
+                            </Button>
 
-                <Button Width="150" Height="75" Grid.Row="2" Grid.Column="0"
-                    Margin="{StaticResource ControlMargin}"
-                    Content="Import Existing" x:Name="ImportExisting" Click="ImportExisting_Click_1" />
+                            <TextBlock Grid.Row="0" Grid.Column="1" TextWrapping="WrapWithOverflow" FontSize="18" Margin="0 10 0 0" Style="{StaticResource CustomMetroLabelTextBlock}">
+                                 Select this option if you would like to start a new or reset an installation.
+                            </TextBlock>
 
-                <TextBlock Grid.Row="2" Grid.Column="1" TextWrapping="WrapWithOverflow" Style="{StaticResource CustomMetroLabelTextBlock}">
-                     Select this option if you have an existing Configuration XML or an Executable or MSI that was generated by this application
-                </TextBlock>
+                            <Button Width="210" Height="100" Grid.Row="2" Grid.Column="0"
+                                Margin="{StaticResource ControlMargin}"
+                                 x:Name="ImportExisting" Click="ImportExisting_Click_1">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="50" />
+                                        <ColumnDefinition Width="140" />
+                                    </Grid.ColumnDefinitions>
+                                    <Image Source="../images/Import.png" Grid.Column="0" Height="50" HorizontalAlignment="Left" ></Image>
+                                    <Label Content="Import existing" Grid.Column="1" VerticalAlignment="Center" Style="{StaticResource CustomMetroLabelHeader}"></Label>
+                                </Grid>
+                            </Button>
 
+                            <TextBlock Grid.Row="2" Grid.Column="1" TextWrapping="WrapWithOverflow" FontSize="18" Margin="0 10 0 0" Style="{StaticResource CustomMetroLabelTextBlock}">
+                                 Select this option if you have an existing Configuration XML or an Executable or MSI that was generated by this application
+                            </TextBlock>
+
+                        </Grid>
+
+                    </TabItem>
+                </Controls:MetroAnimatedSingleRowTabControl>
             </Grid>
         </Grid>
     </AdornerDecorator>

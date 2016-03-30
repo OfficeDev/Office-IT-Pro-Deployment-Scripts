@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -259,7 +260,6 @@ namespace MetroDemo.ExampleViews
             {
                 if (informationDialog == null)
                 {
-
                     informationDialog = new InformationDialog
                     {
                         Height = 500,

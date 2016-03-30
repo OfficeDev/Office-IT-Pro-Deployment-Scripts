@@ -53,7 +53,7 @@
         </Grid.RowDefinitions>
 
         <Border Grid.Row="0" BorderThickness="1">
-            <WebBrowser  Name="HelpInfo" Margin="5"   >
+            <WebBrowser  Name="HelpInfo" Margin="5" Visibility="Hidden" Navigated="HelpInfo_OnNavigated"   >
  
             </WebBrowser>
         </Border>

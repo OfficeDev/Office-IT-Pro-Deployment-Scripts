@@ -20,7 +20,6 @@ D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Microsoft.OfficeProPlus.MSIGenerator\bin\Debug\Microsoft.Deployment.WindowsInstaller.xml
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Microsoft.OfficeProPlus.MSIGenerator\obj\Debug\Microsoft.OfficeProPlus.MSIGen.dll
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Microsoft.OfficeProPlus.MSIGenerator\obj\Debug\Microsoft.OfficeProPlus.MSIGen.pdb
-D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Microsoft.OfficeProPlus.MSIGenerator\obj\Debug\Microsoft.OfficeProPlus.MSIGen.csprojResolveAssemblyReference.cache
 C:\Users\jojones\Documents\GitHub\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Microsoft.OfficeProPlus.MSIGenerator\bin\Debug\Microsoft.OfficeProPlus.MSIGen.dll
 C:\Users\jojones\Documents\GitHub\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Microsoft.OfficeProPlus.MSIGenerator\bin\Debug\Microsoft.OfficeProPlus.MSIGen.pdb
 C:\Users\jojones\Documents\GitHub\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Microsoft.OfficeProPlus.MSIGenerator\bin\Debug\WixSharp.dll

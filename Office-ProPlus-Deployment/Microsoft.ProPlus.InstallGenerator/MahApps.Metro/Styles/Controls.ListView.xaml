@@ -346,14 +346,9 @@
         </Setter>
     </Style>
 
-    <Style x:Key="MetroGridViewColumnHeader"
-           TargetType="GridViewColumnHeader">
-        <Setter Property="Controls:ControlsHelper.ContentCharacterCasing"
-                Value="Upper" />
-        <Setter Property="FontWeight"
-                Value="SemiBold" />
-        <Setter Property="Foreground"
-                Value="{DynamicResource BlackBrush}" />
+    <Style x:Key="MetroGridViewColumnHeader" TargetType="GridViewColumnHeader">
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{DynamicResource GrayBrush}" />
         <Setter Property="SnapsToDevicePixels"
                 Value="True" />
         <Setter Property="HorizontalContentAlignment"
@@ -368,9 +363,8 @@
                     <Grid>
                         <Rectangle Fill="Transparent"
                                    IsHitTestVisible="True" />
-                        <Border x:Name="HeaderBorder"
-                                Padding="{TemplateBinding Padding}">
-                            <ContentPresenter x:Name="HeaderContent"
+                        <Border x:Name="HeaderBorder" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter x:Name="HeaderContent" 
                                               Content="{TemplateBinding Content}"
                                               ContentTemplate="{TemplateBinding ContentTemplate}"
                                               Margin="0,0,0,1"

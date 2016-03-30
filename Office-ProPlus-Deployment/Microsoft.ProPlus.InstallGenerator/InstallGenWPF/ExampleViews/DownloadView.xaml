@@ -112,8 +112,8 @@
                                             <ColumnDefinition Width="100" />
                                         </Grid.ColumnDefinitions>
 
-                                        <CheckBox x:Name="Download32Bit" Grid.Column="0" Content="32-Bit" Style="{StaticResource MetroCheckBox}"></CheckBox>
-                                        <CheckBox x:Name="Download64Bit" Grid.Column="1" Content="64-Bit" Style="{StaticResource MetroCheckBox}"></CheckBox>
+                                        <CheckBox x:Name="Download32Bit" Grid.Column="0" Content="32-Bit" Foreground="#666666" Style="{StaticResource MetroCheckBox}"></CheckBox>
+                                        <CheckBox x:Name="Download64Bit" Grid.Column="1" Content="64-Bit" Foreground="#666666" Style="{StaticResource MetroCheckBox}"></CheckBox>
                                     </Grid>
 
                                 </Grid>
@@ -126,11 +126,11 @@
                                         <ColumnDefinition Width="790" />
                                     </Grid.ColumnDefinitions>
 
-                                    <Border BorderThickness="2" BorderBrush="Gray" Height="189">
+                                    <Border BorderThickness="2" BorderBrush="Gray" Height="189" >
                                         <ListView Margin="0" Name="lvUsers" BorderThickness="0">
                                             <ListView.View>
-                                                <GridView >
-                                                    <GridViewColumn Header="" Width="35">
+                                                <GridView  >
+                                                <GridViewColumn Header="" Width="35">
                                                     <GridViewColumn.CellTemplate>
                                                         <DataTemplate>
                                                             <CheckBox IsChecked="{Binding Selected}" IsEnabled="{Binding Editable, Converter={StaticResource negate}}" ></CheckBox>
@@ -170,6 +170,8 @@
                                         </ListView.View>
                                         </ListView>
                                     </Border>
+
+
                                 </Grid>
 
                                 <Grid Margin="50 10 0 0" HorizontalAlignment="Left">
@@ -192,7 +194,7 @@
                 </Controls:MetroAnimatedSingleRowTabControl>
             </Grid>
 
-            <Grid Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Bottom" >
+            <Grid Grid.Row="1" Margin="0 0 0 30" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Bottom" >
                 <Grid.Resources>
                     <ResourceDictionary>
                         <ResourceDictionary.MergedDictionaries>
@@ -205,12 +207,8 @@
                     <ColumnDefinition Width="20"  />
                     <ColumnDefinition  />
                 </Grid.ColumnDefinitions>
-                <Button Width="100" 
-                    Margin="0,32,0,28" Height="40" Grid.Column="0"
-                    Content="Previous" x:Name="PreviousButton" Click="PreviousButton_Click" />
-                <Button Width="100"
-                    Margin="{StaticResource ControlMargin}" Height="40" Grid.Column="2"
-                    Content="Next" x:Name="NextButton" Click="NextButton_Click" />
+                <Button x:Name="PreviousButton" Width="100" Height="40" Grid.Column="0" Content="Previous"  Click="PreviousButton_Click" />
+                <Button x:Name="NextButton" Width="100" Height="40" Grid.Column="2" Content="Next" Click="NextButton_Click" />
             </Grid>
         </Grid>
 

@@ -7,6 +7,7 @@
     <Color x:Key="BlackColor">#FFFFFFFF</Color>
     <Color x:Key="RedColor">#FFC80000</Color>
     <Color x:Key="WhiteColor">#FF252525</Color>
+    <Color x:Key="GrayColor">#FF666666</Color>
 
     <Color x:Key="Gray1">#FFF9F9F9</Color>
     <Color x:Key="Gray2">#FF7F7F7F</Color>
@@ -25,12 +26,12 @@
     <SolidColorBrush x:Key="LabelTextBrush" Color="{StaticResource BlackColor}" options:Freeze="True" />
     <SolidColorBrush x:Key="BlackColorBrush" Color="{StaticResource BlackColor}" options:Freeze="True" />
     <SolidColorBrush x:Key="RedColorBrush" Color="{StaticResource RedColor}" options:Freeze="True" />
-    <SolidColorBrush x:Key="TextBoxMouseOverInnerBorderBrush" Color="{StaticResource BlackColor}" options:Freeze="True" />
-    <SolidColorBrush x:Key="TextBoxFocusBorderBrush" Color="{StaticResource BlackColor}" options:Freeze="True" />
-    <SolidColorBrush x:Key="ButtonMouseOverBorderBrush" Color="{StaticResource BlackColor}" options:Freeze="True" />
-    <SolidColorBrush x:Key="ButtonMouseOverInnerBorderBrush" Color="{StaticResource BlackColor}" options:Freeze="True" />
-    <SolidColorBrush x:Key="ComboBoxMouseOverBorderBrush" Color="{StaticResource BlackColor}" options:Freeze="True" />
-    <SolidColorBrush x:Key="ComboBoxMouseOverInnerBorderBrush" Color="{StaticResource BlackColor}" options:Freeze="True" />
+    <SolidColorBrush x:Key="TextBoxMouseOverInnerBorderBrush" Color="{StaticResource GrayColor}" options:Freeze="True" />
+    <SolidColorBrush x:Key="TextBoxFocusBorderBrush" Color="{StaticResource GrayColor}" options:Freeze="True" />
+    <SolidColorBrush x:Key="ButtonMouseOverBorderBrush" Color="{StaticResource GrayColor}" options:Freeze="True" />
+    <SolidColorBrush x:Key="ButtonMouseOverInnerBorderBrush" Color="{StaticResource GrayColor}" options:Freeze="True" />
+    <SolidColorBrush x:Key="ComboBoxMouseOverBorderBrush" Color="{StaticResource GrayColor}" options:Freeze="True" />
+    <SolidColorBrush x:Key="ComboBoxMouseOverInnerBorderBrush" Color="{StaticResource GrayColor}" options:Freeze="True" />
 
     <SolidColorBrush x:Key="ControlBackgroundBrush" Color="{StaticResource WhiteColor}" options:Freeze="True" />
     <SolidColorBrush x:Key="WhiteBrush" Color="{StaticResource WhiteColor}" options:Freeze="True" />

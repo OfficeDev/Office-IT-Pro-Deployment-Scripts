@@ -58,7 +58,7 @@
 
                             <Grid Height="410" Width="900" Grid.Row="1" HorizontalAlignment="Left">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="390" />
+                                    <ColumnDefinition Width="370" />
                                     <ColumnDefinition Width="120" />
                                     <ColumnDefinition Width="280" />
                                 </Grid.ColumnDefinitions>
@@ -84,15 +84,18 @@
                                                HorizontalAlignment="Left"  Width="100" VerticalAlignment="Center"/>
                                     </Grid>
 
-                                    <ListBox x:Name="MainProducts"  Style="{StaticResource VirtualisedMetroListBox}"
-                                         ItemsSource="{Binding MainProducts}"
-                                         DisplayMemberPath="DisplayName" Width="320" Height="60"
-                                         SelectedIndex="0" SelectionMode="Single" FontSize="20" SelectionChanged="Products_OnSelectionChanged" BorderThickness="2,2,2,0"/>
+                                    <ListBox x:Name="MainProducts"  Style="{StaticResource VirtualizedMetroListBox}" Margin="35 10 0 0"
+                                            ItemsSource="{Binding MainProducts}"
+                                            DisplayMemberPath="DisplayName" Width="320" Height="60"
+                                            SelectedIndex="0" SelectionMode="Single" FontSize="20" SelectionChanged="Products_OnSelectionChanged" BorderThickness="2,2,2,0">
+                                    </ListBox>
 
-                                    <ListBox x:Name="AdditionalProducts"  Style="{StaticResource VirtualisedMetroListBox}"
-                                         ItemsSource="{Binding AdditionalProducts}"
-                                         DisplayMemberPath="DisplayName" Width="320" Height="60"
-                                         SelectedIndex="-1" SelectionMode="Multiple" FontSize="20" SelectionChanged="Products_OnSelectionChanged" BorderThickness="2,0,2,2" />
+                                    <ListBox x:Name="AdditionalProducts"  Style="{StaticResource VirtualizedMetroListBox}" Margin="35 0 0 0"
+                                            ItemsSource="{Binding AdditionalProducts}"
+                                            DisplayMemberPath="DisplayName" Width="320" Height="60"
+                                            SelectedIndex="-1" SelectionMode="Multiple" FontSize="20" SelectionChanged="Products_OnSelectionChanged" BorderThickness="2,0,2,2">
+                                    </ListBox>
+              
                                 </StackPanel>
 
                                 <StackPanel Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" Margin="0,0,0,0">
@@ -109,12 +112,12 @@
                                         </Button>
                                         <Label Content="Edition" Style="{StaticResource CustomMetroLabelHeader}" HorizontalAlignment="Left" Grid.Column="1"/>
                                     </Grid>
-                                    <RadioButton Margin="{StaticResource ControlMargin}" x:Name="ProductEdition32Bit" HorizontalAlignment="Center"
-                                         Content="32-Bit" Width="100"
+                                    <RadioButton Margin="10 10 0 0" x:Name="ProductEdition32Bit" HorizontalAlignment="Center"
+                                         Content="32-Bit" Width="100" Foreground="#666666"
                                          GroupName="1" 
                                          IsChecked="True" FontSize="20" />
-                                    <RadioButton Margin="{StaticResource ControlMargin}"  x:Name="ProductEdition64Bit" HorizontalAlignment="Center"
-                                         Content="64-Bit" Width="100"
+                                    <RadioButton Margin="10 10 0 0"  x:Name="ProductEdition64Bit" HorizontalAlignment="Center"
+                                         Content="64-Bit" Width="100" Foreground="#666666"
                                          GroupName="1" FontSize="20" />
                                 </StackPanel>
 
@@ -135,9 +138,9 @@
                                     </Grid>
 
 
-                                    <ComboBox x:Name="ProductBranch" Width="270" Height="35" Margin="0, 10, 0, 0" SelectedIndex="0" BorderThickness="2" BorderBrush="Gray"
+                                    <ComboBox x:Name="ProductBranch" Width="270" Height="35"  Margin="10, 10, 0, 0" SelectedIndex="0" 
                                               FontSize="20" ItemsSource="{Binding Branches}" DisplayMemberPath="Name" SelectionChanged="ProductBranch_OnSelectionChanged" 
-                                              Style="{StaticResource MetroComboBox}">
+                                              Style="{StaticResource MetroComboBoxStyle}">
                                     </ComboBox>
                                 </StackPanel>
 
@@ -230,10 +233,10 @@
                                     </Button>
                                     <Label Content="Version" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" />
 
-                                    <Border BorderThickness="2" BorderBrush="Gray" Grid.Column="2" Height="38">
-                                        <ComboBox Width="360" x:Name="ProductVersion" Grid.Column="2" BorderThickness="0"
+                                   
+                                        <ComboBox Width="360" x:Name="ProductVersion" Grid.Column="2"  
                                               Height="35" HorizontalAlignment="Left" 
-                                              Style="{DynamicResource MetroComboBox}"
+                                              Style="{StaticResource MetroComboBoxStyle}"
                                               Controls:TextBoxHelper.Watermark="16.0.4949.1003"
                                               DisplayMemberPath="Version"
                                               IsEditable="True"
@@ -241,7 +244,9 @@
                                               MaxDropDownHeight="125"
                                               FontSize="20"
                                               Text="{Binding Path=Version}"  />
-                                    </Border>
+
+
+                                    
                                 </Grid>
                                 <Grid Margin="50 0 0 0" >
                                     <Grid.RowDefinitions>
@@ -296,7 +301,7 @@
                                 <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,0,0,0">Excluded</Label>
                             </DockPanel>
                         </TabItem.Header>
-                        <Grid Margin="-30,0,0,0" HorizontalAlignment="Center">
+                        <Grid Margin="50,30,0,0" HorizontalAlignment="Left">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="30" />
                                 <ColumnDefinition Width="300"/>
@@ -316,7 +321,6 @@
                             <DataGrid x:Name="ExcludedApps1" Grid.Column="1" Grid.Row="0" Height="350" 
                                   RenderOptions.ClearTypeHint="Enabled"
                                   TextOptions.TextFormattingMode="Display"
-                                  Margin="5,4.6,2.6,5.4"
                                   Background="#e6e6e6"
                                   ItemsSource="{Binding Path=ExcludeProducts}"
                                   Style="{DynamicResource MetroDataGrid}"
@@ -329,7 +333,7 @@
                                         <Style.Triggers>
                                             <Trigger Property="IsSelected" Value="True" >
                                                 <Setter Property="Background" Value="#e6e6e6" />
-                                                <Setter Property="Foreground" Value="Black" />
+                                                <Setter Property="Foreground" Value="#666666" />
                                                 <Setter Property="BorderThickness" Value="0" />
                                             </Trigger>
                                         </Style.Triggers>
@@ -337,7 +341,7 @@
                                 </DataGrid.RowStyle>
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="Product" Binding="{Binding DisplayName}" Width="100" 
-                                        IsReadOnly="True" FontSize="20" Foreground="#333333" FontWeight="SemiBold"  />
+                                        IsReadOnly="True" FontSize="20" Foreground="#666666" FontWeight="SemiBold"  />
                                     <DataGridTemplateColumn Header="Status" >
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
@@ -356,7 +360,6 @@
                             <DataGrid x:Name="ExcludedApps2" Grid.Column="2" Grid.Row="0" Height="350"
                                   RenderOptions.ClearTypeHint="Enabled"
                                   TextOptions.TextFormattingMode="Display"
-                                  Margin="7.4,4.6,1.6,5.4"
                                   ItemsSource="{Binding Path=ExcludeProducts}"
                                   Style="{DynamicResource MetroDataGrid}"
                                   Background="#e6e6e6"
@@ -368,7 +371,7 @@
                                         <Style.Triggers>
                                             <Trigger Property="IsSelected" Value="True" >
                                                 <Setter Property="Background" Value="#e6e6e6" />
-                                                <Setter Property="Foreground" Value="Black" />
+                                                <Setter Property="Foreground" Value="#666666" />
                                                 <Setter Property="BorderThickness" Value="0" />
                                             </Trigger>
                                         </Style.Triggers>
@@ -376,7 +379,7 @@
                                 </DataGrid.RowStyle>
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="Product" Binding="{Binding DisplayName}" Width="120" 
-                                        IsReadOnly="True" FontSize="20" Foreground="#333333" FontWeight="SemiBold" />
+                                        IsReadOnly="True" FontSize="20" Foreground="#666666" FontWeight="SemiBold" />
                                     <DataGridTemplateColumn Header="Status" >
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
@@ -397,7 +400,7 @@
                 </Controls:MetroAnimatedSingleRowTabControl>
             </Grid>
 
-            <Grid Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Bottom" >
+            <Grid Grid.Row="1" Margin="0 0 0 30" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Bottom" >
                 <Grid.Resources>
                     <ResourceDictionary>
                         <ResourceDictionary.MergedDictionaries>
@@ -410,12 +413,8 @@
                     <ColumnDefinition Width="20"  />
                     <ColumnDefinition  />
                 </Grid.ColumnDefinitions>
-                <Button Width="100" 
-                    Margin="0,32,0,28" Height="40" Grid.Column="0"
-                    Content="Previous" x:Name="PreviousButton" Click="PreviousButton_Click" />
-                <Button Width="100"
-                    Margin="{StaticResource ControlMargin}" Height="40" Grid.Column="2"
-                    Content="Next" x:Name="NextButton" Click="NextButton_Click" />
+                <Button x:Name="PreviousButton" Width="100" Height="40" Grid.Column="0" Content="Previous"  Click="PreviousButton_Click" />
+                <Button x:Name="NextButton" Width="100" Height="40" Grid.Column="2" Content="Next" Click="NextButton_Click" />
             </Grid>
         </Grid>
 
