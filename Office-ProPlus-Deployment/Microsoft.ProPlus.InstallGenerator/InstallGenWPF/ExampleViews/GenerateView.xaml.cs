@@ -48,7 +48,6 @@ namespace MetroDemo.ExampleViews
         public event MessageEventHandler ErrorMessage;
 
         private CancellationTokenSource _tokenSource = new CancellationTokenSource();
-        private Task _downloadTask = null;
 
 
         public GenerateView()
@@ -89,85 +88,6 @@ namespace MetroDemo.ExampleViews
             catch (Exception ex)
             {
                 LogErrorMessage(ex);
-            }
-        }
-
-        private async Task DownloadOfficeFiles()
-        {
-            try
-            {
-                GlobalObjects.ViewModel.BlockNavigation = true;
-                _tokenSource = new CancellationTokenSource();
-
-                GenerateButton.IsEnabled = false;
-                BuildFilePath.IsReadOnly = true;
-                BrowseSourcePathButton.IsEnabled = false;
-
-                DownloadProgressBar.Maximum = 100;
-                DownloadPercent.Content = "";
-
-                var proPlusDownloader = new ProPlusDownloader();
-                proPlusDownloader.DownloadFileProgress += async (senderfp, progress) =>
-                {
-                    var percent = progress.PercentageComplete;
-                    if (percent > 0)
-                    {
-                        Dispatcher.Invoke(() => { 
-                            DownloadPercent.Content = percent + "%";
-                            DownloadProgressBar.Value = Convert.ToInt32(Math.Round(percent, 0));
-                        });
-                    }
-                };
-
-                var buildPath = BuildFilePath.Text.Trim();
-                if (string.IsNullOrEmpty(buildPath)) return;
-
-                var configXml = GlobalObjects.ViewModel.ConfigXmlParser.ConfigurationXml;
-                var languages =
-                    (from product in configXml.Add.Products
-                        from language in product.Languages
-                        select language.ID.ToLower()).Distinct().ToList();
-
-                string branch = null;
-                if (configXml.Add.Branch.HasValue)
-                {
-                    branch = configXml.Add.Branch.Value.ToString();
-                }
-
-                var officeEdition = OfficeEdition.Office32Bit;
-                if (configXml.Add.OfficeClientEdition == OfficeClientEdition.Office64Bit)
-                {
-                    officeEdition = OfficeEdition.Office64Bit;
-                }
-
-                buildPath = GlobalObjects.SetBranchFolderPath(branch, buildPath);
-                Directory.CreateDirectory(buildPath);
-
-                BuildFilePath.Text = buildPath;
-
-                await proPlusDownloader.DownloadBranch(new DownloadBranchProperties()
-                {
-                    BranchName = branch,
-                    OfficeEdition = officeEdition,
-                    TargetDirectory = buildPath,
-                    Languages = languages
-                }, _tokenSource.Token);
-
-                MessageBox.Show("Download Complete");
-
-                LogAnaylytics("/GenerateView", "Download." + branch);
-            }
-            finally
-            {
-                GlobalObjects.ViewModel.BlockNavigation = false;
-                GenerateButton.IsEnabled = true;
-                BuildFilePath.IsReadOnly = false;
-                BrowseSourcePathButton.IsEnabled = true;
-                DownloadProgressBar.Value = 0;
-                DownloadPercent.Content = "";
-
-                DownloadButton.Content = "Download";
-                _tokenSource = new CancellationTokenSource();
             }
         }
 
@@ -464,10 +384,7 @@ namespace MetroDemo.ExampleViews
 
             if (buildFolderExists)
             {
-                if (!_downloadTask.IsActive())
-                {
-                    GenerateButton.IsEnabled = true;
-                }
+                GenerateButton.IsEnabled = true;
             }
             else
             {
@@ -719,18 +636,17 @@ namespace MetroDemo.ExampleViews
             try
             {
                 var enabled = IncludeBuild.IsChecked.HasValue && IncludeBuild.IsChecked.Value;
+                SourceFilePath.Visibility = enabled ? Visibility.Visible : Visibility.Collapsed;
 
                 SourcePathLabel.IsEnabled = enabled;
                 BuildFilePath.IsEnabled = enabled;
                 BrowseSourcePathButton.IsEnabled = enabled;
 
                 OpenFolderButton.IsEnabled = enabled;
-                DownloadButton.IsEnabled = enabled;
 
                 var buildFilePath = BuildFilePath.Text.Trim();
                 if (enabled && !string.IsNullOrEmpty(buildFilePath))
                 {
-                    DownloadButton.IsEnabled = true;
                     if (await GlobalObjects.DirectoryExists(buildFilePath))
                     {
                         OpenFolderButton.IsEnabled = true;
@@ -743,7 +659,6 @@ namespace MetroDemo.ExampleViews
                 else
                 {
                     OpenFolderButton.IsEnabled = false;
-                    DownloadButton.IsEnabled = false;
                 }
             }
             catch (Exception ex)
@@ -806,44 +721,6 @@ namespace MetroDemo.ExampleViews
             }
         }
 
-        private async void DownloadButton_OnClick(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                if (_tokenSource != null)
-                {
-                    if (_tokenSource.IsCancellationRequested)
-                    {
-                        GlobalObjects.ViewModel.BlockNavigation = false;
-                        return;
-                    }
-                    if (_downloadTask.IsActive())
-                    {
-                        GlobalObjects.ViewModel.BlockNavigation = false;
-                        _tokenSource.Cancel();
-                        return;
-                    }
-                }
-
-                DownloadButton.Content = "Stop";
-
-                _downloadTask = DownloadOfficeFiles();
-                await _downloadTask;
-            }
-            catch (Exception ex)
-            {
-                if (ex.Message.ToLower().Contains("aborted") ||
-                    ex.Message.ToLower().Contains("canceled"))
-                {
-                    GlobalObjects.ViewModel.BlockNavigation = false;
-                }
-                else
-                {
-                    LogErrorMessage(ex);
-                }
-            }
-        }
-        
         private async void BuildFilePath_OnTextChanged(object sender, TextChangedEventArgs e)
         {
             try
@@ -868,7 +745,6 @@ namespace MetroDemo.ExampleViews
                 }
 
                 OpenFolderButton.IsEnabled = openFolderEnabled;
-                DownloadButton.IsEnabled = enabled;
             }
             catch (Exception ex)
             {
