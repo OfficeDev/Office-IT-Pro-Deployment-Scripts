@@ -173,8 +173,15 @@
                                 </Grid>
 
                                 <Grid Margin="50 10 0 0" HorizontalAlignment="Left">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="790" />
+                                    </Grid.ColumnDefinitions>
+
                                     <Button Width="70" Height="40" 
-                                            Content="Download" x:Name="DownloadButton" Click="DownloadButton_OnClick" IsEnabled="False"   />
+                                            Content="Download" x:Name="DownloadButton"  HorizontalAlignment="Left"
+                                            Click="DownloadButton_OnClick" IsEnabled="False"   />
+                                    <Button Width="70" Height="40" HorizontalAlignment="Right"
+                                            Content="Advanced" x:Name="AdvDownloadButton" Click="AdvDownloadButton_OnClick" IsEnabled="True"   />
                                 </Grid>
 
                             </StackPanel>

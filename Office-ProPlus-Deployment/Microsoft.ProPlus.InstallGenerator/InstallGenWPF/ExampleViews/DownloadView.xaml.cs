@@ -53,7 +53,8 @@ namespace MetroDemo.ExampleViews
         private int _cachedIndex = 0;
         private DateTime _lastUpdated;
 
-        private List<Channel> items = null; 
+        private List<Channel> items = null;
+        private DownloadAdvanced advancedSettings = null;
 
         public DownloadView()
         {
@@ -183,7 +184,10 @@ namespace MetroDemo.ExampleViews
                             var proPlusDownloader = new ProPlusDownloader();
                             proPlusDownloader.DownloadFileProgress += async (senderfp, progress) =>
                             {
-                                DownloadFileProgress(progress, channelItems, channelItem);
+                                if (!_tokenSource.Token.IsCancellationRequested)
+                                {
+                                    DownloadFileProgress(progress, channelItems, channelItem);
+                                }
                             };
 
                             proPlusDownloader.VersionDetected += (sender, version) =>
@@ -201,6 +205,7 @@ namespace MetroDemo.ExampleViews
                             var officeEdition = GetSelectedEdition();
 
                             var buildPath = GlobalObjects.SetBranchFolderPath(branch, startPath);
+
                             Directory.CreateDirectory(buildPath);
 
                             var setVersion = channelItem.DisplayVersion;
@@ -214,8 +219,11 @@ namespace MetroDemo.ExampleViews
                                 Version = setVersion
                             }, _tokenSource.Token);
 
-                            UpdatePercentage(channelItems, channelItem.Name);
-                            
+                            if (!_tokenSource.Token.IsCancellationRequested)
+                            {
+                                UpdatePercentage(channelItems, channelItem.Name);
+                            }
+
                             LogAnaylytics("/ProductView", "Download." + branch);
                         }
                         catch (Exception ex)
@@ -226,13 +234,21 @@ namespace MetroDemo.ExampleViews
                             }
                         }
                     });
-                    //await task;
+
+                    if (!GlobalObjects.ViewModel.AllowMultipleDownloads)
+                    {
+                        await task;
+                    }
+
+                    if (_tokenSource.Token.IsCancellationRequested) break;
 
                     var timeTaken = DateTime.Now - startTime;
 
                     taskList.Add(task);
-                    await Task.Delay(1000);
+                    await Task.Delay(new TimeSpan(0,0,5));
                 }
+
+                await Task.Delay(new TimeSpan(0, 0, 1));
 
                 foreach (var task in taskList)
                 {
@@ -500,6 +516,23 @@ namespace MetroDemo.ExampleViews
         }
 
         #region "Events"
+
+        private void AdvDownloadButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            try 
+            {
+                if (advancedSettings == null)
+                {
+                    advancedSettings = new DownloadAdvanced();
+                }
+
+                advancedSettings.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
 
         private async void DownloadButton_OnClick(object sender, RoutedEventArgs e)
         {

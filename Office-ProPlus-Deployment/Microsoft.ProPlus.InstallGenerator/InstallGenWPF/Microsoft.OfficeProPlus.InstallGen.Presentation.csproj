@@ -161,6 +161,7 @@
     <Content Include="InstallOffice.cs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Compile Include="Extentions\Extentions.cs" />
     <Compile Include="Logging\ErrorLogger.cs" />
     <Compile Include="Logging\GoogleAnalytics.cs" />
     <Compile Include="MainWindowViewModel.cs" />
@@ -193,6 +194,9 @@
     </Compile>
     <Compile Include="Windows\CertificatesDialog.xaml.cs">
       <DependentUpon>CertificatesDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\DownloadAdvanced.xaml.cs">
+      <DependentUpon>DownloadAdvanced.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\Languages.xaml.cs">
       <DependentUpon>Languages.xaml</DependentUpon>
@@ -279,6 +283,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Windows\CertificatesDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Windows\DownloadAdvanced.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -454,9 +462,7 @@
     </Content>
     <Resource Include="images\wait.GIF" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Extentions\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

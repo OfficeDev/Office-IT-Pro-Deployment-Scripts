@@ -181,96 +181,6 @@ namespace MetroDemo.ExampleViews
         }
 
 
-        private async Task DownloadOfficeFiles()
-        {
-            try
-            {
-                _tokenSource = new CancellationTokenSource();
-
-                UpdateXml();
-
-                UpdateUpdatePath.IsReadOnly = true;
-                UpdatePath.IsEnabled = false;
-
-                DownloadProgressBar.Maximum = 100;
-                DownloadPercent.Content = "";
-
-                var configXml = GlobalObjects.ViewModel.ConfigXmlParser.ConfigurationXml;
-
-                string branch = null;
-                if (configXml.Updates.Branch.HasValue)
-                {
-                    branch = configXml.Updates.Branch.Value.ToString();
-                }
-
-                var proPlusDownloader = new ProPlusDownloader();
-                proPlusDownloader.DownloadFileProgress += async (senderfp, progress) =>
-                {
-                    var percent = progress.PercentageComplete;
-                    if (percent > 0)
-                    {
-                        Dispatcher.Invoke(() =>
-                        {
-                            DownloadPercent.Content = percent + "%";
-                            DownloadProgressBar.Value = Convert.ToInt32(Math.Round(percent, 0));
-                        });
-                    }
-                };
-                proPlusDownloader.VersionDetected += (sender, version) =>
-                {
-                    if (branch == null) return;
-                    var modelBranch = GlobalObjects.ViewModel.Branches.FirstOrDefault(b => b.Branch.ToString().ToLower() == branch.ToLower());
-                    if (modelBranch == null) return;
-                    if (modelBranch.Versions.Any(v => v.Version == version.Version)) return;
-                    modelBranch.Versions.Insert(0, new Build() { Version = version.Version });
-                    modelBranch.CurrentVersion = version.Version;
-
-                    UpdateTargetVersion.ItemsSource = modelBranch.Versions;
-                    UpdateTargetVersion.SetValue(TextBoxHelper.WatermarkProperty, modelBranch.CurrentVersion);
-                };
-
-                var buildPath = UpdateUpdatePath.Text.Trim();
-                if (string.IsNullOrEmpty(buildPath)) return;
-
-                var languages =
-                    (from product in configXml.Add.Products
-                     from language in product.Languages
-                     select language.ID.ToLower()).Distinct().ToList();
-
-                var officeEdition = OfficeEdition.Office32Bit;
-                if (configXml.Add.OfficeClientEdition == OfficeClientEdition.Office64Bit)
-                {
-                    officeEdition = OfficeEdition.Office64Bit;
-                }
-
-                buildPath = GlobalObjects.SetBranchFolderPath(branch, buildPath);
-                Directory.CreateDirectory(buildPath);
-
-                UpdateUpdatePath.Text = buildPath;
-
-                await proPlusDownloader.DownloadBranch(new DownloadBranchProperties()
-                {
-                    BranchName = branch,
-                    OfficeEdition = officeEdition,
-                    TargetDirectory = buildPath,
-                    Languages = languages
-                }, _tokenSource.Token);
-
-                MessageBox.Show("Download Complete");
-            }
-            finally
-            {
-                UpdateUpdatePath.IsReadOnly = false;
-                UpdatePath.IsEnabled = true;
-                DownloadProgressBar.Value = 0;
-                DownloadPercent.Content = "";
-
-                DownloadButton.Content = "Download";
-                _tokenSource = new CancellationTokenSource();
-            }
-        }
-
-
         private async Task GetBranchVersion(OfficeBranch branch, OfficeEdition officeEdition)
         {
             try
@@ -601,42 +511,6 @@ namespace MetroDemo.ExampleViews
             catch { }
         }
 
-        private async void DownloadButton_OnClick(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                if (_tokenSource != null)
-                {
-                    if (_tokenSource.IsCancellationRequested)
-                    {
-                        return;
-                    }
-                    if (_downloadTask.IsActive())
-                    {
-                        _tokenSource.Cancel();
-                        return;
-                    }
-                }
-
-                DownloadButton.Content = "Stop";
-
-                _downloadTask = DownloadOfficeFiles();
-                await _downloadTask;
-            }
-            catch (Exception ex)
-            {
-                if (ex.Message.ToLower().Contains("aborted") ||
-                    ex.Message.ToLower().Contains("canceled"))
-                {
-
-                }
-                else
-                {
-                    LogErrorMessage(ex);
-                }
-            }
-        }
-
         private async void OpenFolderButton_OnClick(object sender, RoutedEventArgs e)
         {
             try
@@ -684,7 +558,6 @@ namespace MetroDemo.ExampleViews
                 }
 
                 OpenFolderButton.IsEnabled = openFolderEnabled;
-                DownloadButton.IsEnabled = enabled;
             }
             catch (Exception ex)
             {

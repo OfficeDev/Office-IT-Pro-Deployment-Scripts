@@ -33,18 +33,14 @@ namespace Microsoft.OfficeProPlus.Downloader
                     Directory.CreateDirectory(directory);
                     await Task.Run(async () =>
                     {
-
                         using (var client = new WebClient())
                         {
-                            
-
                             client.DownloadProgressChanged +=
                                 new DownloadProgressChangedEventHandler(client_DownloadProgressChanged);
                             client.DownloadFileCompleted += new AsyncCompletedEventHandler(client_DownloadFileCompleted);
                             
                             if (!token.IsCancellationRequested)
                             {
-
                                 using (var ctr = token.Register(() => client.CancelAsync()))
                                 {
                                     //actual download, will retry if fails                            

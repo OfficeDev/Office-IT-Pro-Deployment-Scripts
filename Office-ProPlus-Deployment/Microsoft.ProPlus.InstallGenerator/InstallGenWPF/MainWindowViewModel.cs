@@ -8,8 +8,8 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Forms;
 using System.Windows.Forms.Design;
 using System.Windows.Media;
 using MahApps.Metro;
@@ -19,9 +19,12 @@ using System.Windows.Input;
 using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
 using Micorosft.OfficeProPlus.ConfigurationXml;
+using Microsoft.OfficeProPlus.InstallGen.Presentation.Extentions;
 using Microsoft.OfficeProPlus.InstallGen.Presentation.Models;
 using Microsoft.OfficeProPlus.InstallGenerator.Models;
 using OfficeInstallGenerator;
+using Application = System.Windows.Application;
+using MessageBox = System.Windows.MessageBox;
 
 namespace MetroDemo
 {
@@ -32,18 +35,55 @@ namespace MetroDemo
 
         public static string SetBranchFolderPath(string selectBranch, string folderPath)
         {
+            var newChannelName = selectBranch;
+            if (ViewModel.UseFolderShortNames)
+            {
+                newChannelName = selectBranch.ConvertChannelToShortName();
+            }
+
+            var longFolderPath = "";
+            var shortFolderPath = "";
+
             foreach (var branch in ViewModel.Branches)
             {
                 var branchName = branch.Branch.ToString();
+
                 if (folderPath.ToLower().EndsWith(@"\" + branchName.ToLower()))
                 {
-                    folderPath = Regex.Replace(folderPath, @"\\" + branchName + "$", @"\" + selectBranch, RegexOptions.IgnoreCase);
+                    folderPath = Regex.Replace(folderPath, @"\\" + branchName + "$", @"\" + newChannelName, RegexOptions.IgnoreCase);
+                    longFolderPath = Regex.Replace(folderPath, @"\\" + branchName + "$", @"\" + selectBranch, RegexOptions.IgnoreCase);
+                }
+                if (folderPath.ToLower().EndsWith(@"\" + branchName.ConvertChannelToShortName().ToLower()))
+                {
+                    folderPath = Regex.Replace(folderPath, @"\\" + branchName.ConvertChannelToShortName() + "$", @"\" + newChannelName, RegexOptions.IgnoreCase);
+                    shortFolderPath = Regex.Replace(folderPath, @"\\" + branchName.ConvertChannelToShortName() + "$", @"\" + selectBranch.ConvertChannelToShortName(), RegexOptions.IgnoreCase);
                 }
             }
-            if (!folderPath.ToLower().EndsWith(@"\" + selectBranch.ToLower()))
+
+            if (!folderPath.ToLower().EndsWith(@"\" + selectBranch.ConvertChannelToShortName().ToLower()) &&
+                !folderPath.ToLower().EndsWith(@"\" + selectBranch.ToLower()))
             {
-                folderPath += @"\" + selectBranch;
+                longFolderPath = folderPath + @"\" + selectBranch;
+                shortFolderPath = folderPath + @"\" + selectBranch.ConvertChannelToShortName();
+
+                folderPath += @"\" + newChannelName;
             }
+
+            if (ViewModel.UseFolderShortNames)
+            {
+                if (Directory.Exists(longFolderPath))
+                {
+                    Directory.Move(longFolderPath, shortFolderPath);
+                }
+            }
+            else
+            {
+                if (Directory.Exists(shortFolderPath))
+                {
+                    Directory.Move(shortFolderPath, longFolderPath);
+                }
+            }
+
             return folderPath;
         }
 
@@ -272,6 +312,10 @@ namespace MetroDemo
              
 
         }
+
+        public bool AllowMultipleDownloads { get; set; }
+
+        public bool UseFolderShortNames { get; set; }
 
         public Certificate SelectedCertificate { get; set; }
 

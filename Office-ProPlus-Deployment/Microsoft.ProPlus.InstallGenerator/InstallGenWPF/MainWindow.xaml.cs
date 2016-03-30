@@ -26,8 +26,9 @@ namespace MetroDemo
         {
             GlobalObjects.ViewModel = new MainWindowViewModel(DialogCoordinator.Instance)
             {
-                ConfigXmlParser = new OfficeInstallGenerator.ConfigXmlParser("<Configuration></Configuration>")
-                
+                ConfigXmlParser = new OfficeInstallGenerator.ConfigXmlParser("<Configuration></Configuration>"),
+                AllowMultipleDownloads = true,
+                UseFolderShortNames = true
             };
 
             DataContext = GlobalObjects.ViewModel;
@@ -220,6 +221,7 @@ namespace MetroDemo
         private void Nav_OnClick(object sender, RoutedEventArgs e)
         {
 
+
             if (OptionsFlyout.Width == 160)
             {
                 var xtran = new Duration(TimeSpan.FromMilliseconds(100));
@@ -230,6 +232,7 @@ namespace MetroDemo
 
                 lblStart.Visibility = Visibility.Collapsed;
                 lblOptions.Visibility = Visibility.Collapsed;
+                lblDownload.Visibility = Visibility.Collapsed;
                 lblProducts.Visibility = Visibility.Collapsed;
                 lblGenerate.Visibility = Visibility.Collapsed;
                 lblUpdate.Visibility = Visibility.Collapsed;
@@ -240,15 +243,10 @@ namespace MetroDemo
                 margin.Right = -10;
                 ((Button) sender).Margin = margin;
 
-                Thickness mainMargin = ((MetroAnimatedSingleRowTabControl) MainWindowTabs).Margin;
-
-
-
+                var mainMargin = ((MetroAnimatedSingleRowTabControl) MainWindowTabs).Margin;
 
                 mainMargin.Left = 45;
                 ((MetroAnimatedSingleRowTabControl) MainWindowTabs).Margin = mainMargin;
-
-
             }
             else
             {
@@ -259,6 +257,7 @@ namespace MetroDemo
                 OptionsFlyout.Width = 160;
 
                 lblStart.Visibility = Visibility.Visible;
+                lblDownload.Visibility = Visibility.Visible;
                 lblOptions.Visibility = Visibility.Visible;
                 lblProducts.Visibility = Visibility.Visible;
                 lblGenerate.Visibility = Visibility.Visible;
@@ -266,14 +265,13 @@ namespace MetroDemo
                 lblAbout.Visibility = Visibility.Visible;
 
 
-                Thickness margin = ((Button)sender).Margin;
+                var margin = ((Button)sender).Margin;
                 margin.Left = 100;
                 ((Button)sender).Margin = margin;
 
-                Thickness mainMargin = ((MetroAnimatedSingleRowTabControl)MainWindowTabs).Margin;
+                var mainMargin = ((MetroAnimatedSingleRowTabControl)MainWindowTabs).Margin;
                 mainMargin.Left = 150;
                 ((MetroAnimatedSingleRowTabControl)MainWindowTabs).Margin = mainMargin;
-
             }
            
 
