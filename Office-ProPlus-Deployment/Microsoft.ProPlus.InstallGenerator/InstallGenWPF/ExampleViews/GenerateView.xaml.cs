@@ -911,6 +911,11 @@ namespace MetroDemo.ExampleViews
 
         #endregion
 
+        private void xmlBrowser_Loaded(object sender, RoutedEventArgs e)
+        {
+
+        }
+
       
     }
 }

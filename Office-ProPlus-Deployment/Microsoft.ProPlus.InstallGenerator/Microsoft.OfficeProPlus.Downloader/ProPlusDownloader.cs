@@ -36,7 +36,7 @@ namespace Microsoft.OfficeProPlus.Downloader
                 {
                     try
                     {
-                        _updateFiles = await DownloadCab();
+                        _updateFiles = await DownloadCabAsync();
                         break;
                     }
                     catch (Exception ex)
@@ -192,7 +192,7 @@ namespace Microsoft.OfficeProPlus.Downloader
 
         }
 
-        public async Task<List<UpdateFiles>> DownloadCab()
+        public async Task<List<UpdateFiles>> DownloadCabAsync()
         {
             var guid = Guid.NewGuid().ToString();
 
@@ -254,7 +254,7 @@ namespace Microsoft.OfficeProPlus.Downloader
                 {
                     if (_updateFiles == null)
                     {
-                        _updateFiles = await DownloadCab();
+                        _updateFiles = await DownloadCabAsync();
                     }
                 }
             }

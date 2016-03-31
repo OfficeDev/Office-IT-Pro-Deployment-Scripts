@@ -221,7 +221,6 @@ namespace MetroDemo
         private void Nav_OnClick(object sender, RoutedEventArgs e)
         {
 
-
             if (OptionsFlyout.Width == 160)
             {
                 var xtran = new Duration(TimeSpan.FromMilliseconds(100));
@@ -237,6 +236,7 @@ namespace MetroDemo
                 lblGenerate.Visibility = Visibility.Collapsed;
                 lblUpdate.Visibility = Visibility.Collapsed;
                 lblAbout.Visibility = Visibility.Collapsed;
+                lblLocal.Visibility = Visibility.Collapsed;
 
                 var margin = ((Button)sender).Margin;
                 margin.Left = -1;
@@ -263,7 +263,7 @@ namespace MetroDemo
                 lblGenerate.Visibility = Visibility.Visible;
                 lblUpdate.Visibility = Visibility.Visible;
                 lblAbout.Visibility = Visibility.Visible;
-
+                lblLocal.Visibility = Visibility.Visible;
 
                 var margin = ((Button)sender).Margin;
                 margin.Left = 100;

@@ -137,6 +137,9 @@
     <Compile Include="ExampleViews\AboutView.xaml.cs">
       <DependentUpon>AboutView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ExampleViews\LocalView.xaml.cs">
+      <DependentUpon>LocalView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ExampleViews\GenerateView.xaml.cs">
       <DependentUpon>GenerateView.xaml</DependentUpon>
     </Compile>
@@ -160,6 +163,9 @@
     </Content>
     <Resource Include="images\Import.png" />
     <Resource Include="images\new.png" />
+    <Resource Include="images\Ok48.png" />
+    <Resource Include="images\InstallRing.gif" />
+    <Resource Include="images\fail.png" />
     <Content Include="InstallOffice.cs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -167,6 +173,7 @@
     <Compile Include="Logging\ErrorLogger.cs" />
     <Compile Include="Logging\GoogleAnalytics.cs" />
     <Compile Include="MainWindowViewModel.cs" />
+    <Compile Include="Models\Channel.cs" />
     <Compile Include="Models\Enums.cs" />
     <Compile Include="Models\ExcludeProduct.cs" />
     <Compile Include="Models\Certificate.cs" />
@@ -182,6 +189,7 @@
     </Compile>
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="ValueConverter\AlbumPriceIsTooMuchConverter.cs" />
+    <Compile Include="ValueConverter\NegateConverter.cs" />
     <Compile Include="Viewer.xaml.cs">
       <DependentUpon>Viewer.xaml</DependentUpon>
     </Compile>
@@ -214,6 +222,10 @@
     <Page Include="ExampleViews\AboutView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ExampleViews\LocalView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="ExampleViews\GenerateView.xaml">
       <Generator>MSBuild:Compile</Generator>

@@ -5,6 +5,7 @@
         xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:exampleViews="clr-namespace:MetroDemo.ExampleViews"
         xmlns:gif="http://wpfanimatedgif.codeplex.com"
+        xmlns:valueConverter="clr-namespace:Microsoft.OfficeProPlus.InstallGen.Presentation.ValueConverter"
         Loaded="GenerateView_OnLoaded" >
 
     <UserControl.Resources>
@@ -15,7 +16,7 @@
 
             <Thickness x:Key="ColumnMargin">10 5 10 5</Thickness>
             <Thickness x:Key="ControlMargin">0 5 0 0</Thickness>
-            <exampleViews:NegateConverter x:Key="negate" />
+            
 
         </ResourceDictionary>
     </UserControl.Resources>
@@ -247,7 +248,7 @@
                             </DockPanel>
                         </TabItem.Header>
 
-                        <xmlBrowser:XmlBrowserControl x:Name="xmlBrowser" Margin="10" />
+                        <xmlBrowser:XmlBrowserControl x:Name="xmlBrowser" Margin="10" Loaded="xmlBrowser_Loaded" />
                     </TabItem>
 
                 </controls:MetroAnimatedSingleRowTabControl>

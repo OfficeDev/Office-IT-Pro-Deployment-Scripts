@@ -1,28 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Runtime.Remoting.Channels;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Forms;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using MahApps.Metro.Controls;
 using MetroDemo.Events;
 using MetroDemo.ExampleWindows;
-using MetroDemo.Models;
 using Micorosft.OfficeProPlus.ConfigurationXml;
 using Micorosft.OfficeProPlus.ConfigurationXml.Model;
 using Microsoft.OfficeProPlus.Downloader;
@@ -61,7 +49,7 @@ namespace MetroDemo.ExampleViews
             InitializeComponent();
         }
 
-        private void DownloadView_Loaded(object sender, RoutedEventArgs e)             
+        private void DownloadView_Loaded(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -94,14 +82,34 @@ namespace MetroDemo.ExampleViews
                 }
             }
 
-            var currentBranch = GlobalObjects.ViewModel.Branches.FirstOrDefault(b => b.NewName.ToLower() == "Current".ToLower());
+            var currentBranch =
+                GlobalObjects.ViewModel.Branches.FirstOrDefault(b => b.NewName.ToLower() == "Current".ToLower());
 
             items = new List<Channel>
             {
-                new Channel() {Name = "Current", ChannelName = "Current", Version = "Latest", Builds = currentBranch.Versions, ForeGround = "Gray"},
-                new Channel() {Name = "Deferred", ChannelName = "Deferred" , Version = "Latest", ForeGround = "Gray"},
-                new Channel() {Name = "First Release Deferred", ChannelName = "FirstReleaseDeferred" , Version = "Latest", ForeGround = "Gray"},
-                new Channel() {Name = "First Release Current", ChannelName = "FirstReleaseCurrent" , Version = "Latest", ForeGround = "Gray"}
+                new Channel()
+                {
+                    Name = "Current",
+                    ChannelName = "Current",
+                    Version = "Latest",
+                    Builds = currentBranch.Versions,
+                    ForeGround = "Gray"
+                },
+                new Channel() {Name = "Deferred", ChannelName = "Deferred", Version = "Latest", ForeGround = "Gray"},
+                new Channel()
+                {
+                    Name = "First Release Deferred",
+                    ChannelName = "FirstReleaseDeferred",
+                    Version = "Latest",
+                    ForeGround = "Gray"
+                },
+                new Channel()
+                {
+                    Name = "First Release Current",
+                    ChannelName = "FirstReleaseCurrent",
+                    Version = "Latest",
+                    ForeGround = "Gray"
+                }
             };
 
             if (configXml.Add.Branch.HasValue)
@@ -119,7 +127,7 @@ namespace MetroDemo.ExampleViews
             }
 
             lvUsers.ItemsSource = items;
-            
+
             if (configXml.Add.OfficeClientEdition == OfficeClientEdition.Office32Bit)
             {
                 Download32Bit.IsChecked = true;
@@ -144,7 +152,9 @@ namespace MetroDemo.ExampleViews
             {
                 GoogleAnalytics.Log(path, pageName);
             }
-            catch { }
+            catch
+            {
+            }
         }
 
         private async Task DownloadOfficeFiles()
@@ -166,7 +176,7 @@ namespace MetroDemo.ExampleViews
                 var configXml = GlobalObjects.ViewModel.ConfigXmlParser.ConfigurationXml;
                 var startPath = ProductUpdateSource.Text.Trim();
 
-                var channelItems = (List<Channel>)lvUsers.ItemsSource;
+                var channelItems = (List<Channel>) lvUsers.ItemsSource;
 
                 var taskList = new List<Task>();
                 _lastUpdated = DateTime.Now.AddDays(-10);
@@ -178,7 +188,7 @@ namespace MetroDemo.ExampleViews
                     var branch = channelItem.ChannelName;
 
                     var task = Task.Run(async () =>
-                    { 
+                    {
                         try
                         {
                             var proPlusDownloader = new ProPlusDownloader();
@@ -245,7 +255,7 @@ namespace MetroDemo.ExampleViews
                     var timeTaken = DateTime.Now - startTime;
 
                     taskList.Add(task);
-                    await Task.Delay(new TimeSpan(0,0,5));
+                    await Task.Delay(new TimeSpan(0, 0, 5));
                 }
 
                 await Task.Delay(new TimeSpan(0, 0, 1));
@@ -254,7 +264,7 @@ namespace MetroDemo.ExampleViews
                 {
                     if (task.Exception != null)
                     {
-                        
+
                     }
                     await task;
                 }
@@ -279,17 +289,19 @@ namespace MetroDemo.ExampleViews
         {
             if (channelItem.ChannelName == null) return;
             var modelBranch =
-                GlobalObjects.ViewModel.Branches.FirstOrDefault(b => b.NewName.ToString().ToLower() == channelItem.ChannelName.ToLower());
+                GlobalObjects.ViewModel.Branches.FirstOrDefault(
+                    b => b.NewName.ToString().ToLower() == channelItem.ChannelName.ToLower());
             if (modelBranch == null) return;
 
             ChangeVersion(channelItems, channelItem.Name, version);
 
             if (modelBranch.Versions.Any(v => v.Version == version)) return;
-            modelBranch.Versions.Insert(0, new Build() { Version = version });
+            modelBranch.Versions.Insert(0, new Build() {Version = version});
             modelBranch.CurrentVersion = version;
         }
 
-        private void DownloadFileProgress(Microsoft.OfficeProPlus.Downloader.Events.DownloadFileProgress progress, IEnumerable<Channel> channelItems, Channel channelItem)
+        private void DownloadFileProgress(Microsoft.OfficeProPlus.Downloader.Events.DownloadFileProgress progress,
+            IEnumerable<Channel> channelItems, Channel channelItem)
         {
             var percent = progress.PercentageComplete;
             if (percent > 0)
@@ -405,7 +417,7 @@ namespace MetroDemo.ExampleViews
 
             if (configXml.Add.Products == null)
             {
-                configXml.Add.Products = new List<ODTProduct>();   
+                configXml.Add.Products = new List<ODTProduct>();
             }
 
             var versionText = "";
@@ -432,7 +444,9 @@ namespace MetroDemo.ExampleViews
                     configXml.Add.Version = null;
                 }
             }
-            catch { }
+            catch
+            {
+            }
 
             configXml.Add.SourcePath = ProductUpdateSource.Text.Length > 0 ? ProductUpdateSource.Text : null;
 
@@ -452,7 +466,7 @@ namespace MetroDemo.ExampleViews
                     b.Branch.ToString().ToLower() == branch.Branch.ToString().ToLower());
                 if (modelBranch == null) return;
                 if (modelBranch.Versions.Any(v => v.Version == latestVersion)) return;
-                modelBranch.Versions.Insert(0, new Build() { Version = latestVersion });
+                modelBranch.Versions.Insert(0, new Build() {Version = latestVersion});
                 modelBranch.CurrentVersion = latestVersion;
 
                 //ProductVersion.ItemsSource = modelBranch.Versions;
@@ -519,7 +533,7 @@ namespace MetroDemo.ExampleViews
 
         private void AdvDownloadButton_OnClick(object sender, RoutedEventArgs e)
         {
-            try 
+            try
             {
                 if (advancedSettings == null)
                 {
@@ -616,7 +630,7 @@ namespace MetroDemo.ExampleViews
                             folderExists = await GlobalObjects.DirectoryExists(ProductUpdateSource.Text);
                         }
 
-                        openFolderEnabled = folderExists;  
+                        openFolderEnabled = folderExists;
                     }
                 }
 
@@ -628,7 +642,7 @@ namespace MetroDemo.ExampleViews
                 LogErrorMessage(ex);
             }
         }
-        
+
 
 
         private void UpdatePath_OnClick(object sender, RoutedEventArgs e)
@@ -734,7 +748,7 @@ namespace MetroDemo.ExampleViews
                 LogErrorMessage(ex);
             }
         }
-        
+
         public BranchChangedEventHandler BranchChanged { get; set; }
 
         #endregion
@@ -777,7 +791,7 @@ namespace MetroDemo.ExampleViews
 
                     };
                 }
-                
+
                 informationDialog.Height = 500;
                 informationDialog.Width = 400;
 
@@ -794,58 +808,11 @@ namespace MetroDemo.ExampleViews
             }
         }
 
- 
+
 
         #endregion
 
 
     }
 
-    public class Channel
-    {
-        public string Name { get; set; }
-
-        public string ChannelName { get; set; }
-
-        public string Version { get; set; }
-
-        public string DisplayVersion { get; set; }
-
-        public bool Selected { get; set; }
-
-        public bool Editable { get; set; }
-
-        public double PercentDownload { get; set; }
-
-        public string PercentDownloadText { get; set; }
-
-        public List<Build> Builds { get; set; }
-
-        public string ForeGround { get; set; }
-
-    }
-
-    public class NegateConverter : IValueConverter
-    {
-
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            if (value is bool)
-            {
-                return !(bool)value;
-            }
-            return value;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            if (value is bool)
-            {
-                return !(bool)value;
-            }
-            return value;
-        }
-
-    }
 }
-

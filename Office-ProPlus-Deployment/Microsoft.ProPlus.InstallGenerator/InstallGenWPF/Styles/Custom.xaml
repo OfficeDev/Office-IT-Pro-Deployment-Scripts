@@ -6,6 +6,12 @@
                     xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
                     mc:Ignorable="options">
 
+    <Color x:Key="ErrorColor">#FFcd4141</Color>
+    <Color x:Key="MessageColor">#FF069dc9</Color>
+
+    <SolidColorBrush x:Key="ErrorBrush" Color="{DynamicResource ErrorColor}"/>
+    <SolidColorBrush x:Key="MessageBrush" Color="{DynamicResource MessageColor}"/>
+
     <Style TargetType="{x:Type Label}" x:Key="MetroLabelTopHeader" BasedOn="{StaticResource MetroLabel}">
         <Setter Property="Foreground" Value="{DynamicResource LabelTextBrushCustom}" />
         <Setter Property="FontSize" Value="26"></Setter>
@@ -20,6 +26,12 @@
         <Setter Property="BorderBrush" Value="#666666" />
     </Style>
 
+    <Style TargetType="{x:Type Button}" x:Key="MetroFlatButtonStyle1" BasedOn="{StaticResource MetroButton}">
+        <Setter Property="Controls:ControlsHelper.ContentCharacterCasing"
+                Value="Normal" />
+        <Setter Property="Foreground" Value="#666666" />
+        <Setter Property="FontSize" Value="12" />
+    </Style>
 
     <Style TargetType="{x:Type TabItem}" x:Key="CustomMetroTabLabelTopHeader" BasedOn="{StaticResource MetroTabItem}">
         <Setter Property="Foreground" Value="#ADAEB0" />
@@ -70,6 +82,13 @@
         <Setter Property="FontSize" Value="24"></Setter>
         <Setter Property="FontFamily" Value="{StaticResource DefaultFont}"></Setter>
         <Setter Property="FontWeight" Value="Thin"></Setter>
+    </Style>
+
+    <Style TargetType="{x:Type Label}" x:Key="CustomMetroLabelLink" BasedOn="{StaticResource MetroLabel}">
+        <Setter Property="Foreground" Value="#069dc9" />
+        <Setter Property="FontSize" Value="16"></Setter>
+        <Setter Property="FontFamily" Value="{StaticResource DefaultFont}"></Setter>
+        <Setter Property="FontWeight" Value="SemiBold"></Setter>
     </Style>
 
     <Style TargetType="{x:Type Label}" x:Key="CustomMetroLabelHeader" BasedOn="{StaticResource MetroLabel}">

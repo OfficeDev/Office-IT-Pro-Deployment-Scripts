@@ -14,6 +14,7 @@ using Microsoft.CSharp;
 using Microsoft.OfficeProPlus.InstallGenerator;
 using Microsoft.OfficeProPlus.InstallGenerator.Extensions;
 using Microsoft.OfficeProPlus.InstallGenerator.Implementation;
+using Microsoft.OfficeProPlus.InstallGenerator.Model;
 using Microsoft.Win32;
 
 

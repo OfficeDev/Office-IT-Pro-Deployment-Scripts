@@ -312,19 +312,22 @@
                     <exampleViews:ProductView x:Name="ProductView"  DataContext="{Binding}" Tag="1"  IsEnabled="true"/>
                 </TabItem>
                 <TabItem>
-                    <exampleViews:DownloadView x:Name="DownloadView"  DataContext="{Binding}" Tag="1"  IsEnabled="true"/>
+                    <exampleViews:DownloadView x:Name="DownloadView"  DataContext="{Binding}" Tag="2"  IsEnabled="true"/>
                 </TabItem>
                 <TabItem>
-                    <exampleViews:UpdateView x:Name="UpdateView" DataContext="{Binding}" Tag="2"  IsEnabled="true"/>
+                    <exampleViews:UpdateView x:Name="UpdateView" DataContext="{Binding}" Tag="3"  IsEnabled="true"/>
                 </TabItem>
                 <TabItem>
-                    <exampleViews:DisplayView x:Name="DisplayView" DataContext="{Binding}" Tag="3"  IsEnabled="true" />
+                    <exampleViews:DisplayView x:Name="DisplayView" DataContext="{Binding}" Tag="4"  IsEnabled="true" />
                 </TabItem>
                 <TabItem>
-                    <exampleViews:GenerateView x:Name="GenerateView" DataContext="{Binding}" Tag="4"   IsEnabled="true"/>
+                    <exampleViews:GenerateView x:Name="GenerateView" DataContext="{Binding}" Tag="5"   IsEnabled="true"/>
                 </TabItem>
                 <TabItem>
-                    <exampleViews:AboutView x:Name="AboutView" DataContext="{Binding}" Tag="5"  IsEnabled="True" />
+                    <exampleViews:LocalView x:Name="LocalView" DataContext="{Binding}" Tag="6"   IsEnabled="true"/>
+                </TabItem>
+                <TabItem>
+                    <exampleViews:AboutView x:Name="AboutView" DataContext="{Binding}" Tag="7"  IsEnabled="True" />
                 </TabItem>
             </Controls:MetroAnimatedSingleRowTabControl>
 

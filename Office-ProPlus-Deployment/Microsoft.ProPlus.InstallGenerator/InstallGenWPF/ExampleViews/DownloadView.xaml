@@ -7,6 +7,7 @@
              xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:exampleViews="clr-namespace:MetroDemo.ExampleViews"
              xmlns:models="clr-namespace:MetroDemo.Models"
+             xmlns:valueConverter="clr-namespace:Microsoft.OfficeProPlus.InstallGen.Presentation.ValueConverter"
              mc:Ignorable="d"
              d:DesignHeight="600"
              d:DesignWidth="900"
@@ -20,7 +21,7 @@
 
             <Thickness x:Key="ColumnMargin">10 5 10 5</Thickness>
             <Thickness x:Key="ControlMargin">0 5 0 0</Thickness>
-            <exampleViews:NegateConverter x:Key="negate" />
+            <valueConverter:NegateConverter x:Key="negate" />
 
         </ResourceDictionary>
     </UserControl.Resources>
@@ -86,9 +87,9 @@
                                         </TextBox>
 
                                         <Button Width="55" Grid.Column="1"
-                                            Height="40" 
+                                            Height="40" Style="{StaticResource MetroFlatButtonStyle1}"
                                             Content="Browse" x:Name="UpdatePath" Click="UpdatePath_OnClick" />
-                                        <Button Width="50" Height="40" Grid.Column="2" 
+                                        <Button Width="50" Height="40" Grid.Column="2" Style="{StaticResource MetroFlatButtonStyle1}"
                                             Content="Open" x:Name="OpenFolderButton" IsEnabled="False" Click="OpenFolderButton_OnClick"   />
 
                                         <Label x:Name="DownloadPercent" Grid.Column="4" Content="" Margin="0 8 0 0" Style="{StaticResource CustomMetroLabelHeader}" />
@@ -179,10 +180,10 @@
                                         <ColumnDefinition Width="790" />
                                     </Grid.ColumnDefinitions>
 
-                                    <Button Width="70" Height="40" 
+                                    <Button Width="70" Height="40" Style="{StaticResource MetroFlatButtonStyle1}"
                                             Content="Download" x:Name="DownloadButton"  HorizontalAlignment="Left"
                                             Click="DownloadButton_OnClick" IsEnabled="False"   />
-                                    <Button Width="70" Height="40" HorizontalAlignment="Right"
+                                    <Button Width="70" Height="40" HorizontalAlignment="Right" Style="{StaticResource MetroFlatButtonStyle1}"
                                             Content="Advanced" x:Name="AdvDownloadButton" Click="AdvDownloadButton_OnClick" IsEnabled="True"   />
                                 </Grid>
 

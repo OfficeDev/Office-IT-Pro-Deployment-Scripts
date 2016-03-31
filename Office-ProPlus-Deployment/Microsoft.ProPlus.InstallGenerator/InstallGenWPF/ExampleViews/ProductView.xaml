@@ -179,9 +179,9 @@
                                 </Border>
 
                                 <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal">
-                                    <Button x:Name="AddLanguageButton" Content="Add Language" Margin="2,10,2,9" Click="AddLanguageButton_Click" />
-                                    <Button x:Name="RemoveLanguageButton" Content="Remove Language" Margin="2,10,2,9" Click="RemoveLanguageButton_Click" />
-                                    <Button x:Name="SetPrimaryButton" Content="Set Primary" Margin="2,10" Click="SetPrimaryButton_OnClick" />
+                                    <Button x:Name="AddLanguageButton" Content="Add Language" Margin="2,10,2,9" Click="AddLanguageButton_Click" Style="{StaticResource MetroFlatButtonStyle1}" />
+                                    <Button x:Name="RemoveLanguageButton" Content="Remove Language" Margin="2,10,2,9" Click="RemoveLanguageButton_Click" Style="{StaticResource MetroFlatButtonStyle1}" />
+                                    <Button x:Name="SetPrimaryButton" Content="Set Primary" Margin="2,10" Click="SetPrimaryButton_OnClick" Style="{StaticResource MetroFlatButtonStyle1}" />
                                     <Button x:Name="LanguageInfo" Width="30" Height="32" HorizontalAlignment="Left" Margin="0 0 0 0" 
                                                 Focusable="False"  Style="{StaticResource MetroInfoButton}" Click="ProductInfo_OnClick" >
                                         <StackPanel Orientation="Horizontal">
@@ -282,9 +282,9 @@
                                         </TextBox>
 
                                         <Button Width="55" Grid.Column="1"
-                                            Height="40" 
+                                            Height="40"  Style="{StaticResource MetroFlatButtonStyle1}"
                                             Content="Browse" x:Name="UpdatePath" Click="UpdatePath_OnClick" />
-                                        <Button Width="50" Height="40" Grid.Column="2" 
+                                        <Button Width="50" Height="40" Grid.Column="2"  Style="{StaticResource MetroFlatButtonStyle1}"
                                             Content="Open" x:Name="OpenFolderButton" IsEnabled="False" Click="OpenFolderButton_OnClick"   />
                                     </Grid>
 
