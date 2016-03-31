@@ -26,7 +26,7 @@
                 <ColumnDefinition Width="*"  />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="500"></RowDefinition>
+                <RowDefinition Height="550"></RowDefinition>
                 <RowDefinition></RowDefinition>
             </Grid.RowDefinitions>
 
@@ -54,7 +54,7 @@
                                 <RowDefinition Height="50" />
                                 <RowDefinition Height="50" />
                                 <RowDefinition Height="120" />
-                                <RowDefinition Height="75" />
+                                <RowDefinition Height="114" />
                                 <RowDefinition />
                             </Grid.RowDefinitions>
 
@@ -64,11 +64,11 @@
                                     <RowDefinition Height="50"></RowDefinition>
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="180" />
-                                    <ColumnDefinition Width="150" />
+                                    <ColumnDefinition Width="215" />
+                                    <ColumnDefinition Width="100" />
                                     <ColumnDefinition Width="150" />
                                 </Grid.ColumnDefinitions>
-                                <Label Content="Install Type" Style="{StaticResource CustomMetroLabelHeader}" HorizontalAlignment="Left" Grid.Column="0" Margin="50,10,0,0" />
+                                <Label Content="Install type" Style="{StaticResource CustomMetroLabelHeader}" HorizontalAlignment="Left" Grid.Column="0" Margin="50,10,0,0" />
                                 <RadioButton x:Name="InstallMsi" Grid.Column="1" Checked="InstallExecutable_OnChecked"
                                          Content="MSI" IsChecked="True"
                                          GroupName="1" FontSize="20"  />
@@ -99,7 +99,7 @@
                                         <ColumnDefinition Width="130" />
                                     </Grid.ColumnDefinitions>
 
-                                    <Label Content="Sign Installer"  HorizontalAlignment="Left" VerticalAlignment="Center"
+                                    <Label Content="Sign installer"  HorizontalAlignment="Left" VerticalAlignment="Center"
                                            Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="0" Height="34" Width="254" Grid.ColumnSpan="2"  />
 
                                     <CheckBox Style="{StaticResource MetroCheckBox}" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center"
@@ -124,7 +124,7 @@
                                     <ColumnDefinition Width="145" />
                                     <ColumnDefinition Width="110" />
                                 </Grid.ColumnDefinitions>
-                                <Label Content="Silent Install" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="0" VerticalAlignment="Center"  />
+                                <Label Content="Silent install" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="0" VerticalAlignment="Center"  />
 
                                 <controls:ToggleSwitch x:Name="SilentInstall" Grid.Column="1" Grid.Row="0" VerticalAlignment="Center"
                                    IsChecked="False" Checked="SilentInstall_OnChecked" Unchecked="SilentInstall_OnChecked"
@@ -143,7 +143,7 @@
                                     <ColumnDefinition Width="60" />
                                 </Grid.ColumnDefinitions>
                                 <Label Content="File Path" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="0" VerticalAlignment="Center" />
-                                <TextBox x:Name="FileSavePath" FontSize="20" Grid.Column="1" VerticalAlignment="Center"
+                                <TextBox x:Name="FileSavePath" FontSize="20" Grid.Column="1" VerticalAlignment="Center" Background="White"
                                              controls:TextBoxHelper.Watermark="Office365ProPlus.msi" Height="35" Grid.Row="0"
                                              controls:TextBoxHelper.ClearTextButton="True" TextChanged="FileSavePath_OnTextChanged"
                                              Text="">
@@ -188,20 +188,20 @@
                                         <RowDefinition Height="50"></RowDefinition>
                                     </Grid.RowDefinitions>
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="110" />
+                                        <ColumnDefinition Width="145" />
                                         <ColumnDefinition Width="20" />
                                         <ColumnDefinition Width="400" />
                                         <ColumnDefinition Width="80" />
                                         <ColumnDefinition Width="60" />
                                     </Grid.ColumnDefinitions>
 
-                                    <Label x:Name="SourcePathLabel" Content="Source Path" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="0" Grid.Row="0" 
+                                    <Label x:Name="SourcePathLabel" Content="Source file path" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="0" Grid.Row="0" 
                                         HorizontalAlignment="Left" VerticalAlignment="Center"  />
 
-                                    <TextBox x:Name="BuildFilePath" Margin="{StaticResource ControlMargin}" Background="#00ffffff" FontSize="20" Grid.Column="2" Grid.Row="0"
+                                    <TextBox x:Name="BuildFilePath" Margin="{StaticResource ControlMargin}" Background="White" FontSize="20" Grid.Column="2" Grid.Row="0"
                                                 controls:TextBoxHelper.Watermark="Local or UNC Path" Height="35"
-                                                controls:TextBoxHelper.ClearTextButton="True"
-                                                Text="" TextChanged="BuildFilePath_OnTextChanged" IsEnabled="False" >
+                                                controls:TextBoxHelper.ClearTextButton="True" VerticalAlignment="Center"
+                                                Text="" TextChanged="BuildFilePath_OnTextChanged" IsEnabled="True" >
                                     </TextBox>
 
                                     <Button Width="70"  Height="40" Grid.Column="3" IsEnabled="False" Grid.Row="0"
@@ -209,15 +209,13 @@
                                     <Button Width="50" Height="40"  Grid.Column="4" Grid.Row="0"
                                             Content="Open" x:Name="OpenFolderButton" IsEnabled="False" Click="OpenFolderButton_OnClick" />
 
-                                    <Label x:Name="DownloadPercent" Content="" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="2" Grid.Row="0" />
-
 
                                 </Grid>
 
                             </Grid>
 
                             <Grid Grid.Row="6" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" >
-                                <Image x:Name="WaitImage" Visibility="Visible" VerticalAlignment="Bottom" gif:ImageBehavior.RepeatBehavior="Forever" 
+                                <Image x:Name="WaitImage" Visibility="Hidden" VerticalAlignment="Bottom" gif:ImageBehavior.RepeatBehavior="Forever" 
                                    Height="60" Grid.Row="0" Grid.Column="0" gif:ImageBehavior.AnimatedSource="../images/wait.GIF" />
                             </Grid>
 
@@ -234,7 +232,7 @@
                                     <ColumnDefinition Width="20"  />
                                     <ColumnDefinition  />
                                 </Grid.ColumnDefinitions>
-                                <Button x:Name="PreviousButton" Width="100" Height="40" Grid.Column="0" Content="Previous"  Click="PreviousButton_Click" />
+                                <Button x:Name="PreviousButton" Width="100" Height="40" Grid.Column="0" Content="Previous" Click="PreviousButton_Click" />
                                 <Button x:Name="GenerateButton" Width="100" Height="40" Grid.Column="2" Content="Generate" Click="GenerateButton_OnClick" />
                             </Grid>
 
