@@ -62,6 +62,7 @@ Generate-ODTConfigurationXml -Languages CurrentOfficeLanguages
 Description:
 Will generate the Office Deployment Tool (ODT) configuration XML based on the local computer and add only add the Languages currently in use by the current Office installation
 #>
+
 [CmdletBinding(SupportsShouldProcess=$true)]
 param(
     [Parameter(ValueFromPipelineByPropertyName=$true, Position=0)]
@@ -90,11 +91,7 @@ begin {
 
     $defaultDisplaySet = 'DisplayName','Version', 'ComputerName'
 
-<<<<<<< HEAD
     $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet(‘DefaultDisplayPropertySet’,[string[]]$defaultDisplaySet)
-=======
-    $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet('DefaultDisplayPropertySet',[string[]]$defaultDisplaySet)
->>>>>>> a69a611768320baefd8fb1ff6dbbcffd4dd783bd
     $PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultDisplayPropertySet)
     
     [string]$tempStr = $MyInvocation.MyCommand.Path
@@ -456,11 +453,7 @@ begin {
 
     $defaultDisplaySet = 'DisplayName','Version', 'ComputerName'
 
-<<<<<<< HEAD
     $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet(‘DefaultDisplayPropertySet’,[string[]]$defaultDisplaySet)
-=======
-    $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet('DefaultDisplayPropertySet',[string[]]$defaultDisplaySet)
->>>>>>> a69a611768320baefd8fb1ff6dbbcffd4dd783bd
     $PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultDisplayPropertySet)
 }
 
