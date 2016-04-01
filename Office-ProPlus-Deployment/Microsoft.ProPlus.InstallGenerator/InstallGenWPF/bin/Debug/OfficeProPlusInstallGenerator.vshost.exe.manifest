@@ -62,7 +62,7 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>iuVGI0ahBUDEujiMLQS0CEd6LQBNk1Xexcza2WbUJqU=</dsig:DigestValue>
+        <dsig:DigestValue>FeFalz3+9HLp8Jpvq9wNTAxFl7fADuLMNQsbEhuowcg=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -86,7 +86,7 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>6EjyLgX/fkQQeQPUEMBipZkWrkLkwyuPPXi2P9dfJoo=</dsig:DigestValue>
+        <dsig:DigestValue>2vB3V97bHxUZcWQxPH+CgCvyubriCbssqeGITy72c7U=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -110,7 +110,7 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>s04b0ytcqWVwf/Bv6Rr3doU1+7NHsN2mLawQvwIae4I=</dsig:DigestValue>
+        <dsig:DigestValue>qtDmaN/TdtSeqJcLEt+MSxXKgoqh5qco0HxdkJ/uD4o=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -122,19 +122,19 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>zLBJ3/9w/A/E8Ozv0S+GjxvpwkKvlz8AtB0ghSbNZbM=</dsig:DigestValue>
+        <dsig:DigestValue>ekA63RGkbgCIFeuMxEa8X1B8RrEVrjnmVG1HRfBfwUQ=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="OfficeInstallGenerator.dll" size="4244992">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="OfficeInstallGenerator.dll" size="4247040">
       <assemblyIdentity name="OfficeInstallGenerator" version="1.0.0.1" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>YAjHp3ijiCZLOmrdPdO4Awf7HZ6ABgMNl2fwxfRWb1A=</dsig:DigestValue>
+        <dsig:DigestValue>NYwLgdIJ2FTn8Mj3aURApoeGeqSRsSaoaRPCFkKY8I0=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -146,7 +146,7 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>XR21J+b/UIkzn6KeP0XbfY16h7PvCvY4hxGOGhRxhqY=</dsig:DigestValue>
+        <dsig:DigestValue>G7CYtahg0K/ZgqaTOERT5TvqWVtzUhcWbXMKCasXIRM=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

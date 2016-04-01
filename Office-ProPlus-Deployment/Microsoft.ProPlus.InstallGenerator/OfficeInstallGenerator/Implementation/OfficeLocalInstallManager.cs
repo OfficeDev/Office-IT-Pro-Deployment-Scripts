@@ -75,38 +75,57 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
             var scriptPath = currentDirectory + @"\Generate-ODTConfigurationXML.ps1";
             var scriptPathTmp = currentDirectory + @"\Tmp-Generate-ODTConfigurationXML.ps1";
 
-            System.IO.File.Copy(scriptPath, scriptPathTmp, true);
-
-            var scriptUrl = AppSettings.GenerateScriptUrl;
-            using (var webClient = new WebClient())
+            if (!System.IO.File.Exists(scriptPathTmp))
             {
-               //await webClient.DownloadFileTaskAsync(new Uri(scriptUrl), scriptPath);
+                System.IO.File.Copy(scriptPath, scriptPathTmp, true);
             }
 
-            await Task.Delay(500);
+            var scriptUrl = AppSettings.GenerateScriptUrl;
 
-            var arguments = @"/c Powershell -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle " +
-                            @"Hidden -File .\RunGenerateXML.ps1";
-
-            var p = new Process
+            try
             {
-                StartInfo = new ProcessStartInfo()
+                await Retry.BlockAsync(5, 1, async () =>
                 {
-                    FileName = "cmd",
-                    Arguments = arguments,
-                    CreateNoWindow = true,
-                    UseShellExecute = false,
-                    WorkingDirectory = currentDirectory,
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true
-                },
-            };
+                    using (var webClient = new WebClient())
+                    {
+                        await webClient.DownloadFileTaskAsync(new Uri(scriptUrl), scriptPath);
+                    }
+                });
+            }
+            catch (Exception ex) { }
 
-            p.Start();
-            p.WaitForExit();
+            var n = 1;
+            await Retry.BlockAsync(2, 1, async () =>
+            {
+                var arguments = @"/c Powershell -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle " +
+                                @"Hidden -File .\RunGenerateXML.ps1";
 
-            var error = await p.StandardError.ReadToEndAsync();
-            if (!string.IsNullOrEmpty(error)) throw (new Exception(error));
+                if (n == 2)
+                {
+                    System.IO.File.Copy(scriptPathTmp, scriptPath, true);
+                }
+
+                var p = new Process
+                {
+                    StartInfo = new ProcessStartInfo()
+                    {
+                        FileName = "cmd",
+                        Arguments = arguments,
+                        CreateNoWindow = true,
+                        UseShellExecute = false,
+                        WorkingDirectory = currentDirectory,
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true
+                    },
+                };
+
+                p.Start();
+                p.WaitForExit();
+
+                var error = await p.StandardError.ReadToEndAsync();
+                if (!string.IsNullOrEmpty(error)) throw (new Exception(error));
+                n++;
+            });
 
             await Task.Delay(100);
 
