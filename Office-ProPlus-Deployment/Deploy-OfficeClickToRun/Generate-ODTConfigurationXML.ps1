@@ -62,6 +62,7 @@ Generate-ODTConfigurationXml -Languages CurrentOfficeLanguages
 Description:
 Will generate the Office Deployment Tool (ODT) configuration XML based on the local computer and add only add the Languages currently in use by the current Office installation
 #>
+
 [CmdletBinding(SupportsShouldProcess=$true)]
 param(
     [Parameter(ValueFromPipelineByPropertyName=$true, Position=0)]
