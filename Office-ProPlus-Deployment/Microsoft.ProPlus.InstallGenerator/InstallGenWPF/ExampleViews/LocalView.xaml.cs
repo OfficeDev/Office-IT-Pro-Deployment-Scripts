@@ -592,12 +592,6 @@ namespace MetroDemo.ExampleViews
 
         #region "Events"
 
-        private void xmlBrowser_Loaded(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-
         private async void ChangeChannel_OnClick(object sender, RoutedEventArgs e)
         {
             try
@@ -655,6 +649,8 @@ namespace MetroDemo.ExampleViews
                         ReInstallOffice.IsEnabled = false;
                     });
 
+                    GlobalObjects.ViewModel.ConfigXmlParser.ConfigurationXml.Display.Level = DisplayLevel.Full;
+
                     var installGenerator = new OfficeInstallExecutableGenerator();
                     installGenerator.InstallOffice(GlobalObjects.ViewModel.ConfigXmlParser.Xml);
 
@@ -670,7 +666,6 @@ namespace MetroDemo.ExampleViews
                 LogErrorMessage(ex);
             }
         }
-
 
         private void MainTabControl_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -749,6 +744,11 @@ namespace MetroDemo.ExampleViews
         }
         
         public BranchChangedEventHandler BranchChanged { get; set; }
+
+        private void xmlBrowser_Loaded(object sender, RoutedEventArgs e)
+        {
+
+        }
 
         #endregion
 
