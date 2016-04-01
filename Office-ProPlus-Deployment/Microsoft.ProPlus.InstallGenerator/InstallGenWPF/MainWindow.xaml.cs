@@ -32,7 +32,7 @@ namespace MetroDemo
             };
 
             DataContext = GlobalObjects.ViewModel;
-            
+            GlobalObjects.ViewModel.RunLocalConfigs = false;
 
             InitializeComponent();
 
@@ -47,6 +47,10 @@ namespace MetroDemo
             UpdateView.TransitionTab += TransitionTab;
             DisplayView.TransitionTab += TransitionTab;
             GenerateView.TransitionTab += TransitionTab;
+            DownloadView.TransitionTab += TransitionTab;
+            LocalView.TransitionTab += TransitionTab;
+
+            LocalView.BranchChanged += BranchChanged;
 
             GenerateView.InfoMessage += GenerateViewInfoMessage;
             GenerateView.ErrorMessage += GenerateView_ErrorMessage;
@@ -62,6 +66,24 @@ namespace MetroDemo
 
             StartView.InfoMessage += GenerateViewInfoMessage;
             StartView.ErrorMessage += GenerateView_ErrorMessage;
+
+            DownloadView.InfoMessage += GenerateViewInfoMessage;
+            DownloadView.ErrorMessage += GenerateView_ErrorMessage;
+
+            LocalView.InfoMessage += GenerateViewInfoMessage;
+            LocalView.ErrorMessage += GenerateView_ErrorMessage;
+        }
+
+        private void BranchChanged(object sender, BranchChangedEventArgs e)
+        {
+            try
+            {
+                ProductView.ChangeBranch(e.BranchName);
+            }
+            catch (Exception ex)
+            {
+                ex.LogException();
+            }
         }
 
 
@@ -108,14 +130,41 @@ namespace MetroDemo
             {
                 var newIndex = Convert.ToInt32(((dynamic)sender).Tag);
 
-                if (e.Direction == TransitionTabDirection.Forward)
+                if (GlobalObjects.ViewModel.RunLocalConfigs)
                 {
-                    MainTabControl.SelectedIndex = newIndex + 1;
+                    GenerateTabName.Visibility = Visibility.Collapsed;
+                    LocalTabName.Visibility = Visibility.Visible;
+                    GenerateView.Tag = 99;
+                    LocalView.Tag = 5;
                 }
                 else
                 {
-                    MainTabControl.SelectedIndex = newIndex - 1;
+                    GenerateTabName.Visibility = Visibility.Visible;
+                    LocalTabName.Visibility = Visibility.Collapsed;
+                    GenerateView.Tag = 5;
+                    LocalView.Tag = 99;
                 }
+
+                var index = newIndex;
+                if (e.Direction == TransitionTabDirection.Forward)
+                {
+                    index = newIndex + 1;
+                }
+                else
+                {
+                    index = newIndex - 1;
+                }
+
+                if (GlobalObjects.ViewModel.RunLocalConfigs)
+                {
+                    if (index == 5) index = 6;
+                }
+                else
+                {
+                    if (index == 6) index = 5;
+                }
+
+                MainTabControl.SelectedIndex = index;
             }
             catch (Exception ex)
             {
@@ -186,8 +235,7 @@ namespace MetroDemo
                 _cacheIndex = MainWindowTabs.SelectedIndex;
             }
         }
-
-
+        
         private void UIElement_OnIsEnabledChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             ((MetroTabItem)sender).IsEnabled = true;

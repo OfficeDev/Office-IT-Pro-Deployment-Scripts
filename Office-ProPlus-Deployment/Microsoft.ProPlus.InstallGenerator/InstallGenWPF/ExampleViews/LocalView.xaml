@@ -69,7 +69,8 @@
                                         <ColumnDefinition Width="280" />
                                         <ColumnDefinition Width="220" />
                                     </Grid.ColumnDefinitions>
-                                    <Label Content="Office 365 ProPlus installed" Style="{StaticResource CustomMetroLabelHeader}" Margin="0 10 0 0" Grid.Column="0"  Height="51"/>
+                                    <Label Content="Office 365 ProPlus installed" Style="{StaticResource CustomMetroLabelHeader}" Margin="0 0 0 0" Grid.Column="0" 
+                                           Height="30"/>
 
                                     <Grid Margin="0,0,0,0" Grid.Column="1">
                                         <Grid.ColumnDefinitions>
@@ -81,7 +82,8 @@
                                                   Click="InstallOffice_OnClick" Style="{StaticResource MetroFlatButtonStyle1}" Visibility="Collapsed"   />
 
                                         <Image x:Name="ImgOfficeInstalled" Grid.Column="0" Source="../images/Ok48.png" Height="38" HorizontalAlignment="Left"  Visibility="Visible" ></Image>
-
+                                        <Image x:Name="ImgLatestInstallFail" Grid.Column="0" Source="../images/fail.png" Height="38" HorizontalAlignment="Left"  Visibility="Collapsed" ></Image>
+                                        
                                         <Image x:Name="WaitInstallImage" Visibility="Collapsed" Height="38" HorizontalAlignment="Left" gif:ImageBehavior.RepeatBehavior="Forever" 
                                                     Grid.Row="0" Grid.Column="0" gif:ImageBehavior.AnimatedSource="../images/InstallRing.GIF" />
                                     </Grid>
@@ -96,11 +98,13 @@
                                         <ColumnDefinition Width="280" />
                                         <ColumnDefinition Width="520" />
                                     </Grid.ColumnDefinitions>
-                                    <Label Content="Latest Version installed" Style="{StaticResource CustomMetroLabelHeader}" Margin="0 10 0 0" Grid.Column="0"  Height="51"/>
+                                    <Label Content="Latest Version installed" Style="{StaticResource CustomMetroLabelHeader}" Margin="0 0 0 0" Grid.Column="0" 
+                                         VerticalAlignment="Center"  Height="30"/>
 
                                     <Grid Margin="0,0,0,0" Grid.Column="1">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition x:Name="UpdateButtonColumn" Width="90" />
+                                            <ColumnDefinition x:Name="RetryButtonColumn" Width="90" />
                                             <ColumnDefinition Width="400" />
                                         </Grid.ColumnDefinitions>
 
@@ -113,7 +117,10 @@
                                                     Grid.Row="0" Grid.Column="0" gif:ImageBehavior.AnimatedSource="../images/InstallRing.GIF" />
 
                                         <Label x:Name="UpdateStatus" Content="New version available (16.0.1111.1111)" VerticalAlignment="Center"
-                                               Style="{StaticResource CustomMetroLabelLink}" Grid.Column="1" Visibility="Hidden" />
+                                               Style="{StaticResource CustomMetroLabelLink}" Grid.Column="2" Visibility="Hidden" />
+
+                                        <Button x:Name="RetryUpdateOffice"  Width="75" Grid.Column="1" Height="40" FontSize="14" HorizontalAlignment="Left" Visibility="Visible"  
+                                                Content="Retry"  Click="UpdateOffice_OnClick" Style="{StaticResource MetroFlatButtonStyle1}"   />
                                     </Grid>
 
                                 </Grid>
@@ -126,14 +133,16 @@
                                         <ColumnDefinition Width="280" />
                                         <ColumnDefinition Width="220" />
                                     </Grid.ColumnDefinitions>
-                                    <Label Content="Installed version" Style="{StaticResource CustomMetroLabelHeader}" Margin="0 10 0 0" Grid.Column="0" />
+                                    <Label Content="Installed version" Style="{StaticResource CustomMetroLabelHeader}" Margin="0 0 0 0" Grid.Column="0"
+                                           Height="30" VerticalAlignment="Center" />
 
                                     <Grid Margin="0,0,0,0" Grid.Column="1">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="200" />
                                         </Grid.ColumnDefinitions>
 
-                                        <Label x:Name="VersionLabel" Content="16.0.0000.0000" Style="{StaticResource CustomMetroLabelHeader}" Margin="0 10 0 0" Grid.Column="0"/>
+                                        <Label x:Name="VersionLabel" Content="16.0.0000.0000" Style="{StaticResource CustomMetroLabelHeader}"
+                                               Margin="0 0 0 0" Grid.Column="0" Height="30" VerticalAlignment="Center" />
                                     </Grid>
 
                                 </Grid>
@@ -146,8 +155,8 @@
                                         <ColumnDefinition Width="280" />
                                         <ColumnDefinition Width="620" />
                                     </Grid.ColumnDefinitions>
-                                    <Label Content="Current channel" Style="{StaticResource CustomMetroLabelHeader}"
-                                            Margin="0 10 0 0" Grid.Column="0" />
+                                    <Label Content="Update channel" Style="{StaticResource CustomMetroLabelHeader}"
+                                            Margin="0 0 0 0" Grid.Column="0" VerticalAlignment="Center" />
 
                                     <Grid Margin="0,0,0,0" Grid.Column="1">
                                         <Grid.ColumnDefinitions>
@@ -156,12 +165,13 @@
                                         </Grid.ColumnDefinitions>
 
                                         <ComboBox x:Name="ProductBranch" Grid.Column="0" Width="270" Height="35" SelectedIndex="0" 
-                                              FontSize="20" ItemsSource="{Binding Branches}" DisplayMemberPath="Name" HorizontalAlignment="Left"
-                                              Style="{StaticResource MetroComboBoxStyle}" SelectionChanged="ProductBranch_OnSelectionChanged" Margin="0,10,0,5" >
+                                              FontSize="20" ItemsSource="{Binding Branches}" DisplayMemberPath="Name" HorizontalAlignment="Left" VerticalAlignment="Center"
+                                              Style="{StaticResource MetroComboBoxStyle}" SelectionChanged="ProductBranch_OnSelectionChanged"  >
                                         </ComboBox>
 
-                                        <Button x:Name="ChangeChannel" Width="75" Grid.Column="1" Height="40" FontSize="14" HorizontalAlignment="Left"  Content="Change" 
-                                                  Click="UpdatePath_OnClick" Style="{StaticResource MetroFlatButtonStyle1}" IsEnabled="False"  />
+                                        <Button x:Name="ChangeChannel" Width="75" Grid.Column="1" Height="40" FontSize="14" HorizontalAlignment="Left"
+                                                Content="Change" VerticalAlignment="Center" Click="ChangeChannel_OnClick"
+                                                   Style="{StaticResource MetroFlatButtonStyle1}" IsEnabled="False"  />
                                     </Grid>
 
                                 </Grid>
@@ -175,9 +185,10 @@
                                         <ColumnDefinition Width="420" />
                                     </Grid.ColumnDefinitions>
                                     <Label Content="Modify the existing installation" Style="{StaticResource CustomMetroLabelHeader}"
-                                            Margin="0 10 0 0" Grid.Column="0" />
+                                            Margin="0 0 0 0" Grid.Column="0" Height="35" VerticalAlignment="Center" />
 
-                                    <Button x:Name="ReInstallOffice"  Width="100" Grid.Column="1" Height="40" FontSize="14" HorizontalAlignment="Left"  Content="Rerun setup" 
+                                    <Button x:Name="ReInstallOffice"  Width="100" Grid.Column="1" Height="40" FontSize="14" VerticalAlignment="Center" 
+                                            HorizontalAlignment="Left"  Content="Rerun setup" 
                                                   Style="{StaticResource MetroFlatButtonStyle1}" Visibility="Visible" Click="InstallOffice_OnClick"   />
                                 </Grid>
 

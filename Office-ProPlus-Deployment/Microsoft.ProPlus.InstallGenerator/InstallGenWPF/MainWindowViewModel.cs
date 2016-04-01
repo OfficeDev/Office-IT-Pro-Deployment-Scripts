@@ -313,6 +313,8 @@ namespace MetroDemo
 
         }
 
+        public bool RunLocalConfigs { get; set; }
+
         public bool AllowMultipleDownloads { get; set; }
 
         public bool UseFolderShortNames { get; set; }

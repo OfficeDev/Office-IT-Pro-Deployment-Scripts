@@ -411,6 +411,20 @@ namespace MetroDemo.ExampleViews
             }
         }
 
+        public void ChangeBranch(string branchName)
+        {
+            var selectIndex = 0;
+            for (var i = 0; i < ProductBranch.Items.Count; i++)
+            {
+                var item = (OfficeBranch)ProductBranch.Items[i];
+                if (item == null) continue;
+                if (item.NewName.ToLower() != branchName.ToLower()) continue;
+                selectIndex = i;
+                break;
+            }
+
+            ProductBranch.SelectedIndex = selectIndex;
+        }
 
         public async Task UpdateVersions()
         {

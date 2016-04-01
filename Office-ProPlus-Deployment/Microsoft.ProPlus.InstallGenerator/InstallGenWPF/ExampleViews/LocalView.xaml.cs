@@ -71,7 +71,10 @@ namespace MetroDemo.ExampleViews
                 LoadXml();
                 GlobalObjects.ViewModel.PropertyChangeEventEnabled = true;
 
-                LoadViewState().ConfigureAwait(false);
+                if (GlobalObjects.ViewModel.RunLocalConfigs)
+                {
+                    LoadViewState().ConfigureAwait(false);
+                }
             }
             catch (Exception ex)
             {
@@ -83,56 +86,167 @@ namespace MetroDemo.ExampleViews
         {
             try
             {
-                ImgLatestUpdateFail.Visibility = Visibility.Collapsed;
-                UpdateStatus.Foreground = (Brush) FindResource("MessageBrush");
-                ErrorRow.Visibility = Visibility.Collapsed;
+                await Retry.BlockAsync(10, 1, async () => {
+                    ErrorRow.Visibility = Visibility.Collapsed;
+                    SetItemState(LocalViewItem.Install, LocalViewState.Default);
 
-                var installGenerator = new OfficeLocalInstallManager();
-                LocalInstall = await installGenerator.CheckForOfficeLocalInstallAsync();
+                    var installGenerator = new OfficeLocalInstallManager();
+                    LocalInstall = await installGenerator.CheckForOfficeLocalInstallAsync();
 
-                var installedRows = Visibility.Collapsed;
-                if (LocalInstall.Installed)
-                {
-                    InstallOffice.Visibility = Visibility.Collapsed;
-                    ImgOfficeInstalled.Visibility = Visibility.Visible;
-                    installedRows = Visibility.Visible;
-                    VersionLabel.Content = LocalInstall.Version;
-
-                    ProductBranch.SelectedItem = LocalInstall.Channel;
-
-                    if (LocalInstall.LatestVersionInstalled)
+                    if (LocalInstall.Installed)
                     {
-                        ImgLatestUpdate.Visibility = Visibility.Visible;
-                        UpdateOffice.Visibility = Visibility.Collapsed;
-                        UpdateStatus.Visibility = Visibility.Collapsed;
-                        UpdateButtonColumn.Width = new GridLength(45, GridUnitType.Pixel);
+                        SetItemState(LocalViewItem.Install, LocalViewState.Success);
+
+                        VersionLabel.Content = LocalInstall.Version;
+                        
+                        var selectIndex = 0;
+                        for (var i = 0; i < ProductBranch.Items.Count; i++)
+                        {
+                            var item = (OfficeBranch) ProductBranch.Items[i];
+                            if (item == null) continue;
+                            if (item.NewName.ToLower() != LocalInstall.Channel.ToLower()) continue;
+                            selectIndex = i;
+                            break;
+                        }
+
+                        BranchChanged(this, new BranchChangedEventArgs()
+                        {
+                            BranchName = LocalInstall.Channel
+                        });
+
+                        ProductBranch.SelectedIndex = selectIndex;
+
+                        var installOffice = new InstallOffice();
+                        if (installOffice.IsUpdateRunning())
+                        {
+                            await RunUpdateOffice();
+                        }
+                        else
+                        {
+                            if (LocalInstall.LatestVersionInstalled)
+                            {
+                                SetItemState(LocalViewItem.Update, LocalViewState.Success);
+                            }
+                            else
+                            {
+                                SetItemState(LocalViewItem.Update, LocalViewState.Action);
+                                UpdateStatus.Content = "New version available  (" + LocalInstall.LatestVersion + ")";
+                            }
+                        }
                     }
                     else
                     {
-                        UpdateStatus.Content = "New version available  (" + LocalInstall.LatestVersion + ")";
-                        UpdateButtonColumn.Width = new GridLength(90, GridUnitType.Pixel);
-                        UpdateStatus.Visibility = Visibility.Visible;
-                        ImgLatestUpdate.Visibility = Visibility.Collapsed;
-                        UpdateOffice.Visibility = Visibility.Visible;
+                        SetItemState(LocalViewItem.Install, LocalViewState.Action);
                     }
-                    
-                }
-                else
-                {
-                    InstallOffice.Visibility = Visibility.Visible;
-                    ImgOfficeInstalled.Visibility = Visibility.Collapsed;
-                    installedRows = Visibility.Collapsed;
-                }
-
-                UpdateRow.Visibility = installedRows;
-                VersionRow.Visibility = installedRows;
-                ChannelRow.Visibility = installedRows;
-                ModifyInstallRow.Visibility = installedRows;
+                });
             }
             catch (Exception ex)
             {
+                SetItemState(LocalViewItem.Install, LocalViewState.Fail);
+                Dispatcher.Invoke(() =>
+                {
+                    ErrorText.Text = ex.Message;
+                });
                 LogErrorMessage(ex);
             }
+        }
+
+        private void SetItemState(LocalViewItem item, LocalViewState state)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                ErrorRow.Visibility = Visibility.Collapsed;
+                switch (item)
+                {
+                    case LocalViewItem.Install:
+                        var installedRows = Visibility.Visible;
+
+                        InstallOffice.Visibility = Visibility.Collapsed;
+                        ImgOfficeInstalled.Visibility = Visibility.Collapsed;
+                        WaitInstallImage.Visibility = Visibility.Collapsed;
+                        ImgLatestInstallFail.Visibility = Visibility.Collapsed;
+                        UpdateButtonColumn.Width = new GridLength(45, GridUnitType.Pixel);
+                        ReInstallOffice.IsEnabled = true;
+                        UpdateOffice.IsEnabled = true;
+                        RetryUpdateOffice.IsEnabled = true;
+                        ProductBranch.IsEnabled = true;
+                        switch (state)
+                        {
+                            case LocalViewState.Default:
+                                WaitInstallImage.Visibility = Visibility.Visible;
+                                installedRows = Visibility.Collapsed;
+                                break;
+                            case LocalViewState.Action:
+                                InstallOffice.Visibility = Visibility.Visible;
+                                installedRows = Visibility.Collapsed;
+                                UpdateButtonColumn.Width = new GridLength(90, GridUnitType.Pixel);
+                                break;
+                            case LocalViewState.Fail:
+                                ImgLatestInstallFail.Visibility = Visibility.Visible;
+                                ErrorRow.Visibility = Visibility.Visible;
+                                installedRows = UpdateRow.Visibility;
+                                break;
+                            case LocalViewState.Success:
+                                ImgOfficeInstalled.Visibility = Visibility.Visible;
+                                break;
+                            case LocalViewState.Wait:
+                                WaitInstallImage.Visibility = Visibility.Visible;
+                                ReInstallOffice.IsEnabled = false;
+                                UpdateOffice.IsEnabled = false;
+                                RetryUpdateOffice.IsEnabled = false;
+                                ProductBranch.IsEnabled = false;
+                                break;
+                        }
+                        UpdateRow.Visibility = installedRows;
+                        VersionRow.Visibility = installedRows;
+                        ChannelRow.Visibility = installedRows;
+                        ModifyInstallRow.Visibility = installedRows;
+                        break;
+                    case LocalViewItem.Update:
+                        UpdateOffice.Visibility = Visibility.Collapsed;
+                        UpdateStatus.Foreground = (Brush)FindResource("MessageBrush");
+                        ImgLatestUpdate.Visibility = Visibility.Collapsed;
+                        ImgLatestUpdateFail.Visibility = Visibility.Collapsed;
+                        WaitUpdateImage.Visibility = Visibility.Collapsed;
+                        ReInstallOffice.IsEnabled = true;
+                        UpdateOffice.IsEnabled = true;
+                        RetryUpdateOffice.IsEnabled = true;
+                        ProductBranch.IsEnabled = true;
+                        RetryButtonColumn.Width = new GridLength(0, GridUnitType.Pixel);
+                        UpdateStatus.Visibility = Visibility.Collapsed;
+                        switch (state)
+                        {
+                            case LocalViewState.Action:
+                                UpdateOffice.Visibility = Visibility.Visible;
+                                UpdateButtonColumn.Width = new GridLength(90, GridUnitType.Pixel);
+                                UpdateStatus.Visibility = Visibility.Visible;
+                                break;
+                            case LocalViewState.Fail:
+                                ImgLatestUpdateFail.Visibility = Visibility.Visible;
+                                UpdateStatus.Foreground = (Brush)FindResource("ErrorBrush");
+                                ErrorRow.Visibility = Visibility.Visible;
+                                UpdateButtonColumn.Width = new GridLength(45, GridUnitType.Pixel);
+                                RetryButtonColumn.Width = new GridLength(90, GridUnitType.Pixel);
+                                UpdateStatus.Visibility = Visibility.Visible;
+                                break;
+                            case LocalViewState.Success:
+                                ImgLatestUpdate.Visibility = Visibility.Visible;
+                                UpdateButtonColumn.Width = new GridLength(45, GridUnitType.Pixel);
+                                break;
+                            case LocalViewState.Wait:
+                                WaitUpdateImage.Visibility = Visibility.Visible;
+                                UpdateStatus.Visibility = Visibility.Visible;
+                                UpdateButtonColumn.Width = new GridLength(45, GridUnitType.Pixel);
+                                ReInstallOffice.IsEnabled = false;
+                                UpdateOffice.IsEnabled = false;
+                                RetryUpdateOffice.IsEnabled = false;
+                                ProductBranch.IsEnabled = false;
+                                break;
+                        }
+                        break;
+                   
+                }
+            });
         }
 
         public async Task RunUpdateOffice()
@@ -143,39 +257,63 @@ namespace MetroDemo.ExampleViews
                 {
                     Dispatcher.Invoke(() =>
                     {
-                        WaitUpdateImage.Visibility = Visibility.Visible;
-                        ImgLatestUpdate.Visibility = Visibility.Collapsed;
-                        UpdateOffice.Visibility = Visibility.Collapsed;
-                        UpdateButtonColumn.Width = new GridLength(50, GridUnitType.Pixel);
                         UpdateStatus.Content = "Updating...";
                     });
+
+                    SetItemState(LocalViewItem.Update, LocalViewState.Wait);
 
                     var installOffice = new InstallOffice();
                     installOffice.UpdatingOfficeStatus += installOffice_UpdatingOfficeStatus;
 
-                    await installOffice.RunOfficeUpdateAsync(LocalInstall.LatestVersion);
+                    var currentChannel = LocalInstall.Channel;
+                    if (!installOffice.IsUpdateRunning())
+                    {
+                        var ppDownloader = new ProPlusDownloader();
+                        var baseUrl =
+                            await ppDownloader.GetChannelBaseUrlAsync(currentChannel, OfficeEdition.Office32Bit);
+                        if (string.IsNullOrEmpty(baseUrl))
+                            throw (new Exception(string.Format("Cannot find BaseUrl for Channel: {0}", currentChannel)));
 
+                        installOffice.ChangeUpdateSource(baseUrl);
+                    }
+
+                    await installOffice.RunOfficeUpdateAsync(LocalInstall.LatestVersion);
+                    
                     Dispatcher.Invoke(() =>
                     {
-                        //InstallOffice.IsEnabled = true;
-                        //ReInstallOffice.IsEnabled = true;
                         UpdateStatus.Content = "";
-                        UpdateStatus.Visibility = Visibility.Collapsed;
-                        UpdateButtonColumn.Width = new GridLength(50, GridUnitType.Pixel);
-                        ImgLatestUpdate.Visibility = Visibility.Visible;
-                        ImgOfficeInstalled.Visibility = Visibility.Visible;
                     });
+
+                    var installGenerator = new OfficeLocalInstallManager();
+                    LocalInstall = await installGenerator.CheckForOfficeLocalInstallAsync();
+                    if (LocalInstall.Installed)
+                    {
+                        Dispatcher.Invoke(() =>
+                        {
+                            VersionLabel.Content = LocalInstall.Version;
+                            ProductBranch.SelectedItem = LocalInstall.Channel;
+                        });
+
+                        if (LocalInstall.LatestVersionInstalled)
+                        {
+                            SetItemState(LocalViewItem.Update, LocalViewState.Success);
+                        }
+                        else
+                        {
+                            SetItemState(LocalViewItem.Update, LocalViewState.Action);
+                            Dispatcher.Invoke(() =>
+                            {
+                                UpdateStatus.Content = "New version available  (" + LocalInstall.LatestVersion + ")";
+                            });
+                        }
+                    }
                 }
                 catch (Exception ex)
                 {
+                    SetItemState(LocalViewItem.Update, LocalViewState.Fail);
                     Dispatcher.Invoke(() =>
                     {
-                        ImgLatestUpdateFail.Visibility = Visibility.Visible;
-                        ImgLatestUpdate.Visibility = Visibility.Collapsed;
-                        UpdateStatus.Visibility = Visibility.Visible;
                         UpdateStatus.Content = "The update failed";
-                        UpdateStatus.Foreground = (Brush) FindResource("ErrorBrush");
-                        ErrorRow.Visibility = Visibility.Visible;
                         ErrorText.Text = ex.Message;
                     });
 
@@ -183,9 +321,92 @@ namespace MetroDemo.ExampleViews
                 }
                 finally
                 {
+                    var installOffice = new InstallOffice();
+                    installOffice.ResetUpdateSource();
+                }
+            });
+        }
+
+        public async Task ChangeOfficeChannel()
+        {
+            await Task.Run(async () =>
+            {
+                try
+                {
+                    var newChannel = "";
                     Dispatcher.Invoke(() =>
                     {
-                        WaitUpdateImage.Visibility = Visibility.Collapsed;
+                        UpdateStatus.Content = "Updating...";
+                        newChannel = ((OfficeBranch) ProductBranch.SelectedItem).NewName;
+                        ChangeChannel.IsEnabled = false;
+                    });
+
+                    SetItemState(LocalViewItem.Update, LocalViewState.Wait);
+
+                    var installOffice = new InstallOffice();
+                    installOffice.UpdatingOfficeStatus += installOffice_UpdatingOfficeStatus;
+
+                    var ppDownloader = new ProPlusDownloader();
+                    var baseUrl = await ppDownloader.GetChannelBaseUrlAsync(newChannel, OfficeEdition.Office32Bit);
+                    if (string.IsNullOrEmpty(baseUrl))
+                        throw (new Exception(string.Format("Cannot find BaseUrl for Channel: {0}", newChannel)));
+
+                    var latestChannelVersion = await ppDownloader.GetLatestVersionAsync(newChannel, OfficeEdition.Office32Bit);
+
+                    installOffice.ChangeUpdateSource(baseUrl);
+
+                    await installOffice.RunOfficeUpdateAsync(latestChannelVersion);
+
+                    installOffice.ChangeBaseCdnUrl(baseUrl);
+
+                    Dispatcher.Invoke(() =>
+                    {
+                        UpdateStatus.Content = "";
+                    });
+                    
+                    var installGenerator = new OfficeLocalInstallManager();
+                    LocalInstall = await installGenerator.CheckForOfficeLocalInstallAsync();
+                    if (LocalInstall.Installed)
+                    {
+                        Dispatcher.Invoke(() =>
+                        {
+                            VersionLabel.Content = LocalInstall.Version;
+                            ProductBranch.SelectedItem = LocalInstall.Channel;
+                        });
+
+                        if (LocalInstall.LatestVersionInstalled)
+                        {
+                            SetItemState(LocalViewItem.Update, LocalViewState.Success);
+                        }
+                        else
+                        {
+                            SetItemState(LocalViewItem.Update, LocalViewState.Action);
+                            Dispatcher.Invoke(() =>
+                            {
+                                UpdateStatus.Content = "New version available  (" + LocalInstall.LatestVersion + ")";
+                            });
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    SetItemState(LocalViewItem.Update, LocalViewState.Fail);
+                    Dispatcher.Invoke(() =>
+                    {
+                        UpdateStatus.Content = "The update failed";
+                        ErrorText.Text = ex.Message;
+                    });
+
+                    LogErrorMessage(ex);
+                }
+                finally
+                {
+                    var installOffice = new InstallOffice();
+                    installOffice.ResetUpdateSource();
+
+                    Dispatcher.Invoke(() =>
+                    {
+                        ChangeChannel.IsEnabled = true;
                     });
                 }
             });
@@ -197,6 +418,7 @@ namespace MetroDemo.ExampleViews
             {
                 Dispatcher.Invoke(() =>
                 {
+                    UpdateStatus.Visibility = Visibility.Visible;
                     UpdateStatus.Content = e.Status;
                 });
             }
@@ -207,6 +429,7 @@ namespace MetroDemo.ExampleViews
         }
 
 
+        #region Page Functions
 
         public void Reset()
         {
@@ -344,9 +567,22 @@ namespace MetroDemo.ExampleViews
             }
             catch { }
         }
-        
+
+        #endregion
 
         #region "Events"
+
+        private async void ChangeChannel_OnClick(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                await ChangeOfficeChannel();
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
 
         private async void UpdateOffice_OnClick(object sender, RoutedEventArgs e)
         {
@@ -364,7 +600,11 @@ namespace MetroDemo.ExampleViews
         {
             try
             {
-                ChangeChannel.IsEnabled = ProductBranch.SelectedItem != LocalInstall.Channel;
+                var selectedBranch = (OfficeBranch) ProductBranch.SelectedItem;
+                if (selectedBranch != null && LocalInstall != null)
+                {
+                    ChangeChannel.IsEnabled = selectedBranch.NewName != LocalInstall.Channel;
+                }
             }
             catch (Exception ex)
             {
@@ -400,33 +640,6 @@ namespace MetroDemo.ExampleViews
             }
         }
 
-        private void UpdatePath_OnClick(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                //var dlg1 = new Ionic.Utils.FolderBrowserDialogEx
-                //{
-                //    Description = "Select a folder:",
-                //    ShowNewFolderButton = true,
-                //    ShowEditBox = true,
-                //    SelectedPath = ProductUpdateSource.Text,
-                //    ShowFullPathInEditBox = true,
-                //    RootFolder = System.Environment.SpecialFolder.MyComputer
-                //};
-                ////dlg1.NewStyle = false;
-
-                //// Show the FolderBrowserDialog.
-                //var result = dlg1.ShowDialog();
-                //if (result == DialogResult.OK)
-                //{
-                //    ProductUpdateSource.Text = dlg1.SelectedPath;
-                //}
-            }
-            catch (Exception ex)
-            {
-                LogErrorMessage(ex);
-            }
-        }
 
         private void MainTabControl_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -567,11 +780,25 @@ namespace MetroDemo.ExampleViews
 
         #endregion
 
-
+  
     }
 
 
+    public enum LocalViewItem
+    {
+        Install = 0,
+        Update = 1
+    }
 
+    public enum LocalViewState
+    {
+        Default = 0,
+        Success = 1,
+        Fail = 2,
+        Action = 3,
+        Wait = 5,
+        Running = 6
+    }
 
 }
 

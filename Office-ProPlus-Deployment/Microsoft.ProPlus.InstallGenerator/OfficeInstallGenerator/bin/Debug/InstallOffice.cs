@@ -26,7 +26,7 @@ public class InstallOffice
 
     public static void Main1(string[] args)
     {
-        using (StreamWriter sw = new StreamWriter(@"C:\OfficeExeLog.txt"))
+        using (var sw = new StreamWriter(@"C:\OfficeExeLog.txt"))
         {
             
         
@@ -201,7 +201,7 @@ public class InstallOffice
 
     public async Task RunOfficeUpdateAsync(string version)
     {
-        await Task.Run(() => { 
+        await Task.Run(async () => { 
             var c2RPath = GetOfficeC2RPath() + @"\OfficeC2RClient.exe";
             if (File.Exists(c2RPath))
             {
@@ -222,18 +222,19 @@ public class InstallOffice
                 p.Start();
                 p.WaitForExit();
 
+                await Task.Delay(1000);
+
                 WaitForOfficeCtrUpadateWithError();
             }
         });
     }
 
- 
     #region Office Operations
 
     public string GetOfficeC2RPath()
     {
-        var officeRegPath = GetOfficeCtrRegPath();
-        var configKey = Registry.LocalMachine.OpenSubKey(officeRegPath);
+        var officeRegKey = GetOfficeCtrRegPath();
+        var configKey = officeRegKey.OpenSubKey(@"Configuration");
         return configKey != null ? GetRegistryValue(configKey, "ClientFolder") : "";
     }
 
@@ -359,6 +360,16 @@ public class InstallOffice
     
     #region Update Monitoring
 
+    public bool IsUpdateRunning()
+    {
+        var scenarioTasks = GetRunningScenarioTasks(true);
+        if (scenarioTasks.Count == 0) return false;
+
+        var anyRunning = scenarioTasks.Any(s => s.State == "TASKSTATE_EXECUTING");
+        return anyRunning;
+    }
+
+
     public void WaitForOfficeCtrUpadateWithError(bool showStatus = false)
     {
         if (showStatus) { Console.WriteLine("Waiting for Install to Complete..."); }
@@ -380,7 +391,7 @@ public class InstallOffice
         {
             var allComplete = true;
 
-            var scenarioTasks = GetRunningScenarioTasks();
+            var scenarioTasks = GetRunningScenarioTasks(true);
             if (scenarioTasks.Count == 0) return;
 
             anyCancelled = scenarioTasks.Any(s => s.State == "TASKSTATE_CANCELLED");
@@ -395,14 +406,6 @@ public class InstallOffice
                 {
                     var statusName = completeScenarios[0].State.Split('_')[1];
                     Console.WriteLine(statusName);
-
-                    if (UpdatingOfficeStatus != null)
-                    {
-                        UpdatingOfficeStatus(this, new Events.UpdatingOfficeArgs()
-                        {
-                            Status = currentOperationName + ": " + statusName
-                        });
-                    }
                 }
                 opRunning = false;
                 tasksRunning.Clear();
@@ -424,7 +427,7 @@ public class InstallOffice
                 {
                     UpdatingOfficeStatus(this, new Events.UpdatingOfficeArgs()
                     {
-                        Status = currentOperationName + ": Running"
+                        Status = currentOperationName + "..."
                     });
                 }
 
@@ -455,7 +458,6 @@ public class InstallOffice
             throw (new Exception("Update not running"));
         }
     }
-
 
     public void WaitForOfficeCtrUpadate(bool showStatus = false)
     {
@@ -530,18 +532,26 @@ public class InstallOffice
 
     }
 
-    public List<ExecutingScenario> GetRunningScenarioTasks()
+    public List<ExecutingScenario> GetRunningScenarioTasks(bool assumeUpdate = false)
     {
         var execScenarios = new List<ExecutingScenario>();
         var executingScenario = GetExecutingScenario();
-        if (string.IsNullOrEmpty(executingScenario)) return new List<ExecutingScenario>();
+        if (string.IsNullOrEmpty(executingScenario))
+        {
+            if (assumeUpdate)
+            {
+                executingScenario = "Update";
+            }
+            else
+            {
+                return new List<ExecutingScenario>();
+            }
+        }
 
-        var mainRegPath = GetOfficeCtrRegPath();
-        if (string.IsNullOrEmpty(mainRegPath)) return new List<ExecutingScenario>();
+        var mainRegKey = GetOfficeCtrRegPath();
+        if (mainRegKey == null) return new List<ExecutingScenario>();
 
-        var scenarioPath = mainRegPath + @"\scenario";
-
-        var scenarioKey = Registry.LocalMachine.OpenSubKey(scenarioPath);
+        var scenarioKey = mainRegKey.OpenSubKey("scenario");
         if (scenarioKey == null) return null;
 
         var subKeyNames = scenarioKey.GetSubKeyNames();
@@ -571,35 +581,133 @@ public class InstallOffice
         return execScenarios;
     }
 
+    public void ResetUpdateSource()
+    {
+        const string policyPath = @"SOFTWARE\Policies\Microsoft\office\16.0\common\officeupdate";
+        var policyKey = Registry.LocalMachine.OpenSubKey(policyPath, true);
+        if (policyKey != null)
+        {
+            var saveUpdatePath = GetRegistryValue(policyKey, "saveupdatepath");
+            if (!string.IsNullOrEmpty(saveUpdatePath))
+            {
+                policyKey.SetValue("updatepath", saveUpdatePath, RegistryValueKind.String);
+                policyKey.DeleteValue("saveupdatepath");
+            }
+        }
+
+        var mainRegKey = GetOfficeCtrRegPath();
+        if (mainRegKey == null) return;
+
+        var configKey = mainRegKey.OpenSubKey(@"Configuration");
+        if (configKey == null) return;
+
+        var saveUpdateUrl = GetRegistryValue(policyKey, "UpdateUrl");
+        if (string.IsNullOrEmpty(saveUpdateUrl)) return;
+
+        configKey.SetValue("UpdateUrl", saveUpdateUrl, RegistryValueKind.String);
+        configKey.DeleteValue("SaveUpdateUrl");
+    }
+
+    public string ChangeUpdateSource(string updateSource)
+    {
+        var currentupdatepath = "";
+
+        const string policyPath = @"SOFTWARE\Policies\Microsoft\office\16.0\common\officeupdate";
+        var policyKey = Registry.LocalMachine.OpenSubKey(policyPath, true);
+        if (policyKey != null)
+        {
+            currentupdatepath = GetRegistryValue(policyKey, "updatepath");
+            var saveupdatePath = GetRegistryValue(policyKey, "saveupdatepath");
+            if (!string.IsNullOrEmpty(currentupdatepath) && !string.IsNullOrEmpty(updateSource))
+            {
+                if (string.IsNullOrEmpty(saveupdatePath))
+                {
+                    policyKey.SetValue("saveupdatepath", currentupdatepath, RegistryValueKind.String);
+                }
+                policyKey.SetValue("updatepath", updateSource, RegistryValueKind.String);
+            }
+        }
+
+        if (!string.IsNullOrEmpty(currentupdatepath)) return currentupdatepath;
+
+        var mainRegKey = GetOfficeCtrRegPath();
+        if (mainRegKey == null) return null;
+
+        var configKey = mainRegKey.OpenSubKey(@"Configuration");
+        if (configKey == null) return null;
+
+        currentupdatepath = GetRegistryValue(configKey, "UpdateUrl");
+        var saveupdateUrl = GetRegistryValue(configKey, "SaveUpdateUrl");
+        if (string.IsNullOrEmpty(currentupdatepath) || string.IsNullOrEmpty(updateSource)) return currentupdatepath;
+
+        if (string.IsNullOrEmpty(saveupdateUrl))
+        {
+            configKey.SetValue("SaveUpdateUrl", currentupdatepath, RegistryValueKind.String);
+        }
+
+        configKey.SetValue("UpdateUrl", updateSource, RegistryValueKind.String);
+
+        return currentupdatepath;
+    }
+
+    public void ChangeBaseCdnUrl(string updateSource)
+    {
+        var mainRegKey = GetOfficeCtrRegPath();
+        if (mainRegKey == null) return;
+
+        var configKey = mainRegKey.OpenSubKey(@"Configuration", true);
+        if (configKey == null) return;
+
+        var cdnBaseUrl = GetRegistryValue(configKey, "CDNBaseUrl");
+        configKey.SetValue("CDNBaseUrl", updateSource, RegistryValueKind.String);
+    }
+
+
     public string GetExecutingScenario()
     {
-        var mainRegPath = GetOfficeCtrRegPath();
-        if (mainRegPath == null) return null;
-        var configKey = Registry.LocalMachine.OpenSubKey(mainRegPath);
-        if (configKey == null) return null;
-        var execScenario = configKey.GetValue("ExecutingScenario");
+        var mainRegKey = GetOfficeCtrRegPath();
+        if (mainRegKey == null) return null;
+        var execScenario = mainRegKey.GetValue("ExecutingScenario");
         return execScenario != null ? execScenario.ToString() : null;
     }
 
-    public string GetOfficeCtrRegPath()
+    public RegistryKey GetOfficeCtrRegPath()
     {
         var path16 = @"SOFTWARE\Microsoft\Office\ClickToRun";
         var path15 = @"SOFTWARE\Microsoft\Office\15.0\ClickToRun";
 
-        var office16Key = Registry.LocalMachine.OpenSubKey(path16);
-        var office15Key = Registry.LocalMachine.OpenSubKey(path15);
+        var office16Key = Registry.LocalMachine.OpenSubKey(path16, true);
+        var office15Key = Registry.LocalMachine.OpenSubKey(path15, true);
 
         if (office16Key != null)
         {
-            return path16;
+            return office16Key;
         }
         else
         {
             if (office15Key != null)
             {
-                return path15;
+                return office15Key;
             }
         }
+
+        var Hklm32 = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32);
+
+        office16Key = Hklm32.OpenSubKey(path16, true);
+        office15Key = Hklm32.OpenSubKey(path15, true);
+
+        if (office16Key != null)
+        {
+            return office16Key;
+        }
+        else
+        {
+            if (office15Key != null)
+            {
+                return office15Key;
+            }
+        }
+
         return null;
     }
 
@@ -614,6 +722,10 @@ public class InstallOffice
             return CurrentOperation.Applying;
         }
         if (executingTasks.Any(t => t.Scenario.ToUpper().Contains("FINALIZE")))
+        {
+            return CurrentOperation.Finalizing;
+        }
+        if (executingTasks.Any(t => t.Scenario.ToUpper().Contains("INTEGRATE")))
         {
             return CurrentOperation.Finalizing;
         }
@@ -838,6 +950,7 @@ public class InstallOffice
     {
         if (regKey != null)
         {
+            if (regKey.GetValue(property) == null) return "";
             return regKey.GetValue(property).ToString();
         }
         return "";

@@ -201,33 +201,62 @@ namespace Microsoft.OfficeProPlus.Downloader
             var localCabPath = Environment.ExpandEnvironmentVariables(@"%temp%\" + guid + @"\" + guid + ".cab");
             if (File.Exists(localCabPath)) File.Delete(localCabPath);
 
-            using (var releaser = await myLock.LockAsync())
+            var now = DateTime.Now;
+
+            var tmpFile32 = Environment.ExpandEnvironmentVariables(@"%temp%\" + now.Year + now.Month + now.Day + now.Hour + "_32.xml");
+            var tmpFile64 = Environment.ExpandEnvironmentVariables(@"%temp%\" + now.Year + now.Month + now.Day + now.Hour + "_64.xml");
+
+            if (!File.Exists(tmpFile32) || !File.Exists(tmpFile64))
             {
-                var now = DateTime.Now;
-                var tmpFile = Environment.ExpandEnvironmentVariables(@"%temp%\" +now.Year + now.Month + now.Day + now.Hour + ".cab");
-
-                if (File.Exists(tmpFile))
+                using (var releaser = await myLock.LockAsync())
                 {
-                    Retry.Block(10, 1, () => File.Copy(tmpFile, localCabPath));
-                }
+                    var tmpFile =
+                        Environment.ExpandEnvironmentVariables(@"%temp%\" + now.Year + now.Month + now.Day + now.Hour +
+                                                               ".cab");
 
-                if (!File.Exists(localCabPath))
-                {
-                    var fd = new FileDownloader();
-                    await fd.DownloadAsync(OfficeVersionUrl, localCabPath);
-                    try
+                    if (File.Exists(tmpFile))
                     {
-                        File.Copy(localCabPath, tmpFile);
+                        Retry.Block(10, 1, () => File.Copy(tmpFile, localCabPath, true));
                     }
-                    catch { }
+
+                    if (!File.Exists(localCabPath))
+                    {
+                        var fd = new FileDownloader();
+                        await fd.DownloadAsync(OfficeVersionUrl, localCabPath);
+                        try
+                        {
+                            File.Copy(localCabPath, tmpFile);
+                        }
+                        catch
+                        {
+                        }
+                    }
+
+                    var cabExtractor = new CabExtractor(localCabPath);
+                    cabExtractor.ExtractCabFiles();
                 }
             }
 
-            var cabExtractor = new CabExtractor(localCabPath);
-            cabExtractor.ExtractCabFiles();
-       
             var xml32Path = Environment.ExpandEnvironmentVariables(@"%temp%\" + guid + @"\ExtractedFiles\o365client_32bit.xml");
             var xml64Path = Environment.ExpandEnvironmentVariables(@"%temp%\" + guid + @"\ExtractedFiles\o365client_64bit.xml");
+
+            if (File.Exists(tmpFile32))
+            {
+                xml32Path = tmpFile32;
+            }
+            else
+            {
+                Retry.Block(10, 1, () => File.Copy(xml32Path, tmpFile32, true));
+            }
+
+            if (File.Exists(tmpFile64))
+            {
+                xml64Path = tmpFile64;
+            }
+            else
+            {
+                Retry.Block(10, 1, () => File.Copy(xml64Path, tmpFile64, true));
+            }
 
             var updateFiles32 = GenerateUpdateFiles(xml32Path);
             var updateFiles64 = GenerateUpdateFiles(xml64Path);
@@ -244,6 +273,29 @@ namespace Microsoft.OfficeProPlus.Downloader
                 updateFiles32,
                 updateFiles64
             };
+        }
+
+        public async Task<string> GetChannelBaseUrlAsync(string channel, OfficeEdition officeEdition)
+        {
+            if (_updateFiles == null)
+            {
+                using (var releaser = await myLock2.LockAsync())
+                {
+                    if (_updateFiles == null)
+                    {
+                        await Retry.BlockAsync(10, 1, async () => {
+                            _updateFiles = await DownloadCabAsync();
+                        });
+                    }
+                }
+            }
+
+            var selectUpdateFiles = _updateFiles.FirstOrDefault(f => f.OfficeEdition == officeEdition);
+            if (selectUpdateFiles == null) return null;
+
+            var branchBase = selectUpdateFiles.BaseURL.FirstOrDefault(b => b.Branch.ToLower() == channel.ToLower());
+            if (branchBase == null) return null;
+            return branchBase.URL;
         }
 
         public async Task<string> GetLatestVersionAsync(string branch, OfficeEdition officeEdition)

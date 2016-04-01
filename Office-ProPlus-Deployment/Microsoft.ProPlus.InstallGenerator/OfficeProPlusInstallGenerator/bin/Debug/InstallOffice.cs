@@ -9,7 +9,9 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Xml;
+using Microsoft.OfficeProPlus.InstallGenerator.Events;
 using Microsoft.Win32;
 //[assembly: AssemblyTitle("")]
 //[assembly: AssemblyProduct("")]
@@ -24,6 +26,10 @@ public class InstallOffice
 
     public static void Main1(string[] args)
     {
+        using (var sw = new StreamWriter(@"C:\OfficeExeLog.txt"))
+        {
+            
+        
         try
         {
             var install = new InstallOffice();
@@ -37,12 +43,14 @@ public class InstallOffice
         {
             Console.WriteLine();
         }
+        }
     }
 
     public void RunProgram()
     {
         var fileNames = new List<string>();
         var installDir = "";
+
         try
         {
             MinimizeWindow();
@@ -56,6 +64,7 @@ public class InstallOffice
             //Directory.CreateDirectory(Environment.ExpandEnvironmentVariables(@"%temp%\OfficeProPlus\LogFiles"));
 
             var args = GetArguments();
+
             if (args.Any())
             {
                 if (!HasValidArguments())
@@ -70,8 +79,8 @@ public class InstallOffice
             {
                 _xmlDoc = new XmlDocument();
                 _xmlDoc.LoadXml(filesXml);
-            }
 
+            }
             Console.Write("Extracting Install Files...");
             fileNames = GetEmbeddedItems(installDir);
             Console.WriteLine("Done");
@@ -83,8 +92,14 @@ public class InstallOffice
 
             SetSourcePath(xmlFilePath);
 
-            if (!File.Exists(odtFilePath)) { throw (new Exception("Cannot find ODT Executable")); }
-            if (!File.Exists(xmlFilePath)) { throw (new Exception("Cannot find Configuration Xml file")); }
+            if (!File.Exists(odtFilePath))
+            {
+                throw (new Exception("Cannot find ODT Executable"));
+            }
+            if (!File.Exists(xmlFilePath))
+            {
+                throw (new Exception("Cannot find Configuration Xml file"));
+            }
 
             var runInstall = false;
             if (GetArguments().Any(a => a.Key.ToLower() == "/uninstall"))
@@ -137,6 +152,7 @@ public class InstallOffice
                         UseShellExecute = false
                     },
                 };
+
                 p.Start();
                 p.WaitForExit();
 
@@ -151,34 +167,9 @@ public class InstallOffice
         }
         finally
         {
-           CleanUp(installDir);
+            CleanUp(installDir);
         }
-    }
 
-    private void ShowHelp()
-    {
-        Console.WriteLine("Usage: " + Process.GetCurrentProcess().ProcessName + " [/uninstall] [/showxml] [/extractxml={File Path}]");
-        Console.WriteLine();
-        Console.WriteLine("  /uninstall\t\t\tRemoves all installed Office 365 ProPlus");
-        Console.WriteLine("  \t\t\t\tproducts.");
-        Console.WriteLine("  /silent\t\t\tInstalls with prompts");
-        Console.WriteLine("  /showxml\t\t\tDisplays the current Office 365 ProPlus");
-        Console.WriteLine("  \t\t\t\tconfiguration xml.");
-        Console.WriteLine("  /extractxml={File Path}\tExtracts the current Office 365 ProPlus");
-        Console.WriteLine("  \t\t\t\tconfiguration xml to the specified file path.");
-    }
-
-    private void MinimizeWindow()
-    {
-        IntPtr winHandle = System.Diagnostics.Process.GetCurrentProcess().MainWindowHandle;
-        ShowWindow(winHandle, SW_SHOWMINIMIZED);
-    }
-
-    private bool HasValidArguments()
-    {
-        return !GetArguments().Any(a => (a.Key.ToLower() != "/uninstall" &&
-                                         a.Key.ToLower() != "/showxml" &&
-                                         a.Key.ToLower() != "/extractxml"));
     }
 
     private string UninstallOfficeProPlus(string installationDirectory, IEnumerable<string> fileNames)
@@ -208,6 +199,150 @@ public class InstallOffice
         return installationDirectory + @"\" + fileNames.FirstOrDefault(f => f.ToLower().EndsWith(".xml"));
     }
 
+    public async Task RunOfficeUpdateAsync(string version)
+    {
+        await Task.Run(async () => { 
+            var c2RPath = GetOfficeC2RPath() + @"\OfficeC2RClient.exe";
+            if (File.Exists(c2RPath))
+            {
+                var arguments =
+                    "/update user displaylevel=false forceappshutdown=true updatepromptuser=false updatetoversion=" + version;
+
+                var p = new Process
+                {
+                    StartInfo = new ProcessStartInfo()
+                    {
+                        FileName = c2RPath,
+                        Arguments = arguments,
+                        CreateNoWindow = true,
+                        UseShellExecute = false
+                    },
+                };
+
+                p.Start();
+                p.WaitForExit();
+
+                await Task.Delay(1000);
+
+                WaitForOfficeCtrUpadateWithError();
+            }
+        });
+    }
+
+    #region Office Operations
+
+    public string GetOfficeC2RPath()
+    {
+        var officeRegKey = GetOfficeCtrRegPath();
+        var configKey = officeRegKey.OpenSubKey(@"Configuration");
+        return configKey != null ? GetRegistryValue(configKey, "ClientFolder") : "";
+    }
+
+    public string GetOdtErrorMessage()
+    {
+        var dirInfo = new DirectoryInfo(LoggingPath);
+        try
+        {
+
+            foreach (var file in dirInfo.GetFiles("*.log"))
+            {
+                using (var reader = new StreamReader(file.FullName))
+                {
+                    do
+                    {
+                        var found = false;
+                        var line = reader.ReadLine();
+                        if (!line.ToLower().Contains("Prereq::ShowPrereqFailure:".ToLower())) continue;
+
+                        var lineSplit = line.Split(':');
+                        foreach (var part in lineSplit)
+                        {
+                            if (found)
+                            {
+                                return part;
+                            }
+                            else
+                            {
+                                if (part.ToLower().Contains("showprereqfailure"))
+                                {
+                                    found = true;
+                                }
+                            }
+                        }
+                    } while (reader.Peek() > -1);
+                }
+
+            }
+        }
+        catch { }
+        finally
+        {
+            try
+            {
+                foreach (var file in dirInfo.GetFiles("*.log"))
+                {
+                    File.Copy(file.FullName, Environment.ExpandEnvironmentVariables(@"%temp%\" + file.Name), true);
+                }
+
+                if (Directory.Exists(LoggingPath))
+                {
+                    Directory.Delete(LoggingPath);
+                }
+            }
+            catch { }
+        }
+        return null;
+    }
+
+    private void SetLoggingPath(string xmlFilePath)
+    {
+        var tempPath = Environment.ExpandEnvironmentVariables("%temp%");
+        const string logFolderName = "OfficeProPlusLogs";
+        LoggingPath = tempPath + @"\" + logFolderName;
+        if (Directory.Exists(LoggingPath))
+        {
+            try
+            {
+                Directory.Delete(LoggingPath);
+            }
+            catch { }
+        }
+        Directory.CreateDirectory(LoggingPath);
+
+        var xmlDoc = new XmlDocument();
+        xmlDoc.Load(xmlFilePath);
+
+        var loggingNode = xmlDoc.SelectSingleNode("/Configuration/Logging");
+        if (loggingNode == null)
+        {
+            loggingNode = xmlDoc.CreateElement("Logging");
+            xmlDoc.DocumentElement.AppendChild(loggingNode);
+        }
+
+        SetAttribute(xmlDoc, loggingNode, "Path", LoggingPath);
+        xmlDoc.Save(xmlFilePath);
+    }
+
+    private void SetSourcePath(string xmlFilePath)
+    {
+        var tempPath = Environment.ExpandEnvironmentVariables("%temp%");
+        const string officeFolderName = "OfficeProPlus";
+
+        var officeFolderPath = tempPath + @"\" + officeFolderName;
+        if (Directory.Exists(officeFolderPath + @"\Office"))
+        {
+            var xmlDoc = new XmlDocument();
+            xmlDoc.Load(xmlFilePath);
+
+            var addNode = xmlDoc.SelectSingleNode("/Configuration/Add");
+            if (addNode != null)
+            {
+                SetAttribute(xmlDoc, addNode, "SourcePath", officeFolderPath);
+                xmlDoc.Save(xmlFilePath);
+            }
+        }
+    }
+
     private void SetConfigSilent(XmlDocument doc)
     {
         var display = doc.SelectSingleNode("/Configuration/Display");
@@ -219,6 +354,414 @@ public class InstallOffice
 
         SetAttribute(doc, display, "Level", "None");
         SetAttribute(doc, display, "AcceptEULA", "TRUE");
+    }
+
+    #endregion
+    
+    #region Update Monitoring
+
+    public bool IsUpdateRunning()
+    {
+        var scenarioTasks = GetRunningScenarioTasks(true);
+        if (scenarioTasks.Count == 0) return false;
+
+        var anyRunning = scenarioTasks.Any(s => s.State == "TASKSTATE_EXECUTING");
+        return anyRunning;
+    }
+
+
+    public void WaitForOfficeCtrUpadateWithError(bool showStatus = false)
+    {
+        if (showStatus) { Console.WriteLine("Waiting for Install to Complete..."); }
+
+        var operationStart = DateTime.Now;
+        var totalOperationStart = DateTime.Now;
+
+        //Thread.Sleep(new TimeSpan(0,0,10));
+
+        var startTime = DateTime.Now;
+        var installRunning = false;
+        var anyCancelled = false;
+        var anyFailed = false;
+        var tasksDone = new List<string>();
+        var tasksRunning = new List<string>();
+        var opRunning = false;
+        var currentOperationName = "";
+        do
+        {
+            var allComplete = true;
+
+            var scenarioTasks = GetRunningScenarioTasks(true);
+            if (scenarioTasks.Count == 0) return;
+
+            anyCancelled = scenarioTasks.Any(s => s.State == "TASKSTATE_CANCELLED");
+            anyFailed = scenarioTasks.Any(s => s.State == "TASKSTATE_FAILED");
+
+            var completeScenarios = scenarioTasks.Where(s => s.State.EndsWith("ED") && !tasksDone.Contains(s.State)).ToList();
+            var completeScenariosNames = completeScenarios.Select(s => s.Scenario).ToList();
+
+            if (completeScenarios.Count > 0 && opRunning && completeScenarios.Any(s => tasksRunning.Contains(s.Scenario)))
+            {
+                if (showStatus)
+                {
+                    var statusName = completeScenarios[0].State.Split('_')[1];
+                    Console.WriteLine(statusName);
+                }
+                opRunning = false;
+                tasksRunning.Clear();
+            }
+
+            var anyRunning = scenarioTasks.Any(s => s.State == "TASKSTATE_EXECUTING");
+            if (anyRunning) allComplete = false;
+
+            var executingTasks = scenarioTasks.Where(s => s.State == "TASKSTATE_EXECUTING" &&
+                                                          !tasksRunning.Contains(s.Scenario)).ToList();
+            if (executingTasks.Count > 0)
+            {
+                installRunning = true;
+                var currentOperation = GetCurrentOperation(executingTasks);
+                Console.Write(currentOperation + ": ");
+                currentOperationName = currentOperation.ToString();
+
+                if (UpdatingOfficeStatus != null)
+                {
+                    UpdatingOfficeStatus(this, new Events.UpdatingOfficeArgs()
+                    {
+                        Status = currentOperationName + "..."
+                    });
+                }
+
+                opRunning = true;
+                tasksRunning.AddRange(executingTasks.Select(t => t.Scenario));
+            }
+
+            tasksDone = completeScenariosNames;
+
+            if (allComplete) break;
+            Thread.Sleep(1000);
+        } while (true);
+
+        if (installRunning)
+        {
+            if (anyFailed)
+            {
+                throw (new Exception("Update failed"));
+            }
+            if (anyCancelled)
+            {
+                throw (new Exception("Update cancelled"));
+            }
+            if (!anyCancelled && !anyFailed) Console.WriteLine("Install Complete");
+        }
+        else
+        {
+            throw (new Exception("Update not running"));
+        }
+    }
+
+    public void WaitForOfficeCtrUpadate(bool showStatus = false)
+    {
+        if (showStatus) { Console.WriteLine("Waiting for Install to Complete..."); }
+
+        var operationStart = DateTime.Now;
+        var totalOperationStart = DateTime.Now;
+
+        //Thread.Sleep(new TimeSpan(0,0,10));
+
+        var startTime = DateTime.Now;
+        var installRunning = false;
+        var anyCancelled = false;
+        var anyFailed = false;
+        var tasksDone = new List<string>();
+        var tasksRunning = new List<string>();
+        var opRunning = false;
+        do
+        {
+            var allComplete = true;
+
+            var scenarioTasks = GetRunningScenarioTasks();
+            if (scenarioTasks.Count == 0) return;
+
+            anyCancelled = scenarioTasks.Any(s => s.State == "TASKSTATE_CANCELLED");
+            anyFailed = scenarioTasks.Any(s => s.State == "TASKSTATE_FAILED");
+
+            var completeScenarios = scenarioTasks.Where(s => s.State.EndsWith("ED") && !tasksDone.Contains(s.State)).ToList();
+            var completeScenariosNames = completeScenarios.Select(s => s.Scenario).ToList();
+
+            if (completeScenarios.Count > 0 && opRunning && completeScenarios.Any(s => tasksRunning.Contains(s.Scenario)))
+            {
+                if (showStatus)
+                {
+                    Console.WriteLine(completeScenarios[0].State.Split('_')[1]);
+                }
+                opRunning = false;
+                tasksRunning.Clear();
+            }
+
+            var anyRunning = scenarioTasks.Any(s => s.State == "TASKSTATE_EXECUTING");
+            if (anyRunning) allComplete = false;
+
+            var executingTasks = scenarioTasks.Where(s => s.State == "TASKSTATE_EXECUTING" &&
+                                                          !tasksRunning.Contains(s.Scenario)).ToList();
+            if (executingTasks.Count > 0)
+            {
+                installRunning = true;
+                var currentOperation = GetCurrentOperation(executingTasks);
+                Console.Write(currentOperation + ": ");
+                opRunning = true;
+                tasksRunning.AddRange(executingTasks.Select(t => t.Scenario));
+            }
+
+            tasksDone = completeScenariosNames;
+
+            if (allComplete) break;
+            Thread.Sleep(1000);
+        } while (true);
+
+        if (installRunning)
+        {
+            if (anyFailed) Console.WriteLine("Install Failed");
+            if (anyCancelled) Console.WriteLine("Install Cancelled");
+            if (!anyCancelled && !anyFailed) Console.WriteLine("Install Complete");
+        }
+        else
+        {
+            Console.WriteLine("Install Not Running");
+        }
+
+
+    }
+
+    public List<ExecutingScenario> GetRunningScenarioTasks(bool assumeUpdate = false)
+    {
+        var execScenarios = new List<ExecutingScenario>();
+        var executingScenario = GetExecutingScenario();
+        if (string.IsNullOrEmpty(executingScenario))
+        {
+            if (assumeUpdate)
+            {
+                executingScenario = "Update";
+            }
+            else
+            {
+                return new List<ExecutingScenario>();
+            }
+        }
+
+        var mainRegKey = GetOfficeCtrRegPath();
+        if (mainRegKey == null) return new List<ExecutingScenario>();
+
+        var scenarioKey = mainRegKey.OpenSubKey("scenario");
+        if (scenarioKey == null) return null;
+
+        var subKeyNames = scenarioKey.GetSubKeyNames();
+
+        foreach (var subKeyName in subKeyNames)
+        {
+            if (subKeyName.ToUpper() == executingScenario.ToUpper())
+            {
+                var execScenKey = scenarioKey.OpenSubKey(subKeyName + @"\TasksState");
+                if (execScenKey == null) continue;
+                var valueNames = execScenKey.GetValueNames();
+
+                foreach (var valueName in valueNames)
+                {
+                    var strState = "";
+                    var state = execScenKey.GetValue(valueName);
+                    if (state != null) strState = state.ToString();
+
+                    execScenarios.Add(new ExecutingScenario()
+                    {
+                        Scenario = valueName,
+                        State = strState.ToUpper()
+                    });
+                }
+            }
+        }
+        return execScenarios;
+    }
+
+    public void ResetUpdateSource()
+    {
+        const string policyPath = @"SOFTWARE\Policies\Microsoft\office\16.0\common\officeupdate";
+        var policyKey = Registry.LocalMachine.OpenSubKey(policyPath, true);
+        if (policyKey != null)
+        {
+            var saveUpdatePath = GetRegistryValue(policyKey, "saveupdatepath");
+            if (!string.IsNullOrEmpty(saveUpdatePath))
+            {
+                policyKey.SetValue("updatepath", saveUpdatePath, RegistryValueKind.String);
+                policyKey.DeleteValue("saveupdatepath");
+            }
+        }
+
+        var mainRegKey = GetOfficeCtrRegPath();
+        if (mainRegKey == null) return;
+
+        var configKey = mainRegKey.OpenSubKey(@"Configuration");
+        if (configKey == null) return;
+
+        var saveUpdateUrl = GetRegistryValue(policyKey, "UpdateUrl");
+        if (string.IsNullOrEmpty(saveUpdateUrl)) return;
+
+        configKey.SetValue("UpdateUrl", saveUpdateUrl, RegistryValueKind.String);
+        configKey.DeleteValue("SaveUpdateUrl");
+    }
+
+    public string ChangeUpdateSource(string updateSource)
+    {
+        var currentupdatepath = "";
+
+        const string policyPath = @"SOFTWARE\Policies\Microsoft\office\16.0\common\officeupdate";
+        var policyKey = Registry.LocalMachine.OpenSubKey(policyPath, true);
+        if (policyKey != null)
+        {
+            currentupdatepath = GetRegistryValue(policyKey, "updatepath");
+            var saveupdatePath = GetRegistryValue(policyKey, "saveupdatepath");
+            if (!string.IsNullOrEmpty(currentupdatepath) && !string.IsNullOrEmpty(updateSource))
+            {
+                if (string.IsNullOrEmpty(saveupdatePath))
+                {
+                    policyKey.SetValue("saveupdatepath", currentupdatepath, RegistryValueKind.String);
+                }
+                policyKey.SetValue("updatepath", updateSource, RegistryValueKind.String);
+            }
+        }
+
+        if (!string.IsNullOrEmpty(currentupdatepath)) return currentupdatepath;
+
+        var mainRegKey = GetOfficeCtrRegPath();
+        if (mainRegKey == null) return null;
+
+        var configKey = mainRegKey.OpenSubKey(@"Configuration");
+        if (configKey == null) return null;
+
+        currentupdatepath = GetRegistryValue(configKey, "UpdateUrl");
+        var saveupdateUrl = GetRegistryValue(configKey, "SaveUpdateUrl");
+        if (string.IsNullOrEmpty(currentupdatepath) || string.IsNullOrEmpty(updateSource)) return currentupdatepath;
+
+        if (string.IsNullOrEmpty(saveupdateUrl))
+        {
+            configKey.SetValue("SaveUpdateUrl", currentupdatepath, RegistryValueKind.String);
+        }
+
+        configKey.SetValue("UpdateUrl", updateSource, RegistryValueKind.String);
+
+        return currentupdatepath;
+    }
+
+    public void ChangeBaseCdnUrl(string updateSource)
+    {
+        var mainRegKey = GetOfficeCtrRegPath();
+        if (mainRegKey == null) return;
+
+        var configKey = mainRegKey.OpenSubKey(@"Configuration", true);
+        if (configKey == null) return;
+
+        var cdnBaseUrl = GetRegistryValue(configKey, "CDNBaseUrl");
+        configKey.SetValue("CDNBaseUrl", updateSource, RegistryValueKind.String);
+    }
+
+
+    public string GetExecutingScenario()
+    {
+        var mainRegKey = GetOfficeCtrRegPath();
+        if (mainRegKey == null) return null;
+        var execScenario = mainRegKey.GetValue("ExecutingScenario");
+        return execScenario != null ? execScenario.ToString() : null;
+    }
+
+    public RegistryKey GetOfficeCtrRegPath()
+    {
+        var path16 = @"SOFTWARE\Microsoft\Office\ClickToRun";
+        var path15 = @"SOFTWARE\Microsoft\Office\15.0\ClickToRun";
+
+        var office16Key = Registry.LocalMachine.OpenSubKey(path16, true);
+        var office15Key = Registry.LocalMachine.OpenSubKey(path15, true);
+
+        if (office16Key != null)
+        {
+            return office16Key;
+        }
+        else
+        {
+            if (office15Key != null)
+            {
+                return office15Key;
+            }
+        }
+
+        var Hklm32 = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32);
+
+        office16Key = Hklm32.OpenSubKey(path16, true);
+        office15Key = Hklm32.OpenSubKey(path15, true);
+
+        if (office16Key != null)
+        {
+            return office16Key;
+        }
+        else
+        {
+            if (office15Key != null)
+            {
+                return office15Key;
+            }
+        }
+
+        return null;
+    }
+
+    public CurrentOperation GetCurrentOperation(List<ExecutingScenario> executingTasks)
+    {
+        if (executingTasks.Any(t => t.Scenario.ToUpper().Contains("DOWNLOAD")))
+        {
+            return CurrentOperation.Downloading;
+        }
+        if (executingTasks.Any(t => t.Scenario.ToUpper().Contains("APPLY")))
+        {
+            return CurrentOperation.Applying;
+        }
+        if (executingTasks.Any(t => t.Scenario.ToUpper().Contains("FINALIZE")))
+        {
+            return CurrentOperation.Finalizing;
+        }
+        if (executingTasks.Any(t => t.Scenario.ToUpper().Contains("INTEGRATE")))
+        {
+            return CurrentOperation.Finalizing;
+        }
+        return CurrentOperation.Starting;
+    }
+
+    #endregion
+    
+    #region File Operations
+
+    private void CleanUp(string installDir)
+    {
+        var dirInfo = new DirectoryInfo(installDir);
+        foreach (var file in dirInfo.GetFiles())
+        {
+            try
+            {
+                file.Delete();
+            }
+            catch { }
+        }
+
+        foreach (var directory in dirInfo.GetDirectories())
+        {
+            try
+            {
+                directory.Delete(true);
+            }
+            catch { }
+        }
+
+        try
+        {
+            Directory.Delete(installDir, true);
+        }
+        catch { }
     }
 
     public string GetTextFileContents(string fileName)
@@ -305,14 +848,10 @@ public class InstallOffice
             output.Write(buffer, 0, bytesRead);
         }
     }
+    
+    #endregion 
 
-    public static string ResourcePath
-    {
-        get
-        {
-            return Directory.GetCurrentDirectory();
-        }
-    }
+    #region Support Functions
 
     private static string GenerateMD5Hash(string filePath)
     {
@@ -325,306 +864,23 @@ public class InstallOffice
         }
     }
 
-    public void WaitForOfficeCtrUpadate(bool showStatus = false)
+    private void ShowHelp()
     {
-        if (showStatus) { Console.WriteLine("Waiting for Install to Complete..."); }
-
-        var operationStart = DateTime.Now;
-        var totalOperationStart = DateTime.Now;
-
-        //Thread.Sleep(new TimeSpan(0,0,10));
-
-        var startTime = DateTime.Now;
-        var installRunning = false;
-        var anyCancelled = false;
-        var anyFailed = false;
-        var tasksDone = new List<string>();
-        var tasksRunning = new List<string>();
-        var opRunning = false;
-        do
-        {
-            var allComplete = true;
-
-            var scenarioTasks = GetRunningScenarioTasks();
-            if (scenarioTasks.Count == 0) return;
-
-            anyCancelled = scenarioTasks.Any(s => s.State == "TASKSTATE_CANCELLED");
-            anyFailed = scenarioTasks.Any(s => s.State == "TASKSTATE_FAILED");
-
-            var completeScenarios = scenarioTasks.Where(s => s.State.EndsWith("ED") && !tasksDone.Contains(s.State)).ToList();
-            var completeScenariosNames = completeScenarios.Select(s => s.Scenario).ToList();
-
-            if (completeScenarios.Count > 0 && opRunning && completeScenarios.Any(s => tasksRunning.Contains(s.Scenario)))
-            {
-                if (showStatus)
-                {
-                    Console.WriteLine(completeScenarios[0].State.Split('_')[1]);
-                }
-                opRunning = false;
-                tasksRunning.Clear();
-            }
-
-            var anyRunning = scenarioTasks.Any(s => s.State == "TASKSTATE_EXECUTING");
-            if (anyRunning) allComplete = false;
-
-            var executingTasks = scenarioTasks.Where(s => s.State == "TASKSTATE_EXECUTING" &&
-                                                          !tasksRunning.Contains(s.Scenario)).ToList();
-            if (executingTasks.Count > 0)
-            {
-                installRunning = true;
-                var currentOperation = GetCurrentOperation(executingTasks);
-                Console.Write(currentOperation + ": ");
-                opRunning = true;
-                tasksRunning.AddRange(executingTasks.Select(t => t.Scenario));
-            }
-
-            tasksDone = completeScenariosNames;
-
-            if (allComplete) break;
-            Thread.Sleep(1000);
-        } while (true);
-
-        if (installRunning)
-        {
-            if (anyFailed) Console.WriteLine("Install Failed");
-            if (anyCancelled) Console.WriteLine("Install Cancelled");
-            if (!anyCancelled && !anyFailed) Console.WriteLine("Install Complete");
-        }
-        else
-        {
-            Console.WriteLine("Install Not Running");
-        }
-
-
+        Console.WriteLine("Usage: " + Process.GetCurrentProcess().ProcessName + " [/uninstall] [/showxml] [/extractxml={File Path}]");
+        Console.WriteLine();
+        Console.WriteLine("  /uninstall\t\t\tRemoves all installed Office 365 ProPlus");
+        Console.WriteLine("  \t\t\t\tproducts.");
+        Console.WriteLine("  /silent\t\t\tInstalls with prompts");
+        Console.WriteLine("  /showxml\t\t\tDisplays the current Office 365 ProPlus");
+        Console.WriteLine("  \t\t\t\tconfiguration xml.");
+        Console.WriteLine("  /extractxml={File Path}\tExtracts the current Office 365 ProPlus");
+        Console.WriteLine("  \t\t\t\tconfiguration xml to the specified file path.");
     }
 
-    public List<ExecutingScenario> GetRunningScenarioTasks()
+    private void MinimizeWindow()
     {
-        var execScenarios = new List<ExecutingScenario>();
-        var executingScenario = GetExecutingScenario();
-        if (string.IsNullOrEmpty(executingScenario)) return new List<ExecutingScenario>();
-
-        var mainRegPath = GetOfficeCtrRegPath();
-        if (string.IsNullOrEmpty(mainRegPath)) return new List<ExecutingScenario>();
-
-        var scenarioPath = mainRegPath + @"\scenario";
-
-        var scenarioKey = Registry.LocalMachine.OpenSubKey(scenarioPath);
-        if (scenarioKey == null) return null;
-
-        var subKeyNames = scenarioKey.GetSubKeyNames();
-
-        foreach (var subKeyName in subKeyNames)
-        {
-            if (subKeyName.ToUpper() == executingScenario.ToUpper())
-            {
-                var execScenKey = scenarioKey.OpenSubKey(subKeyName + @"\TasksState");
-                if (execScenKey == null) continue;
-                var valueNames = execScenKey.GetValueNames();
-
-                foreach (var valueName in valueNames)
-                {
-                    var strState = "";
-                    var state = execScenKey.GetValue(valueName);
-                    if (state != null) strState = state.ToString();
-
-                    execScenarios.Add(new ExecutingScenario()
-                    {
-                        Scenario = valueName,
-                        State = strState.ToUpper()
-                    });
-                }
-            }
-        }
-        return execScenarios;
-    }
-
-    public string GetExecutingScenario()
-    {
-        var mainRegPath = GetOfficeCtrRegPath();
-        if (mainRegPath == null) return null;
-        var configKey = Registry.LocalMachine.OpenSubKey(mainRegPath);
-        if (configKey == null) return null;
-        var execScenario = configKey.GetValue("ExecutingScenario");
-        return execScenario != null ? execScenario.ToString() : null;
-    }
-
-    public string GetOfficeCtrRegPath()
-    {
-        var path16 = @"SOFTWARE\Microsoft\Office\ClickToRun";
-        var path15 = @"SOFTWARE\Microsoft\Office\15.0\ClickToRun";
-
-
-        var office16Key = Registry.LocalMachine.OpenSubKey(path16);
-        var office15Key = Registry.LocalMachine.OpenSubKey(path15);
-
-
-        if (office16Key != null)
-        {
-            return path16;
-        }
-        else
-        {
-            if (office15Key != null)
-            {
-                return path15;
-            }
-        }
-        return null;
-    }
-
-    public string GetOdtErrorMessage()
-    {
-        var dirInfo = new DirectoryInfo(LoggingPath);
-        try
-        {
-
-            foreach (var file in dirInfo.GetFiles("*.log"))
-            {
-                using (var reader = new StreamReader(file.FullName))
-                {
-                    do
-                    {
-                        var found = false;
-                        var line = reader.ReadLine();
-                        if (!line.ToLower().Contains("Prereq::ShowPrereqFailure:".ToLower())) continue;
-
-                        var lineSplit = line.Split(':');
-                        foreach (var part in lineSplit)
-                        {
-                            if (found)
-                            {
-                                return part;
-                            }
-                            else
-                            {
-                                if (part.ToLower().Contains("showprereqfailure"))
-                                {
-                                    found = true;
-                                }
-                            }
-                        }
-                    } while (reader.Peek() > -1);
-                }
-
-            }
-        }
-        catch {}
-        finally
-        {
-            try
-            {
-                foreach (var file in dirInfo.GetFiles("*.log"))
-                {
-                    File.Copy(file.FullName, Environment.ExpandEnvironmentVariables(@"%temp%\" + file.Name), true);
-                }
-
-                if (Directory.Exists(LoggingPath))
-                {
-                    Directory.Delete(LoggingPath);
-                }
-            }
-            catch { }
-        }
-        return null;
-    }
-
-    private void SetLoggingPath(string xmlFilePath)
-    {
-        var tempPath = Environment.ExpandEnvironmentVariables("%temp%");
-        const string logFolderName = "OfficeProPlusLogs";
-        LoggingPath = tempPath + @"\" + logFolderName;
-        if (Directory.Exists(LoggingPath))
-        {
-            try
-            {
-                Directory.Delete(LoggingPath);
-            }
-            catch { }
-        }
-        Directory.CreateDirectory(LoggingPath);
-
-        var xmlDoc = new XmlDocument();
-        xmlDoc.Load(xmlFilePath);
-
-        var loggingNode = xmlDoc.SelectSingleNode("/Configuration/Logging");
-        if (loggingNode == null)
-        {
-            loggingNode = xmlDoc.CreateElement("Logging");
-            xmlDoc.DocumentElement.AppendChild(loggingNode);
-        }
-
-        SetAttribute(xmlDoc, loggingNode, "Path", LoggingPath);
-        xmlDoc.Save(xmlFilePath);
-    }
-
-    private void SetSourcePath(string xmlFilePath)
-    {
-        var tempPath = Environment.ExpandEnvironmentVariables("%temp%");
-        const string officeFolderName = "OfficeProPlus";
-
-        var officeFolderPath = tempPath + @"\" + officeFolderName;
-        if (Directory.Exists(officeFolderPath + @"\Office"))
-        {
-            var xmlDoc = new XmlDocument();
-            xmlDoc.Load(xmlFilePath);
-
-            var addNode = xmlDoc.SelectSingleNode("/Configuration/Add");
-            if (addNode != null)
-            {
-                SetAttribute(xmlDoc, addNode, "SourcePath", officeFolderPath);
-                xmlDoc.Save(xmlFilePath);
-            }
-        }
-    }
-
-    public string LoggingPath { get; set; }
-
-    public bool SilentInstall { get; set; }
-
-    public CurrentOperation GetCurrentOperation(List<ExecutingScenario> executingTasks)
-    {
-        if (executingTasks.Any(t => t.Scenario.ToUpper().Contains("DOWNLOAD")))
-        {
-            return CurrentOperation.Downloading;
-        }
-        if (executingTasks.Any(t => t.Scenario.ToUpper().Contains("APPLY")))
-        {
-            return CurrentOperation.Applying;
-        }
-        if (executingTasks.Any(t => t.Scenario.ToUpper().Contains("FINALIZE")))
-        {
-            return CurrentOperation.Finalizing;
-        }
-        return CurrentOperation.Starting;
-    }
-
-    private void CleanUp(string installDir)
-    {
-        var dirInfo = new DirectoryInfo(installDir);
-        foreach (var file in dirInfo.GetFiles())
-        {
-            try
-            {
-                file.Delete();
-            }
-            catch { }
-        }
-
-        foreach (var directory in dirInfo.GetDirectories())
-        {
-            try
-            {
-                directory.Delete(true);
-            }
-            catch { }
-        }
-
-        try
-        {
-            Directory.Delete(installDir, true);
-        }
-        catch { }
+        IntPtr winHandle = System.Diagnostics.Process.GetCurrentProcess().MainWindowHandle;
+        ShowWindow(winHandle, SW_SHOWMINIMIZED);
     }
 
     public List<CmdArgument> GetArguments()
@@ -651,20 +907,6 @@ public class InstallOffice
         }
         return returnList;
     }
-
-    //private void extractWixTools(string installDir)
-    //{
-    //    string zipPath = installDir + @"\tools.zip";
-    //    string extractPath = "\tools";
-
-    //    using (ZipArchive archive = ZipFile.OpenRead(zipPath))
-    //    {
-    //        foreach (ZipArchiveEntry entry in archive.Entries)
-    //        {
-    //            entry.ExtractToFile(Path.Combine(extractPath+entry.FullName));
-    //        }
-    //    }
-    //}
 
     private string Beautify(XmlDocument doc)
     {
@@ -693,11 +935,6 @@ public class InstallOffice
         return Beautify(doc);
     }
 
-    [DllImport("user32.dll")]
-    public static extern bool ShowWindow( IntPtr hWnd, int nCmdShow );
-
-    public const int SW_SHOWMINIMIZED = 2;
-
     private void SetAttribute(XmlDocument xmlDoc, XmlNode xmlNode, string name, string value)
     {
         var pathAttr = xmlNode.Attributes[name];
@@ -708,6 +945,72 @@ public class InstallOffice
         }
         pathAttr.Value = value;
     }
+
+    private string GetRegistryValue(RegistryKey regKey, string property)
+    {
+        if (regKey != null)
+        {
+            if (regKey.GetValue(property) == null) return "";
+            return regKey.GetValue(property).ToString();
+        }
+        return "";
+    }
+    
+    //private void extractWixTools(string installDir)
+    //{
+    //    string zipPath = installDir + @"\tools.zip";
+    //    string extractPath = "\tools";
+
+    //    using (ZipArchive archive = ZipFile.OpenRead(zipPath))
+    //    {
+    //        foreach (ZipArchiveEntry entry in archive.Entries)
+    //        {
+    //            entry.ExtractToFile(Path.Combine(extractPath+entry.FullName));
+    //        }
+    //    }
+    //}
+
+    #endregion
+
+    #region Properties
+
+    private bool HasValidArguments()
+    {
+        return !GetArguments().Any(a => (a.Key.ToLower() != "/uninstall" &&
+                                         a.Key.ToLower() != "/showxml" &&
+                                         a.Key.ToLower() != "/extractxml"));
+    }
+
+    public string LoggingPath { get; set; }
+
+    public bool SilentInstall { get; set; }
+
+    public static string ResourcePath
+    {
+        get
+        {
+            return Directory.GetCurrentDirectory();
+        }
+    }
+
+
+    #endregion
+
+    #region WindowsFunctions
+
+    [DllImport("user32.dll")]
+    public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+
+    public const int SW_SHOWMINIMIZED = 2;
+
+    #endregion
+
+    #region Events
+
+    public event Events.UpdatingOfficeEventHandler UpdatingOfficeStatus = null;
+
+    #endregion
+
 }
 
 public class ODTLogFile

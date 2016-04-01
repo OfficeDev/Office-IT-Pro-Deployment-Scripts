@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.OfficeProPlus.Downloader;
@@ -54,6 +57,61 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
 
         }
 
+        public async Task<string> GenerateLocalConfigXml()
+        {
+            var currentDirectory = Directory.GetCurrentDirectory() + @"\Scripts";
+            if (!System.IO.File.Exists(currentDirectory + @"\Generate-ODTConfigurationXML.ps1"))
+            {
+                currentDirectory = Directory.GetCurrentDirectory() + @"\Project\Scripts";
+            }
+
+            var xmlFilePath = Environment.ExpandEnvironmentVariables(@"%temp%\localConfig.xml");
+
+            if (System.IO.File.Exists(xmlFilePath))
+            {
+                System.IO.File.Delete(xmlFilePath);
+            }
+
+            var scriptPath = currentDirectory + @"\Generate-ODTConfigurationXML.ps1";
+            var scriptPathTmp = currentDirectory + @"\Tmp-Generate-ODTConfigurationXML.ps1";
+
+            System.IO.File.Copy(scriptPath, scriptPathTmp, true);
+
+            var scriptUrl =
+                "https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/raw/master/Office-ProPlus-Deployment/Generate-ODTConfigurationXML/Generate-ODTConfigurationXML.ps1";
+
+            using (var webClient = new WebClient())
+            {
+               // await webClient.DownloadFileTaskAsync(new Uri(scriptUrl), scriptPath);
+            }
+
+            var arguments = @"/c Powershell -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle " +
+                            @"Hidden -File .\RunGenerateXML.ps1";
+
+            var p = new Process
+            {
+                StartInfo = new ProcessStartInfo()
+                {
+                    FileName = "cmd",
+                    Arguments = arguments,
+                    CreateNoWindow = true,
+                    UseShellExecute = false,
+                    WorkingDirectory = currentDirectory,
+                },
+            };
+
+            p.Start();
+            p.WaitForExit();
+
+            await Task.Delay(100);
+
+            if (System.IO.File.Exists(xmlFilePath))
+            {
+                return System.IO.File.ReadAllText(xmlFilePath);
+            }
+            return "";
+        }
+
         private async Task<string> GetOfficeLatestVersion(string branch, OfficeEdition edition)
         {
             var ppDownload = new ProPlusDownloader();
@@ -80,6 +138,7 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
         {
             if (regKey != null)
             {
+                if (regKey.GetValue(property) == null) return "";
                 return regKey.GetValue(property).ToString();
             }
             return "";

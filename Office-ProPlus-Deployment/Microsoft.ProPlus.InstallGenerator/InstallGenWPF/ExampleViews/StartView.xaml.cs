@@ -65,6 +65,8 @@ namespace MetroDemo.ExampleViews
         {
             try
             {
+                GlobalObjects.ViewModel.RunLocalConfigs = false;
+
                 GlobalObjects.ViewModel.ConfigXmlParser.LoadXml(GlobalObjects.ViewModel.DefaultXml);
                 GlobalObjects.ViewModel.ResetXml = true;
                 GlobalObjects.ViewModel.ImportFile = null;
@@ -90,12 +92,12 @@ namespace MetroDemo.ExampleViews
             }
         }
 
-     
-
         private void ImportExisting_Click_1(object sender, RoutedEventArgs e)
         {
             try
             {
+                GlobalObjects.ViewModel.RunLocalConfigs = false;
+
                 var dlg = new Microsoft.Win32.OpenFileDialog
                 {
                     DefaultExt = ".png",
@@ -136,6 +138,40 @@ namespace MetroDemo.ExampleViews
 
                     LogAnaylytics("/StartView", "ImportExisting");
                 }
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
+
+        private async void ManageLocal_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                GlobalObjects.ViewModel.RunLocalConfigs = true;
+
+                var officeInstallManager = new OfficeLocalInstallManager();
+                var localXml = await officeInstallManager.GenerateLocalConfigXml();
+
+                GlobalObjects.ViewModel.ConfigXmlParser.LoadXml(localXml);
+                GlobalObjects.ViewModel.ResetXml = true;
+                GlobalObjects.ViewModel.ImportFile = null;
+
+
+                if (RestartWorkflow != null)
+                {
+                    this.RestartWorkflow(this, new EventArgs());
+                }
+
+                this.TransitionTab(this, new TransitionTabEventArgs()
+                {
+                    Direction = TransitionTabDirection.Forward,
+                    Index = 0
+                });
+
+                LogAnaylytics("/StartView", "StartNew");
+
             }
             catch (Exception ex)
             {
