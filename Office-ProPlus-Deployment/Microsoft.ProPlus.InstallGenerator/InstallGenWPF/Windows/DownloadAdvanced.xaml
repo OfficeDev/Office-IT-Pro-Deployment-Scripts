@@ -23,7 +23,7 @@
                       NonActiveGlowBrush="#333333"
                       mc:Ignorable="d"
                       d:DataContext="{d:DesignInstance metroDemo:MainWindowViewModel}"
-                      x:Name="AdvancedDownloadSelectionDialog" Loaded="LanguagesDialog_OnLoaded" 
+                      x:Name="AdvancedDownloadSelectionDialog" Loaded="DownloadAdvanced_OnLoaded" 
                       TitleCaps="False">
 
 
@@ -74,10 +74,10 @@
             </Grid.RowDefinitions>
 
             <CheckBox x:Name="AllowMultipleDownloads" Grid.Row="0" Content="Allow downloading multiple channels at once" FontSize="16" Style="{StaticResource MetroCheckBox}"
-                     ></CheckBox>
+                  Foreground="{StaticResource GrayBrush}" Checked="ToggleButton_OnChecked" Unchecked="ToggleButton_OnChecked"></CheckBox>
 
             <CheckBox x:Name="UseFolderShortNames" Grid.Row="1" Content="Use Channel folder short names" FontSize="16" Style="{StaticResource MetroCheckBox}"
-                     ></CheckBox>
+                   Foreground="{StaticResource GrayBrush}" Checked="ToggleButton_OnChecked" Unchecked="ToggleButton_OnChecked"></CheckBox>
         </Grid>
         
         <StackPanel Grid.Column="0" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,5,5,5"  >

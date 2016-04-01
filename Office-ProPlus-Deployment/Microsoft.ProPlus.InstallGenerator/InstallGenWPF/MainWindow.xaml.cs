@@ -24,54 +24,65 @@ namespace MetroDemo
 
         public MainWindow()
         {
-            GlobalObjects.ViewModel = new MainWindowViewModel(DialogCoordinator.Instance)
+            try
             {
-                ConfigXmlParser = new OfficeInstallGenerator.ConfigXmlParser("<Configuration></Configuration>"),
-                AllowMultipleDownloads = true,
-                UseFolderShortNames = true
-            };
+                GlobalObjects.ViewModel = new MainWindowViewModel(DialogCoordinator.Instance)
+                {
+                    ConfigXmlParser = new OfficeInstallGenerator.ConfigXmlParser(GlobalObjects.DefaultXml),
+                    AllowMultipleDownloads = true,
+                    UseFolderShortNames = true
+                };
 
-            DataContext = GlobalObjects.ViewModel;
-            GlobalObjects.ViewModel.RunLocalConfigs = false;
+                DataContext = GlobalObjects.ViewModel;
+                GlobalObjects.ViewModel.RunLocalConfigs = false;
 
-            InitializeComponent();
+                InitializeComponent();
 
-            ThemeManager.TransitionsEnabled = false;
+                ProductView.LoadXml();
+                DisplayView.LoadXml();
+                UpdateView.LoadXml();
 
-            MainTabControl.SelectionChanged += MainTabControl_SelectionChanged;
+                ThemeManager.TransitionsEnabled = false;
 
-            StartView.TransitionTab += TransitionTab;
-            StartView.XmlImported += XmlImported;
+                MainTabControl.SelectionChanged += MainTabControl_SelectionChanged;
 
-            ProductView.TransitionTab += TransitionTab;
-            UpdateView.TransitionTab += TransitionTab;
-            DisplayView.TransitionTab += TransitionTab;
-            GenerateView.TransitionTab += TransitionTab;
-            DownloadView.TransitionTab += TransitionTab;
-            LocalView.TransitionTab += TransitionTab;
+                StartView.TransitionTab += TransitionTab;
+                StartView.XmlImported += XmlImported;
 
-            LocalView.BranchChanged += BranchChanged;
+                ProductView.TransitionTab += TransitionTab;
+                UpdateView.TransitionTab += TransitionTab;
+                DisplayView.TransitionTab += TransitionTab;
+                GenerateView.TransitionTab += TransitionTab;
+                DownloadView.TransitionTab += TransitionTab;
+                LocalView.TransitionTab += TransitionTab;
 
-            GenerateView.InfoMessage += GenerateViewInfoMessage;
-            GenerateView.ErrorMessage += GenerateView_ErrorMessage;
+                LocalView.BranchChanged += BranchChanged;
 
-            DisplayView.InfoMessage += GenerateViewInfoMessage;
-            DisplayView.ErrorMessage += GenerateView_ErrorMessage;
+                GenerateView.InfoMessage += GenerateViewInfoMessage;
+                GenerateView.ErrorMessage += GenerateView_ErrorMessage;
 
-            ProductView.InfoMessage += GenerateViewInfoMessage;
-            ProductView.ErrorMessage += GenerateView_ErrorMessage;
+                DisplayView.InfoMessage += GenerateViewInfoMessage;
+                DisplayView.ErrorMessage += GenerateView_ErrorMessage;
 
-            UpdateView.InfoMessage += GenerateViewInfoMessage;
-            UpdateView.ErrorMessage += GenerateView_ErrorMessage;
+                ProductView.InfoMessage += GenerateViewInfoMessage;
+                ProductView.ErrorMessage += GenerateView_ErrorMessage;
 
-            StartView.InfoMessage += GenerateViewInfoMessage;
-            StartView.ErrorMessage += GenerateView_ErrorMessage;
+                UpdateView.InfoMessage += GenerateViewInfoMessage;
+                UpdateView.ErrorMessage += GenerateView_ErrorMessage;
 
-            DownloadView.InfoMessage += GenerateViewInfoMessage;
-            DownloadView.ErrorMessage += GenerateView_ErrorMessage;
+                StartView.InfoMessage += GenerateViewInfoMessage;
+                StartView.ErrorMessage += GenerateView_ErrorMessage;
 
-            LocalView.InfoMessage += GenerateViewInfoMessage;
-            LocalView.ErrorMessage += GenerateView_ErrorMessage;
+                DownloadView.InfoMessage += GenerateViewInfoMessage;
+                DownloadView.ErrorMessage += GenerateView_ErrorMessage;
+
+                LocalView.InfoMessage += GenerateViewInfoMessage;
+                LocalView.ErrorMessage += GenerateView_ErrorMessage;
+            }
+            catch (Exception ex)
+            {
+                ex.LogException();
+            }
         }
 
         private void BranchChanged(object sender, BranchChangedEventArgs e)
@@ -103,6 +114,10 @@ namespace MetroDemo
             ProductView.Reset();
             UpdateView.Reset();
             DisplayView.Reset();
+
+            ProductView.LoadXml();
+            DisplayView.LoadXml();
+            UpdateView.LoadXml();
         }
 
         private void XmlImported(object sender, EventArgs eventArgs)
@@ -407,6 +422,7 @@ namespace MetroDemo
                 };
 
                 GenerateView.xmlBrowser.Visibility = Visibility.Hidden;
+                LocalView.xmlBrowser.Visibility = Visibility.Hidden;
 
                 var result = await this.ShowMessageAsync("Quit application?",
                     "Sure you want to quit application?",
@@ -421,6 +437,7 @@ namespace MetroDemo
                 else
                 {
                     GenerateView.xmlBrowser.Visibility = Visibility.Visible;
+                    LocalView.xmlBrowser.Visibility = Visibility.Visible;
                 }
             }
             catch { }

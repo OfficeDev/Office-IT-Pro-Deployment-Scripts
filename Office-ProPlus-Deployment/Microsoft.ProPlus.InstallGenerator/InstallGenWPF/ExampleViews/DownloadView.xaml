@@ -42,7 +42,7 @@
                     <ColumnDefinition />
                     <ColumnDefinition Width="0"/>
                 </Grid.ColumnDefinitions>
-                <StackPanel Grid.Row="0" Grid.Column="1"  Background="#666666" Width="auto" Height="40" HorizontalAlignment="Stretch" VerticalAlignment="Top" />
+                <StackPanel Grid.Row="0" Grid.Column="1"  Background="{StaticResource GrayBrush}" Width="auto" Height="40" HorizontalAlignment="Stretch" VerticalAlignment="Top" />
                 <Controls:MetroAnimatedSingleRowTabControl Grid.Row="0" Grid.Column="1"  x:Name="MainTabControl"  SelectionChanged="MainTabControl_OnSelectionChanged"
                                                            Height="600" VerticalAlignment="Top" >
                     <TabItem x:Name="OptionalTab" Height="50" >
@@ -81,7 +81,7 @@
         
                                         <Controls:MetroProgressBar x:Name="DownloadProgressBar"  Grid.Column="0" Height="37" Background="White" Width="360" HorizontalAlignment="Left" />
                                         <TextBox x:Name="ProductUpdateSource" Background="#00ffffff" FontSize="20" Grid.Column="0" HorizontalAlignment="Left"
-                                             Controls:TextBoxHelper.Watermark="Local, UNC or HTTP Path" Height="37" Width="360"
+                                             Controls:TextBoxHelper.Watermark="Local, UNC or HTTP Path" Height="37" Width="360" Foreground="{StaticResource GrayBrush}"
                                              Controls:TextBoxHelper.ClearTextButton="True" TextChanged="BuildFilePath_OnTextChanged"
                                              Text="">
                                         </TextBox>
@@ -113,8 +113,10 @@
                                             <ColumnDefinition Width="100" />
                                         </Grid.ColumnDefinitions>
 
-                                        <CheckBox x:Name="Download32Bit" Grid.Column="0" Content="32-Bit" Foreground="#666666" Style="{StaticResource MetroCheckBox}"></CheckBox>
-                                        <CheckBox x:Name="Download64Bit" Grid.Column="1" Content="64-Bit" Foreground="#666666" Style="{StaticResource MetroCheckBox}"></CheckBox>
+                                        <CheckBox x:Name="Download32Bit" Grid.Column="0" Content="32-Bit" Checked="ToggleButton_OnChecked" Unchecked="ToggleButton_OnChecked"
+                                                  Foreground="{StaticResource GrayBrush}" Style="{StaticResource MetroCheckBox}"></CheckBox>
+                                        <CheckBox x:Name="Download64Bit" Grid.Column="1" Content="64-Bit"  Checked="ToggleButton_OnChecked" Unchecked="ToggleButton_OnChecked"
+                                                  Foreground="{StaticResource GrayBrush}" Style="{StaticResource MetroCheckBox}"></CheckBox>
                                     </Grid>
 
                                 </Grid>
@@ -134,7 +136,8 @@
                                                 <GridViewColumn Header="" Width="35">
                                                     <GridViewColumn.CellTemplate>
                                                         <DataTemplate>
-                                                            <CheckBox IsChecked="{Binding Selected}" IsEnabled="{Binding Editable, Converter={StaticResource negate}}" ></CheckBox>
+                                                            <CheckBox IsChecked="{Binding Selected}" IsEnabled="{Binding Editable, Converter={StaticResource negate}}"
+                                                                     Checked="ToggleButton_OnChecked" Unchecked="ToggleButton_OnChecked" ></CheckBox>
                                                         </DataTemplate>
                                                     </GridViewColumn.CellTemplate>
                                                 </GridViewColumn>
@@ -143,13 +146,13 @@
                                                     <GridViewColumn.CellTemplate>
                                                         <DataTemplate>
                                                             <Grid Margin="0 1 0 1">
-                                                                    <Controls:MetroProgressBar x:Name="DownloadProgressBar"  Grid.Column="0" Height="35" Foreground="{Binding ForeGround}" 
+                                                                    <Controls:MetroProgressBar x:Name="DownloadProgressBar"  Grid.Column="0" Height="35" Foreground="#999999" 
                                                                                             Background="White" Width="250" HorizontalAlignment="Left" Value="{Binding PercentDownload}" />
                                                                 <ComboBox Width="250" x:Name="ProductVersion" BorderThickness="0" Grid.Column="0" Background="Transparent"
                                                                         Height="35" HorizontalAlignment="Left" 
                                                                         Style="{DynamicResource MetroComboBox}"
                                                                         Controls:TextBoxHelper.Watermark="{Binding Version}"
-                                                                        DisplayMemberPath="Version"
+                                                                        DisplayMemberPath="Version" Foreground="{StaticResource GrayBrush}"
                                                                         IsEditable="True"
                                                                         ItemsSource="{Binding Builds}"
                                                                         MaxDropDownHeight="125"
@@ -162,7 +165,7 @@
                                                 <GridViewColumn Header="" Width="55" >
                                                     <GridViewColumn.CellTemplate>
                                                         <DataTemplate>
-                                                                <Label HorizontalAlignment="Center" Content="{Binding PercentDownloadText}"></Label>
+                                                                <Label HorizontalAlignment="Center" Foreground="{StaticResource GrayBrush}" Content="{Binding PercentDownloadText}"></Label>
                                                         </DataTemplate>
                                                     </GridViewColumn.CellTemplate>
                                                 </GridViewColumn>

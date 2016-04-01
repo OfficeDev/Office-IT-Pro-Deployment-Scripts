@@ -92,6 +92,8 @@ namespace MetroDemo
             var task = Task.Run(() => Directory.Exists(path));
             return await Task.WhenAny(task, Task.Delay(1000)) == task && task.Result;
         }
+
+        public static string DefaultXml = "<Configuration><Updates Enabled=\"TRUE\"></Updates><Display Level=\"Full\" /></Configuration>";
     }
 
     public class MainWindowViewModel : INotifyPropertyChanged
@@ -386,9 +388,6 @@ namespace MetroDemo
         }
 
         public ConfigXmlParser ConfigXmlParser { get; set; }
-
-        public string DefaultXml =
-            "<Configuration></Configuration>";
 
         public bool ResetXml { get; set; }
 

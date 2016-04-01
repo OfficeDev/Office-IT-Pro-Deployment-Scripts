@@ -15,6 +15,7 @@ using System.Windows.Media;
 using MetroDemo.Events;
 using MetroDemo.ExampleWindows;
 using Micorosft.OfficeProPlus.ConfigurationXml;
+using Micorosft.OfficeProPlus.ConfigurationXml.Enums;
 using Micorosft.OfficeProPlus.ConfigurationXml.Model;
 using Microsoft.OfficeProPlus.Downloader;
 using Microsoft.OfficeProPlus.Downloader.Model;
@@ -75,12 +76,31 @@ namespace MetroDemo.ExampleViews
                 {
                     LoadViewState().ConfigureAwait(false);
                 }
+
+                LoadCurrentXml();
             }
             catch (Exception ex)
             {
                 LogErrorMessage(ex);
             }
         }
+
+        public void LoadCurrentXml()
+        {
+            if (xmlBrowser == null) return;
+
+            if (GlobalObjects.ViewModel == null) return;
+            if (GlobalObjects.ViewModel.ConfigXmlParser != null)
+            {
+                var configXml = GlobalObjects.ViewModel.ConfigXmlParser;
+
+                if (!string.IsNullOrEmpty(configXml.Xml))
+                {
+                    xmlBrowser.XmlDoc = configXml.Xml;
+                }
+            }
+        }
+
 
         private async Task LoadViewState()
         {
@@ -572,15 +592,26 @@ namespace MetroDemo.ExampleViews
 
         #region "Events"
 
+        private void xmlBrowser_Loaded(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+
         private async void ChangeChannel_OnClick(object sender, RoutedEventArgs e)
         {
             try
             {
+                GlobalObjects.ViewModel.BlockNavigation = true;
                 await ChangeOfficeChannel();
             }
             catch (Exception ex)
             {
                 LogErrorMessage(ex);
+            }
+            finally
+            {
+                GlobalObjects.ViewModel.BlockNavigation = false;
             }
         }
 

@@ -88,7 +88,7 @@
     <Style x:Key="MetroListBoxItem"
            TargetType="{x:Type ListBoxItem}">
         <Setter Property="Foreground"
-                Value="{DynamicResource BlackBrush}" />
+                Value="{DynamicResource GrayBrush}" />
         <Setter Property="HorizontalContentAlignment"
                 Value="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}" />
         <Setter Property="VerticalContentAlignment"

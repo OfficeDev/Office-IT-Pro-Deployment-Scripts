@@ -37,7 +37,7 @@
                     <ColumnDefinition />
                     <ColumnDefinition Width="0"/>
                 </Grid.ColumnDefinitions>
-                <StackPanel Grid.Row="0" Grid.Column="1"  Background="#666666" Width="auto" Height="40" HorizontalAlignment="Stretch" VerticalAlignment="Top" />
+                <StackPanel Grid.Row="0" Grid.Column="1"  Background="{StaticResource GrayBrush}" Width="auto" Height="40" HorizontalAlignment="Stretch" VerticalAlignment="Top" />
                 <Controls:MetroAnimatedSingleRowTabControl Grid.Row="0" Grid.Column="1"  x:Name="MainTabControl" 
                                                            Height="600" VerticalAlignment="Top" >
                     <TabItem x:Name="OptionalTab" Height="50" >
@@ -78,10 +78,10 @@
                                     <Label Content="Display Level" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="1" Grid.ColumnSpan="2" />
 
                                     <Controls:ToggleSwitch x:Name="DisplayLevel" Grid.Column="2" 
-                                                   IsChecked="True"
-                                                   OnLabel="Full"
+                                                   IsChecked="True"  Style="{StaticResource MetroToggleSwitchStyle}"
+                                                   OnLabel="Full" 
                                                    OffLabel="None"
-                                                   HorizontalAlignment="Right" Width="96" />
+                                                   HorizontalAlignment="Right" Width="110" />
                                 </Grid>
 
                                 <Grid Margin="50 0 0 0">
@@ -101,7 +101,7 @@
                                        HorizontalAlignment="Left" Grid.Column="1"  Width="143" />
 
                                     <Controls:ToggleSwitch x:Name="AcceptEula" Grid.Column="2"
-                                               IsChecked="False"
+                                               IsChecked="False" Style="{StaticResource MetroToggleSwitchStyle}"
                                                OnLabel="True"
                                                OffLabel="False"
                                                 HorizontalAlignment="Right" Width="104" />
@@ -124,10 +124,10 @@
                                        HorizontalAlignment="Left" Grid.Column="1" Grid.ColumnSpan="2" Width="158" />
 
                                     <Controls:ToggleSwitch x:Name="AutoActivate" Grid.Column="2"
-                                               IsChecked="False"
+                                               IsChecked="False" Style="{StaticResource MetroToggleSwitchStyle}"
                                                OnLabel="Yes"
                                                OffLabel="No"
-                                              HorizontalAlignment="Right" Width="90" />
+                                              HorizontalAlignment="Right" Width="100" />
                                 </Grid>
 
                                 <Grid Margin="50 0 0 0">
@@ -147,7 +147,7 @@
                                        HorizontalAlignment="Left"  Grid.Column="1" Grid.ColumnSpan="2" Width="180"/>
 
                                     <Controls:ToggleSwitch x:Name="ForceAppShutdown" Grid.Column="2"
-                                               IsChecked="False"
+                                               IsChecked="False" Style="{StaticResource MetroToggleSwitchStyle}"
                                                OnLabel="True"
                                                OffLabel="False"
                                                HorizontalAlignment="Right" Width="103" />
@@ -170,7 +170,7 @@
                                        HorizontalAlignment="Left"  Grid.Column="1" Width="310"/>
 
                                     <Controls:ToggleSwitch x:Name="SharedComputerLicensing" Grid.Column="2"
-                                               IsChecked="False"
+                                               IsChecked="False" Style="{StaticResource MetroToggleSwitchStyle}"
                                                OnLabel="True"
                                                OffLabel="False"
                                                 HorizontalAlignment="Right" Width="104" />

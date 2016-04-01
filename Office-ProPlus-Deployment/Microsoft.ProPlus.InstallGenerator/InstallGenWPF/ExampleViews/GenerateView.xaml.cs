@@ -514,6 +514,7 @@ namespace MetroDemo.ExampleViews
                 LogErrorMessage(ex);
             }
         }
+
         private void InstallExecutable_OnChecked(object sender, RoutedEventArgs e)
         {
             try

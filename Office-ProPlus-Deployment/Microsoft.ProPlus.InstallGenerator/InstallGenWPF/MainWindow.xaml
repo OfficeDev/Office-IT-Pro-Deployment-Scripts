@@ -258,7 +258,7 @@
                             <DockPanel Margin="10" Height="30">
                                 <Rectangle Height="16" Width="16">
                                     <Rectangle.Fill>
-                                        <VisualBrush  Visual="{StaticResource appbar_scale_white}" ></VisualBrush>
+                                        <VisualBrush  Visual="{StaticResource appbar_edit}" ></VisualBrush>
                                     </Rectangle.Fill>
                                 </Rectangle>
                                 <Label FontSize="16" Foreground="white" x:Name="lblOptions">Options</Label>
@@ -270,7 +270,7 @@
                             <DockPanel Margin="10" Height="30">
                                 <Rectangle Height="16" Width="16">
                                     <Rectangle.Fill>
-                                        <VisualBrush  Visual="{StaticResource appbar_potion_white}" ></VisualBrush>
+                                        <VisualBrush  Visual="{StaticResource appbar_list_gear}" ></VisualBrush>
                                     </Rectangle.Fill>
                                 </Rectangle>
                                 <Label FontSize="16" Foreground="white" x:Name="lblGenerate" >Generate</Label>

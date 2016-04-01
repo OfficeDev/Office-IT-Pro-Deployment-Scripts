@@ -37,10 +37,10 @@
                     <ColumnDefinition />
                     <ColumnDefinition Width="0"/>
                 </Grid.ColumnDefinitions>
-                <StackPanel Grid.Row="0" Grid.Column="1"  Background="#666666" Width="auto" Height="40" HorizontalAlignment="Stretch" VerticalAlignment="Top" />
+                <StackPanel Grid.Row="0" Grid.Column="1"  Background="{StaticResource GrayBrush}" Width="auto" Height="40" HorizontalAlignment="Stretch" VerticalAlignment="Top" />
                 <controls:MetroAnimatedSingleRowTabControl Grid.Row="0" Grid.Column="1"  x:Name="MainTabControl" 
                                                            Height="600" VerticalAlignment="Top" >
-                    <TabItem Background="#666666" Height="40">
+                    <TabItem Background="{StaticResource GrayBrush}" Height="40">
                         <TabItem.Header>
                             <DockPanel Margin="0,5,0,0">
                                 <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,0,0,0">Install wrapper</Label>
@@ -71,11 +71,11 @@
                                 </Grid.ColumnDefinitions>
                                 <Label Content="Install type" Style="{StaticResource CustomMetroLabelHeader}" HorizontalAlignment="Left" Grid.Column="0" Margin="50,10,0,0" />
                                 <RadioButton x:Name="InstallMsi" Grid.Column="1" Checked="InstallExecutable_OnChecked"
-                                         Content="MSI" IsChecked="True"
+                                         Content="MSI" IsChecked="True" Foreground="{StaticResource GrayBrush}"
                                          GroupName="1" FontSize="20"  />
 
                                 <RadioButton x:Name="InstallExecutable" Grid.Column="2" Checked="InstallExecutable_OnChecked"
-                                         Content="Executable" IsChecked="False"
+                                         Content="Executable" IsChecked="False" Foreground="{StaticResource GrayBrush}"
                                          GroupName="1" FontSize="20"  />
                             </Grid>
 
@@ -107,11 +107,11 @@
                                      x:Name="SignInstaller" Checked="SignWithCert_OnCheck" Unchecked="SignWithCert_OnCheck" IsEnabled="True" Height="18" Width="19" ></CheckBox>
 
                                     <Button x:Name="OpenCertificateBrowser" Width="120" Height="35" Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center"
-                                            VerticalAlignment="Center"  
-                                            Focusable="False" Content="Select Certificate" Style="{StaticResource MetroButton}" Click="OpenCertificateBrowser_OnClick" IsEnabled="False" >
+                                            VerticalAlignment="Center"   Style="{StaticResource MetroFlatButtonStyle1}"
+                                            Focusable="False" Content="Select Certificate" Click="OpenCertificateBrowser_OnClick" IsEnabled="False" >
                                     </Button>
                                     <Button x:Name="OpenCertGenerator" Width="129" Height="35" Grid.Row="0" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" 
-                                    Focusable="False" Content="Generate Certificate" Style="{StaticResource MetroButton}" Click="OpenCertGenerator_OnClick"  IsEnabled="False" >
+                                    Focusable="False" Content="Generate Certificate" Style="{StaticResource MetroFlatButtonStyle1}" Click="OpenCertGenerator_OnClick"  IsEnabled="False" >
                                     </Button>
                                 </Grid>
 
@@ -127,7 +127,8 @@
                                 </Grid.ColumnDefinitions>
                                 <Label Content="Silent install" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="0" VerticalAlignment="Center"  />
 
-                                <controls:ToggleSwitch x:Name="SilentInstall" Grid.Column="1" Grid.Row="0" VerticalAlignment="Center"
+                                <controls:ToggleSwitch x:Name="SilentInstall" Grid.Column="1" Grid.Row="0" 
+                                   VerticalAlignment="Center"  Style="{StaticResource MetroToggleSwitchStyle}"
                                    IsChecked="False" Checked="SilentInstall_OnChecked" Unchecked="SilentInstall_OnChecked"
                                    OnLabel="Yes" OffLabel="No" HorizontalAlignment="Right" />
 
@@ -149,8 +150,8 @@
                                              controls:TextBoxHelper.ClearTextButton="True" TextChanged="FileSavePath_OnTextChanged"
                                              Text="">
                                 </TextBox>
-                                <Button Grid.Column="2" Height="40" Width="60" Content="Browse" x:Name="SaveButton" Click="SaveButton_Click" />
-                                <Button Grid.Column="3" Height="40" Width="60" Content="Open" x:Name="OpenExeFolderButton" IsEnabled="False" Click="OpenExeFolderButton_OnClick" />
+                                <Button Grid.Column="2" Height="40" Width="60" Style="{StaticResource MetroFlatButtonStyle1}" Content="Browse" x:Name="SaveButton" Click="SaveButton_Click" />
+                                <Button Grid.Column="3" Height="40" Width="60" Style="{StaticResource MetroFlatButtonStyle1}" Content="Open" x:Name="OpenExeFolderButton" IsEnabled="False" Click="OpenExeFolderButton_OnClick" />
                             </Grid>
 
                             <Grid Grid.Column="0" Grid.Row="5" Margin="50 0 0 0">
@@ -241,7 +242,7 @@
                         </Grid>
                     </TabItem>
 
-                    <TabItem  Background="#666666" Height="40" >
+                    <TabItem  Background="{StaticResource GrayBrush}" Height="40" >
                         <TabItem.Header>
                             <DockPanel Margin="0,5,0,0">
                                 <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,0,0,0">Configuration</Label>

@@ -531,6 +531,29 @@ namespace MetroDemo.ExampleViews
 
         #region "Events"
 
+        private bool allowCheck = true;
+        private void ToggleButton_OnChecked(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (!allowCheck) return;
+                var chkBox = (System.Windows.Controls.CheckBox) sender;
+                if (GlobalObjects.ViewModel.BlockNavigation)
+                {
+                    allowCheck = false;
+                    chkBox.IsChecked = !chkBox.IsChecked;
+                }
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+            finally
+            {
+                allowCheck = true;
+            }
+        }
+
         private void AdvDownloadButton_OnClick(object sender, RoutedEventArgs e)
         {
             try

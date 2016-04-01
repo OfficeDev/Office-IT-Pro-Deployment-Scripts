@@ -39,7 +39,7 @@
                     <ColumnDefinition />
                     <ColumnDefinition Width="0"/>
                 </Grid.ColumnDefinitions>
-                <StackPanel Grid.Row="0" Grid.Column="1"  Background="#666666" Width="auto" Height="40" HorizontalAlignment="Stretch" VerticalAlignment="Top" />
+                <StackPanel Grid.Row="0" Grid.Column="1"  Background="{StaticResource GrayBrush}" Width="auto" Height="40" HorizontalAlignment="Stretch" VerticalAlignment="Top" />
                 <Controls:MetroAnimatedSingleRowTabControl Grid.Row="0" Grid.Column="1"  x:Name="MainTabControl"  SelectionChanged="MainTabControl_OnSelectionChanged"
                                                            Height="600" VerticalAlignment="Top" >
                     <TabItem x:Name="ProductTab" Height="50" >
@@ -113,11 +113,11 @@
                                         <Label Content="Edition" Style="{StaticResource CustomMetroLabelHeader}" HorizontalAlignment="Left" Grid.Column="1"/>
                                     </Grid>
                                     <RadioButton Margin="10 10 0 0" x:Name="ProductEdition32Bit" HorizontalAlignment="Center"
-                                         Content="32-Bit" Width="100" Foreground="#666666"
+                                         Content="32-Bit" Width="100" Foreground="{StaticResource GrayBrush}"
                                          GroupName="1" 
                                          IsChecked="True" FontSize="20" />
                                     <RadioButton Margin="10 10 0 0"  x:Name="ProductEdition64Bit" HorizontalAlignment="Center"
-                                         Content="64-Bit" Width="100" Foreground="#666666"
+                                         Content="64-Bit" Width="100" Foreground="{StaticResource GrayBrush}"
                                          GroupName="1" FontSize="20" />
                                 </StackPanel>
 
@@ -333,7 +333,7 @@
                                         <Style.Triggers>
                                             <Trigger Property="IsSelected" Value="True" >
                                                 <Setter Property="Background" Value="#e6e6e6" />
-                                                <Setter Property="Foreground" Value="#666666" />
+                                                <Setter Property="Foreground" Value="{StaticResource GrayBrush}" />
                                                 <Setter Property="BorderThickness" Value="0" />
                                             </Trigger>
                                         </Style.Triggers>
@@ -341,12 +341,12 @@
                                 </DataGrid.RowStyle>
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="Product" Binding="{Binding DisplayName}" Width="100" 
-                                        IsReadOnly="True" FontSize="20" Foreground="#666666" FontWeight="SemiBold"  />
+                                        IsReadOnly="True" FontSize="20" Foreground="{StaticResource GrayBrush}" FontWeight="SemiBold"  />
                                     <DataGridTemplateColumn Header="Status" >
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <Controls:ToggleSwitch DataContext="{Binding}" IsChecked="{Binding Included, Mode=TwoWay}"
-                                                       OnLabel="Included"
+                                                       OnLabel="Included" Style="{StaticResource MetroToggleSwitchStyle}"
                                                        OffLabel="Excluded"
                                                        Margin="{StaticResource ControlMargin}" 
                                                        HorizontalAlignment="Right" 
@@ -371,7 +371,7 @@
                                         <Style.Triggers>
                                             <Trigger Property="IsSelected" Value="True" >
                                                 <Setter Property="Background" Value="#e6e6e6" />
-                                                <Setter Property="Foreground" Value="#666666" />
+                                                <Setter Property="Foreground" Value="{StaticResource GrayBrush}" />
                                                 <Setter Property="BorderThickness" Value="0" />
                                             </Trigger>
                                         </Style.Triggers>
@@ -379,13 +379,13 @@
                                 </DataGrid.RowStyle>
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="Product" Binding="{Binding DisplayName}" Width="120" 
-                                        IsReadOnly="True" FontSize="20" Foreground="#666666" FontWeight="SemiBold" />
+                                        IsReadOnly="True" FontSize="20" Foreground="{StaticResource GrayBrush}" FontWeight="SemiBold" />
                                     <DataGridTemplateColumn Header="Status" >
                                         <DataGridTemplateColumn.CellTemplate>
                                             <DataTemplate>
                                                 <Controls:ToggleSwitch 
                                                    DataContext="{Binding}" IsChecked="{Binding Included, Mode=TwoWay}"
-                                                   OnLabel="Included"
+                                                   OnLabel="Included" Style="{StaticResource MetroToggleSwitchStyle}"
                                                    OffLabel="Excluded"
                                                    Margin="{StaticResource ControlMargin}" HorizontalAlignment="Right" 
                                                    IsCheckedChanged="ToggleSwitch_OnIsCheckedChanged" />

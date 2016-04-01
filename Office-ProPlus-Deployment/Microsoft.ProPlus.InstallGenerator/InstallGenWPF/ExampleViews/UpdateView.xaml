@@ -37,7 +37,7 @@
                     <ColumnDefinition />
                     <ColumnDefinition Width="0"/>
                 </Grid.ColumnDefinitions>
-                <StackPanel Grid.Row="0" Grid.Column="1"  Background="#666666" Width="auto" Height="40" HorizontalAlignment="Stretch" VerticalAlignment="Top" />
+                <StackPanel Grid.Row="0" Grid.Column="1"  Background="{StaticResource GrayBrush}" Width="auto" Height="40" HorizontalAlignment="Stretch" VerticalAlignment="Top" />
                 <Controls:MetroAnimatedSingleRowTabControl Grid.Row="0" Grid.Column="1"  x:Name="MainTabControl" 
                                                            Height="600" VerticalAlignment="Top" >
                     <TabItem x:Name="OptionalTab" Height="50" >
@@ -74,7 +74,7 @@
                                     </StackPanel.Resources>
 
                                     <Controls:ToggleSwitch x:Name="EnabledSwitch"
-                                               IsChecked="false"
+                                               IsChecked="false" Style="{StaticResource MetroToggleSwitchStyle}"
                                                OnLabel="Enabled"
                                                OffLabel="Disabled"
                                                Margin="{StaticResource ControlMargin}" IsCheckedChanged="EnabledSwitch_OnIsCheckedChanged"  />
@@ -125,14 +125,15 @@
                                         </Button>
 
                                         <TextBox x:Name="UpdateUpdatePath" Background="White" FontSize="20" Grid.Column="2"
-                                     Controls:TextBoxHelper.Watermark="Network, local or HTTP Path"
+                                     Controls:TextBoxHelper.Watermark="Network, local or HTTP Path" Foreground="{StaticResource GrayBrush}"
                                      Controls:TextBoxHelper.ClearTextButton="True" TextChanged="UpdateUpdatePath_OnTextChanged"
                                      Text=""  Style="{StaticResource MetroTextBox}" Height="38" />
 
-                                        <Button  Grid.Column="3" Margin="10 0 0 0"
+                                        <Button  Grid.Column="3" Margin="10 0 0 0" Style="{StaticResource MetroFlatButtonStyle1}"
                                                         Content="Browse" x:Name="UpdatePath" Click="UpdatePath_OnClick"  />
 
-                                        <Button Grid.Column="4" Content="Open" x:Name="OpenFolderButton" IsEnabled="False" Click="OpenFolderButton_OnClick"  Margin="10 0 0 0"  />
+                                        <Button Grid.Column="4" Content="Open" x:Name="OpenFolderButton" Style="{StaticResource MetroFlatButtonStyle1}"
+                                                IsEnabled="False" Click="OpenFolderButton_OnClick"  Margin="10 0 0 0"  />
                                     </Grid>
 
                                     <Grid Margin="50 0 0 10">
@@ -172,7 +173,7 @@
                                         </Button>
                                         <DatePicker x:Name="UpdateDeadline" Height="35" Grid.Column="2" PreviewKeyUp="UpdateDeadline_OnPreviewKeyUp"
                     		            Width="310" SelectedDateChanged="UpdateDeadline_OnSelectedDateChanged"
-                    		            HorizontalAlignment="Left" FontSize="20"
+                    		            HorizontalAlignment="Left" FontSize="20" Foreground="{StaticResource GrayBrush}"
                     		            Controls:TextBoxHelper.Watermark="Select a date" 
                                         Background="White" BorderThickness="2" BorderBrush="#767676"/>
 

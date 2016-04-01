@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:MetroDemo="clr-namespace:MetroDemo"
              xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:gif="http://wpfanimatedgif.codeplex.com"
              mc:Ignorable="d"
              d:DesignHeight="600"
              d:DesignWidth="800"
@@ -38,7 +39,7 @@
                     <ColumnDefinition />
                     <ColumnDefinition Width="0"/>
                 </Grid.ColumnDefinitions>
-                <StackPanel Grid.Row="0" Grid.Column="1"  Background="#666666" Width="auto" Height="40" HorizontalAlignment="Stretch" VerticalAlignment="Top" />
+                <StackPanel Grid.Row="0" Grid.Column="1"  Background="{StaticResource GrayBrush}" Width="auto" Height="40" HorizontalAlignment="Stretch" VerticalAlignment="Top" />
                 <Controls:MetroAnimatedSingleRowTabControl Grid.Row="0" Grid.Column="1"  x:Name="MainTabControl" 
                                                            Height="600" VerticalAlignment="Top" >
                     <TabItem x:Name="OptionalTab" Height="50" >
@@ -70,7 +71,7 @@
                                         <ColumnDefinition Width="50" />
                                         <ColumnDefinition Width="110" />
                                     </Grid.ColumnDefinitions>
-                                    <Image Source="../images/new.png" Grid.Column="0" Height="40" Margin="0 0 0 0"  ></Image>
+                                    <Image Source="../images/new.png" Grid.Column="0" Height="40" Margin="-10 0 0 0"  ></Image>
                                     <Label Content="Start new" Grid.Column="1" VerticalAlignment="Center"  Style="{StaticResource CustomMetroLabelHeader}"></Label>
                                 </Grid>
                             </Button>
@@ -87,7 +88,7 @@
                                         <ColumnDefinition Width="50" />
                                         <ColumnDefinition Width="140" />
                                     </Grid.ColumnDefinitions>
-                                    <Image Source="../images/Import.png" Grid.Column="0" Height="50" HorizontalAlignment="Left" ></Image>
+                                    <Image Source="../images/Import.png" Grid.Column="0" Height="50" HorizontalAlignment="Left" Margin="-5 0 0 0"  ></Image>
                                     <Label Content="Import existing" Grid.Column="1" VerticalAlignment="Center" Style="{StaticResource CustomMetroLabelHeader}"></Label>
                                 </Grid>
                             </Button>
@@ -103,8 +104,10 @@
                                         <ColumnDefinition Width="50" />
                                         <ColumnDefinition Width="140" />
                                     </Grid.ColumnDefinitions>
-                                    <Image Source="../images/Import.png" Grid.Column="0" Height="50" HorizontalAlignment="Left" ></Image>
-                                    <Label Content="Manage Local" Grid.Column="1" VerticalAlignment="Center" Style="{StaticResource CustomMetroLabelHeader}"></Label>
+                                    <Image x:Name="ImgManageLocal" Source="../images/local.png" Grid.Column="0" Height="50" HorizontalAlignment="Left" ></Image>
+                                    <Image x:Name="WaitManageLocal" Visibility="Collapsed" Height="40" HorizontalAlignment="Left" gif:ImageBehavior.RepeatBehavior="Forever" 
+                                                    Grid.Row="0" Grid.Column="0" gif:ImageBehavior.AnimatedSource="../images/InstallRing.GIF" />
+                                    <Label Content="Manage local" Grid.Column="1" VerticalAlignment="Center" Style="{StaticResource CustomMetroLabelHeader}"></Label>
                                 </Grid>
                             </Button>
 

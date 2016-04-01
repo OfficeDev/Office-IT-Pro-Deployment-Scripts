@@ -18,7 +18,6 @@
                     </ResourceDictionary.MergedDictionaries>
                 </ResourceDictionary>
             </StackPanel.Resources>
-            <Button Name="InstallOfficeButton" Content="_Install Office" Margin="2" Click="InstallOfficeButton_OnClick" />
             <Button Name="CopyClipButton" Content="_copy to clipboard" Margin="2" Click="CopyClipButtonClick" />
             <Button Name="SaveToFileButton" Content="_save to file" Margin="2" Click="SaveToFileButton_OnClick" />
             <Button Name="ValidateXmlButton" Content="_validate xml" Visibility="Collapsed" Margin="2" Click="ValidateXmlButtonClick"/>

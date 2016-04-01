@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -30,6 +31,8 @@ namespace MetroDemo.ExampleViews
         public event MessageEventHandler InfoMessage;
         public event MessageEventHandler ErrorMessage;
         public event TransitionTabEventHandler TransitionTab;
+
+        private bool _running = false;
 
         public StartView()
         {
@@ -65,12 +68,12 @@ namespace MetroDemo.ExampleViews
         {
             try
             {
+                if (_running) return;
                 GlobalObjects.ViewModel.RunLocalConfigs = false;
 
-                GlobalObjects.ViewModel.ConfigXmlParser.LoadXml(GlobalObjects.ViewModel.DefaultXml);
+                GlobalObjects.ViewModel.ConfigXmlParser.LoadXml(GlobalObjects.DefaultXml);
                 GlobalObjects.ViewModel.ResetXml = true;
                 GlobalObjects.ViewModel.ImportFile = null;
-
 
                 if (RestartWorkflow != null)
                 {
@@ -96,6 +99,7 @@ namespace MetroDemo.ExampleViews
         {
             try
             {
+                if (_running) return;
                 GlobalObjects.ViewModel.RunLocalConfigs = false;
 
                 var dlg = new Microsoft.Win32.OpenFileDialog
@@ -149,20 +153,37 @@ namespace MetroDemo.ExampleViews
         {
             try
             {
-                GlobalObjects.ViewModel.RunLocalConfigs = true;
+                if (_running) return;
 
-                var officeInstallManager = new OfficeLocalInstallManager();
-                var localXml = await officeInstallManager.GenerateLocalConfigXml();
+                GlobalObjects.ViewModel.BlockNavigation = true;
+                _running = true;
+                var localXml = "";
+
+                await Task.Run(async () => { 
+                    Dispatcher.Invoke(() =>
+                    {
+                        WaitManageLocal.Visibility = Visibility.Visible;
+                        ImgManageLocal.Visibility = Visibility.Collapsed;
+                    });
+
+                    GlobalObjects.ViewModel.RunLocalConfigs = true;
+
+                    var officeInstallManager = new OfficeLocalInstallManager();
+                    localXml = await officeInstallManager.GenerateLocalConfigXml();
+                });
 
                 GlobalObjects.ViewModel.ConfigXmlParser.LoadXml(localXml);
                 GlobalObjects.ViewModel.ResetXml = true;
                 GlobalObjects.ViewModel.ImportFile = null;
 
+                GlobalObjects.ViewModel.ConfigXmlParser.ConfigurationXml.Add.Version = null;
 
                 if (RestartWorkflow != null)
                 {
                     this.RestartWorkflow(this, new EventArgs());
                 }
+
+                GlobalObjects.ViewModel.BlockNavigation = false;
 
                 this.TransitionTab(this, new TransitionTabEventArgs()
                 {
@@ -171,11 +192,18 @@ namespace MetroDemo.ExampleViews
                 });
 
                 LogAnaylytics("/StartView", "StartNew");
-
             }
             catch (Exception ex)
             {
                 LogErrorMessage(ex);
+            } finally
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    WaitManageLocal.Visibility = Visibility.Collapsed;
+                    ImgManageLocal.Visibility = Visibility.Visible;
+                });
+                _running = false;
             }
         }
 

@@ -8,7 +8,9 @@
 
     <Color x:Key="ErrorColor">#FFcd4141</Color>
     <Color x:Key="MessageColor">#FF069dc9</Color>
+    <Color x:Key="GrayColor">#FF666666</Color>
 
+    <SolidColorBrush x:Key="GrayBrush" Color="{DynamicResource GrayColor}"/>
     <SolidColorBrush x:Key="ErrorBrush" Color="{DynamicResource ErrorColor}"/>
     <SolidColorBrush x:Key="MessageBrush" Color="{DynamicResource MessageColor}"/>
 
@@ -20,16 +22,21 @@
         <Setter Property="Padding" Value="0 10 0 0"></Setter>
     </Style>
 
+
+    <Style TargetType="{x:Type Controls:ToggleSwitch}" x:Key="MetroToggleSwitchStyle" BasedOn="{StaticResource MetroToggleSwitch}">
+        <Setter Property="Foreground" Value="{StaticResource GrayBrush}" />
+    </Style>
+
     <Style TargetType="{x:Type ComboBox}" x:Key="MetroComboBoxStyle" BasedOn="{StaticResource MetroComboBox}">
-        <Setter Property="Foreground" Value="#666666" />
+        <Setter Property="Foreground" Value="{StaticResource GrayBrush}" />
         <Setter Property="BorderThickness"  Value="2"   />
-        <Setter Property="BorderBrush" Value="#666666" />
+        <Setter Property="BorderBrush" Value="{StaticResource GrayBrush}" />
     </Style>
 
     <Style TargetType="{x:Type Button}" x:Key="MetroFlatButtonStyle1" BasedOn="{StaticResource MetroButton}">
         <Setter Property="Controls:ControlsHelper.ContentCharacterCasing"
                 Value="Normal" />
-        <Setter Property="Foreground" Value="#666666" />
+        <Setter Property="Foreground" Value="{StaticResource GrayBrush}" />
         <Setter Property="FontSize" Value="12" />
     </Style>
 
@@ -44,7 +51,7 @@
 
     <Style TargetType="{x:Type Label}" x:Key="CustomMetroLabelTopHeader" BasedOn="{StaticResource MetroLabel}">
         <Setter Property="Foreground" Value="#ADAEB0" />
-        <Setter Property="Background" Value="#666666"></Setter>
+        <Setter Property="Background" Value="{StaticResource GrayBrush}"></Setter>
         <Setter Property="FontSize" Value="16"></Setter>
         <Setter Property="FontFamily" Value="{StaticResource DefaultFont}"></Setter>
         <Setter Property="FontWeight" Value="SemiBold"></Setter>
@@ -62,11 +69,11 @@
     </Style>
 
     <Style TargetType="{x:Type ListBox}" x:Key="VirtualizedMetroListBox">
-        <Setter Property="Foreground" Value="#666666" />
+        <Setter Property="Foreground" Value="{StaticResource GrayBrush}" />
         <Setter Property="FontSize" Value="18"></Setter>
         <Setter Property="FontFamily" Value="{StaticResource DefaultFont}"></Setter>
         <Setter Property="FontWeight" Value="SemiBold"></Setter>
-        <Setter Property="BorderBrush" Value="#666666"></Setter>
+        <Setter Property="BorderBrush" Value="{StaticResource GrayBrush}"></Setter>
         <Style.Triggers>
             <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor,AncestorType={x:Type TabItem}},Path=IsSelected}" Value="True">
                 <Setter Property="Foreground" Value="#00BCF2 "></Setter>
@@ -92,7 +99,7 @@
     </Style>
 
     <Style TargetType="{x:Type Label}" x:Key="CustomMetroLabelHeader" BasedOn="{StaticResource MetroLabel}">
-        <Setter Property="Foreground" Value="#666666" />
+        <Setter Property="Foreground" Value="{StaticResource GrayBrush}" />
         <Setter Property="FontSize" Value="18"></Setter>
         <Setter Property="FontFamily" Value="{StaticResource DefaultFont}"></Setter>
         <Setter Property="FontWeight" Value="SemiBold"></Setter>
@@ -120,7 +127,7 @@
     </Style>
 
     <Style TargetType="{x:Type TextBlock}" x:Key="CustomMetroLabelTextBlock" BasedOn="{StaticResource MetroTextBlock}">
-        <Setter Property="Foreground" Value="#333333" />
+        <Setter Property="Foreground" Value="{StaticResource GrayBrush}" />
         <Setter Property="FontSize" Value="14"></Setter>
         <Setter Property="FontFamily" Value="{StaticResource DefaultFont}"></Setter>
         <Setter Property="FontWeight" Value="Normal"></Setter>
@@ -178,7 +185,8 @@
 
     <Style TargetType="{x:Type ListViewItem}" x:Key="{x:Type ListViewItem}" >
         <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
-        <Setter Property="Foreground" Value="#666666"/>
+        <Setter Property="Foreground" Value="{StaticResource GrayBrush}"/>
+        <Setter Property="FontSize" Value="16"/>
         <Setter Property="UIElement.SnapsToDevicePixels" Value="True"/>
         <Setter Property="Template">
             <Setter.Value>
@@ -196,7 +204,7 @@
                             <GridViewRowPresenter Content="{TemplateBinding ContentControl.Content}"
                                           HorizontalAlignment="{TemplateBinding Control.HorizontalContentAlignment}"
                                           VerticalAlignment="{TemplateBinding Control.VerticalContentAlignment}"
-                                          SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}"/>
+                                          SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" />
 
                             <!-- This is used for ListView that does not use GridView -->
                             <ContentPresenter x:Name="contentPresenter"

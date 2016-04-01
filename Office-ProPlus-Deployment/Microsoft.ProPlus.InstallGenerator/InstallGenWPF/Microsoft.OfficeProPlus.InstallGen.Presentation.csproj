@@ -166,6 +166,8 @@
     <Resource Include="images\Ok48.png" />
     <Resource Include="images\InstallRing.gif" />
     <Resource Include="images\fail.png" />
+    <Resource Include="images\local.png" />
+    <Resource Include="images\GitHubSite.PNG" />
     <Content Include="InstallOffice.cs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

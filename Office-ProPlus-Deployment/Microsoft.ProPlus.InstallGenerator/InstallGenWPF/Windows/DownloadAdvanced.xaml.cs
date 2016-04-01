@@ -17,6 +17,7 @@ namespace MetroDemo.ExampleWindows
     {
         private bool _disposed;
         private bool _hideOnClose = true;
+        private bool localOverride = true;
 
         public DownloadAdvanced()
         {
@@ -42,16 +43,21 @@ namespace MetroDemo.ExampleWindows
 
         }
 
-        private void LanguagesDialog_OnLoaded(object sender, RoutedEventArgs e)
+        private void DownloadAdvanced_OnLoaded(object sender, RoutedEventArgs e)
         {
             try
             {
+                localOverride = false;
                 AllowMultipleDownloads.IsChecked = GlobalObjects.ViewModel.AllowMultipleDownloads;
                 UseFolderShortNames.IsChecked = GlobalObjects.ViewModel.UseFolderShortNames;
             }
             catch (Exception ex)
             {
                 ex.LogException(true);
+            }
+            finally
+            {
+                localOverride = true;
             }
         }
 
@@ -67,7 +73,30 @@ namespace MetroDemo.ExampleWindows
         }
 
         #region Events
-        
+
+        private bool allowCheck = true;
+        private void ToggleButton_OnChecked(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (!allowCheck) return;
+                var chkBox = (System.Windows.Controls.CheckBox)sender;
+                if (GlobalObjects.ViewModel.BlockNavigation && localOverride)
+                {
+                    allowCheck = false;
+                    chkBox.IsChecked = !chkBox.IsChecked;
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.LogException(true);
+            }
+            finally
+            {
+                allowCheck = true;
+            }
+        }
+
         private void OkButton_Click(object sender, RoutedEventArgs e)
         {
             try
