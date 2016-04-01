@@ -1377,7 +1377,7 @@ function odtAddUpdates{
         
         $hasUpdatePath = $false
         if($UpdatePath){$hasUpdatePath = $true}else{$hasUpdatePath = $false}
-        if(($hasEnabled -ne $true) -or ($hasUpdatePath -ne $true)){
+        if(($hasEnabled -eq $true) -or ($hasUpdatePath -eq $true)){
            $addUpdates = $true
         }
 
