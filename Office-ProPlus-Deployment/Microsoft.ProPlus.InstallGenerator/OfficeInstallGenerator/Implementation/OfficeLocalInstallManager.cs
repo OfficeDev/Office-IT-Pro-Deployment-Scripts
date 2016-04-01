@@ -77,13 +77,13 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
 
             System.IO.File.Copy(scriptPath, scriptPathTmp, true);
 
-            var scriptUrl =
-                "https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/raw/master/Office-ProPlus-Deployment/Generate-ODTConfigurationXML/Generate-ODTConfigurationXML.ps1";
-
+            var scriptUrl = AppSettings.GenerateScriptUrl;
             using (var webClient = new WebClient())
             {
-               // await webClient.DownloadFileTaskAsync(new Uri(scriptUrl), scriptPath);
+               //await webClient.DownloadFileTaskAsync(new Uri(scriptUrl), scriptPath);
             }
+
+            await Task.Delay(500);
 
             var arguments = @"/c Powershell -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle " +
                             @"Hidden -File .\RunGenerateXML.ps1";
@@ -97,11 +97,16 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
                     CreateNoWindow = true,
                     UseShellExecute = false,
                     WorkingDirectory = currentDirectory,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true
                 },
             };
 
             p.Start();
             p.WaitForExit();
+
+            var error = await p.StandardError.ReadToEndAsync();
+            if (!string.IsNullOrEmpty(error)) throw (new Exception(error));
 
             await Task.Delay(100);
 

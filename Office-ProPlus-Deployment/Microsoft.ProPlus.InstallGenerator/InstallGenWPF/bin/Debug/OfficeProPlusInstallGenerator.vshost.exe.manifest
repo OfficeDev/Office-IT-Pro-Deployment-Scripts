@@ -62,7 +62,7 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>KE3VaaJRNnHTAaOWt7y+ZyfePPyr+fZMug6oM+gE8a0=</dsig:DigestValue>
+        <dsig:DigestValue>iuVGI0ahBUDEujiMLQS0CEd6LQBNk1Xexcza2WbUJqU=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -74,7 +74,7 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>W/fU2yspk/z2xnUY32iHfa1ONLzuWW3bPwT09A+NxvE=</dsig:DigestValue>
+        <dsig:DigestValue>Y5mfvU+vkQJMZXZe6zeRWkIhOIf3ihmueTVh4NAn9Lw=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -86,7 +86,7 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>DrB5Qg2rfLo8z/dYHL0xxixXXIlSgsHPc8vgwMcxd0s=</dsig:DigestValue>
+        <dsig:DigestValue>6EjyLgX/fkQQeQPUEMBipZkWrkLkwyuPPXi2P9dfJoo=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -110,7 +110,7 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>Qx5dWkLRDhRI/BoxXXDAPMSUJ/b7B329h05X+YGUCKI=</dsig:DigestValue>
+        <dsig:DigestValue>s04b0ytcqWVwf/Bv6Rr3doU1+7NHsN2mLawQvwIae4I=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -122,31 +122,31 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>6uEch/X3Nd8d/9oOX4MBBTJiDxE4s4RfgE+neYBNYss=</dsig:DigestValue>
+        <dsig:DigestValue>zLBJ3/9w/A/E8Ozv0S+GjxvpwkKvlz8AtB0ghSbNZbM=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="OfficeInstallGenerator.dll" size="4242432">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="OfficeInstallGenerator.dll" size="4244992">
       <assemblyIdentity name="OfficeInstallGenerator" version="1.0.0.1" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>l8bcwPRQEl4US9f+Qh0NPDc/3ot2XTj6iKh9WRbAmE4=</dsig:DigestValue>
+        <dsig:DigestValue>YAjHp3ijiCZLOmrdPdO4Awf7HZ6ABgMNl2fwxfRWb1A=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="OfficeProPlusInstallGenerator.exe" size="2369536">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="OfficeProPlusInstallGenerator.exe" size="2371072">
       <assemblyIdentity name="OfficeProPlusInstallGenerator" version="1.0.0.1" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>GPWRATZVUSvKXw/mRHWLNfVvZPOGoXW935MZW6SYAmI=</dsig:DigestValue>
+        <dsig:DigestValue>XR21J+b/UIkzn6KeP0XbfY16h7PvCvY4hxGOGhRxhqY=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
