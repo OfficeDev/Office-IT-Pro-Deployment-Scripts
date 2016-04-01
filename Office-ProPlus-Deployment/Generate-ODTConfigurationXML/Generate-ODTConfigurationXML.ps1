@@ -90,7 +90,11 @@ begin {
 
     $defaultDisplaySet = 'DisplayName','Version', 'ComputerName'
 
+<<<<<<< HEAD
     $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet(‘DefaultDisplayPropertySet’,[string[]]$defaultDisplaySet)
+=======
+    $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet('DefaultDisplayPropertySet',[string[]]$defaultDisplaySet)
+>>>>>>> a69a611768320baefd8fb1ff6dbbcffd4dd783bd
     $PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultDisplayPropertySet)
     
     [string]$tempStr = $MyInvocation.MyCommand.Path
@@ -452,7 +456,11 @@ begin {
 
     $defaultDisplaySet = 'DisplayName','Version', 'ComputerName'
 
+<<<<<<< HEAD
     $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet(‘DefaultDisplayPropertySet’,[string[]]$defaultDisplaySet)
+=======
+    $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet('DefaultDisplayPropertySet',[string[]]$defaultDisplaySet)
+>>>>>>> a69a611768320baefd8fb1ff6dbbcffd4dd783bd
     $PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultDisplayPropertySet)
 }
 
