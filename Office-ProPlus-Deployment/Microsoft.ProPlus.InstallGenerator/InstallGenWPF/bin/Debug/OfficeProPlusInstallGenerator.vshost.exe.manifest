@@ -62,7 +62,7 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>r86MkVCkYNPhQhcQLMzRUyKqVMpbOObaBUfTRMuWS4o=</dsig:DigestValue>
+        <dsig:DigestValue>kf25v+lVeJhzdFl+FrLnG5BTJHbm2HkLTri24Ne37jg=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -127,26 +127,26 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="OfficeInstallGenerator.dll" size="4247040">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="OfficeInstallGenerator.dll" size="4248064">
       <assemblyIdentity name="OfficeInstallGenerator" version="1.0.0.1" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>q4YTKeJsAm3yg42K1YY+3Z5Jvhey4cTNJEVIJqL91QM=</dsig:DigestValue>
+        <dsig:DigestValue>tF6ygYcdSfskRSO/iuahhJH4gu8HVCfDott6AEzvg3E=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="OfficeProPlusInstallGenerator.exe" size="2371072">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="OfficeProPlusInstallGenerator.exe" size="2382848">
       <assemblyIdentity name="OfficeProPlusInstallGenerator" version="1.0.0.1" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>UDw46pPKJB98MeUKuN9ZzOcMHqdLcAfycJDjUPKPIqc=</dsig:DigestValue>
+        <dsig:DigestValue>YJeFUmGwFsnhIhIDV9ahOlCYqSKr2H+gLVzlsTPwsQs=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

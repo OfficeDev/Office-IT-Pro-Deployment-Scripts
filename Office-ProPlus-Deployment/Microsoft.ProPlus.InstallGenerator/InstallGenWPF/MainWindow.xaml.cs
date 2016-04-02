@@ -57,6 +57,7 @@ namespace MetroDemo
                 LocalView.TransitionTab += TransitionTab;
 
                 LocalView.BranchChanged += BranchChanged;
+                LocalView.MainWindow = this;
 
                 GenerateView.InfoMessage += GenerateViewInfoMessage;
                 GenerateView.ErrorMessage += GenerateView_ErrorMessage;
@@ -96,7 +97,6 @@ namespace MetroDemo
                 ex.LogException();
             }
         }
-
 
         public string WindowWidth()
         {
@@ -179,7 +179,8 @@ namespace MetroDemo
                     if (index == 6) index = 5;
                 }
 
-                MainTabControl.SelectedIndex = index;
+                MainTabControl.SelectedIndex = e.UseIndex ? e.Index : index;
+                
             }
             catch (Exception ex)
             {
@@ -198,6 +199,8 @@ namespace MetroDemo
                 });
             });
         }
+
+
 
         private async Task ShowErrorDialogAsync(string title, string message)
         {

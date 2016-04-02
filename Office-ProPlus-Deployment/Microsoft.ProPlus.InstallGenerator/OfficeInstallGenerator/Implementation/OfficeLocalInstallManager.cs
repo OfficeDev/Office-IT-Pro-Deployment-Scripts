@@ -26,9 +26,11 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
             var officeRegKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Office\ClickToRun\Configuration");
             if (officeRegKey != null)
             {
-                localInstall.Installed = true;
                 localInstall.Version = GetRegistryValue(officeRegKey, "VersionToReport");
+                if (string.IsNullOrEmpty(localInstall.Version)) return localInstall;
 
+                localInstall.Installed = true;
+                
                 var currentBaseCDNUrl = GetRegistryValue(officeRegKey, "CDNBaseUrl");
  
                 var installFile = await GetOfficeInstallFileXml();

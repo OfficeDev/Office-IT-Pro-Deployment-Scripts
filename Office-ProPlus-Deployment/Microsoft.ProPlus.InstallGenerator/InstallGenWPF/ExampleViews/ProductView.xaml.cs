@@ -413,6 +413,7 @@ namespace MetroDemo.ExampleViews
 
         public void ChangeBranch(string branchName)
         {
+            if (branchName == null) return;
             var selectIndex = 0;
             for (var i = 0; i < ProductBranch.Items.Count; i++)
             {

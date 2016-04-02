@@ -244,9 +244,6 @@ namespace MetroDemo.ExampleViews
                             SourceFilePath = sourceFilePath
                         });
 
-
-                        
-
                         LogAnaylytics("/GenerateView", "GenerateMSI");
                     }
 
@@ -256,11 +253,8 @@ namespace MetroDemo.ExampleViews
                     if (!String.IsNullOrEmpty(GlobalObjects.ViewModel.SelectedCertificate.ThumbPrint) && sign)
                     {
                         await InstallerSign(executablePath);
-
                     }
 
-
-                  
                     if (InfoMessage != null)
                     {
                         if (isInstallExe)
@@ -279,10 +273,7 @@ namespace MetroDemo.ExampleViews
                                 Message = "File Generation Complete"
                             });
                         }
-
                     }
-
-
 
                     await Task.Delay(500);
                 }
@@ -623,8 +614,6 @@ namespace MetroDemo.ExampleViews
             {
                 var sign = SignInstaller.IsChecked.Value; 
                 await GenerateInstall(sign);
-
-
             }
             catch (Exception ex)
             {

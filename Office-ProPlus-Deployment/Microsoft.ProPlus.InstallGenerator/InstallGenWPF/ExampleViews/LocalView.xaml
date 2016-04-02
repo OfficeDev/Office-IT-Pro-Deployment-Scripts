@@ -162,7 +162,8 @@
                                     <Grid Margin="0,0,0,0" Grid.Column="1">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="280" />
-                                            <ColumnDefinition Width="200"/>
+                                            <ColumnDefinition Width="90"/>
+                                            <ColumnDefinition Width="105"/>
                                         </Grid.ColumnDefinitions>
 
                                         <ComboBox x:Name="ProductBranch" Grid.Column="0" Width="270" Height="35" SelectedIndex="0" 
@@ -173,9 +174,41 @@
                                         <Button x:Name="ChangeChannel" Width="75" Grid.Column="1" Height="40" FontSize="14" HorizontalAlignment="Left"
                                                 Content="Change" VerticalAlignment="Center" Click="ChangeChannel_OnClick"
                                                    Style="{StaticResource MetroFlatButtonStyle1}" IsEnabled="False"  />
+
+                                        <Button x:Name="ShowVersion" Width="105" Grid.Column="2" Height="40" FontSize="14" HorizontalAlignment="Left"
+                                                Content="Select Version" VerticalAlignment="Center" Click="ShowVersion_OnClick"
+                                                   Style="{StaticResource MetroFlatButtonStyle1}" IsEnabled="True"  />
                                     </Grid>
 
                                 </Grid>
+
+                                <Grid x:Name="NewVersionRow" Margin="50 0 0 0" Width="800" HorizontalAlignment="Left" Visibility="Collapsed" >
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="50"></RowDefinition>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="280" />
+                                        <ColumnDefinition Width="620" />
+                                    </Grid.ColumnDefinitions>
+                                    <Label Content="Target version" Style="{StaticResource CustomMetroLabelHeader}"
+                                            Margin="30 0 0 0" Grid.Column="0" VerticalAlignment="Center" />
+
+                                    <Grid Margin="0,0,0,0" Grid.Column="1">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="280" />
+                                            <ColumnDefinition Width="90"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <ComboBox x:Name="NewVersion" Grid.Column="0" Width="270" Height="35" SelectedIndex="0" IsEditable="True" MaxDropDownHeight="125"
+                                              FontSize="20" ItemsSource="{Binding Builds}" DisplayMemberPath="Version" HorizontalAlignment="Left" VerticalAlignment="Center"
+                                              Style="{StaticResource MetroComboBoxStyle}"   >
+                                        </ComboBox>
+
+                                    </Grid>
+
+                                </Grid>
+
 
                                 <Grid x:Name="ModifyInstallRow" Margin="50 0 0 0" Width="800" HorizontalAlignment="Left" >
                                     <Grid.RowDefinitions>
@@ -191,6 +224,28 @@
                                     <Button x:Name="ReInstallOffice"  Width="100" Grid.Column="1" Height="40" FontSize="14" VerticalAlignment="Center" 
                                             HorizontalAlignment="Left"  Content="Rerun setup" 
                                                   Style="{StaticResource MetroFlatButtonStyle1}" Visibility="Visible" Click="InstallOffice_OnClick"   />
+                                </Grid>
+
+                                <Grid x:Name="ModifyUninstallRow" Margin="50 0 0 0" Width="800" HorizontalAlignment="Left" >
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="50"></RowDefinition>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="280" />
+                                        <ColumnDefinition Width="0" x:Name="UninstallIconColumn" />
+                                        <ColumnDefinition Width="420" />
+                                    </Grid.ColumnDefinitions>
+                                    <Label Content="Uninstall Office 365 ProPlus" Style="{StaticResource CustomMetroLabelHeader}"
+                                            Margin="0 0 0 0" Grid.Column="0" Height="35" VerticalAlignment="Center" />
+
+                                    <Button x:Name="UnInstallOffice"  Width="100" Grid.Column="2" Height="40" FontSize="14" VerticalAlignment="Center" 
+                                            HorizontalAlignment="Left"  Content="Uninstall" Background="#cd4141" Foreground="White" 
+                                                  Style="{StaticResource MetroFlatButtonStyle1}" Visibility="Visible" Click="UnInstallOffice_OnClick"   />
+
+                                    <Image x:Name="ImgRemoveFail" Grid.Column="1" Source="../images/fail.png" Height="38" HorizontalAlignment="Left"  Visibility="Visible" ></Image>
+
+                                    <Image x:Name="WaitRemoveImage" Visibility="Collapsed" Height="38" HorizontalAlignment="Left" gif:ImageBehavior.RepeatBehavior="Forever" 
+                                                    Grid.Row="0" Grid.Column="1" gif:ImageBehavior.AnimatedSource="../images/InstallRing.GIF" />
                                 </Grid>
 
                                 <Grid x:Name="ErrorRow" Margin="50 20 0 0" Width="800" HorizontalAlignment="Left" Visibility="Collapsed" >
@@ -212,9 +267,7 @@
 
                                             <TextBlock x:Name="ErrorText" Grid.Row="1" TextWrapping="WrapWithOverflow" Foreground="{StaticResource ErrorBrush}" Margin="10 0 0 0"
                                              FontSize="14"  FontWeight="SemiBold" Style="{StaticResource MetroTextBlock}">
-                                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec adipiscing
-                                            nulla quis libero egestas lobortis. Duis blandit imperdiet ornare. Nulla
-                                            ac arcu ut purus placerat congue. Integer pretium fermentum gravida.
+
                                             </TextBlock>
                                         </Grid>
   

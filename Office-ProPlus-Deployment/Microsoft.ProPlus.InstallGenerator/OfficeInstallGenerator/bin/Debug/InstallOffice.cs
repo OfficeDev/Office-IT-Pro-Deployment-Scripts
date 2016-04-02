@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -12,12 +13,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using Microsoft.OfficeProPlus.InstallGenerator.Events;
+using Microsoft.OfficeProPlus.InstallGenerator.Extensions;
 using Microsoft.Win32;
 //[assembly: AssemblyTitle("")]
 //[assembly: AssemblyProduct("")]
 //[assembly: AssemblyDescription("")]
 //[assembly: AssemblyVersion("")]
 //[assembly: AssemblyFileVersion("")]
+using OfficeInstallGenerator;
 
 public class InstallOffice
 {
@@ -230,6 +233,53 @@ public class InstallOffice
     }
 
     #region Office Operations
+
+    public void UnInstallOffice()
+    {
+        const string configurationXml = "<Configuration><Remove All=\"TRUE\"/><Display Level=\"Full\" /></Configuration>";
+
+        var tmpPath = Environment.ExpandEnvironmentVariables("%temp%");
+        var embededExeFiles = EmbeddedResources.GetEmbeddedItems(tmpPath, @"\.exe$");
+
+        var installExe = tmpPath + @"\" + embededExeFiles.FirstOrDefault(f => f.ToLower().Contains("2016"));
+        var xmlPath = tmpPath + @"\configuration.xml";
+
+        if (File.Exists(xmlPath)) File.Delete(xmlPath);
+        File.WriteAllText(xmlPath, configurationXml);
+
+        var p = new Process
+        {
+            StartInfo = new ProcessStartInfo()
+            {
+                FileName = installExe,
+                Arguments = "/configure " + tmpPath + @"\configuration.xml",
+                CreateNoWindow = true,
+                UseShellExecute = false,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true
+            },
+        };
+        p.Start();
+        p.WaitForExit();
+
+        var error = p.StandardError.ReadToEnd();
+        if (!string.IsNullOrEmpty(error)) throw (new Exception(error));
+
+        if (File.Exists(xmlPath)) File.Delete(xmlPath);
+
+        foreach (var exeFilePath in embededExeFiles)
+        {
+            try
+            {
+                if (File.Exists(tmpPath + @"\" + exeFilePath))
+                {
+                    File.Delete(tmpPath + @"\" + exeFilePath);
+                }
+            }
+            catch { }
+        }
+    }
+
 
     public string GetOfficeC2RPath()
     {

@@ -185,11 +185,24 @@ namespace MetroDemo.ExampleViews
 
                 GlobalObjects.ViewModel.BlockNavigation = false;
 
-                this.TransitionTab(this, new TransitionTabEventArgs()
+                var installOffice = new InstallOffice();
+                if (installOffice.IsUpdateRunning())
                 {
-                    Direction = TransitionTabDirection.Forward,
-                    Index = 0
-                });
+                    this.TransitionTab(this, new TransitionTabEventArgs()
+                    {
+                        Direction = TransitionTabDirection.Forward,
+                        Index = 6,
+                        UseIndex = true
+                    });
+                }
+                else
+                {
+                    this.TransitionTab(this, new TransitionTabEventArgs()
+                    {
+                        Direction = TransitionTabDirection.Forward,
+                        Index = 0
+                    });
+                }
 
                 LogAnaylytics("/StartView", "StartNew");
             }
