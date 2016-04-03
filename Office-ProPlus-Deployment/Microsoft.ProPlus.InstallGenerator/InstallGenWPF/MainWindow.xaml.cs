@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
@@ -12,7 +13,10 @@ using MahApps.Metro.Controls.Dialogs;
 using MetroDemo.Events;
 using MetroDemo.ExampleViews;
 using MetroDemo.ExampleWindows;
+using Microsoft.OfficeProPlus.Downloader;
+using Microsoft.OfficeProPlus.Downloader.Model;
 using Microsoft.OfficeProPlus.InstallGen.Presentation.Logging;
+using Microsoft.OfficeProPlus.InstallGenerator.Models;
 using Microsoft.VisualBasic;
 
 namespace MetroDemo
@@ -84,6 +88,52 @@ namespace MetroDemo
             {
                 ex.LogException();
             }
+        }
+
+        private async void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                //var branchJson = GlobalObjects.ViewModel.BranchesToJson;
+                //System.IO.File.WriteAllText(Environment.ExpandEnvironmentVariables(@"%temp%\BranchVersions.json"),branchJson);
+
+                try
+                {
+                    await GetProPlusVersions();
+                }
+                catch { }
+            }
+            catch (Exception ex)
+            {
+                ex.LogException(false);
+            }
+        }
+
+        private async Task GetProPlusVersions()
+        {
+            await Retry.BlockAsync(3, 1, async () =>
+            {
+                var cd = new ProPlusDownloader();
+                var channelVersionJson = await cd.GetChannelVersionJson();
+                var branches = GlobalObjects.ViewModel.JsonToBranches(channelVersionJson);
+                if (branches != null)
+                {
+                    GlobalObjects.ViewModel.Branches = branches;
+                }
+
+                var ppDownload = new ProPlusDownloader();
+
+                foreach (var channel in GlobalObjects.ViewModel.Branches)
+                {
+                    var latestVersion = await ppDownload.GetLatestVersionAsync(channel.Branch.ToString(), OfficeEdition.Office32Bit);
+                    channel.CurrentVersion = latestVersion;
+                    if (channel.Versions.All(v => v.Version != latestVersion))
+                    {
+                        channel.Versions.Insert(0, new Build() { Version = latestVersion });
+                    }
+                }
+
+            });
         }
 
         private void BranchChanged(object sender, BranchChangedEventArgs e)
@@ -199,8 +249,6 @@ namespace MetroDemo
                 });
             });
         }
-
-
 
         private async Task ShowErrorDialogAsync(string title, string message)
         {
@@ -446,7 +494,6 @@ namespace MetroDemo
             catch { }
         }
         #endregion
-
 
 
     }

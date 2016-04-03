@@ -74,6 +74,11 @@ namespace MetroDemo.ExampleViews
                 LoadXml();
                 LanguageUnique.SelectionChanged += LanguageUnique_OnSelectionChanged;
                 GlobalObjects.ViewModel.PropertyChangeEventEnabled = true;
+
+                var currentIndex = ProductBranch.SelectedIndex;
+                ProductBranch.ItemsSource = GlobalObjects.ViewModel.Branches;
+                if (currentIndex == -1) currentIndex = 0;
+                ProductBranch.SelectedIndex = currentIndex;
             }
             catch (Exception ex)
             {
@@ -430,6 +435,7 @@ namespace MetroDemo.ExampleViews
         public async Task UpdateVersions()
         {
             var branch = (OfficeBranch)ProductBranch.SelectedItem;
+            if (branch == null) return;
             ProductVersion.ItemsSource = branch.Versions;
             ProductVersion.SetValue(TextBoxHelper.WatermarkProperty, branch.CurrentVersion);
 
@@ -523,21 +529,11 @@ namespace MetroDemo.ExampleViews
         {
             try
             {
-                if (branch.Updated) return;
-                var ppDownload = new ProPlusDownloader();
-                var latestVersion = await ppDownload.GetLatestVersionAsync(branch.Branch.ToString(), officeEdition);
-
                 var modelBranch = GlobalObjects.ViewModel.Branches.FirstOrDefault(b =>
                     b.Branch.ToString().ToLower() == branch.Branch.ToString().ToLower());
                 if (modelBranch == null) return;
-                if (modelBranch.Versions.Any(v => v.Version == latestVersion)) return;
-                modelBranch.Versions.Insert(0, new Build() { Version = latestVersion });
-                modelBranch.CurrentVersion = latestVersion;
 
-                ProductVersion.ItemsSource = modelBranch.Versions;
                 ProductVersion.SetValue(TextBoxHelper.WatermarkProperty, modelBranch.CurrentVersion);
-
-                modelBranch.Updated = true;
             }
             catch (Exception)
             {

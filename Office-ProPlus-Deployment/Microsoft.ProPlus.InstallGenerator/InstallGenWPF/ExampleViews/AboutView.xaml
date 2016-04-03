@@ -44,7 +44,7 @@
 
                             <TextBlock HorizontalAlignment="Left" Style="{StaticResource CustomMetroLabelTextBlock}" 
                                            FontSize="16" Grid.Row="0" TextWrapping="Wrap" 
-                                           Text="   The OfficeDev GitHub organization has a Repository named Office-IT-Pro-Deployment-Scripts. It contains a collection of useful PowerShell scripts to make deploying Office 2016 and Office 365 ProPlus easier for IT Pros and administrators. The repository contains deployment solutions for Office 365 ProPlus. If you would like to visit the GitHub repository please click on the image below." VerticalAlignment="Top" Width="646" Grid.ColumnSpan="4"/>
+                                           Text="The OfficeDev GitHub organization has a Repository named Office-IT-Pro-Deployment-Scripts. It contains a collection of useful PowerShell scripts to make deploying Office 2016 and Office 365 ProPlus easier for IT Pros and administrators. The repository contains deployment solutions for Office 365 ProPlus. If you would like to visit the GitHub repository please click on the image below." VerticalAlignment="Top" Width="646" Grid.ColumnSpan="4"/>
 
                             <TextBlock Grid.Row="2" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center" >
                                 <Hyperlink NavigateUri="https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/" 
@@ -80,16 +80,16 @@
                             </Grid.RowDefinitions>
 
                             <TextBlock HorizontalAlignment="Left" FontSize="16" Style="{StaticResource CustomMetroLabelTextBlock}"
-                                       Grid.Row="0" TextWrapping="Wrap" Text="     The Office 365 ProPlus Install Toolkit is application that allows you to generate an executable or MSI installer file that allows you to deploy Office 365 ProPlus with traditional methods. The generated installer contains the configuration options that you select so you can distribute a file that allows users to install Office 365 ProPlus with specific configuration but only requires them to run one file.
+                                       Grid.Row="0" TextWrapping="Wrap" Text="The Office 365 ProPlus Install Toolkit is application that allows you to generate an executable or MSI installer file that allows you to deploy Office 365 ProPlus with traditional methods. The generated installer contains the configuration options that you select so you can distribute a file that allows users to install Office 365 ProPlus with specific configuration but only requires them to run one file.
                                        " 
                                       VerticalAlignment="Top"  Grid.Column="0"/>
 
                             <TextBlock HorizontalAlignment="Left" FontSize="16" Style="{StaticResource CustomMetroLabelTextBlock}"
-                                       Grid.Row="2" TextWrapping="Wrap" Text="     The toolkit also allows you to manage Office 365 ProPlus on the local workstation.  If you choose the 'Manage local' option it will check for an existing installation of Microsoft Office. If Office 365 ProPlus is not installed you can install it. You can also modify an existing installation.  " 
+                                       Grid.Row="2" TextWrapping="Wrap" Text="The toolkit also allows you to manage Office 365 ProPlus on the local workstation.  If you choose the 'Manage local' option it will check for an existing installation of Microsoft Office. If Office 365 ProPlus is not installed you can install it. You can also modify an existing installation.  " 
                                       VerticalAlignment="Top"  Grid.Column="0"/>
 
                             <TextBlock HorizontalAlignment="Left" FontSize="16" Style="{StaticResource CustomMetroLabelTextBlock}"
-                                       Grid.Row="4" TextWrapping="Wrap" Text="     If you are using the Office 365 ProPlus 2016 version then you can take advantage of the update Channels. The toolkit allows you to change the Channel of an existing Office 365 ProPlus install.  To change the Channel it does not reinstall Office, it actually uses the update process to switch Channels." 
+                                       Grid.Row="4" TextWrapping="Wrap" Text="If you are using the Office 365 ProPlus 2016 version then you can take advantage of the update Channels. The toolkit allows you to change the Channel of an existing Office 365 ProPlus install.  To change the Channel it does not reinstall Office, it actually uses the update process to switch Channels." 
                                       VerticalAlignment="Top"  Grid.Column="0"/>
                         </Grid>
                     </TabItem>

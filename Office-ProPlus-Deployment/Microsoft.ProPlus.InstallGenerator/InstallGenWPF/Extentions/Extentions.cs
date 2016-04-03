@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Extentions
@@ -29,5 +30,11 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Extentions
             return channel;
         }
 
+        public static bool IsValidVersion(this string version)
+        {
+            if (string.IsNullOrEmpty(version)) return false;
+            var match = Regex.Match(version, @"^\d{2}\.\d\.\d{4}\.\d{4}$");
+            return match.Success;
+        }
     }
 }

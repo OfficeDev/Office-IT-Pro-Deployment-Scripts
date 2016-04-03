@@ -22,6 +22,7 @@ using Micorosft.OfficeProPlus.ConfigurationXml;
 using Microsoft.OfficeProPlus.InstallGen.Presentation.Extentions;
 using Microsoft.OfficeProPlus.InstallGen.Presentation.Models;
 using Microsoft.OfficeProPlus.InstallGenerator.Models;
+using Newtonsoft.Json;
 using OfficeInstallGenerator;
 using Application = System.Windows.Application;
 using MessageBox = System.Windows.MessageBox;
@@ -140,12 +141,23 @@ namespace MetroDemo
                     Name = "Current",
                     NewName = "Current",
                     Id = "Current",
-                    CurrentVersion = "16.0.6001.1038",
+                    CurrentVersion = "16.0.6741.2021",
                     Versions = new List<Build>()
                     {
+                        new Build() { Version = "16.0.6741.2021"},
+                        new Build() { Version = "16.0.6741.2017"},
+                        new Build() { Version = "16.0.6568.2036"},
+                        new Build() { Version = "16.0.6568.2034"},
+                        new Build() { Version = "16.0.6568.2025"},
+                        new Build() { Version = "16.0.6366.2068"},
+                        new Build() { Version = "16.0.6366.2062"},
+                        new Build() { Version = "16.0.6366.2056"},
+                        new Build() { Version = "16.0.6366.2036"},
+                        new Build() { Version = "16.0.6001.1043"},
                         new Build() { Version = "16.0.6001.1038"},
+                        new Build() { Version = "16.0.6001.1034"},
                         new Build() { Version = "16.0.4229.1029"},
-                        new Build() { Version = "16.0.4229.1024"}
+                        new Build() { Version = "16.0.4229.1024"},
                     }
                 },
                 new OfficeBranch()
@@ -179,15 +191,25 @@ namespace MetroDemo
                     Name = "First Release Deferred",
                     NewName = "FirstReleaseDeferred",
                     Id = "FirstReleaseBusiness",
-                    CurrentVersion = "16.0.6001.1038",
+                    CurrentVersion = "16.0.6741.2021",
                     Versions = new List<Build>()
                     {
-                        new Build() { Version = "16.0.6001.1038"},
-                        new Build() { Version = "16.0.4229.1029"},
-                        new Build() { Version = "16.0.4229.1024"}
+
                     }
                 }
             };
+
+            //new Build() { Version = "16.0.6741.2021"},
+            //new Build() { Version = "16.0.6741.2017"},
+            //new Build() { Version = "16.0.6741.2015"},
+            //new Build() { Version = "16.0.6741.2014"},
+            //new Build() { Version = "16.0.6001.1061"},
+            //new Build() { Version = "16.0.6001.1054"},
+            //new Build() { Version = "16.0.6001.1043"},
+            //new Build() { Version = "16.0.6001.1038"},
+            //new Build() { Version = "16.0.6001.1034"},
+            //new Build() { Version = "16.0.4229.1029"},
+            //new Build() { Version = "16.0.4229.1024"}
 
             MainProducts = new List<Product>()
             {
@@ -313,6 +335,21 @@ namespace MetroDemo
             SelectedCertificate = new Certificate();
              
 
+        }
+
+        public string BranchesToJson
+        {
+            get
+            {
+                var json = JsonConvert.SerializeObject(Branches.ToArray());
+                return json;       
+            }
+        }
+
+        public List<OfficeBranch> JsonToBranches(string json)
+        {
+            var branches = JsonConvert.DeserializeObject<List<OfficeBranch>>(json);
+            return branches;
         }
 
         public bool RunLocalConfigs { get; set; }

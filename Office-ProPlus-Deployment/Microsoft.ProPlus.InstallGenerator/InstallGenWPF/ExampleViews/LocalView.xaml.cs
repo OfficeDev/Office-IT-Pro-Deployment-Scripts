@@ -21,6 +21,7 @@ using Micorosft.OfficeProPlus.ConfigurationXml.Enums;
 using Micorosft.OfficeProPlus.ConfigurationXml.Model;
 using Microsoft.OfficeProPlus.Downloader;
 using Microsoft.OfficeProPlus.Downloader.Model;
+using Microsoft.OfficeProPlus.InstallGen.Presentation.Extentions;
 using Microsoft.OfficeProPlus.InstallGen.Presentation.Logging;
 using Microsoft.OfficeProPlus.InstallGen.Presentation.Models;
 using Microsoft.OfficeProPlus.InstallGenerator.Implementation;
@@ -29,6 +30,7 @@ using Microsoft.OfficeProPlus.InstallGenerator.Models;
 using OfficeInstallGenerator;
 using OfficeInstallGenerator.Model;
 using File = System.IO.File;
+using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 using MessageBox = System.Windows.MessageBox;
 using UserControl = System.Windows.Controls.UserControl;
 
@@ -39,6 +41,7 @@ namespace MetroDemo.ExampleViews
     /// </summary>
     public partial class LocalView : UserControl
     {
+        #region Declarations
         private LanguagesDialog languagesDialog = null;
         private CancellationTokenSource _tokenSource = new CancellationTokenSource();
 
@@ -57,7 +60,7 @@ namespace MetroDemo.ExampleViews
 
         private OfficeLocalInstall LocalInstall { get; set; }
         private bool FirstRun = true;
-
+        #endregion
 
         public LocalView()
         {
@@ -70,8 +73,12 @@ namespace MetroDemo.ExampleViews
             {
                 if (MainTabControl == null) return;
                 MainTabControl.SelectedIndex = 0;
-
                 if (GlobalObjects.ViewModel == null) return;
+
+                var currentIndex = ProductBranch.SelectedIndex;
+                ProductBranch.ItemsSource = GlobalObjects.ViewModel.Branches;
+                if (currentIndex == -1) currentIndex = 0;
+                ProductBranch.SelectedIndex = currentIndex;
 
                 GlobalObjects.ViewModel.PropertyChangeEventEnabled = false;
                 LoadXml();
@@ -199,6 +206,19 @@ namespace MetroDemo.ExampleViews
         {
             Dispatcher.Invoke(() =>
             {
+                var latestInstalled = false;
+                if (LocalInstall != null)
+                {
+                    latestInstalled = LocalInstall.LatestVersionInstalled;
+                }
+                if (!latestInstalled)
+                {
+                    if (RetryButtonColumn.Width.Value > 0)
+                    {
+                        latestInstalled = true;
+                    }
+                }
+
                 ErrorRow.Visibility = Visibility.Collapsed;
                 switch (item)
                 {
@@ -209,11 +229,14 @@ namespace MetroDemo.ExampleViews
                         ImgOfficeInstalled.Visibility = Visibility.Collapsed;
                         WaitInstallImage.Visibility = Visibility.Collapsed;
                         ImgLatestInstallFail.Visibility = Visibility.Collapsed;
-                        UpdateButtonColumn.Width = new GridLength(45, GridUnitType.Pixel);
+
+                        UpdateButtonColumn.Width = latestInstalled ? new GridLength(45, GridUnitType.Pixel) : new GridLength(90, GridUnitType.Pixel);
+
                         ReInstallOffice.IsEnabled = true;
                         UpdateOffice.IsEnabled = true;
                         RetryUpdateOffice.IsEnabled = true;
                         ProductBranch.IsEnabled = true;
+                        UnInstallOffice.IsEnabled = true;
                         switch (state)
                         {
                             case LocalViewState.InstallingOffice:
@@ -247,6 +270,8 @@ namespace MetroDemo.ExampleViews
                                 UpdateOffice.IsEnabled = false;
                                 RetryUpdateOffice.IsEnabled = false;
                                 ProductBranch.IsEnabled = false;
+                                UnInstallOffice.IsEnabled = false;
+
                                 break;
                         }
                         UpdateRow.Visibility = installedRows;
@@ -512,8 +537,10 @@ namespace MetroDemo.ExampleViews
                     }
                     else
                     {
-                        var match = Regex.Match(channelToChangeTo, @"\d{2}\.\d\.\d{4}\.\d{4}");
-                        if (!match.Success) throw (new Exception(string.Format("Invalid Version: {0}", channelToChangeTo)));
+                        if (!channelToChangeTo.IsValidVersion())
+                        {
+                            throw (new Exception(string.Format("Invalid Version: {0}", channelToChangeTo)));
+                        }
                     }
 
                     installOffice.ChangeUpdateSource(baseUrl);
@@ -620,6 +647,7 @@ namespace MetroDemo.ExampleViews
 
         public async Task UpdateVersions()
         {
+            if (ProductBranch.SelectedItem == null) return;
             var branch = (OfficeBranch)ProductBranch.SelectedItem;
             NewVersion.ItemsSource = branch.Versions;
             NewVersion.SetValue(TextBoxHelper.WatermarkProperty, branch.CurrentVersion);
@@ -651,6 +679,19 @@ namespace MetroDemo.ExampleViews
             }
         }
 
+        private string GetSelectedVersion()
+        {
+            var selVersionText = "";
+            if (NewVersion.SelectedItem != null)
+            {
+                selVersionText = ((Build)NewVersion.SelectedItem).Version;
+            }
+            else
+            {
+                selVersionText = NewVersion.Text;
+            }
+            return selVersionText;
+        }
 
         #region Page Functions
 
@@ -716,21 +757,11 @@ namespace MetroDemo.ExampleViews
         
         private async Task GetBranchVersion(OfficeBranch branch, OfficeEdition officeEdition)
         {
-                if (branch.Updated) return;
-                var ppDownload = new ProPlusDownloader();
-                var latestVersion = await ppDownload.GetLatestVersionAsync(branch.Branch.ToString(), officeEdition);
+            var modelBranch = GlobalObjects.ViewModel.Branches.FirstOrDefault(b =>
+                b.Branch.ToString().ToLower() == branch.Branch.ToString().ToLower());
+            if (modelBranch == null) return;
 
-                var modelBranch = GlobalObjects.ViewModel.Branches.FirstOrDefault(b =>
-                    b.Branch.ToString().ToLower() == branch.Branch.ToString().ToLower());
-                if (modelBranch == null) return;
-                if (modelBranch.Versions.Any(v => v.Version == latestVersion)) return;
-                modelBranch.Versions.Insert(0, new Build() { Version = latestVersion });
-                modelBranch.CurrentVersion = latestVersion;
-
-                //ProductVersion.ItemsSource = modelBranch.Versions;
-                //ProductVersion.SetValue(TextBoxHelper.WatermarkProperty, modelBranch.CurrentVersion);
-
-                modelBranch.Updated = true;
+            NewVersion.SetValue(TextBoxHelper.WatermarkProperty, modelBranch.CurrentVersion);
         }
 
         private bool TransitionProductTabs(TransitionTabDirection direction)
@@ -795,6 +826,27 @@ namespace MetroDemo.ExampleViews
 
         #region "Events"
 
+        private void NewVersion_OnKeyUp(object sender, KeyEventArgs e)
+        {
+            try
+            {
+                if (LocalInstall == null) return;
+                var selVersionText = GetSelectedVersion();
+                if (selVersionText.IsValidVersion())
+                {
+                    ChangeChannel.IsEnabled = LocalInstall.Version != selVersionText;
+                }
+                else
+                {
+                    ChangeChannel.IsEnabled = false;
+                }
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
+
         private void ShowVersion_OnClick(object sender, RoutedEventArgs e)
         {
             try
@@ -816,7 +868,17 @@ namespace MetroDemo.ExampleViews
                     {
                         NewVersionRow.Visibility = Visibility.Visible;
                         ShowVersion.Content = "Hide version";
-                        ChangeChannel.IsEnabled = true;
+
+                        var selVersionText = GetSelectedVersion();
+                        if (selVersionText.IsValidVersion())
+                        {
+                            ChangeChannel.IsEnabled = LocalInstall.Version != selVersionText;
+                        }
+                        else
+                        {
+                            ChangeChannel.IsEnabled = false;
+                        }
+
                         ProductBranch.Focus();
                     }
                 }
@@ -885,10 +947,46 @@ namespace MetroDemo.ExampleViews
                 var selectedBranch = (OfficeBranch) ProductBranch.SelectedItem;
                 if (selectedBranch != null && LocalInstall != null)
                 {
-                    ChangeChannel.IsEnabled = selectedBranch.NewName != LocalInstall.Channel;
+                    if (NewVersionRow.Visibility == Visibility.Visible)
+                    {
+                        var selVersionText = GetSelectedVersion();
+                        if (selVersionText.IsValidVersion())
+                        {
+                            ChangeChannel.IsEnabled = LocalInstall.Version != selVersionText;
+                        }
+                        else
+                        {
+                            ChangeChannel.IsEnabled = false;
+                        }
+                    }
+                    else
+                    {
+                        ChangeChannel.IsEnabled = selectedBranch.NewName != LocalInstall.Channel;
+                    }
                 }
 
                 await UpdateVersions();
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
+
+        private void NewVersion_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            try
+            {
+                if (LocalInstall == null) return;
+                var selVersionText = GetSelectedVersion();
+                if (selVersionText.IsValidVersion())
+                {
+                    ChangeChannel.IsEnabled = LocalInstall.Version != selVersionText;
+                }
+                else
+                {
+                    ChangeChannel.IsEnabled = false;
+                }
             }
             catch (Exception ex)
             {
@@ -916,9 +1014,7 @@ namespace MetroDemo.ExampleViews
                         SetItemState(LocalViewItem.Install, LocalViewState.InstallingOffice);
 
                         var installGenerator = new OfficeInstallExecutableGenerator();
-                        //installGenerator.InstallOffice(GlobalObjects.ViewModel.ConfigXmlParser.Xml);
-
-                        await Task.Delay(5000);
+                        installGenerator.InstallOffice(GlobalObjects.ViewModel.ConfigXmlParser.Xml);
 
                         await LoadViewState();
 
@@ -948,6 +1044,62 @@ namespace MetroDemo.ExampleViews
                 GlobalObjects.ViewModel.BlockNavigation = false;
             }
         }
+
+        private async void ReRunInstallOffice_OnClick(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                await Task.Run(async () =>
+                {
+                    try
+                    {
+                        Dispatcher.Invoke(() =>
+                        {
+                            InstallOffice.IsEnabled = false;
+                            ReInstallOffice.IsEnabled = false;
+                            NewVersionRow.Visibility = Visibility.Collapsed;
+                            ChangeChannel.IsEnabled = false;
+                            ShowVersion.Content = "Show version";
+                        });
+                        GlobalObjects.ViewModel.BlockNavigation = true;
+                        GlobalObjects.ViewModel.ConfigXmlParser.ConfigurationXml.Display.Level = DisplayLevel.Full;
+
+                        FirstRun = false;
+                        
+                        SetItemState(LocalViewItem.Install, LocalViewState.Wait);
+
+                        var installGenerator = new OfficeInstallExecutableGenerator();
+                        installGenerator.InstallOffice(GlobalObjects.ViewModel.ConfigXmlParser.Xml);
+
+                        await LoadViewState();
+
+                        Dispatcher.Invoke(() =>
+                        {
+                            InstallOffice.IsEnabled = true;
+                            ReInstallOffice.IsEnabled = true;
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        SetItemState(LocalViewItem.Install, LocalViewState.Fail);
+                        LogErrorMessage(ex);
+                    }
+                    finally
+                    {
+                        GlobalObjects.ViewModel.BlockNavigation = false;
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+            finally
+            {
+                GlobalObjects.ViewModel.BlockNavigation = false;
+            }
+        }
+
 
         private void MainTabControl_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {

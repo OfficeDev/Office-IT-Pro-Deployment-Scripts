@@ -191,7 +191,7 @@
                                         <ColumnDefinition Width="620" />
                                     </Grid.ColumnDefinitions>
                                     <Label Content="Target version" Style="{StaticResource CustomMetroLabelHeader}"
-                                            Margin="30 0 0 0" Grid.Column="0" VerticalAlignment="Center" />
+                                            Margin="0 0 0 0" Grid.Column="0" VerticalAlignment="Center" />
 
                                     <Grid Margin="0,0,0,0" Grid.Column="1">
                                         <Grid.ColumnDefinitions>
@@ -202,7 +202,7 @@
 
                                         <ComboBox x:Name="NewVersion" Grid.Column="0" Width="270" Height="35" SelectedIndex="0" IsEditable="True" MaxDropDownHeight="125"
                                               FontSize="20" ItemsSource="{Binding Builds}" DisplayMemberPath="Version" HorizontalAlignment="Left" VerticalAlignment="Center"
-                                              Style="{StaticResource MetroComboBoxStyle}"   >
+                                              Style="{StaticResource MetroComboBoxStyle}" SelectionChanged="NewVersion_OnSelectionChanged" KeyUp="NewVersion_OnKeyUp"  >
                                         </ComboBox>
 
                                     </Grid>
@@ -223,7 +223,7 @@
 
                                     <Button x:Name="ReInstallOffice"  Width="100" Grid.Column="1" Height="40" FontSize="14" VerticalAlignment="Center" 
                                             HorizontalAlignment="Left"  Content="Rerun setup" 
-                                                  Style="{StaticResource MetroFlatButtonStyle1}" Visibility="Visible" Click="InstallOffice_OnClick"   />
+                                                  Style="{StaticResource MetroFlatButtonStyle1}" Visibility="Visible" Click="ReRunInstallOffice_OnClick"   />
                                 </Grid>
 
                                 <Grid x:Name="ModifyUninstallRow" Margin="50 0 0 0" Width="800" HorizontalAlignment="Left" >

@@ -15,7 +15,7 @@ namespace Microsoft.OfficeProPlus.InstallGenerator
         {
             get
             {
-                var objConfig = GetAppSetting<string>("AzureStorageAccountType").ToString();
+                var objConfig = GetAppSetting<string>("GenerateScriptUrl").ToString();
                 return String.IsNullOrEmpty(objConfig) ? MGenerateScriptUrl : objConfig;
             }
         }
