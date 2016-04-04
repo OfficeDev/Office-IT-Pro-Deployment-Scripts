@@ -69,6 +69,7 @@ namespace MetroDemo.ExampleViews
             try
             {
                 if (_running) return;
+                GlobalObjects.ViewModel.LocalConfig = false;
                 GlobalObjects.ViewModel.RunLocalConfigs = false;
 
                 GlobalObjects.ViewModel.ConfigXmlParser.LoadXml(GlobalObjects.DefaultXml);
@@ -100,6 +101,7 @@ namespace MetroDemo.ExampleViews
             try
             {
                 if (_running) return;
+                GlobalObjects.ViewModel.LocalConfig = false;
                 GlobalObjects.ViewModel.RunLocalConfigs = false;
 
                 var dlg = new Microsoft.Win32.OpenFileDialog
@@ -155,6 +157,7 @@ namespace MetroDemo.ExampleViews
             {
                 if (_running) return;
 
+                GlobalObjects.ViewModel.LocalConfig = true;
                 GlobalObjects.ViewModel.BlockNavigation = true;
                 _running = true;
                 var localXml = "";

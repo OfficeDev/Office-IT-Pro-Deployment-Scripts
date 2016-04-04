@@ -106,6 +106,7 @@ namespace MetroDemo.ExampleViews
         private void RemoveSelectedLanguage()
         {
             var selectProductId = GetSelectedProduct();
+            var installOffice = new InstallOffice();
 
             var currentItems = (List<Language>)LanguageList.ItemsSource ?? new List<Language>();
             foreach (Language language in LanguageList.SelectedItems)
@@ -115,13 +116,88 @@ namespace MetroDemo.ExampleViews
                     currentItems.Remove(language);
                 }
 
-
-
                 GlobalObjects.ViewModel.RemoveLanguage(selectProductId, language.Id);
+
+                if (GlobalObjects.ViewModel.LocalConfig)
+                {
+                    var productId = language.ProductId;
+                    if (string.IsNullOrEmpty(productId)) productId = "O365ProPlusRetail";
+
+                    var languageInstalled = installOffice.ProPlusLanguageInstalled(productId, language.Id);
+                    if (languageInstalled)
+                    {
+                        GlobalObjects.ViewModel.AddRemovedLanguage(productId, language);
+                    }
+                }
             }
             LanguageList.ItemsSource = null;
             LanguageList.ItemsSource = GlobalObjects.ViewModel.GetLanguages(selectProductId);
         }
+
+        private void LaunchLanguageDialog()
+        {
+            try
+            {
+                if (languagesDialog == null)
+                {
+                    var currentItems1 = (List<Language>)LanguageList.ItemsSource ?? new List<Language>();
+
+                    var languageList = GlobalObjects.ViewModel.Languages.ToList();
+                    foreach (var language in currentItems1)
+                    {
+                        languageList.Remove(language);
+                    }
+
+                    languagesDialog = new LanguagesDialog
+                    {
+                        LanguageSource = languageList
+                    };
+                    languagesDialog.Closed += (o, args) =>
+                    {
+                        languagesDialog = null;
+                    };
+                    languagesDialog.Closing += (o, args) =>
+                    {
+                        var currentItems2 = (List<Language>)LanguageList.ItemsSource ?? new List<Language>();
+
+                        if (languagesDialog.SelectedItems != null)
+                        {
+                            if (languagesDialog.SelectedItems.Count > 0)
+                            {
+                                currentItems2.AddRange(languagesDialog.SelectedItems);
+                            }
+                        }
+
+                        var selectedLangs = FormatLanguage(currentItems2.Distinct().ToList()).ToList();
+
+                        var selectProductId = GetSelectedProduct();
+
+                        foreach (var languages in selectedLangs)
+                        {
+                            languages.ProductId = selectProductId;
+                        }
+
+                        GlobalObjects.ViewModel.AddLanguages(selectProductId, selectedLangs);
+
+                        foreach (var language in selectedLangs)
+                        {
+                            GlobalObjects.ViewModel.RemoveAddRemovedLanguage(selectProductId, language); 
+                        }
+                        
+                        LanguageList.ItemsSource = null;
+                        LanguageList.ItemsSource = selectedLangs;
+
+                    };
+                }
+                languagesDialog.Launch();
+
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
+
 
         private void ChangePrimaryLanguage()
         {
@@ -307,6 +383,45 @@ namespace MetroDemo.ExampleViews
                 configXml.Add = new ODTAdd();
             }
 
+            var languages = GlobalObjects.ViewModel.GetRemovedLanguages();
+            if (languages.Count > 0)
+            {
+                if (configXml.Remove == null)
+                {
+                    configXml.Remove = new ODTRemove
+                    {
+                        Products = new List<ODTProduct>()
+                    };
+
+                    foreach (var productId in languages.Select(p => p.ProductId).ToList().Distinct())
+                    {
+                        var tmpProdId = productId;
+                        if (productId == null)
+                        {
+                            tmpProdId = "O365ProPlusRetail";
+                        }
+
+                        var pLanguages = languages.Where(l => l.ProductId == productId);
+                        var odtProduct = new ODTProduct()
+                        {
+                            ID = tmpProdId
+                        };
+                        if (odtProduct.Languages == null) odtProduct.Languages = new List<ODTLanguage>();
+
+                        foreach (var language in pLanguages)
+                        {
+                            odtProduct.Languages.Add(new ODTLanguage()
+                            {
+                                ID = language.Id
+                            });
+                        }
+
+                        configXml.Remove.Products.Add(odtProduct);
+
+                    }
+                }
+            }
+
             if (ProductEdition32Bit.IsChecked.HasValue && ProductEdition32Bit.IsChecked.Value)
             {
                 configXml.Add.OfficeClientEdition = OfficeClientEdition.Office32Bit;
@@ -387,9 +502,43 @@ namespace MetroDemo.ExampleViews
                 {
                     product.Languages = new List<ODTLanguage>();
 
+                    ODTProduct removeProduct = null;
+                    if (configXml.Remove != null)
+                    {
+                       removeProduct = configXml.Remove.Products.FirstOrDefault(p => p.ID == product.ID);
+                    }
+                    
+
                     var productLanguages = GlobalObjects.ViewModel.GetLanguages(product.ID);
 
-                    foreach (Language language in productLanguages)
+                    foreach (var language in productLanguages)
+                    {
+                        if (removeProduct != null)
+                        {
+                            var rmLang =
+                                removeProduct.Languages.FirstOrDefault(l => l.ID.ToLower() == language.Id.ToLower());
+                            if (rmLang != null)
+                            {
+                                removeProduct.Languages.Remove(rmLang);
+                                if (removeProduct.Languages.Count == 0)
+                                {
+                                    configXml.Remove.Products.Remove(removeProduct);
+                                }
+                                if (configXml.Remove.Products.Count == 0)
+                                {
+                                    configXml.Remove = null;
+                                }
+                            }
+                        }
+
+                        product.Languages.Add(new ODTLanguage()
+                        {
+                            ID = language.Id
+                        });
+                    }
+
+                    var removedLanguages = GlobalObjects.ViewModel.GetRemovedLanguages(product.ID);
+                    foreach (var language in removedLanguages)
                     {
                         product.Languages.Add(new ODTLanguage()
                         {
@@ -984,64 +1133,6 @@ namespace MetroDemo.ExampleViews
             }
         }
 
-        private void LaunchLanguageDialog()
-        {
-            try
-            {
-                if (languagesDialog == null)
-                {
-                    var currentItems1 = (List<Language>)LanguageList.ItemsSource ?? new List<Language>();
-
-                    var languageList = GlobalObjects.ViewModel.Languages.ToList();
-                    foreach (var language in currentItems1)
-                    {
-                        languageList.Remove(language);
-                    }
-
-                    languagesDialog = new LanguagesDialog
-                    {
-                        LanguageSource = languageList
-                    };
-                    languagesDialog.Closed += (o, args) =>
-                    {
-                        languagesDialog = null;
-                    };
-                    languagesDialog.Closing += (o, args) =>
-                    {
-                        var currentItems2 = (List<Language>)LanguageList.ItemsSource ?? new List<Language>();
-
-                        if (languagesDialog.SelectedItems != null)
-                        {
-                            if (languagesDialog.SelectedItems.Count > 0)
-                            {
-                                currentItems2.AddRange(languagesDialog.SelectedItems);
-                            }
-                        }
-
-                        var selectedLangs = FormatLanguage(currentItems2.Distinct().ToList()).ToList();
-
-                        var selectProductId = GetSelectedProduct();
-
-                        foreach (var languages in selectedLangs)
-                        {
-                            languages.ProductId = selectProductId;
-                        }
-
-                        GlobalObjects.ViewModel.AddLanguages(selectProductId, selectedLangs);
-
-                        LanguageList.ItemsSource = null;
-                        LanguageList.ItemsSource = selectedLangs;
-
-                    };
-                }
-                languagesDialog.Launch();
-
-            }
-            catch (Exception ex)
-            {
-                LogErrorMessage(ex);
-            }
-        }
 
 
         #endregion

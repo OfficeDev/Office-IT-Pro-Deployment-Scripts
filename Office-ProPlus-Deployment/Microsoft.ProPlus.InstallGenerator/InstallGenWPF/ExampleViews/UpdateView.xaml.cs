@@ -53,6 +53,11 @@ namespace MetroDemo.ExampleViews
         {
             try
             {
+                var currentIndex = UpdateBranch.SelectedIndex;
+                UpdateBranch.ItemsSource = GlobalObjects.ViewModel.Branches;
+                if (currentIndex == -1) currentIndex = 0;
+                UpdateBranch.SelectedIndex = currentIndex;
+
                 GlobalObjects.ViewModel.PropertyChanged += ViewModel_PropertyChanged;
 
                 LoadXml();
@@ -118,7 +123,9 @@ namespace MetroDemo.ExampleViews
             }
            
             var updateBranch = (OfficeBranch) UpdateBranch.SelectedItem;
-            var txtTargetVersion = UpdateTargetVersion.Text;
+
+            var txtTargetVersion = GetSelectedVersion();
+
             Version targetVersion = null;
 
             if (updateBranch != null)
@@ -170,26 +177,26 @@ namespace MetroDemo.ExampleViews
             DeadlineTimeMinute.Text = "";
         }
 
+        private string GetSelectedVersion()
+        {
+            if (UpdateTargetVersion.SelectedItem != null)
+            {
+                var selectedVersion = (Build) UpdateTargetVersion.SelectedItem;
+                return selectedVersion.Version;
+            }
+
+            return !string.IsNullOrEmpty(UpdateTargetVersion.Text) ? UpdateTargetVersion.Text : "";
+        }
 
         private async Task GetBranchVersion(OfficeBranch branch, OfficeEdition officeEdition)
         {
             try
             {
-                if (branch.Updated) return;
-                var ppDownload = new ProPlusDownloader();
-                var latestVersion = await ppDownload.GetLatestVersionAsync(branch.Branch.ToString(), officeEdition);
-
                 var modelBranch = GlobalObjects.ViewModel.Branches.FirstOrDefault(b =>
                     b.Branch.ToString().ToLower() == branch.Branch.ToString().ToLower());
                 if (modelBranch == null) return;
-                if (modelBranch.Versions.Any(v => v.Version == latestVersion)) return;
-                modelBranch.Versions.Insert(0, new Build() { Version = latestVersion });
-                modelBranch.CurrentVersion = latestVersion;
 
-                UpdateTargetVersion.ItemsSource = modelBranch.Versions;
                 UpdateTargetVersion.SetValue(TextBoxHelper.WatermarkProperty, modelBranch.CurrentVersion);
-
-                modelBranch.Updated = true;
             }
             catch (Exception ex)
             {

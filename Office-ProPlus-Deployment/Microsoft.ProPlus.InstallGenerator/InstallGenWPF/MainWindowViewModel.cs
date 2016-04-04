@@ -101,6 +101,7 @@ namespace MetroDemo
     {
         private readonly IDialogCoordinator _dialogCoordinator;
         private List<Language> _selectedLanguages = null;
+        private List<Language> _removedLanguages = null;
         
         public MainWindowViewModel(IDialogCoordinator dialogCoordinator)
         {
@@ -124,6 +125,8 @@ namespace MetroDemo
                         DefaultLanguage,
                     };
             }
+
+            _removedLanguages = new List<Language>();
 
             Builds = new List<Build>()
             {
@@ -182,7 +185,22 @@ namespace MetroDemo
                     CurrentVersion = "",
                     Versions = new List<Build>()
                     {
-
+                        new Build() { Version = "16.0.6769.2015"},
+                        new Build() { Version = "16.0.6769.2011"},
+                        new Build() { Version = "16.0.6741.2017"},
+                        new Build() { Version = "16.0.6741.2015"},
+                        new Build() { Version = "16.0.6741.2014"},
+                        new Build() { Version = "16.0.6568.2036"},
+                        new Build() { Version = "16.0.6568.2025"},
+                        new Build() { Version = "16.0.6568.2016"},
+                        new Build() { Version = "16.0.6366.2062"},
+                        new Build() { Version = "16.0.6366.2056"},
+                        new Build() { Version = "16.0.6366.2047"},
+                        new Build() { Version = "16.0.6366.2036"},
+                        new Build() { Version = "16.0.6366.2025"},
+                        new Build() { Version = "16.0.6228.1010"},
+                        new Build() { Version = "16.0.6228.1007"},
+                        new Build() { Version = "16.0.6228.1004"}
                     }
                 },
                 new OfficeBranch()
@@ -194,22 +212,22 @@ namespace MetroDemo
                     CurrentVersion = "16.0.6741.2021",
                     Versions = new List<Build>()
                     {
-
+                        new Build() { Version = "16.0.6741.2021"},
+                        new Build() { Version = "16.0.6741.2017"},
+                        new Build() { Version = "16.0.6741.2015"},
+                        new Build() { Version = "16.0.6741.2014"},
+                        new Build() { Version = "16.0.6001.1061"},
+                        new Build() { Version = "16.0.6001.1054"},
+                        new Build() { Version = "16.0.6001.1043"},
+                        new Build() { Version = "16.0.6001.1038"},
+                        new Build() { Version = "16.0.6001.1034"},
+                        new Build() { Version = "16.0.4229.1029"},
+                        new Build() { Version = "16.0.4229.1024"}
                     }
                 }
             };
 
-            //new Build() { Version = "16.0.6741.2021"},
-            //new Build() { Version = "16.0.6741.2017"},
-            //new Build() { Version = "16.0.6741.2015"},
-            //new Build() { Version = "16.0.6741.2014"},
-            //new Build() { Version = "16.0.6001.1061"},
-            //new Build() { Version = "16.0.6001.1054"},
-            //new Build() { Version = "16.0.6001.1043"},
-            //new Build() { Version = "16.0.6001.1038"},
-            //new Build() { Version = "16.0.6001.1034"},
-            //new Build() { Version = "16.0.4229.1029"},
-            //new Build() { Version = "16.0.4229.1024"}
+
 
             MainProducts = new List<Product>()
             {
@@ -336,6 +354,8 @@ namespace MetroDemo
              
 
         }
+
+        public bool LocalConfig { get; set; }
 
         public string BranchesToJson
         {
@@ -631,6 +651,21 @@ namespace MetroDemo
             return languages.ToList();
         }
 
+        public List<Language> GetRemovedLanguages()
+        {
+            return _removedLanguages.ToList();
+        }
+
+        public List<Language> GetRemovedLanguages(string productId)
+        {
+            if (productId != null) productId = productId.ToLower();
+
+            var languages = _removedLanguages.Where(l => (l.ProductId == productId) ||
+                ((l.ProductId != null && productId != null) && l.ProductId.ToLower() == productId.ToLower()));
+
+            return languages.ToList();
+        }
+
         public Language GetLanguage(string productId, string languageId)
         {
             if (productId != null) productId = productId.ToLower();
@@ -721,6 +756,33 @@ namespace MetroDemo
             foreach (var removelanguage in currentLangs)
             {
                 _selectedLanguages.Remove(removelanguage);
+            }
+        }
+
+        public void AddRemovedLanguage(string productId, Language language)
+        {
+            if (productId != null) productId = productId.ToLower();
+
+            var currentLangs = _removedLanguages.Where(l => l.ProductId == productId).ToList();
+
+            if (currentLangs.Any(l => l.Id.ToLower() == language.Id.ToLower()))
+            {
+                return;
+            }
+
+            language.ProductId = language.ProductId != null ? language.ProductId.ToLower() : language.ProductId;
+
+            _removedLanguages.Add(language);
+        }
+
+        public void RemoveAddRemovedLanguage(string productId, Language language)
+        {
+            if (productId != null) productId = productId.ToLower();
+
+            var currentLang = _removedLanguages.FirstOrDefault(l => l.ProductId == productId);
+            if (currentLang != null)
+            {
+                _removedLanguages.Remove(currentLang);
             }
         }
 

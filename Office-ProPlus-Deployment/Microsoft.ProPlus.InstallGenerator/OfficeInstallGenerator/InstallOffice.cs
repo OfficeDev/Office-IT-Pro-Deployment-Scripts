@@ -279,13 +279,40 @@ public class InstallOffice
             catch { }
         }
     }
-
-
+    
     public string GetOfficeC2RPath()
     {
         var officeRegKey = GetOfficeCtrRegPath();
         var configKey = officeRegKey.OpenSubKey(@"Configuration");
         return configKey != null ? GetRegistryValue(configKey, "ClientFolder") : "";
+    }
+
+    public bool ProPlusLanguageInstalled(string productId, string language)
+    {
+        var officeRegKey = GetOfficeCtrRegPath();
+        var prodKey = officeRegKey.OpenSubKey(@"ProductReleaseIDs");
+        if (prodKey == null) return false;
+        var subKeys = prodKey.GetSubKeyNames();
+        if (!subKeys.Any()) return false;
+        var mainId = subKeys.FirstOrDefault();
+        if (mainId == null) return false;
+        var mainKey = prodKey.OpenSubKey(mainId);
+        if (mainKey == null) return false;
+        var prodKeys = mainKey.GetSubKeyNames();
+        if (!prodKeys.Any()) return false;
+
+        foreach (var prodKeyName in prodKeys)
+        {
+            if (!prodKeyName.ToLower().Contains(productId.ToLower())) continue;
+            var productKey = mainKey.OpenSubKey(prodKeyName);
+            var languages = productKey.GetSubKeyNames();
+
+            if (languages.Any(l => l.ToLower() == language.ToLower()))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     public string GetOdtErrorMessage()

@@ -53,6 +53,7 @@
     <Compile Include="Enums\DisplayLevel.cs" />
     <Compile Include="Enums\OfficeClientEdition.cs" />
     <Compile Include="Model\ConfigurationXml.cs" />
+    <Compile Include="Model\ODTRemove.cs" />
     <Compile Include="Model\ODTAdd.cs" />
     <Compile Include="Model\ODTDisplay.cs" />
     <Compile Include="Model\ODTExcludeApp.cs" />

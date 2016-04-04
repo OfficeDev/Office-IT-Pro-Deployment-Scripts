@@ -575,3 +575,4 @@ D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\InstallGenWPF\bin\Debug\Scripts\DefaultConfiguration.xml
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\InstallGenWPF\bin\Debug\Newtonsoft.Json.dll
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\InstallGenWPF\bin\Debug\Newtonsoft.Json.xml
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\InstallGenWPF\bin\Debug\HelpFiles\EnableSCCMSupportInfo.html

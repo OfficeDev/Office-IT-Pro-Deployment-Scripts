@@ -79,14 +79,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Micorosft.OfficeProPlus.ConfigurationXml.dll" size="22528">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Micorosft.OfficeProPlus.ConfigurationXml.dll" size="24576">
       <assemblyIdentity name="Micorosft.OfficeProPlus.ConfigurationXml" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>nBqTi6LiwsHQwt24Hd2gUsXi+Rt55L/r9xI+XwaF+as=</dsig:DigestValue>
+        <dsig:DigestValue>JrNACoDIeZepGDgcCs03yEFkLyx4FtdZ1UCCgUqYSBs=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -139,26 +139,26 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="OfficeInstallGenerator.dll" size="4248064">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="OfficeInstallGenerator.dll" size="4248576">
       <assemblyIdentity name="OfficeInstallGenerator" version="1.0.0.1" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>xxIOPAcomKmVElK9e9egD2s1ux2ZjaUOsHptRiF3v98=</dsig:DigestValue>
+        <dsig:DigestValue>Rrtf+ofEWKh/gp9zQbvQY0D/tJAYlqZgWtXyOdr5rnQ=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="OfficeProPlusInstallGenerator.exe" size="2388992">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="OfficeProPlusInstallGenerator.exe" size="2395136">
       <assemblyIdentity name="OfficeProPlusInstallGenerator" version="1.0.0.1" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>WHBJm0SfYag6/nJdX82zlTvneSeHmjQet/2BeGsPuC4=</dsig:DigestValue>
+        <dsig:DigestValue>EM4TsyJP/8qMTxQdmJDpT4u/M77aCTvNenDLkUNSYDM=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -390,6 +390,15 @@
       <dsig:DigestValue>N90bgrQ1xheQUD7yeEkTeMQsYmUmBeAM9rQDf+qBt0A=</dsig:DigestValue>
     </hash>
   </file>
+  <file name="HelpFiles\EnableSCCMSupportInfo.html" size="2266">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>zUE/OMo68wrlH/cV+ITUp/kohDPzRP3wDx31QEb5nbs=</dsig:DigestValue>
+    </hash>
+  </file>
   <file name="HelpFiles\ExcludeAppInfo.html" size="2486">
     <hash>
       <dsig:Transforms>
@@ -523,6 +532,15 @@
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
       <dsig:DigestValue>RsS7FWY7zkDwuaeWk0nPICi4GRKy/XQc+ZEr8/XQtsY=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="ProjectFiles\WPF_AutoCompleteComboBox.dll" size="24064">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>wiJA9hVu3YvTtJ1l4MgwB6cbK3/rs7JKE7DPcCE34q4=</dsig:DigestValue>
     </hash>
   </file>
   <file name="Resources\makecert.exe" size="64144">

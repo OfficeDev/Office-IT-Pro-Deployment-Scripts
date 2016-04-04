@@ -174,6 +174,9 @@
     <Resource Include="images\fail.png" />
     <Resource Include="images\local.png" />
     <Resource Include="images\GitHubSite.PNG" />
+    <Content Include="HelpFiles\EnableSCCMSupportInfo.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="InstallOffice.cs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -362,6 +365,7 @@
     <Resource Include="Resources\Entypo-license.txt" />
     <Resource Include="Resources\WindowsIcons-license.txt" />
     <None Include="Resources\signtool.exe" />
+    <Content Include="ProjectFiles\WPF_AutoCompleteComboBox.dll" />
     <Content Include="Resources\makecert.exe" />
     <None Include="Scripts\DefaultConfiguration.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

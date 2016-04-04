@@ -240,7 +240,8 @@ namespace MetroDemo.ExampleViews
                         {
                             if (!ex.Message.ToLower().Contains("aborted"))
                             {
-                                var strError = ex.Message;
+                                ex.LogException(false);
+                                UpdateError(channelItems, channelItem.Name, "ERROR: " + ex.Message);
                             }
                         }
                     });
@@ -339,6 +340,20 @@ namespace MetroDemo.ExampleViews
             {
                 lvUsers.ItemsSource = newList;
             });
+        }
+
+        private void UpdateError(IEnumerable<Channel> channelItems, string channelName, string error)
+        {
+            var newTmpList = channelItems.ToList();
+            var tempItem2 = newTmpList.FirstOrDefault(c => c.Name == channelName);
+            if (tempItem2 != null)
+            {
+                tempItem2.PercentDownloadText = error;
+                Dispatcher.Invoke(() =>
+                {
+                    lvUsers.ItemsSource = newTmpList;
+                });
+            }
         }
 
         private void UpdatePercentage(IEnumerable<Channel> channelItems, string channelName)

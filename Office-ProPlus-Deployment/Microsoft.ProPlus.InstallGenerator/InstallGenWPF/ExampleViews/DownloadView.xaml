@@ -162,10 +162,10 @@
                                                         </DataTemplate>
                                                     </GridViewColumn.CellTemplate>
                                                 </GridViewColumn>
-                                                <GridViewColumn Header="" Width="55" >
+                                                <GridViewColumn Header="" Width="250" >
                                                     <GridViewColumn.CellTemplate>
                                                         <DataTemplate>
-                                                                <Label HorizontalAlignment="Center" Foreground="{StaticResource GrayBrush}" Content="{Binding PercentDownloadText}"></Label>
+                                                                <Label HorizontalAlignment="Left" Margin="10 0 0 0" Foreground="{StaticResource GrayBrush}" Content="{Binding PercentDownloadText}"></Label>
                                                         </DataTemplate>
                                                     </GridViewColumn.CellTemplate>
                                                 </GridViewColumn>

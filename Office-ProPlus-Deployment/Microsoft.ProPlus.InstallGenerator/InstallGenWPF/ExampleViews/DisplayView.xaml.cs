@@ -86,6 +86,8 @@ namespace MetroDemo.ExampleViews
             UpdateDisplayXml();
 
             UpdatePropertiesXml();
+
+            UpdateConfigManagerXml();
         }
 
         private void UpdateDisplayXml()
@@ -149,6 +151,18 @@ namespace MetroDemo.ExampleViews
                 configXml.Properties.SharedComputerLicensing = SharedComputerLicensing.IsChecked.Value;
             }
 
+        }
+
+        private void UpdateConfigManagerXml()
+        {
+            var configXml = GlobalObjects.ViewModel.ConfigXmlParser.ConfigurationXml;
+            if (configXml.Add != null)
+            {
+                if (EnableSCCMSupport.IsChecked.HasValue)
+                {
+                    configXml.Add.OfficeMgmtCOM = EnableSCCMSupport.IsChecked.Value;
+                }
+            }
         }
 
         private void LogErrorMessage(Exception ex)
@@ -218,6 +232,8 @@ namespace MetroDemo.ExampleViews
 
                 UpdatePropertiesXml();
 
+                UpdateConfigManagerXml();
+
                 this.TransitionTab(this, new TransitionTabEventArgs()
                 {
                     Direction = TransitionTabDirection.Forward
@@ -236,6 +252,8 @@ namespace MetroDemo.ExampleViews
                 UpdateDisplayXml();
 
                 UpdatePropertiesXml();
+
+                UpdateConfigManagerXml();
 
                 this.TransitionTab(this, new TransitionTabEventArgs()
                 {

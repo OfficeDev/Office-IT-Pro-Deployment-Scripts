@@ -151,6 +151,7 @@
                                         </Button>
 
                                      <ComboBox x:Name="UpdateTargetVersion" Height="35" Controls:TextBoxHelper.Watermark="16.0.4949.1003"
+                                                   IsEditable="True" IsTextSearchEnabled="True"
                                                   SelectedIndex="0" MaxDropDownHeight="125"  Grid.Column="2" Text="{Binding Path=Version}" 
                                                   Style="{StaticResource MetroComboBoxStyle}"   ItemsSource="{Binding Builds}"  
                                             FontSize="20"  DisplayMemberPath="Version" SelectionChanged="UpdateBranch_OnSelectionChanged" />

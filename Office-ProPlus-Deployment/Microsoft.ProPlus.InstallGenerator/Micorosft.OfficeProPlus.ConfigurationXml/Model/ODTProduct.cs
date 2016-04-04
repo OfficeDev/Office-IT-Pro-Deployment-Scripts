@@ -13,6 +13,8 @@ namespace Micorosft.OfficeProPlus.ConfigurationXml.Model
 
         public List<ODTLanguage> Languages { get; set; }
 
+        public List<ODTLanguage> RemoveLanguages { get; set; }
+
         public List<ODTExcludeApp> ExcludeApps { get; set; } 
 
     }

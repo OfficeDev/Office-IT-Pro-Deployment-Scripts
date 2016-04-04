@@ -45,6 +45,7 @@ namespace OfficeInstallGenerator
             get
             {
                 SaveProducts();
+                SaveRemoveProducts();
                 SaveUpdates();
                 SaveDisplay();
                 SaveProperties();
@@ -64,6 +65,8 @@ namespace OfficeInstallGenerator
             ConfigurationXml = new ConfigurationXml();
 
             LoadAdds();
+
+            LoadRemoves();
 
             LoadUpdates();
 
@@ -123,9 +126,64 @@ namespace OfficeInstallGenerator
                     }
                 }
 
+                odtAdd.OfficeMgmtCOM = null;
+                if (addNode.Attributes["OfficeMgmtCOM"] != null)
+                {
+                    var strOfficeMgmtCOM = addNode.Attributes["OfficeMgmtCOM"].Value;
+                    if (!string.IsNullOrEmpty(strOfficeMgmtCOM))
+                    {
+                        try
+                        {
+                            odtAdd.OfficeMgmtCOM = Convert.ToBoolean(strOfficeMgmtCOM);
+                        }
+                        catch { }
+                    }
+                }
+
                 ConfigurationXml.Add = odtAdd;
 
                 LoadProducts(addNode, odtAdd);
+            }
+        }
+
+
+        private void LoadRemoves()
+        {
+            var removeNodes = _xmlDoc.DocumentElement.SelectNodes("./Remove");
+            foreach (XmlNode removeNode in removeNodes)
+            {
+                var odtRemove = new ODTRemove();
+
+                ConfigurationXml.Remove = odtRemove;
+
+                LoadRemoveProducts(removeNode, odtRemove);
+            }
+        }
+
+        private void LoadRemoveProducts(XmlNode xmlNode, ODTRemove addItem)
+        {
+            var products = xmlNode.SelectNodes("./Product");
+            foreach (XmlNode productNode in products)
+            {
+                var product = new ODTProduct();
+
+                if (productNode.Attributes["ID"] != null)
+                {
+                    var productId = productNode.Attributes["ID"].Value;
+                    if (!string.IsNullOrEmpty(productId))
+                    {
+                        product.ID = productId;
+                    }
+                }
+
+                if (addItem.Products == null)
+                {
+                    addItem.Products = new List<ODTProduct>();
+                }
+
+                addItem.Products.Add(product);
+
+                LoadLanguages(productNode, product);
             }
         }
 
@@ -199,6 +257,15 @@ namespace OfficeInstallGenerator
                 {
                     RemoveAttribute(addNode, "SourcePath");
                 }
+
+                if (this.ConfigurationXml.Add.OfficeMgmtCOM.HasValue)
+                {
+                    SetAttribute(addNode, "OfficeMgmtCOM", this.ConfigurationXml.Add.OfficeMgmtCOM.Value.ToString());
+                }
+                else
+                {
+                    RemoveAttribute(addNode, "OfficeMgmtCOM");
+                }
             }
 
             if (this.ConfigurationXml.Add != null && this.ConfigurationXml.Add.Products != null)
@@ -246,6 +313,58 @@ namespace OfficeInstallGenerator
                 }
             }
         }
+
+        private void SaveRemoveProducts()
+        {
+            var removeNode = _xmlDoc.DocumentElement.SelectSingleNode("./Remove");
+            if (removeNode == null)
+            {
+                removeNode = _xmlDoc.CreateElement("Remove");
+                _xmlDoc.DocumentElement.AppendChild(removeNode);
+            }
+
+            foreach (XmlNode childNode in removeNode.ChildNodes)
+            {
+                removeNode.RemoveChild(childNode);
+            }
+
+            if (this.ConfigurationXml.Remove != null && this.ConfigurationXml.Remove.Products != null)
+            {
+                foreach (var product in this.ConfigurationXml.Remove.Products)
+                {
+                    var productNode = removeNode.SelectSingleNode("./Product[@ID='" + product.ID + "']");
+                    if (productNode == null)
+                    {
+                        productNode = _xmlDoc.CreateElement("Product");
+                        SetAttribute(productNode, "ID", product.ID);
+                        removeNode.AppendChild(productNode);
+                    }
+
+                    if (product.Languages != null)
+                    {
+                        foreach (var language in product.Languages)
+                        {
+                            var languageNode = productNode.SelectSingleNode("./Language[@ID='" + language.ID + "']");
+                            if (languageNode == null)
+                            {
+                                languageNode = _xmlDoc.CreateElement("Language");
+                                SetAttribute(languageNode, "ID", language.ID);
+                                productNode.AppendChild(languageNode);
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                if (removeNode != null)
+                {
+                    _xmlDoc.DocumentElement.RemoveChild(removeNode);
+                }
+            }
+
+        }
+
 
 
         private void LoadExcludedApps(XmlNode xmlNode, ODTProduct addItem)

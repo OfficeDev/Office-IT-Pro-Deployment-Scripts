@@ -21,6 +21,8 @@ namespace OfficeInstallGenerator.Model
 
         public List<ODTProduct> Products { get; set; }
 
+        public bool? OfficeMgmtCOM { get; set; }
+
         public bool IsLanguagesSameForAllProducts()
         {
             return this.Products.All(productMain => !this.Products.Where(p => !String.Equals(p.ID, productMain.ID, StringComparison.CurrentCultureIgnoreCase))
