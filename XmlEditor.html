@@ -360,7 +360,7 @@
                                             <table>
                                                 <tr>
                                                     <td>
-                                                        <label class="ms-Label">Branch</label>
+                                                        <label class="ms-Label">Channel</label>
                                                     </td>
                                                     <td>
                                                         <i id="branchInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('branchInfo', this)"></i>
@@ -466,17 +466,27 @@
                                     <div>
                                         <h2 class="ms-font-xl">Optional Fields</h2>
 
+                                        <div id="mgtToggleGroup" class="ms-Toggle">
+                                            <br />
+
+                                            <span class="ms-Toggle-description">Enable Configuration Manager support</span>
+                                            <input type="checkbox" id="mgtToggle" class="ms-Toggle-input">
+                                            <label for="mgtToggle" class="ms-Toggle-field">
+                                                <span class="ms-Label ms-Label--off">Disabled</span>
+                                                <span class="ms-Label ms-Label--on">Enabled</span>
+                                            </label>
+                                        </div>
+
                                         <table>
                                             <tr>
                                                 <td>
                                                     <label class="ms-Label">Version</label>
                                                 </td>
                                                 <td>
-                                                    <i id="versionInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('versionInfo', this)"></i>
+                                                    <i id="versionInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px; text-align: center; cursor: pointer;" onclick="toggleInfo('versionInfo', this)"></i>
                                                 </td>
                                             </tr>
                                         </table>
-
                                         <form data-toggle="validator" role="form">
                                             <div class="input-group" style="width:100%">
                                                 <div id="versionTextBox" style="width:100%">
@@ -701,7 +711,7 @@
                                         <table>
                                             <tr>
                                                 <td>
-                                                    <label class="ms-Label">Branch</label>
+                                                    <label class="ms-Label">Channel</label>
                                                 </td>
                                                 <td>
                                                     <i id="updatesBranchInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('updatesBranchInfo', this)"></i>
