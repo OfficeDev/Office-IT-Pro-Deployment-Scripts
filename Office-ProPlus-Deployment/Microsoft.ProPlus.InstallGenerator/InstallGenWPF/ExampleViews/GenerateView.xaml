@@ -249,7 +249,7 @@
                             </DockPanel>
                         </TabItem.Header>
 
-                        <xmlBrowser:XmlBrowserControl x:Name="xmlBrowser" Margin="10" Loaded="xmlBrowser_Loaded" />
+                        <xmlBrowser:XmlBrowserControl x:Name="xmlBrowser" Margin="10" Loaded="xmlBrowser_Loaded" Height="500" VerticalAlignment="Top" />
                     </TabItem>
 
                 </controls:MetroAnimatedSingleRowTabControl>

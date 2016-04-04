@@ -290,7 +290,7 @@
                             </DockPanel>
                         </TabItem.Header>
 
-                        <xmlBrowser:XmlBrowserControl x:Name="xmlBrowser" Margin="10" Loaded="xmlBrowser_Loaded" />
+                        <xmlBrowser:XmlBrowserControl x:Name="xmlBrowser" Margin="10" Loaded="xmlBrowser_Loaded" Height="450" VerticalAlignment="Top" />
                     </TabItem>
 
                 </Controls:MetroAnimatedSingleRowTabControl>
@@ -310,7 +310,7 @@
                     <ColumnDefinition  />
                 </Grid.ColumnDefinitions>
                 <Button x:Name="PreviousButton" Width="100" Height="40" Grid.Column="0" Content="Previous"  Click="PreviousButton_Click" />
-                <Button x:Name="NextButton" Width="100" Height="40" Grid.Column="2" Content="Next" Click="NextButton_Click" Visibility="Hidden" />
+                <Button x:Name="NextButton" Width="100" Height="40" Grid.Column="2" Content="Next" Click="NextButton_Click" Visibility="Visible" />
             </Grid>
         </Grid>
 

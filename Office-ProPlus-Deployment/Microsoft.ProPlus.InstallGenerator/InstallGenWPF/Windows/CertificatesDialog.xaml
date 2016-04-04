@@ -12,10 +12,10 @@
                       TitleForeground="#333333"
                       WindowTitleBrush="#f4f4f4"
                       Background="#e6e6e6"
-                      MinWidth="700"
-                      Width="700"
-                      MinHeight="500"
-                      Height="auto"
+                      MinWidth="400"
+                      Width="1100"
+                      MinHeight="200"
+                      Height="500"
                       SaveWindowPosition="True"
                       WindowStartupLocation="CenterScreen"
                       BorderThickness="1"
@@ -54,19 +54,17 @@
         </DataTemplate>
     </Controls:MetroWindow.TitleTemplate>
 
-    <Grid>
+    <Grid Margin="0,0,0,0">
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="53*" />
-            <ColumnDefinition Width="106*"/>
-            <ColumnDefinition Width="531*"/>
+            <ColumnDefinition  />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="50" />
         </Grid.RowDefinitions>
 
-        <StackPanel Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" >
+        <StackPanel Grid.Column="0" Grid.Row="0" Background="White">
             <DataGrid x:Name="CertificateList"   Height="Auto"
                     VerticalAlignment="Stretch"
                     RenderOptions.ClearTypeHint="Enabled"
@@ -79,11 +77,11 @@
                     CanUserAddRows="False">
 
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Display Name" Binding="{Binding FriendlyName}" Width="200" 
+                    <DataGridTextColumn Header="Display Name" Binding="{Binding FriendlyName}" Width="250" 
                                                       IsReadOnly="True" FontSize="20" Foreground="{DynamicResource LabelTextBrushCustom}"  />
-                    <DataGridTextColumn Header="Issuer Name" Binding="{Binding IssuerName}" Width="200" 
+                    <DataGridTextColumn Header="Issuer Name" Binding="{Binding IssuerName}" Width="220" 
                                                       IsReadOnly="True" FontSize="20" Foreground="{DynamicResource LabelTextBrushCustom}" />
-                    <DataGridTextColumn Header="Thumbprint" Binding="{Binding ThumbPrint}" Width="300" 
+                    <DataGridTextColumn Header="Thumbprint" Binding="{Binding ThumbPrint}" Width="460" 
                                                       IsReadOnly="True" FontSize="20" Foreground="{DynamicResource LabelTextBrushCustom}" />
                 </DataGrid.Columns>
 
@@ -92,7 +90,7 @@
 
         </StackPanel>
 
-        <StackPanel Grid.Column="2" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,5,5,5" Height="50"  >
+        <StackPanel Grid.Column="0" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,5,5,5" Height="50"  >
             <Button Name="OkButton" Content="OK" Margin="2" Height="30" Click="OkButton_Click"  />
             <Button Name="CancelButton" Content="Cancel" Margin="2" Height="30" Click="CancelButton_OnClick"  />
         </StackPanel>

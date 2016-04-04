@@ -12,7 +12,7 @@
                       TitleForeground="#333333"
                       WindowTitleBrush="#f4f4f4"
                       Background="#e6e6e6"
-                      MinWidth="400"
+                      MinWidth="500"
                       MinHeight="200"
                       MaxWidth="450"
                       MaxHeight="500"
@@ -57,20 +57,20 @@
     <Grid>
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="7*" />
-            <ColumnDefinition Width="10*" />
+            <ColumnDefinition Width="150" />
+            <ColumnDefinition Width="320" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="450" />
-            <RowDefinition Height="0" />
+            <RowDefinition Height="390" />
+            <RowDefinition Height="50" />
         </Grid.RowDefinitions>
 
         <Label x:Name="PublisherLabel" Content="Publisher Name" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="0" Grid.Row="0" 
-                                   HorizontalAlignment="Left" Width="166" Margin="0,44,0,9" Grid.ColumnSpan="2" />
+                                   HorizontalAlignment="Left" Width="166" Margin="0 50 0 0" Grid.ColumnSpan="2" />
 
-        <TextBox Grid.Row="0" Name="CertPublisher" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0,44,0,372" Width="225" Height="34"  Grid.Column="1"/>
+        <TextBox Grid.Row="0" Name="CertPublisher" Style="{StaticResource MetroTextBox}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0 50 0 0"  Width="315" Height="34"  Grid.Column="1"/>
 
-        <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,10,317" Height="50" Width="108"  >
+        <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="50" Width="108"  >
             <Button Name="OkButton" Content="OK" Margin="2" Height="30" Click="OkButton_Click"  />
             <Button Name="CancelButton" Content="Cancel" Margin="2" Height="30" Click="CancelButton_OnClick"  />
         </StackPanel>

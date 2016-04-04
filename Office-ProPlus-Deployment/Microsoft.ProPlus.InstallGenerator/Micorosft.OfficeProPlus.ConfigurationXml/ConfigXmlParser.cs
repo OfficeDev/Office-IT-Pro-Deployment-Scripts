@@ -258,7 +258,7 @@ namespace OfficeInstallGenerator
                     RemoveAttribute(addNode, "SourcePath");
                 }
 
-                if (this.ConfigurationXml.Add.OfficeMgmtCOM.HasValue)
+                if (this.ConfigurationXml.Add.OfficeMgmtCOM.HasValue && this.ConfigurationXml.Add.OfficeMgmtCOM.Value)
                 {
                     SetAttribute(addNode, "OfficeMgmtCOM", this.ConfigurationXml.Add.OfficeMgmtCOM.Value.ToString());
                 }

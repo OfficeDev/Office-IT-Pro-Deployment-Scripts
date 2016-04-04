@@ -68,8 +68,6 @@ namespace MetroDemo.ExampleWindows
                     GlobalObjects.ViewModel.SelectedCertificate.FriendlyName = tempCert.FriendlyName ;
                     GlobalObjects.ViewModel.SelectedCertificate.IssuerName = tempCert.IssuerName;
                     GlobalObjects.ViewModel.SelectedCertificate.ThumbPrint = tempCert.ThumbPrint;
-
-
                 }
                 else
                 {

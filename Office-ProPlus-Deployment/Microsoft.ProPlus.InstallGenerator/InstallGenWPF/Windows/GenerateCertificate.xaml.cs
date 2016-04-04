@@ -90,28 +90,23 @@ namespace MetroDemo.ExampleWindows
         private string  CreateCertificate(string publisher)
         {
             var thumbprint = "";
-
-
             try
             {
-
-                Random getRandom = new Random();
+                var getRandom = new Random();
                 var makeCertPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "makecert.exe");
                 var startDate = DateTime.Now.AddDays(-1).ToString("MM/dd/yyyy").Split(' ')[0];
                 var endDate = DateTime.Now.AddYears(2).ToString("MM/dd/yyyy").Split(' ')[0];
                 var serialNumber = getRandom.Next(0, 1000000);
 
+                System.IO.File.WriteAllBytes(makeCertPath, Microsoft.OfficeProPlus.InstallGen.Presentation.Properties.Resources.makecert);
 
-                System.IO.File.WriteAllBytes(makeCertPath,
-                    Microsoft.OfficeProPlus.InstallGen.Presentation.Properties.Resources.makecert);
-
-                Process createProcess = new Process
+                var createProcess = new Process
                 {
                     StartInfo = new ProcessStartInfo()
                     {
                         FileName = makeCertPath,
                         Arguments =
-                            " -r -pe -n CN=" + publisher + " -b " + startDate + " -e " + endDate +
+                            " -r -pe -n \"CN=" + publisher + "\" -b " + startDate + " -e " + endDate +
                             " -eku 1.3.6.1.5.5.7.3.3 -ss My -# " + serialNumber,
                         CreateNoWindow = true,
                         UseShellExecute = false
@@ -119,12 +114,8 @@ namespace MetroDemo.ExampleWindows
                 };
 
                 createProcess.Start();
-
                 createProcess.WaitForExit();
                 thumbprint = GetThumbPrint(serialNumber);
-
-
-
             }
             catch (Exception ex)
             {

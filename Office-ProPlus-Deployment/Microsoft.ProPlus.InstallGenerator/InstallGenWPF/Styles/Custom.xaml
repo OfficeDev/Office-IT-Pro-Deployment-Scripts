@@ -167,7 +167,7 @@
 
     <Color x:Key="TopBarColor">#0072c5</Color>
 
-    <SolidColorBrush x:Key="WindowTitleColorBrush" Color="{StaticResource TopBarColor}" options:Freeze="True" />
+    <SolidColorBrush x:Key="WindowTitleColorBrush" Color="#f4f4f4" options:Freeze="True" />
 
     <system:Double x:Key="WindowTitleFontSize">20</system:Double>
 

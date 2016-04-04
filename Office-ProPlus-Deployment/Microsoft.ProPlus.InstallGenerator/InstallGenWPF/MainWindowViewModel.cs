@@ -516,8 +516,8 @@ namespace MetroDemo
             try
             {
                 Certificates.Clear();
-                X509Store localStore = new X509Store(StoreLocation.CurrentUser);
-                X509Store machineStore = new X509Store(StoreLocation.LocalMachine);
+                var localStore = new X509Store(StoreLocation.CurrentUser);
+                var machineStore = new X509Store(StoreLocation.LocalMachine);
 
                 localStore.Open(OpenFlags.ReadOnly);
                 if (localStore.Certificates.Count > 0)
@@ -525,14 +525,10 @@ namespace MetroDemo
                     foreach (var certificate in localStore.Certificates)
                     {
                         var cert = new Certificate();
-
-                        Console.WriteLine(certificate.SubjectName.Name);
-
                         if(IsSigningCert(certificate))
                         {
-                            if (String.IsNullOrEmpty(certificate.FriendlyName))
+                            if (string.IsNullOrEmpty(certificate.FriendlyName))
                             {
-
                                 cert.FriendlyName = certificate.SubjectName.Name; 
                             }
                             else
@@ -554,7 +550,7 @@ namespace MetroDemo
                 {
                     foreach (var certificate in machineStore.Certificates)
                     {
-                        Certificate cert = new Certificate();
+                        var cert = new Certificate();
 
                         if (IsSigningCert(certificate))
                         {
