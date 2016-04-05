@@ -7,6 +7,7 @@ using System.Reflection;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
+using System.ServiceProcess;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -200,6 +201,45 @@ public class InstallOffice
         doc.Save(installationDirectory + @"\configuration.xml");
 
         return installationDirectory + @"\" + fileNames.FirstOrDefault(f => f.ToLower().EndsWith(".xml"));
+    }
+
+    public async Task ChangeOfficeChannel(string targetChannel, string baseUrl)
+    {
+        var saveBaseUrl = "";
+        try
+        {
+            saveBaseUrl = GetBaseCdnUrl();
+
+            ChangeUpdateSource(baseUrl);
+            ChangeBaseCdnUrl(baseUrl);
+
+            RestartC2RSerivce();
+
+            await RunOfficeUpdateAsync(targetChannel);
+        }
+        catch (Exception ex)
+        {
+            if (!string.IsNullOrEmpty(saveBaseUrl))
+            {
+                ChangeBaseCdnUrl(saveBaseUrl);
+            }
+            throw;
+        }
+        finally
+        {
+            ResetUpdateSource();
+        }
+
+    }
+
+    public static void RestartC2RSerivce()
+    {
+        const string serviceName = "ClickToRunSvc";
+        var service = new ServiceController(serviceName);
+        service.Stop();
+        service.WaitForStatus(ServiceControllerStatus.Stopped, new TimeSpan(0, 0, 5));
+        service.Start();
+        service.WaitForStatus(ServiceControllerStatus.Running, new TimeSpan(0, 0, 5));
     }
 
     public async Task RunOfficeUpdateAsync(string version)
@@ -445,8 +485,7 @@ public class InstallOffice
         var anyRunning = scenarioTasks.Any(s => s.State == "TASKSTATE_EXECUTING");
         return anyRunning;
     }
-
-
+    
     public void WaitForOfficeCtrUpadateWithError(bool showStatus = false)
     {
         if (showStatus) { Console.WriteLine("Waiting for Install to Complete..."); }
@@ -725,6 +764,17 @@ public class InstallOffice
         configKey.SetValue("UpdateUrl", updateSource, RegistryValueKind.String);
 
         return currentupdatepath;
+    }
+
+    public string GetBaseCdnUrl()
+    {
+        var mainRegKey = GetOfficeCtrRegPath();
+        if (mainRegKey == null) return "";
+
+        var configKey = mainRegKey.OpenSubKey(@"Configuration", true);
+        if (configKey == null) return "";
+
+        return GetRegistryValue(configKey, "CDNBaseUrl");
     }
 
     public void ChangeBaseCdnUrl(string updateSource)

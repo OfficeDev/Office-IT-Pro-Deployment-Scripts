@@ -376,8 +376,12 @@ namespace MetroDemo.ExampleViews
         {
             await Task.Run(async () =>
             {
+                InstallOffice installOffice = null;
                 try
                 {
+                    installOffice = new InstallOffice();
+                    installOffice.UpdatingOfficeStatus += installOffice_UpdatingOfficeStatus;
+
                     Dispatcher.Invoke(() =>
                     {
                         UpdateStatus.Content = "Updating...";
@@ -388,9 +392,6 @@ namespace MetroDemo.ExampleViews
                     GlobalObjects.ViewModel.BlockNavigation = true;
 
                     SetItemState(LocalViewItem.Update, LocalViewState.Wait);
-
-                    var installOffice = new InstallOffice();
-                    installOffice.UpdatingOfficeStatus += installOffice_UpdatingOfficeStatus;
 
                     var currentChannel = LocalInstall.Channel;
                     if (!installOffice.IsUpdateRunning())
@@ -404,28 +405,7 @@ namespace MetroDemo.ExampleViews
                         installOffice.ChangeUpdateSource(baseUrl);
                     }
 
-                    Dispatcher.Invoke(() =>
-                    {
-                        if (NewVersionRow.Visibility == Visibility.Visible)
-                        {
-                            var versionFound = false;
-                            for (var i = 0; i < NewVersion.Items.Count; i++)
-                            {
-                                var item = NewVersion.Items[i];
-                                if (item == null) continue;
-
-                                var version = (Build) item;
-                                if (version.Version != LocalInstall.LatestVersion) continue;
-                                NewVersion.SelectedIndex = i;
-                                versionFound = true;
-                                break;
-                            }
-                            if (!versionFound)
-                            {
-                                NewVersion.Text = LocalInstall.LatestVersion;
-                            }
-                        }
-                    });
+                    SetSelectedVersion();
 
                     await installOffice.RunOfficeUpdateAsync(LocalInstall.LatestVersion);
                     
@@ -471,7 +451,6 @@ namespace MetroDemo.ExampleViews
                 }
                 finally
                 {
-                    var installOffice = new InstallOffice();
                     installOffice.ResetUpdateSource();
                     Dispatcher.Invoke(() =>
                     {
@@ -483,12 +462,42 @@ namespace MetroDemo.ExampleViews
             });
         }
 
+        private void SetSelectedVersion()
+        {
+            Dispatcher.Invoke(() =>
+            {
+                if (NewVersionRow.Visibility == Visibility.Visible)
+                {
+                    var versionFound = false;
+                    for (var i = 0; i < NewVersion.Items.Count; i++)
+                    {
+                        var item = NewVersion.Items[i];
+                        if (item == null) continue;
+
+                        var version = (Build)item;
+                        if (version.Version != LocalInstall.LatestVersion) continue;
+                        NewVersion.SelectedIndex = i;
+                        versionFound = true;
+                        break;
+                    }
+                    if (!versionFound)
+                    {
+                        NewVersion.Text = LocalInstall.LatestVersion;
+                    }
+                }
+            });
+        }
+
         public async Task ChangeOfficeChannel()
         {
             await Task.Run(async () =>
             {
+                var installOffice = new InstallOffice();
                 try
                 {
+                    installOffice = new InstallOffice();
+                    installOffice.UpdatingOfficeStatus += installOffice_UpdatingOfficeStatus;
+
                     var newChannel = "";
                     Dispatcher.Invoke(() =>
                     {
@@ -499,10 +508,7 @@ namespace MetroDemo.ExampleViews
                     });
 
                     SetItemState(LocalViewItem.Update, LocalViewState.Wait);
-
-                    var installOffice = new InstallOffice();
-                    installOffice.UpdatingOfficeStatus += installOffice_UpdatingOfficeStatus;
-
+                    
                     var ppDownloader = new ProPlusDownloader();
                     var baseUrl = await ppDownloader.GetChannelBaseUrlAsync(newChannel, OfficeEdition.Office32Bit);
                     if (string.IsNullOrEmpty(baseUrl))
@@ -543,11 +549,7 @@ namespace MetroDemo.ExampleViews
                         }
                     }
 
-                    installOffice.ChangeUpdateSource(baseUrl);
-
-                    await installOffice.RunOfficeUpdateAsync(channelToChangeTo);
-
-                    installOffice.ChangeBaseCdnUrl(baseUrl);
+                    await installOffice.ChangeOfficeChannel(channelToChangeTo, baseUrl);
 
                     Dispatcher.Invoke(() =>
                     {
@@ -591,9 +593,6 @@ namespace MetroDemo.ExampleViews
                 }
                 finally
                 {
-                    var installOffice = new InstallOffice();
-                    installOffice.ResetUpdateSource();
-
                     Dispatcher.Invoke(() =>
                     {
                         ChangeChannel.IsEnabled = true;
