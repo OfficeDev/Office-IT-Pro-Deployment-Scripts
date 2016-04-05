@@ -1,0 +1,631 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<asmv1:assembly xsi:schemaLocation="urn:schemas-microsoft-com:asm.v1 assembly.adaptive.xsd" manifestVersion="1.0" xmlns:asmv1="urn:schemas-microsoft-com:asm.v1" xmlns="urn:schemas-microsoft-com:asm.v2" xmlns:asmv2="urn:schemas-microsoft-com:asm.v2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:co.v1="urn:schemas-microsoft-com:clickonce.v1" xmlns:asmv3="urn:schemas-microsoft-com:asm.v3" xmlns:dsig="http://www.w3.org/2000/09/xmldsig#" xmlns:co.v2="urn:schemas-microsoft-com:clickonce.v2">
+  <asmv1:assemblyIdentity name="Microsoft.CIE.Run.exe" version="2.0.0.16" publicKeyToken="7e4875a70752af6e" language="neutral" processorArchitecture="msil" type="win32" />
+  <description asmv2:iconFile="1447297750_gear_settings_cog_preferences.ico" xmlns="urn:schemas-microsoft-com:asm.v1" />
+  <application />
+  <entryPoint>
+    <assemblyIdentity name="Microsoft.CIE.UI.Run" version="1.1.0.0" language="neutral" processorArchitecture="msil" />
+    <commandLine file="Microsoft.CIE.UI.Run.exe" parameters="" />
+  </entryPoint>
+  <trustInfo>
+    <security>
+      <applicationRequestMinimum>
+        <PermissionSet Unrestricted="true" ID="Custom" SameSite="site" />
+        <defaultAssemblyRequest permissionSetReference="Custom" />
+      </applicationRequestMinimum>
+      <requestedPrivileges xmlns="urn:schemas-microsoft-com:asm.v3">
+        <!-- UAC Manifest Options
+            If you want to change the Windows User Account Control level replace the 
+            requestedExecutionLevel node with one of the following.
+
+        <requestedExecutionLevel  level="asInvoker" uiAccess="false" />
+        <requestedExecutionLevel  level="requireAdministrator" uiAccess="false" />
+        <requestedExecutionLevel  level="highestAvailable" uiAccess="false" />
+
+            Specifying requestedExecutionLevel node will disable file and registry virtualization.
+            If you want to utilize File and Registry Virtualization for backward 
+            compatibility then delete the requestedExecutionLevel node.
+        -->
+        <requestedExecutionLevel level="asInvoker" uiAccess="false" />
+      </requestedPrivileges>
+    </security>
+  </trustInfo>
+  <dependency>
+    <dependentOS>
+      <osVersionInfo>
+        <os majorVersion="5" minorVersion="1" buildNumber="2600" servicePackMajor="0" />
+      </osVersionInfo>
+    </dependentOS>
+  </dependency>
+  <dependency>
+    <dependentAssembly dependencyType="preRequisite" allowDelayedBinding="true">
+      <assemblyIdentity name="Microsoft.Windows.CommonLanguageRuntime" version="4.0.30319.0" />
+    </dependentAssembly>
+  </dependency>
+  <dependency>
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Microsoft.CIE.UI.Run.exe" size="222280">
+      <assemblyIdentity name="Microsoft.CIE.UI.Run" version="1.1.0.0" language="neutral" processorArchitecture="msil" />
+      <hash>
+        <dsig:Transforms>
+          <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+        </dsig:Transforms>
+        <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+        <dsig:DigestValue>/MGEPBQaMDS0RtYv6a6xGyCOzSc=</dsig:DigestValue>
+      </hash>
+    </dependentAssembly>
+  </dependency>
+  <file name="Microsoft.CIE.UI.Run.exe.config" size="271">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>f1O2c+RQ3AmqIWY3NY91fPEljEc=</dsig:DigestValue>
+    </hash>
+  </file>
+  <compatibility xmlns="urn:schemas-microsoft-com:compatibility.v1">
+    <application>
+      <!-- A list of all Windows versions that this application is designed to work with. Windows will automatically select the most compatible environment.-->
+      <!-- If your application is designed to work with Windows 7, uncomment the following supportedOS node-->
+      <!--<supportedOS Id="{35138b9a-5d96-4fbd-8e2d-a2440225f93a}"/>-->
+    </application>
+  </compatibility>
+  <file name="Project\Garlic.dll" size="15360">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>cgPhuwR2yQovPdBHHiCMqiKGB5g=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Project\InstallOffice.cs" size="24085">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>14Utldo4n8qFt5lszX3cByC8PKE=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Project\MahApps.Metro.dll" size="937984">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>Uf/doqe4rbviRZVHjmuZfme9LFk=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Project\MahApps.Metro.pdb" size="1156608">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>YaBR7uaWCOKsJbWESlNna0uvTxY=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Project\MahApps.Metro.Resources.dll" size="1064448">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>UHBdCggLijJT+L9Qf0g7sM+1jMo=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Project\MahApps.Metro.Resources.pdb" size="17920">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>pampauGmAm7D05CAycfJ5TH6cqc=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Project\MahApps.Metro.xml" size="339077">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>9NhgSAJFGaAUoX05uhcdFAKt0Hs=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Project\Micorosft.OfficeProPlus.ConfigurationXml.dll" size="23040">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>aS6E8ZaSd85tqg4c9nmEhUgOc1o=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Project\Micorosft.OfficeProPlus.ConfigurationXml.pdb" size="32256">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>PBxh9LHn+AhvfObDQ6Ybzk6bC/c=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Project\Microsoft.Deployment.WindowsInstaller.dll" size="176128">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>qKPSwVcVdsTI822FKo5F3Favv2c=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Project\Microsoft.Deployment.WindowsInstaller.xml" size="486900">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>7N49DXGCaPVmU66ZgWh3f+9AkUo=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Project\Microsoft.OfficeProPlus.Downloader.dll" size="55808">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>q386gQQeCkk2zKBAgJS1Y3JLuQc=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Project\Microsoft.OfficeProPlus.Downloader.pdb" size="93696">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>QvTJ0PLoDgIapW2yH0coGYem4yk=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Project\Microsoft.OfficeProPlus.MSIGen.dll" size="13312">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>LnkKOhjxQR2OvEKP1fCioNfSn3Q=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Project\Microsoft.OfficeProPlus.MSIGen.pdb" size="22016">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>1PnlxhoLT/4ZmCsIhsaDPtu1YUk=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Project\OfficeInstallGenerator.dll" size="4246016">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>PsVqvTT4wtUMVhPaPWFutIDkRrA=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Project\OfficeInstallGenerator.pdb" size="108032">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>nmwNH7dO2pcdWVGnVQf1FFcJv4g=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Project\System.Windows.Interactivity.dll" size="55904">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>zmxMGM9jj5gJBbnLZxDuH6c7s5c=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Project\WixSharp.dll" size="299008">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>MuVbi8wqsAfeCV6dAhHG+2AmRiM=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Project\wixTools.zip" size="39973772">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>zeVvVepke0L0IUUgRerQbLaJnnE=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Project\WpfAnimatedGif.dll" size="39424">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>kw6ig3N1i+yI5TxPelsUh2qlkAU=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Project\de\System.Windows.Interactivity.resources.dll" size="22704">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>FA42Qss8IE0N1lkqtqtkXWFGeYM=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Project\en\System.Windows.Interactivity.resources.dll" size="22704">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>1wIJUlgi0UUXesDxUUfXXutLLqI=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Project\es\System.Windows.Interactivity.resources.dll" size="22688">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>mqCkcw/CQF1pMC17tF623mtblpo=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Project\fr\System.Windows.Interactivity.resources.dll" size="22688">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>jFE4cwiF5lzOAjSdwGARfynkaCw=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Project\HelpFiles\AcceptEulaInfo.html" size="2052">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>g6mmMEQVVk4Q0fGJ16UAlLoCa40=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Project\HelpFiles\AutoActivateInfo.html" size="1802">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>fFrHk0mFadXynyAweT5bBeIfjVo=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Project\HelpFiles\BranchInfo.html" size="1817">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>d2wLkGEcdDfzAZj732mxALC5LFM=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Project\HelpFiles\DeadlineInfo.html" size="3382">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>N2Pi8kgitZa51GxTjfjLXNrumX0=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Project\HelpFiles\DisplayLevelInfo.html" size="1747">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>o0KvY9qCDa9FiOz39PRkISplPVs=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Project\HelpFiles\EditionInfo.html" size="1665">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>aZUVXKUPreC10yLrkJQ1pXdFcFM=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Project\HelpFiles\EmbedOfficeInstall.html" size="1930">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>wnC4zvWiojMBR7O9TgLqZaDpTNI=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Project\HelpFiles\ExcludeAppInfo.html" size="2486">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>kJyujY/jZmhmq8JXrqStz908aOM=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Project\HelpFiles\ForceAppShutdownInfo.html" size="1873">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>9LzaUZjvbS6z5sWK89Kq9i4aEFw=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Project\HelpFiles\LanguageInfo.html" size="2365">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>f4SEMGRgJpLBkT9XRediH5xfNnU=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Project\HelpFiles\LogLevelInfo.html" size="1363">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>+XITSO84Tdd8LSYc449E2vVXQcw=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Project\HelpFiles\LogPathInfo.html" size="1417">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>0fqCJk1ytRGBgedqSaSI9cs3u+g=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Project\HelpFiles\PackageGuidInfo.html" size="2771">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>x3Rg73lu9NUfMdKecjEztJgovbs=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Project\HelpFiles\PidKeyInfo.html" size="1843">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>fz/PSgVgPVblCyPEbYkmp0g8zeY=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Project\HelpFiles\ProductInfo.html" size="2283">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>oiqaeJ1VvJdH8ngp7lQ/L9oUak4=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Project\HelpFiles\SharedComputerLicensingInfo.html" size="1662">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>IyRGVyVldadirlwY94I040QPTQo=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Project\HelpFiles\SourcePathInfo.html" size="2833">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>Gja8z70Nbw72UmGAEP+aPg6lTKg=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Project\HelpFiles\TargetVersionInfo.html" size="3153">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>KfupL9tmTbINvk//F+g/GDi4lNE=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Project\HelpFiles\UpdatePathInfo.html" size="2334">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>yDjMIF2bMbDAK/JN5atbIrtRylQ=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Project\HelpFiles\VersionInfo.html" size="2157">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>D5xBMbnY/oK4654ow3z6/5RKiOQ=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Project\it\System.Windows.Interactivity.resources.dll" size="22688">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>jinAEpbClgUfomXGqBWvwClpJx8=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Project\ja\System.Windows.Interactivity.resources.dll" size="23200">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>t944j+wxyr23EWROIN874QkLWNg=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Project\ko\System.Windows.Interactivity.resources.dll" size="22688">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>ZLcPJZz8ruof3c8wYV8GbQvQN0o=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Project\ru\System.Windows.Interactivity.resources.dll" size="23216">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>GW1MPVH7ERSCVeWP9LBuzwdQk+Y=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Project\zh-Hans\System.Windows.Interactivity.resources.dll" size="22176">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>cz0UXYiiqAM8GEGro3V9OjKVJZI=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Project\zh-Hant\System.Windows.Interactivity.resources.dll" size="22176">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>O0IC584tvwZ9cvPtZ83P8xxhXis=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="1447297750_gear_settings_cog_preferences.ico" size="106775">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>0App4sBN3afaDJYe6UUH2islSRY=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Project\Newtonsoft.Json.dll" size="522752">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>ysXjbcSY1rsWFwAgvgIf9b0YqeI=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Project\Newtonsoft.Json.xml" size="516075">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>ajcMY1mQIXmGcqEEdVYGqEWey2U=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Project\HelpFiles\EnableSCCMSupportInfo.html" size="2266">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>Vuzg592CQprSwX7x0NrdqtbrOhQ=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Project\Scripts\DefaultConfiguration.xml" size="179">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>0M04TLSXffi4epkns1Xe9Sf+Mnc=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Project\Scripts\Generate-ODTConfigurationXML.ps1" size="61988">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>nN0asFv3o/djleCDvjxdQ+GMR9Y=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Project\Scripts\RunGenerateXML.ps1" size="137">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>6GszMFKPJE/OK44NxQ71f7BvTTU=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Project\OfficeProPlusInstallToolkit.exe" size="2249728">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>9z45Y+wf8roy5euF23Rpgywojzc=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Project\OfficeProPlusInstallToolkit.exe.config" size="839">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>YLEoC9bpxaBc65OpfU5ReBmX5J4=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Project\OfficeProPlusInstallToolkit.pdb" size="583168">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>5zVRJWD9zPkI6eyCBY5+84rlMRU=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Project\Scripts\Tmp-Generate-ODTConfigurationXML.ps1" size="61988">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      <dsig:DigestValue>nN0asFv3o/djleCDvjxdQ+GMR9Y=</dsig:DigestValue>
+    </hash>
+  </file>
+<publisherIdentity name="CN=&quot;Valorem Consulting Group, LLC&quot;, O=&quot;Valorem Consulting Group, LLC&quot;, L=Kansas City, S=Missouri, C=US" issuerKeyHash="40c2bd278ecc348330a233d7fb6cb3f0b42c80ce" /><Signature Id="StrongNameSignature" xmlns="http://www.w3.org/2000/09/xmldsig#"><SignedInfo><CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" /><SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha256" /><Reference URI=""><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature" /><Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" /></Transforms><DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" /><DigestValue>vN1oEFX7L1bUQS5iz+EDj5iRqYaCy6/PuzHRliymyRQ=</DigestValue></Reference></SignedInfo><SignatureValue>QXEB8U0bp0k+pHqjiup6fCyBNnwavfC4EgCWHw3eqNPZrIqMqeiXGjy2RHYfQTSYWryuySkplli5RqtwcTSfpg/TvmvvvIbp2wYjDpmnBwPNL8kges5BS/saCgvy6a4iUTaPDIKKVzddH32/fBsD6bTNhKG1X3qA8cdIQye7Hqv9ZfsvbURVMMVoNHWo3SBC8rDOvVtvukraio8n3K/bPAVkJnGhY4Wp58CLvkMATTPHaEW1gt8IlDHhq3Ja2eAv7spjD9eJaI0tGeyBGjoO1Fzl9e/4qCwzgX6hL9m63+nbev5jNqiUj6KKg39b6cl+/cqCPCsinPaaMSKCK5Lv3w==</SignatureValue><KeyInfo Id="StrongNameKeyInfo"><KeyValue><RSAKeyValue><Modulus>zP/F12dkNCW4AfzxPzL81HB3lZrt1sBn77rzii+gQudfhVhYAv28Hr54/61SebhF+LNSxLOrGnkgUZ0QA0m1yiaNZZozDjXmapu6QePUsS+ysVh/xTZM47Wp99dIGNwYZoaiiRFx4OMeoUGbUQpTqn2Gn7+fp9gIj68uu0EtIz8oQjjzBkD7EstrEcUhBL8Ti4IvOuQqKNEpjwO4Kzk4tanhtiaV8L4xuNOSH5z367ith2FcNAULgoYIpqKTPYqdIhjpqbCclWfkZySs6Dp6jNO5eqyymExnaZp9su/B/CTMFSsP/SvVlp3aJwb9niUu3QD7MYAfAJ4z+muhck7U3Q==</Modulus><Exponent>AQAB</Exponent></RSAKeyValue></KeyValue><msrel:RelData xmlns:msrel="http://schemas.microsoft.com/windows/rel/2005/reldata"><r:license xmlns:r="urn:mpeg:mpeg21:2003:01-REL-R-NS" xmlns:as="http://schemas.microsoft.com/windows/pki/2005/Authenticode"><r:grant><as:ManifestInformation Hash="14c9a62c96d131bbcfafcb8286a991988f03e1cf622e41d4562ffb551068ddbc" Description="" Url=""><as:assemblyIdentity name="Microsoft.CIE.Run.exe" version="2.0.0.16" publicKeyToken="7e4875a70752af6e" language="neutral" processorArchitecture="msil" type="win32" /></as:ManifestInformation><as:SignedBy /><as:AuthenticodePublisher><as:X509SubjectName>CN="Valorem Consulting Group, LLC", O="Valorem Consulting Group, LLC", L=Kansas City, S=Missouri, C=US</as:X509SubjectName></as:AuthenticodePublisher></r:grant><r:issuer><Signature Id="AuthenticodeSignature" xmlns="http://www.w3.org/2000/09/xmldsig#"><SignedInfo><CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" /><SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha256" /><Reference URI=""><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature" /><Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" /></Transforms><DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" /><DigestValue>Q3dzr83RbJycMfh4X3YGOQLxXrSpNb3l/76Ww+X04z0=</DigestValue></Reference></SignedInfo><SignatureValue>WWYWN5QOIyyqzfmz0btP+VRcr3Vj8cZLfl9LJjqUkLwz8nySxydyC7lh/H826KHP/1t89QMK6Mxqk7kEDvASa9tvhd3AbN7e259D1MOQvq1I7S6VY+RamrYBhMVS7AyTYdUys//tWmAy4PNfYA3w3lotf8H6pYYrjUM3jzCHcKp856Mdxuvd2UqJyPfUWxxf8NIz8rMGr0PGTDAd97f8ouPTORUF36xzNNk5jn2eg6i03x1kn9YwzEU1Lma2Tk6i2pnHVuE3ByERw1B5uiOpoE4ospyMTXxDasJR+w1mjR6+zRQ4iEMdbtsq1BM0St/AvFIG43nFhmvqEn+mn++edg==</SignatureValue><KeyInfo><KeyValue><RSAKeyValue><Modulus>zP/F12dkNCW4AfzxPzL81HB3lZrt1sBn77rzii+gQudfhVhYAv28Hr54/61SebhF+LNSxLOrGnkgUZ0QA0m1yiaNZZozDjXmapu6QePUsS+ysVh/xTZM47Wp99dIGNwYZoaiiRFx4OMeoUGbUQpTqn2Gn7+fp9gIj68uu0EtIz8oQjjzBkD7EstrEcUhBL8Ti4IvOuQqKNEpjwO4Kzk4tanhtiaV8L4xuNOSH5z367ith2FcNAULgoYIpqKTPYqdIhjpqbCclWfkZySs6Dp6jNO5eqyymExnaZp9su/B/CTMFSsP/SvVlp3aJwb9niUu3QD7MYAfAJ4z+muhck7U3Q==</Modulus><Exponent>AQAB</Exponent></RSAKeyValue></KeyValue><X509Data><X509Certificate>MIIFOzCCBCOgAwIBAgIIGmDNt89P3zkwDQYJKoZIhvcNAQELBQAwgbQxCzAJBgNVBAYTAlVTMRAwDgYDVQQIEwdBcml6b25hMRMwEQYDVQQHEwpTY290dHNkYWxlMRowGAYDVQQKExFHb0RhZGR5LmNvbSwgSW5jLjEtMCsGA1UECxMkaHR0cDovL2NlcnRzLmdvZGFkZHkuY29tL3JlcG9zaXRvcnkvMTMwMQYDVQQDEypHbyBEYWRkeSBTZWN1cmUgQ2VydGlmaWNhdGUgQXV0aG9yaXR5IC0gRzIwHhcNMTUwNDI4MjA0NTM4WhcNMTcwNTE3MjExOTA2WjCBhjELMAkGA1UEBhMCVVMxETAPBgNVBAgTCE1pc3NvdXJpMRQwEgYDVQQHEwtLYW5zYXMgQ2l0eTEmMCQGA1UEChMdVmFsb3JlbSBDb25zdWx0aW5nIEdyb3VwLCBMTEMxJjAkBgNVBAMTHVZhbG9yZW0gQ29uc3VsdGluZyBHcm91cCwgTExDMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAzP/F12dkNCW4AfzxPzL81HB3lZrt1sBn77rzii+gQudfhVhYAv28Hr54/61SebhF+LNSxLOrGnkgUZ0QA0m1yiaNZZozDjXmapu6QePUsS+ysVh/xTZM47Wp99dIGNwYZoaiiRFx4OMeoUGbUQpTqn2Gn7+fp9gIj68uu0EtIz8oQjjzBkD7EstrEcUhBL8Ti4IvOuQqKNEpjwO4Kzk4tanhtiaV8L4xuNOSH5z367ith2FcNAULgoYIpqKTPYqdIhjpqbCclWfkZySs6Dp6jNO5eqyymExnaZp9su/B/CTMFSsP/SvVlp3aJwb9niUu3QD7MYAfAJ4z+muhck7U3QIDAQABo4IBezCCAXcwDAYDVR0TAQH/BAIwADATBgNVHSUEDDAKBggrBgEFBQcDAzAOBgNVHQ8BAf8EBAMCB4AwNQYDVR0fBC4wLDAqoCigJoYkaHR0cDovL2NybC5nb2RhZGR5LmNvbS9nZGlnMnM1LTAuY3JsMFMGA1UdIARMMEowSAYLYIZIAYb9bQEHFwIwOTA3BggrBgEFBQcCARYraHR0cDovL2NlcnRpZmljYXRlcy5nb2RhZGR5LmNvbS9yZXBvc2l0b3J5LzB2BggrBgEFBQcBAQRqMGgwJAYIKwYBBQUHMAGGGGh0dHA6Ly9vY3NwLmdvZGFkZHkuY29tLzBABggrBgEFBQcwAoY0aHR0cDovL2NlcnRpZmljYXRlcy5nb2RhZGR5LmNvbS9yZXBvc2l0b3J5L2dkaWcyLmNydDAfBgNVHSMEGDAWgBRAwr0njsw0gzCiM9f7bLPwtCyAzjAdBgNVHQ4EFgQUTEe4mpE4ryf3Q72HiOUDMDqqPDgwDQYJKoZIhvcNAQELBQADggEBAGhaGjJc7DFoSiuvJ+rVVuuMjVjCpHV6sThWuzrHnIjal2IDFI3y6daVUtSh9Sh5UAt/j+d+eY10tQRpeOUehxTnxf7t3n598IIVB3JT3RIwjnbMb5Nbr3/80umbBGR4uMqVH0BSajngdDtXmpvEA+scVEdaWqOsNATaQZ8wc7L0sr6EWBO5TU3Xfv53b5nWiDIae1GWbvjwi/J448XsXJStmxOIBMY9vUk9TfkkGzIUIEgAW10I6S1ITNUDLeE8QKjvXS0o/jtvWtDblfYFS5S0m3SEGxPVW2m6DOzreMI45BZFzYKtHlAMh0pKpTRIC8ck5CFm8c/XFbDXd6lSfTY=</X509Certificate><X509Certificate>MIIE0DCCA7igAwIBAgIBBzANBgkqhkiG9w0BAQsFADCBgzELMAkGA1UEBhMCVVMxEDAOBgNVBAgTB0FyaXpvbmExEzARBgNVBAcTClNjb3R0c2RhbGUxGjAYBgNVBAoTEUdvRGFkZHkuY29tLCBJbmMuMTEwLwYDVQQDEyhHbyBEYWRkeSBSb290IENlcnRpZmljYXRlIEF1dGhvcml0eSAtIEcyMB4XDTExMDUwMzA3MDAwMFoXDTMxMDUwMzA3MDAwMFowgbQxCzAJBgNVBAYTAlVTMRAwDgYDVQQIEwdBcml6b25hMRMwEQYDVQQHEwpTY290dHNkYWxlMRowGAYDVQQKExFHb0RhZGR5LmNvbSwgSW5jLjEtMCsGA1UECxMkaHR0cDovL2NlcnRzLmdvZGFkZHkuY29tL3JlcG9zaXRvcnkvMTMwMQYDVQQDEypHbyBEYWRkeSBTZWN1cmUgQ2VydGlmaWNhdGUgQXV0aG9yaXR5IC0gRzIwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQC54MsQ1K92vdSTYuswZLiBCGzDBNliF44v/z5lz4/OYuY8UhzaFkVLVat4a2ODYpDOD2lsmcgaFItMzEUz6ojcnqOvK/6AYZ15V8TPLvQ/MDxdR/yaFrzDN5ZBUY4RS1T4KL7QjL7wMDge87Am+GZHY23ecSZHjzhHU9FGHbTj3ADqRay9vHHZqm8A29vNMDp5T19MR/gd71vCxJ1gO7GyQ5HYpDNO6rPWJ0+tJYqlxvTV0KaudAVkV4i1RFXULSo6Pvi4vekyCgKUZMQWOlDxSq7neTOvDCAHf+jfBDnCaQJsY1L6d8EbyHSHyLmTGFBUNUtpTrw700kuH9zB0lL7AgMBAAGjggEaMIIBFjAPBgNVHRMBAf8EBTADAQH/MA4GA1UdDwEB/wQEAwIBBjAdBgNVHQ4EFgQUQMK9J47MNIMwojPX+2yz8LQsgM4wHwYDVR0jBBgwFoAUOpqFBxBnKLbv9r0FQW4gwZTaD94wNAYIKwYBBQUHAQEEKDAmMCQGCCsGAQUFBzABhhhodHRwOi8vb2NzcC5nb2RhZGR5LmNvbS8wNQYDVR0fBC4wLDAqoCigJoYkaHR0cDovL2NybC5nb2RhZGR5LmNvbS9nZHJvb3QtZzIuY3JsMEYGA1UdIAQ/MD0wOwYEVR0gADAzMDEGCCsGAQUFBwIBFiVodHRwczovL2NlcnRzLmdvZGFkZHkuY29tL3JlcG9zaXRvcnkvMA0GCSqGSIb3DQEBCwUAA4IBAQAIfmyTEMg4uJapkEv/oV9PBO9sPpyIBslQj6Zz91cxG7685C/b+LrTW+C05+Z5Yg4MotdqY3MxtfWoSKQ7CC2iXZDXtHwlTxFWMMS2RJ17LJ3lXubvDGGqv+QqG+6EnriDfcFDzkSnE3ANkR/0yBOtg2DZ2HKocyQetawiDsoXiWJYRBuriSUBAA/NxBti21G00w9RKpv0vHP8ds42pM3Z2Czqrpv1KrKQ0U11GIo/ikGQI31bS/6kA1ibRrLDYGCD+H1QQc7CoZDDu+8CL9IVVO5EFdkKrqeKM+2xLXY2JtwE65/3YR8V3Idv7kaWKK2hJn0KCacuBKONvPi8BDAB</X509Certificate><X509Certificate>MIIEfTCCA2WgAwIBAgIDG+cVMA0GCSqGSIb3DQEBCwUAMGMxCzAJBgNVBAYTAlVTMSEwHwYDVQQKExhUaGUgR28gRGFkZHkgR3JvdXAsIEluYy4xMTAvBgNVBAsTKEdvIERhZGR5IENsYXNzIDIgQ2VydGlmaWNhdGlvbiBBdXRob3JpdHkwHhcNMTQwMTAxMDcwMDAwWhcNMzEwNTMwMDcwMDAwWjCBgzELMAkGA1UEBhMCVVMxEDAOBgNVBAgTB0FyaXpvbmExEzARBgNVBAcTClNjb3R0c2RhbGUxGjAYBgNVBAoTEUdvRGFkZHkuY29tLCBJbmMuMTEwLwYDVQQDEyhHbyBEYWRkeSBSb290IENlcnRpZmljYXRlIEF1dGhvcml0eSAtIEcyMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAv3FiCPH6WTT3G8kYo/eASVjpIoMTpsUgQwE7hPHmhUmfJ+r2hBtOoLTbcJjHMgGxBT4HTu70+k8vWTAi56sZVmvigAf88xZ1gDlRe+X5NbZ0TqmNghPktj+pA4P6or6KFWp/3gvDthkUBcrqw6gElDtGfDIN8wBmIsiNaW02jBEYt9OyHGC0OPoCjM7T3UYH3go+6118yHz7sCtTpJJiaVElBWEaRIGMLKlDliPfrDqBmg4pxRyp6V0etp6eMAo5zvGIgPtLXcwy7IViQyU0AlYnAZG0O3AqP26x6JyIAX2f1PnbU21gnb8s51iruF9G/M7EGwM8CetJMVxpRrPgRwIDAQABo4IBFzCCARMwDwYDVR0TAQH/BAUwAwEB/zAOBgNVHQ8BAf8EBAMCAQYwHQYDVR0OBBYEFDqahQcQZyi27/a9BUFuIMGU2g/eMB8GA1UdIwQYMBaAFNLEsNKR1EwRcbNhyz2h/t2oatTjMDQGCCsGAQUFBwEBBCgwJjAkBggrBgEFBQcwAYYYaHR0cDovL29jc3AuZ29kYWRkeS5jb20vMDIGA1UdHwQrMCkwJ6AloCOGIWh0dHA6Ly9jcmwuZ29kYWRkeS5jb20vZ2Ryb290LmNybDBGBgNVHSAEPzA9MDsGBFUdIAAwMzAxBggrBgEFBQcCARYlaHR0cHM6Ly9jZXJ0cy5nb2RhZGR5LmNvbS9yZXBvc2l0b3J5LzANBgkqhkiG9w0BAQsFAAOCAQEAWQtTvZKGEacke+1bMc8dH2xwxbhuvk679r6XUOEwf7ooXGKUwuN+M/f7QnaF25UcjCJYdQkMiGVnOQoWCcWgOJekxSOTP7QYpgEGRJHjp2kntFolfzq3Ms3dhP8qOCkzpN1nsoX+oYggHFCJyNwq9kIDN0zmiN/VryTyscPfzLXs4Jlet0lUIDyUGAzHHFIYSaRt4bNYC8nY7NmuHDKOKHAN4v6mF56ED71XcLNa6R+ghlO773z/aQvgSMO3kwvIClTErF0UZzdsyqUvMQg3qm5vjLyb4lddJIGvl5echK1srDdMZvNhkREg5L4wn3qkKQmw4TRfZHcYQFHfjDCmrw==</X509Certificate></X509Data></KeyInfo></Signature></r:issuer></r:license></msrel:RelData></KeyInfo></Signature></asmv1:assembly>
