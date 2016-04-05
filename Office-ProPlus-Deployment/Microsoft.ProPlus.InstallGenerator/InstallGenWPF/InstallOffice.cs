@@ -357,6 +357,7 @@ public class InstallOffice
             var allComplete = true;
 
             var scenarioTasks = GetRunningScenarioTasks();
+            if (scenarioTasks == null) return;
             if (scenarioTasks.Count == 0) return;
 
             anyCancelled = scenarioTasks.Any(s => s.State == "TASKSTATE_CANCELLED");

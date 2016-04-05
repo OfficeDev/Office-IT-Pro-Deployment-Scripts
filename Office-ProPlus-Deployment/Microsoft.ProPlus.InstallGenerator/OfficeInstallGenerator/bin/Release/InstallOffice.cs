@@ -480,6 +480,7 @@ public class InstallOffice
     public bool IsUpdateRunning()
     {
         var scenarioTasks = GetRunningScenarioTasks(true);
+        if (scenarioTasks == null) return false;
         if (scenarioTasks.Count == 0) return false;
 
         var anyRunning = scenarioTasks.Any(s => s.State == "TASKSTATE_EXECUTING");
@@ -508,6 +509,7 @@ public class InstallOffice
             var allComplete = true;
 
             var scenarioTasks = GetRunningScenarioTasks(true);
+            if (scenarioTasks == null) return;
             if (scenarioTasks.Count == 0) return;
 
             anyCancelled = scenarioTasks.Any(s => s.State == "TASKSTATE_CANCELLED");
@@ -596,6 +598,7 @@ public class InstallOffice
             var allComplete = true;
 
             var scenarioTasks = GetRunningScenarioTasks();
+            if (scenarioTasks == null) return;
             if (scenarioTasks.Count == 0) return;
 
             anyCancelled = scenarioTasks.Any(s => s.State == "TASKSTATE_CANCELLED");
