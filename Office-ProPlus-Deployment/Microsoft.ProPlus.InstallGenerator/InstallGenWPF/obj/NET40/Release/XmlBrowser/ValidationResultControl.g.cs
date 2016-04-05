@@ -60,7 +60,7 @@ namespace MahApps.Metro.Controls.XmlBrowser {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/OfficeProPlusInstallGenerator;component/xmlbrowser/validationresultcontrol.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/OfficeProPlusInstallToolkit;component/xmlbrowser/validationresultcontrol.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\..\XmlBrowser\ValidationResultControl.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);

@@ -233,7 +233,7 @@ namespace MetroDemo.ExampleViews {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/OfficeProPlusInstallGenerator;component/exampleviews/generateview.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/OfficeProPlusInstallToolkit;component/exampleviews/generateview.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\..\ExampleViews\GenerateView.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);

@@ -257,19 +257,11 @@ public class CustomActions
     [CustomAction]
     public static ActionResult InstallOffice(Session session)
     {
-       
-
         try
         {
-           
             var installDir = session.CustomActionData["INSTALLDIR"];
-
-
             if (installDir == null) return ActionResult.Failure;
-
             var isSilent = false;
-
-
             try
             {
                 var uiLevel = session.CustomActionData["UILevel"];
@@ -298,14 +290,8 @@ public class CustomActions
                 p.StartInfo.Arguments = "/silent";
                
             }
-            
-
             p.Start();
             Process.GetCurrentProcess().Close();
-
-
-
-           
             return ActionResult.Success;
         }
         catch (Exception ex)
@@ -323,16 +309,39 @@ public class CustomActions
             var installDir = session.CustomActionData["INSTALLDIR"];
             if (installDir == null) return ActionResult.Failure;
 
+            var isSilent = false;
+            try
+            {
+                var uiLevel = session.CustomActionData["UILevel"];
+                if (uiLevel == "2" || uiLevel == "3")
+                {
+                    isSilent = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
+            var arguments = "/uninstall";
+
             var p = new Process
             {
                 StartInfo = new ProcessStartInfo()
                 {
                     FileName = installDir + @"\InstallOfficeProPlus.exe",
-                    Arguments = "/uninstall",
+                    Arguments = arguments,
                     CreateNoWindow = true,
                     UseShellExecute = false
                 },
             };
+
+            if (isSilent)
+            {
+                arguments += " /silent";
+                p.StartInfo.Arguments = arguments;
+            }
+
             p.Start();
             p.WaitForExit();
 

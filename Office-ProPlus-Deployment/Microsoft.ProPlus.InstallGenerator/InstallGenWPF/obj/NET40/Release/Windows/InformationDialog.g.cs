@@ -71,7 +71,7 @@ namespace MetroDemo.ExampleWindows {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/OfficeProPlusInstallGenerator;component/windows/informationdialog.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/OfficeProPlusInstallToolkit;component/windows/informationdialog.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\..\Windows\InformationDialog.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);

@@ -90,7 +90,7 @@ namespace MetroDemo.ExampleWindows {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/OfficeProPlusInstallGenerator;component/windows/certificatesdialog.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/OfficeProPlusInstallToolkit;component/windows/certificatesdialog.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\..\Windows\CertificatesDialog.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);

@@ -51,7 +51,7 @@ public partial class resources_icons_xaml : System.Windows.ResourceDictionary, S
             return;
         }
         _contentLoaded = true;
-        System.Uri resourceLocater = new System.Uri("/OfficeProPlusInstallGenerator;component/resources/icons.xaml", System.UriKind.Relative);
+        System.Uri resourceLocater = new System.Uri("/OfficeProPlusInstallToolkit;component/resources/icons.xaml", System.UriKind.Relative);
         
         #line 1 "..\..\..\..\Resources\Icons.xaml"
         System.Windows.Application.LoadComponent(this, resourceLocater);
