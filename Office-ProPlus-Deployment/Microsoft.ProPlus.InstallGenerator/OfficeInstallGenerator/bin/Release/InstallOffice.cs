@@ -1108,6 +1108,7 @@ public class InstallOffice
     {
         return !GetArguments().Any(a => (a.Key.ToLower() != "/uninstall" &&
                                          a.Key.ToLower() != "/showxml" &&
+                                         a.Key.ToLower() != "/silent" &&
                                          a.Key.ToLower() != "/extractxml"));
     }
 

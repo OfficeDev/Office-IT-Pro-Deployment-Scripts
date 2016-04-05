@@ -325,6 +325,11 @@ public class CustomActions
 
             var arguments = "/uninstall";
 
+            if (isSilent)
+            {
+                arguments += " /silent";
+            }
+
             var p = new Process
             {
                 StartInfo = new ProcessStartInfo()
@@ -335,12 +340,6 @@ public class CustomActions
                     UseShellExecute = false
                 },
             };
-
-            if (isSilent)
-            {
-                arguments += " /silent";
-                p.StartInfo.Arguments = arguments;
-            }
 
             p.Start();
             p.WaitForExit();
