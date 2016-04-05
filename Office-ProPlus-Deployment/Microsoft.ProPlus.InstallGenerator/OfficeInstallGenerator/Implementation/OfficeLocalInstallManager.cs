@@ -10,6 +10,7 @@ using Microsoft.OfficeProPlus.Downloader;
 using Microsoft.OfficeProPlus.Downloader.Model;
 using Microsoft.OfficeProPlus.InstallGenerator.Model;
 using Microsoft.Win32;
+using OfficeInstallGenerator;
 
 namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
 {
@@ -159,6 +160,53 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
             }
             return null;
         }
+
+        public void UnInstallOffice()
+        {
+            const string configurationXml = "<Configuration><Remove All=\"TRUE\"/><Display Level=\"Full\" /></Configuration>";
+
+            var tmpPath = Environment.ExpandEnvironmentVariables("%temp%");
+            var embededExeFiles = EmbeddedResources.GetEmbeddedItems(tmpPath, @"\.exe$");
+
+            var installExe = tmpPath + @"\" + embededExeFiles.FirstOrDefault(f => f.ToLower().Contains("2016"));
+            var xmlPath = tmpPath + @"\configuration.xml";
+
+            if (System.IO.File.Exists(xmlPath)) System.IO.File.Delete(xmlPath);
+            System.IO.File.WriteAllText(xmlPath, configurationXml);
+
+            var p = new Process
+            {
+                StartInfo = new ProcessStartInfo()
+                {
+                    FileName = installExe,
+                    Arguments = "/configure " + tmpPath + @"\configuration.xml",
+                    CreateNoWindow = true,
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true
+                },
+            };
+            p.Start();
+            p.WaitForExit();
+
+            var error = p.StandardError.ReadToEnd();
+            if (!string.IsNullOrEmpty(error)) throw (new Exception(error));
+
+            if (System.IO.File.Exists(xmlPath)) System.IO.File.Delete(xmlPath);
+
+            foreach (var exeFilePath in embededExeFiles)
+            {
+                try
+                {
+                    if (System.IO.File.Exists(tmpPath + @"\" + exeFilePath))
+                    {
+                        System.IO.File.Delete(tmpPath + @"\" + exeFilePath);
+                    }
+                }
+                catch { }
+            }
+        }
+    
 
         private string GetRegistryValue(RegistryKey regKey, string property)
         {

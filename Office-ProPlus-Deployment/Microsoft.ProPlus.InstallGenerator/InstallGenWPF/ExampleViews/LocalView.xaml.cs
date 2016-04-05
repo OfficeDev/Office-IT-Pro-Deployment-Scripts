@@ -619,7 +619,7 @@ namespace MetroDemo.ExampleViews
 
                     SetItemState(LocalViewItem.Uninstall, LocalViewState.Wait);
 
-                    var installGenerator = new InstallOffice();
+                    var installGenerator = new OfficeLocalInstallManager();
                     installGenerator.UnInstallOffice();
 
                     SetItemState(LocalViewItem.Uninstall, LocalViewState.Success);

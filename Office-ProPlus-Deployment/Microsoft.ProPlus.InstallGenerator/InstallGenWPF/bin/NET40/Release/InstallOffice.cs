@@ -189,6 +189,7 @@ public class InstallOffice
     {
         return !GetArguments().Any(a => (a.Key.ToLower() != "/uninstall" &&
                                          a.Key.ToLower() != "/showxml" &&
+                                         a.Key.ToLower() != "/silent" &&
                                          a.Key.ToLower() != "/extractxml"));
     }
 
@@ -225,7 +226,7 @@ public class InstallOffice
         if (display == null)
         {
             display = doc.CreateElement("Display");
-            doc.AppendChild(display);
+            doc.DocumentElement.AppendChild(display);
         }
 
         SetAttribute(doc, display, "Level", "None");
