@@ -270,7 +270,6 @@ public class InstallOffice
 
     #region Office Operations
 
-
     public string GetOfficeC2RPath()
     {
         var officeRegKey = GetOfficeCtrRegPath();

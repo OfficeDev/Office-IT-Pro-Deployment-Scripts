@@ -153,7 +153,7 @@
                                                                         Style="{DynamicResource MetroComboBox}"
                                                                         Controls:TextBoxHelper.Watermark="{Binding Version}"
                                                                         DisplayMemberPath="Version" Foreground="{StaticResource GrayBrush}"
-                                                                        IsEditable="True"
+                                                                        IsEditable="True" IsTextSearchEnabled="True"
                                                                         ItemsSource="{Binding Builds}"
                                                                         MaxDropDownHeight="125"
                                                                         FontSize="20"

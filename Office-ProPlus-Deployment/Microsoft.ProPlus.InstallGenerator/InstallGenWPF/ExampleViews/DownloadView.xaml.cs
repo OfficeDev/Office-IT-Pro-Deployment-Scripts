@@ -82,8 +82,14 @@ namespace MetroDemo.ExampleViews
                 }
             }
 
-            var currentBranch =
-                GlobalObjects.ViewModel.Branches.FirstOrDefault(b => b.NewName.ToLower() == "Current".ToLower());
+            var currentBranch = GlobalObjects.ViewModel.Branches.FirstOrDefault(b => b.NewName.ToLower() == "Current".ToLower());
+            var deferredBranch = GlobalObjects.ViewModel.Branches.FirstOrDefault(b => b.NewName.ToLower() == "Deferred".ToLower());
+            var firstReleaseDeferred = GlobalObjects.ViewModel.Branches.FirstOrDefault(b => b.NewName.ToLower() == "FirstReleaseDeferred".ToLower());
+            var firstReleaseCurrent = GlobalObjects.ViewModel.Branches.FirstOrDefault(b => b.NewName.ToLower() == "FirstReleaseCurrent".ToLower());
+            if (currentBranch == null) currentBranch = new OfficeBranch();
+            if (deferredBranch == null) deferredBranch = new OfficeBranch();
+            if (firstReleaseDeferred == null) firstReleaseDeferred = new OfficeBranch();
+            if (firstReleaseCurrent == null) firstReleaseCurrent = new OfficeBranch();
 
             items = new List<Channel>
             {
@@ -93,22 +99,30 @@ namespace MetroDemo.ExampleViews
                     ChannelName = "Current",
                     Version = "Latest",
                     Builds = currentBranch.Versions,
-                    ForeGround = "Gray"
+                    ForeGround = "Gray",
                 },
-                new Channel() {Name = "Deferred", ChannelName = "Deferred", Version = "Latest", ForeGround = "Gray"},
+                new Channel() {
+                    Name = "Deferred", 
+                    ChannelName = "Deferred", 
+                    Version = "Latest", 
+                    ForeGround = "Gray",
+                    Builds = deferredBranch.Versions
+                },
                 new Channel()
                 {
                     Name = "First Release Deferred",
                     ChannelName = "FirstReleaseDeferred",
                     Version = "Latest",
-                    ForeGround = "Gray"
+                    ForeGround = "Gray",
+                    Builds = firstReleaseDeferred.Versions
                 },
                 new Channel()
                 {
                     Name = "First Release Current",
                     ChannelName = "FirstReleaseCurrent",
                     Version = "Latest",
-                    ForeGround = "Gray"
+                    ForeGround = "Gray",
+                    Builds = firstReleaseCurrent.Versions
                 }
             };
 
