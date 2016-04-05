@@ -61,7 +61,7 @@ namespace XMLViewer {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/OfficeProPlusInstallGenerator;component/viewer.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/OfficeProPlusInstallToolkit;component/viewer.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\Viewer.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);

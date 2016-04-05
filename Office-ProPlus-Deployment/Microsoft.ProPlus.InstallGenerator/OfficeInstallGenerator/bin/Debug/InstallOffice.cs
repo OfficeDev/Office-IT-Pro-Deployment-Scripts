@@ -1,26 +1,24 @@
 ﻿using System;
-using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Reflection;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
+using System.ServiceProcess;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using Microsoft.OfficeProPlus.InstallGenerator.Events;
-using Microsoft.OfficeProPlus.InstallGenerator.Extensions;
 using Microsoft.Win32;
+
 //[assembly: AssemblyTitle("")]
 //[assembly: AssemblyProduct("")]
 //[assembly: AssemblyDescription("")]
 //[assembly: AssemblyVersion("")]
 //[assembly: AssemblyFileVersion("")]
-using OfficeInstallGenerator;
 
 public class InstallOffice
 {
@@ -67,7 +65,6 @@ public class InstallOffice
             //Directory.CreateDirectory(Environment.ExpandEnvironmentVariables(@"%temp%\OfficeProPlus\LogFiles"));
 
             var args = GetArguments();
-
             if (args.Any())
             {
                 if (!HasValidArguments())
@@ -202,6 +199,45 @@ public class InstallOffice
         return installationDirectory + @"\" + fileNames.FirstOrDefault(f => f.ToLower().EndsWith(".xml"));
     }
 
+    public async Task ChangeOfficeChannel(string targetChannel, string baseUrl)
+    {
+        var saveBaseUrl = "";
+        try
+        {
+            saveBaseUrl = GetBaseCdnUrl();
+
+            ChangeUpdateSource(baseUrl);
+            ChangeBaseCdnUrl(baseUrl);
+
+            RestartC2RSerivce();
+
+            await RunOfficeUpdateAsync(targetChannel);
+        }
+        catch (Exception ex)
+        {
+            if (!string.IsNullOrEmpty(saveBaseUrl))
+            {
+                ChangeBaseCdnUrl(saveBaseUrl);
+            }
+            throw;
+        }
+        finally
+        {
+            ResetUpdateSource();
+        }
+
+    }
+
+    public static void RestartC2RSerivce()
+    {
+        const string serviceName = "ClickToRunSvc";
+        var service = new ServiceController(serviceName);
+        service.Stop();
+        service.WaitForStatus(ServiceControllerStatus.Stopped, new TimeSpan(0, 0, 5));
+        service.Start();
+        service.WaitForStatus(ServiceControllerStatus.Running, new TimeSpan(0, 0, 5));
+    }
+
     public async Task RunOfficeUpdateAsync(string version)
     {
         await Task.Run(async () => { 
@@ -234,52 +270,7 @@ public class InstallOffice
 
     #region Office Operations
 
-    public void UnInstallOffice()
-    {
-        const string configurationXml = "<Configuration><Remove All=\"TRUE\"/><Display Level=\"Full\" /></Configuration>";
 
-        var tmpPath = Environment.ExpandEnvironmentVariables("%temp%");
-        var embededExeFiles = EmbeddedResources.GetEmbeddedItems(tmpPath, @"\.exe$");
-
-        var installExe = tmpPath + @"\" + embededExeFiles.FirstOrDefault(f => f.ToLower().Contains("2016"));
-        var xmlPath = tmpPath + @"\configuration.xml";
-
-        if (File.Exists(xmlPath)) File.Delete(xmlPath);
-        File.WriteAllText(xmlPath, configurationXml);
-
-        var p = new Process
-        {
-            StartInfo = new ProcessStartInfo()
-            {
-                FileName = installExe,
-                Arguments = "/configure " + tmpPath + @"\configuration.xml",
-                CreateNoWindow = true,
-                UseShellExecute = false,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true
-            },
-        };
-        p.Start();
-        p.WaitForExit();
-
-        var error = p.StandardError.ReadToEnd();
-        if (!string.IsNullOrEmpty(error)) throw (new Exception(error));
-
-        if (File.Exists(xmlPath)) File.Delete(xmlPath);
-
-        foreach (var exeFilePath in embededExeFiles)
-        {
-            try
-            {
-                if (File.Exists(tmpPath + @"\" + exeFilePath))
-                {
-                    File.Delete(tmpPath + @"\" + exeFilePath);
-                }
-            }
-            catch { }
-        }
-    }
-    
     public string GetOfficeC2RPath()
     {
         var officeRegKey = GetOfficeCtrRegPath();
@@ -440,13 +431,13 @@ public class InstallOffice
     public bool IsUpdateRunning()
     {
         var scenarioTasks = GetRunningScenarioTasks(true);
+        if (scenarioTasks == null) return false;
         if (scenarioTasks.Count == 0) return false;
 
         var anyRunning = scenarioTasks.Any(s => s.State == "TASKSTATE_EXECUTING");
         return anyRunning;
     }
-
-
+    
     public void WaitForOfficeCtrUpadateWithError(bool showStatus = false)
     {
         if (showStatus) { Console.WriteLine("Waiting for Install to Complete..."); }
@@ -469,6 +460,7 @@ public class InstallOffice
             var allComplete = true;
 
             var scenarioTasks = GetRunningScenarioTasks(true);
+            if (scenarioTasks == null) return;
             if (scenarioTasks.Count == 0) return;
 
             anyCancelled = scenarioTasks.Any(s => s.State == "TASKSTATE_CANCELLED");
@@ -557,6 +549,7 @@ public class InstallOffice
             var allComplete = true;
 
             var scenarioTasks = GetRunningScenarioTasks();
+            if (scenarioTasks == null) return;
             if (scenarioTasks.Count == 0) return;
 
             anyCancelled = scenarioTasks.Any(s => s.State == "TASKSTATE_CANCELLED");
@@ -725,6 +718,17 @@ public class InstallOffice
         configKey.SetValue("UpdateUrl", updateSource, RegistryValueKind.String);
 
         return currentupdatepath;
+    }
+
+    public string GetBaseCdnUrl()
+    {
+        var mainRegKey = GetOfficeCtrRegPath();
+        if (mainRegKey == null) return "";
+
+        var configKey = mainRegKey.OpenSubKey(@"Configuration", true);
+        if (configKey == null) return "";
+
+        return GetRegistryValue(configKey, "CDNBaseUrl");
     }
 
     public void ChangeBaseCdnUrl(string updateSource)
@@ -1055,6 +1059,7 @@ public class InstallOffice
     {
         return !GetArguments().Any(a => (a.Key.ToLower() != "/uninstall" &&
                                          a.Key.ToLower() != "/showxml" &&
+                                         a.Key.ToLower() != "/silent" &&
                                          a.Key.ToLower() != "/extractxml"));
     }
 

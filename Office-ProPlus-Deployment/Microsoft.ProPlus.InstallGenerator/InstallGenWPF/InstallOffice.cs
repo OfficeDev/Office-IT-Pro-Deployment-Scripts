@@ -49,17 +49,11 @@ public class InstallOffice
             MinimizeWindow();
 
             SilentInstall = false;
-
-
             var startTime = DateTime.Now;
-
-
-
-            var currentDirectory = Environment.ExpandEnvironmentVariables("%public%");
+            
+            var currentDirectory = Environment.ExpandEnvironmentVariables("%temp%");
             installDir = currentDirectory + @"\OfficeProPlus";
            
-
-
             Directory.CreateDirectory(installDir);
 
             var args = GetArguments();
@@ -124,6 +118,11 @@ public class InstallOffice
             {
                 Console.WriteLine("Installing Office 365 ProPlus...");
                 runInstall = true;
+
+                if (GetArguments().Any(a => a.Key.ToLower() == "/silent"))
+                {
+                    SilentInstall = true;
+                }
             }
 
             if (runInstall)
@@ -131,6 +130,7 @@ public class InstallOffice
 
                 if (SilentInstall)
                 {
+                    Console.WriteLine("Running Silent Install...");
                     var doc = new XmlDocument();
                     doc.Load(xmlFilePath);
                     SetConfigSilent(doc);
