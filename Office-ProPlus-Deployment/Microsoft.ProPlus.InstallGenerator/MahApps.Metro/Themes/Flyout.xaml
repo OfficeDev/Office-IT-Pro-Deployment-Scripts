@@ -16,7 +16,7 @@
                    VerticalAlignment="Center"
                    LastChildFill="True">
             <Button x:Name="nav"
-                    Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type Controls:Flyout}}, Path=CloseCommand, Mode=OneWay}"
+                    Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type Controls:Flyout}}, Path=CloseCommand, Mode=TwoWay}"
                     DockPanel.Dock="Left"
                     Style="{DynamicResource MetroCircleButtonStyle}"
                     Visibility="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Controls:Flyout}}, Path=CloseButtonVisibility}"
@@ -25,7 +25,24 @@
                     FontFamily="Segoe UI Symbol"
                     Foreground="{Binding RelativeSource={RelativeSource AncestorType={x:Type Controls:Flyout}}, Path=Foreground}"
                     FontSize="16"
-                    VerticalAlignment="Bottom">
+                    VerticalAlignment="Bottom"
+                    RenderTransformOrigin="0.5,0.5">
+                <Button.RenderTransform>
+                    <RotateTransform x:Name="AnimatedRotateTransform" Angle="0" />
+                </Button.RenderTransform>
+                <Button.Triggers>
+                    <EventTrigger RoutedEvent="Button.Click">
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation 
+                                    Storyboard.TargetName="AnimatedRotateTransform"
+                                    Storyboard.TargetProperty="Angle"
+                                    By="180" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                </Button.Triggers>
+               
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="Click">
                         <Actions:SetFlyoutOpenAction TargetObject="{Binding RelativeSource={RelativeSource AncestorType={x:Type Controls:Flyout}}}"
@@ -126,7 +143,7 @@
                                                            Storyboard.TargetName="root">
                                 <SplineDoubleKeyFrame KeyTime="00:00:00.750"
                                                       KeySpline="0.25,1,0.05,1"
-                                                      Value="0"
+                                                      Value="-100"
                                                       x:Name="hideFrame" />
                             </DoubleAnimationUsingKeyFrames>
                             <DoubleAnimationUsingKeyFrames BeginTime="00:00:00"
@@ -142,7 +159,7 @@
                                                            Storyboard.TargetName="root">
                                 <SplineDoubleKeyFrame KeyTime="00:00:00.750"
                                                       KeySpline="0.25,1,0.05,1"
-                                                      Value="0"
+                                                      Value="1"
                                                       x:Name="fadeOutFrame" />
                             </DoubleAnimationUsingKeyFrames>
                         </Storyboard>
@@ -180,7 +197,7 @@
                                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
                                                            Storyboard.TargetName="root">
                                 <SplineDoubleKeyFrame KeyTime="0"
-                                                      Value="0" />
+                                                      Value="100" />
                             </DoubleAnimationUsingKeyFrames>
                             <DoubleAnimationUsingKeyFrames BeginTime="00:00:00"
                                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"
@@ -192,7 +209,7 @@
                                                            Storyboard.TargetProperty="(UIElement.Opacity)"
                                                            Storyboard.TargetName="root">
                                 <SplineDoubleKeyFrame KeyTime="0"
-                                                      Value="0" />
+                                                      Value="1" />
                             </DoubleAnimationUsingKeyFrames>
                         </Storyboard>
                     </VisualState>
@@ -202,7 +219,7 @@
                                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
                                                            Storyboard.TargetName="root">
                                 <SplineDoubleKeyFrame KeyTime="0"
-                                                      Value="0" />
+                                                      Value="100" />
                             </DoubleAnimationUsingKeyFrames>
                             <DoubleAnimationUsingKeyFrames BeginTime="00:00:00"
                                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.Y)"

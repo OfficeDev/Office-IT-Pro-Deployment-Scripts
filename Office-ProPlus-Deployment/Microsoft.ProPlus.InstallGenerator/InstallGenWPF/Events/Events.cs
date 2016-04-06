@@ -43,6 +43,9 @@ namespace MetroDemo.Events
 
         public TransitionTabDirection Direction { get; set; }
 
+        [DefaultValue(false)]
+        public bool UseIndex { get; set; }
+
     }
 
     public delegate void PropertyValueChangedEventHandler(object sender, PropertyValueChangedEventArgs e);

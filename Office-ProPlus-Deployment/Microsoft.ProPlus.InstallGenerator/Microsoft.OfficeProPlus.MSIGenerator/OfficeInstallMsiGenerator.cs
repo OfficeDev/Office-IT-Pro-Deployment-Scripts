@@ -116,7 +116,7 @@ public class MsiGenerator
 
     public string GetOdtErrorMessage()
     {
-        var tempPath = Environment.ExpandEnvironmentVariables("%temp%");
+        var tempPath = Environment.ExpandEnvironmentVariables("%public%");
         const string logFolderName = "OfficeProPlusLogs";
         var loggingPath = tempPath + @"\" + logFolderName;
 
@@ -261,9 +261,7 @@ public class CustomActions
         {
             var installDir = session.CustomActionData["INSTALLDIR"];
             if (installDir == null) return ActionResult.Failure;
-
             var isSilent = false;
-
             try
             {
                 var uiLevel = session.CustomActionData["UILevel"];
@@ -290,17 +288,17 @@ public class CustomActions
             if (isSilent)
             {
                 p.StartInfo.Arguments = "/silent";
+               
             }
-
             p.Start();
-            p.WaitForExit();
-
+            Process.GetCurrentProcess().Close();
             return ActionResult.Success;
         }
         catch (Exception ex)
         {
             return ActionResult.Failure;
         }
+        
     }
 
     [CustomAction]
@@ -311,16 +309,38 @@ public class CustomActions
             var installDir = session.CustomActionData["INSTALLDIR"];
             if (installDir == null) return ActionResult.Failure;
 
+            var isSilent = false;
+            try
+            {
+                var uiLevel = session.CustomActionData["UILevel"];
+                if (uiLevel == "2" || uiLevel == "3")
+                {
+                    isSilent = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
+            var arguments = "/uninstall";
+
+            if (isSilent)
+            {
+                arguments += " /silent";
+            }
+
             var p = new Process
             {
                 StartInfo = new ProcessStartInfo()
                 {
                     FileName = installDir + @"\InstallOfficeProPlus.exe",
-                    Arguments = "/uninstall",
+                    Arguments = arguments,
                     CreateNoWindow = true,
                     UseShellExecute = false
                 },
             };
+
             p.Start();
             p.WaitForExit();
 

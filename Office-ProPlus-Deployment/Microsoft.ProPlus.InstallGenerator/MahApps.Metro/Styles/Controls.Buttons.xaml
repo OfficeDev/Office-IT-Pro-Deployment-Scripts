@@ -290,6 +290,8 @@
            BasedOn="{StaticResource BaseMetroWindowButtonStyle}">
         <Setter Property="FocusVisualStyle"
                 Value="{x:Null}" />
+        <Setter Property="Foreground"
+                Value="#333333"/>
         <Setter Property="IsTabStop"
                 Value="False" />
         <Setter Property="Width"
@@ -655,8 +657,8 @@
 
     <Style x:Key="MetroCircleToggleButtonStyle"
            TargetType="{x:Type ToggleButton}">
-        <Setter Property="FocusVisualStyle"
-                Value="{StaticResource MetroCircleButtonFocusVisual}" />
+        <!--<Setter Property="FocusVisualStyle"
+                Value="{StaticResource MetroCircleButtonFocusVisual}" />-->
         <Setter Property="Background"
                 Value="Transparent" />
         <Setter Property="BorderThickness"
@@ -718,11 +720,11 @@
                                     </Storyboard>
                                 </BeginStoryboard>
                             </Trigger.ExitActions>
-                            <Setter Property="Foreground"
-                                    Value="{DynamicResource IdealForegroundColorBrush}" />
-                            <Setter TargetName="ellipse"
+                            <!--<Setter Property="Foreground"
+                                    Value="{DynamicResource IdealForegroundColorBrush}" />-->
+                            <!--<Setter TargetName="ellipse"
                                     Property="Stroke"
-                                    Value="{DynamicResource AccentColorBrush}" />
+                                    Value="{DynamicResource AccentColorBrush}" />-->
                         </Trigger>
                         <Trigger Property="IsMouseOver"
                                  Value="True">

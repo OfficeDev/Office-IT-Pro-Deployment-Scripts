@@ -16,7 +16,9 @@ namespace MahApps.Metro.Actions
 
         protected override void Invoke(object parameter)
         {
-            ((Flyout) TargetObject).IsOpen = Value;
+            ((Flyout)TargetObject).IsOpen = Value;
+
+
         }
     }
 }

@@ -261,7 +261,8 @@ namespace MahApps.Metro.Controls
         {
             if (SelectedIndex < Items.Count - 1)
             {
-                presenter.Transition = Orientation == Orientation.Horizontal ? LeftTransition : DownTransition;
+               // presenter.Transition = Orientation == Orientation.Horizontal ? LeftTransition : DownTransition;
+                presenter.Transition = DownTransition;
                 SelectedIndex++;
             }
         }

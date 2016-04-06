@@ -9,7 +9,7 @@
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Microsoft.OfficeProPlus.InstallGen.Presentation</RootNamespace>
-    <AssemblyName>OfficeProPlusInstallGenerator</AssemblyName>
+    <AssemblyName>OfficeProPlusInstallToolkit</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
@@ -81,7 +81,7 @@
     </ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
-    <GenerateManifests>true</GenerateManifests>
+    <GenerateManifests>false</GenerateManifests>
   </PropertyGroup>
   <PropertyGroup>
     <SignManifests>false</SignManifests>
@@ -92,6 +92,12 @@
   <PropertyGroup>
     <ManifestTimestampUrl>http://timestamp.verisign.com/scripts/timstamp.dll</ManifestTimestampUrl>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <PropertyGroup>
+    <TargetZone>LocalIntranet</TargetZone>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Garlic, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Garlic.2.1.0.0\lib\net35\Garlic.dll</HintPath>
@@ -101,8 +107,13 @@
       <HintPath>..\..\Lib\GrayscaleEffect.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="PresentationFramework.Aero" />
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Net" />
     <Reference Include="System.Windows.Forms" />
@@ -132,13 +143,20 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AppSettings.cs" />
     <Compile Include="Engine\OfficeInstaller.cs" />
     <Compile Include="Events\Events.cs" />
     <Compile Include="ExampleViews\AboutView.xaml.cs">
       <DependentUpon>AboutView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ExampleViews\LocalView.xaml.cs">
+      <DependentUpon>LocalView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ExampleViews\GenerateView.xaml.cs">
       <DependentUpon>GenerateView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ExampleViews\DownloadView.xaml.cs">
+      <DependentUpon>DownloadView.xaml</DependentUpon>
     </Compile>
     <Compile Include="ExampleViews\StartView.xaml.cs">
       <DependentUpon>StartView.xaml</DependentUpon>
@@ -155,14 +173,27 @@
     <Content Include="HelpFiles\EmbedOfficeInstall.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Resource Include="images\Import.png" />
+    <Resource Include="images\new.png" />
+    <Resource Include="images\Ok48.png" />
+    <Resource Include="images\InstallRing.gif" />
+    <Resource Include="images\fail.png" />
+    <Resource Include="images\local.png" />
+    <Resource Include="images\GitHubSite.PNG" />
+    <Content Include="HelpFiles\EnableSCCMSupportInfo.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="InstallOffice.cs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Compile Include="Extentions\Extentions.cs" />
     <Compile Include="Logging\ErrorLogger.cs" />
     <Compile Include="Logging\GoogleAnalytics.cs" />
     <Compile Include="MainWindowViewModel.cs" />
+    <Compile Include="Models\Channel.cs" />
     <Compile Include="Models\Enums.cs" />
     <Compile Include="Models\ExcludeProduct.cs" />
+    <Compile Include="Models\Certificate.cs" />
     <Compile Include="Models\Language.cs" />
     <Compile Include="Models\OfficeBranch.cs" />
     <Compile Include="Models\Product.cs" />
@@ -175,14 +206,24 @@
     </Compile>
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="ValueConverter\AlbumPriceIsTooMuchConverter.cs" />
+    <Compile Include="ValueConverter\NegateConverter.cs" />
     <Compile Include="Viewer.xaml.cs">
       <DependentUpon>Viewer.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\GenerateCertificate.xaml.cs">
+      <DependentUpon>GenerateCertificate.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\FolderBrowserDialogEx.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Windows\InformationDialog.xaml.cs">
       <DependentUpon>InformationDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\CertificatesDialog.xaml.cs">
+      <DependentUpon>CertificatesDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\DownloadAdvanced.xaml.cs">
+      <DependentUpon>DownloadAdvanced.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\Languages.xaml.cs">
       <DependentUpon>Languages.xaml</DependentUpon>
@@ -199,7 +240,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="ExampleViews\LocalView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="ExampleViews\GenerateView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="ExampleViews\DownloadView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -244,6 +293,10 @@
       <SubType>Designer</SubType>
       <ContainsDesignTimeResources>true</ContainsDesignTimeResources>
     </Page>
+    <Page Include="Resources\Icons.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Styles\Custom.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -252,7 +305,19 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Windows\GenerateCertificate.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Windows\InformationDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Windows\CertificatesDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Windows\DownloadAdvanced.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -297,9 +362,24 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
+    <None Include="Scripts\Generate-ODTConfigurationXML.ps1">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Scripts\RunGenerateXML.ps1">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <Resource Include="Resources\Entypo-license.txt" />
+    <Resource Include="Resources\WindowsIcons-license.txt" />
+    <None Include="Resources\signtool.exe" />
+    <Content Include="ProjectFiles\WPF_AutoCompleteComboBox.dll" />
+    <Content Include="Resources\makecert.exe" />
+    <None Include="Scripts\DefaultConfiguration.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <Content Include="wixTools.zip">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Resource Include="Resources\Entypo.ttf" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0,Profile=Client">
@@ -423,9 +503,7 @@
     </Content>
     <Resource Include="images\wait.GIF" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Extentions\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

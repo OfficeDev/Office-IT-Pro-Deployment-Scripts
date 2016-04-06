@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -19,6 +21,10 @@ namespace Microsoft.OfficeProPlus.Downloader
 
         private List<UpdateFiles> _updateFiles { get; set; }
 
+
+        private static AsyncLock myLock = new AsyncLock();
+        private static AsyncLock myLock2 = new AsyncLock();
+
         public async Task DownloadBranch(DownloadBranchProperties properties, CancellationToken token = new CancellationToken())
         {
             var fd = new FileDownloader();
@@ -27,17 +33,48 @@ namespace Microsoft.OfficeProPlus.Downloader
 
             if (_updateFiles == null)
             {
-                _updateFiles = await DownloadCab();
+                for (var t = 1; t <= 20; t++)
+                {
+                    try
+                    {
+                        _updateFiles = await DownloadCabAsync();
+                        break;
+                    }
+                    catch (Exception ex)
+                    {
+                       
+                    }
+                    await Task.Delay(1000, token);
+                }
             }
 
-            var selectUpdateFile = properties.OfficeEdition == OfficeEdition.Office32Bit ? _updateFiles.FirstOrDefault(u => u.OfficeEdition == OfficeEdition.Office32Bit) :
-                                                                _updateFiles.FirstOrDefault(u => u.OfficeEdition == OfficeEdition.Office64Bit);
+            var selectUpdateFile = new UpdateFiles();
+
+
+            if (properties.OfficeEdition == OfficeEdition.Office32Bit)
+            {
+                selectUpdateFile = _updateFiles.FirstOrDefault(u => u.OfficeEdition == OfficeEdition.Office32Bit);
+            }
+            else if (properties.OfficeEdition == OfficeEdition.Office32Bit)
+            {
+                selectUpdateFile = _updateFiles.FirstOrDefault(u => u.OfficeEdition == OfficeEdition.Office64Bit);
+            }
+            else if (properties.OfficeEdition == OfficeEdition.Both)
+            {
+                var selectUpdateFile32 = _updateFiles.FirstOrDefault(u => u.OfficeEdition == OfficeEdition.Office32Bit);
+                var selectUpdateFile64 = _updateFiles.FirstOrDefault(u => u.OfficeEdition == OfficeEdition.Office64Bit);
+
+                selectUpdateFile32.Files.AddRange(selectUpdateFile64.Files);
+                selectUpdateFile = selectUpdateFile32;
+            }
+
+
             if (selectUpdateFile == null) throw (new Exception("Cannot Find Office Files"));
 
             var branch = selectUpdateFile.BaseURL.FirstOrDefault(b => b.Branch.ToLower() == properties.BranchName.ToLower());
 
             var version = properties.Version;
-            if (properties.Version == null)
+            if (string.IsNullOrEmpty(properties.Version))
             {
                 version = await GetLatestVersionAsync(branch, properties.OfficeEdition);
                 if (VersionDetected != null)
@@ -133,33 +170,104 @@ namespace Microsoft.OfficeProPlus.Downloader
 
             double percentageEnd = downloadedSize / totalSize * 100;
             if (percentageEnd == 99.0) percentageEnd = 100;
-            DownloadFileProgress(this, new Events.DownloadFileProgress()
+
+            if (DownloadFileProgress != null)
             {
-                BytesRecieved = (long)(downloadedSize),
-                PercentageComplete = Math.Truncate(percentageEnd),
-                TotalBytesToRecieve = (long)totalSize
-            });
+                DownloadFileProgress(this, new Events.DownloadFileProgress()
+                {
+                    BytesRecieved = (long) (downloadedSize),
+                    PercentageComplete = Math.Truncate(percentageEnd),
+                    TotalBytesToRecieve = (long) totalSize
+                });
+            }
+
+            if (DownloadFileComplete != null)
+            {
+                DownloadFileComplete(this, new Events.DownloadFileProgress()
+                {
+                    BytesRecieved = (long) (downloadedSize),
+                    PercentageComplete = Math.Truncate(percentageEnd),
+                    TotalBytesToRecieve = (long) totalSize
+                });
+            }
 
         }
 
-        public async Task<List<UpdateFiles>> DownloadCab()
+        public async Task<List<UpdateFiles>> DownloadCabAsync()
         {
             var guid = Guid.NewGuid().ToString();
 
-            var localCabPath = Environment.ExpandEnvironmentVariables(@"%temp%\" + guid + ".cab");
+            var cabPath = Environment.ExpandEnvironmentVariables(@"%temp%\" + guid);
+            Directory.CreateDirectory(cabPath);
+            var localCabPath = Environment.ExpandEnvironmentVariables(@"%temp%\" + guid + @"\" + guid + ".cab");
             if (File.Exists(localCabPath)) File.Delete(localCabPath);
 
-            var fd = new FileDownloader();
-            await fd.DownloadAsync(OfficeVersionUrl, localCabPath);
+            var now = DateTime.Now;
 
-            var cabExtractor = new CabExtractor(localCabPath);
-            cabExtractor.ExtractCabFiles();
+            var tmpFile32 = Environment.ExpandEnvironmentVariables(@"%temp%\" + now.Year + now.Month + now.Day + now.Hour + "_32.xml");
+            var tmpFile64 = Environment.ExpandEnvironmentVariables(@"%temp%\" + now.Year + now.Month + now.Day + now.Hour + "_64.xml");
 
-            var xml32Path = Environment.ExpandEnvironmentVariables(@"%temp%\ExtractedFiles\o365client_32bit.xml");
-            var xml64Path = Environment.ExpandEnvironmentVariables(@"%temp%\ExtractedFiles\o365client_64bit.xml");
+            if (!File.Exists(tmpFile32) || !File.Exists(tmpFile64))
+            {
+                using (var releaser = await myLock.LockAsync())
+                {
+                    var tmpFile =
+                        Environment.ExpandEnvironmentVariables(@"%temp%\" + now.Year + now.Month + now.Day + now.Hour +
+                                                               ".cab");
+
+                    if (File.Exists(tmpFile))
+                    {
+                        Retry.Block(10, 1, () => File.Copy(tmpFile, localCabPath, true));
+                    }
+
+                    if (!File.Exists(localCabPath))
+                    {
+                        var fd = new FileDownloader();
+                        await fd.DownloadAsync(OfficeVersionUrl, localCabPath);
+                        try
+                        {
+                            File.Copy(localCabPath, tmpFile);
+                        }
+                        catch
+                        {
+                        }
+                    }
+
+                    var cabExtractor = new CabExtractor(localCabPath);
+                    cabExtractor.ExtractCabFiles();
+                }
+            }
+
+            var xml32Path = Environment.ExpandEnvironmentVariables(@"%temp%\" + guid + @"\ExtractedFiles\o365client_32bit.xml");
+            var xml64Path = Environment.ExpandEnvironmentVariables(@"%temp%\" + guid + @"\ExtractedFiles\o365client_64bit.xml");
+
+            if (File.Exists(tmpFile32))
+            {
+                xml32Path = tmpFile32;
+            }
+            else
+            {
+                Retry.Block(10, 1, () => File.Copy(xml32Path, tmpFile32, true));
+            }
+
+            if (File.Exists(tmpFile64))
+            {
+                xml64Path = tmpFile64;
+            }
+            else
+            {
+                Retry.Block(10, 1, () => File.Copy(xml64Path, tmpFile64, true));
+            }
 
             var updateFiles32 = GenerateUpdateFiles(xml32Path);
             var updateFiles64 = GenerateUpdateFiles(xml64Path);
+
+            try
+            {
+                if (File.Exists(localCabPath)) File.Delete(localCabPath);
+                if (Directory.Exists(cabPath)) Directory.Delete(cabPath, true);
+            }
+            catch { }
 
             return new List<UpdateFiles>()
             {
@@ -168,11 +276,40 @@ namespace Microsoft.OfficeProPlus.Downloader
             };
         }
 
+        public async Task<string> GetChannelBaseUrlAsync(string channel, OfficeEdition officeEdition)
+        {
+            if (_updateFiles == null)
+            {
+                using (var releaser = await myLock2.LockAsync())
+                {
+                    if (_updateFiles == null)
+                    {
+                        await Retry.BlockAsync(10, 1, async () => {
+                            _updateFiles = await DownloadCabAsync();
+                        });
+                    }
+                }
+            }
+
+            var selectUpdateFiles = _updateFiles.FirstOrDefault(f => f.OfficeEdition == officeEdition);
+            if (selectUpdateFiles == null) return null;
+
+            var branchBase = selectUpdateFiles.BaseURL.FirstOrDefault(b => b.Branch.ToLower() == channel.ToLower());
+            if (branchBase == null) return null;
+            return branchBase.URL;
+        }
+
         public async Task<string> GetLatestVersionAsync(string branch, OfficeEdition officeEdition)
         {
             if (_updateFiles == null)
             {
-                _updateFiles = await DownloadCab();
+                using (var releaser = await myLock2.LockAsync())
+                {
+                    if (_updateFiles == null)
+                    {
+                        _updateFiles = await DownloadCabAsync();
+                    }
+                }
             }
 
             var selectUpdateFiles = _updateFiles.FirstOrDefault(f => f.OfficeEdition == officeEdition);
@@ -207,6 +344,16 @@ namespace Microsoft.OfficeProPlus.Downloader
 
             var version = GetCabVersion(vcabExtFilePath);
             return version;
+        }
+
+        public async Task<string> GetChannelVersionJson()
+        {
+            var channelVersionJson = "";
+            using (var webClient = new WebClient())
+            {
+               channelVersionJson = await webClient.DownloadStringTaskAsync(AppSettings.BranchVersionUrl);
+            }
+            return channelVersionJson;
         }
 
         private UpdateFiles GenerateUpdateFiles(string xmlFilePath)
@@ -265,6 +412,8 @@ namespace Microsoft.OfficeProPlus.Downloader
             var buildVersion = availableNode.GetAttributeValue("Build");
             return buildVersion;
         }
+
+        public Events.DownloadFileProgressEventHandler DownloadFileComplete { get; set; }
 
         public Events.DownloadFileProgressEventHandler DownloadFileProgress { get; set; }
 

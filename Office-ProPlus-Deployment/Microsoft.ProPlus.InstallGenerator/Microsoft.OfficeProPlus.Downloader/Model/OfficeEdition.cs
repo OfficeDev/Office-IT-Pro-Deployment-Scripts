@@ -8,6 +8,7 @@ namespace Microsoft.OfficeProPlus.Downloader.Model
 {
     public enum OfficeEdition
     {
+        Both=0,
         Office32Bit=1,
         Office64Bit=2
     }

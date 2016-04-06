@@ -46,9 +46,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -57,16 +59,20 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AppSettings.cs" />
+    <Compile Include="Events\Events.cs" />
     <Compile Include="Extensions\DirectoryHelper.cs" />
     <Compile Include="Extensions\Extensions.cs" />
     <Compile Include="Implementation\OfficeConfigXMLExtractor.cs" />
     <Compile Include="Implementation\OfficeInstallMsiGenerator.cs" />
     <Compile Include="Implementation\OfficeInstallProperties.cs" />
     <Compile Include="Implementation\OfficeInstallReturn.cs" />
+    <Compile Include="Implementation\OfficeLocalInstallManager.cs" />
     <Compile Include="Implementation\ZipExtractor.cs" />
     <Compile Include="IOfficeInstallGenerator.cs" />
     <Compile Include="IOfficeInstallProperties.cs" />
     <Compile Include="IOfficeInstallReturn.cs" />
+    <Compile Include="Model\OfficeLocalInstall.cs" />
     <Compile Include="Support\EmbeddedResources.cs" />
     <Compile Include="Enums\OfficeVersion.cs" />
     <Compile Include="Implementation\OfficeInstallExecutableGenerator.cs" />
@@ -107,6 +113,10 @@
     <ProjectReference Include="..\Micorosft.OfficeProPlus.ConfigurationXml\Micorosft.OfficeProPlus.ConfigurationXml.csproj">
       <Project>{ce88a24e-73c3-4b1d-b72c-f41894485a14}</Project>
       <Name>Micorosft.OfficeProPlus.ConfigurationXml</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Microsoft.OfficeProPlus.Downloader\Microsoft.OfficeProPlus.Downloader.csproj">
+      <Project>{ea30b98d-401b-46ee-ba77-31efc287e9af}</Project>
+      <Name>Microsoft.OfficeProPlus.Downloader</Name>
     </ProjectReference>
     <ProjectReference Include="..\Microsoft.OfficeProPlus.MSIGenerator\Microsoft.OfficeProPlus.MSIGen.csproj">
       <Project>{57e3e5c7-ff48-4538-8b90-5ab106d87c6d}</Project>

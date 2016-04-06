@@ -12,6 +12,8 @@ namespace OfficeInstallGenerator.Model
 
         public ODTAdd Add { get; set; }
 
+        public ODTRemove Remove { get; set; }
+
         public ODTUpdates Updates { get; set; }
 
         public ODTDisplay Display { get; set; }

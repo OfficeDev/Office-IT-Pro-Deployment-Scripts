@@ -4,11 +4,13 @@ using System.IO;
 using System.Linq;
 using System.ComponentModel;
 using System.Globalization;
+using System.Security.Cryptography.X509Certificates;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Forms;
+using System.Windows.Forms.Design;
 using System.Windows.Media;
 using MahApps.Metro;
 using MetroDemo;
@@ -17,9 +19,13 @@ using System.Windows.Input;
 using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
 using Micorosft.OfficeProPlus.ConfigurationXml;
+using Microsoft.OfficeProPlus.InstallGen.Presentation.Extentions;
 using Microsoft.OfficeProPlus.InstallGen.Presentation.Models;
 using Microsoft.OfficeProPlus.InstallGenerator.Models;
+using Newtonsoft.Json;
 using OfficeInstallGenerator;
+using Application = System.Windows.Application;
+using MessageBox = System.Windows.MessageBox;
 
 namespace MetroDemo
 {
@@ -30,18 +36,55 @@ namespace MetroDemo
 
         public static string SetBranchFolderPath(string selectBranch, string folderPath)
         {
+            var newChannelName = selectBranch;
+            if (ViewModel.UseFolderShortNames)
+            {
+                newChannelName = selectBranch.ConvertChannelToShortName();
+            }
+
+            var longFolderPath = "";
+            var shortFolderPath = "";
+
             foreach (var branch in ViewModel.Branches)
             {
                 var branchName = branch.Branch.ToString();
+
                 if (folderPath.ToLower().EndsWith(@"\" + branchName.ToLower()))
                 {
-                    folderPath = Regex.Replace(folderPath, @"\\" + branchName + "$", @"\" + selectBranch, RegexOptions.IgnoreCase);
+                    folderPath = Regex.Replace(folderPath, @"\\" + branchName + "$", @"\" + newChannelName, RegexOptions.IgnoreCase);
+                    longFolderPath = Regex.Replace(folderPath, @"\\" + branchName + "$", @"\" + selectBranch, RegexOptions.IgnoreCase);
+                }
+                if (folderPath.ToLower().EndsWith(@"\" + branchName.ConvertChannelToShortName().ToLower()))
+                {
+                    folderPath = Regex.Replace(folderPath, @"\\" + branchName.ConvertChannelToShortName() + "$", @"\" + newChannelName, RegexOptions.IgnoreCase);
+                    shortFolderPath = Regex.Replace(folderPath, @"\\" + branchName.ConvertChannelToShortName() + "$", @"\" + selectBranch.ConvertChannelToShortName(), RegexOptions.IgnoreCase);
                 }
             }
-            if (!folderPath.ToLower().EndsWith(@"\" + selectBranch.ToLower()))
+
+            if (!folderPath.ToLower().EndsWith(@"\" + selectBranch.ConvertChannelToShortName().ToLower()) &&
+                !folderPath.ToLower().EndsWith(@"\" + selectBranch.ToLower()))
             {
-                folderPath += @"\" + selectBranch;
+                longFolderPath = folderPath + @"\" + selectBranch;
+                shortFolderPath = folderPath + @"\" + selectBranch.ConvertChannelToShortName();
+
+                folderPath += @"\" + newChannelName;
             }
+
+            if (ViewModel.UseFolderShortNames)
+            {
+                if (Directory.Exists(longFolderPath))
+                {
+                    Directory.Move(longFolderPath, shortFolderPath);
+                }
+            }
+            else
+            {
+                if (Directory.Exists(shortFolderPath))
+                {
+                    Directory.Move(shortFolderPath, longFolderPath);
+                }
+            }
+
             return folderPath;
         }
 
@@ -50,12 +93,15 @@ namespace MetroDemo
             var task = Task.Run(() => Directory.Exists(path));
             return await Task.WhenAny(task, Task.Delay(1000)) == task && task.Result;
         }
+
+        public static string DefaultXml = "<Configuration><Updates Enabled=\"TRUE\"></Updates><Display Level=\"Full\" /></Configuration>";
     }
 
     public class MainWindowViewModel : INotifyPropertyChanged
     {
         private readonly IDialogCoordinator _dialogCoordinator;
         private List<Language> _selectedLanguages = null;
+        private List<Language> _removedLanguages = null;
         
         public MainWindowViewModel(IDialogCoordinator dialogCoordinator)
         {
@@ -80,6 +126,8 @@ namespace MetroDemo
                     };
             }
 
+            _removedLanguages = new List<Language>();
+
             Builds = new List<Build>()
             {
                 new Build()
@@ -94,50 +142,92 @@ namespace MetroDemo
                 {
                     Branch = Branch.Current,
                     Name = "Current",
+                    NewName = "Current",
                     Id = "Current",
-                    CurrentVersion = "16.0.6001.1038",
+                    CurrentVersion = "16.0.6741.2021",
                     Versions = new List<Build>()
                     {
+                        new Build() { Version = "16.0.6741.2021"},
+                        new Build() { Version = "16.0.6741.2017"},
+                        new Build() { Version = "16.0.6568.2036"},
+                        new Build() { Version = "16.0.6568.2034"},
+                        new Build() { Version = "16.0.6568.2025"},
+                        new Build() { Version = "16.0.6366.2068"},
+                        new Build() { Version = "16.0.6366.2062"},
+                        new Build() { Version = "16.0.6366.2056"},
+                        new Build() { Version = "16.0.6366.2036"},
+                        new Build() { Version = "16.0.6001.1043"},
                         new Build() { Version = "16.0.6001.1038"},
+                        new Build() { Version = "16.0.6001.1034"},
                         new Build() { Version = "16.0.4229.1029"},
-                        new Build() { Version = "16.0.4229.1024"}
+                        new Build() { Version = "16.0.4229.1024"},
+                    }
+                },
+                new OfficeBranch()
+                {
+                    Branch = Branch.Business,
+                    Name = "Deferred",
+                    NewName = "Deferred",
+                    Id = "Business",
+                    CurrentVersion = "",
+                    Versions = new List<Build>()
+                    {
+                       new Build() { Version = "16.0.6001.1068"},
+                       new Build() { Version = "16.0.6001.1061"}
                     }
                 },
                 new OfficeBranch()
                 {
                     Branch = Branch.FirstReleaseCurrent,
                     Name = "First Release Current",
+                    NewName = "FirstReleaseCurrent",
                     Id = "FirstReleaseCurrent",
                     CurrentVersion = "",
                     Versions = new List<Build>()
                     {
-
-                    }
-                },
-                new OfficeBranch()
-                {
-                    Branch = Branch.Business,
-                    Name = "Business",
-                    Id = "Business",
-                    CurrentVersion = "",
-                    Versions = new List<Build>()
-                    {
+                        new Build() { Version = "16.0.6769.2015"},
+                        new Build() { Version = "16.0.6769.2011"},
+                        new Build() { Version = "16.0.6741.2017"},
+                        new Build() { Version = "16.0.6741.2015"},
+                        new Build() { Version = "16.0.6741.2014"},
+                        new Build() { Version = "16.0.6568.2036"},
+                        new Build() { Version = "16.0.6568.2025"},
+                        new Build() { Version = "16.0.6568.2016"},
+                        new Build() { Version = "16.0.6366.2062"},
+                        new Build() { Version = "16.0.6366.2056"},
+                        new Build() { Version = "16.0.6366.2047"},
+                        new Build() { Version = "16.0.6366.2036"},
+                        new Build() { Version = "16.0.6366.2025"},
+                        new Build() { Version = "16.0.6228.1010"},
+                        new Build() { Version = "16.0.6228.1007"},
+                        new Build() { Version = "16.0.6228.1004"}
                     }
                 },
                 new OfficeBranch()
                 {
                     Branch = Branch.FirstReleaseBusiness,
-                    Name = "First Release Business",
+                    Name = "First Release Deferred",
+                    NewName = "FirstReleaseDeferred",
                     Id = "FirstReleaseBusiness",
-                    CurrentVersion = "16.0.6001.1038",
+                    CurrentVersion = "16.0.6741.2021",
                     Versions = new List<Build>()
                     {
+                        new Build() { Version = "16.0.6741.2021"},
+                        new Build() { Version = "16.0.6741.2017"},
+                        new Build() { Version = "16.0.6741.2015"},
+                        new Build() { Version = "16.0.6741.2014"},
+                        new Build() { Version = "16.0.6001.1061"},
+                        new Build() { Version = "16.0.6001.1054"},
+                        new Build() { Version = "16.0.6001.1043"},
                         new Build() { Version = "16.0.6001.1038"},
+                        new Build() { Version = "16.0.6001.1034"},
                         new Build() { Version = "16.0.4229.1029"},
                         new Build() { Version = "16.0.4229.1024"}
                     }
                 }
             };
+
+
 
             MainProducts = new List<Product>()
             {
@@ -258,7 +348,37 @@ namespace MetroDemo
                 new Language { Id="uk-ua", Name="Ukrainian" }
             };
 
+            Certificates = new List<Certificate>();
+
+            SelectedCertificate = new Certificate();
+             
+
         }
+
+        public bool LocalConfig { get; set; }
+
+        public string BranchesToJson
+        {
+            get
+            {
+                var json = JsonConvert.SerializeObject(Branches.ToArray());
+                return json;       
+            }
+        }
+
+        public List<OfficeBranch> JsonToBranches(string json)
+        {
+            var branches = JsonConvert.DeserializeObject<List<OfficeBranch>>(json);
+            return branches;
+        }
+
+        public bool RunLocalConfigs { get; set; }
+
+        public bool AllowMultipleDownloads { get; set; }
+
+        public bool UseFolderShortNames { get; set; }
+
+        public Certificate SelectedCertificate { get; set; }
 
         public Language DefaultLanguage = null;
 
@@ -269,6 +389,8 @@ namespace MetroDemo
         public List<ExcludeProduct> ExcludeProducts { get; set; }
 
         public List<Language> Languages { get; set; }
+
+        public List<Certificate> Certificates { get; set; } 
 
         public List<OfficeBranch> Branches { get; set; }
 
@@ -324,9 +446,6 @@ namespace MetroDemo
 
         public ConfigXmlParser ConfigXmlParser { get; set; }
 
-        public string DefaultXml =
-            "<Configuration></Configuration>";
-
         public bool ResetXml { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -369,6 +488,100 @@ namespace MetroDemo
             {
                 language.ProductId = null;
             }
+        }
+
+        public bool IsSigningCert(X509Certificate2 certificate)
+        {
+            
+            foreach (X509Extension ext in certificate.Extensions)
+            {
+                if (ext.Oid.FriendlyName == "Enhanced Key Usage")
+                {
+                    var ku = ext as X509EnhancedKeyUsageExtension;
+                    foreach (var eku in ku.EnhancedKeyUsages)
+                    {
+                        if (eku.FriendlyName == "Code Signing")
+                        {
+                            return true;
+                        }
+                    }  
+                }
+            }
+
+            return false; 
+
+        }
+        public void SetCertificates()
+        {
+            try
+            {
+                Certificates.Clear();
+                var localStore = new X509Store(StoreLocation.CurrentUser);
+                var machineStore = new X509Store(StoreLocation.LocalMachine);
+
+                localStore.Open(OpenFlags.ReadOnly);
+                if (localStore.Certificates.Count > 0)
+                {
+                    foreach (var certificate in localStore.Certificates)
+                    {
+                        var cert = new Certificate();
+                        if(IsSigningCert(certificate))
+                        {
+                            if (string.IsNullOrEmpty(certificate.FriendlyName))
+                            {
+                                cert.FriendlyName = certificate.SubjectName.Name; 
+                            }
+                            else
+                            {
+                                cert.FriendlyName = certificate.FriendlyName;
+                            }
+
+                            cert.IssuerName = certificate.IssuerName.Name;
+                            cert.ThumbPrint = certificate.Thumbprint;
+
+                            Certificates.Add(cert);
+                        }
+
+                    }
+                }
+
+                machineStore.Open(OpenFlags.ReadOnly);
+                if (machineStore.Certificates.Count > 0)
+                {
+                    foreach (var certificate in machineStore.Certificates)
+                    {
+                        var cert = new Certificate();
+
+                        if (IsSigningCert(certificate))
+                        {
+                            if (String.IsNullOrEmpty(certificate.FriendlyName))
+                            {
+
+                                cert.FriendlyName = certificate.SubjectName.Name;
+                            }
+                            else
+                            {
+                                cert.FriendlyName = certificate.FriendlyName;
+                            }
+
+                            cert.IssuerName = certificate.IssuerName.Name;
+                            cert.ThumbPrint = certificate.Thumbprint;
+
+                            Certificates.Add(cert);
+                        }
+
+                    }
+                }
+                localStore.Close();
+                machineStore.Close();
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            
+                
         }
 
         public List<Language> GetLanguages(string productId)
@@ -430,6 +643,21 @@ namespace MetroDemo
             }
 
             languages = FormatLanguage(languages.Distinct().OrderBy(l => l.Order).ToList());
+
+            return languages.ToList();
+        }
+
+        public List<Language> GetRemovedLanguages()
+        {
+            return _removedLanguages.ToList();
+        }
+
+        public List<Language> GetRemovedLanguages(string productId)
+        {
+            if (productId != null) productId = productId.ToLower();
+
+            var languages = _removedLanguages.Where(l => (l.ProductId == productId) ||
+                ((l.ProductId != null && productId != null) && l.ProductId.ToLower() == productId.ToLower()));
 
             return languages.ToList();
         }
@@ -524,6 +752,33 @@ namespace MetroDemo
             foreach (var removelanguage in currentLangs)
             {
                 _selectedLanguages.Remove(removelanguage);
+            }
+        }
+
+        public void AddRemovedLanguage(string productId, Language language)
+        {
+            if (productId != null) productId = productId.ToLower();
+
+            var currentLangs = _removedLanguages.Where(l => l.ProductId == productId).ToList();
+
+            if (currentLangs.Any(l => l.Id.ToLower() == language.Id.ToLower()))
+            {
+                return;
+            }
+
+            language.ProductId = language.ProductId != null ? language.ProductId.ToLower() : language.ProductId;
+
+            _removedLanguages.Add(language);
+        }
+
+        public void RemoveAddRemovedLanguage(string productId, Language language)
+        {
+            if (productId != null) productId = productId.ToLower();
+
+            var currentLang = _removedLanguages.FirstOrDefault(l => l.ProductId == productId);
+            if (currentLang != null)
+            {
+                _removedLanguages.Remove(currentLang);
             }
         }
 

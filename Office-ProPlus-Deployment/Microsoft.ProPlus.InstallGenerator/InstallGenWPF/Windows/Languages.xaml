@@ -7,7 +7,11 @@
                       xmlns:metroDemo="clr-namespace:MetroDemo"
                       xmlns:exampleWindows="clr-namespace:MetroDemo.ExampleWindows"
                       xmlns:converters="http://metro.mahapps.com/winfx/xaml/shared"
+                      xmlns:dialogs="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
                       Title="Languages"
+                      TitleForeground="#333333"
+                      WindowTitleBrush="#f4f4f4"
+                      Background="#e6e6e6"
                       MinWidth="700"
                       Width="700"
                       MinHeight="500"
@@ -15,10 +19,13 @@
                       SaveWindowPosition="True"
                       WindowStartupLocation="CenterScreen"
                       BorderThickness="1"
-                      BorderBrush="{DynamicResource AccentColorBrush}"
+                      GlowBrush="{DynamicResource WindowTitleColorBrush}"
+                      NonActiveGlowBrush="#333333"
                       mc:Ignorable="d"
                       d:DataContext="{d:DesignInstance metroDemo:MainWindowViewModel}"
-                      x:Name="LanguagesSelectionDialog" Loaded="LanguagesDialog_OnLoaded" >
+                      x:Name="LanguagesSelectionDialog" Loaded="LanguagesDialog_OnLoaded" 
+                      TitleCaps="False">
+
 
     <Window.Resources>
         <ResourceDictionary>
@@ -33,12 +40,16 @@
 
     <Controls:MetroWindow.TitleTemplate>
         <DataTemplate>
-            <TextBlock Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Content, Converter={converters:ToUpperConverter}}"
+            <TextBlock Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Content}"
                        TextTrimming="CharacterEllipsis"
                        HorizontalAlignment="Left"
                        VerticalAlignment="Center"
-                       Margin="10 0 8 0"
-                       FontSize="{DynamicResource WindowTitleFontSize}"
+                       Margin="0,5,-81,0" 
+                       Padding="10,0,0,0" 
+                       Background="#f4f4f4"
+                       Height="28"
+                       FontSize="14"
+                       FontWeight="Bold"
                        FontFamily="{DynamicResource HeaderFontFamily}" />
         </DataTemplate>
     </Controls:MetroWindow.TitleTemplate>
@@ -46,15 +57,17 @@
     <Grid>
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition />
+            <ColumnDefinition Width="53*" />
+            <ColumnDefinition Width="106*"/>
+            <ColumnDefinition Width="531*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="50" />
         </Grid.RowDefinitions>
 
-        <StackPanel Grid.Column="0" Grid.Row="0">
-            <DataGrid x:Name="LanguageList" Height="400"
+        <StackPanel Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3">
+            <DataGrid x:Name="LanguageList" Height="413"
                     RenderOptions.ClearTypeHint="Enabled"
                     TextOptions.TextFormattingMode="Display"
                     Margin="5"
@@ -75,7 +88,7 @@
 
         </StackPanel>
 
-        <StackPanel Grid.Column="0" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="5"  >
+        <StackPanel Grid.Column="2" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,5,5,5"  >
             <Button Name="OkButton" Content="OK" Margin="2" Height="30" Click="OkButton_Click"  />
             <Button Name="CancelButton" Content="Cancel" Margin="2" Height="30" Click="CancelButton_OnClick"  />
         </StackPanel>

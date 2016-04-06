@@ -54,6 +54,7 @@ namespace MetroDemo.ExampleViews
         public ProductView()
         {
             InitializeComponent();
+         
         }
 
         private void ProductView_Loaded(object sender, RoutedEventArgs e)             
@@ -73,6 +74,11 @@ namespace MetroDemo.ExampleViews
                 LoadXml();
                 LanguageUnique.SelectionChanged += LanguageUnique_OnSelectionChanged;
                 GlobalObjects.ViewModel.PropertyChangeEventEnabled = true;
+
+                var currentIndex = ProductBranch.SelectedIndex;
+                ProductBranch.ItemsSource = GlobalObjects.ViewModel.Branches;
+                if (currentIndex == -1) currentIndex = 0;
+                ProductBranch.SelectedIndex = currentIndex;
             }
             catch (Exception ex)
             {
@@ -89,102 +95,6 @@ namespace MetroDemo.ExampleViews
             catch { }
         }
 
-        private async Task DownloadOfficeFiles()
-        {
-            try
-            {
-                SetTabStatus(false);
-                GlobalObjects.ViewModel.BlockNavigation = true;
-                _tokenSource = new CancellationTokenSource();
-
-                UpdateXml();
-
-                ProductUpdateSource.IsReadOnly = true;
-                UpdatePath.IsEnabled = false;
-
-                DownloadProgressBar.Maximum = 100;
-                DownloadPercent.Content = "";
-
-                var configXml = GlobalObjects.ViewModel.ConfigXmlParser.ConfigurationXml;
-
-                string branch = null;
-                if (configXml.Add.Branch.HasValue)
-                {
-                    branch = configXml.Add.Branch.Value.ToString();
-                }
-
-                var proPlusDownloader = new ProPlusDownloader();
-                proPlusDownloader.DownloadFileProgress += async (senderfp, progress) =>
-                {
-                    var percent = progress.PercentageComplete;
-                    if (percent > 0)
-                    {
-                        Dispatcher.Invoke(() =>
-                        {
-                            DownloadPercent.Content = percent + "%";
-                            DownloadProgressBar.Value = Convert.ToInt32(Math.Round(percent, 0));
-                        });
-                    }
-                };
-                proPlusDownloader.VersionDetected += (sender, version) =>
-                {
-                    if (branch == null) return;
-                    var modelBranch = GlobalObjects.ViewModel.Branches.FirstOrDefault(b => b.Branch.ToString().ToLower() == branch.ToLower());
-                    if (modelBranch == null) return;
-                    if (modelBranch.Versions.Any(v => v.Version == version.Version)) return;
-                    modelBranch.Versions.Insert(0, new Build() { Version = version.Version });
-                    modelBranch.CurrentVersion = version.Version;
-
-                    ProductVersion.ItemsSource = modelBranch.Versions;
-                    ProductVersion.SetValue(TextBoxHelper.WatermarkProperty, modelBranch.CurrentVersion);
-                };
-
-                var buildPath = ProductUpdateSource.Text.Trim();
-                if (string.IsNullOrEmpty(buildPath)) return;
-
-                var languages =
-                    (from product in configXml.Add.Products
-                     from language in product.Languages
-                     select language.ID.ToLower()).Distinct().ToList();
-
-                var officeEdition = OfficeEdition.Office32Bit;
-                if (configXml.Add.OfficeClientEdition == OfficeClientEdition.Office64Bit)
-                {
-                    officeEdition = OfficeEdition.Office64Bit;
-                }
-
-                buildPath = GlobalObjects.SetBranchFolderPath(branch, buildPath);
-                Directory.CreateDirectory(buildPath);
-
-                ProductUpdateSource.Text = buildPath;
-
-                await proPlusDownloader.DownloadBranch(new DownloadBranchProperties()
-                {
-                    BranchName = branch,
-                    OfficeEdition = officeEdition,
-                    TargetDirectory = buildPath,
-                    Languages = languages
-                }, _tokenSource.Token);
-
-                MessageBox.Show("Download Complete");
-
-                LogAnaylytics("/ProductView", "Download." + branch);
-            }
-            finally
-            {
-                SetTabStatus(true);
-                GlobalObjects.ViewModel.BlockNavigation = false;
-                ProductUpdateSource.IsReadOnly = false;
-                UpdatePath.IsEnabled = true;
-                DownloadProgressBar.Value = 0;
-                DownloadPercent.Content = "";
-
-                DownloadButton.Content = "Download";
-                _tokenSource = new CancellationTokenSource();
-            }
-        }
-
-
         private void LanguageChange()
         {
             var languages = GlobalObjects.ViewModel.GetLanguages(GetSelectedProduct());
@@ -196,6 +106,7 @@ namespace MetroDemo.ExampleViews
         private void RemoveSelectedLanguage()
         {
             var selectProductId = GetSelectedProduct();
+            var installOffice = new InstallOffice();
 
             var currentItems = (List<Language>)LanguageList.ItemsSource ?? new List<Language>();
             foreach (Language language in LanguageList.SelectedItems)
@@ -205,13 +116,88 @@ namespace MetroDemo.ExampleViews
                     currentItems.Remove(language);
                 }
 
-
-
                 GlobalObjects.ViewModel.RemoveLanguage(selectProductId, language.Id);
+
+                if (GlobalObjects.ViewModel.LocalConfig)
+                {
+                    var productId = language.ProductId;
+                    if (string.IsNullOrEmpty(productId)) productId = "O365ProPlusRetail";
+
+                    var languageInstalled = installOffice.ProPlusLanguageInstalled(productId, language.Id);
+                    if (languageInstalled)
+                    {
+                        GlobalObjects.ViewModel.AddRemovedLanguage(productId, language);
+                    }
+                }
             }
             LanguageList.ItemsSource = null;
             LanguageList.ItemsSource = GlobalObjects.ViewModel.GetLanguages(selectProductId);
         }
+
+        private void LaunchLanguageDialog()
+        {
+            try
+            {
+                if (languagesDialog == null)
+                {
+                    var currentItems1 = (List<Language>)LanguageList.ItemsSource ?? new List<Language>();
+
+                    var languageList = GlobalObjects.ViewModel.Languages.ToList();
+                    foreach (var language in currentItems1)
+                    {
+                        languageList.Remove(language);
+                    }
+
+                    languagesDialog = new LanguagesDialog
+                    {
+                        LanguageSource = languageList
+                    };
+                    languagesDialog.Closed += (o, args) =>
+                    {
+                        languagesDialog = null;
+                    };
+                    languagesDialog.Closing += (o, args) =>
+                    {
+                        var currentItems2 = (List<Language>)LanguageList.ItemsSource ?? new List<Language>();
+
+                        if (languagesDialog.SelectedItems != null)
+                        {
+                            if (languagesDialog.SelectedItems.Count > 0)
+                            {
+                                currentItems2.AddRange(languagesDialog.SelectedItems);
+                            }
+                        }
+
+                        var selectedLangs = FormatLanguage(currentItems2.Distinct().ToList()).ToList();
+
+                        var selectProductId = GetSelectedProduct();
+
+                        foreach (var languages in selectedLangs)
+                        {
+                            languages.ProductId = selectProductId;
+                        }
+
+                        GlobalObjects.ViewModel.AddLanguages(selectProductId, selectedLangs);
+
+                        foreach (var language in selectedLangs)
+                        {
+                            GlobalObjects.ViewModel.RemoveAddRemovedLanguage(selectProductId, language); 
+                        }
+                        
+                        LanguageList.ItemsSource = null;
+                        LanguageList.ItemsSource = selectedLangs;
+
+                    };
+                }
+                languagesDialog.Launch();
+
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
+
 
         private void ChangePrimaryLanguage()
         {
@@ -397,6 +383,45 @@ namespace MetroDemo.ExampleViews
                 configXml.Add = new ODTAdd();
             }
 
+            var languages = GlobalObjects.ViewModel.GetRemovedLanguages();
+            if (languages.Count > 0)
+            {
+                if (configXml.Remove == null)
+                {
+                    configXml.Remove = new ODTRemove
+                    {
+                        Products = new List<ODTProduct>()
+                    };
+
+                    foreach (var productId in languages.Select(p => p.ProductId).ToList().Distinct())
+                    {
+                        var tmpProdId = productId;
+                        if (productId == null)
+                        {
+                            tmpProdId = "O365ProPlusRetail";
+                        }
+
+                        var pLanguages = languages.Where(l => l.ProductId == productId);
+                        var odtProduct = new ODTProduct()
+                        {
+                            ID = tmpProdId
+                        };
+                        if (odtProduct.Languages == null) odtProduct.Languages = new List<ODTLanguage>();
+
+                        foreach (var language in pLanguages)
+                        {
+                            odtProduct.Languages.Add(new ODTLanguage()
+                            {
+                                ID = language.Id
+                            });
+                        }
+
+                        configXml.Remove.Products.Add(odtProduct);
+
+                    }
+                }
+            }
+
             if (ProductEdition32Bit.IsChecked.HasValue && ProductEdition32Bit.IsChecked.Value)
             {
                 configXml.Add.OfficeClientEdition = OfficeClientEdition.Office32Bit;
@@ -477,9 +502,43 @@ namespace MetroDemo.ExampleViews
                 {
                     product.Languages = new List<ODTLanguage>();
 
+                    ODTProduct removeProduct = null;
+                    if (configXml.Remove != null)
+                    {
+                       removeProduct = configXml.Remove.Products.FirstOrDefault(p => p.ID == product.ID);
+                    }
+                    
+
                     var productLanguages = GlobalObjects.ViewModel.GetLanguages(product.ID);
 
-                    foreach (Language language in productLanguages)
+                    foreach (var language in productLanguages)
+                    {
+                        if (removeProduct != null)
+                        {
+                            var rmLang =
+                                removeProduct.Languages.FirstOrDefault(l => l.ID.ToLower() == language.Id.ToLower());
+                            if (rmLang != null)
+                            {
+                                removeProduct.Languages.Remove(rmLang);
+                                if (removeProduct.Languages.Count == 0)
+                                {
+                                    configXml.Remove.Products.Remove(removeProduct);
+                                }
+                                if (configXml.Remove.Products.Count == 0)
+                                {
+                                    configXml.Remove = null;
+                                }
+                            }
+                        }
+
+                        product.Languages.Add(new ODTLanguage()
+                        {
+                            ID = language.Id
+                        });
+                    }
+
+                    var removedLanguages = GlobalObjects.ViewModel.GetRemovedLanguages(product.ID);
+                    foreach (var language in removedLanguages)
                     {
                         product.Languages.Add(new ODTLanguage()
                         {
@@ -506,10 +565,26 @@ namespace MetroDemo.ExampleViews
             }
         }
 
+        public void ChangeBranch(string branchName)
+        {
+            if (branchName == null) return;
+            var selectIndex = 0;
+            for (var i = 0; i < ProductBranch.Items.Count; i++)
+            {
+                var item = (OfficeBranch)ProductBranch.Items[i];
+                if (item == null) continue;
+                if (item.NewName.ToLower() != branchName.ToLower()) continue;
+                selectIndex = i;
+                break;
+            }
+
+            ProductBranch.SelectedIndex = selectIndex;
+        }
 
         public async Task UpdateVersions()
         {
             var branch = (OfficeBranch)ProductBranch.SelectedItem;
+            if (branch == null) return;
             ProductVersion.ItemsSource = branch.Versions;
             ProductVersion.SetValue(TextBoxHelper.WatermarkProperty, branch.CurrentVersion);
 
@@ -603,21 +678,11 @@ namespace MetroDemo.ExampleViews
         {
             try
             {
-                if (branch.Updated) return;
-                var ppDownload = new ProPlusDownloader();
-                var latestVersion = await ppDownload.GetLatestVersionAsync(branch.Branch.ToString(), officeEdition);
-
                 var modelBranch = GlobalObjects.ViewModel.Branches.FirstOrDefault(b =>
                     b.Branch.ToString().ToLower() == branch.Branch.ToString().ToLower());
                 if (modelBranch == null) return;
-                if (modelBranch.Versions.Any(v => v.Version == latestVersion)) return;
-                modelBranch.Versions.Insert(0, new Build() { Version = latestVersion });
-                modelBranch.CurrentVersion = latestVersion;
 
-                ProductVersion.ItemsSource = modelBranch.Versions;
                 ProductVersion.SetValue(TextBoxHelper.WatermarkProperty, modelBranch.CurrentVersion);
-
-                modelBranch.Updated = true;
             }
             catch (Exception)
             {
@@ -706,47 +771,6 @@ namespace MetroDemo.ExampleViews
             }
         }
 
-        private async void DownloadButton_OnClick(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                if (_tokenSource != null)
-                {
-                    if (_tokenSource.IsCancellationRequested)
-                    {
-                        GlobalObjects.ViewModel.BlockNavigation = false;
-                        SetTabStatus(true);
-                        return;
-                    }
-                    if (_downloadTask.IsActive())
-                    {
-                        GlobalObjects.ViewModel.BlockNavigation = false;
-                        SetTabStatus(true);
-                        _tokenSource.Cancel();
-                        return;
-                    }
-                }
-
-                DownloadButton.Content = "Stop";
-
-                _downloadTask = DownloadOfficeFiles();
-                await _downloadTask;
-            }
-            catch (Exception ex)
-            {
-                if (ex.Message.ToLower().Contains("aborted") ||
-                    ex.Message.ToLower().Contains("canceled"))
-                {
-                    GlobalObjects.ViewModel.BlockNavigation = false;
-                    SetTabStatus(true);
-                }
-                else
-                {
-                    LogErrorMessage(ex);
-                }
-            }
-        }
-
         private async void OpenFolderButton_OnClick(object sender, RoutedEventArgs e)
         {
             try
@@ -793,7 +817,6 @@ namespace MetroDemo.ExampleViews
                 }
 
                 OpenFolderButton.IsEnabled = openFolderEnabled;
-                DownloadButton.IsEnabled = enabled;
             }
             catch (Exception ex)
             {
@@ -1110,64 +1133,6 @@ namespace MetroDemo.ExampleViews
             }
         }
 
-        private void LaunchLanguageDialog()
-        {
-            try
-            {
-                if (languagesDialog == null)
-                {
-                    var currentItems1 = (List<Language>)LanguageList.ItemsSource ?? new List<Language>();
-
-                    var languageList = GlobalObjects.ViewModel.Languages.ToList();
-                    foreach (var language in currentItems1)
-                    {
-                        languageList.Remove(language);
-                    }
-
-                    languagesDialog = new LanguagesDialog
-                    {
-                        LanguageSource = languageList
-                    };
-                    languagesDialog.Closed += (o, args) =>
-                    {
-                        languagesDialog = null;
-                    };
-                    languagesDialog.Closing += (o, args) =>
-                    {
-                        var currentItems2 = (List<Language>)LanguageList.ItemsSource ?? new List<Language>();
-
-                        if (languagesDialog.SelectedItems != null)
-                        {
-                            if (languagesDialog.SelectedItems.Count > 0)
-                            {
-                                currentItems2.AddRange(languagesDialog.SelectedItems);
-                            }
-                        }
-
-                        var selectedLangs = FormatLanguage(currentItems2.Distinct().ToList()).ToList();
-
-                        var selectProductId = GetSelectedProduct();
-
-                        foreach (var languages in selectedLangs)
-                        {
-                            languages.ProductId = selectProductId;
-                        }
-
-                        GlobalObjects.ViewModel.AddLanguages(selectProductId, selectedLangs);
-
-                        LanguageList.ItemsSource = null;
-                        LanguageList.ItemsSource = selectedLangs;
-
-                    };
-                }
-                languagesDialog.Launch();
-
-            }
-            catch (Exception ex)
-            {
-                LogErrorMessage(ex);
-            }
-        }
 
 
         #endregion

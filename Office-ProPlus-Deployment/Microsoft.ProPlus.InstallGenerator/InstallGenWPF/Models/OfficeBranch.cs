@@ -22,5 +22,7 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Models
 
         public bool Updated { get; set; }
 
+        public string NewName { get; set; }
+
     }
 }

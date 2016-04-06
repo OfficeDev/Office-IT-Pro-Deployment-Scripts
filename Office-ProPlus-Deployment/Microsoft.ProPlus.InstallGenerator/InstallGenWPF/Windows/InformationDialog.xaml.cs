@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Navigation;
 using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
 using MetroDemo.Models;
@@ -58,16 +60,32 @@ namespace MetroDemo.ExampleWindows
 
         }
 
+        private void HelpInfo_OnNavigated(object sender, NavigationEventArgs e)
+        {
+            try
+            {
+                Task.Run(() => Dispatcher.Invoke(async () =>
+                {
+                    await Task.Delay(500);
+                    HelpInfo.Visibility = Visibility.Visible;
+                }));
+            }
+            catch (Exception ex)
+            {
+                ex.LogException(true);
+            }
+        }
+
         public void Launch()
         {
             try { 
-            Owner = Application.Current.MainWindow;
-            // only for this window, because we allow minimizing
-            if (WindowState == WindowState.Minimized)
-            {
-                WindowState = WindowState.Normal;
-            }
-            Show();
+                Owner = Application.Current.MainWindow;
+                // only for this window, because we allow minimizing
+                if (WindowState == WindowState.Minimized)
+                {
+                    WindowState = WindowState.Normal;
+                }
+                Show();
             }
             catch (Exception ex)
             {

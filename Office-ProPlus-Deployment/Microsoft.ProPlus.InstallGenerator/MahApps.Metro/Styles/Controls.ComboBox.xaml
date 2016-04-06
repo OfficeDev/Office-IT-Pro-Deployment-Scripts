@@ -465,7 +465,7 @@
                                     SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
                                     Visibility="Collapsed"
                                     BorderBrush="Transparent"
-                                    BorderThickness="1,1,0,1"
+                                    BorderThickness="2,2,0,2"
                                     Margin="0,0,-2,0"
                                     Background="{TemplateBinding Background}">
                                 <TextBox x:Name="PART_EditableTextBox"

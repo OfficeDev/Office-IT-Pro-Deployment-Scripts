@@ -1,15 +1,23 @@
 ﻿using System;
+using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using MahApps.Metro;
 using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
 using MetroDemo.Events;
 using MetroDemo.ExampleViews;
 using MetroDemo.ExampleWindows;
+using Microsoft.OfficeProPlus.Downloader;
+using Microsoft.OfficeProPlus.Downloader.Model;
 using Microsoft.OfficeProPlus.InstallGen.Presentation.Logging;
+using Microsoft.OfficeProPlus.InstallGenerator.Models;
+using Microsoft.VisualBasic;
 
 namespace MetroDemo
 {
@@ -20,81 +28,129 @@ namespace MetroDemo
 
         public MainWindow()
         {
-            GlobalObjects.ViewModel = new MainWindowViewModel(DialogCoordinator.Instance)
+            try
             {
-                ConfigXmlParser = new OfficeInstallGenerator.ConfigXmlParser("<Configuration></Configuration>")
-            };
+                GlobalObjects.ViewModel = new MainWindowViewModel(DialogCoordinator.Instance)
+                {
+                    ConfigXmlParser = new OfficeInstallGenerator.ConfigXmlParser(GlobalObjects.DefaultXml),
+                    AllowMultipleDownloads = true,
+                    UseFolderShortNames = true
+                };
 
-            DataContext = GlobalObjects.ViewModel;
+                DataContext = GlobalObjects.ViewModel;
+                GlobalObjects.ViewModel.RunLocalConfigs = false;
 
-            InitializeComponent();
+                InitializeComponent();
 
-            ThemeManager.TransitionsEnabled = true;
+                ProductView.LoadXml();
+                DisplayView.LoadXml();
+                UpdateView.LoadXml();
 
-            MainTabControl.SelectionChanged += MainTabControl_SelectionChanged;
+                ThemeManager.TransitionsEnabled = false;
 
-            StartView.TransitionTab += TransitionTab;
-            StartView.XmlImported += XmlImported;
+                MainTabControl.SelectionChanged += MainTabControl_SelectionChanged;
 
-            ProductView.TransitionTab += TransitionTab;
-            UpdateView.TransitionTab += TransitionTab;
-            DisplayView.TransitionTab += TransitionTab;
+                StartView.TransitionTab += TransitionTab;
+                StartView.XmlImported += XmlImported;
 
-            GenerateView.InfoMessage += GenerateViewInfoMessage;
-            GenerateView.ErrorMessage += GenerateView_ErrorMessage;
+                ProductView.TransitionTab += TransitionTab;
+                UpdateView.TransitionTab += TransitionTab;
+                DisplayView.TransitionTab += TransitionTab;
+                GenerateView.TransitionTab += TransitionTab;
+                DownloadView.TransitionTab += TransitionTab;
+                LocalView.TransitionTab += TransitionTab;
 
-            DisplayView.InfoMessage += GenerateViewInfoMessage;
-            DisplayView.ErrorMessage += GenerateView_ErrorMessage;
+                LocalView.BranchChanged += BranchChanged;
+                LocalView.MainWindow = this;
 
-            ProductView.InfoMessage += GenerateViewInfoMessage;
-            ProductView.ErrorMessage += GenerateView_ErrorMessage;
+                GenerateView.InfoMessage += GenerateViewInfoMessage;
+                GenerateView.ErrorMessage += GenerateView_ErrorMessage;
 
-            UpdateView.InfoMessage += GenerateViewInfoMessage;
-            UpdateView.ErrorMessage += GenerateView_ErrorMessage;
+                DisplayView.InfoMessage += GenerateViewInfoMessage;
+                DisplayView.ErrorMessage += GenerateView_ErrorMessage;
 
-            StartView.InfoMessage += GenerateViewInfoMessage;
-            StartView.ErrorMessage += GenerateView_ErrorMessage;
+                ProductView.InfoMessage += GenerateViewInfoMessage;
+                ProductView.ErrorMessage += GenerateView_ErrorMessage;
+
+                UpdateView.InfoMessage += GenerateViewInfoMessage;
+                UpdateView.ErrorMessage += GenerateView_ErrorMessage;
+
+                StartView.InfoMessage += GenerateViewInfoMessage;
+                StartView.ErrorMessage += GenerateView_ErrorMessage;
+
+                DownloadView.InfoMessage += GenerateViewInfoMessage;
+                DownloadView.ErrorMessage += GenerateView_ErrorMessage;
+
+                LocalView.InfoMessage += GenerateViewInfoMessage;
+                LocalView.ErrorMessage += GenerateView_ErrorMessage;
+            }
+            catch (Exception ex)
+            {
+                ex.LogException();
+            }
         }
 
-        private void MainTabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
         {
-            if (StartView.RestartWorkflow == null)
+            try
             {
-                StartView.RestartWorkflow += RestartWorkflow;
-            }
+                var branchJson = GlobalObjects.ViewModel.BranchesToJson;
+                System.IO.File.WriteAllText(Environment.ExpandEnvironmentVariables(@"%temp%\BranchVersions.json"),branchJson);
 
-            e.Handled = false;
-
-            if (GlobalObjects.ViewModel.BlockNavigation)
-            {
-                MainTabControl.SelectedIndex = _cacheIndex;
-                return;
-            }
-
-            ThemeManager.TransitionsEnabled = MainTabControl.SelectedIndex != 4;
-
-            if (MainTabControl.SelectedIndex > -1)
-            {
-                ((TabItem) MainTabControl.Items[MainTabControl.SelectedIndex]).IsEnabled = true;
-
-                if (MainTabControl.SelectedIndex < (MainTabControl.Items.Count - 1))
+                try
                 {
-                    ((TabItem) MainTabControl.Items[MainTabControl.SelectedIndex + 1]).IsEnabled = true;
+                    await GetProPlusVersions();
                 }
+                catch { }
             }
-
-            if (_cacheIndex != MainTabControl.SelectedIndex)
+            catch (Exception ex)
             {
-                if (!GlobalObjects.ViewModel.ResetXml)
-                {
-                   ProductView.UpdateXml();
-                   DisplayView.UpdateXml();
-                   UpdateView.UpdateXml();
-                }
-                GlobalObjects.ViewModel.ResetXml = false;
-
-                _cacheIndex = MainTabControl.SelectedIndex;
+                ex.LogException(false);
             }
+        }
+
+        private async Task GetProPlusVersions()
+        {
+            await Retry.BlockAsync(3, 1, async () =>
+            {
+                var cd = new ProPlusDownloader();
+                var channelVersionJson = await cd.GetChannelVersionJson();
+                var branches = GlobalObjects.ViewModel.JsonToBranches(channelVersionJson);
+                if (branches != null)
+                {
+                    GlobalObjects.ViewModel.Branches = branches;
+                }
+
+                var ppDownload = new ProPlusDownloader();
+
+                foreach (var channel in GlobalObjects.ViewModel.Branches)
+                {
+                    var latestVersion = await ppDownload.GetLatestVersionAsync(channel.Branch.ToString(), OfficeEdition.Office32Bit);
+                    channel.CurrentVersion = latestVersion;
+                    if (channel.Versions.All(v => v.Version != latestVersion))
+                    {
+                        channel.Versions.Insert(0, new Build() { Version = latestVersion });
+                    }
+                }
+
+            });
+        }
+
+        private void BranchChanged(object sender, BranchChangedEventArgs e)
+        {
+            try
+            {
+                ProductView.ChangeBranch(e.BranchName);
+            }
+            catch (Exception ex)
+            {
+                ex.LogException();
+            }
+        }
+
+        public string WindowWidth()
+        {
+            return ((Panel)Application.Current.MainWindow.Content).ToString(); 
         }
 
         private void RestartWorkflow(object sender, EventArgs eventArgs)
@@ -102,12 +158,16 @@ namespace MetroDemo
             for (var i = 1; i < MainTabControl.Items.Count; i++)
             {
                 var tabItem = (TabItem)MainTabControl.Items[i];
-                tabItem.IsEnabled = false;
+                //tabItem.IsEnabled = false;
             }
 
             ProductView.Reset();
             UpdateView.Reset();
             DisplayView.Reset();
+
+            ProductView.LoadXml();
+            DisplayView.LoadXml();
+            UpdateView.LoadXml();
         }
 
         private void XmlImported(object sender, EventArgs eventArgs)
@@ -135,14 +195,42 @@ namespace MetroDemo
             {
                 var newIndex = Convert.ToInt32(((dynamic)sender).Tag);
 
-                if (e.Direction == TransitionTabDirection.Forward)
+                if (GlobalObjects.ViewModel.RunLocalConfigs)
                 {
-                    MainTabControl.SelectedIndex = newIndex + 1;
+                    GenerateTabName.Visibility = Visibility.Collapsed;
+                    LocalTabName.Visibility = Visibility.Visible;
+                    GenerateView.Tag = 99;
+                    LocalView.Tag = 5;
                 }
                 else
                 {
-                    MainTabControl.SelectedIndex = newIndex - 1;
+                    GenerateTabName.Visibility = Visibility.Visible;
+                    LocalTabName.Visibility = Visibility.Collapsed;
+                    GenerateView.Tag = 5;
+                    LocalView.Tag = 99;
                 }
+
+                var index = newIndex;
+                if (e.Direction == TransitionTabDirection.Forward)
+                {
+                    index = newIndex + 1;
+                }
+                else
+                {
+                    index = newIndex - 1;
+                }
+
+                if (GlobalObjects.ViewModel.RunLocalConfigs)
+                {
+                    if (index == 5) index = 6;
+                }
+                else
+                {
+                    if (index == 6) index = 5;
+                }
+
+                MainTabControl.SelectedIndex = e.UseIndex ? e.Index : index;
+                
             }
             catch (Exception ex)
             {
@@ -176,6 +264,49 @@ namespace MetroDemo
 
         #region Events
 
+        private void MainTabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (StartView.RestartWorkflow == null)
+            {
+                StartView.RestartWorkflow += RestartWorkflow;
+            }
+
+            e.Handled = false;
+
+            if (GlobalObjects.ViewModel.BlockNavigation)
+            {
+                MainTabControl.SelectedIndex = _cacheIndex;
+                return;
+            }
+
+            ThemeManager.TransitionsEnabled = MainTabControl.SelectedIndex != 4;
+            ThemeManager.TransitionsEnabled = false;
+
+            if (MainTabControl.SelectedIndex > -1)
+            {
+                ((TabItem)MainWindowTabs.Items[MainTabControl.SelectedIndex]).IsSelected = true;
+                ((TabItem)MainWindowTabs.Items[MainTabControl.SelectedIndex]).IsEnabled = true;
+            }
+
+            if (_cacheIndex != MainTabControl.SelectedIndex)
+            {
+                if (!GlobalObjects.ViewModel.ResetXml)
+                {
+                    ProductView.UpdateXml();
+                    DisplayView.UpdateXml();
+                    UpdateView.UpdateXml();
+                }
+                GlobalObjects.ViewModel.ResetXml = false;
+
+                _cacheIndex = MainWindowTabs.SelectedIndex;
+            }
+        }
+        
+        private void UIElement_OnIsEnabledChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            ((MetroTabItem)sender).IsEnabled = true;
+        }
+        
         private async void GenerateViewInfoMessage(object sender, MessageEventArgs e)
         {
             try
@@ -198,6 +329,66 @@ namespace MetroDemo
             {
                 ShowErrorDialogAsync("ERROR", ex.Message).ConfigureAwait(false);
             }
+        }
+
+
+        private void Nav_OnClick(object sender, RoutedEventArgs e)
+        {
+
+            if (OptionsFlyout.Width == 160)
+            {
+                var xtran = new Duration(TimeSpan.FromMilliseconds(100));
+                var widthAnimation = new DoubleAnimation(45, xtran);
+                OptionsFlyout.AreAnimationsEnabled = true;
+                OptionsFlyout.BeginAnimation(WidthProperty, widthAnimation);
+                OptionsFlyout.Width = 45;
+
+                lblStart.Visibility = Visibility.Collapsed;
+                lblOptions.Visibility = Visibility.Collapsed;
+                lblDownload.Visibility = Visibility.Collapsed;
+                lblProducts.Visibility = Visibility.Collapsed;
+                lblGenerate.Visibility = Visibility.Collapsed;
+                lblUpdate.Visibility = Visibility.Collapsed;
+                lblAbout.Visibility = Visibility.Collapsed;
+                lblLocal.Visibility = Visibility.Collapsed;
+
+                var margin = ((Button)sender).Margin;
+                margin.Left = -1;
+                margin.Right = -10;
+                ((Button) sender).Margin = margin;
+
+                var mainMargin = ((MetroAnimatedSingleRowTabControl) MainWindowTabs).Margin;
+
+                mainMargin.Left = 45;
+                ((MetroAnimatedSingleRowTabControl) MainWindowTabs).Margin = mainMargin;
+            }
+            else
+            {
+                var xtran = new Duration(TimeSpan.FromMilliseconds(100));
+                var widthAnimation = new DoubleAnimation(160, xtran);
+                OptionsFlyout.AreAnimationsEnabled = true;
+                OptionsFlyout.BeginAnimation(WidthProperty, widthAnimation);
+                OptionsFlyout.Width = 160;
+
+                lblStart.Visibility = Visibility.Visible;
+                lblDownload.Visibility = Visibility.Visible;
+                lblOptions.Visibility = Visibility.Visible;
+                lblProducts.Visibility = Visibility.Visible;
+                lblGenerate.Visibility = Visibility.Visible;
+                lblUpdate.Visibility = Visibility.Visible;
+                lblAbout.Visibility = Visibility.Visible;
+                lblLocal.Visibility = Visibility.Visible;
+
+                var margin = ((Button)sender).Margin;
+                margin.Left = 100;
+                ((Button)sender).Margin = margin;
+
+                var mainMargin = ((MetroAnimatedSingleRowTabControl)MainWindowTabs).Margin;
+                mainMargin.Left = 150;
+                ((MetroAnimatedSingleRowTabControl)MainWindowTabs).Margin = mainMargin;
+            }
+           
+
         }
 
         #endregion
@@ -282,6 +473,7 @@ namespace MetroDemo
                 };
 
                 GenerateView.xmlBrowser.Visibility = Visibility.Hidden;
+                LocalView.xmlBrowser.Visibility = Visibility.Hidden;
 
                 var result = await this.ShowMessageAsync("Quit application?",
                     "Sure you want to quit application?",
@@ -296,11 +488,13 @@ namespace MetroDemo
                 else
                 {
                     GenerateView.xmlBrowser.Visibility = Visibility.Visible;
+                    LocalView.xmlBrowser.Visibility = Visibility.Visible;
                 }
             }
             catch { }
         }
         #endregion
-        
+
+
     }
 }

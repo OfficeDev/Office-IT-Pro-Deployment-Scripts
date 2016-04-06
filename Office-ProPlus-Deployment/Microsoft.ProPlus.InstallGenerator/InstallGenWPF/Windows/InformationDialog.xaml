@@ -6,6 +6,9 @@
                       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                       xmlns:converters="http://metro.mahapps.com/winfx/xaml/shared"
                       Title=""
+                      WindowTitleBrush="#f4f4f4"
+                      Background="#e6e6e6"
+                      Foreground="#333333"
                       WindowStartupLocation="CenterOwner"
                       BorderThickness="1"
                       BorderBrush="{DynamicResource AccentColorBrush}"
@@ -26,12 +29,17 @@
 
     <controls:MetroWindow.TitleTemplate>
         <DataTemplate>
-            <TextBlock Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Content, Converter={converters:ToUpperConverter}}"
+            <TextBlock Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Content}"
                        TextTrimming="CharacterEllipsis"
                        HorizontalAlignment="Left"
                        VerticalAlignment="Center"
-                       Margin="10 0 8 0"
-                       FontSize="{DynamicResource WindowTitleFontSize}"
+                       Margin="0,5,-81,0" 
+                       Padding="10,0,0,0" 
+                       Background="#f4f4f4"
+                       Foreground="#333333"
+                       Height="28"
+                       FontSize="14"
+                       FontWeight="Bold"
                        FontFamily="{DynamicResource HeaderFontFamily}" />
         </DataTemplate>
     </controls:MetroWindow.TitleTemplate>
@@ -45,7 +53,7 @@
         </Grid.RowDefinitions>
 
         <Border Grid.Row="0" BorderThickness="1">
-            <WebBrowser  Name="HelpInfo" Margin="5"   >
+            <WebBrowser  Name="HelpInfo" Margin="5" Visibility="Hidden" Navigated="HelpInfo_OnNavigated"   >
  
             </WebBrowser>
         </Border>

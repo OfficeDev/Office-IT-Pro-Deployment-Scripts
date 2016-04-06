@@ -190,7 +190,10 @@ namespace Microsoft.OfficeProPlus.Downloader
 
             foreach (var file in _fileNames)
             {
-                ExtractFile(file);
+                Retry.Block(5, 1, () =>
+                {
+                    ExtractFile(file);
+                });
             }
             return true;
         }

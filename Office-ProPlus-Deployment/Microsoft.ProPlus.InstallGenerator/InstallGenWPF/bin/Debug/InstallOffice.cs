@@ -43,20 +43,21 @@ public class InstallOffice
     {
         var fileNames = new List<string>();
         var installDir = "";
+      
         try
         {
             MinimizeWindow();
 
             SilentInstall = false;
-
+            var startTime = DateTime.Now;
+            
             var currentDirectory = Environment.ExpandEnvironmentVariables("%temp%");
             installDir = currentDirectory + @"\OfficeProPlus";
-
+           
             Directory.CreateDirectory(installDir);
-            //Directory.CreateDirectory(Environment.ExpandEnvironmentVariables(@"%temp%\OfficeProPlus\LogFiles"));
 
             var args = GetArguments();
-            if (args.Any())
+            if (args.Any() && Environment.UserName != "SYSTEM")
             {
                 if (!HasValidArguments())
                 {
@@ -65,6 +66,7 @@ public class InstallOffice
                 }
             }
 
+
             var filesXml = GetTextFileContents("files.xml");
             if (!string.IsNullOrEmpty(filesXml))
             {
@@ -72,12 +74,14 @@ public class InstallOffice
                 _xmlDoc.LoadXml(filesXml);
             }
 
+
             Console.Write("Extracting Install Files...");
             fileNames = GetEmbeddedItems(installDir);
             Console.WriteLine("Done");
 
             var odtFilePath = installDir + @"\" + fileNames.FirstOrDefault(f => f.ToLower().EndsWith(".exe"));
             var xmlFilePath = installDir + @"\" + fileNames.FirstOrDefault(f => f.ToLower().EndsWith(".xml"));
+
 
             SetLoggingPath(xmlFilePath);
 
@@ -114,6 +118,11 @@ public class InstallOffice
             {
                 Console.WriteLine("Installing Office 365 ProPlus...");
                 runInstall = true;
+
+                if (GetArguments().Any(a => a.Key.ToLower() == "/silent"))
+                {
+                    SilentInstall = true;
+                }
             }
 
             if (runInstall)
@@ -121,6 +130,7 @@ public class InstallOffice
 
                 if (SilentInstall)
                 {
+                    Console.WriteLine("Running Silent Install...");
                     var doc = new XmlDocument();
                     doc.Load(xmlFilePath);
                     SetConfigSilent(doc);
@@ -153,6 +163,7 @@ public class InstallOffice
         {
            CleanUp(installDir);
         }
+        
     }
 
     private void ShowHelp()
@@ -178,6 +189,7 @@ public class InstallOffice
     {
         return !GetArguments().Any(a => (a.Key.ToLower() != "/uninstall" &&
                                          a.Key.ToLower() != "/showxml" &&
+                                         a.Key.ToLower() != "/silent" &&
                                          a.Key.ToLower() != "/extractxml"));
     }
 
@@ -214,7 +226,7 @@ public class InstallOffice
         if (display == null)
         {
             display = doc.CreateElement("Display");
-            doc.AppendChild(display);
+            doc.DocumentElement.AppendChild(display);
         }
 
         SetAttribute(doc, display, "Level", "None");
@@ -346,6 +358,7 @@ public class InstallOffice
             var allComplete = true;
 
             var scenarioTasks = GetRunningScenarioTasks();
+            if (scenarioTasks == null) return;
             if (scenarioTasks.Count == 0) return;
 
             anyCancelled = scenarioTasks.Any(s => s.State == "TASKSTATE_CANCELLED");
@@ -516,7 +529,7 @@ public class InstallOffice
             {
                 foreach (var file in dirInfo.GetFiles("*.log"))
                 {
-                    File.Copy(file.FullName, Environment.ExpandEnvironmentVariables(@"%temp%\" + file.Name), true);
+                    File.Copy(file.FullName, Environment.ExpandEnvironmentVariables(@"%public%\" + file.Name), true);
                 }
 
                 if (Directory.Exists(LoggingPath))
@@ -531,7 +544,7 @@ public class InstallOffice
 
     private void SetLoggingPath(string xmlFilePath)
     {
-        var tempPath = Environment.ExpandEnvironmentVariables("%temp%");
+        var tempPath = Environment.ExpandEnvironmentVariables("%public%");
         const string logFolderName = "OfficeProPlusLogs";
         LoggingPath = tempPath + @"\" + logFolderName;
         if (Directory.Exists(LoggingPath))
@@ -560,7 +573,7 @@ public class InstallOffice
 
     private void SetSourcePath(string xmlFilePath)
     {
-        var tempPath = Environment.ExpandEnvironmentVariables("%temp%");
+        var tempPath = Environment.ExpandEnvironmentVariables("%public%");
         const string officeFolderName = "OfficeProPlus";
 
         var officeFolderPath = tempPath + @"\" + officeFolderName;

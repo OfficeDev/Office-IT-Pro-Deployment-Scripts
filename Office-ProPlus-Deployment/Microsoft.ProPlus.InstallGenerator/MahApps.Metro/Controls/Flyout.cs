@@ -322,6 +322,7 @@ namespace MahApps.Metro.Controls
         {
             var flyout = (Flyout)dependencyObject;
 
+            
             Action openedChangedAction = () => {
                 if (e.NewValue != e.OldValue)
                 {
@@ -387,7 +388,7 @@ namespace MahApps.Metro.Controls
         private void Hide()
         {
             // hide the flyout, we should get better performance and prevent showing the flyout on any resizing events
-            this.Visibility = Visibility.Hidden;
+            //this.Visibility = Visibility.Hidden;
 
             this.RaiseEvent(new RoutedEventArgs(ClosingFinishedEvent));
         }

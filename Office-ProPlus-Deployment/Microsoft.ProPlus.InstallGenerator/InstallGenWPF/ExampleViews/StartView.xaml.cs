@@ -4,16 +4,19 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Forms.VisualStyles;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using MetroDemo.Events;
+using MetroDemo.Models;
 using Microsoft.OfficeProPlus.InstallGen.Presentation.Logging;
 using Microsoft.OfficeProPlus.InstallGenerator.Implementation;
 
@@ -28,6 +31,8 @@ namespace MetroDemo.ExampleViews
         public event MessageEventHandler InfoMessage;
         public event MessageEventHandler ErrorMessage;
         public event TransitionTabEventHandler TransitionTab;
+
+        private bool _running = false;
 
         public StartView()
         {
@@ -63,7 +68,11 @@ namespace MetroDemo.ExampleViews
         {
             try
             {
-                GlobalObjects.ViewModel.ConfigXmlParser.LoadXml(GlobalObjects.ViewModel.DefaultXml);
+                if (_running) return;
+                GlobalObjects.ViewModel.LocalConfig = false;
+                GlobalObjects.ViewModel.RunLocalConfigs = false;
+
+                GlobalObjects.ViewModel.ConfigXmlParser.LoadXml(GlobalObjects.DefaultXml);
                 GlobalObjects.ViewModel.ResetXml = true;
                 GlobalObjects.ViewModel.ImportFile = null;
 
@@ -79,6 +88,7 @@ namespace MetroDemo.ExampleViews
                 });
 
                 LogAnaylytics("/StartView", "StartNew");
+
             }
             catch (Exception ex)
             {
@@ -90,6 +100,10 @@ namespace MetroDemo.ExampleViews
         {
             try
             {
+                if (_running) return;
+                GlobalObjects.ViewModel.LocalConfig = false;
+                GlobalObjects.ViewModel.RunLocalConfigs = false;
+
                 var dlg = new Microsoft.Win32.OpenFileDialog
                 {
                     DefaultExt = ".png",
@@ -134,6 +148,78 @@ namespace MetroDemo.ExampleViews
             catch (Exception ex)
             {
                 LogErrorMessage(ex);
+            }
+        }
+
+        private async void ManageLocal_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (_running) return;
+
+                GlobalObjects.ViewModel.LocalConfig = true;
+                GlobalObjects.ViewModel.BlockNavigation = true;
+                _running = true;
+                var localXml = "";
+
+                await Task.Run(async () => { 
+                    Dispatcher.Invoke(() =>
+                    {
+                        WaitManageLocal.Visibility = Visibility.Visible;
+                        ImgManageLocal.Visibility = Visibility.Collapsed;
+                    });
+
+                    GlobalObjects.ViewModel.RunLocalConfigs = true;
+
+                    var officeInstallManager = new OfficeLocalInstallManager();
+                    localXml = await officeInstallManager.GenerateLocalConfigXml();
+                });
+
+                GlobalObjects.ViewModel.ConfigXmlParser.LoadXml(localXml);
+                GlobalObjects.ViewModel.ResetXml = true;
+                GlobalObjects.ViewModel.ImportFile = null;
+
+                GlobalObjects.ViewModel.ConfigXmlParser.ConfigurationXml.Add.Version = null;
+
+                if (RestartWorkflow != null)
+                {
+                    this.RestartWorkflow(this, new EventArgs());
+                }
+
+                GlobalObjects.ViewModel.BlockNavigation = false;
+
+                var installOffice = new InstallOffice();
+                if (installOffice.IsUpdateRunning())
+                {
+                    this.TransitionTab(this, new TransitionTabEventArgs()
+                    {
+                        Direction = TransitionTabDirection.Forward,
+                        Index = 6,
+                        UseIndex = true
+                    });
+                }
+                else
+                {
+                    this.TransitionTab(this, new TransitionTabEventArgs()
+                    {
+                        Direction = TransitionTabDirection.Forward,
+                        Index = 0
+                    });
+                }
+
+                LogAnaylytics("/StartView", "StartNew");
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            } finally
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    WaitManageLocal.Visibility = Visibility.Collapsed;
+                    ImgManageLocal.Visibility = Visibility.Visible;
+                });
+                _running = false;
             }
         }
 

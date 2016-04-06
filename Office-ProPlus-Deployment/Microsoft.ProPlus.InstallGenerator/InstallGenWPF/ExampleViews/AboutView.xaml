@@ -11,263 +11,90 @@
              mc:Ignorable="d" 
              d:DesignHeight="600" d:DesignWidth="900"
              Loaded="AboutView_OnLoaded">
-    <Grid>
+    <Grid Background="#e6e6e6">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="50" />
-            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="0" />
+            <ColumnDefinition />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0" Grid.Column="1"  Background="{StaticResource GrayBrush}" Width="auto" Height="40"  HorizontalAlignment="Stretch" VerticalAlignment="Top"/>
 
-        <DockPanel Grid.Column="1" LastChildFill="True">
+        <DockPanel Grid.Column="1" LastChildFill="True"  >
             <Grid DockPanel.Dock="Top" Margin="10" HorizontalAlignment="Left" VerticalAlignment="Top">
-                <Grid.RowDefinitions>
-                    <RowDefinition/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                </Grid.ColumnDefinitions>
+
+                <Controls:MetroAnimatedSingleRowTabControl Grid.Row="0" Grid.Column="0" x:Name="MainTabControl" Margin="-9,-10,-29.6,0">
+                    <TabItem Background="{StaticResource GrayBrush}" Height="40">
+                        <TabItem.Header >
+                            <DockPanel Margin="0,5,0,0" >
+                                <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,0,0,0">About Github</Label>
+                            </DockPanel>
+                        </TabItem.Header>
+
+                        <Grid HorizontalAlignment="Center" Margin="80 20 0 0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="110" />
+                                <RowDefinition Height="5" />
+                                <RowDefinition Height="370" />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock HorizontalAlignment="Left" Style="{StaticResource CustomMetroLabelTextBlock}" 
+                                           FontSize="16" Grid.Row="0" TextWrapping="Wrap" 
+                                           Text="The OfficeDev GitHub organization has a Repository named Office-IT-Pro-Deployment-Scripts. It contains a collection of useful PowerShell scripts to make deploying Office 2016 and Office 365 ProPlus easier for IT Pros and administrators. The repository contains deployment solutions for Office 365 ProPlus. If you would like to visit the GitHub repository please click on the image below." VerticalAlignment="Top" Width="646" Grid.ColumnSpan="4"/>
+
+                            <TextBlock Grid.Row="2" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center" >
+                                <Hyperlink NavigateUri="https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/" 
+                                            FontSize="18" RequestNavigate="Hyperlink_RequestNavigate">
+                                    <Image Grid.Row="2" Source="../images/GitHubSite.PNG" Width="550" >
+                                
+                                    </Image>
+                                </Hyperlink>
+                            </TextBlock>
+
+
+
+                        </Grid>
+                    </TabItem>
+                    <TabItem Background="{StaticResource GrayBrush}" Height="40" >
+                        <TabItem.Header>
+                            <DockPanel Margin="0,5,0,0">
+                                <Label Style="{StaticResource CustomMetroLabelTopHeader}"  Padding="0,0,0,0">About Install Toolkit</Label>
+                            </DockPanel>
+                        </TabItem.Header>
+
+                        <Grid HorizontalAlignment="Center" Margin="80 20 0 0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="700" />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="110" />
+                                <RowDefinition Height="20" />
+                                <RowDefinition Height="80" />
+                                <RowDefinition Height="20" />
+                                <RowDefinition Height="150" />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock HorizontalAlignment="Left" FontSize="16" Style="{StaticResource CustomMetroLabelTextBlock}"
+                                       Grid.Row="0" TextWrapping="Wrap" Text="The Office 365 ProPlus Install Toolkit is application that allows you to generate an executable or MSI installer file that allows you to deploy Office 365 ProPlus with traditional methods. The generated installer contains the configuration options that you select so you can distribute a file that allows users to install Office 365 ProPlus with specific configuration but only requires them to run one file.
+                                       " 
+                                      VerticalAlignment="Top"  Grid.Column="0"/>
+
+                            <TextBlock HorizontalAlignment="Left" FontSize="16" Style="{StaticResource CustomMetroLabelTextBlock}"
+                                       Grid.Row="2" TextWrapping="Wrap" Text="The toolkit also allows you to manage Office 365 ProPlus on the local workstation.  If you choose the 'Manage local' option it will check for an existing installation of Microsoft Office. If Office 365 ProPlus is not installed you can install it. You can also modify an existing installation.  " 
+                                      VerticalAlignment="Top"  Grid.Column="0"/>
+
+                            <TextBlock HorizontalAlignment="Left" FontSize="16" Style="{StaticResource CustomMetroLabelTextBlock}"
+                                       Grid.Row="4" TextWrapping="Wrap" Text="If you are using the Office 365 ProPlus 2016 version then you can take advantage of the update Channels. The toolkit allows you to change the Channel of an existing Office 365 ProPlus install.  To change the Channel it does not reinstall Office, it actually uses the update process to switch Channels." 
+                                      VerticalAlignment="Top"  Grid.Column="0"/>
+                        </Grid>
+                    </TabItem>
+                </Controls:MetroAnimatedSingleRowTabControl>
             </Grid>
-
-            <Controls:MetroAnimatedSingleRowTabControl Grid.Row="0" Grid.Column="0" x:Name="MainTabControl">
-                <TabItem Header="About Github">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition />
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="20" />
-                            <RowDefinition Height="50" />
-                            <RowDefinition Height="10" />
-                            <RowDefinition Height="100" />
-                            <RowDefinition Height="20" />
-                            <RowDefinition Height="50" />
-                            <RowDefinition Height="50" />
-                            <RowDefinition Height="150" />
-                        </Grid.RowDefinitions>
-
-                        <Grid Grid.Column="0" Grid.Row="1">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="50"></RowDefinition>
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="180" />
-                                <ColumnDefinition Width="150" />
-                                <ColumnDefinition Width="150" />
-                            </Grid.ColumnDefinitions>
-                            <Label Content="About Github" Style="{StaticResource MetroLabelHeader}" HorizontalAlignment="Left" Grid.Column="0" />
-
-
-
-                        </Grid>
-
-                        <Border Grid.Column="0" Grid.Row="3" BorderBrush="Gainsboro" BorderThickness="1" Width="870" HorizontalAlignment="Left">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="50"></RowDefinition>
-                                    <RowDefinition Height="50"></RowDefinition>
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-
-                                <Grid Grid.Row="0" Grid.Column="0">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="50"></RowDefinition>
-                                    </Grid.RowDefinitions>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="280" />
-                                        <ColumnDefinition Width="20" />
-                                        <ColumnDefinition Width="50" />
-                                    </Grid.ColumnDefinitions>
-
-
-
-                                </Grid>
-                                <Grid  Grid.Row="1" Grid.Column="0">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="50"></RowDefinition>
-                                    </Grid.RowDefinitions>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="170" />
-                                        <ColumnDefinition Width="20" />
-                                        <ColumnDefinition Width="400" />
-                                        <ColumnDefinition Width="80" />
-                                        <ColumnDefinition Width="60" />
-                                        <ColumnDefinition Width="90" />
-                                        <ColumnDefinition Width="80" />
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.ColumnSpan="6" Margin="10,19,19,-22.4">
-                                        <Hyperlink NavigateUri="https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/Development/Office-ProPlus-Deployment/Microsoft.ProPlus.InstallGenerator" RequestNavigate="Hyperlink_RequestNavigate">
-                                        https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/Development/Office-ProPlus-Deployment/Microsoft.ProPlus.InstallGenerator
-                                        </Hyperlink>
-                                    </TextBlock>
-                                    
-                                </Grid>
-                            </Grid>
-                        </Border>
-
-                        <Grid Grid.Column="0" Grid.Row="5">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="50"></RowDefinition>
-                                <RowDefinition Height="250"></RowDefinition>
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="150" />
-                                <ColumnDefinition Width="110" />
-                            </Grid.ColumnDefinitions>
-
-
-
-                        </Grid>
-
-                        <Grid Grid.Column="0" Grid.Row="6">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="50"></RowDefinition>
-                                <RowDefinition Height="250"></RowDefinition>
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="180" />
-                                <ColumnDefinition Width="450" />
-                                <ColumnDefinition Width="80" />
-                                <ColumnDefinition Width="60" />
-                            </Grid.ColumnDefinitions>
-
-
-                        </Grid>
-
-                        <Grid Grid.Column="0" Grid.Row="7">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="500" />
-                                <ColumnDefinition />
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="80" />
-                            </Grid.RowDefinitions>
-
-
-                        </Grid>
-                        <TextBlock HorizontalAlignment="Left" Height="68" Margin="26,10.4,0,0" Style="{StaticResource MetroTextBlock}" Grid.Row="3" TextWrapping="Wrap" Text="  Github is a code repository for developers to collaborate on any software based project from web projects to windows desktop applications.  Different branches of a project allow for separate versions of the project which can be useful when variations which will impact how the project can run on different platforms.  You can visit the site for our project at the link below" VerticalAlignment="Top" Width="770"/>
-
-                    </Grid>
-                </TabItem>
-                <TabItem Header="About Install Generator">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition />
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="20" />
-                            <RowDefinition Height="50" />
-                            <RowDefinition Height="10" />
-                            <RowDefinition Height="100" />
-                            <RowDefinition Height="20" />
-                            <RowDefinition Height="50" />
-                            <RowDefinition Height="50" />
-                            <RowDefinition Height="150" />
-                        </Grid.RowDefinitions>
-
-                        <Grid Grid.Column="0" Grid.Row="1">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="50"></RowDefinition>
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="180" />
-                                <ColumnDefinition Width="150" />
-                                <ColumnDefinition Width="150" />
-                            </Grid.ColumnDefinitions>
-                            <Label Content="About Office 365 ProPlus Install Generator" Style="{StaticResource MetroLabelHeader}" HorizontalAlignment="Left" Grid.Column="0" />
-
-
-
-                        </Grid>
-
-                        <Border Grid.Column="0" Grid.Row="3" BorderBrush="Gainsboro" BorderThickness="1" Width="870" HorizontalAlignment="Left">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="50"></RowDefinition>
-                                    <RowDefinition Height="50"></RowDefinition>
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-
-                                <Grid Grid.Row="0" Grid.Column="0">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="50"></RowDefinition>
-                                    </Grid.RowDefinitions>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="280" />
-                                        <ColumnDefinition Width="20" />
-                                        <ColumnDefinition Width="50" />
-                                    </Grid.ColumnDefinitions>
-
-
-
-                                </Grid>
-                                <Grid  Grid.Row="1" Grid.Column="0">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="50"></RowDefinition>
-                                    </Grid.RowDefinitions>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="170" />
-                                        <ColumnDefinition Width="20" />
-                                        <ColumnDefinition Width="400" />
-                                        <ColumnDefinition Width="80" />
-                                        <ColumnDefinition Width="60" />
-                                        <ColumnDefinition Width="90" />
-                                        <ColumnDefinition Width="80" />
-                                    </Grid.ColumnDefinitions>                                    
-                                </Grid>
-                            </Grid>
-                        </Border>
-
-                        <Grid Grid.Column="0" Grid.Row="5">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="50"></RowDefinition>
-                                <RowDefinition Height="250"></RowDefinition>
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="150" />
-                                <ColumnDefinition Width="110" />
-                            </Grid.ColumnDefinitions>
-
-
-
-                        </Grid>
-
-                        <Grid Grid.Column="0" Grid.Row="6">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="50"></RowDefinition>
-                                <RowDefinition Height="250"></RowDefinition>
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="180" />
-                                <ColumnDefinition Width="450" />
-                                <ColumnDefinition Width="80" />
-                                <ColumnDefinition Width="60" />
-                            </Grid.ColumnDefinitions>
-
-
-                        </Grid>
-
-                        <Grid Grid.Column="0" Grid.Row="7">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="500" />
-                                <ColumnDefinition />
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="80" />
-                            </Grid.RowDefinitions>
-
-
-                        </Grid>
-                        <TextBlock HorizontalAlignment="Left" Height="68" Margin="26,10.4,0,0" Style="{StaticResource MetroTextBlock}" Grid.Row="3" TextWrapping="Wrap" Text="	Office 365 ProPlus Install Generator is a project that allows the ability to install Microsoft Office using different methods, along with selecting different options.  Options include languages, excluding certain products, choosing the download source path, and specifying 32-bit versus 64-bit.  Install options include creating an MSI or EXE file, or installing directly from the generator application itself." VerticalAlignment="Top" Width="770"/>
-
-                    </Grid>
-                </TabItem>
-            </Controls:MetroAnimatedSingleRowTabControl>
         </DockPanel>
     </Grid>
 </UserControl>
