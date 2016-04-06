@@ -51,7 +51,7 @@ public class InstallOffice
             SilentInstall = false;
             var startTime = DateTime.Now;
             
-            var currentDirectory = Environment.ExpandEnvironmentVariables("%temp%");
+            var currentDirectory = Environment.ExpandEnvironmentVariables("%public%");
             installDir = currentDirectory + @"\OfficeProPlus";
            
             Directory.CreateDirectory(installDir);
