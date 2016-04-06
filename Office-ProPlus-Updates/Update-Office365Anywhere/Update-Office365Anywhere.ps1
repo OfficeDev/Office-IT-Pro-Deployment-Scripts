@@ -149,6 +149,335 @@ Function Get-OfficeCTRRegPath() {
     }
 }
 
+Function Get-OfficeVersion {
+<#
+.Synopsis
+Gets the Office Version installed on the computer
+
+.DESCRIPTION
+This function will query the local or a remote computer and return the information about Office Products installed on the computer
+
+.NOTES   
+Name: Get-OfficeVersion
+Version: 1.0.4
+DateCreated: 2015-07-01
+DateUpdated: 2015-08-28
+
+.LINK
+https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
+
+.PARAMETER ComputerName
+The computer or list of computers from which to query 
+
+.PARAMETER ShowAllInstalledProducts
+Will expand the output to include all installed Office products
+
+.EXAMPLE
+Get-OfficeVersion
+
+Description:
+Will return the locally installed Office product
+
+.EXAMPLE
+Get-OfficeVersion -ComputerName client01,client02
+
+Description:
+Will return the installed Office product on the remote computers
+
+.EXAMPLE
+Get-OfficeVersion | select *
+
+Description:
+Will return the locally installed Office product with all of the available properties
+
+#>
+[CmdletBinding(SupportsShouldProcess=$true)]
+param(
+    [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
+    [string[]]$ComputerName = $env:COMPUTERNAME,
+    [switch]$ShowAllInstalledProducts,
+    [System.Management.Automation.PSCredential]$Credentials
+)
+
+begin {
+    $HKLM = [UInt32] "0x80000002"
+    $HKCR = [UInt32] "0x80000000"
+
+    $excelKeyPath = "Excel\DefaultIcon"
+    $wordKeyPath = "Word\DefaultIcon"
+   
+    $installKeys = 'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall',
+                   'SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall'
+
+    $officeKeys = 'SOFTWARE\Microsoft\Office',
+                  'SOFTWARE\Wow6432Node\Microsoft\Office'
+
+    $defaultDisplaySet = 'DisplayName','Version', 'ComputerName'
+
+    $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet(‘DefaultDisplayPropertySet’,[string[]]$defaultDisplaySet)
+    $PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultDisplayPropertySet)
+}
+
+
+process {
+
+ $results = new-object PSObject[] 0;
+
+ foreach ($computer in $ComputerName) {
+    if ($Credentials) {
+       $os=Get-WMIObject win32_operatingsystem -computername $computer -Credential $Credentials
+    } else {
+       $os=Get-WMIObject win32_operatingsystem -computername $computer
+    }
+
+    $osArchitecture = $os.OSArchitecture
+
+    if ($Credentials) {
+       $regProv = Get-Wmiobject -list "StdRegProv" -namespace root\default -computername $computer -Credential $Credentials
+    } else {
+       $regProv = Get-Wmiobject -list "StdRegProv" -namespace root\default -computername $computer
+    }
+
+    [System.Collections.ArrayList]$VersionList = New-Object -TypeName System.Collections.ArrayList
+    [System.Collections.ArrayList]$PathList = New-Object -TypeName System.Collections.ArrayList
+    [System.Collections.ArrayList]$PackageList = New-Object -TypeName System.Collections.ArrayList
+    [System.Collections.ArrayList]$ClickToRunPathList = New-Object -TypeName System.Collections.ArrayList
+    [System.Collections.ArrayList]$ConfigItemList = New-Object -TypeName  System.Collections.ArrayList
+    $ClickToRunList = new-object PSObject[] 0;
+
+    foreach ($regKey in $officeKeys) {
+       $officeVersion = $regProv.EnumKey($HKLM, $regKey)
+       foreach ($key in $officeVersion.sNames) {
+          if ($key -match "\d{2}\.\d") {
+            if (!$VersionList.Contains($key)) {
+              $AddItem = $VersionList.Add($key)
+            }
+
+            $path = join-path $regKey $key
+
+            $configPath = join-path $path "Common\Config"
+            $configItems = $regProv.EnumKey($HKLM, $configPath)
+            if ($configItems) {
+               foreach ($configId in $configItems.sNames) {
+                 if ($configId) {
+                    $Add = $ConfigItemList.Add($configId.ToUpper())
+                 }
+               }
+            }
+
+            $cltr = New-Object -TypeName PSObject
+            $cltr | Add-Member -MemberType NoteProperty -Name InstallPath -Value ""
+            $cltr | Add-Member -MemberType NoteProperty -Name UpdatesEnabled -Value $false
+            $cltr | Add-Member -MemberType NoteProperty -Name UpdateUrl -Value ""
+            $cltr | Add-Member -MemberType NoteProperty -Name StreamingFinished -Value $false
+            $cltr | Add-Member -MemberType NoteProperty -Name Platform -Value ""
+            $cltr | Add-Member -MemberType NoteProperty -Name ClientCulture -Value ""
+            
+            $packagePath = join-path $path "Common\InstalledPackages"
+            $clickToRunPath = join-path $path "ClickToRun\Configuration"
+            $virtualInstallPath = $regProv.GetStringValue($HKLM, $clickToRunPath, "InstallationPath").sValue
+
+            [string]$officeLangResourcePath = join-path  $path "Common\LanguageResources"
+            $mainLangId = $regProv.GetDWORDValue($HKLM, $officeLangResourcePath, "SKULanguage").uValue
+            if ($mainLangId) {
+                $mainlangCulture = [globalization.cultureinfo]::GetCultures("allCultures") | where {$_.LCID -eq $mainLangId}
+                if ($mainlangCulture) {
+                    $cltr.ClientCulture = $mainlangCulture.Name
+                }
+            }
+
+            [string]$officeLangPath = join-path  $path "Common\LanguageResources\InstalledUIs"
+            $langValues = $regProv.EnumValues($HKLM, $officeLangPath);
+            if ($langValues) {
+               foreach ($langValue in $langValues) {
+                  $langCulture = [globalization.cultureinfo]::GetCultures("allCultures") | where {$_.LCID -eq $langValue}
+               } 
+            }
+
+            if ($virtualInstallPath) {
+
+            } else {
+              $clickToRunPath = join-path $regKey "ClickToRun\Configuration"
+              $virtualInstallPath = $regProv.GetStringValue($HKLM, $clickToRunPath, "InstallationPath").sValue
+            }
+
+            if ($virtualInstallPath) {
+               if (!$ClickToRunPathList.Contains($virtualInstallPath.ToUpper())) {
+                  $AddItem = $ClickToRunPathList.Add($virtualInstallPath.ToUpper())
+               }
+
+               $cltr.InstallPath = $virtualInstallPath
+               $cltr.StreamingFinished = $regProv.GetStringValue($HKLM, $clickToRunPath, "StreamingFinished").sValue
+               $cltr.UpdatesEnabled = $regProv.GetStringValue($HKLM, $clickToRunPath, "UpdatesEnabled").sValue
+               $cltr.UpdateUrl = $regProv.GetStringValue($HKLM, $clickToRunPath, "UpdateUrl").sValue
+               $cltr.Platform = $regProv.GetStringValue($HKLM, $clickToRunPath, "Platform").sValue
+               $cltr.ClientCulture = $regProv.GetStringValue($HKLM, $clickToRunPath, "ClientCulture").sValue
+               $ClickToRunList += $cltr
+            }
+
+            $packageItems = $regProv.EnumKey($HKLM, $packagePath)
+            $officeItems = $regProv.EnumKey($HKLM, $path)
+
+            foreach ($itemKey in $officeItems.sNames) {
+              $itemPath = join-path $path $itemKey
+              $installRootPath = join-path $itemPath "InstallRoot"
+
+              $filePath = $regProv.GetStringValue($HKLM, $installRootPath, "Path").sValue
+              if (!$PathList.Contains($filePath)) {
+                  $AddItem = $PathList.Add($filePath)
+              }
+            }
+
+            foreach ($packageGuid in $packageItems.sNames) {
+              $packageItemPath = join-path $packagePath $packageGuid
+              $packageName = $regProv.GetStringValue($HKLM, $packageItemPath, "").sValue
+            
+              if (!$PackageList.Contains($packageName)) {
+                if ($packageName) {
+                   $AddItem = $PackageList.Add($packageName.Replace(' ', '').ToLower())
+                }
+              }
+            }
+
+          }
+       }
+    }
+
+    
+
+    foreach ($regKey in $installKeys) {
+        $keyList = new-object System.Collections.ArrayList
+        $keys = $regProv.EnumKey($HKLM, $regKey)
+
+        foreach ($key in $keys.sNames) {
+           $path = join-path $regKey $key
+           $installPath = $regProv.GetStringValue($HKLM, $path, "InstallLocation").sValue
+           if (!($installPath)) { continue }
+           if ($installPath.Length -eq 0) { continue }
+
+           $buildType = "64-Bit"
+           if ($osArchitecture -eq "32-bit") {
+              $buildType = "32-Bit"
+           }
+
+           if ($regKey.ToUpper().Contains("Wow6432Node".ToUpper())) {
+              $buildType = "32-Bit"
+           }
+
+           if ($key -match "{.{8}-.{4}-.{4}-1000-0000000FF1CE}") {
+              $buildType = "64-Bit" 
+           }
+
+           if ($key -match "{.{8}-.{4}-.{4}-0000-0000000FF1CE}") {
+              $buildType = "32-Bit" 
+           }
+
+           if ($modifyPath) {
+               if ($modifyPath.ToLower().Contains("platform=x86")) {
+                  $buildType = "32-Bit"
+               }
+
+               if ($modifyPath.ToLower().Contains("platform=x64")) {
+                  $buildType = "64-Bit"
+               }
+           }
+
+           $primaryOfficeProduct = $false
+           $officeProduct = $false
+           foreach ($officeInstallPath in $PathList) {
+             if ($officeInstallPath) {
+                $installReg = "^" + $installPath.Replace('\', '\\')
+                $installReg = $installReg.Replace('(', '\(')
+                $installReg = $installReg.Replace(')', '\)')
+                if ($officeInstallPath -match $installReg) { $officeProduct = $true }
+             }
+           }
+
+           if (!$officeProduct) { continue };
+           
+           $name = $regProv.GetStringValue($HKLM, $path, "DisplayName").sValue          
+
+           if ($ConfigItemList.Contains($key.ToUpper()) -and $name.ToUpper().Contains("MICROSOFT OFFICE")) {
+              $primaryOfficeProduct = $true
+           }
+
+           $version = $regProv.GetStringValue($HKLM, $path, "DisplayVersion").sValue
+           $modifyPath = $regProv.GetStringValue($HKLM, $path, "ModifyPath").sValue 
+
+           $cltrUpdatedEnabled = $NULL
+           $cltrUpdateUrl = $NULL
+           $clientCulture = $NULL;
+
+           [string]$clickToRun = $false
+           if ($ClickToRunPathList.Contains($installPath.ToUpper())) {
+               $clickToRun = $true
+               if ($name.ToUpper().Contains("MICROSOFT OFFICE")) {
+                  $primaryOfficeProduct = $true
+               }
+
+               foreach ($cltr in $ClickToRunList) {
+                 if ($cltr.InstallPath) {
+                   if ($cltr.InstallPath.ToUpper() -eq $installPath.ToUpper()) {
+                       $cltrUpdatedEnabled = $cltr.UpdatesEnabled
+                       $cltrUpdateUrl = $cltr.UpdateUrl
+                       if ($cltr.Platform -eq 'x64') {
+                           $buildType = "64-Bit" 
+                       }
+                       if ($cltr.Platform -eq 'x86') {
+                           $buildType = "32-Bit" 
+                       }
+                       $clientCulture = $cltr.ClientCulture
+                   }
+                 }
+               }
+           }
+           
+           if (!$primaryOfficeProduct) {
+              if (!$ShowAllInstalledProducts) {
+                  continue
+              }
+           }
+
+           $object = New-Object PSObject -Property @{DisplayName = $name; Version = $version; InstallPath = $installPath; ClickToRun = $clickToRun; 
+                     Bitness=$buildType; ComputerName=$computer; ClickToRunUpdatesEnabled=$cltrUpdatedEnabled; ClickToRunUpdateUrl=$cltrUpdateUrl;
+                     ClientCulture=$clientCulture }
+           $object | Add-Member MemberSet PSStandardMembers $PSStandardMembers
+           $results += $object
+
+        }
+    }
+
+  }
+
+  $results = Get-Unique -InputObject $results 
+
+  return $results;
+}
+
+}
+
+Function Get-LCID(){
+    [CmdletBinding()]
+        Param(
+        [Parameter(Mandatory=$true)]
+        [string] $UpdateSource = $NULL
+    )
+
+    if ($UpdateSource) {
+        $mainRegPath = Get-OfficeCTRRegPath
+        $configRegPath = $mainRegPath + "\Configuration"
+        $llcc = (Get-ItemProperty HKLM:\$configRegPath -Name ClientCulture -ErrorAction SilentlyContinue).ClientCulture
+        $cabversion = (Get-Item ($UpdateSource + "\Office\Data\" + "*\") | Where-Object {$_.Mode -eq "d-----"})
+        $cabverdir = $cabversion.Name
+    }    
+
+       switch ($llcc)
+        {        ar-sa{$lcid = "1025"}        bg-bg{$lcid = "1026"}        zh-cn{$lcid = "2052"}        zh-tw{$lcid = "1028"}        hr-hr{$lcid = "1050"}        cs-cz{$lcid = "1029"}        da-dk{$lcid = "1030"}        nl-nl{$lcid = "1043"}        en-us{$lcid = "1033"}        et-ee{$lcid = "1061"}        fi-fi{$lcid = "1035"}        fr-fr{$lcid = "1036"}        de-de{$lcid = "1031"}        el-gr{$lcid = "1032"}        he-il{$lcid = "1037"}        hi-in{$lcid = "1081"}        hu-hu{$lcid = "1038"}        id-id{$lcid = "1057"}        it-it{$lcid = "1040"}        ja-jp{$lcid = "1041"}        kk-kz{$lcid = "1087"}        ko-kr{$lcid = "1042"}        lv-lv{$lcid = "1062"}        lt-lt{$lcid = "1063"}        ms-my{$lcid = "1086"}        nb-no{$lcid = "1044"}        pl-pl{$lcid = "1045"}        pt-br{$lcid = "1046"}        pt-pt{$lcid = "2070"}        ro-ro{$lcid = "1048"}        ru-ru{$lcid = "1049"}        sr-latn-cs{$lcid = "2074"}        sk-sk{$lcid = "1051"}        sl-si{$lcid = "1060"}        es-es{$lcid = "3082"}        sv-se{$lcid = "1053"}        th-th{$lcid = "1054"}        tr-tr{$lcid = "1055"}        uk-ua{$lcid = "1058"}        vi-vn{$lcid = "1066"}
+        }
+
+       Return $lcid        
+    }
+
 Function Test-UpdateSource() {
     [CmdletBinding()]
     Param(
@@ -188,7 +517,13 @@ Function Validate-UpdateSource() {
         $configRegPath = $mainRegPath + "\Configuration"
         $currentplatform = (Get-ItemProperty HKLM:\$configRegPath -Name Platform -ErrorAction SilentlyContinue).Platform
         $updateToVersion = (Get-ItemProperty HKLM:\$configRegPath -Name UpdateToVersion -ErrorAction SilentlyContinue).UpdateToVersion
+        $llcc = (Get-ItemProperty HKLM:\$configRegPath -Name ClientCulture -ErrorAction SilentlyContinue).ClientCulture
+        $cabversion = (Get-Item ($UpdateSource + "\Office\Data\" + "*\") | Where-Object {$_.Mode -eq "d-----"})
+        $cabverdir = $cabversion.Name
+        $runcid = Get-LCID -UpdateSource $UpdateSource
+        $setlcid = $lcid
 
+        
         if ($updateToVersion) {
             if ($currentplatform.ToLower() -eq "x86") {
                $cabPath = $UpdateSource + "\Office\Data\v32_" + $updateToVersion + ".cab"
@@ -197,6 +532,18 @@ Function Validate-UpdateSource() {
                $cabPath = $UpdateSource + "\Office\Data\v64_" + $updateToVersion + ".cab"
             }
         } 
+        if ($runcid) {
+            if ($currentplatform.ToLower() -eq "X86"){
+                $cabpathi = $UpdateSource + "\Office\Data\" + $cabverdir + "\i86" + $runcid + ".cab"
+                $cabpaths = $UpdateSource + "\Office\Data\" + $cabverdir + "\s86" + $runcid + ".cab"
+            }
+            else{
+                $cabpathi = $UpdateSource + "\Office\Data\" + $cabverdir + "\i64" + $runcid + ".cab"
+                $cabpaths = $UpdateSource + "\Office\Data\" + $cabverdir + "\s64" + $runcid + ".cab"
+            }
+              
+            
+        }
         
         if($UpdateSource.ToLower().StartsWith("http")){        
             if ($currentplatform.ToLower() -eq "x86") {
@@ -220,14 +567,24 @@ Function Validate-UpdateSource() {
            $validUpdateSource = Test-URL -url $cabPath
         } else {
            $validUpdateSource = Test-Path -Path $cabPath
+           $validUpdateSourcei = Test-Path -Path $cabpathi
+           $validUpdateSources = Test-Path -Path $cabpaths
         }
+
+
         
         if (!$validUpdateSource) {
            Write-Host "Invalid UpdateSource. File Not Found: $cabPath"
         }
+        if (!$validUpdateSourcei) {
+            Write-Host "Invalid UpdateSource. File Not Found: $cabpathi"
+        }
+        if (!$validUpdateSources){
+            Write-Host "Invalid Updateource. File Not Found: $cabpaths"
+        }
     }
-
-    return $validUpdateSource
+    
+        return $validUpdateSource
 }
 
 Function Update-Office365Anywhere() {
