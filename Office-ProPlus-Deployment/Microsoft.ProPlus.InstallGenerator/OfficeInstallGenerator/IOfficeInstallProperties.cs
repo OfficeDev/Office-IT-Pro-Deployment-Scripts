@@ -11,6 +11,8 @@ namespace Microsoft.OfficeProPlus.InstallGenerator
     {
         OfficeVersion OfficeVersion { get; set; }
 
+        string BuildVersion { get; set; }
+
         string ConfigurationXmlPath { get; set; }
 
         string SourceFilePath { get; set; }

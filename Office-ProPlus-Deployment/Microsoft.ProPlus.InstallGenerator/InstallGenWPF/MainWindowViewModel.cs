@@ -3,20 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.ComponentModel;
-using System.Globalization;
 using System.Security.Cryptography.X509Certificates;
 using System.Text.RegularExpressions;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Controls;
-using System.Windows.Forms;
-using System.Windows.Forms.Design;
 using System.Windows.Media;
 using MahApps.Metro;
-using MetroDemo;
 using MetroDemo.Models;
 using System.Windows.Input;
-using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
 using Micorosft.OfficeProPlus.ConfigurationXml;
 using Microsoft.OfficeProPlus.InstallGen.Presentation.Extentions;
@@ -88,7 +81,7 @@ namespace MetroDemo
             return folderPath;
         }
 
-        public async static Task<bool> DirectoryExists(string path)
+        public static async Task<bool> DirectoryExists(string path)
         {
             var task = Task.Run(() => Directory.Exists(path));
             return await Task.WhenAny(task, Task.Delay(1000)) == task && task.Result;
@@ -397,6 +390,8 @@ namespace MetroDemo
         public bool UseSameLanguagesForAllProducts { get; set; }
 
         public bool PropertyChangeEventEnabled { get; set; }
+
+        public string DownloadFolderPath { get; set; }
 
         private string _importFile = "";
         public string ImportFile

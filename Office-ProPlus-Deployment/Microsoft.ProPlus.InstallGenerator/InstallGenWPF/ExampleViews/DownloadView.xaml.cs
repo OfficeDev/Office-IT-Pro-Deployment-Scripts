@@ -82,6 +82,11 @@ namespace MetroDemo.ExampleViews
                 }
             }
 
+            if (!string.IsNullOrEmpty(GlobalObjects.ViewModel.DownloadFolderPath))
+            {
+                ProductUpdateSource.Text = GlobalObjects.ViewModel.DownloadFolderPath;
+            }
+
             var currentBranch = GlobalObjects.ViewModel.Branches.FirstOrDefault(b => b.NewName.ToLower() == "Current".ToLower());
             var deferredBranch = GlobalObjects.ViewModel.Branches.FirstOrDefault(b => b.NewName.ToLower() == "Deferred".ToLower());
             var firstReleaseDeferred = GlobalObjects.ViewModel.Branches.FirstOrDefault(b => b.NewName.ToLower() == "FirstReleaseDeferred".ToLower());
@@ -190,6 +195,11 @@ namespace MetroDemo.ExampleViews
                 var configXml = GlobalObjects.ViewModel.ConfigXmlParser.ConfigurationXml;
                 var startPath = ProductUpdateSource.Text.Trim();
 
+                if (!string.IsNullOrEmpty(startPath))
+                {
+                    GlobalObjects.ViewModel.DownloadFolderPath = startPath;
+                }
+
                 var channelItems = (List<Channel>) lvUsers.ItemsSource;
 
                 var taskList = new List<Task>();
@@ -206,7 +216,7 @@ namespace MetroDemo.ExampleViews
                         try
                         {
                             var proPlusDownloader = new ProPlusDownloader();
-                            proPlusDownloader.DownloadFileProgress += async (senderfp, progress) =>
+                            proPlusDownloader.DownloadFileProgress += (senderfp, progress) =>
                             {
                                 if (!_tokenSource.Token.IsCancellationRequested)
                                 {

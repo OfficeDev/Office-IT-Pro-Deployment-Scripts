@@ -193,6 +193,97 @@ namespace Microsoft.OfficeProPlus.Downloader
 
         }
 
+        public async Task<bool> ValidateSourceFiles(DownloadBranchProperties properties, CancellationToken token = new CancellationToken())
+        {
+            var fd = new FileDownloader();
+
+            if (properties.Languages == null) properties.Languages = new List<string>() { "en-us" };
+
+            if (_updateFiles == null)
+            {
+                for (var t = 1; t <= 20; t++)
+                {
+                    try
+                    {
+                        _updateFiles = await DownloadCabAsync();
+                        break;
+                    }
+                    catch (Exception ex)
+                    {
+
+                    }
+                    await Task.Delay(1000, token);
+                }
+            }
+
+            var selectUpdateFile = new UpdateFiles();
+
+
+            if (properties.OfficeEdition == OfficeEdition.Office32Bit)
+            {
+                selectUpdateFile = _updateFiles.FirstOrDefault(u => u.OfficeEdition == OfficeEdition.Office32Bit);
+            }
+            else if (properties.OfficeEdition == OfficeEdition.Office32Bit)
+            {
+                selectUpdateFile = _updateFiles.FirstOrDefault(u => u.OfficeEdition == OfficeEdition.Office64Bit);
+            }
+            else if (properties.OfficeEdition == OfficeEdition.Both)
+            {
+                var selectUpdateFile32 = _updateFiles.FirstOrDefault(u => u.OfficeEdition == OfficeEdition.Office32Bit);
+                var selectUpdateFile64 = _updateFiles.FirstOrDefault(u => u.OfficeEdition == OfficeEdition.Office64Bit);
+
+                selectUpdateFile32.Files.AddRange(selectUpdateFile64.Files);
+                selectUpdateFile = selectUpdateFile32;
+            }
+
+
+            if (selectUpdateFile == null) throw (new Exception("Cannot Find Office Files"));
+
+            var branch = selectUpdateFile.BaseURL.FirstOrDefault(b => b.Branch.ToLower() == properties.BranchName.ToLower());
+
+            var version = properties.Version;
+            if (string.IsNullOrEmpty(properties.Version))
+            {
+                version = await GetLatestVersionAsync(branch, properties.OfficeEdition);
+            }
+
+            var allFiles = new List<Model.File>();
+            foreach (var language in properties.Languages)
+            {
+                var langCode = language.GetLanguageNumber();
+                var langfiles = selectUpdateFile.Files.Where(f => f.Language == 0 || f.Language == langCode);
+
+                foreach (var file in langfiles)
+                {
+                    file.Name = Regex.Replace(file.Name, "%version%", version, RegexOptions.IgnoreCase);
+                    file.RelativePath = Regex.Replace(file.RelativePath, "%version%", version, RegexOptions.IgnoreCase);
+                    file.RemoteUrl = branch.URL + @"/" + file.RelativePath + file.Name;
+                    file.FileSize = await fd.GetFileSizeAsync(file.RemoteUrl);
+
+                    allFiles.Add(file);
+                }
+            }
+
+            allFiles = allFiles.Distinct().ToList();
+
+            foreach (var file in allFiles)
+            {
+                file.LocalFilePath = properties.TargetDirectory + file.RelativePath.Replace("/", "\\") + file.Name;
+            }
+
+            foreach (var file in allFiles)
+            {
+                var localFilePath = properties.TargetDirectory + file.RelativePath.Replace("/", "\\") + file.Name;
+                if (!File.Exists(localFilePath))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+
         public async Task<List<UpdateFiles>> DownloadCabAsync()
         {
             var guid = Guid.NewGuid().ToString();
@@ -401,15 +492,15 @@ namespace Microsoft.OfficeProPlus.Downloader
             return updateFiles;
         }
 
-        private string GetCabVersion(string xmlFilePath)
+        public string GetCabVersion(string xmlFilePath)
         {
             var xmlDoc = new XmlDocument();
             xmlDoc.Load(xmlFilePath);
 
+            if (xmlDoc.DocumentElement == null) return null;
             var availableNode = xmlDoc.DocumentElement.SelectSingleNode("./Available");
-            if (availableNode == null) return null;
 
-            var buildVersion = availableNode.GetAttributeValue("Build");
+            var buildVersion = availableNode?.GetAttributeValue("Build");
             return buildVersion;
         }
 

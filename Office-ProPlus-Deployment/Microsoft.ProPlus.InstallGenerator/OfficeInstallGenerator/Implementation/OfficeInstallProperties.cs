@@ -12,6 +12,7 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
         public string ExecutablePath { get; set; }
 
         public OfficeVersion OfficeVersion { get; set; }
+        public string BuildVersion { get; set; }
 
         public string ConfigurationXmlPath { get; set; }
 

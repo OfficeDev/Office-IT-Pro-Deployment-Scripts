@@ -3,3 +3,4 @@ D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Microsoft.OfficeProPlus.Downloader\bin\Release\Microsoft.OfficeProPlus.Downloader.pdb
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Microsoft.OfficeProPlus.Downloader\obj\Release\Microsoft.OfficeProPlus.Downloader.dll
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Microsoft.OfficeProPlus.Downloader\obj\Release\Microsoft.OfficeProPlus.Downloader.pdb
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Microsoft.OfficeProPlus.Downloader\obj\Release\Microsoft.OfficeProPlus.Downloader.csprojResolveAssemblyReference.cache

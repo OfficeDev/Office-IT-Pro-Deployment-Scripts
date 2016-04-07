@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
+using System.Windows.Forms;
 using System.Windows.Input;
 using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
@@ -63,19 +64,22 @@ namespace MetroDemo.ExampleWindows
             {
                 if (CertificateList.SelectedItems.Count > 0)
                 {
-                    var tempCert = (Certificate) CertificateList.SelectedItem; 
-                    
-                    GlobalObjects.ViewModel.SelectedCertificate.FriendlyName = tempCert.FriendlyName ;
-                    GlobalObjects.ViewModel.SelectedCertificate.IssuerName = tempCert.IssuerName;
-                    GlobalObjects.ViewModel.SelectedCertificate.ThumbPrint = tempCert.ThumbPrint;
+                    var tempCert = (Certificate) CertificateList.SelectedItem;
+                    if (tempCert != null)
+                    {
+                        GlobalObjects.ViewModel.SelectedCertificate = tempCert;
+                        GlobalObjects.ViewModel.SelectedCertificate.FriendlyName = tempCert.FriendlyName;
+                        GlobalObjects.ViewModel.SelectedCertificate.IssuerName = tempCert.IssuerName;
+                        GlobalObjects.ViewModel.SelectedCertificate.ThumbPrint = tempCert.ThumbPrint;
+                    }
                 }
                 else
                 {
                     GlobalObjects.ViewModel.SelectedCertificate = new Certificate();
                 }
 
+                Result = System.Windows.Forms.DialogResult.OK;
                 this.Close();
-              
             }
             catch (Exception ex)
             {
@@ -86,9 +90,12 @@ namespace MetroDemo.ExampleWindows
         private void CancelButton_OnClick(object sender, RoutedEventArgs e)
         {
             GlobalObjects.ViewModel.SelectedCertificate = new Certificate();
+            Result = System.Windows.Forms.DialogResult.Cancel;
             this.Close();
-
         }
+
+        public DialogResult Result = System.Windows.Forms.DialogResult.Cancel;
+
 
         public void Dispose()
         {

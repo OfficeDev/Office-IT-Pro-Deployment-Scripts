@@ -13,9 +13,9 @@
                       WindowTitleBrush="#f4f4f4"
                       Background="#e6e6e6"
                       MinWidth="500"
-                      MinHeight="200"
+                      MinHeight="150"
                       MaxWidth="450"
-                      MaxHeight="500"
+                      MaxHeight="200"
                       SaveWindowPosition="True"
                       WindowStartupLocation="CenterScreen"
                       BorderThickness="1"
@@ -24,7 +24,7 @@
                       mc:Ignorable="d"
                       d:DataContext="{d:DesignInstance metroDemo:MainWindowViewModel}"
                       x:Name="LanguagesSelectionDialog"  
-                      TitleCaps="False" Width="452" Height="483">
+                      TitleCaps="False" Width="452" Height="150">
 
 
     <Window.Resources>
@@ -54,23 +54,24 @@
         </DataTemplate>
     </Controls:MetroWindow.TitleTemplate>
 
-    <Grid>
+    <Grid Margin="10 20 0 0">
 
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="150" />
             <ColumnDefinition Width="320" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="390" />
             <RowDefinition Height="50" />
+            <RowDefinition Height="40" />
         </Grid.RowDefinitions>
 
         <Label x:Name="PublisherLabel" Content="Publisher Name" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="0" Grid.Row="0" 
-                                   HorizontalAlignment="Left" Width="166" Margin="0 50 0 0" Grid.ColumnSpan="2" />
+                                   HorizontalAlignment="Left" Width="166"  />
 
-        <TextBox Grid.Row="0" Name="CertPublisher" Style="{StaticResource MetroTextBox}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0 50 0 0"  Width="315" Height="34"  Grid.Column="1"/>
+        <TextBox Grid.Row="0" Name="CertPublisher" Style="{StaticResource MetroTextBox}" FontSize="18" Foreground="{StaticResource GrayBrush}"
+                 HorizontalAlignment="Left" VerticalAlignment="Top" Width="315" Height="34"  Grid.Column="1" FontWeight="SemiBold" />
 
-        <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Height="50" Width="108"  >
+        <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="108"  >
             <Button Name="OkButton" Content="OK" Margin="2" Height="30" Click="OkButton_Click"  />
             <Button Name="CancelButton" Content="Cancel" Margin="2" Height="30" Click="CancelButton_OnClick"  />
         </StackPanel>

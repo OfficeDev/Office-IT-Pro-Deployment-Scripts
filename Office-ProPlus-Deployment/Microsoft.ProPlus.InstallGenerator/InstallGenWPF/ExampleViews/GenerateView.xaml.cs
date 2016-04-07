@@ -19,6 +19,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Xml;
 using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
 using MetroDemo.Events;
@@ -70,11 +71,96 @@ namespace MetroDemo.ExampleViews
 
                 InstallMsi.IsChecked = true;
 
+                LoadFolder();
+
                 LogAnaylytics("/GenerateView", "Load");
             }
             catch (Exception ex)
             {
                 LogErrorMessage(ex);
+            }
+        }
+
+        private void LoadFolder()
+        {
+            if (string.IsNullOrEmpty(GlobalObjects.ViewModel.DownloadFolderPath)) return;
+            if (!Directory.Exists(GlobalObjects.ViewModel.DownloadFolderPath)) return;
+
+            var mainFolderPath = GlobalObjects.ViewModel.DownloadFolderPath;
+            var folderPath = mainFolderPath;
+            var configXml = GlobalObjects.ViewModel.ConfigXmlParser.ConfigurationXml;
+            if (configXml.Add?.Branch != null)
+            {
+                switch (configXml.Add.Branch)
+                {
+                    case Branch.Business:
+                        if (Directory.Exists(folderPath + @"\DC"))
+                        {
+                            folderPath = mainFolderPath + @"\DC";
+                        }
+                        else if (Directory.Exists(folderPath + @"\Deferred"))
+                        {
+                            folderPath = mainFolderPath + @"\Deferred";
+                        }
+                        else if (Directory.Exists(folderPath + @"\Business"))
+                        {
+                            folderPath = mainFolderPath + @"\Business";
+                        }
+                        break;
+                    case Branch.Current:
+                        if (Directory.Exists(folderPath + @"\CC"))
+                        {
+                            folderPath = mainFolderPath + @"\CC";
+                        }
+                        else if (Directory.Exists(folderPath + @"\Current"))
+                        {
+                            folderPath = mainFolderPath + @"\Current";
+                        }
+                        break;
+                    case Branch.FirstReleaseCurrent:
+                        if (Directory.Exists(folderPath + @"\FRCC"))
+                        {
+                            folderPath = mainFolderPath + @"\FRCC";
+                        }
+                        else if (Directory.Exists(folderPath + @"\FirstReleaseCurrent"))
+                        {
+                            folderPath = mainFolderPath + @"\FirstReleaseCurrent";
+                        }
+                        break;
+                    case Branch.Validation:
+                        if (Directory.Exists(folderPath + @"\FRDC"))
+                        {
+                            folderPath = mainFolderPath + @"\FRDC";
+                        }
+                        else if (Directory.Exists(folderPath + @"\FirstReleaseDeferred"))
+                        {
+                            folderPath = mainFolderPath + @"\FirstReleaseDeferred";
+                        }
+                        else if (Directory.Exists(folderPath + @"\FirstReleaseBusiness"))
+                        {
+                            folderPath = mainFolderPath + @"\FirstReleaseBusiness";
+                        }
+                        break;
+                    case Branch.FirstReleaseBusiness:
+                        if (Directory.Exists(folderPath + @"\FRDC"))
+                        {
+                            folderPath = mainFolderPath + @"\FRDC";
+                        }
+                        else if (Directory.Exists(folderPath + @"\FirstReleaseDeferred"))
+                        {
+                            folderPath = mainFolderPath + @"\FirstReleaseDeferred";
+                        }
+                        else if (Directory.Exists(folderPath + @"\FirstReleaseBusiness"))
+                        {
+                            folderPath = mainFolderPath + @"\FirstReleaseBusiness";
+                        }
+                        break;
+                }
+            }
+
+            if (Directory.Exists(folderPath + @"\Office\Data"))
+            {
+                BuildFilePath.Text = folderPath;
             }
         }
 
@@ -93,34 +179,29 @@ namespace MetroDemo.ExampleViews
 
         private async Task InstallerSign(string path)
         {
-
-
-            var signPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "signtool.exe");
-            System.IO.File.WriteAllBytes(signPath, Microsoft.OfficeProPlus.InstallGen.Presentation.Properties.Resources.signtool);
-
-            var thumbprint = GlobalObjects.ViewModel.SelectedCertificate.ThumbPrint;
-
-            path = path.Replace("\\\\", "\\");
-
-            Process signProcess = new Process
+            await Task.Run(() =>
             {
-                StartInfo = new ProcessStartInfo()
+                var signPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "signtool.exe");
+                System.IO.File.WriteAllBytes(signPath, Microsoft.OfficeProPlus.InstallGen.Presentation.Properties.Resources.signtool);
+
+                var thumbprint = GlobalObjects.ViewModel.SelectedCertificate.ThumbPrint;
+
+                path = path.Replace("\\\\", "\\");
+
+                var signProcess = new Process
                 {
-                    FileName = signPath,
-                    Arguments = " sign /sha1 " + thumbprint + " " + path,
-                    CreateNoWindow = true,
-                    UseShellExecute = false
-                }
-            };
+                    StartInfo = new ProcessStartInfo()
+                    {
+                        FileName = signPath, Arguments = " sign /sha1 " + thumbprint + " " + path, CreateNoWindow = true, UseShellExecute = false
+                    }
+                };
 
-
-            signProcess.Start();
-
+                signProcess.Start();
+            });
         }
 
         private async Task GenerateInstall(bool sign)
-        {                   
-
+        {
             await Task.Run(async () =>
             {
                 try
@@ -152,8 +233,7 @@ namespace MetroDemo.ExampleViews
 
                         if (!string.IsNullOrEmpty(executablePath))
                         {
-                            if (executablePath.ToLower().EndsWith(".exe") ||
-                                executablePath.ToLower().EndsWith(".msi"))
+                            if (executablePath.ToLower().EndsWith(".exe") || executablePath.ToLower().EndsWith(".msi"))
                             {
                                 break;
                             }
@@ -175,28 +255,19 @@ namespace MetroDemo.ExampleViews
                     {
                         if (!Directory.Exists(directoryPath))
                         {
-
-                            var result = MessageBox.Show("The directory '" + directoryPath + "' does not exist." +
-                                Environment.NewLine + Environment.NewLine + "Create Directory?", "Create Directory", MessageBoxButton.YesNo,
-                                MessageBoxImage.Question, MessageBoxResult.Yes);
+                            var result = MessageBox.Show("The directory '" + directoryPath + "' does not exist." + Environment.NewLine + Environment.NewLine + "Create Directory?", "Create Directory", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.Yes);
                             Directory.CreateDirectory(directoryPath);
 
-                            await Dispatcher.InvokeAsync(() =>
-                            {
-                                OpenExeFolderButton.IsEnabled = true;
-                            });
+                            await Dispatcher.InvokeAsync(() => { OpenExeFolderButton.IsEnabled = true; });
                         }
                     }
 
-                    var configFilePath =
-                        Environment.ExpandEnvironmentVariables(@"%temp%\OfficeProPlus\" + Guid.NewGuid().ToString() +
-                                                               ".xml");
+                    var configFilePath = Environment.ExpandEnvironmentVariables(@"%temp%\OfficeProPlus\" + Guid.NewGuid().ToString() + ".xml");
                     Directory.CreateDirectory(Environment.ExpandEnvironmentVariables(@"%temp%\OfficeProPlus"));
 
                     GlobalObjects.ViewModel.ConfigXmlParser.ConfigurationXml.Logging = new ODTLogging
                     {
-                        Level = LoggingLevel.Standard,
-                        Path = @"%temp%"
+                        Level = LoggingLevel.Standard, Path = @"%temp%"
                     };
 
                     System.IO.File.WriteAllText(configFilePath, GlobalObjects.ViewModel.ConfigXmlParser.Xml);
@@ -212,11 +283,91 @@ namespace MetroDemo.ExampleViews
                     });
 
                     var isInstallExe = false;
-                    await Dispatcher.InvokeAsync(() =>
-                    {
-                        isInstallExe = InstallExecutable.IsChecked.HasValue && InstallExecutable.IsChecked.Value;
-                    });
+                    await Dispatcher.InvokeAsync(() => { isInstallExe = InstallExecutable.IsChecked.HasValue && InstallExecutable.IsChecked.Value; });
 
+                    var configXml = GlobalObjects.ViewModel.ConfigXmlParser.ConfigurationXml;
+                    string version = null;
+                    if (configXml.Add.Version != null)
+                    {
+                        version = configXml.Add.Version.ToString();
+                    }
+
+
+                    if (!string.IsNullOrEmpty(sourceFilePath))
+                    {
+                        var branchName = "";
+                        if (configXml.Add?.Branch != null)
+                        {
+                            branchName = configXml.Add.Branch.ToString();
+                        }
+
+                        var languages = new List<string>();
+                        foreach (var product in configXml.Add.Products)
+                        {
+                            foreach (var languageItem in product.Languages)
+                            {
+                                languages.Add(languageItem.ID);
+                            }
+                        }
+
+                        var edition = OfficeEdition.Office32Bit;
+                        if (configXml.Add.OfficeClientEdition == OfficeClientEdition.Office64Bit)
+                        {
+                            edition = OfficeEdition.Office64Bit;
+                        }
+
+                        var ppDownload = new ProPlusDownloader();
+                        var validFiles = await ppDownload.ValidateSourceFiles(new DownloadBranchProperties()
+                        {
+                            TargetDirectory = sourceFilePath,
+                            BranchName = branchName,
+                            Languages = languages,
+                            OfficeEdition = edition,
+                            Version = version
+                        });
+
+                        var cabFilePath = sourceFilePath + @"\Office\Data\v32.cab";
+                        if (configXml.Add.OfficeClientEdition == OfficeClientEdition.Office64Bit)
+                        {
+                            cabFilePath = sourceFilePath + @"\Office\Data\v64.cab";
+                        }
+
+                        if (string.IsNullOrEmpty(version) && System.IO.File.Exists(cabFilePath))
+                        {
+                            var fInfo = new FileInfo(cabFilePath);
+                            var cabExtractor = new CabExtractor(cabFilePath);
+                            cabExtractor.ExtractCabFiles();
+                            cabExtractor.Dispose();
+
+                            var vdPathDir = fInfo.Directory?.FullName + @"\ExtractedFiles";
+                            var vdPath = vdPathDir + @"\VersionDescriptor.xml";
+                            if (System.IO.File.Exists(vdPath))
+                            {
+                                var latestVersion = ppDownload.GetCabVersion(vdPath);
+                                if (latestVersion != null)
+                                {
+                                    version = latestVersion;
+                                }
+                                if (Directory.Exists(vdPathDir))
+                                {
+                                    try
+                                    {
+                                        Directory.Delete(vdPathDir);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        var strError = ex.Message;
+                                    }
+                                }
+                            }
+                        }
+
+                        if (!validFiles)
+                        {
+                            throw (new Exception(
+                                "The Office Source Files are invalid. Please verify that all of the files have been downloaded."));
+                        }
+                    }
 
                     if (isInstallExe)
                     {
@@ -226,9 +377,9 @@ namespace MetroDemo.ExampleViews
                             ConfigurationXmlPath = configFilePath,
                             OfficeVersion = OfficeVersion.Office2016,
                             ExecutablePath = executablePath,
-                            SourceFilePath = sourceFilePath
+                            SourceFilePath = sourceFilePath,
+                            BuildVersion = version
                         });
-
 
 
                         LogAnaylytics("/GenerateView", "GenerateExe");
@@ -241,7 +392,8 @@ namespace MetroDemo.ExampleViews
                             ConfigurationXmlPath = configFilePath,
                             OfficeVersion = OfficeVersion.Office2016,
                             ExecutablePath = executablePath,
-                            SourceFilePath = sourceFilePath
+                            SourceFilePath = sourceFilePath,
+                            BuildVersion = version
                         });
 
                         LogAnaylytics("/GenerateView", "GenerateMSI");
@@ -250,7 +402,7 @@ namespace MetroDemo.ExampleViews
 
                     await Task.Delay(500);
 
-                    if (!String.IsNullOrEmpty(GlobalObjects.ViewModel.SelectedCertificate.ThumbPrint) && sign)
+                    if (!string.IsNullOrEmpty(GlobalObjects.ViewModel.SelectedCertificate.ThumbPrint) && sign)
                     {
                         await InstallerSign(executablePath);
                     }
@@ -261,16 +413,14 @@ namespace MetroDemo.ExampleViews
                         {
                             InfoMessage(this, new MessageEventArgs()
                             {
-                                Title = "Generate Executable",
-                                Message = "File Generation Complete"
+                                Title = "Generate Executable", Message = "File Generation Complete"
                             });
                         }
                         else
                         {
                             InfoMessage(this, new MessageEventArgs()
                             {
-                                Title = "Generate MSI",
-                                Message = "File Generation Complete"
+                                Title = "Generate MSI", Message = "File Generation Complete"
                             });
                         }
                     }
@@ -283,7 +433,7 @@ namespace MetroDemo.ExampleViews
                     Console.WriteLine(ex.StackTrace);
                 }
                 finally
-               { 
+                {
                     Dispatcher.Invoke(() =>
                     {
                         WaitImage.Visibility = Visibility.Hidden;
@@ -330,11 +480,9 @@ namespace MetroDemo.ExampleViews
                 var silentInstall = false;
                 if (configXml.ConfigurationXml.Display != null)
                 {
-                    if (configXml.ConfigurationXml.Display.Level.HasValue &&
-                        configXml.ConfigurationXml.Display.Level == DisplayLevel.None)
+                    if (configXml.ConfigurationXml.Display.Level.HasValue && configXml.ConfigurationXml.Display.Level == DisplayLevel.None)
                     {
-                        if (configXml.ConfigurationXml.Display.AcceptEULA.HasValue &&
-                            configXml.ConfigurationXml.Display.AcceptEULA == true)
+                        if (configXml.ConfigurationXml.Display.AcceptEULA.HasValue && configXml.ConfigurationXml.Display.AcceptEULA == true)
                         {
                             silentInstall = true;
                         }
@@ -381,7 +529,6 @@ namespace MetroDemo.ExampleViews
             {
                 GenerateButton.IsEnabled = false;
             }
-
         }
 
         private async void FixFileExtension()
@@ -470,8 +617,7 @@ namespace MetroDemo.ExampleViews
             {
                 ErrorMessage(this, new MessageEventArgs()
                 {
-                    Title = "Error",
-                    Message = ex.Message
+                    Title = "Error", Message = ex.Message
                 });
             }
         }
@@ -482,10 +628,10 @@ namespace MetroDemo.ExampleViews
             {
                 GoogleAnalytics.Log(path, pageName);
             }
-            catch { }
+            catch
+            {
+            }
         }
-
-
 
         #region "Events"
 
@@ -493,12 +639,10 @@ namespace MetroDemo.ExampleViews
         {
             try
             {
-                
                 this.TransitionTab(this, new TransitionTabEventArgs()
                 {
                     Direction = TransitionTabDirection.Back
                 });
-           
             }
             catch (Exception ex)
             {
@@ -510,7 +654,6 @@ namespace MetroDemo.ExampleViews
         {
             try
             {
-
                 FixFileExtension();
             }
             catch (Exception ex)
@@ -612,7 +755,15 @@ namespace MetroDemo.ExampleViews
         {
             try
             {
-                var sign = SignInstaller.IsChecked.Value; 
+                var sign = SignInstaller.IsChecked.HasValue && SignInstaller.IsChecked.Value;
+                if (sign)
+                {
+                    if (GlobalObjects.ViewModel.SelectedCertificate == null)
+                    {
+                        throw (new Exception("Select a Signing Certificate"));
+                    }
+                }
+
                 await GenerateInstall(sign);
             }
             catch (Exception ex)
@@ -620,7 +771,7 @@ namespace MetroDemo.ExampleViews
                 LogErrorMessage(ex);
             }
         }
-        
+
         private async void IncludeBuild_OnChecked(object sender, RoutedEventArgs e)
         {
             try
@@ -752,12 +903,7 @@ namespace MetroDemo.ExampleViews
             {
                 var dlg1 = new Ionic.Utils.FolderBrowserDialogEx
                 {
-                    Description = "Select a folder to download files to:",
-                    ShowNewFolderButton = true,
-                    ShowEditBox = true,
-                    SelectedPath = BuildFilePath.Text,
-                    ShowFullPathInEditBox = true,
-                    RootFolder = System.Environment.SpecialFolder.MyComputer
+                    Description = "Select a folder to download files to:", ShowNewFolderButton = true, ShowEditBox = true, SelectedPath = BuildFilePath.Text, ShowFullPathInEditBox = true, RootFolder = System.Environment.SpecialFolder.MyComputer
                 };
 
                 //dlg1.NewStyle = false;
@@ -779,26 +925,23 @@ namespace MetroDemo.ExampleViews
         {
             try
             {
-                if (SignInstaller.IsChecked.Value)
+                if (SignInstaller.IsChecked.HasValue && SignInstaller.IsChecked.Value)
                 {
                     OpenCertificateBrowser.IsEnabled = true;
                     OpenCertGenerator.IsEnabled = true;
-
+                    PublisherRow.Height = new GridLength(50, GridUnitType.Pixel);
                 }
                 else
                 {
                     OpenCertificateBrowser.IsEnabled = false;
                     OpenCertGenerator.IsEnabled = false;
-
-
-
+                    PublisherRow.Height = new GridLength(0, GridUnitType.Pixel);
                 }
             }
             catch (Exception ex)
             {
                 LogErrorMessage(ex);
             }
-          
         }
 
         private CertificatesDialog certificatesDialog = null;
@@ -817,10 +960,42 @@ namespace MetroDemo.ExampleViews
                     certificatesDialog.CertificateList.ItemsSource = certificateList;
                 }
 
-               
+                certificatesDialog.Closing += CertificatesDialog_Closing;
                 certificatesDialog.Launch();
             }
-             catch (Exception ex)
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
+
+        private void CertificatesGenDialog_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            try
+            {
+                var dialog = (GenerateCertificate) sender;
+                if (dialog.Result == DialogResult.OK)
+                {
+                    Publisher.Text = GlobalObjects.ViewModel.SelectedCertificate.FriendlyName;
+                }
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
+
+        private void CertificatesDialog_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            try
+            {
+                var dialog = (CertificatesDialog) sender;
+                if (dialog.Result == DialogResult.OK)
+                {
+                    Publisher.Text = GlobalObjects.ViewModel.SelectedCertificate.FriendlyName;
+                }
+            }
+            catch (Exception ex)
             {
                 LogErrorMessage(ex);
             }
@@ -831,8 +1006,7 @@ namespace MetroDemo.ExampleViews
             try
             {
                 generateCertificateDialog = new GenerateCertificate();
-
-
+                generateCertificateDialog.Closing += CertificatesGenDialog_Closing;
                 generateCertificateDialog.Launch();
             }
             catch (Exception ex)
@@ -840,7 +1014,7 @@ namespace MetroDemo.ExampleViews
                 LogErrorMessage(ex);
             }
         }
-        
+
         #endregion
 
         #region "Info"
@@ -849,7 +1023,7 @@ namespace MetroDemo.ExampleViews
         {
             try
             {
-                var sourceName = ((dynamic)sender).Name;
+                var sourceName = ((dynamic) sender).Name;
                 LaunchInformationDialog(sourceName);
             }
             catch (Exception ex)
@@ -866,20 +1040,12 @@ namespace MetroDemo.ExampleViews
             {
                 if (informationDialog == null)
                 {
-
                     informationDialog = new InformationDialog
                     {
-                        Height = 500,
-                        Width = 400
+                        Height = 500, Width = 400
                     };
-                    informationDialog.Closed += (o, args) =>
-                    {
-                        informationDialog = null;
-                    };
-                    informationDialog.Closing += (o, args) =>
-                    {
-
-                    };
+                    informationDialog.Closed += (o, args) => { informationDialog = null; };
+                    informationDialog.Closing += (o, args) => { };
                 }
 
                 informationDialog.Height = 500;
@@ -890,7 +1056,6 @@ namespace MetroDemo.ExampleViews
 
                 informationDialog.HelpInfo.NavigateToString(helpFile);
                 informationDialog.Launch();
-
             }
             catch (Exception ex)
             {
@@ -898,14 +1063,10 @@ namespace MetroDemo.ExampleViews
             }
         }
 
-
         #endregion
 
         private void xmlBrowser_Loaded(object sender, RoutedEventArgs e)
         {
-
         }
-
-      
     }
 }

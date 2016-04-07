@@ -50,7 +50,6 @@ namespace OfficeInstallGenerator
                 parameters.ReferencedAssemblies.Add("System.Core.dll");
                 parameters.ReferencedAssemblies.Add("Microsoft.CSharp.dll");
                
-
                 embededExeFiles = EmbeddedResources.GetEmbeddedItems(currentDirectory, @"\.exe$");
 
                 File.Copy(installProperties.ConfigurationXmlPath, tmpPath + @"\configuration.xml", true);
@@ -94,8 +93,8 @@ namespace OfficeInstallGenerator
                     {
                         throw (new DirectoryNotFoundException("Invalid Source Path: " + installProperties.SourceFilePath));
                     }
-
-                    EmbedSourceFiles(parameters, installProperties.SourceFilePath + @"\Office");
+                    
+                    EmbedSourceFiles(parameters, installProperties.SourceFilePath + @"\Office", installProperties.BuildVersion);
                 }
 
                 if (installProperties.OfficeVersion == OfficeVersion.Office2013)
@@ -186,7 +185,7 @@ namespace OfficeInstallGenerator
             }
         }
 
-        private void EmbedSourceFiles(CompilerParameters parameters, string sourcePath)
+        private void EmbedSourceFiles(CompilerParameters parameters, string sourcePath, string version = null)
         {
             var xmlFilePath = DirectoryHelper.GetCurrentDirectoryFilePath("Files.xml"); 
 
@@ -197,6 +196,16 @@ namespace OfficeInstallGenerator
 
             foreach (var sourceFile in sourceFiles)
             {
+                if (!string.IsNullOrEmpty(version))
+                {
+                    if (!(sourceFile.FullName.ToLower().Contains(version.ToLower()) ||
+                        sourceFile.Name.ToLower() == "v32.cab" ||
+                        sourceFile.Name.ToLower() == "v64.cab"))
+                    {
+                        continue;
+                    }
+                }
+
                 fileCacher.AddFile(dirInfo.Parent.FullName, sourceFile.FullName);
                 parameters.EmbeddedResources.Add(sourceFile.FullName);
             }

@@ -52,6 +52,7 @@
                                 <RowDefinition Height="20" />
                                 <RowDefinition Height="50" />
                                 <RowDefinition Height="50" />
+                                <RowDefinition Height="0" x:Name="PublisherRow" />
                                 <RowDefinition Height="50" />
                                 <RowDefinition Height="50" />
                                 <RowDefinition Height="120" />
@@ -120,6 +121,36 @@
                             <Grid Grid.Column="0" Grid.Row="3" Margin="50 0 0 0">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="50"></RowDefinition>
+                                    <RowDefinition Height="50"></RowDefinition>
+                                    <RowDefinition Height="50"></RowDefinition>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <Grid Grid.Row="0" Grid.Column="0" >
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="50"></RowDefinition>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="165" />
+                                        <ColumnDefinition Width="400" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <Label Content="Publisher"  HorizontalAlignment="Left" VerticalAlignment="Center"
+                                           Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="0" Height="34" Width="254"  />
+
+                                    <TextBox x:Name="Publisher" FontSize="20" Grid.Column="1" VerticalAlignment="Center" Background="White" 
+                                             Height="35" Grid.Row="0" IsReadOnly="True"
+                                             Text="" Foreground="{StaticResource GrayBrush}" />
+
+                                </Grid>
+
+                            </Grid>
+
+                            <Grid Grid.Column="0" Grid.Row="4" Margin="50 0 0 0">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="50"></RowDefinition>
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="145" />
@@ -134,7 +165,7 @@
 
                             </Grid>
 
-                            <Grid Grid.Column="0" Grid.Row="4" Margin="50 0 0 0">
+                            <Grid Grid.Column="0" Grid.Row="5" Margin="50 0 0 0">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="50"></RowDefinition>
                                 </Grid.RowDefinitions>
@@ -145,7 +176,7 @@
                                     <ColumnDefinition Width="60" />
                                 </Grid.ColumnDefinitions>
                                 <Label Content="File Path" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="0" VerticalAlignment="Center" />
-                                <TextBox x:Name="FileSavePath" FontSize="20" Grid.Column="1" VerticalAlignment="Center" Background="White"
+                                <TextBox x:Name="FileSavePath" FontSize="20" Grid.Column="1" VerticalAlignment="Center" Foreground="{StaticResource GrayBrush}" Background="White"
                                              controls:TextBoxHelper.Watermark="Office365ProPlus.msi" Height="35" Grid.Row="0"
                                              controls:TextBoxHelper.ClearTextButton="True" TextChanged="FileSavePath_OnTextChanged"
                                              Text="">
@@ -154,7 +185,7 @@
                                 <Button Grid.Column="3" Height="40" Width="60" Style="{StaticResource MetroFlatButtonStyle1}" Content="Open" x:Name="OpenExeFolderButton" IsEnabled="False" Click="OpenExeFolderButton_OnClick" />
                             </Grid>
 
-                            <Grid Grid.Column="0" Grid.Row="5" Margin="50 0 0 0">
+                            <Grid Grid.Column="0" Grid.Row="6" Margin="50 0 0 0">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="50"></RowDefinition>
                                     <RowDefinition Height="50"></RowDefinition>
@@ -216,12 +247,12 @@
 
                             </Grid>
 
-                            <Grid Grid.Row="6" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" >
+                            <Grid Grid.Row="7" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" >
                                 <Image x:Name="WaitImage" Visibility="Hidden" VerticalAlignment="Bottom" gif:ImageBehavior.RepeatBehavior="Forever" 
                                    Height="60" Grid.Row="0" Grid.Column="0" gif:ImageBehavior.AnimatedSource="../images/wait.GIF" />
                             </Grid>
 
-                            <Grid Margin="0 0 0 0" Grid.Row="7" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Top"  >
+                            <Grid Margin="0 0 0 0" Grid.Row="8" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Top"  >
                                 <Grid.Resources>
                                     <ResourceDictionary>
                                         <ResourceDictionary.MergedDictionaries>

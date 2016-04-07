@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Windows;
+using System.Windows.Forms;
 using System.Windows.Input;
 using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
@@ -59,37 +60,36 @@ namespace MetroDemo.ExampleWindows
             Show();
         }
 
-        private string GetThumbPrint( int serialNumber)
+        private X509Certificate2 GetThumbPrint( int serialNumber)
         {
-            X509Store localStore = new X509Store(StoreLocation.CurrentUser);
+            var localStore = new X509Store(StoreLocation.CurrentUser);
             var thumbprint = "";
-
-           
-            localStore.Open(OpenFlags.ReadOnly);
-            if (localStore.Certificates.Count > 0)
+            try
             {
-                foreach (var certificate in localStore.Certificates)
+                localStore.Open(OpenFlags.ReadOnly);
+                if (localStore.Certificates.Count > 0)
                 {
-                    var currentSerialNumber = certificate.SerialNumber;
-                    var matchSerialNumber = serialNumber.ToString("X6");
-
-                    if (currentSerialNumber == matchSerialNumber)
+                    foreach (var certificate in localStore.Certificates)
                     {
-                        thumbprint = certificate.Thumbprint;
-                        return thumbprint;
+                        var currentSerialNumber = certificate.SerialNumber;
+                        var matchSerialNumber = serialNumber.ToString("X6");
 
+                        if (currentSerialNumber == matchSerialNumber)
+                        {
+                            return certificate;
+                        }
                     }
                 }
+                return new X509Certificate2();
             }
-
-            localStore.Close();
-            return thumbprint;
-
+            finally
+            {
+                localStore.Close();
+            }
         }
 
-        private string  CreateCertificate(string publisher)
+        private Certificate CreateCertificate(string publisher)
         {
-            var thumbprint = "";
             try
             {
                 var getRandom = new Random();
@@ -115,15 +115,28 @@ namespace MetroDemo.ExampleWindows
 
                 createProcess.Start();
                 createProcess.WaitForExit();
-                thumbprint = GetThumbPrint(serialNumber);
+                var cert = GetThumbPrint(serialNumber);
+
+                if (cert == null) return new Certificate();
+
+                var name = cert.FriendlyName;
+                if (string.IsNullOrEmpty(name))
+                {
+                    name = cert.SubjectName.Name;
+                }
+
+                return new Certificate()
+                {
+                    ThumbPrint = cert.Thumbprint,
+                    FriendlyName = name,
+                    IssuerName = cert.IssuerName.Name
+                };
             }
             catch (Exception ex)
             {
                 ex.LogException();
+                throw;
             }
-          
-            return thumbprint;
-
         }
 
         private void OkButton_Click(object sender, RoutedEventArgs e)
@@ -132,16 +145,19 @@ namespace MetroDemo.ExampleWindows
             {
                 GlobalObjects.ViewModel.SelectedCertificate = new Certificate();
                 var publisher = CertPublisher.Text;
-                if (!String.IsNullOrEmpty(publisher))
+                if (!string.IsNullOrEmpty(publisher))
                 {
-                    var thumbprint = CreateCertificate(publisher);
-                    if (!String.IsNullOrEmpty(thumbprint))
+                    var certificate = CreateCertificate(publisher);
+                    if (certificate != null)
                     {
-                        GlobalObjects.ViewModel.SelectedCertificate.ThumbPrint = thumbprint;
+                        GlobalObjects.ViewModel.SelectedCertificate = certificate;
                     }
-
+                    Result = System.Windows.Forms.DialogResult.OK;
                     this.Close();
- 
+                }
+                else
+                {
+                    throw (new Exception("Publisher name required"));
                 }
             }
             catch (Exception ex)
@@ -153,9 +169,11 @@ namespace MetroDemo.ExampleWindows
         private void CancelButton_OnClick(object sender, RoutedEventArgs e)
         {
             GlobalObjects.ViewModel.SelectedCertificate = new Certificate();
+            Result = System.Windows.Forms.DialogResult.Cancel;
             this.Close();
-
         }
+
+        public DialogResult Result = System.Windows.Forms.DialogResult.Cancel;
 
         public void Dispose()
         {
