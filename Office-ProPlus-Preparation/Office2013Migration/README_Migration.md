@@ -61,14 +61,14 @@ Overall description of this powershell script
 4. Makes the following changes:
 
     Most Recently Used (MRU)
-    ------------------------
+    
     Moves FROM:
 	    HKEY_CURRENT_USER\SOFTWARE\Microsoft\Office\15.0\**App**\User MRU\AD_**\
     Moves TO:
 	    HKEY_CURRENT_USER\SOFTWARE\Microsoft\Office\15.0\**App**\User MRU\OrgId_**\
 
     Roaming settings and customizations
-    -----------------------------------
+    
     Moves FROM:
 	    HKEY_CURRENT_USER\SOFTWARE\Microsoft\Office\15.0\Common\Roaming\Identities\**_AD
     Moves TO:
