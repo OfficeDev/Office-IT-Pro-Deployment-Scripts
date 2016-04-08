@@ -15,6 +15,7 @@ using MetroDemo.ExampleViews;
 using MetroDemo.ExampleWindows;
 using Microsoft.OfficeProPlus.Downloader;
 using Microsoft.OfficeProPlus.Downloader.Model;
+using Microsoft.OfficeProPlus.InstallGen.Presentation.Extentions;
 using Microsoft.OfficeProPlus.InstallGen.Presentation.Logging;
 using Microsoft.OfficeProPlus.InstallGenerator.Models;
 using Microsoft.VisualBasic;
@@ -270,7 +271,7 @@ namespace MetroDemo
             {
                 StartView.RestartWorkflow += RestartWorkflow;
             }
-
+            
             e.Handled = false;
 
             if (GlobalObjects.ViewModel.BlockNavigation)
@@ -282,19 +283,30 @@ namespace MetroDemo
             ThemeManager.TransitionsEnabled = MainTabControl.SelectedIndex != 4;
             ThemeManager.TransitionsEnabled = false;
 
+            TabItem tabItem = null;
             if (MainTabControl.SelectedIndex > -1)
             {
-                ((TabItem)MainWindowTabs.Items[MainTabControl.SelectedIndex]).IsSelected = true;
-                ((TabItem)MainWindowTabs.Items[MainTabControl.SelectedIndex]).IsEnabled = true;
+                tabItem = ((TabItem) MainWindowTabs.Items[MainTabControl.SelectedIndex]);
+                tabItem.IsSelected = true;
+                tabItem.IsEnabled = true;
             }
 
             if (_cacheIndex != MainTabControl.SelectedIndex)
             {
-                if (!GlobalObjects.ViewModel.ResetXml)
+                if (tabItem != null && !GlobalObjects.ViewModel.ResetXml)
                 {
-                    ProductView.UpdateXml();
-                    DisplayView.UpdateXml();
-                    UpdateView.UpdateXml();
+                    if (!tabItem.Content.GetType().ToString().ToLower().Contains("productview"))
+                    {
+                        ProductView.UpdateXml();
+                    }
+                    if (!tabItem.Content.GetType().ToString().ToLower().Contains("display"))
+                    {
+                        DisplayView.UpdateXml();
+                    }
+                    if (!tabItem.Content.GetType().ToString().ToLower().Contains("update"))
+                    {
+                        UpdateView.UpdateXml();
+                    }
                 }
                 GlobalObjects.ViewModel.ResetXml = false;
 

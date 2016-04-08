@@ -50,6 +50,7 @@
     <Reference Include="System.Core" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.Management" />
     <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -69,6 +70,7 @@
     <Compile Include="Implementation\OfficeInstallReturn.cs" />
     <Compile Include="Implementation\OfficeLocalInstallManager.cs" />
     <Compile Include="Implementation\ZipExtractor.cs" />
+    <Compile Include="InstallOfficeTest.cs" />
     <Compile Include="IOfficeInstallGenerator.cs" />
     <Compile Include="IOfficeInstallProperties.cs" />
     <Compile Include="IOfficeInstallReturn.cs" />

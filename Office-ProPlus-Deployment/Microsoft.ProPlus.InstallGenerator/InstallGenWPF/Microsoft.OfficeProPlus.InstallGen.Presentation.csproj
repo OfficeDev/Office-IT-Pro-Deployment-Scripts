@@ -146,28 +146,28 @@
     <Compile Include="AppSettings.cs" />
     <Compile Include="Engine\OfficeInstaller.cs" />
     <Compile Include="Events\Events.cs" />
-    <Compile Include="ExampleViews\AboutView.xaml.cs">
+    <Compile Include="Views\AboutView.xaml.cs">
       <DependentUpon>AboutView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ExampleViews\LocalView.xaml.cs">
+    <Compile Include="Views\LocalView.xaml.cs">
       <DependentUpon>LocalView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ExampleViews\GenerateView.xaml.cs">
+    <Compile Include="Views\GenerateView.xaml.cs">
       <DependentUpon>GenerateView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ExampleViews\DownloadView.xaml.cs">
+    <Compile Include="Views\DownloadView.xaml.cs">
       <DependentUpon>DownloadView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ExampleViews\StartView.xaml.cs">
+    <Compile Include="Views\StartView.xaml.cs">
       <DependentUpon>StartView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ExampleViews\DisplayView.xaml.cs">
+    <Compile Include="Views\DisplayView.xaml.cs">
       <DependentUpon>DisplayView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ExampleViews\UpdateView.xaml.cs">
+    <Compile Include="Views\UpdateView.xaml.cs">
       <DependentUpon>UpdateView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ExampleViews\ProductView.xaml.cs">
+    <Compile Include="Views\ProductView.xaml.cs">
       <DependentUpon>ProductView.xaml</DependentUpon>
     </Compile>
     <Content Include="HelpFiles\EmbedOfficeInstall.html">
@@ -236,35 +236,35 @@
       <DependentUpon>XmlBrowserControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="XmlBrowser\XmlValidator.cs" />
-    <Page Include="ExampleViews\AboutView.xaml">
+    <Page Include="Views\AboutView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ExampleViews\LocalView.xaml">
+    <Page Include="Views\LocalView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="ExampleViews\GenerateView.xaml">
+    <Page Include="Views\GenerateView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="ExampleViews\DownloadView.xaml">
+    <Page Include="Views\DownloadView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="ExampleViews\StartView.xaml">
+    <Page Include="Views\StartView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="ExampleViews\DisplayView.xaml">
+    <Page Include="Views\DisplayView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="ExampleViews\UpdateView.xaml">
+    <Page Include="Views\UpdateView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="ExampleViews\ProductView.xaml">
+    <Page Include="Views\ProductView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

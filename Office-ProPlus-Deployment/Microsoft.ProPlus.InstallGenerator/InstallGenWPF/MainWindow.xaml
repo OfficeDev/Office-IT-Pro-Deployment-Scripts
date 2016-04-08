@@ -203,7 +203,7 @@
                             </Style.Triggers>
                         </Style>
                     </Controls:MetroTabControl.Resources>
-                    <Controls:MetroTabItem  Width="160" IsEnabled="True">
+                    <Controls:MetroTabItem x:Name="TabStart"  Width="160" IsEnabled="True">
                         <Controls:MetroTabItem.Header >
                             <DockPanel Margin="10" Height="30" >
                                 <Rectangle Height="16" Width="16">
@@ -217,7 +217,7 @@
                         </Controls:MetroTabItem.Header>
 
                     </Controls:MetroTabItem >
-                    <Controls:MetroTabItem IsEnabled="True" IsSelected="False"  Width="160">
+                    <Controls:MetroTabItem x:Name="TabProducts" IsEnabled="True" IsSelected="False"  Width="160">
                         <Controls:MetroTabItem.Header>
                             <DockPanel Margin="10" Height="30">
                                 <Rectangle Height="16" Width="16" >
@@ -229,7 +229,7 @@
                             </DockPanel>
                         </Controls:MetroTabItem.Header>
                     </Controls:MetroTabItem >
-                    <Controls:MetroTabItem IsEnabled="True" Width="160" >
+                    <Controls:MetroTabItem x:Name="TabDownload" IsEnabled="True" Width="160" >
                         <Controls:MetroTabItem.Header>
                             <DockPanel Margin="10" Height="30">
                                 <Rectangle Height="16" Width="16">
@@ -241,7 +241,7 @@
                             </DockPanel>
                         </Controls:MetroTabItem.Header>
                     </Controls:MetroTabItem >
-                    <Controls:MetroTabItem IsEnabled="True" Width="160" >
+                    <Controls:MetroTabItem x:Name="TabUpdates" IsEnabled="True" Width="160" >
                         <Controls:MetroTabItem.Header>
                             <DockPanel Margin="10" Height="30">
                                 <Rectangle Height="16" Width="16">
@@ -253,7 +253,7 @@
                             </DockPanel>
                         </Controls:MetroTabItem.Header>
                     </Controls:MetroTabItem >
-                    <Controls:MetroTabItem IsEnabled="True" Width="160" >
+                    <Controls:MetroTabItem x:Name="TabOptions" IsEnabled="True" Width="160" >
                         <Controls:MetroTabItem.Header>
                             <DockPanel Margin="10" Height="30">
                                 <Rectangle Height="16" Width="16">
@@ -289,7 +289,7 @@
                             </DockPanel>
                         </Controls:MetroTabItem.Header>
                     </Controls:MetroTabItem>
-                    <Controls:MetroTabItem IsEnabled="True" IsEnabledChanged="UIElement_OnIsEnabledChanged" >
+                    <Controls:MetroTabItem x:Name="TabAbout"  IsEnabled="True" IsEnabledChanged="UIElement_OnIsEnabledChanged" >
                         <Controls:MetroTabItem.Header>
                             <DockPanel Margin="10" Height="30">
                                 <Rectangle Height="16" Width="16">

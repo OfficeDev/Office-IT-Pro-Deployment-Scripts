@@ -10,6 +10,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Xml;
+using System.Globalization;
+using System.Management;
 using Microsoft.Win32;
 //[assembly: AssemblyTitle("")]
 //[assembly: AssemblyProduct("")]
@@ -43,17 +45,17 @@ public class InstallOffice
     {
         var fileNames = new List<string>();
         var installDir = "";
-      
+
         try
         {
             MinimizeWindow();
 
             SilentInstall = false;
             var startTime = DateTime.Now;
-            
+
             var currentDirectory = Environment.ExpandEnvironmentVariables("%public%");
             installDir = currentDirectory + @"\OfficeProPlus";
-           
+
             Directory.CreateDirectory(installDir);
 
             var args = GetArguments();
@@ -137,6 +139,30 @@ public class InstallOffice
                     doc.Save(xmlFilePath);
                 }
 
+                try
+                {
+                    var officeProducts = GetOfficeVersion();
+                    if (officeProducts != null)
+                    {
+                        foreach (var product in officeProducts.OfficeInstalls)
+                        {
+                            var displayName = product.DisplayName;
+                            if (displayName == null) displayName = "";
+                        }
+
+                        Console.WriteLine(officeProducts.Edition);
+
+                        var doc = new XmlDocument();
+                        doc.Load(xmlFilePath);
+                        SetClientEdition(doc, officeProducts.Edition);
+                        doc.Save(xmlFilePath);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Get Version Error: " + ex.Message);
+                }
+
                 var p = new Process
                 {
                     StartInfo = new ProcessStartInfo()
@@ -161,10 +187,355 @@ public class InstallOffice
         }
         finally
         {
-           CleanUp(installDir);
+            //CleanUp(installDir);
         }
-        
+
     }
+
+
+    public OfficeInstalledProducts GetOfficeVersion()
+    {
+        var installKeys = new List<string>()
+        {
+            @"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall",
+            @"SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall"
+        };
+
+        var officeKeys = new List<string>()
+        {
+            @"SOFTWARE\Microsoft\Office",
+            @"SOFTWARE\Wow6432Node\Microsoft\Office"
+        };
+
+        string osArchitecture = null;
+        var osClass = new ManagementClass("Win32_OperatingSystem");
+        foreach (var queryObj in osClass.GetInstances())
+        {
+            foreach (var prop in queryObj.Properties)
+            {
+                if (prop.Name == null) continue;
+                if (prop.Name.ToLower() == "OSArchitecture".ToLower())
+                {
+                    if (prop.Value == null) continue;
+                    osArchitecture = prop.Value.ToString() ?? "";
+                    break;
+                }
+            }
+        }
+
+        // $results = new-object PSObject[] 0;
+
+        // foreach ($computer in $ComputerName) {
+        //    if ($Credentials) {
+        //       $os=Get-WMIObject win32_operatingsystem -computername $computer -Credential $Credentials
+        //    } else {
+        //       $os=Get-WMIObject win32_operatingsystem -computername $computer
+        //    }
+
+        //    $osArchitecture = $os.OSArchitecture
+
+        //    if ($Credentials) {
+        //       $regProv = Get-Wmiobject -list "StdRegProv" -namespace root\default -computername $computer -Credential $Credentials
+        //} else {
+        //       $regProv = Get-Wmiobject -list "StdRegProv" -namespace root\default -computername $computer
+        //}
+
+        var officePathReturn = GetOfficePathList();
+
+        foreach (var regKey in installKeys)
+        {
+            var keyList = new List<string>();
+            var keys = GetRegistrySubKeys(regKey);
+
+            foreach (var key in keys)
+            {
+                var path = regKey + @"\" + key;
+                var installPath = GetRegistryValue(path, "InstallLocation");
+
+                if (string.IsNullOrEmpty(installPath))
+                {
+                    continue;
+                }
+
+                var buildType = "64-Bit";
+                if (osArchitecture == "32-bit")
+                {
+                    buildType = "32-Bit";
+                }
+
+                if (regKey.ToUpper().Contains("Wow6432Node".ToUpper()))
+                {
+                    buildType = "32-Bit";
+                }
+
+                if (Regex.Match(key, "{.{8}-.{4}-.{4}-1000-0000000FF1CE}").Success)
+                {
+                    buildType = "64-Bit";
+                }
+
+                if (Regex.Match(key, "{.{8}-.{4}-.{4}-0000-0000000FF1CE}").Success)
+                {
+                    buildType = "64-Bit";
+                }
+
+
+                var modifyPath = GetRegistryValue(path, "ModifyPath");
+                if (!string.IsNullOrEmpty(modifyPath))
+                {
+                    if (modifyPath.ToLower().Contains("platform=x86"))
+                    {
+                        buildType = "32-Bit";
+                    }
+
+                    if (modifyPath.ToLower().Contains("platform=x64"))
+                    {
+                        buildType = "64-Bit";
+                    }
+                }
+
+
+                var officeProduct = false;
+                foreach (var officeInstallPath in officePathReturn.PathList)
+                {
+                    if (!string.IsNullOrEmpty(officeInstallPath))
+                    {
+                        var installReg = "^" + installPath.Replace(@"\", @"\\");
+                        installReg = installReg.Replace("(", @"\(");
+                        installReg = installReg.Replace(@")", @"\)");
+
+                        if (Regex.Match(officeInstallPath, installReg).Success)
+                        {
+                            officeProduct = true;
+                        }
+                    }
+                }
+
+                if (!officeProduct)
+                {
+                    continue;
+                }
+
+
+                var name = GetRegistryValue(path, "DisplayName");
+                if (name == null) name = "";
+
+                if (officePathReturn.ConfigItemList.Contains(key.ToUpper()) && name.ToUpper().Contains("MICROSOFT OFFICE"))
+                {
+                    //primaryOfficeProduct = true;
+                }
+
+                var version = GetRegistryValue(path, "DisplayVersion");
+                modifyPath = GetRegistryValue(path, "ModifyPath");
+
+                var clientCulture = "";
+
+                if (installPath == null) installPath = "";
+
+                var clickToRun = false;
+                if (officePathReturn.ClickToRunPathList.Contains(installPath.ToUpper()))
+                {
+                    clickToRun = true;
+                    if (name.ToUpper().Contains("MICROSOFT OFFICE"))
+                    {
+                        //primaryOfficeProduct = true;
+                    }
+
+                    foreach (var cltr in officePathReturn.ClickToRunList)
+                    {
+                        if (!string.IsNullOrEmpty(cltr.InstallPath))
+                        {
+                            if (cltr.InstallPath.ToUpper() == installPath.ToUpper())
+                            {
+                                if (cltr.Bitness == "x64")
+                                {
+                                    buildType = "64-Bit";
+                                }
+                                if (cltr.Bitness == "x86")
+                                {
+                                    buildType = "32-Bit";
+                                }
+                                clientCulture = cltr.ClientCulture;
+                            }
+                        }
+                    }
+                }
+
+                var offInstall = new OfficeInstall
+                {
+                    DisplayName = name,
+                    Version = version,
+                    InstallPath = installPath,
+                    ClickToRun = clickToRun,
+                    Bitness = buildType,
+                    ClientCulture = clientCulture
+                };
+                officePathReturn.ClickToRunList.Add(offInstall);
+                //}
+            }
+
+        }
+
+        var returnList = officePathReturn.ClickToRunList.Distinct().ToList();
+
+        return new OfficeInstalledProducts()
+        {
+            OfficeInstalls = returnList,
+            OSArchitecture = osArchitecture
+        };
+    }
+
+    public OfficePathsReturn GetOfficePathList()
+    {
+        var officeKeys = new List<string>()
+        {
+            @"SOFTWARE\Microsoft\Office",
+            @"SOFTWARE\Wow6432Node\Microsoft\Office"
+        };
+
+        var clickToRunList = new List<OfficeInstall>();
+
+        var pathReturn = new OfficePathsReturn()
+        {
+            ClickToRunList = new List<OfficeInstall>(),
+            VersionList = new List<string>(),
+            PathList = new List<string>(),
+            PackageList = new List<string>(),
+            ClickToRunPathList = new List<string>(),
+            ConfigItemList = new List<string>()
+        };
+
+
+        foreach (var regKey in officeKeys)
+        {
+            var officeVersion = GetRegistrySubKeys(regKey);
+            var c2RRegPath = regKey + @"\ClickToRun\Configuration";
+            var c2R16Key = GetRegistryKey(c2RRegPath);
+            if (c2R16Key != null)
+            {
+                clickToRunList.Add(new OfficeInstall
+                {
+                    InstallPath = GetRegistryValue(c2RRegPath, "InstallationPath"),
+                    Bitness = GetRegistryValue(c2RRegPath, "Platform"),
+                    ClientCulture = GetRegistryValue(c2RRegPath, "ClientCulture"),
+                    ClickToRun = true
+                });
+            }
+
+            foreach (var key in officeVersion)
+            {
+                var match = Regex.Match(key, @"\d{2}\.\d");
+                if (match.Success)
+                {
+                    if (!pathReturn.VersionList.Contains(key))
+                    {
+                        pathReturn.VersionList.Add(key);
+                    }
+
+                    var path = regKey + @"\" + key;
+                    var configPath = path + @"\Common\Config";
+
+                    var configItems = GetRegistrySubKeys(configPath);
+                    if (configItems != null)
+                    {
+                        pathReturn.ConfigItemList.AddRange(from configId in configItems where !string.IsNullOrEmpty(configId) select configId.ToUpper());
+                    }
+
+                    var cltr = new OfficeInstall();
+
+                    var packagePath = path + @"\Common\InstalledPackages";
+                    var clickToRunPath = path + @"\ClickToRun\Configuration";
+                    var officeLangResourcePath = path + @"\Common\LanguageResources";
+                    var cultures = CultureInfo.GetCultures(CultureTypes.AllCultures);
+
+                    var virtualInstallPath = GetRegistryValue(clickToRunPath, "InstallationPath");
+                    var mainLangId = GetRegistryValue(officeLangResourcePath, "SKULanguage");
+                    if (string.IsNullOrEmpty(mainLangId))
+                    {
+                        var mainlangCulture = cultures.FirstOrDefault(c => c.LCID.ToString() == mainLangId);
+
+                        if (mainlangCulture != null)
+                        {
+                            cltr.ClientCulture = mainlangCulture.Name;
+                        }
+                    }
+
+                    var officeLangPath = path + @"\Common\LanguageResources\InstalledUIs";
+                    var langValues = GetRegistrySubKeys(officeLangPath);
+
+                    CultureInfo langCulture = null;
+                    if (langValues != null)
+                    {
+                        foreach (var langValue in langValues)
+                        {
+                            langCulture = cultures.FirstOrDefault(c => c.LCID.ToString() == langValue);
+                        }
+                    }
+
+                    if (string.IsNullOrEmpty(virtualInstallPath))
+                    {
+                        clickToRunPath = regKey + @"\ClickToRun\Configuration";
+                        virtualInstallPath = GetRegistryValue(clickToRunPath, "InstallationPath");
+                    }
+
+                    if (!string.IsNullOrEmpty(virtualInstallPath))
+                    {
+                        if (virtualInstallPath == null) virtualInstallPath = "";
+                        if (!pathReturn.ClickToRunPathList.Contains(virtualInstallPath.ToUpper()))
+                        {
+                            pathReturn.ClickToRunPathList.Add(virtualInstallPath.ToUpper());
+                        }
+
+                        cltr.InstallPath = virtualInstallPath;
+                        cltr.Bitness = GetRegistryValue(clickToRunPath, "Platform");
+                        cltr.ClientCulture = GetRegistryValue(clickToRunPath, "ClientCulture");
+                        cltr.ClickToRun = true;
+                        clickToRunList.Add(cltr);
+                    }
+
+                    var packageItems = GetRegistrySubKeys(packagePath);
+                    var officeItems = GetRegistrySubKeys(path);
+
+                    foreach (var itemKey in officeItems)
+                    {
+                        var itemPath = path + @"\" + itemKey;
+                        var installRootPath = itemPath + @"\InstallRoot";
+
+                        //HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Office\15.0\Common\InstallRoot
+
+                        var filePath = GetRegistryValue(installRootPath, "Path");
+
+                        if (string.IsNullOrEmpty(filePath)) continue;
+
+                        if (!pathReturn.PathList.Contains(filePath))
+                        {
+                            pathReturn.PathList.Add(filePath);
+                        }
+                    }
+
+                    if (packageItems != null)
+                    {
+                        foreach (var packageGuid in packageItems)
+                        {
+                            var packageItemPath = packagePath + @"\" + packageGuid;
+                            var packageName = GetRegistryValue(packageItemPath, null);
+                            if (!pathReturn.PackageList.Contains(packageName))
+                            {
+                                if (!string.IsNullOrEmpty(packageName))
+                                {
+                                    pathReturn.PackageList.Add(packageName.Replace(" ", "").ToLower());
+                                }
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
+
+        return pathReturn;
+    }
+
+
 
     private void ShowHelp()
     {
@@ -231,6 +602,21 @@ public class InstallOffice
 
         SetAttribute(doc, display, "Level", "None");
         SetAttribute(doc, display, "AcceptEULA", "TRUE");
+    }
+
+    private void SetClientEdition(XmlDocument doc, OfficeClientEdition edition)
+    {
+        var add = doc.SelectSingleNode("/Configuration/Add");
+        if (add == null) return;
+        switch (edition)
+        {
+            case OfficeClientEdition.Office32Bit:
+                SetAttribute(doc, add, "OfficeClientEdition", "32");
+                break;
+            case OfficeClientEdition.Office64Bit:
+                SetAttribute(doc, add, "OfficeClientEdition", "64");
+                break;
+        }
     }
 
     public string GetTextFileContents(string fileName)
@@ -522,7 +908,7 @@ public class InstallOffice
 
             }
         }
-        catch {}
+        catch { }
         finally
         {
             try
@@ -707,7 +1093,7 @@ public class InstallOffice
     }
 
     [DllImport("user32.dll")]
-    public static extern bool ShowWindow( IntPtr hWnd, int nCmdShow );
+    public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
 
     public const int SW_SHOWMINIMIZED = 2;
 
@@ -721,6 +1107,67 @@ public class InstallOffice
         }
         pathAttr.Value = value;
     }
+
+    private RegistryKey GetRegistryKey(string keyPath)
+    {
+        var key = Registry.LocalMachine.OpenSubKey(keyPath);
+        return key;
+        //using (var key = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).OpenSubKey(keyPath))
+        //{
+        //    var value = key?.GetValue(property)?.ToString();
+        //    if (!string.IsNullOrEmpty(value))
+        //    {
+        //        return value;
+        //    }
+        //}
+    }
+
+    private List<string> GetRegistrySubKeys(string keyPath)
+    {
+        using (var key = Registry.LocalMachine.OpenSubKey(keyPath))
+        {
+            if (key == null) return new List<string>();
+            var subKeyList = key.GetSubKeyNames().ToList();
+            if (subKeyList != null) return subKeyList;
+        }
+
+        //using (var key = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).OpenSubKey(keyPath))
+        //{
+        //    var value = key?.GetValue(property)?.ToString();
+        //    if (!string.IsNullOrEmpty(value))
+        //    {
+        //        return value;
+        //    }
+        //}
+
+        return new List<string>();
+    }
+
+    private string GetRegistryValue(string keyPath, string property)
+    {
+        using (var key = Registry.LocalMachine.OpenSubKey(keyPath))
+        {
+            if (key == null) return "";
+            var objValue = key.GetValue(property);
+            if (objValue == null) return "";
+            var value = objValue.ToString();
+            if (!string.IsNullOrEmpty(value))
+            {
+                return value;
+            }
+        }
+
+        //using (var key = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).OpenSubKey(keyPath))
+        //{
+        //    var value = key?.GetValue(property)?.ToString();
+        //    if (!string.IsNullOrEmpty(value))
+        //    {
+        //        return value;
+        //    }
+        //}
+        return "";
+    }
+
 }
 
 public class ODTLogFile
@@ -752,4 +1199,73 @@ public class CmdArgument
     public string Key { get; set; }
 
     public string Value { get; set; }
+}
+
+
+public class OfficeInstalledProducts
+{
+    public List<OfficeInstall> OfficeInstalls { get; set; }
+
+    public string OSArchitecture { get; set; }
+
+    public OfficeClientEdition Edition
+    {
+        get
+        {
+            if (OSArchitecture != null)
+            {
+                if (OSArchitecture.Contains("32"))
+                {
+                    return OfficeClientEdition.Office32Bit;
+                }
+            }
+
+            var installsFiltered = OfficeInstalls.Where(i => !i.DisplayName.ToLower().Contains("mui") && !i.DisplayName.ToLower().Contains("shared")).ToList();
+            if (installsFiltered.Any(i => i.Bitness.Contains("32")))
+            {
+                return OfficeClientEdition.Office32Bit;
+            }
+
+            return OfficeClientEdition.Office64Bit;
+
+        }
+    }
+}
+
+public class OfficeInstall
+{
+    public string DisplayName { get; set; }
+
+    public bool ClickToRun { get; set; }
+
+    public string Bitness { get; set; }
+
+    public string Version { get; set; }
+
+    public string InstallPath { get; set; }
+
+    public string ClientCulture { get; set; }
+
+}
+
+
+public class OfficePathsReturn
+{
+    public List<string> VersionList { get; set; }
+
+    public List<string> PathList { get; set; }
+
+    public List<string> PackageList { get; set; }
+
+    public List<string> ClickToRunPathList { get; set; }
+
+    public List<string> ConfigItemList { get; set; }
+
+    public List<OfficeInstall> ClickToRunList { get; set; }
+}
+
+public enum OfficeClientEdition
+{
+    Office32Bit = 0,
+    Office64Bit = 1
 }

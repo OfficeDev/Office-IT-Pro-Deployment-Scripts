@@ -225,7 +225,7 @@ namespace OfficeInstallGenerator
             if (addNode == null)
             {
                 addNode = _xmlDoc.CreateElement("Add");
-                _xmlDoc.DocumentElement.AppendChild(addNode);
+                _xmlDoc.DocumentElement.PrependChild(addNode);
             }
 
             foreach (XmlNode childNode in addNode.ChildNodes)

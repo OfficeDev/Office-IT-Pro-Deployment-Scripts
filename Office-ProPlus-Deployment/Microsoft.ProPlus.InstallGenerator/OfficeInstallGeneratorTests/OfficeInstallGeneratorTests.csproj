@@ -41,6 +41,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.XML" />
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -60,15 +61,15 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Micorosft.OfficeProPlus.ConfigurationXml\Micorosft.OfficeProPlus.ConfigurationXml.csproj">
-      <Project>{ce88a24e-73c3-4b1d-b72c-f41894485a14}</Project>
+      <Project>{CE88A24E-73C3-4B1D-B72C-F41894485A14}</Project>
       <Name>Micorosft.OfficeProPlus.ConfigurationXml</Name>
     </ProjectReference>
     <ProjectReference Include="..\Microsoft.OfficeProPlus.Downloader\Microsoft.OfficeProPlus.Downloader.csproj">
-      <Project>{ea30b98d-401b-46ee-ba77-31efc287e9af}</Project>
+      <Project>{EA30B98D-401B-46EE-BA77-31EFC287E9AF}</Project>
       <Name>Microsoft.OfficeProPlus.Downloader</Name>
     </ProjectReference>
     <ProjectReference Include="..\OfficeInstallGenerator\Microsoft.OfficeProPlus.InstallGenerator.csproj">
-      <Project>{0702f643-0467-43a4-bdbc-b54f006e8244}</Project>
+      <Project>{0702F643-0467-43A4-BDBC-B54F006E8244}</Project>
       <Name>Microsoft.OfficeProPlus.InstallGenerator</Name>
     </ProjectReference>
   </ItemGroup>

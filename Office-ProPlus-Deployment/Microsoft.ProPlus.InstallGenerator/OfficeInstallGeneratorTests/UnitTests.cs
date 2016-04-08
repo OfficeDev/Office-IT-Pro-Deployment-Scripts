@@ -38,6 +38,14 @@ namespace OfficeInstallGeneratorTests
             
         }
 
+        [TestMethod]
+        public void TestGetOfficeVersions()
+        {
+
+            var officeInstall = new InstallOffice2();
+
+            officeInstall.GetOfficeVersion();
+        }
 
         [TestMethod]
         public void TestConfigXmlParser()

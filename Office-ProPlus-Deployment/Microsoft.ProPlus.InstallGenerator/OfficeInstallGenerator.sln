@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.40629.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.OfficeProPlus.InstallGenerator", "OfficeInstallGenerator\Microsoft.OfficeProPlus.InstallGenerator.csproj", "{0702F643-0467-43A4-BDBC-B54F006E8244}"
 EndProject
@@ -56,6 +56,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WixSharp45", "WixSharp45", 
 		ProjectFiles\WixSharp45\WixSharp.UI.dll = ProjectFiles\WixSharp45\WixSharp.UI.dll
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestCode", "TestCode\TestCode.csproj", "{773B8C58-63B6-4B72-A231-1D999F5ECB9A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -102,6 +104,10 @@ Global
 		{56E8080F-FFEB-47CD-ADB9-92245F92565B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{56E8080F-FFEB-47CD-ADB9-92245F92565B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{56E8080F-FFEB-47CD-ADB9-92245F92565B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{773B8C58-63B6-4B72-A231-1D999F5ECB9A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{773B8C58-63B6-4B72-A231-1D999F5ECB9A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{773B8C58-63B6-4B72-A231-1D999F5ECB9A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{773B8C58-63B6-4B72-A231-1D999F5ECB9A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
