@@ -1,6 +1,6 @@
-##**Migration Scripts**
+##**Migrate Office MRU**
 
-These scripts assist in grabbing registry key settings and creating log files for current Office 2013 users.
+These scripts assist in migrating Office registry key settings and creating log files for current Office 2013 users.
 
 ###**Set-GlobalDictionary_v0.2**
 
