@@ -462,6 +462,47 @@ namespace MetroDemo.ExampleViews
             });
         }
 
+        public async Task RunInstallOffice()
+        {
+            await Task.Run(async () =>
+            {
+                try
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        InstallOffice.IsEnabled = false;
+                        ReInstallOffice.IsEnabled = false;
+                    });
+                    GlobalObjects.ViewModel.BlockNavigation = true;
+                    GlobalObjects.ViewModel.ConfigXmlParser.ConfigurationXml.Display.Level = DisplayLevel.Full;
+
+                    FirstRun = false;
+
+                    SetItemState(LocalViewItem.Install, LocalViewState.InstallingOffice);
+
+                    var installGenerator = new OfficeInstallExecutableGenerator();
+                    installGenerator.InstallOffice(GlobalObjects.ViewModel.ConfigXmlParser.Xml);
+
+                    await LoadViewState();
+
+                    Dispatcher.Invoke(() =>
+                    {
+                        InstallOffice.IsEnabled = true;
+                        ReInstallOffice.IsEnabled = true;
+                    });
+                }
+                catch (Exception ex)
+                {
+                    SetItemState(LocalViewItem.Install, LocalViewState.Fail);
+                    LogErrorMessage(ex);
+                }
+                finally
+                {
+                    GlobalObjects.ViewModel.BlockNavigation = false;
+                }
+            });
+        }
+
         private void SetSelectedVersion()
         {
             Dispatcher.Invoke(() =>
@@ -931,7 +972,11 @@ namespace MetroDemo.ExampleViews
         {
             try
             {
+                //If 2016 rut this
                 await RunUpdateOffice();
+
+                //If 2013 rut this
+                //await RunInstallOffice();
             }
             catch (Exception ex)
             {
@@ -997,42 +1042,7 @@ namespace MetroDemo.ExampleViews
         {
             try
             {
-                await Task.Run(async () =>
-                {
-                    try {
-                        Dispatcher.Invoke(() =>
-                        {
-                            InstallOffice.IsEnabled = false;
-                            ReInstallOffice.IsEnabled = false;
-                        });
-                        GlobalObjects.ViewModel.BlockNavigation = true;
-                        GlobalObjects.ViewModel.ConfigXmlParser.ConfigurationXml.Display.Level = DisplayLevel.Full;
-
-                        FirstRun = false;
-
-                        SetItemState(LocalViewItem.Install, LocalViewState.InstallingOffice);
-
-                        var installGenerator = new OfficeInstallExecutableGenerator();
-                        installGenerator.InstallOffice(GlobalObjects.ViewModel.ConfigXmlParser.Xml);
-
-                        await LoadViewState();
-
-                        Dispatcher.Invoke(() =>
-                        {
-                            InstallOffice.IsEnabled = true;
-                            ReInstallOffice.IsEnabled = true;
-                        });
-                    }
-                    catch (Exception ex)
-                    {
-                        SetItemState(LocalViewItem.Install, LocalViewState.Fail);
-                        LogErrorMessage(ex);
-                    }
-                    finally
-                    {
-                        GlobalObjects.ViewModel.BlockNavigation = false;
-                    }
-                });
+                await RunInstallOffice();
             }
             catch (Exception ex)
             {

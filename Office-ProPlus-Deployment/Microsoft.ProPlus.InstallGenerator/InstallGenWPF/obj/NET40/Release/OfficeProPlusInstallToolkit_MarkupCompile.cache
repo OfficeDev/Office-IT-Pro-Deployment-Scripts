@@ -8,7 +8,7 @@ D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.
 Microsoft.OfficeProPlus.InstallGen.Presentation
 none
 false
-TRACE;NET4
+CODE_ANALYSIS;TRACE;NET4
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\InstallGenWPF\App.xaml
 211705998408
 25-1251974890

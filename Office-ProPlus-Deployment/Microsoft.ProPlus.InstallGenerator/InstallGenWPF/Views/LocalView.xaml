@@ -148,7 +148,7 @@
 
                                 </Grid>
                                 
-                                <Grid x:Name="ChannelRow" Margin="50 0 0 0" Width="800" HorizontalAlignment="Left" >
+                                <Grid x:Name="ChannelRow" Margin="50 0 0 0" Width="800" HorizontalAlignment="Left">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="50"></RowDefinition>
                                     </Grid.RowDefinitions>
@@ -208,7 +208,6 @@
                                     </Grid>
 
                                 </Grid>
-
 
                                 <Grid x:Name="ModifyInstallRow" Margin="50 0 0 0" Width="800" HorizontalAlignment="Left" >
                                     <Grid.RowDefinitions>
@@ -275,7 +274,6 @@
                                     </Border>
 
                                 </Grid>
-
 
                             </StackPanel>
 
