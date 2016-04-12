@@ -39,7 +39,7 @@
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Row="0" Grid.Column="1"  Background="{StaticResource GrayBrush}" Width="auto" Height="40" HorizontalAlignment="Stretch" VerticalAlignment="Top" />
                 <controls:MetroAnimatedSingleRowTabControl Grid.Row="0" Grid.Column="1"  x:Name="MainTabControl" 
-                                                           Height="600" VerticalAlignment="Top" >
+                                                           Height="550" VerticalAlignment="Top" >
                     <TabItem Background="{StaticResource GrayBrush}" Height="40">
                         <TabItem.Header>
                             <DockPanel Margin="0,5,0,0">
@@ -55,8 +55,8 @@
                                 <RowDefinition Height="0" x:Name="PublisherRow" />
                                 <RowDefinition Height="50" />
                                 <RowDefinition Height="50" />
-                                <RowDefinition Height="120" x:Name="SpacerRow" />
-                                <RowDefinition Height="114" />
+                                <RowDefinition Height="120"  />
+                                <RowDefinition Height="114" x:Name="SpacerRow" />
                                 <RowDefinition />
                             </Grid.RowDefinitions>
 

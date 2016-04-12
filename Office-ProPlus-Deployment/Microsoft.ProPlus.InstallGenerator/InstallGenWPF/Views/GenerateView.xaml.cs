@@ -2,26 +2,13 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Forms;
-using System.Windows.Forms.VisualStyles;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Xml;
 using MahApps.Metro.Controls;
-using MahApps.Metro.Controls.Dialogs;
 using MetroDemo.Events;
 using MetroDemo.ExampleWindows;
 using Micorosft.OfficeProPlus.ConfigurationXml;
@@ -33,7 +20,6 @@ using Microsoft.OfficeProPlus.InstallGen.Presentation.Logging;
 using Microsoft.OfficeProPlus.InstallGenerator.Implementation;
 using OfficeInstallGenerator;
 using MessageBox = System.Windows.MessageBox;
-using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 using UserControl = System.Windows.Controls.UserControl;
 
 namespace MetroDemo.ExampleViews
@@ -772,6 +758,31 @@ namespace MetroDemo.ExampleViews
             }
         }
 
+        private void SignWithCert_OnCheck(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (SignInstaller.IsChecked.HasValue && SignInstaller.IsChecked.Value)
+                {
+                    OpenCertificateBrowser.IsEnabled = true;
+                    OpenCertGenerator.IsEnabled = true;
+                    PublisherRow.Height = new GridLength(50, GridUnitType.Pixel);
+                    SpacerRow.Height = new GridLength(64, GridUnitType.Pixel);
+                }
+                else
+                {
+                    OpenCertificateBrowser.IsEnabled = false;
+                    OpenCertGenerator.IsEnabled = false;
+                    PublisherRow.Height = new GridLength(0, GridUnitType.Pixel);
+                    SpacerRow.Height = new GridLength(114, GridUnitType.Pixel);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
+
         private async void IncludeBuild_OnChecked(object sender, RoutedEventArgs e)
         {
             try
@@ -801,6 +812,16 @@ namespace MetroDemo.ExampleViews
                 {
                     OpenFolderButton.IsEnabled = false;
                 }
+
+                if (SignInstaller.IsChecked.HasValue && SignInstaller.IsChecked.Value)
+                {
+                    SpacerRow.Height = new GridLength(64, GridUnitType.Pixel);
+                }
+                else
+                {
+                    SpacerRow.Height = new GridLength(114, GridUnitType.Pixel);
+                }
+
             }
             catch (Exception ex)
             {
@@ -913,31 +934,6 @@ namespace MetroDemo.ExampleViews
                 if (result == DialogResult.OK)
                 {
                     BuildFilePath.Text = dlg1.SelectedPath;
-                }
-            }
-            catch (Exception ex)
-            {
-                LogErrorMessage(ex);
-            }
-        }
-
-        private void SignWithCert_OnCheck(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                if (SignInstaller.IsChecked.HasValue && SignInstaller.IsChecked.Value)
-                {
-                    OpenCertificateBrowser.IsEnabled = true;
-                    OpenCertGenerator.IsEnabled = true;
-                    PublisherRow.Height = new GridLength(50, GridUnitType.Pixel);
-                    SpacerRow.Height = new GridLength(70, GridUnitType.Pixel);
-                }
-                else
-                {
-                    OpenCertificateBrowser.IsEnabled = false;
-                    OpenCertGenerator.IsEnabled = false;
-                    PublisherRow.Height = new GridLength(0, GridUnitType.Pixel);
-                    SpacerRow.Height = new GridLength(120, GridUnitType.Pixel);
                 }
             }
             catch (Exception ex)
