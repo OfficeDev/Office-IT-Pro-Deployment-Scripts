@@ -2,6 +2,3 @@ D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Micorosft.OfficeProPlus.ConfigurationXml\bin\Release\Micorosft.OfficeProPlus.ConfigurationXml.pdb
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Micorosft.OfficeProPlus.ConfigurationXml\obj\Release\Micorosft.OfficeProPlus.ConfigurationXml.dll
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Micorosft.OfficeProPlus.ConfigurationXml\obj\Release\Micorosft.OfficeProPlus.ConfigurationXml.pdb
-D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Micorosft.OfficeProPlus.ConfigurationXml\bin\Release\Micorosft.OfficeProPlus.ConfigurationXml.dll.CodeAnalysisLog.xml
-D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Micorosft.OfficeProPlus.ConfigurationXml\bin\Release\Micorosft.OfficeProPlus.ConfigurationXml.dll.lastcodeanalysissucceeded
-D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Micorosft.OfficeProPlus.ConfigurationXml\obj\Release\Micorosft.OfficeProPlus.ConfigurationXml.csprojResolveAssemblyReference.cache
