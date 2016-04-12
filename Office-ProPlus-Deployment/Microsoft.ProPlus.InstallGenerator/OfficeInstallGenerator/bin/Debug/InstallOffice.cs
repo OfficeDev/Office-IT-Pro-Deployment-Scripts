@@ -254,14 +254,23 @@ public class InstallOffice
                         FileName = c2RPath,
                         Arguments = arguments,
                         CreateNoWindow = true,
-                        UseShellExecute = false
+                        UseShellExecute = false,
+                        RedirectStandardError = true
                     },
                 };
+
+                ClearRunningUpdateScenarioTasks();
 
                 p.Start();
                 p.WaitForExit();
 
-                await Task.Delay(1000);
+                await Task.Delay(3000);
+
+                var strError = await p.StandardError.ReadToEndAsync();
+                if (strError != null)
+                {
+                    
+                }
 
                 WaitForOfficeCtrUpadateWithError();
             }
@@ -438,7 +447,7 @@ public class InstallOffice
         var anyRunning = scenarioTasks.Any(s => s.State == "TASKSTATE_EXECUTING");
         return anyRunning;
     }
-    
+
     public void WaitForOfficeCtrUpadateWithError(bool showStatus = false)
     {
         if (showStatus) { Console.WriteLine("Waiting for Install to Complete..."); }
@@ -484,11 +493,15 @@ public class InstallOffice
             var anyRunning = scenarioTasks.Any(s => s.State == "TASKSTATE_EXECUTING");
             if (anyRunning) allComplete = false;
 
+            if (scenarioTasks.Count > 0)
+            {
+                installRunning = true;
+            }
+
             var executingTasks = scenarioTasks.Where(s => s.State == "TASKSTATE_EXECUTING" &&
                                                           !tasksRunning.Contains(s.Scenario)).ToList();
             if (executingTasks.Count > 0)
             {
-                installRunning = true;
                 var currentOperation = GetCurrentOperation(executingTasks);
                 Console.Write(currentOperation + ": ");
                 currentOperationName = currentOperation.ToString();
@@ -652,6 +665,36 @@ public class InstallOffice
         return execScenarios;
     }
 
+    public void ClearRunningUpdateScenarioTasks()
+    {
+        var executingScenario = "Update";
+
+        var mainRegKey = GetOfficeCtrRegPath();
+        if (mainRegKey == null) return;
+
+        var scenarioKey = mainRegKey.OpenSubKey("scenario");
+        if (scenarioKey == null) return;
+
+        var subKeyNames = scenarioKey.GetSubKeyNames();
+
+        foreach (var subKeyName in subKeyNames)
+        {
+            if (subKeyName.ToUpper() == executingScenario.ToUpper())
+            {
+                var execScenKey = scenarioKey.OpenSubKey(subKeyName + @"\TasksState", true);
+                if (execScenKey == null) continue;
+                var valueNames = execScenKey.GetValueNames();
+
+                foreach (var valueName in valueNames)
+                {
+                    execScenKey.DeleteValue(valueName, false);
+                }
+                break;
+            }
+        }
+    }
+
+
     public void ResetUpdateSource()
     {
         const string policyPath = @"SOFTWARE\Policies\Microsoft\office\16.0\common\officeupdate";
@@ -672,7 +715,7 @@ public class InstallOffice
         var configKey = mainRegKey.OpenSubKey(@"Configuration", true);
         if (configKey == null) return;
 
-        var saveUpdateUrl = GetRegistryValue(policyKey, "UpdateUrl");
+        var saveUpdateUrl = GetRegistryValue(configKey, "SaveUpdateUrl");
         if (string.IsNullOrEmpty(saveUpdateUrl)) return;
 
         configKey.SetValue("UpdateUrl", saveUpdateUrl, RegistryValueKind.String);
