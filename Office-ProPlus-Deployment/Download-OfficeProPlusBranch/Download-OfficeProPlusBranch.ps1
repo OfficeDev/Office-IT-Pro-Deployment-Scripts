@@ -26,8 +26,6 @@ using System;
 
 Add-Type -TypeDefinition $enumDef
 
-
-
 $enumDef = "
 using System;
        [FlagsAttribute]
@@ -96,10 +94,10 @@ Param(
     [bool] $OverWrite = $false,
 
     [Parameter()]
-    [OfficeBranch[]] $Branches,#, 4)
+    [OfficeBranch[]] $Branches,
 
     [Parameter()]
-    [OfficeChannel[]] $Channels,
+    [OfficeChannel[]] $Channels = (0,1,2,3),
     
     [Parameter()]
     [int] $NumVersionsToKeep = 2,
