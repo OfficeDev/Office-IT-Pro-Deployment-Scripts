@@ -1,0 +1,13 @@
+C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\ODT_Launcher\bin\Release\bin\Debug\bin\ODT_Launcher.exe
+C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\ODT_Launcher\bin\Release\ODT_Launcher.exe
+C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\ODT_Launcher\bin\Release\ODT_Launcher.exe.config
+C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\ODT_Launcher\bin\Release\ODT_Launcher.exe.manifest
+C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\ODT_Launcher\bin\Release\ODT_Launcher.application
+C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\ODT_Launcher\bin\Release\ODT_Launcher.pdb
+C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\ODT_Launcher\obj\Release\ODT_Launcher.csprojResolveAssemblyReference.cache
+C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\ODT_Launcher\obj\Release\ODT_Launcher.Properties.Resources.resources
+C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\ODT_Launcher\obj\Release\ODT_Launcher.csproj.GenerateResource.Cache
+C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\ODT_Launcher\obj\Release\ODT_Launcher.exe.manifest
+C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\ODT_Launcher\obj\Release\ODT_Launcher.application
+C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\ODT_Launcher\obj\Release\ODT_Launcher.exe
+C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\ODT_Launcher\obj\Release\ODT_Launcher.pdb
