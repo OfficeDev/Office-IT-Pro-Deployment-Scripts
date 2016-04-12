@@ -842,10 +842,12 @@ public class InstallOffice
     {
         var mainRegPath = GetOfficeCtrRegPath();
         if (mainRegPath == null) return null;
-        var configKey = Registry.LocalMachine.OpenSubKey(mainRegPath);
-        if (configKey == null) return null;
-        var execScenario = configKey.GetValue("ExecutingScenario");
-        return execScenario != null ? execScenario.ToString() : null;
+        using (var configKey = Registry.LocalMachine.OpenSubKey(mainRegPath))
+        {
+            if (configKey == null) return null;
+            var execScenario = configKey.GetValue("ExecutingScenario");
+            return execScenario != null ? execScenario.ToString() : null;
+        }
     }
 
     public string GetOfficeCtrRegPath()
@@ -853,23 +855,22 @@ public class InstallOffice
         var path16 = @"SOFTWARE\Microsoft\Office\ClickToRun";
         var path15 = @"SOFTWARE\Microsoft\Office\15.0\ClickToRun";
 
-
-        var office16Key = Registry.LocalMachine.OpenSubKey(path16);
-        var office15Key = Registry.LocalMachine.OpenSubKey(path15);
-
-
-        if (office16Key != null)
+        using (var office16Key = Registry.LocalMachine.OpenSubKey(path16))
+        using (var office15Key = Registry.LocalMachine.OpenSubKey(path15))
         {
-            return path16;
-        }
-        else
-        {
-            if (office15Key != null)
+            if (office16Key != null)
             {
-                return path15;
+                return path16;
             }
+            else
+            {
+                if (office15Key != null)
+                {
+                    return path15;
+                }
+            }
+            return null;
         }
-        return null;
     }
 
     public string GetOdtErrorMessage()
@@ -1110,7 +1111,7 @@ public class InstallOffice
 
     private RegistryKey GetRegistryKey(string keyPath)
     {
-        var key = Registry.LocalMachine.OpenSubKey(keyPath);
+        var key = Registry.LocalMachine.OpenSubKey(keyPath, true);
         return key;
         //using (var key = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).OpenSubKey(keyPath))
         //{
@@ -1124,7 +1125,7 @@ public class InstallOffice
 
     private List<string> GetRegistrySubKeys(string keyPath)
     {
-        using (var key = Registry.LocalMachine.OpenSubKey(keyPath))
+        using (var key = Registry.LocalMachine.OpenSubKey(keyPath, true))
         {
             if (key == null) return new List<string>();
             var subKeyList = key.GetSubKeyNames().ToList();
@@ -1145,7 +1146,7 @@ public class InstallOffice
 
     private string GetRegistryValue(string keyPath, string property)
     {
-        using (var key = Registry.LocalMachine.OpenSubKey(keyPath))
+        using (var key = Registry.LocalMachine.OpenSubKey(keyPath, true))
         {
             if (key == null) return "";
             var objValue = key.GetValue(property);

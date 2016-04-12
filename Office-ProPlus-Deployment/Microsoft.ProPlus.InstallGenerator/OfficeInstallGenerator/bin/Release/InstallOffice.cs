@@ -273,8 +273,10 @@ public class InstallOffice
     public string GetOfficeC2RPath()
     {
         var officeRegKey = GetOfficeCtrRegPath();
-        var configKey = officeRegKey.OpenSubKey(@"Configuration");
-        return configKey != null ? GetRegistryValue(configKey, "ClientFolder") : "";
+        using (var configKey = officeRegKey.OpenSubKey(@"Configuration", true))
+        {
+            return configKey != null ? GetRegistryValue(configKey, "ClientFolder") : "";
+        }
     }
 
     public bool ProPlusLanguageInstalled(string productId, string language)
@@ -667,7 +669,7 @@ public class InstallOffice
         var mainRegKey = GetOfficeCtrRegPath();
         if (mainRegKey == null) return;
 
-        var configKey = mainRegKey.OpenSubKey(@"Configuration");
+        var configKey = mainRegKey.OpenSubKey(@"Configuration", true);
         if (configKey == null) return;
 
         var saveUpdateUrl = GetRegistryValue(policyKey, "UpdateUrl");
@@ -702,7 +704,7 @@ public class InstallOffice
         var mainRegKey = GetOfficeCtrRegPath();
         if (mainRegKey == null) return null;
 
-        var configKey = mainRegKey.OpenSubKey(@"Configuration");
+        var configKey = mainRegKey.OpenSubKey(@"Configuration", true);
         if (configKey == null) return null;
 
         currentupdatepath = GetRegistryValue(configKey, "UpdateUrl");
