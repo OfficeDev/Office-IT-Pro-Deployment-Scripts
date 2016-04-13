@@ -25,6 +25,14 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
             };
 
             var officeRegKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Office\ClickToRun\Configuration");
+            if (officeRegKey == null)
+            {
+                officeRegKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Office\16.0\ClickToRun\Configuration");
+                if (officeRegKey == null)
+                {
+                    officeRegKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Office\15.0\ClickToRun\Configuration");
+                }
+            }
             if (officeRegKey != null)
             {
                 localInstall.Version = GetRegistryValue(officeRegKey, "VersionToReport");
@@ -161,7 +169,7 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
             return null;
         }
 
-        public void UnInstallOffice()
+        public void UnInstallOffice(string installVer = "2016")
         {
             
             const string configurationXml = "<Configuration><Remove All=\"TRUE\"/><Display Level=\"Full\" /></Configuration>";
@@ -169,13 +177,13 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
             var tmpPath = Environment.ExpandEnvironmentVariables("%temp%");
             var embededExeFiles = EmbeddedResources.GetEmbeddedItems(tmpPath, @"\.exe$");
 
-            //NOTE: Have this function determine if 2013 ProPlus or 2016 ProPlus is installed and then use the right ODT version
+            //NOTE: Have this function determine if 2013 ProPlus or 2016 ProPlus is installed and then use the right ODT version            
             var installExe = tmpPath + @"\" + embededExeFiles.FirstOrDefault(f => f.ToLower().Contains("2016"));
-
-            //If 2013 then get the 2013 ODT version
-            //installExe = tmpPath + @"\" + embededExeFiles.FirstOrDefault(f => f.ToLower().Contains("2013"));
-
-
+            if (installVer == "2013")
+            {
+                //If 2013 then get the 2013 ODT version
+                installExe = tmpPath + @"\" + embededExeFiles.FirstOrDefault(f => f.ToLower().Contains("2013"));
+            }
             var xmlPath = tmpPath + @"\configuration.xml";
 
             if (System.IO.File.Exists(xmlPath)) System.IO.File.Delete(xmlPath);

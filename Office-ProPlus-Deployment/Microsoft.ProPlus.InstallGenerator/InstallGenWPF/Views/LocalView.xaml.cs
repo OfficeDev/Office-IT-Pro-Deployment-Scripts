@@ -224,11 +224,11 @@ namespace MetroDemo.ExampleViews
                 {
                     case LocalViewItem.Install:
                         var installedRows = Visibility.Visible;
-
+                        bool isNotfifteen = true;
                         InstallOffice.Visibility = Visibility.Collapsed;
                         ImgOfficeInstalled.Visibility = Visibility.Collapsed;
                         WaitInstallImage.Visibility = Visibility.Collapsed;
-                        ImgLatestInstallFail.Visibility = Visibility.Collapsed;
+                        ImgLatestInstallFail.Visibility = Visibility.Collapsed;                        
 
                         UpdateButtonColumn.Width = latestInstalled ? new GridLength(45, GridUnitType.Pixel) : new GridLength(90, GridUnitType.Pixel);
 
@@ -249,7 +249,7 @@ namespace MetroDemo.ExampleViews
                                 break;
                             case LocalViewState.Default:
                                 WaitInstallImage.Visibility = Visibility.Visible;
-                                installedRows = Visibility.Collapsed;
+                                installedRows = Visibility.Collapsed;                                
                                 break;
                             case LocalViewState.Action:
                                 InstallOffice.Visibility = Visibility.Visible;
@@ -263,6 +263,15 @@ namespace MetroDemo.ExampleViews
                                 break;
                             case LocalViewState.Success:
                                 ImgOfficeInstalled.Visibility = Visibility.Visible;
+                                if (LocalInstall != null)
+                                {
+                                    if (LocalInstall.Version.StartsWith("15."))
+                                    {
+                                        ChannelRow.Visibility = Visibility.Collapsed;
+                                        ModifyInstallRow.Visibility = Visibility.Collapsed;
+                                        isNotfifteen = false;
+                                    }
+                                }
                                 break;
                             case LocalViewState.Wait:
                                 WaitInstallImage.Visibility = Visibility.Visible;
@@ -275,10 +284,14 @@ namespace MetroDemo.ExampleViews
                                 break;
                         }
                         UpdateRow.Visibility = installedRows;
-                        VersionRow.Visibility = installedRows;
-                        ChannelRow.Visibility = installedRows;
-                        ModifyInstallRow.Visibility = installedRows;
+                        VersionRow.Visibility = installedRows;                        
                         ModifyUninstallRow.Visibility = installedRows;
+                        //maybe set bool switch here to see if rows collapsed due to version 15.x.x.x
+                        if (isNotfifteen)
+                        {
+                            ChannelRow.Visibility = installedRows;
+                            ModifyInstallRow.Visibility = installedRows;
+                        }
                         break;
                     case LocalViewItem.Update:
                         UpdateOffice.Visibility = Visibility.Collapsed;
@@ -661,7 +674,12 @@ namespace MetroDemo.ExampleViews
                     SetItemState(LocalViewItem.Uninstall, LocalViewState.Wait);
 
                     var installGenerator = new OfficeLocalInstallManager();
-                    installGenerator.UnInstallOffice();
+                    string installVer = "2016";
+                    if (LocalInstall.Version.StartsWith("15."))
+                    {
+                        installVer = "2013";
+                    }
+                    installGenerator.UnInstallOffice(installVer);
 
                     SetItemState(LocalViewItem.Uninstall, LocalViewState.Success);
 
@@ -972,11 +990,16 @@ namespace MetroDemo.ExampleViews
         {
             try
             {
-                //If 2016 rut this
-                await RunUpdateOffice();
-
-                //If 2013 rut this
-                //await RunInstallOffice();
+                if (LocalInstall.Version.StartsWith("15."))
+                {
+                    //If 2013 rut this
+                    await RunInstallOffice();
+                }
+                else
+                {
+                    //If 2016 rut this
+                    await RunUpdateOffice();
+                }   
             }
             catch (Exception ex)
             {
