@@ -1,0 +1,13 @@
+C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\SelfService\Content\Install_Files\bin\Debug\bin\ODT_Launcher.exe
+C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\SelfService\Content\Install_Files\ODT_Launcher.exe
+C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\SelfService\Content\Install_Files\ODT_Launcher.exe.config
+C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\SelfService\Content\Install_Files\ODT_Launcher.exe.manifest
+C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\SelfService\Content\Install_Files\ODT_Launcher.application
+C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\SelfService\Content\Install_Files\ODT_Launcher.pdb
+C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\ODT_Launcher\obj\Debug\ODT_Launcher.Properties.Resources.resources
+C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\ODT_Launcher\obj\Debug\ODT_Launcher.csproj.GenerateResource.Cache
+C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\ODT_Launcher\obj\Debug\ODT_Launcher.exe.manifest
+C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\ODT_Launcher\obj\Debug\ODT_Launcher.application
+C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\ODT_Launcher\obj\Debug\ODT_Launcher.exe
+C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\ODT_Launcher\obj\Debug\ODT_Launcher.pdb
+C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\ODT_Launcher\obj\Debug\ODT_Launcher.csprojResolveAssemblyReference.cache
