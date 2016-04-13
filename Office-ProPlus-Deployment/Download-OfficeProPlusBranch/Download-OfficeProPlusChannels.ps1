@@ -60,7 +60,17 @@ v32, v64, or Both. What bitness of office you wish to download. Defaults to Both
 .PARAMETER OverWrite
 If this parameter is specified then existing files will be overwritten.
 .PARAMETER Branches
-An array of the branches you wish to download. Defaults to all available branches (CMValidation currently not available)
+An array of the Branches you wish to download (This parameter is left for legacy usage)
+.PARAMETER Channels
+An array of the Channels you wish to download. Defaults to all available channels except First Release Current
+.PARAMETER NumVersionsToKeep
+This parameter controls the number of versions to retain. Any older versions will be deleted.
+.PARAMETER UseChannelFolderShortName
+This parameter change the folder name that the scripts creates for each Channel folder. For example if this paramter is set to $true then the Current Channel folder will be named "CC"
+.PARAMETER NumOfRetries
+This parameter Controls the number of times the script will retry if a failure happens
+.PARAMETER IncludeChannelInfo
+This parameter Controls whether the ofl.cab file is downloaded and cached in the root of the TargetDirectory folder
 .Example
 Download-OfficeBranch -TargetDirectory "\\server\updateshare"
 Default downloads all available branches of the most recent version for both bitnesses into an update source. Downloads the English language pack by default if language is not specified.
