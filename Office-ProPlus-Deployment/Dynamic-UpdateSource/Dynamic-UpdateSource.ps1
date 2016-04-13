@@ -1,5 +1,6 @@
 $enum3 = "
 using System;
+
 namespace Microsoft.Office
 {
     [FlagsAttribute]
@@ -7,11 +8,34 @@ namespace Microsoft.Office
     {
         Current=0,
         Business=1,
-        Validation=2
+        Validation=2,
+        FirstReleaseCurrent=3,
+        FirstReleaseBusiness=4
     }
 }
 "
 Add-Type -TypeDefinition $enum3 -ErrorAction SilentlyContinue
+
+$enum4 = "
+ using System;
+ 
+ namespace Microsoft.Office
+ {
+     [FlagsAttribute]
+     public enum Channel
+     {
+         Current=0,
+         Deferred=1,
+         Validation=2,
+         FirstReleaseCurrent=3,
+         FirstReleaseDeferred=4
+     }
+ }
+ "
+ try {
+ Add-Type -TypeDefinition $enum4 -ErrorAction SilentlyContinue
+ } catch {}
+
 
 Function Dynamic-UpdateSource {
 <#
@@ -41,10 +65,10 @@ Will Dynamically set the Update Source based a list Provided
         [Parameter(ValueFromPipelineByPropertyName=$true)]
         [bool] $SourceByIP = $false,
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [bool] $IncludeUpdatePath = $false
+        [bool] $IncludeUpdatePath = $true
     )
 
-     Process{
+    Process{
 
      #get computer ADSite and IP address
      $computerADSite = "ADSite"
@@ -106,9 +130,9 @@ Will Dynamically set the Update Source based a list Provided
             }          
      }
      if ($SourceValue) {
-        Set-ODTAdd -TargetFilePath $TargetFilePath -SourcePath $SourceValue
+        SetODTAdd -TargetFilePath $TargetFilePath -SourcePath $SourceValue
         if($IncludeUpdatePath){
-            Set-ODTUpdates -TargetFilePath $TargetFilePath -UpdatePath $SourceValue
+            SetODTUpdates -TargetFilePath $TargetFilePath -UpdatePath $SourceValue
         }
 
      } else {
@@ -120,57 +144,10 @@ Will Dynamically set the Update Source based a list Provided
         } 
      }
 
-
-
     }
 }
 
-Function Set-ODTAdd{
-<#
-.SYNOPSIS
-Modifies an existing configuration xml file's add section
-.PARAMETER SourcePath
-Optional.
-The SourcePath value can be set to a network, local, or HTTP path that contains a 
-Click-to-Run source. Environment variables can be used for network or local paths.
-SourcePath indicates the location to save the Click-to-Run installation source 
-when you run the Office Deployment Tool in download mode.
-SourcePath indicates the installation source path from which to install Office 
-when you run the Office Deployment Tool in configure mode. If you don’t specify 
-SourcePath in configure mode, Setup will look in the current folder for the Office 
-source files. If the Office source files aren’t found in the current folder, Setup 
-will look on Office 365 for them.
-SourcePath specifies the path of the Click-to-Run Office source from which the 
-App-V package will be made when you run the Office Deployment Tool in packager mode.
-If you do not specify SourcePath, Setup will attempt to create an \Office\Data\... 
-folder structure in the working directory from which you are running setup.exe.
-.PARAMETER Version
-Optional. If a Version value is not set, the Click-to-Run product installation streams 
-the latest available version from the source. The default is to use the most recently 
-advertised build (as defined in v32.CAB or v64.CAB at the Click-to-Run Office installation source).
-Version can be set to an Office 2013 build number by using this format: X.X.X.X
-.PARAMETER Bitness
-Required. Specifies the edition of Click-to-Run for Office 365 product to use: 32- or 64-bit.
-.PARAMETER TargetFilePath
-Full file path for the file to be modified and be output to.
-.PARAMETER Branch
-Optional. Specifies the update branch for the product that you want to download or install.
-.Example
-Set-ODTAdd -SourcePath "C:\Preload\Office" -TargetFilePath "$env:Public/Documents/config.xml"
-Sets config SourcePath property of the add element to C:\Preload\Office
-.Example
-Set-ODTAdd -SourcePath "C:\Preload\Office" -Version "15.1.2.3" -TargetFilePath "$env:Public/Documents/config.xml"
-Sets config SourcePath property of the add element to C:\Preload\Office and version to 15.1.2.3
-.Notes
-Here is what the portion of configuration file looks like when modified by this function:
-<Configuration>
-  ...
-  <Add SourcePath="\\server\share\" Version="15.1.2.3" OfficeClientEdition="32"> 
-      ...
-  </Add>
-  ...
-</Configuration>
-#>
+Function SetODTAdd{
     Param(
 
         [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
@@ -180,23 +157,12 @@ Here is what the portion of configuration file looks like when modified by this 
         [string] $SourcePath = $NULL,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [string] $Version,
-
-        [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [string] $Bitness,
-
-        [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [string] $TargetFilePath,
-
-        [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [Microsoft.Office.Branches] $Branch = "Current"
+        [string] $TargetFilePath
 
     )
 
     Process{
         $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
-
-
 
         #Load file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
@@ -235,31 +201,6 @@ Here is what the portion of configuration file looks like when modified by this 
             }
         }
 
-        <#
-        if($Branch -ne $null){
-            $ConfigFile.Configuration.Add.SetAttribute("Branch", $Branch);
-        }
-
-        
-
-        if([string]::IsNullOrWhiteSpace($Version) -eq $false){
-            $ConfigFile.Configuration.Add.SetAttribute("Version", $Version) | Out-Null
-        } else {
-            if ($PSBoundParameters.ContainsKey('Version')) {
-                $ConfigFile.Configuration.Add.RemoveAttribute("Version")
-            }
-        }
-
-        if([string]::IsNullOrWhiteSpace($Bitness) -eq $false){
-            $ConfigFile.Configuration.Add.SetAttribute("OfficeClientEdition", $Bitness) | Out-Null
-        } else {
-            if ($PSBoundParameters.ContainsKey('OfficeClientEdition')) {
-                $ConfigFile.Configuration.Add.RemoveAttribute("OfficeClientEdition")
-            }
-        }
-
-        #>
-
         $ConfigFile.Save($TargetFilePath) | Out-Null
         $global:saveLastFilePath = $TargetFilePath
 
@@ -284,52 +225,7 @@ Here is what the portion of configuration file looks like when modified by this 
 
 }
 
-Function Set-ODTUpdates{
-<#
-.SYNOPSIS
-Modifies an existing configuration xml file's updates section
-.PARAMETER SourcePath
-Optional.
-The UpdatePath value can be set to a network, local, or HTTP path that contains a 
-Click-to-Run source. Environment variables can be used for network or local paths.
-SourcePath indicates the location to save the Click-to-Run installation source 
-when you run the Office Deployment Tool in download mode.
-SourcePath indicates the installation source path from which to install Office 
-when you run the Office Deployment Tool in configure mode. If you don’t specify 
-SourcePath in configure mode, Setup will look in the current folder for the Office 
-source files. If the Office source files aren’t found in the current folder, Setup 
-will look on Office 365 for them.
-SourcePath specifies the path of the Click-to-Run Office source from which the 
-App-V package will be made when you run the Office Deployment Tool in packager mode.
-If you do not specify SourcePath, Setup will attempt to create an \Office\Data\... 
-folder structure in the working directory from which you are running setup.exe.
-.PARAMETER Version
-Optional. If a Version value is not set, the Click-to-Run product installation streams 
-the latest available version from the source. The default is to use the most recently 
-advertised build (as defined in v32.CAB or v64.CAB at the Click-to-Run Office installation source).
-Version can be set to an Office 2013 build number by using this format: X.X.X.X
-.PARAMETER Bitness
-Required. Specifies the edition of Click-to-Run for Office 365 product to use: 32- or 64-bit.
-.PARAMETER TargetFilePath
-Full file path for the file to be modified and be output to.
-.PARAMETER Branch
-Optional. Specifies the update branch for the product that you want to download or install.
-.Example
-Set-ODTAdd -SourcePath "C:\Preload\Office" -TargetFilePath "$env:Public/Documents/config.xml"
-Sets config SourcePath property of the add element to C:\Preload\Office
-.Example
-Set-ODTAdd -SourcePath "C:\Preload\Office" -Version "15.1.2.3" -TargetFilePath "$env:Public/Documents/config.xml"
-Sets config SourcePath property of the add element to C:\Preload\Office and version to 15.1.2.3
-.Notes
-Here is what the portion of configuration file looks like when modified by this function:
-<Configuration>
-  ...
-  <Add SourcePath="\\server\share\" Version="15.1.2.3" OfficeClientEdition="32"> 
-      ...
-  </Add>
-  ...
-</Configuration>
-#>
+Function SetODTUpdates{
     Param(
 
         [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
@@ -339,26 +235,12 @@ Here is what the portion of configuration file looks like when modified by this 
         [string] $UpdatePath = $NULL,        
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [string] $Enabled,
-
-        [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [string] $TargetVersion,
-
-        [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [string] $Deadline,
-
-        [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [string] $TargetFilePath,
-
-        [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [Microsoft.Office.Branches] $Branch = "Current"
+        [string] $TargetFilePath
 
     )
 
     Process{
         $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
-
-
 
         #Load file
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
@@ -400,46 +282,8 @@ Here is what the portion of configuration file looks like when modified by this 
                      $node.RemoveAttribute("UpdatePath")
                  }
              }
-             <#
-             if([string]::IsNullOrWhiteSpace($Enabled) -eq $false){            
-                 $node.SetAttribute("Enabled", $Enabled) | Out-Null
-             } else {
-                 if ($node.HasAttribute('Enabled')) {
-                     $node.RemoveAttribute("Enabled")
-                 }
-             }
- 
-             
-         
-             if([string]::IsNullOrWhiteSpace($TargetVersion) -eq $false){
-                 $node.SetAttribute("Version", $TargetVersion) | Out-Null
-             } else {
-                 if ($node.HasAttribute('TargetVersion')) {
-                     $node.RemoveAttribute("TargetVersion")
-                 }
-             }
- 
-             if([string]::IsNullOrWhiteSpace($Deadline) -eq $false){
-                 $node.SetAttribute("Deadline", $Deadline) | Out-Null
-             } else {
-                 if ($node.HasAttribute('Deadline')) {
-                     $node.RemoveAttribute("Deadline")
-                 }
-             }
- 
-             if($Branch -ne $null){
-                 $node.SetAttribute("Branch", $Branch);
-             } else {
-                 if ($node.HasAttribute('Branch')) {
-                     $node.RemoveAttribute("Branch")
-                 }
-             }
-         #>
          }
         
-
-        
-
         $ConfigFile.Save($TargetFilePath) | Out-Null
         $global:saveLastFilePath = $TargetFilePath
 
@@ -461,54 +305,6 @@ Here is what the portion of configuration file looks like when modified by this 
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "Branch" -Value $Branch
             $Result
         }
-    }
-
-}
-
-Function Get-ODTAdd{
-<#
-.SYNOPSIS
-Gets the value of the Add section in the configuration file
-.PARAMETER TargetFilePath
-Required. Full file path for the file.
-.Example
-Get-ODTAdd -TargetFilePath "$env:Public\Documents\config.xml"
-Returns the value of the Add section if it exists in the specified
-file. 
-#>
-    Param(
-
-        [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
-        [string] $ConfigurationXML = $NULL,
-
-        [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [string] $TargetFilePath
-
-    )
-
-    Process{
-        $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
-
-        #Load the file
-        [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
-
-        if ($TargetFilePath) {
-           $ConfigFile.Load($TargetFilePath) | Out-Null
-        } else {
-            if ($ConfigurationXml) 
-            {
-              $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
-              $global:saveLastConfigFile = $NULL
-              $global:saveLastFilePath = $NULL
-            }
-        }
-
-        #Check that the file is properly formatted
-        if($ConfigFile.Configuration -eq $null){
-            throw $NoConfigurationElement
-        }
-        
-        $ConfigFile.Configuration.GetElementsByTagName("Add") | Select OfficeClientEdition, SourcePath, Version, Branch
     }
 
 }
