@@ -100,14 +100,20 @@ Param(
     [OfficeChannel[]] $Channels = (0, 1, 2, 3),
 
     [Parameter()]
-    [int] $NumOfRetries = 10
+    [int] $NumOfRetries = 5,
+
+    [Parameter()]
+    [bool] $IncludeChannelInfo = $false
 )
 
 $BranchesOrChannels = @()
 
 if($Branches.Count -gt 0)
 {
-    $BranchesOrChannels = $Branches
+    foreach ($branchName in $Branches) {
+      $channelConvertName = ConvertBranchNameToChannelName -BranchName $branchName
+      $BranchesOrChannels += $channelConvertName
+    }
 }
 else{
     $BranchesOrChannels = $Channels
@@ -116,13 +122,17 @@ else{
 $numberOfFiles = (($BranchesOrChannels.Count) * ((($Languages.Count + 1)*3) + 5))
 
 [bool]$downloadSuccess = $TRUE;
-For($i=0; $i -le $NumOfRetries; $i++){#loops through download process in the event of a failure in order to retry
+For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the event of a failure in order to retry
 
     try{
-        $webclient = New-Object System.Net.WebClient
         $XMLFilePath = "$env:TEMP/ofl.cab"
         $XMLDownloadURL = "http://officecdn.microsoft.com/pr/wsus/ofl.cab"
-        $webclient.DownloadFile($XMLDownloadURL,$XMLFilePath)
+
+        DownloadFile -url $XMLDownloadURL -targetFile $XMLFilePath
+
+        if ($IncludeChannelInfo) {
+            Copy-Item -Path $XMLFilePath -Destination "$TargetDirectory\ofl.cab"
+        }
 
         if($Bitness -eq [Bitness]::Both -or $Bitness -eq [Bitness]::v32){
             $32XMLFileName = "o365client_32bit.xml"
@@ -188,12 +198,11 @@ For($i=0; $i -le $NumOfRetries; $i++){#loops through download process in the eve
 
                 if([String]::IsNullOrWhiteSpace($Version)){
                     #get base .cab to get current version
-                    $webclient = New-Object System.Net.WebClient
                     $baseCabFile = $CurrentVersionXML.UpdateFiles.File | ? rename -ne $null
                     $url = "$baseURL$($baseCabFile.relativePath)$($baseCabFile.rename)"
                     $destination = "$TargetDirectory\$FolderName\Office\Data\$($baseCabFile.rename)"
 
-                    $webclient.DownloadFile($url,$destination)
+                    DownloadFile -url $url -targetFile $destination
 
                     expand $destination $env:TEMP -f:"VersionDescriptor.xml" | Out-Null
                     $baseCabFileName = $env:TEMP + "\VersionDescriptor.xml"
@@ -285,8 +294,7 @@ For($i=0; $i -le $NumOfRetries; $i++){#loops through download process in the eve
     {
         #if download fails, displays error, continues loop
         $errorMessage = $computer + ": " + $_
-        Write-Host $errorMessage
-        throw;
+        Write-Host $errorMessage -ForegroundColor White -BackgroundColor Red
         $downloadSuccess = $FALSE;
     }
 
@@ -317,7 +325,6 @@ function DownloadFile($url, $targetFile) {
        $downloadedBytes = $count
 
        while ($count -gt 0)
-
        {
            $targetStream.Write($buffer, 0, $count)
            $count = $responseStream.Read($buffer,0,$buffer.length)
@@ -342,20 +349,30 @@ function DownloadFile($url, $targetFile) {
 }
 
 function PurgeOlderVersions([string]$targetDirectory, [int]$numVersionsToKeep, [array]$channels){
+    Write-Host "Checking for Older Versions"
                          
     for($k = 0; $k -lt $channels.Count; $k++)
     {
         [array]$totalVersions = @()#declare empty array so each folder can be purged of older versions individually
         [string]$channelName = $channels[$k]
         [string]$shortChannelName = ConvertChannelNameToShortName -ChannelName $channelName
+        [string]$branchName = ConvertChannelNameToBranchName -ChannelName $channelName
+        [string]$channelName2 = ConvertBranchNameToChannelName -BranchName $channelName
 
-        $directoryPath = $TargetDirectory.ToString() + '\'+ $channelName +'\Office\Data'
+        $folderList = @($channelName, $shortChannelName, $channelName2, $branchName)
 
-        if (!Test-Path -Path $directoryPath) {
-           $directoryPath = $TargetDirectory.ToString() + '\'+ $shortChannelName +'\Office\Data'
+        foreach ($folderName in $folderList) {
+            $directoryPath = $TargetDirectory.ToString() + '\'+ $folderName +'\Office\Data'
+
+            if (Test-Path -Path $directoryPath) {
+               break;
+            }
         }
 
         if (Test-Path -Path $directoryPath) {
+            Write-Host "`tChannel: $channelName2"
+             [bool]$versionsToRemove = $false
+
             $files = Get-ChildItem $directoryPath  
             Foreach($file in $files)
             {        
@@ -369,20 +386,41 @@ function PurgeOlderVersions([string]$targetDirectory, [int]$numVersionsToKeep, [
             if($totalVersions.Length -gt $numVersionsToKeep)
             {
                 #sort array in numerical order
-                $totalVersions = $totalVersions | Sort-Object
-        
+                $totalVersions = $totalVersions | Sort-Object 
+               
                 #delete older versions
                 $numToDelete = $totalVersions.Length - $numVersionsToKeep
                 for($i = 1; $i -le $numToDelete; $i++)#loop through versions
                 {
+                     $versionsToRemove = $true
+                     $removeVersion = $totalVersions[($i-1)]
+                     Write-Host "`t`tRemoving Version: $removeVersion"
+                     
                      Foreach($file in $files)#loop through files
-                     {                                         #array is 0 based
-                        if($file.Name.Contains($totalVersions[($i-1)]))
-                        {                    
-                            Remove-Item -Recurse -Force $directoryPath"\"$file
+                     {  #array is 0 based
+
+                        if($file.Name.Contains($removeVersion))
+                        {                               
+                            $folderPath = "$directoryPath\$file"
+
+                             for($t=1;$t -lt 5; $t++) {
+                               try {
+                                  Remove-Item -Recurse -Force $folderPath
+                                  break;
+                               } catch {
+                                 if ($t -ge 4) {
+                                    throw
+                                 }
+                               }
+                             }
                         }
                      }
                 }
+
+            }
+
+            if (!($versionsToRemove)) {
+                Write-Host "`t`tNo Versions to Remove"
             }
         }
 
@@ -414,6 +452,60 @@ function ConvertChannelNameToShortName {
        }
        if ($ChannelName.ToLower() -eq "FirstReleaseBusiness".ToLower()) {
          return "FRDC"
+       }
+    }
+}
+
+function ConvertChannelNameToBranchName {
+    Param(
+       [Parameter()]
+       [string] $ChannelName
+    )
+    Process {
+       if ($ChannelName.ToLower() -eq "FirstReleaseCurrent".ToLower()) {
+         return "FirstReleaseCurrent"
+       }
+       if ($ChannelName.ToLower() -eq "Current".ToLower()) {
+         return "Current"
+       }
+       if ($ChannelName.ToLower() -eq "FirstReleaseDeferred".ToLower()) {
+         return "FirstReleaseBusiness"
+       }
+       if ($ChannelName.ToLower() -eq "Deferred".ToLower()) {
+         return "Business"
+       }
+       if ($ChannelName.ToLower() -eq "Business".ToLower()) {
+         return "Business"
+       }
+       if ($ChannelName.ToLower() -eq "FirstReleaseBusiness".ToLower()) {
+         return "FirstReleaseBusiness"
+       }
+    }
+}
+
+function ConvertBranchNameToChannelName {
+    Param(
+       [Parameter()]
+       [string] $BranchName
+    )
+    Process {
+       if ($BranchName.ToLower() -eq "FirstReleaseCurrent".ToLower()) {
+         return "FirstReleaseCurrent"
+       }
+       if ($BranchName.ToLower() -eq "Current".ToLower()) {
+         return "Current"
+       }
+       if ($BranchName.ToLower() -eq "FirstReleaseDeferred".ToLower()) {
+         return "FirstReleaseDeferred"
+       }
+       if ($BranchName.ToLower() -eq "Deferred".ToLower()) {
+         return "Deferred"
+       }
+       if ($BranchName.ToLower() -eq "Business".ToLower()) {
+         return "Deferred"
+       }
+       if ($BranchName.ToLower() -eq "FirstReleaseBusiness".ToLower()) {
+         return "FirstReleaseDeferred"
        }
     }
 }
