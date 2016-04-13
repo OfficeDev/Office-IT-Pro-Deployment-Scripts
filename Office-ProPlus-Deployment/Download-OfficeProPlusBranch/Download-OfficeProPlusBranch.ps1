@@ -127,22 +127,23 @@ $numberOfFiles = (($BranchesOrChannels.Count) * ((($Languages.Count + 1)*3) + 5)
 
 [bool]$downloadSuccess = $TRUE;
 For($i=0; $i -le $NumOfRetries; $i++){#loops through download process in the event of a failure in order to retry
-try{
-$downloadSuccess = $TRUE;#resets var to true in the event that the download doesn't fail again
-$webclient = New-Object System.Net.WebClient
-$XMLFilePath = "$env:TEMP/ofl.cab"
-$XMLDownloadURL = "http://officecdn.microsoft.com/pr/wsus/ofl.cab"
-$webclient.DownloadFile($XMLDownloadURL,$XMLFilePath)
 
-if($Bitness -eq [Bitness]::Both -or $Bitness -eq [Bitness]::v32){
+try{
+    $downloadSuccess = $TRUE;#resets var to true in the event that the download doesn't fail again
+    $webclient = New-Object System.Net.WebClient
+    $XMLFilePath = "$env:TEMP/ofl.cab"
+    $XMLDownloadURL = "http://officecdn.microsoft.com/pr/wsus/ofl.cab"
+    $webclient.DownloadFile($XMLDownloadURL,$XMLFilePath)
+
+                        if($Bitness -eq [Bitness]::Both -or $Bitness -eq [Bitness]::v32){
     $32XMLFileName = "o365client_32bit.xml"
     expand $XMLFilePath $env:TEMP -f:$32XMLFileName | Out-Null
     $32XMLFilePath = $env:TEMP + "\o365client_32bit.xml"
     [xml]$32XML = Get-Content $32XMLFilePath
     $xmlArray = ($32XML)
-}
+    }
 
-if($Bitness -eq [Bitness]::Both -or $Bitness -eq [Bitness]::v64){
+                                            if($Bitness -eq [Bitness]::Both -or $Bitness -eq [Bitness]::v64){
     $64XMLFileName = "o365client_64bit.xml"
     expand $XMLFilePath $env:TEMP -f:$64XMLFileName | Out-Null
     $64XMLFilePath = $env:TEMP + "\o365client_64bit.xml"
@@ -153,118 +154,98 @@ if($Bitness -eq [Bitness]::Both -or $Bitness -eq [Bitness]::v64){
     }else{
         $xmlArray = ($64XML)
     }
-}
-
-$j = 0
-$b = 0
-$BranchOrChannelCount = $BranchesOrChannels.Count * 2
-
-#loop to download files
-$xmlArray | %{
-    $CurrentVersionXML = $_
-    
-    $currentBitness = "32-Bit"
-    if ($CurrentVersionXML.OuterXml.Contains("Architecture: 64 Bit")) {
-        $currentBitness = "64-Bit"
     }
 
-    Write-Host
-    Write-Host "Downloading Bitness : $currentBitness"
+    $j = 0
+    $b = 0
+    $BranchOrChannelCount = $BranchesOrChannels.Count * 2
 
-    #loop for each branch
-    $BranchesOrChannels | %{
-        $currentBranchOrChannel = $_
-        $b++
-
-        Write-Progress -id 1 -Activity "Downloading Channel" -status "Channel: $($currentBranchOrChannel.ToString()) : $currentBitness" -percentComplete ($b / $BranchOrChannelCount *100) 
-
-        Write-Host "`tDownloading Channel: $currentBranchOrChannel"
-
-        $baseURL = $CurrentVersionXML.UpdateFiles.baseURL | ? branch -eq $_.ToString() | %{$_.URL};
-        if(!(Test-Path "$TargetDirectory\$($_.ToString())\")){
-            New-Item -Path "$TargetDirectory\$($_.ToString())\" -ItemType directory -Force | Out-Null
-        }
-        if(!(Test-Path "$TargetDirectory\$($_.ToString())\Office")){
-            New-Item -Path "$TargetDirectory\$($_.ToString())\Office" -ItemType directory -Force | Out-Null
-        }
-        if(!(Test-Path "$TargetDirectory\$($_.ToString())\Office\Data")){
-            New-Item -Path "$TargetDirectory\$($_.ToString())\Office\Data" -ItemType directory -Force | Out-Null
+    #loop to download files
+    $xmlArray | %{
+        $CurrentVersionXML = $_
+    
+        $currentBitness = "32-Bit"
+        if ($CurrentVersionXML.OuterXml.Contains("Architecture: 64 Bit")) {
+            $currentBitness = "64-Bit"
         }
 
-        if([String]::IsNullOrWhiteSpace($Version)){
-            #get base .cab to get current version
-            $webclient = New-Object System.Net.WebClient
-            $baseCabFile = $CurrentVersionXML.UpdateFiles.File | ? rename -ne $null
-            $url = "$baseURL$($baseCabFile.relativePath)$($baseCabFile.rename)"
-            $destination = "$TargetDirectory\$($_.ToString())\Office\Data\$($baseCabFile.rename)"
+        Write-Host
+        Write-Host "Downloading Bitness : $currentBitness"
 
-            $webclient.DownloadFile($url,$destination)
+        #loop for each branch
+        $BranchesOrChannels | %{
+            $currentBranchOrChannel = $_
+            $b++
 
-            expand $destination $env:TEMP -f:"VersionDescriptor.xml" | Out-Null
-            $baseCabFileName = $env:TEMP + "\VersionDescriptor.xml"
-            [xml]$vdxml = Get-Content $baseCabFileName
-            $currentVersion = $vdxml.Version.Available.Build;
-            Remove-Item -Path $baseCabFileName
-        }else{
-            $currentVersion = $Version
+            Write-Progress -id 1 -Activity "Downloading Channel" -status "Channel: $($currentBranchOrChannel.ToString()) : $currentBitness" -percentComplete ($b / $BranchOrChannelCount *100) 
 
-            $relativePath = $_.relativePath -replace "`%version`%", $currentVersion
-            $fileName = "/Office/Data/v32_$currentVersion.cab"
-            $url = "$baseURL$relativePath$fileName"
+            Write-Host "`tDownloading Channel: $currentBranchOrChannel"
 
-            try {
-               Invoke-WebRequest -Uri $url -ErrorAction Stop | Out-Null
-            } catch {
-               Write-Host "`t`tVersion Not Found: $currentVersion"
-               return 
+            $baseURL = $CurrentVersionXML.UpdateFiles.baseURL | ? branch -eq $_.ToString() | %{$_.URL};
+            if(!(Test-Path "$TargetDirectory\$($_.ToString())\")){
+                New-Item -Path "$TargetDirectory\$($_.ToString())\" -ItemType directory -Force | Out-Null
             }
-        }
+            if(!(Test-Path "$TargetDirectory\$($_.ToString())\Office")){
+                New-Item -Path "$TargetDirectory\$($_.ToString())\Office" -ItemType directory -Force | Out-Null
+            }
+            if(!(Test-Path "$TargetDirectory\$($_.ToString())\Office\Data")){
+                New-Item -Path "$TargetDirectory\$($_.ToString())\Office\Data" -ItemType directory -Force | Out-Null
+            }
 
-        if(!(Test-Path "$TargetDirectory\$($_.ToString())\Office\Data\$currentVersion")){
-            New-Item -Path "$TargetDirectory\$($_.ToString())\Office\Data\$currentVersion" -ItemType directory -Force | Out-Null
-        }
+            if([String]::IsNullOrWhiteSpace($Version)){
+                #get base .cab to get current version
+                $webclient = New-Object System.Net.WebClient
+                $baseCabFile = $CurrentVersionXML.UpdateFiles.File | ? rename -ne $null
+                $url = "$baseURL$($baseCabFile.relativePath)$($baseCabFile.rename)"
+                $destination = "$TargetDirectory\$($_.ToString())\Office\Data\$($baseCabFile.rename)"
 
-        $numberOfFiles = 0
-        $j = 0
+                $webclient.DownloadFile($url,$destination)
 
-        $CurrentVersionXML.UpdateFiles.File | ? language -eq "0" | 
-        %{
-           $numberOfFiles ++
-        }
+                expand $destination $env:TEMP -f:"VersionDescriptor.xml" | Out-Null
+                $baseCabFileName = $env:TEMP + "\VersionDescriptor.xml"
+                [xml]$vdxml = Get-Content $baseCabFileName
+                $currentVersion = $vdxml.Version.Available.Build;
+                Remove-Item -Path $baseCabFileName
+            }else{
+                $currentVersion = $Version
 
-        $Languages | 
-        %{
-            #LANGUAGE LOGIC HERE
-            $languageId  = [globalization.cultureinfo]::GetCultures("allCultures") | ? Name -eq $_ | %{$_.LCID}
-            $CurrentVersionXML.UpdateFiles.File | ? language -eq $languageId | 
+                $relativePath = $_.relativePath -replace "`%version`%", $currentVersion
+                $fileName = "/Office/Data/v32_$currentVersion.cab"
+                $url = "$baseURL$relativePath$fileName"
+
+                try {
+                   Invoke-WebRequest -Uri $url -ErrorAction Stop | Out-Null
+                } catch {
+                   Write-Host "`t`tVersion Not Found: $currentVersion"
+                   return 
+                }
+            }
+
+            if(!(Test-Path "$TargetDirectory\$($_.ToString())\Office\Data\$currentVersion")){
+                New-Item -Path "$TargetDirectory\$($_.ToString())\Office\Data\$currentVersion" -ItemType directory -Force | Out-Null
+            }
+
+            $numberOfFiles = 0
+            $j = 0
+
+            $CurrentVersionXML.UpdateFiles.File | ? language -eq "0" | 
             %{
                $numberOfFiles ++
             }
-        }
 
-
-        #basic files
-        $CurrentVersionXML.UpdateFiles.File | ? language -eq "0" | 
-        %{
-            $name = $_.name -replace "`%version`%", $currentVersion
-            $relativePath = $_.relativePath -replace "`%version`%", $currentVersion
-            $url = "$baseURL$relativePath$name"
-            $destination = "$TargetDirectory\$($currentBranchOrChannel.ToString())$relativePath$name"
-
-            if (!(Test-Path -Path $destination) -or $OverWrite) {
-               DownloadFile -url $url -targetFile $destination
+            $Languages | 
+            %{
+                #LANGUAGE LOGIC HERE
+                $languageId  = [globalization.cultureinfo]::GetCultures("allCultures") | ? Name -eq $_ | %{$_.LCID}
+                $CurrentVersionXML.UpdateFiles.File | ? language -eq $languageId | 
+                %{
+                   $numberOfFiles ++
+                }
             }
 
-            $j = $j + 1
-            Write-Progress -id 2 -ParentId 1 -Activity "Downloading Channel Files" -status "Channel: $($currentBranchOrChannel.ToString())" -percentComplete ($j / $numberOfFiles *100)
-        }
 
-        #language files
-        $Languages | 
-        %{
-            #LANGUAGE LOGIC HERE
-            $languageId  = [globalization.cultureinfo]::GetCultures("allCultures") | ? Name -eq $_ | %{$_.LCID}
-            $CurrentVersionXML.UpdateFiles.File | ? language -eq $languageId | 
+            #basic files
+            $CurrentVersionXML.UpdateFiles.File | ? language -eq "0" | 
             %{
                 $name = $_.name -replace "`%version`%", $currentVersion
                 $relativePath = $_.relativePath -replace "`%version`%", $currentVersion
@@ -278,21 +259,47 @@ $xmlArray | %{
                 $j = $j + 1
                 Write-Progress -id 2 -ParentId 1 -Activity "Downloading Channel Files" -status "Channel: $($currentBranchOrChannel.ToString())" -percentComplete ($j / $numberOfFiles *100)
             }
+
+            #language files
+            $Languages | 
+            %{
+                #LANGUAGE LOGIC HERE
+                $languageId  = [globalization.cultureinfo]::GetCultures("allCultures") | ? Name -eq $_ | %{$_.LCID}
+                $CurrentVersionXML.UpdateFiles.File | ? language -eq $languageId | 
+                %{
+                    $name = $_.name -replace "`%version`%", $currentVersion
+                    $relativePath = $_.relativePath -replace "`%version`%", $currentVersion
+                    $url = "$baseURL$relativePath$name"
+                    $destination = "$TargetDirectory\$($currentBranchOrChannel.ToString())$relativePath$name"
+
+                    if (!(Test-Path -Path $destination) -or $OverWrite) {
+                       DownloadFile -url $url -targetFile $destination
+                    }
+
+                    $j = $j + 1
+                    Write-Progress -id 2 -ParentId 1 -Activity "Downloading Channel Files" -status "Channel: $($currentBranchOrChannel.ToString())" -percentComplete ($j / $numberOfFiles *100)
+                }
+            }
+
+
         }
 
-
     }
-
-}
-} catch {#if download fails, displays error, continues loop
+} 
+catch 
+{
+    #if download fails, displays error, continues loop
     $errorMessage = $computer + ": " + $_
     Write-Host $errorMessage
     $downloadSuccess = $FALSE;
 }
-    if($downloadSuccess){#if download succeeds, breaks out of loop
+
+if($downloadSuccess){#if download succeeds, breaks out of loop
     break
-    }
+}
+
 }#end of for loop
+
 #After downloads finish, purge older versions
 PurgeOlderVersions $TargetDirectory $NumVersionsToKeep $BranchesOrChannels
 
