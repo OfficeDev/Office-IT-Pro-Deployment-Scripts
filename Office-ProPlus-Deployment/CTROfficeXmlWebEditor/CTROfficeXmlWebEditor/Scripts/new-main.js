@@ -2956,12 +2956,14 @@ var productSkus2013Names = [
     'Office 365 ProPlus',
     'Office 365 for Business',
     'Visio for Office 365',
-    'Project for Office 365'
+    'Project for Office 365',
+    'SharePoint Designer' 
 ];
 
 var productSkus2013Values = [
     'O365ProPlusRetail',
     'O365BusinessRetail',
     'VisioProRetail',
-    'ProjectProRetail'
+    'ProjectProRetail',
+    'SPDRetail'
 ];
