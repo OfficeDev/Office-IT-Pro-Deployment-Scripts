@@ -375,9 +375,9 @@
                                                     <option oldvalue="Current" value="CurrentChannel">Current Channel</option>
                                                     <option oldvalue="FirstReleaseCurrent" value="FirstReleaseCurrentChannel"> First Release Current Channel</option> -->
                                                     <option oldvalue="Current" value="Current">Current</option>
-                                                    <option oldvalue="Business" value="Business">Deferred</option>
+                                                    <option oldvalue="Business" value="Deferred">Deferred</option>
                                                     <option oldvalue="FirstReleaseCurrent" value="FirstReleaseCurrent"> First Release Current</option>
-                                                    <option oldvalue="FirstReleaseBusiness" value="FirstReleaseBusiness"> First Release Deferred</option>                                                                                                        
+                                                    <option oldvalue="FirstReleaseBusiness" value="FirstReleaseDeferred"> First Release Deferred</option>                                                                                                        
                                                 </select>
                                             </div>
                                         </div>
@@ -721,14 +721,10 @@
                                         <div class="ms-Dropdown">
                                             <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
                                             <select id="cbUpdateBranch" class="ms-Dropdown-select">
-                                          <!--  <option oldvalue="Business" value="DeferredChannel">Deferred Channel</option>
-                                                <option oldvalue="FirstReleaseBusiness" value="FirstReleaseDeferredChannel"> First Release Deferred Channel</option>
-                                                <option oldvalue="Current" value="CurrentChannel">Current Channel</option>
-                                                <option oldvalue="FirstReleaseCurrent" value="FirstReleaseCurrentChannel"> First Release Current Channel</option>  -->
-                                                <option value="Current">Current</option>
-                                                <option value="Business">Deferred</option>
-                                                <option value="FirstReleaseCurrent"> First Release Current</option>
-                                                <option value="FirstReleaseBusiness"> First Release Deferred</option>                                                                                                
+                                                <option oldvalue="Business" value="Deferred">Deferred</option>
+                                                <option oldvalue="FirstReleaseBusiness" value="FirstReleaseDeferred">First Release Deferred</option>
+                                                <option oldvalue="Current" value="Current">Current</option>
+                                                <option oldvalue="FirstReleaseCurrent" value="FirstReleaseCurrent">First Release Current</option>                                                                                             
                                             </select>
                                         </div>
                                     </div>
@@ -941,16 +937,34 @@
                                                     <label class="ms-Toggle-description">SharedComputerLicensing</label>
                                                 </td>
                                                 <td>
-                                                    <i id="sclInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('sclInfo', this)"></i>
+                                                    <i id="sclInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px; text-align: center; cursor: pointer;" onclick="toggleInfo('sclInfo', this)"></i>
                                                 </td>
                                             </tr>
                                         </table>
-                                        <input type="checkbox" id="sharedComputerLicensing" class="ms-Toggle-input" />
+                                        <input type="checkbox" id="sharedComputerLicensing" class="ms-Toggle-input"/>
                                         <label for="sharedComputerLicensing" class="ms-Toggle-field">
                                             <span class="ms-Label ms-Label--off">False</span>
                                             <span class="ms-Label ms-Label--on">True</span>
                                         </label>
                                     </div>
+
+                                    <!--<div id="pinIconsProperty" class="ms-Toggle">
+                                        <table>
+                                            <tr>
+                                                <td>
+                                                    <label class="ms-Toggle-description">PinIcons</label>
+                                                </td>
+                                                <td>
+                                                    <i id="pinIconsIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('pinIconInfo', this)"></i>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        <input type="checkbox" id="pinIcons" class="ms-Toggle-input" />
+                                        <label for="pinIcons" class="ms-Toggle-field">
+                                            <span class="ms-Label ms-Label--off">False</span>
+                                            <span class="ms-Label ms-Label--on">True</span>
+                                        </label>
+                                    </div>-->
 
                                     <table>
                                         <tr>
@@ -1012,7 +1026,7 @@
                                     <br />
 
                                     <div class="ms-font-m" style="margin: 0px 10px 0px 10px">
-                                        (New) The Install Toolkit now includes the ability to manage a local workstations Office 365 ProPlus installation. It allows you to install or uninstall Office 365 ProPlus, update your existing installation to the newest version or change the update channel. 
+                                        <span style="font-weight: bold;">(New)</span> The Install Toolkit now includes the ability to manage a local workstations Office 365 ProPlus installation. It allows you to install or uninstall Office 365 ProPlus, update your existing installation to the newest version or change the update channel. 
                                     </div>
 
                                     <br />
@@ -1039,7 +1053,7 @@
                                 <div id="xmlSec" style="border-left: solid 1px #e5e3e3;height:500px;">
                                     <div class="ms-CommandBar" style="min-width: 500px">
 
-                                        <div class="ms-CommandBar-sideCommands" style="float: left;text-align: left;">
+                                        <div class="ms-CommandBar-sideCommands" style="float: left; text-align: left;">
                                             <div class="ms-CommandBarItem">
                                                 <div class="ms-CommandBarItem-linkWrapper" onclick="clickUpload();">
                                                     <div class="ms-CommandBarItem-link">
@@ -1080,11 +1094,15 @@
                                                     </div>
                                                 </div>
                                             </div>
-
-
-
+                                            <div class="ms-CommandBarItem">
+                                                <div class="ms-CommandBarItem-linkWrapper">
+                                                    <div class="ms-CommandBarItem-link" onclick="downloadOdt()" style="position: relative">
+                                                        <span class="ms-CommandBarItem-icon ms-Icon ms-Icon--download"></span>
+                                                        <span class="ms-CommandBarItem-commandText ms-font-m ms-font-weight-regular">Download Office Deployment Tool</span>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
-
                                     </div>
                                     <div class="ms-TextField" style="margin-top:0px;margin-left: 30px;">
                                         <pre style="border: white none 0;padding:0px;margin:0px;background-color: white;">
@@ -1759,10 +1777,10 @@
             </div>
         </div>
 
-        <div id="sclInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none">
+        <div id="sclInfo" class="ms-Callout ms-Callout--arrowLeft" style="position: absolute; left: 80px; top: 40px; display: none">
             <div class="ms-Callout-main">
                 <div class="ms-Callout-header">
-                    <span style="float:right; cursor:pointer" class="ms-Icon ms-Icon--x" onclick="toggleInfo('sclInfo')"></span>
+                    <span style="float: right; cursor: pointer" class="ms-Icon ms-Icon--x" onclick="toggleInfo('sclInfo')"></span>
                     <p class="ms-Callout-title">SharedComputerLicensing</p>
                 </div>
                 <div class="ms-Callout-inner">
@@ -1780,7 +1798,26 @@
             </div>
         </div>
 
-        <div id="PACKAGEGUIDInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none">
+        <div id="pinIconInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none">
+            <div class="ms-Callout-main">
+                <div class="ms-Callout-header">
+                    <span style="float:right; cursor:pointer" class="ms-Icon ms-Icon--x" onclick="toggleInfo('pinIconInfo')"></span>
+                    <p class="ms-Callout-title">PinIcons</p>
+                </div>
+                <div class="ms-Callout-inner">
+                    <div class="ms-Callout-content">
+                        <p class="ms-Callout-subText">Controls wether or not Icons are pinned to the taskbar. (Doesn't apply to Windows 10)</p>
+                        <hr>
+                        <p class="ms-Callout-subText">Optional. </p>
+                        <p class="ms-Callout-subText">
+                            Set <strong id="STRONG_3">PinIcons</strong> to FALSE if you do not want the Office icons pinned to the taskbar
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <div id="PACKAGEGUIDInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none">
             <div class="ms-Callout-main">
                 <div class="ms-Callout-header">
                     <span style="float:right; cursor:pointer" class="ms-Icon ms-Icon--x" onclick="toggleInfo('PACKAGEGUIDInfo')"></span>
