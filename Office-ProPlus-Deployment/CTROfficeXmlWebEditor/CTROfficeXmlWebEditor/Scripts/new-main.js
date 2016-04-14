@@ -1,5 +1,7 @@
 ﻿
 var selectDate;
+var odt2016Window;
+var odt2013Window;
 
 $(document).ready(function () {
 
@@ -193,6 +195,7 @@ $(document).ready(function () {
 
         displayXml(xmlDoc);
 
+     
         $("#btAddProduct").text('Edit Product');
 
         return false;
@@ -642,6 +645,10 @@ function changeVersions(version) {
         //$("#pidKeyLabel").show("slow");
         $("#branchSection").hide("slow");
         $("#updateBranchSection").hide("slow");
+        $("#mgtToggleGroup").hide("slow");
+        $('#mgtToggle').prop("checked", false);
+        $("#pinIconsProperty").hide("slow");
+
         $("#autoUpgradeToggle").show("slow");
         //16.0.4229.1024
 
@@ -675,7 +682,9 @@ function changeVersions(version) {
         //$("#pidKeyLabel").hide("slow");
         $("#branchSection").show("slow");
         $("#updateBranchSection").show("slow");
+        $("#mgtToggleGroup").show("slow");
         $("#autoUpgradeToggle").hide("slow");
+        $("#pinIconsProperty").show("slow");
 
         $("#txtPidKey").val("");
 
@@ -688,9 +697,9 @@ function changeVersions(version) {
 
         if (selectedBranch == "Current") {
             selectVersions = versionsCurrent2016;
-        } else if (selectedBranch == "Business") {
+        } else if (selectedBranch == "Deferred") {
             selectVersions = versionsBusiness2016;
-        } else if (selectedBranch == "Validation" || selectedBranch == "FirstReleaseBusiness") {
+        } else if (selectedBranch == "Validation" || selectedBranch == "FirstReleaseDeferred") {
             selectVersions = versionsFRBusiness2016;
         } else if (selectedBranch == "FirstReleaseCurrent") {
             selectVersions = versionsFRCurrent2016;
@@ -725,6 +734,20 @@ function changeVersions(version) {
     odtToggleUpdate();
 
     changeExcludeApps(version);
+}
+
+function downloadOdt() {
+    if ($("#office2016Select").hasClass('is-selected')) {
+        odt2016Window = OpenInNewTab("https://www.microsoft.com/en-us/download/details.aspx?id=49117");
+    } else {
+        odt2013Window = OpenInNewTab("https://www.microsoft.com/en-us/download/details.aspx?id=36778");
+    }
+}
+
+function OpenInNewTab(url) {
+    var win = window.open(url, url);
+    win.focus();
+    return win;
 }
 
 function changeExcludeApps(version) {
@@ -1311,9 +1334,15 @@ function odtAddProduct(xmlDoc) {
     var selectSourcePath = $("#txtSourcePath").val();
     var selectLanguage = $("#cbLanguage").val();
     var selectPidKey = $("#txtPidKey").val();
+    var mgtCOM = $('#mgtToggle')[0].checked;
+
 
     var addNode = xmlDoc.createElement("Add");
     var nodes = xmlDoc.documentElement.getElementsByTagName("Add");
+
+
+    
+
     if (nodes.length > 0) {
         addNode = xmlDoc.documentElement.getElementsByTagName("Add")[0];
     } else {
@@ -1340,9 +1369,11 @@ function odtAddProduct(xmlDoc) {
 
     if ($("#office2016Select").hasClass("is-selected")) {
         var selectedBranch = $("#cbBranch").val();
-        addNode.setAttribute("Branch", selectedBranch);
-    } else {
         addNode.removeAttribute("Branch");
+        addNode.setAttribute("Channel", selectedBranch);
+    } else {
+        addNode.removeAttribute("Channel");
+        addNode.removeAttribute("OfficeMgmtCOM");
     }
 
     var productNode = getProductNode(addNode, selectedProduct);
@@ -1381,6 +1412,13 @@ function odtAddProduct(xmlDoc) {
             xmlDoc.documentElement.removeChild(removeNode);
         }
     }
+
+    if (mgtCOM) {
+        addNode.setAttribute("OfficeMgmtCOM", "TRUE");
+    } else {
+        addNode.removeAttribute("OfficeMgmtCOM");
+    }
+
 
     var productCount = getAddProductCount(xmlDoc);
     if (productCount == 0) {
@@ -1694,6 +1732,9 @@ function odtAddExcludeApp(xmlDoc) {
     if (nodes.length > 0) {
         addNode = xmlDoc.documentElement.getElementsByTagName("Add")[0];
 
+      
+
+
         var productNode = getProductNode(addNode, selectedProduct);
         if (productNode) {
             var exNode = getExcludeAppNode(productNode, selectExcludeApp);
@@ -1820,10 +1861,11 @@ function odtSaveUpdates(xmlDoc) {
 
         if ($("#office2016Select").hasClass("is-selected")) {
             var selectedBranch = $("#cbUpdateBranch").val();
-            updateNode.setAttribute("Branch", selectedBranch);
+            updateNode.removeAttribute("Branch");
+            updateNode.setAttribute("Channel", selectedBranch);
             updateNode.removeAttribute("AutoUpgrade");
         } else {
-            updateNode.removeAttribute("Branch");
+            updateNode.removeAttribute("Channel");
             //updateNode.AddAttribute("AutoUpgrade");
             //updateNode.setAttribute("AutoUpgrade","FALSE");
         }
@@ -1936,6 +1978,7 @@ function odtSaveProperties(xmlDoc) {
     var autoActivateNode = null;
     var forceShutDownNode = null;
     var sharedComputerLicensingNode = null;
+    var pinIconsNode = null;
     var packageguidNode = null;
 
     var nodes = xmlDoc.documentElement.getElementsByTagName("Property");
@@ -1954,6 +1997,9 @@ function odtSaveProperties(xmlDoc) {
                     if (propNode.getAttribute("Name").toUpperCase() == "SHAREDCOMPUTERLICENSING") {
                         sharedComputerLicensingNode = propNode;
                     }
+                    if (propNode.getAttribute("Name").toUpperCase() == "PINICONS") {
+                        pinIconsNode = propNode;
+                    }
                     if (propNode.getAttribute("Name").toUpperCase() == "PACKAGEGUID") {
                         packageguidNode = propNode;
                     }
@@ -1965,6 +2011,7 @@ function odtSaveProperties(xmlDoc) {
     var $AutoActivate = $("#autoActivate")[0];
     var $ForceAppShutdown = $("#forceAppShutdown")[0];
     var $SharedComputerLicensing = $("#sharedComputerLicensing")[0];
+    var $PinIcons = $("#pinIcons")[0];
 
     var packageguidVal = $("#txtPACKAGEGUID").val();
     if (packageguidVal) {
@@ -2018,6 +2065,21 @@ function odtSaveProperties(xmlDoc) {
     } else {
         sharedComputerLicensingNode.setAttribute("Name", "SharedComputerLicensing");
         sharedComputerLicensingNode.setAttribute("Value", "0");
+    }
+
+    if (!(pinIconsNode)) {
+        pinIconsNode = xmlDoc.createElement("Property");
+        xmlDoc.documentElement.appendChild(pinIconsNode);
+    }
+
+    if ($PinIcons) {
+        if ($PinIcons.checked) {
+            pinIconsNode.setAttribute("Name", "PinIcons");
+            pinIconsNode.setAttribute("Value", "TRUE");
+        } else {
+            pinIconsNode.setAttribute("Name", "PinIcons");
+            pinIconsNode.setAttribute("Value", "FALSE");
+        }
     }
 }
 
@@ -2267,7 +2329,7 @@ function loadUploadXmlFile(inXmlDoc) {
         var selectedBranch = addNode.getAttribute("Branch");
         if (selectedBranch) {
             if (selectedBranch.toLowerCase() == "validation") {
-                selectedBranch = "FirstReleaseBusiness";
+                selectedBranch = "FirstReleaseDeferred";
             }
             $("#cbBranch").msdropdownval(selectedBranch);
            // $("#office2016Select").addClass("is-selected");
@@ -2324,7 +2386,7 @@ function loadUploadXmlFile(inXmlDoc) {
         var selectedUpdateBranch = updateNode.getAttribute("Branch");
         if (selectedUpdateBranch) {
             if (selectedUpdateBranch.toLowerCase() == "validation") {
-                selectedUpdateBranch = "FirstReleaseBusiness";
+                selectedUpdateBranch = "FirstReleaseDeferred";
             }
 
             $("#cbUpdateBranch").msdropdownval(selectedUpdateBranch);
