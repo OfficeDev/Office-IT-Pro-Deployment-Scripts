@@ -948,11 +948,11 @@
                                         </label>
                                     </div>
 
-                                    <!--<div id="pinIconsProperty" class="ms-Toggle">
+                                    <div id="pinIconsProperty" class="ms-Toggle">
                                         <table>
                                             <tr>
                                                 <td>
-                                                    <label class="ms-Toggle-description">PinIcons</label>
+                                                    <label class="ms-Toggle-description">PinIconsToTaskbar</label>
                                                 </td>
                                                 <td>
                                                     <i id="pinIconsIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('pinIconInfo', this)"></i>
@@ -964,7 +964,7 @@
                                             <span class="ms-Label ms-Label--off">False</span>
                                             <span class="ms-Label ms-Label--on">True</span>
                                         </label>
-                                    </div>-->
+                                    </div>
 
                                     <table>
                                         <tr>
@@ -1191,8 +1191,20 @@
                 </p>
             </div>
             <div id="welcomeInner" class="ms-Dialog-inner" style="overflow-y: auto; height: auto; max-height: 90%">
-                <div class="ms-Dialog-content" style="width: 98%; padding-left: 20px; padding-top: 10px; height:100%">
+                <div class="ms-Dialog-content" style="width: 98%; padding-left: 20px; padding-top: 20px; height: 100%">
                     <div id="disclaimer">
+                        <p class="ms-font-l ms-fontWeight-semibold">
+                            <img src="images/Warning64.png" alt="Warning" />
+                            ALERT: New Version of the Office Deployment Tool (ODT)
+                            <p class="ms-font-m">
+                                The latest version of the Office Deployment Tool (ODT) now supports using the Channel parameter in the configuration XML. This site will now use
+                                the Channel parameter jnstead of Branch. Previous versions of the Office Deployment Tool (ODT) will not recognize the Channel parameter and will
+                                ignore it and default to Deferred channel. To avoid this issue you must download and use the latest version of ODT.
+                                <br/><br />
+                                <a style="cursor:pointer" onclick="OpenInNewTab('https://www.microsoft.com/en-us/download/details.aspx?id=49117')">Office Deployment Tool (2016)</a>
+                            </p>
+                        </p>
+                        <hr />
                         <p class="ms-font-l ms-fontWeight-semibold">
                             Updated Branch Names
                             <p class="ms-font-m">Based on customer feedback, we’ve changed how we refer to our update branches. The name changes are as follows:</p>
@@ -1202,13 +1214,9 @@
                                 <li>First Release for Current Branch is now called <strong>First Release for Current Channel</strong></li>
                                 <li>First Release for Current Branch for Business is now called <strong>First Release for Deferred Channel</strong></li>
                             </ul>
-                            <p class="ms-font-m">
-                                Only the names are changing. The servicing model for each of these channels remains the same.<br/>
-                                We are in the process of updating our content, so you will continue to see the previous naming during this transition.
-                            </p>
                         </p>
-                        <hr/>
-                        <div class="ms-Dialog-actions" style="width: 98%; margin-right: 30px; bottom: 20px;position:absolute">
+                       
+                        <div class="ms-Dialog-actions" style="width: 98%; margin-right: 30px; bottom: 20px; position: absolute">
                             <div class="ms-Dialog-actionsRight">
                                 <button class="ms-Dialog-action ms-Button" onclick="hideWelcome();">
                                     <span class="ms-Button-label">Close</span>
@@ -1224,18 +1232,18 @@
                         <p class="ms-font-m">
                             This page provides a graphical method to generate and edit the Office Click-to-Run configuration.xml file. The configuration.xml file is used to specify Click-to-Run installation and update options.
                         </p>
-                        <br />
+                        <br/>
                         <p class="ms-font-m">
-                            <a href="https://technet.microsoft.com/en-us/library/JJ219426.aspx">Reference for Click-to-Run configuration.xml file</a>
+                            <a style="cursor:pointer" onclick="OpenInNewTab('https://technet.microsoft.com/en-us/library/JJ219426.aspx')">Reference for Click-to-Run configuration.xml file</a>
                         </p>
-                        <br />
+                        <br/>
                         <p class="ms-font-m">
-                            The <a href="https://technet.microsoft.com/en-us/library/jj219422.aspx" id="A_2">Office Deployment Tool</a> is a downloadable tool.
-                            (<a href="https://www.microsoft.com/en-us/download/details.aspx?id=49117">Office 365 ProPlus 2016</a>,
-                            <a href="http://www.microsoft.com/en-us/download/details.aspx?id=36778">Office 365 ProPlus 2013</a>)
+                            The <a style="cursor:pointer" onclick="OpenInNewTab('https://technet.microsoft.com/en-us/library/jj219422.aspx')" id="A_2">Office Deployment Tool</a> is a downloadable tool.
+                            (<a style="cursor:pointer" onclick="OpenInNewTab('https://www.microsoft.com/en-us/download/details.aspx?id=49117')">Office 365 ProPlus 2016</a>,
+                             <a style="cursor:pointer" onclick="OpenInNewTab('http://www.microsoft.com/en-us/download/details.aspx?id=36778')">Office 365 ProPlus 2013</a>)
                         </p>
-                        <br />
-                        <hr />
+                        <br/>
+                        <hr/>
                         <p class="ms-font-xl" style="margin-top: 10px">How to use this site</p>
 
                         <p class="ms-font-l" style="margin-top: 10px">Start</p>
@@ -1247,7 +1255,7 @@
                             </ul>
                         </p>
 
-                        <br />
+                        <br/>
 
                         <p class="ms-font-l" style="margin-top: 10px">Configure</p>
                         <p class="ms-font-m">
@@ -1258,7 +1266,7 @@
                             </ul>
                         </p>
 
-                        <br />
+                        <br/>
 
                         <p class="ms-font-l" style="margin-top: 10px">Save</p>
                         <p class="ms-font-m">
@@ -1269,16 +1277,16 @@
                             </ul>
                         </p>
 
-                        <hr />
+                        <hr/>
 
                         <p class="ms-font-m">
-                            For more scripts and tools for automating Office ProPlus deployments you can go to the <a href="https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts" id="A_2">Office IT Pro Deployment Scripts</a>
-                            respository in the <a href="https://github.com/OfficeDev" id="A_2">OfficeDev</a> GitHub Site.
+                            For more scripts and tools for automating Office ProPlus deployments you can go to the <a style="cursor:pointer" onclick="OpenInNewTab('https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts')" id="A_2">Office IT Pro Deployment Scripts</a>
+                            respository in the <a style="cursor:pointer" onclick="OpenInNewTab('https://github.com/OfficeDev')" id="A_2">OfficeDev</a> GitHub Site.
 
 
                         </p>
 
-                        <div class="ms-Dialog-actions" style="width: 98%; margin-right: 30px;bottom: 20px;position:absolute">
+                        <div class="ms-Dialog-actions" style="width: 98%; margin-right: 30px; bottom: 20px; position: absolute">
                             <div class="ms-Dialog-actionsRight">
                                 <button class="ms-Dialog-action ms-Button" onclick="foreverHideWelcome();">
                                     <span class="ms-Button-label">Don't Show This Again</span>

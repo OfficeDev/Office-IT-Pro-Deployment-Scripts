@@ -8,9 +8,9 @@ $(document).ready(function () {
 
     var finput = document.getElementById('fileInput');
     finput.addEventListener('change', function (e) {
-        var hWCheck = $.cookie("hideWelcome");
+        var hWCheck = $.cookie("hideWelcome1");
         if (!(hWCheck)) {
-            setCookie("hideWelcome", true, 1);
+            setCookie("hideWelcome1", true, 1);
         }
         fileUploaded(e);
     });
@@ -20,7 +20,7 @@ $(document).ready(function () {
         document.getElementById("txtTargetVersion").style.lineHeight = "0px";
     }
 
-    var hW = $.cookie("hideWelcome");
+    var hW = $.cookie("hideWelcome1");
     if (hW) {
         $("#welcomeDialog").hide();
         fadeBackground(false);
@@ -1997,7 +1997,7 @@ function odtSaveProperties(xmlDoc) {
                     if (propNode.getAttribute("Name").toUpperCase() == "SHAREDCOMPUTERLICENSING") {
                         sharedComputerLicensingNode = propNode;
                     }
-                    if (propNode.getAttribute("Name").toUpperCase() == "PINICONS") {
+                    if (propNode.getAttribute("Name").toUpperCase() == "PINICONSTOTASKBAR") {
                         pinIconsNode = propNode;
                     }
                     if (propNode.getAttribute("Name").toUpperCase() == "PACKAGEGUID") {
@@ -2074,10 +2074,10 @@ function odtSaveProperties(xmlDoc) {
 
     if ($PinIcons) {
         if ($PinIcons.checked) {
-            pinIconsNode.setAttribute("Name", "PinIcons");
+            pinIconsNode.setAttribute("Name", "PinIconsToTaskbar");
             pinIconsNode.setAttribute("Value", "TRUE");
         } else {
-            pinIconsNode.setAttribute("Name", "PinIcons");
+            pinIconsNode.setAttribute("Name", "PinIconsToTaskbar");
             pinIconsNode.setAttribute("Value", "FALSE");
         }
     }
@@ -2699,7 +2699,7 @@ function foreverHideWelcome() {
     $("#welcomeDialog").fadeOut(function() {
         fadeBackground(false);
     });
-    $.cookie("hideWelcome", true);
+    $.cookie("hideWelcome1", true);
 }
 
 function openCommentDialog() {
