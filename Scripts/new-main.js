@@ -37,6 +37,7 @@ $(document).ready(function () {
     });
 
     changeExcludeApps("2016");
+    changeProducts("2016");
 
     $("#commentDialog").draggable();
 
@@ -540,7 +541,7 @@ $(document).ready(function () {
         return currentValue;
     };
 
-    $.fn.msdropdownvals = function (values) {
+    $.fn.msdropdownvals = function (displays, values) {
         var currentValues = this.val();
 
         var parent = this[0].parentNode;
@@ -557,7 +558,7 @@ $(document).ready(function () {
                     if (values) {
                         jqueryUl.empty();
 
-                        $.each(values, function(val, text) {
+                        $.each(displays, function (val, text) {
                             jqueryUl.append(
                                 $('<li class="ms-Dropdown-item">' + text + '</li>')
                             );
@@ -572,11 +573,14 @@ $(document).ready(function () {
 
         mySelect.empty();
 
-        $.each(values, function (val, text) {
+        for (var r = 0; r < displays.length; r++) {
+            var displayName = displays[r];
+            var value = values[r];
             mySelect.append(
-                $('<option></option>').val(text).html(text)
+                $('<option></option>').val(value).html(displayName)
             );
-        });
+        }
+
     };
 
 
@@ -733,6 +737,7 @@ function changeVersions(version) {
 
     odtToggleUpdate();
 
+    changeProducts(version);
     changeExcludeApps(version);
 }
 
@@ -755,13 +760,33 @@ function changeExcludeApps(version) {
     var mySelect = $('#cbExcludeApp');
 
     if (version == "2013") {
-        mySelect.msdropdownvals(excludeApps2013);
+        mySelect.msdropdownvals(excludeApps2013, excludeApps2013);
     }
     if (version == "2016") {
-        mySelect.msdropdownvals(excludeApps2016);
+        mySelect.msdropdownvals(excludeApps2016, excludeApps2016);
     }
 
     mySelect.trigger("chosen:updated");
+}
+
+function changeProducts(version) {
+    $("#cbProduct").empty();
+    $("#cbRemoveProduct").empty();
+    var mySelectAdd = $('#cbProduct');
+    var mySelectRemove = $('#cbRemoveProduct');
+
+    if (version == "2013") {
+        mySelectAdd.msdropdownvals(productSkus2013Names, productSkus2013Values);
+        mySelectRemove.msdropdownvals(productSkus2013Names, productSkus2013Values);
+    }
+    if (version == "2016") {
+        mySelectAdd.msdropdownvals(productSkus2016Names, productSkus2016Values);
+        mySelectRemove.msdropdownvals(productSkus2016Names, productSkus2016Values);
+    }
+
+    mySelectAdd.trigger("chosen:updated");
+    mySelectRemove.trigger("chosen:updated");
+
 }
 
 function addComment() {
@@ -2903,4 +2928,42 @@ var excludeApps2016 = [
     'Publisher',
     'Visio',
     'Word'    
+];
+
+var productSkus2016Names = [
+    'Office 365 ProPlus',
+    'Office 365 for Business',
+    'Visio for Office 365',
+    'Project for Office 365',
+    'Visio for Office 365 Professional (Volume License)',
+    'Visio for Office 365 Standard (Volume License)',
+    'Project for Office 365 Professional (Volume License)',
+    'Project for Office 365 Standard (Volume License)'
+];
+
+var productSkus2016Values = [
+    'O365ProPlusRetail',
+    'O365BusinessRetail',
+    'VisioProRetail',
+    'ProjectProRetail',
+    'VisioProXVolume',
+    'VisioStdXVolume',
+    'ProjectProXVolume',
+    'ProjectStdXVolume'
+];
+
+var productSkus2013Names = [
+    'Office 365 ProPlus',
+    'Office 365 for Business',
+    'Visio for Office 365',
+    'Project for Office 365',
+    'SharePoint Designer' 
+];
+
+var productSkus2013Values = [
+    'O365ProPlusRetail',
+    'O365BusinessRetail',
+    'VisioProRetail',
+    'ProjectProRetail',
+    'SPDRetail'
 ];
