@@ -3097,3 +3097,154 @@ function ConvertBranchNameToChannelName {
        }
     }
 }
+
+function Change-UpdatePathToChannel {
+   [CmdletBinding()]
+   param( 
+     [Parameter()]
+     [string] $UpdatePath,
+     
+     [Parameter()]
+     [Channel] $Channel
+   )
+
+   $newUpdatePath = $UpdatePath
+
+   $branchShortName = "DC"
+   if ($Channel.ToString().ToLower() -eq "current") {
+      $branchShortName = "CC"
+   }
+   if ($Channel.ToString().ToLower() -eq "firstreleasecurrent") {
+      $branchShortName = "FRCC"
+   }
+   if ($Channel.ToString().ToLower() -eq "firstreleasedeferred") {
+      $branchShortName = "FRDC"
+   }
+   if ($Channel.ToString().ToLower() -eq "deferred") {
+      $branchShortName = "DC"
+   }
+
+   $channelNames = @("FRCC", "CC", "FRDC", "DC")
+
+   $madeChange = $false
+   foreach ($channelName in $channelNames) {
+      if ($UpdatePath.ToUpper().EndsWith("\$channelName")) {
+         $newUpdatePath = $newUpdatePath -replace "\\$channelName", "\$branchShortName"
+         $madeChange = $true
+      } 
+      if ($UpdatePath.ToUpper().Contains("\$channelName\")) {
+         $newUpdatePath = $newUpdatePath -replace "\\$channelName\\", "\$branchShortName\"
+         $madeChange = $true
+      } 
+      if ($UpdatePath.ToUpper().EndsWith("/$channelName")) {
+         $newUpdatePath = $newUpdatePath -replace "\/$channelName", "/$branchShortName"
+         $madeChange = $true
+      }
+      if ($UpdatePath.ToUpper().Contains("/$channelName/")) {
+         $newUpdatePath = $newUpdatePath -replace "\/$channelName\/", "/$branchShortName/"
+         $madeChange = $true
+      }
+   }
+
+   if (!($madeChange)) {
+      if ($newUpdatePath.Contains("/")) {
+         if ($newUpdatePath.EndsWith("/")) {
+           $newUpdatePath += "$branchShortName"
+         } else {
+           $newUpdatePath += "/$branchShortName"
+         }
+      }
+      if ($newUpdatePath.Contains("\")) {
+         if ($newUpdatePath.EndsWith("\")) {
+           $newUpdatePath += "$branchShortName"
+         } else {
+           $newUpdatePath += "\$branchShortName"
+         }
+      }
+   }
+
+   try {
+     $pathAlive = Test-UpdateSource -UpdateSource $newUpdatePath
+   } catch {
+     $pathAlive = $false
+   }
+   
+   if ($pathAlive) {
+     return $newUpdatePath
+   } else {
+     return $UpdatePath
+   }
+}
+
+Function Test-UpdateSource() {
+    [CmdletBinding()]
+    Param(
+        [Parameter(Mandatory=$true)]
+        [string] $UpdateSource = $NULL
+    )
+
+  	$uri = [System.Uri]$UpdateSource
+
+    [bool]$sourceIsAlive = $false
+
+    if($uri.Host){
+	    $sourceIsAlive = Test-Connection -Count 1 -computername $uri.Host -Quiet
+    }else{
+        $sourceIsAlive = Test-Path $uri.LocalPath -ErrorAction SilentlyContinue
+    }
+
+    if ($sourceIsAlive) {
+        $sourceIsAlive = Validate-UpdateSource -UpdateSource $UpdateSource
+    }
+
+    return $sourceIsAlive
+}
+
+Function Validate-UpdateSource() {
+    [CmdletBinding()]
+    Param(
+        [Parameter(Mandatory=$true)]
+        [string] $UpdateSource = $NULL
+    )
+
+    Process {
+    [bool]$validUpdateSource = $false
+    [string]$cabPath = ""
+
+    if ($UpdateSource) {
+        $mainRegPath = Get-OfficeCTRRegPath
+        $configRegPath = $mainRegPath + "\Configuration"
+        $currentplatform = (Get-ItemProperty HKLM:\$configRegPath -Name Platform -ErrorAction SilentlyContinue).Platform
+        $updateToVersion = (Get-ItemProperty HKLM:\$configRegPath -Name UpdateToVersion -ErrorAction SilentlyContinue).UpdateToVersion
+
+        if ($updateToVersion) {
+            if ($currentplatform.ToLower() -eq "x86") {
+               $cabPath = $UpdateSource + "\Office\Data\v32_" + $updateToVersion + ".cab"
+            }
+            if ($currentplatform.ToLower() -eq "x64") {
+               $cabPath = $UpdateSource + "\Office\Data\v64_" + $updateToVersion + ".cab"
+            }
+        } else {
+            if ($currentplatform.ToLower() -eq "x86") {
+               $cabPath = $UpdateSource + "\Office\Data\v32.cab"
+            }
+            if ($currentplatform.ToLower() -eq "x64") {
+               $cabPath = $UpdateSource + "\Office\Data\v64.cab"
+            }
+        }
+
+        if ($cabPath.ToLower().StartsWith("http")) {
+           $cabPath = $cabPath.Replace("\", "/")
+           $validUpdateSource = Test-URL -url $cabPath
+        } else {
+           $validUpdateSource = Test-Path -Path $cabPath
+        }
+        
+        if (!$validUpdateSource) {
+           throw "Invalid UpdateSource. File Not Found: $cabPath"
+        }
+    }
+
+    return $validUpdateSource
+    }
+}
