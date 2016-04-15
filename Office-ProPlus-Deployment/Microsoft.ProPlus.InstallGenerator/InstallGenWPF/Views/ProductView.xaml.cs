@@ -282,6 +282,16 @@ namespace MetroDemo.ExampleViews
                         branchIndex++;
                     }
 
+                    foreach (OfficeBranch branchItem in ProductBranch.Items)
+                    {
+                        if (branchItem.Id.ToUpper() == configXml.Add.Chanel.ToString().ToUpper())
+                        {
+                            ProductBranch.SelectedIndex = branchIndex;
+                            break;
+                        }
+                        branchIndex++;
+                    }
+
                     if (configXml.Add.Products != null && configXml.Add.Products.Count > 0)
                     {
                         LanguageList.ItemsSource = null;
@@ -453,8 +463,23 @@ namespace MetroDemo.ExampleViews
 
             if (ProductBranch.SelectedItem != null)
             {
-                var selectedItem = (OfficeBranch) ProductBranch.SelectedItem;
-                configXml.Add.Branch = selectedItem.Branch;
+                    var selectedItem = (OfficeBranch)ProductBranch.SelectedItem;
+                //configXml.Add.Branch = selectedItem.Branch;
+                switch (selectedItem.Branch)
+                {
+                    case Branch.Business:
+                        configXml.Add.Chanel = Chanel.Deferred;
+                        break;
+                    case Branch.Current:
+                        configXml.Add.Chanel = Chanel.Current;
+                        break;
+                    case Branch.FirstReleaseBusiness:
+                        configXml.Add.Chanel = Chanel.FirstReleaseDeferred;
+                        break;
+                    case Branch.FirstReleaseCurrent:
+                        configXml.Add.Chanel = Chanel.FirstReleaseCurrent;
+                        break;
+                }
             }
 
             if (configXml.Add.Products == null)

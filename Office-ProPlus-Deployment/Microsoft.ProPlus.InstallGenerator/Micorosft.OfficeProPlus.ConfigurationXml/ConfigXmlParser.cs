@@ -106,6 +106,15 @@ namespace OfficeInstallGenerator
                     }
                 }
 
+                if (addNode.Attributes["Channel"] != null)
+                {
+                    var channel = addNode.Attributes["Channel"].Value;
+                    if (!string.IsNullOrEmpty(channel))
+                    {
+                        odtAdd.Chanel = (Chanel)Enum.Parse(typeof(Chanel), channel);
+                    }
+                }
+
                 odtAdd.SourcePath = null;
                 if (addNode.Attributes["SourcePath"] != null)
                 {
@@ -247,7 +256,8 @@ namespace OfficeInstallGenerator
                 SetAttribute(addNode, "OfficeClientEdition",
                     this.ConfigurationXml.Add.OfficeClientEdition == OfficeClientEdition.Office32Bit ? "32" : "64");
 
-                SetAttribute(addNode, "Branch", this.ConfigurationXml.Add.Branch.ToString());
+                //SetAttribute(addNode, "Branch", this.ConfigurationXml.Add.Branch.ToString());
+                SetAttribute(addNode, "Channel", this.ConfigurationXml.Add.Chanel.ToString());
 
                 if (this.ConfigurationXml.Add.SourcePath != null)
                 {

@@ -14,4 +14,12 @@ namespace Micorosft.OfficeProPlus.ConfigurationXml
         Validation=2,
         FirstReleaseBusiness=3
     }
+    public enum Chanel
+    {
+        Current = 0,
+        FirstReleaseCurrent = 4,
+        Deferred = 1,
+        Validation = 2,
+        FirstReleaseDeferred = 3
+    }
 }

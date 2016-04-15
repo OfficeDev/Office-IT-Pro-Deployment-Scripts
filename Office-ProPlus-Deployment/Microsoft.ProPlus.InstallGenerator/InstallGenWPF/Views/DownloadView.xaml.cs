@@ -145,6 +145,20 @@ namespace MetroDemo.ExampleViews
                 }
             }
 
+            if (configXml.Add.Chanel.HasValue)
+            {
+                var channelName = configXml.Add.Chanel.Value.ToString();
+                if (channelName.ToLower() == "Deferred".ToLower()) channelName = "Deferred";
+                if (channelName.ToLower() == "FirstReleaseDeferred".ToLower()) channelName = "FirstReleaseDeferred";
+
+                var selectedChannel = items.FirstOrDefault(c => c.ChannelName == channelName);
+                if (selectedChannel != null)
+                {
+                    selectedChannel.Editable = true;
+                    selectedChannel.Selected = true;
+                }
+            }
+
             lvUsers.ItemsSource = items;
 
             if (configXml.Add.OfficeClientEdition == OfficeClientEdition.Office32Bit)

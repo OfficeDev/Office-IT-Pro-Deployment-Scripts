@@ -144,6 +144,75 @@ namespace MetroDemo.ExampleViews
                 }
             }
 
+            if (configXml.Add?.Chanel != null)
+            {
+                switch (configXml.Add.Chanel)
+                {
+                    case Chanel.Deferred:
+                        if (Directory.Exists(folderPath + @"\DC"))
+                        {
+                            folderPath = mainFolderPath + @"\DC";
+                        }
+                        else if (Directory.Exists(folderPath + @"\Deferred"))
+                        {
+                            folderPath = mainFolderPath + @"\Deferred";
+                        }
+                        else if (Directory.Exists(folderPath + @"\Business"))
+                        {
+                            folderPath = mainFolderPath + @"\Business";
+                        }
+                        break;
+                    case Chanel.Current:
+                        if (Directory.Exists(folderPath + @"\CC"))
+                        {
+                            folderPath = mainFolderPath + @"\CC";
+                        }
+                        else if (Directory.Exists(folderPath + @"\Current"))
+                        {
+                            folderPath = mainFolderPath + @"\Current";
+                        }
+                        break;
+                    case Chanel.FirstReleaseCurrent:
+                        if (Directory.Exists(folderPath + @"\FRCC"))
+                        {
+                            folderPath = mainFolderPath + @"\FRCC";
+                        }
+                        else if (Directory.Exists(folderPath + @"\FirstReleaseCurrent"))
+                        {
+                            folderPath = mainFolderPath + @"\FirstReleaseCurrent";
+                        }
+                        break;
+                    case Chanel.Validation:
+                        if (Directory.Exists(folderPath + @"\FRDC"))
+                        {
+                            folderPath = mainFolderPath + @"\FRDC";
+                        }
+                        else if (Directory.Exists(folderPath + @"\FirstReleaseDeferred"))
+                        {
+                            folderPath = mainFolderPath + @"\FirstReleaseDeferred";
+                        }
+                        else if (Directory.Exists(folderPath + @"\FirstReleaseBusiness"))
+                        {
+                            folderPath = mainFolderPath + @"\FirstReleaseBusiness";
+                        }
+                        break;
+                    case Chanel.FirstReleaseDeferred:
+                        if (Directory.Exists(folderPath + @"\FRDC"))
+                        {
+                            folderPath = mainFolderPath + @"\FRDC";
+                        }
+                        else if (Directory.Exists(folderPath + @"\FirstReleaseDeferred"))
+                        {
+                            folderPath = mainFolderPath + @"\FirstReleaseDeferred";
+                        }
+                        else if (Directory.Exists(folderPath + @"\FirstReleaseBusiness"))
+                        {
+                            folderPath = mainFolderPath + @"\FirstReleaseBusiness";
+                        }
+                        break;
+                }
+            }
+
             if (Directory.Exists(folderPath + @"\Office\Data"))
             {
                 BuildFilePath.Text = folderPath;
@@ -286,6 +355,10 @@ namespace MetroDemo.ExampleViews
                         {
                             branchName = configXml.Add.Branch.ToString();
                         }
+                        if (configXml.Add?.Chanel != null)
+                        {
+                            branchName = configXml.Add.Chanel.ToString();
+                        }
 
                         var languages = new List<string>();
                         foreach (var product in configXml.Add.Products)
@@ -305,7 +378,7 @@ namespace MetroDemo.ExampleViews
                         var ppDownload = new ProPlusDownloader();
                         var validFiles = await ppDownload.ValidateSourceFiles(new DownloadBranchProperties()
                         {
-                            TargetDirectory = sourceFilePath,
+                            TargetDirectory = sourceFilePath,                            
                             BranchName = branchName,
                             Languages = languages,
                             OfficeEdition = edition,
