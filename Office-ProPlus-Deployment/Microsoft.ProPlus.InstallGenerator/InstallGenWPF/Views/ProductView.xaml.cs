@@ -282,9 +282,10 @@ namespace MetroDemo.ExampleViews
                         branchIndex++;
                     }
 
+                    branchIndex = 0;
                     foreach (OfficeBranch branchItem in ProductBranch.Items)
                     {
-                        if (branchItem.Id.ToUpper() == configXml.Add.Chanel.ToString().ToUpper())
+                        if (branchItem.NewName.ToUpper() == configXml.Add.Chanel.ToString().ToUpper())
                         {
                             ProductBranch.SelectedIndex = branchIndex;
                             break;
