@@ -63,13 +63,13 @@
                                     <ColumnDefinition Width="280" />
                                 </Grid.ColumnDefinitions>
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="250"></RowDefinition>
-                                    <RowDefinition Height="200"></RowDefinition>
+                                    <RowDefinition Height="320.8"></RowDefinition>
+                                    <RowDefinition Height="128.8"></RowDefinition>
                                 </Grid.RowDefinitions>
 
-                                <StackPanel Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" Margin="0,0,0,0">
+                                <StackPanel Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" Margin="0,0,213,39.6" Grid.RowSpan="2" Grid.ColumnSpan="3" Width="559">
 
-                                    <Grid Margin="35 0 0 0" >
+                                    <Grid Margin="35,0,0.2,0" Height="30" >
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="30" />
                                             <ColumnDefinition Width="400" />
@@ -84,21 +84,19 @@
                                                HorizontalAlignment="Left"  Width="100" VerticalAlignment="Center"/>
                                     </Grid>
 
-                                    <ListBox x:Name="MainProducts"  Style="{StaticResource VirtualizedMetroListBox}" Margin="35 10 0 0"
+                                    <ListBox x:Name="MainProducts"  Style="{StaticResource VirtualizedMetroListBox}" Margin="35,10,10.2,0"
                                             ItemsSource="{Binding MainProducts}"
-                                            DisplayMemberPath="DisplayName" Width="320" Height="60"
-                                            SelectedIndex="0" SelectionMode="Single" FontSize="20" SelectionChanged="Products_OnSelectionChanged" BorderThickness="2,2,2,0">
-                                    </ListBox>
+                                            DisplayMemberPath="DisplayName" Height="60"
+                                            SelectedIndex="0" SelectionMode="Single" FontSize="20" SelectionChanged="Products_OnSelectionChanged" BorderThickness="2,2,2,0" RenderTransformOrigin="0.508,0.123"/>
 
-                                    <ListBox x:Name="AdditionalProducts"  Style="{StaticResource VirtualizedMetroListBox}" Margin="35 0 0 0"
+                                    <ListBox x:Name="AdditionalProducts"  Style="{StaticResource VirtualizedMetroListBox}" Margin="35,0,10.2,0"
                                             ItemsSource="{Binding AdditionalProducts}"
-                                            DisplayMemberPath="DisplayName" Width="320" Height="60"
-                                            SelectedIndex="-1" SelectionMode="Multiple" FontSize="20" SelectionChanged="Products_OnSelectionChanged" BorderThickness="2,0,2,2">
-                                    </ListBox>
-              
+                                            DisplayMemberPath="DisplayName" Height="147"
+                                            SelectedIndex="-1" SelectionMode="Multiple" FontSize="20" SelectionChanged="Products_OnSelectionChanged" BorderThickness="2,0,2,2"/>
+
                                 </StackPanel>
 
-                                <StackPanel Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" Margin="0,0,0,0">
+                                <StackPanel Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center" Margin="91.8,0,-99,5.8" Width="288">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="30" />
@@ -112,16 +110,16 @@
                                         </Button>
                                         <Label Content="Edition" Style="{StaticResource CustomMetroLabelHeader}" HorizontalAlignment="Left" Grid.Column="1"/>
                                     </Grid>
-                                    <RadioButton Margin="10 10 0 0" x:Name="ProductEdition32Bit" HorizontalAlignment="Center"
-                                         Content="32-Bit" Width="100" Foreground="{StaticResource GrayBrush}"
+                                    <RadioButton Margin="10,10,174,0" x:Name="ProductEdition32Bit" HorizontalAlignment="Center"
+                                         Content="32-Bit" Width="104" Foreground="{StaticResource GrayBrush}"
                                          GroupName="1" 
-                                         IsChecked="True" FontSize="20" />
-                                    <RadioButton Margin="10 10 0 0"  x:Name="ProductEdition64Bit" HorizontalAlignment="Center"
-                                         Content="64-Bit" Width="100" Foreground="{StaticResource GrayBrush}"
-                                         GroupName="1" FontSize="20" />
+                                         IsChecked="True" FontSize="20" Height="28" />
+                                    <RadioButton Margin="10,10,155,0"  x:Name="ProductEdition64Bit" HorizontalAlignment="Center"
+                                         Content="64-Bit" Width="123" Foreground="{StaticResource GrayBrush}"
+                                         GroupName="1" FontSize="20" Height="27" />
                                 </StackPanel>
 
-                                <StackPanel Grid.Row="0" Grid.Column="2" HorizontalAlignment="Left">
+                                <StackPanel Grid.Row="0" Grid.Column="2" HorizontalAlignment="Left" RenderTransformOrigin="2.26,0.535" Margin="91.8,153,-99,39.6" Grid.RowSpan="2" Width="288">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="30" />
@@ -233,8 +231,8 @@
                                     </Button>
                                     <Label Content="Version" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" />
 
-                                   
-                                        <ComboBox Width="360" x:Name="ProductVersion" Grid.Column="2"  
+
+                                    <ComboBox Width="360" x:Name="ProductVersion" Grid.Column="2"  
                                               Height="35" HorizontalAlignment="Left" IsTextSearchEnabled="True"
                                               Style="{StaticResource MetroComboBoxStyle}" 
                                               Controls:TextBoxHelper.Watermark="16.0.4949.1003"
@@ -271,7 +269,7 @@
                                             <ColumnDefinition Width="75" />
                                             <ColumnDefinition Width="75" />
                                         </Grid.ColumnDefinitions>
-        
+
                                         <Controls:MetroProgressBar x:Name="DownloadProgressBar"  Grid.Column="0" Height="37" Background="White" Width="360" HorizontalAlignment="Left" />
                                         <TextBox x:Name="ProductUpdateSource" Background="#00ffffff" FontSize="20" Grid.Column="0" HorizontalAlignment="Left"
                                              Controls:TextBoxHelper.Watermark="Local, UNC or HTTP Path" Height="37" Width="360"

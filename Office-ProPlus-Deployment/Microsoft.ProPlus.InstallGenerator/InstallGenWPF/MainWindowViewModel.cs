@@ -245,8 +245,28 @@ namespace MetroDemo
                 },
                 new Product()
                 {
+                    DisplayName = "Visio for Office 365 Professional (Volume License)",
+                    Id = "VisioProXVolume"
+                },
+                 new Product()
+                {
+                    DisplayName = "Visio for Office 365 Standard (Volume License)",
+                    Id = "VisioStdXVolume"
+                },
+                new Product()
+                {
                     DisplayName = "Project for Office 365",
                     Id = "ProjectProRetail"
+                },
+                new Product()
+                {
+                    DisplayName = "Project for Office 365 Professional(Volume License)",
+                    Id = "ProjectProXVolume"
+                },
+                new Product()
+                {
+                    DisplayName = "Project for Office 365 Standard (Volume License)",
+                    Id = "ProjectStdXVolume"
                 }
             };
 

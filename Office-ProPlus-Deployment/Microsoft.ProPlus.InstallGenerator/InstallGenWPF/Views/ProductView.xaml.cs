@@ -982,6 +982,20 @@ namespace MetroDemo.ExampleViews
                 {
                     products.Add(product);
                 }
+                //should unselect item of similar name, don't want to add 3 different types of visio
+                if (e.AddedItems.Count > 0)
+                {
+                    MetroDemo.Models.Product temp = (MetroDemo.Models.Product)e.AddedItems[0];
+
+                    foreach (Product product in AdditionalProducts.SelectedItems)
+                    {
+                        if (product.DisplayName != temp.DisplayName && product.DisplayName.StartsWith(temp.DisplayName.Substring(0, 5)))
+                        {
+                            AdditionalProducts.SelectedItems.Remove(product);
+                            break;
+                        }
+                    }
+                }
 
                 foreach (Product product in AdditionalProducts.SelectedItems)
                 {
