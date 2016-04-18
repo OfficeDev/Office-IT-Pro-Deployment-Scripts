@@ -445,8 +445,11 @@ Here is what the portion of configuration file looks like when modified by this 
             [System.XML.XMLElement]$ProductElement=$ConfigFile.CreateElement("Product")
             $AddElement.appendChild($ProductElement) | Out-Null
             $ProductElement.SetAttribute("ID", $ProductId) | Out-Null
+
             if($PIDKEY -ne $null){
+              if($PIDKEY){
                 $ProductElement.SetAttribute("PIDKEY", $PIDKEY) | Out-Null
+              }
             }
         }
 
