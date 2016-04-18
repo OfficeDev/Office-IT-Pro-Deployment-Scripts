@@ -484,6 +484,15 @@ namespace OfficeInstallGenerator
                     updates.Branch = (Branch)Enum.Parse(typeof(Branch), branch);
                 }
             }
+
+            if (updatesNode.Attributes["Channel"] != null)
+            {
+                var channel = updatesNode.Attributes["Channel"].Value;
+                if (!string.IsNullOrEmpty(channel))
+                {
+                    updates.ODTChannel = (ODTChannel)Enum.Parse(typeof(ODTChannel), channel);
+                }
+            }
         }
 
         private void SaveUpdates()
@@ -500,6 +509,7 @@ namespace OfficeInstallGenerator
             if (!this.ConfigurationXml.Updates.Enabled)
             {
                 RemoveAttribute(updatesNode, "Branch");
+                RemoveAttribute(updatesNode, "Channel");
                 RemoveAttribute(updatesNode, "UpdatePath");
                 RemoveAttribute(updatesNode, "TargetVersion");
                 RemoveAttribute(updatesNode, "Deadline");
@@ -513,6 +523,16 @@ namespace OfficeInstallGenerator
             else
             {
                 RemoveAttribute(updatesNode, "Branch");
+            }
+
+            if (this.ConfigurationXml.Updates.ODTChannel.HasValue &&
+                !string.IsNullOrEmpty(this.ConfigurationXml.Updates.ODTChannel.Value.ToString()))
+            {
+                SetAttribute(updatesNode, "Channel", this.ConfigurationXml.Updates.ODTChannel.ToString());
+            }
+            else
+            {
+                RemoveAttribute(updatesNode, "Channel");
             }
 
             if (!string.IsNullOrEmpty(this.ConfigurationXml.Updates.UpdatePath))
