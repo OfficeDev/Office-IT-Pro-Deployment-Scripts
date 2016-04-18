@@ -12,7 +12,6 @@ Process {
    $scriptPath = split-path -parent $MyInvocation.MyCommand.Definition
  }
 
- 
 #Importing all required functions
 . $scriptPath\Generate-ODTConfigurationXML.ps1
 . $scriptPath\Edit-OfficeConfigurationFile.ps1
@@ -20,7 +19,7 @@ Process {
 . $scriptPath\Dynamic-UpdateSource.ps1
 
 
-$targetFilePath = $scriptPath + "\configuration.xml"
+$targetFilePath = "$env:temp\configuration.xml"
 
 #This example will create an Office Deployment Tool (ODT) configuration file and include all of the Languages currently in use on the computer
 #from which the script is run.  It will then remove the Version attribute from the XML to ensure the installation gets the latest version

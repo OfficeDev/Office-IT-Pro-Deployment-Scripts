@@ -20,7 +20,7 @@ Process {
 . $scriptPath\Remove-OfficeClickToRun.ps1
 . $scriptPath\Get-OfficeVersion.ps1
 
-$targetFilePath = "configuration.xml"
+$targetFilePath = "$env:temp\configuration.xml"
 
 #This example will detect the current install of Office that is currently installed. If the current install of Office Click-To-Run 32-bit it will
 #then generate a Configuration XML based on the current configuration It will then remove the Version attribute from the XML to ensure the installation gets the latest version
