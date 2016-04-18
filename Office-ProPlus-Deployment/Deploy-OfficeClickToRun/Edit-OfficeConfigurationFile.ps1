@@ -2,7 +2,7 @@
 [String]$global:saveLastFilePath = $NULL
 
 $validProductIds = @("O365ProPlusRetail","O365BusinessRetail","VisioProRetail","ProjectProRetail", "SPDRetail")
-
+try {
 $enum = "
 using System;
  
@@ -21,7 +21,9 @@ namespace Microsoft.Office
 }
 "
 Add-Type -TypeDefinition $enum -ErrorAction SilentlyContinue
+} catch { }
 
+try {
 $enum2 = "
 using System;
  
@@ -33,7 +35,9 @@ using System;
     }
 "
 Add-Type -TypeDefinition $enum2 -ErrorAction SilentlyContinue
+} catch { }
 
+try {
 $enum3 = "
 using System;
 
@@ -51,7 +55,9 @@ namespace Microsoft.Office
 }
 "
 Add-Type -TypeDefinition $enum3 -ErrorAction SilentlyContinue
+} catch { }
 
+try {
 $enum4 = "
  using System;
  
@@ -69,6 +75,7 @@ $enum4 = "
  }
  "
  Add-Type -TypeDefinition $enum4 -ErrorAction SilentlyContinue
+ } catch { }
 
 $validLanguages = @(
 "English|en-us",
