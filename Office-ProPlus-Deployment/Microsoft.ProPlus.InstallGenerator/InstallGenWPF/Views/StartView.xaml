@@ -50,28 +50,27 @@
                             </DockPanel>
                         </TabItem.Header>
 
-                        <Grid  Margin="30 30 0 0" VerticalAlignment="Top" HorizontalAlignment="Left"  Height="500" Width="700">
+                        <Grid  Margin="30 30 0 0" VerticalAlignment="Top" HorizontalAlignment="Left"  Height="500" Width="750">
 
                             <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="500" />
                                 <ColumnDefinition Width="250" />
-                                <ColumnDefinition Width="450" />
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="100" />
-                                <RowDefinition Height="30" />
-                                <RowDefinition Height="100" />
-                                <RowDefinition Height="30" />
-                                <RowDefinition Height="100" />
+                                <RowDefinition Height="50" />
+                                <RowDefinition Height="80" />
+                                <RowDefinition Height="300" />
                             </Grid.RowDefinitions>
 
-                            <TextBlock Grid.Row="4" Name="txtBlock" TextWrapping="WrapWithOverflow" FontSize="18" FontWeight="SemiBold"
-                                       Margin="135,97,115.2,-87.2" Style="{StaticResource CustomMetroLabelTextBlock}" Grid.ColumnSpan="2">
-                                 
+                            <TextBlock Grid.Row="2" Name="txtBlock" TextWrapping="WrapWithOverflow" FontSize="18" FontWeight="SemiBold" Style="{StaticResource CustomMetroLabelTextBlock}" />
+                            
+                            <TextBlock Grid.Row="0" Grid.Column="0" TextWrapping="WrapWithOverflow" FontSize="25" FontWeight="Bold" Style="{StaticResource CustomMetroLabelTextBlock}">
+                                <Run Text="What would you like to do?"/>
                             </TextBlock>
-                            <TextBlock TextWrapping="WrapWithOverflow" FontSize="25" FontWeight="Bold"
-                            	Margin="181,13.2,69.2,27.8" Style="{StaticResource CustomMetroLabelTextBlock}" Grid.ColumnSpan="2" Grid.RowSpan="2" Grid.Row="1"><Run Text="What would you like to do?"/></TextBlock>
-                            <ComboBox x:Name="strtCmboBx" Grid.ColumnSpan="2" HorizontalAlignment="Left" Margin="157,25,0,0" Grid.Row="2" VerticalAlignment="Top" Width="406" SelectionChanged="strtCmboBx_SelectionChanged"/>
-                            <Button x:Name="strtButton" FontSize="20" HorizontalAlignment="Left" Margin="190,78,0,0" Grid.Row="2" Grid.RowSpan="3" VerticalAlignment="Top" Width="330" Grid.ColumnSpan="2" Height="90" Click="strtButton_Click">
+
+                            <ComboBox x:Name="cbActions" Grid.Row="1" FontSize="20" Height="50" HorizontalAlignment="Left" VerticalAlignment="Top" Width="500" SelectionChanged="cbActions_SelectionChanged"/>
+                            
+                            <Button x:Name="strtButton" Grid.Row="1" Grid.Column="1" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Top" Width="200" Height="50" Click="strtButton_Click">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="50" />
