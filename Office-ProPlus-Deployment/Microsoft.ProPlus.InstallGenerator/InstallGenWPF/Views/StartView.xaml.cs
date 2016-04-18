@@ -43,12 +43,15 @@ namespace MetroDemo.ExampleViews
         {
             try
             {
-                strtCmboBx.Items.Clear();
-                strtCmboBx.Items.Add("Please select an item....");
-                strtCmboBx.Items.Add("Create new Office 365 ProPlus Install");
-                strtCmboBx.Items.Add("Import Office 365 ProPlus Install");
-                strtCmboBx.Items.Add("Manage local Office 365 ProPlus Install");
-                strtCmboBx.SelectedIndex = 0;
+                if (strtCmboBx.Items.Count < 1)
+                {
+                    strtCmboBx.Items.Add("Please select an item....");
+                    strtCmboBx.Items.Add("Create new Office 365 ProPlus Install");
+                    strtCmboBx.Items.Add("Import Office 365 ProPlus Install");
+                    strtCmboBx.Items.Add("Manage local Office 365 ProPlus Install");
+                    strtCmboBx.SelectedIndex = 0;
+                }
+                
                 LogAnaylytics("/", "StartView");
             }
             catch (Exception ex)

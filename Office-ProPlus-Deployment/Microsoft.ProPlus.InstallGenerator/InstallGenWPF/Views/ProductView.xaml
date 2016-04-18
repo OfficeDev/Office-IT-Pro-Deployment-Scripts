@@ -52,11 +52,11 @@
                         <Grid HorizontalAlignment="Left">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="20"></RowDefinition>
-                                <RowDefinition Height="250"></RowDefinition>
-                                <RowDefinition Height="300"></RowDefinition>
+                                <RowDefinition Height="324.8"></RowDefinition>
+                                <RowDefinition Height="224"></RowDefinition>
                             </Grid.RowDefinitions>
 
-                            <Grid Height="410" Width="900" Grid.Row="1" HorizontalAlignment="Left">
+                            <Grid Width="900" Grid.Row="1" HorizontalAlignment="Left" Margin="0,0,0,139.8" Grid.RowSpan="2">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="370" />
                                     <ColumnDefinition Width="120" />
@@ -91,7 +91,7 @@
 
                                     <ListBox x:Name="AdditionalProducts"  Style="{StaticResource VirtualizedMetroListBox}" Margin="35,0,10.2,0"
                                             ItemsSource="{Binding AdditionalProducts}"
-                                            DisplayMemberPath="DisplayName" Height="147"
+                                            DisplayMemberPath="DisplayName" Height="192"
                                             SelectedIndex="-1" SelectionMode="Multiple" FontSize="20" SelectionChanged="Products_OnSelectionChanged" BorderThickness="2,0,2,2"/>
 
                                 </StackPanel>
