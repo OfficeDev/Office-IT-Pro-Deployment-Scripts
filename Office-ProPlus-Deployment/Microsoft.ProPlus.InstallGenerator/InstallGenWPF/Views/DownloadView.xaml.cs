@@ -145,9 +145,9 @@ namespace MetroDemo.ExampleViews
                 }
             }
 
-            if (configXml.Add.Chanel.HasValue)
+            if (configXml.Add.ODTChannel.HasValue)
             {
-                var channelName = configXml.Add.Chanel.Value.ToString();
+                var channelName = configXml.Add.ODTChannel.Value.ToString();
                 if (channelName.ToLower() == "Deferred".ToLower()) channelName = "Deferred";
                 if (channelName.ToLower() == "FirstReleaseDeferred".ToLower()) channelName = "FirstReleaseDeferred";
 

@@ -144,11 +144,11 @@ namespace MetroDemo.ExampleViews
                 }
             }
 
-            if (configXml.Add?.Chanel != null)
+            if (configXml.Add?.ODTChannel != null)
             {
-                switch (configXml.Add.Chanel)
+                switch (configXml.Add.ODTChannel)
                 {
-                    case Chanel.Deferred:
+                    case ODTChannel.Deferred:
                         if (Directory.Exists(folderPath + @"\DC"))
                         {
                             folderPath = mainFolderPath + @"\DC";
@@ -162,7 +162,7 @@ namespace MetroDemo.ExampleViews
                             folderPath = mainFolderPath + @"\Business";
                         }
                         break;
-                    case Chanel.Current:
+                    case ODTChannel.Current:
                         if (Directory.Exists(folderPath + @"\CC"))
                         {
                             folderPath = mainFolderPath + @"\CC";
@@ -172,7 +172,7 @@ namespace MetroDemo.ExampleViews
                             folderPath = mainFolderPath + @"\Current";
                         }
                         break;
-                    case Chanel.FirstReleaseCurrent:
+                    case ODTChannel.FirstReleaseCurrent:
                         if (Directory.Exists(folderPath + @"\FRCC"))
                         {
                             folderPath = mainFolderPath + @"\FRCC";
@@ -182,7 +182,7 @@ namespace MetroDemo.ExampleViews
                             folderPath = mainFolderPath + @"\FirstReleaseCurrent";
                         }
                         break;
-                    case Chanel.Validation:
+                    case ODTChannel.Validation:
                         if (Directory.Exists(folderPath + @"\FRDC"))
                         {
                             folderPath = mainFolderPath + @"\FRDC";
@@ -196,7 +196,7 @@ namespace MetroDemo.ExampleViews
                             folderPath = mainFolderPath + @"\FirstReleaseBusiness";
                         }
                         break;
-                    case Chanel.FirstReleaseDeferred:
+                    case ODTChannel.FirstReleaseDeferred:
                         if (Directory.Exists(folderPath + @"\FRDC"))
                         {
                             folderPath = mainFolderPath + @"\FRDC";
@@ -355,9 +355,9 @@ namespace MetroDemo.ExampleViews
                         {
                             branchName = configXml.Add.Branch.ToString();
                         }
-                        if (configXml.Add?.Chanel != null)
+                        if (configXml.Add?.ODTChannel != null)
                         {
-                            branchName = configXml.Add.Chanel.ToString();
+                            branchName = configXml.Add.ODTChannel.ToString();
                         }
 
                         var languages = new List<string>();

@@ -14,7 +14,7 @@ namespace Micorosft.OfficeProPlus.ConfigurationXml
         Validation=2,
         FirstReleaseBusiness=3
     }
-    public enum Chanel
+    public enum ODTChannel
     {
         Current = 0,
         FirstReleaseCurrent = 4,

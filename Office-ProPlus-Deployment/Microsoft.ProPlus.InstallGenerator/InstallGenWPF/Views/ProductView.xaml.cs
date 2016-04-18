@@ -285,7 +285,7 @@ namespace MetroDemo.ExampleViews
                     branchIndex = 0;
                     foreach (OfficeBranch branchItem in ProductBranch.Items)
                     {
-                        if (branchItem.NewName.ToUpper() == configXml.Add.Chanel.ToString().ToUpper())
+                        if (branchItem.NewName.ToUpper() == configXml.Add.ODTChannel.ToString().ToUpper())
                         {
                             ProductBranch.SelectedIndex = branchIndex;
                             break;
@@ -469,16 +469,16 @@ namespace MetroDemo.ExampleViews
                 switch (selectedItem.Branch)
                 {
                     case Branch.Business:
-                        configXml.Add.Chanel = Chanel.Deferred;
+                        configXml.Add.ODTChannel = ODTChannel.Deferred;
                         break;
                     case Branch.Current:
-                        configXml.Add.Chanel = Chanel.Current;
+                        configXml.Add.ODTChannel = ODTChannel.Current;
                         break;
                     case Branch.FirstReleaseBusiness:
-                        configXml.Add.Chanel = Chanel.FirstReleaseDeferred;
+                        configXml.Add.ODTChannel = ODTChannel.FirstReleaseDeferred;
                         break;
                     case Branch.FirstReleaseCurrent:
-                        configXml.Add.Chanel = Chanel.FirstReleaseCurrent;
+                        configXml.Add.ODTChannel = ODTChannel.FirstReleaseCurrent;
                         break;
                 }
             }

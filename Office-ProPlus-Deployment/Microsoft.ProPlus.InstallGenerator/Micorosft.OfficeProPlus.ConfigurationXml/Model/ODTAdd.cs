@@ -15,7 +15,7 @@ namespace OfficeInstallGenerator.Model
 
         public Branch? Branch { get; set; }
 
-        public Chanel? Chanel { get; set; }
+        public ODTChannel? ODTChannel { get; set; }
 
         public string SourcePath { get; set; }
 
