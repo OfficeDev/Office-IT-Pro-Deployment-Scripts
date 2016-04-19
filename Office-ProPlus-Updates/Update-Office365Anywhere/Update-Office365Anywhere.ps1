@@ -1170,6 +1170,7 @@ Will generate the Office Deployment Tool (ODT) configuration XML based on the lo
                Write-Host "Starting Update process"
                Write-Host "Update Source: $currentUpdateSource" 
                Write-Log -Message "Will now execute $oc2rcFilePath $oc2rcParams with UpdateSource:$currentUpdateSource" -severity 1 -component "Office 365 Update Anywhere"
+
                StartProcess -execFilePath $oc2rcFilePath -execParams $oc2rcParams
 
                if ($WaitForUpdateToFinish) {
@@ -1189,8 +1190,7 @@ Will generate the Office Deployment Tool (ODT) configuration XML based on the lo
     }
 }
 
-
-#Update-Office365Anywhere -WaitForUpdateToFinish $WaitForUpdateToFinish -EnableUpdateAnywhere $EnableUpdateAnywhere -ForceAppShutdown $ForceAppShutdown -UpdatePromptUser $UpdatePromptUser -DisplayLevel $DisplayLevel -UpdateToVersion $UpdateToVersion -LogPath $LogPath -LogName $LogName
+Update-Office365Anywhere -WaitForUpdateToFinish $WaitForUpdateToFinish -EnableUpdateAnywhere $EnableUpdateAnywhere -ForceAppShutdown $ForceAppShutdown -UpdatePromptUser $UpdatePromptUser -DisplayLevel $DisplayLevel -UpdateToVersion $UpdateToVersion -LogPath $LogPath -LogName $LogName
 
 
 
