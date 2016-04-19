@@ -154,7 +154,12 @@ public class InstallOffice
 
                         var doc = new XmlDocument();
                         doc.Load(xmlFilePath);
-                        SetClientEdition(doc, officeProducts.Edition);
+
+                        if (officeProducts.Edition.HasValue)
+                        {
+                            SetClientEdition(doc, officeProducts.Edition.Value);
+                        }
+
                         doc.Save(xmlFilePath);
                     }
                 }
@@ -602,6 +607,23 @@ public class InstallOffice
 
         SetAttribute(doc, display, "Level", "None");
         SetAttribute(doc, display, "AcceptEULA", "TRUE");
+    }
+
+    private OfficeClientEdition GetClientEdition(XmlDocument doc)
+    {
+        var add = doc.SelectSingleNode("/Configuration/Add");
+        if (add == null) return OfficeClientEdition.Office32Bit;
+        if (doc.Attributes == null || doc.Attributes.Count == 0) return OfficeClientEdition.Office32Bit;
+
+        var currentValue = GetAttribute(doc, add, "OfficeClientEdition");
+        if (currentValue == "32")
+        {
+            return OfficeClientEdition.Office32Bit;
+        }
+        else
+        {
+            return OfficeClientEdition.Office64Bit;
+        }
     }
 
     private void SetClientEdition(XmlDocument doc, OfficeClientEdition edition)
@@ -1098,6 +1120,18 @@ public class InstallOffice
 
     public const int SW_SHOWMINIMIZED = 2;
 
+    private string GetAttribute(XmlDocument xmlDoc, XmlNode xmlNode, string name)
+    {
+        var pathAttr = xmlNode.Attributes[name];
+        if (pathAttr != null)
+        {
+            var value = xmlNode.Attributes[name].Value;
+            if (!string.IsNullOrEmpty(value)) return value.ToString();
+        }
+        return "";
+    }
+
+
     private void SetAttribute(XmlDocument xmlDoc, XmlNode xmlNode, string name, string value)
     {
         var pathAttr = xmlNode.Attributes[name];
@@ -1209,7 +1243,8 @@ public class OfficeInstalledProducts
 
     public string OSArchitecture { get; set; }
 
-    public OfficeClientEdition Edition
+    private OfficeClientEdition _setClientEdition = OfficeClientEdition.Office32Bit;
+    public OfficeClientEdition? Edition
     {
         get
         {
@@ -1221,14 +1256,20 @@ public class OfficeInstalledProducts
                 }
             }
 
-            var installsFiltered = OfficeInstalls.Where(i => !i.DisplayName.ToLower().Contains("mui") && !i.DisplayName.ToLower().Contains("shared")).ToList();
+            var installsFiltered = OfficeInstalls.Where(i => !i.DisplayName.ToLower().Contains("mui") &&
+                                                             !i.DisplayName.ToLower().Contains("shared") &&
+                                                             !i.DisplayName.ToLower().Contains("license")).ToList();
             if (installsFiltered.Any(i => i.Bitness.Contains("32")))
             {
                 return OfficeClientEdition.Office32Bit;
             }
 
-            return OfficeClientEdition.Office64Bit;
+            if (installsFiltered.Any(i => i.Bitness.Contains("64")))
+            {
+                return OfficeClientEdition.Office64Bit;
+            }
 
+            return null;
         }
     }
 }

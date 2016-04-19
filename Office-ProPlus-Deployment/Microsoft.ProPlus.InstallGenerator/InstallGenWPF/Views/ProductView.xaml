@@ -113,7 +113,7 @@
                                     <ComboBox x:Name="cbVisio" Width="500" FontSize="20" Height="40" BorderBrush="{StaticResource GrayBrush}"
                                               ItemsSource="{Binding VisioProducts}" DisplayMemberPath="DisplayName" Margin="0 5 0 0"
                                               Foreground="{StaticResource GrayBrush}" HorizontalAlignment="Left" BorderThickness="2"
-                                              VerticalAlignment="Center" />
+                                              VerticalAlignment="Center" SelectionChanged="CbVisio_OnSelectionChanged" />
 
                                     <Grid Height="30" Margin="0 20 0 0" >
                                         <Grid.ColumnDefinitions>
@@ -137,7 +137,8 @@
                                     <ComboBox x:Name="cbProject" Width="500" FontSize="20" BorderThickness="2" Margin="0 5 0 0"
                                               BorderBrush="{StaticResource GrayBrush}"
                                               Height="40" ItemsSource="{Binding ProjectProducts}" DisplayMemberPath="DisplayName"
-                                              Foreground="{StaticResource GrayBrush}" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                                              Foreground="{StaticResource GrayBrush}" HorizontalAlignment="Left" VerticalAlignment="Center"
+                                              SelectionChanged="CbProject_OnSelectionChanged" />
 
                                 </StackPanel>
 

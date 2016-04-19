@@ -227,12 +227,14 @@ namespace MetroDemo
                 new Product()
                 {
                     DisplayName = "Office 365 ProPlus",
-                    Id = "O365ProPlusRetail"
+                    Id = "O365ProPlusRetail",
+                    ShortName = "Office 365 ProPlus"
                 },
                 new Product()
                 {
                     DisplayName = "Office 365 for Business",
-                    Id = "O365BusinessRetail"
+                    Id = "O365BusinessRetail",
+                    ShortName = "Office 365 for Business"
                 }
             };
 
@@ -241,17 +243,20 @@ namespace MetroDemo
                 new Product()
                 {
                     DisplayName = "Visio for Office 365",
-                    Id = "VisioProRetail"
+                    Id = "VisioProRetail",
+                    ShortName = "Visio for Office 365"
                 },
                 new Product()
                 {
                     DisplayName = "Visio for Office 365 Professional (Volume License)",
-                    Id = "VisioProXVolume"
+                    Id = "VisioProXVolume",
+                    ShortName = "Visio for Office 365"
                 },
                  new Product()
                 {
                     DisplayName = "Visio for Office 365 Standard (Volume License)",
-                    Id = "VisioStdXVolume"
+                    Id = "VisioStdXVolume",
+                    ShortName = "Visio for Office 365"
                 },
             };
 
@@ -260,17 +265,20 @@ namespace MetroDemo
                 new Product()
                 {
                     DisplayName = "Project for Office 365",
-                    Id = "ProjectProRetail"
+                    Id = "ProjectProRetail",
+                    ShortName = "Project for Office 365"
                 },
                 new Product()
                 {
                     DisplayName = "Project for Office 365 Professional(Volume License)",
-                    Id = "ProjectProXVolume"
+                    Id = "ProjectProXVolume",
+                    ShortName = "Project for Office 365"
                 },
                 new Product()
                 {
                     DisplayName = "Project for Office 365 Standard (Volume License)",
-                    Id = "ProjectStdXVolume"
+                    Id = "ProjectStdXVolume",
+                    ShortName = "Project for Office 365"
                 }
             };
 

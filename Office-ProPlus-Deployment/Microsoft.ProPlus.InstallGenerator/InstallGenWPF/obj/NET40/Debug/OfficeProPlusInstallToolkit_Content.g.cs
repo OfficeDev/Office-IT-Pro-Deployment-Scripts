@@ -10,6 +10,8 @@
 
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("helpfiles/embedofficeinstall.html")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("helpfiles/enablesccmsupportinfo.html")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("helpfiles/projectinfo.html")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("helpfiles/visioinfo.html")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("installoffice.cs")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("projectfiles/wpf_autocompletecombobox.dll")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("resources/makecert.exe")]

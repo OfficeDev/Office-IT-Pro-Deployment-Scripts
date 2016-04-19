@@ -307,12 +307,23 @@ namespace MetroDemo.ExampleViews
 
                             MainProducts.SelectedIndex = index;
 
-                            //foreach (Product item in AdditionalProducts.Items)
-                            //{
-                            //    if (item.Id.ToUpper() != product.ID.ToUpper()) continue;
-                            //    AdditionalProducts.SelectedItems.Add(item);
-                            //    break;
-                            //}
+                            foreach (Product item in cbVisio.Items)
+                            {
+                                if (item.Id.ToUpper() != product.ID.ToUpper()) continue;
+                                chkVisio.IsChecked = true;
+                                cbVisio.IsEnabled = true;
+                                cbVisio.SelectedItem = item;
+                                break;
+                            }
+
+                            foreach (Product item in cbProject.Items)
+                            {
+                                if (item.Id.ToUpper() != product.ID.ToUpper()) continue;
+                                chkProject.IsChecked = true;
+                                cbProject.IsEnabled = true;
+                                cbProject.SelectedItem = item;
+                                break;
+                            }
 
                             if (product.Languages != null)
                             {
@@ -521,15 +532,25 @@ namespace MetroDemo.ExampleViews
 
                 configXml.Add.Products.Add(existingProduct);
 
-                //foreach (Product addProduct in AdditionalProducts.SelectedItems)
-                //{
-                //    var additionalProduct = new ODTProduct()
-                //    {
-                //        ID = addProduct.Id
-                //    };
+                if (chkVisio.IsChecked.HasValue && chkVisio.IsChecked.Value)
+                {
+                    var addProduct = (Product) cbVisio.SelectedItem;
+                    var additionalProduct = new ODTProduct()
+                    {
+                        ID = addProduct.Id
+                    };
+                    configXml.Add.Products.Add(additionalProduct);
+                }
 
-                //    configXml.Add.Products.Add(additionalProduct);
-                //}
+                if (chkProject.IsChecked.HasValue && chkProject.IsChecked.Value)
+                {
+                    var addProduct = (Product)cbProject.SelectedItem;
+                    var additionalProduct = new ODTProduct()
+                    {
+                        ID = addProduct.Id
+                    };
+                    configXml.Add.Products.Add(additionalProduct);
+                }
 
                 if (existingProduct.Languages == null)
                 {
@@ -706,6 +727,56 @@ namespace MetroDemo.ExampleViews
             return selectedProductId;
         }
 
+        private void ProductsSelectionChanged()
+        {
+            LanguageUnique.ItemsSource = null;
+
+            var products = new List<Product>();
+
+            foreach (Product product in MainProducts.SelectedItems)
+            {
+                products.Add(product);
+            }
+            //should unselect item of similar name, don't want to add 3 different types of visio
+            //if (e.AddedItems.Count > 0)
+            //{
+            //    MetroDemo.Models.Product temp = (MetroDemo.Models.Product)e.AddedItems[0];
+
+            //    foreach (Product product in AdditionalProducts.SelectedItems)
+            //    {
+            //        if (product.DisplayName != temp.DisplayName && product.DisplayName.StartsWith(temp.DisplayName.Substring(0, 5)))
+            //        {
+            //            AdditionalProducts.SelectedItems.Remove(product);
+            //            break;
+            //        }
+            //    }
+            //}
+
+            //foreach (Product product in cbVisio.SelectedItems)
+            //{
+            //    products.Add(product);
+            //}
+
+            if (chkVisio.IsChecked.HasValue && chkVisio.IsChecked.Value)
+            {
+                var visioProduct = (Product)cbVisio.SelectedItem;
+                products.Add(visioProduct);
+            }
+
+            if (chkProject.IsChecked.HasValue && chkProject.IsChecked.Value)
+            {
+                var projetProduct = (Product)cbProject.SelectedItem;
+                products.Add(projetProduct);
+            }
+
+            LanguageUnique.DisplayMemberPath = "ShortName";
+            LanguageUnique.ItemsSource = products;
+            if (products.Count > 0)
+            {
+                LanguageUnique.SelectedIndex = 0;
+            }
+        }
+
         private async Task GetBranchVersion(OfficeBranch branch, OfficeEdition officeEdition)
         {
             try
@@ -776,11 +847,36 @@ namespace MetroDemo.ExampleViews
 
         #region "Events"
 
+        private void CbVisio_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            try
+            {
+                ProductsSelectionChanged();
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
+
+        private void CbProject_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            try
+            {
+                ProductsSelectionChanged();
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
+
         private void ChkProject_OnChecked(object sender, RoutedEventArgs e)
         {
             try
             {
                 cbProject.IsEnabled = (chkProject.IsChecked.HasValue && chkProject.IsChecked.Value);
+                ProductsSelectionChanged();
             }
             catch (Exception ex)
             {
@@ -793,6 +889,7 @@ namespace MetroDemo.ExampleViews
             try
             {
                 cbVisio.IsEnabled = (chkVisio.IsChecked.HasValue && chkVisio.IsChecked.Value);
+                ProductsSelectionChanged();
             }
             catch (Exception ex)
             {
@@ -990,40 +1087,7 @@ namespace MetroDemo.ExampleViews
         {
             try
             {
-                LanguageUnique.ItemsSource = null;
-
-                var products = new List<Product>();
-
-                foreach (Product product in MainProducts.SelectedItems)
-                {
-                    products.Add(product);
-                }
-                //should unselect item of similar name, don't want to add 3 different types of visio
-                //if (e.AddedItems.Count > 0)
-                //{
-                //    MetroDemo.Models.Product temp = (MetroDemo.Models.Product)e.AddedItems[0];
-
-                //    foreach (Product product in AdditionalProducts.SelectedItems)
-                //    {
-                //        if (product.DisplayName != temp.DisplayName && product.DisplayName.StartsWith(temp.DisplayName.Substring(0, 5)))
-                //        {
-                //            AdditionalProducts.SelectedItems.Remove(product);
-                //            break;
-                //        }
-                //    }
-                //}
-
-                //foreach (Product product in AdditionalProducts.SelectedItems)
-                //{
-                //    products.Add(product);
-                //}
-
-                LanguageUnique.DisplayMemberPath = "DisplayName";
-                LanguageUnique.ItemsSource = products;
-                if (products.Count > 0)
-                {
-                    LanguageUnique.SelectedIndex = 0;
-                }
+                ProductsSelectionChanged();
             }
             catch (Exception ex)
             {

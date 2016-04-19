@@ -187,6 +187,12 @@
     <Content Include="HelpFiles\EnableSCCMSupportInfo.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="HelpFiles\ProjectInfo.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="HelpFiles\VisioInfo.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="InstallOffice.cs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

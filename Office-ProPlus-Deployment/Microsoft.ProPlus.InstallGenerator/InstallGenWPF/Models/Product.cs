@@ -11,6 +11,7 @@ namespace MetroDemo.Models
     {
         private string _id;
         private string _displayName;
+        private string _shortName;
 
         public string Id
         {
@@ -33,6 +34,18 @@ namespace MetroDemo.Models
                 OnPropertyChanged();
             }
         }
+
+        public string ShortName
+        {
+            get { return _shortName; }
+            set
+            {
+                if (value == _shortName) return;
+                _shortName = value;
+                OnPropertyChanged();
+            }
+        }
+
 
         public bool Selected { get; set; }
 
