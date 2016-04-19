@@ -224,3 +224,5 @@ C:\Users\jojones\Documents\GitHub\Office-IT-Pro-Deployment-Scripts\Office-ProPlu
 C:\Users\jojones\Documents\GitHub\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\InstallGenWPF\obj\NET40\Release\OfficeProPlusInstallToolkit.g.resources
 C:\Users\jojones\Documents\GitHub\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\InstallGenWPF\obj\NET40\Release\Microsoft.OfficeProPlus.InstallGen.Presentation.Properties.Resources.resources
 C:\Users\jojones\Documents\GitHub\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\InstallGenWPF\obj\NET40\Release\Microsoft.OfficeProPlus.InstallGen.Presentation.csproj.GenerateResource.Cache
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\InstallGenWPF\bin\NET40\Release\HelpFiles\ProjectInfo.html
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\InstallGenWPF\bin\NET40\Release\HelpFiles\VisioInfo.html

@@ -215,6 +215,8 @@ namespace MetroDemo.ExampleViews
                 _blockUpdate = true;
                 cbVisio.SelectedIndex = 0;
                 cbProject.SelectedIndex = 0;
+                chkVisio.IsChecked = false;
+                chkProject.IsChecked = false;
 
                 MainProducts.SelectedIndex = 0;
                 ProductEdition32Bit.IsChecked = true;
@@ -737,6 +739,7 @@ namespace MetroDemo.ExampleViews
             {
                 products.Add(product);
             }
+
             //should unselect item of similar name, don't want to add 3 different types of visio
             //if (e.AddedItems.Count > 0)
             //{
@@ -775,6 +778,8 @@ namespace MetroDemo.ExampleViews
             {
                 LanguageUnique.SelectedIndex = 0;
             }
+
+            UpdateXml();
         }
 
         private async Task GetBranchVersion(OfficeBranch branch, OfficeEdition officeEdition)
