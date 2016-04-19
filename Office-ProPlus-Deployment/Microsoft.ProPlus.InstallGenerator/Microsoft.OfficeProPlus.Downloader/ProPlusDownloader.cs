@@ -55,7 +55,7 @@ namespace Microsoft.OfficeProPlus.Downloader
             {
                 selectUpdateFile = _updateFiles.FirstOrDefault(u => u.OfficeEdition == OfficeEdition.Office32Bit);
             }
-            else if (properties.OfficeEdition == OfficeEdition.Office32Bit)
+            else if (properties.OfficeEdition == OfficeEdition.Office64Bit)
             {
                 selectUpdateFile = _updateFiles.FirstOrDefault(u => u.OfficeEdition == OfficeEdition.Office64Bit);
             }
@@ -365,6 +365,29 @@ namespace Microsoft.OfficeProPlus.Downloader
                 updateFiles32,
                 updateFiles64
             };
+        }
+
+        public async Task<string> GetChannelNameFromUrlAsync(string channelUrl, OfficeEdition officeEdition)
+        {
+            if (_updateFiles == null)
+            {
+                using (var releaser = await myLock2.LockAsync())
+                {
+                    if (_updateFiles == null)
+                    {
+                        await Retry.BlockAsync(10, 1, async () => {
+                            _updateFiles = await DownloadCabAsync();
+                        });
+                    }
+                }
+            }
+
+            var selectUpdateFiles = _updateFiles.FirstOrDefault(f => f.OfficeEdition == officeEdition);
+            if (selectUpdateFiles == null) return null;
+
+            var branchBase = selectUpdateFiles.BaseURL.FirstOrDefault(b => b.URL.ToLower() == channelUrl.ToLower());
+            if (branchBase == null) return null;
+            return branchBase.Branch;
         }
 
         public async Task<string> GetChannelBaseUrlAsync(string channel, OfficeEdition officeEdition)

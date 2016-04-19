@@ -140,11 +140,29 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
 
             await Task.Delay(100);
 
+            var configXml = "";
+
             if (System.IO.File.Exists(xmlFilePath))
             {
-                return System.IO.File.ReadAllText(xmlFilePath);
+                configXml = System.IO.File.ReadAllText(xmlFilePath);
             }
-            return "";
+
+            try
+            {
+                var installOffice = new InstallOffice();
+                var updateUrl = installOffice.GetBaseCdnUrl();
+                if (!string.IsNullOrEmpty(updateUrl))
+                {
+                    var pd = new ProPlusDownloader();
+                    var channelName = await pd.GetChannelNameFromUrlAsync(updateUrl, OfficeEdition.Office32Bit);
+                    if (!string.IsNullOrEmpty(configXml) && !string.IsNullOrEmpty(channelName))
+                    {
+                        configXml = installOffice.SetUpdateChannel(configXml, channelName);
+                    }
+                }
+            } catch { }
+
+            return configXml;
         }
 
         private async Task<string> GetOfficeLatestVersion(string branch, OfficeEdition edition)

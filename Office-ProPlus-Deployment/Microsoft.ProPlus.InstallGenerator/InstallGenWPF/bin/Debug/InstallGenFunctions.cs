@@ -421,6 +421,30 @@ public class InstallOffice
         }
     }
 
+    public string SetUpdateChannel(string xml, string channel)
+    {
+        var xmlDoc = new XmlDocument();
+        if (File.Exists(xml))
+        {
+            xmlDoc.Load(xml);
+        }
+        else
+        {
+            xmlDoc.LoadXml(xml);
+        }
+       
+        var addNode = xmlDoc.SelectSingleNode("/Configuration/Add");
+        if (addNode == null) return xmlDoc.OuterXml;
+
+        SetAttribute(xmlDoc, addNode, "Channel", channel);
+        if (File.Exists(xml))
+        {
+            xmlDoc.Save(xml);
+        }
+
+        return xmlDoc.OuterXml;
+    }
+
     private void SetConfigSilent(XmlDocument doc)
     {
         var display = doc.SelectSingleNode("/Configuration/Display");

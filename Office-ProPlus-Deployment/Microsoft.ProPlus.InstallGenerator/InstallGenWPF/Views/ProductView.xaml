@@ -68,7 +68,7 @@
 
                                 <StackPanel Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" Width="520">
 
-                                    <Grid Height="30" >
+                                    <Grid Height="35" >
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="30" />
                                             <ColumnDefinition Width="400" />
@@ -90,7 +90,7 @@
                                             SelectedIndex="0" SelectionMode="Single" FontSize="20" SelectionChanged="Products_OnSelectionChanged" 
                                              BorderThickness="2,2,2,2" RenderTransformOrigin="0.508,0.123"/>
 
-                                    <Grid Height="30" Margin="0 20 0 0" >
+                                    <Grid Height="35" Margin="0 20 0 0" >
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="30" />
                                             <ColumnDefinition Width="450" />
@@ -115,7 +115,7 @@
                                               Foreground="{StaticResource GrayBrush}" HorizontalAlignment="Left" BorderThickness="2"
                                               VerticalAlignment="Center" SelectionChanged="CbVisio_OnSelectionChanged" />
 
-                                    <Grid Height="30" Margin="0 20 0 0" >
+                                    <Grid Height="35" Margin="0 20 0 0" >
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="30" />
                                             <ColumnDefinition Width="450" />
