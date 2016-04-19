@@ -8,7 +8,7 @@
              xmlns:gif="http://wpfanimatedgif.codeplex.com"
              mc:Ignorable="d"
              d:DesignHeight="600"
-             d:DesignWidth="800"
+             d:DesignWidth="900"
              d:DataContext="{d:DesignInstance MetroDemo:MainWindowViewModel}"
              Loaded="StartView_OnLoaded">
 
@@ -50,10 +50,10 @@
                             </DockPanel>
                         </TabItem.Header>
 
-                        <Grid  Margin="30 30 0 0" VerticalAlignment="Top" HorizontalAlignment="Left"  Height="500" Width="750">
+                        <Grid  Margin="30 30 0 0" VerticalAlignment="Top" HorizontalAlignment="Left"  Height="500" Width="800">
 
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="500" />
+                                <ColumnDefinition Width="550" />
                                 <ColumnDefinition Width="250" />
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
@@ -68,17 +68,18 @@
                                 <Run Text="What would you like to do?"/>
                             </TextBlock>
 
-                            <ComboBox x:Name="cbActions" Grid.Row="1" FontSize="20" Height="50" HorizontalAlignment="Left" VerticalAlignment="Top" Width="500" SelectionChanged="cbActions_SelectionChanged"/>
+                            <ComboBox x:Name="cbActions" Grid.Row="1" Grid.Column="0" Width="550" FontSize="20" Height="50" Foreground="{StaticResource GrayBrush}"
+                                      HorizontalAlignment="Left" VerticalAlignment="Center"  SelectionChanged="cbActions_SelectionChanged"/>
                             
-                            <Button x:Name="strtButton" Grid.Row="1" Grid.Column="1" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Top" Width="200" Height="50" Click="strtButton_Click">
+                            <Button x:Name="strtButton" Grid.Row="1" Grid.Column="1" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center" Width="200" Height="55" Click="strtButton_Click">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="50" />
+                                        <ColumnDefinition Width="65" />
                                         <ColumnDefinition Width="140" />
                                     </Grid.ColumnDefinitions>                                    
                                     <Image x:Name="WaitManageLocal" Visibility="Collapsed" Height="40" HorizontalAlignment="Left" gif:ImageBehavior.RepeatBehavior="Forever" 
                                                     Grid.Row="0" Grid.Column="0" gif:ImageBehavior.AnimatedSource="../images/InstallRing.GIF" />
-                                    <Label Content="Start" Grid.Column="1" VerticalAlignment="Center" FontSize="25" HorizontalAlignment="Center" Style="{StaticResource CustomMetroLabelHeader}" Margin="10.4,0,38.4,0.2" Width="92"></Label>
+                                    <Label Content="Start" Grid.Column="1" VerticalAlignment="Center" FontSize="22" Style="{StaticResource CustomMetroLabelHeader}" HorizontalContentAlignment="Left" ></Label>
                                 </Grid>
                             </Button>
 

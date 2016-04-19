@@ -45,9 +45,9 @@ namespace MetroDemo.ExampleViews
             {
                 if (cbActions.Items.Count < 1)
                 {
-                    cbActions.Items.Add("Create new Office 365 ProPlus Installer");
-                    cbActions.Items.Add("Import an existing Office 365 ProPlus Installer");
-                    cbActions.Items.Add("Manage your local Office 365 ProPlus Installation");
+                    cbActions.Items.Add("Create new Office 365 ProPlus installer");
+                    cbActions.Items.Add("Import an existing Office 365 ProPlus installer");
+                    cbActions.Items.Add("Manage your local Office 365 ProPlus installation");
                     cbActions.SelectedIndex = 0;
                 }
                 
@@ -59,20 +59,7 @@ namespace MetroDemo.ExampleViews
             }
         }
 
-        private void LogErrorMessage(Exception ex)
-        {
-            ex.LogException(false);
-            if (ErrorMessage != null)
-            {
-                ErrorMessage(this, new MessageEventArgs()
-                {
-                    Title = "Error",
-                    Message = ex.Message
-                });
-            }
-        }
-
-        private void StartNew_Click(object sender, RoutedEventArgs e)
+        private void StartNew()
         {
             try
             {
@@ -104,7 +91,7 @@ namespace MetroDemo.ExampleViews
             }
         }
 
-        private void ImportExisting_Click_1(object sender, RoutedEventArgs e)
+        private void ImportExisting()
         {
             try
             {
@@ -159,7 +146,7 @@ namespace MetroDemo.ExampleViews
             }
         }
 
-        private async void ManageLocal_Click(object sender, RoutedEventArgs e)
+        private async void ManageLocal()
         {
             try
             {
@@ -170,7 +157,7 @@ namespace MetroDemo.ExampleViews
                 _running = true;
                 var localXml = "";
 
-                await Task.Run(async () => { 
+                await Task.Run(async () => {
                     Dispatcher.Invoke(() =>
                     {
                         WaitManageLocal.Visibility = Visibility.Visible;
@@ -220,7 +207,8 @@ namespace MetroDemo.ExampleViews
             catch (Exception ex)
             {
                 LogErrorMessage(ex);
-            } finally
+            }
+            finally
             {
                 Dispatcher.Invoke(() =>
                 {
@@ -228,6 +216,19 @@ namespace MetroDemo.ExampleViews
                     //ImgManageLocal.Visibility = Visibility.Visible;
                 });
                 _running = false;
+            }
+        }
+
+        private void LogErrorMessage(Exception ex)
+        {
+            ex.LogException(false);
+            if (ErrorMessage != null)
+            {
+                ErrorMessage(this, new MessageEventArgs()
+                {
+                    Title = "Error",
+                    Message = ex.Message
+                });
             }
         }
 
@@ -249,13 +250,13 @@ namespace MetroDemo.ExampleViews
             switch (cbActions.SelectedIndex)
             {
                 case 0:
-                    StartNew_Click(new object(), new RoutedEventArgs());
+                    StartNew();
                     break;
                 case 1:
-                    ImportExisting_Click_1(new object(), new RoutedEventArgs());
+                    ImportExisting();
                     break;
                 case 2:
-                    ManageLocal_Click(new object(), new RoutedEventArgs());
+                    ManageLocal();
                     break;
                 default:
                     LogErrorMessage(new Exception("invalid selection"));

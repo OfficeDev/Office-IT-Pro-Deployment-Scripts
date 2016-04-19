@@ -1,30 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Runtime.Remoting.Channels;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Forms;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using MahApps.Metro.Controls;
 using MetroDemo.Events;
 using MetroDemo.ExampleWindows;
 using MetroDemo.Models;
 using Micorosft.OfficeProPlus.ConfigurationXml;
 using Micorosft.OfficeProPlus.ConfigurationXml.Model;
-using Microsoft.OfficeProPlus.Downloader;
 using Microsoft.OfficeProPlus.Downloader.Model;
 using Microsoft.OfficeProPlus.InstallGen.Presentation.Logging;
 using Microsoft.OfficeProPlus.InstallGen.Presentation.Models;
@@ -63,7 +52,10 @@ namespace MetroDemo.ExampleViews
         {
             try
             {
-               // LoadExcludedProducts();
+                // LoadExcludedProducts();
+
+                cbProject.IsEnabled = false;
+                cbVisio.IsEnabled = false;
 
                 if (MainTabControl == null) return;
                 MainTabControl.SelectedIndex = 0;
@@ -221,7 +213,8 @@ namespace MetroDemo.ExampleViews
             try
             {
                 _blockUpdate = true;
-                AdditionalProducts.SelectedItems.Clear();
+                cbVisio.SelectedIndex = 0;
+                cbProject.SelectedIndex = 0;
 
                 MainProducts.SelectedIndex = 0;
                 ProductEdition32Bit.IsChecked = true;
@@ -314,12 +307,12 @@ namespace MetroDemo.ExampleViews
 
                             MainProducts.SelectedIndex = index;
 
-                            foreach (Product item in AdditionalProducts.Items)
-                            {
-                                if (item.Id.ToUpper() != product.ID.ToUpper()) continue;
-                                AdditionalProducts.SelectedItems.Add(item);
-                                break;
-                            }
+                            //foreach (Product item in AdditionalProducts.Items)
+                            //{
+                            //    if (item.Id.ToUpper() != product.ID.ToUpper()) continue;
+                            //    AdditionalProducts.SelectedItems.Add(item);
+                            //    break;
+                            //}
 
                             if (product.Languages != null)
                             {
@@ -528,15 +521,15 @@ namespace MetroDemo.ExampleViews
 
                 configXml.Add.Products.Add(existingProduct);
 
-                foreach (Product addProduct in AdditionalProducts.SelectedItems)
-                {
-                    var additionalProduct = new ODTProduct()
-                    {
-                        ID = addProduct.Id
-                    };
+                //foreach (Product addProduct in AdditionalProducts.SelectedItems)
+                //{
+                //    var additionalProduct = new ODTProduct()
+                //    {
+                //        ID = addProduct.Id
+                //    };
 
-                    configXml.Add.Products.Add(additionalProduct);
-                }
+                //    configXml.Add.Products.Add(additionalProduct);
+                //}
 
                 if (existingProduct.Languages == null)
                 {
@@ -783,6 +776,30 @@ namespace MetroDemo.ExampleViews
 
         #region "Events"
 
+        private void ChkProject_OnChecked(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                cbProject.IsEnabled = (chkProject.IsChecked.HasValue && chkProject.IsChecked.Value);
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
+
+        private void ChkVisio_OnChecked(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                cbVisio.IsEnabled = (chkVisio.IsChecked.HasValue && chkVisio.IsChecked.Value);
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
+
         private void MainTabControl_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             try
@@ -818,8 +835,7 @@ namespace MetroDemo.ExampleViews
                 LogErrorMessage(ex);
             }
         }
-
-
+        
         private async void ProductBranch_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             try
@@ -983,24 +999,24 @@ namespace MetroDemo.ExampleViews
                     products.Add(product);
                 }
                 //should unselect item of similar name, don't want to add 3 different types of visio
-                if (e.AddedItems.Count > 0)
-                {
-                    MetroDemo.Models.Product temp = (MetroDemo.Models.Product)e.AddedItems[0];
+                //if (e.AddedItems.Count > 0)
+                //{
+                //    MetroDemo.Models.Product temp = (MetroDemo.Models.Product)e.AddedItems[0];
 
-                    foreach (Product product in AdditionalProducts.SelectedItems)
-                    {
-                        if (product.DisplayName != temp.DisplayName && product.DisplayName.StartsWith(temp.DisplayName.Substring(0, 5)))
-                        {
-                            AdditionalProducts.SelectedItems.Remove(product);
-                            break;
-                        }
-                    }
-                }
+                //    foreach (Product product in AdditionalProducts.SelectedItems)
+                //    {
+                //        if (product.DisplayName != temp.DisplayName && product.DisplayName.StartsWith(temp.DisplayName.Substring(0, 5)))
+                //        {
+                //            AdditionalProducts.SelectedItems.Remove(product);
+                //            break;
+                //        }
+                //    }
+                //}
 
-                foreach (Product product in AdditionalProducts.SelectedItems)
-                {
-                    products.Add(product);
-                }
+                //foreach (Product product in AdditionalProducts.SelectedItems)
+                //{
+                //    products.Add(product);
+                //}
 
                 LanguageUnique.DisplayMemberPath = "DisplayName";
                 LanguageUnique.ItemsSource = products;

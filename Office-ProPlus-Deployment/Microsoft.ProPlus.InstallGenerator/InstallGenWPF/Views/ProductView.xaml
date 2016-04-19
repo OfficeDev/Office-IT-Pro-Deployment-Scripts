@@ -52,28 +52,28 @@
                         <Grid HorizontalAlignment="Left">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="20"></RowDefinition>
-                                <RowDefinition Height="324.8"></RowDefinition>
+                                <RowDefinition Height="350"></RowDefinition>
                                 <RowDefinition Height="224"></RowDefinition>
                             </Grid.RowDefinitions>
 
-                            <Grid Width="900" Grid.Row="1" HorizontalAlignment="Left" Margin="0,0,0,139.8" Grid.RowSpan="2">
+                            <Grid Width="900" Grid.Row="1" HorizontalAlignment="Left" Margin="10 0 0 0">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="370" />
-                                    <ColumnDefinition Width="120" />
+                                    <ColumnDefinition Width="540" />
+                                    <ColumnDefinition Width="5" />
                                     <ColumnDefinition Width="280" />
                                 </Grid.ColumnDefinitions>
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="320.8"></RowDefinition>
-                                    <RowDefinition Height="128.8"></RowDefinition>
+                                    <RowDefinition Height="600"></RowDefinition>
                                 </Grid.RowDefinitions>
 
-                                <StackPanel Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" Margin="0,0,213,39.6" Grid.RowSpan="2" Grid.ColumnSpan="3" Width="559">
+                                <StackPanel Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" Width="520">
 
-                                    <Grid Margin="35,0,0.2,0" Height="30" >
+                                    <Grid Height="30" >
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="30" />
                                             <ColumnDefinition Width="400" />
                                         </Grid.ColumnDefinitions>
+                                        
                                         <Button x:Name="ProductInfo" Width="30" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" 
                                                 Focusable="False"  Style="{StaticResource MetroInfoButton}" Click="ProductInfo_OnClick" >
                                             <StackPanel Orientation="Horizontal">
@@ -84,19 +84,64 @@
                                                HorizontalAlignment="Left"  Width="100" VerticalAlignment="Center"/>
                                     </Grid>
 
-                                    <ListBox x:Name="MainProducts"  Style="{StaticResource VirtualizedMetroListBox}" Margin="35,10,10.2,0"
-                                            ItemsSource="{Binding MainProducts}"
-                                            DisplayMemberPath="DisplayName" Height="60"
-                                            SelectedIndex="0" SelectionMode="Single" FontSize="20" SelectionChanged="Products_OnSelectionChanged" BorderThickness="2,2,2,0" RenderTransformOrigin="0.508,0.123"/>
+                                    <ListBox x:Name="MainProducts"  Style="{StaticResource VirtualizedMetroListBox}" 
+                                            ItemsSource="{Binding MainProducts}" Width="500" HorizontalAlignment="Left"
+                                            DisplayMemberPath="DisplayName" Height="60" Margin="0 10 0 0" FontWeight="Normal"
+                                            SelectedIndex="0" SelectionMode="Single" FontSize="20" SelectionChanged="Products_OnSelectionChanged" 
+                                             BorderThickness="2,2,2,2" RenderTransformOrigin="0.508,0.123"/>
 
-                                    <ListBox x:Name="AdditionalProducts"  Style="{StaticResource VirtualizedMetroListBox}" Margin="35,0,10.2,0"
-                                            ItemsSource="{Binding AdditionalProducts}"
-                                            DisplayMemberPath="DisplayName" Height="192"
-                                            SelectedIndex="-1" SelectionMode="Multiple" FontSize="20" SelectionChanged="Products_OnSelectionChanged" BorderThickness="2,0,2,2"/>
+                                    <Grid Height="30" Margin="0 20 0 0" >
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="30" />
+                                            <ColumnDefinition Width="450" />
+                                            <ColumnDefinition Width="30" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <Button x:Name="VisioInfo" Width="30" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" 
+                                                Focusable="False"  Style="{StaticResource MetroInfoButton}" Click="ProductInfo_OnClick" >
+                                            <StackPanel Orientation="Horizontal">
+                                                <Image Source="../images/info.png" Width="20" Height="20"/>
+                                            </StackPanel>
+                                        </Button>
+                                        <Label Grid.Row="0" Grid.Column="1" Content="Visio" Style="{StaticResource CustomMetroLabelHeader}"  
+                                               HorizontalAlignment="Left"  Width="100" VerticalAlignment="Center"/>
+                                        <CheckBox x:Name="chkVisio" Grid.Column="2" Style="{StaticResource MetroCheckBox}" Checked="ChkVisio_OnChecked"
+                                                  Unchecked="ChkVisio_OnChecked"></CheckBox>
+                                    </Grid>
+                                    
+
+                                    <ComboBox x:Name="cbVisio" Width="500" FontSize="20" Height="40" BorderBrush="{StaticResource GrayBrush}"
+                                              ItemsSource="{Binding VisioProducts}" DisplayMemberPath="DisplayName" Margin="0 5 0 0"
+                                              Foreground="{StaticResource GrayBrush}" HorizontalAlignment="Left" BorderThickness="2"
+                                              VerticalAlignment="Center" />
+
+                                    <Grid Height="30" Margin="0 20 0 0" >
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="30" />
+                                            <ColumnDefinition Width="450" />
+                                            <ColumnDefinition Width="30" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <Button x:Name="ProjectInfo" Width="30" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" 
+                                                Focusable="False"  Style="{StaticResource MetroInfoButton}" Click="ProductInfo_OnClick" >
+                                            <StackPanel Orientation="Horizontal">
+                                                <Image Source="../images/info.png" Width="20" Height="20"/>
+                                            </StackPanel>
+                                        </Button>
+                                        <Label Grid.Row="0" Grid.Column="1" Content="Project" Style="{StaticResource CustomMetroLabelHeader}"  
+                                               HorizontalAlignment="Left"  Width="100" VerticalAlignment="Center"/>
+                                        <CheckBox x:Name="chkProject" Grid.Column="2" Style="{StaticResource MetroCheckBox}" Checked="ChkProject_OnChecked" 
+                                                 Unchecked="ChkProject_OnChecked" ></CheckBox>
+                                    </Grid>
+                                    
+                                    <ComboBox x:Name="cbProject" Width="500" FontSize="20" BorderThickness="2" Margin="0 5 0 0"
+                                              BorderBrush="{StaticResource GrayBrush}"
+                                              Height="40" ItemsSource="{Binding ProjectProducts}" DisplayMemberPath="DisplayName"
+                                              Foreground="{StaticResource GrayBrush}" HorizontalAlignment="Left" VerticalAlignment="Center" />
 
                                 </StackPanel>
 
-                                <StackPanel Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center" Margin="91.8,0,-99,5.8" Width="288">
+                                <StackPanel Grid.Row="0" Grid.Column="2" HorizontalAlignment="Left"  Width="280">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="30" />
@@ -110,17 +155,14 @@
                                         </Button>
                                         <Label Content="Edition" Style="{StaticResource CustomMetroLabelHeader}" HorizontalAlignment="Left" Grid.Column="1"/>
                                     </Grid>
-                                    <RadioButton Margin="10,10,174,0" x:Name="ProductEdition32Bit" HorizontalAlignment="Center"
-                                         Content="32-Bit" Width="104" Foreground="{StaticResource GrayBrush}"
-                                         GroupName="1" 
+                                    <RadioButton x:Name="ProductEdition32Bit" Content="32-Bit"  Foreground="{StaticResource GrayBrush}"
+                                         GroupName="1" HorizontalContentAlignment="Left" Margin="5 0 0 0"
                                          IsChecked="True" FontSize="20" Height="28" />
-                                    <RadioButton Margin="10,10,155,0"  x:Name="ProductEdition64Bit" HorizontalAlignment="Center"
-                                         Content="64-Bit" Width="123" Foreground="{StaticResource GrayBrush}"
+                                    <RadioButton  x:Name="ProductEdition64Bit" HorizontalContentAlignment="Left"
+                                         Content="64-Bit" Foreground="{StaticResource GrayBrush}" Margin="5 0 0 0"
                                          GroupName="1" FontSize="20" Height="27" />
-                                </StackPanel>
 
-                                <StackPanel Grid.Row="0" Grid.Column="2" HorizontalAlignment="Left" RenderTransformOrigin="2.26,0.535" Margin="91.8,153,-99,39.6" Grid.RowSpan="2" Width="288">
-                                    <Grid>
+                                    <Grid Margin="0 20 0 0">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="30" />
                                             <ColumnDefinition Width="80" />

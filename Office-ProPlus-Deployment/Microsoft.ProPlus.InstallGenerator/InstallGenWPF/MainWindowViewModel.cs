@@ -236,7 +236,7 @@ namespace MetroDemo
                 }
             };
 
-            AdditionalProducts = new List<Product>()
+            VisioProducts = new List<Product>()
             {
                 new Product()
                 {
@@ -253,6 +253,10 @@ namespace MetroDemo
                     DisplayName = "Visio for Office 365 Standard (Volume License)",
                     Id = "VisioStdXVolume"
                 },
+            };
+
+            ProjectProducts = new List<Product>()
+            {
                 new Product()
                 {
                     DisplayName = "Project for Office 365",
@@ -397,7 +401,9 @@ namespace MetroDemo
 
         public List<Product> MainProducts { get; set; }
 
-        public List<Product> AdditionalProducts { get; set; }
+        public List<Product> VisioProducts { get; set; }
+
+        public List<Product> ProjectProducts { get; set; }
 
         public List<ExcludeProduct> ExcludeProducts { get; set; }
 
