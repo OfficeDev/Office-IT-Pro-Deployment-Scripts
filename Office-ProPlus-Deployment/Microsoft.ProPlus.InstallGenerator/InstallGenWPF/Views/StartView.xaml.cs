@@ -48,6 +48,7 @@ namespace MetroDemo.ExampleViews
                     cbActions.Items.Add("Create new Office 365 ProPlus installer");
                     cbActions.Items.Add("Import an existing Office 365 ProPlus installer");
                     cbActions.Items.Add("Manage your local Office 365 ProPlus installation");
+                    cbActions.Items.Add("Create Office 365 ProPlus language pack");
                     cbActions.SelectedIndex = 0;
                 }
                 
@@ -219,6 +220,37 @@ namespace MetroDemo.ExampleViews
             }
         }
 
+        private void CreateLanguagePack()
+        {
+            try
+            {
+                if (_running) return;
+                GlobalObjects.ViewModel.LocalConfig = false;
+                GlobalObjects.ViewModel.RunLocalConfigs = false;
+
+                GlobalObjects.ViewModel.ConfigXmlParser.LoadXml(GlobalObjects.DefaultXml);
+                GlobalObjects.ViewModel.ResetXml = true;
+                GlobalObjects.ViewModel.ImportFile = null;
+
+                if (RestartWorkflow != null)
+                {
+                    this.RestartWorkflow(this, new EventArgs());
+                }
+
+                this.TransitionTab(this, new TransitionTabEventArgs()
+                {
+                    Direction = TransitionTabDirection.Forward,
+                    Index = 7
+                });
+                LogAnaylytics("/StartView", "LanguagePack");
+
+
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
         private void LogErrorMessage(Exception ex)
         {
             ex.LogException(false);
@@ -258,6 +290,9 @@ namespace MetroDemo.ExampleViews
                 case 2:
                     ManageLocal();
                     break;
+                case 3:
+                    CreateLanguagePack();
+                    break;
                 default:
                     LogErrorMessage(new Exception("invalid selection"));
                     break;
@@ -276,6 +311,9 @@ namespace MetroDemo.ExampleViews
                     break;
                 case 2:
                     txtBlock.Text = "Select this option if ou would like to install, modify or manage the local installation of Office 365 ProPlus.";
+                    break;
+                case 3:
+                    txtBlock.Text = "Select this option if you would like to create a language pack.";
                     break;
                 default:
                     txtBlock.Text = "";

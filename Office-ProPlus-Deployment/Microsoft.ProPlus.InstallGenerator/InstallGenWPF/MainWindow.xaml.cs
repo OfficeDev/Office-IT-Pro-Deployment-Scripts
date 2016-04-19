@@ -196,6 +196,25 @@ namespace MetroDemo
             {
                 var newIndex = Convert.ToInt32(((dynamic)sender).Tag);
 
+                if (TabUpdates.Visibility == Visibility.Collapsed)
+                {
+                    GenerateTabName.Visibility = Visibility.Visible;
+                    TabUpdates.Visibility = Visibility.Visible;
+                    TabOptions.Visibility = Visibility.Visible;
+                    ProductView.ProductTab.Visibility = Visibility.Visible;
+                    ProductView.OptionalTab.Visibility = Visibility.Visible;
+                    ProductView.ExcludedTab.Visibility = Visibility.Visible;
+                }
+                if (((MetroDemo.Events.TransitionTabEventArgs)e).Index == 7)
+                {
+                    GenerateTabName.Visibility = Visibility.Collapsed;
+                    TabUpdates.Visibility = Visibility.Collapsed;
+                    TabOptions.Visibility = Visibility.Collapsed;
+                    ProductView.ProductTab.Visibility = Visibility.Collapsed;
+                    ProductView.OptionalTab.Visibility = Visibility.Collapsed;
+                    ProductView.ExcludedTab.Visibility = Visibility.Collapsed;
+                }
+
                 if (GlobalObjects.ViewModel.RunLocalConfigs)
                 {
                     GenerateTabName.Visibility = Visibility.Collapsed;
