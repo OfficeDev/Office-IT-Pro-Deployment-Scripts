@@ -60,6 +60,11 @@ namespace MetroDemo.ExampleViews
                 if (MainTabControl == null) return;
                 MainTabControl.SelectedIndex = 0;
 
+                if (ProductTab.Visibility == Visibility.Collapsed)
+                {
+                    MainTabControl.SelectedIndex = 1;
+                }
+
                 if (GlobalObjects.ViewModel == null) return;
                 LanguageList.ItemsSource = GlobalObjects.ViewModel.GetLanguages(null);
 
