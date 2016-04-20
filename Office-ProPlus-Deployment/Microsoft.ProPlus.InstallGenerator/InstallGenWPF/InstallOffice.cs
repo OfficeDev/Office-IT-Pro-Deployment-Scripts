@@ -45,6 +45,8 @@ public class InstallOffice
     {
         var fileNames = new List<string>();
         var installDir = "";
+        var os = Environment.OSVersion;
+        var exitCode = 0;
 
         try
         {
@@ -168,6 +170,8 @@ public class InstallOffice
                     Console.WriteLine("Get Version Error: " + ex.Message);
                 }
 
+                if (os.Version.Major == 6 & os.Version.Minor == 1) toggleWUS(true);
+
                 var p = new Process
                 {
                     StartInfo = new ProcessStartInfo()
@@ -181,6 +185,8 @@ public class InstallOffice
                 p.Start();
                 p.WaitForExit();
 
+                exitCode = p.ExitCode; 
+
                 WaitForOfficeCtrUpadate();
 
                 var errorMessage = GetOdtErrorMessage();
@@ -192,11 +198,33 @@ public class InstallOffice
         }
         finally
         {
-            //CleanUp(installDir);
+            if (os.Version.Major == 6 & os.Version.Minor == 1) toggleWUS(false);
+
+            //if (exitCode != 0) uninstallMSI();
+
+            CleanUp(installDir);
         }
 
     }
 
+
+   
+
+    private void toggleWUS(bool toggle)
+    {
+        var args = "/C net start wuauserv";
+
+        if (toggle)
+        {
+            args = "/C net stop wuauserv";
+        }
+
+
+
+        System.Diagnostics.Process.Start("CMD.exe", args);
+
+
+    }
 
     public OfficeInstalledProducts GetOfficeVersion()
     {
