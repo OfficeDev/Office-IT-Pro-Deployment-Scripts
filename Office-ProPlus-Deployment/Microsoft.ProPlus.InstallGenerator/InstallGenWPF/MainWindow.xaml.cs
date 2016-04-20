@@ -211,7 +211,6 @@ namespace MetroDemo
                 {
                     GenerateTabName.Visibility = Visibility.Collapsed;
                     TabUpdates.Visibility = Visibility.Collapsed;
-                    TabOptions.Visibility = Visibility.Collapsed;
                     ProductView.ProductTab.Visibility = Visibility.Collapsed;
                     ProductView.OptionalTab.Visibility = Visibility.Collapsed;
                     ProductView.ExcludedTab.Visibility = Visibility.Collapsed;

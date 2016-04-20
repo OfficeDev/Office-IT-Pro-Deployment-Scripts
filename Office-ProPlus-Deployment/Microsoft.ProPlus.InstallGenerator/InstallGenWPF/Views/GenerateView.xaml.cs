@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,7 +18,10 @@ using Micorosft.OfficeProPlus.ConfigurationXml.Enums;
 using Micorosft.OfficeProPlus.ConfigurationXml.Model;
 using Microsoft.OfficeProPlus.Downloader;
 using Microsoft.OfficeProPlus.Downloader.Model;
+using Microsoft.OfficeProPlus.InstallGen.Presentation.Enums;
 using Microsoft.OfficeProPlus.InstallGen.Presentation.Logging;
+using Microsoft.OfficeProPlus.InstallGenerator;
+using Microsoft.OfficeProPlus.InstallGenerator.Extensions;
 using Microsoft.OfficeProPlus.InstallGenerator.Implementation;
 using OfficeInstallGenerator;
 using MessageBox = System.Windows.MessageBox;
@@ -58,6 +63,8 @@ namespace MetroDemo.ExampleViews
                 InstallMsi.IsChecked = true;
 
                 LoadFolder();
+
+                MajorVersion.Value = 1;
 
                 LogAnaylytics("/GenerateView", "Load");
             }
@@ -262,9 +269,7 @@ namespace MetroDemo.ExampleViews
                 try
                 {
                     FixFileExtension();
-
                     var executablePath = "";
-
 
                     for (var i = 1; i <= 2; i++)
                     {
@@ -428,34 +433,102 @@ namespace MetroDemo.ExampleViews
                         }
                     }
 
-                    if (isInstallExe)
-                    {
-                        var generateExe = new OfficeInstallExecutableGenerator();
-                        generateExe.Generate(new OfficeInstallProperties()
-                        {
-                            ConfigurationXmlPath = configFilePath,
-                            OfficeVersion = OfficeVersion.Office2016,
-                            ExecutablePath = executablePath,
-                            SourceFilePath = sourceFilePath,
-                            BuildVersion = version
-                        });
+                    var productName = "Microsoft Office 365 ProPlus Installer";
+                    var productId = Guid.NewGuid().ToString(); //"8AA11E8A-A882-45CC-B52C-80149B4CF47A";
+                    var upgradeCode = "AC89246F-38A8-4C32-9110-FF73533F417C";
 
-                        LogAnaylytics("/GenerateView", "GenerateExe");
+                    var productVersion = new Version("1.0.0");
+                    if (MajorVersion.Value.HasValue && MinorVersion.Value.HasValue && ReleaseVersion.Value.HasValue)
+                    {
+                        productVersion =
+                            new Version(MajorVersion.Value.Value + "." + MinorVersion.Value.Value + "." +
+                                        ReleaseVersion.Value.Value);
+                    }
+
+                    var installProperties = new List<OfficeInstallProperties>();
+
+                    if (GlobalObjects.ViewModel.ApplicationMode == ApplicationMode.LanguagePack)
+                    {
+                        productName = "Microsoft Office 365 ProPlus Language Pack";
+
+                        var languages = configXml?.Add?.Products?.FirstOrDefault()?.Languages;
+                        foreach (var language in languages)
+                        {
+                            var configLangXml = new ConfigXmlParser(GlobalObjects.ViewModel.ConfigXmlParser.Xml);
+                            configLangXml.ConfigurationXml.Add.ODTChannel = null;
+                            var tmpProducts = configLangXml?.ConfigurationXml?.Add?.Products;
+                            tmpProducts.FirstOrDefault().Languages = new List<ODTLanguage>()
+                            {
+                                new ODTLanguage()
+                                {
+                                    ID = language.ID
+                                }
+                            };
+
+                            var tmpXmlFilePath = Environment.ExpandEnvironmentVariables(@"%temp%\" + Guid.NewGuid().ToString());
+                            System.IO.File.WriteAllText(tmpXmlFilePath, configLangXml.Xml);
+
+                            var tmpSourceFilePath = executablePath;
+
+                            if (Regex.Match(executablePath, ".msi$", RegexOptions.IgnoreCase).Success)
+                            {
+                                tmpSourceFilePath = Regex.Replace(executablePath, ".msi$", "(" + language.ID + ").msi",
+                                    RegexOptions.IgnoreCase);
+                            }
+
+                            if (Regex.Match(executablePath, ".exe", RegexOptions.IgnoreCase).Success)
+                            {
+                                tmpSourceFilePath = Regex.Replace(executablePath, ".exe$", "(" + language.ID + ").exe",
+                                    RegexOptions.IgnoreCase);
+                            }
+
+                            installProperties.Add(new OfficeInstallProperties()
+                            {
+                                ProductName = productName + " (" + language.ID + ")",
+                                ProductId = productId,
+                                ConfigurationXmlPath = tmpXmlFilePath,
+                                OfficeVersion = OfficeVersion.Office2016,
+                                ExecutablePath = tmpSourceFilePath,
+                                SourceFilePath = sourceFilePath,
+                                BuildVersion = version,
+                                UpgradeCode = language.ID.GenerateGuid(),
+                                Version = productVersion
+                            });
+                        }
                     }
                     else
                     {
-                        var generateMsi = new OfficeInstallMsiGenerator();
-                        generateMsi.Generate(new OfficeInstallProperties()
+                        installProperties.Add(new OfficeInstallProperties()
                         {
+                            ProductName = productName,
+                            ProductId = productId,
                             ConfigurationXmlPath = configFilePath,
                             OfficeVersion = OfficeVersion.Office2016,
                             ExecutablePath = executablePath,
                             SourceFilePath = sourceFilePath,
-                            BuildVersion = version
+                            BuildVersion = version,
+                            UpgradeCode = upgradeCode,
+                            Version = productVersion,
+                            Language = ""
                         });
-
-                        LogAnaylytics("/GenerateView", "GenerateMSI");
                     }
+
+                    foreach (var installProperty in installProperties)
+                    {
+                        IOfficeInstallGenerator installer = null;
+                        if (isInstallExe)
+                        {
+                            installer = new OfficeInstallExecutableGenerator();
+                            LogAnaylytics("/GenerateView", "GenerateExe");
+                        }
+                        else
+                        {
+                            installer = new OfficeInstallMsiGenerator();
+                            LogAnaylytics("/GenerateView", "GenerateMSI");
+                        }
+                        installer.Generate(installProperty);
+                    }
+
 
                     await Task.Delay(500);
 
@@ -629,10 +702,18 @@ namespace MetroDemo.ExampleViews
             if (InstallMsi.IsChecked.HasValue && InstallMsi.IsChecked.Value)
             {
                 fileName = "OfficeProPlus.msi";
+                if (GlobalObjects.ViewModel.ApplicationMode == ApplicationMode.LanguagePack)
+                {
+                    fileName = "OfficeProPlusLanuagePack.msi";
+                }
             }
             else
             {
                 fileName = "OfficeProPlus.exe";
+                if (GlobalObjects.ViewModel.ApplicationMode == ApplicationMode.LanguagePack)
+                {
+                    fileName = "OfficeProPlusLanuagePack.exe";
+                }
             }
 
             var currentFilePath = FileSavePath.Text;

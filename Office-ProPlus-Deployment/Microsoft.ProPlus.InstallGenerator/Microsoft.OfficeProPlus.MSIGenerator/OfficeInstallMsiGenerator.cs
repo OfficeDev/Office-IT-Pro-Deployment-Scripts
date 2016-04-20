@@ -49,12 +49,25 @@ public class MsiGenerator
         };
 
         project.GUID = installProperties.ProductId;
-        project.ControlPanelInfo = new ProductInfo() {Manufacturer = "Microsoft Corporation"};
+        project.ControlPanelInfo = new ProductInfo() { Manufacturer = installProperties.Manufacturer };
         project.OutFileName = installProperties.MsiPath;
+        project.UpgradeCode = installProperties.UpgradeCode;
+        project.Version = installProperties.Version;
+        project.MajorUpgrade = new MajorUpgrade()
+        {
+            DowngradeErrorMessage = "A later version of [ProductName] is already installed. Setup will now exit.",
+            AllowDowngrades = false,
+            AllowSameVersionUpgrades = false
+        };
 
         project.Load += project_Load;
         project.AfterInstall += project_AfterInstall;
 
+        if (!string.IsNullOrEmpty(installProperties.Language))
+        {
+            project.Language = installProperties.Language;
+        }
+        
         if (!string.IsNullOrEmpty(installProperties.WixToolsPath))
         {
             Compiler.WixLocation = installProperties.WixToolsPath + @"\";
@@ -341,8 +354,8 @@ public class CustomActions
                 },
             };
 
-            p.Start();
-            p.WaitForExit();
+            //p.Start();
+            //p.WaitForExit();
 
             return ActionResult.Success;
         }

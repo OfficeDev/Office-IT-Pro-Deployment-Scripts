@@ -52,6 +52,7 @@
                                 <RowDefinition Height="20" />
                                 <RowDefinition Height="50" />
                                 <RowDefinition Height="50" />
+                                <RowDefinition Height="50" />
                                 <RowDefinition Height="0" x:Name="PublisherRow" />
                                 <RowDefinition Height="50" />
                                 <RowDefinition Height="50" />
@@ -134,6 +135,45 @@
                                     </Grid.RowDefinitions>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="165" />
+                                        <ColumnDefinition Width="110" />
+                                        <ColumnDefinition Width="110" />
+                                        <ColumnDefinition Width="110" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <Label Content="Version"  HorizontalAlignment="Left" VerticalAlignment="Center"
+                                           Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="0" Height="34" Width="254"  />
+
+                                    <controls:NumericUpDown x:Name="MajorVersion" FontSize="20" Grid.Column="1" VerticalAlignment="Center" Background="White" 
+                                             Height="35" Grid.Row="0"  Width="90" HorizontalAlignment="Left" Maximum="99"
+                                              Foreground="{StaticResource GrayBrush}" />
+
+                                    <controls:NumericUpDown x:Name="MinorVersion" FontSize="20" Grid.Column="2" VerticalAlignment="Center" Background="White" 
+                                             Height="35" Grid.Row="0" Width="90" HorizontalAlignment="Left" Maximum="99"
+                                              Foreground="{StaticResource GrayBrush}" />
+
+                                    <controls:NumericUpDown x:Name="ReleaseVersion" FontSize="20" Grid.Column="3" VerticalAlignment="Center" Background="White" 
+                                             Height="35" Grid.Row="0" Width="90" HorizontalAlignment="Left" Maximum="9999"
+                                              Foreground="{StaticResource GrayBrush}" />
+                                </Grid>
+
+                            </Grid>
+                            
+                            <Grid Grid.Column="0" Grid.Row="4" Margin="50 0 0 0">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="50"></RowDefinition>
+                                    <RowDefinition Height="50"></RowDefinition>
+                                    <RowDefinition Height="50"></RowDefinition>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <Grid Grid.Row="0" Grid.Column="0" >
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="50"></RowDefinition>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="165" />
                                         <ColumnDefinition Width="400" />
                                     </Grid.ColumnDefinitions>
 
@@ -148,7 +188,7 @@
 
                             </Grid>
 
-                            <Grid Grid.Column="0" Grid.Row="4" Margin="50 0 0 0">
+                            <Grid Grid.Column="0" Grid.Row="5" Margin="50 0 0 0">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="50"></RowDefinition>
                                 </Grid.RowDefinitions>
@@ -165,7 +205,7 @@
 
                             </Grid>
 
-                            <Grid Grid.Column="0" Grid.Row="5" Margin="50 0 0 0">
+                            <Grid Grid.Column="0" Grid.Row="6" Margin="50 0 0 0">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="50"></RowDefinition>
                                 </Grid.RowDefinitions>
@@ -185,7 +225,7 @@
                                 <Button Grid.Column="3" Height="40" Width="60" Style="{StaticResource MetroFlatButtonStyle1}" Content="Open" x:Name="OpenExeFolderButton" IsEnabled="False" Click="OpenExeFolderButton_OnClick" />
                             </Grid>
 
-                            <Grid Grid.Column="0" Grid.Row="6" Margin="50 0 0 0">
+                            <Grid Grid.Column="0" Grid.Row="7" Margin="50 0 0 0">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="50"></RowDefinition>
                                     <RowDefinition Height="50"></RowDefinition>

@@ -9,6 +9,14 @@ namespace Microsoft.OfficeProPlus.InstallGenerator
 {
     public interface IOfficeInstallProperties
     {
+        string ProductName { get; set; }
+
+        string ProductId { get; set; }
+
+        Version Version { get; set; }
+
+        string UpgradeCode { get; set; }
+
         OfficeVersion OfficeVersion { get; set; }
 
         string BuildVersion { get; set; }
@@ -18,5 +26,7 @@ namespace Microsoft.OfficeProPlus.InstallGenerator
         string SourceFilePath { get; set; }
 
         string ExecutablePath { get; set; }
+
+        string Language { get; set; }
     }
 }

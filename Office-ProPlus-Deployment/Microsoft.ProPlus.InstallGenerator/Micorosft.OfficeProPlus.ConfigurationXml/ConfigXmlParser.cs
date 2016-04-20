@@ -626,11 +626,6 @@ namespace OfficeInstallGenerator
             {
                 RemoveAttribute(displayNode, "AcceptEULA");
             }
-
-            if (IsLanguagePack)
-            {
-                displayNode?.ParentNode?.RemoveChild(displayNode);
-            }
         }
 
 
@@ -719,18 +714,6 @@ namespace OfficeInstallGenerator
                 }
 
 
-            }
-
-            if (IsLanguagePack)
-            {
-                var properties = _xmlDoc?.DocumentElement?.SelectNodes("./Property");
-                if (properties != null)
-                {
-                    foreach (XmlNode property in properties)
-                    {
-                        property?.ParentNode?.RemoveChild(property);
-                    }
-                }
             }
         }
 

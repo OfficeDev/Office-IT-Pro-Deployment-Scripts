@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -36,6 +37,17 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Extensions
             var doc = new XmlDocument();
             doc.LoadXml(xml);
             return doc.Beautify();
+        }
+
+        public static string GenerateGuid(this string s)
+        {
+            Guid result;
+            using (MD5 md5 = MD5.Create())
+            {
+                byte[] hash = md5.ComputeHash(Encoding.Default.GetBytes(s));
+                result = new Guid(hash);
+            }
+            return result.ToString();
         }
 
     }

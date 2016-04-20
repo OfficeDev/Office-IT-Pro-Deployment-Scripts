@@ -50,14 +50,17 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
                     MsiPath = msiCreatePath,
                     ExecutablePath = exePath,
                     Manufacturer = "Microsoft Corporation",
-                    Name = "Microsoft Office 365 ProPlus Installer",
+                    Name = installProperties.ProductName,
                     ProgramFilesPath = @"%ProgramFiles%\Microsoft Office 365 ProPlus Installer",
                     ProgramFiles = new List<string>()
                     {
                         installProperties.ConfigurationXmlPath
                     },
-                    ProductId = new Guid("8AA11E8A-A882-45CC-B52C-80149B4CF47A"),
-                    WixToolsPath = wixDirectory
+                    ProductId = new Guid(installProperties.ProductId),
+                    WixToolsPath = wixDirectory,
+                    Version = installProperties.Version,
+                    UpgradeCode = new Guid(installProperties.UpgradeCode),
+                    Language = installProperties.Language
                 });
 
                 var installDirectory = new OfficeInstallReturn

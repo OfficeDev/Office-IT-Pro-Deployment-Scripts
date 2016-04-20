@@ -574,7 +574,6 @@ public class InstallOffice
         Console.WriteLine("Uninstalling Office 365 ProPlus...");
 
         var doc = new XmlDocument();
-
         var root = doc.CreateElement("Configuration");
 
         var remove1 = doc.CreateElement("Remove");

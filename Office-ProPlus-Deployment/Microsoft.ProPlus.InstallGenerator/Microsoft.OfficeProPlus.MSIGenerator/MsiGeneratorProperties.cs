@@ -10,6 +10,8 @@ namespace Microsoft.OfficeProPlus.InstallGenerator
 
         public string Name { get; set; }
 
+        public string Language { get; set; }
+
         public string ExecutablePath { get; set; }
 
         public string MsiPath { get; set; }
@@ -22,7 +24,13 @@ namespace Microsoft.OfficeProPlus.InstallGenerator
 
         public Guid ProductId { get; set; }
 
+        public Guid UpgradeCode { get; set; }
+
+        public Version Version { get; set; }
+
         public string WixToolsPath { get; set; }
 
     }
 }
+
+
