@@ -149,6 +149,335 @@ Function Get-OfficeCTRRegPath() {
     }
 }
 
+Function Get-OfficeVersion {
+<#
+.Synopsis
+Gets the Office Version installed on the computer
+
+.DESCRIPTION
+This function will query the local or a remote computer and return the information about Office Products installed on the computer
+
+.NOTES   
+Name: Get-OfficeVersion
+Version: 1.0.4
+DateCreated: 2015-07-01
+DateUpdated: 2015-08-28
+
+.LINK
+https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
+
+.PARAMETER ComputerName
+The computer or list of computers from which to query 
+
+.PARAMETER ShowAllInstalledProducts
+Will expand the output to include all installed Office products
+
+.EXAMPLE
+Get-OfficeVersion
+
+Description:
+Will return the locally installed Office product
+
+.EXAMPLE
+Get-OfficeVersion -ComputerName client01,client02
+
+Description:
+Will return the installed Office product on the remote computers
+
+.EXAMPLE
+Get-OfficeVersion | select *
+
+Description:
+Will return the locally installed Office product with all of the available properties
+
+#>
+[CmdletBinding(SupportsShouldProcess=$true)]
+param(
+    [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
+    [string[]]$ComputerName = $env:COMPUTERNAME,
+    [switch]$ShowAllInstalledProducts,
+    [System.Management.Automation.PSCredential]$Credentials
+)
+
+begin {
+    $HKLM = [UInt32] "0x80000002"
+    $HKCR = [UInt32] "0x80000000"
+
+    $excelKeyPath = "Excel\DefaultIcon"
+    $wordKeyPath = "Word\DefaultIcon"
+   
+    $installKeys = 'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall',
+                   'SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall'
+
+    $officeKeys = 'SOFTWARE\Microsoft\Office',
+                  'SOFTWARE\Wow6432Node\Microsoft\Office'
+
+    $defaultDisplaySet = 'DisplayName','Version', 'ComputerName'
+
+    $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet(‘DefaultDisplayPropertySet’,[string[]]$defaultDisplaySet)
+    $PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultDisplayPropertySet)
+}
+
+
+process {
+
+ $results = new-object PSObject[] 0;
+
+ foreach ($computer in $ComputerName) {
+    if ($Credentials) {
+       $os=Get-WMIObject win32_operatingsystem -computername $computer -Credential $Credentials
+    } else {
+       $os=Get-WMIObject win32_operatingsystem -computername $computer
+    }
+
+    $osArchitecture = $os.OSArchitecture
+
+    if ($Credentials) {
+       $regProv = Get-Wmiobject -list "StdRegProv" -namespace root\default -computername $computer -Credential $Credentials
+    } else {
+       $regProv = Get-Wmiobject -list "StdRegProv" -namespace root\default -computername $computer
+    }
+
+    [System.Collections.ArrayList]$VersionList = New-Object -TypeName System.Collections.ArrayList
+    [System.Collections.ArrayList]$PathList = New-Object -TypeName System.Collections.ArrayList
+    [System.Collections.ArrayList]$PackageList = New-Object -TypeName System.Collections.ArrayList
+    [System.Collections.ArrayList]$ClickToRunPathList = New-Object -TypeName System.Collections.ArrayList
+    [System.Collections.ArrayList]$ConfigItemList = New-Object -TypeName  System.Collections.ArrayList
+    $ClickToRunList = new-object PSObject[] 0;
+
+    foreach ($regKey in $officeKeys) {
+       $officeVersion = $regProv.EnumKey($HKLM, $regKey)
+       foreach ($key in $officeVersion.sNames) {
+          if ($key -match "\d{2}\.\d") {
+            if (!$VersionList.Contains($key)) {
+              $AddItem = $VersionList.Add($key)
+            }
+
+            $path = join-path $regKey $key
+
+            $configPath = join-path $path "Common\Config"
+            $configItems = $regProv.EnumKey($HKLM, $configPath)
+            if ($configItems) {
+               foreach ($configId in $configItems.sNames) {
+                 if ($configId) {
+                    $Add = $ConfigItemList.Add($configId.ToUpper())
+                 }
+               }
+            }
+
+            $cltr = New-Object -TypeName PSObject
+            $cltr | Add-Member -MemberType NoteProperty -Name InstallPath -Value ""
+            $cltr | Add-Member -MemberType NoteProperty -Name UpdatesEnabled -Value $false
+            $cltr | Add-Member -MemberType NoteProperty -Name UpdateUrl -Value ""
+            $cltr | Add-Member -MemberType NoteProperty -Name StreamingFinished -Value $false
+            $cltr | Add-Member -MemberType NoteProperty -Name Platform -Value ""
+            $cltr | Add-Member -MemberType NoteProperty -Name ClientCulture -Value ""
+            
+            $packagePath = join-path $path "Common\InstalledPackages"
+            $clickToRunPath = join-path $path "ClickToRun\Configuration"
+            $virtualInstallPath = $regProv.GetStringValue($HKLM, $clickToRunPath, "InstallationPath").sValue
+
+            [string]$officeLangResourcePath = join-path  $path "Common\LanguageResources"
+            $mainLangId = $regProv.GetDWORDValue($HKLM, $officeLangResourcePath, "SKULanguage").uValue
+            if ($mainLangId) {
+                $mainlangCulture = [globalization.cultureinfo]::GetCultures("allCultures") | where {$_.LCID -eq $mainLangId}
+                if ($mainlangCulture) {
+                    $cltr.ClientCulture = $mainlangCulture.Name
+                }
+            }
+
+            [string]$officeLangPath = join-path  $path "Common\LanguageResources\InstalledUIs"
+            $langValues = $regProv.EnumValues($HKLM, $officeLangPath);
+            if ($langValues) {
+               foreach ($langValue in $langValues) {
+                  $langCulture = [globalization.cultureinfo]::GetCultures("allCultures") | where {$_.LCID -eq $langValue}
+               } 
+            }
+
+            if ($virtualInstallPath) {
+
+            } else {
+              $clickToRunPath = join-path $regKey "ClickToRun\Configuration"
+              $virtualInstallPath = $regProv.GetStringValue($HKLM, $clickToRunPath, "InstallationPath").sValue
+            }
+
+            if ($virtualInstallPath) {
+               if (!$ClickToRunPathList.Contains($virtualInstallPath.ToUpper())) {
+                  $AddItem = $ClickToRunPathList.Add($virtualInstallPath.ToUpper())
+               }
+
+               $cltr.InstallPath = $virtualInstallPath
+               $cltr.StreamingFinished = $regProv.GetStringValue($HKLM, $clickToRunPath, "StreamingFinished").sValue
+               $cltr.UpdatesEnabled = $regProv.GetStringValue($HKLM, $clickToRunPath, "UpdatesEnabled").sValue
+               $cltr.UpdateUrl = $regProv.GetStringValue($HKLM, $clickToRunPath, "UpdateUrl").sValue
+               $cltr.Platform = $regProv.GetStringValue($HKLM, $clickToRunPath, "Platform").sValue
+               $cltr.ClientCulture = $regProv.GetStringValue($HKLM, $clickToRunPath, "ClientCulture").sValue
+               $ClickToRunList += $cltr
+            }
+
+            $packageItems = $regProv.EnumKey($HKLM, $packagePath)
+            $officeItems = $regProv.EnumKey($HKLM, $path)
+
+            foreach ($itemKey in $officeItems.sNames) {
+              $itemPath = join-path $path $itemKey
+              $installRootPath = join-path $itemPath "InstallRoot"
+
+              $filePath = $regProv.GetStringValue($HKLM, $installRootPath, "Path").sValue
+              if (!$PathList.Contains($filePath)) {
+                  $AddItem = $PathList.Add($filePath)
+              }
+            }
+
+            foreach ($packageGuid in $packageItems.sNames) {
+              $packageItemPath = join-path $packagePath $packageGuid
+              $packageName = $regProv.GetStringValue($HKLM, $packageItemPath, "").sValue
+            
+              if (!$PackageList.Contains($packageName)) {
+                if ($packageName) {
+                   $AddItem = $PackageList.Add($packageName.Replace(' ', '').ToLower())
+                }
+              }
+            }
+
+          }
+       }
+    }
+
+    
+
+    foreach ($regKey in $installKeys) {
+        $keyList = new-object System.Collections.ArrayList
+        $keys = $regProv.EnumKey($HKLM, $regKey)
+
+        foreach ($key in $keys.sNames) {
+           $path = join-path $regKey $key
+           $installPath = $regProv.GetStringValue($HKLM, $path, "InstallLocation").sValue
+           if (!($installPath)) { continue }
+           if ($installPath.Length -eq 0) { continue }
+
+           $buildType = "64-Bit"
+           if ($osArchitecture -eq "32-bit") {
+              $buildType = "32-Bit"
+           }
+
+           if ($regKey.ToUpper().Contains("Wow6432Node".ToUpper())) {
+              $buildType = "32-Bit"
+           }
+
+           if ($key -match "{.{8}-.{4}-.{4}-1000-0000000FF1CE}") {
+              $buildType = "64-Bit" 
+           }
+
+           if ($key -match "{.{8}-.{4}-.{4}-0000-0000000FF1CE}") {
+              $buildType = "32-Bit" 
+           }
+
+           if ($modifyPath) {
+               if ($modifyPath.ToLower().Contains("platform=x86")) {
+                  $buildType = "32-Bit"
+               }
+
+               if ($modifyPath.ToLower().Contains("platform=x64")) {
+                  $buildType = "64-Bit"
+               }
+           }
+
+           $primaryOfficeProduct = $false
+           $officeProduct = $false
+           foreach ($officeInstallPath in $PathList) {
+             if ($officeInstallPath) {
+                $installReg = "^" + $installPath.Replace('\', '\\')
+                $installReg = $installReg.Replace('(', '\(')
+                $installReg = $installReg.Replace(')', '\)')
+                if ($officeInstallPath -match $installReg) { $officeProduct = $true }
+             }
+           }
+
+           if (!$officeProduct) { continue };
+           
+           $name = $regProv.GetStringValue($HKLM, $path, "DisplayName").sValue          
+
+           if ($ConfigItemList.Contains($key.ToUpper()) -and $name.ToUpper().Contains("MICROSOFT OFFICE")) {
+              $primaryOfficeProduct = $true
+           }
+
+           $version = $regProv.GetStringValue($HKLM, $path, "DisplayVersion").sValue
+           $modifyPath = $regProv.GetStringValue($HKLM, $path, "ModifyPath").sValue 
+
+           $cltrUpdatedEnabled = $NULL
+           $cltrUpdateUrl = $NULL
+           $clientCulture = $NULL;
+
+           [string]$clickToRun = $false
+           if ($ClickToRunPathList.Contains($installPath.ToUpper())) {
+               $clickToRun = $true
+               if ($name.ToUpper().Contains("MICROSOFT OFFICE")) {
+                  $primaryOfficeProduct = $true
+               }
+
+               foreach ($cltr in $ClickToRunList) {
+                 if ($cltr.InstallPath) {
+                   if ($cltr.InstallPath.ToUpper() -eq $installPath.ToUpper()) {
+                       $cltrUpdatedEnabled = $cltr.UpdatesEnabled
+                       $cltrUpdateUrl = $cltr.UpdateUrl
+                       if ($cltr.Platform -eq 'x64') {
+                           $buildType = "64-Bit" 
+                       }
+                       if ($cltr.Platform -eq 'x86') {
+                           $buildType = "32-Bit" 
+                       }
+                       $clientCulture = $cltr.ClientCulture
+                   }
+                 }
+               }
+           }
+           
+           if (!$primaryOfficeProduct) {
+              if (!$ShowAllInstalledProducts) {
+                  continue
+              }
+           }
+
+           $object = New-Object PSObject -Property @{DisplayName = $name; Version = $version; InstallPath = $installPath; ClickToRun = $clickToRun; 
+                     Bitness=$buildType; ComputerName=$computer; ClickToRunUpdatesEnabled=$cltrUpdatedEnabled; ClickToRunUpdateUrl=$cltrUpdateUrl;
+                     ClientCulture=$clientCulture }
+           $object | Add-Member MemberSet PSStandardMembers $PSStandardMembers
+           $results += $object
+
+        }
+    }
+
+  }
+
+  $results = Get-Unique -InputObject $results 
+
+  return $results;
+}
+
+}
+
+Function Get-LCID(){
+    [CmdletBinding()]
+        Param(
+        [Parameter(Mandatory=$true)]
+        [string] $UpdateSource = $NULL
+    )
+
+    if ($UpdateSource) {
+        $mainRegPath = Get-OfficeCTRRegPath
+        $configRegPath = $mainRegPath + "\Configuration"
+        $llcc = (Get-ItemProperty HKLM:\$configRegPath -Name ClientCulture -ErrorAction SilentlyContinue).ClientCulture
+        $cabversion = (Get-Item ($UpdateSource + "\Office\Data\" + "*\") | Where-Object {$_.Mode -eq "d-----"})
+        $cabverdir = $cabversion.Name
+    }    
+
+       switch ($llcc)
+        {        ar-sa{$lcid = "1025"}        bg-bg{$lcid = "1026"}        zh-cn{$lcid = "2052"}        zh-tw{$lcid = "1028"}        hr-hr{$lcid = "1050"}        cs-cz{$lcid = "1029"}        da-dk{$lcid = "1030"}        nl-nl{$lcid = "1043"}        en-us{$lcid = "1033"}        et-ee{$lcid = "1061"}        fi-fi{$lcid = "1035"}        fr-fr{$lcid = "1036"}        de-de{$lcid = "1031"}        el-gr{$lcid = "1032"}        he-il{$lcid = "1037"}        hi-in{$lcid = "1081"}        hu-hu{$lcid = "1038"}        id-id{$lcid = "1057"}        it-it{$lcid = "1040"}        ja-jp{$lcid = "1041"}        kk-kz{$lcid = "1087"}        ko-kr{$lcid = "1042"}        lv-lv{$lcid = "1062"}        lt-lt{$lcid = "1063"}        ms-my{$lcid = "1086"}        nb-no{$lcid = "1044"}        pl-pl{$lcid = "1045"}        pt-br{$lcid = "1046"}        pt-pt{$lcid = "2070"}        ro-ro{$lcid = "1048"}        ru-ru{$lcid = "1049"}        sr-latn-cs{$lcid = "2074"}        sk-sk{$lcid = "1051"}        sl-si{$lcid = "1060"}        es-es{$lcid = "3082"}        sv-se{$lcid = "1053"}        th-th{$lcid = "1054"}        tr-tr{$lcid = "1055"}        uk-ua{$lcid = "1058"}        vi-vn{$lcid = "1066"}
+        }
+
+       Return $lcid        
+    }
+
 Function Test-UpdateSource() {
     [CmdletBinding()]
     Param(
@@ -188,7 +517,12 @@ Function Validate-UpdateSource() {
         $configRegPath = $mainRegPath + "\Configuration"
         $currentplatform = (Get-ItemProperty HKLM:\$configRegPath -Name Platform -ErrorAction SilentlyContinue).Platform
         $updateToVersion = (Get-ItemProperty HKLM:\$configRegPath -Name UpdateToVersion -ErrorAction SilentlyContinue).UpdateToVersion
-
+        $llcc = (Get-ItemProperty HKLM:\$configRegPath -Name ClientCulture -ErrorAction SilentlyContinue).ClientCulture
+        $cabversion = (Get-Item ($UpdateSource + "\Office\Data\" + "*\") | Where-Object {$_.Mode -eq "d-----"})
+        $cabverdir = $cabversion.Name
+        $runcid = Get-LCID -UpdateSource $UpdateSource
+        $setlcid = $lcid
+        
         if ($updateToVersion) {
             if ($currentplatform.ToLower() -eq "x86") {
                $cabPath = $UpdateSource + "\Office\Data\v32_" + $updateToVersion + ".cab"
@@ -197,6 +531,16 @@ Function Validate-UpdateSource() {
                $cabPath = $UpdateSource + "\Office\Data\v64_" + $updateToVersion + ".cab"
             }
         } 
+        if ($runcid) {
+            if ($currentplatform.ToLower() -eq "X86"){
+                $cabpathi = $UpdateSource + "\Office\Data\" + $cabverdir + "\i86" + $runcid + ".cab"
+                $cabpaths = $UpdateSource + "\Office\Data\" + $cabverdir + "\s86" + $runcid + ".cab"
+            }
+            else{
+                $cabpathi = $UpdateSource + "\Office\Data\" + $cabverdir + "\i64" + $runcid + ".cab"
+                $cabpaths = $UpdateSource + "\Office\Data\" + $cabverdir + "\s64" + $runcid + ".cab"
+            }
+        }
         
         if($UpdateSource.ToLower().StartsWith("http")){        
             if ($currentplatform.ToLower() -eq "x86") {
@@ -220,245 +564,22 @@ Function Validate-UpdateSource() {
            $validUpdateSource = Test-URL -url $cabPath
         } else {
            $validUpdateSource = Test-Path -Path $cabPath
+           $validUpdateSourcei = Test-Path -Path $cabpathi
+           $validUpdateSources = Test-Path -Path $cabpaths
         }
         
         if (!$validUpdateSource) {
-           Write-Host "Invalid UpdateSource. File Not Found: $cabPath"
+            throw "Invalid UpdateSource. File Not Found: $cabPath"
+        }
+        if (!$validUpdateSourcei) {
+            throw "Invalid UpdateSource. File Not Found: $cabpathi"
+        }
+        if (!$validUpdateSources){
+            throw "Invalid Updateource. File Not Found: $cabpaths"
         }
     }
-
-    return $validUpdateSource
-}
-
-Function Update-Office365Anywhere() {
-<#
-.Synopsis
-This function is designed to provide way for Office Click-To-Run clients to have the ability to update themselves from a managed network source
-or from the Internet depending on the availability of the primary update source.
-
-.DESCRIPTION
-This function is designed to provide way for Office Click-To-Run clients to have the ability to update themselves from a managed network source
-or from the Internet depending on the availability of the primary update source.  The idea behind this is if users have laptops and are mobile 
-they may not recieve updates if they are not able to be in the office on regular basis.  This functionality is available with this function but it's 
-use can be controller by the parameter -EnableUpdateAnywhere.  This function also provides a way to initiate an update and the script will wait
-for the update to complete before exiting. Natively starting an update executable does not wait for the process to complete before exiting and
-in certain scenarios it may be useful to have the update process wait for the update to complete.
-
-.NOTES   
-Name: Update-Office365Anywhere
-Version: 1.1.0
-DateCreated: 2015-08-28
-DateUpdated: 2015-09-03
-
-.LINK
-https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
-
-.PARAMETER WaitForUpdateToFinish
-If this parameter is set to $true then the function will monitor the Office update and will not exit until the update process has stopped.
-If this parameter is set to $false then the script will exit right after the update process has been started.  By default this parameter is set
-to $true
-
-.PARAMETER EnableUpdateAnywhere
-This parameter controls whether the UpdateAnywhere functionality is used or not. When enabled the update process will check the availbility
-of the update source set for the client.  If that update source is not available then it will update the client from the Microsoft Office CDN.
-When set to $false the function will only use the Update source configured on the client. By default it is set to $true.
-
-.PARAMETER ForceAppShutdown
-This specifies whether the user will be given the option to cancel out of the update. However, if this variable is set to True, then the applications will be shut down immediately and the update will proceed.
-
-.PARAMETER UpdatePromptUser
-This specifies whether or not the user will see this dialog before automatically applying the updates:
-
-.PARAMETER DisplayLevel
-This specifies whether the user will see a user interface during the update. Setting this to false will hide all update UI (including error UI that is encountered during the update scenario).
-
-.PARAMETER UpdateToVersion
-This specifies the version to which Office needs to be updated to.  This can used to install a newer or an older version than what is presently installed.
-
-.EXAMPLE
-Update-Office365Anywhere 
-
-Description:
-Will generate the Office Deployment Tool (ODT) configuration XML based on the local computer
-
-#>
-
-    [CmdletBinding()]
-    Param(
-        [Parameter()]
-        [bool] $WaitForUpdateToFinish = $true,
-
-        [Parameter()]
-        [bool] $EnableUpdateAnywhere = $true,
-
-        [Parameter()]
-        [bool] $ForceAppShutdown = $false,
-
-        [Parameter()]
-        [bool] $UpdatePromptUser = $false,
-
-        [Parameter()]
-        [bool] $DisplayLevel = $false,
-
-        [Parameter()]
-        [string] $UpdateToVersion = $NULL,
-
-        [Parameter()]
-        [string] $LogPath = $NULL,
-
-        [Parameter()]
-        [string] $LogName = $NULL
-        
-    )
-
-    Process {
-        try {
-            $Global:UpdateAnywhereLogPath = $LogPath;
-            $Global:UpdateAnywhereLogFileName = $LogName;
-
-            $mainRegPath = Get-OfficeCTRRegPath
-            $configRegPath = $mainRegPath + "\Configuration"
-
-            $currentUpdateSource = (Get-ItemProperty HKLM:\$configRegPath -Name UpdateUrl -ErrorAction SilentlyContinue).UpdateUrl
-            $saveUpdateSource = (Get-ItemProperty HKLM:\$configRegPath -Name SaveUpdateUrl -ErrorAction SilentlyContinue).SaveUpdateUrl
-            $clientFolder = (Get-ItemProperty HKLM:\$configRegPath -Name ClientFolder -ErrorAction SilentlyContinue).ClientFolder
-
-            $officeUpdateCDN = Get-OfficeCDNUrl
-
-            $officeCDN = "http://officecdn.microsoft.com"
-            $oc2rcFilePath = Join-Path $clientFolder "\OfficeC2RClient.exe"
-
-            $oc2rcParams = "/update user"
-            if ($ForceAppShutdown) {
-              $oc2rcParams += " forceappshutdown=true"
-            } else {
-              $oc2rcParams += " forceappshutdown=false"
-            }
-
-            if ($UpdatePromptUser) {
-              $oc2rcParams += " updatepromptuser=true"
-            } else {
-              $oc2rcParams += " updatepromptuser=false"
-            }
-
-            if ($DisplayLevel) {
-              $oc2rcParams += " displaylevel=true"
-            } else {
-              $oc2rcParams += " displaylevel=false"
-            }
-
-            if ($UpdateToVersion) {
-              $oc2rcParams += " updatetoversion=$UpdateToVersion"
-            }
-
     
-            $UpdateSource = "http"
-            if ($currentUpdateSource) {
-              If ($currentUpdateSource.StartsWith("\\",1)) {
-                 $UpdateSource = "UNC"
-              }
-            }
-
-             if ($EnableUpdateAnywhere) {
-
-                if ($currentUpdateSource) {
-                    [bool]$isAlive = $false
-                    if ($currentUpdateSource.ToLower() -eq $officeUpdateCDN.ToLower() -and ($saveUpdateSource)) {
-                        if ($currentUpdateSource -ne $saveUpdateSource) {
-                            $channelUpdateSource = Change-UpdatePathToChannel -UpdatePath $saveUpdateSource
-
-                            if ($channelUpdateSource -ne $saveUpdateSource) {
-                                $saveUpdateSource = $channelUpdateSource
-                            }
-
-	                        $isAlive = Test-UpdateSource -UpdateSource $saveUpdateSource
-                            if ($isAlive) {
-                               Write-Log -Message "Restoring Saved Update Source $saveUpdateSource" -severity 1 -component "Office 365 Update Anywhere"
-                               Set-Reg -Hive "HKLM" -keyPath $configRegPath -ValueName "UpdateUrl" -Value $saveUpdateSource -Type String
-                            }
-                        }
-                    }
-                }
-
-                if (!($currentUpdateSource)) {
-                   if ($officeUpdateCDN) {
-                       Write-Log -Message "No Update source is set so defaulting to Office CDN" -severity 1 -component "Office 365 Update Anywhere"
-                       Set-Reg -Hive "HKLM" -keyPath $configRegPath -ValueName "UpdateUrl" -Value $officeUpdateCDN -Type String
-                       $currentUpdateSource = $officeUpdateCDN
-                   }
-                }
-
-                if (!$isAlive) {
-                    $channelUpdateSource = Change-UpdatePathToChannel -UpdatePath $currentUpdateSource
-
-                    if ($channelUpdateSource -ne $currentUpdateSource) {
-                        $currentUpdateSource = $channelUpdateSource
-                    }
-
-                    $isAlive = Test-UpdateSource -UpdateSource $currentUpdateSource
-                    if (!($isAlive)) {
-                        if ($currentUpdateSource.ToLower() -ne $officeUpdateCDN.ToLower()) {
-                          Set-Reg -Hive "HKLM" -keyPath $configRegPath -ValueName "SaveUpdateUrl" -Value $currentUpdateSource -Type String
-                        }
-
-                        Write-Host "Unable to use $currentUpdateSource. Will now use $officeUpdateCDN"
-                        Write-Log -Message "Unable to use $currentUpdateSource. Will now use $officeUpdateCDN" -severity 1 -component "Office 365 Update Anywhere"
-                        Set-Reg -Hive "HKLM" -keyPath $configRegPath -ValueName "UpdateUrl" -Value $officeUpdateCDN -Type String
-
-                        $isAlive = Test-UpdateSource -UpdateSource $officeUpdateCDN
-                    }
-                }
-
-            } else {
-                if($currentUpdateSource -ne $null){
-                    $channelUpdateSource = Change-UpdatePathToChannel -UpdatePath $currentUpdateSource
-
-                    if ($channelUpdateSource -ne $currentUpdateSource) {
-                        $currentUpdateSource= $channelUpdateSource
-                    }
-
-                    $isAlive = Test-UpdateSource -UpdateSource $currentUpdateSource
-
-                }else{
-                    $isAlive = Test-UpdateSource -UpdateSource $officeUpdateCDN
-                    $currentUpdateSource = $officeUpdateCDN;
-                }
-            }
-
-           if ($isAlive) {
-               $currentUpdateSource = (Get-ItemProperty HKLM:\$configRegPath -Name UpdateUrl -ErrorAction SilentlyContinue).UpdateUrl
-               if($currentUpdateSource.ToLower().StartsWith("http")){
-                   $channelUpdateSource = $currentUpdateSource
-               }
-               else{
-                   $channelUpdateSource = Change-UpdatePathToChannel -UpdatePath $currentUpdateSource
-               }
-
-               if ($channelUpdateSource -ne $currentUpdateSource) {
-                   Set-Reg -Hive "HKLM" -keyPath $configRegPath -ValueName "UpdateUrl" -Value $channelUpdateSource -Type String
-                   $channelUpdateSource = $channelUpdateSource
-               }
-
-               Write-Host "Starting Update process"
-               Write-Host "Update Source: $currentUpdateSource" 
-               Write-Log -Message "Will now execute $oc2rcFilePath $oc2rcParams with UpdateSource:$currentUpdateSource" -severity 1 -component "Office 365 Update Anywhere"
-               StartProcess -execFilePath $oc2rcFilePath -execParams $oc2rcParams
-
-               if ($WaitForUpdateToFinish) {
-                    Wait-ForOfficeCTRUpadate
-               }
-
-           } else {
-               $currentUpdateSource = (Get-ItemProperty HKLM:\$configRegPath -Name UpdateUrl -ErrorAction SilentlyContinue).UpdateUrl
-               Write-Host "Update Source '$currentUpdateSource' Unavailable"
-               Write-Log -Message "Update Source '$currentUpdateSource' Unavailable" -severity 1 -component "Office 365 Update Anywhere"
-           }
-
-       } catch {
-           Write-Log -Message $_.Exception.Message -severity 1 -component $LogFileName
-           throw;
-       }
-    }
+    return $validUpdateSource
 }
 
 Function formatTimeItem() {
@@ -789,6 +910,8 @@ function Get-ChannelXml {
            $XMLFilePath = "$env:TEMP/ofl.cab"
            $XMLDownloadURL = "http://officecdn.microsoft.com/pr/wsus/ofl.cab"
            $webclient.DownloadFile($XMLDownloadURL,$XMLFilePath)
+       } else {
+           $XMLFilePath = $cabPath
        }
 
        $tmpName = "o365client_64bit.xml"
@@ -799,6 +922,272 @@ function Get-ChannelXml {
        return $channelXml
    }
 
+}
+
+Function Update-Office365Anywhere() {
+<#
+.Synopsis
+This function is designed to provide way for Office Click-To-Run clients to have the ability to update themselves from a managed network source
+or from the Internet depending on the availability of the primary update source.
+
+.DESCRIPTION
+This function is designed to provide way for Office Click-To-Run clients to have the ability to update themselves from a managed network source
+or from the Internet depending on the availability of the primary update source.  The idea behind this is if users have laptops and are mobile 
+they may not recieve updates if they are not able to be in the office on regular basis.  This functionality is available with this function but it's 
+use can be controller by the parameter -EnableUpdateAnywhere.  This function also provides a way to initiate an update and the script will wait
+for the update to complete before exiting. Natively starting an update executable does not wait for the process to complete before exiting and
+in certain scenarios it may be useful to have the update process wait for the update to complete.
+
+.NOTES   
+Name: Update-Office365Anywhere
+Version: 1.1.0
+DateCreated: 2015-08-28
+DateUpdated: 2015-09-03
+
+.LINK
+https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
+
+.PARAMETER WaitForUpdateToFinish
+If this parameter is set to $true then the function will monitor the Office update and will not exit until the update process has stopped.
+If this parameter is set to $false then the script will exit right after the update process has been started.  By default this parameter is set
+to $true
+
+.PARAMETER EnableUpdateAnywhere
+This parameter controls whether the UpdateAnywhere functionality is used or not. When enabled the update process will check the availbility
+of the update source set for the client.  If that update source is not available then it will update the client from the Microsoft Office CDN.
+When set to $false the function will only use the Update source configured on the client. By default it is set to $true.
+
+.PARAMETER ForceAppShutdown
+This specifies whether the user will be given the option to cancel out of the update. However, if this variable is set to True, then the applications will be shut down immediately and the update will proceed.
+
+.PARAMETER UpdatePromptUser
+This specifies whether or not the user will see this dialog before automatically applying the updates:
+
+.PARAMETER DisplayLevel
+This specifies whether the user will see a user interface during the update. Setting this to false will hide all update UI (including error UI that is encountered during the update scenario).
+
+.PARAMETER UpdateToVersion
+This specifies the version to which Office needs to be updated to.  This can used to install a newer or an older version than what is presently installed.
+
+.EXAMPLE
+Update-Office365Anywhere 
+
+Description:
+Will generate the Office Deployment Tool (ODT) configuration XML based on the local computer
+
+#>
+
+    [CmdletBinding()]
+    Param(
+        [Parameter()]
+        [bool] $WaitForUpdateToFinish = $true,
+
+        [Parameter()]
+        [bool] $EnableUpdateAnywhere = $true,
+
+        [Parameter()]
+        [bool] $ForceAppShutdown = $false,
+
+        [Parameter()]
+        [bool] $UpdatePromptUser = $false,
+
+        [Parameter()]
+        [bool] $DisplayLevel = $false,
+
+        [Parameter()]
+        [string] $UpdateToVersion = $NULL,
+
+        [Parameter()]
+        [string] $LogPath = $NULL,
+
+        [Parameter()]
+        [string] $LogName = $NULL
+        
+    )
+
+    Process {
+        try {
+            $Global:UpdateAnywhereLogPath = $LogPath;
+            $Global:UpdateAnywhereLogFileName = $LogName;
+
+            $mainRegPath = Get-OfficeCTRRegPath
+            $configRegPath = $mainRegPath + "\Configuration"
+            $GPORegPath = "HKLM:\Software\Policies\Microsoft\Office\16.0\common\officeupdate"
+            $GPORegPath2 = "Software\Policies\Microsoft\Office\16.0\common\officeupdate"
+
+            $GPOUpdateSource = $true
+            $currentUpdateSource = (Get-ItemProperty $GPORegPath -Name updatepath -ErrorAction SilentlyContinue).updatepath
+
+            if(!($currentUpdateSource)){
+              $currentUpdateSource = (Get-ItemProperty HKLM:\$configRegPath -Name UpdateUrl -ErrorAction SilentlyContinue).UpdateUrl
+              $GPOUpdateSource = $false
+            }
+
+            $saveUpdateSource = (Get-ItemProperty HKLM:\$configRegPath -Name SaveUpdateUrl -ErrorAction SilentlyContinue).SaveUpdateUrl
+            $clientFolder = (Get-ItemProperty HKLM:\$configRegPath -Name ClientFolder -ErrorAction SilentlyContinue).ClientFolder
+
+            $officeUpdateCDN = Get-OfficeCDNUrl
+
+            $officeCDN = "http://officecdn.microsoft.com"
+            $oc2rcFilePath = Join-Path $clientFolder "\OfficeC2RClient.exe"
+
+            $oc2rcParams = "/update user"
+            if ($ForceAppShutdown) {
+              $oc2rcParams += " forceappshutdown=true"
+            } else {
+              $oc2rcParams += " forceappshutdown=false"
+            }
+
+            if ($UpdatePromptUser) {
+              $oc2rcParams += " updatepromptuser=true"
+            } else {
+              $oc2rcParams += " updatepromptuser=false"
+            }
+
+            if ($DisplayLevel) {
+              $oc2rcParams += " displaylevel=true"
+            } else {
+              $oc2rcParams += " displaylevel=false"
+            }
+
+            if ($UpdateToVersion) {
+              $oc2rcParams += " updatetoversion=$UpdateToVersion"
+            }
+
+            $UpdateSource = "http"
+            if ($currentUpdateSource) {
+              If ($currentUpdateSource.StartsWith("\\",1)) {
+                 $UpdateSource = "UNC"
+              }
+            }
+
+            if ($EnableUpdateAnywhere) {
+
+                if ($currentUpdateSource) {
+                    [bool]$isAlive = $false
+                    if ($currentUpdateSource.ToLower() -eq $officeUpdateCDN.ToLower() -and ($saveUpdateSource)) {
+                        if ($currentUpdateSource -ne $saveUpdateSource) {
+                            $channelUpdateSource = Change-UpdatePathToChannel -UpdatePath $saveUpdateSource
+
+                            if ($channelUpdateSource -ne $saveUpdateSource) {
+                                $saveUpdateSource = $channelUpdateSource
+                            }
+
+	                        $isAlive = Test-UpdateSource -UpdateSource $saveUpdateSource
+                            if ($isAlive) {
+                               Write-Log -Message "Restoring Saved Update Source $saveUpdateSource" -severity 1 -component "Office 365 Update Anywhere"
+
+                               if ($GPOUpdateSource) {
+                                   Set-Reg -Hive "HKLM" -keyPath $GPORegPath -ValueName "updatepath" -Value $saveUpdateSource -Type String
+                               } else {
+                                   Set-Reg -Hive "HKLM" -keyPath $configRegPath -ValueName "UpdateUrl" -Value $saveUpdateSource -Type String
+                               }
+                            }
+                        }
+                    }
+                }
+
+                if (!($currentUpdateSource)) {
+                   if ($officeUpdateCDN) {
+                       Write-Log -Message "No Update source is set so defaulting to Office CDN" -severity 1 -component "Office 365 Update Anywhere"
+
+                       if ($GPOUpdateSource) {
+                           Set-Reg -Hive "HKLM" -keyPath $GPORegPath -ValueName "updatepath" -Value $officeUpdateCDN -Type String
+                       } else {
+                           Set-Reg -Hive "HKLM" -keyPath $configRegPath -ValueName "UpdateUrl" -Value $officeUpdateCDN -Type String
+                       }
+
+                       $currentUpdateSource = $officeUpdateCDN
+                   }
+                }
+
+                if (!$isAlive) {
+                    $channelUpdateSource = Change-UpdatePathToChannel -UpdatePath $currentUpdateSource
+
+                    if ($channelUpdateSource -ne $currentUpdateSource) {
+                        $currentUpdateSource = $channelUpdateSource
+                    }
+
+                    $isAlive = Test-UpdateSource -UpdateSource $currentUpdateSource
+                    if (!($isAlive)) {
+                        if ($currentUpdateSource.ToLower() -ne $officeUpdateCDN.ToLower()) {
+                            Set-Reg -Hive "HKLM" -keyPath $configRegPath -ValueName "SaveUpdateUrl" -Value $currentUpdateSource -Type String
+                        }
+
+                        Write-Host "Unable to use $currentUpdateSource. Will now use $officeUpdateCDN"
+                        Write-Log -Message "Unable to use $currentUpdateSource. Will now use $officeUpdateCDN" -severity 1 -component "Office 365 Update Anywhere"
+
+                        if ($GPOUpdateSource) {
+                            Set-Reg -Hive "HKLM" -keyPath $GPORegPath -ValueName "updatepath" -Value $officeUpdateCDN -Type String
+                        } else {
+                            Set-Reg -Hive "HKLM" -keyPath $configRegPath -ValueName "UpdateUrl" -Value $officeUpdateCDN -Type String
+                        }
+
+                        $isAlive = Test-UpdateSource -UpdateSource $officeUpdateCDN
+                    }
+                }
+
+            } else {
+                if($currentUpdateSource -ne $null){
+                    $channelUpdateSource = Change-UpdatePathToChannel -UpdatePath $currentUpdateSource
+
+                    if ($channelUpdateSource -ne $currentUpdateSource) {
+                        $currentUpdateSource= $channelUpdateSource
+                    }
+
+                    $isAlive = Test-UpdateSource -UpdateSource $currentUpdateSource
+
+                }else{
+                    $isAlive = Test-UpdateSource -UpdateSource $officeUpdateCDN
+                    $currentUpdateSource = $officeUpdateCDN;
+                }
+            }
+
+            if ($isAlive) {
+               if ($GPOUpdateSource) {
+                 $currentUpdateSource = (Get-ItemProperty $GPORegPath -Name updatepath -ErrorAction SilentlyContinue).updatepath
+               } else {
+                 $currentUpdateSource = (Get-ItemProperty HKLM:\$configRegPath -Name UpdateUrl -ErrorAction SilentlyContinue).UpdateUrl
+               }
+
+               if($currentUpdateSource.ToLower().StartsWith("http")){
+                   $channelUpdateSource = $currentUpdateSource
+               }
+               else{
+                   $channelUpdateSource = Change-UpdatePathToChannel -UpdatePath $currentUpdateSource
+               }
+
+               if ($channelUpdateSource -ne $currentUpdateSource) {
+                   if ($GPOUpdateSource) {
+                     Set-Reg -Hive "HKLM" -keyPath $GPORegPath2 -ValueName "updatepath" -Value $channelUpdateSource -Type String
+                   } else {
+                     Set-Reg -Hive "HKLM" -keyPath $configRegPath -ValueName "UpdateUrl" -Value $channelUpdateSource -Type String
+                   }
+                  
+                   $channelUpdateSource = $channelUpdateSource
+               }
+
+               Write-Host "Starting Update process"
+               Write-Host "Update Source: $currentUpdateSource" 
+               Write-Log -Message "Will now execute $oc2rcFilePath $oc2rcParams with UpdateSource:$currentUpdateSource" -severity 1 -component "Office 365 Update Anywhere"
+
+               StartProcess -execFilePath $oc2rcFilePath -execParams $oc2rcParams
+
+               if ($WaitForUpdateToFinish) {
+                    Wait-ForOfficeCTRUpadate
+               }
+
+            } else {
+               $currentUpdateSource = (Get-ItemProperty HKLM:\$configRegPath -Name UpdateUrl -ErrorAction SilentlyContinue).UpdateUrl
+               Write-Host "Update Source '$currentUpdateSource' Unavailable"
+               Write-Log -Message "Update Source '$currentUpdateSource' Unavailable" -severity 1 -component "Office 365 Update Anywhere"
+            }
+
+       } catch {
+           Write-Log -Message $_.Exception.Message -severity 1 -component $LogFileName
+           throw;
+       }
+    }
 }
 
 Update-Office365Anywhere -WaitForUpdateToFinish $WaitForUpdateToFinish -EnableUpdateAnywhere $EnableUpdateAnywhere -ForceAppShutdown $ForceAppShutdown -UpdatePromptUser $UpdatePromptUser -DisplayLevel $DisplayLevel -UpdateToVersion $UpdateToVersion -LogPath $LogPath -LogName $LogName
