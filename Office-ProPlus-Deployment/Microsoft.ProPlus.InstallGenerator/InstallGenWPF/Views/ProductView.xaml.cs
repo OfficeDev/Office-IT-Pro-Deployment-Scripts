@@ -15,6 +15,7 @@ using MetroDemo.Models;
 using Micorosft.OfficeProPlus.ConfigurationXml;
 using Micorosft.OfficeProPlus.ConfigurationXml.Model;
 using Microsoft.OfficeProPlus.Downloader.Model;
+using Microsoft.OfficeProPlus.InstallGen.Presentation.Enums;
 using Microsoft.OfficeProPlus.InstallGen.Presentation.Logging;
 using Microsoft.OfficeProPlus.InstallGen.Presentation.Models;
 using Microsoft.OfficeProPlus.InstallGenerator.Models;
@@ -78,6 +79,25 @@ namespace MetroDemo.ExampleViews
                 ProductBranch.ItemsSource = GlobalObjects.ViewModel.Branches;
                 if (currentIndex == -1) currentIndex = 0;
                 ProductBranch.SelectedIndex = currentIndex;
+
+                if (GlobalObjects.ViewModel.ApplicationMode == ApplicationMode.LanguagePack)
+                {
+                    MainProducts.ItemsSource = GlobalObjects.ViewModel.LanguagePackProducts;
+                    MainProducts.SelectedIndex = 0;
+
+                    ProductsSelectionChanged();
+
+                    UseLangForAllLabel.Visibility = Visibility.Collapsed;
+                    UseLangForAllProducts.Visibility = Visibility.Collapsed;
+                }
+                else
+                {
+                    MainProducts.ItemsSource = GlobalObjects.ViewModel.MainProducts;
+                    MainProducts.SelectedIndex = 0;
+
+                    UseLangForAllLabel.Visibility = Visibility.Visible;
+                    UseLangForAllProducts.Visibility = Visibility.Visible;
+                }
             }
             catch (Exception ex)
             {
@@ -475,7 +495,7 @@ namespace MetroDemo.ExampleViews
 
             if (ProductBranch.SelectedItem != null)
             {
-                    var selectedItem = (OfficeBranch)ProductBranch.SelectedItem;
+                var selectedItem = (OfficeBranch)ProductBranch.SelectedItem;
                 //configXml.Add.Branch = selectedItem.Branch;
                 switch (selectedItem.Branch)
                 {
@@ -745,26 +765,6 @@ namespace MetroDemo.ExampleViews
                 products.Add(product);
             }
 
-            //should unselect item of similar name, don't want to add 3 different types of visio
-            //if (e.AddedItems.Count > 0)
-            //{
-            //    MetroDemo.Models.Product temp = (MetroDemo.Models.Product)e.AddedItems[0];
-
-            //    foreach (Product product in AdditionalProducts.SelectedItems)
-            //    {
-            //        if (product.DisplayName != temp.DisplayName && product.DisplayName.StartsWith(temp.DisplayName.Substring(0, 5)))
-            //        {
-            //            AdditionalProducts.SelectedItems.Remove(product);
-            //            break;
-            //        }
-            //    }
-            //}
-
-            //foreach (Product product in cbVisio.SelectedItems)
-            //{
-            //    products.Add(product);
-            //}
-
             if (chkVisio.IsChecked.HasValue && chkVisio.IsChecked.Value)
             {
                 var visioProduct = (Product)cbVisio.SelectedItem;
@@ -805,11 +805,26 @@ namespace MetroDemo.ExampleViews
 
         private bool TransitionProductTabs(TransitionTabDirection direction)
         {
+            var currentIndex = MainTabControl.SelectedIndex;
+            var tmpIndex = currentIndex;
             if (direction == TransitionTabDirection.Forward)
             {
                 if (MainTabControl.SelectedIndex < MainTabControl.Items.Count - 1)
                 {
-                    MainTabControl.SelectedIndex++;
+                    do
+                    {
+                        tmpIndex ++;
+                        if (tmpIndex < MainTabControl.Items.Count)
+                        {
+                            var item = (TabItem) MainTabControl.Items[tmpIndex];
+                            if (item == null || item.IsVisible) break;
+                        }
+                        else
+                        {
+                            return true;
+                        }
+                    } while (true);
+                    MainTabControl.SelectedIndex = tmpIndex;
                 }
                 else
                 {
@@ -820,7 +835,20 @@ namespace MetroDemo.ExampleViews
             {
                 if (MainTabControl.SelectedIndex > 0)
                 {
-                    MainTabControl.SelectedIndex--;
+                    do
+                    {
+                        tmpIndex--;
+                        if (tmpIndex > 0)
+                        {
+                            var item = (TabItem)MainTabControl.Items[tmpIndex];
+                            if (item == null || item.IsVisible) break;
+                        }
+                        else
+                        {
+                            return true;
+                        }
+                    } while (true);
+                    MainTabControl.SelectedIndex = tmpIndex;
                 }
                 else
                 {

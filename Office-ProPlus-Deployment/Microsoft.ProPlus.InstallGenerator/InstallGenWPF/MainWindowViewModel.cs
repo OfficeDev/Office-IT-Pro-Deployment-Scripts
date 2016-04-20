@@ -12,6 +12,7 @@ using MetroDemo.Models;
 using System.Windows.Input;
 using MahApps.Metro.Controls.Dialogs;
 using Micorosft.OfficeProPlus.ConfigurationXml;
+using Microsoft.OfficeProPlus.InstallGen.Presentation.Enums;
 using Microsoft.OfficeProPlus.InstallGen.Presentation.Extentions;
 using Microsoft.OfficeProPlus.InstallGen.Presentation.Models;
 using Microsoft.OfficeProPlus.InstallGenerator.Models;
@@ -88,6 +89,8 @@ namespace MetroDemo
         }
 
         public static string DefaultXml = "<Configuration><Updates Enabled=\"TRUE\"></Updates><Display Level=\"Full\" /></Configuration>";
+
+        public static string DefaultLanguagePackXml = "<Configuration><Add><Product ID=\"LanguagePack\"><Language ID=\"en-us\" /></Product></Add></Configuration>";
     }
 
     public class MainWindowViewModel : INotifyPropertyChanged
@@ -99,6 +102,8 @@ namespace MetroDemo
         public MainWindowViewModel(IDialogCoordinator dialogCoordinator)
         {
             _dialogCoordinator = dialogCoordinator;
+
+            ApplicationMode = ApplicationMode.InstallGenerator;
 
             if (DefaultLanguage == null)
             {
@@ -235,6 +240,16 @@ namespace MetroDemo
                     DisplayName = "Office 365 for Business",
                     Id = "O365BusinessRetail",
                     ShortName = "Office 365 for Business"
+                }
+            };
+
+            LanguagePackProducts = new List<Product>()
+            {
+                new Product()
+                {
+                    Id = "LanguagePack",
+                    DisplayName = "Language Pack",
+                    ShortName = "Language Pack"
                 }
             };
 
@@ -397,7 +412,7 @@ namespace MetroDemo
             return branches;
         }
 
-        public bool RunLocalConfigs { get; set; }
+        public ApplicationMode ApplicationMode { get; set; }
 
         public bool AllowMultipleDownloads { get; set; }
 
@@ -408,6 +423,8 @@ namespace MetroDemo
         public Language DefaultLanguage = null;
 
         public List<Product> MainProducts { get; set; }
+
+        public List<Product> LanguagePackProducts { get; set; }
 
         public List<Product> VisioProducts { get; set; }
 

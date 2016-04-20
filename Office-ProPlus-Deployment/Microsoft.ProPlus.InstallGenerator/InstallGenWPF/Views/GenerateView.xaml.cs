@@ -440,7 +440,6 @@ namespace MetroDemo.ExampleViews
                             BuildVersion = version
                         });
 
-
                         LogAnaylytics("/GenerateView", "GenerateExe");
                     }
                     else
@@ -457,7 +456,6 @@ namespace MetroDemo.ExampleViews
 
                         LogAnaylytics("/GenerateView", "GenerateMSI");
                     }
-
 
                     await Task.Delay(500);
 

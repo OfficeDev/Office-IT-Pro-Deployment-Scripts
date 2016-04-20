@@ -21,6 +21,7 @@ using Micorosft.OfficeProPlus.ConfigurationXml.Enums;
 using Micorosft.OfficeProPlus.ConfigurationXml.Model;
 using Microsoft.OfficeProPlus.Downloader;
 using Microsoft.OfficeProPlus.Downloader.Model;
+using Microsoft.OfficeProPlus.InstallGen.Presentation.Enums;
 using Microsoft.OfficeProPlus.InstallGen.Presentation.Extentions;
 using Microsoft.OfficeProPlus.InstallGen.Presentation.Logging;
 using Microsoft.OfficeProPlus.InstallGen.Presentation.Models;
@@ -84,7 +85,7 @@ namespace MetroDemo.ExampleViews
                 LoadXml();
                 GlobalObjects.ViewModel.PropertyChangeEventEnabled = true;
 
-                if (GlobalObjects.ViewModel.RunLocalConfigs)
+                if (GlobalObjects.ViewModel.ApplicationMode == ApplicationMode.ManageLocal)
                 {
                     LoadViewState().ConfigureAwait(false);
                 }
@@ -824,11 +825,26 @@ namespace MetroDemo.ExampleViews
 
         private bool TransitionProductTabs(TransitionTabDirection direction)
         {
+            var currentIndex = MainTabControl.SelectedIndex;
+            var tmpIndex = currentIndex;
             if (direction == TransitionTabDirection.Forward)
             {
                 if (MainTabControl.SelectedIndex < MainTabControl.Items.Count - 1)
                 {
-                    MainTabControl.SelectedIndex++;
+                    do
+                    {
+                        tmpIndex++;
+                        if (tmpIndex < MainTabControl.Items.Count)
+                        {
+                            var item = (TabItem)MainTabControl.Items[tmpIndex];
+                            if (item == null || item.IsVisible) break;
+                        }
+                        else
+                        {
+                            return true;
+                        }
+                    } while (true);
+                    MainTabControl.SelectedIndex = tmpIndex;
                 }
                 else
                 {
@@ -839,7 +855,20 @@ namespace MetroDemo.ExampleViews
             {
                 if (MainTabControl.SelectedIndex > 0)
                 {
-                    MainTabControl.SelectedIndex--;
+                    do
+                    {
+                        tmpIndex--;
+                        if (tmpIndex > 0)
+                        {
+                            var item = (TabItem)MainTabControl.Items[tmpIndex];
+                            if (item == null || item.IsVisible) break;
+                        }
+                        else
+                        {
+                            return true;
+                        }
+                    } while (true);
+                    MainTabControl.SelectedIndex = tmpIndex;
                 }
                 else
                 {
@@ -849,6 +878,7 @@ namespace MetroDemo.ExampleViews
 
             return false;
         }
+
 
         private void LogErrorMessage(Exception ex)
         {

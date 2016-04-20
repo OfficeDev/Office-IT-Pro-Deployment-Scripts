@@ -15,6 +15,7 @@ using MetroDemo.ExampleViews;
 using MetroDemo.ExampleWindows;
 using Microsoft.OfficeProPlus.Downloader;
 using Microsoft.OfficeProPlus.Downloader.Model;
+using Microsoft.OfficeProPlus.InstallGen.Presentation.Enums;
 using Microsoft.OfficeProPlus.InstallGen.Presentation.Extentions;
 using Microsoft.OfficeProPlus.InstallGen.Presentation.Logging;
 using Microsoft.OfficeProPlus.InstallGenerator.Models;
@@ -39,7 +40,7 @@ namespace MetroDemo
                 };
 
                 DataContext = GlobalObjects.ViewModel;
-                GlobalObjects.ViewModel.RunLocalConfigs = false;
+                GlobalObjects.ViewModel.ApplicationMode = ApplicationMode.InstallGenerator;
 
                 InitializeComponent();
 
@@ -205,7 +206,8 @@ namespace MetroDemo
                     ProductView.OptionalTab.Visibility = Visibility.Visible;
                     ProductView.ExcludedTab.Visibility = Visibility.Visible;
                 }
-                if (((MetroDemo.Events.TransitionTabEventArgs)e).Index == 7)
+
+                if (GlobalObjects.ViewModel.ApplicationMode == ApplicationMode.LanguagePack)
                 {
                     GenerateTabName.Visibility = Visibility.Collapsed;
                     TabUpdates.Visibility = Visibility.Collapsed;
@@ -215,7 +217,7 @@ namespace MetroDemo
                     ProductView.ExcludedTab.Visibility = Visibility.Collapsed;
                 }
 
-                if (GlobalObjects.ViewModel.RunLocalConfigs)
+                if (GlobalObjects.ViewModel.ApplicationMode == ApplicationMode.ManageLocal)
                 {
                     GenerateTabName.Visibility = Visibility.Collapsed;
                     LocalTabName.Visibility = Visibility.Visible;
@@ -240,14 +242,27 @@ namespace MetroDemo
                     index = newIndex - 1;
                 }
 
-                if (GlobalObjects.ViewModel.RunLocalConfigs)
+                if (GlobalObjects.ViewModel.ApplicationMode == ApplicationMode.ManageLocal)
                 {
                     if (index == 5) index = 6;
+                }
+                else if (GlobalObjects.ViewModel.ApplicationMode == ApplicationMode.LanguagePack)
+                {
+                    if (e.Direction == TransitionTabDirection.Forward)
+                    {
+                        if (index == 3) index = 5;
+                    }
+                    else
+                    {
+                        if (index == 4) index = 2;
+                    }
                 }
                 else
                 {
                     if (index == 6) index = 5;
                 }
+
+                //MainTabControl.Items[]
 
                 MainTabControl.SelectedIndex = e.UseIndex ? e.Index : index;
                 
@@ -361,7 +376,6 @@ namespace MetroDemo
                 ShowErrorDialogAsync("ERROR", ex.Message).ConfigureAwait(false);
             }
         }
-
 
         private void Nav_OnClick(object sender, RoutedEventArgs e)
         {

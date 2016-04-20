@@ -1,22 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Forms.VisualStyles;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using MetroDemo.Events;
-using MetroDemo.Models;
+using Microsoft.OfficeProPlus.InstallGen.Presentation.Enums;
 using Microsoft.OfficeProPlus.InstallGen.Presentation.Logging;
 using Microsoft.OfficeProPlus.InstallGenerator.Implementation;
 
@@ -66,7 +53,7 @@ namespace MetroDemo.ExampleViews
             {
                 if (_running) return;
                 GlobalObjects.ViewModel.LocalConfig = false;
-                GlobalObjects.ViewModel.RunLocalConfigs = false;
+                GlobalObjects.ViewModel.ApplicationMode = ApplicationMode.InstallGenerator;
 
                 GlobalObjects.ViewModel.ConfigXmlParser.LoadXml(GlobalObjects.DefaultXml);
                 GlobalObjects.ViewModel.ResetXml = true;
@@ -98,7 +85,7 @@ namespace MetroDemo.ExampleViews
             {
                 if (_running) return;
                 GlobalObjects.ViewModel.LocalConfig = false;
-                GlobalObjects.ViewModel.RunLocalConfigs = false;
+                GlobalObjects.ViewModel.ApplicationMode = ApplicationMode.InstallGenerator;
 
                 var dlg = new Microsoft.Win32.OpenFileDialog
                 {
@@ -165,7 +152,7 @@ namespace MetroDemo.ExampleViews
                         //ImgManageLocal.Visibility = Visibility.Collapsed;
                     });
 
-                    GlobalObjects.ViewModel.RunLocalConfigs = true;
+                    GlobalObjects.ViewModel.ApplicationMode = ApplicationMode.ManageLocal;
 
                     var officeInstallManager = new OfficeLocalInstallManager();
                     localXml = await officeInstallManager.GenerateLocalConfigXml();
@@ -226,9 +213,8 @@ namespace MetroDemo.ExampleViews
             {
                 if (_running) return;
                 GlobalObjects.ViewModel.LocalConfig = false;
-                GlobalObjects.ViewModel.RunLocalConfigs = false;
-
-                GlobalObjects.ViewModel.ConfigXmlParser.LoadXml(GlobalObjects.DefaultXml);
+                GlobalObjects.ViewModel.ApplicationMode = ApplicationMode.LanguagePack;
+                GlobalObjects.ViewModel.ConfigXmlParser = new OfficeInstallGenerator.ConfigXmlParser(GlobalObjects.DefaultLanguagePackXml);
                 GlobalObjects.ViewModel.ResetXml = true;
                 GlobalObjects.ViewModel.ImportFile = null;
 
@@ -251,6 +237,7 @@ namespace MetroDemo.ExampleViews
                 LogErrorMessage(ex);
             }
         }
+
         private void LogErrorMessage(Exception ex)
         {
             ex.LogException(false);

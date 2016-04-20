@@ -535,11 +535,26 @@ namespace MetroDemo.ExampleViews
 
         private bool TransitionProductTabs(TransitionTabDirection direction)
         {
+            var currentIndex = MainTabControl.SelectedIndex;
+            var tmpIndex = currentIndex;
             if (direction == TransitionTabDirection.Forward)
             {
                 if (MainTabControl.SelectedIndex < MainTabControl.Items.Count - 1)
                 {
-                    MainTabControl.SelectedIndex++;
+                    do
+                    {
+                        tmpIndex++;
+                        if (tmpIndex < MainTabControl.Items.Count)
+                        {
+                            var item = (TabItem)MainTabControl.Items[tmpIndex];
+                            if (item == null || item.IsVisible) break;
+                        }
+                        else
+                        {
+                            return true;
+                        }
+                    } while (true);
+                    MainTabControl.SelectedIndex = tmpIndex;
                 }
                 else
                 {
@@ -550,7 +565,20 @@ namespace MetroDemo.ExampleViews
             {
                 if (MainTabControl.SelectedIndex > 0)
                 {
-                    MainTabControl.SelectedIndex--;
+                    do
+                    {
+                        tmpIndex--;
+                        if (tmpIndex > 0)
+                        {
+                            var item = (TabItem)MainTabControl.Items[tmpIndex];
+                            if (item == null || item.IsVisible) break;
+                        }
+                        else
+                        {
+                            return true;
+                        }
+                    } while (true);
+                    MainTabControl.SelectedIndex = tmpIndex;
                 }
                 else
                 {
@@ -560,6 +588,7 @@ namespace MetroDemo.ExampleViews
 
             return false;
         }
+
 
         private void LogErrorMessage(Exception ex)
         {

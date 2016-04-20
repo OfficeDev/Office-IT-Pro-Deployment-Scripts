@@ -18,6 +18,7 @@ namespace OfficeInstallGenerator
         private XmlDocument _xmlDoc = null;
         public ConfigurationXml ConfigurationXml { get; set; }
         public Guid ObjectId;
+        public bool IsLanguagePack = false;
 
 
         public ConfigXmlParser(string xml)
@@ -29,6 +30,7 @@ namespace OfficeInstallGenerator
 
         public void LoadXml(string xml)
         {
+            IsLanguagePack = false;
             if (File.Exists(xml))
             {
                 xml = File.ReadAllText(xml);
@@ -210,6 +212,7 @@ namespace OfficeInstallGenerator
                     if (!string.IsNullOrEmpty(productId))
                     {
                         product.ID = productId;
+                        IsLanguagePack = productId.ToLower() == "languagepack";
                     }
                 }
 
@@ -244,37 +247,34 @@ namespace OfficeInstallGenerator
 
             if (this.ConfigurationXml.Add != null)
             {
-                if (this.ConfigurationXml.Add.Version != null)
-                {
-                    SetAttribute(addNode, "Version", this.ConfigurationXml.Add.Version.ToString());
-                }
-                else
-                {
-                    RemoveAttribute(addNode, "Version");
-                }
+                RemoveAttribute(addNode, "OfficeClientEdition");
+                RemoveAttribute(addNode, "Channel");
+                RemoveAttribute(addNode, "Branch");
+                RemoveAttribute(addNode, "Version");
+                RemoveAttribute(addNode, "SourcePath");
+                RemoveAttribute(addNode, "OfficeMgmtCOM");
 
-                SetAttribute(addNode, "OfficeClientEdition",
-                    this.ConfigurationXml.Add.OfficeClientEdition == OfficeClientEdition.Office32Bit ? "32" : "64");
+                if (!IsLanguagePack)
+                {
+                    SetAttribute(addNode, "OfficeClientEdition",
+                        this.ConfigurationXml.Add.OfficeClientEdition == OfficeClientEdition.Office32Bit ? "32" : "64");
+                    SetAttribute(addNode, "Channel", this.ConfigurationXml.Add.ODTChannel.ToString());
 
-                //SetAttribute(addNode, "Branch", this.ConfigurationXml.Add.Branch.ToString());
-                SetAttribute(addNode, "Channel", this.ConfigurationXml.Add.ODTChannel.ToString());
+                    if (this.ConfigurationXml.Add.Version != null)
+                    {
+                        SetAttribute(addNode, "Version", this.ConfigurationXml.Add.Version.ToString());
+                    }
 
-                if (this.ConfigurationXml.Add.SourcePath != null)
-                {
-                    SetAttribute(addNode, "SourcePath", this.ConfigurationXml.Add.SourcePath);
-                }
-                else
-                {
-                    RemoveAttribute(addNode, "SourcePath");
-                }
+                    if (this.ConfigurationXml.Add.SourcePath != null)
+                    {
+                        SetAttribute(addNode, "SourcePath", this.ConfigurationXml.Add.SourcePath);
+                    }
 
-                if (this.ConfigurationXml.Add.OfficeMgmtCOM.HasValue && this.ConfigurationXml.Add.OfficeMgmtCOM.Value)
-                {
-                    SetAttribute(addNode, "OfficeMgmtCOM", this.ConfigurationXml.Add.OfficeMgmtCOM.Value.ToString());
-                }
-                else
-                {
-                    RemoveAttribute(addNode, "OfficeMgmtCOM");
+                    if (this.ConfigurationXml.Add.OfficeMgmtCOM.HasValue &&
+                        this.ConfigurationXml.Add.OfficeMgmtCOM.Value)
+                    {
+                        SetAttribute(addNode, "OfficeMgmtCOM", this.ConfigurationXml.Add.OfficeMgmtCOM.Value.ToString());
+                    }
                 }
             }
 
@@ -303,7 +303,7 @@ namespace OfficeInstallGenerator
                             }
                         }
 
-                        if (product.ExcludeApps != null)
+                        if (product.ExcludeApps != null && !IsLanguagePack)
                         {
                             foreach (var excludedApp in product.ExcludeApps)
                             {
@@ -561,6 +561,11 @@ namespace OfficeInstallGenerator
             {
                 RemoveAttribute(updatesNode, "Deadline");
             }
+
+            if (IsLanguagePack)
+            {
+                updatesNode?.ParentNode?.RemoveChild(updatesNode);
+            }
         }
 
 
@@ -621,9 +626,12 @@ namespace OfficeInstallGenerator
             {
                 RemoveAttribute(displayNode, "AcceptEULA");
             }
+
+            if (IsLanguagePack)
+            {
+                displayNode?.ParentNode?.RemoveChild(displayNode);
+            }
         }
-
-
 
 
         private void LoadProperties()
@@ -667,12 +675,12 @@ namespace OfficeInstallGenerator
             {
                 if (this.ConfigurationXml.Properties.AutoActivate != null)
                 {
-                    var autoActivateNode = _xmlDoc.DocumentElement.SelectSingleNode("./Property[@Name='AUTOACTIVATE']");
+                    var autoActivateNode = _xmlDoc?.DocumentElement?.SelectSingleNode("./Property[@Name='AUTOACTIVATE']");
                     if (autoActivateNode == null)
                     {
                         autoActivateNode = _xmlDoc.CreateElement("Property");
                         SetAttribute(autoActivateNode, "Name", "AUTOACTIVATE");
-                        _xmlDoc.DocumentElement.AppendChild(autoActivateNode);
+                        _xmlDoc?.DocumentElement?.AppendChild(autoActivateNode);
                     }
 
                     SetAttribute(autoActivateNode, "Value",
@@ -682,12 +690,12 @@ namespace OfficeInstallGenerator
                 if (this.ConfigurationXml.Properties.ForceAppShutdown.HasValue)
                 {
                     var forceAppShutdownNode =
-                        _xmlDoc.DocumentElement.SelectSingleNode("./Property[@Name='FORCEAPPSHUTDOWN']");
+                        _xmlDoc?.DocumentElement?.SelectSingleNode("./Property[@Name='FORCEAPPSHUTDOWN']");
                     if (forceAppShutdownNode == null)
                     {
                         forceAppShutdownNode = _xmlDoc.CreateElement("Property");
                         SetAttribute(forceAppShutdownNode, "Name", "FORCEAPPSHUTDOWN");
-                        _xmlDoc.DocumentElement.AppendChild(forceAppShutdownNode);
+                        _xmlDoc?.DocumentElement?.AppendChild(forceAppShutdownNode);
                     }
 
                     SetAttribute(forceAppShutdownNode, "Value",
@@ -698,12 +706,12 @@ namespace OfficeInstallGenerator
                 if (this.ConfigurationXml.Properties.SharedComputerLicensing.HasValue)
                 {
                     var sharedComputerLicensing =
-                        _xmlDoc.DocumentElement.SelectSingleNode("./Property[@Name='SharedComputerLicensing']");
+                        _xmlDoc?.DocumentElement?.SelectSingleNode("./Property[@Name='SharedComputerLicensing']");
                     if (sharedComputerLicensing == null)
                     {
                         sharedComputerLicensing = _xmlDoc.CreateElement("Property");
                         SetAttribute(sharedComputerLicensing, "Name", "SharedComputerLicensing");
-                        _xmlDoc.DocumentElement.AppendChild(sharedComputerLicensing);
+                        _xmlDoc?.DocumentElement?.AppendChild(sharedComputerLicensing);
                     }
 
                     SetAttribute(sharedComputerLicensing, "Value",
@@ -711,6 +719,18 @@ namespace OfficeInstallGenerator
                 }
 
 
+            }
+
+            if (IsLanguagePack)
+            {
+                var properties = _xmlDoc?.DocumentElement?.SelectNodes("./Property");
+                if (properties != null)
+                {
+                    foreach (XmlNode property in properties)
+                    {
+                        property?.ParentNode?.RemoveChild(property);
+                    }
+                }
             }
         }
 
@@ -768,6 +788,11 @@ namespace OfficeInstallGenerator
             else
             {
                 RemoveAttribute(loggingNode, "Path");
+            }
+
+            if (IsLanguagePack)
+            {
+                loggingNode?.ParentNode?.RemoveChild(loggingNode);
             }
         }
 
