@@ -43,160 +43,525 @@ public class InstallOffice
 
     public void RunProgram()
     {
-        var fileNames = new List<string>();
-        var installDir = "";
-
+        SilentInstall = false;
         try
         {
             MinimizeWindow();
 
-            SilentInstall = false;
-            var startTime = DateTime.Now;
-
-            var currentDirectory = Environment.ExpandEnvironmentVariables("%public%");
-            installDir = currentDirectory + @"\OfficeProPlus";
-
-            Directory.CreateDirectory(installDir);
-
-            var args = GetArguments();
-            if (args.Any() && Environment.UserName != "SYSTEM")
-            {
-                if (!HasValidArguments())
-                {
-                    ShowHelp();
-                    return;
-                }
-            }
-
-
-            var filesXml = GetTextFileContents("files.xml");
-            if (!string.IsNullOrEmpty(filesXml))
-            {
-                _xmlDoc = new XmlDocument();
-                _xmlDoc.LoadXml(filesXml);
-            }
-
-
-            Console.Write("Extracting Install Files...");
-            fileNames = GetEmbeddedItems(installDir);
-            Console.WriteLine("Done");
-
-            var odtFilePath = installDir + @"\" + fileNames.FirstOrDefault(f => f.ToLower().EndsWith(".exe"));
-            var xmlFilePath = installDir + @"\" + fileNames.FirstOrDefault(f => f.ToLower().EndsWith(".xml"));
-
-
-            SetLoggingPath(xmlFilePath);
-
-            SetSourcePath(xmlFilePath);
-
-            if (!File.Exists(odtFilePath)) { throw (new Exception("Cannot find ODT Executable")); }
-            if (!File.Exists(xmlFilePath)) { throw (new Exception("Cannot find Configuration Xml file")); }
+            Initialize();
+            
+            SetLoggingPath(XmlFilePath);
+            SetSourcePath(XmlFilePath);
 
             var runInstall = false;
-            if (GetArguments().Any(a => a.Key.ToLower() == "/uninstall"))
+            switch (Operation)
             {
-                xmlFilePath = UninstallOfficeProPlus(installDir, fileNames);
-                runInstall = true;
-
-                if (GetArguments().Any(a => a.Key.ToLower() == "/silent"))
-                {
-                    SilentInstall = true;
-                }
-            }
-            else if (GetArguments().Any(a => a.Key.ToLower() == "/showxml"))
-            {
-                Console.Clear();
-                var configXml = File.ReadAllText(xmlFilePath);
-                Console.WriteLine(BeautifyXml(configXml));
-            }
-            else if (GetArguments().Any(a => a.Key.ToLower() == "/extractxml"))
-            {
-                var arg = GetArguments().FirstOrDefault(a => a.Key.ToLower() == "/extractxml");
-                if (string.IsNullOrEmpty(arg.Value)) Console.WriteLine("ERROR: Invalid File Path");
-                var configXml = BeautifyXml(File.ReadAllText(xmlFilePath));
-                File.WriteAllText(arg.Value, configXml);
-            }
-            else
-            {
-                Console.WriteLine("Installing Office 365 ProPlus...");
-                runInstall = true;
-
-                if (GetArguments().Any(a => a.Key.ToLower() == "/silent"))
-                {
-                    SilentInstall = true;
-                }
+                case OperationType.ShowXml:
+                    ShowXml(XmlFilePath);
+                    break;
+                case OperationType.ExtractXml:
+                    ExtractXml(XmlFilePath);
+                    break;
+                case OperationType.Uninstall:
+                    XmlFilePath = UninstallOfficeProPlus(InstallDirectory, FileNames);
+                    runInstall = true;
+                    break;
+                case OperationType.Install:
+                    runInstall = true;
+                    UpdateLanguagePackInstall(XmlFilePath);
+                    break;
             }
 
             if (runInstall)
             {
-
-                if (SilentInstall)
-                {
-                    Console.WriteLine("Running Silent Install...");
-                    var doc = new XmlDocument();
-                    doc.Load(xmlFilePath);
-                    SetConfigSilent(doc);
-                    doc.Save(xmlFilePath);
-                }
-
-                try
-                {
-                    var officeProducts = GetOfficeVersion();
-                    if (officeProducts != null)
-                    {
-                        foreach (var product in officeProducts.OfficeInstalls)
-                        {
-                            var displayName = product.DisplayName;
-                            if (displayName == null) displayName = "";
-                        }
-
-                        Console.WriteLine(officeProducts.Edition);
-
-                        var doc = new XmlDocument();
-                        doc.Load(xmlFilePath);
-
-                        if (officeProducts.Edition.HasValue)
-                        {
-                            SetClientEdition(doc, officeProducts.Edition.Value);
-                        }
-
-                        doc.Save(xmlFilePath);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("Get Version Error: " + ex.Message);
-                }
-
-                var p = new Process
-                {
-                    StartInfo = new ProcessStartInfo()
-                    {
-                        FileName = odtFilePath,
-                        Arguments = "/configure " + xmlFilePath,
-                        CreateNoWindow = true,
-                        UseShellExecute = false
-                    },
-                };
-                p.Start();
-                p.WaitForExit();
-
-                WaitForOfficeCtrUpadate();
-
-                var errorMessage = GetOdtErrorMessage();
-                if (!string.IsNullOrEmpty(errorMessage))
-                {
-                    Console.Error.WriteLine(errorMessage.Trim());
-                }
+                RunInstall(OdtFilePath, XmlFilePath);
             }
         }
         finally
         {
-            //CleanUp(installDir);
+            //if (exitCode != 0) uninstallMSI();
+            CleanUp(InstallDirectory);
         }
 
     }
 
+    #region Main Operations
+
+    private int RunInstall(string odtFilePath, string xmlFilePath)
+    {
+        try
+        {
+            StopWus();
+            
+            Console.WriteLine("Installing Office 365 ProPlus...");
+
+            if (SilentInstall)
+            {
+                Console.WriteLine("Running Silent Install...");
+                var doc = new XmlDocument();
+                doc.Load(xmlFilePath);
+                SetConfigSilent(doc);
+                doc.Save(xmlFilePath);
+            }
+
+            try
+            {
+                var officeProducts = GetOfficeVersion();
+                if (officeProducts != null)
+                {
+                    foreach (var product in officeProducts.OfficeInstalls)
+                    {
+                        var displayName = product.DisplayName;
+                        if (displayName == null) displayName = "";
+                    }
+
+                    Console.WriteLine(officeProducts.Edition);
+
+                    var doc = new XmlDocument();
+                    doc.Load(xmlFilePath);
+
+                    if (officeProducts.Edition.HasValue)
+                    {
+                        SetClientEdition(doc, officeProducts.Edition.Value);
+                    }
+
+                    doc.Save(xmlFilePath);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Get Version Error: " + ex.Message);
+            }
+
+            var p = new Process
+            {
+                StartInfo = new ProcessStartInfo()
+                {
+                    FileName = odtFilePath,
+                    Arguments = "/configure " + xmlFilePath,
+                    CreateNoWindow = true,
+                    UseShellExecute = false
+                },
+            };
+            p.Start();
+            p.WaitForExit();
+
+            WaitForOfficeCtrUpadate();
+
+            var errorMessage = GetOdtErrorMessage();
+            if (!string.IsNullOrEmpty(errorMessage))
+            {
+                Console.Error.WriteLine(errorMessage.Trim());
+            }
+
+            return p.ExitCode;
+        }
+        finally
+        {
+            StartWus();
+        }
+    }
+
+    private string UninstallOfficeProPlus(string installationDirectory, IEnumerable<string> fileNames)
+    {
+        var doc = new XmlDocument();
+
+        if (IsLanguagePackInstall(XmlFilePath))
+        {
+            Console.WriteLine("Uninstalling Office 365 ProPlus Language Pack...");
+
+            UpdateLanguagePackInstall(XmlFilePath, true);
+            doc.Load(XmlFilePath);
+        }
+        else
+        {
+            Console.WriteLine("Uninstalling Office 365 ProPlus...");
+
+            var root = doc.CreateElement("Configuration");
+            var remove1 = doc.CreateElement("Remove");
+            var all = doc.CreateAttribute("All");
+            all.Value = "TRUE";
+            remove1.Attributes.Append(all);
+            root.AppendChild(remove1);
+            doc.AppendChild(root);
+        }
+
+        if (SilentInstall)
+        {
+            SetConfigSilent(doc);
+        }
+
+        doc.Save(installationDirectory + @"\configuration.xml");
+
+        return installationDirectory + @"\" + fileNames.FirstOrDefault(f => f.ToLower().EndsWith(".xml"));
+    }
+
+    private void ShowXml(string xmlFilePath)
+    {
+        Console.Clear();
+        var configXml = File.ReadAllText(xmlFilePath);
+        Console.WriteLine(BeautifyXml(configXml));
+    }
+
+    private void ExtractXml(string xmlFilePath)
+    {
+        var arg = GetArguments().FirstOrDefault(a => a.Key.ToLower() == "/extractxml");
+        if (string.IsNullOrEmpty(arg.Value)) Console.WriteLine("ERROR: Invalid File Path");
+        var configXml = BeautifyXml(File.ReadAllText(xmlFilePath));
+        File.WriteAllText(arg.Value, configXml);
+    }
+
+    private void Initialize()
+    {
+        var currentDirectory = Environment.ExpandEnvironmentVariables("%public%");
+        InstallDirectory = currentDirectory + @"\OfficeProPlus";
+        Directory.CreateDirectory(InstallDirectory);
+
+        OS = Environment.OSVersion;
+
+        var args = GetArguments();
+        if (args.Any() && Environment.UserName != "SYSTEM")
+        {
+            if (!HasValidArguments())
+            {
+                ShowHelp();
+                return;
+            }
+        }
+
+        var filesXml = GetTextFileContents("files.xml");
+        if (!string.IsNullOrEmpty(filesXml))
+        {
+            _xmlDoc = new XmlDocument();
+            _xmlDoc.LoadXml(filesXml);
+        }
+
+        Console.Write("Extracting Install Files...");
+        FileNames = GetEmbeddedItems(InstallDirectory);
+        Console.WriteLine("Done");
+
+        OdtFilePath = InstallDirectory + @"\" + FileNames.FirstOrDefault(f => f.ToLower().EndsWith(".exe"));
+        XmlFilePath = InstallDirectory + @"\" + FileNames.FirstOrDefault(f => f.ToLower().EndsWith(".xml"));
+
+        if (!File.Exists(OdtFilePath)) { throw (new Exception("Cannot find ODT Executable")); }
+        if (!File.Exists(XmlFilePath)) { throw (new Exception("Cannot find Configuration Xml file")); }
+
+        if (GetArguments().Any(a => a.Key.ToLower() == "/silent"))
+        {
+            SilentInstall = true;
+        }
+
+        if (GetArguments().Any(a => a.Key.ToLower() == "/uninstall"))
+        {
+            Operation = OperationType.Uninstall;
+        }
+        else if (GetArguments().Any(a => a.Key.ToLower() == "/showxml"))
+        {
+            Operation = OperationType.ShowXml;
+        }
+        else if (GetArguments().Any(a => a.Key.ToLower() == "/extractxml"))
+        {
+            Operation = OperationType.ExtractXml;
+        }
+        else
+        {
+            Operation = OperationType.Install;
+        }
+    }
+
+    #endregion
+
+    #region Configuration XML
+
+    private void SetConfigSilent(XmlDocument doc)
+    {
+        var display = doc.SelectSingleNode("/Configuration/Display");
+        if (display == null)
+        {
+            display = doc.CreateElement("Display");
+            doc.DocumentElement.AppendChild(display);
+        }
+
+        SetAttribute(doc, display, "Level", "None");
+        SetAttribute(doc, display, "AcceptEULA", "TRUE");
+    }
+
+    private OfficeClientEdition GetClientEdition(XmlDocument doc)
+    {
+        var add = doc.SelectSingleNode("/Configuration/Add");
+        if (add == null) return OfficeClientEdition.Office32Bit;
+        if (doc.Attributes == null || doc.Attributes.Count == 0) return OfficeClientEdition.Office32Bit;
+
+        var currentValue = GetAttribute(doc, add, "OfficeClientEdition");
+        if (currentValue == "32")
+        {
+            return OfficeClientEdition.Office32Bit;
+        }
+        else
+        {
+            return OfficeClientEdition.Office64Bit;
+        }
+    }
+
+    private void SetClientEdition(XmlDocument doc, OfficeClientEdition edition)
+    {
+        var add = doc.SelectSingleNode("/Configuration/Add");
+        if (add == null) return;
+        switch (edition)
+        {
+            case OfficeClientEdition.Office32Bit:
+                SetAttribute(doc, add, "OfficeClientEdition", "32");
+                break;
+            case OfficeClientEdition.Office64Bit:
+                SetAttribute(doc, add, "OfficeClientEdition", "64");
+                break;
+        }
+    }
+
+    private void SetLoggingPath(string xmlFilePath)
+    {
+        var tempPath = Environment.ExpandEnvironmentVariables("%public%");
+        const string logFolderName = "OfficeProPlusLogs";
+        LoggingPath = tempPath + @"\" + logFolderName;
+        if (Directory.Exists(LoggingPath))
+        {
+            try
+            {
+                Directory.Delete(LoggingPath);
+            }
+            catch { }
+        }
+        Directory.CreateDirectory(LoggingPath);
+
+        var xmlDoc = new XmlDocument();
+        xmlDoc.Load(xmlFilePath);
+
+        var loggingNode = xmlDoc.SelectSingleNode("/Configuration/Logging");
+        if (loggingNode == null)
+        {
+            loggingNode = xmlDoc.CreateElement("Logging");
+            xmlDoc.DocumentElement.AppendChild(loggingNode);
+        }
+
+        SetAttribute(xmlDoc, loggingNode, "Path", LoggingPath);
+        xmlDoc.Save(xmlFilePath);
+    }
+
+    private void SetSourcePath(string xmlFilePath)
+    {
+        var tempPath = Environment.ExpandEnvironmentVariables("%public%");
+        const string officeFolderName = "OfficeProPlus";
+
+        var officeFolderPath = tempPath + @"\" + officeFolderName;
+        if (Directory.Exists(officeFolderPath + @"\Office"))
+        {
+            var xmlDoc = new XmlDocument();
+            xmlDoc.Load(xmlFilePath);
+
+            var addNode = xmlDoc.SelectSingleNode("/Configuration/Add");
+            if (addNode != null)
+            {
+                SetAttribute(xmlDoc, addNode, "SourcePath", officeFolderPath);
+                xmlDoc.Save(xmlFilePath);
+            }
+        }
+    }
+
+    private bool IsLanguagePackInstall(string xmlFilePath)
+    {
+        var xmlDoc = new XmlDocument();
+        xmlDoc.Load(xmlFilePath);
+
+        var languagePack = xmlDoc.SelectSingleNode("/Configuration/Add/Product[@ID='LanguagePack']");
+        if (languagePack != null)
+        {
+            return true;
+        }
+
+        languagePack = xmlDoc.SelectSingleNode("/Configuration/Remove/Product[@ID='LanguagePack']");
+        if (languagePack != null)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    private void UpdateLanguagePackClientCulture(string xmlFilePath, string clientCulture, bool convertToRemove = false)
+    {
+        var xmlDoc = new XmlDocument();
+        xmlDoc.Load(xmlFilePath);
+
+        var addNode = xmlDoc.SelectSingleNode("/Configuration/Add");
+
+        var languagePack = xmlDoc.SelectSingleNode("/Configuration/Add/Product[@ID='LanguagePack']") ??
+                           xmlDoc.SelectSingleNode("/Configuration/Remove/Product[@ID='LanguagePack']");
+        if (languagePack == null) return;
+        
+        var languageList = new List<string>();
+        var languages = languagePack.SelectNodes("./Language");
+        foreach (XmlNode language in languages)
+        {
+            var langId = GetAttribute(xmlDoc, language, "ID");
+            if (!string.IsNullOrEmpty(langId))
+            {
+                languageList.Add(langId);
+            }
+        }
+
+        for (var i = 0; i < languages.Count; i++)
+        {
+            var language = languages[i];
+            languagePack.RemoveChild(language);
+        }
+
+        if (convertToRemove && addNode != null)
+        {
+            var removeNode = xmlDoc.CreateElement("Remove");
+            languagePack = xmlDoc.CreateElement("Product");
+            SetAttribute(xmlDoc, languagePack, "ID", "LanguagePack");
+            removeNode.AppendChild(languagePack);
+            xmlDoc.DocumentElement.PrependChild(removeNode);
+        }
+
+        if (!convertToRemove)
+        {
+            AddLanguage(xmlDoc, languagePack, clientCulture);
+        }
+        else
+        {
+            if (addNode != null)
+            {
+                xmlDoc.DocumentElement.RemoveChild(addNode);
+            }
+        }
+
+        var otherLangs = languageList.Where(l => l.ToLower() != clientCulture.ToLower());
+        if (otherLangs.Any())
+        {
+            foreach (var otherLang in otherLangs)
+            {
+                AddLanguage(xmlDoc, languagePack, otherLang);
+            }
+        }
+
+        xmlDoc.Save(xmlFilePath);
+    }
+
+    private void AddLanguage(XmlDocument xmlDoc, XmlNode productNode, string languageId)
+    {
+        var languageNode = xmlDoc.CreateElement("Language");
+        SetAttribute(xmlDoc, languageNode, "ID", languageId);
+        productNode.AppendChild(languageNode);
+    }
+
+    #endregion
+
+    #region File Operations
+
+    public string GetTextFileContents(string fileName)
+    {
+        var resourceName = "";
+        var resourceNames = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceNames();
+        foreach (var name in resourceNames)
+        {
+            if (name.ToLower().EndsWith(fileName.ToLower()))
+            {
+                resourceName = name;
+            }
+        }
+
+        if (!string.IsNullOrEmpty(resourceName))
+        {
+            var strReturn = "";
+            using (var stream = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName))
+            using (var reader = new StreamReader(stream))
+            {
+                strReturn = reader.ReadToEnd();
+            }
+            return strReturn;
+        }
+        return null;
+    }
+
+    public List<string> GetEmbeddedItems(string targetDirectory)
+    {
+        var returnFiles = new List<string>();
+        var assemblyPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
+        if (assemblyPath == null) return returnFiles;
+
+        //var appRoot = new Uri(assemblyPath).LocalPath;
+        var assembly = System.Reflection.Assembly.GetExecutingAssembly();
+        var assemblyName = assembly.GetName().Name;
+
+        foreach (var resourceStreamName in assembly.GetManifestResourceNames())
+        {
+            using (var input = assembly.GetManifestResourceStream(resourceStreamName))
+            {
+                var fileName = Regex.Replace(resourceStreamName, "^" + assemblyName + ".", "", RegexOptions.IgnoreCase);
+                fileName = Regex.Replace(fileName, "^Resources.", "", RegexOptions.IgnoreCase);
+
+                returnFiles.Add(fileName);
+
+                var filePath = Path.Combine(targetDirectory, fileName);
+
+                if (File.Exists(filePath)) File.Delete(filePath);
+
+                using (Stream output = File.Create(filePath))
+                {
+                    CopyStream(input, output);
+                }
+
+                var md5Hash = GenerateMD5Hash(filePath);
+                MoveFile(targetDirectory, md5Hash, fileName);
+            }
+        }
+        return returnFiles;
+    }
+
+    public void MoveFile(string rootDirectory, string md5Hash, string fileName)
+    {
+        if (_xmlDoc == null) return;
+        var fileNode = _xmlDoc.SelectSingleNode("//File[@Hash='" + md5Hash + "' and @FileName='" + fileName + "']");
+        if (fileNode == null) return;
+
+        var folderPath = fileNode.Attributes["FolderPath"].Value;
+        var xmlfileName = fileNode.Attributes["FileName"].Value;
+
+        Directory.CreateDirectory(rootDirectory + @"\" + folderPath);
+        File.Move(rootDirectory + @"\" + fileName, rootDirectory + @"\" + folderPath + @"\" + xmlfileName);
+    }
+
+    private static void CopyStream(Stream input, Stream output)
+    {
+        // Insert null checking here for production
+        var buffer = new byte[8192];
+
+        int bytesRead;
+        while ((bytesRead = input.Read(buffer, 0, buffer.Length)) > 0)
+        {
+            output.Write(buffer, 0, bytesRead);
+        }
+    }
+
+    #endregion
+
+    #region Office Registry
+
+    public void UpdateLanguagePackInstall(string xmlFilePath, bool convertToRemove = false)
+    {
+        var regPath = GetOfficeCtrRegPath();
+        var configKey = Registry.LocalMachine.OpenSubKey(regPath + @"\Configuration");
+        if (configKey == null) return;
+
+        var clientCulture = GetRegistryValue(regPath + @"\Configuration", "ClientCulture");
+        if (string.IsNullOrEmpty(clientCulture)) return;
+
+        if (IsLanguagePackInstall(xmlFilePath))
+        {
+            UpdateLanguagePackClientCulture(xmlFilePath, clientCulture, convertToRemove);
+        }
+    }
 
     public OfficeInstalledProducts GetOfficeVersion()
     {
@@ -540,211 +905,6 @@ public class InstallOffice
         return pathReturn;
     }
 
-
-
-    private void ShowHelp()
-    {
-        Console.WriteLine("Usage: " + Process.GetCurrentProcess().ProcessName + " [/uninstall] [/showxml] [/extractxml={File Path}]");
-        Console.WriteLine();
-        Console.WriteLine("  /uninstall\t\t\tRemoves all installed Office 365 ProPlus");
-        Console.WriteLine("  \t\t\t\tproducts.");
-        Console.WriteLine("  /silent\t\t\tInstalls with prompts");
-        Console.WriteLine("  /showxml\t\t\tDisplays the current Office 365 ProPlus");
-        Console.WriteLine("  \t\t\t\tconfiguration xml.");
-        Console.WriteLine("  /extractxml={File Path}\tExtracts the current Office 365 ProPlus");
-        Console.WriteLine("  \t\t\t\tconfiguration xml to the specified file path.");
-    }
-
-    private void MinimizeWindow()
-    {
-        IntPtr winHandle = System.Diagnostics.Process.GetCurrentProcess().MainWindowHandle;
-        ShowWindow(winHandle, SW_SHOWMINIMIZED);
-    }
-
-    private bool HasValidArguments()
-    {
-        return !GetArguments().Any(a => (a.Key.ToLower() != "/uninstall" &&
-                                         a.Key.ToLower() != "/showxml" &&
-                                         a.Key.ToLower() != "/silent" &&
-                                         a.Key.ToLower() != "/extractxml"));
-    }
-
-    private string UninstallOfficeProPlus(string installationDirectory, IEnumerable<string> fileNames)
-    {
-        Console.WriteLine("Uninstalling Office 365 ProPlus...");
-
-        var doc = new XmlDocument();
-
-        var root = doc.CreateElement("Configuration");
-
-        var remove1 = doc.CreateElement("Remove");
-        var all = doc.CreateAttribute("All");
-        all.Value = "TRUE";
-
-        remove1.Attributes.Append(all);
-        root.AppendChild(remove1);
-
-        doc.AppendChild(root);
-
-        if (SilentInstall)
-        {
-            SetConfigSilent(doc);
-        }
-
-        doc.Save(installationDirectory + @"\configuration.xml");
-
-        return installationDirectory + @"\" + fileNames.FirstOrDefault(f => f.ToLower().EndsWith(".xml"));
-    }
-
-    private void SetConfigSilent(XmlDocument doc)
-    {
-        var display = doc.SelectSingleNode("/Configuration/Display");
-        if (display == null)
-        {
-            display = doc.CreateElement("Display");
-            doc.DocumentElement.AppendChild(display);
-        }
-
-        SetAttribute(doc, display, "Level", "None");
-        SetAttribute(doc, display, "AcceptEULA", "TRUE");
-    }
-
-    private OfficeClientEdition GetClientEdition(XmlDocument doc)
-    {
-        var add = doc.SelectSingleNode("/Configuration/Add");
-        if (add == null) return OfficeClientEdition.Office32Bit;
-        if (doc.Attributes == null || doc.Attributes.Count == 0) return OfficeClientEdition.Office32Bit;
-
-        var currentValue = GetAttribute(doc, add, "OfficeClientEdition");
-        if (currentValue == "32")
-        {
-            return OfficeClientEdition.Office32Bit;
-        }
-        else
-        {
-            return OfficeClientEdition.Office64Bit;
-        }
-    }
-
-    private void SetClientEdition(XmlDocument doc, OfficeClientEdition edition)
-    {
-        var add = doc.SelectSingleNode("/Configuration/Add");
-        if (add == null) return;
-        switch (edition)
-        {
-            case OfficeClientEdition.Office32Bit:
-                SetAttribute(doc, add, "OfficeClientEdition", "32");
-                break;
-            case OfficeClientEdition.Office64Bit:
-                SetAttribute(doc, add, "OfficeClientEdition", "64");
-                break;
-        }
-    }
-
-    public string GetTextFileContents(string fileName)
-    {
-        var resourceName = "";
-        var resourceNames = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceNames();
-        foreach (var name in resourceNames)
-        {
-            if (name.ToLower().EndsWith(fileName.ToLower()))
-            {
-                resourceName = name;
-            }
-        }
-
-        if (!string.IsNullOrEmpty(resourceName))
-        {
-            var strReturn = "";
-            using (var stream = System.Reflection.Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName))
-            using (var reader = new StreamReader(stream))
-            {
-                strReturn = reader.ReadToEnd();
-            }
-            return strReturn;
-        }
-        return null;
-    }
-
-    public List<string> GetEmbeddedItems(string targetDirectory)
-    {
-        var returnFiles = new List<string>();
-        var assemblyPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
-        if (assemblyPath == null) return returnFiles;
-
-        //var appRoot = new Uri(assemblyPath).LocalPath;
-        var assembly = System.Reflection.Assembly.GetExecutingAssembly();
-        var assemblyName = assembly.GetName().Name;
-
-        foreach (var resourceStreamName in assembly.GetManifestResourceNames())
-        {
-            using (var input = assembly.GetManifestResourceStream(resourceStreamName))
-            {
-                var fileName = Regex.Replace(resourceStreamName, "^" + assemblyName + ".", "", RegexOptions.IgnoreCase);
-                fileName = Regex.Replace(fileName, "^Resources.", "", RegexOptions.IgnoreCase);
-
-                returnFiles.Add(fileName);
-
-                var filePath = Path.Combine(targetDirectory, fileName);
-
-                if (File.Exists(filePath)) File.Delete(filePath);
-
-                using (Stream output = File.Create(filePath))
-                {
-                    CopyStream(input, output);
-                }
-
-                var md5Hash = GenerateMD5Hash(filePath);
-                MoveFile(targetDirectory, md5Hash, fileName);
-            }
-        }
-        return returnFiles;
-    }
-
-    public void MoveFile(string rootDirectory, string md5Hash, string fileName)
-    {
-        if (_xmlDoc == null) return;
-        var fileNode = _xmlDoc.SelectSingleNode("//File[@Hash='" + md5Hash + "' and @FileName='" + fileName + "']");
-        if (fileNode == null) return;
-
-        var folderPath = fileNode.Attributes["FolderPath"].Value;
-        var xmlfileName = fileNode.Attributes["FileName"].Value;
-
-        Directory.CreateDirectory(rootDirectory + @"\" + folderPath);
-        File.Move(rootDirectory + @"\" + fileName, rootDirectory + @"\" + folderPath + @"\" + xmlfileName);
-    }
-
-    private static void CopyStream(Stream input, Stream output)
-    {
-        // Insert null checking here for production
-        var buffer = new byte[8192];
-
-        int bytesRead;
-        while ((bytesRead = input.Read(buffer, 0, buffer.Length)) > 0)
-        {
-            output.Write(buffer, 0, bytesRead);
-        }
-    }
-
-    public static string ResourcePath
-    {
-        get
-        {
-            return Directory.GetCurrentDirectory();
-        }
-    }
-
-    private static string GenerateMD5Hash(string filePath)
-    {
-        using (var md5 = MD5.Create())
-        {
-            using (var stream = File.OpenRead(filePath))
-            {
-                return BitConverter.ToString(md5.ComputeHash(stream)).Replace("-", "").ToLower();
-            }
-        }
-    }
-
     public void WaitForOfficeCtrUpadate(bool showStatus = false)
     {
         if (showStatus) { Console.WriteLine("Waiting for Install to Complete..."); }
@@ -895,6 +1055,75 @@ public class InstallOffice
         }
     }
 
+    #endregion
+
+    #region Properties
+
+    public OperationType Operation { get; set; }
+
+    public OperatingSystem OS { get; set; }
+
+    public string OdtFilePath { get; set; }
+
+    public string XmlFilePath { get; set; }
+
+    public List<string> FileNames { get; set; } 
+
+    public string InstallDirectory { get; set; }
+
+    public string LoggingPath { get; set; }
+
+    public bool SilentInstall { get; set; }
+
+    public static string ResourcePath
+    {
+        get
+        {
+            return Directory.GetCurrentDirectory();
+        }
+    }
+
+    #endregion
+
+    #region Operations
+
+    private void StopWus()
+    {
+        if (OS.Version.Major == 6 && OS.Version.Minor == 1)
+        {
+            ToggleWus(true);
+        }
+    }
+
+    private void StartWus()
+    {
+        if (OS.Version.Major == 6 && OS.Version.Minor == 1)
+        {
+            ToggleWus(true);
+        }
+    }
+
+    private void ToggleWus(bool toggle)
+    {
+        var args = "/C net start wuauserv";
+        if (toggle)
+        {
+            args = "/C net stop wuauserv";
+        }
+
+        var p = new Process
+        {
+            StartInfo =
+            {
+                FileName = "CMD.exe",
+                Arguments = args
+            }
+        };
+
+        p.Start();
+        p.WaitForExit();
+    }
+
     public string GetOdtErrorMessage()
     {
         var dirInfo = new DirectoryInfo(LoggingPath);
@@ -951,58 +1180,43 @@ public class InstallOffice
         return null;
     }
 
-    private void SetLoggingPath(string xmlFilePath)
+    private void ShowHelp()
     {
-        var tempPath = Environment.ExpandEnvironmentVariables("%public%");
-        const string logFolderName = "OfficeProPlusLogs";
-        LoggingPath = tempPath + @"\" + logFolderName;
-        if (Directory.Exists(LoggingPath))
-        {
-            try
-            {
-                Directory.Delete(LoggingPath);
-            }
-            catch { }
-        }
-        Directory.CreateDirectory(LoggingPath);
-
-        var xmlDoc = new XmlDocument();
-        xmlDoc.Load(xmlFilePath);
-
-        var loggingNode = xmlDoc.SelectSingleNode("/Configuration/Logging");
-        if (loggingNode == null)
-        {
-            loggingNode = xmlDoc.CreateElement("Logging");
-            xmlDoc.DocumentElement.AppendChild(loggingNode);
-        }
-
-        SetAttribute(xmlDoc, loggingNode, "Path", LoggingPath);
-        xmlDoc.Save(xmlFilePath);
+        Console.WriteLine("Usage: " + Process.GetCurrentProcess().ProcessName + " [/uninstall] [/showxml] [/extractxml={File Path}]");
+        Console.WriteLine();
+        Console.WriteLine("  /uninstall\t\t\tRemoves all installed Office 365 ProPlus");
+        Console.WriteLine("  \t\t\t\tproducts.");
+        Console.WriteLine("  /silent\t\t\tInstalls with prompts");
+        Console.WriteLine("  /showxml\t\t\tDisplays the current Office 365 ProPlus");
+        Console.WriteLine("  \t\t\t\tconfiguration xml.");
+        Console.WriteLine("  /extractxml={File Path}\tExtracts the current Office 365 ProPlus");
+        Console.WriteLine("  \t\t\t\tconfiguration xml to the specified file path.");
     }
 
-    private void SetSourcePath(string xmlFilePath)
+    private void MinimizeWindow()
     {
-        var tempPath = Environment.ExpandEnvironmentVariables("%public%");
-        const string officeFolderName = "OfficeProPlus";
+        IntPtr winHandle = System.Diagnostics.Process.GetCurrentProcess().MainWindowHandle;
+        ShowWindow(winHandle, SW_SHOWMINIMIZED);
+    }
 
-        var officeFolderPath = tempPath + @"\" + officeFolderName;
-        if (Directory.Exists(officeFolderPath + @"\Office"))
+    private bool HasValidArguments()
+    {
+        return !GetArguments().Any(a => (a.Key.ToLower() != "/uninstall" &&
+                                         a.Key.ToLower() != "/showxml" &&
+                                         a.Key.ToLower() != "/silent" &&
+                                         a.Key.ToLower() != "/extractxml"));
+    }
+
+    private static string GenerateMD5Hash(string filePath)
+    {
+        using (var md5 = MD5.Create())
         {
-            var xmlDoc = new XmlDocument();
-            xmlDoc.Load(xmlFilePath);
-
-            var addNode = xmlDoc.SelectSingleNode("/Configuration/Add");
-            if (addNode != null)
+            using (var stream = File.OpenRead(filePath))
             {
-                SetAttribute(xmlDoc, addNode, "SourcePath", officeFolderPath);
-                xmlDoc.Save(xmlFilePath);
+                return BitConverter.ToString(md5.ComputeHash(stream)).Replace("-", "").ToLower();
             }
         }
     }
-
-    public string LoggingPath { get; set; }
-
-    public bool SilentInstall { get; set; }
 
     public CurrentOperation GetCurrentOperation(List<ExecutingScenario> executingTasks)
     {
@@ -1074,19 +1288,9 @@ public class InstallOffice
         return returnList;
     }
 
-    //private void extractWixTools(string installDir)
-    //{
-    //    string zipPath = installDir + @"\tools.zip";
-    //    string extractPath = "\tools";
+    #endregion
 
-    //    using (ZipArchive archive = ZipFile.OpenRead(zipPath))
-    //    {
-    //        foreach (ZipArchiveEntry entry in archive.Entries)
-    //        {
-    //            entry.ExtractToFile(Path.Combine(extractPath+entry.FullName));
-    //        }
-    //    }
-    //}
+    #region XML
 
     private string Beautify(XmlDocument doc)
     {
@@ -1115,11 +1319,6 @@ public class InstallOffice
         return Beautify(doc);
     }
 
-    [DllImport("user32.dll")]
-    public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
-
-    public const int SW_SHOWMINIMIZED = 2;
-
     private string GetAttribute(XmlDocument xmlDoc, XmlNode xmlNode, string name)
     {
         var pathAttr = xmlNode.Attributes[name];
@@ -1130,8 +1329,7 @@ public class InstallOffice
         }
         return "";
     }
-
-
+    
     private void SetAttribute(XmlDocument xmlDoc, XmlNode xmlNode, string name, string value)
     {
         var pathAttr = xmlNode.Attributes[name];
@@ -1142,6 +1340,10 @@ public class InstallOffice
         }
         pathAttr.Value = value;
     }
+
+    #endregion
+
+    #region Registry
 
     private RegistryKey GetRegistryKey(string keyPath)
     {
@@ -1203,6 +1405,17 @@ public class InstallOffice
         return "";
     }
 
+    #endregion
+
+    #region Windows Functions
+
+    [DllImport("user32.dll")]
+    public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+
+    public const int SW_SHOWMINIMIZED = 2;
+
+    #endregion
+
 }
 
 public class ODTLogFile
@@ -1235,7 +1448,6 @@ public class CmdArgument
 
     public string Value { get; set; }
 }
-
 
 public class OfficeInstalledProducts
 {
@@ -1290,7 +1502,6 @@ public class OfficeInstall
 
 }
 
-
 public class OfficePathsReturn
 {
     public List<string> VersionList { get; set; }
@@ -1310,4 +1521,12 @@ public enum OfficeClientEdition
 {
     Office32Bit = 0,
     Office64Bit = 1
+}
+
+public enum OperationType
+{
+    Install = 0,
+    Uninstall = 1,
+    ShowXml = 2,
+    ExtractXml = 3
 }

@@ -144,15 +144,15 @@
                                            Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="0" Height="34" Width="254"  />
 
                                     <controls:NumericUpDown x:Name="MajorVersion" FontSize="20" Grid.Column="1" VerticalAlignment="Center" Background="White" 
-                                             Height="35" Grid.Row="0"  Width="90" HorizontalAlignment="Left" Maximum="99"
+                                             Height="35" Grid.Row="0"  Width="90" HorizontalAlignment="Left" Maximum="99" Minimum="1"
                                               Foreground="{StaticResource GrayBrush}" />
 
                                     <controls:NumericUpDown x:Name="MinorVersion" FontSize="20" Grid.Column="2" VerticalAlignment="Center" Background="White" 
-                                             Height="35" Grid.Row="0" Width="90" HorizontalAlignment="Left" Maximum="99"
+                                             Height="35" Grid.Row="0" Width="90" HorizontalAlignment="Left" Maximum="99" Minimum="0"
                                               Foreground="{StaticResource GrayBrush}" />
 
                                     <controls:NumericUpDown x:Name="ReleaseVersion" FontSize="20" Grid.Column="3" VerticalAlignment="Center" Background="White" 
-                                             Height="35" Grid.Row="0" Width="90" HorizontalAlignment="Left" Maximum="9999"
+                                             Height="35" Grid.Row="0" Width="90" HorizontalAlignment="Left" Maximum="9999" Minimum="0"
                                               Foreground="{StaticResource GrayBrush}" />
                                 </Grid>
 

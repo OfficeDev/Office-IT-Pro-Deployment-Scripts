@@ -65,6 +65,8 @@ namespace MetroDemo.ExampleViews
                 LoadFolder();
 
                 MajorVersion.Value = 1;
+                MinorVersion.Value = 0;
+                ReleaseVersion.Value = 0;
 
                 LogAnaylytics("/GenerateView", "Load");
             }
@@ -438,12 +440,16 @@ namespace MetroDemo.ExampleViews
                     var upgradeCode = "AC89246F-38A8-4C32-9110-FF73533F417C";
 
                     var productVersion = new Version("1.0.0");
-                    if (MajorVersion.Value.HasValue && MinorVersion.Value.HasValue && ReleaseVersion.Value.HasValue)
+
+                    await Dispatcher.InvokeAsync(() =>
                     {
-                        productVersion =
-                            new Version(MajorVersion.Value.Value + "." + MinorVersion.Value.Value + "." +
-                                        ReleaseVersion.Value.Value);
-                    }
+                        if (MajorVersion.Value.HasValue && MinorVersion.Value.HasValue && ReleaseVersion.Value.HasValue)
+                        {
+                            productVersion =
+                                new Version(MajorVersion.Value.Value + "." + MinorVersion.Value.Value + "." +
+                                            ReleaseVersion.Value.Value);
+                        }
+                    });
 
                     var installProperties = new List<OfficeInstallProperties>();
 
@@ -465,7 +471,7 @@ namespace MetroDemo.ExampleViews
                                 }
                             };
 
-                            var tmpXmlFilePath = Environment.ExpandEnvironmentVariables(@"%temp%\" + Guid.NewGuid().ToString());
+                            var tmpXmlFilePath = Environment.ExpandEnvironmentVariables(@"%temp%\" + Guid.NewGuid().ToString() + ".xml");
                             System.IO.File.WriteAllText(tmpXmlFilePath, configLangXml.Xml);
 
                             var tmpSourceFilePath = executablePath;
@@ -492,7 +498,8 @@ namespace MetroDemo.ExampleViews
                                 SourceFilePath = sourceFilePath,
                                 BuildVersion = version,
                                 UpgradeCode = language.ID.GenerateGuid(),
-                                Version = productVersion
+                                Version = productVersion,
+                                Language = "en-us"
                             });
                         }
                     }
@@ -509,7 +516,7 @@ namespace MetroDemo.ExampleViews
                             BuildVersion = version,
                             UpgradeCode = upgradeCode,
                             Version = productVersion,
-                            Language = ""
+                            Language = "en-us"
                         });
                     }
 

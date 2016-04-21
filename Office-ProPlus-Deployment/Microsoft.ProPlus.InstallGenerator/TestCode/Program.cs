@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.OfficeProPlus.InstallGenerator.Extensions;
 
 namespace TestCode
 {
@@ -12,18 +11,9 @@ namespace TestCode
         static void Main(string[] args)
         {
 
-            var strEnus = "en-us";
-            var guid = strEnus.GenerateGuid();
+            var officeInstall = new InstallOffice();
 
-            var officeInstall = new InstallOffice2();
-
-            var officeProducts = officeInstall.GetOfficeVersion();
-            if (officeProducts != null)
-            {
-                
-
-
-            }
+            officeInstall.UpdateLanguagePackInstall(@"E:\Users\rsmith.VCG\Desktop\config1.xml", true);
 
         }
     }

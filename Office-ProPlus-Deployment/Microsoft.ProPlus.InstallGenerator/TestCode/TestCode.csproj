@@ -52,16 +52,6 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\InstallGenWPF\Microsoft.OfficeProPlus.InstallGen.Presentation.csproj">
-      <Project>{56e8080f-ffeb-47cd-adb9-92245f92565b}</Project>
-      <Name>Microsoft.OfficeProPlus.InstallGen.Presentation</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\OfficeInstallGenerator\Microsoft.OfficeProPlus.InstallGenerator.csproj">
-      <Project>{0702f643-0467-43a4-bdbc-b54f006e8244}</Project>
-      <Name>Microsoft.OfficeProPlus.InstallGenerator</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
