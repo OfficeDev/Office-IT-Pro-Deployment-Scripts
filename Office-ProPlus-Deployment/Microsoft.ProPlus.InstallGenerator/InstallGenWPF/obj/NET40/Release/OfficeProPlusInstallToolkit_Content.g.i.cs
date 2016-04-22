@@ -10,7 +10,12 @@
 
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("helpfiles/embedofficeinstall.html")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("helpfiles/enablesccmsupportinfo.html")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("helpfiles/filepathgen.html")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("helpfiles/projectinfo.html")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("helpfiles/signinstallerinfo.html")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("helpfiles/silentinstallinfo.html")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("helpfiles/sourcefilepathgen.html")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("helpfiles/versioninfogen.html")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("helpfiles/visioinfo.html")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("installoffice.cs")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("projectfiles/wpf_autocompletecombobox.dll")]
