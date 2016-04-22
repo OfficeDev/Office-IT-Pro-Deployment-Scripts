@@ -935,6 +935,32 @@ namespace MetroDemo.ExampleViews
             }
         }
 
+        private void OPPInstalled_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var sourceName = ((dynamic)sender).Name;
+                LaunchInformationDialog(sourceName);
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
+
+        private void LatestVInstall_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var sourceName = ((dynamic)sender).Name;
+                LaunchInformationDialog(sourceName);
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
+
         private void ShowVersion_OnClick(object sender, RoutedEventArgs e)
         {
             try
@@ -1246,6 +1272,71 @@ namespace MetroDemo.ExampleViews
 
         }
 
+        private void InstalledVersion_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var sourceName = ((dynamic)sender).Name;
+                LaunchInformationDialog(sourceName);
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
+
+        private void UpdateChannel_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var sourceName = ((dynamic)sender).Name;
+                LaunchInformationDialog(sourceName);
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
+
+        private void TargetVersionInfo_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var sourceName = ((dynamic)sender).Name;
+                LaunchInformationDialog(sourceName);
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
+
+        private void ModifyExisting_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var sourceName = ((dynamic)sender).Name;
+                LaunchInformationDialog(sourceName);
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
+
+        private void OfficeInstall_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var sourceName = ((dynamic)sender).Name;
+                LaunchInformationDialog(sourceName);
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
+
         #endregion
 
         #region "Info"
@@ -1303,11 +1394,17 @@ namespace MetroDemo.ExampleViews
             }
         }
 
- 
+
+
+
+
+
+
+
 
         #endregion
 
-
+        
     }
 
 
