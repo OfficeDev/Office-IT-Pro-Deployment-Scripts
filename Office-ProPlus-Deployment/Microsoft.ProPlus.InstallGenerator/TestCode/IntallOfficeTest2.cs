@@ -12,6 +12,8 @@ using System.Threading;
 using System.Xml;
 using System.Globalization;
 using System.Management;
+using System.Windows;
+using System.Windows.Forms;
 using Microsoft.Win32;
 //[assembly: AssemblyTitle("")]
 //[assembly: AssemblyProduct("")]
@@ -46,10 +48,10 @@ public class InstallOffice
         SilentInstall = false;
         try
         {
-            MinimizeWindow();
+            //MinimizeWindow();
 
             Initialize();
-            
+
             SetLoggingPath(XmlFilePath);
             SetSourcePath(XmlFilePath);
 
@@ -79,8 +81,7 @@ public class InstallOffice
         }
         finally
         {
-            //if (exitCode != 0) uninstallMSI();
-            CleanUp(InstallDirectory);
+            //CleanUp(InstallDirectory);
         }
 
     }
@@ -92,18 +93,13 @@ public class InstallOffice
         try
         {
             StopWus();
-            
-            Console.WriteLine("Installing Office 365 ProPlus...");
 
-            if (SilentInstall)
+            if (DetermineIfLanguageInstalled(false))
             {
-                Console.WriteLine("Running Silent Install...");
-                var doc = new XmlDocument();
-                doc.Load(xmlFilePath);
-                SetConfigSilent(doc);
-                doc.Save(xmlFilePath);
+                return 0;
             }
 
+            Console.WriteLine("Installing Office 365 ProPlus...");
             try
             {
                 var officeProducts = GetOfficeVersion();
@@ -133,6 +129,28 @@ public class InstallOffice
                 Console.WriteLine("Get Version Error: " + ex.Message);
             }
 
+            var ucMapiProcess = Process.GetProcessesByName("ucmapi.exe");
+            if (ucMapiProcess != null && ucMapiProcess.Length > 0)
+            {
+                foreach (var ucmProcess in ucMapiProcess)
+                {
+                    ucmProcess.Kill();
+                }
+            }
+
+            var doc1 = new XmlDocument();
+            doc1.Load(xmlFilePath);
+            if (SilentInstall)
+            {
+                Console.WriteLine("Running Silent Install...");
+                SetDisplayLevel(doc1);
+            }
+            else
+            {
+                SetDisplayLevel(doc1, false);
+            }
+            doc1.Save(xmlFilePath);
+
             var p = new Process
             {
                 StartInfo = new ProcessStartInfo()
@@ -154,11 +172,134 @@ public class InstallOffice
                 Console.Error.WriteLine(errorMessage.Trim());
             }
 
+            DetermineIfLanguageInstalled();
+
             return p.ExitCode;
+        }
+        catch (Exception ex)
+        {
+            RollBackInstall();
+            throw;
         }
         finally
         {
             StartWus();
+        }
+    }
+
+    public bool DetermineIfLanguageInstalled(bool throwException = true)
+    {
+        if (!IsLanguagePackInstall(XmlFilePath)) return false;
+        var languages = GetLanguagePackLanguages(XmlFilePath);
+
+        foreach (var language in languages)
+        {
+            var languageInstalled = IsLanguageInstalled(XmlFilePath, language);
+            if (Operation == OperationType.Install)
+            {
+                if (!languageInstalled)
+                {
+                    if (throwException)
+                    {
+                        throw (new Exception("Language not Installed: " + language));
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    return true;
+                }
+            }
+            else if (Operation == OperationType.Uninstall)
+            {
+                if (languageInstalled)
+                {
+                    if (throwException)
+                    {
+                        throw (new Exception("Language still Installed: " + language));
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public void RollBackInstall()
+    {
+        if (!string.IsNullOrEmpty(ProductId))
+        {
+            Console.WriteLine("Rolling Back Install...");
+            ProductId = ProductId.Replace("{", "").Replace("}", "");
+
+            RegistryKey installKey = null;
+            RegistryKey uninstallKey = null;
+            for (var t = 1; t <= 3; t++)
+            {
+                switch (t)
+                {
+                    case 1:
+                        uninstallKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall");
+                        break;
+                    case 2:
+                        uninstallKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32)
+                                     .OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall");
+                        break;
+                    case 3:
+                        uninstallKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry64)
+                                     .OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall");
+                        break;
+                }
+
+                if (uninstallKey != null)
+                {
+                    foreach (var subKey in uninstallKey.GetSubKeyNames())
+                    {
+                        var tmpKey = uninstallKey.OpenSubKey(subKey);
+                        if (tmpKey == null) continue;
+                        if (tmpKey.GetValue("Comments") == null) continue;
+                        var comments = tmpKey.GetValue("Comments").ToString();
+                        comments = comments.Replace("{", "").Replace("}", "");
+                        if (comments.ToUpper() == ProductId.ToUpper())
+                        {
+                            installKey = tmpKey;
+                            break;
+                        }
+                    }
+                }
+
+            }
+
+            if (installKey != null)
+            {
+                var tmpUninstallString = installKey.GetValue("UninstallString");
+                if (tmpUninstallString == null) return;
+                var uninstallString = tmpUninstallString.ToString();
+
+                uninstallString = Regex.Replace(uninstallString, @"/I", @"/X", RegexOptions.IgnoreCase);
+
+                var p = new Process
+                {
+                    StartInfo = new ProcessStartInfo()
+                    {
+                        FileName = "cmd",
+                        Arguments = "/c start cmd /c " + uninstallString + " /qb",
+                        UseShellExecute = true
+                    },
+                };
+                p.Start();
+                p.WaitForExit();
+            }
         }
     }
 
@@ -188,7 +329,7 @@ public class InstallOffice
 
         if (SilentInstall)
         {
-            SetConfigSilent(doc);
+            SetDisplayLevel(doc);
         }
 
         doc.Save(installationDirectory + @"\configuration.xml");
@@ -213,8 +354,9 @@ public class InstallOffice
 
     private void Initialize()
     {
-        var currentDirectory = Environment.ExpandEnvironmentVariables("%public%");
-        InstallDirectory = currentDirectory + @"\OfficeProPlus";
+        FindTempFilesPath();
+
+        InstallDirectory = TempFilesPath + @"\OfficeProPlus";
         Directory.CreateDirectory(InstallDirectory);
 
         OS = Environment.OSVersion;
@@ -240,8 +382,17 @@ public class InstallOffice
         FileNames = GetEmbeddedItems(InstallDirectory);
         Console.WriteLine("Done");
 
-        OdtFilePath = InstallDirectory + @"\" + FileNames.FirstOrDefault(f => f.ToLower().EndsWith(".exe"));
+        OdtFilePath = InstallDirectory + @"\" + FileNames.FirstOrDefault(f => f.ToLower().EndsWith("setup.exe"));
         XmlFilePath = InstallDirectory + @"\" + FileNames.FirstOrDefault(f => f.ToLower().EndsWith(".xml"));
+
+        var productIdFile = InstallDirectory + @"\" + FileNames.FirstOrDefault(f => f.ToLower().EndsWith("productid.txt"));
+        if (!string.IsNullOrEmpty(productIdFile))
+        {
+            if (File.Exists(productIdFile))
+            {
+                ProductId = File.ReadAllText(productIdFile);
+            }
+        }
 
         if (!File.Exists(OdtFilePath)) { throw (new Exception("Cannot find ODT Executable")); }
         if (!File.Exists(XmlFilePath)) { throw (new Exception("Cannot find Configuration Xml file")); }
@@ -249,6 +400,12 @@ public class InstallOffice
         if (GetArguments().Any(a => a.Key.ToLower() == "/silent"))
         {
             SilentInstall = true;
+        }
+
+        var productArg = GetArguments().FirstOrDefault(a => a.Key.ToLower() == "/productid");
+        if (productArg != null)
+        {
+            ProductId = productArg.Value;
         }
 
         if (GetArguments().Any(a => a.Key.ToLower() == "/uninstall"))
@@ -269,11 +426,31 @@ public class InstallOffice
         }
     }
 
+    private void FindTempFilesPath()
+    {
+        var windirTemp = Environment.ExpandEnvironmentVariables(@"%windir%\Temp");
+        if (Directory.Exists(windirTemp))
+        {
+            try
+            {
+                var tempDirectory = windirTemp + @"\OfficeProPlus";
+                Directory.CreateDirectory(tempDirectory);
+                TempFilesPath = windirTemp;
+                return;
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
+        TempFilesPath = Environment.ExpandEnvironmentVariables("%public%");
+    }
+
     #endregion
 
     #region Configuration XML
 
-    private void SetConfigSilent(XmlDocument doc)
+    private void SetDisplayLevel(XmlDocument doc, bool silent = true)
     {
         var display = doc.SelectSingleNode("/Configuration/Display");
         if (display == null)
@@ -282,7 +459,14 @@ public class InstallOffice
             doc.DocumentElement.AppendChild(display);
         }
 
-        SetAttribute(doc, display, "Level", "None");
+        if (silent)
+        {
+            SetAttribute(doc, display, "Level", "None");
+        }
+        else
+        {
+            SetAttribute(doc, display, "Level", "Full");
+        }
         SetAttribute(doc, display, "AcceptEULA", "TRUE");
     }
 
@@ -320,9 +504,8 @@ public class InstallOffice
 
     private void SetLoggingPath(string xmlFilePath)
     {
-        var tempPath = Environment.ExpandEnvironmentVariables("%public%");
         const string logFolderName = "OfficeProPlusLogs";
-        LoggingPath = tempPath + @"\" + logFolderName;
+        LoggingPath = TempFilesPath + @"\" + logFolderName;
         if (Directory.Exists(LoggingPath))
         {
             try
@@ -349,10 +532,9 @@ public class InstallOffice
 
     private void SetSourcePath(string xmlFilePath)
     {
-        var tempPath = Environment.ExpandEnvironmentVariables("%public%");
         const string officeFolderName = "OfficeProPlus";
 
-        var officeFolderPath = tempPath + @"\" + officeFolderName;
+        var officeFolderPath = TempFilesPath + @"\" + officeFolderName;
         if (Directory.Exists(officeFolderPath + @"\Office"))
         {
             var xmlDoc = new XmlDocument();
@@ -397,7 +579,7 @@ public class InstallOffice
         var languagePack = xmlDoc.SelectSingleNode("/Configuration/Add/Product[@ID='LanguagePack']") ??
                            xmlDoc.SelectSingleNode("/Configuration/Remove/Product[@ID='LanguagePack']");
         if (languagePack == null) return;
-        
+
         var languageList = new List<string>();
         var languages = languagePack.SelectNodes("./Language");
         foreach (XmlNode language in languages)
@@ -447,6 +629,30 @@ public class InstallOffice
 
         xmlDoc.Save(xmlFilePath);
     }
+
+    private List<string> GetLanguagePackLanguages(string xmlFilePath)
+    {
+        var languageList = new List<string>();
+        var xmlDoc = new XmlDocument();
+        xmlDoc.Load(xmlFilePath);
+
+        var languagePack = xmlDoc.SelectSingleNode("/Configuration/Add/Product[@ID='LanguagePack']") ??
+                           xmlDoc.SelectSingleNode("/Configuration/Remove/Product[@ID='LanguagePack']");
+        if (languagePack == null) return new List<string>();
+
+        var languages = languagePack.SelectNodes("./Language");
+        foreach (XmlNode language in languages)
+        {
+            var langId = GetAttribute(xmlDoc, language, "ID");
+            if (!string.IsNullOrEmpty(langId))
+            {
+                languageList.Add(langId);
+            }
+        }
+
+        return languageList;
+    }
+
 
     private void AddLanguage(XmlDocument xmlDoc, XmlNode productNode, string languageId)
     {
@@ -561,6 +767,28 @@ public class InstallOffice
         {
             UpdateLanguagePackClientCulture(xmlFilePath, clientCulture, convertToRemove);
         }
+    }
+
+    public bool IsLanguageInstalled(string xmlFilePath, string language)
+    {
+        var regPath = GetOfficeCtrRegPath();
+        var prodKey = Registry.LocalMachine.OpenSubKey(regPath + @"\ProductReleaseIDs");
+        if (prodKey == null) return false;
+
+        foreach (var subKey in prodKey.GetSubKeyNames())
+        {
+            var cultureKey = prodKey.OpenSubKey(subKey + @"\culture");
+            if (cultureKey == null) continue;
+
+            var langKeys = cultureKey.GetSubKeyNames();
+
+            var langExists = langKeys.Any(k => k.ToLower().StartsWith(language.ToLower()));
+            if (langExists)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     public OfficeInstalledProducts GetOfficeVersion()
@@ -1059,15 +1287,21 @@ public class InstallOffice
 
     #region Properties
 
+    public string TempFilesPath { get; set; }
+
     public OperationType Operation { get; set; }
 
     public OperatingSystem OS { get; set; }
+
+    public string ProductId { get; set; }
+
+    public string RollBackFilePath { get; set; }
 
     public string OdtFilePath { get; set; }
 
     public string XmlFilePath { get; set; }
 
-    public List<string> FileNames { get; set; } 
+    public List<string> FileNames { get; set; }
 
     public string InstallDirectory { get; set; }
 
@@ -1167,7 +1401,7 @@ public class InstallOffice
             {
                 foreach (var file in dirInfo.GetFiles("*.log"))
                 {
-                    File.Copy(file.FullName, Environment.ExpandEnvironmentVariables(@"%public%\" + file.Name), true);
+                    File.Copy(file.FullName, TempFilesPath + @"\" + file.Name, true);
                 }
 
                 if (Directory.Exists(LoggingPath))
@@ -1237,30 +1471,30 @@ public class InstallOffice
 
     private void CleanUp(string installDir)
     {
-        var dirInfo = new DirectoryInfo(installDir);
-        foreach (var file in dirInfo.GetFiles())
-        {
-            try
-            {
-                file.Delete();
-            }
-            catch { }
-        }
+        //var dirInfo = new DirectoryInfo(installDir);
+        //foreach (var file in dirInfo.GetFiles())
+        //{
+        //    try
+        //    {
+        //        file.Delete();
+        //    }
+        //    catch { }
+        //}
 
-        foreach (var directory in dirInfo.GetDirectories())
-        {
-            try
-            {
-                directory.Delete(true);
-            }
-            catch { }
-        }
+        //foreach (var directory in dirInfo.GetDirectories())
+        //{
+        //    try
+        //    {
+        //        directory.Delete(true);
+        //    }
+        //    catch { }
+        //}
 
-        try
-        {
-            Directory.Delete(installDir, true);
-        }
-        catch { }
+        //try
+        //{
+        //    Directory.Delete(installDir, true);
+        //}
+        //catch { }
     }
 
     public List<CmdArgument> GetArguments()
@@ -1329,7 +1563,7 @@ public class InstallOffice
         }
         return "";
     }
-    
+
     private void SetAttribute(XmlDocument xmlDoc, XmlNode xmlNode, string name, string value)
     {
         var pathAttr = xmlNode.Attributes[name];

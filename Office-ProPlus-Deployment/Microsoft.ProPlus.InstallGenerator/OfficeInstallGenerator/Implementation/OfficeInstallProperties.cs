@@ -11,6 +11,8 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
     {
         public string ProductName { get; set; }
 
+        public string ProgramFilesPath { get; set; }
+
         public string ProductId { get; set; }
 
         public Version Version { get; set; }

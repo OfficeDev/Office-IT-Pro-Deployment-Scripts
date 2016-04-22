@@ -51,7 +51,7 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
                     ExecutablePath = exePath,
                     Manufacturer = "Microsoft Corporation",
                     Name = installProperties.ProductName,
-                    ProgramFilesPath = @"%ProgramFiles%\Microsoft Office 365 ProPlus Installer",
+                    ProgramFilesPath = installProperties.ProgramFilesPath,
                     ProgramFiles = new List<string>()
                     {
                         installProperties.ConfigurationXmlPath

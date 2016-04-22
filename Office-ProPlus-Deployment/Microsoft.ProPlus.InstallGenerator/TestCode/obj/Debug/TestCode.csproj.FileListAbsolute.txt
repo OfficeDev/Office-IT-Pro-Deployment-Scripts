@@ -1,9 +1,4 @@
-D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\TestCode\bin\Debug\TestCode.exe.config
-D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\TestCode\bin\Debug\TestCode.exe
-D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\TestCode\bin\Debug\TestCode.pdb
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\TestCode\obj\Debug\TestCode.csprojResolveAssemblyReference.cache
-D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\TestCode\obj\Debug\TestCode.exe
-D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\TestCode\obj\Debug\TestCode.pdb
 C:\Users\jojones\Documents\GitHub\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\TestCode\bin\Debug\InstallOffice.cs
 C:\Users\jojones\Documents\GitHub\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\TestCode\bin\Debug\TestCode.exe.config
 C:\Users\jojones\Documents\GitHub\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\TestCode\bin\Debug\TestCode.exe
@@ -22,3 +17,8 @@ C:\Users\jojones\Documents\GitHub\Office-IT-Pro-Deployment-Scripts\Office-ProPlu
 C:\Users\jojones\Documents\GitHub\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\TestCode\obj\Debug\TestCode.csprojResolveAssemblyReference.cache
 C:\Users\jojones\Documents\GitHub\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\TestCode\obj\Debug\TestCode.exe
 C:\Users\jojones\Documents\GitHub\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\TestCode\obj\Debug\TestCode.pdb
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\TestCode\bin\Debug\RollBackMsi.exe.config
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\TestCode\bin\Debug\RollBackMsi.exe
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\TestCode\bin\Debug\RollBackMsi.pdb
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\TestCode\obj\Debug\RollBackMsi.exe
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\TestCode\obj\Debug\RollBackMsi.pdb

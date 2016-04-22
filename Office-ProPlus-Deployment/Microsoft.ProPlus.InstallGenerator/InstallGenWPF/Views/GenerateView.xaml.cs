@@ -488,10 +488,14 @@ namespace MetroDemo.ExampleViews
                                     RegexOptions.IgnoreCase);
                             }
 
+                            var programFilesPath = @"%ProgramFiles%\Microsoft Office 365 ProPlus Installer\" + language.ID + @"\" + productVersion;
+
+                            var langProductName = productName + " (" + language.ID + ")";
+
                             installProperties.Add(new OfficeInstallProperties()
                             {
-                                ProductName = productName + " (" + language.ID + ")",
-                                ProductId = productId,
+                                ProductName = langProductName,
+                                ProductId = langProductName.GenerateGuid(),
                                 ConfigurationXmlPath = tmpXmlFilePath,
                                 OfficeVersion = OfficeVersion.Office2016,
                                 ExecutablePath = tmpSourceFilePath,
@@ -499,7 +503,8 @@ namespace MetroDemo.ExampleViews
                                 BuildVersion = version,
                                 UpgradeCode = language.ID.GenerateGuid(),
                                 Version = productVersion,
-                                Language = "en-us"
+                                Language = "en-us",
+                                ProgramFilesPath = programFilesPath
                             });
                         }
                     }
@@ -516,7 +521,8 @@ namespace MetroDemo.ExampleViews
                             BuildVersion = version,
                             UpgradeCode = upgradeCode,
                             Version = productVersion,
-                            Language = "en-us"
+                            Language = "en-us",
+                            ProgramFilesPath = @"%ProgramFiles%\Microsoft Office 365 ProPlus Installer"
                         });
                     }
 

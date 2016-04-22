@@ -13,3 +13,5 @@ D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\TestWixGeneration\obj\Debug\TestWixGeneration.csprojResolveAssemblyReference.cache
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\TestWixGeneration\obj\Debug\TestWixGeneration.exe
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\TestWixGeneration\obj\Debug\TestWixGeneration.pdb
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\TestWixGeneration\bin\Debug\TestWixGeneration.exe.CodeAnalysisLog.xml
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\TestWixGeneration\bin\Debug\TestWixGeneration.exe.lastcodeanalysissucceeded

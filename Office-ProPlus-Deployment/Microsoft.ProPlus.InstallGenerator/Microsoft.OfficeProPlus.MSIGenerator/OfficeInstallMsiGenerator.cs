@@ -13,6 +13,8 @@ using Microsoft.Win32;
 using RegistryReader;
 using WixSharp;
 using System;
+using System.Runtime.CompilerServices;
+using WixSharp.CommonTasks;
 using File = WixSharp.File;
 
 public class MsiGenerator 
@@ -27,13 +29,19 @@ public class MsiGenerator
             {
                 new SetPropertyAction("InstallDirectory", installProperties.ProgramFilesPath),
                 new ElevatedManagedAction("InstallOffice", Return.check, When.After, Step.InstallFiles, Condition.NOT_Installed), 
-                new ElevatedManagedAction("UninstallOffice", Return.check, When.Before, Step.RemoveFiles, Condition.BeingRemoved), 
+                new ElevatedManagedAction("UninstallOffice", Return.check, When.Before, Step.RemoveFiles, Condition.BeingRemoved),
             },
             Properties = new[] 
             { 
                 new Property("InstallDirectory", "empty"),
+                new Property()
+                {
+                    Name = "ProductGuid",
+                    Value = installProperties.ProductId.ToString()
+                }
             }
         };
+
 
         var files = new List<WixSharp.File>();
         foreach (var filePath in installProperties.ProgramFiles)
@@ -49,7 +57,11 @@ public class MsiGenerator
         };
 
         project.GUID = installProperties.ProductId;
-        project.ControlPanelInfo = new ProductInfo() { Manufacturer = installProperties.Manufacturer };
+        project.ControlPanelInfo = new ProductInfo()
+        {
+            Manufacturer = installProperties.Manufacturer,
+            Comments = installProperties.ProductId.ToString()
+        };
         project.OutFileName = installProperties.MsiPath;
         project.UpgradeCode = installProperties.UpgradeCode;
         project.Version = installProperties.Version;
@@ -60,8 +72,12 @@ public class MsiGenerator
             AllowSameVersionUpgrades = false
         };
 
+        //project.MajorUpgradeStrategy.RemoveExistingProductAfter = null;
+
         project.Load += project_Load;
         project.AfterInstall += project_AfterInstall;
+        project.InstallScope = InstallScope.perMachine;
+        
 
         if (!string.IsNullOrEmpty(installProperties.Language))
         {
@@ -79,7 +95,7 @@ public class MsiGenerator
             Compiler.WixSdkLocation = @"wixTools\sdk\";
         }
 
-        Compiler.BuildMsi(project);
+        var returnValue  = Compiler.BuildMsi(project);
 
         var installDirectory = new MsiGeneratorReturn
         {
@@ -104,8 +120,7 @@ public class MsiGenerator
         {
             if (errorMessage != null)
             {
-                //MessageBox.Show(errorMessage);
-                e.Result = ActionResult.Failure;
+                e.Result = ActionResult.Success;
                 return;
             }
             else
@@ -119,12 +134,13 @@ public class MsiGenerator
         }
         else if (e.IsUninstalling)
         {
-            VerifyOfficeUninstalled(e);
+            //VerifyOfficeUninstalled(e);
+            e.Result = ActionResult.Success;
         }
         else
         {
             e.Result = ActionResult.Success;
-        }
+        }       
     }
 
     public string GetOdtErrorMessage()
@@ -186,7 +202,6 @@ public class MsiGenerator
         }
         return null;
     }
-
 
     public void VerifyOfficeUninstalled(SetupEventArgs e)
     {
@@ -292,7 +307,8 @@ public class CustomActions
             {
                 StartInfo = new ProcessStartInfo()
                 {
-                    FileName = installDir + @"\InstallOfficeProPlus.exe",
+                    FileName = "cmd",
+                    Arguments = "/c start cmd /c \"" + installDir + "\\InstallOfficeProPlus.exe\"",
                     CreateNoWindow = true,
                     UseShellExecute = false
                 },
@@ -301,10 +317,9 @@ public class CustomActions
             if (isSilent)
             {
                 p.StartInfo.Arguments = "/silent";
-               
             }
             p.Start();
-            Process.GetCurrentProcess().Close();
+            
             return ActionResult.Success;
         }
         catch (Exception ex)
@@ -320,7 +335,11 @@ public class CustomActions
         try
         {
             var installDir = session.CustomActionData["INSTALLDIR"];
-            if (installDir == null) return ActionResult.Failure;
+            if (installDir == null)
+            {
+                MessageBox.Show("No Install Directory");
+                return ActionResult.Failure;
+            }
 
             var isSilent = false;
             try
@@ -354,8 +373,8 @@ public class CustomActions
                 },
             };
 
-            //p.Start();
-            //p.WaitForExit();
+            p.Start();
+            p.WaitForExit();
 
             return ActionResult.Success;
         }
