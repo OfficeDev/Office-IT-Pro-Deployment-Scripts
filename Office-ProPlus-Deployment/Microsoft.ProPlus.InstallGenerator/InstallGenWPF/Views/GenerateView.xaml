@@ -67,16 +67,23 @@
                                     <RowDefinition Height="50"></RowDefinition>
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="215" />
+                                    <ColumnDefinition Width="50" />
+                                    <ColumnDefinition Width="165" />
                                     <ColumnDefinition Width="100" />
                                     <ColumnDefinition Width="150" />
                                 </Grid.ColumnDefinitions>
-                                <Label Content="Install type" Style="{StaticResource CustomMetroLabelHeader}" HorizontalAlignment="Left" Grid.Column="0" Margin="50,10,0,0" />
-                                <RadioButton x:Name="InstallMsi" Grid.Column="1" Checked="InstallExecutable_OnChecked"
+                                <Button x:Name="ProductInfo" Width="30" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" 
+                                                Focusable="False"  Style="{StaticResource MetroInfoButton}" Click="ProductInfo_OnClick" >
+                                    <StackPanel Orientation="Horizontal">
+                                        <Image Source="../images/info.png" Width="20" Height="20"/>
+                                    </StackPanel>
+                                </Button>
+                                <Label Content="Install type" Style="{StaticResource CustomMetroLabelHeader}" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="1"  />
+                                <RadioButton x:Name="InstallMsi" Grid.Column="2" Checked="InstallExecutable_OnChecked"
                                          Content="MSI" IsChecked="True" Foreground="{StaticResource GrayBrush}"
                                          GroupName="1" FontSize="20"  />
 
-                                <RadioButton x:Name="InstallExecutable" Grid.Column="2" Checked="InstallExecutable_OnChecked"
+                                <RadioButton x:Name="InstallExecutable" Grid.Column="3" Checked="InstallExecutable_OnChecked"
                                          Content="Executable" IsChecked="False" Foreground="{StaticResource GrayBrush}"
                                          GroupName="1" FontSize="20"  />
                             </Grid>
