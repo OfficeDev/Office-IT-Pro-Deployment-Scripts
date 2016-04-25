@@ -26,16 +26,21 @@ $targetFilePath = "$env:temp\configuration.xml"
 
 Generate-ODTConfigurationXml -Languages AllInUseLanguages -TargetFilePath $targetFilePath | Set-ODTAdd -Version $NULL -Channel Deferred | Out-Null
 
-if ((Get-ODTProductToAdd -TargetFilePath $targetFilePath -ProductId O365ProPlusRetail)) {
-     Set-ODTProductToAdd -ProductId "O365ProPlusRetail" -TargetFilePath $targetFilePath -ExcludeApps ("Lync", "Groove") | Out-Null
+#Get the languages currently in use so the additional products can be installed with the same languages
+$products = Get-ODTProductToAdd -TargetFilePath $targetFilePath -All
+if ($products) { $languages = $products.Languages } else { $languages = @("en-us") }
+
+#Add VisioProRetail if it isn't currently installed
+if (!(Get-ODTProductToAdd -TargetFilePath $targetFilePath -ProductId VisioProRetail)) {
+     Add-ODTProductToAdd -ProductId "VisioProRetail" -TargetFilePath $targetFilePath -LanguageIds $languages | Out-Null    
 }
 
-if ((Get-ODTProductToAdd -TargetFilePath $targetFilePath -ProductId O365BusinessRetail)) {
-     Set-ODTProductToAdd -ProductId "O365BusinessRetail" -TargetFilePath $targetFilePath -ExcludeApps ("Lync", "Groove") | Out-Null
+#Add ProjectProRetail if it isn't currently installed
+if (!(Get-ODTProductToAdd -TargetFilePath $targetFilePath -ProductId ProjectProRetail)) {
+     Add-ODTProductToAdd -ProductId "ProjectProRetail" -TargetFilePath $targetFilePath -LanguageIds $languages | Out-Null
 }
 
 Install-OfficeClickToRun -TargetFilePath $targetFilePath
-
 
 # Configuration.xml file for Click-to-Run for Office 365 products reference. https://technet.microsoft.com/en-us/library/JJ219426.aspx
 }
