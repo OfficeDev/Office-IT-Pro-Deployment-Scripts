@@ -16,6 +16,9 @@ Param(
     [bool] $DisplayLevel = $false,
 
     [Parameter()]
+    [string] $UpdateToVersion = $NULL,
+
+    [Parameter()]
     [string] $LogPath = $null,
 
     [Parameter()]
