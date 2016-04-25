@@ -90,7 +90,7 @@ namespace MetroDemo
 
         public static string DefaultXml = "<Configuration><Updates Enabled=\"TRUE\"></Updates><Display Level=\"Full\" /></Configuration>";
 
-        public static string DefaultLanguagePackXml = "<Configuration><Add><Product ID=\"LanguagePack\"><Language ID=\"en-us\" /></Product></Add></Configuration>";
+        public static string DefaultLanguagePackXml = "<Configuration><Add><Product ID=\"LanguagePack\"><Language ID=\"en-us\" /></Product></Add><Display Level=\"Full\" /></Configuration>";
     }
 
     public class MainWindowViewModel : INotifyPropertyChanged

@@ -52,13 +52,13 @@
                                 <RowDefinition Height="20" />
                                 <RowDefinition Height="50" />
                                 <RowDefinition Height="50" />
-                                <RowDefinition Height="50" />
                                 <RowDefinition Height="0" x:Name="PublisherRow" />
+                                <RowDefinition Height="50" />
                                 <RowDefinition Height="50" />
                                 <RowDefinition Height="50" />
                                 <RowDefinition Height="120"  />
                                 <RowDefinition Height="114" x:Name="SpacerRow" />
-                                <RowDefinition />
+                                <RowDefinition Height="*" />
                             </Grid.RowDefinitions>
 
                             <Grid Grid.Column="0" Grid.Row="1">
@@ -133,7 +133,37 @@
 
                             </Grid>
 
+
                             <Grid Grid.Column="0" Grid.Row="3">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="50"></RowDefinition>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <Grid Grid.Row="0" Grid.Column="0" >
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="50"></RowDefinition>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="50" />
+                                        <ColumnDefinition Width="165" />
+                                        <ColumnDefinition Width="400" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <Label Content="Publisher"  HorizontalAlignment="Left" VerticalAlignment="Center"
+                                           Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="1" Height="34" Width="150"  />
+
+                                    <TextBox x:Name="Publisher" FontSize="20" Grid.Column="2" VerticalAlignment="Center" Background="White" 
+                                             Height="35" Grid.Row="0" IsReadOnly="True"
+                                             Text="" Foreground="{StaticResource GrayBrush}" />
+
+                                </Grid>
+
+                            </Grid>
+
+                            <Grid Grid.Column="0" Grid.Row="4">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="50"></RowDefinition>
                                     <RowDefinition Height="50"></RowDefinition>
@@ -177,36 +207,7 @@
                                 </Grid>
 
                             </Grid>
-                            
-                            <Grid Grid.Column="0" Grid.Row="4">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="50"></RowDefinition>
-                                    <RowDefinition Height="50"></RowDefinition>
-                                    <RowDefinition Height="50"></RowDefinition>
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
 
-                                <Grid Grid.Row="0" Grid.Column="0" >
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="50"></RowDefinition>
-                                    </Grid.RowDefinitions>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="165" />
-                                        <ColumnDefinition Width="400" />
-                                    </Grid.ColumnDefinitions>
-
-                                    <Label Content="Publisher"  HorizontalAlignment="Left" VerticalAlignment="Center"
-                                           Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="0" Height="34" Width="254"  />
-
-                                    <TextBox x:Name="Publisher" FontSize="20" Grid.Column="1" VerticalAlignment="Center" Background="White" 
-                                             Height="35" Grid.Row="0" IsReadOnly="True"
-                                             Text="" Foreground="{StaticResource GrayBrush}" />
-
-                                </Grid>
-
-                            </Grid>
 
                             <Grid Grid.Column="0" Grid.Row="5">
                                 <Grid.RowDefinitions>
@@ -333,7 +334,7 @@
                                    Height="60" Grid.Row="0" Grid.Column="0" gif:ImageBehavior.AnimatedSource="../images/wait.GIF" />
                             </Grid>
 
-                            <Grid Margin="0 0 0 0" Grid.Row="8" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Top"  >
+                            <Grid Margin="0 0 0 10" Grid.Row="8" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Bottom"  >
                                 <Grid.Resources>
                                     <ResourceDictionary>
                                         <ResourceDictionary.MergedDictionaries>

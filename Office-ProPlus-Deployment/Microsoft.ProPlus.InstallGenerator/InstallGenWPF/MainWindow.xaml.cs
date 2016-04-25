@@ -249,11 +249,11 @@ namespace MetroDemo
                 {
                     if (e.Direction == TransitionTabDirection.Forward)
                     {
-                        if (index == 3) index = 5;
+                        if (index == 3) index = 4;
                     }
                     else
                     {
-                        if (index == 4) index = 2;
+                        if (index == 3) index = 2;
                     }
                 }
                 else
