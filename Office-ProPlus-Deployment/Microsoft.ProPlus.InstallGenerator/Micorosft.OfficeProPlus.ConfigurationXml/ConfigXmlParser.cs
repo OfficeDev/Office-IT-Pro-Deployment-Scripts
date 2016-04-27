@@ -113,6 +113,16 @@ namespace OfficeInstallGenerator
                     var channel = addNode.Attributes["Channel"].Value;
                     if (!string.IsNullOrEmpty(channel))
                     {
+                        if (channel.ToLower() == "business")
+                        {
+                            channel = "deferred";
+                        }
+
+                        if (channel.ToLower() == "firstreleasebusiness")
+                        {
+                            channel = "firstreleasedeferred";
+                        }
+
                         odtAdd.ODTChannel = (ODTChannel)Enum.Parse(typeof(ODTChannel), channel);
                     }
                 }
@@ -490,6 +500,16 @@ namespace OfficeInstallGenerator
                 var channel = updatesNode.Attributes["Channel"].Value;
                 if (!string.IsNullOrEmpty(channel))
                 {
+                    if (channel.ToLower() == "business")
+                    {
+                        channel = "deferred";
+                    }
+
+                    if (channel.ToLower() == "firstreleasebusiness")
+                    {
+                        channel = "firstreleasedeferred";
+                    }
+
                     updates.ODTChannel = (ODTChannel)Enum.Parse(typeof(ODTChannel), channel);
                 }
             }
