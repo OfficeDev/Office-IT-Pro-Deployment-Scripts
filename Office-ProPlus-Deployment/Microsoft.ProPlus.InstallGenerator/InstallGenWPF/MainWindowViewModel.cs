@@ -142,9 +142,11 @@ namespace MetroDemo
                     Name = "Current",
                     NewName = "Current",
                     Id = "Current",
-                    CurrentVersion = "16.0.6741.2021",
+                    CurrentVersion = "16.0.6769.2017",
                     Versions = new List<Build>()
                     {
+                        new Build() { Version = "16.0.6769.2017"},
+                        new Build() { Version = "16.0.6769.2015"},
                         new Build() { Version = "16.0.6741.2021"},
                         new Build() { Version = "16.0.6741.2017"},
                         new Build() { Version = "16.0.6568.2036"},
@@ -167,9 +169,10 @@ namespace MetroDemo
                     Name = "Deferred",
                     NewName = "Deferred",
                     Id = "Business",
-                    CurrentVersion = "",
+                    CurrentVersion = "16.0.6001.1073",
                     Versions = new List<Build>()
                     {
+                       new Build() { Version = "16.0.6001.1073"},
                        new Build() { Version = "16.0.6001.1068"},
                        new Build() { Version = "16.0.6001.1061"}
                     }
@@ -180,7 +183,7 @@ namespace MetroDemo
                     Name = "First Release Current",
                     NewName = "FirstReleaseCurrent",
                     Id = "FirstReleaseCurrent",
-                    CurrentVersion = "",
+                    CurrentVersion = "16.0.6769.2015",
                     Versions = new List<Build>()
                     {
                         new Build() { Version = "16.0.6769.2015"},
@@ -207,9 +210,11 @@ namespace MetroDemo
                     Name = "First Release Deferred",
                     NewName = "FirstReleaseDeferred",
                     Id = "FirstReleaseBusiness",
-                    CurrentVersion = "16.0.6741.2021",
+                    CurrentVersion = "16.0.6741.2026",
                     Versions = new List<Build>()
                     {
+                        new Build() { Version = "16.0.6741.2026"},
+                        new Build() { Version = "16.0.6741.2025"},
                         new Build() { Version = "16.0.6741.2021"},
                         new Build() { Version = "16.0.6741.2017"},
                         new Build() { Version = "16.0.6741.2015"},

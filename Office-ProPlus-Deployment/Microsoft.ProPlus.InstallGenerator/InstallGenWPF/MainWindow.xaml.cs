@@ -96,8 +96,8 @@ namespace MetroDemo
         {
             try
             {
-                var branchJson = GlobalObjects.ViewModel.BranchesToJson;
-                System.IO.File.WriteAllText(Environment.ExpandEnvironmentVariables(@"%temp%\BranchVersions.json"),branchJson);
+                //var branchJson = GlobalObjects.ViewModel.BranchesToJson;
+                //System.IO.File.WriteAllText(Environment.ExpandEnvironmentVariables(@"%temp%\BranchVersions.json"),branchJson);
 
                 try
                 {
