@@ -223,7 +223,7 @@ namespace Microsoft.OfficeProPlus.Downloader
             {
                 selectUpdateFile = _updateFiles.FirstOrDefault(u => u.OfficeEdition == OfficeEdition.Office32Bit);
             }
-            else if (properties.OfficeEdition == OfficeEdition.Office32Bit)
+            else if (properties.OfficeEdition == OfficeEdition.Office64Bit)
             {
                 selectUpdateFile = _updateFiles.FirstOrDefault(u => u.OfficeEdition == OfficeEdition.Office64Bit);
             }

@@ -4,16 +4,16 @@
 winexe
 C#
 .cs
-D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\InstallGenWPF\obj\NET40\Debug\
+C:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\InstallGenWPF\obj\NET40\Debug\
 Microsoft.OfficeProPlus.InstallGen.Presentation
 none
 false
 TRACE;DEBUG
-D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\InstallGenWPF\App.xaml
+C:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\InstallGenWPF\App.xaml
 211705998408
 38156356024
 451391256538
-27966321588
+27-1489762028
 Views\AboutView.xaml;Views\LocalView.xaml;Views\GenerateView.xaml;Views\DownloadView.xaml;Views\StartView.xaml;Views\DisplayView.xaml;Views\UpdateView.xaml;Views\ProductView.xaml;MainWindow.xaml;Navigation\HomePage.xaml;Navigation\InterestingPage.xaml;Resources\Icons.xaml;Styles\Custom.xaml;Viewer.xaml;Windows\GenerateCertificate.xaml;Windows\InformationDialog.xaml;Windows\CertificatesDialog.xaml;Windows\DownloadAdvanced.xaml;Windows\Languages.xaml;XmlBrowser\ValidationResultControl.xaml;XmlBrowser\XmlBrowserControl.xaml;
 
 False
