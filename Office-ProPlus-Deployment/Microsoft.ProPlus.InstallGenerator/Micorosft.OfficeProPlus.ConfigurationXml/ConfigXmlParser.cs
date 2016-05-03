@@ -82,6 +82,7 @@ namespace OfficeInstallGenerator
         private void LoadAdds()
         {
             var addNodes = _xmlDoc.DocumentElement.SelectNodes("./Add");
+            
             foreach (XmlNode addNode in addNodes)
             {
                 var odtAdd = new ODTAdd();

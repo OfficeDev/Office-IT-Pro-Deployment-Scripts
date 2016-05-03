@@ -20,6 +20,7 @@ using Microsoft.OfficeProPlus.InstallGen.Presentation.Logging;
 using Microsoft.OfficeProPlus.InstallGen.Presentation.Models;
 using Microsoft.OfficeProPlus.InstallGenerator.Models;
 using OfficeInstallGenerator.Model;
+using System.Xml;
 using File = System.IO.File;
 using MessageBox = System.Windows.MessageBox;
 using UserControl = System.Windows.Controls.UserControl;
@@ -41,12 +42,14 @@ namespace MetroDemo.ExampleViews
         private Task _downloadTask = null;
         private int _cachedIndex = 0;
         private bool _blockUpdate = false;
+        private bool chBxMainProductFirstInitialize = true;
+        private bool isResetError = false;
         
 
         public ProductView()
         {
             InitializeComponent();
-         
+            
         }
 
         private void ProductView_Loaded(object sender, RoutedEventArgs e)             
@@ -54,7 +57,7 @@ namespace MetroDemo.ExampleViews
             try
             {
                 // LoadExcludedProducts();
-
+                isResetError = true;
                 cbProject.IsEnabled = false;
                 cbVisio.IsEnabled = false;
 
@@ -98,6 +101,7 @@ namespace MetroDemo.ExampleViews
                     UseLangForAllLabel.Visibility = Visibility.Visible;
                     UseLangForAllProducts.Visibility = Visibility.Visible;
                 }
+                isResetError = false;
             }
             catch (Exception ex)
             {
@@ -241,7 +245,13 @@ namespace MetroDemo.ExampleViews
                 cbVisio.SelectedIndex = 0;
                 cbProject.SelectedIndex = 0;
                 chkVisio.IsChecked = false;
-                chkProject.IsChecked = false;
+                chkProject.IsChecked = false;                
+                if (chBxMainProductFirstInitialize)
+                {
+                    chkofficeProd.IsChecked = true;
+                    chBxMainProductFirstInitialize = false;
+                }
+                
 
                 MainProducts.SelectedIndex = 0;
                 ProductEdition32Bit.IsChecked = true;
@@ -350,7 +360,7 @@ namespace MetroDemo.ExampleViews
                                 cbProject.IsEnabled = true;
                                 cbProject.SelectedItem = item;
                                 break;
-                            }
+                            }                            
 
                             if (product.Languages != null)
                             {
@@ -442,7 +452,7 @@ namespace MetroDemo.ExampleViews
             if (configXml.Add == null)
             {
                 configXml.Add = new ODTAdd();
-            }
+            }            
 
             var languages = GlobalObjects.ViewModel.GetRemovedLanguages();
             if (languages.Count > 0)
@@ -547,6 +557,7 @@ namespace MetroDemo.ExampleViews
 
             configXml.Add.SourcePath = ProductUpdateSource.Text.Length > 0 ? ProductUpdateSource.Text : null;
 
+            
             var mainProduct = (Product) MainProducts.SelectedItem;
             if (mainProduct != null)
             {
@@ -556,8 +567,10 @@ namespace MetroDemo.ExampleViews
                 {
                     ID = mainProduct.Id
                 };
-
-                configXml.Add.Products.Add(existingProduct);
+                if (chkofficeProd.IsChecked.HasValue && chkofficeProd.IsChecked.Value)
+                {
+                    configXml.Add.Products.Add(existingProduct);
+                }
 
                 if (chkVisio.IsChecked.HasValue && chkVisio.IsChecked.Value)
                 {
@@ -643,7 +656,7 @@ namespace MetroDemo.ExampleViews
                     });
                 }
 
-            }
+            }   
         }
 
         public void ChangeBranch(string branchName)
@@ -756,15 +769,32 @@ namespace MetroDemo.ExampleViews
 
         private void ProductsSelectionChanged()
         {
+            if ((chkVisio.IsChecked.HasValue && chkVisio.IsChecked.Value == false) && (chkProject.IsChecked.HasValue && chkProject.IsChecked.Value == false) && (chkofficeProd.IsChecked.HasValue && chkofficeProd.IsChecked.Value == false))
+            {
+                GlobalObjects.ViewModel.BlockNavigation = true;
+                if (!isResetError)
+                {
+                    throw new Exception("At least one product must be selected.");
+                }
+            }
+            else if (GlobalObjects.ViewModel.BlockNavigation)
+            {
+                GlobalObjects.ViewModel.BlockNavigation = false;
+            }
+
+            isResetError = false;
+
             LanguageUnique.ItemsSource = null;
 
             var products = new List<Product>();
 
-            foreach (Product product in MainProducts.SelectedItems)
+            if (chkofficeProd.IsChecked.HasValue && chkofficeProd.IsChecked.Value)
             {
-                products.Add(product);
+                foreach (Product product in MainProducts.SelectedItems)
+                {
+                    products.Add(product);
+                }
             }
-
             if (chkVisio.IsChecked.HasValue && chkVisio.IsChecked.Value)
             {
                 var visioProduct = (Product)cbVisio.SelectedItem;
@@ -926,7 +956,20 @@ namespace MetroDemo.ExampleViews
         {
             try
             {
-                cbVisio.IsEnabled = (chkVisio.IsChecked.HasValue && chkVisio.IsChecked.Value);
+                cbVisio.IsEnabled = (chkVisio.IsChecked.HasValue && chkVisio.IsChecked.Value);                
+                ProductsSelectionChanged();
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
+
+        private void chkofficeProd_Checked(object sender, RoutedEventArgs e)
+        {
+            try
+            {                
+                MainProducts.IsEnabled = (chkofficeProd.IsChecked.HasValue && chkofficeProd.IsChecked.Value);
                 ProductsSelectionChanged();
             }
             catch (Exception ex)
@@ -945,8 +988,7 @@ namespace MetroDemo.ExampleViews
                     return;
                 }
 
-                UpdateXml();
-
+                UpdateXml();                
                 switch (MainTabControl.SelectedIndex)
                 {
                     case 0:
@@ -1306,9 +1348,11 @@ namespace MetroDemo.ExampleViews
 
 
 
+
+
+
         #endregion
-
-
+              
     }
 }
 

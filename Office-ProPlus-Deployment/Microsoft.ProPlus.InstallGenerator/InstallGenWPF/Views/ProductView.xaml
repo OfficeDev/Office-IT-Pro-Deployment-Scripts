@@ -71,7 +71,8 @@
                                     <Grid Height="35" >
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="30" />
-                                            <ColumnDefinition Width="400" />
+                                            <ColumnDefinition Width="450" />
+                                            <ColumnDefinition Width="30" />
                                         </Grid.ColumnDefinitions>
                                         
                                         <Button x:Name="ProductInfo" Width="30" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" 
@@ -82,6 +83,7 @@
                                         </Button>
                                         <Label Grid.Row="0" Grid.Column="1" Content="Product" Style="{StaticResource CustomMetroLabelHeader}"  
                                                HorizontalAlignment="Left"  Width="100" VerticalAlignment="Center"/>
+                                        <CheckBox x:Name="chkofficeProd" Grid.Column="2" Style="{StaticResource MetroCheckBox}" Checked="chkofficeProd_Checked" Unchecked="chkofficeProd_Checked" ></CheckBox>
                                     </Grid>
 
                                     <ListBox x:Name="MainProducts"  Style="{StaticResource VirtualizedMetroListBox}" 
