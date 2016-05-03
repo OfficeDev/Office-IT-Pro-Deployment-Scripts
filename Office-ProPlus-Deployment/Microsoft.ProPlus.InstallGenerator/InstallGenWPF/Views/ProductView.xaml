@@ -83,7 +83,7 @@
                                         </Button>
                                         <Label Grid.Row="0" Grid.Column="1" Content="Product" Style="{StaticResource CustomMetroLabelHeader}"  
                                                HorizontalAlignment="Left"  Width="100" VerticalAlignment="Center"/>
-                                        <CheckBox x:Name="chkofficeProd" Grid.Column="2" Style="{StaticResource MetroCheckBox}" Checked="chkofficeProd_Checked" Unchecked="chkofficeProd_Checked" ></CheckBox>
+                                        <CheckBox x:Name="chkofficeProd" Grid.Column="2" Style="{StaticResource MetroCheckBox}" Checked="chkofficeProd_Checked" Unchecked="chkofficeProd_Checked" Click="chkofficeProd_Click" ></CheckBox>
                                     </Grid>
 
                                     <ListBox x:Name="MainProducts"  Style="{StaticResource VirtualizedMetroListBox}" 
@@ -108,7 +108,7 @@
                                         <Label Grid.Row="0" Grid.Column="1" Content="Visio" Style="{StaticResource CustomMetroLabelHeader}"  
                                                HorizontalAlignment="Left"  Width="100" VerticalAlignment="Center"/>
                                         <CheckBox x:Name="chkVisio" Grid.Column="2" Style="{StaticResource MetroCheckBox}" Checked="ChkVisio_OnChecked"
-                                                  Unchecked="ChkVisio_OnChecked"></CheckBox>
+                                                  Unchecked="ChkVisio_OnChecked" Click="chkofficeProd_Click"></CheckBox>
                                     </Grid>
                                     
 
@@ -133,7 +133,7 @@
                                         <Label Grid.Row="0" Grid.Column="1" Content="Project" Style="{StaticResource CustomMetroLabelHeader}"  
                                                HorizontalAlignment="Left"  Width="100" VerticalAlignment="Center"/>
                                         <CheckBox x:Name="chkProject" Grid.Column="2" Style="{StaticResource MetroCheckBox}" Checked="ChkProject_OnChecked" 
-                                                 Unchecked="ChkProject_OnChecked" ></CheckBox>
+                                                 Unchecked="ChkProject_OnChecked" Click="chkofficeProd_Click" ></CheckBox>
                                     </Grid>
                                     
                                     <ComboBox x:Name="cbProject" Width="500" FontSize="20" BorderThickness="2" Margin="0 5 0 0"

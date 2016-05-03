@@ -42,8 +42,7 @@ namespace MetroDemo.ExampleViews
         private Task _downloadTask = null;
         private int _cachedIndex = 0;
         private bool _blockUpdate = false;
-        private bool chBxMainProductFirstInitialize = true;
-        private bool isResetError = false;
+        private bool chBxMainProductFirstInitialize = true;        
         
 
         public ProductView()
@@ -57,10 +56,8 @@ namespace MetroDemo.ExampleViews
             try
             {
                 // LoadExcludedProducts();
-                isResetError = true;
                 cbProject.IsEnabled = false;
-                cbVisio.IsEnabled = false;
-
+                cbVisio.IsEnabled = false;                
                 if (MainTabControl == null) return;
                 MainTabControl.SelectedIndex = 0;
 
@@ -101,7 +98,6 @@ namespace MetroDemo.ExampleViews
                     UseLangForAllLabel.Visibility = Visibility.Visible;
                     UseLangForAllProducts.Visibility = Visibility.Visible;
                 }
-                isResetError = false;
             }
             catch (Exception ex)
             {
@@ -768,21 +764,7 @@ namespace MetroDemo.ExampleViews
         }
 
         private void ProductsSelectionChanged()
-        {
-            if ((chkVisio.IsChecked.HasValue && chkVisio.IsChecked.Value == false) && (chkProject.IsChecked.HasValue && chkProject.IsChecked.Value == false) && (chkofficeProd.IsChecked.HasValue && chkofficeProd.IsChecked.Value == false))
-            {
-                GlobalObjects.ViewModel.BlockNavigation = true;
-                if (!isResetError)
-                {
-                    throw new Exception("At least one product must be selected.");
-                }
-            }
-            else if (GlobalObjects.ViewModel.BlockNavigation)
-            {
-                GlobalObjects.ViewModel.BlockNavigation = false;
-            }
-
-            isResetError = false;
+        {                        
 
             LanguageUnique.ItemsSource = null;
 
@@ -1352,7 +1334,28 @@ namespace MetroDemo.ExampleViews
 
 
         #endregion
-              
+
+        private void chkofficeProd_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if ((chkVisio.IsChecked.HasValue && chkVisio.IsChecked.Value == false) && (chkProject.IsChecked.HasValue && chkProject.IsChecked.Value == false) && (chkofficeProd.IsChecked.HasValue && chkofficeProd.IsChecked.Value == false))
+                {
+
+                    GlobalObjects.ViewModel.BlockNavigation = true;
+                    throw new Exception("At least one product must be selected.");
+
+                }
+                else if (GlobalObjects.ViewModel.BlockNavigation)
+                {
+                    GlobalObjects.ViewModel.BlockNavigation = false;
+                }
+            }
+            catch(Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
     }
 }
 
