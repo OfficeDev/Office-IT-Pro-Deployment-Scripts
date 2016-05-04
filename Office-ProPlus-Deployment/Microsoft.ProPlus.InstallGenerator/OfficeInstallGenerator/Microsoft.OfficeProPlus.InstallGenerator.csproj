@@ -74,6 +74,7 @@
     <Compile Include="IOfficeInstallGenerator.cs" />
     <Compile Include="IOfficeInstallProperties.cs" />
     <Compile Include="IOfficeInstallReturn.cs" />
+    <Compile Include="Model\OfficeRemoteInstall.cs" />
     <Compile Include="Model\OfficeLocalInstall.cs" />
     <Compile Include="Support\EmbeddedResources.cs" />
     <Compile Include="Enums\OfficeVersion.cs" />

@@ -339,7 +339,7 @@
                     <exampleViews:LocalView x:Name="LocalView" DataContext="{Binding}" Tag="6"   IsEnabled="true"/>
                 </TabItem>
                 <TabItem>
-                    <exampleViews:LocalView x:Name="RemoteView" DataContext="{Binding}" Tag="7"   IsEnabled="true"/>
+                    <exampleViews:RemoteView x:Name="RemoteView" DataContext="{Binding}" Tag="7"   IsEnabled="true"/>
                 </TabItem>
                 <TabItem>
                     <exampleViews:AboutView x:Name="AboutView" DataContext="{Binding}" Tag="8"  IsEnabled="True" />
