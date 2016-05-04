@@ -10,6 +10,7 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Enums
     {
         InstallGenerator = 0,
         ManageLocal = 1,
-        LanguagePack = 2
+        LanguagePack = 2,
+        ManageRemote = 3
     }
 }

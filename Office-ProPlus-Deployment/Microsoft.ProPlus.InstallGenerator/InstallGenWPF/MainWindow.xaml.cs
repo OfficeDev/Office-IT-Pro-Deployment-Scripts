@@ -219,14 +219,22 @@ namespace MetroDemo
                 if (GlobalObjects.ViewModel.ApplicationMode == ApplicationMode.ManageLocal)
                 {
                     GenerateTabName.Visibility = Visibility.Collapsed;
+                    RemoteTabName.Visibility = Visibility.Collapsed;
                     LocalTabName.Visibility = Visibility.Visible;
                     GenerateView.Tag = 99;
                     LocalView.Tag = 5;
+                }
+                else if(GlobalObjects.ViewModel.ApplicationMode == ApplicationMode.ManageRemote)
+                {
+                    GenerateTabName.Visibility = Visibility.Collapsed;
+                    LocalTabName.Visibility = Visibility.Collapsed;
+                    RemoteTabName.Visibility = Visibility.Visible;
                 }
                 else
                 {
                     GenerateTabName.Visibility = Visibility.Visible;
                     LocalTabName.Visibility = Visibility.Collapsed;
+                    RemoteTabName.Visibility = Visibility.Collapsed;
                     GenerateView.Tag = 5;
                     LocalView.Tag = 99;
                 }
