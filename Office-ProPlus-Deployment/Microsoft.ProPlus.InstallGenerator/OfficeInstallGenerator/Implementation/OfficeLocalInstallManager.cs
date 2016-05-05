@@ -14,12 +14,12 @@ using OfficeInstallGenerator;
 
 namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
 {
-    public class OfficeLocalInstallManager
+    public class OfficeLocalInstallManager : IManageOfficeInstall
     {
 
-        public async Task<OfficeLocalInstall> CheckForOfficeLocalInstallAsync()
+        public async Task<OfficeInstallation> CheckForOfficeInstallAsync()
         {
-            var localInstall = new OfficeLocalInstall()
+            var localInstall = new OfficeInstallation()
             {
                 Installed = false
             };
@@ -68,7 +68,7 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
 
         }
 
-        public async Task<string> GenerateLocalConfigXml()
+        public async Task<string> GenerateConfigXml()
         {
             var currentDirectory = Directory.GetCurrentDirectory() + @"\Scripts";
             if (!System.IO.File.Exists(currentDirectory + @"\Generate-ODTConfigurationXML.ps1"))
@@ -165,14 +165,14 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
             return configXml;
         }
 
-        private async Task<string> GetOfficeLatestVersion(string branch, OfficeEdition edition)
+        public async Task<string> GetOfficeLatestVersion(string branch, OfficeEdition edition)
         {
             var ppDownload = new ProPlusDownloader();
             var latestVersion = await ppDownload.GetLatestVersionAsync(branch, edition);
             return latestVersion;
         }
 
-        private async Task<UpdateFiles> GetOfficeInstallFileXml()
+        public async Task<UpdateFiles> GetOfficeInstallFileXml()
         {
             var ppDownload = new ProPlusDownloader();
             var installFiles = await ppDownload.DownloadCabAsync();
@@ -187,7 +187,7 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
             return null;
         }
 
-        public void UnInstallOffice(string installVer = "2016")
+        public void UninstallOffice(string installVer = "2016")
         {
             
             const string configurationXml = "<Configuration><Remove All=\"TRUE\"/><Display Level=\"Full\" /></Configuration>";
@@ -240,8 +240,7 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
             }
         }
     
-
-        private string GetRegistryValue(RegistryKey regKey, string property)
+        public string GetRegistryValue(RegistryKey regKey, string property)
         {
             if (regKey != null)
             {

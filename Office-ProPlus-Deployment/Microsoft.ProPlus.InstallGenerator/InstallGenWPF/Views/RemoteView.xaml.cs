@@ -34,6 +34,7 @@ using File = System.IO.File;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 using MessageBox = System.Windows.MessageBox;
 using UserControl = System.Windows.Controls.UserControl;
+using System.Management;
 
 namespace MetroDemo.ExampleViews
 {
@@ -70,6 +71,57 @@ namespace MetroDemo.ExampleViews
 
         private void RemoteView_Loaded(object sender, RoutedEventArgs e)             
         {
+
+
+            //testing WMI Remote 
+
+            //try
+            //{
+            //    var userName = "molly clark";
+            //    var computerName = "desktop-ll5q3ej";
+            //    var domain = "WORKGROUP";
+            //    var password = "pass@word1";
+
+            //    ConnectionOptions options = new ConnectionOptions();
+            //    options.Authority = "NTLMDOMAIN:" + domain;
+            //    options.Username = userName;
+            //    options.Password = password;
+
+            //    //ManagementScope scope = new ManagementScope("\\\\"+computerName+"\\root\\cimv2", options);
+            //    ManagementScope scope = new ManagementScope("\\\\10.10.8.33\\root\\cimv2", options);
+            //    scope.Options.EnablePrivileges = true;
+            //    scope.Options.Impersonation = System.Management.ImpersonationLevel.Impersonate;
+
+
+            //    scope.Connect();
+
+            //    //Query system for Operating System information
+            //    ObjectQuery query = new ObjectQuery(
+            //        "SELECT * FROM Win32_OperatingSystem");
+            //    ManagementObjectSearcher searcher =
+            //        new ManagementObjectSearcher(scope, query);
+
+
+            //    ManagementObjectCollection queryCollection = searcher.Get();
+            //    foreach (ManagementObject m in queryCollection)
+            //    {
+            //        // Display the remote computer information
+            //        Console.WriteLine("Computer Name : {0}",
+            //            m["csname"]);
+            //        Console.WriteLine("Windows Directory : {0}",
+            //            m["WindowsDirectory"]);
+            //        Console.WriteLine("Operating System: {0}",
+            //            m["Caption"]);
+            //        Console.WriteLine("Version: {0}", m["Version"]);
+            //        Console.WriteLine("Manufacturer : {0}",
+            //            m["Manufacturer"]);
+            //    }
+            //}
+            //catch (Exception ex)
+            //{
+            //    LogErrorMessage(ex);
+
+            //}
             //try
             //{
             //    if (MainTabControl == null) return;
