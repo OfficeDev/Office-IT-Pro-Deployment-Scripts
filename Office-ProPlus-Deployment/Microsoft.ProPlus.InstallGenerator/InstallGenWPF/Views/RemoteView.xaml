@@ -92,7 +92,7 @@
                                 </Border>
 
                                 <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal">
-                                    <CheckBox x:Name="chkAll" Margin="10,20,0,20" />
+                                    <CheckBox x:Name="chkAll" Margin="10,20,0,20" Click="chkAll_Click" />
                                     <Label x:Name="lblSelectAll" Style="{StaticResource CustomMetroLabelHeader}" Content="Select All" Margin="5,18,10,0" />
                                     <TextBox x:Name="txtBxAddMachines" Margin="50,20,1,20" Width="200" TextWrapping="Wrap" AcceptsReturn="True" />
                                     <Button x:Name="AddComputersButton" Content="Add Computers" Margin="2,20,2,20" Style="{StaticResource MetroFlatButtonStyle1}" Click="AddComputersButton_Click" />

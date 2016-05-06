@@ -197,7 +197,48 @@ namespace MetroDemo.ExampleViews
 
         private void ImportComputersButton_Click(object sender, RoutedEventArgs e)
         {
+            var dlg = new Microsoft.Win32.OpenFileDialog
+            {
+                DefaultExt = ".png",
+                Filter = "Text Files (.txt)|*.txt|CSV Files (.csv)|*.csv"
+        };
 
+            var result = dlg.ShowDialog();
+            if (result == true)
+            {
+                                
+                string line;
+                StreamReader file = new StreamReader(dlg.FileName);
+                while ((line = file.ReadLine()) != null)
+                {
+                    if (!line.Contains(","))
+                    {
+                        var info = new RemoteMachine { include = false, Machine = line, Status = "Found", Channel = "FirstReleaseDeferred", Version = "16.09.45.231" };
+                        remoteClients.Add(info);
+                    }
+                    else
+                    {
+                        string[] tempStrArray = line.Split(',');
+                        foreach (string tempStr in tempStrArray)
+                        {
+                            var info = new RemoteMachine { include = false, Machine = tempStr, Status = "Found", Channel = "FirstReleaseDeferred", Version = "16.09.45.231" };
+                            remoteClients.Add(info);
+                        }
+                    }
+                    
+                }
+                RemoteMachineList.Items.Refresh();
+                
+            }
+        }
+
+        private void chkAll_Click(object sender, RoutedEventArgs e)
+        {
+            foreach(var client in remoteClients)
+            {
+                client.include = chkAll.IsChecked.Value;
+            }
+            RemoteMachineList.Items.Refresh();
         }
 
         //#endregion
