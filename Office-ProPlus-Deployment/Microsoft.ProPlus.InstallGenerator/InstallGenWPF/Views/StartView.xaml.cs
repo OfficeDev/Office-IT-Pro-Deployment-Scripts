@@ -229,7 +229,7 @@ namespace MetroDemo.ExampleViews
                     GlobalObjects.ViewModel.ApplicationMode = ApplicationMode.ManageLocal;
 
                     var officeInstallManager = new OfficeLocalInstallManager();
-                    localXml = await officeInstallManager.GenerateLocalConfigXml();
+                    localXml = await officeInstallManager.GenerateConfigXml();
                 });
 
                 GlobalObjects.ViewModel.ConfigXmlParser.LoadXml(localXml);
