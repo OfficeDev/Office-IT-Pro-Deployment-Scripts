@@ -53,312 +53,67 @@
                                 <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,0,0,0">Remote install</Label>
                             </DockPanel>
                         </TabItem.Header>
+                        <StackPanel Margin="50,0,0,0">
+                            <Grid >
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="5" />
+                                    <RowDefinition Height="70" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
 
-                        <!--<Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="30"></RowDefinition>
-                                <RowDefinition Height="500"></RowDefinition>
-                            </Grid.RowDefinitions>
+                                <Border Grid.Column="0" Grid.Row="2" BorderThickness="2" BorderBrush="Gray"  Margin="0 0 15 0" >
+                                    <DataGrid x:Name="RemoteMachineList" Height="400" 
+                                              RenderOptions.ClearTypeHint="Enabled" Background="White"
+                                              TextOptions.TextFormattingMode="Display" BorderThickness="0" BorderBrush="Gray"
+                                              Margin="0 0 0 0"  Style="{DynamicResource MetroDataGrid}"
+                                              AutoGenerateColumns="False" HeadersVisibility="Column"
+                                              CanUserAddRows="False">
+                                        <DataGrid.Columns>
+                                            
+                                            <DataGridCheckBoxColumn Header="" Binding="{Binding Path=include, UpdateSourceTrigger=PropertyChanged}" Width="50" 
+                                                      IsReadOnly="False" >
+                                                <!--<DataGridCheckBoxColumn.CellStyle>
+                                                    <Style>
+                                                        
+                                                    </Style>
+                                                </DataGridCheckBoxColumn.CellStyle>-->
+                                            </DataGridCheckBoxColumn>
+                                            
+                                            <DataGridTextColumn Header="Machine" Binding="{Binding Path=Machine}" Width="200" 
+                                                      IsReadOnly="True" FontSize="20" Foreground="{DynamicResource LabelTextBrushCustom}" />
+                                            <DataGridTextColumn Header="Status" Binding="{Binding Path=Status}" Width="150" 
+                                                      IsReadOnly="True" FontSize="20" Foreground="{DynamicResource LabelTextBrushCustom}" />
+                                            <DataGridTextColumn Header="Channel" Binding="{Binding Path=Channel}" Width="200"
+                                                      IsReadOnly="True" FontSize="20" Foreground="{DynamicResource LabelTextBrushCustom}" />
+                                            <DataGridTextColumn Header="Version" Binding="{Binding Path=Version}" Width="205"
+                                                      IsReadOnly="True" FontSize="20" Foreground="{DynamicResource LabelTextBrushCustom}" />
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </Border>
 
-                            <StackPanel Grid.Column="0" Grid.Row="1">
+                                <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal">
+                                    <CheckBox x:Name="chkAll" Margin="10,20,0,20" />
+                                    <Label x:Name="lblSelectAll" Style="{StaticResource CustomMetroLabelHeader}" Content="Select All" Margin="5,18,10,0" />
+                                    <TextBox x:Name="txtBxAddMachines" Margin="50,20,1,20" Width="200" TextWrapping="Wrap" AcceptsReturn="True" />
+                                    <Button x:Name="AddComputersButton" Content="Add Computers" Margin="2,20,2,20" Style="{StaticResource MetroFlatButtonStyle1}" Click="AddComputersButton_Click" />
+                                    <Button x:Name="ImportComputersButton" Content="Import Computers" Margin="2,20,0,20" Style="{StaticResource MetroFlatButtonStyle1}" Click="ImportComputersButton_Click" />
+                                    <Button x:Name="btnChangeChannelOrVersion" Content="Switch Channel/Version" Margin="50,20,2,20" Style="{StaticResource MetroFlatButtonStyle1}" Click="btnChangeChannelOrVersion_Click" />
+                                </StackPanel>
 
-                                <Grid Width="800" HorizontalAlignment="Left" >
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="50"></RowDefinition>
-                                    </Grid.RowDefinitions>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="50" />
-                                        <ColumnDefinition Width="280" />
-                                        <ColumnDefinition Width="220" />
-                                    </Grid.ColumnDefinitions>
-                                    <Button x:Name="OPPInstalled" Width="30" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" Margin="10,9,-40,9"
-                                            Focusable="False"  Style="{StaticResource CustomMetroInfoButton}" Click="OPPInstalled_Click" >
-                                        <StackPanel Orientation="Horizontal">
-                                            <Image Source="../images/info.png" Width="20" Height="20"/>
-                                        </StackPanel>
-                                    </Button>
-                                    <Label Content="Office 365 ProPlus installed" Style="{StaticResource CustomMetroLabelHeader}" Margin="0 0 0 0" Grid.Column="1" 
-                                           Height="30"/>
+                                <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,35.6,320.4" Grid.RowSpan="2">                                   
+                                </StackPanel>
 
-                                    <Grid Margin="0,0,0,0" Grid.Column="2">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="85" />
-                                            <ColumnDefinition Width="200" />
-                                        </Grid.ColumnDefinitions>
-
-                                        <Button x:Name="InstallOffice"  Width="75" Grid.Column="0" Height="40" FontSize="14" HorizontalAlignment="Left"  Content="Install" 
-                                                  Click="InstallOffice_OnClick" Style="{StaticResource MetroFlatButtonStyle1}" Visibility="Collapsed"   />
-
-                                        <Image x:Name="ImgOfficeInstalled" Grid.Column="0" Source="../images/Ok48.png" Height="38" HorizontalAlignment="Left"  Visibility="Visible" ></Image>
-                                        <Image x:Name="ImgLatestInstallFail" Grid.Column="0" Source="../images/fail.png" Height="38" HorizontalAlignment="Left"  Visibility="Collapsed" ></Image>
-                                        
-                                        <Image x:Name="WaitInstallImage" Visibility="Collapsed" Height="38" HorizontalAlignment="Left" gif:ImageBehavior.RepeatBehavior="Forever" 
-                                                    Grid.Row="0" Grid.Column="0" gif:ImageBehavior.AnimatedSource="../images/InstallRing.GIF" />
-                                    </Grid>
-
-                                </Grid>
-
-                                <Grid x:Name="UpdateRow" Width="800" HorizontalAlignment="Left" >
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="50"></RowDefinition>
-                                    </Grid.RowDefinitions>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="50" />
-                                        <ColumnDefinition Width="280" />
-                                        <ColumnDefinition Width="520" />
-                                    </Grid.ColumnDefinitions>
-                                    <Button x:Name="LatestVInstall" Width="30" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" Margin="10,9,-40,9"
-                                            Focusable="False"  Style="{StaticResource CustomMetroInfoButton}" Click="LatestVInstall_Click" >
-                                        <StackPanel Orientation="Horizontal">
-                                            <Image Source="../images/info.png" Width="20" Height="20"/>
-                                        </StackPanel>
-                                    </Button>
-                                    <Label Content="Latest Version installed" Style="{StaticResource CustomMetroLabelHeader}" Margin="0 0 0 0" Grid.Column="1" 
-                                         VerticalAlignment="Center"  Height="30"/>
-
-                                    <Grid Margin="0,0,0,0" Grid.Column="2">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition x:Name="UpdateButtonColumn" Width="90" />
-                                            <ColumnDefinition x:Name="RetryButtonColumn" Width="90" />
-                                            <ColumnDefinition Width="400" />
-                                        </Grid.ColumnDefinitions>
-
-                                        <Button x:Name="UpdateOffice"  Width="75" Grid.Column="0" Height="40" FontSize="14" HorizontalAlignment="Left" Visibility="Visible"  Content="Update" 
-                                                 Click="UpdateOffice_OnClick" Style="{StaticResource MetroFlatButtonStyle1}"   />
-
-                                        <Image x:Name="ImgLatestUpdate" Grid.Column="0" Source="../images/Ok48.png" Height="38" HorizontalAlignment="Left"  Visibility="Collapsed" ></Image>
-                                        <Image x:Name="ImgLatestUpdateFail" Grid.Column="0" Source="../images/fail.png" Height="38" HorizontalAlignment="Left"  Visibility="Collapsed" ></Image>
-                                        <Image x:Name="WaitUpdateImage" Visibility="Collapsed" Height="38" HorizontalAlignment="Left" gif:ImageBehavior.RepeatBehavior="Forever" 
-                                                    Grid.Row="0" Grid.Column="0" gif:ImageBehavior.AnimatedSource="../images/InstallRing.GIF" />
-
-                                        <Label x:Name="UpdateStatus" Content="New version available (16.0.1111.1111)" VerticalAlignment="Center"
-                                               Style="{StaticResource CustomMetroLabelLink}" Grid.Column="2" Visibility="Hidden" />
-
-                                        <Button x:Name="RetryUpdateOffice"  Width="75" Grid.Column="1" Height="40" FontSize="14" HorizontalAlignment="Left" Visibility="Visible"  
-                                                Content="Retry"  Click="UpdateOffice_OnClick" Style="{StaticResource MetroFlatButtonStyle1}"   />
-                                    </Grid>
-
-                                </Grid>
-
-                                <Grid x:Name="VersionRow" Width="800" HorizontalAlignment="Left" >
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="50"></RowDefinition>
-                                    </Grid.RowDefinitions>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="50" />
-                                        <ColumnDefinition Width="280" />
-                                        <ColumnDefinition Width="220" />
-                                    </Grid.ColumnDefinitions>
-                                    <Button x:Name="InstalledVersion" Width="30" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" Margin="10,9,-40,9"
-                                            Focusable="False"  Style="{StaticResource CustomMetroInfoButton}" Click="InstalledVersion_Click" >
-                                        <StackPanel Orientation="Horizontal">
-                                            <Image Source="../images/info.png" Width="20" Height="20"/>
-                                        </StackPanel>
-                                    </Button>
-                                    <Label Content="Installed version" Style="{StaticResource CustomMetroLabelHeader}" Margin="0 0 0 0" Grid.Column="1"
-                                           Height="30" VerticalAlignment="Center" />
-
-                                    <Grid Margin="0,0,0,0" Grid.Column="2">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="200" />
-                                        </Grid.ColumnDefinitions>
-
-                                        <Label x:Name="VersionLabel" Content="16.0.0000.0000" Style="{StaticResource CustomMetroLabelHeader}"
-                                               Margin="0 0 0 0" Grid.Column="0" Height="30" VerticalAlignment="Center" />
-                                    </Grid>
-
-                                </Grid>
-                                
-                                <Grid x:Name="ChannelRow" Width="800" HorizontalAlignment="Left">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="50"></RowDefinition>
-                                    </Grid.RowDefinitions>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="50" />
-                                        <ColumnDefinition Width="280" />
-                                        <ColumnDefinition Width="620" />
-                                    </Grid.ColumnDefinitions>
-                                    <Button x:Name="UpdateChannel" Width="30" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" Margin="10,9,-40,9"
-                                            Focusable="False"  Style="{StaticResource CustomMetroInfoButton}" Click="UpdateChannel_Click" >
-                                        <StackPanel Orientation="Horizontal">
-                                            <Image Source="../images/info.png" Width="20" Height="20"/>
-                                        </StackPanel>
-                                    </Button>
-                                    <Label Content="Update channel" Style="{StaticResource CustomMetroLabelHeader}"
-                                            Margin="0 0 0 0" Grid.Column="1" VerticalAlignment="Center" />
-
-                                    <Grid Margin="0,0,0,0" Grid.Column="2">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="280" />
-                                            <ColumnDefinition Width="90"/>
-                                            <ColumnDefinition Width="105"/>
-                                        </Grid.ColumnDefinitions>
-
-                                        <ComboBox x:Name="ProductBranch" Grid.Column="0" Width="270" Height="35" SelectedIndex="0" 
-                                              FontSize="20" ItemsSource="{Binding Branches}" DisplayMemberPath="Name" HorizontalAlignment="Left" VerticalAlignment="Center"
-                                              Style="{StaticResource MetroComboBoxStyle}" SelectionChanged="ProductBranch_OnSelectionChanged"  >
-                                        </ComboBox>
-
-                                        <Button x:Name="ChangeChannel" Width="75" Grid.Column="1" Height="40" FontSize="14" HorizontalAlignment="Left"
-                                                Content="Change" VerticalAlignment="Center" Click="ChangeChannel_OnClick"
-                                                   Style="{StaticResource MetroFlatButtonStyle1}" IsEnabled="False"  />
-
-                                        <Button x:Name="ShowVersion" Width="105" Grid.Column="2" Height="40" FontSize="14" HorizontalAlignment="Left"
-                                                Content="Select Version" VerticalAlignment="Center" Click="ShowVersion_OnClick"
-                                                   Style="{StaticResource MetroFlatButtonStyle1}" IsEnabled="True"  />
-                                    </Grid>
-
-                                </Grid>
-
-                                <Grid x:Name="NewVersionRow" Width="800" HorizontalAlignment="Left" Visibility="Collapsed" >
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="50"></RowDefinition>
-                                    </Grid.RowDefinitions>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="50" />
-                                        <ColumnDefinition Width="280" />
-                                        <ColumnDefinition Width="620" />
-                                    </Grid.ColumnDefinitions>
-                                    <Button x:Name="TargetVersionInfo" Width="30" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" Margin="10,9,-40,9"
-                                            Focusable="False"  Style="{StaticResource CustomMetroInfoButton}" Click="TargetVersionInfo_Click" >
-                                        <StackPanel Orientation="Horizontal">
-                                            <Image Source="../images/info.png" Width="20" Height="20"/>
-                                        </StackPanel>
-                                    </Button>
-                                    <Label Content="Target version" Style="{StaticResource CustomMetroLabelHeader}"
-                                            Margin="0 0 0 0" Grid.Column="1" VerticalAlignment="Center" />
-
-                                    <Grid Margin="0,0,0,0" Grid.Column="2">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="280" />
-                                            <ColumnDefinition Width="90"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
-                                        
-                                        <ComboBox x:Name="NewVersion" Grid.Column="0" Width="270" Height="35" SelectedIndex="0" IsEditable="True" MaxDropDownHeight="125"
-                                              FontSize="20" ItemsSource="{Binding Builds}" DisplayMemberPath="Version" HorizontalAlignment="Left" VerticalAlignment="Center"
-                                              Style="{StaticResource MetroComboBoxStyle}" SelectionChanged="NewVersion_OnSelectionChanged" KeyUp="NewVersion_OnKeyUp"  >
-                                        </ComboBox>
-
-                                    </Grid>
-
-                                </Grid>
-
-                                <Grid x:Name="ModifyInstallRow" Width="800" HorizontalAlignment="Left" >
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="50"></RowDefinition>
-                                    </Grid.RowDefinitions>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="50" />
-                                        <ColumnDefinition Width="280" />
-                                        <ColumnDefinition Width="420" />
-                                    </Grid.ColumnDefinitions>
-                                    <Button x:Name="ModifyExisting" Width="30" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" Margin="10,9,-40,9"
-                                            Focusable="False"  Style="{StaticResource CustomMetroInfoButton}" Click="ModifyExisting_Click" >
-                                        <StackPanel Orientation="Horizontal">
-                                            <Image Source="../images/info.png" Width="20" Height="20"/>
-                                        </StackPanel>
-                                    </Button>
-                                    <Label Content="Modify the existing installation" Style="{StaticResource CustomMetroLabelHeader}"
-                                            Margin="0 0 0 0" Grid.Column="1" Height="35" VerticalAlignment="Center" />
-
-                                    <Button x:Name="ReInstallOffice"  Width="100" Grid.Column="2" Height="40" FontSize="14" VerticalAlignment="Center" 
-                                            HorizontalAlignment="Left"  Content="Rerun setup" 
-                                                  Style="{StaticResource MetroFlatButtonStyle1}" Visibility="Visible" Click="ReRunInstallOffice_OnClick"   />
-                                </Grid>
-
-                                <Grid x:Name="ModifyUninstallRow" Width="800" HorizontalAlignment="Left" >
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="50"></RowDefinition>
-                                    </Grid.RowDefinitions>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="50" />
-                                        <ColumnDefinition Width="280" />
-                                        <ColumnDefinition Width="0" x:Name="UninstallIconColumn" />
-                                        <ColumnDefinition Width="420" />
-                                    </Grid.ColumnDefinitions>
-                                    <Button x:Name="OfficeInstall" Width="30" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" Margin="10,9,-40,9"
-                                            Focusable="False"  Style="{StaticResource CustomMetroInfoButton}" Click="OfficeInstall_Click" >
-                                        <StackPanel Orientation="Horizontal">
-                                            <Image Source="../images/info.png" Width="20" Height="20"/>
-                                        </StackPanel>
-                                    </Button>
-                                    <Label Content="Uninstall Office 365 ProPlus" Style="{StaticResource CustomMetroLabelHeader}"
-                                            Margin="0 0 0 0" Grid.Column="1" Height="35" VerticalAlignment="Center" />
-
-                                    <Button x:Name="UnInstallOffice"  Width="100" Grid.Column="3" Height="40" FontSize="14" VerticalAlignment="Center" 
-                                            HorizontalAlignment="Left"  Content="Uninstall" Background="#cd4141" Foreground="White" 
-                                                  Style="{StaticResource MetroFlatButtonStyle1}" Visibility="Visible" Click="UnInstallOffice_OnClick"   />
-
-                                    <Image x:Name="ImgRemoveFail" Grid.Column="2" Source="../images/fail.png" Height="38" HorizontalAlignment="Left"  Visibility="Visible" ></Image>
-
-                                    <Image x:Name="WaitRemoveImage" Visibility="Collapsed" Height="38" HorizontalAlignment="Left" gif:ImageBehavior.RepeatBehavior="Forever" 
-                                                    Grid.Row="0" Grid.Column="2" gif:ImageBehavior.AnimatedSource="../images/InstallRing.GIF" />
-                                </Grid>
-
-                                <Grid x:Name="ErrorRow" Margin="50 20 0 0" Width="800" HorizontalAlignment="Left" Visibility="Collapsed" >
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="800" />
-                                    </Grid.ColumnDefinitions>
-
-                                    <Border  Grid.Column="0" BorderThickness="2" BorderBrush="{StaticResource ErrorBrush}">
-                                        <Grid>
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="40"></RowDefinition>
-                                                <RowDefinition Height="80"></RowDefinition>
-                                            </Grid.RowDefinitions>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="800" />
-                                            </Grid.ColumnDefinitions>
-                                            <Label Content="Error" Style="{StaticResource CustomMetroLabelHeader}" Foreground="{StaticResource ErrorBrush}"
-                                           Grid.Column="0" />
-
-                                            <TextBlock x:Name="ErrorText" Grid.Row="1" TextWrapping="WrapWithOverflow" Foreground="{StaticResource ErrorBrush}" Margin="10 0 0 0"
-                                             FontSize="14"  FontWeight="SemiBold" Style="{StaticResource MetroTextBlock}">
-
-                                            </TextBlock>
-                                        </Grid>
-  
-
-                                    </Border>
-
-                                </Grid>
-
-                            </StackPanel>
-
-
-                        </Grid>-->
+                            </Grid>
+                        </StackPanel>
+                        
                     </TabItem>
 
-                    <!--<TabItem  Background="{StaticResource GrayBrush}" Height="40" >
-                        <TabItem.Header>
-                            <DockPanel Margin="0,5,0,0">
-                                <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,0,0,0">Configuration</Label>
-                            </DockPanel>
-                        </TabItem.Header>
-
-                        <xmlBrowser:XmlBrowserControl x:Name="xmlBrowser" Margin="10" Loaded="xmlBrowser_Loaded" Height="450" VerticalAlignment="Top" />
-                    </TabItem>-->
+                    
 
                 </Controls:MetroAnimatedSingleRowTabControl>
             </Grid>
 
-            <!--<Grid Grid.Row="1" Margin="0 0 0 30" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Bottom" >
-                <Grid.Resources>
-                    <ResourceDictionary>
-                        <ResourceDictionary.MergedDictionaries>
-                            <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/FlatButton.xaml" />
-                        </ResourceDictionary.MergedDictionaries>
-                    </ResourceDictionary>
-                </Grid.Resources>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition  />
-                    <ColumnDefinition Width="20"  />
-                    <ColumnDefinition  />
-                </Grid.ColumnDefinitions>
-                <Button x:Name="PreviousButton" Width="100" Height="40" Grid.Column="0" Content="Previous"  Click="PreviousButton_Click" />
-                <Button x:Name="NextButton" Width="100" Height="40" Grid.Column="2" Content="Next" Click="NextButton_Click" Visibility="Visible" />
-            </Grid>-->
+            
         </Grid>
 
     </AdornerDecorator>

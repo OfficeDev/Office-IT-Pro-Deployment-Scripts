@@ -275,6 +275,9 @@
     <Compile Include="Windows\Languages.xaml.cs">
       <DependentUpon>Languages.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Windows\RemoteChannelVersionDialog.xaml.cs">
+      <DependentUpon>RemoteChannelVersionDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="XmlBrowser\Converters\NullToBooleanConverter.cs" />
     <Compile Include="XmlBrowser\ValidationResultControl.xaml.cs">
       <DependentUpon>ValidationResultControl.xaml</DependentUpon>
@@ -375,6 +378,10 @@
     <Page Include="Windows\Languages.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Windows\RemoteChannelVersionDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="XmlBrowser\ValidationResultControl.xaml">
       <Generator>MSBuild:Compile</Generator>

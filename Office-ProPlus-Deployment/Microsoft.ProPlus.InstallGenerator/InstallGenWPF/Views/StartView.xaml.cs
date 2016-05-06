@@ -135,7 +135,7 @@ namespace MetroDemo.ExampleViews
             }
         }
 
-        private async void ManageRemote()
+        private void ManageRemote()
         {
             try
             {
@@ -144,26 +144,26 @@ namespace MetroDemo.ExampleViews
                 GlobalObjects.ViewModel.LocalConfig = false;
                 GlobalObjects.ViewModel.BlockNavigation = true;
                 _running = true;
-                var localXml = "";
+                var localXml = GlobalObjects.DefaultXml;
 
-                await Task.Run(async () => {
-                    Dispatcher.Invoke(() =>
-                    {
+
+
                         WaitManageLocal.Visibility = Visibility.Visible;
                         //ImgManageLocal.Visibility = Visibility.Collapsed;
-                    });
+                    
 
                     GlobalObjects.ViewModel.ApplicationMode = ApplicationMode.ManageRemote;
 
-                    var officeInstallManager = new OfficeLocalInstallManager();
-                    localXml = await officeInstallManager.GenerateLocalConfigXml();
-                });
+                    GlobalObjects.ViewModel.ConfigXmlParser.LoadXml(GlobalObjects.DefaultXml);
+                    GlobalObjects.ViewModel.ResetXml = true;
+                    GlobalObjects.ViewModel.ImportFile = null;
+                
 
                 GlobalObjects.ViewModel.ConfigXmlParser.LoadXml(localXml);
                 GlobalObjects.ViewModel.ResetXml = true;
                 GlobalObjects.ViewModel.ImportFile = null;
 
-                GlobalObjects.ViewModel.ConfigXmlParser.ConfigurationXml.Add.Version = null;
+                //GlobalObjects.ViewModel.ConfigXmlParser.ConfigurationXml.Add.Version = null;
 
                 if (RestartWorkflow != null)
                 {
