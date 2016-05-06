@@ -59,7 +59,7 @@ namespace MetroDemo.ExampleViews
         private List<Channel> items = null;
         private DownloadAdvanced advancedSettings = null;
 
-        private OfficeLocalInstall LocalInstall { get; set; }
+        private OfficeInstallation LocalInstall { get; set; }
         private bool FirstRun = true;
         #endregion
 
@@ -127,8 +127,8 @@ namespace MetroDemo.ExampleViews
 
                     SetItemState(LocalViewItem.Install, LocalViewState.Default);
 
-                    var installGenerator = new OfficeLocalInstallManager();
-                    LocalInstall = await installGenerator.CheckForOfficeLocalInstallAsync();
+                    var installGenerator = new OfficeLocalInstallManager(); 
+                    LocalInstall = await installGenerator.CheckForOfficeInstallAsync();
 
                     if (LocalInstall.Installed)
                     {
@@ -428,8 +428,8 @@ namespace MetroDemo.ExampleViews
                         UpdateStatus.Content = "";
                     });
 
-                    var installGenerator = new OfficeLocalInstallManager();
-                    LocalInstall = await installGenerator.CheckForOfficeLocalInstallAsync();
+                    var installGenerator = new OfficeInstallManager(); 
+                    LocalInstall = await installGenerator.CheckForOfficeInstallAsync();
                     if (LocalInstall.Installed)
                     {
                         Dispatcher.Invoke(() =>
@@ -611,8 +611,8 @@ namespace MetroDemo.ExampleViews
                         UpdateStatus.Content = "";
                     });
                     
-                    var installGenerator = new OfficeLocalInstallManager();
-                    LocalInstall = await installGenerator.CheckForOfficeLocalInstallAsync();
+                    var installGenerator = new OfficeInstallManager();
+                    LocalInstall = await installGenerator.CheckForOfficeInstallAsync();
                     if (LocalInstall.Installed)
                     {
                         Dispatcher.Invoke(() =>
@@ -674,13 +674,13 @@ namespace MetroDemo.ExampleViews
 
                     SetItemState(LocalViewItem.Uninstall, LocalViewState.Wait);
 
-                    var installGenerator = new OfficeLocalInstallManager();
+                    var installGenerator = new OfficeInstallManager();
                     string installVer = "2016";
                     if (LocalInstall.Version.StartsWith("15."))
                     {
                         installVer = "2013";
                     }
-                    installGenerator.UnInstallOffice(installVer);
+                    installGenerator.UninstallOffice(installVer);
 
                     SetItemState(LocalViewItem.Uninstall, LocalViewState.Success);
 
