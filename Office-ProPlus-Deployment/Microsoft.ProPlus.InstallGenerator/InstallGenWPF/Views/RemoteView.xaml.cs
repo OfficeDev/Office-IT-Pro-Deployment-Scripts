@@ -72,6 +72,9 @@ namespace MetroDemo.ExampleViews
 
         private void RemoteView_Loaded(object sender, RoutedEventArgs e)             
         {
+
+
+
             RemoteMachineList.ItemsSource = remoteClients;
         }       
 

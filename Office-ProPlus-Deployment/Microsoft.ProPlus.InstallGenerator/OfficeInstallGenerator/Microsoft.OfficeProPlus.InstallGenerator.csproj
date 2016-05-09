@@ -71,7 +71,8 @@
     <Compile Include="Implementation\OfficeInstallProperties.cs" />
     <Compile Include="Implementation\OfficeInstallReturn.cs" />
     <Compile Include="Implementation\OfficeLocalInstallManager.cs" />
-    <Compile Include="Implementation\OfficeRemoteInstallManager.cs" />
+    <Compile Include="Implementation\OfficePowershellInstallManager.cs" />
+    <Compile Include="Implementation\OfficeWmiInstallManager.cs" />
     <Compile Include="Implementation\ZipExtractor.cs" />
     <Compile Include="InstallOfficeTest.cs" />
     <Compile Include="IOfficeInstallGenerator.cs" />

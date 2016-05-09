@@ -12,7 +12,8 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
     public class OfficeInstallManager : IManageOfficeInstall
     {
         OfficeLocalInstallManager LocalInstall = new OfficeLocalInstallManager();
-        OfficeRemoteInstallManager RemoteInstall = new OfficeRemoteInstallManager(); 
+        OfficeWmiInstallManager WmiInstall = new OfficeWmiInstallManager();
+        OfficePowershellInstallManager PowershellInstall = new OfficePowershellInstallManager();
 
         private bool isLocal { get; set; }
 
@@ -21,29 +22,68 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
             isLocal = true; 
         }
 
-        public OfficeInstallManager(string computerName)
+        public OfficeInstallManager(string[] computerInfo)
         {
-            isLocal = false; 
+            isLocal = false;
 
+            WmiInstall.remoteUser = computerInfo[0];
+            WmiInstall.remoteComputerName = computerInfo[1];
+            WmiInstall.remoteDomain = computerInfo[2];
+            WmiInstall.remotePass = computerInfo[3];
+
+            //need to set Powershell info now..
+
+
+            try
+            {
+                WmiInstall.initConnection();
+                PowershellInstall.initConnection();
+            }
+            catch (Exception)
+            {//add error handling
+            }
         }
 
-        public Task<OfficeInstallation> CheckForOfficeInstallAsync()
+        public async Task<OfficeInstallation> CheckForOfficeInstallAsync()
         {
+            var result = new OfficeInstallation();
+
+            try
+            {
+               
+                if (isLocal)
+                {
+                    result = await LocalInstall.CheckForOfficeInstallAsync();
+               
+                }
+                else
+                {
+
+                    try
+                    {
+                        result = await WmiInstall.CheckForOfficeInstallAsync();
+
+                    }
+                    catch (Exception)
+                    {
+                        try
+                        {
+                            result = await PowershellInstall.CheckForOfficeInstallAsync();
+                 
+                        }
+                        catch (Exception) { }
+                   
+                    }
+                }
+            }
+            catch (Exception)
+            {
+
+            }
+          
+            return result;
+            
            
-            if (isLocal)
-            {
-                var result = LocalInstall.CheckForOfficeInstallAsync();
-                return result;
-
-            }
-            else
-            {
-                var result = RemoteInstall.CheckForOfficeInstallAsync();
-                return result;
-
-            }
-
-
         }
 
         public Task<string> GenerateConfigXml()
@@ -55,23 +95,46 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
 
         public Task<string> GetOfficeLatestVersion(string branch, OfficeEdition edition)
         {
-            //TODO implement remote 
-            if (isLocal)
-            {
-                var result = LocalInstall.GetOfficeLatestVersion(branch, edition);
-                return result;
-            }
-            else
-            {
-                var result = RemoteInstall.GetOfficeLatestVersion(branch, edition);
-                return result;
-            }
+            
+            var result = LocalInstall.GetOfficeLatestVersion(branch, edition);
+            return result;
+          
       
         }
 
         public string GetRegistryValue(RegistryKey regKey, string property)
         {
-            var result = LocalInstall.GetRegistryValue(regKey, property);
+
+            var result = "";
+            try
+            {
+                if (isLocal)
+                {
+                    result = LocalInstall.GetRegistryValue(regKey, property);
+                }
+                else
+                {
+                    try
+                    {
+                        result = WmiInstall.GetRegistryValue(regKey, property);
+                    }
+                    catch (Exception)
+                    {
+                        try
+                        {
+                            result = PowershellInstall.GetRegistryValue(regKey, property);
+                        }
+                        catch (Exception)
+                        {
+                            //add error handling 
+                        }
+                    }
+                }
+            }
+            catch (Exception)
+            { 
+                //add error handling
+            }
             return result; 
         }
 
