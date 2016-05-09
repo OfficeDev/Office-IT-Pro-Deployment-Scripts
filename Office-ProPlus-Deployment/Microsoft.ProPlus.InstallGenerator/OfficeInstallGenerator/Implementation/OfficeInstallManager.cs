@@ -31,7 +31,27 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
             WmiInstall.remoteDomain = computerInfo[2];
             WmiInstall.remotePass = computerInfo[3];
 
+
+
             //need to set Powershell info now..
+
+            try
+            {
+                //WmiInstall.initConnection(); 
+            }
+            catch (Exception)
+            {
+
+                //try
+                //{
+                //    PowershellInstall.initConnection();
+                //}
+                //catch(Exception)
+
+                //{
+                //    //let user know that neither wmi nor powershell could connect 
+                //}
+            }
 
 
             try

@@ -64,7 +64,7 @@ Process
 
         #Actual Functionality
         if ($Credentials) {
-           $regProv = Get-Wmiobject -list "StdRegProv" -namespace root\default -computername $computer -Credential $Credentials;
+           $regProv = Get-Wmiobject -list "StdRegProv" -namespace root\cimv2 -computername $computer -Credential $Credentials;
         } else {
            $regProv = Get-Wmiobject -list "StdRegProv" -namespace root\default -computername $computer;
         }

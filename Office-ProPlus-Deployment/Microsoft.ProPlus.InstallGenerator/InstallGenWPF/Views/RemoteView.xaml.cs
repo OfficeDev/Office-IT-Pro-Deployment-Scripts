@@ -72,6 +72,10 @@ namespace MetroDemo.ExampleViews
 
         private void RemoteView_Loaded(object sender, RoutedEventArgs e)             
         {
+            //var connectionInfo = new string[4] { "SCCM-CL1", "10.59.10.201", "WORKGROUP", "pass@word1" };
+
+            var connectionInfo = new string[4] { "Molly Clark@desktop-ll5q3ej", "10.10.8.225", "WORKGROUP", "pass@word1" }; 
+            var installGenerator = new OfficeInstallManager(connectionInfo);
 
 
 

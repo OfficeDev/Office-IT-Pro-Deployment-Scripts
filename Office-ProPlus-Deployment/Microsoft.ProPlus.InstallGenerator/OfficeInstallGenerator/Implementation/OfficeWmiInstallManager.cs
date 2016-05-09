@@ -27,11 +27,12 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
             options.Authority = "NTLMDOMAIN:" + remoteDomain;
             options.Username = remoteUser;
             options.Password = remotePass;
+           
 
             //ManagementScope scope = new ManagementScope("\\\\"+computerName+"\\root\\cimv2", options);
-            ManagementScope scope = new ManagementScope("\\\\10.10.8.33\\root\\cimv2", options);
-            scope.Options.EnablePrivileges = true;
-            scope.Options.Impersonation = System.Management.ImpersonationLevel.Impersonate;
+            ManagementScope scope = new ManagementScope(@"\"+remoteComputerName+@"\root\cimv2", options);
+            //scope.Options.EnablePrivileges = true;
+            scope.Options.Impersonation = ImpersonationLevel.Impersonate;
             scope.Connect();
 
             //Query system for Operating System information
@@ -59,7 +60,10 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
 
         public Task<OfficeInstallation> CheckForOfficeInstallAsync()
         {
+             
             throw new NotImplementedException();
+
+
         }
 
         public Task<string> GenerateConfigXml()
