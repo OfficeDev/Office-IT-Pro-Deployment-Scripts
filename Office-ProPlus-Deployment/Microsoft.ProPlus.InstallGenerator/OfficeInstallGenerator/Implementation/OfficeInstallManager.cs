@@ -15,29 +15,36 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
         OfficeWmiInstallManager WmiInstall = new OfficeWmiInstallManager();
         OfficePowershellInstallManager PowershellInstall = new OfficePowershellInstallManager();
 
+        private string[] computerInfo { get; set; }
+
         private bool isLocal { get; set; }
 
         public OfficeInstallManager()
         {
             isLocal = true; 
+
         }
 
         public OfficeInstallManager(string[] computerInfo)
         {
             isLocal = false;
+            this.computerInfo = computerInfo;              
 
+        }
+
+        public  async Task  initConnections()
+        {
             WmiInstall.remoteUser = computerInfo[0];
             WmiInstall.remoteComputerName = computerInfo[1];
             WmiInstall.remoteDomain = computerInfo[2];
             WmiInstall.remotePass = computerInfo[3];
 
-
-
             //need to set Powershell info now..
+
 
             try
             {
-                //WmiInstall.initConnection(); 
+               await WmiInstall.initConnection();
             }
             catch (Exception)
             {
@@ -54,14 +61,7 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
             }
 
 
-            try
-            {
-                WmiInstall.initConnection();
-                PowershellInstall.initConnection();
-            }
-            catch (Exception)
-            {//add error handling
-            }
+
         }
 
         public async Task<OfficeInstallation> CheckForOfficeInstallAsync()
@@ -76,25 +76,25 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
                     result = await LocalInstall.CheckForOfficeInstallAsync();
                
                 }
-                else
-                {
+                //else
+                //{
 
-                    try
-                    {
-                        result = await WmiInstall.CheckForOfficeInstallAsync();
+                //    try
+                //    {
+                //        result = await WmiInstall.CheckForOfficeInstallAsync();
 
-                    }
-                    catch (Exception)
-                    {
-                        try
-                        {
-                            result = await PowershellInstall.CheckForOfficeInstallAsync();
+                //    }
+                //    catch (Exception)
+                //    {
+                //        //try
+                //        //{
+                //        //    result = await PowershellInstall.CheckForOfficeInstallAsync();
                  
-                        }
-                        catch (Exception) { }
+                //        //}
+                //        //catch (Exception) { }
                    
-                    }
-                }
+                //    }
+                //}
             }
             catch (Exception)
             {
@@ -106,57 +106,7 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
            
         }
 
-        public Task<string> GenerateConfigXml()
-        {            
-            var result = LocalInstall.GenerateConfigXml();
-            return result;
 
-        }
-
-        public Task<string> GetOfficeLatestVersion(string branch, OfficeEdition edition)
-        {
-            
-            var result = LocalInstall.GetOfficeLatestVersion(branch, edition);
-            return result;
-          
-      
-        }
-
-        public string GetRegistryValue(RegistryKey regKey, string property)
-        {
-
-            var result = "";
-            try
-            {
-                if (isLocal)
-                {
-                    result = LocalInstall.GetRegistryValue(regKey, property);
-                }
-                else
-                {
-                    try
-                    {
-                        result = WmiInstall.GetRegistryValue(regKey, property);
-                    }
-                    catch (Exception)
-                    {
-                        try
-                        {
-                            result = PowershellInstall.GetRegistryValue(regKey, property);
-                        }
-                        catch (Exception)
-                        {
-                            //add error handling 
-                        }
-                    }
-                }
-            }
-            catch (Exception)
-            { 
-                //add error handling
-            }
-            return result; 
-        }
 
         public void UninstallOffice(string installVer = "2016")
         {

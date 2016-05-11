@@ -13,12 +13,8 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
 
         Task UpdateOffice();
 
-        Task<string> GenerateConfigXml();
-
-        Task<string> GetOfficeLatestVersion(string branch, OfficeEdition edition);
 
         void UninstallOffice(string installVer = "2016");
 
-        string GetRegistryValue(RegistryKey regKey, string property);
     }
 }

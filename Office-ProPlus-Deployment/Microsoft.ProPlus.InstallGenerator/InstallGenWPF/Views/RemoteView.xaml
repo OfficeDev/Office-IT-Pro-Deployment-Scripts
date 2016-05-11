@@ -92,15 +92,19 @@
                                 </Border>
 
                                 <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal">
-                                    <CheckBox x:Name="chkAll" Margin="10,20,0,20" Click="chkAll_Click" />
+                                    <CheckBox x:Name="chkAll" Margin="2,20,0,20" Click="chkAll_Click" />
                                     <Label x:Name="lblSelectAll" Style="{StaticResource CustomMetroLabelHeader}" Content="Select All" Margin="5,18,10,0" />
-                                    <TextBox x:Name="txtBxAddMachines" Margin="50,20,1,20" Width="200" TextWrapping="Wrap" AcceptsReturn="True" />
+                                    <TextBox x:Name="txtBxAddMachines" Margin="10,20,1,20" Width="200" TextWrapping="Wrap" AcceptsReturn="True" />
                                     <Button x:Name="AddComputersButton" Content="Add Computers" Margin="2,20,2,20" Style="{StaticResource MetroFlatButtonStyle1}" Click="AddComputersButton_Click" />
                                     <Button x:Name="ImportComputersButton" Content="Import Computers" Margin="2,20,0,20" Style="{StaticResource MetroFlatButtonStyle1}" Click="ImportComputersButton_Click" />
-                                    <Button x:Name="btnChangeChannelOrVersion" Content="Switch Channel/Version" Margin="50,20,2,20" Style="{StaticResource MetroFlatButtonStyle1}" Click="btnChangeChannelOrVersion_Click" />
+                                    <Button x:Name="btnChangeChannelOrVersion" Content="Switch Channel/Version" Margin="2,20,2,20" Style="{StaticResource MetroFlatButtonStyle1}" Click="btnChangeChannelOrVersion_Click" />
+                                    <Button x:Name="btnUpdateRemote" Content="Update Remote" Margin="20,20,2,20" Style="{StaticResource MetroFlatButtonStyle1}" Click="btnUpdateRemote_Click" />
+
                                 </StackPanel>
 
-                                <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,35.6,320.4" Grid.RowSpan="2">                                   
+                                <StackPanel Grid.Row="2" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,100" Grid.RowSpan="2">
+                                    <Image x:Name="WaitImage" Visibility="Hidden"  VerticalAlignment="Bottom" gif:ImageBehavior.RepeatBehavior="Forever" 
+                                   Height="200" Grid.Row="0" Grid.Column="0" gif:ImageBehavior.AnimatedSource="../images/wait.GIF" />
                                 </StackPanel>
 
                             </Grid>
