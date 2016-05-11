@@ -59,6 +59,33 @@ using System;
 Add-Type -TypeDefinition $enumBitness -ErrorAction SilentlyContinue
 } catch { }
 
+try {
+$enumBitnessOptions = "
+using System;
+       [FlagsAttribute]
+       public enum BitnessOptions
+       {
+          v32 = 1,
+          v64 = 2
+       }
+"
+Add-Type -TypeDefinition $enumBitnessOptions -ErrorAction SilentlyContinue
+} catch { }
+
+try {
+$deploymentPurpose = "
+using System;
+       [FlagsAttribute]
+       public enum DeploymentPurpose
+       {
+          Default= 0,
+          Required = 1,
+          Available = 2
+       }
+"
+Add-Type -TypeDefinition $deploymentPurpose -ErrorAction SilentlyContinue
+} catch { }
+
 function Download-CMOfficeChannelFiles() {
     [CmdletBinding(SupportsShouldProcess=$true)]
     Param
@@ -957,6 +984,9 @@ Deploys the Package created by the Setup-CMOfficeProPlusPackage function
         [Parameter(Mandatory=$true)]
         [OfficeChannel] $Channel,
 
+        [Parameter()]
+	    [BitnessOptions]$Bitness = "v32",
+
         [Parameter(Mandatory=$true)]
         [CMOfficeProgramType] $ProgramType,
         
@@ -964,7 +994,10 @@ Deploys the Package created by the Setup-CMOfficeProPlusPackage function
 	    [String]$SiteCode = $null,
 
 	    [Parameter()]
-	    [String]$CMPSModulePath = $NULL
+	    [String]$CMPSModulePath = $NULL,
+
+    	[Parameter()]
+	    [DeploymentPurpose]$DeploymentPurpose = "Default"
 	) 
     Begin
     {
@@ -977,6 +1010,8 @@ Deploys the Package created by the Setup-CMOfficeProPlusPackage function
        try {
 
         Check-AdminAccess
+
+        $strBitness = $Bitness.ToString() -Replace "v", ""
 
         $ChannelList = @("FirstReleaseCurrent", "Current", "FirstReleaseDeferred", "Deferred")
         $ChannelXml = Get-ChannelXml
@@ -993,16 +1028,50 @@ Deploys the Package created by the Setup-CMOfficeProPlusPackage function
                 }
 
                 LoadCMPrereqs -SiteCode $SiteCode -CMPSModulePath $CMPSModulePath
+                $SiteCode = GetLocalSiteCode -SiteCode $SiteCode
 
                 $pType = ""
 
                 Switch ($ProgramType) {
-                    "DeployWithScript" { $pType = "DeployWithScript-$Channel" }
-                    "DeployWithConfigurationFile" { $pType = "DeployWithConfigurationFile-$Channel" }
-                    "ChangeChannel" { $pType = "ChangeChannel-$Channel" }
-                    "RollBack" { $pType = "RollBack" }
-                    "UpdateWithConfigMgr" { $pType = "UpdateWithConfigMgr" }
-                    "UpdateWithTask" { $pType = "UpdateWithTask" }
+                    "DeployWithScript" { 
+                         $pType = "DeployWithScript-$Channel-$strBitness"; 
+                         if ($DeploymentPurpose -eq "Default") {
+                             $DeploymentPurpose = "Required";
+                         }
+                    }
+                    "DeployWithConfigurationFile" { 
+                         $pType = "DeployWithConfigurationFile-$Channel-$strBitness"; 
+                         if ($DeploymentPurpose -eq "Default") {
+                           $DeploymentPurpose = "Required" 
+                         } 
+                    }
+                    "ChangeChannel" { 
+                         $pType = "ChangeChannel-$Channel"; 
+                         if ($DeploymentPurpose -eq "Default") {
+                             $DeploymentPurpose = "Available" 
+                         }
+                    }
+                    "RollBack" { 
+                         $pType = "RollBack"; 
+                         if ($DeploymentPurpose -eq "Default") {
+                            $DeploymentPurpose = "Available" 
+                         }
+                    }
+                    "UpdateWithConfigMgr" { 
+                         $pType = "UpdateWithConfigMgr"; 
+                         if ($DeploymentPurpose -eq "Default") {
+                            $DeploymentPurpose = "Required"  }
+                         }
+                    "UpdateWithTask" { 
+                         $pType = "UpdateWithTask"; 
+                         if ($DeploymentPurpose -eq "Default") {
+                            $DeploymentPurpose = "Required"  
+                         }
+                    }
+                }
+
+                if ($DeploymentPurpose -eq "Default") {
+                   $DeploymentPurpose = "Required"  
                 }
 
                 $Program = Get-CMProgram | Where {$_.Comment -eq $pType }
@@ -1011,7 +1080,20 @@ Deploys the Package created by the Setup-CMOfficeProPlusPackage function
                 $packageName = "Office 365 ProPlus"
                 if ($package) {
                    if ($Program) {
-                        $packageDeploy = Get-CMDeployment | where {$_.PackageId -eq $package.PackageId -and $_.ProgramName -eq $programName }
+
+                        [int]$deploymentIntent = 1
+                        Switch ($ProgramType) {
+                            "Available" { 
+                               $deploymentIntent = 2
+                            }
+                            "Required" { 
+                               $deploymentIntent = 1
+                            }
+                        }
+
+                        $comment = $ProgramType.ToString() + "-" + $ChannelName + "-" + $Bitness.ToString() + "-" + $Collection.ToString()
+
+                        $packageDeploy = get-wmiobject -Namespace "root\sms\site_$SiteCode" -Class SMS_Advertisement  | where {$_.PackageId -eq $package.PackageId -and $_.Comment -eq $comment }
                         if ($packageDeploy.Count -eq 0) {
                             try {
                                 $packageId = $package.PackageId
@@ -1020,10 +1102,10 @@ Deploys the Package created by the Setup-CMOfficeProPlusPackage function
                                     $ProgramName = $Program.ProgramName
 
      	                            Start-CMPackageDeployment -CollectionName "$Collection" -PackageId $packageId -ProgramName "$ProgramName" `
-                                                                -StandardProgram  -DeployPurpose Available -RerunBehavior AlwaysRerunProgram `
+                                                                -StandardProgram  -DeployPurpose $DeploymentPurpose.ToString() -RerunBehavior AlwaysRerunProgram `
                                                                 -ScheduleEvent AsSoonAsPossible -FastNetworkOption RunProgramFromDistributionPoint `
                                                                 -SlowNetworkOption RunProgramFromDistributionPoint `
-                                                                -AllowSharedContent $false
+                                                                -AllowSharedContent $false -Comment $comment
 
                                     Update-CMDistributionPoint -PackageId $package.PackageId
 
@@ -1192,6 +1274,25 @@ function LoadCMPrereqs() {
 
             Set-Location "$SiteCode`:"	
         }
+    }
+}
+
+function GetLocalSiteCode() {
+    [CmdletBinding()]	
+    Param
+	(
+	    [Parameter()]
+	    [String]$SiteCode = $null
+    )
+    Begin
+    {
+
+    }
+    Process {
+        if (!$SiteCode) {
+            $SiteCode = (Get-ItemProperty -Path "hklm:\SOFTWARE\Microsoft\SMS\Identification" -Name "Site Code").'Site Code'
+        }
+        return $SiteCode
     }
 }
 

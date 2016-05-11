@@ -174,8 +174,16 @@ Function Create-Office365AnywhereTask {
            Copy-Item -Path "$scriptRoot\Update-Office365Anywhere.ps1" -Destination "$env:Windir\Temp\Update-Office365Anywhere.ps1" -Force
        }
 
+       if (Test-Path -Path "$scriptRoot\SharedFunctions.ps1") {
+           Copy-Item -Path "$scriptRoot\SharedFunctions.ps1" -Destination "$env:Windir\Temp\SharedFunctions.ps1" -Force
+       }
+
        if (Test-Path -Path "$scriptRoot\DeploymentFiles\Update-Office365Anywhere.ps1") {
            Copy-Item -Path "$scriptRoot\DeploymentFiles\Update-Office365Anywhere.ps1" -Destination "$env:Windir\Temp\Update-Office365Anywhere.ps1" -Force
+       }
+
+       if (Test-Path -Path "$scriptRoot\DeploymentFiles\SharedFunctions.ps1") {
+           Copy-Item -Path "$scriptRoot\DeploymentFiles\SharedFunctions.ps1" -Destination "$env:Windir\Temp\SharedFunctions.ps1" -Force
        }
 
        $exePath = "PowerShell -Command $env:windir\Temp\Update-Office365Anywhere.ps1" + `
