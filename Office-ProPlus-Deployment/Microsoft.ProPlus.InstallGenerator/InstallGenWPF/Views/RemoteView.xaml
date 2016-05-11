@@ -94,7 +94,7 @@
                                 <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal">
                                     <CheckBox x:Name="chkAll" Margin="2,20,0,20" Click="chkAll_Click" />
                                     <Label x:Name="lblSelectAll" Style="{StaticResource CustomMetroLabelHeader}" Content="Select All" Margin="5,18,10,0" />
-                                    <TextBox x:Name="txtBxAddMachines" Margin="10,20,1,20" Width="200" TextWrapping="Wrap" AcceptsReturn="True" />
+                                    <TextBox x:Name="txtBxAddMachines" Margin="10,20,1,20" Width="200" TextWrapping="Wrap" Style="{StaticResource MetroTextBox}" AcceptsReturn="True"  Text="Username\Password\IP\Domain"   />
                                     <Button x:Name="AddComputersButton" Content="Add Computers" Margin="2,20,2,20" Style="{StaticResource MetroFlatButtonStyle1}" Click="AddComputersButton_Click" />
                                     <Button x:Name="ImportComputersButton" Content="Import Computers" Margin="2,20,0,20" Style="{StaticResource MetroFlatButtonStyle1}" Click="ImportComputersButton_Click" />
                                     <Button x:Name="btnChangeChannelOrVersion" Content="Switch Channel/Version" Margin="2,20,2,20" Style="{StaticResource MetroFlatButtonStyle1}" Click="btnChangeChannelOrVersion_Click" />

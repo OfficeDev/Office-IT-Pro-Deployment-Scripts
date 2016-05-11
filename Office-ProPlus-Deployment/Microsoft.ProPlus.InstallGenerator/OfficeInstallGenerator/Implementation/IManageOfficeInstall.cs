@@ -13,7 +13,6 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
 
         Task UpdateOffice();
 
-
         void UninstallOffice(string installVer = "2016");
 
     }

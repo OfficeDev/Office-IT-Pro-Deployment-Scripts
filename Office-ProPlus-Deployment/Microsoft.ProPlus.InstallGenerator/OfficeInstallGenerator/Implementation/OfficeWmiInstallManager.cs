@@ -25,33 +25,32 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
         {
 
            
-            var computerName = remoteComputerName;
-            var password = remotePass;
+          
 
             var timeOut = new TimeSpan(0, 5, 0);
             ConnectionOptions options = new ConnectionOptions();
-            options.Authority = "NTLMDOMAIN:" + remoteDomain;
-            options.Username = remoteUser;
-            options.Password = remotePass;
+            options.Authority = "NTLMDOMAIN:" + remoteDomain.Trim();
+            options.Username = remoteUser.Trim();
+            options.Password = remotePass.Trim();
             options.Impersonation = ImpersonationLevel.Impersonate;
             options.Timeout = timeOut;
 
 
 
-            scope = new ManagementScope("\\\\" + remoteComputerName + "\\root\\cimv2", options);
+            scope = new ManagementScope("\\\\" + remoteComputerName.Trim() + "\\root\\cimv2", options);
             scope.Options.EnablePrivileges = true;
 
             try
             {
-                scope.Connect();
+               await Task.Run(() => { scope.Connect(); });
             }
             catch (Exception)
             {
-              
-                scope.Connect();
+
+                await Task.Run(() => { scope.Connect(); });
             }
 
-            await CheckForOfficeInstallAsync();
+
 
 
 
@@ -139,12 +138,6 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
             return latestVersion;
         }
 
-
-        public string GetRegistryValue(RegistryKey regKey, string property)
-        {
-            throw new NotImplementedException();
-        }
-
         private string GetRegistryValue(string regKey, string valueName, string getmethParam)
         {
             var regValue = "";
@@ -166,6 +159,7 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
 
             return regValue; 
         }
+
         public void UninstallOffice(string installVer = "2016")
         {
             throw new NotImplementedException();

@@ -35,9 +35,9 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
         public  async Task  initConnections()
         {
             WmiInstall.remoteUser = computerInfo[0];
-            WmiInstall.remoteComputerName = computerInfo[1];
-            WmiInstall.remoteDomain = computerInfo[2];
-            WmiInstall.remotePass = computerInfo[3];
+            WmiInstall.remoteComputerName = computerInfo[2];
+            WmiInstall.remoteDomain = computerInfo[3];
+            WmiInstall.remotePass = computerInfo[1];
 
             //need to set Powershell info now..
 
@@ -81,7 +81,10 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
 
                 //    try
                 //    {
-                //        result = await WmiInstall.CheckForOfficeInstallAsync();
+                else
+                {
+                    result = await WmiInstall.CheckForOfficeInstallAsync();
+                }
 
                 //    }
                 //    catch (Exception)
@@ -89,10 +92,10 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
                 //        //try
                 //        //{
                 //        //    result = await PowershellInstall.CheckForOfficeInstallAsync();
-                 
+
                 //        //}
                 //        //catch (Exception) { }
-                   
+
                 //    }
                 //}
             }
@@ -105,7 +108,6 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
             
            
         }
-
 
 
         public void UninstallOffice(string installVer = "2016")

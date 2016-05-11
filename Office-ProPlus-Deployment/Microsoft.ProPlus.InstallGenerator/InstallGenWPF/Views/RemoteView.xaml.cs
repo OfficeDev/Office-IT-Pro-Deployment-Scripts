@@ -143,14 +143,54 @@ namespace MetroDemo.ExampleViews
 
         
 
-        private void AddComputersButton_Click(object sender, RoutedEventArgs e)
+        private async void AddComputersButton_Click(object sender, RoutedEventArgs e)
         {
+            //placeholder text for data entry Username\Password\IP\Domain
+
+
             if (txtBxAddMachines.Text != "")
             {
-                var info = new RemoteMachine { include = false, Machine = txtBxAddMachines.Text, Status = "Found", Channel = "FirstReleaseDeferred", Version = "16.09.45.231" };
+                //parse text 
+
+                WaitImage.Visibility = Visibility.Visible;
+
+
+                var connectionInfo = txtBxAddMachines.Text.Split('\\');
+                var installGenerator = new OfficeInstallManager(connectionInfo);
+
+
+                await Task.Run(async () => { await installGenerator.initConnections(); });
+
+                var officeInstall = await installGenerator.CheckForOfficeInstallAsync();
+
+                //var connectionInfo = string[4]{ }
+                //var userName = computerInfo[0];
+                //var password = computerInfo[1];
+                //var remoteIp = computerInfo[2];
+                //var domain = computerInfo[3];
+
+                //init connection
+
+                //get channel/version
+
+                //set UI channel/version 
+
+                var info = new RemoteMachine();
+                if(officeInstall.Channel != null)
+                {
+                     info = new RemoteMachine { include = false, Machine = txtBxAddMachines.Text, Status = "Found", Channel = officeInstall.Channel, Version = officeInstall.Version };
+
+                }
+                else
+                {
+                    info = new RemoteMachine { include = false, Machine = txtBxAddMachines.Text, Status = "Not Found", Channel = officeInstall.Channel, Version = officeInstall.Version };
+                }
                 remoteClients.Add(info);
                 txtBxAddMachines.Clear();                
                 RemoteMachineList.Items.Refresh();
+
+                WaitImage.Visibility = Visibility.Hidden;
+
             }
         }
 
@@ -246,19 +286,20 @@ namespace MetroDemo.ExampleViews
             RemoteMachineList.Items.Refresh();
         }
 
-        private  async void btnUpdateRemote_Click(object sender, RoutedEventArgs e)
+        private async void btnUpdateRemote_Click(object sender, RoutedEventArgs e)
         {
 
-            //var connectionInfo = new string[4] { "SCCM-CL1", "10.59.10.201", "WORKGROUP", "pass@word1" };
 
             WaitImage.Visibility = Visibility.Visible;
 
-            var connectionInfo = new string[4] { "Molly Clark", "10.10.8.225", "WORKGROUP", "pass@word1" };
+            var connectionInfo = new string[4] { "Molly Clark", "pass@word1", "10.10.8.225", "WORKGROUP" };
             var installGenerator = new OfficeInstallManager(connectionInfo);
 
 
 
-           await Task.Run(async ()  =>  { await installGenerator.initConnections(); }); 
+            await Task.Run(async () => { await installGenerator.initConnections(); });
+            var officeInstall = await installGenerator.CheckForOfficeInstallAsync();
+
 
 
             WaitImage.Visibility = Visibility.Hidden;
