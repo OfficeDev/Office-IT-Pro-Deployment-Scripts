@@ -76,12 +76,7 @@ namespace MetroDemo.ExampleViews
             
 
             RemoteMachineList.ItemsSource = remoteClients;
-        }       
-
-
-        
-
-
+        }      
 
         private void LogErrorMessage(Exception ex)
         {
@@ -104,7 +99,6 @@ namespace MetroDemo.ExampleViews
             }
             catch { }
         }
-
 
         private void MainTabControl_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -140,10 +134,6 @@ namespace MetroDemo.ExampleViews
             }
         }
 
-        
-       
-
-
         private async void AddComputersButton_Click(object sender, RoutedEventArgs e)
         {
             //placeholder text for data entry Username\Password\IP\Domain
@@ -177,16 +167,6 @@ namespace MetroDemo.ExampleViews
 
                     versions.Add(officeInstall.Version);
                     channels = channels + officeInstall.Channel;
-
-                    //versionsComboBox.Width = 30;
-                    //channelsComboBox.Width = 100;
-
-                    //versionsComboBox.Height = 20;
-                    //channelsComboBox.Height = 20;
-
-                    
-
-
 
                     foreach (var branch in branches)
                     {
@@ -247,8 +227,6 @@ namespace MetroDemo.ExampleViews
                 LogErrorMessage(ex);
             }
         }
-
-        
 
         private void RemoteUpdateDialog_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
@@ -327,7 +305,12 @@ namespace MetroDemo.ExampleViews
 
 
             await Task.Run(async () => { await installGenerator.initConnections(); });
-            var officeInstall = await installGenerator.CheckForOfficeInstallAsync();
+
+            await Task.Run(() => { installGenerator.UpdateOffice();});
+
+            //var officeInstall = await installGenerator.CheckForOfficeInstallAsync();
+
+            
 
 
 
@@ -335,10 +318,7 @@ namespace MetroDemo.ExampleViews
 
         }
 
-
-
         //#endregion
-
 
     }
 

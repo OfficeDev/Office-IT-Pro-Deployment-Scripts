@@ -117,8 +117,22 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
 
         public Task UpdateOffice()
         {
-            var result = LocalInstall.UpdateOffice();
-            return result; 
+
+           
+
+            if (isLocal)
+            {
+                  return LocalInstall.UpdateOffice();
+            }
+            else
+            {
+                return WmiInstall.UpdateOffice();
+            }
+
+
+
+
+
         }
     }
 }

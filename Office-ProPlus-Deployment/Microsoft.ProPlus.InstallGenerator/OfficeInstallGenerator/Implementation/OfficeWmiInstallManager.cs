@@ -50,11 +50,6 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
                 await Task.Run(() => { scope.Connect(); });
             }
 
-
-
-
-
-
         }
 
         public async Task<OfficeInstallation> CheckForOfficeInstallAsync()
@@ -138,6 +133,31 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
             return latestVersion;
         }
 
+
+        //private async Task RunOfficeUpdateAsync(string version)
+        //{
+
+        //}
+
+
+        private string getOfficeC2RPath()
+        {
+
+            var path = @"SOFTWARE\Microsoft\Office\ClickToRun\Configuration";
+            var path15 = @"SOFTWARE\Microsoft\Office\15.0\ClickToRun\Configuration";
+
+            var result = GetRegistryValue(path15, "ClientFolder", "GetStringValue");
+
+            if (string.IsNullOrEmpty(result))
+            {
+                result = GetRegistryValue(path, "ClientFolder", "GetStringValue");
+            }
+          
+
+
+            return path; 
+        }
+
         private string GetRegistryValue(string regKey, string valueName, string getmethParam)
         {
             var regValue = "";
@@ -151,9 +171,16 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
 
             ManagementBaseObject outParams = registry.InvokeMethod(getmethParam, inParams, null);
 
-            if(outParams.Properties["sValue"].Value.ToString() != null)
+            try
             {
-                regValue = outParams.Properties["sValue"].Value.ToString();
+                if(outParams.Properties["sValue"].Value.ToString() != null)
+                {
+                    regValue = outParams.Properties["sValue"].Value.ToString();
+                }
+            }
+            catch (Exception)
+            {
+                regValue = "";
             }
 
 
@@ -165,9 +192,24 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
             throw new NotImplementedException();
         }
 
-        public Task UpdateOffice()
+        private async Task runC2R(string arguments, string c2rPath)
         {
-            throw new NotImplementedException();
+            await initConnection();
+            ManagementPath managementPath = new ManagementPath("Win32_Process");
+
+
+
+
+        }
+
+        public async Task UpdateOffice()
+        {
+            var c2rPath = getOfficeC2RPath();
+            var version = "16.0.6769.2015";
+
+            var arguments ="/update user displaylevel=false forceappshutdown=true updatepromptuser=false updatetoversion=" + version;
+
+            await runC2R(arguments, c2rPath);
         }
     }
 }

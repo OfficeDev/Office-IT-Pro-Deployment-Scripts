@@ -825,6 +825,7 @@ public class InstallOffice
         var path16 = @"SOFTWARE\Microsoft\Office\ClickToRun";
         var path15 = @"SOFTWARE\Microsoft\Office\15.0\ClickToRun";
 
+        
         var office16Key = Registry.LocalMachine.OpenSubKey(path16, true);
         var office15Key = Registry.LocalMachine.OpenSubKey(path15, true);
 
