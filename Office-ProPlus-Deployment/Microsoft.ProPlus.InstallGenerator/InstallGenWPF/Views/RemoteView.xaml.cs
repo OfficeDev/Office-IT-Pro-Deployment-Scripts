@@ -73,8 +73,7 @@ namespace MetroDemo.ExampleViews
         private void RemoteView_Loaded(object sender, RoutedEventArgs e)             
         {
             
-
-
+            
 
             RemoteMachineList.ItemsSource = remoteClients;
         }       
@@ -142,6 +141,8 @@ namespace MetroDemo.ExampleViews
         }
 
         
+       
+
 
         private async void AddComputersButton_Click(object sender, RoutedEventArgs e)
         {
@@ -163,27 +164,53 @@ namespace MetroDemo.ExampleViews
 
                 var officeInstall = await installGenerator.CheckForOfficeInstallAsync();
 
-                //var connectionInfo = string[4]{ }
-                //var userName = computerInfo[0];
-                //var password = computerInfo[1];
-                //var remoteIp = computerInfo[2];
-                //var domain = computerInfo[3];
-
-                //init connection
-
-                //get channel/version
+                List<string> versions = new List<String>();
+                string channels = "";
+                
 
                 //set UI channel/version 
 
                 var info = new RemoteMachine();
                 if(officeInstall.Channel != null)
                 {
-                     info = new RemoteMachine { include = false, Machine = txtBxAddMachines.Text, Status = "Found", Channel = officeInstall.Channel, Version = officeInstall.Version };
+                    var branches = GlobalObjects.ViewModel.Branches;
+
+                    versions.Add(officeInstall.Version);
+                    channels = channels + officeInstall.Channel;
+
+                    //versionsComboBox.Width = 30;
+                    //channelsComboBox.Width = 100;
+
+                    //versionsComboBox.Height = 20;
+                    //channelsComboBox.Height = 20;
+
+                    
+
+
+
+                    foreach (var branch in branches)
+                    {
+                        if (branch.Branch.ToString() != officeInstall.Channel)
+                        {
+                            channels= channels + branch.Branch.ToString();
+                        }
+
+                        if (branch.Versions.ToString() != officeInstall.Version)
+                        {
+                            versions.Add(branch.CurrentVersion);
+                        }
+                    }
+
+
+                    Channel.ItemsSource = channels;
+
+                    info = new RemoteMachine { include = false, Machine = txtBxAddMachines.Text, Status = "Found", Channel = channels, Version = versions };
+
 
                 }
                 else
                 {
-                    info = new RemoteMachine { include = false, Machine = txtBxAddMachines.Text, Status = "Not Found", Channel = officeInstall.Channel, Version = officeInstall.Version };
+                    info = new RemoteMachine { include = false, Machine = txtBxAddMachines.Text, Status = "Not Found", Channel = channels, Version = versions };
                 }
                 remoteClients.Add(info);
                 txtBxAddMachines.Clear();                
@@ -200,7 +227,7 @@ namespace MetroDemo.ExampleViews
             public string Machine { get; set; }
             public string Status { get; set; }
             public string Channel { get; set; }
-            public string Version { get; set; }
+            public List<string> Version { get; set; }
         }
 
         private RemoteChannelVersionDialog remoteUpdateDialog = null;
@@ -246,19 +273,21 @@ namespace MetroDemo.ExampleViews
             {
                 DefaultExt = ".png",
                 Filter = "Text Files (.txt)|*.txt|CSV Files (.csv)|*.csv"
-        };
+            };
 
             var result = dlg.ShowDialog();
             if (result == true)
             {
-                                
+
+                List<string> versions = new List<String>();
+                string channels = "";
                 string line;
                 StreamReader file = new StreamReader(dlg.FileName);
                 while ((line = file.ReadLine()) != null)
                 {
                     if (!line.Contains(","))
                     {
-                        var info = new RemoteMachine { include = false, Machine = line, Status = "Found", Channel = "FirstReleaseDeferred", Version = "16.09.45.231" };
+                        var info = new RemoteMachine { include = false, Machine = line, Status = "Found", Channel = channels, Version = versions };
                         remoteClients.Add(info);
                     }
                     else
@@ -266,7 +295,7 @@ namespace MetroDemo.ExampleViews
                         string[] tempStrArray = line.Split(',');
                         foreach (string tempStr in tempStrArray)
                         {
-                            var info = new RemoteMachine { include = false, Machine = tempStr, Status = "Found", Channel = "FirstReleaseDeferred", Version = "16.09.45.231" };
+                            var info = new RemoteMachine { include = false, Machine = tempStr, Status = "Found", Channel = channels, Version = versions };
                             remoteClients.Add(info);
                         }
                     }

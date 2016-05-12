@@ -23,7 +23,7 @@
 
             <Thickness x:Key="ColumnMargin">10 5 10 5</Thickness>
             <Thickness x:Key="ControlMargin">0 5 0 0</Thickness>
-            
+
 
         </ResourceDictionary>
     </UserControl.Resources>
@@ -91,7 +91,7 @@
 
                                         <Image x:Name="ImgOfficeInstalled" Grid.Column="0" Source="../images/Ok48.png" Height="38" HorizontalAlignment="Left"  Visibility="Visible" ></Image>
                                         <Image x:Name="ImgLatestInstallFail" Grid.Column="0" Source="../images/fail.png" Height="38" HorizontalAlignment="Left"  Visibility="Collapsed" ></Image>
-                                        
+
                                         <Image x:Name="WaitInstallImage" Visibility="Collapsed" Height="38" HorizontalAlignment="Left" gif:ImageBehavior.RepeatBehavior="Forever" 
                                                     Grid.Row="0" Grid.Column="0" gif:ImageBehavior.AnimatedSource="../images/InstallRing.GIF" />
                                     </Grid>
@@ -168,7 +168,7 @@
                                     </Grid>
 
                                 </Grid>
-                                
+
                                 <Grid x:Name="ChannelRow" Width="800" HorizontalAlignment="Left">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="50"></RowDefinition>
@@ -189,23 +189,26 @@
 
                                     <Grid Margin="0,0,0,0" Grid.Column="2">
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="280" />
+                                            <ColumnDefinition Width="27.265" />
+                                            <ColumnDefinition Width="43.735"/>
+                                            <ColumnDefinition Width="44.107"/>
+                                            <ColumnDefinition Width="168.479"/>
                                             <ColumnDefinition Width="90"/>
                                             <ColumnDefinition Width="105"/>
                                         </Grid.ColumnDefinitions>
 
-                                        <ComboBox x:Name="ProductBranch" Grid.Column="0" Width="270" Height="35" SelectedIndex="0" 
+                                        <ComboBox x:Name="ProductBranch" Grid.Column="0" Width="270" Height="34" SelectedIndex="0" 
                                               FontSize="20" ItemsSource="{Binding Branches}" DisplayMemberPath="Name" HorizontalAlignment="Left" VerticalAlignment="Center"
-                                              Style="{StaticResource MetroComboBoxStyle}" SelectionChanged="ProductBranch_OnSelectionChanged"  >
+                                              Style="{StaticResource MetroComboBoxStyle}" SelectionChanged="ProductBranch_OnSelectionChanged" Grid.ColumnSpan="4" Margin="0,8"  >
                                         </ComboBox>
 
-                                        <Button x:Name="ChangeChannel" Width="75" Grid.Column="1" Height="40" FontSize="14" HorizontalAlignment="Left"
+                                        <Button x:Name="ChangeChannel" Width="75" Grid.Column="4" Height="40" FontSize="14" HorizontalAlignment="Left"
                                                 Content="Change" VerticalAlignment="Center" Click="ChangeChannel_OnClick"
-                                                   Style="{StaticResource MetroFlatButtonStyle1}" IsEnabled="False"  />
+                                                   Style="{StaticResource MetroFlatButtonStyle1}" IsEnabled="False" Margin="0,5"  />
 
-                                        <Button x:Name="ShowVersion" Width="105" Grid.Column="2" Height="40" FontSize="14" HorizontalAlignment="Left"
+                                        <Button x:Name="ShowVersion" Width="105" Grid.Column="5" Height="40" FontSize="14" HorizontalAlignment="Left"
                                                 Content="Select Version" VerticalAlignment="Center" Click="ShowVersion_OnClick"
-                                                   Style="{StaticResource MetroFlatButtonStyle1}" IsEnabled="True"  />
+                                                   Style="{StaticResource MetroFlatButtonStyle1}" IsEnabled="True" Margin="0,5"  />
                                     </Grid>
 
                                 </Grid>
@@ -234,7 +237,7 @@
                                             <ColumnDefinition Width="90"/>
                                             <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
-                                        
+
                                         <ComboBox x:Name="NewVersion" Grid.Column="0" Width="270" Height="35" SelectedIndex="0" IsEditable="True" MaxDropDownHeight="125"
                                               FontSize="20" ItemsSource="{Binding Builds}" DisplayMemberPath="Version" HorizontalAlignment="Left" VerticalAlignment="Center"
                                               Style="{StaticResource MetroComboBoxStyle}" SelectionChanged="NewVersion_OnSelectionChanged" KeyUp="NewVersion_OnKeyUp"  >
@@ -318,7 +321,7 @@
 
                                             </TextBlock>
                                         </Grid>
-  
+
 
                                     </Border>
 

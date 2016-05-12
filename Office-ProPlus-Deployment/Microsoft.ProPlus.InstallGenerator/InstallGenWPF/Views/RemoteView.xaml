@@ -83,10 +83,10 @@
                                                       IsReadOnly="True" FontSize="20" Foreground="{DynamicResource LabelTextBrushCustom}" />
                                             <DataGridTextColumn Header="Status" Binding="{Binding Path=Status}" Width="150" 
                                                       IsReadOnly="True" FontSize="20" Foreground="{DynamicResource LabelTextBrushCustom}" />
-                                            <DataGridTextColumn Header="Channel" Binding="{Binding Path=Channel}" Width="200"
-                                                      IsReadOnly="True" FontSize="20" Foreground="{DynamicResource LabelTextBrushCustom}" />
-                                            <DataGridTextColumn Header="Version" Binding="{Binding Path=Version}" Width="205"
-                                                      IsReadOnly="True" FontSize="20" Foreground="{DynamicResource LabelTextBrushCustom}" />
+                                            <DataGridComboBoxColumn  Header="Channel" x:Name="Channel" SelectedValueBinding="{Binding Channel, Mode=TwoWay}" DisplayMemberPath="{Binding Channel}" Width="200" 
+                                                      IsReadOnly="True"/>
+                                            <DataGridComboBoxColumn Header="Version"  Width="205"
+                                                      IsReadOnly="True"  />
                                         </DataGrid.Columns>
                                     </DataGrid>
                                 </Border>
@@ -94,7 +94,7 @@
                                 <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal">
                                     <CheckBox x:Name="chkAll" Margin="2,20,0,20" Click="chkAll_Click" />
                                     <Label x:Name="lblSelectAll" Style="{StaticResource CustomMetroLabelHeader}" Content="Select All" Margin="5,18,10,0" />
-                                    <TextBox x:Name="txtBxAddMachines" Margin="10,20,1,20" Width="200" TextWrapping="Wrap" Style="{StaticResource MetroTextBox}" AcceptsReturn="True"  Text="Username\Password\IP\Domain"   />
+                                    <TextBox x:Name="txtBxAddMachines" Margin="10,20,1,20" Width="200" TextWrapping="Wrap" Style="{StaticResource MetroTextBox}" AcceptsReturn="True"  Text="Molly Clark\pass@word1\10.10.8.225\WORKGROUP"   />
                                     <Button x:Name="AddComputersButton" Content="Add Computers" Margin="2,20,2,20" Style="{StaticResource MetroFlatButtonStyle1}" Click="AddComputersButton_Click" />
                                     <Button x:Name="ImportComputersButton" Content="Import Computers" Margin="2,20,0,20" Style="{StaticResource MetroFlatButtonStyle1}" Click="ImportComputersButton_Click" />
                                     <Button x:Name="btnChangeChannelOrVersion" Content="Switch Channel/Version" Margin="2,20,2,20" Style="{StaticResource MetroFlatButtonStyle1}" Click="btnChangeChannelOrVersion_Click" />
