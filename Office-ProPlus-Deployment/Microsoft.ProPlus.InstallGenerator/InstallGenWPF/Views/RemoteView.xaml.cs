@@ -1,40 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Forms;
-using System.Windows.Media;
 using MahApps.Metro.Controls;
-using MahApps.Metro.Controls.Dialogs;
 using MetroDemo.Events;
 using MetroDemo.ExampleWindows;
-using Micorosft.OfficeProPlus.ConfigurationXml;
-using Micorosft.OfficeProPlus.ConfigurationXml.Enums;
-using Micorosft.OfficeProPlus.ConfigurationXml.Model;
-using Microsoft.OfficeProPlus.Downloader;
-using Microsoft.OfficeProPlus.Downloader.Model;
-using Microsoft.OfficeProPlus.InstallGen.Presentation.Enums;
-using Microsoft.OfficeProPlus.InstallGen.Presentation.Extentions;
 using Microsoft.OfficeProPlus.InstallGen.Presentation.Logging;
 using Microsoft.OfficeProPlus.InstallGen.Presentation.Models;
 using Microsoft.OfficeProPlus.InstallGenerator.Implementation;
-using Microsoft.OfficeProPlus.InstallGenerator.Model;
-using Microsoft.OfficeProPlus.InstallGenerator.Models;
-using OfficeInstallGenerator;
-using OfficeInstallGenerator.Model;
-using File = System.IO.File;
-using KeyEventArgs = System.Windows.Input.KeyEventArgs;
-using MessageBox = System.Windows.MessageBox;
 using UserControl = System.Windows.Controls.UserControl;
-using System.Data;
 
 namespace MetroDemo.ExampleViews
 {
@@ -78,11 +56,6 @@ namespace MetroDemo.ExampleViews
             RemoteMachineList.ItemsSource = remoteClients;
         }       
 
-
-        
-
-
-
         private void LogErrorMessage(Exception ex)
         {
             ex.LogException(false);
@@ -104,7 +77,6 @@ namespace MetroDemo.ExampleViews
             }
             catch { }
         }
-
 
         private void MainTabControl_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -140,10 +112,6 @@ namespace MetroDemo.ExampleViews
             }
         }
 
-        
-       
-
-
         private async void AddComputersButton_Click(object sender, RoutedEventArgs e)
         {
             //placeholder text for data entry Username\Password\IP\Domain
@@ -155,6 +123,7 @@ namespace MetroDemo.ExampleViews
 
                 WaitImage.Visibility = Visibility.Visible;
 
+                GlobalObjects.ViewModel.RemoteMachines = new List<RemoteMachine>();
 
                 var connectionInfo = txtBxAddMachines.Text.Split('\\');
                 var installGenerator = new OfficeInstallManager(connectionInfo);
@@ -164,13 +133,14 @@ namespace MetroDemo.ExampleViews
 
                 var officeInstall = await installGenerator.CheckForOfficeInstallAsync();
 
-                List<string> versions = new List<String>();
-                string channels = "";
+                var versions = new List<String>();
+                var channels = "";
                 
 
                 //set UI channel/version 
 
                 var info = new RemoteMachine();
+
                 if(officeInstall.Channel != null)
                 {
                     var branches = GlobalObjects.ViewModel.Branches;
@@ -184,10 +154,7 @@ namespace MetroDemo.ExampleViews
                     //versionsComboBox.Height = 20;
                     //channelsComboBox.Height = 20;
 
-                    
-
-
-
+                   
                     foreach (var branch in branches)
                     {
                         if (branch.Branch.ToString() != officeInstall.Channel)
@@ -201,33 +168,44 @@ namespace MetroDemo.ExampleViews
                         }
                     }
 
-
-                    Channel.ItemsSource = channels;
-
-                    info = new RemoteMachine { include = false, Machine = txtBxAddMachines.Text, Status = "Found", Channel = channels, Version = versions };
-
-
+                    info = new RemoteMachine { include = false, Machine = txtBxAddMachines.Text, Status = "Found",
+                    Channels = new List<Channel>()
+                    {
+                       new Channel()
+                       {
+                           Name = "Current"
+                       }    
+                    } 
+                    , Channel = new Channel()
+                    {
+                        Name = "Current"
+                    }, Version = versions };
                 }
                 else
                 {
-                    info = new RemoteMachine { include = false, Machine = txtBxAddMachines.Text, Status = "Not Found", Channel = channels, Version = versions };
+                    info = new RemoteMachine { include = false, Machine = txtBxAddMachines.Text, Status = "Not Found",
+                    Channels = new List<Channel>()
+                    {
+                       new Channel()
+                       {
+                           Name = "Current"
+                       }
+                    }
+                    ,Channel = new Channel()
+                    {
+                        Name = "Current"
+                    }, Version = versions };
                 }
-                remoteClients.Add(info);
-                txtBxAddMachines.Clear();                
-                RemoteMachineList.Items.Refresh();
+
+                GlobalObjects.ViewModel.RemoteMachines.Add(info);
+
+                txtBxAddMachines.Clear();
+
+                RemoteMachineList.ItemsSource = GlobalObjects.ViewModel.RemoteMachines;
 
                 WaitImage.Visibility = Visibility.Hidden;
 
             }
-        }
-
-        public class RemoteMachine
-        {
-            public bool include { get; set; }
-            public string Machine { get; set; }
-            public string Status { get; set; }
-            public string Channel { get; set; }
-            public List<string> Version { get; set; }
         }
 
         private RemoteChannelVersionDialog remoteUpdateDialog = null;
@@ -236,9 +214,6 @@ namespace MetroDemo.ExampleViews
             try
             {
                 remoteUpdateDialog = new RemoteChannelVersionDialog();
-
-
-
                 remoteUpdateDialog.Closing += RemoteUpdateDialog_Closing;
                 remoteUpdateDialog.Launch();
             }
@@ -247,8 +222,6 @@ namespace MetroDemo.ExampleViews
                 LogErrorMessage(ex);
             }
         }
-
-        
 
         private void RemoteUpdateDialog_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
@@ -287,7 +260,7 @@ namespace MetroDemo.ExampleViews
                 {
                     if (!line.Contains(","))
                     {
-                        var info = new RemoteMachine { include = false, Machine = line, Status = "Found", Channel = channels, Version = versions };
+                        var info = new RemoteMachine { include = false, Machine = line, Status = "Found", Channel = null, Version = versions };
                         remoteClients.Add(info);
                     }
                     else
@@ -295,7 +268,7 @@ namespace MetroDemo.ExampleViews
                         string[] tempStrArray = line.Split(',');
                         foreach (string tempStr in tempStrArray)
                         {
-                            var info = new RemoteMachine { include = false, Machine = tempStr, Status = "Found", Channel = channels, Version = versions };
+                            var info = new RemoteMachine { include = false, Machine = tempStr, Status = "Found", Channel = null, Version = versions };
                             remoteClients.Add(info);
                         }
                     }
