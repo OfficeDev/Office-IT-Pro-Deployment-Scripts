@@ -133,6 +133,16 @@ namespace MetroDemo
                     Version = "16.0.4949.1003"
                 }
             };
+            
+            
+
+            Channels = new List<Channel>()
+            {
+                new Channel()
+                {
+                    
+                }
+            };
 
             Branches = new List<OfficeBranch>()
             {
@@ -426,6 +436,10 @@ namespace MetroDemo
         public Certificate SelectedCertificate { get; set; }
 
         public Language DefaultLanguage = null;
+
+        public List<RemoteMachine> RemoteMachines { get; set; } 
+
+        public List<Channel> Channels { get; set; }
 
         public List<Product> MainProducts { get; set; }
 

@@ -35,10 +35,12 @@ namespace MetroDemo.ExampleWindows
             var deferredBranch = GlobalObjects.ViewModel.Branches.FirstOrDefault(b => b.NewName.ToLower() == "Deferred".ToLower());
             var firstReleaseDeferred = GlobalObjects.ViewModel.Branches.FirstOrDefault(b => b.NewName.ToLower() == "FirstReleaseDeferred".ToLower());
             var firstReleaseCurrent = GlobalObjects.ViewModel.Branches.FirstOrDefault(b => b.NewName.ToLower() == "FirstReleaseCurrent".ToLower());
+
             if (currentBranch == null) currentBranch = new OfficeBranch();
             if (deferredBranch == null) deferredBranch = new OfficeBranch();
             if (firstReleaseDeferred == null) firstReleaseDeferred = new OfficeBranch();
             if (firstReleaseCurrent == null) firstReleaseCurrent = new OfficeBranch();
+
             items = new List<Channel>
             {
                 new Channel()
@@ -73,11 +75,13 @@ namespace MetroDemo.ExampleWindows
                     Builds = firstReleaseCurrent.Versions
                 }
             };
+
             Owner = System.Windows.Application.Current.MainWindow;
             ChannelSelection.Items.Add("Deferred");
             ChannelSelection.Items.Add("Current");
             ChannelSelection.Items.Add("FirstReleaseDeferred");
             ChannelSelection.Items.Add("FirstReleaseCurrent");
+
             // only for this window, because we allow minimizing
             if (WindowState == WindowState.Minimized)
             {
@@ -110,8 +114,6 @@ namespace MetroDemo.ExampleWindows
             Result = System.Windows.Forms.DialogResult.Cancel;
             this.Close();
         }
-
-       
 
         private void ChannelSelection_DropDownClosed(object sender, EventArgs e)
         {
@@ -147,5 +149,6 @@ namespace MetroDemo.ExampleWindows
                     break;
             }
         }
+
     }
 }

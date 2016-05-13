@@ -10,6 +10,7 @@
              xmlns:valueConverter="clr-namespace:Microsoft.OfficeProPlus.InstallGen.Presentation.ValueConverter"
              xmlns:gif="http://wpfanimatedgif.codeplex.com"
              xmlns:xmlBrowser="clr-namespace:MahApps.Metro.Controls.XmlBrowser"
+             xmlns:models1="clr-namespace:Microsoft.OfficeProPlus.InstallGen.Presentation.Models"
              mc:Ignorable="d"
              d:DesignHeight="600"
              d:DesignWidth="900"
@@ -67,26 +68,41 @@
                                               TextOptions.TextFormattingMode="Display" BorderThickness="0" BorderBrush="Gray"
                                               Margin="0 0 0 0"  Style="{DynamicResource MetroDataGrid}"
                                               AutoGenerateColumns="False" HeadersVisibility="Column"
-                                              CanUserAddRows="False">
+                                              CanUserAddRows="False" DataContext="{Binding RemoteMachines}">
                                         <DataGrid.Columns>
-                                            
+
                                             <DataGridCheckBoxColumn Header="" Binding="{Binding Path=include, UpdateSourceTrigger=PropertyChanged}" Width="50" 
                                                       IsReadOnly="False" >
-                                                <!--<DataGridCheckBoxColumn.CellStyle>
-                                                    <Style>
-                                                        
-                                                    </Style>
-                                                </DataGridCheckBoxColumn.CellStyle>-->
                                             </DataGridCheckBoxColumn>
                                             
                                             <DataGridTextColumn Header="Machine" Binding="{Binding Path=Machine}" Width="200" 
                                                       IsReadOnly="True" FontSize="20" Foreground="{DynamicResource LabelTextBrushCustom}" />
                                             <DataGridTextColumn Header="Status" Binding="{Binding Path=Status}" Width="150" 
                                                       IsReadOnly="True" FontSize="20" Foreground="{DynamicResource LabelTextBrushCustom}" />
-                                            <DataGridComboBoxColumn  Header="Channel" x:Name="Channel" SelectedValueBinding="{Binding Channel, Mode=TwoWay}" DisplayMemberPath="{Binding Channel}" Width="200" 
-                                                      IsReadOnly="True"/>
-                                            <DataGridComboBoxColumn Header="Version"  Width="205"
-                                                      IsReadOnly="True"  />
+                                            <DataGridTemplateColumn  Header="Channel" Width="250">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+
+                                                        <ComboBox Width="250" x:Name="ProductVersion" BorderThickness="0" Background="Transparent"
+                                                                        Height="35" HorizontalAlignment="Left" 
+                                                                        Style="{DynamicResource MetroComboBox}"
+                                                                        DisplayMemberPath="Name" Foreground="{StaticResource GrayBrush}"
+                                                                        IsEditable="True" IsTextSearchEnabled="True"
+                                                                        ItemsSource="{Binding Path=Channels}" 
+                                                                        SelectedValuePath="Name"
+                                                                        SelectedItem="{Binding Path=Channel}"
+                                                                        MaxDropDownHeight="125"
+                                                                        FontSize="20" IsSynchronizedWithCurrentItem="True" />
+
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+                                            <DataGridComboBoxColumn Header="Version" 
+                                                                       DisplayMemberPath="Name" 
+                                                                    ItemsSource="{Binding Path=Channels}"
+                                                                    SelectedValuePath="Name" 
+                                                                    SelectedValueBinding="{Binding Path=Channel}"
+                                                                    Width="205" IsReadOnly="False"  />
                                         </DataGrid.Columns>
                                     </DataGrid>
                                 </Border>

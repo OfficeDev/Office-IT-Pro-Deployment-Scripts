@@ -756,3 +756,7 @@ C:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deplo
 C:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\InstallGenWPF\obj\NET40\Debug\Windows\RemoteChannelVersionDialog.baml
 C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\InstallGenWPF\obj\NET40\Debug\Windows\RemoteChannelVersionDialog.g.cs
 C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\InstallGenWPF\obj\NET40\Debug\Windows\RemoteChannelVersionDialog.baml
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\InstallGenWPF\obj\NET40\Debug\Views\RemoteView.g.cs
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\InstallGenWPF\obj\NET40\Debug\Windows\RemoteChannelVersionDialog.g.cs
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\InstallGenWPF\obj\NET40\Debug\Views\RemoteView.baml
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\InstallGenWPF\obj\NET40\Debug\Windows\RemoteChannelVersionDialog.baml
