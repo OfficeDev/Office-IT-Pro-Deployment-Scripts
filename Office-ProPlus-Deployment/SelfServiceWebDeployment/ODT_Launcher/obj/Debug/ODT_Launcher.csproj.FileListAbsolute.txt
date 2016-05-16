@@ -1,0 +1,16 @@
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\SelfService\Content\Install_Files\ODT_Launcher.exe
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\SelfService\Content\Install_Files\ODT_Launcher.exe.config
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\SelfService\Content\Install_Files\ODT_Launcher.exe.manifest
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\SelfService\Content\Install_Files\ODT_Launcher.application
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\SelfService\Content\Install_Files\ODT_Launcher.pdb
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\ODT_Launcher\bin\Debug\ODT_Launcher.exe.config
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\ODT_Launcher\bin\Debug\ODT_Launcher.exe.manifest
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\ODT_Launcher\bin\Debug\ODT_Launcher.application
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\ODT_Launcher\bin\Debug\ODT_Launcher.exe
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\ODT_Launcher\bin\Debug\ODT_Launcher.pdb
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\ODT_Launcher\obj\Debug\ODT_Launcher.Properties.Resources.resources
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\ODT_Launcher\obj\Debug\ODT_Launcher.csproj.GenerateResource.Cache
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\ODT_Launcher\obj\Debug\ODT_Launcher.exe.manifest
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\ODT_Launcher\obj\Debug\ODT_Launcher.application
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\ODT_Launcher\obj\Debug\ODT_Launcher.exe
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\ODT_Launcher\obj\Debug\ODT_Launcher.pdb

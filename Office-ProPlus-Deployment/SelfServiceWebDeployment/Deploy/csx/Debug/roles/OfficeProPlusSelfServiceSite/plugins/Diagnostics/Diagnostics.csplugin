@@ -1,0 +1,12 @@
+<?xml version="1.0" ?>
+<RoleModule 
+  xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceDefinition"
+  namespace="Microsoft.WindowsAzure.Plugins.Diagnostics">
+  <Startup priority="-2">
+    <Task commandLine="DiagnosticsPluginLauncher.exe" executionContext="limited" taskType="background" >
+        <Environment>
+            <Variable name="IsEmulated" value="true" />
+        </Environment>
+    </Task>
+  </Startup>
+</RoleModule>

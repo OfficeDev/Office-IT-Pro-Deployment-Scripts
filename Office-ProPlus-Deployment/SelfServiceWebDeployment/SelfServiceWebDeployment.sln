@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SelfService", "SelfService\SelfService.csproj", "{D730C456-3769-4E63-BD1F-77A1F2A11418}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OfficeProPlusSelfServiceSite", "SelfService\OfficeProPlusSelfServiceSite.csproj", "{D730C456-3769-4E63-BD1F-77A1F2A11418}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ODT_Launcher", "ODT_Launcher\ODT_Launcher.csproj", "{AFB03998-FEB1-40BE-8F2B-568D40906073}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OfficeProPlusSelfServiceInstaller", "ODT_Launcher\OfficeProPlusSelfServiceInstaller.csproj", "{AFB03998-FEB1-40BE-8F2B-568D40906073}"
+EndProject
+Project("{CC5FD16D-436D-48AD-A40C-5A424C6E3E79}") = "DeployOfficeProPlusSelfService", "Deploy\DeployOfficeProPlusSelfService.ccproj", "{2428BF33-BBBF-4D9D-8E48-4B810DBC19D1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{AFB03998-FEB1-40BE-8F2B-568D40906073}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AFB03998-FEB1-40BE-8F2B-568D40906073}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AFB03998-FEB1-40BE-8F2B-568D40906073}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2428BF33-BBBF-4D9D-8E48-4B810DBC19D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2428BF33-BBBF-4D9D-8E48-4B810DBC19D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2428BF33-BBBF-4D9D-8E48-4B810DBC19D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2428BF33-BBBF-4D9D-8E48-4B810DBC19D1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
