@@ -202,7 +202,7 @@ function Create-CMOfficePackage {
                           
            if ($OfficeSourceFilesPath) {
                 $officeFileChannelPath = "$OfficeSourceFilesPath\$ChannelShortName"
-                $officeFileTargetPath = "$LocalChannelPath\$Channel"
+                $officeFileTargetPath = "$LocalChannelPath"
 
                 if (!(Test-Path -Path $officeFileChannelPath)) {
                     throw "Channel Folder Missing: $officeFileChannelPath - Ensure that you have downloaded the Channel you are trying to deploy"
