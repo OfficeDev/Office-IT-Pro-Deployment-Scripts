@@ -1,15 +1,3 @@
-D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\ODT_Launcher\bin\Debug\SelfServiceInstaller.exe.config
-D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\ODT_Launcher\bin\Debug\SelfServiceInstaller.exe.manifest
-D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\ODT_Launcher\bin\Debug\SelfServiceInstaller.application
-D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\ODT_Launcher\bin\Debug\SelfServiceInstaller.exe
-D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\ODT_Launcher\bin\Debug\SelfServiceInstaller.pdb
-D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\ODT_Launcher\obj\Debug\SelfServiceInstaller.Properties.Resources.resources
-D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\ODT_Launcher\obj\Debug\OfficeProPlusSelfServiceInstaller.csproj.GenerateResource.Cache
-D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\ODT_Launcher\obj\Debug\SelfServiceInstaller.exe.manifest
-D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\ODT_Launcher\obj\Debug\SelfServiceInstaller.application
-D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\ODT_Launcher\obj\Debug\SelfServiceInstaller.exe
-D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\ODT_Launcher\obj\Debug\SelfServiceInstaller.pdb
-D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\ODT_Launcher\obj\Debug\OfficeProPlusSelfServiceInstaller.csprojResolveAssemblyReference.cache
 C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\ODT_Launcher\bin\Debug\SelfServiceInstaller.exe.config
 C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\ODT_Launcher\bin\Debug\SelfServiceInstaller.exe.manifest
 C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\SelfServiceWebDeployment\ODT_Launcher\bin\Debug\SelfServiceInstaller.application
