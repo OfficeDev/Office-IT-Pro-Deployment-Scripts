@@ -187,7 +187,10 @@ namespace MetroDemo.ExampleViews
                     info = new RemoteMachine
                     {
                         include = false,
-                        Machine = txtBxAddMachines.Text,
+                        Machine = connectionInfo[2],
+                        UserName = connectionInfo[0],
+                        Password = connectionInfo[1],
+                        WorkGroup = connectionInfo[3],
                         Status = "Found",
                         Channels = channels,
                         Channel = currentChannel,
@@ -201,7 +204,10 @@ namespace MetroDemo.ExampleViews
                     info = new RemoteMachine
                     {
                         include = false,
-                        Machine = txtBxAddMachines.Text,
+                        Machine = connectionInfo[2],
+                        UserName = connectionInfo[0],
+                        Password = connectionInfo[1],
+                        WorkGroup = connectionInfo[3],
                         Status = "Not Found",
                         Channels = null,
                         Channel = null,
@@ -327,23 +333,30 @@ namespace MetroDemo.ExampleViews
             WaitImage.Visibility = Visibility.Visible;
 
             var connectionInfo = new string[4] ;
-            var installGenerator = new OfficeInstallManager(connectionInfo);
+            
+            foreach (var client in remoteClients)
+            {                
+                if (client.include)
+                {
+                    var installGenerator = new OfficeInstallManager(connectionInfo);
 
-            //Remove when done testing 
-            await Task.Run(async () => { await installGenerator.initConnections(); });
-            var officeInstall = await installGenerator.CheckForOfficeInstallAsync();
-
-            var updateInfo = new List<string> { "Molly Clark", "pass@word1", "10.10.8.225", "WORKGROUP", "Current", "16.0.6769.2015" };
-
-            //try
-            //{
-            await ChangeOfficeChannelWmi(updateInfo, officeInstall);
-            //}
-            //catch (Exception)
-            //{
-            //    //powershell 
-            //}
-
+                    //Remove when done testing 
+                    await Task.Run(async () => { await installGenerator.initConnections(); });
+                    var officeInstall = await installGenerator.CheckForOfficeInstallAsync();
+                    var updateInfo = new List<string> { client.UserName, client.Password, client.Machine, client.WorkGroup, client.Channel.Name,   client.Version.Number };
+                    client.Status = "Success";
+                    try
+                    {
+                        //turn back on later
+                        await ChangeOfficeChannelWmi(updateInfo, officeInstall);
+                    }
+                    catch (Exception)
+                    {
+                        client.Status = "Error";
+                        //powershell 
+                    }
+                }
+            }
 
 
             WaitImage.Visibility = Visibility.Hidden;

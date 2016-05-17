@@ -13,6 +13,12 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Models
 
         public string Machine { get; set; }
 
+        public string UserName { get; set; }
+
+        public string Password { get; set; }
+
+        public string WorkGroup { get; set; }
+
         public string Status { get; set; }
 
         public Channel Channel { get; set; }
