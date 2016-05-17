@@ -17,15 +17,14 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
         public string remoteComputerName { get; set;}
         public string remoteDomain { get; set;}
         public string remotePass { get; set;}
-
+        public string newVersion { get; set;}
+        public string newChannel { get; set;}
+        public string connectionNamespace { get; set; }
         public ManagementScope scope { get; set;}
 
 
         public  async Task initConnection()
         {
-
-           
-          
 
             var timeOut = new TimeSpan(0, 5, 0);
             ConnectionOptions options = new ConnectionOptions();
@@ -37,7 +36,7 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
 
 
 
-            scope = new ManagementScope("\\\\" + remoteComputerName.Trim() + "\\root\\cimv2", options);
+            scope = new ManagementScope("\\\\" + remoteComputerName.Trim() + connectionNamespace , options);
             scope.Options.EnablePrivileges = true;
 
             try
@@ -60,17 +59,19 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
                 var officeRegPathKey = @"SOFTWARE\Microsoft\Office\ClickToRun\Configuration";
 
 
-                officeInstance.Version = await Task.Run(() => { return GetRegistryValue(officeRegPathKey, "VersionToReport", "GetStringValue"); });
+          
+
+                officeInstance.Version = await GetRegistryValue(officeRegPathKey, "VersionToReport", "GetStringValue"); 
                 
                 if(string.IsNullOrEmpty(officeInstance.Version))
                 {
                     officeRegPathKey = @"SOFTWARE\Microsoft\Office\16.0\ClickToRun\Configuration";
-                    officeInstance.Version = await Task.Run(() => { return GetRegistryValue(officeRegPathKey, "VersionToReport", "GetStringValue"); });
+                officeInstance.Version = await GetRegistryValue(officeRegPathKey, "VersionToReport", "GetStringValue");
 
                     if (string.IsNullOrEmpty(officeInstance.Version))
                     {
                         officeRegPathKey = @"SOFTWARE\Microsoft\Office\15.0\ClickToRun\Configuration";
-                        officeInstance.Version = await Task.Run(() => { return GetRegistryValue(officeRegPathKey, "VersionToReport", "GetStringValue"); });
+                        officeInstance.Version = await GetRegistryValue(officeRegPathKey, "VersionToReport", "GetStringValue");
 
                     }
 
@@ -78,8 +79,8 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
 
                 if(!string.IsNullOrEmpty(officeInstance.Version))
                 {
-                    officeInstance.Installed = true; 
-                    var currentBaseCDNUrl = await Task.Run(() => { return GetRegistryValue(officeRegPathKey, "CDNBaseUrl", "GetStringValue"); });
+                    officeInstance.Installed = true;
+                    var currentBaseCDNUrl = await GetRegistryValue(officeRegPathKey, "CDNBaseUrl", "GetStringValue");
 
 
                     var installFile = await GetOfficeInstallFileXml();
@@ -133,58 +134,68 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
             return latestVersion;
         }
 
-
-        //private async Task RunOfficeUpdateAsync(string version)
-        //{
-
-        //}
-
-
-        private string getOfficeC2RPath()
+        private async Task<string> GetOfficeC2RPath()
         {
+            
+            await Task.Run(() => {
+                var path = @"SOFTWARE\Microsoft\Office\ClickToRun\Configuration";
+                var path15 = @"SOFTWARE\Microsoft\Office\15.0\ClickToRun\Configuration";
 
-            var path = @"SOFTWARE\Microsoft\Office\ClickToRun\Configuration";
-            var path15 = @"SOFTWARE\Microsoft\Office\15.0\ClickToRun\Configuration";
+                 var result =  GetRegistryValue(path15, "ClientFolder", "GetStringValue").ToString();
 
-            var result = GetRegistryValue(path15, "ClientFolder", "GetStringValue");
+                if (string.IsNullOrEmpty(result))
+                {
+                    result =  GetRegistryValue(path, "ClientFolder", "GetStringValue").ToString();
 
-            if (string.IsNullOrEmpty(result))
-            {
-                result = GetRegistryValue(path, "ClientFolder", "GetStringValue");
-            }
-          
+                }
+
+                return result;
 
 
-            return path; 
+            });
+            return null;
         }
 
-        private string GetRegistryValue(string regKey, string valueName, string getmethParam)
+
+        private async Task<string> GetRegistryValue(string regKey, string valueName, string getmethParam)
         {
+
             var regValue = "";
 
-            ManagementClass registry = new ManagementClass(scope, new ManagementPath("StdRegProv"), null);
-            ManagementBaseObject inParams = registry.GetMethodParameters(getmethParam);
-
-            inParams["hDefKey"] = 0x80000002;
-            inParams["sSubKeyName"] = regKey;
-            inParams["sValueName"] = valueName;
-
-            ManagementBaseObject outParams = registry.InvokeMethod(getmethParam, inParams, null);
-
-            try
+            await Task.Run(() =>
             {
-                if(outParams.Properties["sValue"].Value.ToString() != null)
+
+
+                ManagementClass registry = new ManagementClass(scope, new ManagementPath("StdRegProv"), null);
+                ManagementBaseObject inParams = registry.GetMethodParameters(getmethParam);
+
+                inParams["hDefKey"] = 0x80000002;
+                inParams["sSubKeyName"] = regKey;
+                inParams["sValueName"] = valueName;
+
+                ManagementBaseObject outParams = registry.InvokeMethod(getmethParam, inParams, null);
+
+                try
                 {
-                    regValue = outParams.Properties["sValue"].Value.ToString();
+                    if (outParams.Properties["sValue"].Value.ToString() != null)
+                    {
+                        regValue = outParams.Properties["sValue"].Value.ToString();
+                    }
+               } 
+                catch (Exception)
+                {
+                    regValue = null;
                 }
-            }
-            catch (Exception)
-            {
-                regValue = "";
-            }
 
 
-            return regValue; 
+
+            });
+
+
+            return regValue;
+
+
+
         }
 
         public void UninstallOffice(string installVer = "2016")
@@ -192,24 +203,14 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
             throw new NotImplementedException();
         }
 
-        private async Task runC2R(string arguments, string c2rPath)
-        {
-            await initConnection();
-            ManagementPath managementPath = new ManagementPath("Win32_Process");
-
-
-
-
-        }
 
         public async Task UpdateOffice()
         {
-            var c2rPath = getOfficeC2RPath();
-            var version = "16.0.6769.2015";
 
-            var arguments ="/update user displaylevel=false forceappshutdown=true updatepromptuser=false updatetoversion=" + version;
 
-            await runC2R(arguments, c2rPath);
+            await initConnection();
+            var currentInstall = await CheckForOfficeInstallAsync();
+
         }
     }
 }

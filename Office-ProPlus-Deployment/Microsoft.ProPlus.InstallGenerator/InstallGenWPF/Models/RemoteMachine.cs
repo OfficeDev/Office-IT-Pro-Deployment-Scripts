@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Models
 {
     public class RemoteMachine
@@ -18,6 +19,9 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Models
 
         public List<Channel> Channels { get; set; }
 
-        public List<string> Version { get; set; }
+        public officeVersion Version { get; set; }
+
+        public List<officeVersion> Versions { get; set; }
+
     }
 }

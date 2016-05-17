@@ -51,6 +51,7 @@
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Management" />
+    <Reference Include="System.Management.Instrumentation" />
     <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Windows" />
     <Reference Include="System.Windows.Forms" />
@@ -66,7 +67,7 @@
     <Compile Include="Events\Events.cs" />
     <Compile Include="Extensions\DirectoryHelper.cs" />
     <Compile Include="Extensions\Extensions.cs" />
-    <Compile Include="Implementation\IManageOfficeInstall.cs" />
+    <Compile Include="IManageOfficeInstall.cs" />
     <Compile Include="Implementation\OfficeConfigXMLExtractor.cs" />
     <Compile Include="Implementation\OfficeInstallManager.cs" />
     <Compile Include="Implementation\OfficeInstallMsiGenerator.cs" />
@@ -76,6 +77,7 @@
     <Compile Include="Implementation\OfficePowershellInstallManager.cs" />
     <Compile Include="Implementation\OfficeWmiInstallManager.cs" />
     <Compile Include="Implementation\ZipExtractor.cs" />
+    <Compile Include="InstallGenFunctionsWmi.cs" />
     <Compile Include="InstallOfficeTest.cs" />
     <Compile Include="IOfficeInstallGenerator.cs" />
     <Compile Include="IOfficeInstallProperties.cs" />

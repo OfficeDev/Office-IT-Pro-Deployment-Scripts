@@ -83,7 +83,7 @@
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
 
-                                                        <ComboBox Width="250" x:Name="ProductVersion" BorderThickness="0" Background="Transparent"
+                                                        <ComboBox Width="250" x:Name="ProductChannel" BorderThickness="0" Background="Transparent"
                                                                         Height="35" HorizontalAlignment="Left" 
                                                                         Style="{DynamicResource MetroComboBox}"
                                                                         DisplayMemberPath="Name" Foreground="{StaticResource GrayBrush}"
@@ -92,17 +92,31 @@
                                                                         SelectedValuePath="Name"
                                                                         SelectedItem="{Binding Path=Channel}"
                                                                         MaxDropDownHeight="125"
+                                                                        FontSize="20" IsSynchronizedWithCurrentItem="True" 
+                                                                        SelectionChanged="ProductChannel_SelectionChanged"/>
+                                                                       
+
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+                                            <DataGridTemplateColumn  Header="Version" Width="250">
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+
+                                                        <ComboBox Width="250" x:Name="ProductVersion" BorderThickness="0" Background="Transparent"
+                                                                        Height="35" HorizontalAlignment="Left" 
+                                                                        Style="{DynamicResource MetroComboBox}"
+                                                                        DisplayMemberPath="Number" Foreground="{StaticResource GrayBrush}"
+                                                                        IsEditable="True" IsTextSearchEnabled="True"
+                                                                        ItemsSource="{Binding Path=Versions, UpdateSourceTrigger=PropertyChanged}" 
+                                                                        SelectedValuePath="Name"
+                                                                        SelectedItem="{Binding Path=Version}"
+                                                                        MaxDropDownHeight="125"
                                                                         FontSize="20" IsSynchronizedWithCurrentItem="True" />
 
                                                     </DataTemplate>
                                                 </DataGridTemplateColumn.CellTemplate>
                                             </DataGridTemplateColumn>
-                                            <DataGridComboBoxColumn Header="Version" 
-                                                                       DisplayMemberPath="Name" 
-                                                                    ItemsSource="{Binding Path=Channels}"
-                                                                    SelectedValuePath="Name" 
-                                                                    SelectedValueBinding="{Binding Path=Channel}"
-                                                                    Width="205" IsReadOnly="False"  />
                                         </DataGrid.Columns>
                                     </DataGrid>
                                 </Border>

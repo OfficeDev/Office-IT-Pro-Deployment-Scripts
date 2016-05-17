@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.OfficeProPlus.Downloader.Model;
+using Microsoft.OfficeProPlus.Downloader;
 using Microsoft.OfficeProPlus.InstallGenerator.Model;
 using Microsoft.Win32;
 
@@ -38,6 +39,7 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
             WmiInstall.remoteComputerName = computerInfo[2];
             WmiInstall.remoteDomain = computerInfo[3];
             WmiInstall.remotePass = computerInfo[1];
+            WmiInstall.connectionNamespace = "\\root\\cimv2"; 
 
             //need to set Powershell info now..
 
@@ -118,21 +120,33 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
         public Task UpdateOffice()
         {
 
-           
-
             if (isLocal)
             {
                   return LocalInstall.UpdateOffice();
             }
             else
             {
+
+
                 return WmiInstall.UpdateOffice();
             }
 
+        }
+
+        public async void ChangeOfficeChannel(List<string> updateInfo)
+        {
 
 
+         
+
+   
 
 
         }
+
+        //public Task UpdateOffice(List<string> updateInfo)
+        //{
+  
+        //}
     }
 }
