@@ -148,4 +148,4 @@ selected before being able to proceed to the next page.
 Once a primary language has been selected the user will be taken to the Additional Languages page.  Here the user can select any other language packs that they wish to install next 
 to primary language.  Additional languages are optional and may be skipped by the user.  Note that the additional language options as well as the primary language options must be 
 associated with the selected build in the SelfServiceConfig.xml file.  
-![alt text](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/Development/Office-ProPlus-Deployment/SelfServiceWebDeployment/images/AddingLanguageSelection.png "Additional language selection")
+![alt text](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/Development/Office-ProPlus-Deployment/SelfServiceWebDeployment/images/AdditionalLanguageSelection.png "Additional language selection")
