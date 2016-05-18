@@ -1,5 +1,5 @@
-#Deploying to IIS
-##Install IIS
+#Office 365 ProPlus SelfService Deployment
+##Deploying to IIS
 1. If you currently don’t have the Microsoft Web Platform Installer installed then navigate to http://www.microsoft.com/web/downloads/platform.aspx 
 2. Once downloaded run the installer.
 3. Click on the Products tab in the Web Platform Installer.
