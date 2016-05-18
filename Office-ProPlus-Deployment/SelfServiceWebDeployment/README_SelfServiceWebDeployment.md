@@ -20,12 +20,11 @@
 8. Right click on the website you want to use and the click Deploy – Import Application
 9. Located the package that you downloaded in step 2 and click Next
 10. Click Next
-11. If there is existing content in the website then you should set or use the default Application Path.  If you want the site to be at the root of the webite then clear the Application Path.
-12. A database is not used by this website so set the Connection String to “Data Source=”
+11. If there is existing content in the website then you should change or use the default Application Path (ie: Office365ProPlus).  If you want the site to be at the root of the webite then clear the Application Path (Note: This should only be done for a newly created website).
 13. Click Next
 14. Click Next
 15. Click Finish
-16. To view the site navigate to http://hostname/SelfService if the application was installed in the root of the website. 
+16. If you accepted the defaults to install the application navigate to http://servername/Office365ProPlus/SelfService.  If the application was installed in the root of the website navigate to http://hostname/SelfService.
 
 ##Configure Windows Firewall
 If you are not using a standard port for the website you may have to make changes to the Windows Firewall in order to allow remote computers to access the application.
@@ -41,7 +40,6 @@ If you are not using a standard port for the website you may have to make change
 9. In the next page make sure that the Allow the connection option is selected then click Next.
 10. Click Next in the following page.
 11. Enter a name for your rule in the Name field then click the Finish button.
-12. Now users from remote machines on your LAN should be able to access the Self Service Deployment tool by browsing to http://<your-ip>:<port-number>/SelfService
 
 #Site Configuration
 ##Configuration XML
