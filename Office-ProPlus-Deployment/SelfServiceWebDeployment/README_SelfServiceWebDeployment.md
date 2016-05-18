@@ -45,7 +45,7 @@ If you are not using a standard port for the website you may have to make change
 
 #Site Configuration
 ##Configuration XML
-The SSDS SelfServiceConfig.xml is located at the root of the site and allows for the semi-customization of the SSDS.  The customizable areas of the site are as follows; the company logo in the site’s banner, the 
+The SSDS SelfServiceConfig.xml is located at the root of the site and allows for the customization of the SSDS.  The customizable areas of the site are as follows; the company logo in the site’s banner, the 
 company’s name in the site’s banner, the questions and answers on the help page, and the builds offered.  The SelfServiceConfig.xml file for the demonstration site can be found [here](http://officeproplusselfservice.cloudapp.net/SelfServiceConfig.xml).
 
 ####Example SelfServiceConfig.xml
