@@ -1,6 +1,5 @@
 #Office 365 ProPlus SelfService Deployment
 ##Deploying to IIS
-
 ###Install Web Deploy
 1. If you currently don’t have the Microsoft Web Platform Installer installed then navigate to http://www.microsoft.com/web/downloads/platform.aspx 
 2. Click Download and run the installer.
@@ -9,7 +8,6 @@
 5. Click Install at the bottom of the window.
 6. Click I Accept in the new window.  Wait for the program to be downloaded and installed. 
 7. Click the Finish button in the new window that displays after your program has been installed.
-
 ###Configure IIS
 1. Go to your Start Menu and type IIS, then select Internet Information Services (IIS) Manager.
 2. Download the deployment package for the website from https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/raw/master/Office-ProPlus-Deployment/SelfServiceWebDeployment/OfficeProPlusSelfServiceSite.zip
