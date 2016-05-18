@@ -28,7 +28,7 @@
 16. To view the site navigate to http://hostname/SelfService if the application was installed in the root of the website. 
 
 ##Configure Windows Firewall
-Changes to the Windows Firewall will need to be done in order to allow remote computers to access the application.
+If you are not using a standard port for the website you may have to make changes to the Windows Firewall in order to allow remote computers to access the application.
 
 1. Go to the Start Menu.
 2. Type Firewall Advanced and then select the Windows Firewall With Advanced Security option.
@@ -37,7 +37,7 @@ Changes to the Windows Firewall will need to be done in order to allow remote co
 5. Select the Enable option in the new window then press the OK button.
 6. In the right hand side of the window select the New Rule option.
 7. In the new window select the Port option then click Next.
-8. In the Specific local ports field enter the port used in step 7 of Configuring IIS (port 90) and click Next.
+8. In the Specific local ports field enter the port used in step 7 of Configuring IIS (ex: port 81) and click Next.
 9. In the next page make sure that the Allow the connection option is selected then click Next.
 10. Click Next in the following page.
 11. Enter a name for your rule in the Name field then click the Finish button.
