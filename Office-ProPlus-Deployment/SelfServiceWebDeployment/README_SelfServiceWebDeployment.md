@@ -1,7 +1,7 @@
 #Office 365 ProPlus SelfService Deployment
 ##Deploying to IIS
 1. If you currently don’t have the Microsoft Web Platform Installer installed then navigate to http://www.microsoft.com/web/downloads/platform.aspx 
-2. Once downloaded run the installer.
+2. Click Download and run the installer.
 3. Click on the Products tab in the Web Platform Installer.
 4. In the search box type Web Deploy 3.6 without bundled SQL Support¸ then click the Add option.
 5. Click Install at the bottom of the window.
