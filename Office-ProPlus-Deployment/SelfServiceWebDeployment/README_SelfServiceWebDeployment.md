@@ -68,19 +68,19 @@ For example, the first Build in the example SelfServiceConfig.xml has the follow
 Chinese (zh-tw),Portuguese (pt-br),Portuguese (pt-pt),Serbian (sr-latn-rs), and Norwegian (nb-no).
 
 ####Possible Language Packs
-English (en-us)                     Greek (el-gr)                       Polish (pl-pl)
-Arabic (ar-sa)                      Hebrew (he-il)                      Portuguese (Brazil) (pt-br)
-Bulgarian (bg-bg)                   Hindi (hi-in)                       Portuguese (Portugal) (pt-pt)
-Chinese (Simplified) (zh-cn)        Hungarian (hu-hu)                   Romanian (ro-ro)
-Chinese (zh-tw)                     Indonesian (id-id)                  Russian (ru-ru)
-Croatian (hr-hr)                    Italian (it-it)                     Serbian (Latin) (sr-latn-rs)
-Czech (cs-cz)                       Japanese (ja-jp)                    Slovak (sk-sk)
-Croatian (hr-hr)                    Kazakh (kk-kh)                      Slovenian (sl-si)
-Danish (da-dk)                      Korean (ko-kr)                      Spanish (es-es)
-Estonian (et-ee)                    Latvian (lv-lv)                     Swedish (sv-se)
-Finnish (fi-fi)                     Lithuanian (lt-lt)                  Thai (th-th)
-French (fr-fr)                      Malay (ms-my)                       Turkish (tr-tr)
-German (de-de)                      Norwegian (Bokm�l) (nb-no)                   
+| English (en-us)               | Greek (el-gr)                | Polish (pl-pl)                 |
+| Arabic (ar-sa)                | Hebrew (he-il)               | Portuguese (Brazil) (pt-br)    |
+| Bulgarian (bg-bg)             | Hindi (hi-in)                | Portuguese (Portugal) (pt-pt)  |
+| Chinese (Simplified) (zh-cn)  | Hungarian (hu-hu)            | Romanian (ro-ro)               |
+| Chinese (zh-tw)               | Indonesian (id-id)           | Russian (ru-ru)                |
+| Croatian (hr-hr)              | Italian (it-it)              | Serbian (Latin) (sr-latn-rs)   |
+| Czech (cs-cz)                 | Japanese (ja-jp)             | Slovak (sk-sk)                 |
+| Croatian (hr-hr)              | Kazakh (kk-kh)               | Slovenian (sl-si)              |
+| Danish (da-dk)                | Korean (ko-kr)               | Spanish (es-es)                |
+| Estonian (et-ee)              | Latvian (lv-lv)              | Swedish (sv-se)                |
+| Finnish (fi-fi)               | Lithuanian (lt-lt)           | Thai (th-th)                   |
+| French (fr-fr)                | Malay (ms-my)                | Turkish (tr-tr)                |
+| German (de-de)                | Norwegian (nb-no)            | Ukrainian (uk-ua)              |          
 
 ####Filters Attribute
 The Filters attribute is used to help further differentiate builds from one another.  It can be populated by a comma separated list of arbitrary values.  These values are displayed as Tags 
