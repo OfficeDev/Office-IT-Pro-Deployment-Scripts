@@ -68,6 +68,8 @@ For example, the first Build in the example SelfServiceConfig.xml has the follow
 Chinese (zh-tw),Portuguese (pt-br),Portuguese (pt-pt),Serbian (sr-latn-rs), and Norwegian (nb-no).
 
 ####Possible Language Packs
+There is a set list of valid language packs that are available for use.  That list of languages includes:
+
 |                               |                              |                                |         
 |-------------------------------|------------------------------|--------------------------------|
 | English (en-us)               | Greek (el-gr)                | Polish (pl-pl)                 |
