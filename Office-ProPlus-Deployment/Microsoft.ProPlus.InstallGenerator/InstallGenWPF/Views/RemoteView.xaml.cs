@@ -18,6 +18,7 @@ using Microsoft.OfficeProPlus.Downloader.Model;
 using Microsoft.OfficeProPlus.Downloader;
 using System.Windows.Media;
 using UserControl = System.Windows.Controls.UserControl;
+using System.Diagnostics;
 
 namespace MetroDemo.ExampleViews
 {
@@ -144,6 +145,14 @@ namespace MetroDemo.ExampleViews
                 //set UI channel/version 
 
                 var info = new RemoteMachine();
+
+                //for testing, remove before going live
+                //if(officeInstall.Channel == null)
+                //{
+                //    officeInstall.Channel = "Deferred";
+                //    officeInstall.Installed = true;
+                //    officeInstall.Version = "16.0.6001.1078";
+                //}
 
                 if (officeInstall.Channel != null)
                 {
@@ -332,10 +341,10 @@ namespace MetroDemo.ExampleViews
 
             WaitImage.Visibility = Visibility.Visible;
 
-            var connectionInfo = new string[4] ;
-            
+            var connectionInfo = new string[4];
+
             foreach (var client in remoteClients)
-            {                
+            {
                 if (client.include)
                 {
                     var installGenerator = new OfficeInstallManager(connectionInfo);
@@ -343,25 +352,39 @@ namespace MetroDemo.ExampleViews
                     //Remove when done testing 
                     await Task.Run(async () => { await installGenerator.initConnections(); });
                     var officeInstall = await installGenerator.CheckForOfficeInstallAsync();
-                    var updateInfo = new List<string> { client.UserName, client.Password, client.Machine, client.WorkGroup, client.Channel.Name,   client.Version.Number };
-                    client.Status = "Success";
+                    var updateInfo = new List<string> { client.UserName, client.Password, client.Machine, client.WorkGroup, client.Channel.Name, client.Version.Number };                    
+                    //RemoteMachineList.Items.Refresh();
                     try
                     {
                         //turn back on later
                         await ChangeOfficeChannelWmi(updateInfo, officeInstall);
+
                     }
                     catch (Exception)
                     {
-                        client.Status = "Error";
+                        try {
+                            //if WMI fails, attempt powershell
+                            Process p = new Process();
+                            p.StartInfo.FileName = "Powershell.exe";                                //replace path to use local path                            switch out arguments so your program throws in the necessary args
+                            p.StartInfo.Arguments = @"-ExecutionPolicy Bypass -NoExit -Command ""& {" + Directory.GetCurrentDirectory() + "\\Resources\\UpdateScriptLaunch.ps1 -Channel " + client.Channel.Name + " -DisplayLevel $true -machineToRun " + client.Machine + " -UpdateToVersion " + client.Version.Number + "}\"";
+                            p.Start();
+                            p.Close();
+                        }
+                        catch (Exception)
+                        {
+                            client.Status = "Error";
+                        }
+                        
                         //powershell 
                     }
+                    client.Status = "Success";
+                    //RemoteMachineList.Items.Refresh();
                 }
             }
 
 
             WaitImage.Visibility = Visibility.Hidden;
-                
-        }
+        }        
 
 
         public async Task ChangeOfficeChannelWmi(List<string> updateinfo, OfficeInstallation LocalInstall)

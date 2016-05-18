@@ -24,6 +24,8 @@
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("helpfiles/versioninfogen.html")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("helpfiles/visioinfo.html")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("installoffice.cs")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("resources/update-office.ps1")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("resources/updatescriptlaunch.ps1")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("projectfiles/wpf_autocompletecombobox.dll")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("resources/makecert.exe")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("wixtools.zip")]
