@@ -49,7 +49,7 @@ The SSDS SelfServiceConfig.xml is located at the root of the site and allows for
 company’s name in the site’s banner, the questions and answers on the help page, and the builds offered.  The SelfServiceConfig.xml file for the demonstration site can be found [here](http://officeproplusselfservice.cloudapp.net/SelfServiceConfig.xml).
 
 ####Example SelfServiceConfig.xml
-insert picture
+![alt text](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/Development/Office-ProPlus-Deployment/SelfServiceWebDeployment/images/ExampleSelfServiceConfigXml.png "Example self service config.xml")
 
 ###Company Name and Logo
 To configure the company simply set Name attribute of the Company element in the SelfServiceConfig.xml file.  To add a company logo to the SSDS’ banner add an image of the company’s logo 
@@ -96,7 +96,7 @@ located in the “Content/XML_Build_Files/Base_Files/” directory.  These base 
 “Content/XML_Build_Files/Generated_Files/” directory.  The base configuration file can be generated using the tool found [here](http://officedev.github.io/Office-IT-Pro-Deployment-Scripts/XmlEditor.html).
 
 ####Example Base build0.xml File  
-insert picture
+![alt text](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/Development/Office-ProPlus-Deployment/SelfServiceWebDeployment/images/ExampleBaseBuild0XmlFile.png "Example base build0.xml")
 
 ###Generated Build Files
 Generated build files are the combination of the languages selected when the user selects their primary/addiitonal languages and the base build file associated with the selected build.  
@@ -105,47 +105,47 @@ As you can see below, the user selected the build with the ID of build0 and then
 and sr-latn-rs as the additional language packs. 
 
 ###Example Generated Build File
-insert picture
+![alt text](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/Development/Office-ProPlus-Deployment/SelfServiceWebDeployment/images/ExampleGeneratedBuildFile.png "Example generated build file")
 
 #Basic Site Usage
 ##Package Selection
 When the user first loads the SSDS (using Internet Explorer or Microsoft Edge) they will be brought to the package selection page (screenshot below).  This page displays all of the 
 packages that are available for installation as well as giving the user the ability to search and filter these builds by certain criteria.
-insert picture
+![alt text](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/Development/Office-ProPlus-Deployment/SelfServiceWebDeployment/images/PackageSelection.png "Package selection")
 
 ###Packages
 Packages are pre-defined builds that are created by the site’s administrator.  They allow for the tailoring of the builds for specific users.  The builds are differentiated by three 
 different fields, the build name, the build location, and build tags.  All three of these fields are customizable and populated using the SelfServiceConfig.xml file (this file will be covered later in the documentation). 
 
 ####Tile View
-insert picture
+![alt text](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/Development/Office-ProPlus-Deployment/SelfServiceWebDeployment/images/TileView.png "Tile view")
 
 ####List View
-insert picture
+![alt text](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/Development/Office-ProPlus-Deployment/SelfServiceWebDeployment/images/ListView.png "List view")
 
 ####Package Filtering
 Users are able to filter the displayed builds by using the Live Searchbox as well as the Location Dropdown.  The Live Searchbox can be used to filter by any of the three different fields 
 contained by each build.  The Location Dropdown can only filter by the Location field. 
-insert picture
+![alt text](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/Development/Office-ProPlus-Deployment/SelfServiceWebDeployment/images/PackageFiltering.png "Package filtering")
 
 ####View Toggling
 Users are able to toggle the builds that are displayed.  They can either be viewed in a tile format by pressing the Tile View button or in a list/table format by pressing the List View button.
-<insert picture>
+![alt text](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/Development/Office-ProPlus-Deployment/SelfServiceWebDeployment/images/ViewToggling.png "View toggling")
 
 ####Selecting A Package For Installation
 To select a build for installation simply click the “Install” text associated with that tile/list item.  Once the “Install” text has been selected the user will be taken to a page that 
 requires them to select a primary language for their installation.
-insert picture1
-insert picture2
+![alt text](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/Development/Office-ProPlus-Deployment/SelfServiceWebDeployment/images/SelectingAPackageForInstallation1.png "Select a package for installation")
+![alt text](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/Development/Office-ProPlus-Deployment/SelfServiceWebDeployment/images/SelectingAPackageForInstallation2.png "Select a package for installation")
 
 ##Language Selection
 ###Primary Language Selection
 The language selected on this page will be the language used in the installer as well as the default language used by the programs included in this build.  A primary language must be 
 selected before being able to proceed to the next page. 
-insert picture
+![alt text](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/Development/Office-ProPlus-Deployment/SelfServiceWebDeployment/images/PrimaryLanguageSelection.png "Primary language selection")
 
 ###Additional Language Selection
 Once a primary language has been selected the user will be taken to the Additional Languages page.  Here the user can select any other language packs that they wish to install next 
 to primary language.  Additional languages are optional and may be skipped by the user.  Note that the additional language options as well as the primary language options must be 
 associated with the selected build in the SelfServiceConfig.xml file.  
-insert picture
+![alt text](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/Development/Office-ProPlus-Deployment/SelfServiceWebDeployment/images/AddingLanguageSelection.png "Additional language selection")
