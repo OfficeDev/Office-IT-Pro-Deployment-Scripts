@@ -11,21 +11,21 @@
 7. Click the Finish button in the new window that displays after your program has been installed.
 
 ###Configure IIS
-1. Go to your Start Menu and type IIS, then select Internet Information Services (IIS) Manager.
+1. Go to your Start Menu and type IIS, then select **Internet Information Services (IIS) Manager**.
 2. Download the deployment package for the website from https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/raw/master/Office-ProPlus-Deployment/SelfServiceWebDeployment/OfficeProPlusSelfServiceSite.zip
-3. If you want to create a new website to use then right click Sites and the click Add Website.  If you want to use an existing website then skip to step 8.
-4. In the new Window add the name of the new site into Site Name.
-5. In the Physical path: enter an existing local folder path where you want the files to be located. (ex: C:\SelfService)
+3. If you want to create a new website to use then right click **Sites** and the click **Add Website**.  If you want to use an existing website then skip to step 8.
+4. In the new Window add the name of the new site into **Site Name**.
+5. In the **Physical path:** enter an existing local folder path where you want the files to be located. (ex: C:\SelfService)
 6. If an existing website is already using port 80 for http or 443 for https then you cannot reuse those ports unless you are using a different IP Address or hostname.  If you want to use ports already 
    in use then consider adding the site to and existing Website.
-7. Click OK
-8. Right click on the website you want to use and the click Deploy – Import Application
-9. Located the package that you downloaded in step 2 and click Next
-10. Click Next
+7. Click **OK**
+8. Right click on the website you want to use and the click **Deploy – Import Application**
+9. Located the package that you downloaded in step 2 and click **Next**
+10. Click **Next**
 11. If there is existing content in the website then you should change or use the default Application Path (ie: Office365ProPlus).  If you want the site to be at the root of the webite then clear the Application Path (Note: This should only be done for a newly created website).
-13. Click Next
-14. Click Next
-15. Click Finish
+13. Click **Next**
+14. Click **Next**
+15. Click **Finish**
 16. If you accepted the defaults to install the application navigate to http://servername/Office365ProPlus/SelfService.  If the application was installed in the root of the website navigate to http://hostname/SelfService.
 
 ##Configure Windows Firewall
