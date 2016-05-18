@@ -7,7 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OfficeProPlusSelfServiceSit
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OfficeProPlusSelfServiceInstaller", "ODT_Launcher\OfficeProPlusSelfServiceInstaller.csproj", "{AFB03998-FEB1-40BE-8F2B-568D40906073}"
 EndProject
-Project("{CC5FD16D-436D-48AD-A40C-5A424C6E3E79}") = "DeployOfficeProPlusSelfService", "Deploy\DeployOfficeProPlusSelfService.ccproj", "{2428BF33-BBBF-4D9D-8E48-4B810DBC19D1}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{21C64641-C69A-4037-87E4-7A5DC4CAC8B7}"
+	ProjectSection(SolutionItems) = preProject
+		OfficeProPlusSelfServiceSite.zip = OfficeProPlusSelfServiceSite.zip
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +26,6 @@ Global
 		{AFB03998-FEB1-40BE-8F2B-568D40906073}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AFB03998-FEB1-40BE-8F2B-568D40906073}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AFB03998-FEB1-40BE-8F2B-568D40906073}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2428BF33-BBBF-4D9D-8E48-4B810DBC19D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2428BF33-BBBF-4D9D-8E48-4B810DBC19D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2428BF33-BBBF-4D9D-8E48-4B810DBC19D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2428BF33-BBBF-4D9D-8E48-4B810DBC19D1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
