@@ -12,7 +12,7 @@
 
 ###Configure IIS
 1. Go to your Start Menu and type IIS, then select **Internet Information Services (IIS) Manager**.
-2. Download the deployment package for the website from https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/raw/master/Office-ProPlus-Deployment/SelfServiceWebDeployment/OfficeProPlusSelfServiceSite.zip
+2. Download the deployment package for the website from [Self Service Site Deployment Package](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/raw/master/Office-ProPlus-Deployment/SelfServiceWebDeployment/OfficeProPlusSelfServiceSite.zip)
 3. If you want to create a new website to use then right click **Sites** and the click **Add Website**.  If you want to use an existing website then skip to step 8.
 4. In the new Window add the name of the new site into **Site Name**.
 5. In the **Physical path:** enter an existing local folder path where you want the files to be located. (ex: C:\SelfService)
