@@ -112,7 +112,7 @@ Each build displayed on the Package Selection page must have partially completed
 located in the **“XmlFiles”** directory.  These base configuration files are modified according to the languages selected by the user and then copied to the 
 **“Content\Generated_Files”** directory.  The base configuration file can be generated using the tool found [here](http://officedev.github.io/Office-IT-Pro-Deployment-Scripts/XmlEditor.html).
 
-####Example Base build0.xml File  
+####Example Base ExecutivesNewYork.xml File  
 ![alt text](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/Development/Office-ProPlus-Deployment/SelfServiceWebDeployment/images/ExampleBaseBuild0XmlFile.png "Example ExecutivesNewYork.xml")
 
 ###Generated Build Files
