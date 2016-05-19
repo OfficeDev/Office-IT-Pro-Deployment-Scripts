@@ -22,7 +22,7 @@
 8. Right click on the website you want to use and the click **Deploy – Import Application**
 9. Located the package that you downloaded in step 2 and click **Next**
 10. Click **Next**
-11. If there is existing content in the website then you should change or use the default Application Path (ie: Office365ProPlus).  If you want the site to be at the root of the webite then clear the Application Path (Note: This should only be done for a newly created website).
+11. If there is existing content in the website then you should change or use the default Application Path (ie: Office365ProPlus).  If you want the site to be at the root of the website then clear the Application Path (Note: This should only be done for a newly created website).
 13. Click **Next**
 14. Click **Next**
 15. Click **Finish**
