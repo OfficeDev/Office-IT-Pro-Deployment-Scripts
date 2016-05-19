@@ -1,4 +1,4 @@
-#Office 365 ProPlus Self Service Deployment
+#Office 365 ProPlus Self Service Deployment (SSDS)
 ##Deploying to IIS
 
 ###Install Web Deploy
@@ -45,15 +45,14 @@ If you are not using a standard port for the website you may have to make change
 
 #Site Configuration
 ##Configuration XML
-The SSDS SelfServiceConfig.xml is located at the root of the site and allows for the customization of the SSDS.  The customizable areas of the site are as follows; the company logo in the site’s banner, the 
-company’s name in the site’s banner, the questions and answers on the help page, and the builds offered.  The SelfServiceConfig.xml file for the demonstration site can be found [here](http://officeproplusselfservice.cloudapp.net/SelfServiceConfig.xml).
+The file **SelfServiceConfig.xml** is located at the root of the site and allows for the customization of the SSDS.  The customizable areas of the site are as follows; the company logo in the site’s banner, the 
+company’s name in the site’s banner, the questions and answers on the help page, and the builds offered. Each "Build" represents an ODT Configuration XML file which corresponds to a deployment item on the site. 
 
 ####Example SelfServiceConfig.xml
 ![alt text](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/Development/Office-ProPlus-Deployment/SelfServiceWebDeployment/images/ExampleSelfServiceConfigXml.png "Example self service config.xml")
 
-###Company Name and Logo
-To configure the company simply set **Name** attribute of the **Company** element in the SelfServiceConfig.xml file.  To add a company logo to the SSDS’ banner add an image of the company’s logo 
-to the Content folder of the site, then add the path to the file as the value of the **LogoSrc** attribute.
+###Company Name
+To configure the company simply set **Name** attribute of the **Company** element in the **SelfServiceConfig.xml** file.
 
 ###Help Page Content
 To add content to the Help Page add an **Item** element as a child of the **Help** element with a **Question** and **Answer** element as children.  Add the possible question as the contents of the **Question** 
@@ -102,17 +101,17 @@ in panel view and as the value of the Name column when the Package Selection pag
 For example, the first Build in the example SelfServiceConfig.xml uses the following Type: IT Pro.
 
 ####ID Attribute
-The ID attribute is used to correlate each build on the Package Selection page with a partially complete XML configuration file located in the “Content/XML_Build_Files/Base_Files/” directory. 
-For example, the first Build in the example SelfServiceConfig.xml uses the following ID: build0.
+The ID attribute is used to correlate each build on the Package Selection page with a partially complete XML configuration file located in the **“XmlFiles”** directory which is located at the root of the website. 
+For example, the first Build in the example SelfServiceConfig.xml uses the following ID: ExecutivesNewYork.  If you look in the **XmlFiles** folder there should be a file name ExecutivesNewYork.xml which contains ODT Configuration xml.
 
 #Build Configuration
 ##Base Build Files
-Each build displayed on the Package Selection page must have partially completed XML configuration file with a file name corresponding to its ID attribute in the SelfServiceConfig.xml 
-located in the “Content/XML_Build_Files/Base_Files/” directory.  These base configuration files are modified according to the languages selected by the user and then copied to the 
-“Content/XML_Build_Files/Generated_Files/” directory.  The base configuration file can be generated using the tool found [here](http://officedev.github.io/Office-IT-Pro-Deployment-Scripts/XmlEditor.html).
+Each build displayed on the Package Selection page must have partially completed XML configuration file with a file name corresponding to its ID attribute in the **SelfServiceConfig.xml** 
+located in the **“XmlFiles”** directory.  These base configuration files are modified according to the languages selected by the user and then copied to the 
+**“Content\Generated_Files”** directory.  The base configuration file can be generated using the tool found [here](http://officedev.github.io/Office-IT-Pro-Deployment-Scripts/XmlEditor.html).
 
 ####Example Base build0.xml File  
-![alt text](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/Development/Office-ProPlus-Deployment/SelfServiceWebDeployment/images/ExampleBaseBuild0XmlFile.png "Example base build0.xml")
+![alt text](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/Development/Office-ProPlus-Deployment/SelfServiceWebDeployment/images/ExampleBaseBuild0XmlFile.png "Example ExecutivesNewYork.xml")
 
 ###Generated Build Files
 Generated build files are the combination of the languages selected when the user selects their primary/addiitonal languages and the base build file associated with the selected build.  
