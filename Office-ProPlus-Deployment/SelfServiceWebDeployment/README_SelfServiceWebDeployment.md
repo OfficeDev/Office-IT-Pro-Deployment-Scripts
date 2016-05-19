@@ -57,7 +57,7 @@ company’s name in the site’s banner, the questions and answers on the help p
 To configure the company simply set **Name** attribute of the **Company** element in the **SelfServiceConfig.xml** file.
 
 ###Add a Build
-To add a build to the Package Selection page add a **Build** element as a child of the **Builds** element with a **Languages**, **Filters**, **Location**, **Type**, and **ID** attributes.
+To add a build to the Package Selection page add a **Build** element as a child of the **Builds** element with a **Languages**, **Filters**, **Location**, **Type**, and **ID** attributes. The ID attribute must match the file name exactly of the XML configuration file located in the **“XmlFiles”** directory which is in the root of the website. A user that selects the build will install Office 365 ProPLus with the configuration contained in that Xml File plus the languages that they select.
 
 ####Languages Attribute
 The Languages attribute should be populated with a comma separated list of the language packs that are available for selection as either the primary language or additional lanuages.
