@@ -188,4 +188,5 @@ After the ClickOnce Installer has been downloaded the user will be prompted to b
 ##Possible Issues
 ###Missing Configuration File
 If a user attempts to install a package that does not have a base configuration xml file located on the server, the following dialog will be shown when attempting to download the installer.  If this occurs the site’s administrator will need to add a configuration xml file with the correct name, in this case “build1.xml”, to the “Content/XML_Build_Files/Base_Files/” directory of the SSDS.
+
 ![alt text](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/Development/Office-ProPlus-Deployment/SelfServiceWebDeployment/images/MissingConfigurationFile.PNG "Missing configuration file")
