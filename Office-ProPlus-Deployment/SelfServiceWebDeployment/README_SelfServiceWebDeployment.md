@@ -65,7 +65,7 @@ To add a build to the Package Selection page add a **Build** element as a child 
 
 ####Languages Attribute
 The Languages attribute should be populated with a comma separated list of the language packs that are available for selection as either the primary language or additional lanuages.  
-For example, the first Build in the example SelfServiceConfig.xml has the following language packs available for installation; English (en-us),Arabic (ar-sa),Bulgarian (bg-bg),Chinese (Simplified) (zh-cn),
+For example, the first Build in the example **SelfServiceConfig.xml** has the following language packs available for installation; English (en-us),Arabic (ar-sa),Bulgarian (bg-bg),Chinese (Simplified) (zh-cn),
 Chinese (zh-tw),Portuguese (pt-br),Portuguese (pt-pt),Serbian (sr-latn-rs), and Norwegian (nb-no).
 
 ####Possible Language Packs
@@ -90,21 +90,21 @@ There is a set list of valid language packs that are available for use.  That li
 ####Filters Attribute
 The Filters attribute is used to help further differentiate builds from one another.  It can be populated by a comma separated list of arbitrary values.  These values are displayed as Tags 
 in the tooltip of builds when viewed in the panel format or as values in the Tags column when viewed in the table/list format on the Package Selection page. 
-For example, the first Build in the example SelfServiceConfig.xml uses the following Filters: Level III and FullTime.
+For example, the first Build in the example **SelfServiceConfig.xml** uses the following Filters: Level III and FullTime.
 
 ####Location Attribute
 The Location attribute is yet another  attribute used to differintiate each build from one another.  The Location attribute can be populated by any arbitrary value thate the administrator wishes to set.  
 These values are displayed as the Location section of each build when the builds are viewed in the panel format or as a value in the Location column when viewed in the table/list format on the Package Selection page. 
-For example, the first Build in the example SelfServiceConfig.xml uses the following Location: Florida.
+For example, the first Build in the example **SelfServiceConfig.xml** uses the following Location: Florida.
 
 ####Type Attribute
 The Type attribute is used as the title of each build when displayed on the Package Selection page.  The Type attribute is displayed above the Location attribute when the Package Selection page is viewed 
 in panel view and as the value of the Name column when the Package Selection page is viewed in the table/list format. 
-For example, the first Build in the example SelfServiceConfig.xml uses the following Type: IT Pro.
+For example, the first Build in the example **SelfServiceConfig.xml** uses the following Type: IT Pro.
 
 ####ID Attribute
 The ID attribute is used to correlate each build on the Package Selection page with a partially complete XML configuration file located in the **“XmlFiles”** directory which is located at the root of the website. 
-For example, the first Build in the example SelfServiceConfig.xml uses the following ID: ExecutivesNewYork.  If you look in the **XmlFiles** folder there should be a file name ExecutivesNewYork.xml which contains ODT Configuration xml.
+For example, the first Build in the example **SelfServiceConfig.xml** uses the following ID: ExecutivesNewYork.  If you look in the **XmlFiles** folder there should be a file name ExecutivesNewYork.xml which contains ODT Configuration xml.
 
 #Build Configuration
 ##Base Build Files
@@ -132,7 +132,7 @@ packages that are available for installation as well as giving the user the abil
 
 ###Packages
 Packages are pre-defined builds that are created by the site’s administrator.  They allow for the tailoring of the builds for specific users.  The builds are differentiated by three 
-different fields, the build name, the build location, and build tags.  All three of these fields are customizable and populated using the SelfServiceConfig.xml file (this file will be covered later in the documentation). 
+different fields, the build name, the build location, and build tags.  All three of these fields are customizable and populated using the **SelfServiceConfig.xml** file (this file will be covered later in the documentation). 
 
 ####Tile View
 ![alt text](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/Development/Office-ProPlus-Deployment/SelfServiceWebDeployment/images/TileView.png "Tile view")
@@ -164,7 +164,7 @@ selected before being able to proceed to the next page.
 ###Additional Language Selection
 Once a primary language has been selected the user will be taken to the Additional Languages page.  Here the user can select any other language packs that they wish to install next 
 to primary language.  Additional languages are optional and may be skipped by the user.  Note that the additional language options as well as the primary language options must be 
-associated with the selected build in the SelfServiceConfig.xml file.  
+associated with the selected build in the **SelfServiceConfig.xml** file.  
 ![alt text](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/Development/Office-ProPlus-Deployment/SelfServiceWebDeployment/images/AdditionalLanguageSelection.png "Additional language selection")
 
 #The Installation Process
