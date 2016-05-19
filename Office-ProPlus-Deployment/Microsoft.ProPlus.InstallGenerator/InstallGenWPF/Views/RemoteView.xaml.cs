@@ -339,12 +339,13 @@ namespace MetroDemo.ExampleViews
         {
             //need to have iterate over ALL entries in datagrid and grab their info once updating work
 
-            WaitImage.Visibility = Visibility.Visible;
 
             var connectionInfo = new string[4];
 
             foreach (var client in remoteClients)
             {
+                WaitImage.Visibility = Visibility.Visible;
+
                 if (client.include)
                 {
                     var installGenerator = new OfficeInstallManager(connectionInfo);
