@@ -109,7 +109,7 @@
                                                                         DisplayMemberPath="Number" Foreground="{StaticResource GrayBrush}"
                                                                         IsEditable="True" IsTextSearchEnabled="True"
                                                                         ItemsSource="{Binding Path=Versions, UpdateSourceTrigger=PropertyChanged}" 
-                                                                        SelectedValuePath="Name"
+                                                                        SelectedValuePath="Number"
                                                                         SelectedItem="{Binding Path=Version}"
                                                                         MaxDropDownHeight="125"
                                                                         FontSize="20" IsSynchronizedWithCurrentItem="True" />

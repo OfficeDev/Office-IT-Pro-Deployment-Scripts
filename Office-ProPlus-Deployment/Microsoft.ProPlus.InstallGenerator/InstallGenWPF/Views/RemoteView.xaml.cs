@@ -333,7 +333,7 @@ namespace MetroDemo.ExampleViews
             await Task.Run(async () => { await installGenerator.initConnections(); });
             var officeInstall = await installGenerator.CheckForOfficeInstallAsync();
 
-            var updateInfo = new List<string> { "Molly Clark", "pass@word1", "10.10.8.225", "WORKGROUP", "Current", "16.0.6769.2015" };
+            var updateInfo = new List<string> { "Molly Clark", "pass@word1", "10.10.8.225", "WORKGROUP", "Deferred", "16.0.6001.1078" };
 
             //try
             //{
@@ -394,11 +394,11 @@ namespace MetroDemo.ExampleViews
 
                     //More UI 
 
-                    var channelToChangeTo = "";
+                    var channelToChangeTo = updateinfo[5];
                     //if (NewVersionRow.Visibility != Visibility.Visible)
                     //{
-                        channelToChangeTo =
-                            await ppDownloader.GetLatestVersionAsync(newChannel, OfficeEdition.Office32Bit);
+                        //channelToChangeTo =
+                        //    await ppDownloader.GetLatestVersionAsync(newChannel, OfficeEdition.Office32Bit);
                     //}
                     //else
                     //{

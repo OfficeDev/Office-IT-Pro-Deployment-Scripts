@@ -220,12 +220,12 @@ public class InstallOfficeWmi
             await initConnection();
             saveBaseUrl = GetBaseCdnUrl();
 
-            ChangeUpdateSource(baseUrl);
-            ChangeBaseCdnUrl(baseUrl);
+            await Task.Run(() => { ChangeUpdateSource(baseUrl); });
+            await Task.Run(() => { ChangeBaseCdnUrl(baseUrl); });
 
-            //RestartC2RSerivce();
+            await Task.Run(() => { RestartC2RSerivce(); });
 
-            //await RunOfficeUpdateAsync(targetChannel);
+            await RunOfficeUpdateAsync(targetChannel);
         }
         catch (Exception ex)
         {
@@ -278,9 +278,11 @@ public class InstallOfficeWmi
 
     public  void RestartC2RSerivce()
     {
-        const string serviceName = "ClickToRunSvc";
 
-        SelectQuery query = new SelectQuery("select * from Win32_Service where name = '" + serviceName + "'");
+        CreateRegistryValue(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System", "LocalAccountTokenFilterPolicy","1");
+        SetRegistryValue(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System", "LocalAccountTokenFilterPolicy", "1", "SetDWORDValue");
+
+        SelectQuery query = new SelectQuery("select * from Win32_Service where name='ClickToRunSvc'");
 
         using (ManagementObjectSearcher searcher = new ManagementObjectSearcher(scope, query))
         {
@@ -296,7 +298,9 @@ public class InstallOfficeWmi
                 {
 
                     //Stop the service
-                    service.InvokeMethod("StopService", null);
+                    var outparams = service.InvokeMethod("StopService", null);
+                    Thread.Sleep(2000);
+                    service.InvokeMethod("StartService", null);
 
                 }
 
@@ -309,39 +313,42 @@ public class InstallOfficeWmi
     public async Task RunOfficeUpdateAsync(string version)
     {
         await Task.Run(async () => { 
-            var c2RPath = GetOfficeC2RPath() + @"\OfficeC2RClient.exe";
-            if (File.Exists(c2RPath))
-            {
-                var arguments =
-                    "/update user displaylevel=false forceappshutdown=true updatepromptuser=false updatetoversion=" + version;
+            var c2RPath = GetOfficeC2RPath() + @"\OfficeC2RClient.exe /update user displaylevel=true forceappshutdown=true updatepromptuser=false updatetoversion=" + version;
 
-                var p = new Process
-                {
-                    StartInfo = new ProcessStartInfo()
-                    {
-                        FileName = c2RPath,
-                        Arguments = arguments,
-                        CreateNoWindow = true,
-                        UseShellExecute = false,
-                        RedirectStandardError = true
-                    },
-                };
+            var c2rExe = new[] { c2RPath };
+            var wmiProcess = new ManagementClass(scope, new ManagementPath("Win32_Process"), new ObjectGetOptions());
+            await Task.Run(() => { wmiProcess.InvokeMethod("Create", c2rExe); });
 
-                ClearRunningUpdateScenarioTasks();
+            //var arguments =
+            //    "/update user displaylevel=false forceappshutdown=true updatepromptuser=false updatetoversion=" + version;
 
-                p.Start();
-                p.WaitForExit();
+            //var p = new Process
+            //{
+            //    StartInfo = new ProcessStartInfo()
+            //    {
+            //        FileName = c2RPath,
+            //        Arguments = arguments,
+            //        CreateNoWindow = true,
+            //        UseShellExecute = false,
+            //        RedirectStandardError = true
+            //    },
+            //};
 
-                await Task.Delay(3000);
+            //ClearRunningUpdateScenarioTasks();
 
-                var strError = await p.StandardError.ReadToEndAsync();
-                if (strError != null)
-                {
-                    
-                }
+            //p.Start();
+            //p.WaitForExit();
 
-                WaitForOfficeCtrUpadateWithError();
-            }
+            //await Task.Delay(3000);
+
+            //var strError = await p.StandardError.ReadToEndAsync();
+            //if (strError != null)
+            //{
+
+            //}
+
+            //WaitForOfficeCtrUpadateWithError();
+            
         });
     }
 
@@ -351,9 +358,9 @@ public class InstallOfficeWmi
 
     public string GetOfficeC2RPath()
     {
-        var officeRegKey = GetOfficeCtrRegPath();
+        var officeRegKey = GetOfficeCtrRegPath().Result;
 
-        var configKey = GetRegistryValue(officeRegKey.ToString() + "\\Configuration", "ClientFolder").Result;
+        var configKey = GetRegistryValue(officeRegKey + "\\Configuration", "ClientFolder").Result;
 
 
         return configKey;
@@ -867,10 +874,10 @@ public class InstallOfficeWmi
             {
                 if (string.IsNullOrEmpty(saveupdatePath.ToString()))
                 {
-                    SetRegistryValue(policyPath + "officeUpdate", "saveupdatepath", currentupdatepath);
+                    SetRegistryValue(policyPath + "officeUpdate", "saveupdatepath", currentupdatepath,"SetStringValue");
                     //policyKey.SetValue("saveupdatepath", currentupdatepath, RegistryValueKind.String);
                 }
-                SetRegistryValue(policyPath + "officeUpdate", "updatepath", updateSource);
+                SetRegistryValue(policyPath + "officeUpdate", "updatepath", updateSource, "SetStringValue");
                 //policyKey.SetValue("updatepath", updateSource, RegistryValueKind.String);
 
             }
@@ -892,11 +899,11 @@ public class InstallOfficeWmi
         if (string.IsNullOrEmpty(saveupdateUrl.ToString()))
         {
 
-            SetRegistryValue(mainRegKey + @"\Configuration", "UpdateUrl", currentupdatepath);
+            SetRegistryValue(mainRegKey + @"\Configuration", "UpdateUrl", currentupdatepath, "SetStringValue");
             //configKey.SetValue("SaveUpdateUrl", currentupdatepath, RegistryValueKind.String);
         }
 
-        SetRegistryValue(mainRegKey + @"\Configuration", "UpdateUrl", updateSource);
+        SetRegistryValue(mainRegKey + @"\Configuration", "UpdateUrl", updateSource, "SetStringValue");
         //configKey.SetValue("UpdateUrl", updateSource, RegistryValueKind.String);
 
         return currentupdatepath;
@@ -930,7 +937,7 @@ public class InstallOfficeWmi
 
         var cdnBaseUrl = GetRegistryValue(mainRegKey+"\\"+configKey, "CDNBaseUrl").Result;
         //configKey.SetValue("CDNBaseUrl", updateSource, RegistryValueKind.String);
-        SetRegistryValue(mainRegKey + "\\" + configKey, "CDNBaseUrl", updateSource);
+        SetRegistryValue(mainRegKey + "\\" + configKey, "CDNBaseUrl", updateSource, "SetStringValue");
     }
 
 
@@ -965,25 +972,28 @@ public class InstallOfficeWmi
                 }
             }
 
-            var Hklm32 = RegistryKey.OpenRemoteBaseKey(RegistryHive.LocalMachine, remoteComputerName, RegistryView.Registry32);
+            //var Hklm32 = RegistryKey.OpenRemoteBaseKey(RegistryHive.LocalMachine, remoteComputerName, RegistryView.Registry32);
             //var Hklm32 = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32);
 
             //office16Key = Hklm32.OpenSubKey(path16, true);
             //office15Key = Hklm32.OpenSubKey(path15, true);
+            office16Key = @"\SOFTWARE\Wow6432Node\Microsoft\Office\";
+            office15Key = @"\SOFTWARE\Wow6432Node\Microsoft\Office\15.0\";
+
 
             if (office16Key != null)
-            {
-                return path16 + "ClickToRun";
-            }
-            else
-            {
-                if (office15Key != null)
                 {
-                return path15 + "ClickToRun";
+                    return path16 + "ClickToRun";
                 }
-            }
+                else
+                {
+                    if (office15Key != null)
+                    {
+                    return path15 + "ClickToRun";
+                    }
+                }
 
-            return null;
+                return null;
    
 
     }
@@ -1256,6 +1266,23 @@ public class InstallOfficeWmi
 
     }
 
+    private async void CreateRegistryValue(string regKey, string valueName, string value)
+    {
+      
+            await Task.Run(() =>
+            {
+                ManagementClass registry = new ManagementClass(scope, new ManagementPath("StdRegProv"), null);
+                ManagementBaseObject inParams = registry.GetMethodParameters("SetDWORDValue");
+
+                inParams["hDefKey"] = 0x80000002;
+                inParams["sSubKeyName"] = regKey;
+                inParams["sValueName"] = valueName;
+
+                ManagementBaseObject outParams = registry.InvokeMethod("SetDWORDValue", inParams, null);
+            });
+
+    }
+
     private String[] GetSubKeyNames(string parentKey)
     {
         ManagementClass registry = new ManagementClass(scope, new ManagementPath("StdRegProv"), null);
@@ -1344,34 +1371,30 @@ public class InstallOfficeWmi
     
     }
 
-    private void SetRegistryValue(string keyPath,  string valueName, string keyValue)
+    private void SetRegistryValue(string keyPath, string valueName, string keyValue, string method)
     {
-        
-        ManagementClass registry = new ManagementClass(scope2, new ManagementPath("StdRegProv"), null);
-        ManagementBaseObject inParams = registry.GetMethodParameters("SetStringValue");
+        try
+        {
 
-        //inParams["hDefKey"] = 0x80000002;
+     
+        ManagementClass registry = new ManagementClass(scope, new ManagementPath("StdRegProv"), null);
+        ManagementBaseObject inParams = registry.GetMethodParameters(method);
+
+        inParams["hDefKey"] = 0x80000002;
         inParams["sSubKeyName"] = keyPath;
         inParams["sValueName"] = valueName;
         inParams["sValue"] = keyValue;
 
-        var outParams = registry.InvokeMethod("SetStringValue", inParams,null); 
+        var outParams = registry.InvokeMethod(method, inParams,null);
+        }
+        catch (Exception)
+        {
+
+        }
+
+
 
     }
-    //private void extractWixTools(string installDir)
-    //{
-    //    string zipPath = installDir + @"\tools.zip";
-    //    string extractPath = "\tools";
-
-    //    using (ZipArchive archive = ZipFile.OpenRead(zipPath))
-    //    {
-    //        foreach (ZipArchiveEntry entry in archive.Entries)
-    //        {
-    //            entry.ExtractToFile(Path.Combine(extractPath+entry.FullName));
-    //        }
-    //    }
-    //}
-
     #endregion
 
     #region Properties
