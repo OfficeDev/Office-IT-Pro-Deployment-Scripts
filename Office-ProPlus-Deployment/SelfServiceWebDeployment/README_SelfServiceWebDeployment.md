@@ -3,15 +3,15 @@
 
 ###Install Web Deploy
 1. If you currently don’t have the Microsoft Web Platform Installer installed then navigate to http://www.microsoft.com/web/downloads/platform.aspx 
-2. Click Download and run the installer.
-3. Click on the Products tab in the Web Platform Installer.
-4. In the search box type Web Deploy 3.6 without bundled SQL Support¸ then click the Add option.
-5. Click Install at the bottom of the window.
-6. Click I Accept in the new window.  Wait for the program to be downloaded and installed. 
-7. Click the Finish button in the new window that displays after your program has been installed.
+2. Click **Download** and run the installer.
+3. Click on the **Products** tab in the Web Platform Installer.
+4. In the search box type **Web Deploy 3.6 without bundled SQL Support**¸ then click the **Add** option.
+5. Click **Install** at the bottom of the window.
+6. Click **I Accept** in the new window.  Wait for the program to be downloaded and installed. 
+7. Click the **Finish** button in the new window that displays after your program has been installed.
 
 ###Configure IIS
-1. Go to your Start Menu and type IIS, then select **Internet Information Services (IIS) Manager**.
+1. Go to your **Start Menu** and type **IIS**, then select **Internet Information Services (IIS) Manager**.
 2. Download the deployment package for the website from [Self Service Site Deployment Package](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/raw/master/Office-ProPlus-Deployment/SelfServiceWebDeployment/OfficeProPlusSelfServiceSite.zip)
 3. If you want to create a new website to use then right click **Sites** and the click **Add Website**.  If you want to use an existing website then skip to step 8.
 4. In the new Window add the name of the new site into **Site Name**.
@@ -31,17 +31,17 @@
 ##Configure Windows Firewall
 If you are not using a standard port for the website you may have to make changes to the Windows Firewall in order to allow remote computers to access the application.
 
-1. Go to the Start Menu.
-2. Type Firewall Advanced and then select the Windows Firewall With Advanced Security option.
-3. In the panel on the left hand side of the new window select the Inbound Rules option.
-4. Search for and double click on the World Wide Web Services rule.
-5. Select the Enable option in the new window then press the OK button.
-6. In the right hand side of the window select the New Rule option.
-7. In the new window select the Port option then click Next.
-8. In the Specific local ports field enter the port used in step 7 of Configuring IIS (ex: port 81) and click Next.
-9. In the next page make sure that the Allow the connection option is selected then click Next.
-10. Click Next in the following page.
-11. Enter a name for your rule in the Name field then click the Finish button.
+1. Go to the **Start Menu**.
+2. Type **Firewall Advanced** and then select the **Windows Firewall With Advanced Security** option.
+3. In the panel on the left hand side of the new window select the **Inbound Rules** option.
+4. Search for and double click on the **World Wide Web Services** rule.
+5. Select the **Enable** option in the new window then press the **OK** button.
+6. In the right hand side of the window select the **New Rule** option.
+7. In the new window select the **Port** option then click **Next**.
+8. In the **Specific local ports** field enter the port used in step 7 of **Configuring IIS** (ex: port 81) and click **Next**.
+9. In the next page make sure that the **Allow the connection** option is selected then click **Next**.
+10. Click **Next** in the following page.
+11. Enter a name for your rule in the **Name** field then click the **Finish** button.
 
 #Site Configuration
 ##Configuration XML
@@ -52,15 +52,15 @@ company’s name in the site’s banner, the questions and answers on the help p
 ![alt text](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/Development/Office-ProPlus-Deployment/SelfServiceWebDeployment/images/ExampleSelfServiceConfigXml.png "Example self service config.xml")
 
 ###Company Name and Logo
-To configure the company simply set Name attribute of the Company element in the SelfServiceConfig.xml file.  To add a company logo to the SSDS’ banner add an image of the company’s logo 
-to the Content folder of the site, then add the path to the file as the value of the LogoSrc attribute.
+To configure the company simply set **Name** attribute of the **Company** element in the SelfServiceConfig.xml file.  To add a company logo to the SSDS’ banner add an image of the company’s logo 
+to the Content folder of the site, then add the path to the file as the value of the **LogoSrc** attribute.
 
 ###Help Page Content
-To add content to the Help Page add an Item element as a child of the Help element with a Question and Answer element as children.  Add the possible question as the contents of the Question 
-element and then add the answer to this question as the contents of the Answer element.
+To add content to the Help Page add an **Item** element as a child of the **Help** element with a **Question** and **Answer** element as children.  Add the possible question as the contents of the **Question** 
+element and then add the answer to this question as the contents of the **Answer** element.
 
 ###Add a Build
-To add a build to the Package Selection page add a Build element as a child of the Builds element with a Languages, Filters, Location, Type, and ID attributes.
+To add a build to the Package Selection page add a **Build** element as a child of the **Builds** element with a **Languages**, **Filters**, **Location**, **Type**, and **ID** attributes.
 
 ####Languages Attribute
 The Languages attribute should be populated with a comma separated list of the language packs that are available for selection as either the primary language or additional lanuages.  
