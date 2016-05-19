@@ -56,17 +56,11 @@ company’s name in the site’s banner, the questions and answers on the help p
 ###Company Name
 To configure the company simply set **Name** attribute of the **Company** element in the **SelfServiceConfig.xml** file.
 
-###Help Page Content
-To add content to the Help Page add an **Item** element as a child of the **Help** element with a **Question** and **Answer** element as children.  Add the possible question as the contents of the **Question** 
-element and then add the answer to this question as the contents of the **Answer** element.
-
 ###Add a Build
 To add a build to the Package Selection page add a **Build** element as a child of the **Builds** element with a **Languages**, **Filters**, **Location**, **Type**, and **ID** attributes.
 
 ####Languages Attribute
-The Languages attribute should be populated with a comma separated list of the language packs that are available for selection as either the primary language or additional lanuages.  
-For example, the first Build in the example **SelfServiceConfig.xml** has the following language packs available for installation; English (en-us),Arabic (ar-sa),Bulgarian (bg-bg),Chinese (Simplified) (zh-cn),
-Chinese (zh-tw),Portuguese (pt-br),Portuguese (pt-pt),Serbian (sr-latn-rs), and Norwegian (nb-no).
+The Languages attribute should be populated with a comma separated list of the language packs that are available for selection as either the primary language or additional lanuages.
 
 ####Possible Language Packs
 There is a set list of valid language packs that are available for use.  That list of languages includes:
@@ -106,23 +100,22 @@ For example, the first Build in the example **SelfServiceConfig.xml** uses the f
 The ID attribute is used to correlate each build on the Package Selection page with a partially complete XML configuration file located in the **“XmlFiles”** directory which is located at the root of the website. 
 For example, the first Build in the example **SelfServiceConfig.xml** uses the following ID: ExecutivesNewYork.  If you look in the **XmlFiles** folder there should be a file name ExecutivesNewYork.xml which contains ODT Configuration xml.
 
+###Help Page Content
+To add content to the Help Page add an **Item** element as a child of the **Help** element with a **Question** and **Answer** element as children.  Add the possible question as the contents of the **Question** 
+element and then add the answer to this question as the contents of the **Answer** element.
+
 #Build Configuration
 ##Base Build Files
 Each build displayed on the Package Selection page must have partially completed XML configuration file with a file name corresponding to its ID attribute in the **SelfServiceConfig.xml** 
 located in the **“XmlFiles”** directory.  These base configuration files are modified according to the languages selected by the user and then copied to the 
 **“Content\Generated_Files”** directory.  The base configuration file can be generated using the tool found [here](http://officedev.github.io/Office-IT-Pro-Deployment-Scripts/XmlEditor.html).
 
-####Example Base ExecutivesNewYork.xml File  
+####Example ExecutivesNewYork.xml File  
 ![alt text](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/Development/Office-ProPlus-Deployment/SelfServiceWebDeployment/images/ExampleBaseBuild0XmlFile.png "Example ExecutivesNewYork.xml")
 
 ###Generated Build Files
 Generated build files are the combination of the languages selected when the user selects their primary/addiitonal languages and the base build file associated with the selected build.  
 The generated build file is used by the ClickOnce Installer to install the correct build and requested language packs. 
-As you can see below, the user selected the build with the ID of build0 and then chose en-us as their primary language (the first Language element) and ar-sa, bg-bg, zh-tw, pt-br, 
-and sr-latn-rs as the additional language packs. 
-
-###Example Generated Build File
-![alt text](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/Development/Office-ProPlus-Deployment/SelfServiceWebDeployment/images/ExampleGeneratedBuildFile.png "Example generated build file")
 
 #Basic Site Usage
 ##Package Selection
