@@ -351,19 +351,25 @@ namespace MetroDemo.ExampleViews
 
                     await Task.Run(async () => { await installGenerator.initConnections(); });
                     var officeInstall = await installGenerator.CheckForOfficeInstallAsync();
-                    var updateInfo = new List<string> { client.UserName, client.Password, client.Machine, client.WorkGroup, client.Channel.Name, client.Version.Number };                    
+                    var updateInfo = new List<string> { client.UserName, client.Password, client.Machine, client.WorkGroup, client.Channel.Name, client.Version.Number };
                     //RemoteMachineList.Items.Refresh();
                     try
                     {
                         //turn back on later
                         await ChangeOfficeChannelWmi(updateInfo, officeInstall);
+                    }
+                    catch (Exception)
+                    {
+                        //powershell
+                    }
 
-   
 
 
 
-            WaitImage.Visibility = Visibility.Hidden;
-        }        
+                    WaitImage.Visibility = Visibility.Hidden;
+                }
+            }
+        }
 
 
         public async Task ChangeOfficeChannelWmi(List<string> updateinfo, OfficeInstallation LocalInstall)
