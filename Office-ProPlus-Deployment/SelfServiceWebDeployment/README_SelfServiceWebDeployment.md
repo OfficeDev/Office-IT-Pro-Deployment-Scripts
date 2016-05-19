@@ -165,3 +165,27 @@ Once a primary language has been selected the user will be taken to the Addition
 to primary language.  Additional languages are optional and may be skipped by the user.  Note that the additional language options as well as the primary language options must be 
 associated with the selected build in the SelfServiceConfig.xml file.  
 ![alt text](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/Development/Office-ProPlus-Deployment/SelfServiceWebDeployment/images/AdditionalLanguageSelection.png "Additional language selection")
+
+#The Installation Process
+##Beginning the Installation Process
+After a user has selected any additional languages they are brought to a confirmation page, listing out the package’s information along with the chosen languages.  When the user clicks the Install button (A) SSDS will generate a configuration file using a base xml file associated with the selected build along with the languages that the user selected, then a ClickOnce installer will be downloaded and the installation process will begin.
+![alt text](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/Development/Office-ProPlus-Deployment/SelfServiceWebDeployment/images/BeginningTheInstallationProcess.PNG "Beginning the installation process")
+
+##ClickOnce Installer
+Once the user has selected the Install button on the previous page the ClickOnce installer will be downloaded.  This requires that pop-ups are allowed for the SSDS.  Once downloaded, the user will need to click the Install button.  the ClickOnce installer to download the Office 365 ProPlus 2016 installer as well as the custom generated installation configuration file.   
+####ClickOnce Download
+![alt text](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/Development/Office-ProPlus-Deployment/SelfServiceWebDeployment/images/ClickOnceDownload.PNG "ClickOnce download")
+
+##Using the ClickOnce Installer
+After the ClickOnce Installer has been downloaded the user will be prompted to begin the installation procces.  They will first need to click the Install button.  After the user presses the Install button they may be notified that the ClickOnce installer is unrecognized (this is because it is unsigned).  They will need to select the More Info option and then press the Run anyway option to allow for the installer to run.  The Office Installer will then be launched.  
+
+####ClickOnce Installer
+![alt text](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/Development/Office-ProPlus-Deployment/SelfServiceWebDeployment/images/ClickOnceInstaller.PNG "ClickOnce installer")
+
+####Office Install
+![alt text](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/Development/Office-ProPlus-Deployment/SelfServiceWebDeployment/images/OfficeInstall.PNG "Office install")
+
+##Possible Issues
+###Missing Configuration File
+If a user attempts to install a package that does not have a base configuration xml file located on the server, the following dialog will be shown when attempting to download the installer.  If this occurs the site’s administrator will need to add a configuration xml file with the correct name, in this case “build1.xml”, to the “Content/XML_Build_Files/Base_Files/” directory of the SSDS.
+![alt text](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/Development/Office-ProPlus-Deployment/SelfServiceWebDeployment/images/MissingConfigurationFile.PNG "Missing configuration file")
