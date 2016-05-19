@@ -1,4 +1,4 @@
-#Office 365 ProPlus SelfService Deployment
+#Office 365 ProPlus Self Service Deployment
 ##Deploying to IIS
 
 ###Install Web Deploy
