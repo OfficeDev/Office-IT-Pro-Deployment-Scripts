@@ -2,13 +2,15 @@
 ##Deploying to IIS
 
 ###Install Web Deploy
-1. If you currently don’t have the Microsoft Web Platform Installer installed then navigate to http://www.microsoft.com/web/downloads/platform.aspx 
+1. You must have Windows Server 2012 or greater with **Internet Information Services (IIS)** installed with ASP.NET 4.5 and .NET Extensibility 4.5 installed in IIS.
+2. If you currently don’t have the Microsoft Web Platform Installer installed then navigate to http://www.microsoft.com/web/downloads/platform.aspx 
 2. Click **Download** and run the installer.
 3. Click on the **Products** tab in the Web Platform Installer.
-4. In the search box type **Web Deploy 3.6 without bundled SQL Support**¸ then click the **Add** option.
-5. Click **Install** at the bottom of the window.
-6. Click **I Accept** in the new window.  Wait for the program to be downloaded and installed. 
-7. Click the **Finish** button in the new window that displays after your program has been installed.
+4. For Server 2012 R2 and Greater in the search box type **Web Deploy 3.6 without bundled SQL Support**¸ then click the **Add** option.
+5. For Server 2012 in the search box type **Web Deploy 3.5 without bundled SQL Support**¸ then click the **Add** option.
+6. Click **Install** at the bottom of the window.
+7. Click **I Accept** in the new window.  Wait for the program to be downloaded and installed. 
+8. Click the **Finish** button in the new window that displays after your program has been installed.
 
 ###Configure IIS
 1. Go to your **Start Menu** and type **IIS**, then select **Internet Information Services (IIS) Manager**.
