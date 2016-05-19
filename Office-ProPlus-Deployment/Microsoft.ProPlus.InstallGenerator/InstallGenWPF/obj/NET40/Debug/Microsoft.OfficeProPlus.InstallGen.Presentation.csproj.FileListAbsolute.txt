@@ -760,3 +760,5 @@ D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\InstallGenWPF\obj\NET40\Debug\Windows\RemoteChannelVersionDialog.g.cs
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\InstallGenWPF\obj\NET40\Debug\Views\RemoteView.baml
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\InstallGenWPF\obj\NET40\Debug\Windows\RemoteChannelVersionDialog.baml
+C:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\InstallGenWPF\bin\Debug\Resources\Update-Office.ps1
+C:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\InstallGenWPF\bin\Debug\Resources\UpdateScriptLaunch.ps1

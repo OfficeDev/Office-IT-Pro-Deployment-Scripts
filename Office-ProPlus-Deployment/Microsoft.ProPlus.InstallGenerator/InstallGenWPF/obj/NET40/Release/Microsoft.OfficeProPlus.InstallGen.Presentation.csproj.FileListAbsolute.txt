@@ -351,3 +351,10 @@ C:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deplo
 C:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\InstallGenWPF\obj\NET40\Release\Microsoft.OfficeProPlus.InstallGen.Presentation.csproj.GenerateResource.Cache
 C:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\InstallGenWPF\obj\NET40\Release\OfficeProPlusInstallToolkit.exe
 C:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\InstallGenWPF\obj\NET40\Release\OfficeProPlusInstallToolkit.pdb
+C:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\InstallGenWPF\bin\NET40\Release\Resources\Update-Office.ps1
+C:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\InstallGenWPF\bin\NET40\Release\Resources\UpdateScriptLaunch.ps1
+C:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\InstallGenWPF\bin\NET40\Release\MahApps.Metro.xml
+C:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\InstallGenWPF\obj\NET40\Release\Views\RemoteView.g.cs
+C:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\InstallGenWPF\obj\NET40\Release\Windows\RemoteChannelVersionDialog.g.cs
+C:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\InstallGenWPF\obj\NET40\Release\Views\RemoteView.baml
+C:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\InstallGenWPF\obj\NET40\Release\Windows\RemoteChannelVersionDialog.baml

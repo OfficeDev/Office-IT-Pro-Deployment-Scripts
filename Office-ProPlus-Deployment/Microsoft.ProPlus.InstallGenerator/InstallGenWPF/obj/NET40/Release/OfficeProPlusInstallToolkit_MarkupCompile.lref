@@ -1,6 +1,7 @@
-﻿C:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\InstallGenWPF\obj\NET40\Release\GeneratedInternalTypeHelper.g.cs
+﻿
 
 FC:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\InstallGenWPF\Views\AboutView.xaml;;
+FC:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\InstallGenWPF\Views\RemoteView.xaml;;
 FC:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\InstallGenWPF\Views\LocalView.xaml;;
 FC:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\InstallGenWPF\Views\GenerateView.xaml;;
 FC:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\InstallGenWPF\Views\DownloadView.xaml;;
@@ -13,5 +14,6 @@ FC:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Depl
 FC:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\InstallGenWPF\Windows\CertificatesDialog.xaml;;
 FC:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\InstallGenWPF\Windows\DownloadAdvanced.xaml;;
 FC:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\InstallGenWPF\Windows\Languages.xaml;;
+FC:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\InstallGenWPF\Windows\RemoteChannelVersionDialog.xaml;;
 FC:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\InstallGenWPF\XmlBrowser\XmlBrowserControl.xaml;;
 

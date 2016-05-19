@@ -18,6 +18,7 @@ using Microsoft.OfficeProPlus.Downloader.Model;
 using Microsoft.OfficeProPlus.Downloader;
 using System.Windows.Media;
 using UserControl = System.Windows.Controls.UserControl;
+using System.Diagnostics;
 
 namespace MetroDemo.ExampleViews
 {
@@ -145,6 +146,14 @@ namespace MetroDemo.ExampleViews
 
                 var info = new RemoteMachine();
 
+                //for testing, remove before going live
+                //if(officeInstall.Channel == null)
+                //{
+                //    officeInstall.Channel = "Deferred";
+                //    officeInstall.Installed = true;
+                //    officeInstall.Version = "16.0.6001.1078";
+                //}
+
                 if (officeInstall.Channel != null)
                 {
                     var branches = GlobalObjects.ViewModel.Branches;
@@ -187,7 +196,10 @@ namespace MetroDemo.ExampleViews
                     info = new RemoteMachine
                     {
                         include = false,
-                        Machine = txtBxAddMachines.Text,
+                        Machine = connectionInfo[2],
+                        UserName = connectionInfo[0],
+                        Password = connectionInfo[1],
+                        WorkGroup = connectionInfo[3],
                         Status = "Found",
                         Channels = channels,
                         Channel = currentChannel,
@@ -201,7 +213,10 @@ namespace MetroDemo.ExampleViews
                     info = new RemoteMachine
                     {
                         include = false,
-                        Machine = txtBxAddMachines.Text,
+                        Machine = connectionInfo[2],
+                        UserName = connectionInfo[0],
+                        Password = connectionInfo[1],
+                        WorkGroup = connectionInfo[3],
                         Status = "Not Found",
                         Channels = null,
                         Channel = null,
@@ -326,29 +341,29 @@ namespace MetroDemo.ExampleViews
 
             WaitImage.Visibility = Visibility.Visible;
 
-            var connectionInfo = new string[4] ;
-            var installGenerator = new OfficeInstallManager(connectionInfo);
+            var connectionInfo = new string[4];
 
-            //Remove when done testing 
-            await Task.Run(async () => { await installGenerator.initConnections(); });
-            var officeInstall = await installGenerator.CheckForOfficeInstallAsync();
+            foreach (var client in remoteClients)
+            {
+                if (client.include)
+                {
+                    var installGenerator = new OfficeInstallManager(connectionInfo);
 
-            var updateInfo = new List<string> { "Molly Clark", "pass@word1", "10.10.8.225", "WORKGROUP", "Deferred", "16.0.6001.1078" };
+                    await Task.Run(async () => { await installGenerator.initConnections(); });
+                    var officeInstall = await installGenerator.CheckForOfficeInstallAsync();
+                    var updateInfo = new List<string> { client.UserName, client.Password, client.Machine, client.WorkGroup, client.Channel.Name, client.Version.Number };                    
+                    //RemoteMachineList.Items.Refresh();
+                    try
+                    {
+                        //turn back on later
+                        await ChangeOfficeChannelWmi(updateInfo, officeInstall);
 
-            //try
-            //{
-            await ChangeOfficeChannelWmi(updateInfo, officeInstall);
-            //}
-            //catch (Exception)
-            //{
-            //    //powershell 
-            //}
+   
 
 
 
             WaitImage.Visibility = Visibility.Hidden;
-                
-        }
+        }        
 
 
         public async Task ChangeOfficeChannelWmi(List<string> updateinfo, OfficeInstallation LocalInstall)
