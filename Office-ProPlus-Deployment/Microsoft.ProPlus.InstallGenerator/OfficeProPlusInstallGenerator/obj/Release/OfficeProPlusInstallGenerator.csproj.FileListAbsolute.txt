@@ -1,9 +1,6 @@
-D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeProPlusInstallGenerator\bin\Release\InstallOffice.cs
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeProPlusInstallGenerator\bin\Release\OfficeProPlusInstallGenerator.exe.config
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeProPlusInstallGenerator\bin\Release\OfficeProPlusInstallGenerator.exe
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeProPlusInstallGenerator\bin\Release\OfficeProPlusInstallGenerator.pdb
-D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeProPlusInstallGenerator\bin\Release\OfficeProPlusInstallGenerator.exe.CodeAnalysisLog.xml
-D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeProPlusInstallGenerator\bin\Release\OfficeProPlusInstallGenerator.exe.lastcodeanalysissucceeded
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeProPlusInstallGenerator\bin\Release\OfficeInstallGenerator.dll
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeProPlusInstallGenerator\bin\Release\Micorosft.OfficeProPlus.ConfigurationXml.dll
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeProPlusInstallGenerator\bin\Release\Microsoft.OfficeProPlus.Downloader.dll
