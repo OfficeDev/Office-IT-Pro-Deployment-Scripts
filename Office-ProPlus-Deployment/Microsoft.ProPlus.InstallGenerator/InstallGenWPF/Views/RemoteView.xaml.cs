@@ -373,9 +373,32 @@ namespace MetroDemo.ExampleViews
                         await ChangeOfficeChannelWmi(updateInfo, officeInstall); 
 
                     }
-                    catch (Exception)
+                    catch (Exception)// if fails via WMI, try via powershell
                     {
-                        //powershell
+                        try
+                        {
+                            string PSPath = System.IO.Directory.GetCurrentDirectory() + "\\Resources\\PowershellAttempt.txt";
+                            System.IO.File.Delete(PSPath);
+                            Process p = new Process();
+                            p.StartInfo.FileName = "Powershell.exe";                                //replace path to use local path                            switch out arguments so your program throws in the necessary args
+                            p.StartInfo.Arguments = @"-ExecutionPolicy Bypass -NoExit -Command ""& {& '" + System.IO.Directory.GetCurrentDirectory() + "\\Resources\\UpdateScriptLaunch.ps1' -Channel " + client.Channel.Name + " -DisplayLevel $false -machineToRun " + client.Machine + " -UpdateToVersion " + client.Version.Number + "}\"";
+                            p.Start();
+                            p.WaitForExit();
+                            p.Close();
+                            string readtext = System.IO.File.ReadAllText(PSPath);
+                            if (readtext.Contains("Update Completed") && !readtext.Contains("Update Not Running"))
+                            {
+                                client.Status = "Succeeded";
+                            }
+                            else
+                            {
+                                client.Status = "Failed";
+                            }
+                        }
+                        catch (Exception)
+                        {
+                            client.Status = "Error";
+                        }
                     }
 
 

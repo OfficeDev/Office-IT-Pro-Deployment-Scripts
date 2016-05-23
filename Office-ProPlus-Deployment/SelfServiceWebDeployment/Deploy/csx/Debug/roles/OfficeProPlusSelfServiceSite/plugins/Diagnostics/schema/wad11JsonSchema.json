@@ -1,0 +1,78 @@
+"type":"object",
+	"$schema": "http://json-schema.org/draft-03/schema",
+	"id": "http://Microsoft.Azure.Wad11.com",
+	"required":true,
+	"properties":{
+		"runtimeSettings": {
+			"type":"array",
+			"id": "http://Microsoft.Azure.Wad11.com/runtimeSettings",
+			"required":true,
+			"items":
+				{
+					"type":"object",
+					"id": "http://Microsoft.Azure.Wad11.com/runtimeSettings/0",
+					"required":true,
+					"properties":{
+						"handlerSettings": {
+							"type":"object",
+							"id": "http://Microsoft.Azure.Wad11.com/runtimeSettings/0/handlerSettings",
+							"required":true,
+							"properties":{
+								"protectedSettings": {
+									"type":"object",
+									"id": "http://Microsoft.Azure.Wad11.com/runtimeSettings/0/handlerSettings/protectedSettings",
+									"required":true,
+									"properties":{
+										"storageAccountEndPoint": {
+											"type":"string",
+											"id": "http://Microsoft.Azure.Wad11.com/runtimeSettings/0/handlerSettings/protectedSettings/storageAccountEndPoint",
+											"required":false
+										},
+										"storageAccountKey": {
+											"type":"string",
+											"id": "http://Microsoft.Azure.Wad11.com/runtimeSettings/0/handlerSettings/protectedSettings/storageAccountKey",
+											"required":true
+										},
+										"storageAccountName": {
+											"type":"string",
+											"id": "http://Microsoft.Azure.Wad11.com/runtimeSettings/0/handlerSettings/protectedSettings/storageAccountName",
+											"required":true
+										}
+									}
+								},
+								"publicSettings": {
+									"type":"object",
+									"id": "http://Microsoft.Azure.Wad11.com/runtimeSettings/0/handlerSettings/publicSettings",
+									"required":true,
+									"properties":{
+										"localResourceDirectory": {
+											"type":"object",
+											"id": "http://Microsoft.Azure.Wad11.com/runtimeSettings/0/handlerSettings/publicSettings/localResourceDirectory",
+											"required":false,
+											"properties":{
+												"expandResourceDirectory": {
+													"type":"boolean",
+													"id": "http://Microsoft.Azure.Wad11.com/runtimeSettings/0/handlerSettings/publicSettings/localResourceDirectory/expandResourceDirectory",
+													"required":true
+												},
+												"path": {
+													"type":"string",
+													"id": "http://Microsoft.Azure.Wad11.com/runtimeSettings/0/handlerSettings/publicSettings/localResourceDirectory/path",
+													"required":true
+												}
+											}
+										},
+										"xmlCfg": {
+											"type":"string",
+											"id": "http://Microsoft.Azure.Wad11.com/runtimeSettings/0/handlerSettings/publicSettings/xmlCfg",
+											"required":true
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+		}
+	}
+}

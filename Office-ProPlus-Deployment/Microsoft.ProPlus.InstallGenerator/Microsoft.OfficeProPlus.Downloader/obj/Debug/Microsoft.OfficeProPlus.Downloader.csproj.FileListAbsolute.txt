@@ -22,3 +22,9 @@ C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deploy
 C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Microsoft.OfficeProPlus.Downloader\obj\Debug\Microsoft.OfficeProPlus.Downloader.csprojResolveAssemblyReference.cache
 C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Microsoft.OfficeProPlus.Downloader\obj\Debug\Microsoft.OfficeProPlus.Downloader.dll
 C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Microsoft.OfficeProPlus.Downloader\obj\Debug\Microsoft.OfficeProPlus.Downloader.pdb
+C:\Source\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Microsoft.OfficeProPlus.Downloader\bin\Debug\Microsoft.OfficeProPlus.Downloader.dll.config
+C:\Source\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Microsoft.OfficeProPlus.Downloader\bin\Debug\Microsoft.OfficeProPlus.Downloader.dll
+C:\Source\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Microsoft.OfficeProPlus.Downloader\bin\Debug\Microsoft.OfficeProPlus.Downloader.pdb
+C:\Source\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Microsoft.OfficeProPlus.Downloader\obj\Debug\Microsoft.OfficeProPlus.Downloader.csprojResolveAssemblyReference.cache
+C:\Source\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Microsoft.OfficeProPlus.Downloader\obj\Debug\Microsoft.OfficeProPlus.Downloader.dll
+C:\Source\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Microsoft.OfficeProPlus.Downloader\obj\Debug\Microsoft.OfficeProPlus.Downloader.pdb

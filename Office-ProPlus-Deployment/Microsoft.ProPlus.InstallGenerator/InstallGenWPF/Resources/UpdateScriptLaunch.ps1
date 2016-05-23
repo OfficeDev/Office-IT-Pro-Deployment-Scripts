@@ -18,11 +18,14 @@
     if ($PSScriptRoot) {   $scriptPath = $PSScriptRoot } else {   $scriptPath = split-path -parent $MyInvocation.MyCommand.Definition }
 
 
-        Invoke-Command -ComputerName $machineToRun -FilePath $scriptPath\Update-Office.ps1 -ArgumentList $UpdateToVersion, $Channel, $DisplayLevel
+        $textToWrite = Invoke-Command -ComputerName $machineToRun -FilePath $scriptPath\Update-Office.ps1 -ArgumentList $UpdateToVersion, $Channel, $DisplayLevel
 
     }
     catch    {
     Write-Host $_.Exception.Message
            throw;
     }
+    $textToWrite | Out-File $scriptPath\PowershellAttempt.txt 
+
+    Stop-Process -Id $PID
     }
