@@ -185,6 +185,29 @@
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="40"></RowDefinition>
                                     </Grid.RowDefinitions>
+                                    <Button Grid.Column="0" x:Name="PinIconsToTaskbarInfo" Height="40" HorizontalAlignment="Center" VerticalAlignment="Center"  
+                                                            Focusable="False"  Style="{StaticResource CustomMetroInfoButton}" Click="ProductInfo_OnClick" >
+                                        <Image Source="../images/info.png" Width="20" Height="20"/>
+                                    </Button>
+                                    <Label Content="Pin Icons To Taskbar" Style="{StaticResource CustomMetroLabelHeader}" 
+                                       HorizontalAlignment="Left"  Grid.Column="1" Width="330"/>
+
+                                    <Controls:ToggleSwitch x:Name="PinIconsToTaskbar" Grid.Column="2"
+                                               IsChecked="False" Style="{StaticResource MetroToggleSwitchStyle}"
+                                               OnLabel="True"
+                                               OffLabel="False"
+                                                HorizontalAlignment="Right" Width="104" />
+                                </Grid>
+
+                                <Grid Margin="50 0 0 0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="30" />
+                                        <ColumnDefinition Width="350" />
+                                        <ColumnDefinition Width="120" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="40"></RowDefinition>
+                                    </Grid.RowDefinitions>
                                     <Button Grid.Column="0" x:Name="EnableSCCMSupportInfo" Height="40" HorizontalAlignment="Center" VerticalAlignment="Center"  
                                                             Focusable="False"  Style="{StaticResource CustomMetroInfoButton}" Click="ProductInfo_OnClick" >
                                         <Image Source="../images/info.png" Width="20" Height="20"/>

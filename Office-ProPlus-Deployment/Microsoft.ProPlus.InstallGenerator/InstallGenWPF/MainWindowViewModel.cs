@@ -88,7 +88,7 @@ namespace MetroDemo
             return await Task.WhenAny(task, Task.Delay(1000)) == task && task.Result;
         }
 
-        public static string DefaultXml = "<Configuration><Updates Enabled=\"TRUE\" /><Display Level=\"Full\" /></Configuration>";
+        public static string DefaultXml = "<Configuration><Updates Enabled=\"TRUE\" /><Display Level=\"Full\" /><Property Name=\"PinIconsToTaskbar\" Value=\"TRUE\"/></Configuration>";
 
         public static string DefaultLanguagePackXml = "<Configuration><Add><Product ID=\"LanguagePack\"><Language ID=\"en-us\" /></Product></Add><Display Level=\"Full\" /></Configuration>";
     }

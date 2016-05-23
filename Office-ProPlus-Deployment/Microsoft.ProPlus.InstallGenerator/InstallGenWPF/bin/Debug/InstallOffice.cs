@@ -385,6 +385,17 @@ public class InstallOffice
         OdtFilePath = InstallDirectory + @"\" + FileNames.FirstOrDefault(f => f.ToLower().EndsWith("setup.exe"));
         XmlFilePath = InstallDirectory + @"\" + FileNames.FirstOrDefault(f => f.ToLower().EndsWith(".xml"));
 
+        var sourceFilePath = GetArguments().FirstOrDefault(a => a.Key.ToLower() == "/sourfilepath");
+
+        var chkPath = InstallDirectory + @"\Office\Data";
+        if (!Directory.Exists(chkPath) && sourceFilePath != null)
+        {
+            if (!string.IsNullOrEmpty(sourceFilePath.Value))
+            {
+                SetSourcePath(XmlFilePath, sourceFilePath.Value);
+            }
+        }
+
         var productIdFile = InstallDirectory + @"\" + FileNames.FirstOrDefault(f => f.ToLower().EndsWith("productid.txt"));
         if (!string.IsNullOrEmpty(productIdFile))
         {
@@ -530,7 +541,7 @@ public class InstallOffice
         xmlDoc.Save(xmlFilePath);
     }
 
-    private void SetSourcePath(string xmlFilePath)
+    private void SetSourcePath(string xmlFilePath, string sourcePath = null)
     {
         const string officeFolderName = "OfficeProPlus";
 
@@ -543,7 +554,8 @@ public class InstallOffice
             var addNode = xmlDoc.SelectSingleNode("/Configuration/Add");
             if (addNode != null)
             {
-                SetAttribute(xmlDoc, addNode, "SourcePath", officeFolderPath);
+                SetAttribute(xmlDoc, addNode, "SourcePath", sourcePath ?? officeFolderPath);
+
                 xmlDoc.Save(xmlFilePath);
             }
         }
