@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Micorosft.OfficeProPlus.ConfigurationXml;
 using OfficeInstallGenerator;
 
 namespace Microsoft.OfficeProPlus.InstallGenerator
@@ -30,5 +31,8 @@ namespace Microsoft.OfficeProPlus.InstallGenerator
         string ExecutablePath { get; set; }
 
         string Language { get; set; }
+
+        OfficeClientEdition OfficeClientEdition { get; set; }
+
     }
 }

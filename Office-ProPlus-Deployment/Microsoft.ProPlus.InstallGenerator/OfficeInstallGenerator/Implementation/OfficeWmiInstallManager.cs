@@ -45,8 +45,14 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
             }
             catch (Exception)
             {
-
-                await Task.Run(() => { scope.Connect(); });
+                try
+                {
+                    await Task.Run(() => { scope.Connect(); });
+                }
+                catch (Exception)
+                {
+                    throw (new Exception("Cannot connect to client"));
+                }
             }
 
         }
@@ -61,9 +67,10 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
 
           
 
-                officeInstance.Version = await GetRegistryValue(officeRegPathKey, "VersionToReport", "GetStringValue"); 
-                
-                if(string.IsNullOrEmpty(officeInstance.Version))
+                officeInstance.Version = await GetRegistryValue(officeRegPathKey, "VersionToReport", "GetStringValue");
+
+
+            if (string.IsNullOrEmpty(officeInstance.Version))
                 {
                     officeRegPathKey = @"SOFTWARE\Microsoft\Office\16.0\ClickToRun\Configuration";
                 officeInstance.Version = await GetRegistryValue(officeRegPathKey, "VersionToReport", "GetStringValue");

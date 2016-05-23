@@ -504,7 +504,8 @@ namespace MetroDemo.ExampleViews
                                 UpgradeCode = language.ID.GenerateGuid(),
                                 Version = productVersion,
                                 Language = "en-us",
-                                ProgramFilesPath = programFilesPath
+                                ProgramFilesPath = programFilesPath,
+                                OfficeClientEdition = configXml.Add.OfficeClientEdition
                             });
                         }
                     }
@@ -522,7 +523,8 @@ namespace MetroDemo.ExampleViews
                             UpgradeCode = upgradeCode,
                             Version = productVersion,
                             Language = "en-us",
-                            ProgramFilesPath = @"%ProgramFiles%\Microsoft Office 365 ProPlus Installer"
+                            ProgramFilesPath = @"%ProgramFiles%\Microsoft Office 365 ProPlus Installer",
+                            OfficeClientEdition = configXml.Add.OfficeClientEdition
                         });
                     }
 

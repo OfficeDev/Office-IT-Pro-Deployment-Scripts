@@ -9,6 +9,15 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
+using MahApps.Metro.Actions;
+using MahApps.Metro.Controls;
+using MahApps.Metro.Controls.Dialogs;
+using MahApps.Metro.Controls.XmlBrowser;
+using MetroDemo;
+using MetroDemo.ExampleViews;
+using MetroDemo.Models;
+using Microsoft.OfficeProPlus.InstallGen.Presentation.Models;
+using Microsoft.OfficeProPlus.InstallGen.Presentation.ValueConverter;
 using System;
 using System.Diagnostics;
 using System.Windows;
@@ -30,6 +39,7 @@ using System.Windows.Media.TextFormatting;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Shell;
+using WpfAnimatedGif;
 
 
 namespace MetroDemo.Navigation {

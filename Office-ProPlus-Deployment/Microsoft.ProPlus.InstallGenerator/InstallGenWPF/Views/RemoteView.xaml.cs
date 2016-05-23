@@ -57,6 +57,7 @@ namespace MetroDemo.ExampleViews
         private void RemoteView_Loaded(object sender, RoutedEventArgs e)
         {
 
+            GlobalObjects.ViewModel.RemoteMachines = new List<RemoteMachine>();
             RemoteMachineList.ItemsSource = remoteClients;
         }
 
@@ -116,24 +117,14 @@ namespace MetroDemo.ExampleViews
             }
         }
 
-        private async void AddComputersButton_Click(object sender, RoutedEventArgs e)
+        private async void addMachines(string[] connectionInfo)
         {
-            //placeholder text for data entry Username\Password\IP\Domain
+           
+               var installGenerator = new OfficeInstallManager(connectionInfo);
 
 
-            if (txtBxAddMachines.Text != "")
-            {
-                //parse text 
+               await installGenerator.initConnections();
 
-                WaitImage.Visibility = Visibility.Visible;
-
-                GlobalObjects.ViewModel.RemoteMachines = new List<RemoteMachine>();
-
-                var connectionInfo = txtBxAddMachines.Text.Split('\\');
-                var installGenerator = new OfficeInstallManager(connectionInfo);
-
-
-                await Task.Run(async () => { await installGenerator.initConnections(); });
 
                 var officeInstall = await installGenerator.CheckForOfficeInstallAsync();
 
@@ -145,14 +136,6 @@ namespace MetroDemo.ExampleViews
                 //set UI channel/version 
 
                 var info = new RemoteMachine();
-
-                //for testing, remove before going live
-                //if(officeInstall.Channel == null)
-                //{
-                //    officeInstall.Channel = "Deferred";
-                //    officeInstall.Installed = true;
-                //    officeInstall.Version = "16.0.6001.1078";
-                //}
 
                 if (officeInstall.Channel != null)
                 {
@@ -229,14 +212,38 @@ namespace MetroDemo.ExampleViews
 
                 remoteClients.Add(info);
                 //txtBxAddMachines.Clear();
+
+            Dispatcher.Invoke(() =>
+            {
                 RemoteMachineList.ItemsSource = remoteClients;
                 RemoteMachineList.Items.Refresh();
                 WaitImage.Visibility = Visibility.Hidden;
+            });
 
+        }
+
+        private async void AddComputersButton_Click(object sender, RoutedEventArgs e)
+        {
+            //placeholder text for data entry Username\Password\IP\Domain
+
+
+            if (txtBxAddMachines.Text != "")
+            {
+                //parse text 
+
+                WaitImage.Visibility = Visibility.Visible;
+
+                //GlobalObjects.ViewModel.RemoteMachines = new List<RemoteMachine>();
+
+                var connectionInfo = txtBxAddMachines.Text.Split('\\');
+
+                //addMachines 
+                await Task.Run(() => { addMachines(connectionInfo); }); 
             }
         }
 
         private RemoteChannelVersionDialog remoteUpdateDialog = null;
+
         private void btnChangeChannelOrVersion_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -273,7 +280,7 @@ namespace MetroDemo.ExampleViews
             var dlg = new Microsoft.Win32.OpenFileDialog
             {
                 DefaultExt = ".png",
-                Filter = "Text Files (.txt)|*.txt|CSV Files (.csv)|*.csv"
+                Filter = "CSV Files (.csv)|*.csv"
             };
 
             var result = dlg.ShowDialog();
@@ -282,55 +289,58 @@ namespace MetroDemo.ExampleViews
 
                 List<string> versions = new List<String>();
                 string line;
-                StreamReader file = new StreamReader(dlg.FileName);
-                while ((line = file.ReadLine()) != null)
+
+                try
                 {
-                    if (!line.Contains(","))
-                    {
-                        var info = new RemoteMachine
-                        {
-                            include = false,
-                            Machine = txtBxAddMachines.Text,
-                            Status = "Found",
-                            Channels = null,
-                            Channel = null,
-                            Versions = null,
-                            Version = null
+                    StreamReader file = new StreamReader(dlg.FileName);
 
-                        };
-
-                        remoteClients.Add(info);
-                    }
-                    else
+                    while ((line = file.ReadLine()) != null)
                     {
+                            //get client info 
+
+                            
+                        
                         string[] tempStrArray = line.Split(',');
-                        foreach (string tempStr in tempStrArray)
-                        {
-                            var info = new RemoteMachine
-                            {
-                                include = false,
-                                Machine = txtBxAddMachines.Text,
-                                Status = "Not Found",
-                                Channels = null,
-                                Channel = null,
-                                Versions = null,
-                                Version = null
-                            };
-                            remoteClients.Add(info);
-                        }
+
+                        addMachines(tempStrArray);
+                          
+                            //var info = new RemoteMachine
+                            //{
+                            //    include = false,
+                            //    Machine = tempStrArray[0],
+                            //    Status = "Not Found",
+                            //    Channels = null,
+                            //    Channel = null,
+                            //    Versions = null,
+                            //    Version = null
+                            //};
+                            //remoteClients.Add(info);
+                            
+                        
+
                     }
+
+                    //RemoteMachineList.Items.Refresh();
 
                 }
-                RemoteMachineList.Items.Refresh();
+                catch (Exception)
+                {
+
+                }
+
+
+
+
 
             }
         }
 
         private void chkAll_Click(object sender, RoutedEventArgs e)
         {
+            var handler = sender as System.Windows.Controls.CheckBox;
             foreach (var client in remoteClients)
             {
-                client.include = chkAll.IsChecked.Value;
+                client.include = handler.IsChecked.Value;
             }
             RemoteMachineList.Items.Refresh();
         }
@@ -340,24 +350,28 @@ namespace MetroDemo.ExampleViews
             //need to have iterate over ALL entries in datagrid and grab their info once updating work
 
 
-            var connectionInfo = new string[4];
 
             foreach (var client in remoteClients)
             {
-                WaitImage.Visibility = Visibility.Visible;
 
                 if (client.include)
                 {
-                    var installGenerator = new OfficeInstallManager(connectionInfo);
-
-                    await Task.Run(async () => { await installGenerator.initConnections(); });
-                    var officeInstall = await installGenerator.CheckForOfficeInstallAsync();
-                    var updateInfo = new List<string> { client.UserName, client.Password, client.Machine, client.WorkGroup, client.Channel.Name, client.Version.Number };
-                    //RemoteMachineList.Items.Refresh();
+                    GlobalObjects.ViewModel.BlockNavigation = true;
+                    WaitImage.Visibility = Visibility.Visible;
                     try
                     {
-                        //turn back on later
-                        await ChangeOfficeChannelWmi(updateInfo, officeInstall);
+                        var connectionInfo = new string[4] { client.UserName, client.Password, client.Machine, client.WorkGroup };
+                        var installGenerator = new OfficeInstallManager(connectionInfo);
+
+                        var newVersion = client.Version;
+                        var newChannel = client.Channel;
+
+                        await Task.Run(async () => { await installGenerator.initConnections(); });
+                        var officeInstall = await installGenerator.CheckForOfficeInstallAsync();
+                        var updateInfo = new List<string> { client.UserName, client.Password, client.Machine, client.WorkGroup, client.Channel.Name, client.Version.Number };
+
+                        await ChangeOfficeChannelWmi(updateInfo, officeInstall); 
+
                     }
                     catch (Exception)
                     {
@@ -367,9 +381,11 @@ namespace MetroDemo.ExampleViews
 
 
 
-                    WaitImage.Visibility = Visibility.Hidden;
                 }
             }
+            GlobalObjects.ViewModel.BlockNavigation = false;
+            WaitImage.Visibility = Visibility.Hidden;
+
         }
 
 
@@ -551,6 +567,8 @@ namespace MetroDemo.ExampleViews
                 }
             }
 
+          
+
             versionCB.ItemsSource = newVersions;
             versionCB.SelectedItem = newVersions[0];
             versionCB.Items.Refresh();
@@ -564,6 +582,22 @@ namespace MetroDemo.ExampleViews
             return (T)parent;
         }
 
+        //private void setOfficeChannel()
+
+        //private void setOfficeVersion(object sender, SelectionChangedEventArgs e)
+        //{
+        //    var row = GetAncestorOfType<DataGridRow>(sender as System.Windows.Controls.ComboBox);
+
+        //    var handler = sender as System.Windows.Controls.ComboBox;
+        //    var currentClient = remoteClients[row.GetIndex()];
+        //    var tempVersion = new officeVersion()
+        //    {
+        //        Number = handler.SelectedValue.ToString()
+        //    };
+
+        //    currentClient.Version = tempVersion;
+        //    RemoteMachineList.Items.Refresh();
+        //}
     }
 }
 

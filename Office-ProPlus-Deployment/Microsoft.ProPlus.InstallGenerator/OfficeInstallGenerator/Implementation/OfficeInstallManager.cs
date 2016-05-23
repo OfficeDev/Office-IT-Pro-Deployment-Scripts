@@ -50,7 +50,7 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
             }
             catch (Exception)
             {
-
+                throw (new Exception("Cannot find client"));
                 //try
                 //{
                 //    PowershellInstall.initConnection();

@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Micorosft.OfficeProPlus.ConfigurationXml;
 using Micorosft.OfficeProPlus.ConfigurationXml.Enums;
 using Micorosft.OfficeProPlus.ConfigurationXml.Model;
 using Microsoft.CSharp;
@@ -100,7 +101,7 @@ namespace OfficeInstallGenerator
                         throw (new DirectoryNotFoundException("Invalid Source Path: " + installProperties.SourceFilePath));
                     }
                     
-                    EmbedSourceFiles(parameters, installProperties.SourceFilePath + @"\Office", installProperties.BuildVersion);
+                    EmbedSourceFiles(parameters, installProperties.SourceFilePath + @"\Office", installProperties.BuildVersion, installProperties.OfficeClientEdition);
                 }
 
                 if (installProperties.OfficeVersion == OfficeVersion.Office2013)
@@ -191,7 +192,7 @@ namespace OfficeInstallGenerator
             }
         }
 
-        private void EmbedSourceFiles(CompilerParameters parameters, string sourcePath, string version = null)
+        private void EmbedSourceFiles(CompilerParameters parameters, string sourcePath, string version = null, OfficeClientEdition officeClientEdition = OfficeClientEdition.Office32Bit)
         {
             var xmlFilePath = DirectoryHelper.GetCurrentDirectoryFilePath("Files.xml"); 
 
@@ -212,7 +213,23 @@ namespace OfficeInstallGenerator
                     }
                 }
 
+                if (officeClientEdition == OfficeClientEdition.Office32Bit)
+                {
+                    if (sourceFile.Name.ToLower().Contains(".x64."))
+                    {
+                        continue;
+                    }
+                }
+                else
+                {
+                    if (sourceFile.Name.ToLower().Contains(".x86."))
+                    {
+                        continue;
+                    }
+                }
+
                 fileCacher.AddFile(dirInfo.Parent.FullName, sourceFile.FullName);
+
                 parameters.EmbeddedResources.Add(sourceFile.FullName);
             }
 

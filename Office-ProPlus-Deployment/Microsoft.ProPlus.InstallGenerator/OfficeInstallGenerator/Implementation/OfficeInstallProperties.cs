@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Micorosft.OfficeProPlus.ConfigurationXml;
 using OfficeInstallGenerator;
 
 namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
@@ -23,6 +24,8 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
 
         public string Language { get; set; }
 
+        public OfficeClientEdition OfficeClientEdition { get; set; }
+
         public OfficeVersion OfficeVersion { get; set; }
 
         public string BuildVersion { get; set; }
@@ -30,6 +33,8 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
         public string ConfigurationXmlPath { get; set; }
 
         public string SourceFilePath { get; set; }
+
+         
 
     }
 }

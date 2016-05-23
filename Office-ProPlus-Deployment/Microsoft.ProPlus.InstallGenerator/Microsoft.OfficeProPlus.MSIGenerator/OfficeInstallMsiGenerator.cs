@@ -14,6 +14,7 @@ using RegistryReader;
 using WixSharp;
 using System;
 using System.Runtime.CompilerServices;
+using Microsoft.OfficeProPlus.MSIGen;
 using WixSharp.CommonTasks;
 using File = WixSharp.File;
 
@@ -39,8 +40,11 @@ public class MsiGenerator
                     Name = "ProductGuid",
                     Value = installProperties.ProductId.ToString()
                 }
+                
             }
         };
+
+        project.Media.AttributesDefinition+= ";CompressionLevel=high";
 
 
         var files = new List<WixSharp.File>();
@@ -48,12 +52,13 @@ public class MsiGenerator
         {
             files.Add(new WixSharp.File(filePath));
         }
-
         files.Add(new WixSharp.File(installProperties.ExecutablePath));
 
+
+        var rootDir = new Dir(installProperties.ProgramFilesPath, files.ToArray());
         project.Dirs = new[]
         {
-            new Dir(installProperties.ProgramFilesPath, files.ToArray())
+            rootDir
         };
 
         project.GUID = installProperties.ProductId;
@@ -71,6 +76,8 @@ public class MsiGenerator
             AllowDowngrades = false,
             AllowSameVersionUpgrades = false
         };
+
+        //project.Platform = Platform.x64;
 
         //project.MajorUpgradeStrategy.RemoveExistingProductAfter = null;
 
@@ -103,6 +110,42 @@ public class MsiGenerator
         };
 
         return installDirectory;
+    }
+
+    private Dir AddProgramFiles(string rootPath, Dir parentDir, MsiDirectory directory)
+    {
+        var path = rootPath + @"\" + directory.RelativePath;
+
+        var newDir = new Dir()
+        {
+            Name = directory.Name
+        };
+
+        var fileLength = parentDir.Files.Length;
+        var newFileList = new File[fileLength + directory.MsiFiles.Count];
+        parentDir.Files.CopyTo(newFileList, 0);
+
+        var startIndex = parentDir.Files.Length;
+        foreach (var file in directory.MsiFiles)
+        {
+            newFileList[startIndex] = new File(file.Path);
+            startIndex ++;
+        }
+
+        newDir.Files = newFileList;
+
+        foreach (var subDir in directory.MsiDirectories)
+        {
+            AddProgramFiles(rootPath, newDir, subDir);
+        }
+
+        var length = parentDir.Dirs.Length;
+        var newList = new Dir[length + 1];
+        parentDir.Dirs.CopyTo(newList, 0);
+        newList[length] = newDir;
+        parentDir.Dirs = newList;
+
+        return newDir; 
     }
 
     private void project_Load(SetupEventArgs e)
