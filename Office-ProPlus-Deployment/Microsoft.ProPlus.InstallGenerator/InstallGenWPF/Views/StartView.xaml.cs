@@ -35,8 +35,8 @@ namespace MetroDemo.ExampleViews
                     cbActions.Items.Add("Create new Office 365 ProPlus installer");
                     cbActions.Items.Add("Import an existing Office 365 ProPlus installer");
                     cbActions.Items.Add("Manage your local Office 365 ProPlus installation");
-                    cbActions.Items.Add("Create Office 365 ProPlus language pack");
-                    cbActions.Items.Add("Manage remote Office 365 ProPlus installation");
+                    //cbActions.Items.Add("Create Office 365 ProPlus language pack");
+                    //cbActions.Items.Add("Manage remote Office 365 ProPlus installation");
                     cbActions.SelectedIndex = 0;
                 }
                 
