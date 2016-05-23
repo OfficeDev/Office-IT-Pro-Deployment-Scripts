@@ -635,9 +635,22 @@ Function Update-Office() {
             $clientFolder = (Get-ItemProperty HKLM:\$configRegPath -Name ClientFolder -ErrorAction SilentlyContinue).ClientFolder
 
             $CDNUpdatePath = (Get-ItemProperty HKLM:\$configRegPath -Name CDNBaseURL -ErrorAction SilentlyContinue).CDNBaseURL
+
+            if($Channel.ToLower().StartsWith("deferred")){
+                $CDNBasePath = "http://officecdn.microsoft.com/pr/7ffbc6bf-bc32-4f92-8982-f9dd17fd3114"
+            }
+            if($Channel.ToLower().StartsWith("firstreleasedeferred")){
+                $CDNBasePath = "http://officecdn.microsoft.com/pr/b8f9b850-328d-4355-9145-c59439a0c4cf"
+            }
+            if($Channel.ToLower().StartsWith("current")){
+                $CDNBasePath = "http://officecdn.microsoft.com/pr/492350f6-3a01-4f97-b9c0-c7c6ddf67d60"
+            }
+            if($Channel.ToLower().StartsWith("firstreleasecurrent")){
+                $CDNBasePath = "http://officecdn.microsoft.com/pr/64256afe-f5d9-4f86-8936-8840a6a4f5be"
+            }
             
             if($CDNUpdatePath){
-                Remove-ItemProperty -Path HKLM:\$configRegPath -Name CDNBaseURL
+                Set-Reg -Hive "HKLM" -keyPath $configRegPath -ValueName "CDNBaseURL" -Value $CDNBasePath -Type String
              }
 
             
@@ -672,6 +685,9 @@ Function Update-Office() {
               If ($currentUpdateSource.StartsWith("\\",1)) {
                  $UpdateSource = "UNC"
               }
+            }
+            else{
+            Set-Reg -Hive "HKLM" -keyPath $configRegPath -ValueName "CDNBaseURL" -Value $CDNBasePath -Type String
             }
             
             Restart-Service ClickToRunSvc         
@@ -711,7 +727,7 @@ Function Update-Office() {
                StartProcess -execFilePath $oc2rcFilePath -execParams $oc2rcParams
 
                if ($WaitForUpdateToFinish) {
-                    Wait-ForOfficeCTRUpadate
+                    $outputText= Wait-ForOfficeCTRUpadate
                }
            }
 
@@ -719,6 +735,7 @@ Function Update-Office() {
            Write-Log -Message $_.Exception.Message -severity 1 -component $LogFileName
            throw;
        }
+       return $outputText
     }
 }
 
@@ -779,10 +796,13 @@ Function Wait-ForOfficeCTRUpadate() {
     begin {
         $HKLM = [UInt32] "0x80000002"
         $HKCR = [UInt32] "0x80000000"
+        $returnVar = ""
     }
-
+    
     process {
+    
        Write-Host "Waiting for Update process to Complete..."
+       $returnVar+= "Waiting for Update process to Complete..."
 
        [datetime]$operationStart = Get-Date
        [datetime]$totalOperationStart = Get-Date
@@ -846,6 +866,7 @@ Function Wait-ForOfficeCTRUpadate() {
                                 $displayText = $statusName + "`t" + $operationTime
 
                                 Write-Host $displayText
+                                $returnVar += $displayText
                             }
                         }
                     } else {
@@ -910,13 +931,17 @@ Function Wait-ForOfficeCTRUpadate() {
        if ($updateRunning) {
           if ($failure) {
             Write-Host "Update Failed"
+            $returnVar+= "Update Failed"
           } else {
             Write-Host "Update Completed - Total Time: $totalOperationTime"
+            $returnVar+= "Update Completed - Total Time: $totalOperationTime"
           }
        } else {
           Write-Host "Update Not Running"
+          $returnVar+= "Update Not Running"
        } 
-    }
+       return $returnVar
+    }    
 }
 
 function Test-URL {

@@ -1,0 +1,8 @@
+<Configuration>
+  <Add OfficeClientEdition="64" Channel="Deferred">
+    <Product ID="O365ProPlusRetail">
+      <Language ID="en-us" />
+    </Product>
+  </Add>
+  <Display Level="None" AcceptEULA="True" />
+</Configuration>
