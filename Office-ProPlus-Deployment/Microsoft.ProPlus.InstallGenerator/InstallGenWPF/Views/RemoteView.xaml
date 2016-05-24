@@ -104,7 +104,7 @@
                                                 </DataGridTemplateColumn.CellTemplate>
                                             </DataGridTemplateColumn>
 
-                                            <DataGridTemplateColumn  Header="Channel" Width="150">
+                                            <DataGridTemplateColumn  Header="Channel" Width="200">
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
 
@@ -124,7 +124,7 @@
                                                     </DataTemplate>
                                                 </DataGridTemplateColumn.CellTemplate>
                                             </DataGridTemplateColumn>
-                                            <DataGridTemplateColumn  Header="Version" Width="150">
+                                            <DataGridTemplateColumn  Header="Version" Width="200">
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
 

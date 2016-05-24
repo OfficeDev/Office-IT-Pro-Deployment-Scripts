@@ -74,6 +74,51 @@ namespace MetroDemo.ExampleViews
             }
         }
 
+        private void LogWmiErrorMessage(Exception ex,string[] connectionInfo =null)
+        {
+            var logPath = Path.GetTempPath() + "\\wmiLog.txt";
+
+            if(System.IO.File.Exists(logPath))
+            {
+                using (TextWriter sw = System.IO.File.AppendText(logPath))
+                {
+                    if (connectionInfo == null)
+                    {
+                        sw.WriteLine(ex.Message);
+                    }
+                    else
+                    {
+                        sw.WriteLine("Client Error: "+ex.Message+","+connectionInfo[2]);
+                    }
+                }
+            }
+            else
+            {
+                using (TextWriter sw = new StreamWriter(logPath))
+                {
+                    if (connectionInfo == null)
+                    {
+                        sw.WriteLine(ex.Message);
+                    }
+                    else
+                    {
+                        sw.WriteLine("Client Error: " + ex.Message + "," + connectionInfo[2]);
+                    }
+                }
+            }
+
+        }
+
+        private void clearLogFile()
+        {
+            var logPath = Path.GetTempPath() + "\\wmiLog.txt";
+
+            if (System.IO.File.Exists(logPath))
+            {
+                System.IO.File.WriteAllText(logPath, String.Empty);
+            }
+        }
+
         private void LogAnaylytics(string path, string pageName)
         {
             try
@@ -120,9 +165,26 @@ namespace MetroDemo.ExampleViews
         private async void addMachines(string[] connectionInfo)
         {
            
-               var installGenerator = new OfficeInstallManager(connectionInfo);
+            var installGenerator = new OfficeInstallManager(connectionInfo);
 
+            var info = new RemoteMachine
+            {
+                include = false,
+                Machine = connectionInfo[2],
+                UserName = connectionInfo[0],
+                Password = connectionInfo[1],
+                WorkGroup = connectionInfo[3],
+                Status = "Not Found",
+                Channels = null,
+                Channel = null,
+                Versions = null,
+                Version = null
+            };
 
+            try
+            {
+
+           
                await installGenerator.initConnections();
 
 
@@ -131,11 +193,6 @@ namespace MetroDemo.ExampleViews
                 var channels = new List<Channel>();
 
                 var versions = new List<officeVersion>();
-
-
-                //set UI channel/version 
-
-                var info = new RemoteMachine();
 
                 if (officeInstall.Channel != null)
                 {
@@ -191,55 +248,56 @@ namespace MetroDemo.ExampleViews
 
                     };
                 }
-                else
-                {
-                    info = new RemoteMachine
-                    {
-                        include = false,
-                        Machine = connectionInfo[2],
-                        UserName = connectionInfo[0],
-                        Password = connectionInfo[1],
-                        WorkGroup = connectionInfo[3],
-                        Status = "Not Found",
-                        Channels = null,
-                        Channel = null,
-                        Versions = null,
-                        Version = null
-                    };
-                }
+              
+               
+                //txtBxAddMachines.Clear();        
 
-                GlobalObjects.ViewModel.RemoteMachines.Add(info);
-
-                remoteClients.Add(info);
-                //txtBxAddMachines.Clear();
-
-            Dispatcher.Invoke(() =>
+            }
+            catch (Exception ex)
             {
-                RemoteMachineList.ItemsSource = remoteClients;
-                RemoteMachineList.Items.Refresh();
-                WaitImage.Visibility = Visibility.Hidden;
-            });
+                LogErrorMessage(ex);
+                LogWmiErrorMessage(ex, connectionInfo);
 
+            }
+            finally
+            {
+                GlobalObjects.ViewModel.RemoteMachines.Add(info);
+                remoteClients.Add(info);
+
+                Dispatcher.Invoke(() =>
+                {
+                    RemoteMachineList.ItemsSource = remoteClients;
+                    RemoteMachineList.Items.Refresh();
+                    toggleControls(true);
+                    WaitImage.Visibility = Visibility.Hidden;
+                });
+            }
         }
 
         private async void AddComputersButton_Click(object sender, RoutedEventArgs e)
         {
             //placeholder text for data entry Username\Password\IP\Domain
-
-
-            if (txtBxAddMachines.Text != "")
+            var connectionInfo = txtBxAddMachines.Text.Split('\\');
+            try
             {
-                //parse text 
-
-                WaitImage.Visibility = Visibility.Visible;
-
-                //GlobalObjects.ViewModel.RemoteMachines = new List<RemoteMachine>();
-
-                var connectionInfo = txtBxAddMachines.Text.Split('\\');
-
-                //addMachines 
-                await Task.Run(() => { addMachines(connectionInfo); }); 
+                toggleControls(false);
+                if (txtBxAddMachines.Text != "")
+                {
+                    WaitImage.Visibility = Visibility.Visible;
+                    await Task.Run(() => { addMachines(connectionInfo); }); 
+                }
             }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+                //wmi logging 
+                //powershell
+            }
+            finally
+            {
+
+            }
+
         }
 
         private RemoteChannelVersionDialog remoteUpdateDialog = null;
@@ -255,6 +313,7 @@ namespace MetroDemo.ExampleViews
             catch (Exception ex)
             {
                 LogErrorMessage(ex);
+
             }
         }
 
@@ -286,6 +345,9 @@ namespace MetroDemo.ExampleViews
             var result = dlg.ShowDialog();
             if (result == true)
             {
+                GlobalObjects.ViewModel.BlockNavigation = true;
+                toggleControls(false);
+                WaitImage.Visibility = Visibility.Visible;
 
                 List<string> versions = new List<String>();
                 string line;
@@ -296,36 +358,15 @@ namespace MetroDemo.ExampleViews
 
                     while ((line = file.ReadLine()) != null)
                     {
-                            //get client info 
-
-                            
-                        
                         string[] tempStrArray = line.Split(',');
 
                         addMachines(tempStrArray);
-                          
-                            //var info = new RemoteMachine
-                            //{
-                            //    include = false,
-                            //    Machine = tempStrArray[0],
-                            //    Status = "Not Found",
-                            //    Channels = null,
-                            //    Channel = null,
-                            //    Versions = null,
-                            //    Version = null
-                            //};
-                            //remoteClients.Add(info);
-                            
-                        
 
                     }
-
-                    //RemoteMachineList.Items.Refresh();
-
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-
+                    LogErrorMessage(ex);
                 }
 
 
@@ -347,47 +388,74 @@ namespace MetroDemo.ExampleViews
 
         private async void btnUpdateRemote_Click(object sender, RoutedEventArgs e)
         {
-            //need to have iterate over ALL entries in datagrid and grab their info once updating work
+            clearLogFile();
+            GlobalObjects.ViewModel.BlockNavigation = true;
+            toggleControls(false);
+            WaitImage.Visibility = Visibility.Visible;
+            var connectionInfo = new string[4];
 
-
-
-            foreach (var client in remoteClients)
+            try
             {
-
-                if (client.include)
+          
+                foreach (var client in remoteClients)
                 {
-                    GlobalObjects.ViewModel.BlockNavigation = true;
-                    WaitImage.Visibility = Visibility.Visible;
-                    try
+
+                    if (client.include)
                     {
-                        var connectionInfo = new string[4] { client.UserName, client.Password, client.Machine, client.WorkGroup };
-                        var installGenerator = new OfficeInstallManager(connectionInfo);
+                        try
+                        {
+                            connectionInfo = new string[4] { client.UserName, client.Password, client.Machine, client.WorkGroup };
+                            var installGenerator = new OfficeInstallManager(connectionInfo);
 
-                        var newVersion = client.Version;
-                        var newChannel = client.Channel;
+                            var newVersion = client.Version;
+                            var newChannel = client.Channel;
 
-                        await Task.Run(async () => { await installGenerator.initConnections(); });
-                        var officeInstall = await installGenerator.CheckForOfficeInstallAsync();
-                        var updateInfo = new List<string> { client.UserName, client.Password, client.Machine, client.WorkGroup, client.Channel.Name, client.Version.Number };
+                            await Task.Run(async () => { await installGenerator.initConnections(); });
+                            var officeInstall = await installGenerator.CheckForOfficeInstallAsync();
+                            var updateInfo = new List<string> { client.UserName, client.Password, client.Machine, client.WorkGroup, client.Channel.Name, client.Version.Number };
 
-                        await ChangeOfficeChannelWmi(updateInfo, officeInstall); 
+                            client.Status = "Updating";
+                            RemoteMachineList.Items.Refresh();
+                            await Task.Run( async() => { await ChangeOfficeChannelWmi(updateInfo, officeInstall); });
+                            client.Status = "Success";
+                            RemoteMachineList.Items.Refresh();
 
+
+                        }
+                        catch (Exception ex)
+                        {
+                            client.Status = ex.Message;
+                            RemoteMachineList.Items.Refresh();
+                            //powershell
+                        }
                     }
-                    catch (Exception)
-                    {
-                        //powershell
-                    }
-
-
-
-
                 }
             }
-            GlobalObjects.ViewModel.BlockNavigation = false;
-            WaitImage.Visibility = Visibility.Hidden;
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+                LogWmiErrorMessage(ex);
+            }
+            finally
+            {
+
+                GlobalObjects.ViewModel.BlockNavigation = false;
+                WaitImage.Visibility = Visibility.Hidden;
+                toggleControls(true);
+            }
+         
 
         }
 
+        private void toggleControls(bool enabled)
+        {
+            txtBxAddMachines.IsEnabled = enabled;
+            AddComputersButton.IsEnabled = enabled;
+            ImportComputersButton.IsEnabled = enabled;
+            btnChangeChannelOrVersion.IsEnabled = enabled;
+            btnUpdateRemote.IsEnabled = enabled; 
+
+        }
 
         public async Task ChangeOfficeChannelWmi(List<string> updateinfo, OfficeInstallation LocalInstall)
         {
@@ -408,126 +476,31 @@ namespace MetroDemo.ExampleViews
                 try
                 {
 
-                    //UI Stuff
-
-                    //installOffice = new InstallOffice();
-                    //installOffice.UpdatingOfficeStatus += installOffice_UpdatingOfficeStatus;
-
-                    //var newChannel = "";
-                    //Dispatcher.Invoke(() =>
-                    //{
-                    //    UpdateStatus.Content = "Updating...";
-                    //    newChannel = ((OfficeBranch)ProductBranch.SelectedItem).NewName;
-                    //    ChangeChannel.IsEnabled = false;
-                    //    NewVersion.IsEnabled = false;
-                    //});
-
-                    //SetItemState(LocalViewItem.Update, LocalViewState.Wait);
-
                     var ppDownloader = new ProPlusDownloader();
                     var baseUrl = await ppDownloader.GetChannelBaseUrlAsync(newChannel, OfficeEdition.Office32Bit);
                     if (string.IsNullOrEmpty(baseUrl))
                         throw (new Exception(string.Format("Cannot find BaseUrl for Channel: {0}", newChannel)));
 
-
-                    //More UI 
-
                     var channelToChangeTo = updateinfo[5];
-                    //if (NewVersionRow.Visibility != Visibility.Visible)
-                    //{
-                        //channelToChangeTo =
-                        //    await ppDownloader.GetLatestVersionAsync(newChannel, OfficeEdition.Office32Bit);
-                    //}
-                    //else
-                    //{
-                    //    Dispatcher.Invoke(() =>
-                    //    {
-                    //        var manualVersion = NewVersion.Text;
 
-                    //        if (string.IsNullOrEmpty(manualVersion) && NewVersion.SelectedItem != null)
-                    //        {
-                    //            manualVersion = ((Build)NewVersion.SelectedItem).Version;
-                    //        }
-                    //        if (!string.IsNullOrEmpty(manualVersion))
-                    //        {
-                    //            channelToChangeTo = manualVersion;
-                    //        }
-                    //    });
-                    //}
-
-                    if (string.IsNullOrEmpty(channelToChangeTo))
-                    {
-                        throw (new Exception("Version required"));
-                    }
-                    //else
-                    //{
-                    //    if (!channelToChangeTo.IsValidVersion())
-                    //    {
-                    //        throw (new Exception(string.Format("Invalid Version: {0}", channelToChangeTo)));
-                    //    }
-                    //}
-
-                    //implement this in WMI ****************
-
-
-                    await installOffice.ChangeOfficeChannel(channelToChangeTo, baseUrl);
-
-
-              
-
-                //Dispatcher.Invoke(() =>
-                //{
-                //    UpdateStatus.Content = "";
-                //});
+                    await Task.Run(async() => { await installOffice.ChangeOfficeChannel(channelToChangeTo, baseUrl); });
 
                 var installGenerator = new OfficeInstallManager();
-                    //if (LocalInstall.Installed)
-                    //{
-                    //    Dispatcher.Invoke(() =>
-                    //    {
-                    //        VersionLabel.Content = LocalInstall.Version;
-                    //        ProductBranch.SelectedItem = LocalInstall.Channel;
-                    //    });
-
-                    //    if (LocalInstall.LatestVersionInstalled)
-                    //    {
-                    //        SetItemState(LocalViewItem.Update, LocalViewState.Success);
-                    //    }
-                    //    else
-                    //    {
-                    //        SetItemState(LocalViewItem.Update, LocalViewState.Action);
-                    //        Dispatcher.Invoke(() =>
-                    //        {
-                    //            UpdateStatus.Content = "New version available  (" + LocalInstall.LatestVersion + ")";
-                    //        });
-                    //    }
-                    //}
                 }
                 catch (Exception ex)
                 {
-                    //SetItemState(LocalViewItem.Update, LocalViewState.Fail);
-                    //Dispatcher.Invoke(() =>
-                    //{
-                    //    UpdateStatus.Content = "The update failed";
-                    //    ErrorText.Text = ex.Message;
-                    //    RetryButtonColumn.Width = new GridLength(0, GridUnitType.Pixel);
-                    //});
                     LogErrorMessage(ex);
+                    LogWmiErrorMessage(ex, updateinfo.ToArray());
+                    throw (new Exception("Error:"+ex.Message));
+
                 }
                 finally
                 {
-                    //Dispatcher.Invoke(() =>
-                    //{
-                    //    ChangeChannel.IsEnabled = true;
-                    //    NewVersion.IsEnabled = true;
-                    //});
+                   
                 }
             });
         }
 
-
-
-        //#endregion
         private List<officeVersion> getVersions(OfficeBranch currentChannel, List<officeVersion> versions, string currentVersion)
         {
 
@@ -546,8 +519,6 @@ namespace MetroDemo.ExampleViews
 
             return versions;
         }
-
-        
 
         private void ProductChannel_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -581,23 +552,6 @@ namespace MetroDemo.ExampleViews
                 return (T)GetAncestorOfType<T>((FrameworkElement)parent);
             return (T)parent;
         }
-
-        //private void setOfficeChannel()
-
-        //private void setOfficeVersion(object sender, SelectionChangedEventArgs e)
-        //{
-        //    var row = GetAncestorOfType<DataGridRow>(sender as System.Windows.Controls.ComboBox);
-
-        //    var handler = sender as System.Windows.Controls.ComboBox;
-        //    var currentClient = remoteClients[row.GetIndex()];
-        //    var tempVersion = new officeVersion()
-        //    {
-        //        Number = handler.SelectedValue.ToString()
-        //    };
-
-        //    currentClient.Version = tempVersion;
-        //    RemoteMachineList.Items.Refresh();
-        //}
     }
 }
 

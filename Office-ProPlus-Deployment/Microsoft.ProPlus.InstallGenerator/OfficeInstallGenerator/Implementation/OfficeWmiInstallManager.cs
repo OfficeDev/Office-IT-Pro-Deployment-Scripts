@@ -58,14 +58,9 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
         }
 
         public async Task<OfficeInstallation> CheckForOfficeInstallAsync()
-        {
-
-         
+        {         
                 var officeInstance = new OfficeInstallation() { Installed = false };
                 var officeRegPathKey = @"SOFTWARE\Microsoft\Office\ClickToRun\Configuration";
-
-
-          
 
                 officeInstance.Version = await GetRegistryValue(officeRegPathKey, "VersionToReport", "GetStringValue");
 
@@ -105,9 +100,6 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
 
 
             }
-
-
-
 
             return officeInstance;
             
