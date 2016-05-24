@@ -15,5 +15,7 @@ namespace Micorosft.OfficeProPlus.ConfigurationXml.Model
 
         public bool? SharedComputerLicensing { get; set; }
 
+        public bool? PinIconsToTaskbar { get; set; }
+
     }
 }

@@ -16,6 +16,7 @@
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("helpfiles/modifyexisting.html")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("helpfiles/officeinstall.html")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("helpfiles/oppinstalled.html")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("helpfiles/piniconstotaskbarinfo.html")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("helpfiles/projectinfo.html")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("helpfiles/signinstallerinfo.html")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("helpfiles/silentinstallinfo.html")]

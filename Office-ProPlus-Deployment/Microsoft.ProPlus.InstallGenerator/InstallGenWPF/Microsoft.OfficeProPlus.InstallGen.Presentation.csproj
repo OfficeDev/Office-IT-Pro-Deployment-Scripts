@@ -212,6 +212,9 @@
     <Content Include="HelpFiles\OPPInstalled.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="HelpFiles\PinIconsToTaskbarInfo.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="HelpFiles\ProjectInfo.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

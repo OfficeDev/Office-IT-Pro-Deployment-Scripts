@@ -682,6 +682,14 @@ namespace OfficeInstallGenerator
                 var value = sharedComputerLicensing.Attributes["Value"].Value.ToString();
                 if (value.ToUpper() == "1") properties.SharedComputerLicensing = true; 
             }
+
+            var pinIconsToTaskbar = _xmlDoc.DocumentElement.SelectSingleNode("./Property[@Name='PinIconsToTaskbar']");
+            if (pinIconsToTaskbar != null)
+            {
+                properties.PinIconsToTaskbar = false;
+                var value = pinIconsToTaskbar.Attributes["Value"].Value.ToString();
+                if (value.ToUpper() == "TRUE") properties.PinIconsToTaskbar = true;
+            }
         }
 
 
@@ -734,6 +742,21 @@ namespace OfficeInstallGenerator
                          this.ConfigurationXml.Properties.SharedComputerLicensing == true ? "1" : "0");
                 }
 
+
+                if (this.ConfigurationXml.Properties.PinIconsToTaskbar.HasValue)
+                {
+                    var pinIconsToTaskbar =
+                        _xmlDoc?.DocumentElement?.SelectSingleNode("./Property[@Name='PinIconsToTaskbar']");
+                    if (pinIconsToTaskbar == null)
+                    {
+                        pinIconsToTaskbar = _xmlDoc.CreateElement("Property");
+                        SetAttribute(pinIconsToTaskbar, "Name", "PinIconsToTaskbar");
+                        _xmlDoc?.DocumentElement?.AppendChild(pinIconsToTaskbar);
+                    }
+
+                    SetAttribute(pinIconsToTaskbar, "Value",
+                            this.ConfigurationXml.Properties.PinIconsToTaskbar.Value.ToString().ToUpper());
+                }
 
             }
         }
