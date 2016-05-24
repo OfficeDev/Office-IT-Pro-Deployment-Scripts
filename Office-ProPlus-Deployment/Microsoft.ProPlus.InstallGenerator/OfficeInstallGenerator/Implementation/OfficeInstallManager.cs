@@ -41,7 +41,11 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
             WmiInstall.remotePass = computerInfo[1];
             WmiInstall.connectionNamespace = "\\root\\cimv2"; 
 
-            //need to set Powershell info now..
+            //need to set Powershell info now..           
+            PowershellInstall.remoteUser = computerInfo[0];
+            PowershellInstall.remoteComputerName = computerInfo[2];
+            PowershellInstall.remoteDomain = computerInfo[3];
+            PowershellInstall.remotePass = computerInfo[1];
 
 
             try
@@ -50,16 +54,16 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
             }
             catch (Exception)
             {
-                throw (new Exception("Cannot find client"));
-                //try
-                //{
-                //    PowershellInstall.initConnection();
-                //}
-                //catch(Exception)
+                //
+                try
+                {
+                    PowershellInstall.initConnection();
+                }
+                catch (Exception)
 
-                //{
-                //    //let user know that neither wmi nor powershell could connect 
-                //}
+                {
+                    throw (new Exception("Cannot find client"));
+                }
             }
 
 
@@ -78,28 +82,27 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
                     result = await LocalInstall.CheckForOfficeInstallAsync();
                
                 }
-                //else
-                //{
 
-                //    try
-                //    {
+               
                 else
                 {
-                    result = await WmiInstall.CheckForOfficeInstallAsync();
+                    try
+                    {
+                        result = await WmiInstall.CheckForOfficeInstallAsync();
                 }
+                        catch (Exception)
+            {
+                try
+                {
+                    result = await PowershellInstall.CheckForOfficeInstallAsync();
 
-                //    }
-                //    catch (Exception)
-                //    {
-                //        //try
-                //        //{
-                //        //    result = await PowershellInstall.CheckForOfficeInstallAsync();
+                }
+                catch (Exception) { }
 
-                //        //}
-                //        //catch (Exception) { }
+            }
+        }
 
-                //    }
-                //}
+
             }
             catch (Exception)
             {
