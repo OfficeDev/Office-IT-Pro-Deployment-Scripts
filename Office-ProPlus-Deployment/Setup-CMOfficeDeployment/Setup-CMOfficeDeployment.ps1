@@ -651,7 +651,10 @@ function Create-CMOfficeUpdateProgram {
 	    [String]$SiteCode = $null,
 
 	    [Parameter()]
-	    [String]$CMPSModulePath = $NULL
+	    [String]$CMPSModulePath = $NULL,
+
+	    [Parameter()]
+	    [bool]$UseScriptLocationAsUpdateSource = $true
     )
     Begin
     {
@@ -679,7 +682,8 @@ function Create-CMOfficeUpdateProgram {
                          " -EnableUpdateAnywhere " + (Convert-Bool -value $EnableUpdateAnywhere) + ` 
                          " -ForceAppShutdown " + (Convert-Bool -value $ForceAppShutdown) + ` 
                          " -UpdatePromptUser " + (Convert-Bool -value $UpdatePromptUser) + ` 
-                         " -DisplayLevel " + (Convert-Bool -value $DisplayLevel)
+                         " -DisplayLevel " + (Convert-Bool -value $DisplayLevel) + ` 
+                         " -UseScriptLocationAsUpdateSource " + (Convert-Bool -value $UseScriptLocationAsUpdateSource)
 
          if ($UpdateToVersion) {
              $CommandLine += "-UpdateToVersion " + $UpdateToVersion
@@ -763,7 +767,10 @@ function Create-CMOfficeUpdateAsTaskProgram {
 	    [String]$SiteCode = $null,
 
 	    [Parameter()]
-	    [String]$CMPSModulePath = $NULL
+	    [String]$CMPSModulePath = $NULL,
+
+	    [Parameter()]
+	    [bool]$UseScriptLocationAsUpdateSource = $true
     )
     Begin
     {
@@ -791,7 +798,8 @@ function Create-CMOfficeUpdateAsTaskProgram {
                          " -EnableUpdateAnywhere " + (Convert-Bool -value $EnableUpdateAnywhere) + ` 
                          " -ForceAppShutdown " + (Convert-Bool -value $ForceAppShutdown) + ` 
                          " -UpdatePromptUser " + (Convert-Bool -value $UpdatePromptUser) + ` 
-                         " -DisplayLevel " + (Convert-Bool -value $DisplayLevel)
+                         " -DisplayLevel " + (Convert-Bool -value $DisplayLevel) + ` 
+                         " -UseScriptLocationAsUpdateSource " + (Convert-Bool -value $UseScriptLocationAsUpdateSource)
 
          if ($UpdateToVersion) {
              $CommandLine += "-UpdateToVersion " + $UpdateToVersion
