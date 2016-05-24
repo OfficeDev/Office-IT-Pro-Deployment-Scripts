@@ -87,13 +87,26 @@ Add-Type -TypeDefinition $deploymentPurpose -ErrorAction SilentlyContinue
 } catch { }
 
 function Download-CMOfficeChannelFiles() {
+<#
+
+
+.EXAMPLE
+Download-CMOfficeChannelFiles -OfficeFilesPath D:\OfficeChannelFiles
+
+.EXAMPLE
+Download-CMOfficeChannelFiles -OfficeFilesPath D:\OfficeChannelFiles -Channels Deferred -Bitness v32
+
+.EXAMPLE
+Download-CMOfficeChannelFiles -OfficeFilesPath D:\OfficeChannelFiles -Bitness v32 -Channels Deferred,FirstReleaseDeferred -Languages en-us,es-es,ja-jp
+#>
+
     [CmdletBinding(SupportsShouldProcess=$true)]
     Param
     (
         [Parameter()]
         [OfficeChannel[]] $Channels = @(1,2,3),
 
-        [Parameter()]
+        [Parameter(Mandatory=$true)]
 	    [String]$OfficeFilesPath = $NULL,
 
         [Parameter()]
@@ -136,6 +149,14 @@ function Download-CMOfficeChannelFiles() {
 }
  
 function Create-CMOfficePackage {
+<#
+
+.EXAMPLE
+Create-CMOfficePackage -Channels Deferred -Bitness v32 -OfficeSourceFilesPath D:\OfficeChannelFiles
+
+
+
+#>
     [CmdletBinding(SupportsShouldProcess=$true)]
     Param
     (
@@ -392,6 +413,13 @@ function Update-CMOfficePackage {
 }
 
 function Create-CMOfficeDeploymentProgram {
+<#
+
+.EXAMPLE
+Create-CMOfficeDeploymentProgram -Channels Deferred
+
+
+#>
     [CmdletBinding(SupportsShouldProcess=$true)]
     Param
     (
@@ -402,7 +430,7 @@ function Create-CMOfficeDeploymentProgram {
 	    [Bitness]$Bitness = "v32",
 
 	    [Parameter()]
-	    [CMDeploymentType]$DeploymentType = "DeployWithScript",
+	    [CMDeploymentType]$DeploymentType = 0,
 
 	    [Parameter()]
 	    [String]$ScriptName = "CM-OfficeDeploymentScript.ps1",
@@ -463,7 +491,7 @@ function Create-CMOfficeDeploymentProgram {
                  if ($packageId) {
                     $comment = $DeploymentType.ToString() + "-" + $channel + "-" + $platform
 
-                    CreateCMProgram -Name $ProgramName -PackageID $packageId -CommandLine $CommandLine -RequiredPlatformNames $requiredPlatformNames -Comment $comment
+                    CreateCMProgram -Name $ProgramName -PackageID $packageId -RequiredPlatformNames $requiredPlatformNames -CommandLine $CommandLine -Comment $comment
                  }
              }
          }
@@ -516,7 +544,7 @@ function Create-CMOfficeChannelChangeProgram {
 
          foreach ($channel in $Channels) {
              $ProgramName = "Change Channel to $channel"
-             $CommandLine = "%windir%\Sysnative\windowsPowershell\V1.0\Powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden -File .\Change-OfficeChannel.ps1 -Channel $Channel"
+             $CommandLine = "%windir%\Sysnative\windowsPowershell\V1.0\Powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden -Command .\Change-OfficeChannel.ps1 -Channel $Channel"
 
              $SharePath = $existingPackage.PkgSourcePath
 
@@ -583,7 +611,7 @@ function Create-CMOfficeRollBackProgram {
          [string]$ProgramName = ""
 
          $ProgramName = "Rollback"
-         $CommandLine = "%windir%\Sysnative\windowsPowershell\V1.0\Powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden -File .\Change-OfficeChannel.ps1 -Rollback"
+         $CommandLine = "%windir%\Sysnative\windowsPowershell\V1.0\Powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden -Command .\Change-OfficeChannel.ps1 -Rollback"
 
          $SharePath = $existingPackage.PkgSourcePath
 
@@ -617,6 +645,38 @@ function Create-CMOfficeRollBackProgram {
 }
 
 function Create-CMOfficeUpdateProgram {
+<#
+.SYNOPSIS
+
+
+.DESCRIPTION
+
+
+.PARAMETER
+
+
+.PARAMETER
+
+
+.PARAMETER
+
+
+.PARAMETER
+
+
+.PARAMETER
+
+
+.PARAMETER
+
+
+.EXAMPLE
+Create-CMOfficeUpdateProgram
+
+.EXAMPLE
+Create-CMOfficeUpdateProgram -ForceAppShutdown $true -EnableUpdateAnywhere $false -LogPath "$env:PUBLIC\UpdateOffice.log" -UpdateToVersion 16.0.6001.1078
+
+#>
     [CmdletBinding(SupportsShouldProcess=$true)]
     Param
     (
@@ -676,7 +736,7 @@ function Create-CMOfficeUpdateProgram {
          }
 
          [string]$ProgramName = "Update Office 365 With ConfigMgr"
-         [string]$CommandLine = "%windir%\Sysnative\windowsPowershell\V1.0\Powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden -File .\Update-Office365Anywhere.ps1"
+         [string]$CommandLine = "%windir%\Sysnative\windowsPowershell\V1.0\Powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden -Command .\Update-Office365Anywhere.ps1"
 
          $CommandLine += " -WaitForUpdateToFinish " + (Convert-Bool -value $WaitForUpdateToFinish) + ` 
                          " -EnableUpdateAnywhere " + (Convert-Bool -value $EnableUpdateAnywhere) + ` 
@@ -686,7 +746,7 @@ function Create-CMOfficeUpdateProgram {
                          " -UseScriptLocationAsUpdateSource " + (Convert-Bool -value $UseScriptLocationAsUpdateSource)
 
          if ($UpdateToVersion) {
-             $CommandLine += "-UpdateToVersion " + $UpdateToVersion
+             $CommandLine += " -UpdateToVersion " + $UpdateToVersion
          }
 
          $SharePath = $existingPackage.PkgSourcePath
@@ -721,6 +781,38 @@ function Create-CMOfficeUpdateProgram {
 }
 
 function Create-CMOfficeUpdateAsTaskProgram {
+<#
+.SYNOPSIS
+Creates an Office 365 ProPlus program.
+
+.DESCRIPTION
+Creates an Office 365 ProPlus program that will create a scheduled task on clients in the target collection.
+
+.PARAMETER UpdateToVersion
+
+
+.PARAMETER $SiteCode
+
+
+.PARAMETER
+
+
+.PARAMETER
+
+
+.PARAMETER
+
+
+.PARAMETER
+
+
+.EXAMPLE
+Create-CMOfficeUpdateAsTaskProgram
+
+.EXAMPLE
+Create-CMOfficeUpdateAsTaskProgram -UpdateToVersion 16.0.6001.1078
+
+#>
     [CmdletBinding(SupportsShouldProcess=$true)]
     Param
     (
@@ -791,7 +883,7 @@ function Create-CMOfficeUpdateAsTaskProgram {
             throw "You must run the Create-CMOfficePackage function before running this function"
          }
 
-         [string]$CommandLine = "%windir%\Sysnative\windowsPowershell\V1.0\Powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden -File .\Create-Office365AnywhereTask.ps1"
+         [string]$CommandLine = "%windir%\Sysnative\windowsPowershell\V1.0\Powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden -Command .\Create-Office365AnywhereTask.ps1"
          [string]$ProgramName = "Update Office 365 With Scheduled Task"
 
          $CommandLine += " -WaitForUpdateToFinish " + (Convert-Bool -value $WaitForUpdateToFinish) + ` 
@@ -802,7 +894,7 @@ function Create-CMOfficeUpdateAsTaskProgram {
                          " -UseScriptLocationAsUpdateSource " + (Convert-Bool -value $UseScriptLocationAsUpdateSource)
 
          if ($UpdateToVersion) {
-             $CommandLine += "-UpdateToVersion " + $UpdateToVersion
+             $CommandLine += " -UpdateToVersion " + $UpdateToVersion
          }
 
          $SharePath = $existingPackage.PkgSourcePath
@@ -852,15 +944,6 @@ Automates the configuration of System Center Configuration Manager (CM) to confi
 
 .DESCRIPTION
 
-.PARAMETER path
-The UNC Path where the downloaded bits will be stored for installation to the target machines.
-
-.PARAMETER Source
-The UNC Path where the downloaded branch bits are stored. Required if source parameter is specified.
-
-.PARAMETER Branch
-
-The update branch to be used with the deployment. Current options are "Business, Current, FirstReleaseBusiness, FirstReleaseCurrent".
 
 .PARAMETER $SiteCode
 The 3 Letter Site ID.
@@ -960,28 +1043,96 @@ Setup-CMOfficeProPlusPackage -Path \\CM-CM\OfficeDeployment -PackageName "Office
 function Deploy-CMOfficeProgram {
 <#
 .SYNOPSIS
-Automates the configuration of System Center Configuration Manager (CM) to configure Office Click-To-Run Updates
+Deploys the Office 365 ProPlus program to a collection.
 
 .DESCRIPTION
+Deploys the Office 365 ProPlus program to a collection.
 
 .PARAMETER Collection
-The target CM Collection
+Required. The target CM Collection ID.
 
-.PARAMETER PackageName
-The Name of the CM package create by the Setup-CMOfficeProPlusPackage function
+.PARAMETER Channel
+The update channel.
 
-.PARAMETER ProgramName
-The Name of the CM program create by the Setup-CMOfficeProPlusPackage function
+.PARAMETER ProgramType
+Required. The type of program that will be deployed.
+DeployWithScript
 
-.PARAMETER UpdateOnlyChangedBits
-Determines whether or not the EnableBinaryDeltaReplication enabled or not
+DeployWithConfigurationFile
+    A configuration xml file will be used to install Office.
+ChangeChannel
+    The program is used to change the current channel of the client.
+RollBack
+    The program is used to rollback to a previous version.
+UpdateWithConfigMg
+    Configuration Manager will be used to start the update.
+UpdateWithTask
+    A task will be configured to start the update. 
+
+.PARAMETER Bitness
+The architecture of Office specified as v32 or v64.
+
+.PARAMETER SiteCode
+The 3 Letter Site ID.
+
+.PARAMETER DeploymentPurpose
+Choose between Default, Required, or Available. If the DeploymentPurpose is set to Required the program will be required to be installed on the client. If DeploymentPurpose
+is Available the program will be become available on the client in the Software Center. If the DeploymentPurpose is not specified or set to Default the deployment will be
+required to be installed on the clients of the collection.
 
 .PARAMETER CMPSModulePath
 Allows the user to specify that full path to the ConfigurationManager.psd1 PowerShell Module. This is especially useful if CM is installed in a non standard path.
 
+.EXAMPLE
+Deploy-CMOfficeProgram -Collection "Office Update" -ProgramType DeployWithScript
+
+
+.EXAMPLE
+Deploy-CMOfficeProgram -Collection "Office Update" -ProgramType DeployWithScript
+
+
+.EXAMPLE
+Deploy-CMOfficeProgram -Collection "Office Update" -ProgramType DeployWithConfigurationFile
+
+
+.EXAMPLE
+Deploy-CMOfficeProgram -Collection "Office Update" -ProgramType DeployWithConfigurationFile
+
+
+.EXAMPLE
+Deploy-CMOfficeProgram -Collection "Office Update" -ProgramType ChangeChannel
+
+
+.EXAMPLE
+Deploy-CMOfficeProgram -Collection "Office Update" -ProgramType ChangeChannel
+
+
+.EXAMPLE
+Deploy-CMOfficeProgram -Collection "Office Update" -ProgramType RollBack
+
+
+.EXAMPLE
+Deploy-CMOfficeProgram -Collection "Office Update" -ProgramType RollBack
+
+
 .Example
-Deploy-CMOfficeProPlusPackage -Collection "CollectionName"
-Deploys the Package created by the Setup-CMOfficeProPlusPackage function
+Deploy-CMOfficeProgram -Collection "Office Update" -ProgramType UpdateWithConfigMgr -DeploymentPurpose Available -Channel Deferred
+Deploys the Package created by the Setup-CMOfficeProPlusPackage function to Collection ID "Office Update".
+
+
+.EXAMPLE
+Deploy-CMOfficeProgram -Collection "Office Update" -ProgramType UpdateWithConfigMgr -DeploymentPurpose Available -Channel Deferred -Bitness v32
+Deploys the Package created by the Setup-CMOfficeProPlusPackage function to Collection ID "Office Update" and will be referenced as 32 bit.
+
+
+.EXAMPLE
+Deploy-CMOfficeProgram -Collection "Office Update" -ProgramType UpdateWithTask
+Deploy-CMOfficeProgram -Collection "Office Update" -ProgramType UpdateWithTask -Channel FirstReleaseDeferred
+
+.EXAMPLE
+Deploy-CMOfficeProgram -Collection "Office Update" -ProgramType UpdateWithTask
+Deploy-CMOfficeProgram -Collection "Office Update" -ProgramType UpdateWithTask -Channel Deferred -DeploymentPurpose Available
+
 #>
     [CmdletBinding()]	
     Param
@@ -990,16 +1141,16 @@ Deploys the Package created by the Setup-CMOfficeProPlusPackage function
 		[String]$Collection = "",
 
         [Parameter(Mandatory=$true)]
-        [OfficeChannel] $Channel,
+        [CMOfficeProgramType] $ProgramType,
+
+        [Parameter()]
+        [OfficeChannel]$Channel = "Deferred",
 
         [Parameter()]
 	    [BitnessOptions]$Bitness = "v32",
-
-        [Parameter(Mandatory=$true)]
-        [CMOfficeProgramType] $ProgramType,
-        
+    
 	    [Parameter()]
-	    [String]$SiteCode = $null,
+	    [String]$SiteCode = $NULL,
 
 	    [Parameter()]
 	    [String]$CMPSModulePath = $NULL,
@@ -1101,7 +1252,7 @@ Deploys the Package created by the Setup-CMOfficeProPlusPackage function
 
                         $comment = $ProgramType.ToString() + "-" + $ChannelName + "-" + $Bitness.ToString() + "-" + $Collection.ToString()
 
-                        $packageDeploy = get-wmiobject -Namespace "root\sms\site_$SiteCode" -Class SMS_Advertisement  | where {$_.PackageId -eq $package.PackageId -and $_.Comment -eq $comment }
+                        $packageDeploy = Get-WmiObject -Namespace "root\sms\site_$SiteCode" -Class SMS_Advertisement  | where {$_.PackageId -eq $package.PackageId -and $_.Comment -eq $comment }
                         if ($packageDeploy.Count -eq 0) {
                             try {
                                 $packageId = $package.PackageId
