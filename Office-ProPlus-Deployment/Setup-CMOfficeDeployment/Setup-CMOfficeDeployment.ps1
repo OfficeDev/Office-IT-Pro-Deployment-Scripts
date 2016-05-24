@@ -301,7 +301,10 @@ function Update-CMOfficePackage {
 	    [String]$SiteCode = $null,
 
 	    [Parameter()]
-	    [String]$CMPSModulePath = $NULL
+	    [String]$CMPSModulePath = $NULL,
+
+        [Parameter()]
+	    [bool]$UpdateDistributionPoints = $true
     )
     Begin
     {
@@ -344,8 +347,9 @@ function Update-CMOfficePackage {
            }
 
            $packageName = $existingPackage.Name
+           $packageId = $existingPackage.PackageID
 
-           Write-Host "Updating Package: $packageName"
+           Write-Host "`tUpdating Package: $packageName"
 
            $Path = $existingPackage.PkgSourcePath
 
@@ -357,7 +361,7 @@ function Update-CMOfficePackage {
            [System.IO.Directory]::CreateDirectory($LocalChannelPath) | Out-Null
                           
            if ($OfficeSourceFilesPath) {
-                Write-Host "`tUpdating Source Files..."
+                Write-Host "`t`tUpdating Source Files..."
 
                 $officeFileChannelPath = "$OfficeSourceFilesPath\$ChannelShortName"
                 $officeFileTargetPath = "$LocalChannelPath\$Channel"
@@ -389,13 +393,18 @@ function Update-CMOfficePackage {
 
            $DeploymentFilePath = "$PSSCriptRoot\DeploymentFiles\*.*"
            if (Test-Path -Path $DeploymentFilePath) {
-             Write-Host "`tUpdating Deployment Files..."
+             Write-Host "`t`tUpdating Deployment Files..."
              Copy-Item -Path $DeploymentFilePath -Destination "$LocalPath" -Force -Recurse
            } else {
              throw "Deployment folder missing: $DeploymentFilePath"
            }
 
            LoadCMPrereqs -SiteCode $SiteCode -CMPSModulePath $CMPSModulePath
+
+           if ($UpdateDistributionPoints) {
+              Write-Host "`t`tUpdating Distribution Points..."
+              Update-CMDistributionPoint -PackageId $packageId
+           }
 
            Write-Host
 
@@ -439,7 +448,13 @@ Create-CMOfficeDeploymentProgram -Channels Deferred
 	    [String]$SiteCode = $null,
 
 	    [Parameter()]
-	    [String]$CMPSModulePath = $NULL
+	    [String]$CMPSModulePath = $NULL,
+
+	    [Parameter()]
+	    [String]$ConfigurationXml = ".\DeploymentFiles\DefaultConfiguration.xml",
+
+	    [Parameter()]
+	    [String]$CustomName = $NULL
     )
     Begin
     {
@@ -462,8 +477,33 @@ Create-CMOfficeDeploymentProgram -Channels Deferred
             $platforms += $Bitness.ToString().Replace("v", "")
          }
 
+         if ($ConfigurationXml.StartsWith(".\")) {
+           $ConfigurationXml = $ConfigurationXml -replace "^\.\\", "$PSScriptRoot\"
+         }
+
+         $tmpCustomName = $CustomName
+         $CustomName = $CustomName -replace ' ', ''
+
+         if ($CustomName) {
+             if (!($CustomName.ToLower().Contains("deploy"))) {
+                $CustomName = "Deploy " + $CustomName
+                $tmpCustomName = "Deploy " + $tmpCustomName
+             }
+         }
+
+         $CustomName = $CustomName -replace ' ', ''
+
+         if ($CustomName.Length -gt 50) {
+             throw "CustomName is too long.  Must be less then 50 Characters"
+         }
+
          foreach ($channel in $Channels) {
              LoadCMPrereqs -SiteCode $SiteCode -CMPSModulePath $CMPSModulePath
+
+             $LargeDrv = Get-LargestDrive
+             $LocalPath = "$LargeDrv\OfficeDeployment"
+
+             $channelShortName = ConvertChannelNameToShortName -ChannelName $channel
 
              $existingPackage = CheckIfPackageExists
              if (!($existingPackage)) {
@@ -474,15 +514,57 @@ Create-CMOfficeDeploymentProgram -Channels Deferred
                  [string]$CommandLine = ""
                  [string]$ProgramName = ""
 
+                 [string]$channelShortNameLabel = $channel
+                 if ($channel -eq "FirstReleaseCurrent") {
+                    $channelShortNameLabel = "FRCC"
+                 }
+                 if ($channel -eq "FirstReleaseDeferred") {
+                    $channelShortNameLabel = "FRDC"
+                 }
+
                  if ($DeploymentType -eq "DeployWithScript") {
-                     $ProgramName = "Deploy $channel Channel With Script - $platform-Bit"
+                     $ProgramName = "Deploy $channelShortNameLabel Channel With Script - $platform-Bit"
+                     if ($CustomName) {
+                       $ProgramName = $tmpCustomName
+                     }
+
                      $CommandLine = "%windir%\Sysnative\windowsPowershell\V1.0\powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive " + `
-                                    "-NoProfile -WindowStyle Hidden -Command .\CM-OfficeDeploymentScript.ps1 -Channel $channel -SourceFileFolder SourceFiles -Bitness $platform"
+                                    "-NoProfile -WindowStyle Hidden -Command .\$ScriptName -Channel $channel -SourceFileFolder SourceFiles -Bitness $platform"
 
                  } elseif ($DeploymentType -eq "DeployWithConfigurationFile") {
-                     $ProgramName = "Deploy $channel Channel With Configuration File - $platform-Bit"
-                     $CommandLine = "Office2016Setup.exe /configure Configuration_UpdateSource.xml"
+                     if (!(Test-Path -Path $ConfigurationXml)) {
+                        throw "Configuration file does not exist: $ConfigurationXml"
+                     }
 
+                     #[guid]::NewGuid().Guid.ToString()
+
+                     $configId = "Config-$channel-$platform-Bit"
+                     $configFileName = $configId + ".xml"
+                     $configFilePath = "$LocalPath\$configFileName"
+
+                     Copy-Item -Path $ConfigurationXml -Destination $configFilePath
+
+                     $sourcePath = $NULL
+
+                     $sourceFilePath = "$LocalPath\SourceFiles\$channelShortName\Office\Data"
+                     if (Test-Path -Path $sourceFilePath) {
+                        $sourcePath = ".\SourceFiles\$channelShortName"
+                     } else {
+                       $sourceFilePath = "$LocalPath\SourceFiles\$channel\Office\Data"
+                       if (Test-Path -Path $sourceFilePath) {
+                          $sourcePath = ".\SourceFiles\$channel"
+                       }
+                     }
+
+                     UpdateConfigurationXml -Path $configFilePath -Channel $channel -Bitness $platform -SourcePath $sourcePath
+
+                     $ProgramName = "Deploy $channelShortNameLabel Channel with Config File - $platform-Bit"
+
+                     if ($CustomName) {
+                       $ProgramName = $tmpCustomName
+                     }
+
+                     $CommandLine = "Office2016Setup.exe /configure $configFileName"
                  }
 
                  [string]$packageId = $null
@@ -490,6 +572,10 @@ Create-CMOfficeDeploymentProgram -Channels Deferred
                  $packageId = $existingPackage.PackageId
                  if ($packageId) {
                     $comment = $DeploymentType.ToString() + "-" + $channel + "-" + $platform
+
+                    if ($CustomName) {
+                       $comment += "-$CustomName"
+                    }
 
                     CreateCMProgram -Name $ProgramName -PackageID $packageId -RequiredPlatformNames $requiredPlatformNames -CommandLine $CommandLine -Comment $comment
                  }
@@ -1156,7 +1242,10 @@ Deploy-CMOfficeProgram -Collection "Office Update" -ProgramType UpdateWithTask -
 	    [String]$CMPSModulePath = $NULL,
 
     	[Parameter()]
-	    [DeploymentPurpose]$DeploymentPurpose = "Default"
+	    [DeploymentPurpose]$DeploymentPurpose = "Default",
+
+	    [Parameter()]
+	    [String]$CustomName = $NULL
 	) 
     Begin
     {
@@ -1169,6 +1258,18 @@ Deploy-CMOfficeProgram -Collection "Office Update" -ProgramType UpdateWithTask -
        try {
 
         Check-AdminAccess
+
+        if ($CustomName) {
+           if (!($CustomName.ToLower().Contains("deploy"))) {
+              $CustomName = "Deploy " + $CustomName
+           }
+        }
+
+        $CustomName = $CustomName -replace ' ', ''
+
+        if ($CustomName.Length -gt 50) {
+            throw "CustomName is too long.  Must be less then 50 Characters"
+        }
 
         $strBitness = $Bitness.ToString() -Replace "v", ""
 
@@ -1209,23 +1310,28 @@ Deploy-CMOfficeProgram -Collection "Office Update" -ProgramType UpdateWithTask -
                          if ($DeploymentPurpose -eq "Default") {
                              $DeploymentPurpose = "Available" 
                          }
+                         $CustomName = $NULL
                     }
                     "RollBack" { 
                          $pType = "RollBack"; 
                          if ($DeploymentPurpose -eq "Default") {
                             $DeploymentPurpose = "Available" 
                          }
+                         $CustomName = $NULL
                     }
                     "UpdateWithConfigMgr" { 
                          $pType = "UpdateWithConfigMgr"; 
                          if ($DeploymentPurpose -eq "Default") {
-                            $DeploymentPurpose = "Required"  }
+                            $DeploymentPurpose = "Required"  
                          }
+                         $CustomName = $NULL
+                    }
                     "UpdateWithTask" { 
                          $pType = "UpdateWithTask"; 
                          if ($DeploymentPurpose -eq "Default") {
                             $DeploymentPurpose = "Required"  
                          }
+                         $CustomName = $NULL
                     }
                 }
 
@@ -1233,7 +1339,13 @@ Deploy-CMOfficeProgram -Collection "Office Update" -ProgramType UpdateWithTask -
                    $DeploymentPurpose = "Required"  
                 }
 
-                $Program = Get-CMProgram | Where {$_.Comment -eq $pType }
+                $tmpPType = $pType
+                if ($CustomName) {
+                   $tmpPType += "-$CustomName"
+                }
+
+                $Program = Get-CMProgram | Where {$_.Comment.ToLower() -eq $tmpPType.ToLower() }
+
                 $programName = $Program.ProgramName
 
                 $packageName = "Office 365 ProPlus"
@@ -1251,6 +1363,9 @@ Deploy-CMOfficeProgram -Collection "Office Update" -ProgramType UpdateWithTask -
                         }
 
                         $comment = $ProgramType.ToString() + "-" + $ChannelName + "-" + $Bitness.ToString() + "-" + $Collection.ToString()
+                        if ($CustomName) {
+                           $comment += "-$CustomName" 
+                        }
 
                         $packageDeploy = Get-WmiObject -Namespace "root\sms\site_$SiteCode" -Class SMS_Advertisement  | where {$_.PackageId -eq $package.PackageId -and $_.Comment -eq $comment }
                         if ($packageDeploy.Count -eq 0) {
@@ -1268,7 +1383,7 @@ Deploy-CMOfficeProgram -Collection "Office Update" -ProgramType UpdateWithTask -
 
                                     Update-CMDistributionPoint -PackageId $package.PackageId
 
-                                    Write-Host "Deployment created for: $packageName ($ProgramName)"
+                                    Write-Host "`tDeployment created for: $packageName ($ProgramName)"
                                 } else {
                                     Write-Host "Could Not find Program in Package for Type: $ProgramType - Channel: $ChannelName" -ForegroundColor White -BackgroundColor Red
                                 }
@@ -1284,10 +1399,10 @@ Deploy-CMOfficeProgram -Collection "Office Update" -ProgramType UpdateWithTask -
                                 }
                             }  
                         } else {
-                          Write-Host "Deployment already exists for: $packageName ($ProgramName)"
+                          Write-Host "`tDeployment already exists for: $packageName ($ProgramName)"
                         }
                    } else {
-                        Write-Host "Could Not find Program in Package for Type: $ProgramType - Channel: $ChannelName" -ForegroundColor White -BackgroundColor Red
+                        Write-Host "Could Not find Program in Package for Type: $ProgramType - Channel: $ChannelName - Bitness: $Bitness" -ForegroundColor White -BackgroundColor Red
                    }
                 } else {
                     throw "Package does not exist: $packageName"
@@ -1305,6 +1420,50 @@ Deploy-CMOfficeProgram -Collection "Office Update" -ProgramType UpdateWithTask -
 }
 
 
+
+
+function UpdateConfigurationXml() {
+    [CmdletBinding()]	
+    Param
+	(
+		[Parameter(Mandatory=$true)]
+		[String]$Path = "",
+
+		[Parameter(Mandatory=$true)]
+		[String]$Channel = "",
+
+		[Parameter(Mandatory=$true)]
+		[String]$Bitness,
+
+		[Parameter()]
+		[String]$SourcePath = $NULL
+	) 
+    Process {
+	  $doc = [Xml] (Get-Content $Path)
+
+      $addNode = $doc.Configuration.Add
+
+      if ($addNode.OfficeClientEdition) {
+          $addNode.OfficeClientEdition = $Bitness
+      } else {
+          $addNode.SetAttribute("OfficeClientEdition", $Bitness)
+      }
+
+      if ($addNode.Channel) {
+          $addNode.Channel = $Channel
+      } else {
+          $addNode.SetAttribute("Channel", $Channel)
+      }
+
+      if ($addNode.SourcePath) {
+          $addNode.SourcePath = $SourcePath
+      } else {
+          $addNode.SetAttribute("SourcePath", $SourcePath)
+      }
+
+      $doc.Save($Path)
+    }
+}
 
 function CreateMainCabFiles() {
     [CmdletBinding()]	
