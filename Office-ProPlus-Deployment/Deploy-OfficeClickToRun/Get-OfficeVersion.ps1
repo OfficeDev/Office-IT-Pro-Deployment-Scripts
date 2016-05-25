@@ -9,43 +9,31 @@ Function Get-OfficeVersion {
 <#
 .Synopsis
 Gets the Office Version installed on the computer
-
 .DESCRIPTION
 This function will query the local or a remote computer and return the information about Office Products installed on the computer
-
 .NOTES   
 Name: Get-OfficeVersion
 Version: 1.0.4
 DateCreated: 2015-07-01
 DateUpdated: 2015-08-28
-
 .LINK
 https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
-
 .PARAMETER ComputerName
 The computer or list of computers from which to query 
-
 .PARAMETER ShowAllInstalledProducts
 Will expand the output to include all installed Office products
-
 .EXAMPLE
 Get-OfficeVersion
-
 Description:
 Will return the locally installed Office product
-
 .EXAMPLE
 Get-OfficeVersion -ComputerName client01,client02
-
 Description:
 Will return the installed Office product on the remote computers
-
 .EXAMPLE
 Get-OfficeVersion | select *
-
 Description:
 Will return the locally installed Office product with all of the available properties
-
 #>
 [CmdletBinding(SupportsShouldProcess=$true)]
 param(
@@ -73,7 +61,6 @@ begin {
     $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet(‘DefaultDisplayPropertySet’,[string[]]$defaultDisplaySet)
     $PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultDisplayPropertySet)
 }
-
 
 process {
 
@@ -257,15 +244,17 @@ process {
               $primaryOfficeProduct = $true
            }
 
-           $version = $regProv.GetStringValue($HKLM, $path, "DisplayVersion").sValue
+           $clickToRunComponent = $regProv.GetDWORDValue($HKLM, $path, "ClickToRunComponent").uValue
            $modifyPath = $regProv.GetStringValue($HKLM, $path, "ModifyPath").sValue 
+           $version = $regProv.GetStringValue($HKLM, $path, "DisplayVersion").sValue
 
            $cltrUpdatedEnabled = $NULL
            $cltrUpdateUrl = $NULL
            $clientCulture = $NULL;
 
            [string]$clickToRun = $false
-           if ($ClickToRunPathList.Contains($installPath.ToUpper())) {
+
+           if ($clickToRunComponent) {
                $clickToRun = $true
                if ($name.ToUpper().Contains("MICROSOFT OFFICE")) {
                   $primaryOfficeProduct = $true
