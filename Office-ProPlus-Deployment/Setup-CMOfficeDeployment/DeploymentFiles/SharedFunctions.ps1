@@ -170,43 +170,31 @@ Function Get-OfficeVersion {
 <#
 .Synopsis
 Gets the Office Version installed on the computer
-
 .DESCRIPTION
 This function will query the local or a remote computer and return the information about Office Products installed on the computer
-
 .NOTES   
 Name: Get-OfficeVersion
 Version: 1.0.4
 DateCreated: 2015-07-01
 DateUpdated: 2015-08-28
-
 .LINK
 https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
-
 .PARAMETER ComputerName
 The computer or list of computers from which to query 
-
 .PARAMETER ShowAllInstalledProducts
 Will expand the output to include all installed Office products
-
 .EXAMPLE
 Get-OfficeVersion
-
 Description:
 Will return the locally installed Office product
-
 .EXAMPLE
 Get-OfficeVersion -ComputerName client01,client02
-
 Description:
 Will return the installed Office product on the remote computers
-
 .EXAMPLE
 Get-OfficeVersion | select *
-
 Description:
 Will return the locally installed Office product with all of the available properties
-
 #>
 [CmdletBinding(SupportsShouldProcess=$true)]
 param(
@@ -417,15 +405,17 @@ process {
               $primaryOfficeProduct = $true
            }
 
-           $version = $regProv.GetStringValue($HKLM, $path, "DisplayVersion").sValue
+           $clickToRunComponent = $regProv.GetDWORDValue($HKLM, $path, "ClickToRunComponent").uValue
            $modifyPath = $regProv.GetStringValue($HKLM, $path, "ModifyPath").sValue 
+           $version = $regProv.GetStringValue($HKLM, $path, "DisplayVersion").sValue
 
            $cltrUpdatedEnabled = $NULL
            $cltrUpdateUrl = $NULL
            $clientCulture = $NULL;
 
            [string]$clickToRun = $false
-           if ($ClickToRunPathList.Contains($installPath.ToUpper())) {
+
+           if ($clickToRunComponent) {
                $clickToRun = $true
                if ($name.ToUpper().Contains("MICROSOFT OFFICE")) {
                   $primaryOfficeProduct = $true
@@ -846,6 +836,101 @@ Function Validate-UpdateSource() {
     
     return $validUpdateSource
 }
+
+Function Copy-OfficeSourceFiles() {
+    [CmdletBinding()]
+    Param(
+        [Parameter(Mandatory=$true)]
+        [string] $Path = $NULL,
+
+        [Parameter(Mandatory=$true)]
+        [string] $Destination = $NULL,
+
+        [Parameter()]
+        [string] $Bitness = "x86",
+
+        [Parameter()]
+        [string[]] $OfficeLanguages = $null
+    )
+
+    [bool]$validUpdateSource = $true
+    [string]$cabPath = ""
+
+    if (($Path) -and ($Destination)) {
+        $mainRegPath = Get-OfficeCTRRegPath
+        if ($mainRegPath) {
+            $configRegPath = $mainRegPath + "\Configuration"
+            $currentplatform = (Get-ItemProperty HKLM:\$configRegPath -Name Platform -ErrorAction SilentlyContinue).Platform
+            $updateToVersion = (Get-ItemProperty HKLM:\$configRegPath -Name UpdateToVersion -ErrorAction SilentlyContinue).UpdateToVersion
+            $llcc = (Get-ItemProperty HKLM:\$configRegPath -Name ClientCulture -ErrorAction SilentlyContinue).ClientCulture
+        }
+
+        $currentplatform = $Bitness
+
+        $mainCab = "$Path\Office\Data\v32.cab"
+        $bitness = "32"
+        if ($currentplatform -eq "x64") {
+            $mainCab = "$Path\Office\Data\v64.cab"
+            $bitness = "64"
+        }
+
+        if (!($updateToVersion)) {
+           $cabXml = Get-CabVersion -FilePath $mainCab
+           if ($cabXml) {
+               $updateToVersion = $cabXml.Version.Available.Build
+           }
+        }
+
+        [xml]$xml = Get-ChannelXml -Bitness $bitness
+        if ($OfficeLanguages) {
+          $languages = $OfficeLanguages
+        } else {
+          $languages = Get-InstalledLanguages
+        }
+
+        $checkFiles = $xml.UpdateFiles.File | Where {   $_.language -eq "0" }
+        foreach ($language in $languages) {
+           $checkFiles += $xml.UpdateFiles.File | Where { $_.language -eq $language.LCID}
+        }
+
+        foreach ($checkFile in $checkFiles) {
+           $fileName = $checkFile.name -replace "%version%", $updateToVersion
+           $relativePath = $checkFile.relativePath -replace "%version%", $updateToVersion
+
+           $fullPath = "$UpdateSource$relativePath$fileName"
+           if ($fullPath.ToLower().StartsWith("http")) {
+              $fullPath = $fullPath -replace "\\", "/"
+           } else {
+              $fullPath = $fullPath -replace "/", "\"
+           }
+           
+           $updateFileExists = $false
+           if ($fullPath.ToLower().StartsWith("http")) {
+               $updateFileExists = Test-URL -url $fullPath
+           } else {
+               if ($fullPath.StartsWith("\\")) {
+                  $updateFileExists = Test-ItemPathUNC -Path $fullPath
+               } else {
+                  $updateFileExists = Test-Path -Path $fullPath
+               }
+           }
+
+           if (!($updateFileExists)) {
+              $fileExists = $missingFiles.Contains($fullPath)
+              if (!($fileExists)) {
+                 $missingFiles.Add($fullPath)
+                 Write-Host "Source File Missing: $fullPath"
+                 Write-Log -Message "Source File Missing: $fullPath" -severity 1 -component "Office 365 Update Anywhere" 
+              }     
+              $validUpdateSource = $false
+           }
+        }
+
+    }
+    
+    return $validUpdateSource
+}
+
 
 function Detect-Channel {
    param( 
@@ -1415,3 +1500,5 @@ function ConvertChannelNameToShortName {
        }
     }
 }
+
+
