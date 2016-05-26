@@ -432,6 +432,9 @@
     <Content Include="Resources\UpdateScriptLaunch.ps1">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Resources\FindVersion.ps1">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="Scripts\Generate-ODTConfigurationXML.ps1">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

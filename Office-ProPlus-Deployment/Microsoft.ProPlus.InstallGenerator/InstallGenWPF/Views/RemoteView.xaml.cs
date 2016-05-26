@@ -437,7 +437,7 @@ namespace MetroDemo.ExampleViews
                     catch (Exception ex)// if fails via WMI, try via powershell
                     {
                         LogWmiErrorMessage(ex, connectionInfo);
-
+                        client.Status = "Error";
                         try
                         {
                             string PSPath = System.IO.Directory.GetCurrentDirectory() + "\\Resources\\PowershellAttempt.txt";
@@ -467,6 +467,7 @@ namespace MetroDemo.ExampleViews
 
                 }
             }
+            RemoteMachineList.Items.Refresh();
             GlobalObjects.ViewModel.BlockNavigation = false;
             WaitImage.Visibility = Visibility.Hidden;
             toggleControls(true);
@@ -513,7 +514,10 @@ namespace MetroDemo.ExampleViews
                 {
                     LogErrorMessage(ex);
                     LogWmiErrorMessage(ex, updateinfo.ToArray());
+                    throw (new Exception("Update Failed"));
+
                 }
+               
             });
         }
 
