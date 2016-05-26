@@ -433,6 +433,8 @@ namespace MetroDemo
 
         public bool UseFolderShortNames { get; set; }
 
+        public string remoteConnectionInfo { get; set; }
+
         public Certificate SelectedCertificate { get; set; }
 
         public Language DefaultLanguage = null;

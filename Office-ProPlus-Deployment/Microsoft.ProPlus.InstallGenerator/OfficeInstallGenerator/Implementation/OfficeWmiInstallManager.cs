@@ -34,8 +34,6 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
             options.Impersonation = ImpersonationLevel.Impersonate;
             options.Timeout = timeOut;
 
-
-
             scope = new ManagementScope("\\\\" + remoteComputerName.Trim() + connectionNamespace , options);
             scope.Options.EnablePrivileges = true;
 

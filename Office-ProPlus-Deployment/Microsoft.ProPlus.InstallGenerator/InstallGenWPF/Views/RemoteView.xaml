@@ -64,7 +64,7 @@
 
                                 <Border Grid.Column="0" Grid.Row="2" BorderThickness="2" BorderBrush="Gray"  Margin="0 0 15 0" >
                                     <DataGrid x:Name="RemoteMachineList" Height="400" 
-                                              RenderOptions.ClearTypeHint="Enabled" Background="White"
+                                              RenderOptions.ClearTypeHint="Enabled" Background="White" HorizontalContentAlignment="Center"
                                               TextOptions.TextFormattingMode="Display" BorderThickness="0" BorderBrush="Gray"
                                               Margin="0 0 0 0"  Style="{DynamicResource MetroDataGrid}"
                                               AutoGenerateColumns="False" HeadersVisibility="Column"
@@ -83,7 +83,7 @@
                                                 </DataGridTemplateColumn.HeaderTemplate>
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
-                                                        <CheckBox x:Name="Include" IsChecked="{Binding Path=include, UpdateSourceTrigger=PropertyChanged}" Width="50"  Margin="0,0,0,0" Padding="10,0,0,0"></CheckBox>
+                                                        <CheckBox x:Name="Include" IsChecked="{Binding Path=include, UpdateSourceTrigger=PropertyChanged}"  HorizontalAlignment="Center"></CheckBox>
                                                     </DataTemplate>
                                                 </DataGridTemplateColumn.CellTemplate>
                                             </DataGridTemplateColumn>
@@ -101,11 +101,11 @@
                                                 </DataGridTemplateColumn.CellTemplate>
                                             </DataGridTemplateColumn>
 
-                                            <DataGridTemplateColumn  Header="Channel" Width="210">
+                                            <DataGridTemplateColumn  Header="Channel" Width="240">
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
 
-                                                        <ComboBox Width="200" x:Name="ProductChannel" BorderThickness="0" Background="Transparent"
+                                                        <ComboBox Width="240" x:Name="ProductChannel" BorderThickness="0" Background="Transparent"
                                                                         Height="35" HorizontalAlignment="Left" 
                                                                         Style="{DynamicResource MetroComboBox}"
                                                                         DisplayMemberPath="Name" Foreground="{StaticResource GrayBrush}"
@@ -120,10 +120,10 @@
                                                     </DataTemplate>
                                                 </DataGridTemplateColumn.CellTemplate>
                                             </DataGridTemplateColumn>
-                                            <DataGridTemplateColumn  Header="Version" Width="210">
+                                            <DataGridTemplateColumn  Header="Version" Width="220">
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
-                                                        <ComboBox Width="200" x:Name="ProductVersion" BorderThickness="0" Background="Transparent"
+                                                        <ComboBox Width="215" x:Name="ProductVersion" BorderThickness="0" Background="Transparent"
                                                                         Height="35" HorizontalAlignment="Left" 
                                                                         Style="{DynamicResource MetroComboBox}"
                                                                         DisplayMemberPath="Number" Foreground="{StaticResource GrayBrush}"
@@ -141,8 +141,7 @@
                                 </Border>
 
                                 <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal">
-                                    <TextBox x:Name="txtBxAddMachines" Margin="0,20,1,20" Width="200" TextWrapping="Wrap" Style="{StaticResource MetroTextBox}" AcceptsReturn="True"  Text="Molly Clark\pass@word1\10.10.8.32\WORKGROUP"   />
-                                    <Button x:Name="AddComputersButton" Content="Add Computers" Margin="2,20,2,20" Style="{StaticResource MetroFlatButtonStyle1}" Click="AddComputersButton_Click" />
+                                    <Button x:Name="AddComputersButton" Content="Add Computers" Margin="0,20,2,20" Style="{StaticResource MetroFlatButtonStyle1}" Click="AddComputersButton_Click" />
                                     <Button x:Name="ImportComputersButton" Content="Import Computers" Margin="2,20,0,20" Style="{StaticResource MetroFlatButtonStyle1}" Click="ImportComputersButton_Click" />
                                     <Button x:Name="btnRemoveComputers" Content="Remove Computers" Margin="2,20,2,20" Style="{StaticResource MetroFlatButtonStyle1}" Click="btnRemoveComputers_Click" />
                                     <Button x:Name="btnChangeChannelOrVersion" Content="Switch Channel/Version" Margin="2,20,2,20" Style="{StaticResource MetroFlatButtonStyle1}" Click="btnChangeChannelOrVersion_Click" />

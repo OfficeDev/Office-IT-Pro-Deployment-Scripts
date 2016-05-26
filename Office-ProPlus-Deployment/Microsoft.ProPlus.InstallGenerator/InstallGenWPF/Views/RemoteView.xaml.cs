@@ -261,30 +261,91 @@ namespace MetroDemo.ExampleViews
             }
         }
 
-        private async void AddComputersButton_Click(object sender, RoutedEventArgs e)
+        private async void RemoteClientInfoDialog_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-
-
-            if (txtBxAddMachines.Text != "")
+        
+            try
             {
-
+         
                 GlobalObjects.ViewModel.BlockNavigation = true;
                 toggleControls(false);
                 WaitImage.Visibility = Visibility.Visible;
+              
 
-                var connectionInfo = txtBxAddMachines.Text.Split('\\');
+                var dialog = (RemoteClientInfoDialog)sender;
+                var textBox = dialog.FindChild<System.Windows.Controls.TextBox>("txtBxAddMachines");
 
-                await Task.Run(async () => { await addMachines(connectionInfo); });
+                if (!String.IsNullOrEmpty(GlobalObjects.ViewModel.remoteConnectionInfo))
+                {
+                    var connectionInfo = GlobalObjects.ViewModel.remoteConnectionInfo.Split(',');
+
+                    foreach (var client in connectionInfo)
+                    {
+                        var clientInfo = client.Split(' ');
+
+
+                        if(clientInfo.Length > 1)
+                        {
+                            await Task.Run(async () => { await addMachines(clientInfo); });
+                        }
+                    }
+
+                    RemoteMachineList.ItemsSource = null;
+                    RemoteMachineList.ItemsSource = remoteClients;
+
+                }
+
+
+            }
+            catch(Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+            finally
+            {
+                toggleControls(true);
+                WaitImage.Visibility = Visibility.Hidden;
             }
 
-            RemoteMachineList.ItemsSource = null;
-            RemoteMachineList.ItemsSource = remoteClients;
-            toggleControls(true);
-            WaitImage.Visibility = Visibility.Hidden;
+
+        }
+
+
+        private void AddComputersButton_Click(object sender, RoutedEventArgs e)
+        {
+
+            try
+            {
+                remoteClientDialog = new RemoteClientInfoDialog();
+                remoteClientDialog.Closing += RemoteClientInfoDialog_Closing;
+                remoteClientDialog.Launch();
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+            //if (txtBxAddMachines.Text != "")
+            //{
+
+            //    GlobalObjects.ViewModel.BlockNavigation = true;
+            //    toggleControls(false);
+            //    WaitImage.Visibility = Visibility.Visible;
+
+            //    var connectionInfo = txtBxAddMachines.Text.Split('\\');
+
+            //    await Task.Run(async () => { await addMachines(connectionInfo); });
+            //}
+
+            //RemoteMachineList.ItemsSource = null;
+            //RemoteMachineList.ItemsSource = remoteClients;
+            //toggleControls(true);
+            //WaitImage.Visibility = Visibility.Hidden;
 
         }
 
         private RemoteChannelVersionDialog remoteUpdateDialog = null;
+        private RemoteClientInfoDialog remoteClientDialog = null;
+
 
         private void btnChangeChannelOrVersion_Click(object sender, RoutedEventArgs e)
         {
@@ -328,8 +389,6 @@ namespace MetroDemo.ExampleViews
                             var versionCB = row.FindChild<System.Windows.Controls.ComboBox>("ProductVersion");
 
                             channelCB.SelectedValue = GlobalObjects.ViewModel.newChannel;
-                            //channelCB.Items.Refresh();
-
                         }
                     }
                 }
@@ -555,7 +614,6 @@ namespace MetroDemo.ExampleViews
 
         private void toggleControls(bool enabled)
         {
-            txtBxAddMachines.IsEnabled = enabled;
             AddComputersButton.IsEnabled = enabled;
             ImportComputersButton.IsEnabled = enabled;
             btnChangeChannelOrVersion.IsEnabled = enabled;
@@ -598,20 +656,9 @@ namespace MetroDemo.ExampleViews
                 versionCB.ItemsSource = newVersions;
                 if (GlobalObjects.ViewModel.newVersion == null)
                 {
-                    //var currentVersion = remoteClients[row.GetIndex()].Version;
                     versionCB.SelectedItem = remoteClients[0];
                 }
-                //else if (include.IsChecked == true && GlobalObjects.ViewModel.newVersion != null )
-                //{
-
-                //    var tempVersion = new officeVersion
-                //    {
-                //        Number = GlobalObjects.ViewModel.newVersion
-                //    };
-
-                //    var versionIndex = newVersions.FindIndex(a => a.Number == GlobalObjects.ViewModel.newVersion);
-                //    versionCB.SelectedItem = newVersions[versionIndex];
-                //}
+               
 
             }
             catch (Exception ex)

@@ -281,6 +281,9 @@
     <Compile Include="Windows\Languages.xaml.cs">
       <DependentUpon>Languages.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Windows\RemoteClientInfoDialog.xaml.cs">
+      <DependentUpon>RemoteClientInfoDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\RemoteChannelVersionDialog.xaml.cs">
       <DependentUpon>RemoteChannelVersionDialog.xaml</DependentUpon>
     </Compile>
@@ -382,6 +385,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Windows\Languages.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Windows\RemoteClientInfoDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

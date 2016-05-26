@@ -26,3 +26,4 @@ C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deploy
 C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Micorosft.OfficeProPlus.ConfigurationXml\bin\Debug\Micorosft.OfficeProPlus.ConfigurationXml.pdb
 C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Micorosft.OfficeProPlus.ConfigurationXml\obj\Debug\Micorosft.OfficeProPlus.ConfigurationXml.dll
 C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Micorosft.OfficeProPlus.ConfigurationXml\obj\Debug\Micorosft.OfficeProPlus.ConfigurationXml.pdb
+C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Micorosft.OfficeProPlus.ConfigurationXml\obj\Debug\Micorosft.OfficeProPlus.ConfigurationXml.csprojResolveAssemblyReference.cache
