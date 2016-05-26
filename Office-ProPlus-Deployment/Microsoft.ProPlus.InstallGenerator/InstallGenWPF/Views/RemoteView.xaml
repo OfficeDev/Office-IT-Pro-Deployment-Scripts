@@ -83,7 +83,7 @@
                                                 </DataGridTemplateColumn.HeaderTemplate>
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
-                                                        <CheckBox IsChecked="{Binding Path=include, UpdateSourceTrigger=PropertyChanged}" Width="50"  Margin="0,0,0,0" Padding="10,0,0,0"></CheckBox>
+                                                        <CheckBox x:Name="Include" IsChecked="{Binding Path=include, UpdateSourceTrigger=PropertyChanged}" Width="50"  Margin="0,0,0,0" Padding="10,0,0,0"></CheckBox>
                                                     </DataTemplate>
                                                 </DataGridTemplateColumn.CellTemplate>
                                             </DataGridTemplateColumn>
@@ -96,46 +96,44 @@
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
                                                         <DockPanel>
-                                                            <Image x:Name="WorkingImage" Visibility="Collapsed" HorizontalAlignment="Left" gif:ImageBehavior.RepeatBehavior="Forever" 
-                                                                Height="20"  gif:ImageBehavior.AnimatedSource="../images/wait.GIF" />
+
                                                             <TextBlock Text="{Binding Path=Status}"  FontSize="20" Foreground="{DynamicResource LabelTextBrushCustom}"/>
                                                         </DockPanel>
                                                     </DataTemplate> 
                                                 </DataGridTemplateColumn.CellTemplate>
                                             </DataGridTemplateColumn>
 
-                                            <DataGridTemplateColumn  Header="Channel" Width="200">
+                                            <DataGridTemplateColumn  Header="Channel" Width="210">
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
 
-                                                        <ComboBox Width="250" x:Name="ProductChannel" BorderThickness="0" Background="Transparent"
+                                                        <ComboBox Width="200" x:Name="ProductChannel" BorderThickness="0" Background="Transparent"
                                                                         Height="35" HorizontalAlignment="Left" 
                                                                         Style="{DynamicResource MetroComboBox}"
                                                                         DisplayMemberPath="Name" Foreground="{StaticResource GrayBrush}"
                                                                         IsEditable="True" IsTextSearchEnabled="True"
                                                                         ItemsSource="{Binding Path=Channels}" 
                                                                         SelectedValuePath="Name"
-                                                                        SelectedItem="{Binding Path=Channel,UpdateSourceTrigger=PropertyChanged}"
+                                                                        SelectedItem="{Binding Path=Channel,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"
                                                                         MaxDropDownHeight="125"
                                                                         FontSize="20" IsSynchronizedWithCurrentItem="True" 
                                                                         SelectionChanged="ProductChannel_SelectionChanged"/>
                                                                        
-
                                                     </DataTemplate>
                                                 </DataGridTemplateColumn.CellTemplate>
                                             </DataGridTemplateColumn>
-                                            <DataGridTemplateColumn  Header="Version" Width="200">
+                                            <DataGridTemplateColumn  Header="Version" Width="210">
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
 
-                                                        <ComboBox Width="250" x:Name="ProductVersion" BorderThickness="0" Background="Transparent"
+                                                        <ComboBox Width="200" x:Name="ProductVersion" BorderThickness="0" Background="Transparent"
                                                                         Height="35" HorizontalAlignment="Left" 
                                                                         Style="{DynamicResource MetroComboBox}"
                                                                         DisplayMemberPath="Number" Foreground="{StaticResource GrayBrush}"
                                                                         IsEditable="True" IsTextSearchEnabled="True"
                                                                         ItemsSource="{Binding Path=Versions}" 
                                                                         SelectedValuePath="Number"
-                                                                        SelectedItem="{Binding Path=Version,UpdateSourceTrigger=PropertyChanged}"
+                                                                        SelectedItem="{Binding Path=Version,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"
                                                                         MaxDropDownHeight="125"
                                                                         FontSize="20" IsSynchronizedWithCurrentItem="True"/>
 
@@ -147,7 +145,7 @@
                                 </Border>
 
                                 <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal">
-                                    <TextBox x:Name="txtBxAddMachines" Margin="10,20,1,20" Width="200" TextWrapping="Wrap" Style="{StaticResource MetroTextBox}" AcceptsReturn="True"  Text="Molly Clark\pass@word1\10.10.8.20\WORKGROUP"   />
+                                    <TextBox x:Name="txtBxAddMachines" Margin="10,20,1,20" Width="200" TextWrapping="Wrap" Style="{StaticResource MetroTextBox}" AcceptsReturn="True"  Text="Molly Clark\pass@word1\10.10.8.32\WORKGROUP"   />
                                     <Button x:Name="AddComputersButton" Content="Add Computers" Margin="2,20,2,20" Style="{StaticResource MetroFlatButtonStyle1}" Click="AddComputersButton_Click" />
                                     <Button x:Name="ImportComputersButton" Content="Import Computers" Margin="2,20,0,20" Style="{StaticResource MetroFlatButtonStyle1}" Click="ImportComputersButton_Click" />
                                    

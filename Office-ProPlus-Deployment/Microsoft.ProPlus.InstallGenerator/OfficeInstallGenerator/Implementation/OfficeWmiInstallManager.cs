@@ -149,8 +149,7 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
                 }
 
                 return result;
-
-
+            
             });
             return null;
         }
@@ -192,9 +191,6 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
 
 
             return regValue;
-
-
-
         }
 
         public void UninstallOffice(string installVer = "2016")

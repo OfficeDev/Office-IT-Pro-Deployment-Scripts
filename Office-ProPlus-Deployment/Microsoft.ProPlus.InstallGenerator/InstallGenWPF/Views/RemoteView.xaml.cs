@@ -28,24 +28,17 @@ namespace MetroDemo.ExampleViews
     public partial class RemoteView : UserControl
     {
         #region Declarations
-        private LanguagesDialog languagesDialog = null;
         private CancellationTokenSource _tokenSource = new CancellationTokenSource();
 
-        public event TransitionTabEventHandler TransitionTab;
-        public event MessageEventHandler InfoMessage;
         public event MessageEventHandler ErrorMessage;
 
         public MetroWindow MainWindow { get; set; }
 
-        private Task _downloadTask = null;
         private int _cachedIndex = 0;
-        private DateTime _lastUpdated;
 
-        private List<Channel> items = null;
-        private DownloadAdvanced advancedSettings = null;
+
 
         private OfficeInstall RemoteInstall { get; set; }
-        private bool FirstRun = true;
         private List<RemoteMachine> remoteClients = new List<RemoteMachine>();
         #endregion
 
@@ -162,7 +155,7 @@ namespace MetroDemo.ExampleViews
             }
         }
 
-        private async void addMachines(string[] connectionInfo)
+        private async Task addMachines(string[] connectionInfo)
         {
 
             var installGenerator = new OfficeInstallManager(connectionInfo);
@@ -263,24 +256,15 @@ namespace MetroDemo.ExampleViews
             {
                 GlobalObjects.ViewModel.RemoteMachines.Add(info);
                 remoteClients.Add(info);
-
-                Dispatcher.Invoke(() =>
-                {
-                    RemoteMachineList.ItemsSource = remoteClients;
-                    RemoteMachineList.Items.Refresh();
-                    toggleControls(true);
-                    WaitImage.Visibility = Visibility.Hidden;
-                });
             }
         }
+
         private async void AddComputersButton_Click(object sender, RoutedEventArgs e)
         {
-            //placeholder text for data entry Username\Password\IP\Domain
 
 
             if (txtBxAddMachines.Text != "")
             {
-                //parse text 
 
                 GlobalObjects.ViewModel.BlockNavigation = true;
                 toggleControls(false);
@@ -288,9 +272,13 @@ namespace MetroDemo.ExampleViews
 
                 var connectionInfo = txtBxAddMachines.Text.Split('\\');
 
-                //addMachines 
-                await Task.Run(() => { addMachines(connectionInfo); });
+                await Task.Run(async() => {await addMachines(connectionInfo); });
             }
+            RemoteMachineList.ItemsSource = remoteClients;
+            RemoteMachineList.Items.Refresh();
+            toggleControls(true);
+            WaitImage.Visibility = Visibility.Hidden;
+
         }
 
         private RemoteChannelVersionDialog remoteUpdateDialog = null;
@@ -314,19 +302,46 @@ namespace MetroDemo.ExampleViews
             try
             {
                 var dialog = (RemoteChannelVersionDialog)sender;
+                var newVersion = new officeVersion
+
+                {
+                    Number = GlobalObjects.ViewModel.newVersion
+                };
+
+                var newChannel = new Channel
+                {
+                    Name = GlobalObjects.ViewModel.newChannel
+                };
+                
                 if (dialog.Result == DialogResult.OK)
                 {
-                    //Alex implementation here
+                    for (var i=0; i< remoteClients.Count; i++)
+                    {
+                        if (remoteClients[i].include)
+                        {
+                            var row = (DataGridRow)RemoteMachineList.ItemContainerGenerator.ContainerFromIndex(i);
 
+                            var channelCB = row.FindChild<System.Windows.Controls.ComboBox>("ProductChannel");
+                            var versionCB = row.FindChild<System.Windows.Controls.ComboBox>("ProductVersion");
+
+                            channelCB.SelectedValue = GlobalObjects.ViewModel.newChannel;
+                            //channelCB.Items.Refresh();
+
+                        }
+                    }
                 }
             }
             catch (Exception ex)
             {
                 LogErrorMessage(ex);
             }
+            finally
+            {
+                RemoteMachineList.Items.Refresh();
+            }
         }
 
-        private void ImportComputersButton_Click(object sender, RoutedEventArgs e)
+        private async  void ImportComputersButton_Click(object sender, RoutedEventArgs e)
         {
             var dlg = new Microsoft.Win32.OpenFileDialog
             {
@@ -337,63 +352,52 @@ namespace MetroDemo.ExampleViews
             var result = dlg.ShowDialog();
             if (result == true)
             {
+               
 
                 List<string> versions = new List<String>();
                 string line;
 
                 try
                 {
+                    GlobalObjects.ViewModel.BlockNavigation = true;
+                    toggleControls(false);
+                    WaitImage.Visibility = Visibility.Visible;
+
                     StreamReader file = new StreamReader(dlg.FileName);
 
                     while ((line = file.ReadLine()) != null)
                     {
-                        //get client info 
-
-
-
+                      
                         string[] tempStrArray = line.Split(',');
-
-                        addMachines(tempStrArray);
-
-                        //var info = new RemoteMachine
-                        //{
-                        //    include = false,
-                        //    Machine = tempStrArray[0],
-                        //    Status = "Not Found",
-                        //    Channels = null,
-                        //    Channel = null,
-                        //    Versions = null,
-                        //    Version = null
-                        //};
-                        //remoteClients.Add(info);
-
-
-
+                        await Task.Run(async () => { await addMachines(tempStrArray); }); 
                     }
-
-                    //RemoteMachineList.Items.Refresh();
-
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    LogErrorMessage(ex);
 
                 }
 
-
-
-
-
+             
+                RemoteMachineList.ItemsSource = remoteClients;
+                RemoteMachineList.Items.Refresh();
+                toggleControls(true);
+                WaitImage.Visibility = Visibility.Hidden;
+              
             }
         }
 
         private void chkAll_Click(object sender, RoutedEventArgs e)
         {
             var handler = sender as System.Windows.Controls.CheckBox;
-            foreach (var client in remoteClients)
+
+            for (var i = 0; i < remoteClients.Count; i++)
             {
-                client.include = handler.IsChecked.Value;
+              
+                var row = (DataGridRow)RemoteMachineList.ItemContainerGenerator.ContainerFromIndex(i);
+                var checkbox = row.FindChild<System.Windows.Controls.CheckBox>("Include");
+                checkbox.IsChecked = handler.IsChecked.Value; 
             }
-            RemoteMachineList.Items.Refresh();
         }
 
         private async void btnUpdateRemote_Click(object sender, RoutedEventArgs e)
@@ -430,8 +434,10 @@ namespace MetroDemo.ExampleViews
 
 
                     }
-                    catch (Exception)// if fails via WMI, try via powershell
+                    catch (Exception ex)// if fails via WMI, try via powershell
                     {
+                        LogWmiErrorMessage(ex, connectionInfo);
+
                         try
                         {
                             string PSPath = System.IO.Directory.GetCurrentDirectory() + "\\Resources\\PowershellAttempt.txt";
@@ -466,7 +472,6 @@ namespace MetroDemo.ExampleViews
             toggleControls(true);
 
         }
-
 
         public async Task ChangeOfficeChannelWmi(List<string> updateinfo, OfficeInstallation LocalInstall)
         {
@@ -509,20 +514,9 @@ namespace MetroDemo.ExampleViews
                     LogErrorMessage(ex);
                     LogWmiErrorMessage(ex, updateinfo.ToArray());
                 }
-                finally
-                {
-                    //Dispatcher.Invoke(() =>
-                    //{
-                    //    ChangeChannel.IsEnabled = true;
-                    //    NewVersion.IsEnabled = true;
-                    //});
-                }
             });
         }
 
-
-
-        //#endregion
         private List<officeVersion> getVersions(OfficeBranch currentChannel, List<officeVersion> versions, string currentVersion)
         {
 
@@ -554,27 +548,59 @@ namespace MetroDemo.ExampleViews
 
         private void ProductChannel_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            //TODO add a channel change listener to get correct versions for that channel
-            var selectedBranch = (sender as System.Windows.Controls.ComboBox).SelectedValue as string;
-            var newVersions = new List<officeVersion>();
-            var branches = GlobalObjects.ViewModel.Branches;
-            var row = GetAncestorOfType<DataGridRow>(sender as System.Windows.Controls.ComboBox);
-            var versionCB = row.FindChild<System.Windows.Controls.ComboBox>("ProductVersion");
-
-            foreach (var branch in branches)
+            try
             {
-                if (branch.NewName.ToString() == selectedBranch)
+
+          
+                var selectedBranch = (sender as System.Windows.Controls.ComboBox).SelectedValue as string;
+                var newVersions = new List<officeVersion>();
+                var branches = GlobalObjects.ViewModel.Branches;
+                var row = GetAncestorOfType<DataGridRow>(sender as System.Windows.Controls.ComboBox);
+                var versionCB = row.FindChild<System.Windows.Controls.ComboBox>("ProductVersion");
+               var include = row.FindChild<System.Windows.Controls.CheckBox>("Include");
+
+                foreach (var branch in branches)
                 {
-                    newVersions = getVersions(branch, newVersions, "");
-                    break;
+                    if (branch.NewName.ToString() == selectedBranch)
+                    {
+                        newVersions = getVersions(branch, newVersions, "");
+                        break;
+                    }
                 }
+
+
+
+                versionCB.ItemsSource = newVersions;
+                versionCB.Items.Refresh();
+
+
+                if (GlobalObjects.ViewModel.newVersion == null )
+                {
+                    versionCB.SelectedItem = newVersions[0];
+                }
+                else if (include.IsChecked == true && GlobalObjects.ViewModel.newVersion != null )
+                {
+
+                    var tempVersion = new officeVersion
+                    {
+                        Number = GlobalObjects.ViewModel.newVersion
+                    };
+
+                    //versionCB.SelectedValue
+                    
+                  
+                    var versionIndex = newVersions.FindIndex(a => a.Number == GlobalObjects.ViewModel.newVersion);
+                    versionCB.SelectedItem = newVersions[versionIndex];
+
+
+                    //versionCB.SelectedItem = tempVersion;
+                }
+
             }
-
-
-
-            versionCB.ItemsSource = newVersions;
-            versionCB.SelectedItem = newVersions[0];
-            versionCB.Items.Refresh();
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
         }
 
         public T GetAncestorOfType<T>(FrameworkElement child) where T : FrameworkElement
@@ -585,22 +611,7 @@ namespace MetroDemo.ExampleViews
             return (T)parent;
         }
 
-        //private void setOfficeChannel()
-
-        //private void setOfficeVersion(object sender, SelectionChangedEventArgs e)
-        //{
-        //    var row = GetAncestorOfType<DataGridRow>(sender as System.Windows.Controls.ComboBox);
-
-        //    var handler = sender as System.Windows.Controls.ComboBox;
-        //    var currentClient = remoteClients[row.GetIndex()];
-        //    var tempVersion = new officeVersion()
-        //    {
-        //        Number = handler.SelectedValue.ToString()
-        //    };
-
-        //    currentClient.Version = tempVersion;
-        //    RemoteMachineList.Items.Refresh();
-        //}
+      
     }
 }
 

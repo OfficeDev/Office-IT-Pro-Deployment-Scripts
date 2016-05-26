@@ -528,6 +528,10 @@ namespace MetroDemo
 
         public bool BlockNavigation { get; set; }
 
+        public string newVersion { get; set;}
+
+        public string newChannel { get; set;}
+
         public List<Language> SelectedLanguages
         {
             get

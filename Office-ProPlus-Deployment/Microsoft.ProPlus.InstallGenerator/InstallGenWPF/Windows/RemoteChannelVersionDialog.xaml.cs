@@ -99,9 +99,10 @@ namespace MetroDemo.ExampleWindows
         {
             try
             {
-               //alex implementation here
-               Result = System.Windows.Forms.DialogResult.OK;
-               this.Close();                
+                Result = System.Windows.Forms.DialogResult.OK;
+                GlobalObjects.ViewModel.newChannel = ChannelSelection.SelectedItem.ToString();
+                GlobalObjects.ViewModel.newVersion = VersionSelection.SelectedItem.ToString();
+                this.Close();                
             }
             catch (Exception ex)
             {
@@ -115,40 +116,76 @@ namespace MetroDemo.ExampleWindows
             this.Close();
         }
 
-        private void ChannelSelection_DropDownClosed(object sender, EventArgs e)
+        private void ChannelSelection_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            switch (ChannelSelection.SelectedValue.ToString())
+            var selectedBranch = (sender as System.Windows.Controls.ComboBox).SelectedValue as string;
+            var newVersions = new List<String>();
+            var branches = GlobalObjects.ViewModel.Branches;
+
+            foreach (var branch in branches)
             {
-                case "Current":                    
-                    VersionSelection.Items.Clear();
-                    VersionSelection.Items.Add(items[0].Version);
-                    foreach (var build in items[0].Builds)
-                        VersionSelection.Items.Add(build.Version);
-                    VersionSelection.SelectedValue = items[0].Version;
+                if (branch.NewName.ToString() == selectedBranch)
+                {
+                    newVersions = getVersions(branch, newVersions, "");
                     break;
-                case "Deferred":
-                    VersionSelection.Items.Clear();
-                    VersionSelection.Items.Add(items[1].Version);
-                    foreach (var build in items[1].Builds)
-                        VersionSelection.Items.Add(build.Version);
-                    VersionSelection.SelectedValue = items[1].Version;
-                    break;
-                case "FirstReleaseDeferred":
-                    VersionSelection.Items.Clear();
-                    VersionSelection.Items.Add(items[2].Version);
-                    foreach (var build in items[2].Builds)
-                        VersionSelection.Items.Add(build.Version);
-                    VersionSelection.SelectedValue = items[2].Version;
-                    break;
-                case "FirstReleaseCurrent":
-                    VersionSelection.Items.Clear();
-                    VersionSelection.Items.Add(items[3].Version);
-                    foreach (var build in items[3].Builds)
-                        VersionSelection.Items.Add(build.Version);
-                    VersionSelection.SelectedValue = items[3].Version;
-                    break;
+                }
             }
+
+
+
+            VersionSelection.ItemsSource = newVersions;
+            VersionSelection.SelectedItem = newVersions[0];
+            VersionSelection.Items.Refresh();
         }
+
+        private List<String> getVersions(OfficeBranch currentChannel, List<String> versions, string currentVersion)
+        {
+
+            foreach (var version in currentChannel.Versions)
+            {
+                if (version.Version.ToString() != currentVersion)
+                {
+                    versions.Add(version.Version.ToString());
+                }
+            }
+
+            return versions;
+        }
+
+        //private void ChannelSelection_DropDownClosed(object sender, EventArgs e)
+        //{
+        //    switch (ChannelSelection.SelectedValue.ToString())
+        //    {
+        //        case "Current":                    
+        //            VersionSelection.Items.Clear();
+        //            VersionSelection.Items.Add(items[0].Version);
+        //            foreach (var build in items[0].Builds)
+        //                VersionSelection.Items.Add(build.Version);
+        //            VersionSelection.SelectedValue = items[0].Version;
+        //            break;
+        //        case "Deferred":
+        //            VersionSelection.Items.Clear();
+        //            VersionSelection.Items.Add(items[1].Version);
+        //            foreach (var build in items[1].Builds)
+        //                VersionSelection.Items.Add(build.Version);
+        //            VersionSelection.SelectedValue = items[1].Version;
+        //            break;
+        //        case "FirstReleaseDeferred":
+        //            VersionSelection.Items.Clear();
+        //            VersionSelection.Items.Add(items[2].Version);
+        //            foreach (var build in items[2].Builds)
+        //                VersionSelection.Items.Add(build.Version);
+        //            VersionSelection.SelectedValue = items[2].Version;
+        //            break;
+        //        case "FirstReleaseCurrent":
+        //            VersionSelection.Items.Clear();
+        //            VersionSelection.Items.Add(items[3].Version);
+        //            foreach (var build in items[3].Builds)
+        //                VersionSelection.Items.Add(build.Version);
+        //            VersionSelection.SelectedValue = items[3].Version;
+        //            break;
+        //    }
+        //}
 
     }
 }
