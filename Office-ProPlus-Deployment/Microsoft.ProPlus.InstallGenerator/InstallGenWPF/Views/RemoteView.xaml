@@ -90,14 +90,12 @@
 
                                             <DataGridTextColumn Header="Machine" Binding="{Binding Path=Machine}" Width="200" 
                                                       IsReadOnly="True" FontSize="20" Foreground="{DynamicResource LabelTextBrushCustom}" />
-                                            <!--<DataGridTextColumn Header="Status" Binding="{Binding Path=Status}" Width="150" 
-                                                      IsReadOnly="True" FontSize="20" Foreground="{DynamicResource LabelTextBrushCustom}" />-->
+                                            
                                             <DataGridTemplateColumn Header="Status" Width="100">
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
                                                         <DockPanel>
-
-                                                            <TextBlock Text="{Binding Path=Status}"  FontSize="20" Foreground="{DynamicResource LabelTextBrushCustom}"/>
+                                                            <TextBlock Text="{Binding Path=Status,UpdateSourceTrigger=PropertyChanged}"  FontSize="20" Foreground="{DynamicResource LabelTextBrushCustom}"/>
                                                         </DockPanel>
                                                     </DataTemplate> 
                                                 </DataGridTemplateColumn.CellTemplate>
@@ -114,7 +112,7 @@
                                                                         IsEditable="True" IsTextSearchEnabled="True"
                                                                         ItemsSource="{Binding Path=Channels}" 
                                                                         SelectedValuePath="Name"
-                                                                        SelectedItem="{Binding Path=Channel,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"
+                                                                        SelectedItem="{Binding Path=Channel, UpdateSourceTrigger=PropertyChanged}"
                                                                         MaxDropDownHeight="125"
                                                                         FontSize="20" IsSynchronizedWithCurrentItem="True" 
                                                                         SelectionChanged="ProductChannel_SelectionChanged"/>
@@ -125,7 +123,6 @@
                                             <DataGridTemplateColumn  Header="Version" Width="210">
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
-
                                                         <ComboBox Width="200" x:Name="ProductVersion" BorderThickness="0" Background="Transparent"
                                                                         Height="35" HorizontalAlignment="Left" 
                                                                         Style="{DynamicResource MetroComboBox}"
@@ -133,10 +130,9 @@
                                                                         IsEditable="True" IsTextSearchEnabled="True"
                                                                         ItemsSource="{Binding Path=Versions}" 
                                                                         SelectedValuePath="Number"
-                                                                        SelectedItem="{Binding Path=Version,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"
+                                                                        SelectedItem="{Binding Path=Version, UpdateSourceTrigger=PropertyChanged}"
                                                                         MaxDropDownHeight="125"
                                                                         FontSize="20" IsSynchronizedWithCurrentItem="True"/>
-
                                                     </DataTemplate>
                                                 </DataGridTemplateColumn.CellTemplate>
                                             </DataGridTemplateColumn>
@@ -145,10 +141,10 @@
                                 </Border>
 
                                 <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal">
-                                    <TextBox x:Name="txtBxAddMachines" Margin="10,20,1,20" Width="200" TextWrapping="Wrap" Style="{StaticResource MetroTextBox}" AcceptsReturn="True"  Text="Molly Clark\pass@word1\10.10.8.32\WORKGROUP"   />
+                                    <TextBox x:Name="txtBxAddMachines" Margin="0,20,1,20" Width="200" TextWrapping="Wrap" Style="{StaticResource MetroTextBox}" AcceptsReturn="True"  Text="Molly Clark\pass@word1\10.10.8.32\WORKGROUP"   />
                                     <Button x:Name="AddComputersButton" Content="Add Computers" Margin="2,20,2,20" Style="{StaticResource MetroFlatButtonStyle1}" Click="AddComputersButton_Click" />
                                     <Button x:Name="ImportComputersButton" Content="Import Computers" Margin="2,20,0,20" Style="{StaticResource MetroFlatButtonStyle1}" Click="ImportComputersButton_Click" />
-                                   
+                                    <Button x:Name="btnRemoveComputers" Content="Remove Computers" Margin="2,20,2,20" Style="{StaticResource MetroFlatButtonStyle1}" Click="btnRemoveComputers_Click" />
                                     <Button x:Name="btnChangeChannelOrVersion" Content="Switch Channel/Version" Margin="2,20,2,20" Style="{StaticResource MetroFlatButtonStyle1}" Click="btnChangeChannelOrVersion_Click" />
                                     <Button x:Name="btnUpdateRemote" Content="Update Remote" Margin="20,20,2,20" Style="{StaticResource MetroFlatButtonStyle1}" Click="btnUpdateRemote_Click" />
                                    

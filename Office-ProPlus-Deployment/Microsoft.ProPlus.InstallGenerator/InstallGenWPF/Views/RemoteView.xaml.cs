@@ -256,6 +256,8 @@ namespace MetroDemo.ExampleViews
             {
                 GlobalObjects.ViewModel.RemoteMachines.Add(info);
                 remoteClients.Add(info);
+
+
             }
         }
 
@@ -272,10 +274,11 @@ namespace MetroDemo.ExampleViews
 
                 var connectionInfo = txtBxAddMachines.Text.Split('\\');
 
-                await Task.Run(async() => {await addMachines(connectionInfo); });
+                await Task.Run(async () => { await addMachines(connectionInfo); });
             }
+
+            RemoteMachineList.ItemsSource = null;
             RemoteMachineList.ItemsSource = remoteClients;
-            RemoteMachineList.Items.Refresh();
             toggleControls(true);
             WaitImage.Visibility = Visibility.Hidden;
 
@@ -312,10 +315,10 @@ namespace MetroDemo.ExampleViews
                 {
                     Name = GlobalObjects.ViewModel.newChannel
                 };
-                
+
                 if (dialog.Result == DialogResult.OK)
                 {
-                    for (var i=0; i< remoteClients.Count; i++)
+                    for (var i = 0; i < remoteClients.Count; i++)
                     {
                         if (remoteClients[i].include)
                         {
@@ -341,7 +344,7 @@ namespace MetroDemo.ExampleViews
             }
         }
 
-        private async  void ImportComputersButton_Click(object sender, RoutedEventArgs e)
+        private async void ImportComputersButton_Click(object sender, RoutedEventArgs e)
         {
             var dlg = new Microsoft.Win32.OpenFileDialog
             {
@@ -352,7 +355,7 @@ namespace MetroDemo.ExampleViews
             var result = dlg.ShowDialog();
             if (result == true)
             {
-               
+
 
                 List<string> versions = new List<String>();
                 string line;
@@ -367,9 +370,9 @@ namespace MetroDemo.ExampleViews
 
                     while ((line = file.ReadLine()) != null)
                     {
-                      
+
                         string[] tempStrArray = line.Split(',');
-                        await Task.Run(async () => { await addMachines(tempStrArray); }); 
+                        await Task.Run(async () => { await addMachines(tempStrArray); });
                     }
                 }
                 catch (Exception ex)
@@ -378,12 +381,12 @@ namespace MetroDemo.ExampleViews
 
                 }
 
-             
+
                 RemoteMachineList.ItemsSource = remoteClients;
                 RemoteMachineList.Items.Refresh();
                 toggleControls(true);
                 WaitImage.Visibility = Visibility.Hidden;
-              
+
             }
         }
 
@@ -393,10 +396,10 @@ namespace MetroDemo.ExampleViews
 
             for (var i = 0; i < remoteClients.Count; i++)
             {
-              
+
                 var row = (DataGridRow)RemoteMachineList.ItemContainerGenerator.ContainerFromIndex(i);
                 var checkbox = row.FindChild<System.Windows.Controls.CheckBox>("Include");
-                checkbox.IsChecked = handler.IsChecked.Value; 
+                checkbox.IsChecked = handler.IsChecked.Value;
             }
         }
 
@@ -427,10 +430,10 @@ namespace MetroDemo.ExampleViews
                         var updateInfo = new List<string> { client.UserName, client.Password, client.Machine, client.WorkGroup, client.Channel.Name, client.Version.Number };
 
                         client.Status = "Updating";
-                        RemoteMachineList.Items.Refresh();
+                        //RemoteMachineList.Items.Refresh();
                         await Task.Run(async () => { await ChangeOfficeChannelWmi(updateInfo, officeInstall); });
                         client.Status = "Success";
-                        RemoteMachineList.Items.Refresh();
+                        //RemoteMachineList.Items.Refresh();
 
 
                     }
@@ -517,7 +520,7 @@ namespace MetroDemo.ExampleViews
                     throw (new Exception("Update Failed"));
 
                 }
-               
+
             });
         }
 
@@ -535,6 +538,16 @@ namespace MetroDemo.ExampleViews
 
                     versions.Add(tempVersion);
                 }
+                else
+                {
+                    var tempVersion = new officeVersion()
+                    {
+                        Number = version.Version.ToString()
+                    };
+
+                    versions.Insert(0, tempVersion);
+
+                }
             }
 
             return versions;
@@ -547,6 +560,7 @@ namespace MetroDemo.ExampleViews
             ImportComputersButton.IsEnabled = enabled;
             btnChangeChannelOrVersion.IsEnabled = enabled;
             btnUpdateRemote.IsEnabled = enabled;
+            btnRemoveComputers.IsEnabled = enabled;
 
         }
 
@@ -555,50 +569,49 @@ namespace MetroDemo.ExampleViews
             try
             {
 
-          
+
                 var selectedBranch = (sender as System.Windows.Controls.ComboBox).SelectedValue as string;
                 var newVersions = new List<officeVersion>();
                 var branches = GlobalObjects.ViewModel.Branches;
                 var row = GetAncestorOfType<DataGridRow>(sender as System.Windows.Controls.ComboBox);
                 var versionCB = row.FindChild<System.Windows.Controls.ComboBox>("ProductVersion");
-               var include = row.FindChild<System.Windows.Controls.CheckBox>("Include");
+                var include = row.FindChild<System.Windows.Controls.CheckBox>("Include");
 
                 foreach (var branch in branches)
                 {
                     if (branch.NewName.ToString() == selectedBranch)
                     {
-                        newVersions = getVersions(branch, newVersions, "");
-                        break;
+                        var number = remoteClients[row.GetIndex()].Version.Number;
+                        if (!String.IsNullOrEmpty(remoteClients[row.GetIndex()].Version.Number))
+                        {
+                            newVersions = getVersions(branch, newVersions, remoteClients[row.GetIndex()].Version.Number);
+                            break;
+                        }
+                        else
+                        {
+                            newVersions = getVersions(branch, newVersions, "");
+                            break;
+                        }
                     }
                 }
 
-
-
                 versionCB.ItemsSource = newVersions;
-                versionCB.Items.Refresh();
-
-
-                if (GlobalObjects.ViewModel.newVersion == null )
+                if (GlobalObjects.ViewModel.newVersion == null)
                 {
-                    versionCB.SelectedItem = newVersions[0];
+                    //var currentVersion = remoteClients[row.GetIndex()].Version;
+                    versionCB.SelectedItem = remoteClients[0];
                 }
-                else if (include.IsChecked == true && GlobalObjects.ViewModel.newVersion != null )
-                {
+                //else if (include.IsChecked == true && GlobalObjects.ViewModel.newVersion != null )
+                //{
 
-                    var tempVersion = new officeVersion
-                    {
-                        Number = GlobalObjects.ViewModel.newVersion
-                    };
+                //    var tempVersion = new officeVersion
+                //    {
+                //        Number = GlobalObjects.ViewModel.newVersion
+                //    };
 
-                    //versionCB.SelectedValue
-                    
-                  
-                    var versionIndex = newVersions.FindIndex(a => a.Number == GlobalObjects.ViewModel.newVersion);
-                    versionCB.SelectedItem = newVersions[versionIndex];
-
-
-                    //versionCB.SelectedItem = tempVersion;
-                }
+                //    var versionIndex = newVersions.FindIndex(a => a.Number == GlobalObjects.ViewModel.newVersion);
+                //    versionCB.SelectedItem = newVersions[versionIndex];
+                //}
 
             }
             catch (Exception ex)
@@ -615,7 +628,13 @@ namespace MetroDemo.ExampleViews
             return (T)parent;
         }
 
-      
-    }
-}
+        private void btnRemoveComputers_Click(object sender, RoutedEventArgs e)
+        {
+            remoteClients.RemoveAll(a => a.include == true); 
 
+            RemoteMachineList.ItemsSource = remoteClients;
+            RemoteMachineList.Items.Refresh();
+        }
+    }
+
+}
