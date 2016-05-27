@@ -1,7 +1,7 @@
 ﻿[String]$global:saveLastConfigFile = $NULL
 [String]$global:saveLastFilePath = $NULL
 
-$validProductIds = @("O365ProPlusRetail","O365BusinessRetail","VisioProRetail","ProjectProRetail", "SPDRetail")
+$validProductIds = @("O365ProPlusRetail","O365BusinessRetail","VisioProRetail","ProjectProRetail", "SPDRetail", "VisioProXVolume", "VisioStdXVolume", "ProjectProXVolume", "ProjectStdXVolume")
 
 try {
 $enum = "
@@ -17,7 +17,11 @@ namespace Microsoft.Office
          O365BusinessRetail = 2,
          VisioProRetail = 4,
          ProjectProRetail = 8,
-         SPDRetail = 16
+         SPDRetail = 16,
+         VisioProXVolume = 32,
+         VisioStdXVolume = 64,
+         ProjectProXVolume = 128,
+         ProjectStdXVolume = 256,
      }
 }
 "
@@ -441,18 +445,20 @@ Here is what the portion of configuration file looks like when modified by this 
         }
 
         #Set the desired values
-        [System.XML.XMLElement]$ProductElement = $ConfigFile.Configuration.Add.Product | ?  ID -eq $ProductId
+        [System.XML.XMLElement]$ProductElement = $ConfigFile.Configuration.Add.Product | Where { $_.ID -eq $ProductId }
         if($ProductElement -eq $null){
             [System.XML.XMLElement]$ProductElement=$ConfigFile.CreateElement("Product")
             $AddElement.appendChild($ProductElement) | Out-Null
             $ProductElement.SetAttribute("ID", $ProductId) | Out-Null
             if($PIDKEY -ne $null){
+              if($PIDKEY){
                 $ProductElement.SetAttribute("PIDKEY", $PIDKEY) | Out-Null
+              }
             }
         }
 
         foreach($LanguageId in $LanguageIds){
-            [System.XML.XMLElement]$LanguageElement = $ProductElement.Language | ?  ID -eq $LanguageId
+            [System.XML.XMLElement]$LanguageElement = $ProductElement.Language | Where { $_.ID -eq $LanguageId }
             if($LanguageElement -eq $null){
                 [System.XML.XMLElement]$LanguageElement=$ConfigFile.CreateElement("Language")
                 $ProductElement.appendChild($LanguageElement) | Out-Null
@@ -461,7 +467,7 @@ Here is what the portion of configuration file looks like when modified by this 
         }
 
         foreach($ExcludeApp in $ExcludeApps){
-            [System.XML.XMLElement]$ExcludeAppElement = $ProductElement.ExcludeApp | ?  ID -eq $ExcludeApp
+            [System.XML.XMLElement]$ExcludeAppElement = $ProductElement.ExcludeApp | Where { $_.ID -eq $ExcludeApp }
             if($ExcludeAppElement -eq $null){
                 [System.XML.XMLElement]$ExcludeAppElement=$ConfigFile.CreateElement("ExcludeApp")
                 $ProductElement.appendChild($ExcludeAppElement) | Out-Null
@@ -608,13 +614,15 @@ Here is what the portion of configuration file looks like when modified by this 
         $AddElement = $ConfigFile.Configuration.Add 
 
         #Set the desired values
-        [System.XML.XMLElement]$ProductElement = $ConfigFile.Configuration.Add.Product | ?  ID -eq $ProductId
+        [System.XML.XMLElement]$ProductElement = $ConfigFile.Configuration.Add.Product | Where { $_.ID -eq $ProductId }
         if($ProductElement -eq $null){
            throw "Cannot find Product with Id '$ProductId'"
         }
 
         if($PIDKEY -ne $null){
+          if($PIDKEY){
             $ProductElement.SetAttribute("PIDKEY", $PIDKEY) | Out-Null
+          }
         }
 
         if ($LanguageIds) {
@@ -625,7 +633,7 @@ Here is what the portion of configuration file looks like when modified by this 
                 }
 
                 foreach($LanguageId in $LanguageIds){
-                    [System.XML.XMLElement]$LanguageElement = $ProductElement.Language | ?  ID -eq $LanguageId
+                    [System.XML.XMLElement]$LanguageElement = $ProductElement.Language | Where { $_.ID -eq $LanguageId }
                     if($LanguageElement -eq $null){
                         [System.XML.XMLElement]$LanguageElement=$ConfigFile.CreateElement("Language")
                         $ProductElement.appendChild($LanguageElement) | Out-Null
@@ -644,7 +652,7 @@ Here is what the portion of configuration file looks like when modified by this 
             }
 
             foreach($ExcludeApp in $ExcludeApps){
-                [System.XML.XMLElement]$ExcludeAppElement = $ProductElement.ExcludeApp | ?  ID -eq $ExcludeApp
+                [System.XML.XMLElement]$ExcludeAppElement = $ProductElement.ExcludeApp | Where { $_.ID -eq $ExcludeApp }
                 if($ExcludeAppElement -eq $null){
                     [System.XML.XMLElement]$ExcludeAppElement=$ConfigFile.CreateElement("ExcludeApp")
                     $ProductElement.appendChild($ExcludeAppElement) | Out-Null
@@ -760,17 +768,19 @@ Language and Exclude values
                 $Result
             }
         }else{
-            [System.XML.XMLElement]$ProductElement = $ConfigFile.Configuration.Add.Product | ?  ID -eq $ProductId
-            $Result = New-Object –TypeName PSObject 
-            Add-Member -InputObject $Result -MemberType NoteProperty -Name "ProductId" -Value ($ProductElement.GetAttribute("ID"))
-            if($ProductElement.Language -ne $null){
-                Add-Member -InputObject $Result -MemberType NoteProperty -Name "Languages" -Value ($ProductElement.Language.GetAttribute("ID"))
-            }
+            [System.XML.XMLElement]$ProductElement = $ConfigFile.Configuration.Add.Product | Where { $_.ID -eq $ProductId }
+            if ($ProductElement) {
+                $Result = New-Object –TypeName PSObject 
+                Add-Member -InputObject $Result -MemberType NoteProperty -Name "ProductId" -Value ($ProductElement.GetAttribute("ID"))
+                if($ProductElement.Language -ne $null){
+                    Add-Member -InputObject $Result -MemberType NoteProperty -Name "Languages" -Value ($ProductElement.Language.GetAttribute("ID"))
+                }
 
-            if($ProductElement.ExcludeApp -ne $null){
-                Add-Member -InputObject $Result -MemberType NoteProperty -Name "ExcludedApps" -Value ($ProductElement.ExcludeApp.GetAttribute("ID"))
+                if($ProductElement.ExcludeApp -ne $null){
+                    Add-Member -InputObject $Result -MemberType NoteProperty -Name "ExcludedApps" -Value ($ProductElement.ExcludeApp.GetAttribute("ID"))
+                }
+                $Result
             }
-            $Result
         }
 
     }
@@ -847,7 +857,7 @@ Removes the ProductToAdd with the ProductId 'O365ProPlusRetail' from the XML Con
 
         if ($All) {
             #Set the desired values
-            [System.XML.XMLElement]$ProductElement = $ConfigFile.Configuration.Add.Product | ?  ID -eq $ProductId
+            [System.XML.XMLElement]$ProductElement = $ConfigFile.Configuration.Add.Product | Where { $_.ID -eq $ProductId }
             if($ProductElement -ne $null){
                 $ConfigFile.Configuration.Add.removeChild($ProductElement) | Out-Null
             }
@@ -951,7 +961,7 @@ Removes the ExcludeApp with the Id 'Lync' (which is Skype for Business) from the
         }
 
         #Search matching ExcludeApp element and remove it
-        [System.XML.XMLElement]$ExcludeAppElement = $ConfigFile.Configuration.Add.Product.ExcludeApp | ?  ID -eq $ExcludeAppId
+        [System.XML.XMLElement]$ExcludeAppElement = $ConfigFile.Configuration.Add.Product.ExcludeApp | Where { $_.ID -eq $ExcludeAppId }
         if($ExcludeAppElement -ne $null){
             $ConfigFile.Configuration.Add.Product.removeChild($ExcludeAppElement) | Out-Null
         }
@@ -1087,14 +1097,14 @@ Here is what the portion of configuration file looks like when modified by this 
         if($All){
              $RemoveElement.SetAttribute("All", "TRUE") | Out-Null
         }else{
-            [System.XML.XMLElement]$ProductElement = $RemoveElement.Product | ?  ID -eq $ProductId
+            [System.XML.XMLElement]$ProductElement = $RemoveElement.Product | Where { $_.ID -eq $ProductId }
             if($ProductElement -eq $null){
                 [System.XML.XMLElement]$ProductElement=$ConfigFile.CreateElement("Product")
                 $RemoveElement.appendChild($ProductElement) | Out-Null
                 $ProductElement.SetAttribute("ID", $ProductId) | Out-Null
             }
             foreach($LanguageId in $LanguageIds){
-                [System.XML.XMLElement]$LanguageElement = $ProductElement.Language | ?  ID -eq $LanguageId
+                [System.XML.XMLElement]$LanguageElement = $ProductElement.Language | Where { $_.ID -eq $LanguageId }
                 if($LanguageElement -eq $null){
                     [System.XML.XMLElement]$LanguageElement=$ConfigFile.CreateElement("Language")
                     $ProductElement.appendChild($LanguageElement) | Out-Null
@@ -1293,7 +1303,7 @@ Removes the ProductToRemove with the ProductId 'O365ProPlusRetail' from the XML 
         }
 
         #Set the desired values
-        [System.XML.XMLElement]$ProductElement = $ConfigFile.Configuration.Remove.Product | ?  ID -eq $ProductId
+        [System.XML.XMLElement]$ProductElement = $ConfigFile.Configuration.Remove.Product | Where { $_.ID -eq $ProductId }
         if($ProductElement -ne $null){
             $ConfigFile.Configuration.Remove.removeChild($ProductElement) | Out-Null
         }
@@ -1753,7 +1763,7 @@ Here is what the portion of configuration file looks like when modified by this 
 
         #Set each property as desired
         if($AutoActivate){
-            [System.XML.XMLElement]$AutoActivateElement = $ConfigFile.Configuration.Property | ?  Name -eq "AUTOACTIVATE"
+            [System.XML.XMLElement]$AutoActivateElement = $ConfigFile.Configuration.Property | Where { $_.Name -eq "AUTOACTIVATE" }
             if($AutoActivateElement -eq $null){
                 [System.XML.XMLElement]$AutoActivateElement=$ConfigFile.CreateElement("Property")
             }
@@ -1764,7 +1774,7 @@ Here is what the portion of configuration file looks like when modified by this 
         }
 
         if($ForceAppShutDown){
-            [System.XML.XMLElement]$ForceAppShutDownElement = $ConfigFile.Configuration.Property | ?  Name -eq "FORCEAPPSHUTDOWN"
+            [System.XML.XMLElement]$ForceAppShutDownElement = $ConfigFile.Configuration.Property | Where { $_.Name -eq "FORCEAPPSHUTDOWN" }
             if($ForceAppShutDownElement -eq $null){
                 [System.XML.XMLElement]$ForceAppShutDownElement=$ConfigFile.CreateElement("Property")
             }
@@ -1775,7 +1785,7 @@ Here is what the portion of configuration file looks like when modified by this 
         }
 
         if($PackageGUID){
-            [System.XML.XMLElement]$PackageGUIDElement = $ConfigFile.Configuration.Property | ?  Name -eq "PACKAGEGUID"
+            [System.XML.XMLElement]$PackageGUIDElement = $ConfigFile.Configuration.Property | Where { $_.Name -eq "PACKAGEGUID" }
             if($PackageGUIDElement -eq $null){
                 [System.XML.XMLElement]$PackageGUIDElement=$ConfigFile.CreateElement("Property")
             }
@@ -1786,7 +1796,7 @@ Here is what the portion of configuration file looks like when modified by this 
         }
 
         if($SharedComputerLicensing){
-            [System.XML.XMLElement]$SharedComputerLicensingElement = $ConfigFile.Configuration.Property | ?  Name -eq "SharedComputerLicensing"
+            [System.XML.XMLElement]$SharedComputerLicensingElement = $ConfigFile.Configuration.Property | Where { $_.Name -eq "SharedComputerLicensing" }
             if($SharedComputerLicensingElement -eq $null){
                 [System.XML.XMLElement]$SharedComputerLicensingElement=$ConfigFile.CreateElement("Property")
             }
@@ -1939,7 +1949,7 @@ Here is what the portion of configuration file that would be removed by this fun
         }
 
         if ($Name) {
-          [System.XML.XMLElement]$ForceAppShutDownElement = $ConfigFile.Configuration.Property | ?  Name -eq $Name.ToUpper()
+          [System.XML.XMLElement]$ForceAppShutDownElement = $ConfigFile.Configuration.Property | Where { $_.Name -eq $Name.ToUpper() }
           if ($ForceAppShutDownElement) {
               $removeNode = $ConfigFile.Configuration.removeChild($ForceAppShutDownElement)
           }
@@ -3014,7 +3024,7 @@ Function IsSupportedLanguage() {
            [string] $Language,
 
            [Parameter()]
-           [bool] $ShowLanguages = $true
+           [bool] $ShowLanguages = $false
         )
 
         $lang = $validLanguages | where {$_.ToString().ToUpper().EndsWith("|$Language".ToUpper())}
@@ -3188,7 +3198,13 @@ Function Test-UpdateSource() {
     [CmdletBinding()]
     Param(
         [Parameter(Mandatory=$true)]
-        [string] $UpdateSource = $NULL
+        [string] $UpdateSource = $NULL,
+
+        [Parameter()]
+        [bool] $ValidateUpdateSourceFiles = $true,
+
+        [Parameter()]
+        [string[]] $OfficeLanguages = $null
     )
 
   	$uri = [System.Uri]$UpdateSource
@@ -3201,8 +3217,15 @@ Function Test-UpdateSource() {
         $sourceIsAlive = Test-Path $uri.LocalPath -ErrorAction SilentlyContinue
     }
 
-    if ($sourceIsAlive) {
-        $sourceIsAlive = Validate-UpdateSource -UpdateSource $UpdateSource
+    if ($ValidateUpdateSourceFiles) {
+       if ($sourceIsAlive) {
+           [string]$strIsAlive = Validate-UpdateSource -UpdateSource $UpdateSource -OfficeLanguages $OfficeLanguages
+           if ($strIsAlive.ToLower() -eq "true") {
+              $sourceIsAlive = $true
+           } else {
+              $sourceIsAlive = $false
+           }
+       }
     }
 
     return $sourceIsAlive
@@ -3212,47 +3235,89 @@ Function Validate-UpdateSource() {
     [CmdletBinding()]
     Param(
         [Parameter(Mandatory=$true)]
-        [string] $UpdateSource = $NULL
+        [string] $UpdateSource = $NULL,
+
+        [Parameter()]
+        [string] $Bitness = "x86",
+
+        [Parameter()]
+        [string[]] $OfficeLanguages = $null
     )
 
-    Process {
-    [bool]$validUpdateSource = $false
+    [bool]$validUpdateSource = $true
     [string]$cabPath = ""
 
     if ($UpdateSource) {
         $mainRegPath = Get-OfficeCTRRegPath
-        $configRegPath = $mainRegPath + "\Configuration"
-        $currentplatform = (Get-ItemProperty HKLM:\$configRegPath -Name Platform -ErrorAction SilentlyContinue).Platform
-        $updateToVersion = (Get-ItemProperty HKLM:\$configRegPath -Name UpdateToVersion -ErrorAction SilentlyContinue).UpdateToVersion
-
-        if ($updateToVersion) {
-            if ($currentplatform.ToLower() -eq "x86") {
-               $cabPath = $UpdateSource + "\Office\Data\v32_" + $updateToVersion + ".cab"
-            }
-            if ($currentplatform.ToLower() -eq "x64") {
-               $cabPath = $UpdateSource + "\Office\Data\v64_" + $updateToVersion + ".cab"
-            }
-        } else {
-            if ($currentplatform.ToLower() -eq "x86") {
-               $cabPath = $UpdateSource + "\Office\Data\v32.cab"
-            }
-            if ($currentplatform.ToLower() -eq "x64") {
-               $cabPath = $UpdateSource + "\Office\Data\v64.cab"
-            }
+        if ($mainRegPath) {
+            $configRegPath = $mainRegPath + "\Configuration"
+            $currentplatform = (Get-ItemProperty HKLM:\$configRegPath -Name Platform -ErrorAction SilentlyContinue).Platform
+            $updateToVersion = (Get-ItemProperty HKLM:\$configRegPath -Name UpdateToVersion -ErrorAction SilentlyContinue).UpdateToVersion
+            $llcc = (Get-ItemProperty HKLM:\$configRegPath -Name ClientCulture -ErrorAction SilentlyContinue).ClientCulture
         }
 
-        if ($cabPath.ToLower().StartsWith("http")) {
-           $cabPath = $cabPath.Replace("\", "/")
-           $validUpdateSource = Test-URL -url $cabPath
+        $currentplatform = $Bitness
+
+        $mainCab = "$UpdateSource\Office\Data\v32.cab"
+        $bitness = "32"
+        if ($currentplatform -eq "x64") {
+            $mainCab = "$UpdateSource\Office\Data\v64.cab"
+            $bitness = "64"
+        }
+
+        if (!($updateToVersion)) {
+           $cabXml = Get-CabVersion -FilePath $mainCab
+           if ($cabXml) {
+               $updateToVersion = $cabXml.Version.Available.Build
+           }
+        }
+
+        [xml]$xml = Get-ChannelXml -Bitness $bitness
+        if ($OfficeLanguages) {
+          $languages = $OfficeLanguages
         } else {
-           $validUpdateSource = Test-Path -Path $cabPath
+          $languages = Get-InstalledLanguages
         }
-        
-        if (!$validUpdateSource) {
-           throw "Invalid UpdateSource. File Not Found: $cabPath"
+
+        $checkFiles = $xml.UpdateFiles.File | Where {   $_.language -eq "0" }
+        foreach ($language in $languages) {
+           $checkFiles += $xml.UpdateFiles.File | Where { $_.language -eq $language.LCID}
         }
+
+        foreach ($checkFile in $checkFiles) {
+           $fileName = $checkFile.name -replace "%version%", $updateToVersion
+           $relativePath = $checkFile.relativePath -replace "%version%", $updateToVersion
+
+           $fullPath = "$UpdateSource$relativePath$fileName"
+           if ($fullPath.ToLower().StartsWith("http")) {
+              $fullPath = $fullPath -replace "\\", "/"
+           } else {
+              $fullPath = $fullPath -replace "/", "\"
+           }
+           
+           $updateFileExists = $false
+           if ($fullPath.ToLower().StartsWith("http")) {
+               $updateFileExists = Test-URL -url $fullPath
+           } else {
+               if ($fullPath.StartsWith("\\")) {
+                  $updateFileExists = Test-ItemPathUNC -Path $fullPath
+               } else {
+                  $updateFileExists = Test-Path -Path $fullPath
+               }
+           }
+
+           if (!($updateFileExists)) {
+              $fileExists = $missingFiles.Contains($fullPath)
+              if (!($fileExists)) {
+                 $missingFiles.Add($fullPath)
+                 Write-Host "Source File Missing: $fullPath"
+                 Write-Log -Message "Source File Missing: $fullPath" -severity 1 -component "Office 365 Update Anywhere" 
+              }     
+              $validUpdateSource = $false
+           }
+        }
+
     }
-
+    
     return $validUpdateSource
-    }
 }
