@@ -1286,38 +1286,28 @@ Distributes the package 'Office 365 ProPlus' to the distribution point cm.contos
     {
        try {
 
-         Check-AdminAccess
+        Check-AdminAccess
 
-        $ChannelList = @("FirstReleaseCurrent", "Current", "FirstReleaseDeferred", "Deferred")
-        $ChannelXml = Get-ChannelXml
+        $package = CheckIfPackageExists
 
-        foreach ($ChannelName in $ChannelList) {
-           if ($Channels -contains $ChannelName) {
-               $selectChannel = $ChannelXml.UpdateFiles.baseURL | Where {$_.branch -eq $ChannelName.ToString() }
-               $latestVersion = Get-ChannelLatestVersion -ChannelUrl $selectChannel.URL -Channel $ChannelName
-               $ChannelShortName = ConvertChannelNameToShortName -ChannelName $ChannelName
-               $package = CheckIfPackageExists
+        if (!($package)) {
+            throw "You must run the Create-CMOfficePackage function before running this function"
+        }
 
-               if (!($package)) {
-                  throw "You must run the Create-CMOfficePackage function before running this function"
-               }
+        LoadCMPrereqs -SiteCode $SiteCode -CMPSModulePath $CMPSModulePath
 
-               LoadCMPrereqs -SiteCode $SiteCode -CMPSModulePath $CMPSModulePath
+        if ($package) {
+            [string]$packageName = $package.Name
 
-               if ($package) {
-                    [string]$packageName = $package.Name
+            if ($DistributionPointGroupName) {
+                Write-Host "Starting Content Distribution for package: $packageName"
+	            Start-CMContentDistribution -PackageName $packageName -DistributionPointGroupName $DistributionPointGroupName
+            }
 
-                    if ($DistributionPointGroupName) {
-                        Write-Host "Starting Content Distribution for package: $packageName"
-	                    Start-CMContentDistribution -PackageName $packageName -DistributionPointGroupName $DistributionPointGroupName
-                    }
-
-                    if ($DistributionPoint) {
-                        Write-Host "Starting Content Distribution for package: $packageName"
-                        Start-CMContentDistribution -PackageName $packageName -DistributionPointName $DistributionPoint
-                    }
-               }
-           }
+            if ($DistributionPoint) {
+                Write-Host "Starting Content Distribution for package: $packageName"
+                Start-CMContentDistribution -PackageName $packageName -DistributionPointName $DistributionPoint
+            }
         }
 
         Write-Host 
