@@ -12,15 +12,15 @@
                       TitleForeground="#333333"
                       WindowTitleBrush="#f4f4f4"
                       Background="#e6e6e6"
-                      MinWidth="600"
+                      MinWidth="300"
                       MinHeight="400"
-                      MaxWidth="950"
+                      MaxWidth="430"
                       MaxHeight="200"
                       SaveWindowPosition="True"
                       WindowStartupLocation="CenterScreen"
                       BorderThickness="1"
                       GlowBrush="{DynamicResource WindowTitleColorBrush}"
-                      NonActiveGlowBrush="#333333"
+                      NonActiveGlowBrush="#f4f4f4"
                       mc:Ignorable="d"
                       d:DataContext="{d:DesignInstance metroDemo:MainWindowViewModel}"
                       x:Name="RemoteClientInfo_Dialog"  
@@ -65,9 +65,12 @@
             <RowDefinition Height="40" />
         </Grid.RowDefinitions>
 
-        <TextBox Grid.Row="0" Grid.Column="0" x:Name="txtBxAddMachines" Width="400" TextWrapping="Wrap" Style="{StaticResource MetroTextBox}" AcceptsReturn="True"  
-                 Text="mClark	pass@word1	10.10.8.32	WORKGROUP," HorizontalAlignment="Center"  />
-        <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="108"  >
+        <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0"   >
+            <TextBox x:Name="txtBxAddMachines" Width="400" Height="300" TextWrapping="Wrap" Style="{StaticResource MetroTextBox}" AcceptsReturn="True"  
+                 Text="mClark	pass@word1	192.168.1.100	WORKGROUP," HorizontalAlignment="Center"  />
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Right" >
             <Button Name="OkButton" Content="OK" Margin="2" Height="30" Click="OkButton_Click" />
             <Button Name="CancelButton" Content="Cancel" Margin="2" Height="30" Click="CancelButton_Click"  />
         </StackPanel>

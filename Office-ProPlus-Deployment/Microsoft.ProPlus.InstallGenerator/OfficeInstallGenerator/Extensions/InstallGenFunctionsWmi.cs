@@ -90,13 +90,13 @@ public class InstallOfficeWmi
         try
         {
             await Task.Run(() => { scope.Connect(); });
-            await Task.Run(() => { scope2.Connect(); });
+            //await Task.Run(() => { scope2.Connect(); });
         }
 
         catch (Exception)
         {
             await Task.Run(() => { scope.Connect(); });
-            await Task.Run(() => { scope2.Connect(); });
+            //await Task.Run(() => { scope2.Connect(); });
         }
 
     }

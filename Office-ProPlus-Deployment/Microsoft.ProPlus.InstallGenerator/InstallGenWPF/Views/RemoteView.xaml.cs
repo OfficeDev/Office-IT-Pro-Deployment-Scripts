@@ -17,6 +17,7 @@ using Microsoft.OfficeProPlus.InstallGenerator.Model;
 using Microsoft.OfficeProPlus.Downloader.Model;
 using Microsoft.OfficeProPlus.Downloader;
 using System.Windows.Media;
+using System.Windows.Threading;
 using UserControl = System.Windows.Controls.UserControl;
 using System.Diagnostics;
 
@@ -324,22 +325,6 @@ namespace MetroDemo.ExampleViews
             {
                 LogErrorMessage(ex);
             }
-            //if (txtBxAddMachines.Text != "")
-            //{
-
-            //    GlobalObjects.ViewModel.BlockNavigation = true;
-            //    toggleControls(false);
-            //    WaitImage.Visibility = Visibility.Visible;
-
-            //    var connectionInfo = txtBxAddMachines.Text.Split('\\');
-
-            //    await Task.Run(async () => { await addMachines(connectionInfo); });
-            //}
-
-            //RemoteMachineList.ItemsSource = null;
-            //RemoteMachineList.ItemsSource = remoteClients;
-            //toggleControls(true);
-            //WaitImage.Visibility = Visibility.Hidden;
 
         }
 
@@ -471,13 +456,24 @@ namespace MetroDemo.ExampleViews
             WaitImage.Visibility = Visibility.Visible;
             var connectionInfo = new string[4];
 
-            foreach (var client in remoteClients)
+            for(var i=0;  i < remoteClients.Count; i++)
             {
+                var client = remoteClients[i];
+                var row = (DataGridRow)RemoteMachineList.ItemContainerGenerator.ContainerFromIndex(i);
+                var updatingImg = row.FindChild<System.Windows.Controls.Image>("ImgUpdating");
+                var successImg = row.FindChild<System.Windows.Controls.Image>("ImgSuccess");
+                var failedImg = row.FindChild<System.Windows.Controls.Image>("ImgFail");
+                var statusText = row.FindChild<System.Windows.Controls.TextBlock>("TxtStatus");
+
 
                 if (client.include)
                 {
                     try
                     {
+                        updatingImg.Visibility = Visibility.Collapsed;
+                        successImg.Visibility = Visibility.Collapsed;
+                        failedImg.Visibility = Visibility.Collapsed;
+
                         connectionInfo = new string[4] { client.UserName, client.Password, client.Machine, client.WorkGroup };
                         var installGenerator = new OfficeInstallManager(connectionInfo);
 
@@ -488,18 +484,24 @@ namespace MetroDemo.ExampleViews
                         var officeInstall = await installGenerator.CheckForOfficeInstallAsync();
                         var updateInfo = new List<string> { client.UserName, client.Password, client.Machine, client.WorkGroup, client.Channel.Name, client.Version.Number };
 
+                        
                         client.Status = "Updating";
-                        //RemoteMachineList.Items.Refresh();
+                        statusText.Text = "Updating";
+                        updatingImg.Visibility = Visibility.Visible;
+
                         await Task.Run(async () => { await ChangeOfficeChannelWmi(updateInfo, officeInstall); });
+
                         client.Status = "Success";
-                        //RemoteMachineList.Items.Refresh();
+                        statusText.Text = "Success";
+                        updatingImg.Visibility = Visibility.Collapsed;
+                        successImg.Visibility = Visibility.Visible;
+
 
 
                     }
                     catch (Exception ex)// if fails via WMI, try via powershell
                     {
                         LogWmiErrorMessage(ex, connectionInfo);
-                        client.Status = "Error";
                         try
                         {
                             string PSPath = System.IO.Directory.GetCurrentDirectory() + "\\Resources\\PowershellAttempt.txt";
@@ -513,23 +515,32 @@ namespace MetroDemo.ExampleViews
                             string readtext = System.IO.File.ReadAllText(PSPath);
                             if (readtext.Contains("Update Completed") && !readtext.Contains("Update Not Running"))
                             {
-                                client.Status = "Succeeded";
+                                successImg.Visibility = Visibility.Collapsed;
+                                failedImg.Visibility = Visibility.Visible;
+                                client.Status = "Success";
+                                statusText.Text = "Success";
+
                             }
                             else
                             {
+                                updatingImg.Visibility = Visibility.Collapsed;
+                                failedImg.Visibility = Visibility.Visible;
                                 client.Status = "Failed";
+                                statusText.Text = "Failed";
                             }
                         }
-                        catch (Exception)
+                        catch (Exception ex1)
                         {
-                            client.Status = "Error";
+                            updatingImg.Visibility = Visibility.Collapsed;
+                            failedImg.Visibility = Visibility.Visible;
+                            client.Status = "Error: "+ex1.Message;
+                            statusText.Text = "Error: "+ex1.Message;
                         }
                     }
 
 
                 }
             }
-            RemoteMachineList.Items.Refresh();
             GlobalObjects.ViewModel.BlockNavigation = false;
             WaitImage.Visibility = Visibility.Hidden;
             toggleControls(true);
@@ -597,17 +608,15 @@ namespace MetroDemo.ExampleViews
 
                     versions.Add(tempVersion);
                 }
-                else
-                {
-                    var tempVersion = new officeVersion()
-                    {
-                        Number = version.Version.ToString()
-                    };
-
-                    versions.Insert(0, tempVersion);
-
-                }
+                
             }
+
+            var selectedVersion = new officeVersion()
+            {
+                Number = currentVersion
+            };
+
+            versions.Insert(0, selectedVersion);
 
             return versions;
         }
@@ -654,9 +663,10 @@ namespace MetroDemo.ExampleViews
                 }
 
                 versionCB.ItemsSource = newVersions;
+                versionCB.Items.Refresh();
                 if (GlobalObjects.ViewModel.newVersion == null)
                 {
-                    versionCB.SelectedItem = remoteClients[0];
+                    versionCB.SelectedItem = remoteClients[0].Version;
                 }
                
 
