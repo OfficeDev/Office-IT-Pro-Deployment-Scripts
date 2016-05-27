@@ -1421,6 +1421,38 @@ function Get-ChannelUrl() {
 
 }
 
+Function Get-LatestVersion() {
+  [CmdletBinding()]
+  Param(
+     [Parameter(Mandatory=$true)]
+     [string] $UpdateURLPath
+  )
+
+  process {
+    [array]$totalVersion = @()
+    $Version = $null
+
+    $LatestBranchVersionPath = $UpdateURLPath + '\Office\Data'
+    if(Test-Path $LatestBranchVersionPath){
+        $DirectoryList = Get-ChildItem $LatestBranchVersionPath
+        Foreach($listItem in $DirectoryList){
+            if($listItem.GetType().Name -eq 'DirectoryInfo'){
+                $totalVersion+=$listItem.Name
+            }
+        }
+    }
+
+    $totalVersion = $totalVersion | Sort-Object -Descending
+    
+    #sets version number to the newest version in directory for channel if version is not set by user in argument  
+    if($totalVersion.Count -gt 0){
+        $Version = $totalVersion[0]
+    }
+
+    return $Version
+  }
+}
+
 function Get-ChannelLatestVersion() {
    [CmdletBinding()]
    param( 

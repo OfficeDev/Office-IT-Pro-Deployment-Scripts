@@ -327,7 +327,7 @@ function DownloadFile($url, $targetFile) {
    try {
        $uri = New-Object "System.Uri" "$url"
        $request = [System.Net.HttpWebRequest]::Create($uri)
-       $request.set_Timeout(15000) #15 second timeout
+       $request.set_Timeout(3000) #15 second timeout
 
        $response = $request.GetResponse()
        $totalLength = [System.Math]::Floor($response.get_ContentLength()/1024)
@@ -353,6 +353,7 @@ function DownloadFile($url, $targetFile) {
        $responseStream.Dispose()
        break;
    } catch {
+     $strError = $_.Message
      if ($t -ge 9) {
         throw
      }

@@ -847,6 +847,101 @@ Function Validate-UpdateSource() {
     return $validUpdateSource
 }
 
+Function Copy-OfficeSourceFiles() {
+    [CmdletBinding()]
+    Param(
+        [Parameter(Mandatory=$true)]
+        [string] $Path = $NULL,
+
+        [Parameter(Mandatory=$true)]
+        [string] $Destination = $NULL,
+
+        [Parameter()]
+        [string] $Bitness = "x86",
+
+        [Parameter()]
+        [string[]] $OfficeLanguages = $null
+    )
+
+    [bool]$validUpdateSource = $true
+    [string]$cabPath = ""
+
+    if (($Path) -and ($Destination)) {
+        $mainRegPath = Get-OfficeCTRRegPath
+        if ($mainRegPath) {
+            $configRegPath = $mainRegPath + "\Configuration"
+            $currentplatform = (Get-ItemProperty HKLM:\$configRegPath -Name Platform -ErrorAction SilentlyContinue).Platform
+            $updateToVersion = (Get-ItemProperty HKLM:\$configRegPath -Name UpdateToVersion -ErrorAction SilentlyContinue).UpdateToVersion
+            $llcc = (Get-ItemProperty HKLM:\$configRegPath -Name ClientCulture -ErrorAction SilentlyContinue).ClientCulture
+        }
+
+        $currentplatform = $Bitness
+
+        $mainCab = "$Path\Office\Data\v32.cab"
+        $bitness = "32"
+        if ($currentplatform -eq "x64") {
+            $mainCab = "$Path\Office\Data\v64.cab"
+            $bitness = "64"
+        }
+
+        if (!($updateToVersion)) {
+           $cabXml = Get-CabVersion -FilePath $mainCab
+           if ($cabXml) {
+               $updateToVersion = $cabXml.Version.Available.Build
+           }
+        }
+
+        [xml]$xml = Get-ChannelXml -Bitness $bitness
+        if ($OfficeLanguages) {
+          $languages = $OfficeLanguages
+        } else {
+          $languages = Get-InstalledLanguages
+        }
+
+        $checkFiles = $xml.UpdateFiles.File | Where {   $_.language -eq "0" }
+        foreach ($language in $languages) {
+           $checkFiles += $xml.UpdateFiles.File | Where { $_.language -eq $language.LCID}
+        }
+
+        foreach ($checkFile in $checkFiles) {
+           $fileName = $checkFile.name -replace "%version%", $updateToVersion
+           $relativePath = $checkFile.relativePath -replace "%version%", $updateToVersion
+
+           $fullPath = "$UpdateSource$relativePath$fileName"
+           if ($fullPath.ToLower().StartsWith("http")) {
+              $fullPath = $fullPath -replace "\\", "/"
+           } else {
+              $fullPath = $fullPath -replace "/", "\"
+           }
+           
+           $updateFileExists = $false
+           if ($fullPath.ToLower().StartsWith("http")) {
+               $updateFileExists = Test-URL -url $fullPath
+           } else {
+               if ($fullPath.StartsWith("\\")) {
+                  $updateFileExists = Test-ItemPathUNC -Path $fullPath
+               } else {
+                  $updateFileExists = Test-Path -Path $fullPath
+               }
+           }
+
+           if (!($updateFileExists)) {
+              $fileExists = $missingFiles.Contains($fullPath)
+              if (!($fileExists)) {
+                 $missingFiles.Add($fullPath)
+                 Write-Host "Source File Missing: $fullPath"
+                 Write-Log -Message "Source File Missing: $fullPath" -severity 1 -component "Office 365 Update Anywhere" 
+              }     
+              $validUpdateSource = $false
+           }
+        }
+
+    }
+    
+    return $validUpdateSource
+}
+
+
 function Detect-Channel {
    param( 
 
@@ -1324,6 +1419,38 @@ function Get-ChannelUrl() {
       return $currentChannel
    }
 
+}
+
+Function Get-LatestVersion() {
+  [CmdletBinding()]
+  Param(
+     [Parameter(Mandatory=$true)]
+     [string] $UpdateURLPath
+  )
+
+  process {
+    [array]$totalVersion = @()
+    $Version = $null
+
+    $LatestBranchVersionPath = $UpdateURLPath + '\Office\Data'
+    if(Test-Path $LatestBranchVersionPath){
+        $DirectoryList = Get-ChildItem $LatestBranchVersionPath
+        Foreach($listItem in $DirectoryList){
+            if($listItem.GetType().Name -eq 'DirectoryInfo'){
+                $totalVersion+=$listItem.Name
+            }
+        }
+    }
+
+    $totalVersion = $totalVersion | Sort-Object -Descending
+    
+    #sets version number to the newest version in directory for channel if version is not set by user in argument  
+    if($totalVersion.Count -gt 0){
+        $Version = $totalVersion[0]
+    }
+
+    return $Version
+  }
 }
 
 function Get-ChannelLatestVersion() {
