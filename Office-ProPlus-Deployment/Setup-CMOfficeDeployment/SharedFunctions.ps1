@@ -170,31 +170,43 @@ Function Get-OfficeVersion {
 <#
 .Synopsis
 Gets the Office Version installed on the computer
+
 .DESCRIPTION
 This function will query the local or a remote computer and return the information about Office Products installed on the computer
+
 .NOTES   
 Name: Get-OfficeVersion
 Version: 1.0.4
 DateCreated: 2015-07-01
 DateUpdated: 2015-08-28
+
 .LINK
 https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
+
 .PARAMETER ComputerName
 The computer or list of computers from which to query 
+
 .PARAMETER ShowAllInstalledProducts
 Will expand the output to include all installed Office products
+
 .EXAMPLE
 Get-OfficeVersion
+
 Description:
 Will return the locally installed Office product
+
 .EXAMPLE
 Get-OfficeVersion -ComputerName client01,client02
+
 Description:
 Will return the installed Office product on the remote computers
+
 .EXAMPLE
 Get-OfficeVersion | select *
+
 Description:
 Will return the locally installed Office product with all of the available properties
+
 #>
 [CmdletBinding(SupportsShouldProcess=$true)]
 param(
@@ -405,17 +417,15 @@ process {
               $primaryOfficeProduct = $true
            }
 
-           $clickToRunComponent = $regProv.GetDWORDValue($HKLM, $path, "ClickToRunComponent").uValue
-           $modifyPath = $regProv.GetStringValue($HKLM, $path, "ModifyPath").sValue 
            $version = $regProv.GetStringValue($HKLM, $path, "DisplayVersion").sValue
+           $modifyPath = $regProv.GetStringValue($HKLM, $path, "ModifyPath").sValue 
 
            $cltrUpdatedEnabled = $NULL
            $cltrUpdateUrl = $NULL
            $clientCulture = $NULL;
 
            [string]$clickToRun = $false
-
-           if ($clickToRunComponent) {
+           if ($ClickToRunPathList.Contains($installPath.ToUpper())) {
                $clickToRun = $true
                if ($name.ToUpper().Contains("MICROSOFT OFFICE")) {
                   $primaryOfficeProduct = $true
@@ -1411,6 +1421,38 @@ function Get-ChannelUrl() {
 
 }
 
+Function Get-LatestVersion() {
+  [CmdletBinding()]
+  Param(
+     [Parameter(Mandatory=$true)]
+     [string] $UpdateURLPath
+  )
+
+  process {
+    [array]$totalVersion = @()
+    $Version = $null
+
+    $LatestBranchVersionPath = $UpdateURLPath + '\Office\Data'
+    if(Test-Path $LatestBranchVersionPath){
+        $DirectoryList = Get-ChildItem $LatestBranchVersionPath
+        Foreach($listItem in $DirectoryList){
+            if($listItem.GetType().Name -eq 'DirectoryInfo'){
+                $totalVersion+=$listItem.Name
+            }
+        }
+    }
+
+    $totalVersion = $totalVersion | Sort-Object -Descending
+    
+    #sets version number to the newest version in directory for channel if version is not set by user in argument  
+    if($totalVersion.Count -gt 0){
+        $Version = $totalVersion[0]
+    }
+
+    return $Version
+  }
+}
+
 function Get-ChannelLatestVersion() {
    [CmdletBinding()]
    param( 
@@ -1500,5 +1542,3 @@ function ConvertChannelNameToShortName {
        }
     }
 }
-
-
