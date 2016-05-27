@@ -666,6 +666,11 @@ Create-CMOfficeDeploymentProgram -Channels Current -DeploymentType DeployWithCon
 
                      $configId = "Config-$channel-$platform-Bit"
                      $configFileName = $configId + ".xml"
+
+                     if ($CustomName) {
+                         $configFileName = $configId + "-" + $CustomName + ".xml"
+                     }
+
                      $configFilePath = "$LocalPath\$configFileName"
 
                      Copy-Item -Path $ConfigurationXml -Destination $configFilePath
@@ -690,7 +695,8 @@ Create-CMOfficeDeploymentProgram -Channels Current -DeploymentType DeployWithCon
                        $ProgramName = $tmpCustomName
                      }
 
-                     $CommandLine = "Office2016Setup.exe /configure $configFileName"
+                     $CommandLine = "%windir%\Sysnative\windowsPowershell\V1.0\powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive " + `
+                                    "-NoProfile -WindowStyle Hidden -Command .\DeployConfigFile.ps1 -ConfigFileName $configFileName"
                  }
 
                  [string]$packageId = $null

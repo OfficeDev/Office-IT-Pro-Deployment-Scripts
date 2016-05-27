@@ -749,7 +749,12 @@ Function Test-UpdateSource() {
 
     if ($ValidateUpdateSourceFiles) {
        if ($sourceIsAlive) {
-           $sourceIsAlive = Validate-UpdateSource -UpdateSource $UpdateSource -OfficeLanguages $OfficeLanguages
+           [string]$strIsAlive = Validate-UpdateSource -UpdateSource $UpdateSource -OfficeLanguages $OfficeLanguages
+           if ($strIsAlive.ToLower() -eq "true") {
+              $sourceIsAlive = $true
+           } else {
+              $sourceIsAlive = $false
+           }
        }
     }
 
