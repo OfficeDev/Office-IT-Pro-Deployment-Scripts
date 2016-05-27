@@ -53,7 +53,7 @@ $targetFilePath = "$env:temp\configuration.xml"
 #from which the script is run.  It will then remove the Version attribute from the XML to ensure the installation gets the latest version
 #when updating an existing install and then it will initiate a install
 
-Generate-ODTConfigurationXml -Languages AllInUseLanguages -TargetFilePath $targetFilePath | Set-ODTAdd -Version $NULL | Set-ODTDisplay -Level Full -AcceptEULA $true 
+Generate-ODTConfigurationXml -Languages AllInUseLanguages -TargetFilePath $targetFilePath | Set-ODTAdd -Version $NULL | Set-ODTDisplay -Level None -AcceptEULA $true 
 
 $languages = Get-XMLLanguages -Path $targetFilePath
 
