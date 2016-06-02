@@ -21,6 +21,11 @@ Process {
  }
  . $shareFunctionsPath
 
+  #Importing all required functions
+. $scriptPath\Edit-OfficeConfigurationFile.ps1
+. $scriptPath\Install-OfficeClickToRun.ps1
+. $scriptPath\SharedFunctions.ps1
+
  [string]$configFilePath = "$scriptPath\$ConfigFileName"
  [string]$targetFilePath = "$env:temp\configuration.xml"
 
@@ -44,11 +49,6 @@ Process {
       $UpdateURLPath = "$UpdateURLPath\$SourceFileFolder"
    }
  }
-
- #Importing all required functions
-. $scriptPath\Edit-OfficeConfigurationFile.ps1
-. $scriptPath\Install-OfficeClickToRun.ps1
-. $scriptPath\SharedFunctions.ps1
 
 $languages = Get-XMLLanguages -Path $targetFilePath
 

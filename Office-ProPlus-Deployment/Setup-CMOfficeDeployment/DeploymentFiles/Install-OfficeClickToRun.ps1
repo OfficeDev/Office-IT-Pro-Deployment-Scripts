@@ -61,6 +61,7 @@ function Install-OfficeClickToRun {
     )
 
     $scriptRoot = GetScriptRoot
+    $localPath = "$env:TEMP\setup.exe"
 
     #Load the file
     [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
@@ -121,7 +122,9 @@ function Install-OfficeClickToRun {
         }
     }
 
-    $cmdLine = $officeCtrPath
+    Copy-Item -Path $officeCtrPath -Destination $localPath -Force
+
+    $cmdLine = $localPath
     $cmdArgs = "/configure " + $TargetFilePath
 
     Write-Host "Installing Office Click-To-Run..."
