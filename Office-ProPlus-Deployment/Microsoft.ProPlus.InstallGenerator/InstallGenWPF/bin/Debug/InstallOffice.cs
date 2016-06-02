@@ -145,10 +145,10 @@ public class InstallOffice
                 Console.WriteLine("Running Silent Install...");
                 SetDisplayLevel(doc1);
             }
-            else
-            {
-                SetDisplayLevel(doc1, false);
-            }
+            //else
+            //{
+            //    SetDisplayLevel(doc1, false);
+            //}
             doc1.Save(xmlFilePath);
 
             var p = new Process
