@@ -350,8 +350,7 @@ public class CustomActions
             {
                 StartInfo = new ProcessStartInfo()
                 {
-                    FileName = "cmd",
-                    Arguments = "/c start cmd /c \"" + installDir + "\\InstallOfficeProPlus.exe\"",
+                    FileName = installDir + @"\InstallOfficeProPlus.exe",
                     CreateNoWindow = true,
                     UseShellExecute = false
                 },
