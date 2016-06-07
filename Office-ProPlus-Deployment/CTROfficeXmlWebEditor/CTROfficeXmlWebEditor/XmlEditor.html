@@ -304,7 +304,7 @@
                                             <span class="ms-font-xl">Tools</span>
                                         </div>
                                         <div id="installRow" class="ms-Table-row navrow">
-                                            <span class="ms-Table-cell" onclick="setPanel('GenerateInstallPanel', 'installRow')">Install Generator (Preview)</span>
+                                            <span class="ms-Table-cell" onclick="setPanel('GenerateInstallPanel', 'installRow')">Install Toolkit</span>
                                         </div>
                                     </div>
 
@@ -330,13 +330,20 @@
                                         </table>
                                         <div class="ms-Dropdown">
                                             <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
+                                            
                                             <select id="cbProduct" class="ms-Dropdown-select">
                                                 <option value="O365ProPlusRetail">Office 365 ProPlus</option>
                                                 <option value="O365BusinessRetail">Office 365 for Business</option>
                                                 <option value="VisioProRetail">Visio for Office 365</option>
                                                 <option value="ProjectProRetail">Project for Office 365</option>
+                                                <option value="VisioProXVolume">Visio Professional 2016 (Volume License)</option>
+                                                <option value="VisioStdXVolume">Visio Standard 2016 (Volume License)</option>
+                                                <option value="ProjectProXVolume">Project Professional 2016 (Volume License)</option>
+                                                <option value="ProjectStdXVolume">Project Standard 2016 (Volume License)</option>
                                             </select>
+                                            
                                         </div>
+
 
                                         <table>
                                             <tr>
@@ -360,7 +367,7 @@
                                             <table>
                                                 <tr>
                                                     <td>
-                                                        <label class="ms-Label">Branch</label>
+                                                        <label class="ms-Label">Channel</label>
                                                     </td>
                                                     <td>
                                                         <i id="branchInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('branchInfo', this)"></i>
@@ -375,9 +382,9 @@
                                                     <option oldvalue="Current" value="CurrentChannel">Current Channel</option>
                                                     <option oldvalue="FirstReleaseCurrent" value="FirstReleaseCurrentChannel"> First Release Current Channel</option> -->
                                                     <option oldvalue="Current" value="Current">Current</option>
-                                                    <option oldvalue="Business" value="Business">Deferred</option>
+                                                    <option oldvalue="Business" value="Deferred">Deferred</option>
                                                     <option oldvalue="FirstReleaseCurrent" value="FirstReleaseCurrent"> First Release Current</option>
-                                                    <option oldvalue="FirstReleaseBusiness" value="FirstReleaseBusiness"> First Release Deferred</option>                                                                                                        
+                                                    <option oldvalue="FirstReleaseBusiness" value="FirstReleaseDeferred"> First Release Deferred</option>                                                                                                        
                                                 </select>
                                             </div>
                                         </div>
@@ -466,17 +473,27 @@
                                     <div>
                                         <h2 class="ms-font-xl">Optional Fields</h2>
 
+                                        <div id="mgtToggleGroup" class="ms-Toggle">
+                                            <br />
+
+                                            <span class="ms-Toggle-description">Enable Configuration Manager support</span>
+                                            <input type="checkbox" id="mgtToggle" class="ms-Toggle-input">
+                                            <label for="mgtToggle" class="ms-Toggle-field">
+                                                <span class="ms-Label ms-Label--off">Disabled</span>
+                                                <span class="ms-Label ms-Label--on">Enabled</span>
+                                            </label>
+                                        </div>
+
                                         <table>
                                             <tr>
                                                 <td>
                                                     <label class="ms-Label">Version</label>
                                                 </td>
                                                 <td>
-                                                    <i id="versionInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('versionInfo', this)"></i>
+                                                    <i id="versionInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px; text-align: center; cursor: pointer;" onclick="toggleInfo('versionInfo', this)"></i>
                                                 </td>
                                             </tr>
                                         </table>
-
                                         <form data-toggle="validator" role="form">
                                             <div class="input-group" style="width:100%">
                                                 <div id="versionTextBox" style="width:100%">
@@ -604,6 +621,10 @@
                                             <option value="O365BusinessRetail">Office 365 for Business</option>
                                             <option value="VisioProRetail">Visio for Office 365</option>
                                             <option value="ProjectProRetail">Project for Office 365</option>
+                                            <option value="VisioProXVolume">Visio Professional 2016 (Volume License)</option>
+                                            <option value="VisioStdXVolume">Visio Standard 2016 (Volume License)</option>
+                                            <option value="ProjectProXVolume">Project Professional 2016 (Volume License)</option>
+                                            <option value="ProjectStdXVolume">Project Standard 2016 (Volume License)</option>
                                         </select>
                                     </div>
 
@@ -701,7 +722,7 @@
                                         <table>
                                             <tr>
                                                 <td>
-                                                    <label class="ms-Label">Branch</label>
+                                                    <label class="ms-Label">Channel</label>
                                                 </td>
                                                 <td>
                                                     <i id="updatesBranchInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('updatesBranchInfo', this)"></i>
@@ -711,14 +732,10 @@
                                         <div class="ms-Dropdown">
                                             <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
                                             <select id="cbUpdateBranch" class="ms-Dropdown-select">
-                                          <!--  <option oldvalue="Business" value="DeferredChannel">Deferred Channel</option>
-                                                <option oldvalue="FirstReleaseBusiness" value="FirstReleaseDeferredChannel"> First Release Deferred Channel</option>
-                                                <option oldvalue="Current" value="CurrentChannel">Current Channel</option>
-                                                <option oldvalue="FirstReleaseCurrent" value="FirstReleaseCurrentChannel"> First Release Current Channel</option>  -->
-                                                <option value="Current">Current</option>
-                                                <option value="Business">Deferred</option>
-                                                <option value="FirstReleaseCurrent"> First Release Current</option>
-                                                <option value="FirstReleaseBusiness"> First Release Deferred</option>                                                                                                
+                                                <option oldvalue="Business" value="Deferred">Deferred</option>
+                                                <option oldvalue="FirstReleaseBusiness" value="FirstReleaseDeferred">First Release Deferred</option>
+                                                <option oldvalue="Current" value="Current">Current</option>
+                                                <option oldvalue="FirstReleaseCurrent" value="FirstReleaseCurrent">First Release Current</option>                                                                                             
                                             </select>
                                         </div>
                                     </div>
@@ -931,12 +948,30 @@
                                                     <label class="ms-Toggle-description">SharedComputerLicensing</label>
                                                 </td>
                                                 <td>
-                                                    <i id="sclInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('sclInfo', this)"></i>
+                                                    <i id="sclInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px; text-align: center; cursor: pointer;" onclick="toggleInfo('sclInfo', this)"></i>
                                                 </td>
                                             </tr>
                                         </table>
-                                        <input type="checkbox" id="sharedComputerLicensing" class="ms-Toggle-input" />
+                                        <input type="checkbox" id="sharedComputerLicensing" class="ms-Toggle-input"/>
                                         <label for="sharedComputerLicensing" class="ms-Toggle-field">
+                                            <span class="ms-Label ms-Label--off">False</span>
+                                            <span class="ms-Label ms-Label--on">True</span>
+                                        </label>
+                                    </div>
+
+                                    <div id="pinIconsProperty" class="ms-Toggle">
+                                        <table>
+                                            <tr>
+                                                <td>
+                                                    <label class="ms-Toggle-description">PinIconsToTaskbar</label>
+                                                </td>
+                                                <td>
+                                                    <i id="pinIconsIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('pinIconInfo', this)"></i>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        <input type="checkbox" id="pinIcons" class="ms-Toggle-input" />
+                                        <label for="pinIcons" class="ms-Toggle-field">
                                             <span class="ms-Label ms-Label--off">False</span>
                                             <span class="ms-Label ms-Label--on">True</span>
                                         </label>
@@ -992,22 +1027,29 @@
                                 <!-- End Templates Panel -->
                                 <!--Start Generate Install Panel-->
                                 <div id="GenerateInstallPanel" class="option-panel">
-                                    <h1 class="ms-font-xxl">Generate your Installation</h1>
+                                    <h1 class="ms-font-xxl">Installation Toolkit</h1>
                                     <div class="ms-font-m" style="margin: 0px 10px 0px 10px">
-                                        The Install Generator is an application that will package an Office 365 ProPlus installation into a single
+                                        The Install Toolkit is an application that will package an Office 365 ProPlus installation into a single
                                         Executable or Windows Installer Package (MSI) file. The XML configuration file is embedded in the file which allows
-                                        you to easily distribute Office 365 ProPlus with a custom configuration.
+                                        you to easily distribute Office 365 ProPlus with a custom configuration. 
                                     </div>
 
                                     <br />
+
                                     <div class="ms-font-m" style="margin: 0px 10px 0px 10px">
-                                        The Install Generator allows you to select installation options. If you would like to use the configuration xml generated by this
+                                        <span style="font-weight: bold;">(New)</span> The Install Toolkit now includes the ability to manage a local workstations Office 365 ProPlus installation. It allows you to install or uninstall Office 365 ProPlus, update your existing installation to the newest version or change the update channel. 
+                                    </div>
+
+                                    <br />
+
+                                    <div class="ms-font-m" style="margin: 0px 10px 0px 10px">
+                                        The Install Toolkit allows you to select installation options. If you would like to use the configuration xml generated by this
                                         website you can export it as an xml file and import it into the application.
                                     </div>
 
                                     <br />
                                     <div class="ms-font-m" style="margin: 0px 10px 0px 10px">
-                                        The Install Generator is a desktop application that is installed via Microsoft ClickOnce.  To install the application click the
+                                        The Install Tookkit is a desktop application that is installed via Microsoft ClickOnce.  To install the application click the
                                         button below or compile the application yourself using the source code <a href="https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/Development/Office-ProPlus-Deployment/Microsoft.ProPlus.InstallGenerator">here.</a>
                                     </div>
 
@@ -1022,7 +1064,7 @@
                                 <div id="xmlSec" style="border-left: solid 1px #e5e3e3;height:500px;">
                                     <div class="ms-CommandBar" style="min-width: 500px">
 
-                                        <div class="ms-CommandBar-sideCommands" style="float: left;text-align: left;">
+                                        <div class="ms-CommandBar-sideCommands" style="float: left; text-align: left;">
                                             <div class="ms-CommandBarItem">
                                                 <div class="ms-CommandBarItem-linkWrapper" onclick="clickUpload();">
                                                     <div class="ms-CommandBarItem-link">
@@ -1063,11 +1105,15 @@
                                                     </div>
                                                 </div>
                                             </div>
-
-
-
+                                            <div class="ms-CommandBarItem">
+                                                <div class="ms-CommandBarItem-linkWrapper">
+                                                    <div class="ms-CommandBarItem-link" onclick="downloadOdt()" style="position: relative">
+                                                        <span class="ms-CommandBarItem-icon ms-Icon ms-Icon--download"></span>
+                                                        <span class="ms-CommandBarItem-commandText ms-font-m ms-font-weight-regular">Download Office Deployment Tool</span>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
-
                                     </div>
                                     <div class="ms-TextField" style="margin-top:0px;margin-left: 30px;">
                                         <pre style="border: white none 0;padding:0px;margin:0px;background-color: white;">
@@ -1156,8 +1202,20 @@
                 </p>
             </div>
             <div id="welcomeInner" class="ms-Dialog-inner" style="overflow-y: auto; height: auto; max-height: 90%">
-                <div class="ms-Dialog-content" style="width: 98%; padding-left: 20px; padding-top: 10px; height:100%">
+                <div class="ms-Dialog-content" style="width: 98%; padding-left: 20px; padding-top: 20px; height: 100%">
                     <div id="disclaimer">
+                        <p class="ms-font-l ms-fontWeight-semibold">
+                            <img src="images/Warning64.png" alt="Warning" />
+                            ALERT: New Version of the Office Deployment Tool (ODT)
+                            <p class="ms-font-m">
+                                The latest version of the Office Deployment Tool (ODT) now supports using the Channel parameter in the configuration XML. This site will now use
+                                the Channel parameter instead of Branch. Previous versions of the Office Deployment Tool (ODT) will not recognize the Channel parameter and will
+                                ignore it and default to Deferred channel. To avoid this issue you must download and use the latest version of ODT.
+                                <br/><br />
+                                <a style="cursor:pointer" onclick="OpenInNewTab('https://www.microsoft.com/en-us/download/details.aspx?id=49117')">Office Deployment Tool (2016)</a>
+                            </p>
+                        </p>
+                        <hr />
                         <p class="ms-font-l ms-fontWeight-semibold">
                             Updated Branch Names
                             <p class="ms-font-m">Based on customer feedback, we’ve changed how we refer to our update branches. The name changes are as follows:</p>
@@ -1167,13 +1225,9 @@
                                 <li>First Release for Current Branch is now called <strong>First Release for Current Channel</strong></li>
                                 <li>First Release for Current Branch for Business is now called <strong>First Release for Deferred Channel</strong></li>
                             </ul>
-                            <p class="ms-font-m">
-                                Only the names are changing. The servicing model for each of these channels remains the same.<br/>
-                                We are in the process of updating our content, so you will continue to see the previous naming during this transition.
-                            </p>
                         </p>
-                        <hr/>
-                        <div class="ms-Dialog-actions" style="width: 98%; margin-right: 30px; bottom: 20px;position:absolute">
+                       
+                        <div class="ms-Dialog-actions" style="width: 98%; margin-right: 30px; bottom: 20px; position: absolute">
                             <div class="ms-Dialog-actionsRight">
                                 <button class="ms-Dialog-action ms-Button" onclick="hideWelcome();">
                                     <span class="ms-Button-label">Close</span>
@@ -1189,18 +1243,18 @@
                         <p class="ms-font-m">
                             This page provides a graphical method to generate and edit the Office Click-to-Run configuration.xml file. The configuration.xml file is used to specify Click-to-Run installation and update options.
                         </p>
-                        <br />
+                        <br/>
                         <p class="ms-font-m">
-                            <a href="https://technet.microsoft.com/en-us/library/JJ219426.aspx">Reference for Click-to-Run configuration.xml file</a>
+                            <a style="cursor:pointer" onclick="OpenInNewTab('https://technet.microsoft.com/en-us/library/JJ219426.aspx')">Reference for Click-to-Run configuration.xml file</a>
                         </p>
-                        <br />
+                        <br/>
                         <p class="ms-font-m">
-                            The <a href="https://technet.microsoft.com/en-us/library/jj219422.aspx" id="A_2">Office Deployment Tool</a> is a downloadable tool.
-                            (<a href="https://www.microsoft.com/en-us/download/details.aspx?id=49117">Office 365 ProPlus 2016</a>,
-                            <a href="http://www.microsoft.com/en-us/download/details.aspx?id=36778">Office 365 ProPlus 2013</a>)
+                            The <a style="cursor:pointer" onclick="OpenInNewTab('https://technet.microsoft.com/en-us/library/jj219422.aspx')" id="A_2">Office Deployment Tool</a> is a downloadable tool.
+                            (<a style="cursor:pointer" onclick="OpenInNewTab('https://www.microsoft.com/en-us/download/details.aspx?id=49117')">Office 365 ProPlus 2016</a>,
+                             <a style="cursor:pointer" onclick="OpenInNewTab('http://www.microsoft.com/en-us/download/details.aspx?id=36778')">Office 365 ProPlus 2013</a>)
                         </p>
-                        <br />
-                        <hr />
+                        <br/>
+                        <hr/>
                         <p class="ms-font-xl" style="margin-top: 10px">How to use this site</p>
 
                         <p class="ms-font-l" style="margin-top: 10px">Start</p>
@@ -1212,7 +1266,7 @@
                             </ul>
                         </p>
 
-                        <br />
+                        <br/>
 
                         <p class="ms-font-l" style="margin-top: 10px">Configure</p>
                         <p class="ms-font-m">
@@ -1223,7 +1277,7 @@
                             </ul>
                         </p>
 
-                        <br />
+                        <br/>
 
                         <p class="ms-font-l" style="margin-top: 10px">Save</p>
                         <p class="ms-font-m">
@@ -1234,16 +1288,16 @@
                             </ul>
                         </p>
 
-                        <hr />
+                        <hr/>
 
                         <p class="ms-font-m">
-                            For more scripts and tools for automating Office ProPlus deployments you can go to the <a href="https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts" id="A_2">Office IT Pro Deployment Scripts</a>
-                            respository in the <a href="https://github.com/OfficeDev" id="A_2">OfficeDev</a> GitHub Site.
+                            For more scripts and tools for automating Office ProPlus deployments you can go to the <a style="cursor:pointer" onclick="OpenInNewTab('https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts')" id="A_2">Office IT Pro Deployment Scripts</a>
+                            respository in the <a style="cursor:pointer" onclick="OpenInNewTab('https://github.com/OfficeDev')" id="A_2">OfficeDev</a> GitHub Site.
 
 
                         </p>
 
-                        <div class="ms-Dialog-actions" style="width: 98%; margin-right: 30px;bottom: 20px;position:absolute">
+                        <div class="ms-Dialog-actions" style="width: 98%; margin-right: 30px; bottom: 20px; position: absolute">
                             <div class="ms-Dialog-actionsRight">
                                 <button class="ms-Dialog-action ms-Button" onclick="foreverHideWelcome();">
                                     <span class="ms-Button-label">Don't Show This Again</span>
@@ -1301,7 +1355,21 @@
                             <li> <p class="ms-Callout-subText">O365ProPlusRetail</p> </li>
                             <li> <p class="ms-Callout-subText">O365BusinessRetail</p> </li>
                             <li> <p class="ms-Callout-subText">VisioProRetail</p> </li>
-                            <li> <p class="ms-Callout-subText">ProjectProRetail</p> </li>
+                            <li><p class="ms-Callout-subText">ProjectProRetail</p> </li>
+
+                            <li>
+                                <p class="ms-Callout-subText">VisioProXVolume</p>
+                            </li>
+                            <li>
+                                <p class="ms-Callout-subText">VisioStdXVolume</p>
+                            </li>
+                            <li>
+                                <p class="ms-Callout-subText">ProjectProXVolume</p>
+                            </li>
+                            <li>
+                                <p class="ms-Callout-subText">ProjectStdXVolume</p>
+                            </li>
+
                         </ul>
                         <p class="ms-Callout-subText">If <strong>ID</strong> is not set, the operation fails and indicates that the input is not valid.</p>
                         <br />
@@ -1742,10 +1810,10 @@
             </div>
         </div>
 
-        <div id="sclInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none">
+        <div id="sclInfo" class="ms-Callout ms-Callout--arrowLeft" style="position: absolute; left: 80px; top: 40px; display: none">
             <div class="ms-Callout-main">
                 <div class="ms-Callout-header">
-                    <span style="float:right; cursor:pointer" class="ms-Icon ms-Icon--x" onclick="toggleInfo('sclInfo')"></span>
+                    <span style="float: right; cursor: pointer" class="ms-Icon ms-Icon--x" onclick="toggleInfo('sclInfo')"></span>
                     <p class="ms-Callout-title">SharedComputerLicensing</p>
                 </div>
                 <div class="ms-Callout-inner">
@@ -1763,7 +1831,26 @@
             </div>
         </div>
 
-        <div id="PACKAGEGUIDInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none">
+        <div id="pinIconInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none">
+            <div class="ms-Callout-main">
+                <div class="ms-Callout-header">
+                    <span style="float:right; cursor:pointer" class="ms-Icon ms-Icon--x" onclick="toggleInfo('pinIconInfo')"></span>
+                    <p class="ms-Callout-title">PinIcons</p>
+                </div>
+                <div class="ms-Callout-inner">
+                    <div class="ms-Callout-content">
+                        <p class="ms-Callout-subText">Controls wether or not Icons are pinned to the taskbar. (Doesn't apply to Windows 10)</p>
+                        <hr>
+                        <p class="ms-Callout-subText">Optional. </p>
+                        <p class="ms-Callout-subText">
+                            Set <strong id="STRONG_3">PinIcons</strong> to FALSE if you do not want the Office icons pinned to the taskbar
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <div id="PACKAGEGUIDInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none">
             <div class="ms-Callout-main">
                 <div class="ms-Callout-header">
                     <span style="float:right; cursor:pointer" class="ms-Icon ms-Icon--x" onclick="toggleInfo('PACKAGEGUIDInfo')"></span>

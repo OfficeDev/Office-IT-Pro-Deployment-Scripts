@@ -23,6 +23,7 @@
     <SccLocalPath>SAK</SccLocalPath>
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
+    <UseGlobalApplicationHostFile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -213,6 +214,8 @@
     <Content Include="images\github24.png" />
     <Content Include="images\info.png" />
     <Content Include="images\Office.png" />
+    <Content Include="images\Warning.png" />
+    <Content Include="images\Warning64.png" />
     <Content Include="index.html" />
     <Content Include="XmlEditor.html" />
     <Content Include="Scripts\FileSaver.js" />
