@@ -36,6 +36,13 @@ Process {
  Copy-Item -Path $configFilePath -Destination $targetFilePath -Force
 
  [string]$UpdateSource = (Get-ODTAdd -TargetFilePath $targetFilePath | select SourcePath).SourcePath
+ [string]$Bitness = (Get-ODTAdd -TargetFilePath $targetFilePath | select OfficeClientEdition).OfficeClientEdition
+ if($Bitness -eq '64'){
+    $Bitness = "x64"
+ }
+ else{
+    $Bitness = "x32"
+ }
 
  if ($UpdateSource) {
      if ($UpdateSource.StartsWith(".\")) {
@@ -53,7 +60,7 @@ Process {
 $languages = Get-XMLLanguages -Path $targetFilePath
 
 if ($UpdateSource) {
-    $ValidUpdateSource = Test-UpdateSource -UpdateSource $UpdateSource -OfficeLanguages $languages
+    $ValidUpdateSource = Test-UpdateSource -UpdateSource $UpdateSource -OfficeLanguages $languages -Bitness $Bitness
     if ($ValidUpdateSource) {
        Set-ODTAdd -TargetFilePath $targetFilePath -SourcePath $UpdateSource | Out-Null
     } else {
