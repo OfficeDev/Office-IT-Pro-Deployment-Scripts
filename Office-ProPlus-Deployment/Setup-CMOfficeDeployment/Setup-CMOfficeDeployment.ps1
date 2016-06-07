@@ -1650,8 +1650,8 @@ Process{
     $query = Get-WmiObject –NameSpace Root\SMS\Site_$SiteCode –Class SMS_DistributionDPStatus –Filter "PackageID='$PkgID'" | Select Name, MessageID, MessageState, LastUpdateDate
 
     If ($query -eq $null)
-    {Write-Host "PackageID not found"
-    Exit
+    {  
+        throw "PackageID not found"
     }
 
     Foreach ($objItem in $query)
