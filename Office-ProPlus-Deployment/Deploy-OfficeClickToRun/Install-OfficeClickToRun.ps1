@@ -1,3 +1,4 @@
+try {
 Add-Type  -ErrorAction SilentlyContinue -TypeDefinition @"
    public enum OfficeCTRVersion
    {
@@ -5,7 +6,9 @@ Add-Type  -ErrorAction SilentlyContinue -TypeDefinition @"
       Office2016
    }
 "@
+} catch {}
 
+try {
 $enum = "
 using System;
  
@@ -19,12 +22,18 @@ namespace Microsoft.Office
          O365BusinessRetail = 2,
          VisioProRetail = 4,
          ProjectProRetail = 8,
-         SPDRetail = 16
+         SPDRetail = 16,
+         VisioProXVolume = 32,
+         VisioStdXVolume = 64,
+         ProjectProXVolume = 128,
+         ProjectStdXVolume = 256,
      }
 }
 "
 Add-Type -TypeDefinition $enum -ErrorAction SilentlyContinue
+} catch {}
 
+try {
 $enum2 = "
 using System;
  
@@ -36,6 +45,7 @@ using System;
     }
 "
 Add-Type -TypeDefinition $enum2 -ErrorAction SilentlyContinue
+} catch {}
 
 function Install-OfficeClickToRun {
     [CmdletBinding()]
@@ -451,7 +461,7 @@ Here is what the portion of configuration file looks like when modified by this 
         [LogLevel] $Level,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [bool] $AcceptEULA,
+        [bool] $AcceptEULA = $true,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $TargetFilePath
@@ -491,7 +501,7 @@ Here is what the portion of configuration file looks like when modified by this 
         }
 
         #Set values
-        if($Level){
+        if($Level -ne $null){
             $DisplayElement.SetAttribute("Level", $Level) | Out-Null
         } else {
             if ($PSBoundParameters.ContainsKey('Level')) {
@@ -499,7 +509,7 @@ Here is what the portion of configuration file looks like when modified by this 
             }
         }
 
-        if($AcceptEULA -ne $NULL){
+        if($AcceptEULA -ne $null){
             $DisplayElement.SetAttribute("AcceptEULA", $AcceptEULA.ToString().ToUpper()) | Out-Null
         } else {
             if ($PSBoundParameters.ContainsKey('AcceptEULA')) {
