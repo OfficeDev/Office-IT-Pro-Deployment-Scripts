@@ -2935,10 +2935,10 @@ var productSkus2016Names = [
     'Office 365 for Business',
     'Visio for Office 365',
     'Project for Office 365',
-    'Visio for Office 365 Professional (Volume License)',
-    'Visio for Office 365 Standard (Volume License)',
-    'Project for Office 365 Professional (Volume License)',
-    'Project for Office 365 Standard (Volume License)'
+    'Visio Professional 2016 (Volume License)',
+    'Visio Standard 2016 (Volume License)',
+    'Project Professional 2016 (Volume License)',
+    'Project Standard 2016 (Volume License)'
 ];
 
 var productSkus2016Values = [
