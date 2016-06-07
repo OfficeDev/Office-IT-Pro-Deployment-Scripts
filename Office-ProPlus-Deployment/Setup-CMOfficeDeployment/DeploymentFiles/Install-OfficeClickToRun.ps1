@@ -22,7 +22,11 @@ namespace Microsoft.Office
          O365BusinessRetail = 2,
          VisioProRetail = 4,
          ProjectProRetail = 8,
-         SPDRetail = 16
+         SPDRetail = 16,
+         VisioProXVolume = 32,
+         VisioStdXVolume = 64,
+         ProjectProXVolume = 128,
+         ProjectStdXVolume = 256,
      }
 }
 "
@@ -61,7 +65,6 @@ function Install-OfficeClickToRun {
     )
 
     $scriptRoot = GetScriptRoot
-    $localPath = "$env:TEMP\setup.exe"
 
     #Load the file
     [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
@@ -122,9 +125,7 @@ function Install-OfficeClickToRun {
         }
     }
 
-    Copy-Item -Path $officeCtrPath -Destination $localPath -Force
-
-    $cmdLine = $localPath
+    $cmdLine = $officeCtrPath
     $cmdArgs = "/configure " + $TargetFilePath
 
     Write-Host "Installing Office Click-To-Run..."
@@ -460,7 +461,7 @@ Here is what the portion of configuration file looks like when modified by this 
         [LogLevel] $Level,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [bool] $AcceptEULA,
+        [bool] $AcceptEULA = $true,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $TargetFilePath
@@ -500,7 +501,7 @@ Here is what the portion of configuration file looks like when modified by this 
         }
 
         #Set values
-        if($Level){
+        if($Level -ne $null){
             $DisplayElement.SetAttribute("Level", $Level) | Out-Null
         } else {
             if ($PSBoundParameters.ContainsKey('Level')) {
@@ -508,7 +509,7 @@ Here is what the portion of configuration file looks like when modified by this 
             }
         }
 
-        if($AcceptEULA -ne $NULL){
+        if($AcceptEULA -ne $null){
             $DisplayElement.SetAttribute("AcceptEULA", $AcceptEULA.ToString().ToUpper()) | Out-Null
         } else {
             if ($PSBoundParameters.ContainsKey('AcceptEULA')) {
