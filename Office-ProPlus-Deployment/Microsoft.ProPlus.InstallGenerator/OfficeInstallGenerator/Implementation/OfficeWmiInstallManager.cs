@@ -60,7 +60,34 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
                 var officeInstance = new OfficeInstallation() { Installed = false };
                 var officeRegPathKey = @"SOFTWARE\Microsoft\Office\ClickToRun\Configuration";
 
-                officeInstance.Version = await GetRegistryValue(officeRegPathKey, "VersionToReport", "GetStringValue");
+#if DEBUG
+            officeInstance.Channel = "Deferred";
+            officeInstance.Installed = true;
+            officeInstance.Version = "16.0.6001.1068";
+            officeInstance.LatestVersion = "16.0.6001.1078";
+            if (!string.IsNullOrEmpty(officeInstance.Version))
+            {
+                officeInstance.Installed = true;
+                var currentBaseCDNUrl = "http://officecdn.microsoft.com/pr/7ffbc6bf-bc32-4f92-8982-f9dd17fd3114";
+
+
+                var installFile = await GetOfficeInstallFileXml();
+                if (installFile == null) return officeInstance;
+
+                var currentBranch = installFile.BaseURL.FirstOrDefault(b => b.URL.Equals(currentBaseCDNUrl) &&
+                                                                      !b.Branch.ToLower().Contains("business"));
+                if (currentBranch != null)
+                {
+                    officeInstance.Channel = currentBranch.Branch;
+
+                    var latestVersion = await GetOfficeLatestVersion(currentBranch.Branch, OfficeEdition.Office32Bit);
+                    officeInstance.LatestVersion = latestVersion;
+                }
+
+
+            }
+#else
+            officeInstance.Version = await GetRegistryValue(officeRegPathKey, "VersionToReport", "GetStringValue");
 
 
             if (string.IsNullOrEmpty(officeInstance.Version))
@@ -98,6 +125,7 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
 
 
             }
+#endif
 
             return officeInstance;
             

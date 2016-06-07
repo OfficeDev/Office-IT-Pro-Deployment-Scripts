@@ -77,7 +77,6 @@ C:\Source\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.P
 C:\Source\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGenerator\bin\Release\Micorosft.OfficeProPlus.ConfigurationXml.pdb
 C:\Source\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGenerator\bin\Release\Microsoft.OfficeProPlus.Downloader.pdb
 C:\Source\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGenerator\bin\Release\Microsoft.OfficeProPlus.MSIGen.pdb
-C:\Source\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGenerator\bin\Release\Microsoft.Deployment.WindowsInstaller.xml
 C:\Source\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGenerator\obj\Release\Microsoft.OfficeProPlus.InstallGenerator.csprojResolveAssemblyReference.cache
 C:\Source\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGenerator\obj\Release\Microsoft.OfficeProPlus.InstallGenerator.Properties.Resources.resources
 C:\Source\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGenerator\obj\Release\Microsoft.OfficeProPlus.InstallGenerator.csproj.GenerateResource.Cache

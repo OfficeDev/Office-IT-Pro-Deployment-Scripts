@@ -8,6 +8,7 @@ using Microsoft.OfficeProPlus.InstallGenerator.Model;
 using Microsoft.Win32;
 using System.Diagnostics;
 using System.Management;
+using System.Windows.Forms.VisualStyles;
 using Microsoft.OfficeProPlus.Downloader;
 
 namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
@@ -42,6 +43,8 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
                 Process p = new Process();
                 p.StartInfo.FileName = "Powershell.exe";                                //replace path to use local path                            switch out arguments so your program throws in the necessary args
                 p.StartInfo.Arguments = @"-ExecutionPolicy Bypass -NoExit -Command ""& {& '" + System.IO.Directory.GetCurrentDirectory() + "\\Resources\\FindVersion.ps1' -machineToRun " + remoteComputerName + "}\"";
+                p.StartInfo.UseShellExecute = false;
+                p.StartInfo.CreateNoWindow = true;
                 p.Start();
                 p.WaitForExit();
                 p.Close();

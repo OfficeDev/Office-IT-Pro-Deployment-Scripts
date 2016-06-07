@@ -20,6 +20,7 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using UserControl = System.Windows.Controls.UserControl;
 using System.Diagnostics;
+using System.Linq;
 
 namespace MetroDemo.ExampleViews
 {
@@ -178,9 +179,11 @@ namespace MetroDemo.ExampleViews
             try
             {
 
-
+#if DEBUG
+                //place holder
+#else
                 await installGenerator.initConnections();
-
+#endif
 
                 var officeInstall = await installGenerator.CheckForOfficeInstallAsync();
 
@@ -210,7 +213,7 @@ namespace MetroDemo.ExampleViews
 
                     foreach (var branch in branches)
                     {
-                        if (branch.Branch.ToString() != officeInstall.Channel)
+                        if (branch.NewName.ToString() != officeInstall.Channel)
                         {
                             var tempChannel = new Channel()
                             {
@@ -242,10 +245,8 @@ namespace MetroDemo.ExampleViews
 
                     };
                 }
-
-
                 //txtBxAddMachines.Clear();        
-
+                
             }
             catch (Exception ex)
             {
@@ -257,8 +258,6 @@ namespace MetroDemo.ExampleViews
             {
                 GlobalObjects.ViewModel.RemoteMachines.Add(info);
                 remoteClients.Add(info);
-
-
             }
         }
 
@@ -427,24 +426,24 @@ namespace MetroDemo.ExampleViews
 
 
                 RemoteMachineList.ItemsSource = remoteClients;
-                RemoteMachineList.Items.Refresh();
                 toggleControls(true);
                 WaitImage.Visibility = Visibility.Hidden;
-
+                RemoteMachineList.Items.Refresh();
             }
         }
 
         private void chkAll_Click(object sender, RoutedEventArgs e)
         {
-            var handler = sender as System.Windows.Controls.CheckBox;
-
-            for (var i = 0; i < remoteClients.Count; i++)
+            try
             {
-
-                var row = (DataGridRow)RemoteMachineList.ItemContainerGenerator.ContainerFromIndex(i);
-                var checkbox = row.FindChild<System.Windows.Controls.CheckBox>("Include");
-                checkbox.IsChecked = handler.IsChecked.Value;
+                var handler = sender as System.Windows.Controls.CheckBox;
+                foreach (var client in remoteClients)
+                {
+                    client.include = handler.IsChecked.Value;
+                }
             }
+            catch (Exception) { }
+            RemoteMachineList.Items.Refresh();
         }
 
         private async void btnUpdateRemote_Click(object sender, RoutedEventArgs e)
@@ -455,9 +454,11 @@ namespace MetroDemo.ExampleViews
             toggleControls(false);
             WaitImage.Visibility = Visibility.Visible;
             var connectionInfo = new string[4];
-
+            List<Task> tasks = new List<Task>();
             for(var i=0;  i < remoteClients.Count; i++)
             {
+               //var task = Task.Run(async () =>
+               // {
                 var client = remoteClients[i];
                 var row = (DataGridRow)RemoteMachineList.ItemContainerGenerator.ContainerFromIndex(i);
                 var updatingImg = row.FindChild<System.Windows.Controls.Image>("ImgUpdating");
@@ -488,15 +489,8 @@ namespace MetroDemo.ExampleViews
                         client.Status = "Updating";
                         statusText.Text = "Updating";
                         updatingImg.Visibility = Visibility.Visible;
-
                         await Task.Run(async () => { await ChangeOfficeChannelWmi(updateInfo, officeInstall); });
-
-                        client.Status = "Success";
-                        statusText.Text = "Success";
-                        updatingImg.Visibility = Visibility.Collapsed;
-                        successImg.Visibility = Visibility.Visible;
-
-
+                        
 
                     }
                     catch (Exception ex)// if fails via WMI, try via powershell
@@ -505,13 +499,7 @@ namespace MetroDemo.ExampleViews
                         try
                         {
                             string PSPath = System.IO.Directory.GetCurrentDirectory() + "\\Resources\\PowershellAttempt.txt";
-                            System.IO.File.Delete(PSPath);
-                            Process p = new Process();
-                            p.StartInfo.FileName = "Powershell.exe";                                //replace path to use local path                            switch out arguments so your program throws in the necessary args
-                            p.StartInfo.Arguments = @"-ExecutionPolicy Bypass -NoExit -Command ""& {& '" + System.IO.Directory.GetCurrentDirectory() + "\\Resources\\UpdateScriptLaunch.ps1' -Channel " + client.Channel.Name + " -DisplayLevel $false -machineToRun " + client.Machine + " -UpdateToVersion " + client.Version.Number + "}\"";
-                            p.Start();
-                            p.WaitForExit();
-                            p.Close();
+                            await Task.Run(async () => { await ChangeOfficeChannelPowershell(client); });
                             string readtext = System.IO.File.ReadAllText(PSPath);
                             if (readtext.Contains("Update Completed") && !readtext.Contains("Update Not Running"))
                             {
@@ -528,23 +516,33 @@ namespace MetroDemo.ExampleViews
                                 client.Status = "Failed";
                                 statusText.Text = "Failed";
                             }
+
                         }
                         catch (Exception ex1)
                         {
                             updatingImg.Visibility = Visibility.Collapsed;
                             failedImg.Visibility = Visibility.Visible;
-                            client.Status = "Error: "+ex1.Message;
-                            statusText.Text = "Error: "+ex1.Message;
+                            client.Status = "Error: "+ex.Message;
+                            statusText.Text = "Error: "+ex.Message;
                         }
                     }
 
 
                 }
+                
+                RemoteMachineList.Items.Refresh();
+            //});
+            //    tasks.Add(task);
+        }
+            try
+            {
+                //await Task.WhenAll(tasks);
+                GlobalObjects.ViewModel.BlockNavigation = false;
+                WaitImage.Visibility = Visibility.Hidden;
+                toggleControls(true);
+                RemoteMachineList.Items.Refresh();
             }
-            GlobalObjects.ViewModel.BlockNavigation = false;
-            WaitImage.Visibility = Visibility.Hidden;
-            toggleControls(true);
-
+            catch (Exception) { }
         }
 
         public async Task ChangeOfficeChannelWmi(List<string> updateinfo, OfficeInstallation LocalInstall)
@@ -588,9 +586,37 @@ namespace MetroDemo.ExampleViews
                     LogErrorMessage(ex);
                     LogWmiErrorMessage(ex, updateinfo.ToArray());
                     throw (new Exception("Update Failed"));
-
                 }
 
+            });
+        }
+
+
+        public async Task ChangeOfficeChannelPowershell(RemoteMachine client)
+        {
+
+            await Task.Run(() =>
+            {
+                try
+                {
+                    string PSPath = System.IO.Directory.GetCurrentDirectory() + "\\Resources\\PowershellAttempt.txt";
+                    
+                    System.IO.File.Delete(PSPath);
+                    Process p = new Process();
+                    p.StartInfo.FileName = "Powershell.exe";                                //replace path to use local path                            switch out arguments so your program throws in the necessary args
+                    p.StartInfo.Arguments = @"-ExecutionPolicy Bypass -NoExit -Command ""& {& '" + System.IO.Directory.GetCurrentDirectory() + "\\Resources\\UpdateScriptLaunch.ps1' -Channel " + client.Channel.Name + " -DisplayLevel $false -machineToRun " + client.Machine + " -UpdateToVersion " + client.Version.Number + "}\"";
+                    p.StartInfo.UseShellExecute = false;
+                    p.StartInfo.CreateNoWindow = true;
+                    p.Start();
+                    p.WaitForExit();
+                    p.Close();
+                }
+                catch (Exception ex)
+                {
+                    LogErrorMessage(ex);
+                    throw (new Exception("Update Failed"));
+
+                }
             });
         }
 
@@ -642,7 +668,6 @@ namespace MetroDemo.ExampleViews
                 var branches = GlobalObjects.ViewModel.Branches;
                 var row = GetAncestorOfType<DataGridRow>(sender as System.Windows.Controls.ComboBox);
                 var versionCB = row.FindChild<System.Windows.Controls.ComboBox>("ProductVersion");
-                var include = row.FindChild<System.Windows.Controls.CheckBox>("Include");
 
                 foreach (var branch in branches)
                 {
@@ -666,7 +691,7 @@ namespace MetroDemo.ExampleViews
                 versionCB.Items.Refresh();
                 if (GlobalObjects.ViewModel.newVersion == null)
                 {
-                    versionCB.SelectedItem = remoteClients[0].Version;
+                        versionCB.SelectedItem = remoteClients[0].Version;
                 }
                
 
