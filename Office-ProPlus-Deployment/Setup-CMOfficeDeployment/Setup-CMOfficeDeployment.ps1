@@ -1632,6 +1632,75 @@ clients in the target collection 'Office Update'.
     }
 }
 
+function Get-CMOfficeDistributionStatus{
+Param(
+
+)
+Begin{
+    $currentExecutionPolicy = Get-ExecutionPolicy
+	Set-ExecutionPolicy Unrestricted -Scope Process -Force  
+    $startLocation = Get-Location
+}
+
+Process{
+    $SiteCode = GetLocalSiteCode -SiteCode $SiteCode
+    $Package = CheckIfPackageExists
+    $PkgID = $Package.PackageID
+
+    $query = Get-WmiObject –NameSpace Root\SMS\Site_$SiteCode –Class SMS_DistributionDPStatus –Filter "PackageID='$PkgID'" | Select Name, MessageID, MessageState, LastUpdateDate
+
+    If ($query -eq $null)
+    {Write-Host "PackageID not found"
+    Exit
+    }
+
+    Foreach ($objItem in $query)
+
+    {
+        $DPName = $objItem.Name
+        $UpdDate = [System.Management.ManagementDateTimeconverter]::ToDateTime($objItem.LastUpdateDate)
+
+        switch ($objItem.MessageState)
+          {
+          1 {$Status = "Success"}
+          2 {$Status = "In Progress"}
+          3 {$Status = "Failed"}
+          }
+
+        switch ($objItem.MessageID)
+            {
+            2303      {$Message = "Content was successfully refreshed"}
+            2323      {$Message = "Failed to initialize NAL"}
+            2324      {$Message = "Failed to access or create the content share"}
+            2330      {$Message = "Content was distributed to distribution point"}
+            2354      {$Message = "Failed to validate content status file"}
+            2357      {$Message = "Content transfer manager was instructed to send content to Distribution Point"}
+            2360      {$Message = "Status message 2360 unknown"}
+            2370      {$Message = "Failed to install distribution point"}
+            2371      {$Message = "Waiting for prestaged content"}
+            2372      {$Message = "Waiting for content"}
+            2380      {$Message = "Content evaluation has started"}
+            2381      {$Message = "An evaluation task is running. Content was added to Queue"}
+            2382      {$Message = "Content hash is invalid"}
+            2383      {$Message = "Failed to validate content hash"}
+            2384      {$Message = "Content hash has been successfully verified"}
+            2391      {$Message = "Failed to connect to remote distribution point"}
+            2398      {$Message = "Content Status not found"}
+            8203      {$Message = "Failed to update package"}
+            8204      {$Message = "Content is being distributed to the distribution Point"}
+            8211      {$Message = "Failed to update package"}
+            }
+        Write-Host "Package $PkgID on $DPName is in '$Status' state"
+        Write-Host "Detail: $Message"
+        Write-Host "Last Update Date: $UpdDate"
+    }
+}
+
+End{
+    Set-ExecutionPolicy $currentExecutionPolicy -Scope Process -Force
+    Set-Location $startLocation
+}
+}
 
 
 

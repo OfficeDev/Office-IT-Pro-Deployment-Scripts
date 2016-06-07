@@ -27,6 +27,56 @@ using System;
 Add-Type -TypeDefinition $enumBitness -ErrorAction SilentlyContinue
 } catch { }
 
+try {
+$enum = "
+using System;
+ 
+namespace Microsoft.Office
+{
+     [FlagsAttribute]
+     public enum Products
+     {
+         Unknown = 0,
+         O365ProPlusRetail = 1,
+         O365BusinessRetail = 2,
+         VisioProRetail = 4,
+         ProjectProRetail = 8,
+         SPDRetail = 16,
+         VisioProXVolume = 32,
+         VisioStdXVolume = 64,
+         ProjectProXVolume = 128,
+         ProjectStdXVolume = 256,
+     }
+}
+"
+Add-Type -TypeDefinition $enum -ErrorAction SilentlyContinue
+} catch {}
+
+try {
+$enum = "
+using System;
+ 
+namespace Microsoft.Office
+{
+     [FlagsAttribute]
+     public enum ProductSelection
+     {
+         All = 0,
+         O365ProPlusRetail = 1,
+         O365BusinessRetail = 2,
+         VisioProRetail = 4,
+         ProjectProRetail = 8,
+         SPDRetail = 16,
+         VisioProXVolume = 32,
+         VisioStdXVolume = 64,
+         ProjectProXVolume = 128,
+         ProjectStdXVolume = 256,
+     }
+}
+"
+Add-Type -TypeDefinition $enum -ErrorAction SilentlyContinue
+} catch {}
+
 [System.Collections.ArrayList]$missingFiles = @()
 
 Function Write-Log {
@@ -589,7 +639,10 @@ function Change-UpdatePathToChannel {
      [bool] $ValidateUpdateSourceFiles = $true,
 
      [Parameter()]
-     [string] $Channel = $null
+     [string] $Channel = $null,
+
+     [Parameter()]
+     [string] $Bitness = $null
    )
 
    $newUpdatePath = $UpdatePath
@@ -709,14 +762,14 @@ function Change-UpdatePathToChannel {
    }
 
    try {
-     $pathAlive = Test-UpdateSource -UpdateSource $newUpdatePath -ValidateUpdateSourceFiles $ValidateUpdateSourceFiles
+     $pathAlive = Test-UpdateSource -UpdateSource $newUpdatePath -ValidateUpdateSourceFiles $ValidateUpdateSourceFiles -Bitness $Bitness
    } catch {
      $pathAlive = $false
    }
 
      if (!($pathAlive)) {
         try {
-           $pathAlive = Test-UpdateSource -UpdateSource $newUpdateLong -ValidateUpdateSourceFiles $ValidateUpdateSourceFiles
+           $pathAlive = Test-UpdateSource -UpdateSource $newUpdateLong -ValidateUpdateSourceFiles $ValidateUpdateSourceFiles -Bitness $Bitness
         } catch {
             $pathAlive = $false
         }
@@ -742,7 +795,10 @@ Function Test-UpdateSource() {
         [bool] $ValidateUpdateSourceFiles = $true,
 
         [Parameter()]
-        [string[]] $OfficeLanguages = $null
+        [string[]] $OfficeLanguages = $null,
+
+        [Parameter()]
+        [String] $Bitness = $NULL
     )
 
   	$uri = [System.Uri]$UpdateSource
@@ -757,7 +813,7 @@ Function Test-UpdateSource() {
 
     if ($ValidateUpdateSourceFiles) {
        if ($sourceIsAlive) {
-           [string]$strIsAlive = Validate-UpdateSource -UpdateSource $UpdateSource -OfficeLanguages $OfficeLanguages
+           [string]$strIsAlive = Validate-UpdateSource -UpdateSource $UpdateSource -OfficeLanguages $OfficeLanguages -Bitness $Bitness
            if ($strIsAlive.ToLower() -eq "true") {
               $sourceIsAlive = $true
            } else {
@@ -776,10 +832,10 @@ Function Validate-UpdateSource() {
         [string] $UpdateSource = $NULL,
 
         [Parameter()]
-        [string] $Bitness = "x86",
+        [string] $Bitness = $NULL,
 
         [Parameter()]
-        [string[]] $OfficeLanguages = $null
+        [string[]] $OfficeLanguages = $NULL
     )
 
     [bool]$validUpdateSource = $true
@@ -787,20 +843,26 @@ Function Validate-UpdateSource() {
 
     if ($UpdateSource) {
         $mainRegPath = Get-OfficeCTRRegPath
+
+        if(!$Bitness){
+            $Bitness = "32"
+        }
+
+        $currentplatform = $Bitness
+
+        if ($currentplatform -eq "x64") {
+            $mainCab = "$UpdateSource\Office\Data\v64.cab"
+            $Bitness = "64"
+        }
+        else{
+            $mainCab = "$UpdateSource\Office\Data\v32.cab"
+        }
+
         if ($mainRegPath) {
             $configRegPath = $mainRegPath + "\Configuration"
             $currentplatform = (Get-ItemProperty HKLM:\$configRegPath -Name Platform -ErrorAction SilentlyContinue).Platform
             $updateToVersion = (Get-ItemProperty HKLM:\$configRegPath -Name UpdateToVersion -ErrorAction SilentlyContinue).UpdateToVersion
             $llcc = (Get-ItemProperty HKLM:\$configRegPath -Name ClientCulture -ErrorAction SilentlyContinue).ClientCulture
-        }
-
-        $currentplatform = $Bitness
-
-        $mainCab = "$UpdateSource\Office\Data\v32.cab"
-        $bitness = "32"
-        if ($currentplatform -eq "x64") {
-            $mainCab = "$UpdateSource\Office\Data\v64.cab"
-            $bitness = "64"
         }
 
         if (!($updateToVersion)) {
@@ -810,7 +872,7 @@ Function Validate-UpdateSource() {
            }
         }
 
-        [xml]$xml = Get-ChannelXml -Bitness $bitness
+        [xml]$xml = Get-ChannelXml -Bitness $Bitness
         if ($OfficeLanguages) {
           $languages = $OfficeLanguages
         } else {
@@ -1626,7 +1688,10 @@ function Locate-UpdateSource() {
       [string]$SourceFileFolder,
 
       [Parameter(Mandatory=$true)]
-      [string] $Channel = $null
+      [string] $Channel = $null,
+
+      [Parameter(Mandatory=$false)]
+      [string] $Bitness = $null
    )
    process {
      if ($SourceFileFolder) {
@@ -1635,7 +1700,7 @@ function Locate-UpdateSource() {
        }
      }
 
-     $UpdateURLPath = Change-UpdatePathToChannel -Channel $Channel -UpdatePath $UpdateURLPath
+     $UpdateURLPath = Change-UpdatePathToChannel -Channel $Channel -UpdatePath $UpdateURLPath -Bitness $Bitness
      return $UpdateURLPath
    }
 }
@@ -1658,9 +1723,10 @@ function Update-ConfigurationXml() {
       if (Test-Path -Path $editFilePath) {
           . $editFilePath
 
-
-          if (Test-UpdateSource -UpdateSource $UpdateURLPath -OfficeLanguages $languages) {
-             Set-ODTAdd -TargetFilePath $TargetFilePath -SourcePath $UpdateURLPath | Out-Null
+          if (Test-Path -Path "$UpdateURLPath\Office\Data") {
+              if (Test-UpdateSource -UpdateSource $UpdateURLPath -OfficeLanguages $languages) {
+                 Set-ODTAdd -TargetFilePath $TargetFilePath -SourcePath $UpdateURLPath | Out-Null
+              }
           }
 
           if (($Bitness -eq "32") -or ($Bitness -eq "x86")) {
@@ -1672,7 +1738,7 @@ function Update-ConfigurationXml() {
    }
  }
 
-function ExcludeApplications() {
+function Exclude-Applications() {
    [CmdletBinding()]
    param(
       [Parameter(Mandatory=$true)]
@@ -1683,5 +1749,119 @@ function ExcludeApplications() {
    )
    process {
       if ((Get-ODTProductToAdd -TargetFilePath $targetFilePath -ProductId O365ProPlusRetail)) {           Set-ODTProductToAdd -ProductId "O365ProPlusRetail" -TargetFilePath $targetFilePath -ExcludeApps $ExcludeApps | Out-Null      }      if ((Get-ODTProductToAdd -TargetFilePath $targetFilePath -ProductId O365BusinessRetail)) {           Set-ODTProductToAdd -ProductId "O365BusinessRetail" -TargetFilePath $targetFilePath -ExcludeApps $ExcludeApps | Out-Null      }
+   }
+}
+
+function Add-ProductSku() {
+   [CmdletBinding()]
+   param(
+      [Parameter(Mandatory=$true)]
+      [string] $TargetFilePath,
+
+      [Parameter(Mandatory=$true)]
+      [Microsoft.Office.Products[]] $ProductIDs,
+
+      [Parameter(Mandatory=$true)]
+      [string[]] $Languages
+   )
+   process {
+     $scriptPath = GetScriptRoot
+     $editFilePath = "$scriptPath\Edit-OfficeConfigurationFile.ps1"
+     if (Test-Path -Path $editFilePath) {
+          . $editFilePath
+     }
+
+    foreach ($ProductID in $ProductIDs) {        if (!(Get-ODTProductToAdd -TargetFilePath $targetFilePath -ProductId $ProductID)) {              Add-ODTProductToAdd -ProductId $ProductID -TargetFilePath $targetFilePath -LanguageIds $languages | Out-Null            }
+    }
+   }
+}
+
+function Remove-ProductSku() {
+   [CmdletBinding()]
+   param(
+      [Parameter(Mandatory=$true)]
+      [string] $TargetFilePath,
+
+      [Parameter(Mandatory=$true)]
+      [Microsoft.Office.Products[]] $ProductIDs
+   )
+   process {
+     $scriptPath = GetScriptRoot
+     $editFilePath = "$scriptPath\Edit-OfficeConfigurationFile.ps1"
+     if (Test-Path -Path $editFilePath) {
+          . $editFilePath
+     }
+    foreach ($ProductID in $ProductIDs) {        if (Get-ODTProductToAdd -TargetFilePath $targetFilePath -ProductId $ProductID) {            Remove-ODTProductToAdd -ProductId $ProductID -TargetFilePath $targetFilePath -LanguageIds $languages | Out-Null            }
+    }
+   }
+}
+
+function Add-ProductLanguage() {
+   [CmdletBinding()]
+   param(
+      [Parameter(Mandatory=$true)]
+      [string] $TargetFilePath,
+
+      [Parameter(Mandatory=$true)]
+      [Microsoft.Office.ProductSelection[]] $ProductIDs,
+
+      [Parameter(Mandatory=$true)]
+      [string[]] $Languages
+   )
+   process {
+     $scriptPath = GetScriptRoot
+     $editFilePath = "$scriptPath\Edit-OfficeConfigurationFile.ps1"
+     if (Test-Path -Path $editFilePath) {
+          . $editFilePath
+     }
+
+    if ($ProductIDs -eq "All") {
+        $productsToCheck = @("O365ProPlusRetail","O365BusinessRetail","VisioProRetail","ProjectProRetail","SPDRetail","VisioProXVolume","VisioStdXVolume","ProjectProXVolume","ProjectStdXVolume")
+         
+        foreach ($ProductID in $productsToCheck) {            $existingSku = Get-ODTProductToAdd -TargetFilePath $targetFilePath -ProductId $ProductID            if ($existingSku) {                $newLangList = @()                foreach ($language in $existingSku.Languages) {                   $newLangList += $language                }                foreach ($newLanguage in $languages) {                   if (!($newLangList.Contains($newLanguage))) {                     $newLangList += $newLanguage                   }                }                if (Get-ODTProductToAdd -TargetFilePath $targetFilePath -ProductId $ProductID) {                   Set-ODTProductToAdd -ProductId $ProductID -TargetFilePath $targetFilePath -LanguageIds $newLangList | Out-Null                  }
+            }
+        }
+    } else {
+        foreach ($ProductID in $ProductIDs) {            if (!(Get-ODTProductToAdd -TargetFilePath $targetFilePath -ProductId $ProductID.ToString())) {                  Add-ODTProductToAdd -ProductId $ProductID.ToString() -TargetFilePath $targetFilePath -LanguageIds $languages | Out-Null                }
+
+            $existingSku = Get-ODTProductToAdd -TargetFilePath $targetFilePath -ProductId $ProductID.ToString()            if ($existingSku) {                $newLangList = @()                foreach ($language in $existingSku.Languages) {                   $newLangList += $language                }                foreach ($newLanguage in $languages) {                   if (!($newLangList.Contains($newLanguage))) {                     $newLangList += $newLanguage                   }                }                if (Get-ODTProductToAdd -TargetFilePath $targetFilePath -ProductId $ProductID.ToString()) {                   Set-ODTProductToAdd -ProductId $ProductID.ToString() -TargetFilePath $targetFilePath -LanguageIds $newLangList | Out-Null                  }
+            }
+        }
+    }
+   }
+}
+
+function Remove-ProductLanguage() {
+   [CmdletBinding()]
+   param(
+      [Parameter(Mandatory=$true)]
+      [string] $TargetFilePath,
+
+      [Parameter(Mandatory=$true)]
+      [Microsoft.Office.ProductSelection[]] $ProductIDs,
+
+      [Parameter(Mandatory=$true)]
+      [string[]] $Languages
+   )
+   process {
+     $scriptPath = GetScriptRoot
+     $editFilePath = "$scriptPath\Edit-OfficeConfigurationFile.ps1"
+     if (Test-Path -Path $editFilePath) {
+          . $editFilePath
+     }
+
+    if ($ProductIDs -eq "All") {
+        $productsToCheck = @("O365ProPlusRetail","O365BusinessRetail","VisioProRetail","ProjectProRetail","SPDRetail","VisioProXVolume","VisioStdXVolume","ProjectProXVolume","ProjectStdXVolume")
+         
+        foreach ($ProductID in $productsToCheck) {            $existingSku = Get-ODTProductToAdd -TargetFilePath $targetFilePath -ProductId $ProductID            if ($existingSku) {                $newLangList = @()                foreach ($language in $existingSku.Languages) {                   [bool]$addLanguages = $true                   foreach ($newLanguage in $languages) {                      if ($language.ToLower() -eq $newLanguage.ToLower()) {                         $addLanguages = $false                      }                   }                   if ($addLanguages) {                       $newLangList += $language                   }                }                if (Get-ODTProductToAdd -TargetFilePath $targetFilePath -ProductId $ProductID) {                   Set-ODTProductToAdd -ProductId $ProductID -TargetFilePath $targetFilePath -LanguageIds $newLangList | Out-Null                  }
+            }
+        }
+    } else {
+        foreach ($ProductID in $ProductIDs) {            if (!(Get-ODTProductToAdd -TargetFilePath $targetFilePath -ProductId $ProductID.ToString())) {                  Add-ODTProductToAdd -ProductId $ProductID.ToString() -TargetFilePath $targetFilePath -LanguageIds $languages | Out-Null                }
+
+            $existingSku = Get-ODTProductToAdd -TargetFilePath $targetFilePath -ProductId $ProductID.ToString()            if ($existingSku) {                $newLangList = @()                foreach ($language in $existingSku.Languages) {                   [bool]$addLanguages = $true                   foreach ($newLanguage in $languages) {                      if ($language.ToLower() -eq $newLanguage.ToLower()) {                         $addLanguages = $false                      }                   }                   if ($addLanguages) {                       $newLangList += $language                   }                }                if (Get-ODTProductToAdd -TargetFilePath $targetFilePath -ProductId $ProductID.ToString()) {                   Set-ODTProductToAdd -ProductId $ProductID.ToString() -TargetFilePath $targetFilePath -LanguageIds $newLangList | Out-Null                  }
+            }
+        }
+    }
    }
 }

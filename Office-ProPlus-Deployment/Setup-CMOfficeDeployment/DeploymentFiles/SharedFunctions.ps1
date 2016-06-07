@@ -639,7 +639,10 @@ function Change-UpdatePathToChannel {
      [bool] $ValidateUpdateSourceFiles = $true,
 
      [Parameter()]
-     [string] $Channel = $null
+     [string] $Channel = $null,
+
+     [Parameter()]
+     [string] $Bitness = $null
    )
 
    $newUpdatePath = $UpdatePath
@@ -759,14 +762,14 @@ function Change-UpdatePathToChannel {
    }
 
    try {
-     $pathAlive = Test-UpdateSource -UpdateSource $newUpdatePath -ValidateUpdateSourceFiles $ValidateUpdateSourceFiles
+     $pathAlive = Test-UpdateSource -UpdateSource $newUpdatePath -ValidateUpdateSourceFiles $ValidateUpdateSourceFiles -Bitness $Bitness
    } catch {
      $pathAlive = $false
    }
 
      if (!($pathAlive)) {
         try {
-           $pathAlive = Test-UpdateSource -UpdateSource $newUpdateLong -ValidateUpdateSourceFiles $ValidateUpdateSourceFiles
+           $pathAlive = Test-UpdateSource -UpdateSource $newUpdateLong -ValidateUpdateSourceFiles $ValidateUpdateSourceFiles -Bitness $Bitness
         } catch {
             $pathAlive = $false
         }
@@ -792,7 +795,10 @@ Function Test-UpdateSource() {
         [bool] $ValidateUpdateSourceFiles = $true,
 
         [Parameter()]
-        [string[]] $OfficeLanguages = $null
+        [string[]] $OfficeLanguages = $null,
+
+        [Parameter()]
+        [String] $Bitness = $NULL
     )
 
   	$uri = [System.Uri]$UpdateSource
@@ -807,7 +813,7 @@ Function Test-UpdateSource() {
 
     if ($ValidateUpdateSourceFiles) {
        if ($sourceIsAlive) {
-           [string]$strIsAlive = Validate-UpdateSource -UpdateSource $UpdateSource -OfficeLanguages $OfficeLanguages
+           [string]$strIsAlive = Validate-UpdateSource -UpdateSource $UpdateSource -OfficeLanguages $OfficeLanguages -Bitness $Bitness
            if ($strIsAlive.ToLower() -eq "true") {
               $sourceIsAlive = $true
            } else {
@@ -826,10 +832,10 @@ Function Validate-UpdateSource() {
         [string] $UpdateSource = $NULL,
 
         [Parameter()]
-        [string] $Bitness = "x86",
+        [string] $Bitness = $NULL,
 
         [Parameter()]
-        [string[]] $OfficeLanguages = $null
+        [string[]] $OfficeLanguages = $NULL
     )
 
     [bool]$validUpdateSource = $true
@@ -837,20 +843,26 @@ Function Validate-UpdateSource() {
 
     if ($UpdateSource) {
         $mainRegPath = Get-OfficeCTRRegPath
+
+        if(!$Bitness){
+            $Bitness = "32"
+        }
+
+        $currentplatform = $Bitness
+
+        if ($currentplatform -eq "x64") {
+            $mainCab = "$UpdateSource\Office\Data\v64.cab"
+            $Bitness = "64"
+        }
+        else{
+            $mainCab = "$UpdateSource\Office\Data\v32.cab"
+        }
+
         if ($mainRegPath) {
             $configRegPath = $mainRegPath + "\Configuration"
             $currentplatform = (Get-ItemProperty HKLM:\$configRegPath -Name Platform -ErrorAction SilentlyContinue).Platform
             $updateToVersion = (Get-ItemProperty HKLM:\$configRegPath -Name UpdateToVersion -ErrorAction SilentlyContinue).UpdateToVersion
             $llcc = (Get-ItemProperty HKLM:\$configRegPath -Name ClientCulture -ErrorAction SilentlyContinue).ClientCulture
-        }
-
-        $currentplatform = $Bitness
-
-        $mainCab = "$UpdateSource\Office\Data\v32.cab"
-        $bitness = "32"
-        if ($currentplatform -eq "x64") {
-            $mainCab = "$UpdateSource\Office\Data\v64.cab"
-            $bitness = "64"
         }
 
         if (!($updateToVersion)) {
@@ -860,7 +872,7 @@ Function Validate-UpdateSource() {
            }
         }
 
-        [xml]$xml = Get-ChannelXml -Bitness $bitness
+        [xml]$xml = Get-ChannelXml -Bitness $Bitness
         if ($OfficeLanguages) {
           $languages = $OfficeLanguages
         } else {
@@ -1676,7 +1688,10 @@ function Locate-UpdateSource() {
       [string]$SourceFileFolder,
 
       [Parameter(Mandatory=$true)]
-      [string] $Channel = $null
+      [string] $Channel = $null,
+
+      [Parameter(Mandatory=$false)]
+      [string] $Bitness = $null
    )
    process {
      if ($SourceFileFolder) {
@@ -1685,7 +1700,7 @@ function Locate-UpdateSource() {
        }
      }
 
-     $UpdateURLPath = Change-UpdatePathToChannel -Channel $Channel -UpdatePath $UpdateURLPath
+     $UpdateURLPath = Change-UpdatePathToChannel -Channel $Channel -UpdatePath $UpdateURLPath -Bitness $Bitness
      return $UpdateURLPath
    }
 }
