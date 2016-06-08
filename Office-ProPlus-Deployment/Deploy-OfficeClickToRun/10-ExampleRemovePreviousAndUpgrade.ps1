@@ -32,7 +32,7 @@ $targetFilePath = "$env:temp\configuration.xml"
 if (!(Test-Path -Path $targetFilePath)) {
    $officeProducts = Get-OfficeVersion -ShowAllInstalledProducts | Select *
 
-   Generate-ODTConfigurationXml -Languages AllInUseLanguages -TargetFilePath $targetFilePath | Set-ODTAdd -Version $NULL | Set-ODTDisplay -Level None -AcceptEULA $true #| Out-Null
+   Generate-ODTConfigurationXml -Languages AllInUseLanguages -TargetFilePath $targetFilePath | Set-ODTAdd -Version $NULL | Set-ODTDisplay -Level None -AcceptEULA $true | Out-Null
 
    $products = Get-ODTProductToAdd -TargetFilePath $targetFilePath -All
    if ($products) { $languages = $products.Languages } else { $languages = @("en-us") }
