@@ -1,8 +1,0 @@
-<Configuration>
-  <Add OfficeClientEdition="64" Branch="Business">
-    <Product ID="O365ProPlusRetail">
-      <Language ID="en-us" />
-    </Product>
-  </Add>
-  <Display Level="Full" AcceptEULA="True" />
-</Configuration>
