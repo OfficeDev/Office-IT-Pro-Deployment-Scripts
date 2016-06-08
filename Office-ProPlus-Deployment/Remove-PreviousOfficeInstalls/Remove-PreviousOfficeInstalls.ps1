@@ -294,7 +294,7 @@ process {
 
 }
 
-Function Remove-OfficeInstall{
+Function Remove-PreviousOfficeInstalls{
   [CmdletBinding(SupportsShouldProcess=$true)]
   param(
 
