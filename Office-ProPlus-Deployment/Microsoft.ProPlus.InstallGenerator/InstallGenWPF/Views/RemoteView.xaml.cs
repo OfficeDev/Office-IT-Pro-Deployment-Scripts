@@ -172,8 +172,10 @@ namespace MetroDemo.ExampleViews
                 Status = "Not Found",
                 Channels = null,
                 Channel = null,
+                OriginalChannel = null,
                 Versions = null,
-                Version = null
+                Version = null,
+                OriginalVersion = null
             };
 
             try
@@ -240,8 +242,10 @@ namespace MetroDemo.ExampleViews
                         Status = "Found",
                         Channels = channels,
                         Channel = currentChannel,
+                        OriginalChannel = currentChannel,
                         Versions = versions,
-                        Version = currentVersion
+                        Version = currentVersion,
+                        OriginalVersion = currentVersion
 
                     };
                 }
@@ -373,6 +377,8 @@ namespace MetroDemo.ExampleViews
                             var versionCB = row.FindChild<System.Windows.Controls.ComboBox>("ProductVersion");
 
                             channelCB.SelectedValue = GlobalObjects.ViewModel.newChannel;
+                            versionCB.SelectedValue = GlobalObjects.ViewModel.newVersion;
+
                         }
                     }
                 }
@@ -383,6 +389,8 @@ namespace MetroDemo.ExampleViews
             }
             finally
             {
+                GlobalObjects.ViewModel.newChannel = null;
+                GlobalObjects.ViewModel.newVersion = null;
                 RemoteMachineList.Items.Refresh();
             }
         }
@@ -745,6 +753,7 @@ namespace MetroDemo.ExampleViews
         private List<officeVersion> getVersions(OfficeBranch currentChannel, List<officeVersion> versions, string currentVersion)
         {
 
+         
             foreach (var version in currentChannel.Versions)
             {
                 if (version.Version.ToString() != currentVersion)
@@ -784,39 +793,41 @@ namespace MetroDemo.ExampleViews
             try
             {
 
-
+                
                 var selectedBranch = (sender as System.Windows.Controls.ComboBox).SelectedValue as string;
                 var newVersions = new List<officeVersion>();
                 var branches = GlobalObjects.ViewModel.Branches;
                 var row = GetAncestorOfType<DataGridRow>(sender as System.Windows.Controls.ComboBox);
                 var versionCB = row.FindChild<System.Windows.Controls.ComboBox>("ProductVersion");
 
-                foreach (var branch in branches)
-                {
-                    if (branch.NewName.ToString() == selectedBranch)
-                    {
-                        var number = remoteClients[row.GetIndex()].Version.Number;
-                        if (!String.IsNullOrEmpty(remoteClients[row.GetIndex()].Version.Number))
-                        {
-                            newVersions = getVersions(branch, newVersions, remoteClients[row.GetIndex()].Version.Number);
-                            break;
-                        }
-                        else
-                        {
-                            newVersions = getVersions(branch, newVersions, "");
-                            break;
-                        }
-                    }
-                }
 
-                versionCB.ItemsSource = newVersions;
-                versionCB.Items.Refresh();
-                if (GlobalObjects.ViewModel.newVersion == null)
+                var branch = branches.Find(a => a.NewName == GlobalObjects.ViewModel.newChannel);
+
+                if (String.IsNullOrEmpty(GlobalObjects.ViewModel.newChannel))
                 {
-                        versionCB.SelectedItem = remoteClients[0].Version;
+                    branch = branches.Find(a => a.NewName == selectedBranch);
                 }
                
 
+                foreach(var version in branch.Versions)
+                {
+                    var tempVersion = new officeVersion()
+                    {
+                        Number = version.Version
+                    };
+
+                    newVersions.Add(tempVersion);
+                }
+
+                var client = remoteClients[row.GetIndex()];
+                versionCB.ItemsSource = newVersions;
+                versionCB.Items.Refresh();
+
+                if(String.IsNullOrEmpty(GlobalObjects.ViewModel.newVersion))
+                {
+                    versionCB.SelectedValue = client.Version.Number;
+                }
+               
             }
             catch (Exception ex)
             {
