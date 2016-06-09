@@ -23,9 +23,13 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Models
 
         public Channel Channel { get; set; }
 
+        public Channel OriginalChannel { get; set; }
+
         public List<Channel> Channels { get; set; }
 
         public officeVersion Version { get; set; }
+
+        public officeVersion OriginalVersion { get; set; }
 
         public List<officeVersion> Versions { get; set; }
 
