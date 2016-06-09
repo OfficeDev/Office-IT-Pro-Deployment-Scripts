@@ -455,7 +455,7 @@ namespace MetroDemo.ExampleViews
         }
 
         private void UpdateImages(int index, bool showUpdate, bool showSuccess, bool showFailed, string text)
-        {
+        { 
             try
             {
                 RemoteMachineList.UpdateLayout();
@@ -475,14 +475,14 @@ namespace MetroDemo.ExampleViews
             catch (Exception) { }
         }
 
-        private void UpdateSingleRecord()
+        private async void UpdateSingleRecord()
         {
             clearLogFile();
             GlobalObjects.ViewModel.BlockNavigation = true;
             toggleControls(false);
             WaitImage.Visibility = Visibility.Visible;
             var connectionInfo = new string[4];
-
+            RemoteMachineList.Items.Refresh();
             for (var i = 0; i < remoteClients.Count; i++)
             {
                 var client = remoteClients[i];
@@ -493,7 +493,7 @@ namespace MetroDemo.ExampleViews
                 var successImg = row.FindChild<System.Windows.Controls.Image>("ImgSuccess");
                 var failedImg = row.FindChild<System.Windows.Controls.Image>("ImgFail");
                 var statusText = row.FindChild<System.Windows.Controls.TextBlock>("TxtStatus");
-
+                RemoteMachineList.Items.Refresh();
 
                 if (client.include)
                 {
@@ -502,30 +502,30 @@ namespace MetroDemo.ExampleViews
                         updatingImg.Visibility = Visibility.Collapsed;
                         successImg.Visibility = Visibility.Collapsed;
                         failedImg.Visibility = Visibility.Collapsed;
-
+                        RemoteMachineList.Items.Refresh();
                         connectionInfo = new string[4] { client.UserName, client.Password, client.Machine, client.WorkGroup };
                         var installGenerator = new OfficeInstallManager(connectionInfo);
 
                         var newVersion = client.Version;
                         var newChannel = client.Channel;
 
-                        Task.Run(async () => { await installGenerator.initConnections(); });
-                        var officeInstall = installGenerator.CheckForOfficeInstallAsync().Result;
+                        await Task.Run(async () => { await installGenerator.initConnections(); });
+                        var officeInstall = await installGenerator.CheckForOfficeInstallAsync();
                         var updateInfo = new List<string> { client.UserName, client.Password, client.Machine, client.WorkGroup, client.Channel.Name, client.Version.Number };
 
 
                         client.Status = "Updating";
                         statusText.Text = "Updating";
                         updatingImg.Visibility = Visibility.Visible;
-
-                        Task.Run(async () => { await ChangeOfficeChannelWmi(updateInfo, officeInstall); });
+                        RemoteMachineList.Items.Refresh();
+                        await Task.Run(async () => { await ChangeOfficeChannelWmi(updateInfo, officeInstall); });
 
                         client.Status = "Success";
                         statusText.Text = "Success";
                         updatingImg.Visibility = Visibility.Collapsed;
                         successImg.Visibility = Visibility.Visible;
 
-
+                        RemoteMachineList.Items.Refresh();
 
                     }
                     catch (Exception ex)// if fails via WMI, try via powershell
@@ -548,7 +548,7 @@ namespace MetroDemo.ExampleViews
                                 failedImg.Visibility = Visibility.Visible;
                                 client.Status = "Success";
                                 statusText.Text = "Success";
-
+                                RemoteMachineList.Items.Refresh();
                             }
                             else
                             {
@@ -556,14 +556,16 @@ namespace MetroDemo.ExampleViews
                                 failedImg.Visibility = Visibility.Visible;
                                 client.Status = "Failed";
                                 statusText.Text = "Failed";
+                                RemoteMachineList.Items.Refresh();
                             }
                         }
                         catch (Exception ex1)
                         {
                             updatingImg.Visibility = Visibility.Collapsed;
                             failedImg.Visibility = Visibility.Visible;
-                            client.Status = "Error: " + ex1.Message;
-                            statusText.Text = "Error: " + ex1.Message;
+                            client.Status = "Error";
+                            statusText.Text = "Error";
+                            RemoteMachineList.Items.Refresh();
                         }
                     }
 
@@ -573,10 +575,11 @@ namespace MetroDemo.ExampleViews
             GlobalObjects.ViewModel.BlockNavigation = false;
             WaitImage.Visibility = Visibility.Hidden;
             toggleControls(true);
+            RemoteMachineList.Items.Refresh();
         }
 
 
-        private void UpdateMultiWPowershell()
+        private async void UpdateMultiWPowershell()
         {
             clearLogFile();
             GlobalObjects.ViewModel.BlockNavigation = true;
@@ -589,7 +592,9 @@ namespace MetroDemo.ExampleViews
                 var client = remoteClients[i];
 
                 Action<int, bool, bool, bool, string> UpdateUI = UpdateImages;
-
+                var connectionInfo = new string[4] { client.UserName, client.Password, client.Machine, client.WorkGroup };
+                var installGenerator = new OfficeInstallManager(connectionInfo);
+                var officeInstall = await installGenerator.CheckForOfficeInstallAsync();
                 if (client.include)
                 {
                     var task = Task.Run(() =>
