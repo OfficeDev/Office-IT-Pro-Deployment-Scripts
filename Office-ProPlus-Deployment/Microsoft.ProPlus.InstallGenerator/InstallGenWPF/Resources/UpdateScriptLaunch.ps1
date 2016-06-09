@@ -25,7 +25,8 @@
     Write-Host $_.Exception.Message
            throw;
     }
-    $textToWrite | Out-File $scriptPath\PowershellAttempt.txt 
+    $filename = $machineToRun+"PowershellAttempt.txt"
+    $textToWrite | Out-File $scriptPath\$filename
 
     Stop-Process -Id $PID
     }
