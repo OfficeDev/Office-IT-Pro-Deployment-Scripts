@@ -454,7 +454,23 @@ namespace MetroDemo.ExampleViews
             RemoteMachineList.Items.Refresh();
         }
 
-        private async void btnUpdateRemote_Click(object sender, RoutedEventArgs e)
+        private void UpdateImages(int index, bool showUpdate, bool showSuccess, bool showFailed, string text)
+        {
+            RemoteMachineList.UpdateLayout();
+            RemoteMachineList.ScrollIntoView(RemoteMachineList.Items[index]);
+            var row = (DataGridRow)RemoteMachineList.ItemContainerGenerator.ContainerFromIndex(index);//is this even working?
+            var updatingImg = row.FindChild<System.Windows.Controls.Image>("ImgUpdating");
+            var successImg = row.FindChild<System.Windows.Controls.Image>("ImgSuccess");
+            var failedImg = row.FindChild<System.Windows.Controls.Image>("ImgFail");
+            var statusText = row.FindChild<System.Windows.Controls.TextBlock>("TxtStatus");
+            updatingImg.Visibility = showUpdate ? Visibility.Visible : Visibility.Collapsed;
+            successImg.Visibility = showSuccess ? Visibility.Visible : Visibility.Collapsed;
+            failedImg.Visibility = showFailed ? Visibility.Visible : Visibility.Collapsed;
+            statusText.Text = text;
+            RemoteMachineList.Items.Refresh();
+        }
+
+        private void btnUpdateRemote_Click(object sender, RoutedEventArgs e)
         {
 
             clearLogFile();
@@ -465,92 +481,101 @@ namespace MetroDemo.ExampleViews
             List<Task> tasks = new List<Task>();
             for(var i=0;  i < remoteClients.Count; i++)
             {
-               //var task = Task.Run(async () =>
-               // {
-                var client = remoteClients[i];
-                var row = (DataGridRow)RemoteMachineList.ItemContainerGenerator.ContainerFromIndex(i);
-                var updatingImg = row.FindChild<System.Windows.Controls.Image>("ImgUpdating");
-                var successImg = row.FindChild<System.Windows.Controls.Image>("ImgSuccess");
-                var failedImg = row.FindChild<System.Windows.Controls.Image>("ImgFail");
-                var statusText = row.FindChild<System.Windows.Controls.TextBlock>("TxtStatus");
+                int copyOfI = i;
+                RemoteMachineList.UpdateLayout();
+                RemoteMachineList.ScrollIntoView(RemoteMachineList.Items[copyOfI]);
+                var row = (DataGridRow)RemoteMachineList.ItemContainerGenerator.ContainerFromIndex(copyOfI);//is this even working?
 
+                var client = remoteClients[i];
+                
+
+                Action<int,bool,bool,bool,string> UpdateUI = UpdateImages;
+                
 
                 if (client.include)
                 {
-                    try
+                    var task = Task.Run(() =>
                     {
-                        updatingImg.Visibility = Visibility.Collapsed;
-                        successImg.Visibility = Visibility.Collapsed;
-                        failedImg.Visibility = Visibility.Collapsed;
+                        try
+                        {
+                            RemoteMachineList.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() => UpdateUI(copyOfI,false, false, false, "Updating")));  
+                        //    updatingImg.Visibility = Visibility.Collapsed;
+                        //successImg.Visibility = Visibility.Collapsed;
+                        //failedImg.Visibility = Visibility.Collapsed;
+                
 
-                        connectionInfo = new string[4] { client.UserName, client.Password, client.Machine, client.WorkGroup };
+                            connectionInfo = new string[4] { client.UserName, client.Password, client.Machine, client.WorkGroup };
                         var installGenerator = new OfficeInstallManager(connectionInfo);
 
                         var newVersion = client.Version;
                         var newChannel = client.Channel;
 
-                        await Task.Run(async () => { await installGenerator.initConnections(); });
-                        var officeInstall = await installGenerator.CheckForOfficeInstallAsync();
-                        var updateInfo = new List<string> { client.UserName, client.Password, client.Machine, client.WorkGroup, client.Channel.Name, client.Version.Number };
+                            Task.Run(async () => { await installGenerator.initConnections(); });
+                            var officeInstall = installGenerator.CheckForOfficeInstallAsync().Result;
+                            var updateInfo = new List<string> { client.UserName, client.Password, client.Machine, client.WorkGroup, client.Channel.Name, client.Version.Number };
 
                         
-                        client.Status = "Updating";
-                        statusText.Text = "Updating";
-                        updatingImg.Visibility = Visibility.Visible;
-                        await Task.Run(async () => { await ChangeOfficeChannelWmi(updateInfo, officeInstall); });
-                        
+                        //client.Status = "Updating";
+                        //statusText.Text = "Updating";
+                        //updatingImg.Visibility = Visibility.Visible;
+                        Task.Run(async () => { await ChangeOfficeChannelWmi(updateInfo, officeInstall); });
 
-                    }
+
+                        }
                     catch (Exception ex)// if fails via WMI, try via powershell
                     {
                         LogWmiErrorMessage(ex, connectionInfo);
                         try
                         {
                             string PSPath = System.IO.Directory.GetCurrentDirectory() + "\\Resources\\PowershellAttempt.txt";
-                            await Task.Run(async () => { await ChangeOfficeChannelPowershell(client); });
-                            string readtext = System.IO.File.ReadAllText(PSPath);
+                                Task.Run(async () => { await ChangeOfficeChannelPowershell(client); });
+                                string readtext = System.IO.File.ReadAllText(PSPath);
                             if (readtext.Contains("Update Completed") && !readtext.Contains("Update Not Running"))
                             {
-                                successImg.Visibility = Visibility.Collapsed;
-                                failedImg.Visibility = Visibility.Visible;
-                                client.Status = "Success";
-                                statusText.Text = "Success";
+                                    //successImg.Visibility = Visibility.Collapsed;
+                                    //failedImg.Visibility = Visibility.Visible;
+                                    //client.Status = "Success";
+                                    //statusText.Text = "Success";
 
-                            }
+                                }
                             else
                             {
-                                updatingImg.Visibility = Visibility.Collapsed;
-                                failedImg.Visibility = Visibility.Visible;
-                                client.Status = "Failed";
-                                statusText.Text = "Failed";
-                            }
+                                    //updatingImg.Visibility = Visibility.Collapsed;
+                                    //failedImg.Visibility = Visibility.Visible;
+                                    //client.Status = "Failed";
+                                    //statusText.Text = "Failed";
+                                }
 
                         }
                         catch (Exception ex1)
                         {
-                            updatingImg.Visibility = Visibility.Collapsed;
-                            failedImg.Visibility = Visibility.Visible;
-                            client.Status = "Error: "+ex.Message;
-                            statusText.Text = "Error: "+ex.Message;
-                        }
+                                //updatingImg.Visibility = Visibility.Collapsed;
+                                //failedImg.Visibility = Visibility.Visible;
+                                //client.Status = "Error: " + ex.Message;
+                                //statusText.Text = "Error: " + ex.Message;
+                            }
                     }
 
-
+                    });
+                    tasks.Add(task);
                 }
                 
                 RemoteMachineList.Items.Refresh();
+                     
+                
+            }
+            //try
+            //{
+            //    await Dispatcher.Invoke(async () =>
+            //    {
+            Task.WaitAll(tasks.ToArray());
             //});
-            //    tasks.Add(task);
-        }
-            try
-            {
-                //await Task.WhenAll(tasks);
-                GlobalObjects.ViewModel.BlockNavigation = false;
+            GlobalObjects.ViewModel.BlockNavigation = false;
                 WaitImage.Visibility = Visibility.Hidden;
                 toggleControls(true);
                 RemoteMachineList.Items.Refresh();
-            }
-            catch (Exception) { }
+            //}
+            //catch (Exception excp) { }
         }
 
         public async Task ChangeOfficeChannelWmi(List<string> updateinfo, OfficeInstallation LocalInstall)
