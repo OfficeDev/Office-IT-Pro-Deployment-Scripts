@@ -314,7 +314,6 @@ namespace MetroDemo.ExampleViews
 
         }
 
-
         private void AddComputersButton_Click(object sender, RoutedEventArgs e)
         {
 
@@ -333,7 +332,6 @@ namespace MetroDemo.ExampleViews
 
         private RemoteChannelVersionDialog remoteUpdateDialog = null;
         private RemoteClientInfoDialog remoteClientDialog = null;
-
 
         private void btnChangeChannelOrVersion_Click(object sender, RoutedEventArgs e)
         {
@@ -354,19 +352,11 @@ namespace MetroDemo.ExampleViews
             try
             {
                 var dialog = (RemoteChannelVersionDialog)sender;
-                var newVersion = new officeVersion
 
-                {
-                    Number = GlobalObjects.ViewModel.newVersion
-                };
 
-                var newChannel = new Channel
+                if (dialog.Result == DialogResult.OK && !String.IsNullOrEmpty(GlobalObjects.ViewModel.newVersion) && !String.IsNullOrEmpty(GlobalObjects.ViewModel.newChannel))
                 {
-                    Name = GlobalObjects.ViewModel.newChannel
-                };
 
-                if (dialog.Result == DialogResult.OK)
-                {
                     for (var i = 0; i < remoteClients.Count; i++)
                     {
                         if (remoteClients[i].include)
@@ -623,7 +613,6 @@ namespace MetroDemo.ExampleViews
 
             });
         }
-
 
         public async Task ChangeOfficeChannelPowershell(RemoteMachine client)
         {

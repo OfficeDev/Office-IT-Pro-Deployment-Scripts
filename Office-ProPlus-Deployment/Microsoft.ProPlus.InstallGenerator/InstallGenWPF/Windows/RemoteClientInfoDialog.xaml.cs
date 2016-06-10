@@ -42,8 +42,12 @@ namespace MetroDemo.ExampleWindows
         {
             try
             {
-                Result = System.Windows.Forms.DialogResult.OK;
-                GlobalObjects.ViewModel.remoteConnectionInfo = txtBxAddMachines.Text;
+                if(!String.IsNullOrEmpty(txtBxAddMachines.Text))
+                {
+                    Result = System.Windows.Forms.DialogResult.OK;
+                    GlobalObjects.ViewModel.remoteConnectionInfo = txtBxAddMachines.Text;
+                }
+              
                 this.Close();                
             }
             catch (Exception ex)
