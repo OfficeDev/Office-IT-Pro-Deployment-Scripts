@@ -523,9 +523,11 @@ namespace MetroDemo.ExampleViews
                         LogWmiErrorMessage(ex, connectionInfo);
                         try
                         {
-                            string PSPath = System.IO.Directory.GetCurrentDirectory() + "\\Resources\\PowershellAttempt.txt";
+                            string PSPath = System.IO.Directory.GetCurrentDirectory() + "\\Resources\\" + client.Machine + "PowershellAttempt.txt";
                             System.IO.File.Delete(PSPath);
                             Process p = new Process();
+                            p.StartInfo.UseShellExecute = false;
+                            p.StartInfo.CreateNoWindow = true;
                             p.StartInfo.FileName = "Powershell.exe";                                //replace path to use local path                            switch out arguments so your program throws in the necessary args
                             p.StartInfo.Arguments = @"-ExecutionPolicy Bypass -NoExit -Command ""& {& '" + System.IO.Directory.GetCurrentDirectory() + "\\Resources\\UpdateScriptLaunch.ps1' -Channel " + client.Channel.Name + " -DisplayLevel $false -machineToRun " + client.Machine + " -UpdateToVersion " + client.Version.Number + "}\"";
                             p.Start();
@@ -555,7 +557,13 @@ namespace MetroDemo.ExampleViews
                             failedImg.Visibility = Visibility.Visible;
                             client.Status = "Error";
                             statusText.Text = "Error";
-                            RemoteMachineList.Items.Refresh();
+                            using (System.IO.StreamWriter file =
+                            new System.IO.StreamWriter(System.IO.Directory.GetCurrentDirectory() + "\\Resources\\" + client.Machine + "PowershellError.txt", true))
+                            {
+                                file.WriteLine(ex1.Message);
+                                file.WriteLine(ex1.StackTrace);
+                            }
+                        RemoteMachineList.Items.Refresh();
                         }
                     }
 
