@@ -178,7 +178,7 @@ public class InstallOfficeWmi
         await Task.Run(async () => {
             try
             {
-                var c2RPath = GetOfficeC2RPath() + @"\OfficeC2RClient.exe /update user displaylevel=false forceappshutdown=true updatepromptuser=false updatetoversion=" + version;
+                var c2RPath = GetOfficeC2RPath() + @"\OfficeC2RClient.exe /update user displaylevel=true forceappshutdown=true updatepromptuser=false updatetoversion=" + version;
                 var mainRegKey = GetOfficeCtrRegPath().Result;
                 var c2rExe = new[] { c2RPath };
                 var wmiProcess = new ManagementClass(scope, new ManagementPath("Win32_Process"), new ObjectGetOptions());

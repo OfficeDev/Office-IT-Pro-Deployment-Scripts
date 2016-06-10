@@ -99,13 +99,10 @@ namespace MetroDemo.ExampleWindows
         {
             try
             {
-                if(!String.IsNullOrEmpty(GlobalObjects.ViewModel.newVersion) && !String.IsNullOrEmpty(GlobalObjects.ViewModel.newChannel))
-                {
-                    Result = System.Windows.Forms.DialogResult.OK;
-                    GlobalObjects.ViewModel.newChannel = ChannelSelection.SelectedItem.ToString();
-                    GlobalObjects.ViewModel.newVersion = VersionSelection.SelectedItem.ToString();
-                }
-              
+               
+                Result = System.Windows.Forms.DialogResult.OK;
+                GlobalObjects.ViewModel.newChannel = ChannelSelection.SelectedItem.ToString();
+                GlobalObjects.ViewModel.newVersion = VersionSelection.SelectedItem.ToString();
                 this.Close();                
             }
             catch (Exception ex)
