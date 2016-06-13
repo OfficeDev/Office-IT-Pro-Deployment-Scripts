@@ -22,7 +22,7 @@ specified in the
 Name: Generate-ODTConfigurationXml
 Version: 1.0.3
 DateCreated: 2015-08-24
-DateUpdated: 2015-11-23
+DateUpdated: 2016-06-13
 .LINK
 https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
 .PARAMETER ComputerName
@@ -252,7 +252,15 @@ process {
     foreach ($lang in $additionalLanguages) {
       if ($lang.GetType().Name.ToLower().Contains("string")) {
         if ($lang.Contains("-")) {
-          if (!($allLanguages -contains $lang.ToLower())) {
+          [bool]$addLang = $true
+
+          foreach ($language in $allLanguages) {
+             if ($language.ToLower() -eq $lang.ToLower()) {
+                $addLang = $false
+             }
+          }
+
+          if ($addLang) {
              $allLanguages += $lang.ToLower()
           }
         }
@@ -304,16 +312,21 @@ process {
        if ($additionalLanguages) {
            $additionalLanguages = Get-Unique -InputObject $additionalLanguages -OnType
            
-           
-                          
-           if ($additionalLanguages -contains ($primaryLanguage)) {
-           $tempLanguages = $additionalLanguages
-           $additionalLanguages = New-Object System.Collections.ArrayList
-           foreach($tempL in $tempLanguages){
-               if($tempL -ne $primaryLanguage){
+           [bool]$containsLang = $false
+           foreach ($additionalLanguage in $additionalLanguages) {
+              if ($primaryLanguage.ToLower() -eq $additionalLanguage.ToLower()) {
+                 $containsLang = $true
+              }
+           }
+          
+           if ($containsLang) {
+               $tempLanguages = $additionalLanguages
+               $additionalLanguages = New-Object System.Collections.ArrayList
+               foreach($tempL in $tempLanguages){
+                  if($tempL -ne $primaryLanguage){
                     $additionalLanguages.Add($tempL) | Out-Null
-               }
-               #$additionalLanguages.Remove($primaryLanguage)
+                  }
+                  #$additionalLanguages.Remove($primaryLanguage)
                }
            }
        }
@@ -1099,7 +1112,15 @@ function getLanguages() {
   
   $langPacks = $regProv.EnumKey($HKLM, "SYSTEM\CurrentControlSet\Control\MUI\UILanguages");
   foreach ($langPackName in $langPacks.sNames) {
-     if (!$returnLangs -contains $langPackName.ToLower()) {
+     [bool]$addReturnLang = $true
+
+     foreach ($returnLang in $returnLangs) {
+        if ($returnLang.ToLower() -eq $langPackName.ToLower()) {
+           $addReturnLang = $false
+        }
+     }
+
+     if ($addReturnLang) {
         $returnLangs += $langPackName.ToLower() 
      }
   }
@@ -1120,7 +1141,14 @@ function checkForLanguage() {
        [string]$langId = $NULL
     )
 
-    if ($availableLangs -contains ($langId.Trim().ToLower())) {
+    [bool]$langExists = $false
+    foreach ($availableLang in $availableLangs) {
+       if ($availableLang.ToLower() -eq $langId.Trim().ToLower()) {
+          $langExists = $true
+       }
+    }
+
+    if ($langExists) {
        return $langId
     } else {
        $langStart = $langId.Split('-')[0]
