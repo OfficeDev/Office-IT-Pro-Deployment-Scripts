@@ -99,6 +99,7 @@ namespace MetroDemo.ExampleWindows
         {
             try
             {
+               
                 Result = System.Windows.Forms.DialogResult.OK;
                 GlobalObjects.ViewModel.newChannel = ChannelSelection.SelectedItem.ToString();
                 GlobalObjects.ViewModel.newVersion = VersionSelection.SelectedItem.ToString();
