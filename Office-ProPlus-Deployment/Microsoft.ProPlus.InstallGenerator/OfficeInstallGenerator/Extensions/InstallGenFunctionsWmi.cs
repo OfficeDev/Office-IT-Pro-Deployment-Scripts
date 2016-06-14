@@ -68,6 +68,68 @@ public class InstallOfficeWmi
 
     }
 
+
+    public void ChangeOfficeChannelNonAsync(string targetChannel, string baseUrl)
+    {
+        var saveBaseUrl = "";
+        try
+        {
+
+            initConnectionNonAsync();
+            saveBaseUrl = GetBaseCdnUrl();
+
+            ChangeUpdateSource(baseUrl);
+            ChangeBaseCdnUrl(baseUrl);
+
+            RestartC2RSerivce();
+
+            RunOfficeUpdateNonAsync(targetChannel);
+        }
+        catch (Exception ex)
+        {
+            if (!string.IsNullOrEmpty(saveBaseUrl))
+            {
+                ChangeBaseCdnUrl(saveBaseUrl);
+            }
+            throw (new Exception(ex.Message));
+        }
+        finally
+        {
+            ResetUpdateSource();
+        }
+    }
+
+    public void initConnectionNonAsync()
+    {
+        var timeOut = new TimeSpan(0, 5, 0);
+        ConnectionOptions options = new ConnectionOptions();
+        options.Authority = "NTLMDOMAIN:" + remoteDomain.Trim();
+        options.Username = remoteUser.Trim();
+        options.Password = remotePass.Trim();
+        options.Impersonation = ImpersonationLevel.Impersonate;
+        options.Timeout = timeOut;
+
+
+
+        scope = new ManagementScope("\\\\" + remoteComputerName.Trim() + connectionNamespace, options);
+        scope.Options.EnablePrivileges = true;
+
+        scope2 = new ManagementScope("\\\\" + remoteComputerName.Trim() + "\\root\\default", options);
+        scope2.Options.EnablePrivileges = true;
+
+        try
+        {
+            scope.Connect();
+            //await Task.Run(() => { scope2.Connect(); });
+        }
+
+        catch (Exception)
+        {
+            scope.Connect();
+            //await Task.Run(() => { scope2.Connect(); });
+        }
+    }
+
     public async Task initConnection()
     {
 
@@ -173,6 +235,46 @@ public class InstallOfficeWmi
 
         return configKey;
     }
+
+    public void RunOfficeUpdateNonAsync(string version)
+    {
+        try
+        {
+            var c2RPath = GetOfficeC2RPath() + @"\OfficeC2RClient.exe /update user displaylevel=false forceappshutdown=true updatepromptuser=false updatetoversion=" + version;
+            var mainRegKey = GetOfficeCtrRegPath().Result;
+            var c2rExe = new[] { c2RPath };
+            var wmiProcess = new ManagementClass(scope, new ManagementPath("Win32_Process"), new ObjectGetOptions());
+            ManagementBaseObject inParams = wmiProcess.GetMethodParameters("Create");
+            inParams["CommandLine"] = c2RPath;
+
+            wmiProcess.InvokeMethod("Create", inParams, null);
+
+            Thread.Sleep(1000);
+
+            var executingScenario = GetRegistryValue(mainRegKey, "ExecutingScenario").Result;
+
+            while (executingScenario != null)
+            {
+                Thread.Sleep(1000);
+                executingScenario = GetRegistryValue(mainRegKey, "ExecutingScenario").Result;
+            }
+
+
+            var updateStatus = GetRegistryValue(mainRegKey, "LastScenarioResult").Result;
+
+            if (updateStatus != "Success")
+            {
+                throw (new Exception("Channel/version change was not successful"));
+            }
+
+        }
+        catch (Exception ex)
+        {
+            throw (new Exception(ex.Message));
+        }
+    }
+
+
     public async Task RunOfficeUpdateAsync(string version)
     {
         await Task.Run(async () => {

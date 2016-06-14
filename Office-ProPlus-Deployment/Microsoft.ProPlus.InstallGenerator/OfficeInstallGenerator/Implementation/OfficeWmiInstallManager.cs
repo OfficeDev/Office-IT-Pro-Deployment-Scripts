@@ -179,7 +179,7 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
             });
             return null;
         }
-
+        
 
         private async Task<string> GetRegistryValue(string regKey, string valueName, string getmethParam)
         {

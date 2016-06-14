@@ -587,7 +587,7 @@ namespace MetroDemo.ExampleViews
         }
 
 
-        private async void UpdateMultiWPowershell()
+        private async void UpdateMulti()
         {
             clearLogFile();
             GlobalObjects.ViewModel.BlockNavigation = true;
@@ -601,37 +601,76 @@ namespace MetroDemo.ExampleViews
 
                 Action<int, bool, bool, bool, string> UpdateUI = UpdateImages;
                 var connectionInfo = new string[4] { client.UserName, client.Password, client.Machine, client.WorkGroup };
-                var installGenerator = new OfficeInstallManager(connectionInfo);
-                var officeInstall = await installGenerator.CheckForOfficeInstallAsync();
                 if (client.include)
                 {
                     var task = Task.Run(() =>
                     {
                         try
                         {
-                            RemoteMachineList.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() => UpdateUI(copyOfI, false, false, false, "Updating")));
+                            RemoteMachineList.Dispatcher.BeginInvoke(DispatcherPriority.Normal,
+                                new Action(() => UpdateUI(copyOfI, false, false, false, "Updating")));
+
+                            connectionInfo = new string[4]
+                            {client.UserName, client.Password, client.Machine, client.WorkGroup};
+
+                            //await Task.Run(async () => { await installGenerator.initConnections(); });
+                            //var officeInstall = await installGenerator.CheckForOfficeInstallAsync();
+                            var updateInfo = new List<string>
+                            {
+                                client.UserName,
+                                client.Password,
+                                client.Machine,
+                                client.WorkGroup,
+                                client.Channel.Name,
+                                client.Version.Number
+                            };
+
 
                             client.Status = "Updating";
-                            ChangeOfficeChannelPowershellNonAsync(client);
-                            string PSPath = System.IO.Directory.GetCurrentDirectory() + "\\Resources\\"+client.Machine+"PowershellAttempt.txt";
-                            string readtext = System.IO.File.ReadAllText(PSPath);
-                            if (readtext.Contains("Update Completed") && !readtext.Contains("Update Not Running"))
-                            {
-                                RemoteMachineList.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() => UpdateUI(copyOfI, false, true, false, "Success")));
-                                client.Status = "Success";
+                            //statusText.Text = "Updating";
+                            //updatingImg.Visibility = Visibility.Visible;
+                            RemoteMachineList.Items.Refresh();
+                            ChangeOfficeChannelWmiNonAsync(updateInfo);
 
-                            }
-                            else
-                            {
-                                RemoteMachineList.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() => UpdateUI(copyOfI, false, false, true, "Failed")));
-                                client.Status = "Failed";
-                            }
+                            client.Status = "Success";
+                            //statusText.Text = "Success";
+                            //updatingImg.Visibility = Visibility.Collapsed;
+                            //successImg.Visibility = Visibility.Visible;
+
+
                         }
-                        catch (Exception ex)// if fails via WMI, try via powershell
+                        catch (Exception ex) // if fails via WMI, try via powershell
                         {
-                            client.Status = "Error: " + ex.Message;
-                            RemoteMachineList.Dispatcher.BeginInvoke(DispatcherPriority.Normal, new Action(() => UpdateUI(copyOfI, false, false, true, "Error" + ex.Message)));
-                        }
+                            try
+                            {
+                                client.Status = "Updating";
+                                ChangeOfficeChannelPowershellNonAsync(client);
+                                string PSPath = System.IO.Directory.GetCurrentDirectory() + "\\Resources\\" +
+                                                client.Machine +
+                                                "PowershellAttempt.txt";
+                                string readtext = System.IO.File.ReadAllText(PSPath);
+                                if (readtext.Contains("Update Completed") && !readtext.Contains("Update Not Running"))
+                                {
+                                    RemoteMachineList.Dispatcher.BeginInvoke(DispatcherPriority.Normal,
+                                        new Action(() => UpdateUI(copyOfI, false, true, false, "Success")));
+                                    client.Status = "Success";
+
+                                }
+                                else
+                                {
+                                    RemoteMachineList.Dispatcher.BeginInvoke(DispatcherPriority.Normal,
+                                        new Action(() => UpdateUI(copyOfI, false, false, true, "Failed")));
+                                    client.Status = "Failed";
+                                }
+                                
+                            }
+                            catch (Exception ex1)
+                            {
+                                client.Status = "Error: " + ex.Message;
+                                RemoteMachineList.Dispatcher.BeginInvoke(DispatcherPriority.Normal,
+                                    new Action(() => UpdateUI(copyOfI, false, false, true, "Error" + ex.Message)));
+                            }
+                    }
 
                     });
                     tasks.Add(task);
@@ -661,7 +700,7 @@ namespace MetroDemo.ExampleViews
             if(remoteClientCount == 1)
                 UpdateSingleRecord();
             else if(remoteClientCount > 1)
-                UpdateMultiWPowershell();
+                UpdateMulti();
         }
 
         public async Task ChangeOfficeChannelWmi(List<string> updateinfo, OfficeInstallation LocalInstall)
@@ -708,6 +747,65 @@ namespace MetroDemo.ExampleViews
                 }
 
             });
+        }
+
+
+        public void ChangeOfficeChannelWmiNonAsync(List<string> updateinfo)
+        {
+            var newChannel = updateinfo[4];
+
+                var installOffice = new InstallOfficeWmi();
+
+                installOffice.remoteUser = updateinfo[0];
+                installOffice.remoteComputerName = updateinfo[2];
+                installOffice.remoteDomain = updateinfo[3];
+                installOffice.remotePass = updateinfo[1];
+                installOffice.newChannel = updateinfo[4];
+                installOffice.newVersion = updateinfo[5];
+                installOffice.connectionNamespace = "\\root\\cimv2";
+            string baseUrl = "";
+                try
+                {
+                    switch (installOffice.newChannel.ToLower().Trim())
+                    {
+                    case "deferred":
+                            baseUrl = "http://officecdn.microsoft.com/pr/7ffbc6bf-bc32-4f92-8982-f9dd17fd3114";
+                        break;
+                    case "firstreleasedeferred":
+                            baseUrl = "http://officecdn.microsoft.com/pr/b8f9b850-328d-4355-9145-c59439a0c4cf";
+                        break;
+                    case "current":
+                            baseUrl = "http://officecdn.microsoft.com/pr/492350f6-3a01-4f97-b9c0-c7c6ddf67d60";
+                        break;
+                    case "firstreleasecurrent":
+                        baseUrl = "http://officecdn.microsoft.com/pr/64256afe-f5d9-4f86-8936-8840a6a4f5be";
+                        break;
+                }
+                    
+                
+                    if (string.IsNullOrEmpty(baseUrl))
+                        throw (new Exception(string.Format("Cannot find BaseUrl for Channel: {0}", newChannel)));
+
+
+
+                    var channelToChangeTo = updateinfo[5];
+
+                    if (string.IsNullOrEmpty(channelToChangeTo))
+                    {
+                        throw (new Exception("Version required"));
+                    }
+
+                    installOffice.ChangeOfficeChannelNonAsync(channelToChangeTo, baseUrl);
+                    var installGenerator = new OfficeInstallManager();
+                }
+                catch (Exception ex)
+                {
+                    LogErrorMessage(ex);
+                    LogWmiErrorMessage(ex, updateinfo.ToArray());
+                    throw (new Exception("Update Failed"));
+                }
+
+            
         }
 
 
