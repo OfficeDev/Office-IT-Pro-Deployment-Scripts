@@ -72,11 +72,11 @@
         <Label x:Name="ChannelLabel" Content="Channel:" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="0" Grid.Row="0" 
                                    HorizontalAlignment="Left" Width="75"  />
 
-        <ComboBox Grid.Row="0" x:Name="ChannelSelection" Style="{StaticResource MetroComboBox}" FontSize="18" Foreground="{StaticResource GrayBrush}"
+        <ComboBox Grid.Row="0" x:Name="ChannelSelection" Style="{StaticResource MetroComboBox}" FontSize="18" Foreground="{StaticResource GrayBrush}" IsReadOnly="True"
                  HorizontalAlignment="Left" VerticalAlignment="Top" Width="275" Height="34"  Grid.Column="1" FontWeight="SemiBold" SelectionChanged="ChannelSelection_SelectionChanged"/>
         <Label x:Name="VersionLabel" Content="Version:" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="2" Grid.Row="0" 
                                    HorizontalAlignment="Left" Width="75"  />
-        <ComboBox Grid.Row="0" x:Name="VersionSelection" Style="{StaticResource MetroComboBox}" FontSize="18" Foreground="{StaticResource GrayBrush}"
+        <ComboBox Grid.Row="0" x:Name="VersionSelection" Style="{StaticResource MetroComboBox}" FontSize="18" Foreground="{StaticResource GrayBrush}" IsReadOnly="True"
                  HorizontalAlignment="Left" VerticalAlignment="Top" Width="275" Height="34"  Grid.Column="3" FontWeight="SemiBold" />
         <StackPanel Grid.Column="3" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="108"  >
             <Button Name="OkButton" Content="OK" Margin="2" Height="30" Click="OkButton_Click" />

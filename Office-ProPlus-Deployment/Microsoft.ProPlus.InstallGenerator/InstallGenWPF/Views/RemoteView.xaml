@@ -105,6 +105,7 @@
                                                         <ComboBox Width="240" x:Name="ProductChannel" BorderThickness="0" Background="Transparent"
                                                                         Height="35" HorizontalAlignment="Left" 
                                                                         Style="{DynamicResource MetroComboBox}"
+                                                                        IsReadOnly="True"
                                                                         DisplayMemberPath="Name" Foreground="{StaticResource GrayBrush}"
                                                                         IsEditable="True" IsTextSearchEnabled="True"
                                                                         ItemsSource="{Binding Path=Channels}" 
@@ -127,6 +128,7 @@
                                                                         IsEditable="True" IsTextSearchEnabled="True"
                                                                         ItemsSource="{Binding Path=Versions}" 
                                                                         SelectedValuePath="Number"
+                                                                        IsReadOnly="True"
                                                                         SelectedItem="{Binding Path=Version, UpdateSourceTrigger=PropertyChanged}"
                                                                         MaxDropDownHeight="125"
                                                                         FontSize="20" IsSynchronizedWithCurrentItem="True"/>
