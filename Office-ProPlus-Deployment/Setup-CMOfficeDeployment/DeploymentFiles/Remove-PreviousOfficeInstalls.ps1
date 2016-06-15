@@ -312,6 +312,11 @@ Function Remove-PreviousOfficeInstalls{
 
     $officeVersions = Get-OfficeVersion | select *
     $ActionFiles = @()
+    
+    if (!( $officeVersions)) {
+       Write-Host "Microsoft Office is not installed"
+       break
+    }
 
     foreach ($officeVersion in $officeVersions) {
         if($officeVersion.ClicktoRun.ToLower() -ne "true"){
@@ -346,11 +351,11 @@ Function Remove-PreviousOfficeInstalls{
       Write-Host "Removing Office products..."
 
       if (Test-Path -Path $ActionFile) {
-          cscript $ActionFile
+          wscript $ActionFile
 
           Do{
             Start-Sleep -Seconds 5
-            $cscriptProcess = Get-Process cscript -ErrorAction SilentlyContinue
+            $cscriptProcess = Get-Process wscript -ErrorAction SilentlyContinue
           }
           Until($cscriptProcess -eq $null)
       } else {
@@ -369,6 +374,7 @@ Function GetScriptRoot() {
      if ($PSScriptRoot) {
        $scriptPath = $PSScriptRoot
      } else {
+       $scriptPath = split-path -parent $MyInvocation.MyCommand.Definition
        $scriptPath = (Get-Item -Path ".\").FullName
      }
 
