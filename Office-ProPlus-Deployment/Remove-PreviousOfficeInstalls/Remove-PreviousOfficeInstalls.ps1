@@ -308,16 +308,15 @@ Function Remove-PreviousOfficeInstalls{
     $15MSIVBS = "OffScrub_O15msi.vbs"
     $16MSIVBS = "OffScrub_O16msi.vbs"
 
-     $scriptPath = "."
-
-     if ($PSScriptRoot) {
-       $scriptPath = $PSScriptRoot
-     } else {
-       $scriptPath = split-path -parent $MyInvocation.MyCommand.Definition
-     }
+     $scriptPath = GetScriptRoot
 
     $officeVersions = Get-OfficeVersion | select *
     $ActionFiles = @()
+    
+    if (!( $officeVersions)) {
+       Write-Host "Microsoft Office is not installed"
+       break
+    }
 
     foreach ($officeVersion in $officeVersions) {
         if($officeVersion.ClicktoRun.ToLower() -ne "true"){
@@ -352,11 +351,11 @@ Function Remove-PreviousOfficeInstalls{
       Write-Host "Removing Office products..."
 
       if (Test-Path -Path $ActionFile) {
-          cscript $ActionFile
+          wscript $ActionFile
 
           Do{
             Start-Sleep -Seconds 5
-            $cscriptProcess = Get-Process cscript -ErrorAction Ignore
+            $cscriptProcess = Get-Process wscript -ErrorAction SilentlyContinue
           }
           Until($cscriptProcess -eq $null)
       } else {
@@ -366,4 +365,19 @@ Function Remove-PreviousOfficeInstalls{
 
 
   }
+}
+
+Function GetScriptRoot() {
+ process {
+     [string]$scriptPath = "."
+
+     if ($PSScriptRoot) {
+       $scriptPath = $PSScriptRoot
+     } else {
+       $scriptPath = split-path -parent $MyInvocation.MyCommand.Definition
+       $scriptPath = (Get-Item -Path ".\").FullName
+     }
+
+     return $scriptPath
+ }
 }
