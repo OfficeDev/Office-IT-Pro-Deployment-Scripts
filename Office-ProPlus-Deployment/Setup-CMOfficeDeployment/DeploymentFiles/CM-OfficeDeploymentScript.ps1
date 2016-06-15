@@ -13,7 +13,15 @@
 
 Process {
  $targetFilePath = "$env:temp\configuration.xml"
- $scriptPath = GetScriptRoot
+
+ [string]$scriptPath = "."
+
+ if ($PSScriptRoot) {
+    $scriptPath = $PSScriptRoot
+ } else {
+   $scriptPath = (Get-Item -Path ".\").FullName
+ }
+
  . "$scriptPath\SharedFunctions.ps1"
  if (Get-OfficeC2RVersion) { Write-Host "Office 365 ProPlus Already Installed" }
 
@@ -66,3 +74,4 @@ Process {
  
  # Configuration.xml file for Click-to-Run for Office 365 products reference. https://technet.microsoft.com/en-us/library/JJ219426.aspx
 }
+
