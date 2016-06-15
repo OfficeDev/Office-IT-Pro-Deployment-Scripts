@@ -308,13 +308,7 @@ Function Remove-PreviousOfficeInstalls{
     $15MSIVBS = "OffScrub_O15msi.vbs"
     $16MSIVBS = "OffScrub_O16msi.vbs"
 
-     $scriptPath = "."
-
-     if ($PSScriptRoot) {
-       $scriptPath = $PSScriptRoot
-     } else {
-       $scriptPath = split-path -parent $MyInvocation.MyCommand.Definition
-     }
+     $scriptPath = GetScriptRoot
 
     $officeVersions = Get-OfficeVersion | select *
     $ActionFiles = @()
@@ -356,7 +350,7 @@ Function Remove-PreviousOfficeInstalls{
 
           Do{
             Start-Sleep -Seconds 5
-            $cscriptProcess = Get-Process cscript -ErrorAction Ignore
+            $cscriptProcess = Get-Process cscript -ErrorAction SilentlyContinue
           }
           Until($cscriptProcess -eq $null)
       } else {
@@ -366,4 +360,18 @@ Function Remove-PreviousOfficeInstalls{
 
 
   }
+}
+
+Function GetScriptRoot() {
+ process {
+     [string]$scriptPath = "."
+
+     if ($PSScriptRoot) {
+       $scriptPath = $PSScriptRoot
+     } else {
+       $scriptPath = (Get-Item -Path ".\").FullName
+     }
+
+     return $scriptPath
+ }
 }
