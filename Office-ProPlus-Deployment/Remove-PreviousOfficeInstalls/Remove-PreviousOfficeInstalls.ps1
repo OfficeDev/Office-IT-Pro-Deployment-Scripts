@@ -294,7 +294,7 @@ process {
 
 }
 
-Function Remove-OfficeInstall{
+Function Remove-PreviousOfficeInstalls{
   [CmdletBinding(SupportsShouldProcess=$true)]
   param(
 
@@ -352,11 +352,11 @@ Function Remove-OfficeInstall{
       Write-Host "Removing Office products..."
 
       if (Test-Path -Path $ActionFile) {
-          wscript $ActionFile
+          cscript $ActionFile
 
           Do{
             Start-Sleep -Seconds 5
-            $cscriptProcess = Get-Process wscript -ErrorAction Ignore
+            $cscriptProcess = Get-Process cscript -ErrorAction Ignore
           }
           Until($cscriptProcess -eq $null)
       } else {
