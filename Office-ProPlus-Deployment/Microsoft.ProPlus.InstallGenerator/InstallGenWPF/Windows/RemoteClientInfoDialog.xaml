@@ -67,7 +67,7 @@
 
         <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0"   >
             <TextBox x:Name="txtBxAddMachines" Width="400" Height="300" TextWrapping="Wrap" Style="{StaticResource MetroTextBox}" AcceptsReturn="True"  
-                 Text="mClark	pass@word1	10.10.8.28	WORKGROUP,admin pass@word1 10.10.8.26 WORKGROUP," HorizontalAlignment="Center"  />
+                 Text="smsadmin	pass@word1	cl2	WORKGROUP," HorizontalAlignment="Center"  />
         </StackPanel>
 
         <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Right" >

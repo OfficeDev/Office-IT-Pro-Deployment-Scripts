@@ -101,8 +101,12 @@ namespace MetroDemo.ExampleWindows
             {
                
                 Result = System.Windows.Forms.DialogResult.OK;
-                GlobalObjects.ViewModel.newChannel = ChannelSelection.SelectedItem.ToString();
-                GlobalObjects.ViewModel.newVersion = VersionSelection.SelectedItem.ToString();
+                if(ChannelSelection.SelectedItem != null  && VersionSelection.SelectedItem != null)
+                {
+                    GlobalObjects.ViewModel.newChannel = ChannelSelection.SelectedItem.ToString();
+                    GlobalObjects.ViewModel.newVersion = VersionSelection.SelectedItem.ToString();
+                }
+               
                 this.Close();                
             }
             catch (Exception ex)

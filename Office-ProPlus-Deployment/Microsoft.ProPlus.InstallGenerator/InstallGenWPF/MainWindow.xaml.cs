@@ -228,7 +228,13 @@ namespace MetroDemo
                 {
                     GenerateTabName.Visibility = Visibility.Collapsed;
                     LocalTabName.Visibility = Visibility.Collapsed;
+                    TabProducts.Visibility = Visibility.Collapsed;
+                    TabDownload.Visibility = Visibility.Collapsed;
+                    TabUpdates.Visibility = Visibility.Collapsed;
+                    TabOptions.Visibility = Visibility.Collapsed; 
+                             
                     RemoteTabName.Visibility = Visibility.Visible;
+                    RemoteTabName.IsSelected = true;
                 }
                 else
                 {

@@ -141,29 +141,12 @@ namespace MetroDemo.ExampleViews
             {
                 if (_running) return;
 
-                GlobalObjects.ViewModel.LocalConfig = false;
                 GlobalObjects.ViewModel.BlockNavigation = true;
                 _running = true;
-                var localXml = GlobalObjects.DefaultXml;
 
-
-
-                        WaitManageLocal.Visibility = Visibility.Visible;
-                        //ImgManageLocal.Visibility = Visibility.Collapsed;
                     
 
-                    GlobalObjects.ViewModel.ApplicationMode = ApplicationMode.ManageRemote;
-
-                    GlobalObjects.ViewModel.ConfigXmlParser.LoadXml(GlobalObjects.DefaultXml);
-                    GlobalObjects.ViewModel.ResetXml = true;
-                    GlobalObjects.ViewModel.ImportFile = null;
-                
-
-                GlobalObjects.ViewModel.ConfigXmlParser.LoadXml(localXml);
-                GlobalObjects.ViewModel.ResetXml = true;
-                GlobalObjects.ViewModel.ImportFile = null;
-
-                //GlobalObjects.ViewModel.ConfigXmlParser.ConfigurationXml.Add.Version = null;
+                GlobalObjects.ViewModel.ApplicationMode = ApplicationMode.ManageRemote;
 
                 if (RestartWorkflow != null)
                 {
@@ -172,25 +155,14 @@ namespace MetroDemo.ExampleViews
 
                 GlobalObjects.ViewModel.BlockNavigation = false;
 
-                var installOffice = new InstallOffice();
-                if (installOffice.IsUpdateRunning())
+                this.TransitionTab(this, new TransitionTabEventArgs()
                 {
-                    this.TransitionTab(this, new TransitionTabEventArgs()
-                    {
-                        Direction = TransitionTabDirection.Forward,
-                        Index = 7,
-                        UseIndex = true
-                    });
-                }
-                else
-                {
-                    this.TransitionTab(this, new TransitionTabEventArgs()
-                    {
-                        Direction = TransitionTabDirection.Forward,
-                        Index = 0
-                    });
-                }
+                    Direction = TransitionTabDirection.Forward,
+                    Index = 7,
+                    UseIndex = true
+                });
 
+                
                 LogAnaylytics("/StartView", "StartNew");
             }
             catch (Exception ex)
