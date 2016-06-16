@@ -382,7 +382,7 @@ namespace MetroDemo
                 new Language { Id="id-id", Name="Indonesian" },
                 new Language { Id="it-it", Name="Italian" },
                 new Language { Id="ja-jp", Name="Japanese" },
-                new Language { Id="kk-kh", Name="Kazakh" },
+                new Language { Id="kk-kz", Name="Kazakh" },
                 new Language { Id="ko-kr", Name="Korean" },
                 new Language { Id="lv-lv", Name="Latvian" },
                 new Language { Id="lt-lt", Name="Lithuanian" },

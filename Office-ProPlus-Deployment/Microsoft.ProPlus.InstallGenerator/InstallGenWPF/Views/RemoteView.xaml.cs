@@ -181,12 +181,7 @@ namespace MetroDemo.ExampleViews
             try
             {
 
-#if DEBUG
-                //place holder
-#else
                 await installGenerator.initConnections();
-#endif
-
                 var officeInstall = await installGenerator.CheckForOfficeInstallAsync();
 
                 var channels = new List<Channel>();
@@ -248,8 +243,7 @@ namespace MetroDemo.ExampleViews
                         OriginalVersion = currentVersion
 
                     };
-                }
-                //txtBxAddMachines.Clear();        
+                }    
                 
             }
             catch (Exception ex)
@@ -314,7 +308,6 @@ namespace MetroDemo.ExampleViews
 
         }
 
-
         private void AddComputersButton_Click(object sender, RoutedEventArgs e)
         {
 
@@ -333,7 +326,6 @@ namespace MetroDemo.ExampleViews
 
         private RemoteChannelVersionDialog remoteUpdateDialog = null;
         private RemoteClientInfoDialog remoteClientDialog = null;
-
 
         private void btnChangeChannelOrVersion_Click(object sender, RoutedEventArgs e)
         {
@@ -535,16 +527,16 @@ namespace MetroDemo.ExampleViews
 
                 try
                 {
-                    //LogWmiErrorMessage(ex, connectionInfo);
+                    LogWmiErrorMessage(ex, connectionInfo);
 
                     string PSPath = System.IO.Directory.GetCurrentDirectory() + "\\Resources\\" + client.Machine + "PowershellAttempt.txt";
-                    //System.IO.File.Delete(PSPath);
+                    System.IO.File.Delete(PSPath);
                     Process p = new Process();
                     p.EnableRaisingEvents = true;
-                    p.StartInfo.CreateNoWindow = true;
+                    p.StartInfo.CreateNoWindow = false;
                     p.StartInfo.UseShellExecute = false;
                     p.StartInfo.FileName = "Powershell.exe";                                //replace path to use local path                            switch out arguments so your program throws in the necessary args
-                    p.StartInfo.Arguments = @"-ExecutionPolicy Bypass -NoExit -Command ""& {& '" + System.IO.Directory.GetCurrentDirectory() + "\\Resources\\UpdateScriptLaunch.ps1' -Channel " + client.Channel.Name + " -DisplayLevel $false -machineToRun " + client.Machine + " -UpdateToVersion " + client.Version.Number + "}\"";
+                    p.StartInfo.Arguments = @"-ExecutionPolicy Bypass -NoExit -Command ""& {& '" + System.IO.Directory.GetCurrentDirectory() + "\\Resources\\UpdateScriptLaunch.ps1' -Channel " + client.Channel.Name + " -DisplayLevel $true -machineToRun " + client.Machine + " -UpdateToVersion " + client.Version.Number + "}\"";
                   
 
 
@@ -725,118 +717,6 @@ namespace MetroDemo.ExampleViews
                 }
 
             });
-        }
-
-
-        public void ChangeOfficeChannelWmiNonAsync(List<string> updateinfo)
-        {
-            var newChannel = updateinfo[4];
-
-                var installOffice = new InstallOfficeWmi();
-
-                installOffice.remoteUser = updateinfo[0];
-                installOffice.remoteComputerName = updateinfo[2];
-                installOffice.remoteDomain = updateinfo[3];
-                installOffice.remotePass = updateinfo[1];
-                installOffice.newChannel = updateinfo[4];
-                installOffice.newVersion = updateinfo[5];
-                installOffice.connectionNamespace = "\\root\\cimv2";
-            string baseUrl = "";
-                try
-                {
-                    switch (installOffice.newChannel.ToLower().Trim())
-                    {
-                    case "deferred":
-                            baseUrl = "http://officecdn.microsoft.com/pr/7ffbc6bf-bc32-4f92-8982-f9dd17fd3114";
-                        break;
-                    case "firstreleasedeferred":
-                            baseUrl = "http://officecdn.microsoft.com/pr/b8f9b850-328d-4355-9145-c59439a0c4cf";
-                        break;
-                    case "current":
-                            baseUrl = "http://officecdn.microsoft.com/pr/492350f6-3a01-4f97-b9c0-c7c6ddf67d60";
-                        break;
-                    case "firstreleasecurrent":
-                        baseUrl = "http://officecdn.microsoft.com/pr/64256afe-f5d9-4f86-8936-8840a6a4f5be";
-                        break;
-                }
-                    
-                
-                    if (string.IsNullOrEmpty(baseUrl))
-                        throw (new Exception(string.Format("Cannot find BaseUrl for Channel: {0}", newChannel)));
-
-
-
-                    var channelToChangeTo = updateinfo[5];
-
-                    if (string.IsNullOrEmpty(channelToChangeTo))
-                    {
-                        throw (new Exception("Version required"));
-                    }
-
-                    installOffice.ChangeOfficeChannelNonAsync(channelToChangeTo, baseUrl);
-                    var installGenerator = new OfficeInstallManager();
-                }
-                catch (Exception ex)
-                {
-                    LogErrorMessage(ex);
-                    LogWmiErrorMessage(ex, updateinfo.ToArray());
-                    throw (new Exception("Update Failed"));
-                }
-
-            
-        }
-
-
-        public async Task ChangeOfficeChannelPowershell(RemoteMachine client)
-        {
-
-            await Task.Run(() =>
-            {
-                try
-                {
-                    string PSPath = System.IO.Directory.GetCurrentDirectory() + "\\Resources\\" + client.Machine + "PowershellAttempt.txt";
-                    
-                    System.IO.File.Delete(PSPath);
-                    Process p = new Process();
-                    p.StartInfo.FileName = "Powershell.exe";                                //replace path to use local path                            switch out arguments so your program throws in the necessary args
-                    p.StartInfo.Arguments = @"-ExecutionPolicy Bypass -NoExit -Command ""& {& '" + System.IO.Directory.GetCurrentDirectory() + "\\Resources\\UpdateScriptLaunch.ps1' -Channel " + client.Channel.Name + " -DisplayLevel $false -machineToRun " + client.Machine + " -UpdateToVersion " + client.Version.Number + "}\"";
-                    p.StartInfo.UseShellExecute = false;
-                    p.StartInfo.CreateNoWindow = true;
-                    p.Start();
-                    p.WaitForExit();
-                    p.Close();
-                }
-                catch (Exception ex)
-                {
-                    LogErrorMessage(ex);
-                    throw (new Exception("Update Failed"));
-
-                }
-            });
-        }
-
-        public void ChangeOfficeChannelPowershellNonAsync(RemoteMachine client)
-        {
-            try
-            {
-                string PSPath = System.IO.Directory.GetCurrentDirectory() + "\\Resources\\"+client.Machine+"PowershellAttempt.txt";
-
-                System.IO.File.Delete(PSPath);
-                Process p = new Process();
-                p.StartInfo.FileName = "Powershell.exe";                                //replace path to use local path                            switch out arguments so your program throws in the necessary args
-                p.StartInfo.Arguments = @"-ExecutionPolicy Bypass -NoExit -Command ""& {& '" + System.IO.Directory.GetCurrentDirectory() + "\\Resources\\UpdateScriptLaunch.ps1' -Channel " + client.Channel.Name + " -DisplayLevel $false -machineToRun " + client.Machine + " -UpdateToVersion " + client.Version.Number + "}\"";
-                p.StartInfo.UseShellExecute = false;
-                p.StartInfo.CreateNoWindow = true;
-                p.Start();
-                p.WaitForExit();
-                p.Close();
-            }
-            catch (Exception ex)
-            {
-                LogErrorMessage(ex);
-                throw (new Exception("Update Failed"));
-
-            }
         }
 
         private List<officeVersion> getVersions(OfficeBranch currentChannel, List<officeVersion> versions, string currentVersion)

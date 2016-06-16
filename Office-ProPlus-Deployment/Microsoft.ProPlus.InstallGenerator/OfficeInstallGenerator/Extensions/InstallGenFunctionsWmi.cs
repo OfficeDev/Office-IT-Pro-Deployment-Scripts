@@ -15,11 +15,6 @@ using Microsoft.OfficeProPlus.InstallGenerator.Events;
 using Microsoft.Win32;
 using System.Management;
 
-//[assembly: AssemblyTitle("")]
-//[assembly: AssemblyProduct("")]
-//[assembly: AssemblyDescription("")]
-//[assembly: AssemblyVersion("")]
-//[assembly: AssemblyFileVersion("")]
 
 public class InstallOfficeWmi
 {
@@ -270,13 +265,12 @@ public class InstallOfficeWmi
         }
     }
 
-
     public async Task RunOfficeUpdateAsync(string version)
     {
         await Task.Run(async () => {
             try
             {
-                var c2RPath = GetOfficeC2RPath() + @"\OfficeC2RClient.exe /update user displaylevel=true forceappshutdown=true updatepromptuser=false updatetoversion=" + version;
+                var c2RPath = GetOfficeC2RPath() + @"\OfficeC2RClient.exe /update user displaylevel=false forceappshutdown=true updatepromptuser=false updatetoversion=" + version;
                 var mainRegKey = GetOfficeCtrRegPath().Result;
                 var c2rExe = new[] { c2RPath };
                 var wmiProcess = new ManagementClass(scope, new ManagementPath("Win32_Process"), new ObjectGetOptions());
@@ -329,7 +323,6 @@ public class InstallOfficeWmi
     {
         const string policyPath = @"SOFTWARE\Policies\Microsoft\office\16.0\common\";
         var policyKey = GetRegistryBaseKey(policyPath, "officeupdate", "EnumKey");
-        //var policyKey = Registry.LocalMachine.OpenSubKey(policyPath, true);
         if (policyKey != null)
         {
             var saveUpdatePath = GetRegistryValue(policyKey.ToString(), "saveupdatepath").Result;
@@ -376,10 +369,9 @@ public class InstallOfficeWmi
                 if (string.IsNullOrEmpty(saveupdatePath.ToString()))
                 {
                     SetRegistryValue(policyPath + "officeUpdate", "saveupdatepath","SetStringValue", currentupdatepath);
-                    //policyKey.SetValue("saveupdatepath", currentupdatepath, RegistryValueKind.String);
                 }
                 SetRegistryValue(policyPath + "officeUpdate", "updatepath", "SetStringValue", updateSource);
-                //policyKey.SetValue("updatepath", updateSource, RegistryValueKind.String);
+                
 
             }
         }
@@ -389,7 +381,6 @@ public class InstallOfficeWmi
         var mainRegKey = GetOfficeCtrRegPath().Result;
         if (mainRegKey == null) return null;
 
-        //var configKey = mainRegKey.OpenSubKey(@"Configuration", true);
         var configKey = GetRegistryBaseKey(mainRegKey, "Configuration", "EnumKey");
         if (configKey == null) return null;
 
@@ -401,11 +392,9 @@ public class InstallOfficeWmi
         {
 
             SetRegistryValue(mainRegKey + @"\Configuration", "UpdateUrl", "SetStringValue", currentupdatepath);
-            //configKey.SetValue("SaveUpdateUrl", currentupdatepath, RegistryValueKind.String);
         }
 
         SetRegistryValue(mainRegKey + @"\Configuration", "UpdateUrl", "SetStringValue", updateSource);
-        //configKey.SetValue("UpdateUrl", updateSource, RegistryValueKind.String);
 
         return currentupdatepath;
         }
@@ -423,9 +412,8 @@ public class InstallOfficeWmi
             if (mainRegKey == null) return "";
 
 
-            //var configKey = GetRegistryValue(mainRegKey.ToString()+"Configuration","CDNBaseUrl");
             var configKey = GetRegistryBaseKey(mainRegKey, "Configuration", "EnumKey");
-            //var configKey = mainRegKey.OpenSubKey(@"Configuration", true);
+
             if (configKey == null) return "";
 
             return GetRegistryValue(mainRegKey + "\\Configuration", "CDNBaseUrl").Result;
@@ -449,12 +437,11 @@ public class InstallOfficeWmi
         var mainRegKey = GetOfficeCtrRegPath().Result;
         if (mainRegKey == null) return;
 
-        //var configKey = mainRegKey.OpenSubKey(@"Configuration", true);
         var configKey = GetRegistryBaseKey(mainRegKey, "Configuration", "EnumKey");
         if (configKey == null) return;
 
         var cdnBaseUrl = GetRegistryValue(mainRegKey+"\\"+configKey, "CDNBaseUrl").Result;
-        //configKey.SetValue("CDNBaseUrl", updateSource, RegistryValueKind.String);
+
         SetRegistryValue(mainRegKey + "\\" + configKey, "CDNBaseUrl", "SetStringValue", updateSource);
         }
         catch(Exception ex)
@@ -470,8 +457,7 @@ public class InstallOfficeWmi
       
             var office16Key = GetRegistryBaseKey(path16, "ClickToRun","EnumKey");
             var office15Key = GetRegistryBaseKey(path15, "ClickToRun","EnumKey");
-            //var office16Key = Registry.LocalMachine.OpenSubKey(path16, true);
-            //var office15Key = Registry.LocalMachine.OpenSubKey(path15, true);
+           
 
             if (office16Key != null)
             {
@@ -485,11 +471,7 @@ public class InstallOfficeWmi
                 }
             }
 
-            //var Hklm32 = RegistryKey.OpenRemoteBaseKey(RegistryHive.LocalMachine, remoteComputerName, RegistryView.Registry32);
-            //var Hklm32 = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32);
-
-            //office16Key = Hklm32.OpenSubKey(path16, true);
-            //office15Key = Hklm32.OpenSubKey(path15, true);
+          
             office16Key = @"\SOFTWARE\Wow6432Node\Microsoft\Office\";
             office15Key = @"\SOFTWARE\Wow6432Node\Microsoft\Office\15.0\";
 
@@ -568,21 +550,6 @@ public class InstallOfficeWmi
 
                     ManagementBaseObject outParams = registry.InvokeMethod("SetDWORDValue", inParams, null);
                 
-
-                //var result = outParams.Properties["ReturnValue"].Value.ToString();
-
-                //if (result != "0")
-                //{
-                //    throw (new Exception("Cannot create registry Value: " + valueName + " at path: " + regKey + " return code: " + result));
-                //}
-                //}
-                //catch (Exception ex)
-                //{
-                //}
-
-
-
-
             });
 
     }
