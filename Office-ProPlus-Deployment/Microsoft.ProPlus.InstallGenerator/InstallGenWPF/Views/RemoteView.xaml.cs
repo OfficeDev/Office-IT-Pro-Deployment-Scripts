@@ -56,7 +56,7 @@ namespace MetroDemo.ExampleViews
             RemoteMachineList.ItemsSource = remoteClients;
         }
 
-        private void LogErrorMessage(Exception ex)
+        private  void LogErrorMessage(Exception ex)
         {
             ex.LogException(false);
             if (ErrorMessage != null)
@@ -454,27 +454,6 @@ namespace MetroDemo.ExampleViews
             RemoteMachineList.Items.Refresh();
         }
 
-        //private void UpdateImages(int index, bool showUpdate, bool showSuccess, bool showFailed, string text)
-        //{ 
-        //    try
-        //    {
-        //        RemoteMachineList.UpdateLayout();
-        //        RemoteMachineList.ScrollIntoView(RemoteMachineList.Items[index]);
-        //        var row = (DataGridRow) RemoteMachineList.ItemContainerGenerator.ContainerFromIndex(index);
-        //            //is this even working?
-        //        var updatingImg = row.FindChild<System.Windows.Controls.Image>("ImgUpdating");
-        //        var successImg = row.FindChild<System.Windows.Controls.Image>("ImgSuccess");
-        //        var failedImg = row.FindChild<System.Windows.Controls.Image>("ImgFail");
-        //        var statusText = row.FindChild<System.Windows.Controls.TextBlock>("TxtStatus");
-        //        updatingImg.Visibility = showUpdate ? Visibility.Visible : Visibility.Collapsed;
-        //        successImg.Visibility = showSuccess ? Visibility.Visible : Visibility.Collapsed;
-        //        failedImg.Visibility = showFailed ? Visibility.Visible : Visibility.Collapsed;
-        //        statusText.Text = text;
-        //        RemoteMachineList.Items.Refresh();
-        //    }
-        //    catch (Exception) { }
-        //}
-
         private async Task UpdateMachine(RemoteMachine client, int i)
         {
 
@@ -526,13 +505,13 @@ namespace MetroDemo.ExampleViews
                 //throw (new Exception(""));
 
                 connectionInfo = new string[4] { client.UserName, client.Password, client.Machine, client.WorkGroup };
-                var installGenerator = new OfficeInstallManager(connectionInfo);
+                var installGenerator = new OfficeInstallManager(connectionInfo); 
 
                 var newVersion = client.Version;
                 var newChannel = client.Channel;
 
                 await Task.Run(async () => { await installGenerator.initConnections(); });
-                var officeInstall = await installGenerator.CheckForOfficeInstallAsync();
+                var officeInstall = await Task.Run(() => { return installGenerator.CheckForOfficeInstallAsync(); });
                 var updateInfo = new List<string> { client.UserName, client.Password, client.Machine, client.WorkGroup, client.Channel.Name, client.Version.Number };
 
                 await Task.Run(async () => { await ChangeOfficeChannelWmi(updateInfo, officeInstall); });
@@ -553,11 +532,13 @@ namespace MetroDemo.ExampleViews
             catch (Exception ex)// if fails via WMI, try via powershell
             {
 
-                LogWmiErrorMessage(ex, connectionInfo);
+
                 try
                 {
+                    //LogWmiErrorMessage(ex, connectionInfo);
+
                     string PSPath = System.IO.Directory.GetCurrentDirectory() + "\\Resources\\" + client.Machine + "PowershellAttempt.txt";
-                    System.IO.File.Delete(PSPath);
+                    //System.IO.File.Delete(PSPath);
                     Process p = new Process();
                     p.EnableRaisingEvents = true;
                     p.StartInfo.CreateNoWindow = true;
@@ -587,6 +568,7 @@ namespace MetroDemo.ExampleViews
 
 
                     await Task.Run(() => { p.WaitForExit(); });
+                    p.Close();
                     PsUpdateExited(PSPath, statusText, client);
 
               

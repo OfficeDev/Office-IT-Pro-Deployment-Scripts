@@ -61,6 +61,7 @@ namespace MetroDemo
                 GenerateView.TransitionTab += TransitionTab;
                 DownloadView.TransitionTab += TransitionTab;
                 LocalView.TransitionTab += TransitionTab;
+                
 
                 LocalView.BranchChanged += BranchChanged;
                 LocalView.MainWindow = this;
@@ -409,6 +410,7 @@ namespace MetroDemo
                 lblUpdate.Visibility = Visibility.Collapsed;
                 lblAbout.Visibility = Visibility.Collapsed;
                 lblLocal.Visibility = Visibility.Collapsed;
+                lblRemote.Visibility = Visibility.Collapsed;
 
                 var margin = ((Button)sender).Margin;
                 margin.Left = -1;
@@ -436,6 +438,7 @@ namespace MetroDemo
                 lblUpdate.Visibility = Visibility.Visible;
                 lblAbout.Visibility = Visibility.Visible;
                 lblLocal.Visibility = Visibility.Visible;
+                lblRemote.Visibility = Visibility.Visible;
 
                 var margin = ((Button)sender).Margin;
                 margin.Left = 100;
