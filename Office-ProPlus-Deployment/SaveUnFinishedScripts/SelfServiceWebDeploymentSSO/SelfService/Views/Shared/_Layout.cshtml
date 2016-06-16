@@ -1,0 +1,104 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    <link rel="Office Self Service" type="img/png" href="~/favicon.ico" />
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+</head>
+<body>
+
+    @RenderBody()
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/jqueryui")
+    @Scripts.Render("~/bundles/taggle")
+    @RenderSection("scripts", required: false)
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.bundle.min.js"></script>
+    <script type="text/javascript" src="./Scripts/FileSaver.js"></script>
+
+    <script type="text/javascript" src="//1000hz.github.io/bootstrap-validator/dist/validator.min.js"></script>
+    <script type="text/javascript" src="./Scripts/jquery.fabric.min.js"></script>
+    <script type="text/javascript" src="./Scripts/ss.js"></script>
+
+    <script>
+        $(document).ready(function () {
+
+            if ($('.ms-FilePicker').length > 0) {
+                $('.ms-FilePicker').css({
+                    "position": "absolute !important"
+                });
+
+                $('.ms-Dropdown').FilePicker();
+                $('.ms-Toggle').FilePicker();
+                $('.ms-Table').FilePicker();
+                $('.ms-DatePicker').FilePicker();
+            } else {
+                if ($.fn.Dropdown) {
+                    $('.ms-Dropdown').Dropdown();
+                }
+                if ($.fn.Toggle) {
+                    $('.ms-Toggle').Toggle();
+                }
+                if ($.fn.Table) {
+                    $('.ms-Table').Table();
+                }
+                if ($.fn.DatePicker) {
+                    var myDatepicker = $('.ms-DatePicker').DatePicker({
+                        label: "Deadline"
+                    });
+                }
+
+                if ($.fn.Panel) {
+                    $('.ms-Panel').Panel();
+                }
+
+                if ($.fn.Dialog) {
+                    $('.ms-Dialog').Dialog();
+                }
+
+                if ($.fn.List) {
+                    $('.ms-List').List();
+                }
+            }
+
+            if (fabric && fabric['Dropdown']) {
+                var component, componentHolder;
+                componentHolder = document.querySelector('.component-holder');
+
+                if (componentHolder) {
+                    component = new fabric.Spinner(componentHolder);
+                }
+            }
+            if (fabric && fabric['Toggle']) {
+                var component, componentHolder;
+                componentHolder = document.querySelector('.component-holder');
+
+                if (componentHolder) {
+                    component = new fabric.Spinner(componentHolder);
+                }
+            }
+            if (fabric && fabric['Table']) {
+                var component, componentHolder;
+                componentHolder = document.querySelector('.component-holder');
+
+                if (componentHolder) {
+                    component = new fabric.Spinner(componentHolder);
+                }
+            }
+            if (fabric && fabric['DatePicker']) {
+                var component, componentHolder;
+                componentHolder = document.querySelector('.component-holder');
+
+                if (componentHolder) {
+                    component = new fabric.Spinner(componentHolder);
+                }
+            }
+
+        });
+
+    </script>
+</body>
+</html>
