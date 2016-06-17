@@ -880,6 +880,60 @@ namespace MetroDemo.ExampleViews
             RemoteMachineList.ItemsSource = remoteClients;
             RemoteMachineList.Items.Refresh();
         }
+
+
+        private void RemoteConfiguration_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var sourceName = ((dynamic)sender).Name;
+                LaunchInformationDialog(sourceName);
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
+
+        private InformationDialog informationDialog = null;
+
+        private void LaunchInformationDialog(string sourceName)
+        {
+            try
+            {
+                if (informationDialog == null)
+                {
+
+                    informationDialog = new InformationDialog
+                    {
+                        Height = 700,
+                        Width = 600
+                    };
+                    informationDialog.Closed += (o, args) =>
+                    {
+                        informationDialog = null;
+                    };
+                    informationDialog.Closing += (o, args) =>
+                    {
+
+                    };
+                }
+
+                informationDialog.Height = 700;
+                informationDialog.Width = 600;
+
+                var filePath = AppDomain.CurrentDomain.BaseDirectory + @"HelpFiles\" + sourceName + ".html";
+                var helpFile = System.IO.File.ReadAllText(filePath);
+
+                informationDialog.HelpInfo.NavigateToString(helpFile);
+                informationDialog.Launch();
+
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
     }
 
 }

@@ -145,7 +145,13 @@
                                     <Button x:Name="btnRemoveComputers" Content="Remove Computers" Margin="2,20,2,20" Style="{StaticResource MetroFlatButtonStyle1}" Click="btnRemoveComputers_Click" />
                                     <Button x:Name="btnChangeChannelOrVersion" Content="Switch Channel/Version" Margin="2,20,2,20" Style="{StaticResource MetroFlatButtonStyle1}" Click="btnChangeChannelOrVersion_Click" />
                                     <Button x:Name="btnUpdateRemote" Content="Update Remote" Margin="20,20,2,20" Style="{StaticResource MetroFlatButtonStyle1}" Click="btnUpdateRemote_Click" />
-                                   
+                                    <Button x:Name="RemoteConfiguration" Width="30" Height="32" Margin="0 0 0 0" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" 
+                                                Focusable="False"  Style="{StaticResource MetroInfoButton}" Click="RemoteConfiguration_Click" >
+                                        <StackPanel Orientation="Horizontal">
+                                            <Image Source="../images/info.png" Width="20" Height="20"/>
+                                        </StackPanel>
+                                    </Button>
+
 
                                 </StackPanel>
 
