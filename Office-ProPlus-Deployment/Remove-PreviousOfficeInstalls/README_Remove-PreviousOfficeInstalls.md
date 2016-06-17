@@ -15,7 +15,7 @@ The Offscrub vbs files included are:
 
 More information can be found at: https://blogs.technet.microsoft.com/odsupport/2011/04/08/how-to-obtain-and-use-offscrub-to-automate-the-uninstallation-of-office-products/
 
-###Examples
+###Example
 
 1. Open a PowerShell console.
 
