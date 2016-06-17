@@ -33,7 +33,7 @@ More information can be found at: https://blogs.technet.microsoft.com/odsupport/
 		the PowerShell function in the script into your PowerShell session which will allow you to 
 		run the function from the console.
 
-3. Run the Script. Script will remove MSI installations of Office 2013 and older
+3. Run the function.
 
 		Type  Remove-PreviousOfficeInstalls
 			
