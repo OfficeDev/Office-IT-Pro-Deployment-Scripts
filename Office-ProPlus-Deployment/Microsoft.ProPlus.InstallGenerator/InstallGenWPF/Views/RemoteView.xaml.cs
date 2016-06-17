@@ -24,13 +24,14 @@ using System.Linq;
 
 namespace MetroDemo.ExampleViews
 {
-    /// <summary>V
-    /// Interaction logic for TextExamples.xaml
-    /// </summary>
+
     public partial class RemoteView : UserControl
     {
         #region Declarations
         private CancellationTokenSource _tokenSource = new CancellationTokenSource();
+        private RemoteChannelVersionDialog remoteUpdateDialog = null;
+        private RemoteClientInfoDialog remoteClientDialog = null;
+        private InformationDialog informationDialog = null;
 
         public event MessageEventHandler ErrorMessage;
 
@@ -336,9 +337,6 @@ namespace MetroDemo.ExampleViews
             }
 
         }
-
-        private RemoteChannelVersionDialog remoteUpdateDialog = null;
-        private RemoteClientInfoDialog remoteClientDialog = null;
 
         private void btnChangeChannelOrVersion_Click(object sender, RoutedEventArgs e)
         {
@@ -881,7 +879,6 @@ namespace MetroDemo.ExampleViews
             RemoteMachineList.Items.Refresh();
         }
 
-
         private void RemoteConfiguration_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -894,8 +891,6 @@ namespace MetroDemo.ExampleViews
                 LogErrorMessage(ex);
             }
         }
-
-        private InformationDialog informationDialog = null;
 
         private void LaunchInformationDialog(string sourceName)
         {

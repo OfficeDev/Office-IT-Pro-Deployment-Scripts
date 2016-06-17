@@ -63,66 +63,6 @@ public class InstallOfficeWmi
 
     }
 
-
-    public void ChangeOfficeChannelNonAsync(string targetChannel, string baseUrl)
-    {
-        var saveBaseUrl = "";
-        try
-        {
-
-            initConnectionNonAsync();
-            saveBaseUrl = GetBaseCdnUrl();
-
-            ChangeUpdateSource(baseUrl);
-            ChangeBaseCdnUrl(baseUrl);
-
-            RestartC2RSerivce();
-
-            RunOfficeUpdateNonAsync(targetChannel);
-        }
-        catch (Exception ex)
-        {
-            if (!string.IsNullOrEmpty(saveBaseUrl))
-            {
-                ChangeBaseCdnUrl(saveBaseUrl);
-            }
-            throw (new Exception(ex.Message));
-        }
-        finally
-        {
-            ResetUpdateSource();
-        }
-    }
-
-    public void initConnectionNonAsync()
-    {
-        var timeOut = new TimeSpan(0, 5, 0);
-        ConnectionOptions options = new ConnectionOptions();
-        options.Authority = "NTLMDOMAIN:" + remoteDomain.Trim();
-        options.Username = remoteUser.Trim();
-        options.Password = remotePass.Trim();
-        options.Impersonation = ImpersonationLevel.Impersonate;
-        options.Timeout = timeOut;
-
-
-
-        scope = new ManagementScope("\\\\" + remoteComputerName.Trim() + connectionNamespace, options);
-        scope.Options.EnablePrivileges = true;
-
-        scope2 = new ManagementScope("\\\\" + remoteComputerName.Trim() + "\\root\\default", options);
-        scope2.Options.EnablePrivileges = true;
-
-        try
-        {
-            scope.Connect();
-        }
-
-        catch (Exception)
-        {
-            scope.Connect();
-        }
-    }
-
     public async Task initConnection()
     {
 
@@ -153,13 +93,6 @@ public class InstallOfficeWmi
         }
 
     }
-
-
-    private void scopeDisconnect(ManagementScope currentScope)
-    {
-        currentScope.Connect();
-    }
-
 
     public  void RestartC2RSerivce()
     {
@@ -204,7 +137,6 @@ public class InstallOfficeWmi
         }
 
     }
-
 
     #region Office Operations
 
@@ -309,15 +241,6 @@ public class InstallOfficeWmi
     #endregion
 
     #region Update Monitoring
-    public void ProcessStoppedEventArrived(object sender, EventArrivedEventArgs e)
-    {
-        if ((uint)e.NewEvent.Properties["ProcessId"].Value == ProcessId)
-        {
-            var exitCode = (int)(uint)e.NewEvent.Properties["ExitStatus"].Value;
-
-        }
-    }
-
 
     public void ResetUpdateSource()
     {
@@ -494,8 +417,6 @@ public class InstallOfficeWmi
 
     #endregion
     
-
-
     #region Support Functions
 
     private async  Task<string> GetRegistryValue(string regKey, string valueName)
@@ -550,53 +471,6 @@ public class InstallOfficeWmi
                 
             });
 
-    }
-
-    private String[] GetSubKeyNames(string parentKey)
-    {
-        ManagementClass registry = new ManagementClass(scope, new ManagementPath("StdRegProv"), null);
-        ManagementBaseObject inParams = registry.GetMethodParameters("EnumKey");
-
-        inParams["hDefKey"] = 0x80000002;
-        inParams["sSubKeyName"] = parentKey;
-
-        ManagementBaseObject outParams = registry.InvokeMethod("EnumKey", inParams, null);
-
-        try
-        {
-            var subKeyNames = (String[])outParams.Properties["sNames"].Value;
-
-            return subKeyNames; 
-
-        }
-        catch (Exception)
-        {
-            return null;
-        }
-
-    }
-
-    private String[] GetValueNames(string keyName)
-    {
-        ManagementClass registry = new ManagementClass(scope, new ManagementPath("StdRegProv"), null);
-        ManagementBaseObject inParams = registry.GetMethodParameters("EnumKey");
-
-        inParams["hDefKey"] = 0x80000002;
-        inParams["sSubKeyName"] = keyName;
-
-        ManagementBaseObject outParams = registry.InvokeMethod("EnumKey", inParams, null);
-
-        try
-        {
-            var valueNames = (String[])outParams.Properties["sValueName"].Value;
-
-            return valueNames;
-
-        }
-        catch (Exception)
-        {
-            return null;
-        }
     }
 
     private string GetRegistryBaseKey(string parentKey, string childKey, string getmethParam)
