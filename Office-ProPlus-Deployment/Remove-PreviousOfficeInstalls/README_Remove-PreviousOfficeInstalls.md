@@ -4,7 +4,7 @@ This PowerShell Script will create remote the local MSI installations of Office 
 
 ###**Using the Offscrub scripts**
 
-The Offscrub vbs scripts can be used to automate the removal of Office products. The scripts will uninstall any Office product regardless of the current health of the Office installation. The Remove-PreviousOfficeInstalls.ps1 script will determine which version of Office is currently installed and will call the appropriate Offscrub vbs script to remove the Office products installations.
+The Offscrub vbs scripts can be used to automate the removal of Office products. The scripts will uninstall the existing Office products regardless of the current health of the installation. The Remove-PreviousOfficeInstalls.ps1 script will determine which version of Office is currently installed and will call the appropriate Offscrub vbs script to remove the Office products installations.
 
 The Offscrub vbs files included are:
 
