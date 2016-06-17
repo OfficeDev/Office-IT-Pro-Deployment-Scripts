@@ -13,7 +13,7 @@ The Offscrub vbs files included are:
 * **OffScrub10.vbs** - Used to remove Office 2010 products.
 * **OffScrub_O15msi.vbs** - Used to remove Office 2013 MSI products.
 
-###Examples**
+###Examples
 
 1. Open a PowerShell console.
 
