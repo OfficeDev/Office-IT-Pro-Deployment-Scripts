@@ -26,7 +26,7 @@
            throw;
     }
     $filename = $machineToRun+"PowershellAttempt.txt"
-    $textToWrite | Out-File $scriptPath\$filename
+    $textToWrite | Out-File $env:temp\$filename
 
     Stop-Process -Id $PID
     }

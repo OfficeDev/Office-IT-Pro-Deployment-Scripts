@@ -529,11 +529,12 @@ namespace MetroDemo.ExampleViews
                 {
                     LogWmiErrorMessage(ex, connectionInfo);
 
-                    string PSPath = System.IO.Directory.GetCurrentDirectory() + "\\Resources\\" + client.Machine + "PowershellAttempt.txt";
+                    //string PSPath = System.IO.Directory.GetCurrentDirectory() + "\\Resources\\" + client.Machine + "PowershellAttempt.txt";
+                    string PSPath = System.IO.Path.GetTempPath()+ client.Machine + "PowershellAttempt.txt";
                     System.IO.File.Delete(PSPath);
                     Process p = new Process();
                     p.EnableRaisingEvents = true;
-                    p.StartInfo.CreateNoWindow = false;
+                    p.StartInfo.CreateNoWindow = true;
                     p.StartInfo.UseShellExecute = false;
                     p.StartInfo.FileName = "Powershell.exe";                                //replace path to use local path                            switch out arguments so your program throws in the necessary args
                     p.StartInfo.Arguments = @"-ExecutionPolicy Bypass -NoExit -Command ""& {& '" + System.IO.Directory.GetCurrentDirectory() + "\\Resources\\UpdateScriptLaunch.ps1' -Channel " + client.Channel.Name + " -DisplayLevel $true -machineToRun " + client.Machine + " -UpdateToVersion " + client.Version.Number + "}\"";
@@ -571,7 +572,8 @@ namespace MetroDemo.ExampleViews
 
                     client.Status = "Error: "+ ex.Message;
                     using (System.IO.StreamWriter file =
-                    new System.IO.StreamWriter(System.IO.Directory.GetCurrentDirectory() + "\\Resources\\" + client.Machine + "PowershellError.txt", true))
+                    //new System.IO.StreamWriter(System.IO.Directory.GetCurrentDirectory() + "\\Resources\\" + client.Machine + "PowershellError.txt", true))
+                    new System.IO.StreamWriter(System.IO.Path.GetTempPath() + client.Machine + "PowershellError.txt", true))
                     {
                         file.WriteLine(ex1.Message);
                         file.WriteLine(ex1.StackTrace);

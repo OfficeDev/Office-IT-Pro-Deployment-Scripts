@@ -489,7 +489,6 @@ public class InstallOfficeWmi
                 }
 
                 return null;
-   
 
     }
 
@@ -576,8 +575,6 @@ public class InstallOfficeWmi
             return null;
         }
 
-
-        return null;
     }
 
     private String[] GetValueNames(string keyName)
@@ -601,9 +598,6 @@ public class InstallOfficeWmi
         {
             return null;
         }
-
-
-        return null;
     }
 
     private string GetRegistryBaseKey(string parentKey, string childKey, string getmethParam)
