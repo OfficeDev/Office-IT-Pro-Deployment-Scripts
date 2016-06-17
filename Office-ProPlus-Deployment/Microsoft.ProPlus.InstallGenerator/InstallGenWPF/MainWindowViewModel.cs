@@ -357,6 +357,10 @@ namespace MetroDemo
                 new ExcludeProduct()
                 {
                     DisplayName = "Word"
+                },
+                new ExcludeProduct()
+                {
+                    DisplayName = "OneDrive"
                 }
             };
 

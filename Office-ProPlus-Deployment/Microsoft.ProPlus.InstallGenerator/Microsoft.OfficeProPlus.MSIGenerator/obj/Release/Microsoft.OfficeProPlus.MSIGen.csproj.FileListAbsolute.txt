@@ -19,3 +19,13 @@ C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deploy
 C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Microsoft.OfficeProPlus.MSIGenerator\obj\Release\Microsoft.OfficeProPlus.MSIGen.dll
 C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Microsoft.OfficeProPlus.MSIGenerator\obj\Release\Microsoft.OfficeProPlus.MSIGen.pdb
 C:\Source\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Microsoft.OfficeProPlus.MSIGenerator\bin\Release\Microsoft.Deployment.WindowsInstaller.xml
+C:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Microsoft.OfficeProPlus.MSIGenerator\bin\Release\Microsoft.OfficeProPlus.MSIGen.dll
+C:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Microsoft.OfficeProPlus.MSIGenerator\bin\Release\Microsoft.OfficeProPlus.MSIGen.pdb
+C:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Microsoft.OfficeProPlus.MSIGenerator\bin\Release\WixSharp.dll
+C:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Microsoft.OfficeProPlus.MSIGenerator\bin\Release\WixSharp.Msi.dll
+C:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Microsoft.OfficeProPlus.MSIGenerator\bin\Release\WixSharp.UI.dll
+C:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Microsoft.OfficeProPlus.MSIGenerator\bin\Release\BootstrapperCore.dll
+C:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Microsoft.OfficeProPlus.MSIGenerator\bin\Release\Microsoft.Deployment.WindowsInstaller.xml
+C:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Microsoft.OfficeProPlus.MSIGenerator\obj\Release\Microsoft.OfficeProPlus.MSIGen.csprojResolveAssemblyReference.cache
+C:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Microsoft.OfficeProPlus.MSIGenerator\obj\Release\Microsoft.OfficeProPlus.MSIGen.dll
+C:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Microsoft.OfficeProPlus.MSIGenerator\obj\Release\Microsoft.OfficeProPlus.MSIGen.pdb
