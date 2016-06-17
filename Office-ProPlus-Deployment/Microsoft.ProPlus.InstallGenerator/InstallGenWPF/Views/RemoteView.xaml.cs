@@ -72,6 +72,9 @@ namespace MetroDemo.ExampleViews
         private void LogWmiErrorMessage(Exception ex, string[] connectionInfo = null)
         {
             var logPath = Path.GetTempPath() + "\\"+connectionInfo[2]+"wmiLog.txt";
+            var stackTrace = new StackTrace(ex,true);
+            var frame = stackTrace.GetFrame(0);
+            var lineNumber = frame.GetFileColumnNumber();
 
             if (System.IO.File.Exists(logPath))
             {
@@ -83,7 +86,7 @@ namespace MetroDemo.ExampleViews
                     }
                     else
                     {
-                        sw.WriteLine("Client Error: " + ex.Message + "," + connectionInfo[2]);
+                        sw.WriteLine("Client Error: " + ex.Message + "," + connectionInfo[2]+","+ stackTrace.ToString());
                     }
                 }
             }
@@ -97,7 +100,7 @@ namespace MetroDemo.ExampleViews
                     }
                     else
                     {
-                        sw.WriteLine("Client Error: " + ex.Message + "," + connectionInfo[2]);
+                        sw.WriteLine("Client Error: " + ex.Message + "," + connectionInfo[2] + ","+ stackTrace.ToString());
                     }
                 }
             }
@@ -265,15 +268,15 @@ namespace MetroDemo.ExampleViews
             try
             {
          
-                GlobalObjects.ViewModel.BlockNavigation = true;
-                toggleControls(false);
-                WaitImage.Visibility = Visibility.Visible;
+                //toggleControlsMulti(false);
+                //WaitImage.Visibility = Visibility.Visible;
+                //WaitImage.Visibility = Visibility.Visible;
               
 
                 var dialog = (RemoteClientInfoDialog)sender;
                 var textBox = dialog.FindChild<System.Windows.Controls.TextBox>("txtBxAddMachines");
 
-                if (!String.IsNullOrEmpty(GlobalObjects.ViewModel.remoteConnectionInfo))
+                if (!String.IsNullOrEmpty(GlobalObjects.ViewModel.remoteConnectionInfo) && dialog.Result == DialogResult.OK) 
                 {
                     var connectionInfo = GlobalObjects.ViewModel.remoteConnectionInfo.Split(',');
 
@@ -301,8 +304,13 @@ namespace MetroDemo.ExampleViews
             }
             finally
             {
-                toggleControls(true);
-                WaitImage.Visibility = Visibility.Hidden;
+                toggleControlsMulti(true);
+                WaitImage.Dispatcher.Invoke(new Action(() =>
+                {
+                    WaitImage.Visibility = Visibility.Hidden;
+                }));
+                GlobalObjects.ViewModel.BlockNavigation = false;
+
             }
 
 
@@ -315,6 +323,11 @@ namespace MetroDemo.ExampleViews
             {
                 remoteClientDialog = new RemoteClientInfoDialog();
                 remoteClientDialog.Closing += RemoteClientInfoDialog_Closing;
+
+                toggleControlsMulti(false);
+                WaitImage.Visibility = Visibility.Visible;
+                GlobalObjects.ViewModel.BlockNavigation = true;
+
                 remoteClientDialog.Launch();
             }
             catch (Exception ex)
@@ -333,6 +346,12 @@ namespace MetroDemo.ExampleViews
             {
                 remoteUpdateDialog = new RemoteChannelVersionDialog();
                 remoteUpdateDialog.Closing += RemoteUpdateDialog_Closing;
+
+
+                toggleControlsMulti(false);
+                WaitImage.Visibility = Visibility.Visible;
+                GlobalObjects.ViewModel.BlockNavigation = true;
+
                 remoteUpdateDialog.Launch();
             }
             catch (Exception ex)
@@ -383,6 +402,14 @@ namespace MetroDemo.ExampleViews
             {
                 GlobalObjects.ViewModel.newChannel = null;
                 GlobalObjects.ViewModel.newVersion = null;
+
+                toggleControlsMulti(true);
+                WaitImage.Dispatcher.Invoke(new Action(() =>
+                {
+                    WaitImage.Visibility = Visibility.Hidden;
+                }));
+                GlobalObjects.ViewModel.BlockNavigation = false;
+
                 RemoteMachineList.Items.Refresh();
             }
         }
@@ -529,7 +556,6 @@ namespace MetroDemo.ExampleViews
                 {
                     LogWmiErrorMessage(ex, connectionInfo);
 
-                    //string PSPath = System.IO.Directory.GetCurrentDirectory() + "\\Resources\\" + client.Machine + "PowershellAttempt.txt";
                     string PSPath = System.IO.Path.GetTempPath()+ client.Machine + "PowershellAttempt.txt";
                     System.IO.File.Delete(PSPath);
                     Process p = new Process();
@@ -537,7 +563,7 @@ namespace MetroDemo.ExampleViews
                     p.StartInfo.CreateNoWindow = true;
                     p.StartInfo.UseShellExecute = false;
                     p.StartInfo.FileName = "Powershell.exe";                                //replace path to use local path                            switch out arguments so your program throws in the necessary args
-                    p.StartInfo.Arguments = @"-ExecutionPolicy Bypass -NoExit -Command ""& {& '" + System.IO.Directory.GetCurrentDirectory() + "\\Resources\\UpdateScriptLaunch.ps1' -Channel " + client.Channel.Name + " -DisplayLevel $true -machineToRun " + client.Machine + " -UpdateToVersion " + client.Version.Number + "}\"";
+                    p.StartInfo.Arguments = @"-ExecutionPolicy Bypass -NoExit -Command ""& {& '" + System.IO.Directory.GetCurrentDirectory() + "\\Resources\\UpdateScriptLaunch.ps1' -Channel " + client.Channel.Name + " -DisplayLevel $false -machineToRun " + client.Machine + " -UpdateToVersion " + client.Version.Number + "}\"";
                   
 
 
@@ -572,7 +598,6 @@ namespace MetroDemo.ExampleViews
 
                     client.Status = "Error: "+ ex.Message;
                     using (System.IO.StreamWriter file =
-                    //new System.IO.StreamWriter(System.IO.Directory.GetCurrentDirectory() + "\\Resources\\" + client.Machine + "PowershellError.txt", true))
                     new System.IO.StreamWriter(System.IO.Path.GetTempPath() + client.Machine + "PowershellError.txt", true))
                     {
                         file.WriteLine(ex1.Message);
@@ -591,7 +616,6 @@ namespace MetroDemo.ExampleViews
 
             }
         }
-
 
         private void PsUpdateExited(string PSPath, TextBlock statusText, RemoteMachine client)
         {
@@ -632,31 +656,35 @@ namespace MetroDemo.ExampleViews
 
         }
 
-
         private async void btnUpdateRemote_Click(object sender, RoutedEventArgs e)
         {
+            List<Task> updateTasks = new List<Task>();
 
-            clearLogFile();
+
+            try
+            {
+                clearLogFile();
             GlobalObjects.ViewModel.BlockNavigation = true;
             toggleControlsMulti(false);
             WaitImage.Visibility = Visibility.Visible;
             RemoteMachineList.Items.Refresh();
             var copyOfI = 0;
-            List<Task> updateTasks = new List<Task>();
-
-            for (var i = 0; i < remoteClients.Count; i++)
+          
+                for (var i = 0; i < remoteClients.Count; i++)
             {
                 copyOfI = i; 
                 var client = remoteClients[copyOfI];
 
-                if (client.include && !String.IsNullOrEmpty(client.OriginalVersion.Number))
-                {
-                    updateTasks.Add(UpdateMachine(client, copyOfI));
-                }
+
+            
+                    if (client.include && client.Status.Trim() != "Not Found")
+                    {
+
+                        updateTasks.Add(UpdateMachine(client, copyOfI));
+                    }
 
             }
-
-
+          
             await Task.Factory.ContinueWhenAll(updateTasks.ToArray(), t =>
             {
                 toggleControlsMulti(true);
@@ -672,6 +700,26 @@ namespace MetroDemo.ExampleViews
                     RemoteMachineList.Items.Refresh();
                 }));
             });
+
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+
+                toggleControlsMulti(true);
+
+                WaitImage.Dispatcher.Invoke(new Action(() =>
+                {
+                    WaitImage.Visibility = Visibility.Hidden;
+                }));
+
+
+                RemoteMachineList.Dispatcher.Invoke(new Action(() =>
+                {
+                    RemoteMachineList.Items.Refresh();
+                }));
+            }
+           
 
         }
 

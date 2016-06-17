@@ -14,7 +14,7 @@ using System.Xml;
 using Microsoft.OfficeProPlus.InstallGenerator.Events;
 using Microsoft.Win32;
 using System.Management;
-
+using System.Windows.Forms;
 
 public class InstallOfficeWmi
 {
@@ -326,12 +326,11 @@ public class InstallOfficeWmi
         if (policyKey != null)
         {
             var saveUpdatePath = GetRegistryValue(policyKey.ToString(), "saveupdatepath").Result;
-            if (!string.IsNullOrEmpty(saveUpdatePath.ToString()))
+            if (!String.IsNullOrEmpty(saveUpdatePath))
             {
                 SetRegistryValue(policyPath + "\\officeupdate", "updatePath", "SetStringValue", saveUpdatePath);
                 SetRegistryValue(policyPath + "\\officeupdate", "saveupdatepath","DeleteValue", null);
-                //policyKey.SetValue("updatepath", saveUpdatePath, RegistryValueKind.String);
-                //policyKey.DeleteValue("saveupdatepath");
+             
             }
         }
 

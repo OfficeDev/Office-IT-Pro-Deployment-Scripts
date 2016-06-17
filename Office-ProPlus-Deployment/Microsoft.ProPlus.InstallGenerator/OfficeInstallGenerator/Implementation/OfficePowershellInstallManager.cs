@@ -38,7 +38,6 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
             string readtext = "";
             try
             {
-                //string PSPath = System.IO.Directory.GetCurrentDirectory() + "\\Resources\\"+remoteComputerName+"PowershellAttemptVersion.txt";
                 string PSPath = System.IO.Path.GetTempPath() + remoteComputerName + "PowershellAttemptVersion.txt";
                 System.IO.File.Delete(PSPath);
                 Process p = new Process();
