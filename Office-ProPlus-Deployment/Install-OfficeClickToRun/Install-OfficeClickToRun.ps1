@@ -125,7 +125,11 @@ function Install-OfficeClickToRun {
         }
     }
 
-    $cmdLine = $officeCtrPath
+    $localPath = "$env:TEMP\setup.exe"
+
+    Copy-Item -Path $officeCtrPath -Destination $localPath -Force
+
+    $cmdLine = $localPath
     $cmdArgs = "/configure " + $TargetFilePath
 
     Write-Host "Installing Office Click-To-Run..."
@@ -133,7 +137,7 @@ function Install-OfficeClickToRun {
     StartProcess -execFilePath $cmdLine -execParams $cmdArgs -WaitForExit $false
 
     if ($WaitForInstallToFinish) {
-         Wait-ForOfficeCTRInstall
+         Wait-ForOfficeCTRInstall -OfficeVersion $OfficeVersion
     }
 }
 
@@ -326,11 +330,15 @@ Language and Exclude values
                 Add-Member -InputObject $Result -MemberType NoteProperty -Name "ProductId" -Value ($ProductElement.GetAttribute("ID"))
 
                 if($ProductElement.Language -ne $null){
-                    Add-Member -InputObject $Result -MemberType NoteProperty -Name "Languages" -Value ($ProductElement.Language.GetAttribute("ID"))
+                    $ProductLangs = $configfile.Configuration.Add.Product.Language | % {$_.ID}
+                    Add-Member -InputObject $Result -MemberType NoteProperty -Name "Languages" -Value $ProductLangs
+                    #Add-Member -InputObject $Result -MemberType NoteProperty -Name "Languages" -Value ($ProductElement.Language.GetAttribute("ID"))
                 }
 
                 if($ProductElement.ExcludeApp -ne $null){
-                    Add-Member -InputObject $Result -MemberType NoteProperty -Name "ExcludedApps" -Value ($ProductElement.ExcludeApp.GetAttribute("ID"))
+                    $ProductExlApps = $configfile.Configuration.Add.Product.ExcludeApp | % {$_.ID}
+                    Add-Member -InputObject $Result -MemberType NoteProperty -Name "ExcludedApps" -Value $ProductExlApps
+                    #Add-Member -InputObject $Result -MemberType NoteProperty -Name "ExcludedApps" -Value ($ProductElement.ExcludeApp.GetAttribute("ID"))
                 }
                 $Result
             }
@@ -346,11 +354,15 @@ Language and Exclude values
                 $Result = New-Object –TypeName PSObject 
                 Add-Member -InputObject $Result -MemberType NoteProperty -Name "ProductId" -Value $tempId 
                 if($ProductElement.Language -ne $null){
-                    Add-Member -InputObject $Result -MemberType NoteProperty -Name "Languages" -Value ($ProductElement.Language.GetAttribute("ID"))
+                    $ProductLangs = $configfile.Configuration.Add.Product.Language | % {$_.ID}
+                    Add-Member -InputObject $Result -MemberType NoteProperty -Name "Languages" -Value $ProductLangs
+                    #Add-Member -InputObject $Result -MemberType NoteProperty -Name "Languages" -Value ($ProductElement.Language.GetAttribute("ID"))
                 }
 
                 if($ProductElement.ExcludeApp -ne $null){
-                    Add-Member -InputObject $Result -MemberType NoteProperty -Name "ExcludedApps" -Value ($ProductElement.ExcludeApp.GetAttribute("ID"))
+                    $ProductExlApps = $configfile.Configuration.Add.Product.ExcludeApp | % {$_.ID}
+                    Add-Member -InputObject $Result -MemberType NoteProperty -Name "ExcludedApps" -Value $ProductExlApps
+                    #Add-Member -InputObject $Result -MemberType NoteProperty -Name "ExcludedApps" -Value ($ProductElement.ExcludeApp.GetAttribute("ID"))
                 }
                 $Result
                 }
@@ -693,7 +705,7 @@ Here is what the portion of configuration file looks like when modified by this 
         $AddElement = $ConfigFile.Configuration.Add 
 
         #Set the desired values
-        [System.XML.XMLElement]$ProductElement = $ConfigFile.Configuration.Add.Product | ?  ID -eq $ProductId
+        [System.XML.XMLElement]$ProductElement = $ConfigFile.Configuration.Add.Product | Where { $_.ID -eq $ProductId }
         if($ProductElement -eq $null){
            throw "Cannot find Product with Id '$ProductId'"
         }
@@ -706,7 +718,7 @@ Here is what the portion of configuration file looks like when modified by this 
                 }
 
                 foreach($LanguageId in $LanguageIds){
-                    [System.XML.XMLElement]$LanguageElement = $ProductElement.Language | ?  ID -eq $LanguageId
+                    [System.XML.XMLElement]$LanguageElement = $ProductElement.Language | Where { $_.ID -eq $LanguageId }
                     if($LanguageElement -eq $null){
                         [System.XML.XMLElement]$LanguageElement=$ConfigFile.CreateElement("Language")
                         $ProductElement.appendChild($LanguageElement) | Out-Null
@@ -725,7 +737,7 @@ Here is what the portion of configuration file looks like when modified by this 
             }
 
             foreach($ExcludeApp in $ExcludeApps){
-                [System.XML.XMLElement]$ExcludeAppElement = $ProductElement.ExcludeApp | ?  ID -eq $ExcludeApp
+                [System.XML.XMLElement]$ExcludeAppElement = $ProductElement.ExcludeApp | Where { $_.ID -eq $ExcludeApp }
                 if($ExcludeAppElement -eq $null){
                     [System.XML.XMLElement]$ExcludeAppElement=$ConfigFile.CreateElement("ExcludeApp")
                     $ProductElement.appendChild($ExcludeAppElement) | Out-Null
@@ -763,7 +775,10 @@ Function Wait-ForOfficeCTRInstall() {
     [CmdletBinding()]
     Param(
         [Parameter()]
-        [int] $TimeOutInMinutes = 120
+        [int] $TimeOutInMinutes = 120,
+
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [OfficeCTRVersion] $OfficeVersion = "Office2016"
     )
 
     begin {
@@ -776,7 +791,13 @@ Function Wait-ForOfficeCTRInstall() {
 
        Start-Sleep -Seconds 20
 
-       $mainRegPath = Get-OfficeCTRRegPath 
+       if($OfficeVersion -eq 'Office2016'){
+           $mainRegPath = 'SOFTWARE\Microsoft\Office\ClickToRun'
+       }
+       else{
+          $mainRegPath = Get-OfficeCTRRegPath
+       } 
+
        $scenarioPath = $mainRegPath + "\scenario"
 
        $regProv = Get-Wmiobject -list "StdRegProv" -namespace root\default -ErrorAction Stop
@@ -824,9 +845,9 @@ Function Wait-ForOfficeCTRInstall() {
                         }
                     } else {
                         $allComplete = $false
-                        $updateRunning=$true
+                        $updateRunning = $true
 
-                        if (!$trackProgress -contains $keyValue) {
+                        if ($trackProgress -notcontains $keyValue) {
                             $trackProgress += $keyValue 
                             $displayValue
                         }
@@ -846,15 +867,18 @@ Function Wait-ForOfficeCTRInstall() {
            }
 
            Start-Sleep -Seconds 5
-       } while($true -eq $true) 
+       } while($updateRunning -eq $true) 
 
        if ($updateRunning) {
           if ($failure) {
+            Write-host ""
             Write-Host "Update Failed"
           } else {
+            Write-host ""
             Write-Host "Update Complete"
           }
        } else {
+          Write-host ""
           Write-Host "Update Not Running"
        } 
     }
