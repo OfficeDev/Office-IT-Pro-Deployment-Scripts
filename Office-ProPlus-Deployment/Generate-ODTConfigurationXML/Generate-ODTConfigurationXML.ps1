@@ -288,7 +288,7 @@ process {
            $officeAddLangs = odtGetOfficeLanguages -ConfigDoc $ConfigFile -OfficeKeyPath $officeConfig.OfficeKeyPath -ProductId $productId
        } else {
          if ($officeExists) {
-             $excludeApps = officeGetExcludedApps -OfficeProducts $officeProducts
+             $excludeApps = officeGetExcludedApps -OfficeProducts $officeProducts -computer $computer -Credentials $Credentials
          }
   
          $msiLanguages = msiGetOfficeLanguages -regProv $regProv
@@ -641,8 +641,10 @@ process {
              if ($officeInstallPath) {
                 $installReg = "^" + $installPath.Replace('\', '\\')
                 $installReg = $installReg.Replace('(', '\(')
-                $installReg = $installReg.Replace(')', '\)')
-                if ($officeInstallPath -match $installReg) { $officeProduct = $true }
+                $installReg = $installReg.Replace(')', '\)')              
+                 try{
+                     if ($officeInstallPath -match $installReg) { $officeProduct = $true }
+                 }catch{}
              }
            }
 
@@ -842,15 +844,21 @@ function getOfficeConfig() {
         } else {
             if ($mainOfficeProduct) 
             {
-               if ($mainOfficeProduct[0].Bitness.ToLower() -eq "32-bit") {
-                  $mainOfficeProduct[0].Bitness = "32"
+               if ($mainOfficeProduct -is [System.Array]) {
+                 $firstProduct = $mainOfficeProduct[0]
+               } else{
+                 $firstProduct = $mainOfficeProduct
+               }
+               
+               if ($firstProduct.Bitness.ToLower() -eq "32-bit") {
+                  $firstProduct.Bitness = "32"
                } else {
-                  $mainOfficeProduct[0].Bitness = "64"
+                  $firstProduct.Bitness = "64"
                }
 
-               $productBitness = $mainOfficeProduct[0].Bitness
-               $productDisplayName = $mainOfficeProduct[0].DisplayName
-               $productVersion = $mainOfficeProduct[0].Version
+               $productBitness = $firstProduct.Bitness
+               $productDisplayName = $firstProduct.DisplayName
+               $productVersion = $firstProduct.Version
             }
         }
 
@@ -1131,8 +1139,26 @@ function getLanguages() {
      $returnLangs = Get-Unique -InputObject $returnLangs
   }
 
-  return $returnLangs
+  $validLangs = @()
+  foreach($lang in $returnlangs){
+    $langExists = $false
+    foreach ($tmpLang in $availablelangs) {
+       if ($tmpLang) {
+          if ($lang) {
+              if ($tmpLang.ToLower() -eq $lang.ToLower()) {
+                 $langExists = $true
+              }
+          }
+       }
+    }
 
+    if($langExists){
+        $validLangs += $lang
+    }   
+  }
+  
+  $returnLangs = $validLangs
+  return $returnLangs
 }
 
 function checkForLanguage() {
@@ -1169,39 +1195,104 @@ function checkForLanguage() {
 function officeGetExcludedApps() {
     param(
        [Parameter(ValueFromPipelineByPropertyName=$true, Position=0)]
-       [PSObject[]]$OfficeProducts = $NULL
+       [PSObject[]]$OfficeProducts = $NULL,
+
+       [string]$Credentials,
+
+       [string]$computer = $env:COMPUTERNAME
     )
 
     begin {
         $HKLM = [UInt32] "0x80000002"
         $HKCR = [UInt32] "0x80000000"
 
-        $allExcludeApps = 'Access','Excel','Groove','InfoPath','OneDrive','OneNote','Outlook',
+        $allExcludeApps = 'Access','Excel','Groove','InfoPath','OneNote','Outlook',
                        'PowerPoint','Publisher','Word'
-        #"SharePointDesigner","Visio", 'Project'
+
+        if ($Credentials) {
+            $regProv = Get-Wmiobject -list "StdRegProv" -namespace root\default -computername $computer -Credential $Credentials  -ErrorAction Stop
+            $os = Get-WMIObject win32_operatingsystem -computername $computer -Credential $Credentials -ErrorAction Stop
+        } 
+        else {
+            $regProv = Get-Wmiobject -list "StdRegProv" -namespace root\default -computername $computer  -ErrorAction Stop
+            $os = Get-WMIObject win32_operatingsystem -computername $computer  -ErrorAction Stop
+        }
     }
 
-    process {
-        $appsToExclude = @() 
+    process{
+        $OfficeVersion = Get-OfficeVersion -ComputerName $computer
+        $OfficeVersion = $OfficeVersion.Version.Split(".")[0]
 
-        foreach ($appName in $allExcludeApps) {
-           [bool]$appInstalled = $false
+        switch($os.OSArchitecture){
+            "32-bit"
+            {
+                $osBitness = '32'
+                $appKeyPath = 'SOFTWARE\Microsoft\Office'
+            }
+            "64-bit"
+            {
+                $osBitness = '64'
+                $appKeyPath = 'SOFTWARE\WOW6432Node\Microsoft\Office'
 
-           foreach ($OfficeProduct in $OfficeProducts) {
-               if ($OfficeProduct.DisplayName.ToLower().Contains($appName.ToLower())) {
-                  $appInstalled = $true
-                  break;
-               }
-           }
-           
-           if (!($appInstalled)) {
-              $appsToExclude += $appName
-           }
+            }
         }
         
+        switch($OfficeVersion){
+            "12"
+            {
+                $bitPath = '12.0'
+                
+            }
+            "14"
+            {
+                $bitPath = '14.0'
+            } 
+        }
+
+        $appKeyPath = Join-Path $appKeyPath $bitPath
+         
+        $appKeys = $regProv.EnumKey($HKLM, $appKeyPath)
+        $appList = $appKeys.sNames
+
+        $appsToExclude = @()
+
+        foreach($appName in $allExcludeApps){
+            [bool]$appInstalled = $false
+
+            foreach ($OfficeProduct in $appList){
+                if($OfficeProduct.ToLower() -like $appName.ToLower()){
+                    if($OfficeProduct -eq "OneNote"){
+                        $onRegPath = Join-Path $appKeyPath $OfficeProduct
+                        $onInstallKey = $regProv.EnumKey($HKLM, $onRegPath)
+                        $onRegKeys = $onInstallKey.sNames
+                        foreach($key in $onRegKeys){
+                            if($key -like "InstallRoot"){
+                                $onInstallRegKey = Join-Path $onRegPath "InstallRoot"
+                                $installRoot = $regProv.GetStringValue($HKLM, $onInstallRegKey, "Path").sValue
+                                $pathChk = Test-Path -Path $installRoot
+                                if($pathChk){
+                                    $appInstalled = $true
+                                    break;
+                                }
+                            }
+                        }              
+                    }
+                    else{
+                        $appInstalled = $true
+                        break;
+                    }
+                }
+            }
+
+            if(!($appInstalled)){
+                $appsToExclude += $appName
+            }
+        }
+            
         return $appsToExclude;
     }
 }
+
 
 function officeGetLanguages() {
    param(
@@ -1327,7 +1418,9 @@ function odtAddProduct() {
     }
 
     if ($Version) {
-       $AddElement.SetAttribute("Version", $Version) | Out-Null
+       if ($Version.StartsWith("16.")) {
+          $AddElement.SetAttribute("Version", $Version) | Out-Null
+       }
     }
 
     if ($Platform) {
@@ -1674,8 +1767,7 @@ Function GetScriptPath() {
      if ($PSScriptRoot) {
        $scriptPath = $PSScriptRoot
      } else {
-       #$scriptPath = (Split-Path $MyInvocation.MyCommand.Path) + "\"
-       $scriptPath = (Get-Location).Path
+       $scriptPath = (Get-Item -Path ".\").FullName
      }
 
      return $scriptPath
@@ -1703,6 +1795,6 @@ function Win7Join([string]$st1, [string]$st2){
 $availableLangs = @("en-us",
 "ar-sa","bg-bg","zh-cn","zh-tw","hr-hr","cs-cz","da-dk","nl-nl","et-ee",
 "fi-fi","fr-fr","de-de","el-gr","he-il","hi-in","hu-hu","id-id","it-it",
-"ja-jp","kk-kh","ko-kr","lv-lv","lt-lt","ms-my","nb-no","pl-pl","pt-br",
+"ja-jp","kk-kz","ko-kr","lv-lv","lt-lt","ms-my","nb-no","pl-pl","pt-br",
 "pt-pt","ro-ro","ru-ru","sr-latn-rs","sk-sk","sl-si","es-es","sv-se","th-th",
 "tr-tr","uk-ua");
