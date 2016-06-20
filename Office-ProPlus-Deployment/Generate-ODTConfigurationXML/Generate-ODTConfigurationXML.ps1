@@ -314,9 +314,13 @@ process {
            
            [bool]$containsLang = $false
            foreach ($additionalLanguage in $additionalLanguages) {
-              if ($primaryLanguage.ToLower() -eq $additionalLanguage.ToLower()) {
-                 $containsLang = $true
-              }
+             if ($primaryLanguage) {
+               if ($additionalLanguage) {
+                  if ($primaryLanguage.ToLower() -eq $additionalLanguage.ToLower()) {
+                     $containsLang = $true
+                  }
+               }
+             }
            }
           
            if ($containsLang) {
