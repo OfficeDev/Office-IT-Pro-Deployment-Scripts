@@ -1,16 +1,21 @@
-﻿#**Nuke-Office**
+﻿#**Remove previous versions of Office**
 
-This PowerShell Script will create remote the local MSI installations of Office 2013 and older. The script using the Offscrub script in order to remove the installations of Office.
+This PowerShell Script will create remote the local MSI installations of Office 2013 and older. The Offscrub vbs scripts are used to remove the MSI installations of Office products.
 
-###**Pre-requisites**
+###**Using the Offscrub scripts**
 
-1. Remote Windows Management Instrumentation (WMI) connectivity and Admin permissions to any remote computers you are querying. 
+The Offscrub vbs scripts can be used to automate the removal of Office products. The scripts will uninstall the existing Office products regardless of the current health of the installation. The Remove-PreviousOfficeInstalls.ps1 script will determine which version of Office is currently installed and will call the appropriate Offscrub vbs script to remove the Office products installations.
 
-2. Make sure that your local PowerShell execution policy allows running scripts.
-		
-		Set-ExecutionPolicy Unrestricted
+The Offscrub vbs files included are:
 
-###**Instructions and Examples**
+* **OffScrub03.vbs** - Used to remove Office 2003 products.
+* **OffScrub07.vbs** - Used to remove Office 2007 products.
+* **OffScrub10.vbs** - Used to remove Office 2010 products.
+* **OffScrub_O15msi.vbs** - Used to remove Office 2013 MSI products.
+
+More information can be found at: https://blogs.technet.microsoft.com/odsupport/2011/04/08/how-to-obtain-and-use-offscrub-to-automate-the-uninstallation-of-office-products/
+
+###Example
 
 1. Open a PowerShell console.
 
@@ -20,9 +25,19 @@ This PowerShell Script will create remote the local MSI installations of Office 
 
 		Example: cd C:\PowerShellScripts
 		
-2. Run the Script. Script will remove MSI installations of Office 2013 and older
+3. Dot-Source the Remove-PreviousOfficeInstalls function into your current session.
 
-		Type  .\Remove-PreviousOfficeInstalls.ps1
+		Type . .\Remove-PreviousOfficeInstalls.ps1
+		
+		By including the additional period before the relative script path you are 'Dot-Sourcing' 
+		the PowerShell function in the script into your PowerShell session which will allow you to 
+		run the function from the console.
+
+3. Run the function.
+
+		Type  Remove-PreviousOfficeInstalls
+		
+		The version of Office will be detected automatically and the appropriate Offscrub file will be used to remove any Office products. If Office is not detected on the client the script will notify the admin and stop running.
 			
 
 	
