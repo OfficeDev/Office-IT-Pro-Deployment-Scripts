@@ -148,6 +148,7 @@
                                         <ColumnDefinition Width="50" />
                                         <ColumnDefinition Width="280" />
                                         <ColumnDefinition Width="220" />
+                                        <ColumnDefinition Width="220" />
                                     </Grid.ColumnDefinitions>
                                     <Button x:Name="InstalledVersion" Width="30" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" Margin="10,9,-40,9"
                                             Focusable="False"  Style="{StaticResource CustomMetroInfoButton}" Click="InstalledVersion_Click" >
@@ -157,8 +158,15 @@
                                     </Button>
                                     <Label Content="Installed channel and version" Style="{StaticResource CustomMetroLabelHeader}" Margin="0 0 0 0" Grid.Column="1"
                                            Height="30" VerticalAlignment="Center" />
-
                                     <Grid Margin="0,0,0,0" Grid.Column="2">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="200" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <Label x:Name="ChannelLabel" Content="Current" Style="{StaticResource CustomMetroLabelHeader}"
+                                               Margin="0 0 0 0" Grid.Column="0" Height="30" VerticalAlignment="Center" />
+                                    </Grid>
+                                    <Grid Margin="0,0,0,0" Grid.Column="3">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="200" />
                                         </Grid.ColumnDefinitions>
