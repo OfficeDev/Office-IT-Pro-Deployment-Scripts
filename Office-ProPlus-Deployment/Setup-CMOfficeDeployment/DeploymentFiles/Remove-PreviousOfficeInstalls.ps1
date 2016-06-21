@@ -308,7 +308,7 @@ Function Remove-PreviousOfficeInstalls{
     $15MSIVBS = "OffScrub_O15msi.vbs"
     $16MSIVBS = "OffScrub_O16msi.vbs"
 
-     $scriptPath = GetScriptRoot
+    $scriptPath = GetScriptRoot
 
     $officeVersions = Get-OfficeVersion | select *
     $ActionFiles = @()
@@ -351,13 +351,14 @@ Function Remove-PreviousOfficeInstalls{
       Write-Host "Removing Office products..."
 
       if (Test-Path -Path $ActionFile) {
-          wscript $ActionFile
+          cscript $ActionFile
 
           Do{
             Start-Sleep -Seconds 5
-            $cscriptProcess = Get-Process wscript -ErrorAction SilentlyContinue
+            $cscriptProcess = Get-Process cscript -ErrorAction SilentlyContinue
           }
           Until($cscriptProcess -eq $null)
+
       } else {
         throw "Required file missing: $ActionFile"
       }
