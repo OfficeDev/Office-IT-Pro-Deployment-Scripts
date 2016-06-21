@@ -3123,7 +3123,7 @@ function Change-UpdatePathToChannel {
      [string] $UpdatePath,
      
      [Parameter()]
-     [Channel] $Channel
+     [String] $Channel
    )
 
    $newUpdatePath = $UpdatePath

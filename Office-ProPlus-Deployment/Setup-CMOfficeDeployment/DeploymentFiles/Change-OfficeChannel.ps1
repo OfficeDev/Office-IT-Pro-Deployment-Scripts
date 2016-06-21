@@ -624,6 +624,18 @@ try {
            $UpdateURLPath = $TmpUpdateUrlPath
         }
     }
+    else{
+        $urlPathChk = Test-Path $UpdateURLPath
+        if(!$urlPathChk){
+            $UpdateURLPath = Get-ScriptPath
+            $SetBack = $true
+
+            $TmpUpdateUrlPath = "$UpdateURLPath\SourceFiles"
+            if (Test-Path -Path $TmpUpdateUrlPath) {
+               $UpdateURLPath = $TmpUpdateUrlPath
+            }
+        }
+    }
 
     $OldUpdatePath = $UpdateURLPath
 

@@ -308,7 +308,7 @@ Function Remove-PreviousOfficeInstalls{
     $15MSIVBS = "OffScrub_O15msi.vbs"
     $16MSIVBS = "OffScrub_O16msi.vbs"
 
-    $scriptPath = GetScriptRoot
+     $scriptPath = GetScriptRoot
 
     $officeVersions = Get-OfficeVersion | select *
     $ActionFiles = @()

@@ -465,12 +465,36 @@ Update-CMOfficePackage -Channels Current -Bitness Both -OfficeSourceFilesPath D:
                     throw "Channel Folder Missing: $officeFileChannelPath - Ensure that you have downloaded the Channel you are trying to deploy"
                 }
 
-                [System.IO.Directory]::CreateDirectory($officeFileTargetPath) | Out-Null
+                $tempofficeFileChannelPath = "$officeFileChannelPath\Office\Data"
+                $tempLocalChannelPath = "$LocalChannelPath\$ChannelShortName\Office\Data"
 
-                if ($MoveSourceFiles) {
-                    Move-Item -Path $officeFileChannelPath -Destination $LocalChannelPath -Force
-                } else {
-                    Copy-Item -Path $officeFileChannelPath -Destination $LocalChannelPath -Recurse -Force
+                if ($MoveSourceFiles){                                
+                    if(!(Test-Path -Path $officeFileTargetPath)) {
+                        [System.IO.Directory]::CreateDirectory($officeFileTargetPath) | Out-Null
+
+                        Move-Item -Path $officeFileChannelPath -Destination $LocalChannelPath -Force
+                    }else{
+                        $subfiles = Get-ChildItem $tempofficeFileChannelPath
+                        foreach($file in $subfiles){
+                            Move-Item -Path $tempofficeFileChannelPath\$file -Destination $tempLocalChannelPath -Force
+                        }
+
+                        Get-ChildItem -Path $officeFileChannelPath -Recurse | Remove-Item -Force -Recurse | Out-Null
+
+                        [System.IO.Directory]::Delete($officeFileChannelPath) | Out-Null
+                    }
+                }else {
+                    if(!(Test-Path -Path $officeFileTargetPath)) {
+                        [System.IO.Directory]::CreateDirectory($officeFileTargetPath) | Out-Null
+
+                        Copy-Item -Path $officeFileChannelPath -Destination $LocalChannelPath -Recurse -Force
+                    }
+                    else{
+                        $subfiles = Get-ChildItem $tempofficeFileChannelPath
+                        foreach($file in $subfiles){
+                            Copy-Item -Path $tempofficeFileChannelPath\$file -Destination $tempLocalChannelPath -Recurse -Force 
+                        }             
+                    }
                 }
 
                 $cabFilePath = "$OfficeSourceFilesPath\ofl.cab"
