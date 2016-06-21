@@ -23,9 +23,21 @@ Process {
  }
 
  . "$scriptPath\SharedFunctions.ps1"
+
  if (Get-OfficeC2RVersion) { Write-Host "Office 365 ProPlus Already Installed" }
 
- ImportDeploymentDependencies -ScriptPath $scriptPath
+ $dependFiles = @("$scriptPath\Generate-ODTConfigurationXML.ps1"
+                  "$scriptPath\Edit-OfficeConfigurationFile.ps1"
+                  "$scriptPath\Install-OfficeClickToRun.ps1"
+                  "$scriptPath\SharedFunctions.ps1")
+
+ foreach ($file in $dependFiles) {
+    $fileExists = Test-ItemPathUNC -Path $file
+    if (!($fileExists)) {
+        throw "Missing Dependency File $file"    
+    }
+    . $file
+ }
 
  $UpdateURLPath = Locate-UpdateSource -Channel $Channel -UpdateURLPath $scriptPath -SourceFileFolder $SourceFileFolder
  Generate-ODTConfigurationXml -Languages AllInUseLanguages -TargetFilePath $targetFilePath | Set-ODTAdd -Version $NULL | Set-ODTDisplay -Level None -AcceptEULA $true  | Out-Null

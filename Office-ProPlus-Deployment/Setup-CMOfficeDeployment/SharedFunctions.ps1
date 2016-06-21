@@ -856,6 +856,7 @@ Function Validate-UpdateSource() {
         }
         else{
             $mainCab = "$UpdateSource\Office\Data\v32.cab"
+            $Bitness = "32"
         }
 
         if ($mainRegPath) {
