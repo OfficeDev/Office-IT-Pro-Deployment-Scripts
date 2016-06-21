@@ -3123,7 +3123,7 @@ function Change-UpdatePathToChannel {
      [string] $UpdatePath,
      
      [Parameter()]
-     [Channel] $Channel
+     [String] $Channel
    )
 
    $newUpdatePath = $UpdatePath
@@ -3204,7 +3204,10 @@ Function Test-UpdateSource() {
         [bool] $ValidateUpdateSourceFiles = $true,
 
         [Parameter()]
-        [string[]] $OfficeLanguages = $null
+        [string[]] $OfficeLanguages = $null,
+
+        [Parameter()]
+        [String] $Bitness = $NULL
     )
 
   	$uri = [System.Uri]$UpdateSource
@@ -3219,7 +3222,7 @@ Function Test-UpdateSource() {
 
     if ($ValidateUpdateSourceFiles) {
        if ($sourceIsAlive) {
-           [string]$strIsAlive = Validate-UpdateSource -UpdateSource $UpdateSource -OfficeLanguages $OfficeLanguages
+           [string]$strIsAlive = Validate-UpdateSource -UpdateSource $UpdateSource -OfficeLanguages $OfficeLanguages -Bitness $Bitness
            if ($strIsAlive.ToLower() -eq "true") {
               $sourceIsAlive = $true
            } else {
