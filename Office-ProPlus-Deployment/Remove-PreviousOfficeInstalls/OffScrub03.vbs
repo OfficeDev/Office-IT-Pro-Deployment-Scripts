@@ -3291,13 +3291,13 @@ Sub RelaunchAsCScript
     Dim Argument
     Dim sCmdLine
     
-    sCmdLine = "cmd.exe /k " & WScript.Path & "\cscript.exe //NOLOGO " & Chr(34) & WScript.scriptFullName & Chr(34)
+    sCmdLine = "cmd.exe /c " & WScript.Path & "\cscript.exe //NOLOGO " & Chr(34) & WScript.scriptFullName & Chr(34)
     If Wscript.Arguments.Count > 0 Then
         For Each Argument in Wscript.Arguments
             sCmdLine = sCmdLine  &  " " & chr(34) & Argument & chr(34)
         Next 'Argument
     End If
-    oWShell.Run sCmdLine,1,False
+    oWShell.Run sCmdLine,0,False
     Wscript.Quit
 End Sub 'RelaunchAsCScript
 '=======================================================================================================
