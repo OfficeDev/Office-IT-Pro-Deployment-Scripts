@@ -10,10 +10,10 @@ Process {
  if ($PSScriptRoot) {
    $scriptPath = $PSScriptRoot
  } else {
-   $scriptPath = split-path -parent $MyInvocation.MyCommand.Definition
+   $scriptPath = (Get-Item -Path ".\").FullName
  }
 
-#Importing all required functions
+#Importing all required functions - These files must be in the same directory as this script
 . $scriptPath\Generate-ODTConfigurationXML.ps1
 . $scriptPath\Edit-OfficeConfigurationFile.ps1
 . $scriptPath\Install-OfficeClickToRun.ps1
@@ -26,12 +26,29 @@ $targetFilePath = "$env:temp\configuration.xml"
 #then generate a Configuration XML based on the current configuration It will then remove the Version attribute from the XML to ensure the installation gets the latest version
 #and change the configuration XML to 64-Bit.  It will remove the existing install of Office Click-To-Run and resinstall Office Click-To-Run with the 64-Bit version
 
-$office = Get-OfficeVersion 
-
-if ($office.ClickToRun) {
-    if ($office.Bitness -eq "32-Bit") {
-        Generate-ODTConfigurationXml -Languages CurrentOfficeLanguages -TargetFilePath $targetFilePath | Set-ODTAdd -Version $NULL -Bitness 64 | Remove-OfficeClickToRun | Install-OfficeClickToRun
+$installOffice = $true
+if (!(Test-Path -Path $targetFilePath)) {
+    $officeVersions = Get-OfficeVersion 
+    foreach ($office in $officeVersions) {
+      if ($office.ClickToRun) {
+        if ($office.Bitness -eq "32-Bit") {
+            Generate-ODTConfigurationXml -Languages CurrentOfficeLanguages -TargetFilePath $targetFilePath | Set-ODTAdd -Version $NULL -Bitness 64 | Out-Null
+        }
+        if ($office.Bitness -eq "64-Bit") {
+            $installOffice = $false
+        }
+      } else {
+        $installOffice = $false
+      }
     }
+}
+
+if ($installOffice) {
+  if (Test-Path -Path $targetFilePath) {
+      Remove-OfficeClickToRun -TargetFilePath $targetFilePath
+
+      Install-OfficeClickToRun -TargetFilePath $targetFilePath
+  }
 }
 
 # Configuration.xml file for Click-to-Run for Office 365 products reference. https://technet.microsoft.com/en-us/library/JJ219426.aspx
