@@ -14,27 +14,29 @@ namespace Microsoft.Office
     }
 }
 "
-Add-Type -TypeDefinition $enum3 -ErrorAction SilentlyContinue
+try {
+ Add-Type -TypeDefinition $enum3 -ErrorAction SilentlyContinue
+} catch {}
 
 $enum4 = "
- using System;
+using System;
  
- namespace Microsoft.Office
- {
-     [FlagsAttribute]
-     public enum Channel
-     {
-         Current=0,
-         Deferred=1,
-         Validation=2,
-         FirstReleaseCurrent=3,
-         FirstReleaseDeferred=4
-     }
- }
- "
- try {
+namespace Microsoft.Office
+{
+    [FlagsAttribute]
+    public enum Channel
+    {
+        Current=0,
+        Deferred=1,
+        Validation=2,
+        FirstReleaseCurrent=3,
+        FirstReleaseDeferred=4
+    }
+}
+"
+try {
  Add-Type -TypeDefinition $enum4 -ErrorAction SilentlyContinue
- } catch {}
+} catch {}
 
 
 Function Dynamic-UpdateSource {
@@ -157,7 +159,19 @@ Function SetODTAdd{
         [string] $SourcePath = $NULL,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [string] $TargetFilePath
+        [string] $Version,
+
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [string] $Bitness,
+
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [string] $TargetFilePath,
+
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [Microsoft.Office.Branches] $Branch,
+
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [Microsoft.Office.Channel] $Channel = "Current"
 
     )
 
@@ -168,7 +182,12 @@ Function SetODTAdd{
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
 
         if ($TargetFilePath) {
-           $ConfigFile.Load($TargetFilePath) | Out-Null
+           if (!(Test-Path $TargetFilePath)) {
+              $TargetFilePath = GetScriptRoot + "\" + $TargetFilePath
+           }
+        
+           $content = Get-Content $TargetFilePath
+           $ConfigFile.LoadXml($content) | Out-Null
         } else {
             if ($ConfigurationXml) 
             {
@@ -192,12 +211,41 @@ Function SetODTAdd{
         }
 
         #Set values as desired
+        if($Branch -ne $null -and $Channel -eq $null){
+            $Channel = ConvertBranchNameToChannelName -BranchName $Branch
+        }
 
-        if([string]::IsNullOrWhiteSpace($SourcePath) -eq $false){
+        if($ConfigFile.Configuration.Add -ne $null){
+            if($ConfigFile.Configuration.Add.Branch -ne $null){
+                $ConfigFile.Configuration.Add.RemoveAttribute("Branch")
+            }
+        }
+
+        if($Channel -ne $null){
+            $ConfigFile.Configuration.Add.SetAttribute("Channel", $Channel);
+        }
+
+        if($SourcePath){
             $ConfigFile.Configuration.Add.SetAttribute("SourcePath", $SourcePath) | Out-Null
         } else {
             if ($PSBoundParameters.ContainsKey('SourcePath')) {
                 $ConfigFile.Configuration.Add.RemoveAttribute("SourcePath")
+            }
+        }
+
+        if($Version){
+            $ConfigFile.Configuration.Add.SetAttribute("Version", $Version) | Out-Null
+        } else {
+            if ($PSBoundParameters.ContainsKey('Version')) {
+                $ConfigFile.Configuration.Add.RemoveAttribute("Version")
+            }
+        }
+
+        if($Bitness){
+            $ConfigFile.Configuration.Add.SetAttribute("OfficeClientEdition", $Bitness) | Out-Null
+        } else {
+            if ($PSBoundParameters.ContainsKey('OfficeClientEdition')) {
+                $ConfigFile.Configuration.Add.RemoveAttribute("OfficeClientEdition")
             }
         }
 
@@ -309,6 +357,54 @@ Function SetODTUpdates{
 
 }
 
+Function Get-ODTAdd{
+<#
+.SYNOPSIS
+Gets the value of the Add section in the configuration file
+.PARAMETER TargetFilePath
+Required. Full file path for the file.
+.Example
+Get-ODTAdd -TargetFilePath "$env:Public\Documents\config.xml"
+Returns the value of the Add section if it exists in the specified
+file. 
+#>
+    Param(
+
+        [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
+        [string] $ConfigurationXML = $NULL,
+
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [string] $TargetFilePath
+
+    )
+
+    Process{
+        $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
+
+        #Load the file
+        [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
+
+        if ($TargetFilePath) {
+           $ConfigFile.Load($TargetFilePath) | Out-Null
+        } else {
+            if ($ConfigurationXml) 
+            {
+              $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
+              $global:saveLastConfigFile = $NULL
+              $global:saveLastFilePath = $NULL
+            }
+        }
+
+        #Check that the file is properly formatted
+        if($ConfigFile.Configuration -eq $null){
+            throw $NoConfigurationElement
+        }
+        
+        $ConfigFile.Configuration.GetElementsByTagName("Add") | Select OfficeClientEdition, SourcePath, Version, Branch
+    }
+
+}
+
 Function GetFilePath() {
     Param(
        [Parameter(ValueFromPipelineByPropertyName=$true)]
@@ -347,8 +443,8 @@ Function GetScriptPath() {
      if ($PSScriptRoot) {
        $scriptPath = $PSScriptRoot
      } else {
-       #$scriptPath = (Split-Path $MyInvocation.MyCommand.Path) + "\"
-       $scriptPath = (Get-Location).Path
+       $scriptPath = split-path -parent $MyInvocation.MyCommand.Definition
+       $scriptPath = (Get-Item -Path ".\").FullName
      }
 
      return $scriptPath

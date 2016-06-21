@@ -10,6 +10,7 @@ Process {
    $scriptPath = $PSScriptRoot
  } else {
    $scriptPath = split-path -parent $MyInvocation.MyCommand.Definition
+   $scriptPath = (Get-Item -Path ".\").FullName
  }
 
 #Sets whether to use Volume Licensing for Project and Visio
