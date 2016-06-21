@@ -4028,14 +4028,14 @@ Sub RelaunchAsCScript
     Dim sCmdLine
     
     SetError ERROR_RELAUNCH
-    sCmdLine = "cmd.exe /k " & WScript.Path & "\cscript.exe //NOLOGO " & Chr(34) & WScript.scriptFullName & Chr(34)
+    sCmdLine = "cmd.exe /c " & WScript.Path & "\cscript.exe //NOLOGO " & Chr(34) & WScript.scriptFullName & Chr(34)
     If Wscript.Arguments.Count > 0 Then
         For Each Argument in Wscript.Arguments
             sCmdLine = sCmdLine  &  " " & chr(34) & Argument & chr(34)
         Next 'Argument
     End If
     
-    Wscript.Quit CLng(oWShell.Run(sCmdLine,1,True))
+    Wscript.Quit CLng(oWShell.Run(sCmdLine,0,True))
 End Sub 'RelaunchAsCScript
 '=======================================================================================================
 
