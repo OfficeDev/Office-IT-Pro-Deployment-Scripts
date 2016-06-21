@@ -103,7 +103,7 @@ $validLanguages = @(
 "Indonesian|id-id",
 "Italian|it-it",
 "Japanese|ja-jp",
-"Kazakh|kk-kh",
+"Kazakh|kk-kz",
 "Korean|ko-kr",
 "Latvian|lv-lv",
 "Lithuanian|lt-lt",
@@ -2055,7 +2055,7 @@ Here is what the portion of configuration file looks like when modified by this 
         [Microsoft.Office.Branches] $Branch,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [Microsoft.Office.Channel] $Channel
+        [Microsoft.Office.Channel] $Channel = "Current"
 
     )
 
@@ -3024,7 +3024,7 @@ Function IsSupportedLanguage() {
            [string] $Language,
 
            [Parameter()]
-           [bool] $ShowLanguages = $false
+           [bool] $ShowLanguages = $true
         )
 
         $lang = $validLanguages | where {$_.ToString().ToUpper().EndsWith("|$Language".ToUpper())}
@@ -3204,7 +3204,10 @@ Function Test-UpdateSource() {
         [bool] $ValidateUpdateSourceFiles = $true,
 
         [Parameter()]
-        [string[]] $OfficeLanguages = $null
+        [string[]] $OfficeLanguages = $null,
+
+        [Parameter()]
+        [String] $Bitness = $NULL
     )
 
   	$uri = [System.Uri]$UpdateSource
@@ -3219,7 +3222,7 @@ Function Test-UpdateSource() {
 
     if ($ValidateUpdateSourceFiles) {
        if ($sourceIsAlive) {
-           [string]$strIsAlive = Validate-UpdateSource -UpdateSource $UpdateSource -OfficeLanguages $OfficeLanguages
+           [string]$strIsAlive = Validate-UpdateSource -UpdateSource $UpdateSource -OfficeLanguages $OfficeLanguages -Bitness $Bitness
            if ($strIsAlive.ToLower() -eq "true") {
               $sourceIsAlive = $true
            } else {

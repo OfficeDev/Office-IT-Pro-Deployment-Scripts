@@ -103,7 +103,7 @@ $validLanguages = @(
 "Indonesian|id-id",
 "Italian|it-it",
 "Japanese|ja-jp",
-"Kazakh|kk-kh",
+"Kazakh|kk-kz",
 "Korean|ko-kr",
 "Latvian|lv-lv",
 "Lithuanian|lt-lt",
