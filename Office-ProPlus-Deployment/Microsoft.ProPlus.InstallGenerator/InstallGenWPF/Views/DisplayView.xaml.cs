@@ -1,18 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using MetroDemo.Events;
 using MetroDemo.ExampleWindows;
 using Micorosft.OfficeProPlus.ConfigurationXml;
@@ -69,6 +58,7 @@ namespace MetroDemo.ExampleViews
                 AutoActivate.IsChecked = configXml.Properties.AutoActivate.HasValue && configXml.Properties.AutoActivate.Value == YesNo.Yes;
                 ForceAppShutdown.IsChecked = configXml.Properties.ForceAppShutdown.HasValue && configXml.Properties.ForceAppShutdown.Value;
                 SharedComputerLicensing.IsChecked = configXml.Properties.SharedComputerLicensing.HasValue && configXml.Properties.SharedComputerLicensing.Value;
+                PinIconsToTaskbar.IsChecked = configXml.Properties.PinIconsToTaskbar.HasValue && configXml.Properties.PinIconsToTaskbar.Value;
             }
         }
 
@@ -79,6 +69,7 @@ namespace MetroDemo.ExampleViews
             AutoActivate.IsChecked = false;
             ForceAppShutdown.IsChecked = false;
             SharedComputerLicensing.IsChecked = false;
+            PinIconsToTaskbar.IsChecked = true;
         }
 
         public void UpdateXml()
@@ -149,6 +140,12 @@ namespace MetroDemo.ExampleViews
             if (SharedComputerLicensing.IsChecked.HasValue)
             {
                 configXml.Properties.SharedComputerLicensing = SharedComputerLicensing.IsChecked.Value;
+            }
+
+            configXml.Properties.PinIconsToTaskbar = null;
+            if (PinIconsToTaskbar.IsChecked.HasValue)
+            {
+                configXml.Properties.PinIconsToTaskbar = PinIconsToTaskbar.IsChecked.Value;
             }
 
         }

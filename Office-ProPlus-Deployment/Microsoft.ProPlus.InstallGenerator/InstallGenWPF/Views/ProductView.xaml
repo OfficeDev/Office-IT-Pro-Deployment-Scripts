@@ -52,28 +52,29 @@
                         <Grid HorizontalAlignment="Left">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="20"></RowDefinition>
-                                <RowDefinition Height="250"></RowDefinition>
-                                <RowDefinition Height="300"></RowDefinition>
+                                <RowDefinition Height="350"></RowDefinition>
+                                <RowDefinition Height="224"></RowDefinition>
                             </Grid.RowDefinitions>
 
-                            <Grid Height="410" Width="900" Grid.Row="1" HorizontalAlignment="Left">
+                            <Grid Width="900" Grid.Row="1" HorizontalAlignment="Left" Margin="10 0 0 0">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="370" />
-                                    <ColumnDefinition Width="120" />
+                                    <ColumnDefinition Width="540" />
+                                    <ColumnDefinition Width="5" />
                                     <ColumnDefinition Width="280" />
                                 </Grid.ColumnDefinitions>
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="250"></RowDefinition>
-                                    <RowDefinition Height="200"></RowDefinition>
+                                    <RowDefinition Height="600"></RowDefinition>
                                 </Grid.RowDefinitions>
 
-                                <StackPanel Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" Margin="0,0,0,0">
+                                <StackPanel Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" Width="520">
 
-                                    <Grid Margin="35 0 0 0" >
+                                    <Grid Height="35" >
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="30" />
-                                            <ColumnDefinition Width="400" />
+                                            <ColumnDefinition Width="450" />
+                                            <ColumnDefinition Width="30" />
                                         </Grid.ColumnDefinitions>
+                                        
                                         <Button x:Name="ProductInfo" Width="30" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" 
                                                 Focusable="False"  Style="{StaticResource MetroInfoButton}" Click="ProductInfo_OnClick" >
                                             <StackPanel Orientation="Horizontal">
@@ -82,23 +83,68 @@
                                         </Button>
                                         <Label Grid.Row="0" Grid.Column="1" Content="Product" Style="{StaticResource CustomMetroLabelHeader}"  
                                                HorizontalAlignment="Left"  Width="100" VerticalAlignment="Center"/>
+                                        <CheckBox x:Name="chkofficeProd" Grid.Column="2" Style="{StaticResource MetroCheckBox}" Checked="chkofficeProd_Checked" Unchecked="chkofficeProd_Checked" Click="chkofficeProd_Click" ></CheckBox>
                                     </Grid>
 
-                                    <ListBox x:Name="MainProducts"  Style="{StaticResource VirtualizedMetroListBox}" Margin="35 10 0 0"
-                                            ItemsSource="{Binding MainProducts}"
-                                            DisplayMemberPath="DisplayName" Width="320" Height="60"
-                                            SelectedIndex="0" SelectionMode="Single" FontSize="20" SelectionChanged="Products_OnSelectionChanged" BorderThickness="2,2,2,0">
-                                    </ListBox>
+                                    <ListBox x:Name="MainProducts"  Style="{StaticResource VirtualizedMetroListBox}" 
+                                            ItemsSource="{Binding MainProducts}" Width="500" HorizontalAlignment="Left"
+                                            DisplayMemberPath="DisplayName" Height="60" Margin="0 10 0 0" FontWeight="Normal"
+                                            SelectedIndex="0" SelectionMode="Single" FontSize="20" SelectionChanged="Products_OnSelectionChanged" 
+                                             BorderThickness="2,2,2,2" RenderTransformOrigin="0.508,0.123"/>
 
-                                    <ListBox x:Name="AdditionalProducts"  Style="{StaticResource VirtualizedMetroListBox}" Margin="35 0 0 0"
-                                            ItemsSource="{Binding AdditionalProducts}"
-                                            DisplayMemberPath="DisplayName" Width="320" Height="60"
-                                            SelectedIndex="-1" SelectionMode="Multiple" FontSize="20" SelectionChanged="Products_OnSelectionChanged" BorderThickness="2,0,2,2">
-                                    </ListBox>
-              
+                                    <Grid Height="35" Margin="0 20 0 0" >
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="30" />
+                                            <ColumnDefinition Width="450" />
+                                            <ColumnDefinition Width="30" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <Button x:Name="VisioInfo" Width="30" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" 
+                                                Focusable="False"  Style="{StaticResource MetroInfoButton}" Click="ProductInfo_OnClick" >
+                                            <StackPanel Orientation="Horizontal">
+                                                <Image Source="../images/info.png" Width="20" Height="20"/>
+                                            </StackPanel>
+                                        </Button>
+                                        <Label Grid.Row="0" Grid.Column="1" Content="Visio" Style="{StaticResource CustomMetroLabelHeader}"  
+                                               HorizontalAlignment="Left"  Width="100" VerticalAlignment="Center"/>
+                                        <CheckBox x:Name="chkVisio" Grid.Column="2" Style="{StaticResource MetroCheckBox}" Checked="ChkVisio_OnChecked"
+                                                  Unchecked="ChkVisio_OnChecked" Click="chkofficeProd_Click"></CheckBox>
+                                    </Grid>
+                                    
+
+                                    <ComboBox x:Name="cbVisio" Width="500" FontSize="20" Height="40" BorderBrush="{StaticResource GrayBrush}"
+                                              ItemsSource="{Binding VisioProducts}" DisplayMemberPath="DisplayName" Margin="0 5 0 0"
+                                              Foreground="{StaticResource GrayBrush}" HorizontalAlignment="Left" BorderThickness="2"
+                                              VerticalAlignment="Center" SelectionChanged="CbVisio_OnSelectionChanged" />
+
+                                    <Grid Height="35" Margin="0 20 0 0" >
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="30" />
+                                            <ColumnDefinition Width="450" />
+                                            <ColumnDefinition Width="30" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <Button x:Name="ProjectInfo" Width="30" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" 
+                                                Focusable="False"  Style="{StaticResource MetroInfoButton}" Click="ProductInfo_OnClick" >
+                                            <StackPanel Orientation="Horizontal">
+                                                <Image Source="../images/info.png" Width="20" Height="20"/>
+                                            </StackPanel>
+                                        </Button>
+                                        <Label Grid.Row="0" Grid.Column="1" Content="Project" Style="{StaticResource CustomMetroLabelHeader}"  
+                                               HorizontalAlignment="Left"  Width="100" VerticalAlignment="Center"/>
+                                        <CheckBox x:Name="chkProject" Grid.Column="2" Style="{StaticResource MetroCheckBox}" Checked="ChkProject_OnChecked" 
+                                                 Unchecked="ChkProject_OnChecked" Click="chkofficeProd_Click" ></CheckBox>
+                                    </Grid>
+                                    
+                                    <ComboBox x:Name="cbProject" Width="500" FontSize="20" BorderThickness="2" Margin="0 5 0 0"
+                                              BorderBrush="{StaticResource GrayBrush}"
+                                              Height="40" ItemsSource="{Binding ProjectProducts}" DisplayMemberPath="DisplayName"
+                                              Foreground="{StaticResource GrayBrush}" HorizontalAlignment="Left" VerticalAlignment="Center"
+                                              SelectionChanged="CbProject_OnSelectionChanged" />
+
                                 </StackPanel>
 
-                                <StackPanel Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" Margin="0,0,0,0">
+                                <StackPanel Grid.Row="0" Grid.Column="2" HorizontalAlignment="Left"  Width="280">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="30" />
@@ -112,17 +158,14 @@
                                         </Button>
                                         <Label Content="Edition" Style="{StaticResource CustomMetroLabelHeader}" HorizontalAlignment="Left" Grid.Column="1"/>
                                     </Grid>
-                                    <RadioButton Margin="10 10 0 0" x:Name="ProductEdition32Bit" HorizontalAlignment="Center"
-                                         Content="32-Bit" Width="100" Foreground="{StaticResource GrayBrush}"
-                                         GroupName="1" 
-                                         IsChecked="True" FontSize="20" />
-                                    <RadioButton Margin="10 10 0 0"  x:Name="ProductEdition64Bit" HorizontalAlignment="Center"
-                                         Content="64-Bit" Width="100" Foreground="{StaticResource GrayBrush}"
-                                         GroupName="1" FontSize="20" />
-                                </StackPanel>
+                                    <RadioButton x:Name="ProductEdition32Bit" Content="32-Bit"  Foreground="{StaticResource GrayBrush}"
+                                         GroupName="1" HorizontalContentAlignment="Left" Margin="5 0 0 0"
+                                         IsChecked="True" FontSize="20" Height="28" />
+                                    <RadioButton  x:Name="ProductEdition64Bit" HorizontalContentAlignment="Left"
+                                         Content="64-Bit" Foreground="{StaticResource GrayBrush}" Margin="5 0 0 0"
+                                         GroupName="1" FontSize="20" Height="27" />
 
-                                <StackPanel Grid.Row="0" Grid.Column="2" HorizontalAlignment="Left">
-                                    <Grid>
+                                    <Grid Margin="0 20 0 0">
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="30" />
                                             <ColumnDefinition Width="80" />
@@ -191,7 +234,7 @@
                                 </StackPanel>
 
                                 <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,35.6,320.4" Grid.RowSpan="2">
-                                    <Label Style="{StaticResource MetroLabelTextSmall}" VerticalAlignment="Center" >Use Languages for all Products</Label>
+                                    <Label x:Name="UseLangForAllLabel" Style="{StaticResource MetroLabelTextSmall}" VerticalAlignment="Center" >Use Languages for all Products</Label>
                                     <CheckBox x:Name="UseLangForAllProducts" Checked="UseLangForAllProducts_OnChecked" Unchecked="UseLangForAllProducts_OnChecked" IsChecked="True"
                                     Style="{StaticResource MetroCheckBox}"></CheckBox>
                                     <ComboBox x:Name="LanguageUnique" Height="20" Width="164" IsEnabled="False" SelectionChanged="LanguageUnique_OnSelectionChanged" Margin="0,12,0,11.6" 
@@ -233,8 +276,8 @@
                                     </Button>
                                     <Label Content="Version" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" />
 
-                                   
-                                        <ComboBox Width="360" x:Name="ProductVersion" Grid.Column="2"  
+
+                                    <ComboBox Width="360" x:Name="ProductVersion" Grid.Column="2"  
                                               Height="35" HorizontalAlignment="Left" IsTextSearchEnabled="True"
                                               Style="{StaticResource MetroComboBoxStyle}" 
                                               Controls:TextBoxHelper.Watermark="16.0.4949.1003"
@@ -271,7 +314,7 @@
                                             <ColumnDefinition Width="75" />
                                             <ColumnDefinition Width="75" />
                                         </Grid.ColumnDefinitions>
-        
+
                                         <Controls:MetroProgressBar x:Name="DownloadProgressBar"  Grid.Column="0" Height="37" Background="White" Width="360" HorizontalAlignment="Left" />
                                         <TextBox x:Name="ProductUpdateSource" Background="#00ffffff" FontSize="20" Grid.Column="0" HorizontalAlignment="Left"
                                              Controls:TextBoxHelper.Watermark="Local, UNC or HTTP Path" Height="37" Width="360"

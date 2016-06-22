@@ -99,6 +99,10 @@
     <TargetZone>LocalIntranet</TargetZone>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="BouncyCastle.Crypto, Version=1.7.4137.9688, Culture=neutral, PublicKeyToken=a4292a325f69b123, processorArchitecture=MSIL">
+      <HintPath>..\packages\BouncyCastle.1.7.0\lib\Net40-Client\BouncyCastle.Crypto.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Garlic, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Garlic.2.1.0.0\lib\net35\Garlic.dll</HintPath>
       <Private>True</Private>
@@ -115,6 +119,7 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Management" />
     <Reference Include="System.Net" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -145,9 +150,15 @@
     </ApplicationDefinition>
     <Compile Include="AppSettings.cs" />
     <Compile Include="Engine\OfficeInstaller.cs" />
+    <Compile Include="Enums\Enums.cs" />
     <Compile Include="Events\Events.cs" />
+    <Compile Include="Models\RemoteMachine.cs" />
+    <Compile Include="Models\officeVersion.cs" />
     <Compile Include="Views\AboutView.xaml.cs">
       <DependentUpon>AboutView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\RemoteView.xaml.cs">
+      <DependentUpon>RemoteView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\LocalView.xaml.cs">
       <DependentUpon>LocalView.xaml</DependentUpon>
@@ -170,6 +181,9 @@
     <Compile Include="Views\ProductView.xaml.cs">
       <DependentUpon>ProductView.xaml</DependentUpon>
     </Compile>
+    <Content Include="HelpFiles\RemoteConfiguration.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="HelpFiles\EmbedOfficeInstall.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -181,6 +195,48 @@
     <Resource Include="images\local.png" />
     <Resource Include="images\GitHubSite.PNG" />
     <Content Include="HelpFiles\EnableSCCMSupportInfo.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="HelpFiles\FilePathGen.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="HelpFiles\InstalledVersion.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="HelpFiles\LatestVInstall.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="HelpFiles\ModifyExisting.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="HelpFiles\OfficeInstall.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="HelpFiles\OPPInstalled.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="HelpFiles\PinIconsToTaskbarInfo.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="HelpFiles\ProjectInfo.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="HelpFiles\SignInstallerInfo.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="HelpFiles\SilentInstallInfo.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="HelpFiles\SourceFilePathGen.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="HelpFiles\UpdateChannel.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="HelpFiles\VersionInfoGen.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="HelpFiles\VisioInfo.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="InstallOffice.cs">
@@ -228,6 +284,12 @@
     <Compile Include="Windows\Languages.xaml.cs">
       <DependentUpon>Languages.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Windows\RemoteClientInfoDialog.xaml.cs">
+      <DependentUpon>RemoteClientInfoDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\RemoteChannelVersionDialog.xaml.cs">
+      <DependentUpon>RemoteChannelVersionDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="XmlBrowser\Converters\NullToBooleanConverter.cs" />
     <Compile Include="XmlBrowser\ValidationResultControl.xaml.cs">
       <DependentUpon>ValidationResultControl.xaml</DependentUpon>
@@ -239,6 +301,10 @@
     <Page Include="Views\AboutView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\RemoteView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\LocalView.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -325,6 +391,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Windows\RemoteClientInfoDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Windows\RemoteChannelVersionDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="XmlBrowser\ValidationResultControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -362,6 +436,15 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
+    <Content Include="Resources\Update-Office.ps1">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\UpdateScriptLaunch.ps1">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\FindVersion.ps1">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="Scripts\Generate-ODTConfigurationXML.ps1">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

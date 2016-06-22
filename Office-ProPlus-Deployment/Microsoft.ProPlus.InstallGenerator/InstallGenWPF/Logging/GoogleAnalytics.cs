@@ -14,19 +14,19 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Logging
 
         public static void Log(string path, string pageName)
         {
-            //if (session == null)
-            //{
-            //    session = new AnalyticsSession("officedev.github.io/Office-IT-Pro-Deployment-Scripts/InstallGenerator",
-            //            "UA-70271323-2");
-            //}
+            if (session == null)
+            {
+                session = new AnalyticsSession("officedev.github.io/Office-IT-Pro-Deployment-Scripts/InstallGenerator",
+                        "UA-70271323-2");
+            }
 
 
-            //var page = session.CreatePageViewRequest(
-            //      path,       // path
-            //      pageName); // page title
+            var page = session.CreatePageViewRequest(
+                  path,       // path
+                  pageName); // page title
 
-            //// or send page views manually
-            //page.Send();
+            // or send page views manually
+            page.Send();
         }
 
     }

@@ -15,6 +15,7 @@ using MetroDemo.ExampleViews;
 using MetroDemo.ExampleWindows;
 using Microsoft.OfficeProPlus.Downloader;
 using Microsoft.OfficeProPlus.Downloader.Model;
+using Microsoft.OfficeProPlus.InstallGen.Presentation.Enums;
 using Microsoft.OfficeProPlus.InstallGen.Presentation.Extentions;
 using Microsoft.OfficeProPlus.InstallGen.Presentation.Logging;
 using Microsoft.OfficeProPlus.InstallGenerator.Models;
@@ -39,7 +40,7 @@ namespace MetroDemo
                 };
 
                 DataContext = GlobalObjects.ViewModel;
-                GlobalObjects.ViewModel.RunLocalConfigs = false;
+                GlobalObjects.ViewModel.ApplicationMode = ApplicationMode.InstallGenerator;
 
                 InitializeComponent();
 
@@ -60,6 +61,7 @@ namespace MetroDemo
                 GenerateView.TransitionTab += TransitionTab;
                 DownloadView.TransitionTab += TransitionTab;
                 LocalView.TransitionTab += TransitionTab;
+                
 
                 LocalView.BranchChanged += BranchChanged;
                 LocalView.MainWindow = this;
@@ -95,8 +97,8 @@ namespace MetroDemo
         {
             try
             {
-                var branchJson = GlobalObjects.ViewModel.BranchesToJson;
-                System.IO.File.WriteAllText(Environment.ExpandEnvironmentVariables(@"%temp%\BranchVersions.json"),branchJson);
+                //var branchJson = GlobalObjects.ViewModel.BranchesToJson;
+                //System.IO.File.WriteAllText(Environment.ExpandEnvironmentVariables(@"%temp%\BranchVersions.json"),branchJson);
 
                 try
                 {
@@ -196,17 +198,50 @@ namespace MetroDemo
             {
                 var newIndex = Convert.ToInt32(((dynamic)sender).Tag);
 
-                if (GlobalObjects.ViewModel.RunLocalConfigs)
+                if (TabUpdates.Visibility == Visibility.Collapsed)
+                {
+                    GenerateTabName.Visibility = Visibility.Visible;
+                    TabUpdates.Visibility = Visibility.Visible;
+                    TabOptions.Visibility = Visibility.Visible;
+                    ProductView.ProductTab.Visibility = Visibility.Visible;
+                    ProductView.OptionalTab.Visibility = Visibility.Visible;
+                    ProductView.ExcludedTab.Visibility = Visibility.Visible;
+                }
+
+                if (GlobalObjects.ViewModel.ApplicationMode == ApplicationMode.LanguagePack)
                 {
                     GenerateTabName.Visibility = Visibility.Collapsed;
+                    TabUpdates.Visibility = Visibility.Collapsed;
+                    ProductView.ProductTab.Visibility = Visibility.Collapsed;
+                    ProductView.OptionalTab.Visibility = Visibility.Collapsed;
+                    ProductView.ExcludedTab.Visibility = Visibility.Collapsed;
+                }
+
+                if (GlobalObjects.ViewModel.ApplicationMode == ApplicationMode.ManageLocal)
+                {
+                    GenerateTabName.Visibility = Visibility.Collapsed;
+                    RemoteTabName.Visibility = Visibility.Collapsed;
                     LocalTabName.Visibility = Visibility.Visible;
                     GenerateView.Tag = 99;
                     LocalView.Tag = 5;
+                }
+                else if(GlobalObjects.ViewModel.ApplicationMode == ApplicationMode.ManageRemote)
+                {
+                    GenerateTabName.Visibility = Visibility.Collapsed;
+                    LocalTabName.Visibility = Visibility.Collapsed;
+                    TabProducts.Visibility = Visibility.Collapsed;
+                    TabDownload.Visibility = Visibility.Collapsed;
+                    TabUpdates.Visibility = Visibility.Collapsed;
+                    TabOptions.Visibility = Visibility.Collapsed; 
+                             
+                    RemoteTabName.Visibility = Visibility.Visible;
+                    RemoteTabName.IsSelected = true;
                 }
                 else
                 {
                     GenerateTabName.Visibility = Visibility.Visible;
                     LocalTabName.Visibility = Visibility.Collapsed;
+                    RemoteTabName.Visibility = Visibility.Collapsed;
                     GenerateView.Tag = 5;
                     LocalView.Tag = 99;
                 }
@@ -221,14 +256,27 @@ namespace MetroDemo
                     index = newIndex - 1;
                 }
 
-                if (GlobalObjects.ViewModel.RunLocalConfigs)
+                if (GlobalObjects.ViewModel.ApplicationMode == ApplicationMode.ManageLocal)
                 {
                     if (index == 5) index = 6;
+                }
+                else if (GlobalObjects.ViewModel.ApplicationMode == ApplicationMode.LanguagePack)
+                {
+                    if (e.Direction == TransitionTabDirection.Forward)
+                    {
+                        if (index == 3) index = 4;
+                    }
+                    else
+                    {
+                        if (index == 3) index = 2;
+                    }
                 }
                 else
                 {
                     if (index == 6) index = 5;
                 }
+
+                //MainTabControl.Items[]
 
                 MainTabControl.SelectedIndex = e.UseIndex ? e.Index : index;
                 
@@ -343,7 +391,6 @@ namespace MetroDemo
             }
         }
 
-
         private void Nav_OnClick(object sender, RoutedEventArgs e)
         {
 
@@ -363,6 +410,7 @@ namespace MetroDemo
                 lblUpdate.Visibility = Visibility.Collapsed;
                 lblAbout.Visibility = Visibility.Collapsed;
                 lblLocal.Visibility = Visibility.Collapsed;
+                lblRemote.Visibility = Visibility.Collapsed;
 
                 var margin = ((Button)sender).Margin;
                 margin.Left = -1;
@@ -390,6 +438,7 @@ namespace MetroDemo
                 lblUpdate.Visibility = Visibility.Visible;
                 lblAbout.Visibility = Visibility.Visible;
                 lblLocal.Visibility = Visibility.Visible;
+                lblRemote.Visibility = Visibility.Visible;
 
                 var margin = ((Button)sender).Margin;
                 margin.Left = 100;

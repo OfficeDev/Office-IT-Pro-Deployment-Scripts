@@ -94,8 +94,8 @@ namespace MetroDemo.ExampleWindows
             {
                 var getRandom = new Random();
                 var makeCertPath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "makecert.exe");
-                var startDate = DateTime.Now.AddDays(-1).ToString("MM/dd/yyyy").Split(' ')[0];
-                var endDate = DateTime.Now.AddYears(2).ToString("MM/dd/yyyy").Split(' ')[0];
+                var startDate = "01/01/" + DateTime.Now.Year.ToString();
+                var endDate = "01/01/" + DateTime.Now.AddYears(2).Year.ToString(); 
                 var serialNumber = getRandom.Next(0, 1000000);
 
                 System.IO.File.WriteAllBytes(makeCertPath, Microsoft.OfficeProPlus.InstallGen.Presentation.Properties.Resources.makecert);

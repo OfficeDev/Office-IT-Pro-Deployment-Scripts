@@ -130,7 +130,22 @@ namespace MetroDemo.ExampleViews
 
             if (updateBranch != null)
             {
-                configXml.Updates.Branch = updateBranch.Branch;
+                //configXml.Updates.Branch = updateBranch.Branch;
+                switch (updateBranch.Branch)
+                {
+                    case Branch.Business:
+                        configXml.Updates.ODTChannel = ODTChannel.Deferred;
+                        break;
+                    case Branch.Current:
+                        configXml.Updates.ODTChannel = ODTChannel.Current;
+                        break;
+                    case Branch.FirstReleaseCurrent:
+                        configXml.Updates.ODTChannel = ODTChannel.FirstReleaseCurrent;
+                        break;
+                    case Branch.FirstReleaseBusiness:
+                        configXml.Updates.ODTChannel = ODTChannel.FirstReleaseDeferred;
+                        break;
+                }
             }
 
             configXml.Updates.Enabled = updatesEnabled;

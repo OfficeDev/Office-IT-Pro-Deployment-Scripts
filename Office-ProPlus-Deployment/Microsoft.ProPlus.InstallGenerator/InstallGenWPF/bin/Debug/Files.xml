@@ -1,12 +1,16 @@
 <Files>
-  <File Path="Office\data\v32.cab" FileName="v32.cab" FolderPath="Office\data" Hash="6187d7a10de737b20f318e64c61b959d" />
-  <File Path="Office\data\v32_16.0.6769.2015.cab" FileName="v32_16.0.6769.2015.cab" FolderPath="Office\data" Hash="6187d7a10de737b20f318e64c61b959d" />
-  <File Path="Office\data\16.0.6769.2015\i320.cab" FileName="i320.cab" FolderPath="Office\data\16.0.6769.2015" Hash="27343e58a35eddd8ec9a396665a2c2e8" />
-  <File Path="Office\data\16.0.6769.2015\i321033.cab" FileName="i321033.cab" FolderPath="Office\data\16.0.6769.2015" Hash="f1a3012572d60b1044959aa5349307ff" />
-  <File Path="Office\data\16.0.6769.2015\i640.cab" FileName="i640.cab" FolderPath="Office\data\16.0.6769.2015" Hash="11a4223a65e570882e26500e69f400d3" />
-  <File Path="Office\data\16.0.6769.2015\i641033.cab" FileName="i641033.cab" FolderPath="Office\data\16.0.6769.2015" Hash="e3b9b09e151f1c35b049ab25cc55e798" />
-  <File Path="Office\data\16.0.6769.2015\s320.cab" FileName="s320.cab" FolderPath="Office\data\16.0.6769.2015" Hash="9ff43381a2819ec3e9c93614f21ece82" />
-  <File Path="Office\data\16.0.6769.2015\s321033.cab" FileName="s321033.cab" FolderPath="Office\data\16.0.6769.2015" Hash="1f1dbba686f9837c146ea5b8bcc7d43c" />
-  <File Path="Office\data\16.0.6769.2015\stream.x86.en-us.dat" FileName="stream.x86.en-us.dat" FolderPath="Office\data\16.0.6769.2015" Hash="510aad543817ee8db989affb45bad6b7" />
-  <File Path="Office\data\16.0.6769.2015\stream.x86.x-none.dat" FileName="stream.x86.x-none.dat" FolderPath="Office\data\16.0.6769.2015" Hash="0914f499d52394946759870fe4a0d40d" />
+  <File Path="Office\data\v32.cab" FileName="v32.cab" FolderPath="Office\data" Hash="1d8c1a000b6a589fe1cc39e24323b5a7" />
+  <File Path="Office\data\v32_16.0.6868.2062.cab" FileName="v32_16.0.6868.2062.cab" FolderPath="Office\data" Hash="1d8c1a000b6a589fe1cc39e24323b5a7" />
+  <File Path="Office\data\v64.cab" FileName="v64.cab" FolderPath="Office\data" Hash="92136b90f0ffc416feb3fbccf8c9a9d0" />
+  <File Path="Office\data\v64_16.0.6868.2062.cab" FileName="v64_16.0.6868.2062.cab" FolderPath="Office\data" Hash="92136b90f0ffc416feb3fbccf8c9a9d0" />
+  <File Path="Office\data\16.0.6868.2062\i320.cab" FileName="i320.cab" FolderPath="Office\data\16.0.6868.2062" Hash="013042ea5b8688636a1d7bfabd244445" />
+  <File Path="Office\data\16.0.6868.2062\i321033.cab" FileName="i321033.cab" FolderPath="Office\data\16.0.6868.2062" Hash="2a333df3dd13714c8f56594ecbd89ee9" />
+  <File Path="Office\data\16.0.6868.2062\i640.cab" FileName="i640.cab" FolderPath="Office\data\16.0.6868.2062" Hash="d6dfd11624b7f2ca4dd5ed2e73854996" />
+  <File Path="Office\data\16.0.6868.2062\i641033.cab" FileName="i641033.cab" FolderPath="Office\data\16.0.6868.2062" Hash="696d8ce03508bc0c71cfd5968ad2a7d3" />
+  <File Path="Office\data\16.0.6868.2062\s320.cab" FileName="s320.cab" FolderPath="Office\data\16.0.6868.2062" Hash="1659af74dc6a830369b17eac849a210a" />
+  <File Path="Office\data\16.0.6868.2062\s321033.cab" FileName="s321033.cab" FolderPath="Office\data\16.0.6868.2062" Hash="049701b7a44ea470ee824b0ac34ed1d8" />
+  <File Path="Office\data\16.0.6868.2062\s640.cab" FileName="s640.cab" FolderPath="Office\data\16.0.6868.2062" Hash="91ced2aafb4df59a849551df832d5395" />
+  <File Path="Office\data\16.0.6868.2062\s641033.cab" FileName="s641033.cab" FolderPath="Office\data\16.0.6868.2062" Hash="fcfa968531d2937d68fcdbf0be7b29a4" />
+  <File Path="Office\data\16.0.6868.2062\stream.x86.en-us.dat" FileName="stream.x86.en-us.dat" FolderPath="Office\data\16.0.6868.2062" Hash="8dffabfdcf99b88673754c44b5dcde42" />
+  <File Path="Office\data\16.0.6868.2062\stream.x86.x-none.dat" FileName="stream.x86.x-none.dat" FolderPath="Office\data\16.0.6868.2062" Hash="3094c1f9facd8aef639f75a5eb451ed3" />
 </Files>

@@ -14,17 +14,25 @@ using OfficeInstallGenerator;
 
 namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
 {
-    public class OfficeLocalInstallManager
+    public class OfficeLocalInstallManager : IManageOfficeInstall
     {
 
-        public async Task<OfficeLocalInstall> CheckForOfficeLocalInstallAsync()
+        public async Task<OfficeInstallation> CheckForOfficeInstallAsync()
         {
-            var localInstall = new OfficeLocalInstall()
+            var localInstall = new OfficeInstallation()
             {
                 Installed = false
             };
 
             var officeRegKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Office\ClickToRun\Configuration");
+            if (officeRegKey == null)
+            {
+                officeRegKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Office\16.0\ClickToRun\Configuration");
+                if (officeRegKey == null)
+                {
+                    officeRegKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Office\15.0\ClickToRun\Configuration");
+                }
+            }
             if (officeRegKey != null)
             {
                 localInstall.Version = GetRegistryValue(officeRegKey, "VersionToReport");
@@ -55,12 +63,9 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
         {
             var installOffice = new InstallOffice();
            
-
-
-
         }
 
-        public async Task<string> GenerateLocalConfigXml()
+        public async Task<string> GenerateConfigXml()
         {
             var currentDirectory = Directory.GetCurrentDirectory() + @"\Scripts";
             if (!System.IO.File.Exists(currentDirectory + @"\Generate-ODTConfigurationXML.ps1"))
@@ -132,21 +137,39 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
 
             await Task.Delay(100);
 
+            var configXml = "";
+
             if (System.IO.File.Exists(xmlFilePath))
             {
-                return System.IO.File.ReadAllText(xmlFilePath);
+                configXml = System.IO.File.ReadAllText(xmlFilePath);
             }
-            return "";
+
+            try
+            {
+                var installOffice = new InstallOffice();
+                var updateUrl = installOffice.GetBaseCdnUrl();
+                if (!string.IsNullOrEmpty(updateUrl))
+                {
+                    var pd = new ProPlusDownloader();
+                    var channelName = await pd.GetChannelNameFromUrlAsync(updateUrl, OfficeEdition.Office32Bit);
+                    if (!string.IsNullOrEmpty(configXml) && !string.IsNullOrEmpty(channelName))
+                    {
+                        configXml = installOffice.SetUpdateChannel(configXml, channelName);
+                    }
+                }
+            } catch { }
+
+            return configXml;
         }
 
-        private async Task<string> GetOfficeLatestVersion(string branch, OfficeEdition edition)
+        public async Task<string> GetOfficeLatestVersion(string branch, OfficeEdition edition)
         {
             var ppDownload = new ProPlusDownloader();
             var latestVersion = await ppDownload.GetLatestVersionAsync(branch, edition);
             return latestVersion;
         }
 
-        private async Task<UpdateFiles> GetOfficeInstallFileXml()
+        public async Task<UpdateFiles> GetOfficeInstallFileXml()
         {
             var ppDownload = new ProPlusDownloader();
             var installFiles = await ppDownload.DownloadCabAsync();
@@ -161,14 +184,21 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
             return null;
         }
 
-        public void UnInstallOffice()
+        public void UninstallOffice(string installVer = "2016")
         {
+            
             const string configurationXml = "<Configuration><Remove All=\"TRUE\"/><Display Level=\"Full\" /></Configuration>";
 
             var tmpPath = Environment.ExpandEnvironmentVariables("%temp%");
             var embededExeFiles = EmbeddedResources.GetEmbeddedItems(tmpPath, @"\.exe$");
 
+            //NOTE: Have this function determine if 2013 ProPlus or 2016 ProPlus is installed and then use the right ODT version            
             var installExe = tmpPath + @"\" + embededExeFiles.FirstOrDefault(f => f.ToLower().Contains("2016"));
+            if (installVer == "2013")
+            {
+                //If 2013 then get the 2013 ODT version
+                installExe = tmpPath + @"\" + embededExeFiles.FirstOrDefault(f => f.ToLower().Contains("2013"));
+            }
             var xmlPath = tmpPath + @"\configuration.xml";
 
             if (System.IO.File.Exists(xmlPath)) System.IO.File.Delete(xmlPath);
@@ -207,8 +237,7 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
             }
         }
     
-
-        private string GetRegistryValue(RegistryKey regKey, string property)
+        public string GetRegistryValue(RegistryKey regKey, string property)
         {
             if (regKey != null)
             {

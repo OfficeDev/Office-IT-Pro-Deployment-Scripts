@@ -12,6 +12,7 @@ using MetroDemo.Models;
 using System.Windows.Input;
 using MahApps.Metro.Controls.Dialogs;
 using Micorosft.OfficeProPlus.ConfigurationXml;
+using Microsoft.OfficeProPlus.InstallGen.Presentation.Enums;
 using Microsoft.OfficeProPlus.InstallGen.Presentation.Extentions;
 using Microsoft.OfficeProPlus.InstallGen.Presentation.Models;
 using Microsoft.OfficeProPlus.InstallGenerator.Models;
@@ -87,7 +88,9 @@ namespace MetroDemo
             return await Task.WhenAny(task, Task.Delay(1000)) == task && task.Result;
         }
 
-        public static string DefaultXml = "<Configuration><Updates Enabled=\"TRUE\"></Updates><Display Level=\"Full\" /></Configuration>";
+        public static string DefaultXml = "<Configuration><Updates Enabled=\"TRUE\" /><Display Level=\"Full\" /><Property Name=\"PinIconsToTaskbar\" Value=\"TRUE\"/></Configuration>";
+
+        public static string DefaultLanguagePackXml = "<Configuration><Add><Product ID=\"LanguagePack\"><Language ID=\"en-us\" /></Product></Add><Display Level=\"Full\" /></Configuration>";
     }
 
     public class MainWindowViewModel : INotifyPropertyChanged
@@ -99,6 +102,8 @@ namespace MetroDemo
         public MainWindowViewModel(IDialogCoordinator dialogCoordinator)
         {
             _dialogCoordinator = dialogCoordinator;
+
+            ApplicationMode = ApplicationMode.InstallGenerator;
 
             if (DefaultLanguage == null)
             {
@@ -128,6 +133,16 @@ namespace MetroDemo
                     Version = "16.0.4949.1003"
                 }
             };
+            
+            
+
+            Channels = new List<Channel>()
+            {
+                new Channel()
+                {
+                    
+                }
+            };
 
             Branches = new List<OfficeBranch>()
             {
@@ -137,9 +152,11 @@ namespace MetroDemo
                     Name = "Current",
                     NewName = "Current",
                     Id = "Current",
-                    CurrentVersion = "16.0.6741.2021",
+                    CurrentVersion = "16.0.6769.2017",
                     Versions = new List<Build>()
                     {
+                        new Build() { Version = "16.0.6769.2017"},
+                        new Build() { Version = "16.0.6769.2015"},
                         new Build() { Version = "16.0.6741.2021"},
                         new Build() { Version = "16.0.6741.2017"},
                         new Build() { Version = "16.0.6568.2036"},
@@ -162,9 +179,10 @@ namespace MetroDemo
                     Name = "Deferred",
                     NewName = "Deferred",
                     Id = "Business",
-                    CurrentVersion = "",
+                    CurrentVersion = "16.0.6001.1073",
                     Versions = new List<Build>()
                     {
+                       new Build() { Version = "16.0.6001.1073"},
                        new Build() { Version = "16.0.6001.1068"},
                        new Build() { Version = "16.0.6001.1061"}
                     }
@@ -175,7 +193,7 @@ namespace MetroDemo
                     Name = "First Release Current",
                     NewName = "FirstReleaseCurrent",
                     Id = "FirstReleaseCurrent",
-                    CurrentVersion = "",
+                    CurrentVersion = "16.0.6769.2015",
                     Versions = new List<Build>()
                     {
                         new Build() { Version = "16.0.6769.2015"},
@@ -202,9 +220,11 @@ namespace MetroDemo
                     Name = "First Release Deferred",
                     NewName = "FirstReleaseDeferred",
                     Id = "FirstReleaseBusiness",
-                    CurrentVersion = "16.0.6741.2021",
+                    CurrentVersion = "16.0.6741.2026",
                     Versions = new List<Build>()
                     {
+                        new Build() { Version = "16.0.6741.2026"},
+                        new Build() { Version = "16.0.6741.2025"},
                         new Build() { Version = "16.0.6741.2021"},
                         new Build() { Version = "16.0.6741.2017"},
                         new Build() { Version = "16.0.6741.2015"},
@@ -227,26 +247,68 @@ namespace MetroDemo
                 new Product()
                 {
                     DisplayName = "Office 365 ProPlus",
-                    Id = "O365ProPlusRetail"
+                    Id = "O365ProPlusRetail",
+                    ShortName = "Office 365 ProPlus"
                 },
                 new Product()
                 {
                     DisplayName = "Office 365 for Business",
-                    Id = "O365BusinessRetail"
+                    Id = "O365BusinessRetail",
+                    ShortName = "Office 365 for Business"
                 }
             };
 
-            AdditionalProducts = new List<Product>()
+            LanguagePackProducts = new List<Product>()
+            {
+                new Product()
+                {
+                    Id = "LanguagePack",
+                    DisplayName = "Language Pack",
+                    ShortName = "Language Pack"
+                }
+            };
+
+            VisioProducts = new List<Product>()
             {
                 new Product()
                 {
                     DisplayName = "Visio for Office 365",
-                    Id = "VisioProRetail"
+                    Id = "VisioProRetail",
+                    ShortName = "Visio for Office 365"
                 },
                 new Product()
                 {
+                    DisplayName = "Visio for Office 365 Professional (Volume License)",
+                    Id = "VisioProXVolume",
+                    ShortName = "Visio for Office 365"
+                },
+                 new Product()
+                {
+                    DisplayName = "Visio for Office 365 Standard (Volume License)",
+                    Id = "VisioStdXVolume",
+                    ShortName = "Visio for Office 365"
+                },
+            };
+
+            ProjectProducts = new List<Product>()
+            {
+                new Product()
+                {
                     DisplayName = "Project for Office 365",
-                    Id = "ProjectProRetail"
+                    Id = "ProjectProRetail",
+                    ShortName = "Project for Office 365"
+                },
+                new Product()
+                {
+                    DisplayName = "Project for Office 365 Professional(Volume License)",
+                    Id = "ProjectProXVolume",
+                    ShortName = "Project for Office 365"
+                },
+                new Product()
+                {
+                    DisplayName = "Project for Office 365 Standard (Volume License)",
+                    Id = "ProjectStdXVolume",
+                    ShortName = "Project for Office 365"
                 }
             };
 
@@ -295,6 +357,10 @@ namespace MetroDemo
                 new ExcludeProduct()
                 {
                     DisplayName = "Word"
+                },
+                new ExcludeProduct()
+                {
+                    DisplayName = "OneDrive"
                 }
             };
 
@@ -320,7 +386,7 @@ namespace MetroDemo
                 new Language { Id="id-id", Name="Indonesian" },
                 new Language { Id="it-it", Name="Italian" },
                 new Language { Id="ja-jp", Name="Japanese" },
-                new Language { Id="kk-kh", Name="Kazakh" },
+                new Language { Id="kk-kz", Name="Kazakh" },
                 new Language { Id="ko-kr", Name="Korean" },
                 new Language { Id="lv-lv", Name="Latvian" },
                 new Language { Id="lt-lt", Name="Lithuanian" },
@@ -365,19 +431,29 @@ namespace MetroDemo
             return branches;
         }
 
-        public bool RunLocalConfigs { get; set; }
+        public ApplicationMode ApplicationMode { get; set; }
 
         public bool AllowMultipleDownloads { get; set; }
 
         public bool UseFolderShortNames { get; set; }
 
+        public string remoteConnectionInfo { get; set; }
+
         public Certificate SelectedCertificate { get; set; }
 
         public Language DefaultLanguage = null;
 
+        public List<RemoteMachine> RemoteMachines { get; set; } 
+
+        public List<Channel> Channels { get; set; }
+
         public List<Product> MainProducts { get; set; }
 
-        public List<Product> AdditionalProducts { get; set; }
+        public List<Product> LanguagePackProducts { get; set; }
+
+        public List<Product> VisioProducts { get; set; }
+
+        public List<Product> ProjectProducts { get; set; }
 
         public List<ExcludeProduct> ExcludeProducts { get; set; }
 
@@ -457,6 +533,10 @@ namespace MetroDemo
         public string Error { get { return string.Empty; } }
 
         public bool BlockNavigation { get; set; }
+
+        public string newVersion { get; set;}
+
+        public string newChannel { get; set;}
 
         public List<Language> SelectedLanguages
         {

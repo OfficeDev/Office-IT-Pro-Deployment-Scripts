@@ -18,6 +18,7 @@ namespace OfficeInstallGenerator
         private XmlDocument _xmlDoc = null;
         public ConfigurationXml ConfigurationXml { get; set; }
         public Guid ObjectId;
+        public bool IsLanguagePack = false;
 
 
         public ConfigXmlParser(string xml)
@@ -29,6 +30,7 @@ namespace OfficeInstallGenerator
 
         public void LoadXml(string xml)
         {
+            IsLanguagePack = false;
             if (File.Exists(xml))
             {
                 xml = File.ReadAllText(xml);
@@ -80,6 +82,7 @@ namespace OfficeInstallGenerator
         private void LoadAdds()
         {
             var addNodes = _xmlDoc.DocumentElement.SelectNodes("./Add");
+            
             foreach (XmlNode addNode in addNodes)
             {
                 var odtAdd = new ODTAdd();
@@ -103,6 +106,25 @@ namespace OfficeInstallGenerator
                     if (!string.IsNullOrEmpty(branch))
                     {
                         odtAdd.Branch = (Branch)Enum.Parse(typeof(Branch), branch);
+                    }
+                }
+
+                if (addNode.Attributes["Channel"] != null)
+                {
+                    var channel = addNode.Attributes["Channel"].Value;
+                    if (!string.IsNullOrEmpty(channel))
+                    {
+                        if (channel.ToLower() == "business")
+                        {
+                            channel = "Deferred";
+                        }
+
+                        if (channel.ToLower() == "firstreleasebusiness")
+                        {
+                            channel = "FirstReleaseDeferred";
+                        }
+
+                        odtAdd.ODTChannel = (ODTChannel)Enum.Parse(typeof(ODTChannel), channel);
                     }
                 }
 
@@ -201,6 +223,7 @@ namespace OfficeInstallGenerator
                     if (!string.IsNullOrEmpty(productId))
                     {
                         product.ID = productId;
+                        IsLanguagePack = productId.ToLower() == "languagepack";
                     }
                 }
 
@@ -235,36 +258,34 @@ namespace OfficeInstallGenerator
 
             if (this.ConfigurationXml.Add != null)
             {
-                if (this.ConfigurationXml.Add.Version != null)
-                {
-                    SetAttribute(addNode, "Version", this.ConfigurationXml.Add.Version.ToString());
-                }
-                else
-                {
-                    RemoveAttribute(addNode, "Version");
-                }
+                RemoveAttribute(addNode, "OfficeClientEdition");
+                RemoveAttribute(addNode, "Channel");
+                RemoveAttribute(addNode, "Branch");
+                RemoveAttribute(addNode, "Version");
+                RemoveAttribute(addNode, "SourcePath");
+                RemoveAttribute(addNode, "OfficeMgmtCOM");
 
-                SetAttribute(addNode, "OfficeClientEdition",
-                    this.ConfigurationXml.Add.OfficeClientEdition == OfficeClientEdition.Office32Bit ? "32" : "64");
+                if (!IsLanguagePack)
+                {
+                    SetAttribute(addNode, "OfficeClientEdition",
+                        this.ConfigurationXml.Add.OfficeClientEdition == OfficeClientEdition.Office32Bit ? "32" : "64");
+                    SetAttribute(addNode, "Channel", this.ConfigurationXml.Add.ODTChannel.ToString());
 
-                SetAttribute(addNode, "Branch", this.ConfigurationXml.Add.Branch.ToString());
+                    if (this.ConfigurationXml.Add.Version != null)
+                    {
+                        SetAttribute(addNode, "Version", this.ConfigurationXml.Add.Version.ToString());
+                    }
 
-                if (this.ConfigurationXml.Add.SourcePath != null)
-                {
-                    SetAttribute(addNode, "SourcePath", this.ConfigurationXml.Add.SourcePath);
-                }
-                else
-                {
-                    RemoveAttribute(addNode, "SourcePath");
-                }
+                    if (this.ConfigurationXml.Add.SourcePath != null)
+                    {
+                        SetAttribute(addNode, "SourcePath", this.ConfigurationXml.Add.SourcePath);
+                    }
 
-                if (this.ConfigurationXml.Add.OfficeMgmtCOM.HasValue && this.ConfigurationXml.Add.OfficeMgmtCOM.Value)
-                {
-                    SetAttribute(addNode, "OfficeMgmtCOM", this.ConfigurationXml.Add.OfficeMgmtCOM.Value.ToString());
-                }
-                else
-                {
-                    RemoveAttribute(addNode, "OfficeMgmtCOM");
+                    if (this.ConfigurationXml.Add.OfficeMgmtCOM.HasValue &&
+                        this.ConfigurationXml.Add.OfficeMgmtCOM.Value)
+                    {
+                        SetAttribute(addNode, "OfficeMgmtCOM", this.ConfigurationXml.Add.OfficeMgmtCOM.Value.ToString());
+                    }
                 }
             }
 
@@ -293,7 +314,7 @@ namespace OfficeInstallGenerator
                             }
                         }
 
-                        if (product.ExcludeApps != null)
+                        if (product.ExcludeApps != null && !IsLanguagePack)
                         {
                             foreach (var excludedApp in product.ExcludeApps)
                             {
@@ -474,6 +495,25 @@ namespace OfficeInstallGenerator
                     updates.Branch = (Branch)Enum.Parse(typeof(Branch), branch);
                 }
             }
+
+            if (updatesNode.Attributes["Channel"] != null)
+            {
+                var channel = updatesNode.Attributes["Channel"].Value;
+                if (!string.IsNullOrEmpty(channel))
+                {
+                    if (channel.ToLower() == "business")
+                    {
+                        channel = "deferred";
+                    }
+
+                    if (channel.ToLower() == "firstreleasebusiness")
+                    {
+                        channel = "firstreleasedeferred";
+                    }
+
+                    updates.ODTChannel = (ODTChannel)Enum.Parse(typeof(ODTChannel), channel);
+                }
+            }
         }
 
         private void SaveUpdates()
@@ -490,6 +530,7 @@ namespace OfficeInstallGenerator
             if (!this.ConfigurationXml.Updates.Enabled)
             {
                 RemoveAttribute(updatesNode, "Branch");
+                RemoveAttribute(updatesNode, "Channel");
                 RemoveAttribute(updatesNode, "UpdatePath");
                 RemoveAttribute(updatesNode, "TargetVersion");
                 RemoveAttribute(updatesNode, "Deadline");
@@ -503,6 +544,16 @@ namespace OfficeInstallGenerator
             else
             {
                 RemoveAttribute(updatesNode, "Branch");
+            }
+
+            if (this.ConfigurationXml.Updates.ODTChannel.HasValue &&
+                !string.IsNullOrEmpty(this.ConfigurationXml.Updates.ODTChannel.Value.ToString()))
+            {
+                SetAttribute(updatesNode, "Channel", this.ConfigurationXml.Updates.ODTChannel.ToString());
+            }
+            else
+            {
+                RemoveAttribute(updatesNode, "Channel");
             }
 
             if (!string.IsNullOrEmpty(this.ConfigurationXml.Updates.UpdatePath))
@@ -530,6 +581,11 @@ namespace OfficeInstallGenerator
             else
             {
                 RemoveAttribute(updatesNode, "Deadline");
+            }
+
+            if (IsLanguagePack)
+            {
+                updatesNode?.ParentNode?.RemoveChild(updatesNode);
             }
         }
 
@@ -594,8 +650,6 @@ namespace OfficeInstallGenerator
         }
 
 
-
-
         private void LoadProperties()
         {
             var properties = new ODTProperties();
@@ -628,6 +682,14 @@ namespace OfficeInstallGenerator
                 var value = sharedComputerLicensing.Attributes["Value"].Value.ToString();
                 if (value.ToUpper() == "1") properties.SharedComputerLicensing = true; 
             }
+
+            var pinIconsToTaskbar = _xmlDoc.DocumentElement.SelectSingleNode("./Property[@Name='PinIconsToTaskbar']");
+            if (pinIconsToTaskbar != null)
+            {
+                properties.PinIconsToTaskbar = false;
+                var value = pinIconsToTaskbar.Attributes["Value"].Value.ToString();
+                if (value.ToUpper() == "TRUE") properties.PinIconsToTaskbar = true;
+            }
         }
 
 
@@ -637,12 +699,12 @@ namespace OfficeInstallGenerator
             {
                 if (this.ConfigurationXml.Properties.AutoActivate != null)
                 {
-                    var autoActivateNode = _xmlDoc.DocumentElement.SelectSingleNode("./Property[@Name='AUTOACTIVATE']");
+                    var autoActivateNode = _xmlDoc?.DocumentElement?.SelectSingleNode("./Property[@Name='AUTOACTIVATE']");
                     if (autoActivateNode == null)
                     {
                         autoActivateNode = _xmlDoc.CreateElement("Property");
                         SetAttribute(autoActivateNode, "Name", "AUTOACTIVATE");
-                        _xmlDoc.DocumentElement.AppendChild(autoActivateNode);
+                        _xmlDoc?.DocumentElement?.AppendChild(autoActivateNode);
                     }
 
                     SetAttribute(autoActivateNode, "Value",
@@ -652,12 +714,12 @@ namespace OfficeInstallGenerator
                 if (this.ConfigurationXml.Properties.ForceAppShutdown.HasValue)
                 {
                     var forceAppShutdownNode =
-                        _xmlDoc.DocumentElement.SelectSingleNode("./Property[@Name='FORCEAPPSHUTDOWN']");
+                        _xmlDoc?.DocumentElement?.SelectSingleNode("./Property[@Name='FORCEAPPSHUTDOWN']");
                     if (forceAppShutdownNode == null)
                     {
                         forceAppShutdownNode = _xmlDoc.CreateElement("Property");
                         SetAttribute(forceAppShutdownNode, "Name", "FORCEAPPSHUTDOWN");
-                        _xmlDoc.DocumentElement.AppendChild(forceAppShutdownNode);
+                        _xmlDoc?.DocumentElement?.AppendChild(forceAppShutdownNode);
                     }
 
                     SetAttribute(forceAppShutdownNode, "Value",
@@ -668,18 +730,33 @@ namespace OfficeInstallGenerator
                 if (this.ConfigurationXml.Properties.SharedComputerLicensing.HasValue)
                 {
                     var sharedComputerLicensing =
-                        _xmlDoc.DocumentElement.SelectSingleNode("./Property[@Name='SharedComputerLicensing']");
+                        _xmlDoc?.DocumentElement?.SelectSingleNode("./Property[@Name='SharedComputerLicensing']");
                     if (sharedComputerLicensing == null)
                     {
                         sharedComputerLicensing = _xmlDoc.CreateElement("Property");
                         SetAttribute(sharedComputerLicensing, "Name", "SharedComputerLicensing");
-                        _xmlDoc.DocumentElement.AppendChild(sharedComputerLicensing);
+                        _xmlDoc?.DocumentElement?.AppendChild(sharedComputerLicensing);
                     }
 
                     SetAttribute(sharedComputerLicensing, "Value",
                          this.ConfigurationXml.Properties.SharedComputerLicensing == true ? "1" : "0");
                 }
 
+
+                if (this.ConfigurationXml.Properties.PinIconsToTaskbar.HasValue)
+                {
+                    var pinIconsToTaskbar =
+                        _xmlDoc?.DocumentElement?.SelectSingleNode("./Property[@Name='PinIconsToTaskbar']");
+                    if (pinIconsToTaskbar == null)
+                    {
+                        pinIconsToTaskbar = _xmlDoc.CreateElement("Property");
+                        SetAttribute(pinIconsToTaskbar, "Name", "PinIconsToTaskbar");
+                        _xmlDoc?.DocumentElement?.AppendChild(pinIconsToTaskbar);
+                    }
+
+                    SetAttribute(pinIconsToTaskbar, "Value",
+                            this.ConfigurationXml.Properties.PinIconsToTaskbar.Value.ToString().ToUpper());
+                }
 
             }
         }
@@ -738,6 +815,11 @@ namespace OfficeInstallGenerator
             else
             {
                 RemoveAttribute(loggingNode, "Path");
+            }
+
+            if (IsLanguagePack)
+            {
+                loggingNode?.ParentNode?.RemoveChild(loggingNode);
             }
         }
 

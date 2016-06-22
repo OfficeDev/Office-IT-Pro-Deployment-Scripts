@@ -13,6 +13,9 @@ using Microsoft.Win32;
 using RegistryReader;
 using WixSharp;
 using System;
+using System.Runtime.CompilerServices;
+using Microsoft.OfficeProPlus.MSIGen;
+using WixSharp.CommonTasks;
 using File = WixSharp.File;
 
 public class MsiGenerator 
@@ -27,34 +30,67 @@ public class MsiGenerator
             {
                 new SetPropertyAction("InstallDirectory", installProperties.ProgramFilesPath),
                 new ElevatedManagedAction("InstallOffice", Return.check, When.After, Step.InstallFiles, Condition.NOT_Installed), 
-                new ElevatedManagedAction("UninstallOffice", Return.check, When.Before, Step.RemoveFiles, Condition.BeingRemoved), 
+                new ElevatedManagedAction("UninstallOffice", Return.check, When.Before, Step.RemoveFiles, Condition.BeingRemoved),
             },
             Properties = new[] 
             { 
                 new Property("InstallDirectory", "empty"),
+                new Property()
+                {
+                    Name = "ProductGuid",
+                    Value = installProperties.ProductId.ToString()
+                }
+                
             }
         };
+
+        project.Media.AttributesDefinition+= ";CompressionLevel=high";
+
 
         var files = new List<WixSharp.File>();
         foreach (var filePath in installProperties.ProgramFiles)
         {
             files.Add(new WixSharp.File(filePath));
         }
-
         files.Add(new WixSharp.File(installProperties.ExecutablePath));
 
+
+        var rootDir = new Dir(installProperties.ProgramFilesPath, files.ToArray());
         project.Dirs = new[]
         {
-            new Dir(installProperties.ProgramFilesPath, files.ToArray())
+            rootDir
         };
 
         project.GUID = installProperties.ProductId;
-        project.ControlPanelInfo = new ProductInfo() {Manufacturer = "Microsoft Corporation"};
+        project.ControlPanelInfo = new ProductInfo()
+        {
+            Manufacturer = installProperties.Manufacturer,
+            Comments = installProperties.ProductId.ToString()
+        };
         project.OutFileName = installProperties.MsiPath;
+        project.UpgradeCode = installProperties.UpgradeCode;
+        project.Version = installProperties.Version;
+        project.MajorUpgrade = new MajorUpgrade()
+        {
+            DowngradeErrorMessage = "A later version of [ProductName] is already installed. Setup will now exit.",
+            AllowDowngrades = false,
+            AllowSameVersionUpgrades = false
+        };
+
+        //project.Platform = Platform.x64;
+
+        //project.MajorUpgradeStrategy.RemoveExistingProductAfter = null;
 
         project.Load += project_Load;
         project.AfterInstall += project_AfterInstall;
+        project.InstallScope = InstallScope.perMachine;
+        
 
+        if (!string.IsNullOrEmpty(installProperties.Language))
+        {
+            project.Language = installProperties.Language;
+        }
+        
         if (!string.IsNullOrEmpty(installProperties.WixToolsPath))
         {
             Compiler.WixLocation = installProperties.WixToolsPath + @"\";
@@ -66,7 +102,7 @@ public class MsiGenerator
             Compiler.WixSdkLocation = @"wixTools\sdk\";
         }
 
-        Compiler.BuildMsi(project);
+        var returnValue  = Compiler.BuildMsi(project);
 
         var installDirectory = new MsiGeneratorReturn
         {
@@ -74,6 +110,42 @@ public class MsiGenerator
         };
 
         return installDirectory;
+    }
+
+    private Dir AddProgramFiles(string rootPath, Dir parentDir, MsiDirectory directory)
+    {
+        var path = rootPath + @"\" + directory.RelativePath;
+
+        var newDir = new Dir()
+        {
+            Name = directory.Name
+        };
+
+        var fileLength = parentDir.Files.Length;
+        var newFileList = new File[fileLength + directory.MsiFiles.Count];
+        parentDir.Files.CopyTo(newFileList, 0);
+
+        var startIndex = parentDir.Files.Length;
+        foreach (var file in directory.MsiFiles)
+        {
+            newFileList[startIndex] = new File(file.Path);
+            startIndex ++;
+        }
+
+        newDir.Files = newFileList;
+
+        foreach (var subDir in directory.MsiDirectories)
+        {
+            AddProgramFiles(rootPath, newDir, subDir);
+        }
+
+        var length = parentDir.Dirs.Length;
+        var newList = new Dir[length + 1];
+        parentDir.Dirs.CopyTo(newList, 0);
+        newList[length] = newDir;
+        parentDir.Dirs = newList;
+
+        return newDir; 
     }
 
     private void project_Load(SetupEventArgs e)
@@ -91,8 +163,7 @@ public class MsiGenerator
         {
             if (errorMessage != null)
             {
-                //MessageBox.Show(errorMessage);
-                e.Result = ActionResult.Failure;
+                e.Result = ActionResult.Success;
                 return;
             }
             else
@@ -106,12 +177,13 @@ public class MsiGenerator
         }
         else if (e.IsUninstalling)
         {
-            VerifyOfficeUninstalled(e);
+            //VerifyOfficeUninstalled(e);
+            e.Result = ActionResult.Success;
         }
         else
         {
             e.Result = ActionResult.Success;
-        }
+        }       
     }
 
     public string GetOdtErrorMessage()
@@ -173,7 +245,6 @@ public class MsiGenerator
         }
         return null;
     }
-
 
     public void VerifyOfficeUninstalled(SetupEventArgs e)
     {
@@ -288,10 +359,9 @@ public class CustomActions
             if (isSilent)
             {
                 p.StartInfo.Arguments = "/silent";
-               
             }
             p.Start();
-            Process.GetCurrentProcess().Close();
+            
             return ActionResult.Success;
         }
         catch (Exception ex)
@@ -307,7 +377,11 @@ public class CustomActions
         try
         {
             var installDir = session.CustomActionData["INSTALLDIR"];
-            if (installDir == null) return ActionResult.Failure;
+            if (installDir == null)
+            {
+                MessageBox.Show("No Install Directory");
+                return ActionResult.Failure;
+            }
 
             var isSilent = false;
             try

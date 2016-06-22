@@ -1,27 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Forms;
-using System.Windows.Forms.VisualStyles;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Xml;
 using MahApps.Metro.Controls;
-using MahApps.Metro.Controls.Dialogs;
 using MetroDemo.Events;
 using MetroDemo.ExampleWindows;
 using Micorosft.OfficeProPlus.ConfigurationXml;
@@ -29,11 +18,13 @@ using Micorosft.OfficeProPlus.ConfigurationXml.Enums;
 using Micorosft.OfficeProPlus.ConfigurationXml.Model;
 using Microsoft.OfficeProPlus.Downloader;
 using Microsoft.OfficeProPlus.Downloader.Model;
+using Microsoft.OfficeProPlus.InstallGen.Presentation.Enums;
 using Microsoft.OfficeProPlus.InstallGen.Presentation.Logging;
+using Microsoft.OfficeProPlus.InstallGenerator;
+using Microsoft.OfficeProPlus.InstallGenerator.Extensions;
 using Microsoft.OfficeProPlus.InstallGenerator.Implementation;
 using OfficeInstallGenerator;
 using MessageBox = System.Windows.MessageBox;
-using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 using UserControl = System.Windows.Controls.UserControl;
 
 namespace MetroDemo.ExampleViews
@@ -72,6 +63,10 @@ namespace MetroDemo.ExampleViews
                 InstallMsi.IsChecked = true;
 
                 LoadFolder();
+
+                MajorVersion.Value = 1;
+                MinorVersion.Value = 0;
+                ReleaseVersion.Value = 0;
 
                 LogAnaylytics("/GenerateView", "Load");
             }
@@ -158,6 +153,75 @@ namespace MetroDemo.ExampleViews
                 }
             }
 
+            if (configXml.Add?.ODTChannel != null)
+            {
+                switch (configXml.Add.ODTChannel)
+                {
+                    case ODTChannel.Deferred:
+                        if (Directory.Exists(folderPath + @"\DC"))
+                        {
+                            folderPath = mainFolderPath + @"\DC";
+                        }
+                        else if (Directory.Exists(folderPath + @"\Deferred"))
+                        {
+                            folderPath = mainFolderPath + @"\Deferred";
+                        }
+                        else if (Directory.Exists(folderPath + @"\Business"))
+                        {
+                            folderPath = mainFolderPath + @"\Business";
+                        }
+                        break;
+                    case ODTChannel.Current:
+                        if (Directory.Exists(folderPath + @"\CC"))
+                        {
+                            folderPath = mainFolderPath + @"\CC";
+                        }
+                        else if (Directory.Exists(folderPath + @"\Current"))
+                        {
+                            folderPath = mainFolderPath + @"\Current";
+                        }
+                        break;
+                    case ODTChannel.FirstReleaseCurrent:
+                        if (Directory.Exists(folderPath + @"\FRCC"))
+                        {
+                            folderPath = mainFolderPath + @"\FRCC";
+                        }
+                        else if (Directory.Exists(folderPath + @"\FirstReleaseCurrent"))
+                        {
+                            folderPath = mainFolderPath + @"\FirstReleaseCurrent";
+                        }
+                        break;
+                    case ODTChannel.Validation:
+                        if (Directory.Exists(folderPath + @"\FRDC"))
+                        {
+                            folderPath = mainFolderPath + @"\FRDC";
+                        }
+                        else if (Directory.Exists(folderPath + @"\FirstReleaseDeferred"))
+                        {
+                            folderPath = mainFolderPath + @"\FirstReleaseDeferred";
+                        }
+                        else if (Directory.Exists(folderPath + @"\FirstReleaseBusiness"))
+                        {
+                            folderPath = mainFolderPath + @"\FirstReleaseBusiness";
+                        }
+                        break;
+                    case ODTChannel.FirstReleaseDeferred:
+                        if (Directory.Exists(folderPath + @"\FRDC"))
+                        {
+                            folderPath = mainFolderPath + @"\FRDC";
+                        }
+                        else if (Directory.Exists(folderPath + @"\FirstReleaseDeferred"))
+                        {
+                            folderPath = mainFolderPath + @"\FirstReleaseDeferred";
+                        }
+                        else if (Directory.Exists(folderPath + @"\FirstReleaseBusiness"))
+                        {
+                            folderPath = mainFolderPath + @"\FirstReleaseBusiness";
+                        }
+                        break;
+                }
+            }
+
             if (Directory.Exists(folderPath + @"\Office\Data"))
             {
                 BuildFilePath.Text = folderPath;
@@ -207,9 +271,7 @@ namespace MetroDemo.ExampleViews
                 try
                 {
                     FixFileExtension();
-
                     var executablePath = "";
-
 
                     for (var i = 1; i <= 2; i++)
                     {
@@ -300,6 +362,10 @@ namespace MetroDemo.ExampleViews
                         {
                             branchName = configXml.Add.Branch.ToString();
                         }
+                        if (configXml.Add?.ODTChannel != null)
+                        {
+                            branchName = configXml.Add.ODTChannel.ToString();
+                        }
 
                         var languages = new List<string>();
                         foreach (var product in configXml.Add.Products)
@@ -319,7 +385,7 @@ namespace MetroDemo.ExampleViews
                         var ppDownload = new ProPlusDownloader();
                         var validFiles = await ppDownload.ValidateSourceFiles(new DownloadBranchProperties()
                         {
-                            TargetDirectory = sourceFilePath,
+                            TargetDirectory = sourceFilePath,                            
                             BranchName = branchName,
                             Languages = languages,
                             OfficeEdition = edition,
@@ -369,34 +435,113 @@ namespace MetroDemo.ExampleViews
                         }
                     }
 
-                    if (isInstallExe)
+                    var productName = "Microsoft Office 365 ProPlus Installer";
+                    var productId = Guid.NewGuid().ToString(); //"8AA11E8A-A882-45CC-B52C-80149B4CF47A";
+                    var upgradeCode = "AC89246F-38A8-4C32-9110-FF73533F417C";
+
+                    var productVersion = new Version("1.0.0");
+
+                    await Dispatcher.InvokeAsync(() =>
                     {
-                        var generateExe = new OfficeInstallExecutableGenerator();
-                        generateExe.Generate(new OfficeInstallProperties()
+                        if (MajorVersion.Value.HasValue && MinorVersion.Value.HasValue && ReleaseVersion.Value.HasValue)
                         {
-                            ConfigurationXmlPath = configFilePath,
-                            OfficeVersion = OfficeVersion.Office2016,
-                            ExecutablePath = executablePath,
-                            SourceFilePath = sourceFilePath,
-                            BuildVersion = version
-                        });
+                            productVersion =
+                                new Version(MajorVersion.Value.Value + "." + MinorVersion.Value.Value + "." +
+                                            ReleaseVersion.Value.Value);
+                        }
+                    });
 
+                    var installProperties = new List<OfficeInstallProperties>();
 
-                        LogAnaylytics("/GenerateView", "GenerateExe");
+                    if (GlobalObjects.ViewModel.ApplicationMode == ApplicationMode.LanguagePack)
+                    {
+                        productName = "Microsoft Office 365 ProPlus Language Pack";
+
+                        var languages = configXml?.Add?.Products?.FirstOrDefault()?.Languages;
+                        foreach (var language in languages)
+                        {
+                            var configLangXml = new ConfigXmlParser(GlobalObjects.ViewModel.ConfigXmlParser.Xml);
+                            configLangXml.ConfigurationXml.Add.ODTChannel = null;
+                            var tmpProducts = configLangXml?.ConfigurationXml?.Add?.Products;
+                            tmpProducts.FirstOrDefault().Languages = new List<ODTLanguage>()
+                            {
+                                new ODTLanguage()
+                                {
+                                    ID = language.ID
+                                }
+                            };
+
+                            var tmpXmlFilePath = Environment.ExpandEnvironmentVariables(@"%temp%\" + Guid.NewGuid().ToString() + ".xml");
+                            System.IO.File.WriteAllText(tmpXmlFilePath, configLangXml.Xml);
+
+                            var tmpSourceFilePath = executablePath;
+
+                            if (Regex.Match(executablePath, ".msi$", RegexOptions.IgnoreCase).Success)
+                            {
+                                tmpSourceFilePath = Regex.Replace(executablePath, ".msi$", "(" + language.ID + ").msi",
+                                    RegexOptions.IgnoreCase);
+                            }
+
+                            if (Regex.Match(executablePath, ".exe", RegexOptions.IgnoreCase).Success)
+                            {
+                                tmpSourceFilePath = Regex.Replace(executablePath, ".exe$", "(" + language.ID + ").exe",
+                                    RegexOptions.IgnoreCase);
+                            }
+
+                            var programFilesPath = @"%ProgramFiles%\Microsoft Office 365 ProPlus Installer\" + language.ID + @"\" + productVersion;
+
+                            var langProductName = productName + " (" + language.ID + ")";
+
+                            installProperties.Add(new OfficeInstallProperties()
+                            {
+                                ProductName = langProductName,
+                                ProductId = langProductName.GenerateGuid(),
+                                ConfigurationXmlPath = tmpXmlFilePath,
+                                OfficeVersion = OfficeVersion.Office2016,
+                                ExecutablePath = tmpSourceFilePath,
+                                SourceFilePath = sourceFilePath,
+                                BuildVersion = version,
+                                UpgradeCode = language.ID.GenerateGuid(),
+                                Version = productVersion,
+                                Language = "en-us",
+                                ProgramFilesPath = programFilesPath,
+                                OfficeClientEdition = configXml.Add.OfficeClientEdition
+                            });
+                        }
                     }
                     else
                     {
-                        var generateMsi = new OfficeInstallMsiGenerator();
-                        generateMsi.Generate(new OfficeInstallProperties()
+                        installProperties.Add(new OfficeInstallProperties()
                         {
+                            ProductName = productName,
+                            ProductId = productId,
                             ConfigurationXmlPath = configFilePath,
                             OfficeVersion = OfficeVersion.Office2016,
                             ExecutablePath = executablePath,
                             SourceFilePath = sourceFilePath,
-                            BuildVersion = version
+                            BuildVersion = version,
+                            UpgradeCode = upgradeCode,
+                            Version = productVersion,
+                            Language = "en-us",
+                            ProgramFilesPath = @"%ProgramFiles%\Microsoft Office 365 ProPlus Installer",
+                            OfficeClientEdition = configXml.Add.OfficeClientEdition
                         });
+                    }
 
-                        LogAnaylytics("/GenerateView", "GenerateMSI");
+                    foreach (var installProperty in installProperties)
+                    {
+                        IOfficeInstallGenerator installer = null;
+                        if (isInstallExe)
+                        {
+                            installer = new OfficeInstallExecutableGenerator();
+                            LogAnaylytics("/GenerateView", "GenerateExe");
+                        }
+                        else
+                        {
+                            installer = new OfficeInstallMsiGenerator();
+                            LogAnaylytics("/GenerateView", "GenerateMSI");
+                        }
+                        installer.Generate(installProperty);
                     }
 
 
@@ -572,10 +717,18 @@ namespace MetroDemo.ExampleViews
             if (InstallMsi.IsChecked.HasValue && InstallMsi.IsChecked.Value)
             {
                 fileName = "OfficeProPlus.msi";
+                if (GlobalObjects.ViewModel.ApplicationMode == ApplicationMode.LanguagePack)
+                {
+                    fileName = "OfficeProPlusLanuagePack.msi";
+                }
             }
             else
             {
                 fileName = "OfficeProPlus.exe";
+                if (GlobalObjects.ViewModel.ApplicationMode == ApplicationMode.LanguagePack)
+                {
+                    fileName = "OfficeProPlusLanuagePack.exe";
+                }
             }
 
             var currentFilePath = FileSavePath.Text;
@@ -772,6 +925,31 @@ namespace MetroDemo.ExampleViews
             }
         }
 
+        private void SignWithCert_OnCheck(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (SignInstaller.IsChecked.HasValue && SignInstaller.IsChecked.Value)
+                {
+                    OpenCertificateBrowser.IsEnabled = true;
+                    OpenCertGenerator.IsEnabled = true;
+                    PublisherRow.Height = new GridLength(50, GridUnitType.Pixel);
+                    SpacerRow.Height = new GridLength(64, GridUnitType.Pixel);
+                }
+                else
+                {
+                    OpenCertificateBrowser.IsEnabled = false;
+                    OpenCertGenerator.IsEnabled = false;
+                    PublisherRow.Height = new GridLength(0, GridUnitType.Pixel);
+                    SpacerRow.Height = new GridLength(114, GridUnitType.Pixel);
+                }
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
+
         private async void IncludeBuild_OnChecked(object sender, RoutedEventArgs e)
         {
             try
@@ -801,6 +979,16 @@ namespace MetroDemo.ExampleViews
                 {
                     OpenFolderButton.IsEnabled = false;
                 }
+
+                if (SignInstaller.IsChecked.HasValue && SignInstaller.IsChecked.Value)
+                {
+                    SpacerRow.Height = new GridLength(64, GridUnitType.Pixel);
+                }
+                else
+                {
+                    SpacerRow.Height = new GridLength(114, GridUnitType.Pixel);
+                }
+
             }
             catch (Exception ex)
             {
@@ -921,31 +1109,6 @@ namespace MetroDemo.ExampleViews
             }
         }
 
-        private void SignWithCert_OnCheck(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                if (SignInstaller.IsChecked.HasValue && SignInstaller.IsChecked.Value)
-                {
-                    OpenCertificateBrowser.IsEnabled = true;
-                    OpenCertGenerator.IsEnabled = true;
-                    PublisherRow.Height = new GridLength(50, GridUnitType.Pixel);
-                    SpacerRow.Height = new GridLength(70, GridUnitType.Pixel);
-                }
-                else
-                {
-                    OpenCertificateBrowser.IsEnabled = false;
-                    OpenCertGenerator.IsEnabled = false;
-                    PublisherRow.Height = new GridLength(0, GridUnitType.Pixel);
-                    SpacerRow.Height = new GridLength(120, GridUnitType.Pixel);
-                }
-            }
-            catch (Exception ex)
-            {
-                LogErrorMessage(ex);
-            }
-        }
-
         private CertificatesDialog certificatesDialog = null;
         private GenerateCertificate generateCertificateDialog = null;
 
@@ -1016,6 +1179,70 @@ namespace MetroDemo.ExampleViews
                 LogErrorMessage(ex);
             }
         }
+        private void SilentInstallInfo_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var sourceName = ((dynamic)sender).Name;
+                LaunchInformationDialog(sourceName);
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
+
+        private void SignInstallerInfo_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var sourceName = ((dynamic)sender).Name;
+                LaunchInformationDialog(sourceName);
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
+
+        private void VersionInfoGen_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var sourceName = ((dynamic)sender).Name;
+                LaunchInformationDialog(sourceName);
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
+
+        private void FilePathGen_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var sourceName = ((dynamic)sender).Name;
+                LaunchInformationDialog(sourceName);
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
+
+        private void SourceFilePathGen_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var sourceName = ((dynamic)sender).Name;
+                LaunchInformationDialog(sourceName);
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
 
         #endregion
 
@@ -1070,5 +1297,7 @@ namespace MetroDemo.ExampleViews
         private void xmlBrowser_Loaded(object sender, RoutedEventArgs e)
         {
         }
+
+        
     }
 }

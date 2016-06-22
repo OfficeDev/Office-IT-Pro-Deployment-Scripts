@@ -1,22 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Forms.VisualStyles;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using MetroDemo.Events;
-using MetroDemo.Models;
+using Microsoft.OfficeProPlus.InstallGen.Presentation.Enums;
 using Microsoft.OfficeProPlus.InstallGen.Presentation.Logging;
 using Microsoft.OfficeProPlus.InstallGenerator.Implementation;
 
@@ -43,6 +30,16 @@ namespace MetroDemo.ExampleViews
         {
             try
             {
+                if (cbActions.Items.Count < 1)
+                {
+                    cbActions.Items.Add("Create new Office 365 ProPlus installer");
+                    cbActions.Items.Add("Import an existing Office 365 ProPlus installer");
+                    cbActions.Items.Add("Manage your local Office 365 ProPlus installation");
+                    cbActions.Items.Add("Create Office 365 ProPlus language pack");
+                    cbActions.Items.Add("Manage remote Office 365 ProPlus installation");
+                    cbActions.SelectedIndex = 0;
+                }
+                
                 LogAnaylytics("/", "StartView");
             }
             catch (Exception ex)
@@ -51,26 +48,13 @@ namespace MetroDemo.ExampleViews
             }
         }
 
-        private void LogErrorMessage(Exception ex)
-        {
-            ex.LogException(false);
-            if (ErrorMessage != null)
-            {
-                ErrorMessage(this, new MessageEventArgs()
-                {
-                    Title = "Error",
-                    Message = ex.Message
-                });
-            }
-        }
-
-        private void StartNew_Click(object sender, RoutedEventArgs e)
+        private void StartNew()
         {
             try
             {
                 if (_running) return;
                 GlobalObjects.ViewModel.LocalConfig = false;
-                GlobalObjects.ViewModel.RunLocalConfigs = false;
+                GlobalObjects.ViewModel.ApplicationMode = ApplicationMode.InstallGenerator;
 
                 GlobalObjects.ViewModel.ConfigXmlParser.LoadXml(GlobalObjects.DefaultXml);
                 GlobalObjects.ViewModel.ResetXml = true;
@@ -96,13 +80,13 @@ namespace MetroDemo.ExampleViews
             }
         }
 
-        private void ImportExisting_Click_1(object sender, RoutedEventArgs e)
+        private void ImportExisting()
         {
             try
             {
                 if (_running) return;
                 GlobalObjects.ViewModel.LocalConfig = false;
-                GlobalObjects.ViewModel.RunLocalConfigs = false;
+                GlobalObjects.ViewModel.ApplicationMode = ApplicationMode.InstallGenerator;
 
                 var dlg = new Microsoft.Win32.OpenFileDialog
                 {
@@ -151,7 +135,52 @@ namespace MetroDemo.ExampleViews
             }
         }
 
-        private async void ManageLocal_Click(object sender, RoutedEventArgs e)
+        private void ManageRemote()
+        {
+            try
+            {
+                if (_running) return;
+
+                GlobalObjects.ViewModel.BlockNavigation = true;
+                _running = true;
+
+                    
+
+                GlobalObjects.ViewModel.ApplicationMode = ApplicationMode.ManageRemote;
+
+                if (RestartWorkflow != null)
+                {
+                    this.RestartWorkflow(this, new EventArgs());
+                }
+
+                GlobalObjects.ViewModel.BlockNavigation = false;
+
+                this.TransitionTab(this, new TransitionTabEventArgs()
+                {
+                    Direction = TransitionTabDirection.Forward,
+                    Index = 7,
+                    UseIndex = true
+                });
+
+                
+                LogAnaylytics("/StartView", "StartNew");
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+            finally
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    WaitManageLocal.Visibility = Visibility.Collapsed;
+                    //ImgManageLocal.Visibility = Visibility.Visible;
+                });
+                _running = false;
+            }
+        }
+
+        private async void ManageLocal()
         {
             try
             {
@@ -162,17 +191,17 @@ namespace MetroDemo.ExampleViews
                 _running = true;
                 var localXml = "";
 
-                await Task.Run(async () => { 
+                await Task.Run(async () => {
                     Dispatcher.Invoke(() =>
                     {
                         WaitManageLocal.Visibility = Visibility.Visible;
-                        ImgManageLocal.Visibility = Visibility.Collapsed;
+                        //ImgManageLocal.Visibility = Visibility.Collapsed;
                     });
 
-                    GlobalObjects.ViewModel.RunLocalConfigs = true;
+                    GlobalObjects.ViewModel.ApplicationMode = ApplicationMode.ManageLocal;
 
                     var officeInstallManager = new OfficeLocalInstallManager();
-                    localXml = await officeInstallManager.GenerateLocalConfigXml();
+                    localXml = await officeInstallManager.GenerateConfigXml();
                 });
 
                 GlobalObjects.ViewModel.ConfigXmlParser.LoadXml(localXml);
@@ -212,14 +241,59 @@ namespace MetroDemo.ExampleViews
             catch (Exception ex)
             {
                 LogErrorMessage(ex);
-            } finally
+            }
+            finally
             {
                 Dispatcher.Invoke(() =>
                 {
                     WaitManageLocal.Visibility = Visibility.Collapsed;
-                    ImgManageLocal.Visibility = Visibility.Visible;
+                    //ImgManageLocal.Visibility = Visibility.Visible;
                 });
                 _running = false;
+            }
+        }
+
+        private void CreateLanguagePack()
+        {
+            try
+            {
+                if (_running) return;
+                GlobalObjects.ViewModel.LocalConfig = false;
+                GlobalObjects.ViewModel.ApplicationMode = ApplicationMode.LanguagePack;
+                GlobalObjects.ViewModel.ConfigXmlParser = new OfficeInstallGenerator.ConfigXmlParser(GlobalObjects.DefaultLanguagePackXml);
+                GlobalObjects.ViewModel.ResetXml = true;
+                GlobalObjects.ViewModel.ImportFile = null;
+
+                if (RestartWorkflow != null)
+                {
+                    this.RestartWorkflow(this, new EventArgs());
+                }
+
+                this.TransitionTab(this, new TransitionTabEventArgs()
+                {
+                    Direction = TransitionTabDirection.Forward,
+                    Index = 7
+                });
+                LogAnaylytics("/StartView", "LanguagePack");
+
+
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
+
+        private void LogErrorMessage(Exception ex)
+        {
+            ex.LogException(false);
+            if (ErrorMessage != null)
+            {
+                ErrorMessage(this, new MessageEventArgs()
+                {
+                    Title = "Error",
+                    Message = ex.Message
+                });
             }
         }
 
@@ -236,5 +310,54 @@ namespace MetroDemo.ExampleViews
             catch { }
         }
 
+        private void strtButton_Click(object sender, RoutedEventArgs e)
+        {
+            switch (cbActions.SelectedIndex)
+            {
+                case 0:
+                    StartNew();
+                    break;
+                case 1:
+                    ImportExisting();
+                    break;
+                case 2:
+                    ManageLocal();
+                    break;
+                case 3:
+                    CreateLanguagePack();
+                    break;
+                case 4:
+                    ManageRemote();
+                    break;
+                default:
+                    LogErrorMessage(new Exception("invalid selection"));
+                    break;
+            }
+        }
+
+        private void cbActions_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            switch (cbActions.SelectedIndex)
+            {
+                case 0:
+                    txtBlock.Text = "Select this option if you would like to start a new or reset an installation.";
+                    break;
+                case 1:
+                    txtBlock.Text = "Select this option if you have an existing Configuration XML or an Executable or MSI that was generated by this application";
+                    break;
+                case 2:
+                    txtBlock.Text = "Select this option if you would like to install, modify or manage the local installation of Office 365 ProPlus.";
+                    break;
+                case 3:
+                    txtBlock.Text = "Select this option if you would like to create a language pack.";
+                    break;
+                case 4:
+                    txtBlock.Text = "Select this option if you would like to install, modify or manage the installation of Office 365 ProPlus on a remote computer.";
+                    break;
+                default:
+                    txtBlock.Text = "";
+                    break;
+            }
+        }    
     }
 }

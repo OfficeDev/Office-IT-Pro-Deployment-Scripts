@@ -10,17 +10,22 @@ namespace TestCode
     {
         static void Main(string[] args)
         {
-
-            var officeInstall = new InstallOffice2();
-
-            var officeProducts = officeInstall.GetOfficeVersion();
-            if (officeProducts != null)
+            try
             {
-                
+                var productId = ""; //args[0];
 
-
+                var officeInstall = new InstallOffice {ProductId = productId };
+                officeInstall.IsLanguageInstalled(@"E:\Users\rsmith.VCG\Desktop\config1.xml", "en-us");
             }
-
+            catch (Exception ex)
+            {
+                Console.WriteLine("ERROR: " + ex.Message);
+            }
+            finally
+            {
+                Console.WriteLine("Done");
+                Console.ReadLine();
+            }
         }
     }
 }

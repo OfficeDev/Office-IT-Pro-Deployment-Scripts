@@ -1,35 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Runtime.Remoting.Channels;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Forms;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using MahApps.Metro.Controls;
 using MetroDemo.Events;
 using MetroDemo.ExampleWindows;
 using MetroDemo.Models;
 using Micorosft.OfficeProPlus.ConfigurationXml;
 using Micorosft.OfficeProPlus.ConfigurationXml.Model;
-using Microsoft.OfficeProPlus.Downloader;
 using Microsoft.OfficeProPlus.Downloader.Model;
+using Microsoft.OfficeProPlus.InstallGen.Presentation.Enums;
 using Microsoft.OfficeProPlus.InstallGen.Presentation.Logging;
 using Microsoft.OfficeProPlus.InstallGen.Presentation.Models;
 using Microsoft.OfficeProPlus.InstallGenerator.Models;
 using OfficeInstallGenerator.Model;
+using System.Xml;
 using File = System.IO.File;
 using MessageBox = System.Windows.MessageBox;
 using UserControl = System.Windows.Controls.UserControl;
@@ -51,22 +42,29 @@ namespace MetroDemo.ExampleViews
         private Task _downloadTask = null;
         private int _cachedIndex = 0;
         private bool _blockUpdate = false;
+        private bool chBxMainProductFirstInitialize = true;        
         
 
         public ProductView()
         {
             InitializeComponent();
-         
+            
         }
 
         private void ProductView_Loaded(object sender, RoutedEventArgs e)             
         {
             try
             {
-               // LoadExcludedProducts();
-
+                // LoadExcludedProducts();
+                cbProject.IsEnabled = false;
+                cbVisio.IsEnabled = false;                
                 if (MainTabControl == null) return;
                 MainTabControl.SelectedIndex = 0;
+
+                if (ProductTab.Visibility == Visibility.Collapsed)
+                {
+                    MainTabControl.SelectedIndex = 1;
+                }
 
                 if (GlobalObjects.ViewModel == null) return;
                 LanguageList.ItemsSource = GlobalObjects.ViewModel.GetLanguages(null);
@@ -81,6 +79,25 @@ namespace MetroDemo.ExampleViews
                 ProductBranch.ItemsSource = GlobalObjects.ViewModel.Branches;
                 if (currentIndex == -1) currentIndex = 0;
                 ProductBranch.SelectedIndex = currentIndex;
+
+                if (GlobalObjects.ViewModel.ApplicationMode == ApplicationMode.LanguagePack)
+                {
+                    MainProducts.ItemsSource = GlobalObjects.ViewModel.LanguagePackProducts;
+                    MainProducts.SelectedIndex = 0;
+
+                    ProductsSelectionChanged();
+
+                    UseLangForAllLabel.Visibility = Visibility.Collapsed;
+                    UseLangForAllProducts.Visibility = Visibility.Collapsed;
+                }
+                else
+                {
+                    MainProducts.ItemsSource = GlobalObjects.ViewModel.MainProducts;
+                    MainProducts.SelectedIndex = 0;
+
+                    UseLangForAllLabel.Visibility = Visibility.Visible;
+                    UseLangForAllProducts.Visibility = Visibility.Visible;
+                }
             }
             catch (Exception ex)
             {
@@ -221,7 +238,16 @@ namespace MetroDemo.ExampleViews
             try
             {
                 _blockUpdate = true;
-                AdditionalProducts.SelectedItems.Clear();
+                cbVisio.SelectedIndex = 0;
+                cbProject.SelectedIndex = 0;
+                chkVisio.IsChecked = false;
+                chkProject.IsChecked = false;                
+                if (chBxMainProductFirstInitialize)
+                {
+                    chkofficeProd.IsChecked = true;
+                    chBxMainProductFirstInitialize = false;
+                }
+                
 
                 MainProducts.SelectedIndex = 0;
                 ProductEdition32Bit.IsChecked = true;
@@ -282,6 +308,17 @@ namespace MetroDemo.ExampleViews
                         branchIndex++;
                     }
 
+                    branchIndex = 0;
+                    foreach (OfficeBranch branchItem in ProductBranch.Items)
+                    {
+                        if (branchItem.NewName.ToUpper() == configXml.Add.ODTChannel.ToString().ToUpper())
+                        {
+                            ProductBranch.SelectedIndex = branchIndex;
+                            break;
+                        }
+                        branchIndex++;
+                    }
+
                     if (configXml.Add.Products != null && configXml.Add.Products.Count > 0)
                     {
                         LanguageList.ItemsSource = null;
@@ -303,12 +340,23 @@ namespace MetroDemo.ExampleViews
 
                             MainProducts.SelectedIndex = index;
 
-                            foreach (Product item in AdditionalProducts.Items)
+                            foreach (Product item in cbVisio.Items)
                             {
                                 if (item.Id.ToUpper() != product.ID.ToUpper()) continue;
-                                AdditionalProducts.SelectedItems.Add(item);
+                                chkVisio.IsChecked = true;
+                                cbVisio.IsEnabled = true;
+                                cbVisio.SelectedItem = item;
                                 break;
                             }
+
+                            foreach (Product item in cbProject.Items)
+                            {
+                                if (item.Id.ToUpper() != product.ID.ToUpper()) continue;
+                                chkProject.IsChecked = true;
+                                cbProject.IsEnabled = true;
+                                cbProject.SelectedItem = item;
+                                break;
+                            }                            
 
                             if (product.Languages != null)
                             {
@@ -400,7 +448,7 @@ namespace MetroDemo.ExampleViews
             if (configXml.Add == null)
             {
                 configXml.Add = new ODTAdd();
-            }
+            }            
 
             var languages = GlobalObjects.ViewModel.GetRemovedLanguages();
             if (languages.Count > 0)
@@ -453,8 +501,23 @@ namespace MetroDemo.ExampleViews
 
             if (ProductBranch.SelectedItem != null)
             {
-                var selectedItem = (OfficeBranch) ProductBranch.SelectedItem;
-                configXml.Add.Branch = selectedItem.Branch;
+                var selectedItem = (OfficeBranch)ProductBranch.SelectedItem;
+                //configXml.Add.Branch = selectedItem.Branch;
+                switch (selectedItem.Branch)
+                {
+                    case Branch.Business:
+                        configXml.Add.ODTChannel = ODTChannel.Deferred;
+                        break;
+                    case Branch.Current:
+                        configXml.Add.ODTChannel = ODTChannel.Current;
+                        break;
+                    case Branch.FirstReleaseBusiness:
+                        configXml.Add.ODTChannel = ODTChannel.FirstReleaseDeferred;
+                        break;
+                    case Branch.FirstReleaseCurrent:
+                        configXml.Add.ODTChannel = ODTChannel.FirstReleaseCurrent;
+                        break;
+                }
             }
 
             if (configXml.Add.Products == null)
@@ -490,6 +553,7 @@ namespace MetroDemo.ExampleViews
 
             configXml.Add.SourcePath = ProductUpdateSource.Text.Length > 0 ? ProductUpdateSource.Text : null;
 
+            
             var mainProduct = (Product) MainProducts.SelectedItem;
             if (mainProduct != null)
             {
@@ -499,16 +563,28 @@ namespace MetroDemo.ExampleViews
                 {
                     ID = mainProduct.Id
                 };
-
-                configXml.Add.Products.Add(existingProduct);
-
-                foreach (Product addProduct in AdditionalProducts.SelectedItems)
+                if (chkofficeProd.IsChecked.HasValue && chkofficeProd.IsChecked.Value)
                 {
+                    configXml.Add.Products.Add(existingProduct);
+                }
+
+                if (chkVisio.IsChecked.HasValue && chkVisio.IsChecked.Value)
+                {
+                    var addProduct = (Product) cbVisio.SelectedItem;
                     var additionalProduct = new ODTProduct()
                     {
                         ID = addProduct.Id
                     };
+                    configXml.Add.Products.Add(additionalProduct);
+                }
 
+                if (chkProject.IsChecked.HasValue && chkProject.IsChecked.Value)
+                {
+                    var addProduct = (Product)cbProject.SelectedItem;
+                    var additionalProduct = new ODTProduct()
+                    {
+                        ID = addProduct.Id
+                    };
                     configXml.Add.Products.Add(additionalProduct);
                 }
 
@@ -576,7 +652,7 @@ namespace MetroDemo.ExampleViews
                     });
                 }
 
-            }
+            }   
         }
 
         public void ChangeBranch(string branchName)
@@ -687,6 +763,42 @@ namespace MetroDemo.ExampleViews
             return selectedProductId;
         }
 
+        private void ProductsSelectionChanged()
+        {                        
+
+            LanguageUnique.ItemsSource = null;
+
+            var products = new List<Product>();
+
+            if (chkofficeProd.IsChecked.HasValue && chkofficeProd.IsChecked.Value)
+            {
+                foreach (Product product in MainProducts.SelectedItems)
+                {
+                    products.Add(product);
+                }
+            }
+            if (chkVisio.IsChecked.HasValue && chkVisio.IsChecked.Value)
+            {
+                var visioProduct = (Product)cbVisio.SelectedItem;
+                products.Add(visioProduct);
+            }
+
+            if (chkProject.IsChecked.HasValue && chkProject.IsChecked.Value)
+            {
+                var projetProduct = (Product)cbProject.SelectedItem;
+                products.Add(projetProduct);
+            }
+
+            LanguageUnique.DisplayMemberPath = "ShortName";
+            LanguageUnique.ItemsSource = products;
+            if (products.Count > 0)
+            {
+                LanguageUnique.SelectedIndex = 0;
+            }
+
+            UpdateXml();
+        }
+
         private async Task GetBranchVersion(OfficeBranch branch, OfficeEdition officeEdition)
         {
             try
@@ -705,11 +817,26 @@ namespace MetroDemo.ExampleViews
 
         private bool TransitionProductTabs(TransitionTabDirection direction)
         {
+            var currentIndex = MainTabControl.SelectedIndex;
+            var tmpIndex = currentIndex;
             if (direction == TransitionTabDirection.Forward)
             {
                 if (MainTabControl.SelectedIndex < MainTabControl.Items.Count - 1)
                 {
-                    MainTabControl.SelectedIndex++;
+                    do
+                    {
+                        tmpIndex ++;
+                        if (tmpIndex < MainTabControl.Items.Count)
+                        {
+                            var item = (TabItem) MainTabControl.Items[tmpIndex];
+                            if (item == null || item.IsVisible) break;
+                        }
+                        else
+                        {
+                            return true;
+                        }
+                    } while (true);
+                    MainTabControl.SelectedIndex = tmpIndex;
                 }
                 else
                 {
@@ -720,7 +847,20 @@ namespace MetroDemo.ExampleViews
             {
                 if (MainTabControl.SelectedIndex > 0)
                 {
-                    MainTabControl.SelectedIndex--;
+                    do
+                    {
+                        tmpIndex--;
+                        if (tmpIndex > 0)
+                        {
+                            var item = (TabItem)MainTabControl.Items[tmpIndex];
+                            if (item == null || item.IsVisible) break;
+                        }
+                        else
+                        {
+                            return true;
+                        }
+                    } while (true);
+                    MainTabControl.SelectedIndex = tmpIndex;
                 }
                 else
                 {
@@ -757,6 +897,69 @@ namespace MetroDemo.ExampleViews
 
         #region "Events"
 
+        private void CbVisio_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            try
+            {
+                ProductsSelectionChanged();
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
+
+        private void CbProject_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            try
+            {
+                ProductsSelectionChanged();
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
+
+        private void ChkProject_OnChecked(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                cbProject.IsEnabled = (chkProject.IsChecked.HasValue && chkProject.IsChecked.Value);
+                ProductsSelectionChanged();
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
+
+        private void ChkVisio_OnChecked(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                cbVisio.IsEnabled = (chkVisio.IsChecked.HasValue && chkVisio.IsChecked.Value);                
+                ProductsSelectionChanged();
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
+
+        private void chkofficeProd_Checked(object sender, RoutedEventArgs e)
+        {
+            try
+            {                
+                MainProducts.IsEnabled = (chkofficeProd.IsChecked.HasValue && chkofficeProd.IsChecked.Value);
+                ProductsSelectionChanged();
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
+
         private void MainTabControl_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             try
@@ -767,8 +970,7 @@ namespace MetroDemo.ExampleViews
                     return;
                 }
 
-                UpdateXml();
-
+                UpdateXml();                
                 switch (MainTabControl.SelectedIndex)
                 {
                     case 0:
@@ -792,8 +994,7 @@ namespace MetroDemo.ExampleViews
                 LogErrorMessage(ex);
             }
         }
-
-
+        
         private async void ProductBranch_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             try
@@ -948,26 +1149,7 @@ namespace MetroDemo.ExampleViews
         {
             try
             {
-                LanguageUnique.ItemsSource = null;
-
-                var products = new List<Product>();
-
-                foreach (Product product in MainProducts.SelectedItems)
-                {
-                    products.Add(product);
-                }
-
-                foreach (Product product in AdditionalProducts.SelectedItems)
-                {
-                    products.Add(product);
-                }
-
-                LanguageUnique.DisplayMemberPath = "DisplayName";
-                LanguageUnique.ItemsSource = products;
-                if (products.Count > 0)
-                {
-                    LanguageUnique.SelectedIndex = 0;
-                }
+                ProductsSelectionChanged();
             }
             catch (Exception ex)
             {
@@ -1148,9 +1330,32 @@ namespace MetroDemo.ExampleViews
 
 
 
+
+
+
         #endregion
 
+        private void chkofficeProd_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if ((chkVisio.IsChecked.HasValue && chkVisio.IsChecked.Value == false) && (chkProject.IsChecked.HasValue && chkProject.IsChecked.Value == false) && (chkofficeProd.IsChecked.HasValue && chkofficeProd.IsChecked.Value == false))
+                {
 
+                    GlobalObjects.ViewModel.BlockNavigation = true;
+                    throw new Exception("At least one product must be selected.");
+
+                }
+                else if (GlobalObjects.ViewModel.BlockNavigation)
+                {
+                    GlobalObjects.ViewModel.BlockNavigation = false;
+                }
+            }
+            catch(Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
     }
 }
 

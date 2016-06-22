@@ -21,6 +21,7 @@ using Micorosft.OfficeProPlus.ConfigurationXml.Enums;
 using Micorosft.OfficeProPlus.ConfigurationXml.Model;
 using Microsoft.OfficeProPlus.Downloader;
 using Microsoft.OfficeProPlus.Downloader.Model;
+using Microsoft.OfficeProPlus.InstallGen.Presentation.Enums;
 using Microsoft.OfficeProPlus.InstallGen.Presentation.Extentions;
 using Microsoft.OfficeProPlus.InstallGen.Presentation.Logging;
 using Microsoft.OfficeProPlus.InstallGen.Presentation.Models;
@@ -58,7 +59,7 @@ namespace MetroDemo.ExampleViews
         private List<Channel> items = null;
         private DownloadAdvanced advancedSettings = null;
 
-        private OfficeLocalInstall LocalInstall { get; set; }
+        private OfficeInstallation LocalInstall { get; set; }
         private bool FirstRun = true;
         #endregion
 
@@ -84,7 +85,7 @@ namespace MetroDemo.ExampleViews
                 LoadXml();
                 GlobalObjects.ViewModel.PropertyChangeEventEnabled = true;
 
-                if (GlobalObjects.ViewModel.RunLocalConfigs)
+                if (GlobalObjects.ViewModel.ApplicationMode == ApplicationMode.ManageLocal)
                 {
                     LoadViewState().ConfigureAwait(false);
                 }
@@ -126,8 +127,8 @@ namespace MetroDemo.ExampleViews
 
                     SetItemState(LocalViewItem.Install, LocalViewState.Default);
 
-                    var installGenerator = new OfficeLocalInstallManager();
-                    LocalInstall = await installGenerator.CheckForOfficeLocalInstallAsync();
+                    var installGenerator = new OfficeLocalInstallManager(); 
+                    LocalInstall = await installGenerator.CheckForOfficeInstallAsync();
 
                     if (LocalInstall.Installed)
                     {
@@ -137,7 +138,7 @@ namespace MetroDemo.ExampleViews
                         Dispatcher.Invoke(() =>
                         {
                             VersionLabel.Content = LocalInstall.Version;
-
+                            ChannelLabel.Content = LocalInstall.Channel;
                             var selectIndex = 0;
                             if (LocalInstall.Channel != null)
                             {
@@ -224,11 +225,11 @@ namespace MetroDemo.ExampleViews
                 {
                     case LocalViewItem.Install:
                         var installedRows = Visibility.Visible;
-
+                        bool isNotfifteen = true;
                         InstallOffice.Visibility = Visibility.Collapsed;
                         ImgOfficeInstalled.Visibility = Visibility.Collapsed;
                         WaitInstallImage.Visibility = Visibility.Collapsed;
-                        ImgLatestInstallFail.Visibility = Visibility.Collapsed;
+                        ImgLatestInstallFail.Visibility = Visibility.Collapsed;                        
 
                         UpdateButtonColumn.Width = latestInstalled ? new GridLength(45, GridUnitType.Pixel) : new GridLength(90, GridUnitType.Pixel);
 
@@ -249,7 +250,7 @@ namespace MetroDemo.ExampleViews
                                 break;
                             case LocalViewState.Default:
                                 WaitInstallImage.Visibility = Visibility.Visible;
-                                installedRows = Visibility.Collapsed;
+                                installedRows = Visibility.Collapsed;                                
                                 break;
                             case LocalViewState.Action:
                                 InstallOffice.Visibility = Visibility.Visible;
@@ -263,6 +264,15 @@ namespace MetroDemo.ExampleViews
                                 break;
                             case LocalViewState.Success:
                                 ImgOfficeInstalled.Visibility = Visibility.Visible;
+                                if (LocalInstall != null)
+                                {
+                                    if (LocalInstall.Version.StartsWith("15."))
+                                    {
+                                        ChannelRow.Visibility = Visibility.Collapsed;
+                                        ModifyInstallRow.Visibility = Visibility.Collapsed;
+                                        isNotfifteen = false;
+                                    }
+                                }
                                 break;
                             case LocalViewState.Wait:
                                 WaitInstallImage.Visibility = Visibility.Visible;
@@ -275,10 +285,14 @@ namespace MetroDemo.ExampleViews
                                 break;
                         }
                         UpdateRow.Visibility = installedRows;
-                        VersionRow.Visibility = installedRows;
-                        ChannelRow.Visibility = installedRows;
-                        ModifyInstallRow.Visibility = installedRows;
+                        VersionRow.Visibility = installedRows;                        
                         ModifyUninstallRow.Visibility = installedRows;
+                        //maybe set bool switch here to see if rows collapsed due to version 15.x.x.x
+                        if (isNotfifteen)
+                        {
+                            ChannelRow.Visibility = installedRows;
+                            ModifyInstallRow.Visibility = installedRows;
+                        }
                         break;
                     case LocalViewItem.Update:
                         UpdateOffice.Visibility = Visibility.Collapsed;
@@ -414,13 +428,14 @@ namespace MetroDemo.ExampleViews
                         UpdateStatus.Content = "";
                     });
 
-                    var installGenerator = new OfficeLocalInstallManager();
-                    LocalInstall = await installGenerator.CheckForOfficeLocalInstallAsync();
+                    var installGenerator = new OfficeInstallManager(); 
+                    LocalInstall = await installGenerator.CheckForOfficeInstallAsync();
                     if (LocalInstall.Installed)
                     {
                         Dispatcher.Invoke(() =>
                         {
                             VersionLabel.Content = LocalInstall.Version;
+                            ChannelLabel.Content = LocalInstall.Channel;
                             ProductBranch.SelectedItem = LocalInstall.Channel;
                         });
 
@@ -457,6 +472,47 @@ namespace MetroDemo.ExampleViews
                         ShowVersion.IsEnabled = true;
                         ChangeChannel.IsEnabled = true;
                     });
+                    GlobalObjects.ViewModel.BlockNavigation = false;
+                }
+            });
+        }
+
+        public async Task RunInstallOffice()
+        {
+            await Task.Run(async () =>
+            {
+                try
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        InstallOffice.IsEnabled = false;
+                        ReInstallOffice.IsEnabled = false;
+                    });
+                    GlobalObjects.ViewModel.BlockNavigation = true;
+                    GlobalObjects.ViewModel.ConfigXmlParser.ConfigurationXml.Display.Level = DisplayLevel.Full;
+
+                    FirstRun = false;
+
+                    SetItemState(LocalViewItem.Install, LocalViewState.InstallingOffice);
+
+                    var installGenerator = new OfficeInstallExecutableGenerator();
+                    installGenerator.InstallOffice(GlobalObjects.ViewModel.ConfigXmlParser.Xml);
+
+                    await LoadViewState();
+
+                    Dispatcher.Invoke(() =>
+                    {
+                        InstallOffice.IsEnabled = true;
+                        ReInstallOffice.IsEnabled = true;
+                    });
+                }
+                catch (Exception ex)
+                {
+                    SetItemState(LocalViewItem.Install, LocalViewState.Fail);
+                    LogErrorMessage(ex);
+                }
+                finally
+                {
                     GlobalObjects.ViewModel.BlockNavigation = false;
                 }
             });
@@ -556,13 +612,14 @@ namespace MetroDemo.ExampleViews
                         UpdateStatus.Content = "";
                     });
                     
-                    var installGenerator = new OfficeLocalInstallManager();
-                    LocalInstall = await installGenerator.CheckForOfficeLocalInstallAsync();
+                    var installGenerator = new OfficeInstallManager();
+                    LocalInstall = await installGenerator.CheckForOfficeInstallAsync();
                     if (LocalInstall.Installed)
                     {
                         Dispatcher.Invoke(() =>
                         {
                             VersionLabel.Content = LocalInstall.Version;
+                            ChannelLabel.Content = LocalInstall.Channel;
                             ProductBranch.SelectedItem = LocalInstall.Channel;
                         });
 
@@ -619,8 +676,13 @@ namespace MetroDemo.ExampleViews
 
                     SetItemState(LocalViewItem.Uninstall, LocalViewState.Wait);
 
-                    var installGenerator = new OfficeLocalInstallManager();
-                    installGenerator.UnInstallOffice();
+                    var installGenerator = new OfficeInstallManager();
+                    string installVer = "2016";
+                    if (LocalInstall.Version.StartsWith("15."))
+                    {
+                        installVer = "2013";
+                    }
+                    installGenerator.UninstallOffice(installVer);
 
                     SetItemState(LocalViewItem.Uninstall, LocalViewState.Success);
 
@@ -765,11 +827,26 @@ namespace MetroDemo.ExampleViews
 
         private bool TransitionProductTabs(TransitionTabDirection direction)
         {
+            var currentIndex = MainTabControl.SelectedIndex;
+            var tmpIndex = currentIndex;
             if (direction == TransitionTabDirection.Forward)
             {
                 if (MainTabControl.SelectedIndex < MainTabControl.Items.Count - 1)
                 {
-                    MainTabControl.SelectedIndex++;
+                    do
+                    {
+                        tmpIndex++;
+                        if (tmpIndex < MainTabControl.Items.Count)
+                        {
+                            var item = (TabItem)MainTabControl.Items[tmpIndex];
+                            if (item == null || item.IsVisible) break;
+                        }
+                        else
+                        {
+                            return true;
+                        }
+                    } while (true);
+                    MainTabControl.SelectedIndex = tmpIndex;
                 }
                 else
                 {
@@ -780,7 +857,20 @@ namespace MetroDemo.ExampleViews
             {
                 if (MainTabControl.SelectedIndex > 0)
                 {
-                    MainTabControl.SelectedIndex--;
+                    do
+                    {
+                        tmpIndex--;
+                        if (tmpIndex > 0)
+                        {
+                            var item = (TabItem)MainTabControl.Items[tmpIndex];
+                            if (item == null || item.IsVisible) break;
+                        }
+                        else
+                        {
+                            return true;
+                        }
+                    } while (true);
+                    MainTabControl.SelectedIndex = tmpIndex;
                 }
                 else
                 {
@@ -790,6 +880,7 @@ namespace MetroDemo.ExampleViews
 
             return false;
         }
+
 
         private void LogErrorMessage(Exception ex)
         {
@@ -839,6 +930,32 @@ namespace MetroDemo.ExampleViews
                 {
                     ChangeChannel.IsEnabled = false;
                 }
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
+
+        private void OPPInstalled_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var sourceName = ((dynamic)sender).Name;
+                LaunchInformationDialog(sourceName);
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
+
+        private void LatestVInstall_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var sourceName = ((dynamic)sender).Name;
+                LaunchInformationDialog(sourceName);
             }
             catch (Exception ex)
             {
@@ -931,7 +1048,16 @@ namespace MetroDemo.ExampleViews
         {
             try
             {
-                await RunUpdateOffice();
+                if (LocalInstall.Version.StartsWith("15."))
+                {
+                    //If 2013 rut this
+                    await RunInstallOffice();
+                }
+                else
+                {
+                    //If 2016 rut this
+                    await RunUpdateOffice();
+                }   
             }
             catch (Exception ex)
             {
@@ -997,42 +1123,7 @@ namespace MetroDemo.ExampleViews
         {
             try
             {
-                await Task.Run(async () =>
-                {
-                    try {
-                        Dispatcher.Invoke(() =>
-                        {
-                            InstallOffice.IsEnabled = false;
-                            ReInstallOffice.IsEnabled = false;
-                        });
-                        GlobalObjects.ViewModel.BlockNavigation = true;
-                        GlobalObjects.ViewModel.ConfigXmlParser.ConfigurationXml.Display.Level = DisplayLevel.Full;
-
-                        FirstRun = false;
-
-                        SetItemState(LocalViewItem.Install, LocalViewState.InstallingOffice);
-
-                        var installGenerator = new OfficeInstallExecutableGenerator();
-                        installGenerator.InstallOffice(GlobalObjects.ViewModel.ConfigXmlParser.Xml);
-
-                        await LoadViewState();
-
-                        Dispatcher.Invoke(() =>
-                        {
-                            InstallOffice.IsEnabled = true;
-                            ReInstallOffice.IsEnabled = true;
-                        });
-                    }
-                    catch (Exception ex)
-                    {
-                        SetItemState(LocalViewItem.Install, LocalViewState.Fail);
-                        LogErrorMessage(ex);
-                    }
-                    finally
-                    {
-                        GlobalObjects.ViewModel.BlockNavigation = false;
-                    }
-                });
+                await RunInstallOffice();
             }
             catch (Exception ex)
             {
@@ -1183,6 +1274,71 @@ namespace MetroDemo.ExampleViews
 
         }
 
+        private void InstalledVersion_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var sourceName = ((dynamic)sender).Name;
+                LaunchInformationDialog(sourceName);
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
+
+        private void UpdateChannel_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var sourceName = ((dynamic)sender).Name;
+                LaunchInformationDialog(sourceName);
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
+
+        private void TargetVersionInfo_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var sourceName = ((dynamic)sender).Name;
+                LaunchInformationDialog(sourceName);
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
+
+        private void ModifyExisting_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var sourceName = ((dynamic)sender).Name;
+                LaunchInformationDialog(sourceName);
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
+
+        private void OfficeInstall_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var sourceName = ((dynamic)sender).Name;
+                LaunchInformationDialog(sourceName);
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
+
         #endregion
 
         #region "Info"
@@ -1240,11 +1396,17 @@ namespace MetroDemo.ExampleViews
             }
         }
 
- 
+
+
+
+
+
+
+
 
         #endregion
 
-
+        
     }
 
 

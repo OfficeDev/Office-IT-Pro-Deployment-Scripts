@@ -8,4 +8,14 @@ D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\MahApps.Metro.Resources\obj\Release\MahApps.Metro.Resources.csproj.GenerateResource.Cache
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\MahApps.Metro.Resources\obj\Release\MahApps.Metro.Resources.dll
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\MahApps.Metro.Resources\obj\Release\MahApps.Metro.Resources.pdb
-D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\MahApps.Metro.Resources\obj\Release\MahApps.Metro.Resources.csprojResolveAssemblyReference.cache
+C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\MahApps.Metro.Resources\bin\Release\MahApps.Metro.Resources.dll
+C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\MahApps.Metro.Resources\bin\Release\MahApps.Metro.Resources.pdb
+C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\MahApps.Metro.Resources\obj\Release\MahApps.Metro.Resources.csprojResolveAssemblyReference.cache
+C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\MahApps.Metro.Resources\obj\Release\Icons.baml
+C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\MahApps.Metro.Resources\obj\Release\Icons.g.cs
+C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\MahApps.Metro.Resources\obj\Release\MahApps.Metro.Resources_MarkupCompile.cache
+C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\MahApps.Metro.Resources\obj\Release\MahApps.Metro.Resources.g.resources
+C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\MahApps.Metro.Resources\obj\Release\MahApps.Metro.Resources.Properties.Resources.resources
+C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\MahApps.Metro.Resources\obj\Release\MahApps.Metro.Resources.csproj.GenerateResource.Cache
+C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\MahApps.Metro.Resources\obj\Release\MahApps.Metro.Resources.dll
+C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\MahApps.Metro.Resources\obj\Release\MahApps.Metro.Resources.pdb

@@ -18,5 +18,7 @@ namespace Micorosft.OfficeProPlus.ConfigurationXml.Model
 
         public Branch? Branch { get; set; }
 
+        public ODTChannel? ODTChannel { get; set; }
+
     }
 }

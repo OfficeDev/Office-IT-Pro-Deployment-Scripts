@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Micorosft.OfficeProPlus.ConfigurationXml;
 using Micorosft.OfficeProPlus.ConfigurationXml.Enums;
 using Micorosft.OfficeProPlus.ConfigurationXml.Model;
 using Microsoft.CSharp;
@@ -48,25 +49,30 @@ namespace OfficeInstallGenerator
                 parameters.ReferencedAssemblies.Add("System.dll");
                 parameters.ReferencedAssemblies.Add("System.Xml.dll");
                 parameters.ReferencedAssemblies.Add("System.Core.dll");
+                parameters.ReferencedAssemblies.Add("System.Windows.Forms.dll");
                 parameters.ReferencedAssemblies.Add("Microsoft.CSharp.dll");
                 parameters.ReferencedAssemblies.Add("System.Management.dll");
-               
+
                 embededExeFiles = EmbeddedResources.GetEmbeddedItems(currentDirectory, @"\.exe$");
 
                 File.Copy(installProperties.ConfigurationXmlPath, tmpPath + @"\configuration.xml", true);
 
-                parameters.EmbeddedResources.Add(tmpPath + @"\configuration.xml");
+                var productIdPath = tmpPath + @"\productid.txt";
+                File.WriteAllText(productIdPath, installProperties.ProductId);
 
-               // parameters.EmbeddedResources.Add(@"\tools\");
+                parameters.EmbeddedResources.Add(tmpPath + @"\configuration.xml");
+                parameters.EmbeddedResources.Add(productIdPath);
+
+                // parameters.EmbeddedResources.Add(@"\tools\");
 
                 var office2013Setup = DirectoryHelper.GetCurrentDirectoryFilePath("Office2013Setup.exe");
-                var office2016Setup = DirectoryHelper.GetCurrentDirectoryFilePath("Office2016Setup.exe"); 
+                var office2016Setup = DirectoryHelper.GetCurrentDirectoryFilePath("Office2016Setup.exe");
 
                 parameters.EmbeddedResources.Add(installProperties.OfficeVersion == OfficeVersion.Office2013
                     ? office2013Setup
                     : office2016Setup);
 
-                var installOfficeFp = DirectoryHelper.GetCurrentDirectoryFilePath("InstallOffice.cs"); 
+                var installOfficeFp = DirectoryHelper.GetCurrentDirectoryFilePath("InstallOffice.cs");
 
                 var fileContents = File.ReadAllText(installOfficeFp);
                 fileContents = fileContents.Replace("public static void Main1(string[] args)",
@@ -95,7 +101,7 @@ namespace OfficeInstallGenerator
                         throw (new DirectoryNotFoundException("Invalid Source Path: " + installProperties.SourceFilePath));
                     }
                     
-                    EmbedSourceFiles(parameters, installProperties.SourceFilePath + @"\Office", installProperties.BuildVersion);
+                    EmbedSourceFiles(parameters, installProperties.SourceFilePath + @"\Office", installProperties.BuildVersion, installProperties.OfficeClientEdition);
                 }
 
                 if (installProperties.OfficeVersion == OfficeVersion.Office2013)
@@ -113,7 +119,7 @@ namespace OfficeInstallGenerator
                     fileContents = fileContents.Replace("//[assembly: AssemblyDescription(\"\")]",
                         "[assembly: AssemblyDescription(\"" + "Office 365 ProPlus (2016)" + "\")]");
                 }
-
+                
                 var results = icc.CompileAssemblyFromSource(parameters, fileContents);
 
                 if (results.Errors.Count > 0)
@@ -186,7 +192,7 @@ namespace OfficeInstallGenerator
             }
         }
 
-        private void EmbedSourceFiles(CompilerParameters parameters, string sourcePath, string version = null)
+        private void EmbedSourceFiles(CompilerParameters parameters, string sourcePath, string version = null, OfficeClientEdition officeClientEdition = OfficeClientEdition.Office32Bit)
         {
             var xmlFilePath = DirectoryHelper.GetCurrentDirectoryFilePath("Files.xml"); 
 
@@ -207,7 +213,23 @@ namespace OfficeInstallGenerator
                     }
                 }
 
+                if (officeClientEdition == OfficeClientEdition.Office32Bit)
+                {
+                    if (sourceFile.Name.ToLower().Contains(".x64."))
+                    {
+                        continue;
+                    }
+                }
+                else
+                {
+                    if (sourceFile.Name.ToLower().Contains(".x86."))
+                    {
+                        continue;
+                    }
+                }
+
                 fileCacher.AddFile(dirInfo.Parent.FullName, sourceFile.FullName);
+
                 parameters.EmbeddedResources.Add(sourceFile.FullName);
             }
 
