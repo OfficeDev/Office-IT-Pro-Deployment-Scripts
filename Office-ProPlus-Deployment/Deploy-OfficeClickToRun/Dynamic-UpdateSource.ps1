@@ -323,7 +323,7 @@ Function SetODTUpdates{
         foreach($node in $nodes){
  
              #Set values as desired
-             if([string]::IsNullOrWhiteSpace($UpdatePath) -eq $false){
+             if($UpdatePath){
                  $node.SetAttribute("UpdatePath", $UpdatePath) | Out-Null
              } else {
                  if ($node.HasAttribute('UpdatePath')) {
