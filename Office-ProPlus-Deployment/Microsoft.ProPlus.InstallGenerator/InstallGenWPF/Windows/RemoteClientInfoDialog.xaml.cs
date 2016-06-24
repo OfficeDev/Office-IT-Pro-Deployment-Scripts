@@ -27,25 +27,21 @@ namespace MetroDemo.ExampleWindows
             InitializeComponent();
         }
         public DialogResult Result = System.Windows.Forms.DialogResult.Cancel;
+
         public void Launch()
         {
            
             this.Show();
         }
 
-        public void Dispose()
-        {
-            throw new NotImplementedException();
-        }
-
         private void OkButton_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                if(!String.IsNullOrEmpty(txtBxAddMachines.Text))
+                if(!string.IsNullOrEmpty(txtBxAddMachines.Text))
                 {
                     Result = System.Windows.Forms.DialogResult.OK;
-                    GlobalObjects.ViewModel.remoteConnectionInfo = txtBxAddMachines.Text;
+                    GlobalObjects.ViewModel.RemoteConnectionInfo(txtBxAddMachines.Text);
                 }
               
                 this.Close();                
@@ -62,8 +58,6 @@ namespace MetroDemo.ExampleWindows
             this.Close();
         }
 
-     
-
         private List<String> getVersions(OfficeBranch currentChannel, List<String> versions, string currentVersion)
         {
 
@@ -78,7 +72,10 @@ namespace MetroDemo.ExampleWindows
             return versions;
         }
 
-    
+        public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
 
     }
 }

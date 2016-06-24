@@ -1,4 +1,3 @@
-try {
 Add-Type -ErrorAction SilentlyContinue -TypeDefinition @"
    public enum OfficeLanguages
    {
@@ -8,7 +7,6 @@ Add-Type -ErrorAction SilentlyContinue -TypeDefinition @"
       AllInUseLanguages
    }
 "@
-} catch {}
 
 Function Generate-ODTConfigurationXml {
 <#
@@ -22,7 +20,7 @@ specified in the
 Name: Generate-ODTConfigurationXml
 Version: 1.0.3
 DateCreated: 2015-08-24
-DateUpdated: 2016-06-13
+DateUpdated: 2015-11-23
 .LINK
 https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
 .PARAMETER ComputerName
@@ -64,7 +62,6 @@ Generate-ODTConfigurationXml -Languages CurrentOfficeLanguages
 Description:
 Will generate the Office Deployment Tool (ODT) configuration XML based on the local computer and add only add the Languages currently in use by the current Office installation
 #>
-
 [CmdletBinding(SupportsShouldProcess=$true)]
 param(
     [Parameter(ValueFromPipelineByPropertyName=$true, Position=0)]
@@ -252,15 +249,7 @@ process {
     foreach ($lang in $additionalLanguages) {
       if ($lang.GetType().Name.ToLower().Contains("string")) {
         if ($lang.Contains("-")) {
-          [bool]$addLang = $true
-
-          foreach ($language in $allLanguages) {
-             if ($language.ToLower() -eq $lang.ToLower()) {
-                $addLang = $false
-             }
-          }
-
-          if ($addLang) {
+          if (!($allLanguages -contains $lang.ToLower())) {
              $allLanguages += $lang.ToLower()
           }
         }
@@ -312,21 +301,16 @@ process {
        if ($additionalLanguages) {
            $additionalLanguages = Get-Unique -InputObject $additionalLanguages -OnType
            
-           [bool]$containsLang = $false
-           foreach ($additionalLanguage in $additionalLanguages) {
-              if ($primaryLanguage.ToLower() -eq $additionalLanguage.ToLower()) {
-                 $containsLang = $true
-              }
-           }
-          
-           if ($containsLang) {
-               $tempLanguages = $additionalLanguages
-               $additionalLanguages = New-Object System.Collections.ArrayList
-               foreach($tempL in $tempLanguages){
-                  if($tempL -ne $primaryLanguage){
+           
+                          
+           if ($additionalLanguages -contains ($primaryLanguage)) {
+           $tempLanguages = $additionalLanguages
+           $additionalLanguages = New-Object System.Collections.ArrayList
+           foreach($tempL in $tempLanguages){
+               if($tempL -ne $primaryLanguage){
                     $additionalLanguages.Add($tempL) | Out-Null
-                  }
-                  #$additionalLanguages.Remove($primaryLanguage)
+               }
+               #$additionalLanguages.Remove($primaryLanguage)
                }
            }
        }
@@ -1112,15 +1096,7 @@ function getLanguages() {
   
   $langPacks = $regProv.EnumKey($HKLM, "SYSTEM\CurrentControlSet\Control\MUI\UILanguages");
   foreach ($langPackName in $langPacks.sNames) {
-     [bool]$addReturnLang = $true
-
-     foreach ($returnLang in $returnLangs) {
-        if ($returnLang.ToLower() -eq $langPackName.ToLower()) {
-           $addReturnLang = $false
-        }
-     }
-
-     if ($addReturnLang) {
+     if (!$returnLangs -contains $langPackName.ToLower()) {
         $returnLangs += $langPackName.ToLower() 
      }
   }
@@ -1141,14 +1117,7 @@ function checkForLanguage() {
        [string]$langId = $NULL
     )
 
-    [bool]$langExists = $false
-    foreach ($availableLang in $availableLangs) {
-       if ($availableLang.ToLower() -eq $langId.Trim().ToLower()) {
-          $langExists = $true
-       }
-    }
-
-    if ($langExists) {
+    if ($availableLangs -contains ($langId.Trim().ToLower())) {
        return $langId
     } else {
        $langStart = $langId.Split('-')[0]
@@ -1404,10 +1373,19 @@ function odtAddUpdates{
         }
         [bool]$addUpdates = $false
         $hasEnabled = $false
-        if($Enabled){$hasEnabled = $true}else{$hasEnabled = $false}
+        if($Enabled){
+           $hasEnabled = $true
+        }else{
+           $hasEnabled = $false
+        }
         
         $hasUpdatePath = $false
-        if($UpdatePath){$hasUpdatePath = $true}else{$hasUpdatePath = $false}
+        if($UpdatePath){
+           $hasUpdatePath = $true
+        }else{
+           $hasUpdatePath = $false
+        }
+
         if(($hasEnabled -eq $true) -or ($hasUpdatePath -eq $true)){
            $addUpdates = $true
         }
@@ -1703,6 +1681,6 @@ function Win7Join([string]$st1, [string]$st2){
 $availableLangs = @("en-us",
 "ar-sa","bg-bg","zh-cn","zh-tw","hr-hr","cs-cz","da-dk","nl-nl","et-ee",
 "fi-fi","fr-fr","de-de","el-gr","he-il","hi-in","hu-hu","id-id","it-it",
-"ja-jp","kk-kh","ko-kr","lv-lv","lt-lt","ms-my","nb-no","pl-pl","pt-br",
+"ja-jp","kk-kz","ko-kr","lv-lv","lt-lt","ms-my","nb-no","pl-pl","pt-br",
 "pt-pt","ro-ro","ru-ru","sr-latn-rs","sk-sk","sl-si","es-es","sv-se","th-th",
 "tr-tr","uk-ua");

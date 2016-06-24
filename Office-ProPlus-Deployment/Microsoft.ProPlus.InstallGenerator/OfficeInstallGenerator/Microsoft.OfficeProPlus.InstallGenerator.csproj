@@ -64,6 +64,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppSettings.cs" />
+    <Compile Include="Enums\ConnectionType.cs" />
     <Compile Include="Events\Events.cs" />
     <Compile Include="Extensions\DirectoryHelper.cs" />
     <Compile Include="Extensions\Extensions.cs" />

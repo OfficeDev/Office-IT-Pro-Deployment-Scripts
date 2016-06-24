@@ -26,7 +26,7 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
         public string connectionNamespace { get; set; }
         public ManagementScope scope { get; set; }
 
-        public void initConnection()
+        public void InitConnection()
         {
            //implement me
 

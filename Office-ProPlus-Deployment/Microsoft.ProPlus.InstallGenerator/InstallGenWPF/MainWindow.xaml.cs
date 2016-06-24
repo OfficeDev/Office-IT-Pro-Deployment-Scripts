@@ -86,6 +86,8 @@ namespace MetroDemo
 
                 LocalView.InfoMessage += GenerateViewInfoMessage;
                 LocalView.ErrorMessage += GenerateView_ErrorMessage;
+
+                RemoteView.ErrorMessage += GenerateView_ErrorMessage;
             }
             catch (Exception ex)
             {
