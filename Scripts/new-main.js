@@ -2940,9 +2940,7 @@ var excludeApps2013 = [
     'OneNote',
     'Outlook',
     'PowerPoint',
-    'Project',
     'Publisher',
-    'Visio',
     'Word'
 ];
 
@@ -2955,9 +2953,7 @@ var excludeApps2016 = [
     'OneDrive',
     'Outlook',
     'PowerPoint',
-    'Project',
     'Publisher',
-    'Visio',
     'Word'    
 ];
 
