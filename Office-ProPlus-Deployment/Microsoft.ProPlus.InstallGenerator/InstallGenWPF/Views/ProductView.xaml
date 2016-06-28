@@ -74,7 +74,7 @@
                                             <ColumnDefinition Width="450" />
                                             <ColumnDefinition Width="30" />
                                         </Grid.ColumnDefinitions>
-                                        
+
                                         <Button x:Name="ProductInfo" Width="30" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" 
                                                 Focusable="False"  Style="{StaticResource MetroInfoButton}" Click="ProductInfo_OnClick" >
                                             <StackPanel Orientation="Horizontal">
@@ -110,7 +110,7 @@
                                         <CheckBox x:Name="chkVisio" Grid.Column="2" Style="{StaticResource MetroCheckBox}" Checked="ChkVisio_OnChecked"
                                                   Unchecked="ChkVisio_OnChecked" Click="chkofficeProd_Click"></CheckBox>
                                     </Grid>
-                                    
+
 
                                     <ComboBox x:Name="cbVisio" Width="500" FontSize="20" Height="40" BorderBrush="{StaticResource GrayBrush}"
                                               ItemsSource="{Binding VisioProducts}" DisplayMemberPath="DisplayName" Margin="0 5 0 0"
@@ -135,7 +135,7 @@
                                         <CheckBox x:Name="chkProject" Grid.Column="2" Style="{StaticResource MetroCheckBox}" Checked="ChkProject_OnChecked" 
                                                  Unchecked="ChkProject_OnChecked" Click="chkofficeProd_Click" ></CheckBox>
                                     </Grid>
-                                    
+
                                     <ComboBox x:Name="cbProject" Width="500" FontSize="20" BorderThickness="2" Margin="0 5 0 0"
                                               BorderBrush="{StaticResource GrayBrush}"
                                               Height="40" ItemsSource="{Binding ProjectProducts}" DisplayMemberPath="DisplayName"
@@ -262,11 +262,13 @@
                                 <Grid Margin="50 0 0 0" >
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="50"></RowDefinition>
+                                        <RowDefinition Height="50"></RowDefinition>
                                     </Grid.RowDefinitions>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="30" />
                                         <ColumnDefinition Width="120" />
                                         <ColumnDefinition Width="360" />
+                                        <ColumnDefinition Width="80" />
                                     </Grid.ColumnDefinitions>
                                     <Button x:Name="VersionInfo" Width="30" Height="32" HorizontalAlignment="Center"  
                                                 Focusable="False"  Style="{StaticResource MetroInfoButton}" Click="ProductInfo_OnClick"  >
@@ -274,10 +276,10 @@
                                             <Image Source="../images/info.png" Width="20" Height="20"/>
                                         </StackPanel>
                                     </Button>
-                                    <Label Content="Version" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                                    <Label Content="Version" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" />
 
 
-                                    <ComboBox Width="360" x:Name="ProductVersion" Grid.Column="2"  
+                                    <ComboBox Width="360" x:Name="ProductVersion" Grid.Column="2"  Grid.Row="0"
                                               Height="35" HorizontalAlignment="Left" IsTextSearchEnabled="True"
                                               Style="{StaticResource MetroComboBoxStyle}" 
                                               Controls:TextBoxHelper.Watermark="16.0.4949.1003"
@@ -287,6 +289,26 @@
                                               MaxDropDownHeight="125"
                                               FontSize="20"
                                               Text="{Binding Path=Version}"  />
+
+
+                                    <Button x:Name="RemoteLoggingInfo" Width="30" Height="32" HorizontalAlignment="Center"   Grid.Row="1"
+                                                Focusable="False"  Style="{StaticResource MetroInfoButton}" Click="ProductInfo_OnClick"  >
+                                        <StackPanel Orientation="Horizontal">
+                                            <Image Source="../images/info.png" Width="20" Height="20"/>
+                                        </StackPanel>
+                                    </Button>
+
+                                    <Label Content="Remote Path" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" />
+
+                                    <TextBox Width="360" x:Name="RemoteLoggingPath" FontSize="20" Grid.Column="2" Grid.Row="1" Background="White"
+                                             Height="35" HorizontalAlignment="Left"
+                                             Controls:TextBoxHelper.Watermark="Remote Logging Path"
+                                              Text="" 
+                                            />
+
+                                    <Button Width="55" Grid.Column="3" Grid.Row="1"
+                                            Height="40"  Style="{StaticResource MetroFlatButtonStyle1}"
+                                            Content="Browse" x:Name="RemotePath" Click="UpdatePath_OnClick" Margin="2,5" />
 
                                 </Grid>
                                 <Grid Margin="50 0 0 0" >
@@ -308,26 +330,31 @@
 
                                     <Grid Margin="0,0,0,0" Grid.Column="2">
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="370" />
+                                            <ColumnDefinition Width="26.78" />
+                                            <ColumnDefinition Width="263.287"/>
+                                            <ColumnDefinition Width="79.713"/>
                                             <ColumnDefinition Width="60" />
                                             <ColumnDefinition Width="60" />
                                             <ColumnDefinition Width="75" />
                                             <ColumnDefinition Width="75" />
                                         </Grid.ColumnDefinitions>
 
-                                        <Controls:MetroProgressBar x:Name="DownloadProgressBar"  Grid.Column="0" Height="37" Background="White" Width="360" HorizontalAlignment="Left" />
+                                        <Controls:MetroProgressBar x:Name="DownloadProgressBar"  Grid.Column="0" Height="38" Background="White" Width="360" HorizontalAlignment="Left" Grid.ColumnSpan="3" Margin="0,6" />
                                         <TextBox x:Name="ProductUpdateSource" Background="#00ffffff" FontSize="20" Grid.Column="0" HorizontalAlignment="Left"
                                              Controls:TextBoxHelper.Watermark="Local, UNC or HTTP Path" Height="37" Width="360"
                                              Controls:TextBoxHelper.ClearTextButton="True" TextChanged="BuildFilePath_OnTextChanged"
-                                             Text="">
+                                             Text="" Grid.ColumnSpan="3" Margin="0,6">
                                         </TextBox>
 
-                                        <Button Width="55" Grid.Column="1"
+                                        <Button Width="55" Grid.Column="3"
                                             Height="40"  Style="{StaticResource MetroFlatButtonStyle1}"
-                                            Content="Browse" x:Name="UpdatePath" Click="UpdatePath_OnClick" />
-                                        <Button Width="50" Height="40" Grid.Column="2"  Style="{StaticResource MetroFlatButtonStyle1}"
-                                            Content="Open" x:Name="OpenFolderButton" IsEnabled="False" Click="OpenFolderButton_OnClick"   />
+                                            Content="Browse" x:Name="UpdatePath" Click="UpdatePath_OnClick" Margin="2,5" />
+                                        <Button Width="50" Height="40" Grid.Column="4"  Style="{StaticResource MetroFlatButtonStyle1}"
+                                            Content="Open" x:Name="OpenFolderButton" IsEnabled="False" Click="OpenFolderButton_OnClick" Margin="5"   />
+
                                     </Grid>
+
+
 
 
                                 </Grid>

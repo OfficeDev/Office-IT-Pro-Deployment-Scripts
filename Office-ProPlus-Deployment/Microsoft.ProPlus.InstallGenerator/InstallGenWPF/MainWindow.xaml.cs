@@ -240,8 +240,14 @@ namespace MetroDemo
                 else
                 {
                     GenerateTabName.Visibility = Visibility.Visible;
-                    LocalTabName.Visibility = Visibility.Collapsed;
+                    TabProducts.Visibility = Visibility.Visible;
+                    TabDownload.Visibility = Visibility.Visible;
+                    TabUpdates.Visibility = Visibility.Visible;
+                    TabOptions.Visibility = Visibility.Visible;
+
                     RemoteTabName.Visibility = Visibility.Collapsed;
+                    LocalTabName.Visibility = Visibility.Collapsed;
+
                     GenerateView.Tag = 5;
                     LocalView.Tag = 99;
                 }

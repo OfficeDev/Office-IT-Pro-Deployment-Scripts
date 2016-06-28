@@ -1437,6 +1437,8 @@ public class InstallOffice
         Console.WriteLine("  \t\t\t\tconfiguration xml.");
         Console.WriteLine("  /extractxml={File Path}\tExtracts the current Office 365 ProPlus");
         Console.WriteLine("  \t\t\t\tconfiguration xml to the specified file path.");
+        Console.WriteLine("  /remotelogging\t\t\tcopies log file to remote location");
+
     }
 
     private void MinimizeWindow()
@@ -1450,7 +1452,8 @@ public class InstallOffice
         return !GetArguments().Any(a => (a.Key.ToLower() != "/uninstall" &&
                                          a.Key.ToLower() != "/showxml" &&
                                          a.Key.ToLower() != "/silent" &&
-                                         a.Key.ToLower() != "/extractxml"));
+                                         a.Key.ToLower() != "/extractxml" &&
+                                         a.Key.ToLower() != "/remotelogging"));
     }
 
     private static string GenerateMD5Hash(string filePath)
