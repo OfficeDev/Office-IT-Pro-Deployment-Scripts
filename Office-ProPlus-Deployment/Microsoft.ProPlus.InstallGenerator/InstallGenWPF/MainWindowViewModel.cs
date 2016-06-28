@@ -98,7 +98,9 @@ namespace MetroDemo
         private readonly IDialogCoordinator _dialogCoordinator;
         private List<Language> _selectedLanguages = null;
         private List<Language> _removedLanguages = null;
-        private List<RemoteComputer> _remoteComputers = null; 
+        private List<RemoteComputer> _remoteComputers = null;
+        private string _adminUsername = "";
+        private string _adminPassword = "";
         
         public MainWindowViewModel(IDialogCoordinator dialogCoordinator)
         {
@@ -439,6 +441,21 @@ namespace MetroDemo
         public bool UseFolderShortNames { get; set; }
 
 
+        public void SetCredentials(string uName, string password)
+        {
+            _adminUsername = uName;
+            _adminPassword = password;
+        }
+
+        public string GetUsername()
+        {
+            return _adminUsername;
+        }
+
+        public string GetPassword()
+        {
+            return _adminPassword;
+        }
         public List<RemoteComputer> RemoteConnectionInfo(string connectionInfo = null)
         {
             if (_remoteComputers == null)

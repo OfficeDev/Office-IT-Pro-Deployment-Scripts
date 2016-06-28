@@ -254,30 +254,17 @@ namespace MetroDemo
                     GenerateView.Tag = 99;
                     LocalView.Tag = 5;
                 }
-                //else if (GlobalObjects.ViewModel.ApplicationMode == ApplicationMode.InstallGenerator)
-                //{
-                //    //new items here
-                //    StartView.Visibility = Visibility.Visible;
-                //    
-                //    UpdateView.Visibility = Visibility.Visible;
-                //    DisplayView.Visibility = Visibility.Visible;
-                //    GenerateView.Visibility = Visibility.Visible;
-                //    LocalView.Visibility = Visibility.Collapsed;
-                //    RemoteView.Visibility = Visibility.Collapsed;
-                //    AboutView.Visibility = Visibility.Visible;
-                //    GenerateTabName.Visibility = Visibility.Visible;
-                //    LocalTabName.Visibility = Visibility.Collapsed;
-                //    RemoteTabName.Visibility = Visibility.Collapsed;
-                //    GenerateView.Tag = 5;
-                //    LocalView.Tag = 99;
-                //}
                 else
                 {
-                    ProductView.Visibility = Visibility.Visible;
-                    DownloadView.Visibility = Visibility.Visible;
                     GenerateTabName.Visibility = Visibility.Visible;
-                    LocalTabName.Visibility = Visibility.Collapsed;
+                    TabProducts.Visibility = Visibility.Visible;
+                    TabDownload.Visibility = Visibility.Visible;
+                    TabUpdates.Visibility = Visibility.Visible;
+                    TabOptions.Visibility = Visibility.Visible;
+
                     RemoteTabName.Visibility = Visibility.Collapsed;
+                    LocalTabName.Visibility = Visibility.Collapsed;
+
                     GenerateView.Tag = 5;
                     LocalView.Tag = 99;
                 }

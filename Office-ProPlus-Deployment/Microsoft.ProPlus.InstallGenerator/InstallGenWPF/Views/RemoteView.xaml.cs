@@ -580,6 +580,15 @@ namespace MetroDemo.ExampleViews
                 {
                     var client = remoteClients[i];
 
+                    //use common username/password for each client
+                    if (!string.IsNullOrEmpty(GlobalObjects.ViewModel.GetUsername()) &&
+                        !string.IsNullOrEmpty(GlobalObjects.ViewModel.GetPassword()))
+                    {
+                        client.Password = GlobalObjects.ViewModel.GetPassword();
+                        client.UserName = GlobalObjects.ViewModel.GetUsername().Split('\\')[1];
+                        client.WorkGroup = GlobalObjects.ViewModel.GetUsername().Split('\\')[0];
+                    }
+
                     if (client.include && client.Status.Trim() != "Not Found")
                     {
                         updateTasks.Add(UpdateMachine(client, i));
@@ -860,52 +869,6 @@ namespace MetroDemo.ExampleViews
                 RemoteMachineList.Items.Refresh();
             }
         }
-
-        private async void ImportComputersButton_Click(object sender, RoutedEventArgs e)
-        {
-            var dlg = new Microsoft.Win32.OpenFileDialog
-            {
-                DefaultExt = ".png",
-                Filter = "CSV Files (.csv)|*.csv"
-            };
-
-            var result = dlg.ShowDialog();
-            if (result == true)
-            {
-
-
-                List<string> versions = new List<String>();
-                string line;
-
-                try
-                {
-                    GlobalObjects.ViewModel.BlockNavigation = true;
-                    ToggleControls(false);
-                    WaitImage.Visibility = Visibility.Visible;
-
-                    StreamReader file = new StreamReader(dlg.FileName);
-
-                    while ((line = file.ReadLine()) != null)
-                    {
-
-                        string[] tempStrArray = line.Split(',');
-                        //await Task.Run(async () => { await AddMachines(tempStrArray); });
-                    }
-                }
-                catch (Exception ex)
-                {
-                    LogErrorMessage(ex);
-
-                }
-
-
-                RemoteMachineList.ItemsSource = remoteClients;
-                ToggleControls(true);
-                WaitImage.Visibility = Visibility.Hidden;
-                RemoteMachineList.Items.Refresh();
-            }
-        }
-
         private void chkAll_Click(object sender, RoutedEventArgs e)
         {
             try
