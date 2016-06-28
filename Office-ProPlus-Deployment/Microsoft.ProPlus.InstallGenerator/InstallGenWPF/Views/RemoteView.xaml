@@ -85,6 +85,7 @@
 
                                             <DataGridTextColumn Header="Machine" Binding="{Binding Path=Machine}" Width="200" 
                                                       IsReadOnly="True" FontSize="20" Foreground="{DynamicResource LabelTextBrushCustom}" />
+                                            
                                             <DataGridTemplateColumn Header="Status" Width="110">
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
@@ -93,11 +94,12 @@
                                                             <Image x:Name="ImgFail"  Source="../images/fail.png" Height="20" HorizontalAlignment="Left"  Visibility="Collapsed" ></Image>
                                                             <Image x:Name="ImgUpdating" Visibility="Collapsed" Height="20" HorizontalAlignment="Left" gif:ImageBehavior.RepeatBehavior="Forever" 
                                                                 gif:ImageBehavior.AnimatedSource="../images/InstallRing.GIF" />
-                                                            <TextBlock x:Name="TxtStatus" Text="{Binding Path=Status,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"  FontSize="20" Foreground="{DynamicResource LabelTextBrushCustom}" HorizontalAlignment="Center" Padding="2 0 0 0"/>
+                                                            <TextBlock x:Name="TxtStatus" Text="{Binding Path=Status,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"  FontSize="20" Foreground="{DynamicResource LabelTextBrushCustom}" HorizontalAlignment="Left" Padding="2 0 0 0"/>
                                                         </DockPanel>
                                                     </DataTemplate> 
                                                 </DataGridTemplateColumn.CellTemplate>
                                             </DataGridTemplateColumn>
+                                            
                                             <DataGridTemplateColumn  Header="Channel" Width="240">
                                                 <DataGridTemplateColumn.CellTemplate>
                                                     <DataTemplate>
@@ -141,7 +143,6 @@
 
                                 <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal">
                                     <Button x:Name="AddComputersButton" Content="Add Computers" Margin="0,20,2,20" Style="{StaticResource MetroFlatButtonStyle1}" Click="AddComputersButton_Click" />
-                                    <Button x:Name="ImportComputersButton" Content="Import Computers" Margin="2,20,0,20" Style="{StaticResource MetroFlatButtonStyle1}" Click="ImportComputersButton_Click" />
                                     <Button x:Name="btnRemoveComputers" Content="Remove Computers" Margin="2,20,2,20" Style="{StaticResource MetroFlatButtonStyle1}" Click="btnRemoveComputers_Click" />
                                     <Button x:Name="btnChangeChannelOrVersion" Content="Switch Channel/Version" Margin="2,20,2,20" Style="{StaticResource MetroFlatButtonStyle1}" Click="btnChangeChannelOrVersion_Click" />
                                     <Button x:Name="btnUpdateRemote" Content="Update Remote" Margin="20,20,2,20" Style="{StaticResource MetroFlatButtonStyle1}" Click="btnUpdateRemote_Click" />

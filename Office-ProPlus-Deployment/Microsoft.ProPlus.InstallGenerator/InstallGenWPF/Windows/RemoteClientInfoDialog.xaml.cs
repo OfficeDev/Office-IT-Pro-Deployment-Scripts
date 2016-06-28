@@ -2,6 +2,7 @@
 using Microsoft.OfficeProPlus.InstallGen.Presentation.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,25 +28,21 @@ namespace MetroDemo.ExampleWindows
             InitializeComponent();
         }
         public DialogResult Result = System.Windows.Forms.DialogResult.Cancel;
+
         public void Launch()
         {
            
             this.Show();
         }
 
-        public void Dispose()
-        {
-            throw new NotImplementedException();
-        }
-
         private void OkButton_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                if(!String.IsNullOrEmpty(txtBxAddMachines.Text))
+                if(!string.IsNullOrEmpty(txtBxAddMachines.Text))
                 {
                     Result = System.Windows.Forms.DialogResult.OK;
-                    GlobalObjects.ViewModel.remoteConnectionInfo = txtBxAddMachines.Text;
+                    GlobalObjects.ViewModel.RemoteConnectionInfo(txtBxAddMachines.Text);
                 }
               
                 this.Close();                
@@ -62,8 +59,6 @@ namespace MetroDemo.ExampleWindows
             this.Close();
         }
 
-     
-
         private List<String> getVersions(OfficeBranch currentChannel, List<String> versions, string currentVersion)
         {
 
@@ -78,7 +73,40 @@ namespace MetroDemo.ExampleWindows
             return versions;
         }
 
-    
+        public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
 
+        private void ImportComputers_OnClick_Click(object sender, RoutedEventArgs e)
+        {
+            var dlg = new Microsoft.Win32.OpenFileDialog
+            {
+                DefaultExt = ".png",
+                Filter = "CSV Files (.csv)|*.csv"
+            };
+
+            var result = dlg.ShowDialog();
+            if (result == true)
+            {
+                string line;
+                txtBxAddMachines.Text = "";
+                try
+                {
+
+                    StreamReader file = new StreamReader(dlg.FileName);
+
+                    while ((line = file.ReadLine()) != null)
+                    {
+                        txtBxAddMachines.Text += line + Environment.NewLine;
+                    }
+                    txtBxAddMachines.Text = txtBxAddMachines.Text.TrimEnd();
+                }
+                catch (Exception ex)
+                {
+
+                }
+            }
+        }
     }
 }

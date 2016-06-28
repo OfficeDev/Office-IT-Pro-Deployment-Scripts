@@ -138,7 +138,7 @@ namespace MetroDemo.ExampleViews
                         Dispatcher.Invoke(() =>
                         {
                             VersionLabel.Content = LocalInstall.Version;
-
+                            ChannelLabel.Content = LocalInstall.Channel;
                             var selectIndex = 0;
                             if (LocalInstall.Channel != null)
                             {
@@ -435,6 +435,7 @@ namespace MetroDemo.ExampleViews
                         Dispatcher.Invoke(() =>
                         {
                             VersionLabel.Content = LocalInstall.Version;
+                            ChannelLabel.Content = LocalInstall.Channel;
                             ProductBranch.SelectedItem = LocalInstall.Channel;
                         });
 
@@ -618,6 +619,7 @@ namespace MetroDemo.ExampleViews
                         Dispatcher.Invoke(() =>
                         {
                             VersionLabel.Content = LocalInstall.Version;
+                            ChannelLabel.Content = LocalInstall.Channel;
                             ProductBranch.SelectedItem = LocalInstall.Channel;
                         });
 

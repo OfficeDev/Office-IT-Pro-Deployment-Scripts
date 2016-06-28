@@ -69,3 +69,4 @@ C:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deplo
 C:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeProPlusInstallGenerator\obj\Debug\OfficeProPlusInstallGenerator.csprojResolveAssemblyReference.cache
 C:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeProPlusInstallGenerator\obj\Debug\OfficeProPlusInstallGenerator.exe
 C:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeProPlusInstallGenerator\obj\Debug\OfficeProPlusInstallGenerator.pdb
+C:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeProPlusInstallGenerator\bin\Debug\Microsoft.Deployment.WindowsInstaller.xml

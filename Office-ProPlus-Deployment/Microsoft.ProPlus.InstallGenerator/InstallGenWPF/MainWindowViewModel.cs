@@ -98,6 +98,7 @@ namespace MetroDemo
         private readonly IDialogCoordinator _dialogCoordinator;
         private List<Language> _selectedLanguages = null;
         private List<Language> _removedLanguages = null;
+        private List<RemoteComputer> _remoteComputers = null; 
         
         public MainWindowViewModel(IDialogCoordinator dialogCoordinator)
         {
@@ -437,7 +438,61 @@ namespace MetroDemo
 
         public bool UseFolderShortNames { get; set; }
 
-        public string remoteConnectionInfo { get; set; }
+
+        public List<RemoteComputer> RemoteConnectionInfo(string connectionInfo = null)
+        {
+            if (_remoteComputers == null)
+            {
+                _remoteComputers = new List<RemoteComputer>();
+            }
+
+            if (!string.IsNullOrEmpty(connectionInfo))
+            {
+                _remoteComputers = new List<RemoteComputer>();
+
+                var lineSplit = Microsoft.VisualBasic.Strings.Split(connectionInfo, Environment.NewLine);
+                foreach (var line in lineSplit)
+                {
+                    var computerName = "";
+                    string userDomain = null;
+                    string userName = null;
+                    string userPassword = null;
+
+                    var remoteComputer = new RemoteComputer();
+
+                    var splitChar = ' ';
+                    if (line.Contains((char) 9))
+                    {
+                        splitChar = (char) 9;  
+                    }
+
+                    var lineInfo = line.Split(splitChar);
+                    computerName = lineInfo[0];
+                    if (lineInfo.Length > 1)
+                    {
+                        userName = lineInfo[1];
+                        if (userName.Contains(@"\"))
+                        {
+                            userDomain = userName.Split('\\')[0];
+                            userName = userName.Split('\\')[1];
+                        }
+                    }
+                    if (lineInfo.Length > 2)
+                    {
+                        userPassword = lineInfo[1];
+                    }
+
+                    remoteComputer.UserName = userName;
+                    remoteComputer.Domain = userDomain;
+                    remoteComputer.Name = computerName;
+                    remoteComputer.Password = userPassword;
+
+                    _remoteComputers.Add(remoteComputer);
+                }
+            }
+
+            return _remoteComputers;
+        }
 
         public Certificate SelectedCertificate { get; set; }
 
