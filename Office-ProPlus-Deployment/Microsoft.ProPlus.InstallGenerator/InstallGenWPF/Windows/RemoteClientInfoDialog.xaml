@@ -70,6 +70,9 @@
                  Text="cl2 Contoso\smsadmin	pass@word1 " HorizontalAlignment="Center"  />
         </StackPanel>
 
+        <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" >
+            <Button Name="ImportComputers" Content="Import" Margin="2" Height="30" Click="ImportComputers_OnClick_Click" />
+        </StackPanel>
         <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Right" >
             <Button Name="OkButton" Content="OK" Margin="2" Height="30" Click="OkButton_Click" />
             <Button Name="CancelButton" Content="Cancel" Margin="2" Height="30" Click="CancelButton_Click"  />

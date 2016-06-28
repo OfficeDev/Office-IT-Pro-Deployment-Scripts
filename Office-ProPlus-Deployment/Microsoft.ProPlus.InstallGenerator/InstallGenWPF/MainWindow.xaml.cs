@@ -194,6 +194,19 @@ namespace MetroDemo
             }
         }
 
+        public void SetToDefaultNonStatic()
+        {
+            try
+            {
+                
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("ERROR:" + ex.Message);
+            }
+        }
+
+
         private void TransitionTab(object sender, Events.TransitionTabEventArgs e)
         {
             try
@@ -238,9 +251,30 @@ namespace MetroDemo
                              
                     RemoteTabName.Visibility = Visibility.Visible;
                     RemoteTabName.IsSelected = true;
+                    GenerateView.Tag = 99;
+                    LocalView.Tag = 5;
                 }
+                //else if (GlobalObjects.ViewModel.ApplicationMode == ApplicationMode.InstallGenerator)
+                //{
+                //    //new items here
+                //    StartView.Visibility = Visibility.Visible;
+                //    
+                //    UpdateView.Visibility = Visibility.Visible;
+                //    DisplayView.Visibility = Visibility.Visible;
+                //    GenerateView.Visibility = Visibility.Visible;
+                //    LocalView.Visibility = Visibility.Collapsed;
+                //    RemoteView.Visibility = Visibility.Collapsed;
+                //    AboutView.Visibility = Visibility.Visible;
+                //    GenerateTabName.Visibility = Visibility.Visible;
+                //    LocalTabName.Visibility = Visibility.Collapsed;
+                //    RemoteTabName.Visibility = Visibility.Collapsed;
+                //    GenerateView.Tag = 5;
+                //    LocalView.Tag = 99;
+                //}
                 else
                 {
+                    ProductView.Visibility = Visibility.Visible;
+                    DownloadView.Visibility = Visibility.Visible;
                     GenerateTabName.Visibility = Visibility.Visible;
                     LocalTabName.Visibility = Visibility.Collapsed;
                     RemoteTabName.Visibility = Visibility.Collapsed;

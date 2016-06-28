@@ -418,7 +418,6 @@ namespace MetroDemo.ExampleViews
         private void ToggleControls(bool enabled)
         {
             AddComputersButton.IsEnabled = enabled;
-            ImportComputersButton.IsEnabled = enabled;
             btnChangeChannelOrVersion.IsEnabled = enabled;
             btnUpdateRemote.IsEnabled = enabled;
             btnRemoveComputers.IsEnabled = enabled;
@@ -429,7 +428,6 @@ namespace MetroDemo.ExampleViews
         {
 
             AddComputersButton.Dispatcher.Invoke(new Action(() => { this.IsEnabled = enabled;}));
-            ImportComputersButton.Dispatcher.Invoke(new Action(() => { this.IsEnabled = enabled; }));
             btnChangeChannelOrVersion.Dispatcher.Invoke(new Action(() => { this.IsEnabled = enabled; }));
             btnUpdateRemote.Dispatcher.Invoke(new Action(() => { this.IsEnabled = enabled; }));
             btnRemoveComputers.Dispatcher.Invoke(new Action(() => { this.IsEnabled = enabled; }));

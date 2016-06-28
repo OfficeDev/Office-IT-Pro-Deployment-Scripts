@@ -2,6 +2,7 @@
 using Microsoft.OfficeProPlus.InstallGen.Presentation.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -77,5 +78,35 @@ namespace MetroDemo.ExampleWindows
             throw new NotImplementedException();
         }
 
+        private void ImportComputers_OnClick_Click(object sender, RoutedEventArgs e)
+        {
+            var dlg = new Microsoft.Win32.OpenFileDialog
+            {
+                DefaultExt = ".png",
+                Filter = "CSV Files (.csv)|*.csv"
+            };
+
+            var result = dlg.ShowDialog();
+            if (result == true)
+            {
+                string line;
+                txtBxAddMachines.Text = "";
+                try
+                {
+
+                    StreamReader file = new StreamReader(dlg.FileName);
+
+                    while ((line = file.ReadLine()) != null)
+                    {
+                        txtBxAddMachines.Text += line + Environment.NewLine;
+                    }
+                    txtBxAddMachines.Text = txtBxAddMachines.Text.TrimEnd();
+                }
+                catch (Exception ex)
+                {
+
+                }
+            }
+        }
     }
 }

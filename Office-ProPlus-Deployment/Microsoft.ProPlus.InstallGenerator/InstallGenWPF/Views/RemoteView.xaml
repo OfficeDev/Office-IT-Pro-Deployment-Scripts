@@ -143,7 +143,6 @@
 
                                 <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal">
                                     <Button x:Name="AddComputersButton" Content="Add Computers" Margin="0,20,2,20" Style="{StaticResource MetroFlatButtonStyle1}" Click="AddComputersButton_Click" />
-                                    <Button x:Name="ImportComputersButton" Content="Import Computers" Margin="2,20,0,20" Style="{StaticResource MetroFlatButtonStyle1}" Click="ImportComputersButton_Click" />
                                     <Button x:Name="btnRemoveComputers" Content="Remove Computers" Margin="2,20,2,20" Style="{StaticResource MetroFlatButtonStyle1}" Click="btnRemoveComputers_Click" />
                                     <Button x:Name="btnChangeChannelOrVersion" Content="Switch Channel/Version" Margin="2,20,2,20" Style="{StaticResource MetroFlatButtonStyle1}" Click="btnChangeChannelOrVersion_Click" />
                                     <Button x:Name="btnUpdateRemote" Content="Update Remote" Margin="20,20,2,20" Style="{StaticResource MetroFlatButtonStyle1}" Click="btnUpdateRemote_Click" />
