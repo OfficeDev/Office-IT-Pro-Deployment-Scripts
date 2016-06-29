@@ -10,6 +10,9 @@ using System.Diagnostics;
 using System.Management;
 using System.Windows.Forms.VisualStyles;
 using Microsoft.OfficeProPlus.Downloader;
+using System.Management.Automation;
+using System.Collections.ObjectModel;
+using Microsoft.OfficeProPlus.InstallGenerator.Implementation;
 
 namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
 {
@@ -38,24 +41,31 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
             string readtext = "";
             try
             {
+                
                 string PSPath = System.IO.Path.GetTempPath() + remoteComputerName + "PowershellAttemptVersion.txt";
                 System.IO.File.Delete(PSPath);
                 Process p = new Process();
-                p.StartInfo.FileName = "Powershell.exe";                                //replace path to use local path                            switch out arguments so your program throws in the necessary args
-                p.StartInfo.Arguments = @"-ExecutionPolicy Bypass -NoExit -Command ""& {& '" + System.IO.Directory.GetCurrentDirectory() + "\\Resources\\FindVersion.ps1' -machineToRun " + remoteComputerName + "}\"";
-                p.StartInfo.UseShellExecute = false;
-                p.StartInfo.CreateNoWindow = true;
-                p.Start();
-                p.WaitForExit();
-                p.Close();
-                readtext = System.IO.File.ReadAllText(PSPath);
+                //p.StartInfo.FileName = "Powershell.exe";                                //replace path to use local path                            switch out arguments so your program throws in the necessary args
+                //p.StartInfo.Arguments = @"-ExecutionPolicy Bypass -NoExit -Command ""& {& '" + System.IO.Directory.GetCurrentDirectory() + "\\Resources\\FindVersion.ps1' -machineToRun " + remoteComputerName + "}\"";
+                //p.StartInfo.UseShellExecute = false;
+                //p.StartInfo.CreateNoWindow = true;
+                //p.Start();
+                //p.WaitForExit();
+                //p.Close();
+                using (System.Management.Automation.PowerShell PowerShellInstance = System.Management.Automation.PowerShell.Create())
+                {
+                    PowerShellInstance.AddScript(System.IO.Directory.GetCurrentDirectory()+ "\\Resources\\FindVersion.ps1");
+                    PowerShellInstance.AddParameter("machineToRun", remoteComputerName);
+                    PowerShellInstance.Invoke();
+                }
+                readtext = System.IO.File.ReadAllText(System.IO.Directory.GetCurrentDirectory()+ "\\Resources\\PowershellAttemptVersion.txt");
                 readtext = readtext.Trim();
 
                 officeInstance.Version = readtext.Split('\\')[0];
             }
-            catch (Exception)
+            catch (Exception exception)
             {
-
+                throw new Exception(exception.Message);
             }
             if (!string.IsNullOrEmpty(officeInstance.Version))
             {

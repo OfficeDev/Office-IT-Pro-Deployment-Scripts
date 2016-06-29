@@ -678,7 +678,7 @@ Function Update-Office() {
             if ($UpdateToVersion) {
               $oc2rcParams += " updatetoversion=$UpdateToVersion"
             }
-
+			$oc2rcParams += " updatepromptuser=false"
     
             $UpdateSource = "http"
             if ($currentUpdateSource) {

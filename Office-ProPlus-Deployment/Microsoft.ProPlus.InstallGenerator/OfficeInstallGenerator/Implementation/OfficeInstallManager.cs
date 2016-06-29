@@ -59,8 +59,11 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
             ExceptionDispatchInfo exception = null;
             try
             {
-               await WmiInstall.InitConnection();
-                _connectionType = ConnectionType.WMI;
+               //await WmiInstall.InitConnection();
+               // _connectionType = ConnectionType.WMI;
+               // return;
+                PowershellInstall.InitConnection();
+                _connectionType = ConnectionType.PowerShell;
                 return;
             }
             catch (Exception ex)
@@ -72,8 +75,11 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
 
             try
             {
-                PowershellInstall.InitConnection();
-                _connectionType = ConnectionType.PowerShell;
+                //PowershellInstall.InitConnection();
+                //_connectionType = ConnectionType.PowerShell;
+                //return;
+                await WmiInstall.InitConnection();
+                _connectionType = ConnectionType.WMI;
                 return;
             }
             catch (Exception ex)
