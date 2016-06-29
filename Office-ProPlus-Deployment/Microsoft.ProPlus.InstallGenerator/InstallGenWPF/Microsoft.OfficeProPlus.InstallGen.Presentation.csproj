@@ -294,6 +294,9 @@
     <Compile Include="Windows\RemoteChannelVersionDialog.xaml.cs">
       <DependentUpon>RemoteChannelVersionDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Windows\CredentialsDialog.xaml.cs">
+      <DependentUpon>CredentialsDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="XmlBrowser\Converters\NullToBooleanConverter.cs" />
     <Compile Include="XmlBrowser\ValidationResultControl.xaml.cs">
       <DependentUpon>ValidationResultControl.xaml</DependentUpon>
@@ -400,6 +403,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Windows\RemoteChannelVersionDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\CredentialsDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

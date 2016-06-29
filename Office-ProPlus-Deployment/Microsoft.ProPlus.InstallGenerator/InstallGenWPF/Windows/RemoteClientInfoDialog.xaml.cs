@@ -108,5 +108,18 @@ namespace MetroDemo.ExampleWindows
                 }
             }
         }
+
+        private void AddCredentials_OnClick(object sender, RoutedEventArgs e)
+        {
+            var credentialsDialogue = new CredentialsDialog();
+            credentialsDialogue.Closing += CredentialsDialogue_Closing;
+            
+            credentialsDialogue.Launch();
+        }
+
+        private void CredentialsDialogue_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            //do stuff here, I guess
+        }
     }
 }
