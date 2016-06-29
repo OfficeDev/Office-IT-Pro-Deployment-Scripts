@@ -494,6 +494,11 @@ namespace MetroDemo
             return _remoteComputers;
         }
 
+        //public string RemoteLoggingPath { get; set; }
+
+
+
+
         public Certificate SelectedCertificate { get; set; }
 
         public Language DefaultLanguage = null;
@@ -523,6 +528,17 @@ namespace MetroDemo
         public bool PropertyChangeEventEnabled { get; set; }
 
         public string DownloadFolderPath { get; set; }
+
+        private string _remoteLoggingPath = "";
+        public string RemoteLoggingPath
+        {
+            get { return _remoteLoggingPath; }
+            set
+            {
+                _remoteLoggingPath = value;
+                RaisePropertyChanged("RemoteLoggingPath");
+            }
+        }
 
         private string _importFile = "";
         public string ImportFile

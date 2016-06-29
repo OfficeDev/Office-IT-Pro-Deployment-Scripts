@@ -1044,6 +1044,28 @@ namespace MetroDemo.ExampleViews
             }
         }
 
+        private async void OpenLoggingFolderButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var folderPath = RemoteLoggingPath.Text.Trim();
+                if (string.IsNullOrEmpty(folderPath)) return;
+
+                if (await GlobalObjects.DirectoryExists(folderPath))
+                {
+                    Process.Start("explorer", folderPath);
+                }
+                else
+                {
+                    MessageBox.Show("Directory path does not exist.");
+                }
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
+
         private async void BuildFilePath_OnTextChanged(object sender, TextChangedEventArgs e)
         {
             try
@@ -1073,7 +1095,44 @@ namespace MetroDemo.ExampleViews
                 LogErrorMessage(ex);
             }
         }
-      
+
+        private async void RemoteLoggingPath_OnTextChanged(object sender, TextChangedEventArgs e)
+        {
+            try
+            {
+                var enabled = false;
+                var openFolderEnabled = false;
+                if (RemoteLoggingPath.Text.Trim().Length > 0)
+                {
+                    var match = Regex.Match(RemoteLoggingPath.Text, @"^\w:\\|\\\\.*\\..*");
+                    if (match.Success)
+                    {
+                        enabled = true;
+                        var folderExists = await GlobalObjects.DirectoryExists(RemoteLoggingPath.Text);
+                        GlobalObjects.ViewModel.RemoteLoggingPath = RemoteLoggingPath.Text;
+                        if (!folderExists)
+                        {
+                            folderExists = await GlobalObjects.DirectoryExists(RemoteLoggingPath.Text);
+                            GlobalObjects.ViewModel.RemoteLoggingPath = "";
+                        }
+
+
+                        openFolderEnabled = folderExists;
+                    }
+                }
+
+                OpenLoggingFolderButton.IsEnabled = openFolderEnabled;
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
+
+        private void RemotePath_Click(object sender, RoutedEventArgs e)
+        {
+        }
+
         private void UpdatePath_OnClick(object sender, RoutedEventArgs e)
         {
             try
@@ -1094,6 +1153,34 @@ namespace MetroDemo.ExampleViews
                 if (result == DialogResult.OK)
                 {
                     ProductUpdateSource.Text = dlg1.SelectedPath;
+                }
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
+
+        private void RemoteLoggingPath_OnClick(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var dlg1 = new Ionic.Utils.FolderBrowserDialogEx
+                {
+                    Description = "Select a folder:",
+                    ShowNewFolderButton = true,
+                    ShowEditBox = true,
+                    SelectedPath = ProductUpdateSource.Text,
+                    ShowFullPathInEditBox = true,
+                    RootFolder = System.Environment.SpecialFolder.MyComputer
+                };
+                //dlg1.NewStyle = false;
+
+                // Show the FolderBrowserDialog.
+                var result = dlg1.ShowDialog();
+                if (result == DialogResult.OK)
+                {
+                    RemoteLoggingPath.Text = dlg1.SelectedPath;
                 }
             }
             catch (Exception ex)
@@ -1269,6 +1356,7 @@ namespace MetroDemo.ExampleViews
             }
         }
         
+
         public BranchChangedEventHandler BranchChanged { get; set; }
 
         #endregion
@@ -1356,6 +1444,7 @@ namespace MetroDemo.ExampleViews
                 LogErrorMessage(ex);
             }
         }
+
     }
 }
 
