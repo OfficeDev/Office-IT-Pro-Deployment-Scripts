@@ -1713,11 +1713,17 @@ function Update-ConfigurationXml() {
       [string] $TargetFilePath,
 
       [Parameter(Mandatory=$true)]
-      [string] $UpdateURLPath
+      [string] $UpdateURLPath,
+
+      [string] $Channel
    )
    process {
       $scriptPath = GetScriptRoot
       $editFilePath = "$scriptPath\Edit-OfficeConfigurationFile.ps1"
+
+      if(!$Channel){
+          $Channel = 'Current'
+      }
 
       $languages = Get-XMLLanguages -Path $TargetFilePath
 
