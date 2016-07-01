@@ -1618,8 +1618,6 @@ clients in the target collection 'Office Update'.
                                                                 -SlowNetworkOption RunProgramFromDistributionPoint `
                                                                 -AllowSharedContent $false -Comment $comment
 
-                                    Update-CMDistributionPoint -PackageId $package.PackageId
-
                                     Write-Host "`tDeployment created for: $packageName ($ProgramName)"
                                 } else {
                                     Write-Host "Could Not find Program in Package for Type: $ProgramType - Channel: $ChannelName" -ForegroundColor White -BackgroundColor Red
