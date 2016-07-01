@@ -59,12 +59,26 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
             ExceptionDispatchInfo exception = null;
             try
             {
-               //await WmiInstall.InitConnection();
-               // _connectionType = ConnectionType.WMI;
-               // return;
+                await WmiInstall.InitConnection();
+                _connectionType = ConnectionType.WMI;
+                return;
+                //PowershellInstall.InitConnection();
+                //_connectionType = ConnectionType.PowerShell;
+                //return;
+            }
+            catch (Exception ex)
+            {
+                exception = ExceptionDispatchInfo.Capture(ex);
+            }
+
+            try
+            {
                 PowershellInstall.InitConnection();
                 _connectionType = ConnectionType.PowerShell;
                 return;
+                //await WmiInstall.InitConnection();
+                //_connectionType = ConnectionType.WMI;
+                //return;
             }
             catch (Exception ex)
             {
@@ -72,20 +86,6 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
             }
 
             exception?.Throw();
-
-            try
-            {
-                //PowershellInstall.InitConnection();
-                //_connectionType = ConnectionType.PowerShell;
-                //return;
-                await WmiInstall.InitConnection();
-                _connectionType = ConnectionType.WMI;
-                return;
-            }
-            catch (Exception ex)
-            {
-                throw (new Exception("Cannot find client"));
-            }
         }
 
         public async Task<OfficeInstallation> CheckForOfficeInstallAsync()

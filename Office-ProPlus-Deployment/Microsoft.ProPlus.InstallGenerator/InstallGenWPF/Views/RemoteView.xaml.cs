@@ -21,6 +21,7 @@ using System.Windows.Threading;
 using UserControl = System.Windows.Controls.UserControl;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
 using Microsoft.OfficeProPlus.InstallGenerator.Models;
 
 namespace MetroDemo.ExampleViews
@@ -234,18 +235,26 @@ namespace MetroDemo.ExampleViews
 
                     string PSPath = System.IO.Path.GetTempPath()+ client.Machine + "PowershellAttempt.txt";
                     System.IO.File.Delete(PSPath);
-                    Process p = new Process();
-                    p.EnableRaisingEvents = true;
-                    p.StartInfo.CreateNoWindow = true;
-                    p.StartInfo.UseShellExecute = false;
-                    p.StartInfo.FileName = "Powershell.exe";                                //replace path to use local path                            switch out arguments so your program throws in the necessary args
-                    p.StartInfo.Arguments = @"-ExecutionPolicy Bypass -NoExit -Command ""& {& '" + System.IO.Directory.GetCurrentDirectory() + "\\Resources\\UpdateScriptLaunch.ps1' -Channel " + client.Channel.Name + " -DisplayLevel $false -machineToRun " + client.Machine + " -UpdateToVersion " + client.Version.Number + "}\"";
-                  
 
 
+                    var powerShellInstance = System.Management.Automation.PowerShell.Create();
                     if (!String.IsNullOrEmpty(client.OriginalVersion.Number) || client.Version.Number != client.OriginalVersion.Number)
                     {
-                        p.Start();
+                        
+                            powerShellInstance.AddScript(System.IO.Directory.GetCurrentDirectory() + "\\Resources\\UpdateScriptLaunch.ps1 -Channel " + client.Channel.Name + " -DisplayLevel $false -machineToRun " + client.Machine + " -UpdateToVersion " + client.Version.Number);
+                            var asyncResult = powerShellInstance.BeginInvoke();//possible make async so toolkit doesn't freeze the console
+                        statusText.Dispatcher.Invoke(new Action(() =>
+                        {
+                            statusText.Text = "Updating...";
+                        }));
+
+                        RemoteMachineList.Dispatcher.Invoke(new Action(() =>
+                        {
+                            RemoteMachineList.Items.Refresh();
+                            RemoteMachineList.ItemsSource = null;
+                            RemoteMachineList.ItemsSource = remoteClients;
+                        }));
+                        powerShellInstance.EndInvoke(asyncResult);
                     }
                     else
                     {
@@ -261,9 +270,8 @@ namespace MetroDemo.ExampleViews
                     }
 
 
+                  
 
-                    await Task.Run(() => { p.WaitForExit(); });
-                    p.Close();
                     PsUpdateExited(PSPath, statusText, client);
 
               
@@ -272,7 +280,7 @@ namespace MetroDemo.ExampleViews
                 {
 
 
-                    client.Status = "Error: "+ ex.Message;
+                    client.Status = "Error: " + ex.Message;
                     using (System.IO.StreamWriter file =
                     new System.IO.StreamWriter(System.IO.Path.GetTempPath() + client.Machine + "PowershellError.txt", true))
                     {
@@ -373,7 +381,6 @@ namespace MetroDemo.ExampleViews
                 }
                 catch (Exception ex)
                 {
-                    LogErrorMessage(ex);
                     LogWmiErrorMessage(ex, new RemoteComputer()
                     {
                         Name = client.Machine,
@@ -664,15 +671,17 @@ namespace MetroDemo.ExampleViews
                     newVersions.Add(tempVersion);
                 }
 
-                var client = remoteClients[row.GetIndex()];
-                versionCB.ItemsSource = newVersions;
-                versionCB.Items.Refresh();
-
-                if (String.IsNullOrEmpty(GlobalObjects.ViewModel.newVersion))
+                if (row != null)
                 {
-                    versionCB.SelectedValue = client.Version.Number;
-                }
+                    var client = remoteClients[row.GetIndex()];
+                    versionCB.ItemsSource = newVersions;
+                    versionCB.Items.Refresh();
 
+                    if (String.IsNullOrEmpty(GlobalObjects.ViewModel.newVersion))
+                    {
+                        versionCB.SelectedValue = client.Version.Number;
+                    }
+                }
             }
             catch (Exception ex)
             {
