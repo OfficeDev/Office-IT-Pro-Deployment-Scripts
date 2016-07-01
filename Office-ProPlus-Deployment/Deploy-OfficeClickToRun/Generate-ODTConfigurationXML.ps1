@@ -149,6 +149,7 @@ process {
 
     if (!($officeConfig.ClickToRunInstalled)) {
         $officeConfig = getOfficeConfig -regProv $regProv -mainOfficeProduct $mainOfficeProduct -officeProducts $officeProducts
+
         if ($officeConfig -and $officeConfig.OfficeKeyPath) {
             $officeLangs = officeGetLanguages -regProv $regProv -OfficeKeyPath $officeConfig.OfficeKeyPath
         }
@@ -157,11 +158,19 @@ process {
         }
     } else {
       $productPlatform = $officeConfig.Platform
+      $otherProducts = generateProductReleaseIds -MainOfficeProduct $mainOfficeProduct -OfficeProducts $officeProducts
     }
-
 
     if ($officeConfig.ProductReleaseIds) {
         $productReleaseIds = $officeConfig.ProductReleaseIds
+    }
+
+    if ($otherProducts) {
+        if ($productReleaseIds) {
+            $productReleaseIds += ",$otherProducts"
+        } else {
+            $productReleaseIds += $otherProducts
+        }
     }
 
     [bool]$officeExists = $true
@@ -897,26 +906,37 @@ function generateProductReleaseIds() {
     {
         if ($OfficeProduct.DisplayName.ToLower().Contains("microsoft") -and
             $OfficeProduct.DisplayName.ToLower().Contains("visio")) {
-            if ($productReleaseIds.Length -gt 0) {
-               $productReleaseIds += ","
+
+            if ($productReleaseIds.IndexOf("VisioProRetail") -eq -1) {
+                if ($productReleaseIds.Length -gt 0) {
+                   $productReleaseIds += ","
+                }
+                $productReleaseIds += "VisioProRetail"
             }
-            $productReleaseIds += "VisioProRetail"
         }
         if ($OfficeProduct.DisplayName.ToLower().Contains("microsoft") -and
-            $OfficeProduct.DisplayName.ToLower().Contains("visio")) {
-            if ($productReleaseIds.Length -gt 0) {
-               $productReleaseIds += ","
+            $OfficeProduct.DisplayName.ToLower().Contains("project")) {
+
+            if ($productReleaseIds.IndexOf("ProjectProRetail") -eq -1) {
+                if ($productReleaseIds.Length -gt 0) {
+                   $productReleaseIds += ","
+                }
+                $productReleaseIds += "ProjectProRetail"
             }
-            $productReleaseIds += "ProjectProRetail"
         }
         if ($OfficeProduct.DisplayName.ToLower().Contains("microsoft") -and
-            $OfficeProduct.DisplayName.ToLower().Contains("sharePoint designer")) {
-            if ($productReleaseIds.Length -gt 0) {
-               $productReleaseIds += ","
+            $OfficeProduct.DisplayName.ToLower().Contains("sharepoint designer")) {
+
+            if ($productReleaseIds.IndexOf("SPDRetail") -eq -1) {
+                if ($productReleaseIds.Length -gt 0) {
+                   $productReleaseIds += ","
+                }
+                $productReleaseIds += "SPDRetail"
             }
-            $productReleaseIds += "SPDRetail"
         }
     }
+
+    $productReleaseIds = Get-Unique -InputObject $productReleaseIds
 
     return $productReleaseIds
 }
