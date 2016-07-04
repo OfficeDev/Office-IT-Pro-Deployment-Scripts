@@ -142,163 +142,182 @@ namespace MetroDemo.ExampleViews
                     Password = remoteMachine.Password
                 });
             }
+            if (remoteMachine.Status == "Checking...")
+            {
+                remoteMachine.Status = "Not Found";
+            }
+            RemoteMachineList.ItemsSource = null;
+            RemoteMachineList.ItemsSource = remoteClients;
+        }
+
+        private Task UpdateMachineMultiThread(RemoteMachine mech, int i)
+        {
+            return Task.Run(() =>
+            {
+                UpdateMachine(mech, i);
+            });
         }
 
 
         private async Task UpdateMachine(RemoteMachine client, int i)
         {
-
-
-            var connectionInfo = new string[4];
-            RemoteMachineList.Dispatcher.Invoke(new Action(() => {
-                RemoteMachineList.UpdateLayout();
-            }));
-
-            var row = (DataGridRow)RemoteMachineList.ItemContainerGenerator.ContainerFromIndex(i);
-
-            System.Windows.Controls.TextBlock statusText = null;
-
-
-            if (row != null)
-            {
-                row.Dispatcher.Invoke(new Action(() =>
-                {
-                    statusText = row.FindChild<System.Windows.Controls.TextBlock>("TxtStatus");
+                var connectionInfo = new string[4];
+                RemoteMachineList.Dispatcher.Invoke(new Action(() => {
+                                                                         RemoteMachineList.UpdateLayout();
                 }));
-            }
-            else
-            {
-                return;
-            }
+
+                var row = (DataGridRow) RemoteMachineList.ItemContainerGenerator.ContainerFromIndex(i);
+
+                System.Windows.Controls.TextBlock statusText = null;
 
 
-            RemoteMachineList.Dispatcher.Invoke(new Action(() =>
-            {
-                RemoteMachineList.Items.Refresh();
-            }));
-
-
-            try
-            {
-
-                client.Status = "Updating";
-
-                statusText.Dispatcher.Invoke(new Action(() =>
+                if (row != null)
                 {
-                    statusText.Text = "Updating";
-                }));
+                    row.Dispatcher.Invoke(new Action(() =>
+                    {
+                        statusText = row.FindChild<System.Windows.Controls.TextBlock>("TxtStatus");
+                    }));
+                }
+                else
+                {
+                    return;
+                }
+
 
                 RemoteMachineList.Dispatcher.Invoke(new Action(() =>
                 {
                     RemoteMachineList.Items.Refresh();
                 }));
-
-                //throw (new Exception(""));
-
-                connectionInfo = new string[4] { client.UserName, client.Password, client.Machine, client.WorkGroup };
-                var installGenerator = new OfficeInstallManager(client.Machine, client.WorkGroup, client.UserName, client.Password); 
-
-                var newVersion = client.Version;
-                var newChannel = client.Channel;
-
-                await Task.Run(async () => { await installGenerator.InitConnections(); });
-                var officeInstall = await Task.Run(() => { return installGenerator.CheckForOfficeInstallAsync(); });
-
-                await Task.Run(async () => { await ChangeOfficeChannelWmi(client, officeInstall); });
-
-                client.Status = "Success";
-
-                statusText.Dispatcher.Invoke(new Action(() =>
-                {
-                    statusText.Text = "Success";
-                }));
-
-                RemoteMachineList.Dispatcher.Invoke(new Action(() =>
-                {
-                    RemoteMachineList.Items.Refresh();
-                }));
-
-            }
-            catch (Exception ex)// if fails via WMI, try via powershell
-            {
 
 
                 try
                 {
-                    LogWmiErrorMessage(ex, new RemoteComputer()
-                    {
-                        Name = client.Machine,
-                        Domain = client.WorkGroup,
-                        Password = client.Password,
-                        UserName = client.UserName
-                    });
 
-                    string PSPath = System.IO.Path.GetTempPath()+ client.Machine + "PowershellAttempt.txt";
-                    System.IO.File.Delete(PSPath);
+                    client.Status = "Updating";
 
-
-                    var powerShellInstance = System.Management.Automation.PowerShell.Create();
-                    if (!String.IsNullOrEmpty(client.OriginalVersion.Number) || client.Version.Number != client.OriginalVersion.Number)
-                    {
-                        
-                            powerShellInstance.AddScript(System.IO.Directory.GetCurrentDirectory() + "\\Resources\\UpdateScriptLaunch.ps1 -Channel " + client.Channel.Name + " -DisplayLevel $false -machineToRun " + client.Machine + " -UpdateToVersion " + client.Version.Number);
-                            var asyncResult = powerShellInstance.BeginInvoke();//possible make async so toolkit doesn't freeze the console
-                        statusText.Dispatcher.Invoke(new Action(() =>
-                        {
-                            statusText.Text = "Updating...";
-                        }));
-
-                        RemoteMachineList.Dispatcher.Invoke(new Action(() =>
-                        {
-                            RemoteMachineList.Items.Refresh();
-                            RemoteMachineList.ItemsSource = null;
-                            RemoteMachineList.ItemsSource = remoteClients;
-                        }));
-                        powerShellInstance.EndInvoke(asyncResult);
-                    }
-                    else
-                    {
-                        statusText.Dispatcher.Invoke(new Action(() =>
-                        {
-                            statusText.Text = "Success";
-                        }));
-
-                        RemoteMachineList.Dispatcher.Invoke(new Action(() =>
-                        {
-                            RemoteMachineList.Items.Refresh();
-                        }));
-                    }
-
-
-                  
-
-                    PsUpdateExited(PSPath, statusText, client);
-
-              
-                }
-                catch (Exception ex1)
-                {
-
-
-                    client.Status = "Error: " + ex.Message;
-                    using (System.IO.StreamWriter file =
-                    new System.IO.StreamWriter(System.IO.Path.GetTempPath() + client.Machine + "PowershellError.txt", true))
-                    {
-                        file.WriteLine(ex1.Message);
-                        file.WriteLine(ex1.StackTrace);
-                    }
                     statusText.Dispatcher.Invoke(new Action(() =>
                     {
-                        statusText.Text = "Error: " + ex.Message;
+                        statusText.Text = "Updating";
                     }));
 
                     RemoteMachineList.Dispatcher.Invoke(new Action(() =>
                     {
                         RemoteMachineList.Items.Refresh();
                     }));
-                }
 
-            }
+                    //throw (new Exception(""));
+
+                    connectionInfo = new string[4] {client.UserName, client.Password, client.Machine, client.WorkGroup};
+                    var installGenerator = new OfficeInstallManager(client.Machine, client.WorkGroup, client.UserName,
+                        client.Password);
+
+                    var newVersion = client.Version;
+                    var newChannel = client.Channel;
+
+                    await Task.Run(async () => { await installGenerator.InitConnections(); });
+                    var officeInstall = await Task.Run(() => { return installGenerator.CheckForOfficeInstallAsync(); });
+
+                    await Task.Run(async () => { await ChangeOfficeChannelWmi(client, officeInstall); });
+
+                    client.Status = "Success";
+
+                    statusText.Dispatcher.Invoke(new Action(() =>
+                    {
+                        statusText.Text = "Success";
+                    }));
+
+                    RemoteMachineList.Dispatcher.Invoke(new Action(() =>
+                    {
+                        RemoteMachineList.Items.Refresh();
+                    }));
+
+                }
+                catch (Exception ex) // if fails via WMI, try via powershell
+                {
+
+
+                    try
+                    {
+                        LogWmiErrorMessage(ex, new RemoteComputer()
+                        {
+                            Name = client.Machine,
+                            Domain = client.WorkGroup,
+                            Password = client.Password,
+                            UserName = client.UserName
+                        });
+
+                        string PSPath = System.IO.Path.GetTempPath() + client.Machine + "PowershellAttempt.txt";
+                        System.IO.File.Delete(PSPath);
+
+
+                        var powerShellInstance = System.Management.Automation.PowerShell.Create();
+                        if (!String.IsNullOrEmpty(client.OriginalVersion.Number) ||
+                            client.Version.Number != client.OriginalVersion.Number)
+                        {
+
+                            powerShellInstance.AddScript(System.IO.Directory.GetCurrentDirectory() +
+                                                         "\\Resources\\UpdateScriptLaunch.ps1 -Channel " +
+                                                         client.Channel.Name + " -DisplayLevel $false -machineToRun " +
+                                                         client.Machine + " -UpdateToVersion " + client.Version.Number);
+                            var asyncResult = powerShellInstance.BeginInvoke();
+                            //possible make async so toolkit doesn't freeze the console
+                            statusText.Dispatcher.Invoke(new Action(() =>
+                            {
+                                statusText.Text = "Updating...";
+                            }));
+
+                            RemoteMachineList.Dispatcher.Invoke(new Action(() =>
+                            {
+                                RemoteMachineList.Items.Refresh();
+                                RemoteMachineList.ItemsSource = null;
+                                RemoteMachineList.ItemsSource = remoteClients;
+                            }));
+                            powerShellInstance.EndInvoke(asyncResult);
+                        }
+                        else
+                        {
+                            statusText.Dispatcher.Invoke(new Action(() =>
+                            {
+                                statusText.Text = "Success";
+                            }));
+
+                            RemoteMachineList.Dispatcher.Invoke(new Action(() =>
+                            {
+                                RemoteMachineList.Items.Refresh();
+                            }));
+                        }
+
+
+
+
+                        PsUpdateExited(PSPath, statusText, client);
+
+
+                    }
+                    catch (Exception ex1)
+                    {
+
+
+                        client.Status = "Error: " + ex.Message;
+                        using (System.IO.StreamWriter file =
+                            new System.IO.StreamWriter(
+                                System.IO.Path.GetTempPath() + client.Machine + "PowershellError.txt", true))
+                        {
+                            file.WriteLine(ex1.Message);
+                            file.WriteLine(ex1.StackTrace);
+                        }
+                        statusText.Dispatcher.Invoke(new Action(() =>
+                        {
+                            statusText.Text = "Error: " + ex.Message;
+                        }));
+
+                        RemoteMachineList.Dispatcher.Invoke(new Action(() =>
+                        {
+                            RemoteMachineList.Items.Refresh();
+                        }));
+                    }
+
+                }
         }
 
         private void PsUpdateExited(string psPath, TextBlock statusText, RemoteMachine client)
@@ -598,7 +617,9 @@ namespace MetroDemo.ExampleViews
 
                     if (client.include && client.Status.Trim() != "Not Found")
                     {
-                        updateTasks.Add(UpdateMachine(client, i));
+                        int tempInt = i;
+                        Task tempTask = UpdateMachineMultiThread(client, tempInt);// UpdateMachine(client, i);
+                        updateTasks.Add(tempTask);
                     }
                 }
 
@@ -617,7 +638,6 @@ namespace MetroDemo.ExampleViews
                         RemoteMachineList.Items.Refresh();
                     }));
                 });
-
             }
             catch (Exception ex)
             {
@@ -636,7 +656,7 @@ namespace MetroDemo.ExampleViews
                     RemoteMachineList.Items.Refresh();
                 }));
             }
-
+            GlobalObjects.ViewModel.BlockNavigation = false;
 
         }
 
