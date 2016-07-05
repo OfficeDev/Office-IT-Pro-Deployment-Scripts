@@ -459,7 +459,7 @@ Update-CMOfficePackage -Channels Current -Bitness Both -OfficeSourceFilesPath D:
                 Write-Host "`t`tUpdating Source Files..."
 
                 $officeFileChannelPath = "$OfficeSourceFilesPath\$ChannelShortName"
-                $officeFileTargetPath = "$LocalChannelPath\$Channel"
+                $officeFileTargetPath = "$LocalChannelPath\$ChannelShortName"
 
                 if (!(Test-Path -Path $officeFileChannelPath)) {
                     throw "Channel Folder Missing: $officeFileChannelPath - Ensure that you have downloaded the Channel you are trying to deploy"
@@ -470,7 +470,7 @@ Update-CMOfficePackage -Channels Current -Bitness Both -OfficeSourceFilesPath D:
 
                 if ($MoveSourceFiles){                                
                     if(!(Test-Path -Path $officeFileTargetPath)) {
-                        [System.IO.Directory]::CreateDirectory($officeFileTargetPath) | Out-Null
+                        #[System.IO.Directory]::CreateDirectory($officeFileTargetPath) | Out-Null
 
                         Move-Item -Path $officeFileChannelPath -Destination $LocalChannelPath -Force
                     }else{
@@ -500,6 +500,17 @@ Update-CMOfficePackage -Channels Current -Bitness Both -OfficeSourceFilesPath D:
                 $cabFilePath = "$OfficeSourceFilesPath\ofl.cab"
                 if (Test-Path $cabFilePath) {
                     Copy-Item -Path $cabFilePath -Destination "$LocalPath\ofl.cab" -Force
+                }
+
+                [string]$oclVersion = $NULL
+                if ($officeFileChannelPath) {
+                    if (Test-Path -Path "$officeFileChannelPath\Office\Data") {
+                       $oclVersion = Get-LatestVersion -UpdateURLPath $officeFileChannelPath
+                    }
+                }
+
+                if ($oclVersion) {
+                   $latestVersion = $oclVersion
                 }
            }
 
