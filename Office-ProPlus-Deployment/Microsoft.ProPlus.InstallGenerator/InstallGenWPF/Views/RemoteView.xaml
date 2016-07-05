@@ -94,7 +94,7 @@
                                                             <Image x:Name="ImgFail"  Source="../images/fail.png" Height="20" HorizontalAlignment="Left"  Visibility="Collapsed" ></Image>
                                                             <Image x:Name="ImgUpdating" Visibility="Collapsed" Height="20" HorizontalAlignment="Left" gif:ImageBehavior.RepeatBehavior="Forever" 
                                                                 gif:ImageBehavior.AnimatedSource="../images/InstallRing.GIF" />
-                                                            <TextBlock x:Name="TxtStatus" Text="{Binding Path=Status,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"  FontSize="20" Foreground="{DynamicResource LabelTextBrushCustom}" HorizontalAlignment="Left" Padding="2 0 0 0"/>
+                                                            <TextBlock x:Name="TxtStatus" Text="{Binding Path=Status,UpdateSourceTrigger=PropertyChanged,Mode=TwoWay,NotifyOnTargetUpdated=True}" TargetUpdated="TxtStatus_OnTargetUpdated" FontSize="20" Foreground="{DynamicResource LabelTextBrushCustom}" HorizontalAlignment="Left" Padding="2 0 0 0"/>
                                                         </DockPanel>
                                                     </DataTemplate> 
                                                 </DataGridTemplateColumn.CellTemplate>

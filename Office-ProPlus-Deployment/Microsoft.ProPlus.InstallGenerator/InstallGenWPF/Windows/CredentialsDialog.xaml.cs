@@ -31,10 +31,12 @@ namespace MetroDemo.ExampleWindows
             this.Show();
             string username = GlobalObjects.ViewModel.GetUsername();
             string password = GlobalObjects.ViewModel.GetPassword();
+            string domain = GlobalObjects.ViewModel.GetDomain();
             if ((!string.IsNullOrEmpty(username)) && (!string.IsNullOrEmpty(password)))
             {
                 txtBoxUserName.Text = username;
                 txtBoxPassword.Password = password;
+                txtBoxDomain.Text = domain;
             }
         }
 
@@ -51,7 +53,11 @@ namespace MetroDemo.ExampleWindows
             if ((!string.IsNullOrEmpty(txtBoxUserName.Text)) && (!string.IsNullOrEmpty(txtBoxPassword.Password)))
             {
                 Result = System.Windows.Forms.DialogResult.OK;
-                GlobalObjects.ViewModel.SetCredentials(txtBoxUserName.Text, txtBoxPassword.Password);
+                GlobalObjects.ViewModel.SetCredentials(txtBoxUserName.Text, txtBoxPassword.Password, txtBoxDomain.Text);
+            }
+            else
+            {
+                throw  new Exception("Please provide username and password");
             }
 
             this.Close();

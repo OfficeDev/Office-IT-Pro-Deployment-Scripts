@@ -42,7 +42,9 @@ namespace MetroDemo.ExampleWindows
                 if(!string.IsNullOrEmpty(txtBxAddMachines.Text))
                 {
                     Result = System.Windows.Forms.DialogResult.OK;
-                    GlobalObjects.ViewModel.RemoteConnectionInfo(txtBxAddMachines.Text);
+                    if(txtBxAddMachines.Text.Contains(" "))
+                        throw new Exception("Please add IP addresses or machine names only");
+                    GlobalObjects.ViewModel.RemoteConnectionInfo(txtBxAddMachines.Text.Trim());
                 }
               
                 this.Close();                
@@ -58,20 +60,7 @@ namespace MetroDemo.ExampleWindows
             Result = System.Windows.Forms.DialogResult.Cancel;
             this.Close();
         }
-
-        private List<String> getVersions(OfficeBranch currentChannel, List<String> versions, string currentVersion)
-        {
-
-            foreach (var version in currentChannel.Versions)
-            {
-                if (version.Version.ToString() != currentVersion)
-                {
-                    versions.Add(version.Version.ToString());
-                }
-            }
-
-            return versions;
-        }
+        
 
         public void Dispose()
         {

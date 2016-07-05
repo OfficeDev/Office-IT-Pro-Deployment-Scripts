@@ -22,6 +22,7 @@ using UserControl = System.Windows.Controls.UserControl;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.Remoting.Messaging;
+using System.Windows.Data;
 using Microsoft.OfficeProPlus.InstallGenerator.Models;
 
 namespace MetroDemo.ExampleViews
@@ -152,6 +153,7 @@ namespace MetroDemo.ExampleViews
 
         private Task UpdateMachineMultiThread(RemoteMachine mech, int i)
         {
+            //allows for updates to be run at the same time.  otherwise, each task stays in queue until al awaits have finished
             return Task.Run(() =>
             {
                 UpdateMachine(mech, i);
@@ -248,8 +250,7 @@ namespace MetroDemo.ExampleViews
 
                         string PSPath = System.IO.Path.GetTempPath() + client.Machine + "PowershellAttempt.txt";
                         System.IO.File.Delete(PSPath);
-
-
+                    
                         var powerShellInstance = System.Management.Automation.PowerShell.Create();
                         if (!String.IsNullOrEmpty(client.OriginalVersion.Number) ||
                             client.Version.Number != client.OriginalVersion.Number)
@@ -261,31 +262,34 @@ namespace MetroDemo.ExampleViews
                                                          client.Machine + " -UpdateToVersion " + client.Version.Number);
                             var asyncResult = powerShellInstance.BeginInvoke();
                             //possible make async so toolkit doesn't freeze the console
-                            statusText.Dispatcher.Invoke(new Action(() =>
-                            {
-                                statusText.Text = "Updating...";
-                            }));
+                            client.Status = "Updating...";
+                        //statusText.Dispatcher.Invoke(new Action(() =>
+                        //{
+                        //    statusText.Text = "Updating...";
+                        //}));
 
-                            RemoteMachineList.Dispatcher.Invoke(new Action(() =>
-                            {
-                                RemoteMachineList.Items.Refresh();
-                                RemoteMachineList.ItemsSource = null;
-                                RemoteMachineList.ItemsSource = remoteClients;
-                            }));
-                            powerShellInstance.EndInvoke(asyncResult);
+                        //RemoteMachineList.Dispatcher.Invoke(new Action(() =>
+                        //{
+                        //    RemoteMachineList.Items.Refresh();
+                        //    RemoteMachineList.ItemsSource = null;
+                        //    RemoteMachineList.ItemsSource = remoteClients;
+                        //}));
+                        
+                        powerShellInstance.EndInvoke(asyncResult);
                         }
                         else
                         {
-                            statusText.Dispatcher.Invoke(new Action(() =>
-                            {
-                                statusText.Text = "Success";
-                            }));
-
-                            RemoteMachineList.Dispatcher.Invoke(new Action(() =>
-                            {
-                                RemoteMachineList.Items.Refresh();
-                            }));
-                        }
+                            //statusText.Dispatcher.Invoke(new Action(() =>
+                            //{
+                            //    statusText.Text = "Success";
+                            //}));
+                        client.Status = "Success";
+                        //RemoteMachineList.Dispatcher.Invoke(new Action(() =>
+                        //    {
+                        //        RemoteMachineList.Items.Refresh();
+                        //    }));
+                        RemoteMachineList.Items.Refresh();
+                    }
 
 
 
@@ -611,8 +615,8 @@ namespace MetroDemo.ExampleViews
                         !string.IsNullOrEmpty(GlobalObjects.ViewModel.GetPassword()))
                     {
                         client.Password = GlobalObjects.ViewModel.GetPassword();
-                        client.UserName = GlobalObjects.ViewModel.GetUsername().Split('\\')[1];
-                        client.WorkGroup = GlobalObjects.ViewModel.GetUsername().Split('\\')[0];
+                        client.UserName = GlobalObjects.ViewModel.GetUsername();
+                        client.WorkGroup = GlobalObjects.ViewModel.GetDomain();
                     }
 
                     if (client.include && client.Status.Trim() != "Not Found")
@@ -625,14 +629,6 @@ namespace MetroDemo.ExampleViews
 
                 await Task.Factory.ContinueWhenAll(updateTasks.ToArray(), t =>
                 {
-                    ToggleControlsMulti(true);
-
-                    WaitImage.Dispatcher.Invoke(new Action(() =>
-                    {
-                        WaitImage.Visibility = Visibility.Hidden;
-                    }));
-
-
                     RemoteMachineList.Dispatcher.Invoke(new Action(() =>
                     {
                         RemoteMachineList.Items.Refresh();
@@ -643,20 +639,11 @@ namespace MetroDemo.ExampleViews
             {
                 LogErrorMessage(ex);
 
-                ToggleControlsMulti(true);
-
-                WaitImage.Dispatcher.Invoke(new Action(() =>
-                {
-                    WaitImage.Visibility = Visibility.Hidden;
-                }));
-
-
                 RemoteMachineList.Dispatcher.Invoke(new Action(() =>
                 {
                     RemoteMachineList.Items.Refresh();
                 }));
             }
-            GlobalObjects.ViewModel.BlockNavigation = false;
 
         }
 
@@ -932,9 +919,35 @@ namespace MetroDemo.ExampleViews
                 LogErrorMessage(ex);
             }
         }
+        
 
         #endregion
 
+        
+        private void TxtStatus_OnTargetUpdated(object sender, DataTransferEventArgs e)
+        {
+            //check text in status, block nav if it's working on something, unblock if not
+            bool inProgress = false;
+            foreach (var client in remoteClients)
+            {
+                if (client.Status.ToLower().Contains("checking") || client.Status.ToLower().Contains("updat"))
+                {
+                    inProgress = true;
+                }
+            }
+            if (inProgress)
+            {
+                GlobalObjects.ViewModel.BlockNavigation = true;
+                ToggleControlsMulti(false);
+                WaitImage.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                ToggleControlsMulti(true);
+                WaitImage.Visibility = Visibility.Hidden;
+                GlobalObjects.ViewModel.BlockNavigation = false;
+            }
+        }
     }
 
 }

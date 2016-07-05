@@ -101,6 +101,7 @@ namespace MetroDemo
         private List<RemoteComputer> _remoteComputers = null;
         private string _adminUsername = "";
         private string _adminPassword = "";
+        private string _adminDomain = "";
         
         public MainWindowViewModel(IDialogCoordinator dialogCoordinator)
         {
@@ -441,10 +442,11 @@ namespace MetroDemo
         public bool UseFolderShortNames { get; set; }
 
 
-        public void SetCredentials(string uName, string password)
+        public void SetCredentials(string uName, string password, string domain)
         {
             _adminUsername = uName;
             _adminPassword = password;
+            _adminDomain = domain;
         }
 
         public string GetUsername()
@@ -455,6 +457,11 @@ namespace MetroDemo
         public string GetPassword()
         {
             return _adminPassword;
+        }
+
+        public string GetDomain()
+        {
+            return _adminDomain;
         }
         public List<RemoteComputer> RemoteConnectionInfo(string connectionInfo = null)
         {
