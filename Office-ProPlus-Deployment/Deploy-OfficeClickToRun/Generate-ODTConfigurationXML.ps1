@@ -158,7 +158,7 @@ process {
         }
     } else {
       $productPlatform = $officeConfig.Platform
-      $otherProducts = generateProductReleaseIds -MainOfficeProduct $mainOfficeProduct -OfficeProducts $officeProducts
+      $otherProducts = $officeConfig.ProductReleaseIds
     }
 
     if ($officeConfig.ProductReleaseIds) {
