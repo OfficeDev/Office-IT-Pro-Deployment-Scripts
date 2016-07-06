@@ -48,7 +48,7 @@
                     <TabItem x:Name="OptionalTab" Height="50" >
                         <TabItem.Header>
                             <DockPanel Margin="0,5,0,0">
-                                <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,0,0,0">Optional</Label>
+                                <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,0,0,0" FontFamily="Segoe UI Semilight">Optional</Label>
                             </DockPanel>
                         </TabItem.Header>
 
@@ -68,7 +68,7 @@
                                         <ColumnDefinition Width="150" />
                                         <ColumnDefinition Width="620" />
                                     </Grid.ColumnDefinitions>
-                                    <Label Content="Download Path" Style="{StaticResource CustomMetroLabelHeader}" Margin="0 10 0 0" Grid.Column="0"  Height="51"/>
+                                    <Label Content="Download Path" Style="{StaticResource CustomMetroLabelHeader}" Margin="0 10 0 0" Grid.Column="0"  Height="51" FontFamily="Segoe UI Semibold"/>
 
                                     <Grid Margin="0,0,0,0" Grid.Column="1">
                                         <Grid.ColumnDefinitions>
@@ -83,14 +83,14 @@
                                         <TextBox x:Name="ProductUpdateSource" Background="#00ffffff" FontSize="20" Grid.Column="0" HorizontalAlignment="Left"
                                              Controls:TextBoxHelper.Watermark="Local, UNC or HTTP Path" Height="37" Width="360" Foreground="{StaticResource GrayBrush}"
                                              Controls:TextBoxHelper.ClearTextButton="True" TextChanged="BuildFilePath_OnTextChanged"
-                                             Text="">
+                                             Text="" FontFamily="Segoe UI Semilight">
                                         </TextBox>
 
                                         <Button Width="55" Grid.Column="1"
                                             Height="40" Style="{StaticResource MetroFlatButtonStyle1}"
-                                            Content="Browse" x:Name="UpdatePath" Click="UpdatePath_OnClick" />
+                                            Content="Browse" x:Name="UpdatePath" Click="UpdatePath_OnClick" FontFamily="Segoe UI Semibold" />
                                         <Button Width="50" Height="40" Grid.Column="2" Style="{StaticResource MetroFlatButtonStyle1}"
-                                            Content="Open" x:Name="OpenFolderButton" IsEnabled="False" Click="OpenFolderButton_OnClick"   />
+                                            Content="Open" x:Name="OpenFolderButton" IsEnabled="False" Click="OpenFolderButton_OnClick" FontFamily="Segoe UI Semibold"   />
 
                                         <Label x:Name="DownloadPercent" Grid.Column="4" Content="" Margin="0 8 0 0" Style="{StaticResource CustomMetroLabelHeader}" />
                                     </Grid>
@@ -105,7 +105,7 @@
                                         <ColumnDefinition Width="150" />
                                         <ColumnDefinition Width="620" />
                                     </Grid.ColumnDefinitions>
-                                    <Label Content="Editions" Style="{StaticResource CustomMetroLabelHeader}" Margin="0 10 0 0" Grid.Column="0"  Height="51"/>
+                                    <Label Content="Editions" Style="{StaticResource CustomMetroLabelHeader}" Margin="0 10 0 0" Grid.Column="0"  Height="51" FontFamily="Segoe UI Semibold"/>
 
                                     <Grid Margin="0,0,0,0" Grid.Column="1">
                                         <Grid.ColumnDefinitions>
@@ -114,9 +114,9 @@
                                         </Grid.ColumnDefinitions>
 
                                         <CheckBox x:Name="Download32Bit" Grid.Column="0" Content="32-Bit" Checked="ToggleButton_OnChecked" Unchecked="ToggleButton_OnChecked"
-                                                  Foreground="{StaticResource GrayBrush}" Style="{StaticResource MetroCheckBox}"></CheckBox>
+                                                  Foreground="{StaticResource GrayBrush}" Style="{StaticResource MetroCheckBox}" FontFamily="Segoe UI Semibold"></CheckBox>
                                         <CheckBox x:Name="Download64Bit" Grid.Column="1" Content="64-Bit"  Checked="ToggleButton_OnChecked" Unchecked="ToggleButton_OnChecked"
-                                                  Foreground="{StaticResource GrayBrush}" Style="{StaticResource MetroCheckBox}"></CheckBox>
+                                                  Foreground="{StaticResource GrayBrush}" Style="{StaticResource MetroCheckBox}" FontFamily="Segoe UI Semibold"></CheckBox>
                                     </Grid>
 
                                 </Grid>
@@ -130,7 +130,7 @@
                                     </Grid.ColumnDefinitions>
 
                                     <Border BorderThickness="2" BorderBrush="Gray" Height="189" >
-                                        <ListView Margin="0" Name="lvUsers" BorderThickness="0">
+                                        <ListView Margin="0" Name="lvUsers" BorderThickness="0" FontFamily="Segoe UI Semibold">
                                             <ListView.View>
                                                 <GridView  >
                                                 <GridViewColumn Header="" Width="35">
@@ -185,9 +185,9 @@
 
                                     <Button Width="70" Height="40" Style="{StaticResource MetroFlatButtonStyle1}"
                                             Content="Download" x:Name="DownloadButton"  HorizontalAlignment="Left"
-                                            Click="DownloadButton_OnClick" IsEnabled="False"   />
+                                            Click="DownloadButton_OnClick" IsEnabled="False" FontFamily="Segoe UI Semibold"   />
                                     <Button Width="70" Height="40" HorizontalAlignment="Right" Style="{StaticResource MetroFlatButtonStyle1}"
-                                            Content="Advanced" x:Name="AdvDownloadButton" Click="AdvDownloadButton_OnClick" IsEnabled="True"   />
+                                            Content="Advanced" x:Name="AdvDownloadButton" Click="AdvDownloadButton_OnClick" IsEnabled="True" FontFamily="Segoe UI Semibold"   />
                                 </Grid>
 
                             </StackPanel>
@@ -211,8 +211,8 @@
                     <ColumnDefinition Width="20"  />
                     <ColumnDefinition  />
                 </Grid.ColumnDefinitions>
-                <Button x:Name="PreviousButton" Width="100" Height="40" Grid.Column="0" Content="Previous"  Click="PreviousButton_Click" Background="#FFF7F7F7" />
-                <Button x:Name="NextButton" Width="100" Height="40" Grid.Column="2" Content="Next" Click="NextButton_Click" Background="#FFF7F7F7" />
+                <Button x:Name="PreviousButton" Width="100" Height="40" Grid.Column="0" Content="Previous"  Click="PreviousButton_Click" Background="#FFF7F7F7" FontFamily="Segoe UI Semilight" />
+                <Button x:Name="NextButton" Width="100" Height="40" Grid.Column="2" Content="Next" Click="NextButton_Click" Background="#FFF7F7F7" FontFamily="Segoe UI Semilight" />
             </Grid>
         </Grid>
 

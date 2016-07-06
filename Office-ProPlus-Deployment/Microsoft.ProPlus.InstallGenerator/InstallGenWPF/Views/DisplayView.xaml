@@ -43,7 +43,7 @@
                     <TabItem x:Name="OptionalTab" Height="50" >
                         <TabItem.Header>
                             <DockPanel Margin="0,5,0,0">
-                                <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,0,0,0">Additional Options</Label>
+                                <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,0,0,0" FontFamily="Segoe UI Semilight">Additional Options</Label>
                             </DockPanel>
                         </TabItem.Header>
             
@@ -75,13 +75,13 @@
                                                             Focusable="False"  Style="{StaticResource CustomMetroInfoButton}" Click="ProductInfo_OnClick" >
                                         <Image Source="../images/info.png" Height="20" Width="20" />
                                     </Button>
-                                    <Label Content="Display Level" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="1" HorizontalAlignment="Left" Grid.ColumnSpan="2" />
+                                    <Label Content="Display Level" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="1" HorizontalAlignment="Left" Grid.ColumnSpan="2" FontFamily="Segoe UI Semibold" />
 
                                     <Controls:ToggleSwitch x:Name="DisplayLevel" Grid.Column="2" 
                                                    IsChecked="True"  Style="{StaticResource MetroToggleSwitchStyle}"
                                                    OnLabel="Full" 
                                                    OffLabel="None"
-                                                   HorizontalAlignment="Left" Width="110" />
+                                                   HorizontalAlignment="Left" Width="110" FontFamily="Segoe UI Semibold" />
                                 </Grid>
 
                                 <Grid Margin="50 0 0 0">
@@ -98,13 +98,13 @@
                                         <Image Source="../images/info.png" Width="20" Height="20"/>
                                     </Button>
                                     <Label Content="Accept EULA" Style="{StaticResource CustomMetroLabelHeader}" 
-                                       HorizontalAlignment="Left" Grid.Column="1"  Width="143" />
+                                       HorizontalAlignment="Left" Grid.Column="1"  Width="143" FontFamily="Segoe UI Semibold" />
 
                                     <Controls:ToggleSwitch x:Name="AcceptEula" Grid.Column="2"
                                                IsChecked="False" Style="{StaticResource MetroToggleSwitchStyle}"
                                                OnLabel="True"
                                                OffLabel="False"
-                                                HorizontalAlignment="Left" Width="110" />
+                                                HorizontalAlignment="Left" Width="110" FontFamily="Segoe UI Semibold" />
                                 </Grid>
 
                                 <Grid Margin="50 0 0 0">
@@ -121,13 +121,13 @@
                                         <Image Source="../images/info.png" Width="20" Height="20"/>
                                     </Button>
                                     <Label Content="Auto Activate" Style="{StaticResource CustomMetroLabelHeader}" 
-                                       HorizontalAlignment="Left" Grid.Column="1" Grid.ColumnSpan="2" Width="158" />
+                                       HorizontalAlignment="Left" Grid.Column="1" Grid.ColumnSpan="2" Width="158" FontFamily="Segoe UI Semibold" />
 
                                     <Controls:ToggleSwitch x:Name="AutoActivate" Grid.Column="2"
                                                IsChecked="False" Style="{StaticResource MetroToggleSwitchStyle}"
                                                OnLabel="Yes"
                                                OffLabel="No"
-                                              HorizontalAlignment="Left" Width="110" />
+                                              HorizontalAlignment="Left" Width="110" FontFamily="Segoe UI Semibold" />
                                 </Grid>
 
                                 <Grid Margin="50 0 0 0">
@@ -144,13 +144,13 @@
                                         <Image Source="../images/info.png" Width="20" Height="20"/>
                                     </Button>
                                     <Label Content="Force App Shutdown" Style="{StaticResource CustomMetroLabelHeader}" 
-                                       HorizontalAlignment="Left"  Grid.Column="1" Grid.ColumnSpan="2" Width="180"/>
+                                       HorizontalAlignment="Left"  Grid.Column="1" Grid.ColumnSpan="2" Width="180" FontFamily="Segoe UI Semibold"/>
 
                                     <Controls:ToggleSwitch x:Name="ForceAppShutdown" Grid.Column="2"
                                                IsChecked="False" Style="{StaticResource MetroToggleSwitchStyle}"
                                                OnLabel="True"
                                                OffLabel="False"
-                                               HorizontalAlignment="Left" Width="110" />
+                                               HorizontalAlignment="Left" Width="110" FontFamily="Segoe UI Semibold" />
                                 </Grid>
 
                                 <Grid Margin="50 0 0 0">
@@ -167,13 +167,13 @@
                                         <Image Source="../images/info.png" Width="20" Height="20"/>
                                     </Button>
                                     <Label Content="Shared Computer Licensing" Style="{StaticResource CustomMetroLabelHeader}" 
-                                       HorizontalAlignment="Left"  Grid.Column="1" Width="310"/>
+                                       HorizontalAlignment="Left"  Grid.Column="1" Width="310" FontFamily="Segoe UI Semibold"/>
 
                                     <Controls:ToggleSwitch x:Name="SharedComputerLicensing" Grid.Column="2"
                                                IsChecked="False" Style="{StaticResource MetroToggleSwitchStyle}"
                                                OnLabel="True"
                                                OffLabel="False"
-                                                HorizontalAlignment="Left" Width="110" />
+                                                HorizontalAlignment="Left" Width="110" FontFamily="Segoe UI Semibold" />
                                 </Grid>
 
                                 <Grid Margin="50 0 0 0">
@@ -190,13 +190,13 @@
                                         <Image Source="../images/info.png" Width="20" Height="20"/>
                                     </Button>
                                     <Label Content="Pin Icons To Taskbar" Style="{StaticResource CustomMetroLabelHeader}" 
-                                       HorizontalAlignment="Left"  Grid.Column="1" Width="330"/>
+                                       HorizontalAlignment="Left"  Grid.Column="1" Width="330" FontFamily="Segoe UI Semibold"/>
 
                                     <Controls:ToggleSwitch x:Name="PinIconsToTaskbar" Grid.Column="2"
                                                IsChecked="False" Style="{StaticResource MetroToggleSwitchStyle}"
                                                OnLabel="True"
                                                OffLabel="False"
-                                                HorizontalAlignment="Left" Width="110" />
+                                                HorizontalAlignment="Left" Width="110" FontFamily="Segoe UI Semibold" />
                                 </Grid>
 
                                 <Grid Margin="50 0 0 0">
@@ -213,13 +213,13 @@
                                         <Image Source="../images/info.png" Width="20" Height="20"/>
                                     </Button>
                                     <Label Content="Enable Configuration Manager support" Style="{StaticResource CustomMetroLabelHeader}" 
-                                       HorizontalAlignment="Left"  Grid.Column="1" Width="330"/>
+                                       HorizontalAlignment="Left"  Grid.Column="1" Width="330" FontFamily="Segoe UI Semibold"/>
 
                                     <Controls:ToggleSwitch x:Name="EnableSCCMSupport" Grid.Column="2"
                                                IsChecked="False" Style="{StaticResource MetroToggleSwitchStyle}"
                                                OnLabel="True"
                                                OffLabel="False"
-                                                HorizontalAlignment="Left" Width="110" />
+                                                HorizontalAlignment="Left" Width="110" FontFamily="Segoe UI Semibold" />
                                 </Grid>
 
                             </StackPanel>
@@ -244,8 +244,8 @@
                     <ColumnDefinition Width="20"  />
                     <ColumnDefinition  />
                 </Grid.ColumnDefinitions>
-                <Button x:Name="PreviousButton" Width="100" Height="40" Grid.Column="0" Content="Previous"  Click="PreviousButton_OnClick" Background="#FFF7F7F7" />
-                <Button x:Name="NextButton" Width="100" Height="40" Grid.Column="2" Content="Next" Click="NextButton_OnClick" Background="#FFF7F7F7" />
+                <Button x:Name="PreviousButton" Width="100" Height="40" Grid.Column="0" Content="Previous"  Click="PreviousButton_OnClick" Background="#FFF7F7F7" FontFamily="Segoe UI Semilight" />
+                <Button x:Name="NextButton" Width="100" Height="40" Grid.Column="2" Content="Next" Click="NextButton_OnClick" Background="#FFF7F7F7" FontFamily="Segoe UI Semilight" />
             </Grid>
             
         </Grid>

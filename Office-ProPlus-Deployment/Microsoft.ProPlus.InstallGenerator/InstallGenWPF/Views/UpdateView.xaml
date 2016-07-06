@@ -43,7 +43,7 @@
                     <TabItem x:Name="OptionalTab" Height="50" >
                         <TabItem.Header>
                             <DockPanel Margin="0,5,0,0">
-                                <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,0,0,0">Configure Updates</Label>
+                                <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,0,0,0" FontFamily="Segoe UI Semilight">Configure Updates</Label>
                             </DockPanel>
                         </TabItem.Header>
                         <Grid >
@@ -77,7 +77,7 @@
                                                IsChecked="false" Style="{StaticResource MetroToggleSwitchStyle}"
                                                OnLabel="Enabled"
                                                OffLabel="Disabled"
-                                               Margin="{StaticResource ControlMargin}" IsCheckedChanged="EnabledSwitch_OnIsCheckedChanged"  />
+                                               Margin="{StaticResource ControlMargin}" IsCheckedChanged="EnabledSwitch_OnIsCheckedChanged" FontFamily="Segoe UI Semibold"  />
 
                                 </StackPanel>
 
@@ -89,7 +89,7 @@
                                             <ColumnDefinition Width="148" />
                                             <ColumnDefinition Width="400" />
                                         </Grid.ColumnDefinitions>
-                                        <Label Content="Channel" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="1" />
+                                        <Label Content="Channel" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="1" FontFamily="Segoe UI Semibold" />
                                         <Button Grid.Column="0" x:Name="BranchInfo" Width="30" Height="32" HorizontalAlignment="Left" 
                                                             Focusable="False"  Style="{StaticResource CustomMetroInfoButton}" Click="ProductInfo_OnClick" >
                                             <StackPanel Orientation="Horizontal">
@@ -98,7 +98,7 @@
                                         </Button>
                             
                                         <ComboBox x:Name="UpdateBranch" Height="35" SelectedIndex="0"  Grid.Column="2"  Style="{StaticResource MetroComboBoxStyle}"
-                                            FontSize="20" ItemsSource="{Binding Branches}" DisplayMemberPath="Name" SelectionChanged="UpdateBranch_OnSelectionChanged" />
+                                            FontSize="20" ItemsSource="{Binding Branches}" DisplayMemberPath="Name" SelectionChanged="UpdateBranch_OnSelectionChanged" FontFamily="Segoe UI Semilight" />
                                    
                                     </Grid>
 
@@ -116,7 +116,7 @@
                                             <ColumnDefinition Width="70" />
                                         </Grid.ColumnDefinitions>
 
-                                        <Label Content="Update Path" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="1" />
+                                        <Label Content="Update Path" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="1" FontFamily="Segoe UI Semibold" />
                                         <Button Grid.Column="0" x:Name="UpdatePathInfo" Width="30" HorizontalAlignment="Left" 
                                                             Focusable="False"  Style="{StaticResource CustomMetroInfoButton}" Click="ProductInfo_OnClick" >
                                             <StackPanel Orientation="Horizontal">
@@ -127,13 +127,13 @@
                                         <TextBox x:Name="UpdateUpdatePath" Background="White" FontSize="20" Grid.Column="2"
                                      Controls:TextBoxHelper.Watermark="Network, local or HTTP Path" Foreground="{StaticResource GrayBrush}"
                                      Controls:TextBoxHelper.ClearTextButton="True" TextChanged="UpdateUpdatePath_OnTextChanged"
-                                     Text=""  Style="{StaticResource MetroTextBox}" Height="38" />
+                                     Text=""  Style="{StaticResource MetroTextBox}" Height="38" FontFamily="Segoe UI Semilight" />
 
                                         <Button  Grid.Column="3" Margin="10 0 0 0" Style="{StaticResource MetroFlatButtonStyle1}"
-                                                        Content="Browse" x:Name="UpdatePath" Click="UpdatePath_OnClick"  />
+                                                        Content="Browse" x:Name="UpdatePath" Click="UpdatePath_OnClick" FontFamily="Segoe UI Semibold"  />
 
                                         <Button Grid.Column="4" Content="Open" x:Name="OpenFolderButton" Style="{StaticResource MetroFlatButtonStyle1}"
-                                                IsEnabled="False" Click="OpenFolderButton_OnClick"  Margin="10 0 0 0"  />
+                                                IsEnabled="False" Click="OpenFolderButton_OnClick"  Margin="10 0 0 0" FontFamily="Segoe UI Semibold"  />
                                     </Grid>
 
                                     <Grid Margin="50 0 0 10">
@@ -142,7 +142,7 @@
                                             <ColumnDefinition Width="148" />
                                             <ColumnDefinition Width="400" />
                                         </Grid.ColumnDefinitions>
-                                        <Label Content="Target Version" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="1" />
+                                        <Label Content="Target Version" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="1" FontFamily="Segoe UI Semibold" />
                                         <Button x:Name="TargetVersionInfo" Width="30" HorizontalAlignment="Left" Grid.Column="0"
                                                             Focusable="False"  Style="{StaticResource CustomMetroInfoButton}" Click="ProductInfo_OnClick" >
                                             <StackPanel Orientation="Horizontal">
@@ -154,7 +154,7 @@
                                                    IsEditable="True" IsTextSearchEnabled="True"
                                                   SelectedIndex="0" MaxDropDownHeight="125"  Grid.Column="2" Text="{Binding Path=Version}" 
                                                   Style="{StaticResource MetroComboBoxStyle}"   ItemsSource="{Binding Builds}"  
-                                            FontSize="20"  DisplayMemberPath="Version" SelectionChanged="UpdateBranch_OnSelectionChanged" />
+                                            FontSize="20"  DisplayMemberPath="Version" SelectionChanged="UpdateBranch_OnSelectionChanged" FontFamily="Segoe UI Semilight" />
                                     </Grid>
 
                                     <Grid Margin="50 0 0 10">
@@ -165,7 +165,7 @@
                                             <ColumnDefinition Width="45" />
                                             <ColumnDefinition Width="45" />
                                         </Grid.ColumnDefinitions>
-                                        <Label Content="Deadline" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="1"  />
+                                        <Label Content="Deadline" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="1" FontFamily="Segoe UI Semibold"  />
                                         <Button Grid.Column="0" x:Name="DeadlineInfo" Width="30" Height="32" HorizontalAlignment="Left" 
                     		            Focusable="False"  Style="{StaticResource CustomMetroInfoButton}" Click="ProductInfo_OnClick" >
                                             <StackPanel Orientation="Horizontal">
@@ -176,15 +176,15 @@
                     		            Width="310" SelectedDateChanged="UpdateDeadline_OnSelectedDateChanged"
                     		            HorizontalAlignment="Left" FontSize="20" Foreground="{StaticResource GrayBrush}"
                     		            Controls:TextBoxHelper.Watermark="Select a date" 
-                                        Background="White" BorderThickness="2" BorderBrush="#767676"/>
+                                        Background="White" BorderThickness="2" BorderBrush="#767676" FontFamily="Segoe UI Semilight"/>
 
                                         <TextBox x:Name="DeadlineTimeHour" FontSize="20" Grid.Column="3" Background="White" PreviewKeyDown="DeadlineTimeHour_OnKeyDown"
                     		            Controls:TextBoxHelper.Watermark="00" TextChanged="DeadlineTimeHour_OnTextChanged"
-                    		            Text="" Height="35" Width="38" />
+                    		            Text="" Height="35" Width="38" FontFamily="Segoe UI Semilight" />
 
                                         <TextBox x:Name="DeadlineTimeMinute" FontSize="20" Grid.Column="4" Background="White" PreviewKeyDown="DeadlineTimeMinute_OnPreviewKeyDown"
                     		            Controls:TextBoxHelper.Watermark="00" TextChanged="DeadlineTimeMinute_OnTextChanged"
-                    		            Text="" Height="35" Width="38"  />
+                    		            Text="" Height="35" Width="38" FontFamily="Segoe UI Semilight"  />
                                     </Grid>
 
                                 </StackPanel>
@@ -208,8 +208,8 @@
                     <ColumnDefinition Width="20"  />
                     <ColumnDefinition  />
                 </Grid.ColumnDefinitions>
-                <Button x:Name="PreviousButton" Width="100" Height="40" Grid.Column="0" Content="Previous"  Click="PreviousButton_OnClick" Background="#FFF7F7F7" />
-                <Button x:Name="NextButton" Width="100" Height="40" Grid.Column="2" Content="Next" Click="NextButton_OnClick" Background="#FFF7F7F7" />
+                <Button x:Name="PreviousButton" Width="100" Height="40" Grid.Column="0" Content="Previous"  Click="PreviousButton_OnClick" Background="#FFF7F7F7" FontFamily="Segoe UI Semilight" />
+                <Button x:Name="NextButton" Width="100" Height="40" Grid.Column="2" Content="Next" Click="NextButton_OnClick" Background="#FFF7F7F7" FontFamily="Segoe UI Semilight" />
             </Grid>
 
         </Grid>
