@@ -149,6 +149,7 @@ process {
 
     if (!($officeConfig.ClickToRunInstalled)) {
         $officeConfig = getOfficeConfig -regProv $regProv -mainOfficeProduct $mainOfficeProduct -officeProducts $officeProducts
+
         if ($officeConfig -and $officeConfig.OfficeKeyPath) {
             $officeLangs = officeGetLanguages -regProv $regProv -OfficeKeyPath $officeConfig.OfficeKeyPath
         }
@@ -157,11 +158,19 @@ process {
         }
     } else {
       $productPlatform = $officeConfig.Platform
+      $otherProducts = generateProductReleaseIds -MainOfficeProduct $mainOfficeProduct -OfficeProducts $officeProducts
     }
-
 
     if ($officeConfig.ProductReleaseIds) {
         $productReleaseIds = $officeConfig.ProductReleaseIds
+    }
+
+    if ($otherProducts) {
+        if ($productReleaseIds) {
+            $productReleaseIds += ",$otherProducts"
+        } else {
+            $productReleaseIds += $otherProducts
+        }
     }
 
     [bool]$officeExists = $true
@@ -335,8 +344,14 @@ process {
            }
        }
 
+       $ChannelName = $NULL
+       $ChannelDetect = Detect-Channel
+       if ($ChannelDetect) {
+          $ChannelName = $ChannelDetect.branch
+       }
+
        odtAddProduct -ConfigDoc $ConfigFile -ProductId $productId -ExcludeApps $excludeApps -Version $officeConfig.Version `
-                     -Platform $productPlatform -ClientCulture $primaryLanguage -AdditionalLanguages $additionalLanguages
+                     -Platform $productPlatform -ClientCulture $primaryLanguage -AdditionalLanguages $additionalLanguages -Channel $ChannelName
 
 
        if ($officeConfig) {
@@ -721,6 +736,12 @@ function getCTRConfig() {
        $regProv = $NULL
     )
 
+    $HKLM = [UInt32] "0x80000002"
+    $computerName = $env:COMPUTERNAME
+
+    if (!($regProv)) {
+        $regProv = Get-Wmiobject -list "StdRegProv" -namespace root\default -computername $computerName -ErrorAction Stop
+    }
     
     $officeCTRKeys = 'SOFTWARE\Microsoft\Office\15.0\ClickToRun',
                      'SOFTWARE\Wow6432Node\Microsoft\Office\15.0\ClickToRun',
@@ -897,26 +918,37 @@ function generateProductReleaseIds() {
     {
         if ($OfficeProduct.DisplayName.ToLower().Contains("microsoft") -and
             $OfficeProduct.DisplayName.ToLower().Contains("visio")) {
-            if ($productReleaseIds.Length -gt 0) {
-               $productReleaseIds += ","
+
+            if ($productReleaseIds.IndexOf("VisioProRetail") -eq -1) {
+                if ($productReleaseIds.Length -gt 0) {
+                   $productReleaseIds += ","
+                }
+                $productReleaseIds += "VisioProRetail"
             }
-            $productReleaseIds += "VisioProRetail"
         }
         if ($OfficeProduct.DisplayName.ToLower().Contains("microsoft") -and
-            $OfficeProduct.DisplayName.ToLower().Contains("visio")) {
-            if ($productReleaseIds.Length -gt 0) {
-               $productReleaseIds += ","
+            $OfficeProduct.DisplayName.ToLower().Contains("project")) {
+
+            if ($productReleaseIds.IndexOf("ProjectProRetail") -eq -1) {
+                if ($productReleaseIds.Length -gt 0) {
+                   $productReleaseIds += ","
+                }
+                $productReleaseIds += "ProjectProRetail"
             }
-            $productReleaseIds += "ProjectProRetail"
         }
         if ($OfficeProduct.DisplayName.ToLower().Contains("microsoft") -and
-            $OfficeProduct.DisplayName.ToLower().Contains("sharePoint designer")) {
-            if ($productReleaseIds.Length -gt 0) {
-               $productReleaseIds += ","
+            $OfficeProduct.DisplayName.ToLower().Contains("sharepoint designer")) {
+
+            if ($productReleaseIds.IndexOf("SPDRetail") -eq -1) {
+                if ($productReleaseIds.Length -gt 0) {
+                   $productReleaseIds += ","
+                }
+                $productReleaseIds += "SPDRetail"
             }
-            $productReleaseIds += "SPDRetail"
         }
     }
+
+    $productReleaseIds = Get-Unique -InputObject $productReleaseIds
 
     return $productReleaseIds
 }
@@ -1403,8 +1435,10 @@ function odtAddProduct() {
        [string[]] $ExcludeApps,
 
        [Parameter(ValueFromPipelineByPropertyName=$true)]
-       [string]$Version = $NULL
+       [string]$Version = $NULL,
 
+       [Parameter(ValueFromPipelineByPropertyName=$true)]
+       [string]$Channel = $NULL
     )
 
     [System.XML.XMLElement]$ConfigElement=$NULL
@@ -1425,6 +1459,10 @@ function odtAddProduct() {
        if ($Version.StartsWith("16.")) {
           $AddElement.SetAttribute("Version", $Version) | Out-Null
        }
+    }
+
+    if ($Channel) {
+       $AddElement.SetAttribute("Channel", $Channel) | Out-Null
     }
 
     if ($Platform) {
@@ -1794,6 +1832,120 @@ function Win7Join([string]$st1, [string]$st2){
     return $tempStr
 }
 
+
+function Detect-Channel() {
+   [CmdletBinding()]
+   param( 
+      
+   )
+
+   Process {
+      $currentBaseUrl = Get-OfficeCDNUrl
+      $channelXml = Get-ChannelXml
+
+      $currentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $currentBaseUrl -and $_.branch -notcontains 'Business' }
+      return $currentChannel
+   }
+
+}
+
+function Get-ChannelUrl() {
+   [CmdletBinding()]
+   param( 
+      [Parameter(Mandatory=$true)]
+      [Channel]$Channel
+   )
+
+   Process {
+      $channelXml = Get-ChannelXml
+
+      $currentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.branch -eq $Channel.ToString() }
+      return $currentChannel
+   }
+}
+
+function Get-ChannelXml() {
+   [CmdletBinding()]
+   param( 
+      
+   )
+
+   process {
+       $XMLFilePath = "$PSScriptRoot\ofl.cab"
+
+       if (!(Test-Path -Path $XMLFilePath)) {
+           $webclient = New-Object System.Net.WebClient
+           $XMLFilePath = "$env:TEMP/ofl.cab"
+           $XMLDownloadURL = "http://officecdn.microsoft.com/pr/wsus/ofl.cab"
+           $webclient.DownloadFile($XMLDownloadURL,$XMLFilePath)
+       }
+
+       $tmpName = "o365client_64bit.xml"
+       expand $XMLFilePath $env:TEMP -f:$tmpName | Out-Null
+       $tmpName = $env:TEMP + "\o365client_64bit.xml"
+       [xml]$channelXml = Get-Content $tmpName
+
+       return $channelXml
+   }
+
+}
+
+Function Set-OfficeCDNUrl() {
+   [CmdletBinding()]
+   param( 
+      [Parameter(Mandatory=$true)]
+      [Channel]$Channel
+   )
+
+   Process {
+        $CDNBaseUrl = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration -Name CDNBaseUrl -ErrorAction SilentlyContinue).CDNBaseUrl
+        if (!($CDNBaseUrl)) {
+           $CDNBaseUrl = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Office\15.0\ClickToRun\Configuration -Name CDNBaseUrl -ErrorAction SilentlyContinue).CDNBaseUrl
+        }
+
+        $path15 = 'HKLM:\SOFTWARE\Microsoft\Office\15.0\ClickToRun\Configuration'
+        $path16 = 'HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration'
+        $regPath = $path16
+
+        if (Test-Path -Path $path16) { $regPath = $path16 }
+        if (Test-Path -Path $path15) { $regPath = $path15 }
+
+        $ChannelUrl = Get-ChannelUrl -Channel $Channel
+           
+        New-ItemProperty $regPath -Name CDNBaseUrl -PropertyType String -Value $ChannelUrl.URL -Force | Out-Null
+   }
+}
+
+Function Get-OfficeCDNUrl() {
+    $CDNBaseUrl = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration -Name CDNBaseUrl -ErrorAction SilentlyContinue).CDNBaseUrl
+    if (!($CDNBaseUrl)) {
+       $CDNBaseUrl = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Office\15.0\ClickToRun\Configuration -Name CDNBaseUrl -ErrorAction SilentlyContinue).CDNBaseUrl
+    }
+    if (!($CDNBaseUrl)) {
+        Push-Location
+        $path15 = 'HKLM:\SOFTWARE\Microsoft\Office\15.0\ClickToRun\ProductReleaseIDs\Active\stream'
+        $path16 = 'HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\ProductReleaseIDs\Active\stream'
+        if (Test-Path -Path $path16) { Set-Location $path16 }
+        if (Test-Path -Path $path15) { Set-Location $path15 }
+        
+        try {
+        $items = Get-Item . | Select-Object -ExpandProperty property -ErrorAction SilentlyContinue
+        if ($items) {
+            $properties = $items | ForEach-Object {
+               New-Object psobject -Property @{"property"=$_; "Value" = (Get-ItemProperty -Path . -Name $_).$_}
+            }
+
+            $value = $properties | Select Value
+            $firstItem = $value[0]
+            [string] $cdnPath = $firstItem.Value
+
+            $CDNBaseUrl = Select-String -InputObject $cdnPath -Pattern "http://officecdn.microsoft.com/.*/.{8}-.{4}-.{4}-.{4}-.{12}" -AllMatches | % { $_.Matches } | % { $_.Value }
+        }
+        } catch { }
+        Pop-Location
+    }
+    return $CDNBaseUrl
+}
 
 
 $availableLangs = @("en-us",

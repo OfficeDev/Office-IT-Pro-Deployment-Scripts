@@ -28,19 +28,15 @@ $targetFilePath = "$env:temp\configuration.xml"
 #and change the configuration XML to 64-Bit.  It will remove the existing install of Office Click-To-Run and resinstall Office Click-To-Run with the 64-Bit version
 
 $installOffice = $true
-if (!(Test-Path -Path $targetFilePath)) {
-    $officeVersions = Get-OfficeVersion 
-    foreach ($office in $officeVersions) {
-      if ($office.ClickToRun) {
-        if ($office.Bitness -eq "32-Bit") {
+
+$officeC2R = getCTRConfig
+if ($officeC2R) {
+    if ($officeC2R.Platform -eq "32") {
+        if (!(Test-Path -Path $targetFilePath)) {
             Generate-ODTConfigurationXml -Languages CurrentOfficeLanguages -TargetFilePath $targetFilePath | Set-ODTAdd -Version $NULL -Bitness 64 | Out-Null
         }
-        if ($office.Bitness -eq "64-Bit") {
-            $installOffice = $false
-        }
-      } else {
-        $installOffice = $false
-      }
+    } else {
+      $installOffice = $false
     }
 }
 
@@ -50,8 +46,8 @@ if ($installOffice) {
 
       Remove-PreviousOfficeInstalls
 
-      Set-ODTAdd -TargetFilePath $targetFilePath -Version $NULL
-      Set-ODTDisplay -TargetFilePath $targetFilePath -Level None -AcceptEULA $true
+      Set-ODTAdd -TargetFilePath $targetFilePath -Version $NULL -Bitness 64 | Out-Null
+      Set-ODTDisplay -TargetFilePath $targetFilePath -Level None -AcceptEULA $true | Out-Null
 
       Install-OfficeClickToRun -TargetFilePath $targetFilePath
   }

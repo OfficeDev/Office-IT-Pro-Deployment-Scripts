@@ -2,6 +2,8 @@
 
 This PowerShell function automates the setup of Office 365 Click-To-Run deployment and update scenarios in Config Manager. 
 
+[README](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/wiki/Readme_Setup-CMOfficeDeployment)
+
 ##Scenarios for creating, updating, and deploying the Office 365 ProPlus programs.
 ###Deploy Office 365 ProPlus
 1. Download the channel files from the CDN.

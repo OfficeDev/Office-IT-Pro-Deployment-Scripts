@@ -317,65 +317,68 @@ Function Remove-PreviousOfficeInstalls{
     $officeVersions = Get-OfficeVersion | select *
     $ActionFiles = @()
     
+    $removeOffice = $true
     if (!( $officeVersions)) {
        Write-Host "Microsoft Office is not installed"
-       break
+       $removeOffice = $false
     }
 
-    foreach ($officeVersion in $officeVersions) {
-        if($officeVersion.ClicktoRun.ToLower() -ne "true"){
-            #Set script file based on office version, if no office detected continue to next computer skipping this one.
-            switch -wildcard ($officeVersion.Version)
-            {
-                "11.*"
+    if ($removeOffice) {
+        foreach ($officeVersion in $officeVersions) {
+            if($officeVersion.ClicktoRun.ToLower() -ne "true"){
+                #Set script file based on office version, if no office detected continue to next computer skipping this one.
+                switch -wildcard ($officeVersion.Version)
                 {
-                    $ActionFiles += "$scriptPath\$03VBS"
+                    "11.*"
+                    {
+                        $ActionFiles += "$scriptPath\$03VBS"
+                    }
+                    "12.*"
+                    {
+                        $ActionFiles += "$scriptPath\$07VBS"
+                    }
+                    "14.*"
+                    {
+                        $ActionFiles += "$scriptPath\$10VBS"
+                    }
+                    "15.*"
+                    {
+                        $ActionFiles += "$scriptPath\$15MSIVBS"
+                    }
+                    "16.*"
+                    {
+                       if ($Remove2016Installs) {
+                          $ActionFiles += "$scriptPath\$16MSIVBS"
+                       }
+                    }
+                    default 
+                    {
+                        continue
+                    }
                 }
-                "12.*"
-                {
-                    $ActionFiles += "$scriptPath\$07VBS"
-                }
-                "14.*"
-                {
-                    $ActionFiles += "$scriptPath\$10VBS"
-                }
-                "15.*"
-                {
-                    $ActionFiles += "$scriptPath\$15MSIVBS"
-                }
-                "16.*"
-                {
-                   if ($Remove2016Installs) {
-                      $ActionFiles += "$scriptPath\$16MSIVBS"
-                   }
-                }
-                default 
-                {
-                    continue
-                }
+            } else {
+              if ($RemoveClickToRunVersions) {
+                 $ActionFiles += "$scriptPath\$c2rVBS"
+              }
             }
-        } else {
-          if ($RemoveClickToRunVersions) {
-             $ActionFiles += "$scriptPath\$c2rVBS"
+        }
+
+        foreach ($ActionFile in $ActionFiles) {
+          Write-Host "Removing Office products..."
+
+          if (Test-Path -Path $ActionFile) {
+              cscript $ActionFile
+
+              Do{
+                Start-Sleep -Seconds 5
+                $cscriptProcess = Get-Process cscript -ErrorAction SilentlyContinue
+              }
+              Until($cscriptProcess -eq $null)
+
+          } else {
+            throw "Required file missing: $ActionFile"
           }
         }
-    }
-
-    foreach ($ActionFile in $ActionFiles) {
-      Write-Host "Removing Office products..."
-
-      if (Test-Path -Path $ActionFile) {
-          cscript $ActionFile
-
-          Do{
-            Start-Sleep -Seconds 5
-            $cscriptProcess = Get-Process cscript -ErrorAction SilentlyContinue
-          }
-          Until($cscriptProcess -eq $null)
-
-      } else {
-        throw "Required file missing: $ActionFile"
-      }
     }
 
 

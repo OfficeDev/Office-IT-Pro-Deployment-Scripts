@@ -736,6 +736,12 @@ function getCTRConfig() {
        $regProv = $NULL
     )
 
+    $HKLM = [UInt32] "0x80000002"
+    $computerName = $env:COMPUTERNAME
+
+    if (!($regProv)) {
+        $regProv = Get-Wmiobject -list "StdRegProv" -namespace root\default -computername $computerName -ErrorAction Stop
+    }
     
     $officeCTRKeys = 'SOFTWARE\Microsoft\Office\15.0\ClickToRun',
                      'SOFTWARE\Wow6432Node\Microsoft\Office\15.0\ClickToRun',
