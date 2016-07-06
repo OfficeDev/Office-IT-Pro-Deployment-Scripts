@@ -301,8 +301,4 @@ process {
 
 }
 
-if ($ShowAllInstalledProducts) {
-    Get-OfficeVersion -ComputerName $ComputerName -ShowAllInstalledProducts -Credentials $Credentials
-} else {
-    Get-OfficeVersion -ComputerName $ComputerName -Credentials $Credentials
-}
+
