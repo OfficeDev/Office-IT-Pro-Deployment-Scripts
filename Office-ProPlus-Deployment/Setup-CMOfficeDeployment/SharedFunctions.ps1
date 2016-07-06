@@ -1713,7 +1713,9 @@ function Update-ConfigurationXml() {
       [string] $TargetFilePath,
 
       [Parameter(Mandatory=$true)]
-      [string] $UpdateURLPath
+      [string] $UpdateURLPath,
+
+      [string] $Channel
    )
    process {
       $scriptPath = GetScriptRoot
@@ -1726,14 +1728,14 @@ function Update-ConfigurationXml() {
 
           if (Test-Path -Path "$UpdateURLPath\Office\Data") {
               if (Test-UpdateSource -UpdateSource $UpdateURLPath -OfficeLanguages $languages) {
-                 Set-ODTAdd -TargetFilePath $TargetFilePath -SourcePath $UpdateURLPath | Out-Null
+                 Set-ODTAdd -TargetFilePath $TargetFilePath -SourcePath $UpdateURLPath -Channel $Channel | Out-Null
               }
           }
 
           if (($Bitness -eq "32") -or ($Bitness -eq "x86")) {
-             Set-ODTAdd -TargetFilePath $TargetFilePath -Bitness 32 | Out-Null
+             Set-ODTAdd -TargetFilePath $TargetFilePath -Bitness 32 -Channel $Channel | Out-Null
           } else {
-             Set-ODTAdd -TargetFilePath $TargetFilePath -Bitness 64 | Out-Null
+             Set-ODTAdd -TargetFilePath $TargetFilePath -Bitness 64 -Channel $Channel | Out-Null
           }
       }
    }

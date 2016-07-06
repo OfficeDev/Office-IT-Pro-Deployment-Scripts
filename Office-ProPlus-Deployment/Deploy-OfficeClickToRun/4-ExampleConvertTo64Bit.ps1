@@ -29,22 +29,16 @@ $targetFilePath = "$env:temp\configuration.xml"
 
 $installOffice = $true
 
-$officeVersions = Get-OfficeVersion 
-foreach ($office in $officeVersions) {
-    if ($office.ClickToRun) {
-        if ($office.Bitness -eq "32-Bit") {
-            if (!(Test-Path -Path $targetFilePath)) {
-                Generate-ODTConfigurationXml -Languages CurrentOfficeLanguages -TargetFilePath $targetFilePath | Set-ODTAdd -Version $NULL -Bitness 64 | Out-Null
-            }
-        }
-        if ($office.Bitness -eq "64-Bit") {
-            $installOffice = $false
+$officeC2R = getCTRConfig
+if ($officeC2R) {
+    if ($officeC2R.Platform -eq "32") {
+        if (!(Test-Path -Path $targetFilePath)) {
+            Generate-ODTConfigurationXml -Languages CurrentOfficeLanguages -TargetFilePath $targetFilePath | Set-ODTAdd -Version $NULL -Bitness 64 | Out-Null
         }
     } else {
-        $installOffice = $false
+      $installOffice = $false
     }
 }
-
 
 if ($installOffice) {
   if (Test-Path -Path $targetFilePath) {
@@ -52,8 +46,8 @@ if ($installOffice) {
 
       Remove-PreviousOfficeInstalls
 
-      Set-ODTAdd -TargetFilePath $targetFilePath -Version $NULL -Bitness 64
-      Set-ODTDisplay -TargetFilePath $targetFilePath -Level None -AcceptEULA $true
+      Set-ODTAdd -TargetFilePath $targetFilePath -Version $NULL -Bitness 64 | Out-Null
+      Set-ODTDisplay -TargetFilePath $targetFilePath -Level None -AcceptEULA $true | Out-Null
 
       Install-OfficeClickToRun -TargetFilePath $targetFilePath
   }
