@@ -137,6 +137,8 @@ function Install-OfficeClickToRun {
     StartProcess -execFilePath $cmdLine -execParams $cmdArgs -WaitForExit $false
 
     if ($WaitForInstallToFinish) {
+         Start-Sleep -Seconds 5
+
          Wait-ForOfficeCTRInstall -OfficeVersion $OfficeVersion
     }
 }
