@@ -789,9 +789,9 @@ Function Wait-ForOfficeCTRInstall() {
     }
 
     process {
-       Write-Host "Waiting for Update to Complete..."
+       Write-Host "Waiting for Install to Complete..."
 
-       Start-Sleep -Seconds 20
+       Start-Sleep -Seconds 25
 
        if($OfficeVersion -eq 'Office2016'){
            $mainRegPath = 'SOFTWARE\Microsoft\Office\ClickToRun'

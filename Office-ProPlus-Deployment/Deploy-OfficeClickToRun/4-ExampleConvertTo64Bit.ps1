@@ -46,8 +46,8 @@ if ($installOffice) {
 
       Remove-PreviousOfficeInstalls
 
-      Set-ODTAdd -TargetFilePath $targetFilePath -Version $NULL -Bitness 64
-      Set-ODTDisplay -TargetFilePath $targetFilePath -Level None -AcceptEULA $true
+      Set-ODTAdd -TargetFilePath $targetFilePath -Version $NULL -Bitness 64 | Out-Null
+      Set-ODTDisplay -TargetFilePath $targetFilePath -Level None -AcceptEULA $true | Out-Null
 
       Install-OfficeClickToRun -TargetFilePath $targetFilePath
   }
