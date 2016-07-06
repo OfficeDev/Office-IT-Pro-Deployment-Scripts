@@ -28,7 +28,7 @@
                     <TabItem Background="{StaticResource GrayBrush}" Height="40">
                         <TabItem.Header >
                             <DockPanel Margin="0,5,0,0" >
-                                <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,0,0,0" FontFamily="Segoe UI Semilight">About Github</Label>
+                                <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,2,0,0" FontFamily="Segoe UI Semilight">About Github</Label>
                             </DockPanel>
                         </TabItem.Header>
 
@@ -62,7 +62,7 @@
                     <TabItem Background="{StaticResource GrayBrush}" Height="40" >
                         <TabItem.Header>
                             <DockPanel Margin="0,5,0,0">
-                                <Label Style="{StaticResource CustomMetroLabelTopHeader}"  Padding="0,0,0,0" FontFamily="Segoe UI Semilight">About Install Toolkit</Label>
+                                <Label Style="{StaticResource CustomMetroLabelTopHeader}"  Padding="0,2,0,0" FontFamily="Segoe UI Semilight">About Install Toolkit</Label>
                             </DockPanel>
                         </TabItem.Header>
 

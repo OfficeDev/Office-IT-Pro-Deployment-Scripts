@@ -11,7 +11,7 @@
                       Title="Update Channel/Version Remote Computer"
                       TitleForeground="#333333"
                       WindowTitleBrush="#f4f4f4"
-                      Background="DarkGray"
+                      Background="#FFCCCCCC"
                       MinWidth="750"
                       MinHeight="150"
                       MaxWidth="950"

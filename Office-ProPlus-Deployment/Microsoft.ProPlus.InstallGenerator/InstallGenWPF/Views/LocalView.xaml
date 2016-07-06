@@ -50,7 +50,7 @@
                     <TabItem x:Name="OptionalTab" Height="40">
                         <TabItem.Header>
                             <DockPanel Margin="0,5,0,0">
-                                <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,0,0,0" FontFamily="Segoe UI Semilight">Local install</Label>
+                                <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,2,0,0" FontFamily="Segoe UI Semilight">Local install</Label>
                             </DockPanel>
                         </TabItem.Header>
 
@@ -344,7 +344,7 @@
                     <TabItem  Background="{StaticResource GrayBrush}" Height="40" >
                         <TabItem.Header>
                             <DockPanel Margin="0,5,0,0">
-                                <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,0,0,0" FontFamily="Segoe UI Semilight">Configuration</Label>
+                                <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,2,0,0" FontFamily="Segoe UI Semilight">Configuration</Label>
                             </DockPanel>
                         </TabItem.Header>
 

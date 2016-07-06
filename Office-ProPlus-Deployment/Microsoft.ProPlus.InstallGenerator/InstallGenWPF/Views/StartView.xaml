@@ -46,7 +46,7 @@
                     <TabItem x:Name="OptionalTab" Height="50" >
                         <TabItem.Header>
                             <DockPanel Margin="0,5,0,0">
-                                <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,0,0,0" FontFamily="Segoe UI Semilight">Office 365 ProPlus Install Toolkit</Label>
+                                <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,2,0,0" FontFamily="Segoe UI Semilight">Office 365 ProPlus Install Toolkit</Label>
                             </DockPanel>
                         </TabItem.Header>
 
