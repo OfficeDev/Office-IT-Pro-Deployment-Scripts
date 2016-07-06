@@ -40,8 +40,8 @@ Process {
  }
 
  $UpdateURLPath = Locate-UpdateSource -Channel $Channel -UpdateURLPath $scriptPath -SourceFileFolder $SourceFileFolder
- Generate-ODTConfigurationXml -Languages AllInUseLanguages -TargetFilePath $targetFilePath | Set-ODTAdd -Version $NULL | Set-ODTDisplay -Level None -AcceptEULA $true  | Out-Null
- Update-ConfigurationXml -TargetFilePath $targetFilePath -UpdateURLPath $UpdateURLPath
+ Generate-ODTConfigurationXml -Languages AllInUseLanguages -TargetFilePath $targetFilePath | Set-ODTAdd -Version $NULL -Channel $Channel | Set-ODTDisplay -Level None -AcceptEULA $true  | Out-Null
+ Update-ConfigurationXml -TargetFilePath $targetFilePath -UpdateURLPath $UpdateURLPath -Channel $Channel
  $languages = Get-XMLLanguages -Path $TargetFilePath
 
  #------------------------------------------------------------------------------------------------------------
