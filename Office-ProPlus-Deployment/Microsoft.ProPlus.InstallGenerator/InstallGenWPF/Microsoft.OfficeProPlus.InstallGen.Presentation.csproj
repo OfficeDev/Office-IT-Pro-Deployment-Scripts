@@ -247,6 +247,7 @@
     <Content Include="HelpFiles\VisioInfo.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Resource Include="images\GitHubSite2.jpg" />
     <Content Include="InstallOffice.cs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

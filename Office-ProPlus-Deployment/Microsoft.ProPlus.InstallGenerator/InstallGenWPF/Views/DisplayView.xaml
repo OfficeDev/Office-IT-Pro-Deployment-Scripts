@@ -65,7 +65,7 @@
                                 <Grid Margin="50 40 0 0">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="30" />
-                                        <ColumnDefinition Width="350" />
+                                        <ColumnDefinition Width="390" />
                                         <ColumnDefinition Width="120" />
                                     </Grid.ColumnDefinitions>
                                     <Grid.RowDefinitions>
@@ -75,19 +75,19 @@
                                                             Focusable="False"  Style="{StaticResource CustomMetroInfoButton}" Click="ProductInfo_OnClick" >
                                         <Image Source="../images/info.png" Height="20" Width="20" />
                                     </Button>
-                                    <Label Content="Display Level" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="1" Grid.ColumnSpan="2" />
+                                    <Label Content="Display Level" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="1" HorizontalAlignment="Left" Grid.ColumnSpan="2" />
 
                                     <Controls:ToggleSwitch x:Name="DisplayLevel" Grid.Column="2" 
                                                    IsChecked="True"  Style="{StaticResource MetroToggleSwitchStyle}"
                                                    OnLabel="Full" 
                                                    OffLabel="None"
-                                                   HorizontalAlignment="Right" Width="110" />
+                                                   HorizontalAlignment="Left" Width="110" />
                                 </Grid>
 
                                 <Grid Margin="50 0 0 0">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="30" />
-                                        <ColumnDefinition Width="350" />
+                                        <ColumnDefinition Width="390" />
                                         <ColumnDefinition Width="120" />
                                     </Grid.ColumnDefinitions>
                                     <Grid.RowDefinitions>
@@ -104,13 +104,13 @@
                                                IsChecked="False" Style="{StaticResource MetroToggleSwitchStyle}"
                                                OnLabel="True"
                                                OffLabel="False"
-                                                HorizontalAlignment="Right" Width="104" />
+                                                HorizontalAlignment="Left" Width="110" />
                                 </Grid>
 
                                 <Grid Margin="50 0 0 0">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="30" />
-                                        <ColumnDefinition Width="350" />
+                                        <ColumnDefinition Width="390" />
                                         <ColumnDefinition Width="120" />
                                     </Grid.ColumnDefinitions>
                                     <Grid.RowDefinitions>
@@ -127,13 +127,13 @@
                                                IsChecked="False" Style="{StaticResource MetroToggleSwitchStyle}"
                                                OnLabel="Yes"
                                                OffLabel="No"
-                                              HorizontalAlignment="Right" Width="100" />
+                                              HorizontalAlignment="Left" Width="110" />
                                 </Grid>
 
                                 <Grid Margin="50 0 0 0">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="30" />
-                                        <ColumnDefinition Width="350" />
+                                        <ColumnDefinition Width="390" />
                                         <ColumnDefinition Width="120" />
                                     </Grid.ColumnDefinitions>
                                     <Grid.RowDefinitions>
@@ -150,13 +150,13 @@
                                                IsChecked="False" Style="{StaticResource MetroToggleSwitchStyle}"
                                                OnLabel="True"
                                                OffLabel="False"
-                                               HorizontalAlignment="Right" Width="103" />
+                                               HorizontalAlignment="Left" Width="110" />
                                 </Grid>
 
                                 <Grid Margin="50 0 0 0">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="30" />
-                                        <ColumnDefinition Width="350" />
+                                        <ColumnDefinition Width="390" />
                                         <ColumnDefinition Width="120" />
                                     </Grid.ColumnDefinitions>
                                     <Grid.RowDefinitions>
@@ -173,13 +173,13 @@
                                                IsChecked="False" Style="{StaticResource MetroToggleSwitchStyle}"
                                                OnLabel="True"
                                                OffLabel="False"
-                                                HorizontalAlignment="Right" Width="104" />
+                                                HorizontalAlignment="Left" Width="110" />
                                 </Grid>
 
                                 <Grid Margin="50 0 0 0">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="30" />
-                                        <ColumnDefinition Width="350" />
+                                        <ColumnDefinition Width="390" />
                                         <ColumnDefinition Width="120" />
                                     </Grid.ColumnDefinitions>
                                     <Grid.RowDefinitions>
@@ -196,13 +196,13 @@
                                                IsChecked="False" Style="{StaticResource MetroToggleSwitchStyle}"
                                                OnLabel="True"
                                                OffLabel="False"
-                                                HorizontalAlignment="Right" Width="104" />
+                                                HorizontalAlignment="Left" Width="110" />
                                 </Grid>
 
                                 <Grid Margin="50 0 0 0">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="30" />
-                                        <ColumnDefinition Width="350" />
+                                        <ColumnDefinition Width="390" />
                                         <ColumnDefinition Width="120" />
                                     </Grid.ColumnDefinitions>
                                     <Grid.RowDefinitions>
@@ -219,7 +219,7 @@
                                                IsChecked="False" Style="{StaticResource MetroToggleSwitchStyle}"
                                                OnLabel="True"
                                                OffLabel="False"
-                                                HorizontalAlignment="Right" Width="104" />
+                                                HorizontalAlignment="Left" Width="110" />
                                 </Grid>
 
                             </StackPanel>
@@ -244,8 +244,8 @@
                     <ColumnDefinition Width="20"  />
                     <ColumnDefinition  />
                 </Grid.ColumnDefinitions>
-                <Button x:Name="PreviousButton" Width="100" Height="40" Grid.Column="0" Content="Previous"  Click="PreviousButton_OnClick" />
-                <Button x:Name="NextButton" Width="100" Height="40" Grid.Column="2" Content="Next" Click="NextButton_OnClick" />
+                <Button x:Name="PreviousButton" Width="100" Height="40" Grid.Column="0" Content="Previous"  Click="PreviousButton_OnClick" Background="#FFF7F7F7" />
+                <Button x:Name="NextButton" Width="100" Height="40" Grid.Column="2" Content="Next" Click="NextButton_OnClick" Background="#FFF7F7F7" />
             </Grid>
             
         </Grid>

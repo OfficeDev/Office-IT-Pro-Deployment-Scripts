@@ -211,8 +211,8 @@
                     <ColumnDefinition Width="20"  />
                     <ColumnDefinition  />
                 </Grid.ColumnDefinitions>
-                <Button x:Name="PreviousButton" Width="100" Height="40" Grid.Column="0" Content="Previous"  Click="PreviousButton_Click" />
-                <Button x:Name="NextButton" Width="100" Height="40" Grid.Column="2" Content="Next" Click="NextButton_Click" />
+                <Button x:Name="PreviousButton" Width="100" Height="40" Grid.Column="0" Content="Previous"  Click="PreviousButton_Click" Background="#FFF7F7F7" />
+                <Button x:Name="NextButton" Width="100" Height="40" Grid.Column="2" Content="Next" Click="NextButton_Click" Background="#FFF7F7F7" />
             </Grid>
         </Grid>
 

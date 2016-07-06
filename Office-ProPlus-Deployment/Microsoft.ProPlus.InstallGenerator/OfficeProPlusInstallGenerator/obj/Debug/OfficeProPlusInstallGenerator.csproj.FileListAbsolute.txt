@@ -60,6 +60,7 @@ C:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deplo
 C:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeProPlusInstallGenerator\bin\Debug\Micorosft.OfficeProPlus.ConfigurationXml.dll
 C:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeProPlusInstallGenerator\bin\Debug\Microsoft.OfficeProPlus.MSIGen.dll
 C:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeProPlusInstallGenerator\bin\Debug\Microsoft.OfficeProPlus.Downloader.dll
+C:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeProPlusInstallGenerator\bin\Debug\System.Management.Automation.dll
 C:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeProPlusInstallGenerator\bin\Debug\WixSharp.dll
 C:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeProPlusInstallGenerator\bin\Debug\Microsoft.Deployment.WindowsInstaller.dll
 C:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeProPlusInstallGenerator\bin\Debug\OfficeInstallGenerator.pdb
@@ -69,5 +70,3 @@ C:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deplo
 C:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeProPlusInstallGenerator\obj\Debug\OfficeProPlusInstallGenerator.csprojResolveAssemblyReference.cache
 C:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeProPlusInstallGenerator\obj\Debug\OfficeProPlusInstallGenerator.exe
 C:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeProPlusInstallGenerator\obj\Debug\OfficeProPlusInstallGenerator.pdb
-C:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeProPlusInstallGenerator\bin\Debug\Microsoft.Deployment.WindowsInstaller.xml
-C:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeProPlusInstallGenerator\bin\Debug\System.Management.Automation.dll

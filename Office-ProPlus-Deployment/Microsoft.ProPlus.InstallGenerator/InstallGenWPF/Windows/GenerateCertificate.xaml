@@ -11,7 +11,7 @@
                       Title="Certificates Browser"
                       TitleForeground="#333333"
                       WindowTitleBrush="#f4f4f4"
-                      Background="#e6e6e6"
+                      Background="DarkGray"
                       MinWidth="500"
                       MinHeight="150"
                       MaxWidth="450"

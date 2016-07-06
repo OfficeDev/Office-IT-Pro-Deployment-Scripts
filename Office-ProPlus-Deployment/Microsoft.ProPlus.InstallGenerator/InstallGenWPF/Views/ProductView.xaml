@@ -82,7 +82,7 @@
                                             </StackPanel>
                                         </Button>
                                         <Label Grid.Row="0" Grid.Column="1" Content="Product" Style="{StaticResource CustomMetroLabelHeader}"  
-                                               HorizontalAlignment="Left"  Width="100" VerticalAlignment="Center"/>
+                                               HorizontalAlignment="Left"  Width="100" VerticalAlignment="Center" FontFamily="Segoe UI, Lucida Sans Unicode, Verdana"/>
                                         <CheckBox x:Name="chkofficeProd" Grid.Column="2" Style="{StaticResource MetroCheckBox}" Checked="chkofficeProd_Checked" Unchecked="chkofficeProd_Checked" Click="chkofficeProd_Click" ></CheckBox>
                                     </Grid>
 
@@ -234,7 +234,7 @@
                                 </StackPanel>
 
                                 <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,35.6,320.4" Grid.RowSpan="2">
-                                    <Label x:Name="UseLangForAllLabel" Style="{StaticResource MetroLabelTextSmall}" VerticalAlignment="Center" >Use Languages for all Products</Label>
+                                    <Label x:Name="UseLangForAllLabel" Style="{StaticResource MetroLabelTextSmall}" VerticalAlignment="Center" Foreground="Black" >Use Languages for all Products</Label>
                                     <CheckBox x:Name="UseLangForAllProducts" Checked="UseLangForAllProducts_OnChecked" Unchecked="UseLangForAllProducts_OnChecked" IsChecked="True"
                                     Style="{StaticResource MetroCheckBox}"></CheckBox>
                                     <ComboBox x:Name="LanguageUnique" Height="20" Width="164" IsEnabled="False" SelectionChanged="LanguageUnique_OnSelectionChanged" Margin="0,12,0,11.6" 
@@ -488,8 +488,8 @@
                     <ColumnDefinition Width="20"  />
                     <ColumnDefinition  />
                 </Grid.ColumnDefinitions>
-                <Button x:Name="PreviousButton" Width="100" Height="40" Grid.Column="0" Content="Previous"  Click="PreviousButton_Click" />
-                <Button x:Name="NextButton" Width="100" Height="40" Grid.Column="2" Content="Next" Click="NextButton_Click" />
+                <Button x:Name="PreviousButton" Width="100" Height="40" Grid.Column="0" Content="Previous"  Click="PreviousButton_Click" Background="#FFF7F7F7" />
+                <Button x:Name="NextButton" Width="100" Height="40" Grid.Column="2" Content="Next" Click="NextButton_Click" Background="#FFF7F7F7" />
             </Grid>
         </Grid>
 
