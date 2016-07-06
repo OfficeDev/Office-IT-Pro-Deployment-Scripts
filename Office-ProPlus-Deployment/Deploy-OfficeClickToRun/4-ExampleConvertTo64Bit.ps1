@@ -19,6 +19,7 @@ Process {
 . $scriptPath\Install-OfficeClickToRun.ps1
 . $scriptPath\Remove-OfficeClickToRun.ps1
 . $scriptPath\Get-OfficeVersion.ps1
+. $scriptPath\Remove-PreviousOfficeInstalls.ps1
 
 $targetFilePath = "$env:temp\configuration.xml"
 
@@ -46,6 +47,11 @@ if (!(Test-Path -Path $targetFilePath)) {
 if ($installOffice) {
   if (Test-Path -Path $targetFilePath) {
       Remove-OfficeClickToRun -TargetFilePath $targetFilePath
+
+      Remove-PreviousOfficeInstalls
+
+      Set-ODTAdd -TargetFilePath $targetFilePath -Version $NULL
+      Set-ODTDisplay -TargetFilePath $targetFilePath -Level None -AcceptEULA $true
 
       Install-OfficeClickToRun -TargetFilePath $targetFilePath
   }

@@ -297,7 +297,11 @@ process {
 Function Remove-PreviousOfficeInstalls{
   [CmdletBinding(SupportsShouldProcess=$true)]
   param(
+    [Parameter(ValueFromPipelineByPropertyName=$true)]
+    [bool]$RemoveClickToRunVersions = $false,
 
+    [Parameter(ValueFromPipelineByPropertyName=$true)]
+    [bool]$Remove2016Installs = $false
   )
 
   Process {
@@ -339,11 +343,21 @@ Function Remove-PreviousOfficeInstalls{
                 {
                     $ActionFiles += "$scriptPath\$15MSIVBS"
                 }
+                "16.*"
+                {
+                   if ($Remove2016Installs) {
+                      $ActionFiles += "$scriptPath\$16MSIVBS"
+                   }
+                }
                 default 
                 {
                     continue
                 }
             }
+        } else {
+          if ($RemoveClickToRunVersions) {
+             $ActionFiles += "$scriptPath\$c2rVBS"
+          }
         }
     }
 

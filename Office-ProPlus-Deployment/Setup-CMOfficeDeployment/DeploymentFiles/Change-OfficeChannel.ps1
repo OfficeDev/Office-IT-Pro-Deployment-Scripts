@@ -695,7 +695,6 @@ try {
 
         if ($SetBack) {
             if ($oldUpdatePath) {
-                New-ItemProperty $Office2RClientKey -Name UpdateUrl -PropertyType String -Value $oldUpdatePath -Force | Out-Null
                 Remove-ItemProperty $Office2RClientKey -Name BackupUpdateUrl -Force | Out-Null
             }
         }

@@ -37,6 +37,7 @@ Process {
 
  [string]$UpdateSource = (Get-ODTAdd -TargetFilePath $targetFilePath | select SourcePath).SourcePath
  [string]$Bitness = (Get-ODTAdd -TargetFilePath $targetFilePath | select OfficeClientEdition).OfficeClientEdition
+ [string]$Channel = (Get-ODTAdd -TargetFilePath $targetFilePath | select Channel).Channel
  if($Bitness -eq '64'){
     $Bitness = "x64"
  }
@@ -57,12 +58,16 @@ Process {
    }
  }
 
+ if(!$Channel){
+    $Channel = 'Current'
+ }
+
 $languages = Get-XMLLanguages -Path $targetFilePath
 
 if ($UpdateSource) {
     $ValidUpdateSource = Test-UpdateSource -UpdateSource $UpdateSource -OfficeLanguages $languages -Bitness $Bitness
     if ($ValidUpdateSource) {
-       Set-ODTAdd -TargetFilePath $targetFilePath -SourcePath $UpdateSource | Out-Null
+       Set-ODTAdd -TargetFilePath $targetFilePath -SourcePath $UpdateSource -Channel $Channel | Out-Null
     } else {
        throw "Invalid Update Source: $UpdateSource"
     }
