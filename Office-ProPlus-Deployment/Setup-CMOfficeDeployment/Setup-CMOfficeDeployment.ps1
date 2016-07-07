@@ -262,12 +262,16 @@ Create-CMOfficePackage -Channels Deferred -Bitness v32 -OfficeSourceFilesPath D:
            $existingPackage = CheckIfPackageExists
            $LargeDrv = Get-LargestDrive
 
-           $Path = CreateOfficeChannelShare -Path "$LargeDrv\OfficeDeployment"
+           if(!$CustomPackageShareName){
+               $CustomPackageShareName = "OfficeDeployment"
+           }
+
+           $Path = CreateOfficeChannelShare -CustomPackageShareName "$LargeDrv\$CustomPackageShareName"
 
            $packageName = "Office 365 ProPlus"
            $ChannelPath = "$Path\$Channel"
-           $LocalPath = "$LargeDrv\OfficeDeployment"
-           $LocalChannelPath = "$LargeDrv\OfficeDeployment\SourceFiles"
+           $LocalPath = "$LargeDrv\$CustomPackageShareName"
+           $LocalChannelPath = "$LargeDrv\$CustomPackageShareName\SourceFiles"
 
            [System.IO.Directory]::CreateDirectory($LocalChannelPath) | Out-Null
                           
@@ -399,7 +403,10 @@ Update-CMOfficePackage -Channels Current -Bitness Both -OfficeSourceFilesPath D:
 	    [String]$CMPSModulePath = $NULL,
 
         [Parameter()]
-	    [bool]$UpdateDistributionPoints = $true
+	    [bool]$UpdateDistributionPoints = $true,
+
+        [Parameter()]
+        [bool]$WaitForUpdateToFinish = $false
     )
     Begin
     {
@@ -534,6 +541,9 @@ Update-CMOfficePackage -Channels Current -Bitness Both -OfficeSourceFilesPath D:
            if ($UpdateDistributionPoints) {
               Write-Host "`t`tUpdating Distribution Points..."
               Update-CMDistributionPoint -PackageId $packageId
+              if($WaitForUpdateToFinish){
+                  Get-CMOfficeDistributionStatus -WaitForDistributionToFinish $true
+              }
            }
 
            Write-Host
@@ -1667,8 +1677,9 @@ clients in the target collection 'Office Update'.
 
 function Get-CMOfficeDistributionStatus{
 Param(
-
+    [bool]$WaitForDistributionToFinish = $false
 )
+
 Begin{
     $currentExecutionPolicy = Get-ExecutionPolicy
 	Set-ExecutionPolicy Unrestricted -Scope Process -Force  
@@ -1680,52 +1691,27 @@ Process{
     $Package = CheckIfPackageExists
     $PkgID = $Package.PackageID
 
-    $query = Get-WmiObject –NameSpace Root\SMS\Site_$SiteCode –Class SMS_DistributionDPStatus –Filter "PackageID='$PkgID'" | Select Name, MessageID, MessageState, LastUpdateDate
+    $Status = GetQueryStatus -SiteCode $SiteCode -PkgID $PkgID
 
-    If ($query -eq $null)
-    {  
-        throw "PackageID not found"
+    if($WaitForDistributionToFinish){
+        Do{
+            Start-Sleep -Seconds 5
+            $Status = GetQueryStatus -SiteCode $SiteCode -PkgID $PkgID
+            
+        }until($Status.Operation -eq 'In Progress')
+
+        $Status
+        
+        Do{
+            Start-Sleep -Seconds 5
+            $Status = GetQueryStatus -SiteCode $SiteCode -PkgID $PkgID
+        }until($Status.Operation -ne 'In Progress')
+
+        $Status
+
     }
-
-    Foreach ($objItem in $query)
-
-    {
-        $DPName = $objItem.Name
-        $UpdDate = [System.Management.ManagementDateTimeconverter]::ToDateTime($objItem.LastUpdateDate)
-
-        switch ($objItem.MessageState)
-          {
-          1 {$Status = "Success"}
-          2 {$Status = "In Progress"}
-          3 {$Status = "Failed"}
-          }
-
-        switch ($objItem.MessageID)
-            {
-            2303      {$Message = "Content was successfully refreshed"}
-            2323      {$Message = "Failed to initialize NAL"}
-            2324      {$Message = "Failed to access or create the content share"}
-            2330      {$Message = "Content was distributed to distribution point"}
-            2354      {$Message = "Failed to validate content status file"}
-            2357      {$Message = "Content transfer manager was instructed to send content to Distribution Point"}
-            2360      {$Message = "Status message 2360 unknown"}
-            2370      {$Message = "Failed to install distribution point"}
-            2371      {$Message = "Waiting for prestaged content"}
-            2372      {$Message = "Waiting for content"}
-            2380      {$Message = "Content evaluation has started"}
-            2381      {$Message = "An evaluation task is running. Content was added to Queue"}
-            2382      {$Message = "Content hash is invalid"}
-            2383      {$Message = "Failed to validate content hash"}
-            2384      {$Message = "Content hash has been successfully verified"}
-            2391      {$Message = "Failed to connect to remote distribution point"}
-            2398      {$Message = "Content Status not found"}
-            8203      {$Message = "Failed to update package"}
-            8204      {$Message = "Content is being distributed to the distribution Point"}
-            8211      {$Message = "Failed to update package"}
-            }
-        Write-Host "Package $PkgID on $DPName is in '$Status' state"
-        Write-Host "Detail: $Message"
-        Write-Host "Last Update Date: $UpdDate"
+    else{
+        $Status
     }
 }
 
@@ -1733,6 +1719,7 @@ End{
     Set-ExecutionPolicy $currentExecutionPolicy -Scope Process -Force
     Set-Location $startLocation
 }
+
 }
 
 
@@ -2042,14 +2029,15 @@ function CreateOfficeChannelShare() {
     [CmdletBinding()]	
     Param
 	(
-		[Parameter()]
-		[String]$Name = "OfficeDeployment$",
-		
-		[Parameter()]
-		[String]$Path = "$env:SystemDrive\OfficeDeployment"
+        [Parameter()]
+        [String]$CustomPackageShareName
 	) 
+    
+    $Path = $CustomPackageShareName
+    $Name = Split-Path -Leaf $CustomPackageShareName
+    $Name = "$Name$"    
 
-    IF (!(TEST-PATH $Path)) { 
+    if (!(Test-Path $Path)) { 
       $addFolder = New-Item $Path -type Directory 
     }
     
@@ -2073,47 +2061,6 @@ function CreateOfficeChannelShare() {
     $share = Get-WmiObject -Class Win32_share | Where {$_.name -eq "$Name"}
     if (!$share) {
        Create-FileShare -Name $Name -Path $Path | Out-Null
-    }
-
-    $sharePath = "\\$env:COMPUTERNAME\$Name"
-    return $sharePath
-}
-
-function CreateOfficeUpdateShare() {
-    [CmdletBinding()]	
-    Param
-	(
-		[Parameter()]
-		[String]$Name = "OfficeDeployment$",
-		
-		[Parameter()]
-		[String]$Path = "$env:SystemDrive\OfficeDeployment"
-	) 
-
-    IF (!(TEST-PATH $Path)) { 
-      $addFolder = New-Item $Path -type Directory 
-    }
-    
-    $ACL = Get-ACL $Path
-
-    $identity = New-Object System.Security.Principal.NTAccount  -argumentlist ("$env:UserDomain\$env:UserName") 
-    $accessRule = New-Object System.Security.AccessControl.FileSystemAccessRule -argumentlist ($identity,"FullControl","ContainerInherit, ObjectInherit","None","Allow")
-
-    $addAcl = $ACL.AddAccessRule($accessRule)
-
-    $identity = New-Object System.Security.Principal.NTAccount -argumentlist ("$env:UserDomain\Domain Admins") 
-    $accessRule = New-Object System.Security.AccessControl.FileSystemAccessRule -argumentlist ($identity,"FullControl","ContainerInherit, ObjectInherit","None","Allow")
-    $addAcl = $ACL.AddAccessRule($accessRule)
-
-    $identity = "Everyone"
-    $accessRule = New-Object System.Security.AccessControl.FileSystemAccessRule -argumentlist ($identity,"Read","ContainerInherit, ObjectInherit","None","Allow")
-    $addAcl = $ACL.AddAccessRule($accessRule)
-
-    Set-ACL -Path $Path -ACLObject $ACL
-    
-    $share = Get-WmiObject -Class Win32_share | Where {$_.name -eq "$Name"}
-    if (!$share) {
-       Create-FileShare -Name $Name -Path $Path
     }
 
     $sharePath = "\\$env:COMPUTERNAME\$Name"
@@ -2306,6 +2253,86 @@ Function GetScriptRoot() {
 
      return $scriptPath
  }
+}
+
+function GetQueryStatus(){
+Param(
+    [string]$SiteCode,
+    [string]$PkgID
+)
+
+    $query = Get-WmiObject –NameSpace Root\SMS\Site_$SiteCode –Class SMS_DistributionDPStatus –Filter "PackageID='$PkgID'" | Select Name, MessageID, MessageState, LastUpdateDate
+
+    if ($query -eq $null)
+    {  
+        throw "PackageID not found"
+    }
+
+    foreach ($objItem in $query){
+
+        $DPName = $objItem.Name
+        $UpdDate = [System.Management.ManagementDateTimeconverter]::ToDateTime($objItem.LastUpdateDate)
+
+        switch ($objItem.MessageState)
+        {
+            1         {$Status = "Success"}
+            2         {$Status = "In Progress"}
+            3         {$Status = "Failed"}
+        }
+
+        switch ($objItem.MessageID)
+        {
+            2300      {$Message = "Content is beginning to process"}
+            2301      {$Message = "Content has been processed successfully"}
+            2311      {$Message = "Distribution Manager has successfully created or updated the package"}
+            2303      {$Message = "Content was successfully refreshed"}
+            2323      {$Message = "Failed to initialize NAL"}
+            2324      {$Message = "Failed to access or create the content share"}
+            2330      {$Message = "Content was distributed to distribution point"}
+            2342      {$Message = "Content is beginning to distribute"}
+            2354      {$Message = "Failed to validate content status file"}
+            2357      {$Message = "Content transfer manager was instructed to send content to Distribution Point"}
+            2360      {$Message = "Status message 2360 unknown"}
+            2370      {$Message = "Failed to install distribution point"}
+            2371      {$Message = "Waiting for prestaged content"}
+            2372      {$Message = "Waiting for content"}
+            2380      {$Message = "Content evaluation has started"}
+            2381      {$Message = "An evaluation task is running. Content was added to Queue"}
+            2382      {$Message = "Content hash is invalid"}
+            2383      {$Message = "Failed to validate content hash"}
+            2384      {$Message = "Content hash has been successfully verified"}
+            2391      {$Message = "Failed to connect to remote distribution point"}
+            2398      {$Message = "Content Status not found"}
+            8203      {$Message = "Failed to update package"}
+            8204      {$Message = "Content is being distributed to the distribution Point"}
+            8211      {$Message = "Failed to update package"}
+        }
+
+        $Displayvalue = showTaskStatus -Operation $Status -Status $Message -DateTime $UpdDate
+
+    }
+
+    return $Displayvalue
+}
+
+function showTaskStatus() {
+    [CmdletBinding()]
+    Param(
+        [Parameter()]
+        [string] $Operation = "",
+
+        [Parameter()]
+        [string] $Status = "",
+
+        [Parameter()]
+        [string] $DateTime = ""
+    )
+
+    $Result = New-Object –TypeName PSObject 
+    Add-Member -InputObject $Result -MemberType NoteProperty -Name "Operation" -Value $Operation
+    Add-Member -InputObject $Result -MemberType NoteProperty -Name "Status" -Value $Status
+    Add-Member -InputObject $Result -MemberType NoteProperty -Name "DateTime" -Value $DateTime
+    return $Result
 }
 
 $scriptPath = GetScriptRoot
