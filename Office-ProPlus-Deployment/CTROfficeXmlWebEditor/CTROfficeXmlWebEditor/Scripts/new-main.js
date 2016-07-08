@@ -1250,6 +1250,18 @@ function changeSelectedProduct() {
 
     $("#txtPidKey").val("");
 
+    if (productId.indexOf("Visio") >= 0 || productId.indexOf("Project") >= 0) {
+        $("#cbExcludeApp").parent("div").addClass("is-disabled");
+        $("#btAddExcludeApp").prop('disabled', true);
+        $("#btRemoveExcludeApp").prop('disabled', true);
+
+    }
+    else {
+        $("#cbExcludeApp").parent("div").removeClass("is-disabled");
+        $("#btAddExcludeApp").prop('disabled', false);
+        $("#btRemoveExcludeApp").prop('disabled', false);
+    }
+
     var productCount = getAddProductCount(xmlDoc);
     if (productCount > 0) {
         var productNode = getProductNode(xmlDoc, productId);
