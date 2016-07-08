@@ -542,6 +542,15 @@ Update-CMOfficePackage -Channels Current -Bitness Both -OfficeSourceFilesPath D:
               Write-Host "`t`tUpdating Distribution Points..."
               Update-CMDistributionPoint -PackageId $packageId
               if($WaitForUpdateToFinish){
+                  $distributionStatus = Get-CMOfficeDistributionStatus
+                  if(!$distributionStatus){
+                      Write-Host ""
+                      Write-Host "NOTE: In order to update the package you must run the function 'Distribute-CMOfficePackage'." -BackgroundColor Red
+                      Write-Host "      You should wait until the content has finished distributing to the distribution points." -BackgroundColor Red
+                      Write-Host "      Otherwise the deployments will fail. The clients will continue to fail until the " -BackgroundColor Red
+                      Write-Host "      content distribution is complete." -BackgroundColor Red
+                  }
+
                   Get-CMOfficeDistributionStatus -WaitForDistributionToFinish $true
               }
            }
@@ -1312,13 +1321,13 @@ Distributes the package 'Office 365 ProPlus' to the distribution point cm.contos
 	    [string]$DistributionPointGroupName,
 
 	    [Parameter()]
-	    [uint16]$DeploymentExpiryDurationInDays = 15,
-
-	    [Parameter()]
 	    [String]$SiteCode = $null,
 
 	    [Parameter()]
-	    [String]$CMPSModulePath = $NULL
+	    [String]$CMPSModulePath = $NULL,
+
+        [Parameter()]
+        [bool]$WaitForDistributionToFinish = $false
 
     )
     Begin
@@ -1355,6 +1364,10 @@ Distributes the package 'Office 365 ProPlus' to the distribution point cm.contos
             }
         }
 
+        if($WaitForDistributionToFinish){
+            Get-CMOfficeDistributionStatus -WaitForDistributionToFinish $true
+        }
+        
         Write-Host 
         Write-Host "NOTE: In order to deploy the package you must run the function 'Deploy-CMOfficeChannelPackage'." -BackgroundColor Red
         Write-Host "      You should wait until the content has finished distributing to the distribution points." -BackgroundColor Red
@@ -1694,23 +1707,77 @@ Process{
     $Status = GetQueryStatus -SiteCode $SiteCode -PkgID $PkgID
 
     if($WaitForDistributionToFinish){
+        [string[]]$trackProgress = @()
+        $currentTime = Get-Date -Format "MM/dd/yyyy HH:mm:ss"            
         Do{
-            Start-Sleep -Seconds 5
             $Status = GetQueryStatus -SiteCode $SiteCode -PkgID $PkgID
+
+            if(!$trackProgress){
+                if($Status.DateTime -ge $currentTime){
+                    $trackProgress += $Status.Status
+                    $updateRunning = $true
+                    $Status
+                }
+            }else{
+                if($trackProgress -notcontains $Status.Status){
+                    $trackProgress += $Status.Status
+                    $updateRunning = $true
+                    $Status
+                }
+            }            
             
         }until($Status.Operation -eq 'In Progress')
-
-        $Status
-        
+               
         Do{
-            Start-Sleep -Seconds 5
             $Status = GetQueryStatus -SiteCode $SiteCode -PkgID $PkgID
-        }until($Status.Operation -ne 'In Progress')
 
-        $Status
+            if(!$trackProgress){
+                $trackProgress += $Status.Status
+                $Status
+            }else{
+                if($trackProgress -notcontains $Status.Status){
+                    $trackProgress += $Status.Status
+                    $updateRunning = $true
+                    $Status
+                }
+            }
 
-    }
-    else{
+            if(($Status.Operation -eq 'Failed') -or`
+               ($Status.Operation -eq 'Error')){
+                $trackProgress += $Status.Status
+                $Status
+
+                break;
+            }
+
+        }until($Status.Operation -eq 'Success')  
+              
+        Do{
+            $Status = GetQueryStatus -SiteCode $SiteCode -PkgID $PkgID
+        
+            if($Status.Operation -eq "Success"){
+                if($Status.Status -eq 'Content was distributed to distribution point'){
+                    $trackProgress += $Status.Status
+                    $allComplete = $true
+                    $updateRunning = $false
+                    $Status
+                }
+                else{        
+                    if($trackProgress -notcontains $Status.Status){
+                        $trackProgress += $Status.Status
+                        $updateRunning = $true
+                        $Status
+                    }
+                }
+            }
+
+            if($Status.Operation -eq "Failed"){
+                $updateRunning = $false
+                $Status
+            }  
+            
+        }while($updateRunning -eq $true)
+    }else{
         $Status
     }
 }
@@ -2278,12 +2345,14 @@ Param(
             1         {$Status = "Success"}
             2         {$Status = "In Progress"}
             3         {$Status = "Failed"}
+            4         {$Status = "Error"}
         }
 
         switch ($objItem.MessageID)
         {
             2300      {$Message = "Content is beginning to process"}
             2301      {$Message = "Content has been processed successfully"}
+            2303      {$Message = "Failed to process package"}
             2311      {$Message = "Distribution Manager has successfully created or updated the package"}
             2303      {$Message = "Content was successfully refreshed"}
             2323      {$Message = "Failed to initialize NAL"}
@@ -2296,12 +2365,14 @@ Param(
             2370      {$Message = "Failed to install distribution point"}
             2371      {$Message = "Waiting for prestaged content"}
             2372      {$Message = "Waiting for content"}
+            2376      {$Message = "Distribution Manager created a snapshot for content"}
             2380      {$Message = "Content evaluation has started"}
             2381      {$Message = "An evaluation task is running. Content was added to Queue"}
             2382      {$Message = "Content hash is invalid"}
             2383      {$Message = "Failed to validate content hash"}
             2384      {$Message = "Content hash has been successfully verified"}
             2391      {$Message = "Failed to connect to remote distribution point"}
+            2397      {$Message = "Detail will be available after the server finishes processing the messages"}
             2398      {$Message = "Content Status not found"}
             8203      {$Message = "Failed to update package"}
             8204      {$Message = "Content is being distributed to the distribution Point"}
