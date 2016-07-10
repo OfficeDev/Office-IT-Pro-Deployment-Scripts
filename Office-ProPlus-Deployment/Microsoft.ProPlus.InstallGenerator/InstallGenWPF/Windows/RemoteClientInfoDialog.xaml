@@ -71,12 +71,12 @@
         </StackPanel>
 
         <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" >
-            <Button Name="ImportComputers" Content="Import" Margin="2" Height="30" Click="ImportComputers_OnClick_Click" />
-            <Button Name="AddCredentials" Content="Credentials" Margin="2" Height="30" Click='AddCredentials_OnClick' />
+            <Button Name="ImportComputers" Content="Import" Margin="2" Height="30" Click="ImportComputers_OnClick_Click" Background="#FFF7F7F7" />
+            <Button Name="AddCredentials" Content="Credentials" Margin="2" Height="30" Click='AddCredentials_OnClick' Background="#FFF7F7F7" />
         </StackPanel>
         <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Right" >
-            <Button Name="OkButton" Content="OK" Margin="2" Height="30" Click="OkButton_Click" />
-            <Button Name="CancelButton" Content="Cancel" Margin="2" Height="30" Click="CancelButton_Click"  />
+            <Button Name="OkButton" Content="OK" Margin="2" Height="30" Click="OkButton_Click" Background="#FFF7F7F7" />
+            <Button Name="CancelButton" Content="Cancel" Margin="2" Height="30" Click="CancelButton_Click" Background="#FFF7F7F7"  />
         </StackPanel>
     </Grid>
 

@@ -72,8 +72,8 @@
                  HorizontalAlignment="Left" VerticalAlignment="Top" Width="315" Height="34"  Grid.Column="1" FontWeight="SemiBold" />
 
         <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="108"  >
-            <Button Name="OkButton" Content="OK" Margin="2" Height="30" Click="OkButton_Click"  />
-            <Button Name="CancelButton" Content="Cancel" Margin="2" Height="30" Click="CancelButton_OnClick"  />
+            <Button Name="OkButton" Content="OK" Margin="2" Height="30" Click="OkButton_Click" Background="#FFF7F7F7"  />
+            <Button Name="CancelButton" Content="Cancel" Margin="2" Height="30" Click="CancelButton_OnClick" Background="#FFF7F7F7"  />
         </StackPanel>
     </Grid>
 
