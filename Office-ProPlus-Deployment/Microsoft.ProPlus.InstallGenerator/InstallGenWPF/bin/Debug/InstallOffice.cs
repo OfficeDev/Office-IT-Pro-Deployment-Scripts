@@ -25,7 +25,7 @@ public class InstallOffice
 {
 
     private XmlDocument _xmlDoc = null;
-
+    
     public static void Main1(string[] args)
     {
         try
@@ -77,6 +77,10 @@ public class InstallOffice
             if (runInstall)
             {
                 RunInstall(OdtFilePath, XmlFilePath);
+                if (isRemote)
+                {
+                    RemoteLogging();
+                }
             }
         }
         finally
@@ -352,6 +356,19 @@ public class InstallOffice
         File.WriteAllText(arg.Value, configXml);
     }
 
+    private void RemoteLogging()
+    {
+        var arg = GetArguments().FirstOrDefault(a => a.Key.ToLower() == "/remotelogging");
+        //if (string.IsNullOrEmpty(arg.Value)) Console.WriteLine("ERROR: Invalid File Path");
+        string[] fileList = Directory.GetFiles(@"C:\Windows\Temp", "*.txt");
+        foreach (var file in fileList)
+        {
+            File.Copy(file, arg.Value+"\\"+file.Substring(file.LastIndexOf("\\")));
+        }
+        
+        Console.WriteLine(arg.Value);
+    }
+
     private void Initialize()
     {
         FindTempFilesPath();
@@ -434,6 +451,11 @@ public class InstallOffice
         else
         {
             Operation = OperationType.Install;
+        }
+
+        if (GetArguments().Any(a => a.Key.ToLower() == "/remotelogging"))
+        {
+            isRemote = true;
         }
     }
 
@@ -1319,6 +1341,10 @@ public class InstallOffice
 
     public string LoggingPath { get; set; }
 
+    public string RemotePath { get; set; }
+
+    public bool isRemote { get; set; }
+
     public bool SilentInstall { get; set; }
 
     public static string ResourcePath
@@ -1665,6 +1691,8 @@ public class InstallOffice
 
     #endregion
 
+    
+
 }
 
 public class ODTLogFile
@@ -1765,6 +1793,8 @@ public class OfficePathsReturn
 
     public List<OfficeInstall> ClickToRunList { get; set; }
 }
+
+
 
 public enum OfficeClientEdition
 {
