@@ -331,24 +331,59 @@ Function Remove-PreviousOfficeInstalls{
                 {
                     "11.*"
                     {
-                        $ActionFiles += "$scriptPath\$03VBS"
+                        Write-Host "Removing Office 2003..."
+                        $ActionFile = "$scriptPath\$03VBS"
+                        
+                        if (Test-Path -Path $ActionFile) {
+                           cscript //Nologo $ActionFile
+                        } else {
+                           throw "Required file missing: $ActionFile"
+                        }
                     }
                     "12.*"
                     {
-                        $ActionFiles += "$scriptPath\$07VBS"
+                        Write-Host "Removing Office 2007..."
+                        $ActionFile = "$scriptPath\$07VBS"
+                        
+                        if (Test-Path -Path $ActionFile) {
+                           cscript //Nologo $ActionFile
+                        } else {
+                           throw "Required file missing: $ActionFile"
+                        }
                     }
                     "14.*"
                     {
-                        $ActionFiles += "$scriptPath\$10VBS"
+                        Write-Host "Removing Office 2010..."
+                        $ActionFile = "$scriptPath\$10VBS"
+                        
+                        if (Test-Path -Path $ActionFile) {
+                           cscript //Nologo $ActionFile
+                        } else {
+                           throw "Required file missing: $ActionFile"
+                        }
                     }
                     "15.*"
                     {
-                        $ActionFiles += "$scriptPath\$15MSIVBS"
+                        Write-Host "Removing Office 2013..."
+                        $ActionFile = "$scriptPath\$15MSIVBS"
+                        
+                        if (Test-Path -Path $ActionFile) {
+                           cscript //Nologo $ActionFile
+                        } else {
+                           throw "Required file missing: $ActionFile"
+                        }
                     }
                     "16.*"
                     {
                        if ($Remove2016Installs) {
-                          $ActionFiles += "$scriptPath\$16MSIVBS"
+                          Write-Host "Removing Office 2016..."
+                          $ActionFile = "$scriptPath\$16MSIVBS"
+                          
+                          if (Test-Path -Path $ActionFile) {
+                             cscript //Nologo $ActionFile
+                          } else {
+                             throw "Required file missing: $ActionFile"
+                          }
                        }
                     }
                     default 
@@ -358,27 +393,19 @@ Function Remove-PreviousOfficeInstalls{
                 }
             } else {
               if ($RemoveClickToRunVersions) {
-                 $ActionFiles += "$scriptPath\$c2rVBS"
+                 Write-Host "Removing Office Click-To-Run..."
+                 $ActionFile = "$scriptPath\$c2rVBS"
+                 
+                 if (Test-Path -Path $ActionFile) {
+                     cscript //Nologo $ActionFile
+                 } else {
+                     throw "Required file missing: $ActionFile"
+                 }
               }
             }
         }
 
-        foreach ($ActionFile in $ActionFiles) {
-          Write-Host "Removing Office products..."
 
-          if (Test-Path -Path $ActionFile) {
-              cscript $ActionFile
-
-              Do{
-                Start-Sleep -Seconds 5
-                $cscriptProcess = Get-Process cscript -ErrorAction SilentlyContinue
-              }
-              Until($cscriptProcess -eq $null)
-
-          } else {
-            throw "Required file missing: $ActionFile"
-          }
-        }
     }
 
 
