@@ -538,27 +538,29 @@ Update-CMOfficePackage -Channels Current -Bitness Both -OfficeSourceFilesPath D:
 
            LoadCMPrereqs -SiteCode $SiteCode -CMPSModulePath $CMPSModulePath
 
-           if ($UpdateDistributionPoints) {
-              Write-Host "`t`tUpdating Distribution Points..."
-              Update-CMDistributionPoint -PackageId $packageId
-              if($WaitForUpdateToFinish){
-                  $distributionStatus = Get-CMOfficeDistributionStatus
-                  if(!$distributionStatus){
-                      Write-Host ""
-                      Write-Host "NOTE: In order to update the package you must run the function 'Distribute-CMOfficePackage'." -BackgroundColor Red
-                      Write-Host "      You should wait until the content has finished distributing to the distribution points." -BackgroundColor Red
-                      Write-Host "      Otherwise the deployments will fail. The clients will continue to fail until the " -BackgroundColor Red
-                      Write-Host "      content distribution is complete." -BackgroundColor Red
-                  }
-
-                  Get-CMOfficeDistributionStatus -WaitForDistributionToFinish $true
-              }
-           }
-
            Write-Host
 
          }
        }
+
+       if ($UpdateDistributionPoints) {
+            Write-Host "`t`tUpdating Distribution Points..."
+            Update-CMDistributionPoint -PackageId $packageId
+            if($WaitForUpdateToFinish){
+                $distributionStatus = Get-CMOfficeDistributionStatus
+                if(!$distributionStatus){
+                    Write-Host ""
+                    Write-Host "NOTE: In order to update the package you must run the function 'Distribute-CMOfficePackage'." -BackgroundColor Red
+                    Write-Host "      You should wait until the content has finished distributing to the distribution points." -BackgroundColor Red
+                    Write-Host "      Otherwise the deployments will fail. The clients will continue to fail until the " -BackgroundColor Red
+                    Write-Host "      content distribution is complete." -BackgroundColor Red
+                }
+
+                Get-CMOfficeDistributionStatus -WaitForDistributionToFinish $true
+            }
+       }
+
+
        } catch {
          throw;
        }
