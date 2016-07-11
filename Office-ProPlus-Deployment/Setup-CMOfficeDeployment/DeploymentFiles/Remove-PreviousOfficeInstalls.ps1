@@ -301,7 +301,19 @@ Function Remove-PreviousOfficeInstalls{
     [bool]$RemoveClickToRunVersions = $false,
 
     [Parameter(ValueFromPipelineByPropertyName=$true)]
-    [bool]$Remove2016Installs = $false
+    [bool]$Remove2016Installs = $false,
+
+    [Parameter(ValueFromPipelineByPropertyName=$true)]
+    [bool]$Force = $true,
+
+    [Parameter(ValueFromPipelineByPropertyName=$true)]
+    [bool]$KeepUserSettings = $true,
+
+    [Parameter(ValueFromPipelineByPropertyName=$true)]
+    [bool]$KeepLync = $false,
+
+    [Parameter(ValueFromPipelineByPropertyName=$true)]
+    [bool]$NoReboot = $false
   )
 
   Process {
@@ -311,6 +323,28 @@ Function Remove-PreviousOfficeInstalls{
     $10VBS = "OffScrub10.vbs"
     $15MSIVBS = "OffScrub_O15msi.vbs"
     $16MSIVBS = "OffScrub_O16msi.vbs"
+
+    $argList = ""
+
+    if ($Force) {
+        $argList += " /FORCE"
+    }
+
+    if ($KeepUserSettings) {
+       $argList += " /KEEPUSERSETTINGS"
+    } else {
+       $argList += " /DELETEUSERSETTINGS"
+    }
+
+    if ($KeepLync) {
+       $argList += " /KEEPLYNC"
+    } else {
+       $argList += " /REMOVELYNC"
+    }
+
+    if ($NoReboot) {
+        $argList += " /NOREBOOT"
+    }
 
     $scriptPath = GetScriptRoot
 
