@@ -1250,6 +1250,18 @@ function changeSelectedProduct() {
 
     $("#txtPidKey").val("");
 
+    if (productId.indexOf("Visio") >= 0 || productId.indexOf("Project") >= 0) {
+        $("#cbExcludeApp").parent("div").addClass("is-disabled");
+        $("#btAddExcludeApp").prop('disabled', true);
+        $("#btRemoveExcludeApp").prop('disabled', true);
+
+    }
+    else {
+        $("#cbExcludeApp").parent("div").removeClass("is-disabled");
+        $("#btAddExcludeApp").prop('disabled', false);
+        $("#btRemoveExcludeApp").prop('disabled', false);
+    }
+
     var productCount = getAddProductCount(xmlDoc);
     if (productCount > 0) {
         var productNode = getProductNode(xmlDoc, productId);
@@ -2849,6 +2861,15 @@ var versionsFRCurrent2016 = [
 ];
 
 var versionsCurrent2016 = [
+'16.0.6965.2058',
+'16.0.6965.2053',
+'16.0.6868.2067',
+'16.0.6868.2062',
+'16.0.6868.2060',
+'16.0.6769.2040',
+'16.0.6769.2015',
+'16.0.6741.2021',
+'16.0.6741.2017',
 '16.0.6366.2036',
 '16.0.6001.1043',
 '16.0.6001.1038',
@@ -2858,10 +2879,32 @@ var versionsCurrent2016 = [
 ];
 
 var versionsBusiness2016 = [
+'16.0.6001.1082',
+'16.0.6001.1078',
+'16.0.6001.1073',
+'16.0.6001.1068',
+'16.0.6001.1061',
 '16.0.6001.1043'
 ];
 
 var versionsFRBusiness2016 = [
+'16.0.6965.2058',
+'16.0.6965.2053',
+'16.0.6868.2067',
+'16.0.6868.2062',
+'16.0.6868.2060',
+'16.0.6769.2040',
+'16.0.6769.2017',
+'16.0.6769.2015',
+'16.0.6741.2021',
+'16.0.6741.2017',
+'16.0.6568.2036',
+'16.0.6568.2034',
+'16.0.6568.2025',
+'16.0.6366.2068',
+'16.0.6366.2062',
+'16.0.6366.2056',
+'16.0.6366.2036',
 '16.0.6001.1043',
 '16.0.6001.1038',
 '16.0.6001.1034',
@@ -2909,9 +2952,7 @@ var excludeApps2013 = [
     'OneNote',
     'Outlook',
     'PowerPoint',
-    'Project',
     'Publisher',
-    'Visio',
     'Word'
 ];
 
@@ -2924,9 +2965,7 @@ var excludeApps2016 = [
     'OneDrive',
     'Outlook',
     'PowerPoint',
-    'Project',
     'Publisher',
-    'Visio',
     'Word'    
 ];
 
