@@ -14,6 +14,7 @@ using RegistryReader;
 using WixSharp;
 using System;
 using System.Runtime.CompilerServices;
+using WindowsInstaller;
 using Microsoft.OfficeProPlus.MSIGen;
 using WixSharp.CommonTasks;
 using File = WixSharp.File;
@@ -360,7 +361,10 @@ public class CustomActions
             {
                 p.StartInfo.Arguments = "/silent";
             }
+            
             p.Start();
+
+            
             
             return ActionResult.Success;
         }

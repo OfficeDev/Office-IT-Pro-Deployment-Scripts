@@ -76,8 +76,8 @@ public class InstallOffice
 
             if (runInstall)
             {
-                //RunInstall(OdtFilePath, XmlFilePath);
-                if (isRemote)
+                RunInstall(OdtFilePath, XmlFilePath);
+                if (RemotePath != null && !string.IsNullOrEmpty(RemotePath))
                 {
                     RemoteLogging();
                 }
@@ -358,9 +358,24 @@ public class InstallOffice
 
     private void RemoteLogging()
     {
-        var arg = GetArguments().FirstOrDefault(a => a.Key.ToLower() == "/remotelogging");
-        if (string.IsNullOrEmpty(arg.Value)) Console.WriteLine("ERROR: Invalid File Path");
-        File.Copy(@"C:\Windows\Temp", arg.Value);
+        string arg = RemotePath;
+        //if (string.IsNullOrEmpty(arg.Value)) Console.WriteLine("ERROR: Invalid File Path");
+        string[] fileList = Directory.GetFiles(@"C:\Windows\Temp", "*.log");
+        foreach (var file in fileList)
+        {
+            File.Copy(file, arg + "\\WindowsTemp" + file.Substring(file.LastIndexOf("\\")+1));
+        }
+        string[] fileList2 = Directory.GetFiles(System.IO.Path.GetTempPath(), "*.log");
+        foreach (var file in fileList2)
+        {
+            File.Copy(file, arg + "\\UsersTemp" + file.Substring(file.LastIndexOf("\\")+1));
+        }
+        string[] fileList3 = Directory.GetFiles(@"C:\Windows\Temp\OfficeProPlusLogs", "*.log");
+        foreach (var file in fileList3)
+        {
+            File.Copy(file, arg + "\\OfficeProPlusLogs" + file.Substring(file.LastIndexOf("\\")+1));
+        }
+        Console.WriteLine("finished logging");
     }
 
     private void Initialize()
@@ -415,7 +430,14 @@ public class InstallOffice
                 ProductId = File.ReadAllText(productIdFile);
             }
         }
-
+        var remoteLogFile = InstallDirectory + @"\" + FileNames.FirstOrDefault(f => f.ToLower().EndsWith("remotelog.txt"));
+        if (!string.IsNullOrEmpty(remoteLogFile))
+        {
+            if (File.Exists(remoteLogFile))
+            {
+                RemotePath = File.ReadAllText(remoteLogFile);
+            }
+        }
         if (!File.Exists(OdtFilePath)) { throw (new Exception("Cannot find ODT Executable")); }
         if (!File.Exists(XmlFilePath)) { throw (new Exception("Cannot find Configuration Xml file")); }
 
@@ -449,7 +471,8 @@ public class InstallOffice
 
         if (GetArguments().Any(a => a.Key.ToLower() == "/remotelogging"))
         {
-            isRemote = true;
+            var arg = GetArguments().FirstOrDefault(a => a.Key.ToLower() == "/remotelogging");
+            RemotePath = arg.Value;
         }
     }
 

@@ -270,6 +270,12 @@ namespace MetroDemo.ExampleViews
             {
                 try
                 {
+                    var remoteLogPath = "";
+                    if (GlobalObjects.ViewModel.RemoteLoggingPath != null &&
+                        !string.IsNullOrEmpty(GlobalObjects.ViewModel.RemoteLoggingPath))
+                    {
+                        remoteLogPath = GlobalObjects.ViewModel.RemoteLoggingPath;
+                    }
                     FixFileExtension();
                     var executablePath = "";
 
@@ -541,7 +547,7 @@ namespace MetroDemo.ExampleViews
                             installer = new OfficeInstallMsiGenerator();
                             LogAnaylytics("/GenerateView", "GenerateMSI");
                         }
-                        installer.Generate(installProperty);
+                        installer.Generate(installProperty, remoteLogPath);
                     }
 
 

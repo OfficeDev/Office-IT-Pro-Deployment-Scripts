@@ -19,7 +19,7 @@ namespace OfficeInstallGenerator
     public class OfficeInstallExecutableGenerator : IOfficeInstallGenerator
     {
 
-        public IOfficeInstallReturn Generate(IOfficeInstallProperties installProperties)
+        public IOfficeInstallReturn Generate(IOfficeInstallProperties installProperties, string remoteLogPath = "")
         {
             var currentDirectory = Directory.GetCurrentDirectory();
             var embededExeFiles = new List<string>();
@@ -58,10 +58,13 @@ namespace OfficeInstallGenerator
                 File.Copy(installProperties.ConfigurationXmlPath, tmpPath + @"\configuration.xml", true);
 
                 var productIdPath = tmpPath + @"\productid.txt";
+                var remoteLog = tmpPath + @"\RemoteLog.txt";
                 File.WriteAllText(productIdPath, installProperties.ProductId);
+                File.WriteAllText(remoteLog, remoteLogPath);
 
                 parameters.EmbeddedResources.Add(tmpPath + @"\configuration.xml");
                 parameters.EmbeddedResources.Add(productIdPath);
+                parameters.EmbeddedResources.Add(remoteLog);
 
                 // parameters.EmbeddedResources.Add(@"\tools\");
 
