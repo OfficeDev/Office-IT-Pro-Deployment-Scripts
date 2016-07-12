@@ -262,16 +262,12 @@ Create-CMOfficePackage -Channels Deferred -Bitness v32 -OfficeSourceFilesPath D:
            $existingPackage = CheckIfPackageExists
            $LargeDrv = Get-LargestDrive
 
-           if(!$CustomPackageShareName){
-               $CustomPackageShareName = "OfficeDeployment"
-           }
-
-           $Path = CreateOfficeChannelShare -CustomPackageShareName "$LargeDrv\$CustomPackageShareName"
+           $Path = CreateOfficeChannelShare -Path "$LargeDrv\OfficeDeployment"
 
            $packageName = "Office 365 ProPlus"
            $ChannelPath = "$Path\$Channel"
-           $LocalPath = "$LargeDrv\$CustomPackageShareName"
-           $LocalChannelPath = "$LargeDrv\$CustomPackageShareName\SourceFiles"
+           $LocalPath = "$LargeDrv\OfficeDeployment"
+           $LocalChannelPath = "$LargeDrv\OfficeDeployment\SourceFiles"
 
            [System.IO.Directory]::CreateDirectory($LocalChannelPath) | Out-Null
                           
@@ -2099,13 +2095,12 @@ function CreateOfficeChannelShare() {
     Param
 	(
         [Parameter()]
-        [String]$CustomPackageShareName
+        [String]$Name = "OfficeDeployment$",
+
+        [Parameter()]
+        [String]$Path = "$env:SystemDrive\OfficeDeployment"
 	) 
     
-    $Path = $CustomPackageShareName
-    $Name = Split-Path -Leaf $CustomPackageShareName
-    $Name = "$Name$"    
-
     if (!(Test-Path $Path)) { 
       $addFolder = New-Item $Path -type Directory 
     }
