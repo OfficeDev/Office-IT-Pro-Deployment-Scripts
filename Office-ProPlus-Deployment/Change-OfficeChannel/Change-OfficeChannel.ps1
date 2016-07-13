@@ -1,9 +1,12 @@
 ﻿  param(
     [Parameter()]
-    [string]$Channel = $null,
+    [string]$Channel = $NULL,
 
     [Parameter()]
-    [switch]$RollBack
+    [switch]$RollBack,
+
+    [Parameter()]
+    [bool]$SendExitCode = $false
   )
 
 Function Get-ScriptPath() {
@@ -280,6 +283,33 @@ Function Test-UpdateSource() {
     return $sourceIsAlive
 }
 
+Function Test-Url() {
+    [CmdletBinding()]
+    Param(
+        [Parameter(Mandatory=$true)]
+        [string] $Url = $NULL
+    )
+
+# First we create the request.
+$HTTP_Request = [System.Net.WebRequest]::Create($Url)
+
+# We then get a response from the site.
+$HTTP_Response = $HTTP_Request.GetResponse()
+
+# We then get the HTTP code as an integer.
+$HTTP_Status = [int]$HTTP_Response.StatusCode
+
+# Finally, we clean up the http request by closing it.
+$HTTP_Response.Close()
+
+If ($HTTP_Status -eq 200) { 
+    return $true
+}
+Else {
+    return $false
+}
+}
+
 Function Validate-UpdateSource() {
     [CmdletBinding()]
     Param(
@@ -340,21 +370,36 @@ Function Get-LatestVersion() {
     [array]$totalVersion = @()
     $Version = $null
 
-    $LatestBranchVersionPath = $UpdateURLPath + '\Office\Data'
-    if(Test-Path $LatestBranchVersionPath){
-        $DirectoryList = Get-ChildItem $LatestBranchVersionPath
-        Foreach($listItem in $DirectoryList){
-            if($listItem.GetType().Name -eq 'DirectoryInfo'){
-                $totalVersion+=$listItem.Name
+    $isUrl = $UpdateURLPath -like 'http*'
+
+    $tempUpdateURLPath = "$UpdateURLPath/Office/Data/v32.cab"
+
+    if ($isUrl) {
+        $cabXml = Get-UrlCabXml -UpdateURLPath $tempUpdateURLPath
+        if ($cabXml) {
+            $availNode = $cabXml.Version.Available
+            $currentVersion = $availNode.Build
+            if ($currentVersion) {
+               $Version = $currentVersion
             }
         }
-    }
+    } else {
+        $LatestBranchVersionPath = $UpdateURLPath + '\Office\Data'
+        if(Test-Path $LatestBranchVersionPath){
+            $DirectoryList = Get-ChildItem $LatestBranchVersionPath
+            Foreach($listItem in $DirectoryList){
+                if($listItem.GetType().Name -eq 'DirectoryInfo'){
+                    $totalVersion+=$listItem.Name
+                }
+            }
+        }
 
-    $totalVersion = $totalVersion | Sort-Object -Descending
+        $totalVersion = $totalVersion | Sort-Object -Descending
     
-    #sets version number to the newest version in directory for channel if version is not set by user in argument  
-    if($totalVersion.Count -gt 0){
-        $Version = $totalVersion[0]
+        #sets version number to the newest version in directory for channel if version is not set by user in argument  
+        if($totalVersion.Count -gt 0){
+            $Version = $totalVersion[0]
+        }
     }
 
     return $Version
@@ -506,6 +551,29 @@ function Get-ChannelUrl() {
    }
 }
 
+function Get-UrlCabXml() {
+   [CmdletBinding()]
+   Param(
+     [Parameter(Mandatory=$true)]
+     [string] $UpdateURLPath
+   )
+
+   process {
+       $webclient = New-Object System.Net.WebClient
+       $XMLFilePath = "$env:TEMP/v32.cab"
+       $XMLDownloadURL = $UpdateURLPath
+       $webclient.DownloadFile($XMLDownloadURL,$XMLFilePath)
+
+       $tmpName = "VersionDescriptor.xml"
+       expand $XMLFilePath $env:TEMP -f:$tmpName | Out-Null
+       $tmpName = $env:TEMP + "\VersionDescriptor.xml"
+       [xml]$channelXml = Get-Content $tmpName
+
+       return $channelXml
+   }
+
+}
+
 function Get-ChannelXml() {
    [CmdletBinding()]
    param( 
@@ -615,6 +683,7 @@ try {
         $UpdateURLPath  = (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration").UpdateUrl
         $PolicyPath = $false
     }
+
     if (!($UpdateURLPath)) {
         $UpdateURLPath = Get-ScriptPath
         $SetBack = $true
@@ -624,9 +693,10 @@ try {
            $UpdateURLPath = $TmpUpdateUrlPath
         }
     }
-    else{
+    else
+    {
         $urlPathChk = Test-Path $UpdateURLPath
-        if(!$urlPathChk){
+        if(!($urlPathChk)){
             $UpdateURLPath = Get-ScriptPath
             $SetBack = $true
 
@@ -639,12 +709,33 @@ try {
 
     $OldUpdatePath = $UpdateURLPath
 
-    if ($RollBack) {
-       $Channel = (Detect-Channel).branch
+    $detectChannelUrl = $NULL
+    $detectChannel = (Detect-Channel)
+    if ($detectChannel) {
+        $detectChannelBranch = $detectChannel.Branch
+        $detectChannelUrl = $detectChannel.Url
     }
 
-    $UpdateURLPath = Change-UpdatePathToChannel -Channel $Channel -UpdatePath $UpdateURLPath
-   
+    if ($RollBack) {
+       $Channel = $detectChannelBranch
+    }
+
+    [bool]$updateUrlIsCdn = $false
+    if ($detectChannelUrl) {
+      if ($detectChannelUrl -like '*officecdn.microsoft.com*') {
+          $updateUrlIsCdn = $true
+      }
+    }
+
+    if ($updateUrlIsCdn) {
+      $newChannelUrl = Get-ChannelUrl -Channel $Channel
+      if ($newChannelUrl) {
+         $UpdateURLPath = $newChannelUrl.Url
+      }
+    } else {
+      $UpdateURLPath = Change-UpdatePathToChannel -Channel $Channel -UpdatePath $UpdateURLPath
+    }
+  
     $validSource = Test-UpdateSource -UpdateSource $UpdateURLPath
     if (!($validSource)) {
         throw "UpdateSource not Valid $UpdateURLPath"
@@ -704,11 +795,17 @@ try {
         if (!($RollBack)) {
            Set-OfficeCDNUrl -Channel $Channel
         }
+
+        Remove-ItemProperty $Office2RClientKey -Name BackupUpdateUrl -Force -ErrorAction SilentlyContinue | Out-Null
     }
-    [System.Environment]::Exit(0)
+    if ($SendExitCode) {
+       [System.Environment]::Exit(0)
+    }
 } catch {
   Write-Host $_ -ForegroundColor Red
   $Error = $null
-  [System.Environment]::Exit(1)
+  if ($SendExitCode) {
+      [System.Environment]::Exit(1)
+  }
 }
 
