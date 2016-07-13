@@ -1422,9 +1422,16 @@ function Get-LargestDrive() {
           $driveInfoList += $driveInfo
       }
 
-      $SortList = Sort-Object -InputObject $driveInfoList -Property FreeSpace
+      $itemList = @()
+      foreach($item in $driveInfoList){
+          $itemList += $item.Freespace
+      }
 
-      $FreeSpaceDrive = $SortList[0]
+      $largItem = $itemList | measure -Maximum      
+      $largestItem = $largItem.Maximum
+
+      $FreeSpaceDrive = $driveInfoList | Where-Object {$_.Freespace -eq $largestItem}
+
       return $FreeSpaceDrive.DeviceID
    }
 }

@@ -159,6 +159,7 @@ process {
     } else {
       $productPlatform = $officeConfig.Platform
       $otherProducts = $officeConfig.ProductReleaseIds
+      $otherProducts = generateProductReleaseIds -OfficeProducts $officeProducts
     }
 
     if ($officeConfig.ProductReleaseIds) {
@@ -197,9 +198,18 @@ process {
           }
       }
     }
-
+    
     if ($productReleaseIds) {
         $splitProducts = $productReleaseIds.Split(',');
+        
+        $newSplitProducts = @()
+        foreach ($productId in $splitProducts) { 
+           if (!($newSplitProducts -Contains $productId)) {
+              $newSplitProducts += $productId
+           }
+        }
+        
+        $splitProducts = $newSplitProducts
     }
 
     $osArchitecture = $os.OSArchitecture
@@ -348,6 +358,26 @@ process {
        $ChannelDetect = Detect-Channel
        if ($ChannelDetect) {
           $ChannelName = $ChannelDetect.branch
+       }
+       
+       if ($officeConfig.ClickToRunInstalled) {
+          if ($Languages -eq "CurrentOfficeLanguages") {
+            
+            $officeAddLangs = odtGetOfficeLanguages -ConfigDoc $ConfigFile -OfficeKeyPath $officeConfig.OfficeKeyPath -ProductId $productId
+            if ($officeAddLangs) {
+               $additionalLanguages = New-Object System.Collections.ArrayList
+               $n = 0
+               foreach ($language in $officeAddLangs) {
+                  if ($n -eq 0) {
+                    $primaryLanguage = $language
+                  } else {
+                    $additionalLanguages += $language
+                  }
+                  $n++
+               }
+            }
+           
+          }
        }
 
        odtAddProduct -ConfigDoc $ConfigFile -ProductId $productId -ExcludeApps $excludeApps -Version $officeConfig.Version `
