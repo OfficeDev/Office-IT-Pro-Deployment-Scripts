@@ -60,7 +60,7 @@ if ($installOffice) {
          }
       }
 
-      Set-ODTUpdates -TargetFilePath $targetFilePath -Channel $addNode.Channel -Enabled $true -UpdatePath $UpdatePath
+      Set-ODTUpdates -TargetFilePath $targetFilePath -Channel $addNode.Channel -Enabled $true -UpdatePath $UpdatePath | Out-Null
 
       Install-OfficeClickToRun -TargetFilePath $targetFilePath
   }
