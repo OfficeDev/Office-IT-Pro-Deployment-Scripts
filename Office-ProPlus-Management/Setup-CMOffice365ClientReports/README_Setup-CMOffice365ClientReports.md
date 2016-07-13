@@ -101,8 +101,7 @@ If you enabled the new classes in Default Client Settings you can move on to Ste
 1.	**Right click** on the **Device Setting** that has the Office365ClientConfigurations classes enabled and choose **Deploy**.  
 2.	Select the **collection** and click **OK**.  
 
-          When the next hardware inventory runs on the client the information from the new class 
-          will collected. This may take some time.
+**Note** - When the next hardware inventory runs on the client the information from the new class will be collected. This may take some time.
           
 ##Import the custom reports
 
