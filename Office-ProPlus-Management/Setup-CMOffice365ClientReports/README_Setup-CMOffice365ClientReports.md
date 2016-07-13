@@ -30,7 +30,7 @@ and **Office365ProPlusConfigurations2013**.
 2.	Go to **Administration/Overview/Client Settings**.
 3.	Right click on **Default Client Settings** and choose **Properties**.
 4.	Click **Hardware Inventory**.
-5.	Click **Set Classes Ö**
+5.	Click **Set Classes ‚Ä¶**
 6.	Deselect **OFFICE365PROPLUSCONFIGURATIONS** and click **OK**.
 7.	Click **OK** to close the Default Settings window.
 
@@ -128,14 +128,15 @@ start to show data once the hardware inventory has run on the clients. Depending
 
 4.	Run the function against the local Report Server.  
 
-        Example: Import-CMReports  
+          Example: Import-CMReports  
 
-		This will run the script and use the local computer name as the Report Server.  
-		A folder called Custom Reports will be created and used to host the report files on the report server.  
-
-	Example: Import-CMReports ñFolderName ìSoftware ñ Office 365 Clientsî
-		This will run the script and use the local computer name as the Report Server.
-		A folder called Software ñ Office 365 Clients will be created and used to host the report files on the report server.
+	  This will run the script and use the local computer name as the Report Server.  
+	  A folder called Custom Reports will be created and used to host the report files on the report server.  
+          
+          Example: Import-CMReports ‚ÄìFolderName ‚ÄúSoftware ‚Äì Office 365 Clients‚Äù  
+	  
+          This will run the script and use the local computer name as the Report Server.
+          A folder called Software ‚Äì Office 365 Clients will be created and used to host the report files on the report server.
 
           
 ###Manually upload the reports
