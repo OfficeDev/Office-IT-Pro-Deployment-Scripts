@@ -422,6 +422,7 @@ Update-CMOfficePackage -Channels Current -Bitness Both -OfficeSourceFilesPath D:
 
        $ChannelList = @("FirstReleaseCurrent", "Current", "FirstReleaseDeferred", "Deferred")
        $ChannelXml = Get-ChannelXml -FolderPath $OfficeSourceFilesPath -OverWrite $false
+       [bool]$packageNotification = $false
 
        foreach ($Channel in $ChannelList) {
          if ($Channels -contains $Channel) {
@@ -447,7 +448,10 @@ Update-CMOfficePackage -Channels Current -Bitness Both -OfficeSourceFilesPath D:
            $packageName = $existingPackage.Name
            $packageId = $existingPackage.PackageID
 
-           Write-Host "`tUpdating Package: $packageName"
+           if(!$packageNotification){
+               Write-Host "`tUpdating Package: $packageName"
+               $packageNotification = $true
+           }           
 
            $Path = $existingPackage.PkgSourcePath
 
@@ -459,7 +463,7 @@ Update-CMOfficePackage -Channels Current -Bitness Both -OfficeSourceFilesPath D:
            [System.IO.Directory]::CreateDirectory($LocalChannelPath) | Out-Null
                           
            if ($OfficeSourceFilesPath) {
-                Write-Host "`t`tUpdating Source Files..."
+                Write-Host "`t`tUpdating Source Files for $Channel..."
 
                 $officeFileChannelPath = "$OfficeSourceFilesPath\$ChannelShortName"
                 $officeFileTargetPath = "$LocalChannelPath\$ChannelShortName"
@@ -524,7 +528,10 @@ Update-CMOfficePackage -Channels Current -Bitness Both -OfficeSourceFilesPath D:
 
            CreateMainCabFiles -LocalPath $LocalPath -ChannelShortName $ChannelShortName -LatestVersion $latestVersion
 
-           $DeploymentFilePath = "$PSSCriptRoot\DeploymentFiles\*.*"
+         }
+       }
+
+       $DeploymentFilePath = "$PSSCriptRoot\DeploymentFiles\*.*"
            if (Test-Path -Path $DeploymentFilePath) {
              Write-Host "`t`tUpdating Deployment Files..."
              Copy-Item -Path $DeploymentFilePath -Destination "$LocalPath" -Force -Recurse
@@ -532,30 +539,24 @@ Update-CMOfficePackage -Channels Current -Bitness Both -OfficeSourceFilesPath D:
              throw "Deployment folder missing: $DeploymentFilePath"
            }
 
-           LoadCMPrereqs -SiteCode $SiteCode -CMPSModulePath $CMPSModulePath
-
-           Write-Host
-
-         }
-       }
+       LoadCMPrereqs -SiteCode $SiteCode -CMPSModulePath $CMPSModulePath
 
        if ($UpdateDistributionPoints) {
-            Write-Host "`t`tUpdating Distribution Points..."
-            Update-CMDistributionPoint -PackageId $packageId
-            if($WaitForUpdateToFinish){
-                $distributionStatus = Get-CMOfficeDistributionStatus
-                if(!$distributionStatus){
-                    Write-Host ""
-                    Write-Host "NOTE: In order to update the package you must run the function 'Distribute-CMOfficePackage'." -BackgroundColor Red
-                    Write-Host "      You should wait until the content has finished distributing to the distribution points." -BackgroundColor Red
-                    Write-Host "      Otherwise the deployments will fail. The clients will continue to fail until the " -BackgroundColor Red
-                    Write-Host "      content distribution is complete." -BackgroundColor Red
-                }
+           Write-Host "`t`tUpdating Distribution Points..."
+           Update-CMDistributionPoint -PackageId $packageId
+           if($WaitForUpdateToFinish){
+               $distributionStatus = Get-CMOfficeDistributionStatus
+               if(!$distributionStatus){
+                   Write-Host ""
+                   Write-Host "NOTE: In order to update the package you must run the function 'Distribute-CMOfficePackage'." -BackgroundColor Red
+                   Write-Host "      You should wait until the content has finished distributing to the distribution points." -BackgroundColor Red
+                   Write-Host "      Otherwise the deployments will fail. The clients will continue to fail until the " -BackgroundColor Red
+                   Write-Host "      content distribution is complete." -BackgroundColor Red
+               }
 
-                Get-CMOfficeDistributionStatus -WaitForDistributionToFinish $true
-            }
+               Get-CMOfficeDistributionStatus -WaitForDistributionToFinish $true
+           }
        }
-
 
        } catch {
          throw;
@@ -1182,7 +1183,7 @@ be prompted before updating and will display the progress.
         [string] $RandomTimeEnd = "17:00",
 
         [Parameter()]
-        [string] $StartTime = "12:00",
+        [string] $StartTime,
 
         [Parameter()]
         [string] $LogPath = $NULL,
@@ -1230,6 +1231,16 @@ be prompted before updating and will display the progress.
                          " -UpdatePromptUser " + (Convert-Bool -value $UpdatePromptUser) + ` 
                          " -DisplayLevel " + (Convert-Bool -value $DisplayLevel) + ` 
                          " -UseScriptLocationAsUpdateSource " + (Convert-Bool -value $UseScriptLocationAsUpdateSource)
+                         
+         if($UseRandomStartTime){
+             $CommandLine += " -UseRandomStartTime " + $UseRandomStartTime + `
+                             " -RandomTimeStart " + $RandomTimeStart + `
+                             " -RandomTimeEnd " + $RandomTimeEnd
+         }
+
+         if($StartTime){
+             $CommandLine += " -StartTime " + $StartTime
+         }
 
          if ($UpdateToVersion) {
              $CommandLine += " -UpdateToVersion " + $UpdateToVersion
