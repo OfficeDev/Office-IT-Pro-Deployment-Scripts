@@ -49,6 +49,19 @@ if ($installOffice) {
       Set-ODTAdd -TargetFilePath $targetFilePath -Version $NULL -Bitness 64 | Out-Null
       Set-ODTDisplay -TargetFilePath $targetFilePath -Level None -AcceptEULA $true | Out-Null
 
+      $updates = Get-ODTUpdates -TargetFilePath $targetFilePath
+      $addNode = Get-ODTAdd -TargetFilePath $targetFilePath
+
+      $UpdatePath = $NULL
+      if ($updates) {
+         $UpdatePath = $updates.UpdatePath
+         if ($UpdatePath -like '*officecdn.microsoft.com*') {
+             $UpdatePath = $NULL
+         }
+      }
+
+      Set-ODTUpdates -TargetFilePath $targetFilePath -Channel $addNode.Channel -Enabled $true -UpdatePath $UpdatePath
+
       Install-OfficeClickToRun -TargetFilePath $targetFilePath
   }
 }
