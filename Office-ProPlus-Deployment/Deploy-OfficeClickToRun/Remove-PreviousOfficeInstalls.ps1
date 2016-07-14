@@ -324,7 +324,7 @@ Function Remove-PreviousOfficeInstalls{
     $15MSIVBS = "OffScrub_O15msi.vbs"
     $16MSIVBS = "OffScrub_O16msi.vbs"
 
-    $argList = ""
+    $argList = "CLIENTALL /QUIET"
 
     if ($Force) {
         $argList += " /FORCE"
