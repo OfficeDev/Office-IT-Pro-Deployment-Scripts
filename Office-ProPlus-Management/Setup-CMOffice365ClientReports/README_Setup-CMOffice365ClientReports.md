@@ -55,7 +55,7 @@ You can find more information about MOF files at https://technet.microsoft.com/e
 ####Use PowerShell to copy the content to the MOF file
 1.	Open a PowerShell console  
 
-        From the Run dialog type PowerShell
+        From the Run dialog type PowerShell. Open the program as an administrator.
 2.	Change the directory to the location where the PowerShell script is saved  
 
         Example: cd c:\PowerShellScripts
@@ -113,7 +113,7 @@ start to show data once the hardware inventory has run on the clients. Completio
 ###Use PowerShell to import the reports
 1.	Open a PowerShell console.  
 
-          From the Run dialog type PowerShell
+          From the Run dialog type PowerShell. Open the program as an administrator.
 2.	Change the directory to the location where the PowerShell script is saved.  
 
           Example: cd c:\PowerShellScripts
