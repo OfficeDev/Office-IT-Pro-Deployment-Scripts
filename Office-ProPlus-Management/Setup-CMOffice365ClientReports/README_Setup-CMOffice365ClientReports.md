@@ -129,8 +129,8 @@ start to show data once the hardware inventory has run on the clients. Completio
 
           Example: Import-CMReports  
 
-	  This will run the script and use the local computer name as the Report Server.  
-	  A folder called Custom Reports will be created and used to host the report files on the report server.  
+          This will run the script and use the local computer name as the Report Server.  
+          A folder called Custom Reports will be created and used to host the report files on the report server.  
           
           Example: Import-CMReports –FolderName “Software – Office 365 Clients”  
 	  
