@@ -1,1 +1,6 @@
 .vshost.exe
+
+# Ignore `bin` dir
+bin/
+# or
+*/bin/*
