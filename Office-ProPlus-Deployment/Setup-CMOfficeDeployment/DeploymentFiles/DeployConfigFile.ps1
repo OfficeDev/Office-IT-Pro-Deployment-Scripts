@@ -67,7 +67,7 @@ $languages = Get-XMLLanguages -Path $targetFilePath
 if ($UpdateSource) {
     $ValidUpdateSource = Test-UpdateSource -UpdateSource $UpdateSource -OfficeLanguages $languages -Bitness $Bitness
     if ($ValidUpdateSource) {
-       Set-ODTAdd -TargetFilePath $targetFilePath -SourcePath $UpdateSource -Channel $Channel | Out-Null
+       Set-ODTAdd -TargetFilePath $targetFilePath -SourcePath $UpdateSource -Channel $Channel | Set-ODTUpdates -Channel $Channel -UpdatePath $UpdateURLPath | Out-Null
     } else {
        throw "Invalid Update Source: $UpdateSource"
     }
