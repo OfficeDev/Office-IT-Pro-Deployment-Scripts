@@ -324,7 +324,7 @@ Function Remove-PreviousOfficeInstalls{
     $15MSIVBS = "OffScrub_O15msi.vbs"
     $16MSIVBS = "OffScrub_O16msi.vbs"
 
-    $argList = ""
+    $argList = "CLIENTALL /Q"
 
     if ($Force) {
         $argList += " /FORCE"
@@ -369,7 +369,7 @@ Function Remove-PreviousOfficeInstalls{
                         $ActionFile = "$scriptPath\$03VBS"
                         
                         if (Test-Path -Path $ActionFile) {
-                           cscript //Nologo $ActionFile
+                           cscript //Nologo $ActionFile $argList
                         } else {
                            throw "Required file missing: $ActionFile"
                         }
@@ -380,7 +380,7 @@ Function Remove-PreviousOfficeInstalls{
                         $ActionFile = "$scriptPath\$07VBS"
                         
                         if (Test-Path -Path $ActionFile) {
-                           cscript //Nologo $ActionFile
+                           cscript //Nologo $ActionFile $argList
                         } else {
                            throw "Required file missing: $ActionFile"
                         }
@@ -391,7 +391,7 @@ Function Remove-PreviousOfficeInstalls{
                         $ActionFile = "$scriptPath\$10VBS"
                         
                         if (Test-Path -Path $ActionFile) {
-                           cscript //Nologo $ActionFile
+                           cscript //Nologo $ActionFile $argList
                         } else {
                            throw "Required file missing: $ActionFile"
                         }
@@ -402,7 +402,7 @@ Function Remove-PreviousOfficeInstalls{
                         $ActionFile = "$scriptPath\$15MSIVBS"
                         
                         if (Test-Path -Path $ActionFile) {
-                           cscript //Nologo $ActionFile
+                           cscript //Nologo $ActionFile $argList
                         } else {
                            throw "Required file missing: $ActionFile"
                         }
@@ -414,7 +414,7 @@ Function Remove-PreviousOfficeInstalls{
                           $ActionFile = "$scriptPath\$16MSIVBS"
                           
                           if (Test-Path -Path $ActionFile) {
-                             cscript //Nologo $ActionFile
+                             cscript //Nologo $ActionFile $argList
                           } else {
                              throw "Required file missing: $ActionFile"
                           }
@@ -431,7 +431,7 @@ Function Remove-PreviousOfficeInstalls{
                  $ActionFile = "$scriptPath\$c2rVBS"
                  
                  if (Test-Path -Path $ActionFile) {
-                     cscript //Nologo $ActionFile
+                     cscript //Nologo $ActionFile $argList
                  } else {
                      throw "Required file missing: $ActionFile"
                  }
