@@ -23,7 +23,7 @@
 
 Update 1606 for Configuration Manager introduced an inventory class to collect some of the Office 365 client 
 information. In order to collect all of the necessary information required for the Office 365 client reports 
-we should to disable this class, and add the two required Inventory classes; **Office365ClientConfigurations** 
+we should disable this class and add the two required Inventory classes; **Office365ClientConfigurations** 
 and **Office365ProPlusConfigurations2013**.
 
 1.	Open the Configuration Manager console.
