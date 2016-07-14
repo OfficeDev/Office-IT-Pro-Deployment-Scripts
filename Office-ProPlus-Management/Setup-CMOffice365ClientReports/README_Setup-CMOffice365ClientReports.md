@@ -108,7 +108,7 @@ If you enabled the new classes in Default Client Settings you can move on to Ste
 The Office 365 Client reports can be imported using PowerShell or by manually uploading the files to the reporting server.
 
 After the Office 365 Client reports are imported they will be available in the Configuration Manager console. The reports will 
-start to show data once the hardware inventory has run on the clients. Depending on the size of the environment this will take some time.
+start to show data once the hardware inventory has run on the clients. Completion time will depend on the size of the environment and the frequency of hardware inventory scan.
 
 ###Use PowerShell to import the reports
 1.	Open a PowerShell console.  
