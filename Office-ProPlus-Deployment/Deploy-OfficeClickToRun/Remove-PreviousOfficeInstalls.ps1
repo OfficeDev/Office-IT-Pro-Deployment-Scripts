@@ -1,4 +1,39 @@
-﻿Function Get-OfficeVersion {
+﻿[CmdletBinding(SupportsShouldProcess=$true)]
+param(
+[Parameter(ValueFromPipelineByPropertyName=$true)]
+[bool]$RemoveClickToRunVersions = $false,
+
+[Parameter(ValueFromPipelineByPropertyName=$true)]
+[bool]$Remove2016Installs = $false,
+
+[Parameter(ValueFromPipelineByPropertyName=$true)]
+[bool]$Force = $true,
+
+[Parameter(ValueFromPipelineByPropertyName=$true)]
+[bool]$KeepUserSettings = $true,
+
+[Parameter(ValueFromPipelineByPropertyName=$true)]
+[bool]$KeepLync = $false,
+
+[Parameter(ValueFromPipelineByPropertyName=$true)]
+[bool]$NoReboot = $false
+)
+
+Function IsDotSourced() {
+  [CmdletBinding(SupportsShouldProcess=$true)]
+  param(
+    [Parameter(ValueFromPipelineByPropertyName=$true)]
+    [string]$InvocationLine = ""
+  )
+  $cmdLine = $InvocationLine.Trim()
+  Do {
+    $cmdLine = $cmdLine.Replace(" ", "")
+  } while($cmdLine.Contains(" "))
+  $dotSourced = ($cmdLine -match '^\.\.')
+  return $dotSourced
+}
+
+Function Get-OfficeVersion {
 <#
 .Synopsis
 Gets the Office Version installed on the computer
@@ -473,4 +508,10 @@ Function GetScriptRoot() {
 
      return $scriptPath
  }
+}
+
+$dotSourced = IsDotSourced -InvocationLine $MyInvocation.Line
+
+if (!($dotSourced)) {
+   Remove-PreviousOfficeInstalls -RemoveClickToRunVersions $RemoveClickToRunVersions -Remove2016Installs $Remove2016Installs -Force $Force -KeepUserSettings $KeepUserSettings -KeepLync $KeepLync -NoReboot $NoReboot
 }
