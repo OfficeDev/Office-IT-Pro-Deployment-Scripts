@@ -2014,6 +2014,9 @@ Full file path for the file to be modified and be output to.
 .PARAMETER Branch
 Optional. Specifies the update branch for the product that you want to download or install.
 
+.PARAMETER OfficeMgmtCOM
+Optional. Configures Office 365 client to receive updates from Configuration Manager
+
 .Example
 Set-ODTAdd -SourcePath "C:\Preload\Office" -TargetFilePath "$env:Public/Documents/config.xml"
 Sets config SourcePath property of the add element to C:\Preload\Office
@@ -2166,6 +2169,7 @@ Here is what the portion of configuration file looks like when modified by this 
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "SourcePath" -Value $SourcePath
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "Version" -Value $Version
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "Bitness" -Value $Bitness
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "OfficeMgmtCOM" -Value $OfficeMgmtCOM
             $Result
         }
     }
@@ -2219,7 +2223,7 @@ file.
             throw $NoConfigurationElement
         }
         
-        $ConfigFile.Configuration.GetElementsByTagName("Add") | Select OfficeClientEdition, SourcePath, Version, Channel, Branch
+        $ConfigFile.Configuration.GetElementsByTagName("Add") | Select OfficeClientEdition, SourcePath, Version, Channel, Branch, OfficeMgmtCOM
     }
 
 }
