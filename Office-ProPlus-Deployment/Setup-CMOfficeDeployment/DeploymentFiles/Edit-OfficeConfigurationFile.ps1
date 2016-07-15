@@ -1406,7 +1406,7 @@ Here is what the portion of configuration file looks like when modified by this 
         [string] $TargetFilePath,
         
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [string] $Enabled,
+        [System.Nullable[bool]] $Enabled,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $UpdatePath,
@@ -1471,7 +1471,7 @@ Here is what the portion of configuration file looks like when modified by this 
              $UpdateElement.SetAttribute("Channel", $Channel);
         }
 
-        if($Enabled){
+        if($Enabled -ne $NULL){
             $UpdateElement.SetAttribute("Enabled", $Enabled.ToString().ToUpper()) | Out-Null
         } else {
           if ($PSBoundParameters.ContainsKey('Enabled')) {
@@ -1693,6 +1693,9 @@ computers by using Remote Desktop Services.
 .PARAMETER TargetFilePath
 Full file path for the file to be modified and be output to.
 
+.PARAMETER PinIconsToTaskbar
+Optional. Set PinIconsToTaskbar to $true to pin icons to taskbar and $false to not.  Does not apply to Windows 10
+
 .Example
 Set-ODTConfigProperties -AutoActivate "1" -TargetFilePath "$env:Public/Documents/config.xml"
 Sets config to automatically activate the products
@@ -1711,6 +1714,7 @@ Here is what the portion of configuration file looks like when modified by this 
   <Property Name="FORCEAPPSHUTDOWN" Value="TRUE" />
   <Property Name="PACKAGEGUID" Value="12345678-ABCD-1234-ABCD-1234567890AB" />
   <Property Name="SharedComputerLicensing" Value="0" />
+  <Property Name="PinIconsToTaskbar" Value="1" />
   ...
 </Configuration>
 
@@ -1722,19 +1726,22 @@ Here is what the portion of configuration file looks like when modified by this 
         [string] $ConfigurationXML = $NULL,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [string] $AutoActivate,
+        [System.Nullable[bool]] $AutoActivate,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [string] $ForceAppShutDown,
+        [System.Nullable[bool]] $ForceAppShutDown,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [string] $PackageGUID,
+        [string] $PackageGUID = $NULL,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [string] $SharedComputerLicensing,
+        [System.Nullable[bool]] $SharedComputerLicensing = $NULL,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [string] $TargetFilePath
+        [string] $TargetFilePath,
+
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [System.Nullable[bool]] $PinIconsToTaskbar = $NULL
     )
 
     Process{
@@ -1762,7 +1769,7 @@ Here is what the portion of configuration file looks like when modified by this 
         }
 
         #Set each property as desired
-        if($AutoActivate){
+        if($AutoActivate -ne $NULL){
             [System.XML.XMLElement]$AutoActivateElement = $ConfigFile.Configuration.Property | Where { $_.Name -eq "AUTOACTIVATE" }
             if($AutoActivateElement -eq $null){
                 [System.XML.XMLElement]$AutoActivateElement=$ConfigFile.CreateElement("Property")
@@ -1770,10 +1777,17 @@ Here is what the portion of configuration file looks like when modified by this 
                 
             $ConfigFile.Configuration.appendChild($AutoActivateElement) | Out-Null
             $AutoActivateElement.SetAttribute("Name", "AUTOACTIVATE") | Out-Null
-            $AutoActivateElement.SetAttribute("Value", $AutoActivate) | Out-Null
+            $AutoActivateElement.SetAttribute("Value", $AutoActivate.ToString().ToUpper()) | Out-Null
+        } Else {
+            [System.XML.XMLElement]$AutoActivateElement = $ConfigFile.Configuration.Property | Where { $_.Name -eq "AUTOACTIVATE" }
+            if($AutoActivateElement -ne $null){
+               if ($PSBoundParameters.ContainsKey('AUTOACTIVATE')) {
+                   $ConfigFile.Configuration.removeChild($AutoActivateElement) | Out-Null
+               }
+            }
         }
 
-        if($ForceAppShutDown){
+        if($ForceAppShutDown -ne $NULL){
             [System.XML.XMLElement]$ForceAppShutDownElement = $ConfigFile.Configuration.Property | Where { $_.Name -eq "FORCEAPPSHUTDOWN" }
             if($ForceAppShutDownElement -eq $null){
                 [System.XML.XMLElement]$ForceAppShutDownElement=$ConfigFile.CreateElement("Property")
@@ -1782,6 +1796,13 @@ Here is what the portion of configuration file looks like when modified by this 
             $ConfigFile.Configuration.appendChild($ForceAppShutDownElement) | Out-Null
             $ForceAppShutDownElement.SetAttribute("Name", "FORCEAPPSHUTDOWN") | Out-Null
             $ForceAppShutDownElement.SetAttribute("Value", $ForceAppShutDown.ToString().ToUpper()) | Out-Null
+        } Else {
+            [System.XML.XMLElement]$ForceAppShutDownElement = $ConfigFile.Configuration.Property | Where { $_.Name -eq "FORCEAPPSHUTDOWN" }
+            if($ForceAppShutDownElement -ne $null){
+               if ($PSBoundParameters.ContainsKey('FORCEAPPSHUTDOWN')) {
+                   $ConfigFile.Configuration.removeChild($ForceAppShutDownElement) | Out-Null
+               }
+            }
         }
 
         if($PackageGUID){
@@ -1793,9 +1814,16 @@ Here is what the portion of configuration file looks like when modified by this 
             $ConfigFile.Configuration.appendChild($PackageGUIDElement) | Out-Null
             $PackageGUIDElement.SetAttribute("Name", "PACKAGEGUID") | Out-Null
             $PackageGUIDElement.SetAttribute("Value", $PackageGUID) | Out-Null
+        } Else {
+            [System.XML.XMLElement]$PackageGUIDElement = $ConfigFile.Configuration.Property | Where { $_.Name -eq "PACKAGEGUID" }
+            if($PackageGUIDElement -ne $null){
+               if ($PSBoundParameters.ContainsKey('PACKAGEGUID')) {
+                   $ConfigFile.Configuration.removeChild($PackageGUIDElement) | Out-Null
+               }
+            }
         }
 
-        if($SharedComputerLicensing){
+        if($SharedComputerLicensing -ne $NULL){
             [System.XML.XMLElement]$SharedComputerLicensingElement = $ConfigFile.Configuration.Property | Where { $_.Name -eq "SharedComputerLicensing" }
             if($SharedComputerLicensingElement -eq $null){
                 [System.XML.XMLElement]$SharedComputerLicensingElement=$ConfigFile.CreateElement("Property")
@@ -1803,7 +1831,32 @@ Here is what the portion of configuration file looks like when modified by this 
                 
             $ConfigFile.Configuration.appendChild($SharedComputerLicensingElement) | Out-Null
             $SharedComputerLicensingElement.SetAttribute("Name", "SharedComputerLicensing") | Out-Null
-            $SharedComputerLicensingElement.SetAttribute("Value", $SharedComputerLicensing) | Out-Null
+            $SharedComputerLicensingElement.SetAttribute("Value", $SharedComputerLicensing.ToString().ToUpper()) | Out-Null
+        } Else {
+            [System.XML.XMLElement]$SharedComputerLicensingElement = $ConfigFile.Configuration.Property | Where { $_.Name -eq "SharedComputerLicensing" }
+            if($SharedComputerLicensingElement -ne $null){
+               if ($PSBoundParameters.ContainsKey('SharedComputerLicensing')) {
+                   $ConfigFile.Configuration.removeChild($SharedComputerLicensingElement) | Out-Null
+               }
+            }
+        }
+
+        if ($PinIconsToTaskbar -ne $NULL) {
+            [System.XML.XMLElement]$PinIconsToTaskbarElement = $ConfigFile.Configuration.Property | Where { $_.Name -eq "PinIconsToTaskbar" }
+            if($PinIconsToTaskbarElement -eq $null){
+                [System.XML.XMLElement]$PinIconsToTaskbarElement=$ConfigFile.CreateElement("Property")
+            }
+                
+            $ConfigFile.Configuration.appendChild($PinIconsToTaskbarElement) | Out-Null
+            $PinIconsToTaskbarElement.SetAttribute("Name", "PinIconsToTaskbar") | Out-Null
+            $PinIconsToTaskbarElement.SetAttribute("Value", $PinIconsToTaskbar.ToString().ToUpper()) | Out-Null
+        } Else {
+            [System.XML.XMLElement]$PinIconsToTaskbarElement = $ConfigFile.Configuration.Property | Where { $_.Name -eq "PinIconsToTaskbar" }
+            if($PinIconsToTaskbarElement -ne $null){
+               if ($PSBoundParameters.ContainsKey('PinIconsToTaskbar')) {
+                   $ConfigFile.Configuration.removeChild($PinIconsToTaskbarElement) | Out-Null
+               }
+            }
         }
 
         $ConfigFile.Save($TargetFilePath) | Out-Null
