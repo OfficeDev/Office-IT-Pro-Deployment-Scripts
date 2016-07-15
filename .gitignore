@@ -1,6 +1,8 @@
 .vshost.exe
 
-# Ignore `bin` dir
+# Ignore `bin` and 'obj' dir
 bin/
+obj/
 # or
 */bin/*
+*/obj/*
