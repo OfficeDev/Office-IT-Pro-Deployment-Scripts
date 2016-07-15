@@ -2,8 +2,10 @@
 var selectDate;
 var odt2016Window;
 var odt2013Window;
+var xmlHistoryLength = 0;
 
 $(document).ready(function () {
+
 
 
 
@@ -524,6 +526,15 @@ $(document).ready(function () {
         $("#btRemoveExcludeApp").prop('disabled', false);
     }
 
+    //if (typeof ($.cookie('xmlHistory') !== undefined)) {
+    //    $.removeCookie('xmlHistory', { path: '/' });
+    //}
+
+    //if (sessionStorage.getItem('xmlHistory') !== null) {
+    //    sessionStorage.removeItem('xmlHistory'); 
+    //}
+
+
 });
 
 (function ($) {
@@ -602,6 +613,58 @@ $(document).ready(function () {
 
 
 })(jQuery);
+
+
+function updateXmlHistory() {
+
+    if (sessionStorage.getItem('xmlHistory') === null) {
+
+        var xml = [{ 'xml': $('#xmlText').html() }];
+        sessionStorage.setItem('xmlHistory', JSON.stringify(xml));
+    }
+    else {
+
+        var xmlHistory = $.parseJSON(sessionStorage.getItem('xmlHistory'));
+
+        xmlHistory.push({ 'xml': $('#xmlText').html() });
+
+        sessionStorage.setItem('xmlHistory', JSON.stringify(xmlHistory));
+    }
+
+    xmlHistoryLength += 1;
+}
+
+
+function undoXmlChange() {
+
+    if (sessionStorage.getItem('xmlHistory') !== null) {
+
+        var xml = $.parseJSON(sessionStorage.getItem('xmlHistory'));
+
+        if (xmlHistoryLength - 2 >= 0) {
+            $('#xmlText').html(xml[xmlHistoryLength - 2].xml);
+            xmlHistoryLength -= 1;
+        }
+
+    }
+
+}
+
+function redoXmlChange() {
+
+    if (sessionStorage.getItem('xmlHistory') !== null) {
+
+        var xml = $.parseJSON(sessionStorage.getItem('xmlHistory'));
+
+        if (xmlHistoryLength <= xml.length) {
+
+            $('#xmlText').html(xml[xmlHistoryLength].xml);
+            xmlHistoryLength += 1;
+        }
+
+    }
+
+}
 
 function fixDatePicker() {
     //ms-DatePicker
