@@ -656,7 +656,7 @@ function redoXmlChange() {
 
         var xml = $.parseJSON(sessionStorage.getItem('xmlHistory'));
 
-        if (xmlHistoryLength <= xml.length) {
+        if (xmlHistoryLength < xml.length) {
 
             $('#xmlText').html(xml[xmlHistoryLength].xml);
             xmlHistoryLength += 1;
@@ -1457,6 +1457,9 @@ function odtAddProduct(xmlDoc) {
         $('#xmlText').empty();
 
         var addNode = xmlDoc.documentElement.getElementsByTagName("Add")[0];
+        if (addNode == null) {
+            addNode = xmlDoc.createElement("Add");
+        }
 
         var products = addNode.getElementsByTagName("Product");
 
@@ -1465,10 +1468,10 @@ function odtAddProduct(xmlDoc) {
         }
     }
 
-
-    var addNode = xmlDoc.createElement("Add");
     var nodes = xmlDoc.documentElement.getElementsByTagName("Add");
-
+    if (addNode == null) {
+        addNode = xmlDoc.createElement("Add");
+    }
 
     if (nodes.length > 0) {
         addNode = xmlDoc.documentElement.getElementsByTagName("Add")[0];
