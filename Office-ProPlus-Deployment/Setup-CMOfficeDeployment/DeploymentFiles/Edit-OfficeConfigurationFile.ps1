@@ -2055,16 +2055,14 @@ Here is what the portion of configuration file looks like when modified by this 
         [Microsoft.Office.Branches] $Branch,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [Microsoft.Office.Channel] $Channel
+        [Microsoft.Office.Channel] $Channel = "Current",
+
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [System.Nullable[bool]] $OfficeMgmtCOM = $NULL
 
     )
 
     Process{
-
-        if(!$Channel){
-            $Channel = 'Current'
-        }
-
         $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
 
         #Load file
@@ -2136,6 +2134,18 @@ Here is what the portion of configuration file looks like when modified by this 
             if ($PSBoundParameters.ContainsKey('OfficeClientEdition')) {
                 $ConfigFile.Configuration.Add.RemoveAttribute("OfficeClientEdition")
             }
+        }
+
+        if ($OfficeMgmtCOM -ne $NULL) {
+           if ($OfficeMgmtCOM) {
+             $ConfigFile.Configuration.Add.SetAttribute("OfficeMgmtCOM", "True") | Out-Null
+           } else {
+             $ConfigFile.Configuration.Add.SetAttribute("OfficeMgmtCOM", "False") | Out-Null
+           }
+        } else {
+          if ($PSBoundParameters.ContainsKey('OfficeMgmtCOM')) {
+              $ConfigFile.Configuration.Add.RemoveAttribute("OfficeMgmtCOM")
+          }
         }
 
         $ConfigFile.Save($TargetFilePath) | Out-Null
