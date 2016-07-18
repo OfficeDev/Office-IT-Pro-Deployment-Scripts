@@ -53,6 +53,7 @@ Function GetScriptRoot() {
        $scriptPath = $PSScriptRoot
      } else {
        $scriptPath = split-path -parent $MyInvocation.MyCommand.Definition
+       $scriptPath = (Get-Item -Path ".\").FullName
      }
 
      return $scriptPath
@@ -81,7 +82,7 @@ Function Generate-StartTime() {
         $theMin = [DateTime]$strTheMin
         $theMax = [DateTime]$strTheMax
 
-        $theRandomGen = new-object random
+        $theRandomGen = New-Object random
         $theRandomTicks = [Convert]::ToInt64( ($theMax.ticks * 1.0 - $theMin.Ticks * 1.0 ) * $theRandomGen.NextDouble() + $theMin.Ticks * 1.0 )
         [DateTime]$startDate = new-object DateTime($theRandomTicks)
 
@@ -187,11 +188,11 @@ Function Create-Office365AnywhereTask {
        }
 
        $exePath = "PowerShell -Command $env:windir\Temp\Update-Office365Anywhere.ps1" + `
-       " -WaitForUpdateToFinish " + (Convert-Bool -value $WaitForUpdateToFinish) + ` 
-       " -EnableUpdateAnywhere " + (Convert-Bool -value $EnableUpdateAnywhere) + ` 
-       " -ForceAppShutdown " + (Convert-Bool -value $ForceAppShutdown) + ` 
-       " -UpdatePromptUser " + (Convert-Bool -value $UpdatePromptUser) + ` 
-       " -DisplayLevel " + (Convert-Bool -value $DisplayLevel) + ` 
+       " -WaitForUpdateToFinish " + (Convert-Bool -value $WaitForUpdateToFinish) + `
+       " -EnableUpdateAnywhere " + (Convert-Bool -value $EnableUpdateAnywhere) + `
+       " -ForceAppShutdown " + (Convert-Bool -value $ForceAppShutdown) + `
+       " -UpdatePromptUser " + (Convert-Bool -value $UpdatePromptUser) + `
+       " -DisplayLevel " + (Convert-Bool -value $DisplayLevel) + `
        " -ValidateUpdateSourceFiles " + (Convert-Bool -value $ValidateUpdateSourceFiles)
 
        if ($UpdateToVersion) {
