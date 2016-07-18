@@ -1,7 +1,7 @@
 ﻿[String]$global:saveLastConfigFile = $NULL
 [String]$global:saveLastFilePath = $NULL
 
-$validProductIds = @("O365ProPlusRetail","O365BusinessRetail","VisioProRetail","ProjectProRetail", "SPDRetail", "VisioProXVolume", "VisioStdXVolume", "ProjectProXVolume", "ProjectStdXVolume")
+$validProductIds = @("O365ProPlusRetail","O365BusinessRetail","VisioProRetail","ProjectProRetail", "SPDRetail", "VisioProXVolume", "VisioStdXVolume", "ProjectProXVolume", "ProjectStdXVolume", "InfoPathRetail")
 
 try {
 $enum = "
@@ -22,6 +22,7 @@ namespace Microsoft.Office
          VisioStdXVolume = 64,
          ProjectProXVolume = 128,
          ProjectStdXVolume = 256,
+         InfoPathRetail = 512,
      }
 }
 "
