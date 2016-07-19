@@ -1,7 +1,7 @@
 #pragma namespace ("\\\\.\\root\\cimv2")
-#pragma deleteclass("Office365ProPlusConfigurations", NOFAIL)
+#pragma deleteclass("Office365ClientConfigurations", NOFAIL)
 [DYNPROPS]
-Class Office365ProPlusConfigurations
+Class Office365ClientConfigurations
 {
 [key] string KeyName;
 String InstallationPath;
@@ -22,9 +22,9 @@ String GPOOfficeMgmtCOM;
 };
 
 [DYNPROPS]
-Instance of Office365ProPlusConfigurations
+Instance of Office365ClientConfigurations
 {
-KeyName="Office365ProPlusConfigurations";
+KeyName="Office365ClientConfigurations";
 [PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Office\\ClickToRun\\Configuration|InstallationPath"),Dynamic,Provider("RegPropProv")] InstallationPath;
 [PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Office\\ClickToRun\\Configuration|ClientFolder"),Dynamic,Provider("RegPropProv")] ClientFolder;
 [PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Office\\ClickToRun\\Configuration|VersionToReport"),Dynamic,Provider("RegPropProv")] VersionToReport;

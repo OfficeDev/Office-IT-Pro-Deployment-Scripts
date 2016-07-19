@@ -1,8 +1,8 @@
 //Custom RegKey import
 #pragma namespace ("\\\\.\\root\\cimv2\\SMS")
-#pragma deleteclass("Office365ProPlusConfigurations", NOFAIL)
-[SMS_Report(TRUE),SMS_Group_Name("Office365ProPlusConfigurations"),SMS_Class_ID("Office365ProPlusConfigurations|1.0")]
-Class Office365ProPlusConfigurations: SMS_Class_Template
+#pragma deleteclass("Office365ClientConfigurations", NOFAIL)
+[SMS_Report(TRUE),SMS_Group_Name("Office365ClientConfigurations"),SMS_Class_ID("Office365ClientConfigurations|1.0")]
+Class Office365ClientConfigurations: SMS_Class_Template
 {
 [SMS_Report(TRUE),key] string KeyName;
 [SMS_Report(TRUE)] string InstallationPath;
