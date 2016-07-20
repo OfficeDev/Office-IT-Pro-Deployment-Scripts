@@ -21,6 +21,7 @@ $UseVolumeLicensing = $false
 . $scriptPath\Edit-OfficeConfigurationFile.ps1
 . $scriptPath\Install-OfficeClickToRun.ps1
 . $scriptPath\Remove-PreviousOfficeInstalls.ps1
+. $scriptPath\Remove-OfficeClickToRun.ps1
 
 $targetFilePath = "$env:temp\configuration.xml"
 
@@ -55,6 +56,8 @@ if (!(Test-Path -Path $targetFilePath)) {
        if ($ProjectStd.Count -gt 0) { Add-ODTProductToAdd -ProductId ProjectStdXVolume -TargetFilePath $targetFilePath -LanguageIds $languages | Out-Null }
    }
 }
+
+Remove-OfficeClickToRun 
 
 Remove-PreviousOfficeInstalls
 
