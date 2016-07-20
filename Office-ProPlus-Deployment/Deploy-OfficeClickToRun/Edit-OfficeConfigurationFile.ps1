@@ -856,7 +856,7 @@ Removes the ProductToAdd with the ProductId 'O365ProPlusRetail' from the XML Con
             throw $NoAddElement
         }
 
-        if ($All) {
+        if (!($All)) {
             #Set the desired values
             [System.XML.XMLElement]$ProductElement = $ConfigFile.Configuration.Add.Product | Where { $_.ID -eq $ProductId }
             if($ProductElement -ne $null){
@@ -870,7 +870,8 @@ Removes the ProductToAdd with the ProductId 'O365ProPlusRetail' from the XML Con
                 }
             }
         } else {
-           $ConfigFile.Configuration.Product.RemoveAll() | Out-Null
+           $ConfigFile.Configuration.Add.RemoveAll() | Out-Null
+           
         }
 
         $ConfigFile.Save($TargetFilePath) | Out-Null

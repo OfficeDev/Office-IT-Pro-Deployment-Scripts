@@ -13,9 +13,9 @@ Gets the Office Version installed on the computer
 This function will query the local or a remote computer and return the information about Office Products installed on the computer
 .NOTES   
 Name: Get-OfficeVersion
-Version: 1.0.4
+Version: 1.0.5
 DateCreated: 2015-07-01
-DateUpdated: 2015-08-28
+DateUpdated: 2016-07-20
 .LINK
 https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
 .PARAMETER ComputerName
@@ -245,6 +245,15 @@ process {
            }
 
            $clickToRunComponent = $regProv.GetDWORDValue($HKLM, $path, "ClickToRunComponent").uValue
+           $uninstallString = $regProv.GetStringValue($HKLM, $path, "UninstallString").sValue
+           if (!($clickToRunComponent)) {
+              if ($uninstallString) {
+                 if ($uninstallString.Contains("OfficeClickToRun")) {
+                     $clickToRunComponent = $true
+                 }
+              }
+           }
+
            $modifyPath = $regProv.GetStringValue($HKLM, $path, "ModifyPath").sValue 
            $version = $regProv.GetStringValue($HKLM, $path, "DisplayVersion").sValue
 
@@ -302,8 +311,3 @@ process {
 }
 
 
-if ($ShowAllInstalledProducts) {
-    Get-OfficeVersion -ComputerName $ComputerName -ShowAllInstalledProducts -Credentials $Credentials
-} else {
-    Get-OfficeVersion -ComputerName $ComputerName -Credentials $Credentials
-}

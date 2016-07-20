@@ -691,7 +691,9 @@ process {
                 $installReg = "^" + $installPath.Replace('\', '\\')
                 $installReg = $installReg.Replace('(', '\(')
                 $installReg = $installReg.Replace(')', '\)')
-                if ($officeInstallPath -match $installReg) { $officeProduct = $true }
+                try {
+                  if ($officeInstallPath -match $installReg) { $officeProduct = $true }
+                } catch { }
              }
            }
 
