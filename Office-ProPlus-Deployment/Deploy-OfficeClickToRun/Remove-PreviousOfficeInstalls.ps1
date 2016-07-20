@@ -418,6 +418,13 @@ Function Remove-PreviousOfficeInstalls{
     }
 
     if ($removeOffice) {
+        [bool]$office03Removed = $false
+        [bool]$office07Removed = $false
+        [bool]$office10Removed = $false
+        [bool]$office15Removed = $false
+        [bool]$office16Removed = $false
+        [bool]$officeC2RRemoved = $false
+
         foreach ($officeVersion in $officeVersions) {
             if($officeVersion.ClicktoRun.ToLower() -ne "true"){
                 #Set script file based on office version, if no office detected continue to next computer skipping this one.
@@ -425,74 +432,89 @@ Function Remove-PreviousOfficeInstalls{
                 {
                     "11.*"
                     {
-                        Write-Host "`tRemoving Office 2003..."
-                        $ActionFile = "$scriptPath\$03VBS"
-                        $cmdLine = """$ActionFile"" $argList"
+                        if (!($office03Removed)) {
+                            Write-Host "`tRemoving Office 2003..."
+                            $ActionFile = "$scriptPath\$03VBS"
+                            $cmdLine = """$ActionFile"" $argList"
                         
-                        if (Test-Path -Path $ActionFile) {
-                            $cmd = "cmd /c cscript //Nologo $cmdLine"
-                            Invoke-Expression $cmd
-                        } else {
-                           throw "Required file missing: $ActionFile"
+                            if (Test-Path -Path $ActionFile) {
+                                $cmd = "cmd /c cscript //Nologo $cmdLine"
+                                Invoke-Expression $cmd
+                                $office03Removed = $true
+                            } else {
+                               throw "Required file missing: $ActionFile"
+                            }
+                            Write-Host ""
                         }
-                        Write-Host ""
                     }
                     "12.*"
                     {
-                        Write-Host "`tRemoving Office 2007..."
-                        $ActionFile = "$scriptPath\$07VBS"
-                        $cmdLine = """$ActionFile"" $argList"
+                        if (!($office07Removed)) {
+                            Write-Host "`tRemoving Office 2007..."
+                            $ActionFile = "$scriptPath\$07VBS"
+                            $cmdLine = """$ActionFile"" $argList"
                         
-                        if (Test-Path -Path $ActionFile) {
-                            $cmd = "cmd /c cscript //Nologo $cmdLine"
-                            Invoke-Expression $cmd
-                        } else {
-                           throw "Required file missing: $ActionFile"
+                            if (Test-Path -Path $ActionFile) {
+                                $cmd = "cmd /c cscript //Nologo $cmdLine"
+                                Invoke-Expression $cmd
+                                $office07Removed = $true
+                            } else {
+                               throw "Required file missing: $ActionFile"
+                            }
+                            Write-Host ""
                         }
-                        Write-Host ""
                     }
                     "14.*"
                     {
-                        Write-Host "`tRemoving Office 2010..."
-                        $ActionFile = "$scriptPath\$10VBS"
-                        $cmdLine = """$ActionFile"" $argList"
+                        if (!($office10Removed)) {
+                            Write-Host "`tRemoving Office 2010..."
+                            $ActionFile = "$scriptPath\$10VBS"
+                            $cmdLine = """$ActionFile"" $argList"
                         
-                        if (Test-Path -Path $ActionFile) {
-                            $cmd = "cmd /c cscript //Nologo $cmdLine"
-                            Invoke-Expression $cmd
-                        } else {
-                           throw "Required file missing: $ActionFile"
+                            if (Test-Path -Path $ActionFile) {
+                                $cmd = "cmd /c cscript //Nologo $cmdLine"
+                                Invoke-Expression $cmd
+                                $office10Removed = $true
+                            } else {
+                               throw "Required file missing: $ActionFile"
+                            }
+                            Write-Host ""
                         }
-                        Write-Host ""
                     }
                     "15.*"
                     {
-                        Write-Host "`tRemoving Office 2013..."
-                        $ActionFile = "$scriptPath\$15MSIVBS"
-                        $cmdLine = """$ActionFile"" $argList"
+                        if (!($office15Removed)) {
+                            Write-Host "`tRemoving Office 2013..."
+                            $ActionFile = "$scriptPath\$15MSIVBS"
+                            $cmdLine = """$ActionFile"" $argList"
                         
-                        if (Test-Path -Path $ActionFile) {
-                           $cmd = "cmd /c cscript //Nologo $cmdLine"
-                           Invoke-Expression $cmd 
-                        } else {
-                           throw "Required file missing: $ActionFile"
+                            if (Test-Path -Path $ActionFile) {
+                               $cmd = "cmd /c cscript //Nologo $cmdLine"
+                               Invoke-Expression $cmd 
+                               $office15Removed = $true
+                            } else {
+                               throw "Required file missing: $ActionFile"
+                            }
+                            Write-Host ""
                         }
-                        Write-Host ""
                     }
                     "16.*"
                     {
-                       if ($Remove2016Installs) {
-                          Write-Host "`tRemoving Office 2016..."
-                          $ActionFile = "$scriptPath\$16MSIVBS"
-                          $cmdLine = """$ActionFile"" $argList"
+                       if (!($office16Removed)) {
+                           if ($Remove2016Installs) {
+                              Write-Host "`tRemoving Office 2016..."
+                              $ActionFile = "$scriptPath\$16MSIVBS"
+                              $cmdLine = """$ActionFile"" $argList"
                           
-                          if (Test-Path -Path $ActionFile) {
-                             $cmd = "cmd /c cscript //Nologo $cmdLine"
-                             Invoke-Expression $cmd
-                          } else {
-                             throw "Required file missing: $ActionFile"
-                          }
-                          Write-Host ""
+                              if (Test-Path -Path $ActionFile) {
+                                $cmd = "cmd /c cscript //Nologo $cmdLine"
+                                Invoke-Expression $cmd
+                                $office16Removed = $true
+                              } else {
+                                throw "Required file missing: $ActionFile"
+                              }
+                              Write-Host ""
+                           }
                        }
                     }
                     default 
@@ -501,17 +523,21 @@ Function Remove-PreviousOfficeInstalls{
                     }
                 }
             } else {
-              if ($RemoveClickToRunVersions) {
-                 Write-Host "`tRemoving Office Click-To-Run..."
-                 $ActionFile = "$scriptPath\$c2rVBS"
-                 $cmdLine = """$ActionFile"" $argList"
+              if ($officeC2RRemoved) {
+                  if ($RemoveClickToRunVersions) {
+                     Write-Host "`tRemoving Office Click-To-Run..."
+                     $ActionFile = "$scriptPath\$c2rVBS"
+                     $cmdLine = """$ActionFile"" $argList"
                  
-                 if (Test-Path -Path $ActionFile) {
-                     & cscript //Nologo $cmdLine
-                 } else {
-                     throw "Required file missing: $ActionFile"
-                 }
-                 Write-Host ""
+                     if (Test-Path -Path $ActionFile) {
+                         $cmd = "cmd /c cscript //Nologo $cmdLine"
+                         Invoke-Expression $cmd
+                         $officeC2RRemoved = $true
+                     } else {
+                         throw "Required file missing: $ActionFile"
+                     }
+                     Write-Host ""
+                  }
               }
             }
         }
