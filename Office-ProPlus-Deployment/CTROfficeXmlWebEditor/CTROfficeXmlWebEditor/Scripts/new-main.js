@@ -3079,7 +3079,10 @@ var productSkus2016Names = [
     'Visio Professional 2016 (Volume License)',
     'Visio Standard 2016 (Volume License)',
     'Project Professional 2016 (Volume License)',
-    'Project Standard 2016 (Volume License)'
+    'Project Standard 2016 (Volume License)',
+    'Skype for Business 2016',
+    'Skype for Business Basic 2016'
+
 ];
 
 var productSkus2016Values = [
@@ -3091,7 +3094,10 @@ var productSkus2016Values = [
     'VisioProXVolume',
     'VisioStdXVolume',
     'ProjectProXVolume',
-    'ProjectStdXVolume'
+    'ProjectStdXVolume',
+    'SkypeforBusinessRetail',
+    'SkypeforBusinessEntryRetail'
+
 ];
 
 var productSkus2013Names = [
@@ -3099,7 +3105,9 @@ var productSkus2013Names = [
     'Office 365 for Business',
     'Visio for Office 365',
     'Project for Office 365',
-    'SharePoint Designer'
+    'SharePoint Designer',
+    'Skype for Business 2015',
+    'Skype for Business Basic 2015'
 ];
 
 var productSkus2013Values = [
@@ -3107,5 +3115,8 @@ var productSkus2013Values = [
     'O365BusinessRetail',
     'VisioProRetail',
     'ProjectProRetail',
-    'SPDRetail'
+    'SPDRetail',
+    'LyncRetail',
+    'LyncEntryRetail'
+
 ];
