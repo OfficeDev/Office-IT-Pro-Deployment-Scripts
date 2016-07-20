@@ -29,7 +29,14 @@ Function IsDotSourced() {
   Do {
     $cmdLine = $cmdLine.Replace(" ", "")
   } while($cmdLine.Contains(" "))
-  $dotSourced = ($cmdLine -match '^\.\.')
+
+  $dotSourced = $false
+  if ($cmdLine -match '^\.\\') {
+     $dotSourced = $false
+  } else {
+     $dotSourced = ($cmdLine -match '^\.')
+  }
+
   return $dotSourced
 }
 
