@@ -104,7 +104,11 @@ namespace OfficeInstallGenerator
                         throw (new DirectoryNotFoundException("Invalid Source Path: " + installProperties.SourceFilePath));
                     }
                     
-                    EmbedSourceFiles(parameters, installProperties.SourceFilePath + @"\Office", installProperties.BuildVersion, installProperties.OfficeClientEdition);
+                    //commenting out, trying to go a different path with this, copy out the source files to the same dir as exe file
+                    //possibly only copy out if contents of source file greater than 1.5 GB
+                    
+                    //EmbedSourceFiles(parameters, installProperties.SourceFilePath + @"\Office", installProperties.BuildVersion, installProperties.OfficeClientEdition);
+                    CopyFolder(new DirectoryInfo(installProperties.SourceFilePath), new DirectoryInfo(installProperties.ExecutablePath.Substring(0, installProperties.ExecutablePath.LastIndexOf(@"\"))));
                 }
 
                 if (installProperties.OfficeVersion == OfficeVersion.Office2013)
@@ -237,6 +241,15 @@ namespace OfficeInstallGenerator
             }
 
             parameters.EmbeddedResources.Add(xmlFilePath);
+        }
+
+
+        public static void CopyFolder(DirectoryInfo source, DirectoryInfo target)
+        {
+            foreach (DirectoryInfo dir in source.GetDirectories())
+                CopyFolder(dir, target.CreateSubdirectory(dir.Name));
+            foreach (FileInfo file in source.GetFiles())
+                file.CopyTo(Path.Combine(target.FullName, file.Name), true);
         }
 
     }

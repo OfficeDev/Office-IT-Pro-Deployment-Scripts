@@ -71,7 +71,6 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
                     Language = installProperties.Language,
                     SourceFilePath = installProperties.SourceFilePath
                 };
-
                 var msiGenerator = new MsiGenerator();
                 msiGenerator.Generate(msiInstallProperties);
 
