@@ -47,34 +47,32 @@ Will uninstall Office Click-to-Run.
         }
 
         $c2rName = $c2rVersion.DisplayName
-        
-        if($c2rName) {     
-            if(!($isInPipe)) {
-                write-host "Please wait while $c2rName is being uninstalled..."
-            }
-   
-            if($c2rVersion -match "15"){
-                $OdtExe = "$scriptRoot\Office2013Setup.exe"
-            }
-            else{
-                $OdtExe = "$scriptRoot\Office2016Setup.exe"
-            } 
-
-            $command = "$OdtExe /configure $RemoveCTRXmlPath"
-
-            Invoke-Expression $command | Out-Null 
-                        
-            [bool] $c2rTest = $false 
-            if( Get-OfficeVersion | Where-Object {$_.ClickToRun -eq "True"} ){
-                $c2rTest = $true
-            }
-
-            if(!($c2rTest)){                           
-                if (!($isInPipe)) {               
-                    Write-Host "Office Click-to-Run has been successfully uninstalled."  
-                }
-            }                                      
+             
+        if(!($isInPipe)) {
+            write-host "Please wait while $c2rName is being uninstalled..."
         }
+   
+        if($c2rVersion -match "15"){
+            $OdtExe = "$scriptRoot\Office2013Setup.exe"
+        }
+        else{
+            $OdtExe = "$scriptRoot\Office2016Setup.exe"
+        } 
+
+        $command = "$OdtExe /configure $RemoveCTRXmlPath"
+
+        Invoke-Expression $command | Out-Null 
+                        
+        [bool] $c2rTest = $false 
+        if( Get-OfficeVersion | Where-Object {$_.ClickToRun -eq "True"} ){
+            $c2rTest = $true
+        }
+
+        if(!($c2rTest)){                           
+            if (!($isInPipe)) {                        
+                Write-Host "Office Click-to-Run has been successfully uninstalled." 
+            }
+        }                                      
                                                                                
         if ($isInPipe) {
             $results = new-object PSObject[] 0;
@@ -90,34 +88,31 @@ Function Get-OfficeVersion {
 <#
 .Synopsis
 Gets the Office Version installed on the computer
-
 .DESCRIPTION
 This function will query the local or a remote computer and return the information about Office Products installed on the computer
-
+.NOTES   
+Name: Get-OfficeVersion
+Version: 1.0.5
+DateCreated: 2015-07-01
+DateUpdated: 2016-07-20
+.LINK
+https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
 .PARAMETER ComputerName
 The computer or list of computers from which to query 
-
 .PARAMETER ShowAllInstalledProducts
 Will expand the output to include all installed Office products
-
 .EXAMPLE
 Get-OfficeVersion
-
 Description:
 Will return the locally installed Office product
-
 .EXAMPLE
 Get-OfficeVersion -ComputerName client01,client02
-
 Description:
 Will return the installed Office product on the remote computers
-
 .EXAMPLE
 Get-OfficeVersion | select *
-
 Description:
 Will return the locally installed Office product with all of the available properties
-
 #>
 [CmdletBinding(SupportsShouldProcess=$true)]
 param(
@@ -146,7 +141,6 @@ begin {
     $PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultDisplayPropertySet)
 }
 
-
 process {
 
  $results = new-object PSObject[] 0;
@@ -166,11 +160,11 @@ process {
        $regProv = Get-Wmiobject -list "StdRegProv" -namespace root\default -computername $computer
     }
 
-    $VersionList = New-Object -TypeName System.Collections.ArrayList
-    $PathList = New-Object -TypeName System.Collections.ArrayList
-    $PackageList = New-Object -TypeName System.Collections.ArrayList
-    $ClickToRunPathList = New-Object -TypeName System.Collections.ArrayList
-    $ConfigItemList = New-Object -TypeName System.Collections.ArrayList
+    [System.Collections.ArrayList]$VersionList = New-Object -TypeName System.Collections.ArrayList
+    [System.Collections.ArrayList]$PathList = New-Object -TypeName System.Collections.ArrayList
+    [System.Collections.ArrayList]$PackageList = New-Object -TypeName System.Collections.ArrayList
+    [System.Collections.ArrayList]$ClickToRunPathList = New-Object -TypeName System.Collections.ArrayList
+    [System.Collections.ArrayList]$ConfigItemList = New-Object -TypeName  System.Collections.ArrayList
     $ClickToRunList = new-object PSObject[] 0;
 
     foreach ($regKey in $officeKeys) {
@@ -184,11 +178,12 @@ process {
             $path = join-path $regKey $key
 
             $configPath = join-path $path "Common\Config"
-            
             $configItems = $regProv.EnumKey($HKLM, $configPath)
-            foreach ($configId in $configItems.sNames) {
-               if ($configId) {
-                 $Add = $ConfigItemList.Add($configId.ToUpper())
+            if ($configItems) {
+               foreach ($configId in $configItems.sNames) {
+                 if ($configId) {
+                    $Add = $ConfigItemList.Add($configId.ToUpper())
+                 }
                }
             }
 
@@ -203,6 +198,23 @@ process {
             $packagePath = join-path $path "Common\InstalledPackages"
             $clickToRunPath = join-path $path "ClickToRun\Configuration"
             $virtualInstallPath = $regProv.GetStringValue($HKLM, $clickToRunPath, "InstallationPath").sValue
+
+            [string]$officeLangResourcePath = join-path  $path "Common\LanguageResources"
+            $mainLangId = $regProv.GetDWORDValue($HKLM, $officeLangResourcePath, "SKULanguage").uValue
+            if ($mainLangId) {
+                $mainlangCulture = [globalization.cultureinfo]::GetCultures("allCultures") | where {$_.LCID -eq $mainLangId}
+                if ($mainlangCulture) {
+                    $cltr.ClientCulture = $mainlangCulture.Name
+                }
+            }
+
+            [string]$officeLangPath = join-path  $path "Common\LanguageResources\InstalledUIs"
+            $langValues = $regProv.EnumValues($HKLM, $officeLangPath);
+            if ($langValues) {
+               foreach ($langValue in $langValues) {
+                  $langCulture = [globalization.cultureinfo]::GetCultures("allCultures") | where {$_.LCID -eq $langValue}
+               } 
+            }
 
             if ($virtualInstallPath) {
 
@@ -241,10 +253,11 @@ process {
             foreach ($packageGuid in $packageItems.sNames) {
               $packageItemPath = join-path $packagePath $packageGuid
               $packageName = $regProv.GetStringValue($HKLM, $packageItemPath, "").sValue
-              if ($packageName) {
-                 if (!$PackageList.Contains($packageName)) {
-                    $AddItem = $PackageList.Add($packageName.Replace(' ', '').ToLower())
-                 }
+            
+              if (!$PackageList.Contains($packageName)) {
+                if ($packageName) {
+                   $AddItem = $PackageList.Add($packageName.Replace(' ', '').ToLower())
+                }
               }
             }
 
@@ -261,6 +274,7 @@ process {
         foreach ($key in $keys.sNames) {
            $path = join-path $regKey $key
            $installPath = $regProv.GetStringValue($HKLM, $path, "InstallLocation").sValue
+           if (!($installPath)) { continue }
            if ($installPath.Length -eq 0) { continue }
 
            $buildType = "64-Bit"
@@ -293,7 +307,7 @@ process {
            $primaryOfficeProduct = $false
            $officeProduct = $false
            foreach ($officeInstallPath in $PathList) {
-             if (($officeInstallPath) -and ($installPath)) {
+             if ($officeInstallPath) {
                 $installReg = "^" + $installPath.Replace('\', '\\')
                 $installReg = $installReg.Replace('(', '\(')
                 $installReg = $installReg.Replace(')', '\)')
@@ -309,15 +323,26 @@ process {
               $primaryOfficeProduct = $true
            }
 
-           $version = $regProv.GetStringValue($HKLM, $path, "DisplayVersion").sValue
+           $clickToRunComponent = $regProv.GetDWORDValue($HKLM, $path, "ClickToRunComponent").uValue
+           $uninstallString = $regProv.GetStringValue($HKLM, $path, "UninstallString").sValue
+           if (!($clickToRunComponent)) {
+              if ($uninstallString) {
+                 if ($uninstallString.Contains("OfficeClickToRun")) {
+                     $clickToRunComponent = $true
+                 }
+              }
+           }
+
            $modifyPath = $regProv.GetStringValue($HKLM, $path, "ModifyPath").sValue 
+           $version = $regProv.GetStringValue($HKLM, $path, "DisplayVersion").sValue
 
            $cltrUpdatedEnabled = $NULL
            $cltrUpdateUrl = $NULL
            $clientCulture = $NULL;
 
            [string]$clickToRun = $false
-           if ($ClickToRunPathList.Contains($installPath.ToUpper())) {
+
+           if ($clickToRunComponent) {
                $clickToRun = $true
                if ($name.ToUpper().Contains("MICROSOFT OFFICE")) {
                   $primaryOfficeProduct = $true
@@ -356,12 +381,14 @@ process {
     }
 
   }
- 
-  return $results;           
-   
+
+  $results = Get-Unique -InputObject $results 
+
+  return $results;
 }
 
 }
+
 
 Function newCTRRemoveXml {
 #Create a xml configuration file to remove all Office CTR products.
