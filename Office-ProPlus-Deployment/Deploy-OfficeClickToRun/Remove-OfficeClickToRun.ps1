@@ -47,32 +47,34 @@ Will uninstall Office Click-to-Run.
         }
 
         $c2rName = $c2rVersion.DisplayName
-             
-        if(!($isInPipe)) {
-            write-host "Please wait while $c2rName is being uninstalled..."
-        }
-   
-        if($c2rVersion -match "15"){
-            $OdtExe = "$scriptRoot\Office2013Setup.exe"
-        }
-        else{
-            $OdtExe = "$scriptRoot\Office2016Setup.exe"
-        } 
-
-        $command = "$OdtExe /configure $RemoveCTRXmlPath"
-
-        Invoke-Expression $command | Out-Null 
-                        
-        [bool] $c2rTest = $false 
-        if( Get-OfficeVersion | Where-Object {$_.ClickToRun -eq "True"} ){
-            $c2rTest = $true
-        }
-
-        if(!($c2rTest)){                           
-            if (!($isInPipe)) {                        
-                Write-Host "Office Click-to-Run has been successfully uninstalled." 
+        
+        if($c2rName) {     
+            if(!($isInPipe)) {
+                write-host "Please wait while $c2rName is being uninstalled..."
             }
-        }                                      
+   
+            if($c2rVersion -match "15"){
+                $OdtExe = "$scriptRoot\Office2013Setup.exe"
+            }
+            else{
+                $OdtExe = "$scriptRoot\Office2016Setup.exe"
+            } 
+
+            $command = "$OdtExe /configure $RemoveCTRXmlPath"
+
+            Invoke-Expression $command | Out-Null 
+                        
+            [bool] $c2rTest = $false 
+            if( Get-OfficeVersion | Where-Object {$_.ClickToRun -eq "True"} ){
+                $c2rTest = $true
+            }
+
+            if(!($c2rTest)){                           
+                if (!($isInPipe)) {               
+                    Write-Host "Office Click-to-Run has been successfully uninstalled."  
+                }
+            }                                      
+        }
                                                                                
         if ($isInPipe) {
             $results = new-object PSObject[] 0;
