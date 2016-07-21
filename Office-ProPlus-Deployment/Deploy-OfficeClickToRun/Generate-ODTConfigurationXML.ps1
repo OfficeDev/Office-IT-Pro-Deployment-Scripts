@@ -309,7 +309,7 @@ process {
            $officeAddLangs = odtGetOfficeLanguages -ConfigDoc $ConfigFile -OfficeKeyPath $officeConfig.OfficeKeyPath -ProductId $productId
        } else {
          if ($officeExists) {
-             if($productId.ToLower().StartsWith("o365") {
+             if($productId.ToLower().StartsWith("o365")) {
                 $excludeApps = officeGetExcludedApps -OfficeProducts $officeProducts -computer $computer -Credentials $Credentials
              }
          }
