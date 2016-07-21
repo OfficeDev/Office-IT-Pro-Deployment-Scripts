@@ -203,10 +203,12 @@ process {
         $splitProducts = $productReleaseIds.Split(',');
         
         $newSplitProducts = @()
-        foreach ($productId in $splitProducts) { 
-           if (!($newSplitProducts -Contains $productId)) {
-              $newSplitProducts += $productId
-           }
+        foreach ($productId in $splitProducts) {
+            if($productId.ToUpper() -notlike "SPD*") {     
+                if (!($newSplitProducts -Contains $productId)) {
+                   $newSplitProducts += $productId
+                }
+            }
         }
         
         $splitProducts = $newSplitProducts
@@ -307,7 +309,9 @@ process {
            $officeAddLangs = odtGetOfficeLanguages -ConfigDoc $ConfigFile -OfficeKeyPath $officeConfig.OfficeKeyPath -ProductId $productId
        } else {
          if ($officeExists) {
-             $excludeApps = officeGetExcludedApps -OfficeProducts $officeProducts -computer $computer -Credentials $Credentials
+             if($productId.ToLower().StartsWith("o365") {
+                $excludeApps = officeGetExcludedApps -OfficeProducts $officeProducts -computer $computer -Credentials $Credentials
+             }
          }
   
          $msiLanguages = msiGetOfficeLanguages -regProv $regProv
@@ -1315,6 +1319,10 @@ function officeGetExcludedApps() {
         }
         
         switch($OfficeVersion){
+            "11"
+            {
+                $bitPath = '11.0'
+            }
             "12"
             {
                 $bitPath = '12.0'
@@ -1323,6 +1331,10 @@ function officeGetExcludedApps() {
             "14"
             {
                 $bitPath = '14.0'
+            }
+            "15"
+            {
+                $bitPath = '15.0'
             } 
         }
 
