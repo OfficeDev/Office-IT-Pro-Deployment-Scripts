@@ -30,3 +30,4 @@ This PowerShell function works with the other deployment scripts to provide a wa
 		Dynamic-UpdateSource -TargetFilePath "\\server\msoffice\configuration.xml" -IncludeUpdatePath $true
 
 
+[![Analytics](https://ga-beacon.appspot.com/UA-70271323-4/README_Dynamic-UpdateSource?pixel)](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts)
