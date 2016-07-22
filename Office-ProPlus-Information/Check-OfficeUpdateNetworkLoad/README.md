@@ -30,3 +30,4 @@ Recommend using Clean VM
           Type: ./Check-OfficeUpdateNetworkLoad -VersionStart 15.0.4623.1003 -VersionEnd 15.0.4631.1002
            
 
+[![Analytics](https://ga-beacon.appspot.com/UA-70271323-4/README_Check_OfficeUpdateNetworkLoad?pixel)](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts)
