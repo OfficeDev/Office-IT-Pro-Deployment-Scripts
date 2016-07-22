@@ -12,6 +12,8 @@ The Offscrub vbs files included are:
 * **OffScrub07.vbs** - Used to remove Office 2007 products.
 * **OffScrub10.vbs** - Used to remove Office 2010 products.
 * **OffScrub_O15msi.vbs** - Used to remove Office 2013 MSI products.
+* **OffScrub_O16msi.vbs** - Used to remove Office 2016 MSI products.
+* **OffScrub_O16msi.vbs** - Used to remove Click-To-Run products.
 
 More information can be found at: https://blogs.technet.microsoft.com/odsupport/2011/04/08/how-to-obtain-and-use-offscrub-to-automate-the-uninstallation-of-office-products/
 
