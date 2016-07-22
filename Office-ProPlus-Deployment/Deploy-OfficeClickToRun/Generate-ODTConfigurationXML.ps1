@@ -203,10 +203,12 @@ process {
         $splitProducts = $productReleaseIds.Split(',');
         
         $newSplitProducts = @()
-        foreach ($productId in $splitProducts) { 
-           if (!($newSplitProducts -Contains $productId)) {
-              $newSplitProducts += $productId
-           }
+        foreach ($productId in $splitProducts) {
+            if($productId.ToUpper() -notlike "SPD*") {     
+                if (!($newSplitProducts -Contains $productId)) {
+                   $newSplitProducts += $productId
+                }
+            }
         }
         
         $splitProducts = $newSplitProducts
@@ -307,7 +309,9 @@ process {
            $officeAddLangs = odtGetOfficeLanguages -ConfigDoc $ConfigFile -OfficeKeyPath $officeConfig.OfficeKeyPath -ProductId $productId
        } else {
          if ($officeExists) {
-             $excludeApps = officeGetExcludedApps -OfficeProducts $officeProducts -computer $computer -Credentials $Credentials
+             if($productId.ToLower().StartsWith("o365")) {
+                $excludeApps = officeGetExcludedApps -OfficeProducts $officeProducts -computer $computer -Credentials $Credentials
+             }
          }
   
          $msiLanguages = msiGetOfficeLanguages -regProv $regProv
@@ -472,9 +476,9 @@ Gets the Office Version installed on the computer
 This function will query the local or a remote computer and return the information about Office Products installed on the computer
 .NOTES   
 Name: Get-OfficeVersion
-Version: 1.0.4
+Version: 1.0.5
 DateCreated: 2015-07-01
-DateUpdated: 2015-08-28
+DateUpdated: 2016-07-20
 .LINK
 https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
 .PARAMETER ComputerName
@@ -690,10 +694,10 @@ process {
              if ($officeInstallPath) {
                 $installReg = "^" + $installPath.Replace('\', '\\')
                 $installReg = $installReg.Replace('(', '\(')
-                $installReg = $installReg.Replace(')', '\)')              
-                 try{
-                     if ($officeInstallPath -match $installReg) { $officeProduct = $true }
-                 }catch{}
+                $installReg = $installReg.Replace(')', '\)')
+                try {
+                  if ($officeInstallPath -match $installReg) { $officeProduct = $true }
+                } catch { }
              }
            }
 
@@ -705,15 +709,26 @@ process {
               $primaryOfficeProduct = $true
            }
 
-           $version = $regProv.GetStringValue($HKLM, $path, "DisplayVersion").sValue
+           $clickToRunComponent = $regProv.GetDWORDValue($HKLM, $path, "ClickToRunComponent").uValue
+           $uninstallString = $regProv.GetStringValue($HKLM, $path, "UninstallString").sValue
+           if (!($clickToRunComponent)) {
+              if ($uninstallString) {
+                 if ($uninstallString.Contains("OfficeClickToRun")) {
+                     $clickToRunComponent = $true
+                 }
+              }
+           }
+
            $modifyPath = $regProv.GetStringValue($HKLM, $path, "ModifyPath").sValue 
+           $version = $regProv.GetStringValue($HKLM, $path, "DisplayVersion").sValue
 
            $cltrUpdatedEnabled = $NULL
            $cltrUpdateUrl = $NULL
            $clientCulture = $NULL;
 
            [string]$clickToRun = $false
-           if ($ClickToRunPathList.Contains($installPath.ToUpper())) {
+
+           if ($clickToRunComponent) {
                $clickToRun = $true
                if ($name.ToUpper().Contains("MICROSOFT OFFICE")) {
                   $primaryOfficeProduct = $true
@@ -1304,6 +1319,10 @@ function officeGetExcludedApps() {
         }
         
         switch($OfficeVersion){
+            "11"
+            {
+                $bitPath = '11.0'
+            }
             "12"
             {
                 $bitPath = '12.0'
@@ -1312,6 +1331,10 @@ function officeGetExcludedApps() {
             "14"
             {
                 $bitPath = '14.0'
+            }
+            "15"
+            {
+                $bitPath = '15.0'
             } 
         }
 

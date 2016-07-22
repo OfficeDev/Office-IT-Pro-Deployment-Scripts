@@ -1233,7 +1233,7 @@ be prompted before updating and will display the progress.
                          " -UseScriptLocationAsUpdateSource " + (Convert-Bool -value $UseScriptLocationAsUpdateSource)
                          
          if($UseRandomStartTime){
-             $CommandLine += " -UseRandomStartTime " + $UseRandomStartTime + `
+             $CommandLine += " -UseRandomStartTime " + (Convert-Bool -value $UseRandomStartTime) + `
                              " -RandomTimeStart " + $RandomTimeStart + `
                              " -RandomTimeEnd " + $RandomTimeEnd
          }
