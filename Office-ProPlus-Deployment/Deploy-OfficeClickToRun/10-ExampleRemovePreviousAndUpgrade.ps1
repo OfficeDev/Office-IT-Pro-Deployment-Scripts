@@ -14,13 +14,14 @@ Process {
  }
 
 #Sets whether to use Volume Licensing for Project and Visio
-$UseVolumeLicensing = $true
+$UseVolumeLicensing = $false
 
 #Importing all required functions
 . $scriptPath\Generate-ODTConfigurationXML.ps1
 . $scriptPath\Edit-OfficeConfigurationFile.ps1
 . $scriptPath\Install-OfficeClickToRun.ps1
 . $scriptPath\Remove-PreviousOfficeInstalls.ps1
+. $scriptPath\Remove-OfficeClickToRun.ps1
 
 $targetFilePath = "$env:temp\configuration.xml"
 
@@ -30,33 +31,43 @@ $targetFilePath = "$env:temp\configuration.xml"
 
 #This script additionally sets the "AcceptEULA" to "True" and the display "Level" to "None" so the install is silent.
 
-if (!(Test-Path -Path $targetFilePath)) {
-   $officeProducts = Get-OfficeVersion -ShowAllInstalledProducts | Select *
+$officeProducts = Get-OfficeVersion -ShowAllInstalledProducts | Select *
 
-   Generate-ODTConfigurationXml -Languages AllInUseLanguages -TargetFilePath $targetFilePath | Set-ODTAdd -Version $NULL | Set-ODTDisplay -Level None -AcceptEULA $true | Out-Null
+$Office2016C2RExists = $officeProducts | Where {$_.ClickToRun -eq $true -and $_.Version -like '16.*' }
 
-   $products = Get-ODTProductToAdd -TargetFilePath $targetFilePath -All
-   if ($products) { $languages = $products.Languages } else { $languages = @("en-us") }
+if ($Office2016C2RExists) {
+  Write-Host "Office 2016 Click-To-Run is already installed"
+} else {
+    if (!(Test-Path -Path $targetFilePath)) {
+       Generate-ODTConfigurationXml -Languages AllInUseLanguages -TargetFilePath $targetFilePath | Set-ODTAdd -Version $NULL | Set-ODTDisplay -Level None -AcceptEULA $true | Out-Null
+
+       $products = Get-ODTProductToAdd -TargetFilePath $targetFilePath -All
+       if ($products) { $languages = $products.Languages } else { $languages = @("en-us") }
+       $visioAdded = $products | Where { $_.ProductID -like 'VisioProRetail' }
+       $projectAdded = $products | Where { $_.ProductID -like 'ProjectProRetail' }
        
-   $VisioPro = $officeProducts | Where { $_.DisplayName -like '*Visio Professional*' -and $_.ClickToRun -eq $false }
-   $VisioStd = $officeProducts | Where { $_.DisplayName -like '*Visio Standard*' -and $_.ClickToRun -eq $false }
-   $ProjectPro = $officeProducts | Where { $_.DisplayName -like '*Project Professional*' -and $_.ClickToRun -eq $false }
-   $ProjectStd = $officeProducts | Where { $_.DisplayName -like '*Project Standard*' -and $_.ClickToRun -eq $false }
+       $VisioPro = $officeProducts | Where { $_.DisplayName -like '*Visio Professional*' -and $_.ClickToRun -eq $false }
+       $VisioStd = $officeProducts | Where { $_.DisplayName -like '*Visio Standard*' -and $_.ClickToRun -eq $false }
+       $ProjectPro = $officeProducts | Where { $_.DisplayName -like '*Project Professional*' -and $_.ClickToRun -eq $false }
+       $ProjectStd = $officeProducts | Where { $_.DisplayName -like '*Project Standard*' -and $_.ClickToRun -eq $false }
 
-   if ($UseVolumeLicensing) {
-       if ($VisioPro.Count -gt 0) { Add-ODTProductToAdd -ProductId VisioProXVolume -TargetFilePath $targetFilePath -LanguageIds $languages | Out-Null }
-       if ($VisioStd.Count -gt 0) { Add-ODTProductToAdd -ProductId VisioStdXVolume -TargetFilePath $targetFilePath -LanguageIds $languages | Out-Null }
-       if ($ProjectPro.Count -gt 0) { Add-ODTProductToAdd -ProductId ProjectProXVolume -TargetFilePath $targetFilePath -LanguageIds $languages | Out-Null }
-       if ($ProjectStd.Count -gt 0) { Add-ODTProductToAdd -ProductId ProjectStdXVolume -TargetFilePath $targetFilePath -LanguageIds $languages | Out-Null }
-   } else {
-       if ($VisioPro.Count -gt 0 -or $VisioStd.Count -gt 0) { Add-ODTProductToAdd -ProductId VisioProRetail -TargetFilePath $targetFilePath -LanguageIds $languages | Out-Null }
-       if ($ProjectPro.Count -gt 0 -or $ProjectStd.Count -gt 0) { Add-ODTProductToAdd -ProductId ProjectProRetail -TargetFilePath $targetFilePath -LanguageIds $languages | Out-Null }
-   }
+       if ($UseVolumeLicensing) {
+           if ($visioAdded) { Remove-ODTProductToAdd -ProductId 'VisioProRetail' -TargetFilePath $targetFilePath }
+           if ($projectAdded) { Remove-ODTProductToAdd -ProductId 'ProjectProRetail' -TargetFilePath $targetFilePath }
+
+           if ($VisioPro.Count -gt 0) { Add-ODTProductToAdd -ProductId VisioProXVolume -TargetFilePath $targetFilePath -LanguageIds $languages | Out-Null }
+           if ($VisioStd.Count -gt 0) { Add-ODTProductToAdd -ProductId VisioStdXVolume -TargetFilePath $targetFilePath -LanguageIds $languages | Out-Null }
+           if ($ProjectPro.Count -gt 0) { Add-ODTProductToAdd -ProductId ProjectProXVolume -TargetFilePath $targetFilePath -LanguageIds $languages | Out-Null }
+           if ($ProjectStd.Count -gt 0) { Add-ODTProductToAdd -ProductId ProjectStdXVolume -TargetFilePath $targetFilePath -LanguageIds $languages | Out-Null }
+       }
+    }
+
+    Remove-OfficeClickToRun 
+
+    Remove-PreviousOfficeInstalls
+
+    Install-OfficeClickToRun -TargetFilePath $targetFilePath
 }
-
-Remove-PreviousOfficeInstalls
-
-Install-OfficeClickToRun -TargetFilePath $targetFilePath
 
 # Configuration.xml file for Click-to-Run for Office 365 products reference. https://technet.microsoft.com/en-us/library/JJ219426.aspx
 }
