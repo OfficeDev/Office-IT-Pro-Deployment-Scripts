@@ -2,3 +2,5 @@
 This PowerShell Function generate the Office Deployment Tool Configuration XML based on the current state of the workstation and the parameters specified for the Function. 
 
 [README](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/wiki/README_Generate-OfficeDeploymentTool(ODT)ConfigurationXML)
+
+[![Analytics](https://ga-beacon.appspot.com/UA-70271323-4/README_Generate-ODTConfigurationXML?pixel)](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts)
