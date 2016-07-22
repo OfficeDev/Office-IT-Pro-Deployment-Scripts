@@ -40,7 +40,7 @@ If the parameter **IncludeUpdatePathAsSourcePath** is set to $true then it will 
 5. An example output is below.  The first language in the list is the Shell UI culture.  
 
           <Configuration>
-             <Add Version="15.0.4745.1002" OfficeClientEdition="32">
+             <Add Version="16.0.4745.1002" OfficeClientEdition="32" Channel="Current">
                  <Product ID="O365ProPlusRetail">
                    <Language ID="en-us" />
                    <Language ID="de-de" />
