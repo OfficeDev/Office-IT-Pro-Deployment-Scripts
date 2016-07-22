@@ -6,17 +6,6 @@ This readme's topic covers using several scripts in this GitHub repository to cr
 
 Minimum requirements for these scripts are Windows 7 with .net 2.0 and powershell 2.0.
 
-
-###**Required Files**
-
- - Generate-ODTConfigurationXML.ps1
- - Edit-OfficeConfigurationFile.ps1
- - Install-OfficeClickToRun.ps1
- - EnvironmentalFilter.ps1
- - DefaultConfiguration.xml
- - Office2013Setup.exe
- - Office2016Setup.exe
-
 ###**Example Scripts**
 
 1. Example Script '1-ExampleDeployGeneric.ps1': This script provides an example on how to use the deployment scripts in one script to provide a solution for Deploying Office Click-To-Run
