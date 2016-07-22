@@ -102,7 +102,7 @@ namespace MetroDemo
         private string _adminUsername = "";
         private string _adminPassword = "";
         private string _adminDomain = "";
-        
+
         public MainWindowViewModel(IDialogCoordinator dialogCoordinator)
         {
             _dialogCoordinator = dialogCoordinator;
@@ -137,14 +137,14 @@ namespace MetroDemo
                     Version = "16.0.4949.1003"
                 }
             };
-            
-            
+
+
 
             Channels = new List<Channel>()
             {
                 new Channel()
                 {
-                    
+
                 }
             };
 
@@ -156,9 +156,19 @@ namespace MetroDemo
                     Name = "Current",
                     NewName = "Current",
                     Id = "Current",
-                    CurrentVersion = "16.0.6769.2017",
+                    CurrentVersion = "16.0.7070.2028",
                     Versions = new List<Build>()
                     {
+                        new Build() { Version = "16.0.7070.2028"},
+                        new Build() { Version = "16.0.7070.2026"},
+                        new Build() { Version = "16.0.7070.2022"},
+                        new Build() { Version = "16.0.6965.2063"},
+                        new Build() { Version = "16.0.6965.2058"},
+                        new Build() { Version = "16.0.6965.2053"},
+                        new Build() { Version = "16.0.6868.2067"},
+                        new Build() { Version = "16.0.6868.2062"},
+                        new Build() { Version = "16.0.6868.2060"},
+                        new Build() { Version = "16.0.6769.2040"},
                         new Build() { Version = "16.0.6769.2017"},
                         new Build() { Version = "16.0.6769.2015"},
                         new Build() { Version = "16.0.6741.2021"},
@@ -183,12 +193,17 @@ namespace MetroDemo
                     Name = "Deferred",
                     NewName = "Deferred",
                     Id = "Business",
-                    CurrentVersion = "16.0.6001.1073",
+                    CurrentVersion = "16.0.6741.2056",
                     Versions = new List<Build>()
                     {
-                       new Build() { Version = "16.0.6001.1073"},
-                       new Build() { Version = "16.0.6001.1068"},
-                       new Build() { Version = "16.0.6001.1061"}
+                        new Build() { Version = "16.0.6741.2056"},
+                        new Build() { Version = "16.0.6001.1085"},
+                        new Build() { Version = "16.0.6741.2048"},
+                        new Build() { Version = "16.0.6001.1082"},
+                        new Build() { Version = "16.0.6001.1078"},
+                        new Build() { Version = "16.0.6001.1073"},
+                        new Build() { Version = "16.0.6001.1068"},
+                        new Build() { Version = "16.0.6001.1061"}
                     }
                 },
                 new OfficeBranch()
@@ -197,9 +212,15 @@ namespace MetroDemo
                     Name = "First Release Current",
                     NewName = "FirstReleaseCurrent",
                     Id = "FirstReleaseCurrent",
-                    CurrentVersion = "16.0.6769.2015",
+                    CurrentVersion = "16.0.7070.2030",
                     Versions = new List<Build>()
                     {
+                        new Build() { Version = "16.0.7070.2030"},
+                        new Build() { Version = "16.0.7070.2026"},
+                        new Build() { Version = "16.0.7070.2022"},
+                        new Build() { Version = "16.0.7070.2028"},
+                        new Build() { Version = "16.0.7070.2020"},
+                        new Build() { Version = "16.0.7070.2019"},
                         new Build() { Version = "16.0.6769.2015"},
                         new Build() { Version = "16.0.6769.2011"},
                         new Build() { Version = "16.0.6741.2017"},
@@ -224,9 +245,17 @@ namespace MetroDemo
                     Name = "First Release Deferred",
                     NewName = "FirstReleaseDeferred",
                     Id = "FirstReleaseBusiness",
-                    CurrentVersion = "16.0.6741.2026",
+                    CurrentVersion = "16.0.6965.2069",
                     Versions = new List<Build>()
                     {
+                        new Build() { Version = "16.0.6965.2069"},
+                        new Build() { Version = "16.0.6965.2066"},
+                        new Build() { Version = "16.0.6965.2063"},
+                        new Build() { Version = "16.0.6965.2058"},
+                        new Build() { Version = "16.0.6741.2047"},
+                        new Build() { Version = "16.0.6741.2042"},
+                        new Build() { Version = "16.0.6741.2037"},
+                        new Build() { Version = "16.0.6741.2033"},
                         new Build() { Version = "16.0.6741.2026"},
                         new Build() { Version = "16.0.6741.2025"},
                         new Build() { Version = "16.0.6741.2021"},
@@ -414,7 +443,7 @@ namespace MetroDemo
             Certificates = new List<Certificate>();
 
             SelectedCertificate = new Certificate();
-             
+
 
         }
 
@@ -425,7 +454,7 @@ namespace MetroDemo
             get
             {
                 var json = JsonConvert.SerializeObject(Branches.ToArray());
-                return json;       
+                return json;
             }
         }
 
@@ -485,9 +514,9 @@ namespace MetroDemo
                     var remoteComputer = new RemoteComputer();
 
                     var splitChar = ' ';
-                    if (line.Contains((char) 9))
+                    if (line.Contains((char)9))
                     {
-                        splitChar = (char) 9;  
+                        splitChar = (char)9;
                     }
 
                     var lineInfo = line.Split(splitChar);
@@ -527,7 +556,7 @@ namespace MetroDemo
 
         public Language DefaultLanguage = null;
 
-        public List<RemoteMachine> RemoteMachines { get; set; } 
+        public List<RemoteMachine> RemoteMachines { get; set; }
 
         public List<Channel> Channels { get; set; }
 
@@ -543,7 +572,7 @@ namespace MetroDemo
 
         public List<Language> Languages { get; set; }
 
-        public List<Certificate> Certificates { get; set; } 
+        public List<Certificate> Certificates { get; set; }
 
         public List<OfficeBranch> Branches { get; set; }
 
@@ -629,9 +658,9 @@ namespace MetroDemo
 
         public bool BlockNavigation { get; set; }
 
-        public string newVersion { get; set;}
+        public string newVersion { get; set; }
 
-        public string newChannel { get; set;}
+        public string newChannel { get; set; }
 
         public List<Language> SelectedLanguages
         {
@@ -662,7 +691,7 @@ namespace MetroDemo
 
         public bool IsSigningCert(X509Certificate2 certificate)
         {
-            
+
             foreach (X509Extension ext in certificate.Extensions)
             {
                 if (ext.Oid.FriendlyName == "Enhanced Key Usage")
@@ -674,11 +703,11 @@ namespace MetroDemo
                         {
                             return true;
                         }
-                    }  
+                    }
                 }
             }
 
-            return false; 
+            return false;
 
         }
         public void SetCertificates()
@@ -695,11 +724,11 @@ namespace MetroDemo
                     foreach (var certificate in localStore.Certificates)
                     {
                         var cert = new Certificate();
-                        if(IsSigningCert(certificate))
+                        if (IsSigningCert(certificate))
                         {
                             if (string.IsNullOrEmpty(certificate.FriendlyName))
                             {
-                                cert.FriendlyName = certificate.SubjectName.Name; 
+                                cert.FriendlyName = certificate.SubjectName.Name;
                             }
                             else
                             {
@@ -750,8 +779,8 @@ namespace MetroDemo
             {
                 MessageBox.Show(ex.Message);
             }
-            
-                
+
+
         }
 
         public List<Language> GetLanguages(string productId)
@@ -760,7 +789,7 @@ namespace MetroDemo
 
             var languages = _selectedLanguages.Where(l => (l.ProductId == productId) ||
                 ((l.ProductId != null && productId != null) && l.ProductId.ToLower() == productId.ToLower()));
-            
+
 
             if (!languages.Any())
             {
@@ -782,7 +811,7 @@ namespace MetroDemo
                         Name = language.Name,
                         Order = 1,
                         ProductId = productId
-                    });  
+                    });
                 }
 
                 languages = _selectedLanguages.Where(
@@ -797,7 +826,7 @@ namespace MetroDemo
                     Name = DefaultLanguage.Name,
                     Order = 1,
                     ProductId = productId
-                });  
+                });
             }
 
             foreach (var language in languages)
@@ -856,7 +885,7 @@ namespace MetroDemo
             var order = 1;
             foreach (var language in languages.Where(l => l.Order != 1))
             {
-                order ++;
+                order++;
                 language.Order = order;
             }
 
@@ -879,7 +908,7 @@ namespace MetroDemo
             {
                 return;
             }
-           
+
             if (currentLangs.Count > 0)
             {
                 language.Order = 2;
@@ -901,9 +930,9 @@ namespace MetroDemo
 
             if (languageItem != null)
             {
-                languageItem.Order = 1; 
+                languageItem.Order = 1;
             }
-            
+
             var order = 1;
             foreach (var productLanguage in otherProductLanguages)
             {
