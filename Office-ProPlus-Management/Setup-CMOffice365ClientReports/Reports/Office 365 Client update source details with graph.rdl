@@ -1,6 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Report xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner" xmlns:cl="http://schemas.microsoft.com/sqlserver/reporting/2010/01/componentdefinition" xmlns="http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition">
-  <Description>Displays all the Office 365 Client update details including source, update url, and channel with a graph.</Description>
+<Report xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner" xmlns:cl="http://schemas.microsoft.com/sqlserver/reporting/2010/01/componentdefinition" xmlns="http://schemas.microsoft.com/sqlserver/reporting/2010/01/reportdefinition">
   <AutoRefresh>0</AutoRefresh>
   <DataSources>
     <DataSource Name="AutoGen__5C6358F2_4BB6_4a1b_A16E_8D96795D8602_">
@@ -30,11 +29,10 @@
     <DataSet Name="UpdateUrls">
       <Query>
         <DataSourceName>AutoGen__5C6358F2_4BB6_4a1b_A16E_8D96795D8602_</DataSourceName>
-        <CommandText>SELECT DISTINCT UpdateUrl00 FROM dbo.Office365ProPlusConfigurations_DATA
+        <CommandText>SELECT DISTINCT UpdateUrl00 FROM dbo.Office365ClientConfigurations_DATA
 WHERE UpdateUrl00 LIKE '\\%'
 UNION
-SELECT DISTINCT 'All' AS UpdateUrl00 FROM dbo.Office365ProPlusConfigurations_DATA</CommandText>
-        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
+SELECT DISTINCT 'All' AS UpdateUrl00</CommandText>
       </Query>
       <Fields>
         <Field Name="UpdateUrl00">
@@ -73,6 +71,9 @@ SELECT DISTINCT 'All' AS UpdateUrl00 FROM dbo.Office365ProPlusConfigurations_DAT
           <QueryParameter Name="@UpdatesEnabled">
             <Value>=Parameters!UpdatesEnabled.Value</Value>
           </QueryParameter>
+          <QueryParameter Name="@UpdateURL">
+            <Value>=Parameters!UpdateURL.Value</Value>
+          </QueryParameter>
         </QueryParameters>
         <CommandText>DECLARE @ChannelTable TABLE(Channel VARCHAR(100) NULL, CPath VARCHAR(100));
 INSERT INTO @ChannelTable VALUES ('Deferred','http://officecdn.microsoft.com/pr/7ffbc6bf-bc32-4f92-8982-f9dd17fd3114'),('FirstReleaseDeferred','http://officecdn.microsoft.com/pr/b8f9b850-328d-4355-9145-c59439a0c4cf'),('Current','http://officecdn.microsoft.com/pr/492350f6-3a01-4f97-b9c0-c7c6ddf67d60'),('FirstReleaseCurrent','http://officecdn.microsoft.com/pr/64256afe-f5d9-4f86-8936-8840a6a4f5be')
@@ -107,7 +108,7 @@ WHEN OffCL.CDNBaseUrl00 LIKE 'http://officecdn%' THEN (SELECT Channel FROM @Chan
 END
 FROM
 dbo.Add_Remove_Programs_64_DATA Addr
-INNER JOIN dbo.Office365ProPlusConfigurations_DATA OffCL  ON OffCL.MachineID = Addr.MachineID
+INNER JOIN dbo.Office365ClientConfigurations_DATA OffCL  ON OffCL.MachineID = Addr.MachineID
 INNER JOIN dbo.System_DATA SysD ON SysD.MachineID = Addr.MachineID
 WHERE Addr.DisplayName00 LIKE '%proplus%' AND Addr.Version00 LIKE '16%'
 
@@ -142,7 +143,7 @@ WHEN OffCL.CDNBaseUrl00 LIKE 'http://officecdn%' THEN (SELECT Channel FROM @Chan
 END
 FROM
 dbo.Add_Remove_Programs_DATA Addr
-INNER JOIN dbo.Office365ProPlusConfigurations_DATA OffCL  ON OffCL.MachineID = Addr.MachineID
+INNER JOIN dbo.Office365ClientConfigurations_DATA OffCL  ON OffCL.MachineID = Addr.MachineID
 INNER JOIN dbo.System_DATA SysD ON SysD.MachineID = Addr.MachineID
 WHERE Addr.DisplayName00 LIKE '%proplus%' AND Addr.Version00 LIKE '16%'
 
@@ -221,6 +222,11 @@ AND UpdatesEnabled LIKE
 CASE WHEN @UpdatesEnabled = 'All'
 THEN '%'
 ELSE @UpdatesEnabled
+END
+AND UpdateSource LIKE
+CASE WHEN @UpdateURL = 'All'
+THEN '%'
+ELSE @UpdateURL
 END</CommandText>
         <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
       </Query>
@@ -313,7 +319,7 @@ WHEN OffCL.CDNBaseUrl00 LIKE 'http://officecdn%' THEN (SELECT Channel FROM @Chan
 END
 FROM
 dbo.Add_Remove_Programs_64_DATA Addr
-INNER JOIN dbo.Office365ProPlusConfigurations_DATA OffCL  ON OffCL.MachineID = Addr.MachineID
+INNER JOIN dbo.Office365ClientConfigurations_DATA OffCL  ON OffCL.MachineID = Addr.MachineID
 INNER JOIN dbo.System_DATA SysD ON SysD.MachineID = Addr.MachineID
 WHERE Addr.DisplayName00 LIKE '%proplus%' AND Addr.Version00 LIKE '16%'
 
@@ -349,7 +355,7 @@ WHEN OffCL.CDNBaseUrl00 LIKE 'http://officecdn%' THEN (SELECT Channel FROM @Chan
 END
 FROM
 dbo.Add_Remove_Programs_DATA Addr
-INNER JOIN dbo.Office365ProPlusConfigurations_DATA OffCL  ON OffCL.MachineID = Addr.MachineID
+INNER JOIN dbo.Office365ClientConfigurations_DATA OffCL  ON OffCL.MachineID = Addr.MachineID
 INNER JOIN dbo.System_DATA SysD ON SysD.MachineID = Addr.MachineID
 WHERE Addr.DisplayName00 LIKE '%proplus%' AND Addr.Version00 LIKE '16%'
 
@@ -439,7 +445,6 @@ CASE WHEN @UpdateSource = 'All'
 THEN '%'
 ELSE @UpdateSource
 END</CommandText>
-        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
       </Query>
       <Fields>
         <Field Name="UpdateURL">
@@ -453,188 +458,32 @@ END</CommandText>
     <ReportSection>
       <Body>
         <ReportItems>
-          <Rectangle Name="ReportDescriptionRectangle">
-            <ReportItems>
-              <Tablix Name="ReportDescriptionTablix2">
-                <TablixBody>
-                  <TablixColumns>
-                    <TablixColumn>
-                      <Width>1.25in</Width>
-                    </TablixColumn>
-                    <TablixColumn>
-                      <Width>10.45in</Width>
-                    </TablixColumn>
-                  </TablixColumns>
-                  <TablixRows>
-                    <TablixRow>
-                      <Height>0.4in</Height>
-                      <TablixCells>
-                        <TablixCell>
-                          <CellContents>
-                            <Textbox Name="DescriptionLabelTextbox">
-                              <CanGrow>true</CanGrow>
-                              <KeepTogether>true</KeepTogether>
-                              <Paragraphs>
-                                <Paragraph>
-                                  <TextRuns>
-                                    <TextRun>
-                                      <Value>=SrsResources.Localization.GetString("Description", User!Language)</Value>
-                                      <Style>
-                                        <FontFamily>Segoe UI</FontFamily>
-                                        <FontSize>9pt</FontSize>
-                                        <FontWeight>Bold</FontWeight>
-                                      </Style>
-                                    </TextRun>
-                                  </TextRuns>
-                                  <Style />
-                                </Paragraph>
-                              </Paragraphs>
-                              <rd:DefaultName>Textbox16</rd:DefaultName>
-                              <Style>
-                                <Border>
-                                  <Color>LightGrey</Color>
-                                  <Style>Solid</Style>
-                                </Border>
-                                <BackgroundColor>Gainsboro</BackgroundColor>
-                                <PaddingLeft>2pt</PaddingLeft>
-                                <PaddingRight>2pt</PaddingRight>
-                                <PaddingTop>2pt</PaddingTop>
-                                <PaddingBottom>2pt</PaddingBottom>
-                              </Style>
-                            </Textbox>
-                          </CellContents>
-                        </TablixCell>
-                        <TablixCell>
-                          <CellContents>
-                            <Textbox Name="DescriptionTextbox2">
-                              <CanGrow>true</CanGrow>
-                              <KeepTogether>true</KeepTogether>
-                              <Paragraphs>
-                                <Paragraph>
-                                  <TextRuns>
-                                    <TextRun>
-                                      <Value>Displays all the Office 365 Client update details including source, update url, and channel with a graph.</Value>
-                                      <Style>
-                                        <FontStyle>Normal</FontStyle>
-                                        <FontFamily>Segoe UI</FontFamily>
-                                        <FontSize>9pt</FontSize>
-                                        <FontWeight>Normal</FontWeight>
-                                        <TextDecoration>None</TextDecoration>
-                                        <Color>#000000</Color>
-                                      </Style>
-                                    </TextRun>
-                                  </TextRuns>
-                                  <Style />
-                                </Paragraph>
-                              </Paragraphs>
-                              <rd:DefaultName>Textbox18</rd:DefaultName>
-                              <Visibility>
-                                <Hidden>true</Hidden>
-                                <ToggleItem>DescriptionLabelTextbox</ToggleItem>
-                              </Visibility>
-                              <Style>
-                                <Border>
-                                  <Color>LightGrey</Color>
-                                  <Style>Solid</Style>
-                                </Border>
-                                <BackgroundColor>Gainsboro</BackgroundColor>
-                                <PaddingLeft>5pt</PaddingLeft>
-                                <PaddingRight>2pt</PaddingRight>
-                                <PaddingTop>2pt</PaddingTop>
-                                <PaddingBottom>2pt</PaddingBottom>
-                              </Style>
-                            </Textbox>
-                          </CellContents>
-                        </TablixCell>
-                      </TablixCells>
-                    </TablixRow>
-                  </TablixRows>
-                </TablixBody>
-                <TablixColumnHierarchy>
-                  <TablixMembers>
-                    <TablixMember />
-                    <TablixMember />
-                  </TablixMembers>
-                </TablixColumnHierarchy>
-                <TablixRowHierarchy>
-                  <TablixMembers>
-                    <TablixMember />
-                  </TablixMembers>
-                </TablixRowHierarchy>
-                <DataSetName>DataSet1</DataSetName>
-                <Height>0.4in</Height>
-                <Width>11.7in</Width>
-                <Style>
-                  <Border>
-                    <Style>None</Style>
-                  </Border>
-                </Style>
-              </Tablix>
-            </ReportItems>
-            <KeepTogether>true</KeepTogether>
-            <Height>0.4in</Height>
-            <Width>17.30208in</Width>
-            <Style>
-              <Border>
-                <Style>None</Style>
-              </Border>
-              <BackgroundColor>Gainsboro</BackgroundColor>
-            </Style>
-          </Rectangle>
-          <Line Name="ReportDescriptionLine2">
-            <Top>0.25in</Top>
-            <Height>0in</Height>
-            <Width>17.30208in</Width>
-            <ZIndex>1</ZIndex>
-            <Style>
-              <Border>
-                <Style>Double</Style>
-                <Width>1.5pt</Width>
-              </Border>
-              <TopBorder>
-                <Style>Double</Style>
-                <Width>1.5pt</Width>
-              </TopBorder>
-              <BottomBorder>
-                <Style>Double</Style>
-                <Width>1.5pt</Width>
-              </BottomBorder>
-              <LeftBorder>
-                <Style>Double</Style>
-                <Width>1.5pt</Width>
-              </LeftBorder>
-              <RightBorder>
-                <Style>Double</Style>
-                <Width>1.5pt</Width>
-              </RightBorder>
-            </Style>
-          </Line>
-          <Tablix Name="Tablix2">
+          <Tablix Name="Tablix1">
             <TablixBody>
               <TablixColumns>
                 <TablixColumn>
-                  <Width>1.61in</Width>
+                  <Width>2.11in</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>2.28125in</Width>
+                  <Width>3.04917in</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>1.51042in</Width>
+                  <Width>1.31333in</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>1.68541in</Width>
+                  <Width>1.57833in</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>1.2625in</Width>
+                  <Width>1.54167in</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>1.38333in</Width>
+                  <Width>1.90625in</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>1.74167in</Width>
+                  <Width>4.34917in</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>1.54625in</Width>
+                  <Width>1.42708in</Width>
                 </TablixColumn>
               </TablixColumns>
               <TablixRows>
@@ -643,7 +492,7 @@ END</CommandText>
                   <TablixCells>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="Textbox4">
+                        <Textbox Name="Textbox17">
                           <CanGrow>true</CanGrow>
                           <UserSort>
                             <SortExpression>=Fields!ComputerName.Value</SortExpression>
@@ -654,43 +503,43 @@ END</CommandText>
                               <TextRuns>
                                 <TextRun>
                                   <Value>Computer Name</Value>
-                                  <Style />
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
                                 </TextRun>
                               </TextRuns>
                               <Style />
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>Textbox4</rd:DefaultName>
+                          <rd:DefaultName>Textbox17</rd:DefaultName>
                           <Style>
                             <Border>
-                              <Color>LightGrey</Color>
-                              <Style>Solid</Style>
+                              <Color>#557eb9</Color>
+                              <Style>None</Style>
                             </Border>
                             <TopBorder>
-                              <Color>#557eb9</Color>
-                              <Style>Double</Style>
+                              <Style>Solid</Style>
+                              <Width>1.5pt</Width>
                             </TopBorder>
                             <BottomBorder>
-                              <Color>#557eb9</Color>
-                              <Style>Double</Style>
+                              <Style>Solid</Style>
+                              <Width>1.5pt</Width>
                             </BottomBorder>
-                            <LeftBorder>
-                              <Style>None</Style>
-                            </LeftBorder>
-                            <RightBorder>
-                              <Style>None</Style>
-                            </RightBorder>
-                            <PaddingLeft>2pt</PaddingLeft>
-                            <PaddingRight>2pt</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
+                            <BackgroundColor>White</BackgroundColor>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                            <PaddingLeft>5pt</PaddingLeft>
+                            <PaddingRight>5pt</PaddingRight>
+                            <PaddingTop>5pt</PaddingTop>
+                            <PaddingBottom>5pt</PaddingBottom>
                           </Style>
                         </Textbox>
                       </CellContents>
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="Textbox6">
+                        <Textbox Name="Textbox2">
                           <CanGrow>true</CanGrow>
                           <UserSort>
                             <SortExpression>=Fields!ProductName.Value</SortExpression>
@@ -701,43 +550,43 @@ END</CommandText>
                               <TextRuns>
                                 <TextRun>
                                   <Value>Product Name</Value>
-                                  <Style />
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
                                 </TextRun>
                               </TextRuns>
                               <Style />
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>Textbox6</rd:DefaultName>
+                          <rd:DefaultName>Textbox2</rd:DefaultName>
                           <Style>
                             <Border>
-                              <Color>LightGrey</Color>
-                              <Style>Solid</Style>
+                              <Color>#557eb9</Color>
+                              <Style>None</Style>
                             </Border>
                             <TopBorder>
-                              <Color>#557eb9</Color>
-                              <Style>Double</Style>
+                              <Style>Solid</Style>
+                              <Width>1.5pt</Width>
                             </TopBorder>
                             <BottomBorder>
-                              <Color>#557eb9</Color>
-                              <Style>Double</Style>
+                              <Style>Solid</Style>
+                              <Width>1.5pt</Width>
                             </BottomBorder>
-                            <LeftBorder>
-                              <Style>None</Style>
-                            </LeftBorder>
-                            <RightBorder>
-                              <Style>None</Style>
-                            </RightBorder>
-                            <PaddingLeft>2pt</PaddingLeft>
-                            <PaddingRight>2pt</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
+                            <BackgroundColor>White</BackgroundColor>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                            <PaddingLeft>5pt</PaddingLeft>
+                            <PaddingRight>5pt</PaddingRight>
+                            <PaddingTop>5pt</PaddingTop>
+                            <PaddingBottom>5pt</PaddingBottom>
                           </Style>
                         </Textbox>
                       </CellContents>
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="Textbox10">
+                        <Textbox Name="Textbox3">
                           <CanGrow>true</CanGrow>
                           <UserSort>
                             <SortExpression>=Fields!PrimaryLanguage.Value</SortExpression>
@@ -747,44 +596,44 @@ END</CommandText>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>Primary Language</Value>
-                                  <Style />
+                                  <Value>Primary language</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
                                 </TextRun>
                               </TextRuns>
                               <Style />
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>Textbox10</rd:DefaultName>
+                          <rd:DefaultName>Textbox2</rd:DefaultName>
                           <Style>
                             <Border>
-                              <Color>LightGrey</Color>
-                              <Style>Solid</Style>
+                              <Color>#557eb9</Color>
+                              <Style>None</Style>
                             </Border>
                             <TopBorder>
-                              <Color>#557eb9</Color>
-                              <Style>Double</Style>
+                              <Style>Solid</Style>
+                              <Width>1.5pt</Width>
                             </TopBorder>
                             <BottomBorder>
-                              <Color>#557eb9</Color>
-                              <Style>Double</Style>
+                              <Style>Solid</Style>
+                              <Width>1.5pt</Width>
                             </BottomBorder>
-                            <LeftBorder>
-                              <Style>None</Style>
-                            </LeftBorder>
-                            <RightBorder>
-                              <Style>None</Style>
-                            </RightBorder>
-                            <PaddingLeft>2pt</PaddingLeft>
-                            <PaddingRight>2pt</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
+                            <BackgroundColor>White</BackgroundColor>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                            <PaddingLeft>5pt</PaddingLeft>
+                            <PaddingRight>5pt</PaddingRight>
+                            <PaddingTop>5pt</PaddingTop>
+                            <PaddingBottom>5pt</PaddingBottom>
                           </Style>
                         </Textbox>
                       </CellContents>
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="Textbox14">
+                        <Textbox Name="Textbox29">
                           <CanGrow>true</CanGrow>
                           <UserSort>
                             <SortExpression>=Fields!ProductVersion.Value</SortExpression>
@@ -795,46 +644,46 @@ END</CommandText>
                               <TextRuns>
                                 <TextRun>
                                   <Value>Product Version</Value>
-                                  <Style />
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
                                 </TextRun>
                               </TextRuns>
                               <Style />
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>Textbox14</rd:DefaultName>
+                          <rd:DefaultName>Textbox29</rd:DefaultName>
                           <Style>
                             <Border>
-                              <Color>LightGrey</Color>
-                              <Style>Solid</Style>
+                              <Color>#557eb9</Color>
+                              <Style>None</Style>
                             </Border>
                             <TopBorder>
-                              <Color>#557eb9</Color>
-                              <Style>Double</Style>
+                              <Style>Solid</Style>
+                              <Width>1.5pt</Width>
                             </TopBorder>
                             <BottomBorder>
-                              <Color>#557eb9</Color>
-                              <Style>Double</Style>
+                              <Style>Solid</Style>
+                              <Width>1.5pt</Width>
                             </BottomBorder>
-                            <LeftBorder>
-                              <Style>None</Style>
-                            </LeftBorder>
-                            <RightBorder>
-                              <Style>None</Style>
-                            </RightBorder>
-                            <PaddingLeft>2pt</PaddingLeft>
-                            <PaddingRight>2pt</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
+                            <BackgroundColor>White</BackgroundColor>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                            <PaddingLeft>5pt</PaddingLeft>
+                            <PaddingRight>5pt</PaddingRight>
+                            <PaddingTop>5pt</PaddingTop>
+                            <PaddingBottom>5pt</PaddingBottom>
                           </Style>
                         </Textbox>
                       </CellContents>
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="Textbox18">
+                        <Textbox Name="Textbox31">
                           <CanGrow>true</CanGrow>
                           <UserSort>
-                            <SortExpression>=Fields!Architecture.Value</SortExpression>
+                            <SortExpression>=Fields!ProductVersion.Value</SortExpression>
                           </UserSort>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
@@ -842,43 +691,43 @@ END</CommandText>
                               <TextRuns>
                                 <TextRun>
                                   <Value>Architecture</Value>
-                                  <Style />
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
                                 </TextRun>
                               </TextRuns>
                               <Style />
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>Textbox18</rd:DefaultName>
+                          <rd:DefaultName>Textbox31</rd:DefaultName>
                           <Style>
                             <Border>
-                              <Color>LightGrey</Color>
-                              <Style>Solid</Style>
+                              <Color>#557eb9</Color>
+                              <Style>None</Style>
                             </Border>
                             <TopBorder>
-                              <Color>#557eb9</Color>
-                              <Style>Double</Style>
+                              <Style>Solid</Style>
+                              <Width>1.5pt</Width>
                             </TopBorder>
                             <BottomBorder>
-                              <Color>#557eb9</Color>
-                              <Style>Double</Style>
+                              <Style>Solid</Style>
+                              <Width>1.5pt</Width>
                             </BottomBorder>
-                            <LeftBorder>
-                              <Style>None</Style>
-                            </LeftBorder>
-                            <RightBorder>
-                              <Style>None</Style>
-                            </RightBorder>
-                            <PaddingLeft>2pt</PaddingLeft>
-                            <PaddingRight>2pt</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
+                            <BackgroundColor>White</BackgroundColor>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                            <PaddingLeft>5pt</PaddingLeft>
+                            <PaddingRight>5pt</PaddingRight>
+                            <PaddingTop>5pt</PaddingTop>
+                            <PaddingBottom>5pt</PaddingBottom>
                           </Style>
                         </Textbox>
                       </CellContents>
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="Textbox20">
+                        <Textbox Name="Textbox33">
                           <CanGrow>true</CanGrow>
                           <UserSort>
                             <SortExpression>=Fields!UpdatesEnabled.Value</SortExpression>
@@ -889,43 +738,43 @@ END</CommandText>
                               <TextRuns>
                                 <TextRun>
                                   <Value>Updates Enabled</Value>
-                                  <Style />
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
                                 </TextRun>
                               </TextRuns>
                               <Style />
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>Textbox20</rd:DefaultName>
+                          <rd:DefaultName>Textbox33</rd:DefaultName>
                           <Style>
                             <Border>
-                              <Color>LightGrey</Color>
-                              <Style>Solid</Style>
+                              <Color>#557eb9</Color>
+                              <Style>None</Style>
                             </Border>
                             <TopBorder>
-                              <Color>#557eb9</Color>
-                              <Style>Double</Style>
+                              <Style>Solid</Style>
+                              <Width>1.5pt</Width>
                             </TopBorder>
                             <BottomBorder>
-                              <Color>#557eb9</Color>
-                              <Style>Double</Style>
+                              <Style>Solid</Style>
+                              <Width>1.5pt</Width>
                             </BottomBorder>
-                            <LeftBorder>
-                              <Style>None</Style>
-                            </LeftBorder>
-                            <RightBorder>
-                              <Style>None</Style>
-                            </RightBorder>
-                            <PaddingLeft>2pt</PaddingLeft>
-                            <PaddingRight>2pt</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
+                            <BackgroundColor>White</BackgroundColor>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                            <PaddingLeft>5pt</PaddingLeft>
+                            <PaddingRight>5pt</PaddingRight>
+                            <PaddingTop>5pt</PaddingTop>
+                            <PaddingBottom>5pt</PaddingBottom>
                           </Style>
                         </Textbox>
                       </CellContents>
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="Textbox22">
+                        <Textbox Name="Textbox35">
                           <CanGrow>true</CanGrow>
                           <UserSort>
                             <SortExpression>=Fields!UpdateSource.Value</SortExpression>
@@ -936,43 +785,43 @@ END</CommandText>
                               <TextRuns>
                                 <TextRun>
                                   <Value>Update Source</Value>
-                                  <Style />
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
                                 </TextRun>
                               </TextRuns>
                               <Style />
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>Textbox22</rd:DefaultName>
+                          <rd:DefaultName>Textbox35</rd:DefaultName>
                           <Style>
                             <Border>
-                              <Color>LightGrey</Color>
-                              <Style>Solid</Style>
+                              <Color>#557eb9</Color>
+                              <Style>None</Style>
                             </Border>
                             <TopBorder>
-                              <Color>#557eb9</Color>
-                              <Style>Double</Style>
+                              <Style>Solid</Style>
+                              <Width>1.5pt</Width>
                             </TopBorder>
                             <BottomBorder>
-                              <Color>#557eb9</Color>
-                              <Style>Double</Style>
+                              <Style>Solid</Style>
+                              <Width>1.5pt</Width>
                             </BottomBorder>
-                            <LeftBorder>
-                              <Style>None</Style>
-                            </LeftBorder>
-                            <RightBorder>
-                              <Style>None</Style>
-                            </RightBorder>
-                            <PaddingLeft>2pt</PaddingLeft>
-                            <PaddingRight>2pt</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
+                            <BackgroundColor>White</BackgroundColor>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                            <PaddingLeft>5pt</PaddingLeft>
+                            <PaddingRight>5pt</PaddingRight>
+                            <PaddingTop>5pt</PaddingTop>
+                            <PaddingBottom>5pt</PaddingBottom>
                           </Style>
                         </Textbox>
                       </CellContents>
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="Textbox26">
+                        <Textbox Name="Textbox37">
                           <CanGrow>true</CanGrow>
                           <UserSort>
                             <SortExpression>=Fields!Channel.Value</SortExpression>
@@ -983,36 +832,36 @@ END</CommandText>
                               <TextRuns>
                                 <TextRun>
                                   <Value>Channel</Value>
-                                  <Style />
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
                                 </TextRun>
                               </TextRuns>
                               <Style />
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>Textbox26</rd:DefaultName>
+                          <rd:DefaultName>Textbox37</rd:DefaultName>
                           <Style>
                             <Border>
-                              <Color>LightGrey</Color>
-                              <Style>Solid</Style>
+                              <Color>#557eb9</Color>
+                              <Style>None</Style>
                             </Border>
                             <TopBorder>
-                              <Color>#557eb9</Color>
-                              <Style>Double</Style>
+                              <Style>Solid</Style>
+                              <Width>1.5pt</Width>
                             </TopBorder>
                             <BottomBorder>
-                              <Color>#557eb9</Color>
-                              <Style>Double</Style>
+                              <Style>Solid</Style>
+                              <Width>1.5pt</Width>
                             </BottomBorder>
-                            <LeftBorder>
-                              <Style>None</Style>
-                            </LeftBorder>
-                            <RightBorder>
-                              <Style>None</Style>
-                            </RightBorder>
-                            <PaddingLeft>2pt</PaddingLeft>
-                            <PaddingRight>2pt</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
+                            <BackgroundColor>White</BackgroundColor>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                            <PaddingLeft>5pt</PaddingLeft>
+                            <PaddingRight>5pt</PaddingRight>
+                            <PaddingTop>5pt</PaddingTop>
+                            <PaddingBottom>5pt</PaddingBottom>
                           </Style>
                         </Textbox>
                       </CellContents>
@@ -1024,7 +873,7 @@ END</CommandText>
                   <TablixCells>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="ComputerName1">
+                        <Textbox Name="ComputerName">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
@@ -1032,36 +881,45 @@ END</CommandText>
                               <TextRuns>
                                 <TextRun>
                                   <Value>=Fields!ComputerName.Value</Value>
-                                  <Style />
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <TextDecoration>Underline</TextDecoration>
+                                  </Style>
                                 </TextRun>
                               </TextRuns>
                               <Style />
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>ComputerName1</rd:DefaultName>
+                          <rd:DefaultName>ComputerName</rd:DefaultName>
                           <ActionInfo>
                             <Actions>
                               <Action>
                                 <Drillthrough>
-                                  <ReportName>../Hardware - General/Computer information for a specific computer</ReportName>
+                                  <ReportName>/ConfigMgr_S01/Hardware - General/Computer information for a specific computer</ReportName>
+                                  <Parameters>
+                                    <Parameter Name="variable">
+                                      <Value>=Fields!ComputerName.Value</Value>
+                                    </Parameter>
+                                  </Parameters>
                                 </Drillthrough>
                               </Action>
                             </Actions>
                           </ActionInfo>
                           <Style>
                             <Border>
-                              <Color>LightGrey</Color>
+                              <Color>#e5e5e5</Color>
                               <Style>Solid</Style>
                             </Border>
-                            <TopBorder>
+                            <BottomBorder>
                               <Style>None</Style>
-                            </TopBorder>
+                            </BottomBorder>
                             <LeftBorder>
                               <Style>None</Style>
                             </LeftBorder>
                             <RightBorder>
                               <Style>None</Style>
                             </RightBorder>
+                            <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "LightSteelBlue")</BackgroundColor>
                             <PaddingLeft>2pt</PaddingLeft>
                             <PaddingRight>2pt</PaddingRight>
                             <PaddingTop>2pt</PaddingTop>
@@ -1072,7 +930,7 @@ END</CommandText>
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="ProductName1">
+                        <Textbox Name="ProductName">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
@@ -1080,27 +938,32 @@ END</CommandText>
                               <TextRuns>
                                 <TextRun>
                                   <Value>=Fields!ProductName.Value</Value>
-                                  <Style />
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                  </Style>
                                 </TextRun>
                               </TextRuns>
-                              <Style />
+                              <Style>
+                                <TextAlign>Left</TextAlign>
+                              </Style>
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>ProductName1</rd:DefaultName>
+                          <rd:DefaultName>ProductName</rd:DefaultName>
                           <Style>
                             <Border>
-                              <Color>LightGrey</Color>
+                              <Color>#e5e5e5</Color>
                               <Style>Solid</Style>
                             </Border>
-                            <TopBorder>
+                            <BottomBorder>
                               <Style>None</Style>
-                            </TopBorder>
+                            </BottomBorder>
                             <LeftBorder>
                               <Style>None</Style>
                             </LeftBorder>
                             <RightBorder>
                               <Style>None</Style>
                             </RightBorder>
+                            <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "LightSteelBlue")</BackgroundColor>
                             <PaddingLeft>2pt</PaddingLeft>
                             <PaddingRight>2pt</PaddingRight>
                             <PaddingTop>2pt</PaddingTop>
@@ -1111,7 +974,7 @@ END</CommandText>
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="PrimaryLanguage1">
+                        <Textbox Name="ClientStateDescription2">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
@@ -1119,27 +982,30 @@ END</CommandText>
                               <TextRuns>
                                 <TextRun>
                                   <Value>=Fields!PrimaryLanguage.Value</Value>
-                                  <Style />
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                  </Style>
                                 </TextRun>
                               </TextRuns>
                               <Style />
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>PrimaryLanguage1</rd:DefaultName>
+                          <rd:DefaultName>ClientStateDescription</rd:DefaultName>
                           <Style>
                             <Border>
-                              <Color>LightGrey</Color>
+                              <Color>#e5e5e5</Color>
                               <Style>Solid</Style>
                             </Border>
-                            <TopBorder>
+                            <BottomBorder>
                               <Style>None</Style>
-                            </TopBorder>
+                            </BottomBorder>
                             <LeftBorder>
                               <Style>None</Style>
                             </LeftBorder>
                             <RightBorder>
                               <Style>None</Style>
                             </RightBorder>
+                            <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "LightSteelBlue")</BackgroundColor>
                             <PaddingLeft>2pt</PaddingLeft>
                             <PaddingRight>2pt</PaddingRight>
                             <PaddingTop>2pt</PaddingTop>
@@ -1150,7 +1016,7 @@ END</CommandText>
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="ProductVersion1">
+                        <Textbox Name="ProductVersion">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
@@ -1158,27 +1024,30 @@ END</CommandText>
                               <TextRuns>
                                 <TextRun>
                                   <Value>=Fields!ProductVersion.Value</Value>
-                                  <Style />
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                  </Style>
                                 </TextRun>
                               </TextRuns>
                               <Style />
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>ProductVersion1</rd:DefaultName>
+                          <rd:DefaultName>ProductVersion</rd:DefaultName>
                           <Style>
                             <Border>
-                              <Color>LightGrey</Color>
+                              <Color>#e5e5e5</Color>
                               <Style>Solid</Style>
                             </Border>
-                            <TopBorder>
+                            <BottomBorder>
                               <Style>None</Style>
-                            </TopBorder>
+                            </BottomBorder>
                             <LeftBorder>
                               <Style>None</Style>
                             </LeftBorder>
                             <RightBorder>
                               <Style>None</Style>
                             </RightBorder>
+                            <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "LightSteelBlue")</BackgroundColor>
                             <PaddingLeft>2pt</PaddingLeft>
                             <PaddingRight>2pt</PaddingRight>
                             <PaddingTop>2pt</PaddingTop>
@@ -1189,7 +1058,7 @@ END</CommandText>
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="Architecture1">
+                        <Textbox Name="Architecture">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
@@ -1197,27 +1066,30 @@ END</CommandText>
                               <TextRuns>
                                 <TextRun>
                                   <Value>=Fields!Architecture.Value</Value>
-                                  <Style />
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                  </Style>
                                 </TextRun>
                               </TextRuns>
                               <Style />
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>Architecture1</rd:DefaultName>
+                          <rd:DefaultName>Architecture</rd:DefaultName>
                           <Style>
                             <Border>
-                              <Color>LightGrey</Color>
+                              <Color>#e5e5e5</Color>
                               <Style>Solid</Style>
                             </Border>
-                            <TopBorder>
+                            <BottomBorder>
                               <Style>None</Style>
-                            </TopBorder>
+                            </BottomBorder>
                             <LeftBorder>
                               <Style>None</Style>
                             </LeftBorder>
                             <RightBorder>
                               <Style>None</Style>
                             </RightBorder>
+                            <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "LightSteelBlue")</BackgroundColor>
                             <PaddingLeft>2pt</PaddingLeft>
                             <PaddingRight>2pt</PaddingRight>
                             <PaddingTop>2pt</PaddingTop>
@@ -1228,7 +1100,7 @@ END</CommandText>
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="UpdatesEnabled1">
+                        <Textbox Name="UpdatesEnabled">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
@@ -1236,27 +1108,30 @@ END</CommandText>
                               <TextRuns>
                                 <TextRun>
                                   <Value>=Fields!UpdatesEnabled.Value</Value>
-                                  <Style />
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                  </Style>
                                 </TextRun>
                               </TextRuns>
                               <Style />
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>UpdatesEnabled1</rd:DefaultName>
+                          <rd:DefaultName>UpdatesEnabled</rd:DefaultName>
                           <Style>
                             <Border>
-                              <Color>LightGrey</Color>
+                              <Color>#e5e5e5</Color>
                               <Style>Solid</Style>
                             </Border>
-                            <TopBorder>
+                            <BottomBorder>
                               <Style>None</Style>
-                            </TopBorder>
+                            </BottomBorder>
                             <LeftBorder>
                               <Style>None</Style>
                             </LeftBorder>
                             <RightBorder>
                               <Style>None</Style>
                             </RightBorder>
+                            <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "LightSteelBlue")</BackgroundColor>
                             <PaddingLeft>2pt</PaddingLeft>
                             <PaddingRight>2pt</PaddingRight>
                             <PaddingTop>2pt</PaddingTop>
@@ -1267,7 +1142,7 @@ END</CommandText>
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="UpdateSource1">
+                        <Textbox Name="UpdateSource">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
@@ -1275,27 +1150,30 @@ END</CommandText>
                               <TextRuns>
                                 <TextRun>
                                   <Value>=Fields!UpdateSource.Value</Value>
-                                  <Style />
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                  </Style>
                                 </TextRun>
                               </TextRuns>
                               <Style />
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>UpdateSource1</rd:DefaultName>
+                          <rd:DefaultName>UpdateSource</rd:DefaultName>
                           <Style>
                             <Border>
-                              <Color>LightGrey</Color>
+                              <Color>#e5e5e5</Color>
                               <Style>Solid</Style>
                             </Border>
-                            <TopBorder>
+                            <BottomBorder>
                               <Style>None</Style>
-                            </TopBorder>
+                            </BottomBorder>
                             <LeftBorder>
                               <Style>None</Style>
                             </LeftBorder>
                             <RightBorder>
                               <Style>None</Style>
                             </RightBorder>
+                            <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "LightSteelBlue")</BackgroundColor>
                             <PaddingLeft>2pt</PaddingLeft>
                             <PaddingRight>2pt</PaddingRight>
                             <PaddingTop>2pt</PaddingTop>
@@ -1306,7 +1184,7 @@ END</CommandText>
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="Channel1">
+                        <Textbox Name="Channel">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
@@ -1314,27 +1192,30 @@ END</CommandText>
                               <TextRuns>
                                 <TextRun>
                                   <Value>=Fields!Channel.Value</Value>
-                                  <Style />
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                  </Style>
                                 </TextRun>
                               </TextRuns>
                               <Style />
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>Channel1</rd:DefaultName>
+                          <rd:DefaultName>Channel</rd:DefaultName>
                           <Style>
                             <Border>
-                              <Color>LightGrey</Color>
+                              <Color>#e5e5e5</Color>
                               <Style>Solid</Style>
                             </Border>
-                            <TopBorder>
+                            <BottomBorder>
                               <Style>None</Style>
-                            </TopBorder>
+                            </BottomBorder>
                             <LeftBorder>
                               <Style>None</Style>
                             </LeftBorder>
                             <RightBorder>
                               <Style>None</Style>
                             </RightBorder>
+                            <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "LightSteelBlue")</BackgroundColor>
                             <PaddingLeft>2pt</PaddingLeft>
                             <PaddingRight>2pt</PaddingRight>
                             <PaddingTop>2pt</PaddingTop>
@@ -1363,312 +1244,25 @@ END</CommandText>
               <TablixMembers>
                 <TablixMember>
                   <KeepWithGroup>After</KeepWithGroup>
+                  <RepeatOnNewPage>true</RepeatOnNewPage>
                 </TablixMember>
                 <TablixMember>
-                  <Group Name="Details1" />
+                  <Group Name="Details" />
                 </TablixMember>
               </TablixMembers>
             </TablixRowHierarchy>
+            <NoRowsMessage>=SrsResources.Localization.GetString("NoDataAvailable", User!Language)</NoRowsMessage>
             <DataSetName>DataSet1</DataSetName>
-            <Top>5.41389in</Top>
+            <Top>8.46945in</Top>
             <Height>0.5in</Height>
-            <Width>13.02083in</Width>
-            <ZIndex>2</ZIndex>
+            <Width>17.275in</Width>
             <Style>
               <Border>
                 <Style>None</Style>
               </Border>
+              <TextAlign>Center</TextAlign>
             </Style>
           </Tablix>
-          <Chart Name="Chart1">
-            <ChartCategoryHierarchy>
-              <ChartMembers>
-                <ChartMember>
-                  <Group Name="Chart1_CategoryGroup">
-                    <GroupExpressions>
-                      <GroupExpression>=Fields!UpdatesEnabled.Value</GroupExpression>
-                    </GroupExpressions>
-                  </Group>
-                  <SortExpressions>
-                    <SortExpression>
-                      <Value>=Fields!UpdatesEnabled.Value</Value>
-                    </SortExpression>
-                  </SortExpressions>
-                  <Label>=Fields!UpdatesEnabled.Value</Label>
-                </ChartMember>
-              </ChartMembers>
-            </ChartCategoryHierarchy>
-            <ChartSeriesHierarchy>
-              <ChartMembers>
-                <ChartMember>
-                  <Group Name="Chart1_SeriesGroup">
-                    <GroupExpressions>
-                      <GroupExpression>=Fields!UpdatesEnabled.Value</GroupExpression>
-                    </GroupExpressions>
-                  </Group>
-                  <SortExpressions>
-                    <SortExpression>
-                      <Value>=Fields!UpdatesEnabled.Value</Value>
-                    </SortExpression>
-                  </SortExpressions>
-                  <Label>=Fields!UpdatesEnabled.Value</Label>
-                </ChartMember>
-              </ChartMembers>
-            </ChartSeriesHierarchy>
-            <ChartData>
-              <ChartSeriesCollection>
-                <ChartSeries Name="UpdatesEnabled">
-                  <ChartDataPoints>
-                    <ChartDataPoint>
-                      <ChartDataPointValues>
-                        <Y>=Count(Fields!UpdatesEnabled.Value)</Y>
-                      </ChartDataPointValues>
-                      <ChartDataLabel>
-                        <Style />
-                        <UseValueAsLabel>true</UseValueAsLabel>
-                        <Visible>true</Visible>
-                      </ChartDataLabel>
-                      <Style />
-                      <ChartMarker>
-                        <Style />
-                      </ChartMarker>
-                      <DataElementOutput>Output</DataElementOutput>
-                    </ChartDataPoint>
-                  </ChartDataPoints>
-                  <Type>Shape</Type>
-                  <Style />
-                  <ChartEmptyPoints>
-                    <Style />
-                    <ChartMarker>
-                      <Style />
-                    </ChartMarker>
-                    <ChartDataLabel>
-                      <Style />
-                    </ChartDataLabel>
-                  </ChartEmptyPoints>
-                  <ValueAxisName>Primary</ValueAxisName>
-                  <CategoryAxisName>Primary</CategoryAxisName>
-                  <ChartSmartLabel>
-                    <CalloutLineColor>Black</CalloutLineColor>
-                    <MinMovingDistance>0pt</MinMovingDistance>
-                  </ChartSmartLabel>
-                </ChartSeries>
-              </ChartSeriesCollection>
-            </ChartData>
-            <ChartAreas>
-              <ChartArea Name="Default">
-                <ChartCategoryAxes>
-                  <ChartAxis Name="Primary">
-                    <Style>
-                      <FontSize>8pt</FontSize>
-                    </Style>
-                    <ChartAxisTitle>
-                      <Caption>Axis Title</Caption>
-                      <Style>
-                        <FontSize>8pt</FontSize>
-                      </Style>
-                    </ChartAxisTitle>
-                    <ChartMajorGridLines>
-                      <Enabled>False</Enabled>
-                      <Style>
-                        <Border>
-                          <Color>Gainsboro</Color>
-                        </Border>
-                      </Style>
-                    </ChartMajorGridLines>
-                    <ChartMinorGridLines>
-                      <Style>
-                        <Border>
-                          <Color>Gainsboro</Color>
-                          <Style>Dotted</Style>
-                        </Border>
-                      </Style>
-                    </ChartMinorGridLines>
-                    <ChartMinorTickMarks>
-                      <Length>0.5</Length>
-                    </ChartMinorTickMarks>
-                    <CrossAt>NaN</CrossAt>
-                    <Minimum>NaN</Minimum>
-                    <Maximum>NaN</Maximum>
-                    <ChartAxisScaleBreak>
-                      <Style />
-                    </ChartAxisScaleBreak>
-                  </ChartAxis>
-                  <ChartAxis Name="Secondary">
-                    <Style>
-                      <FontSize>8pt</FontSize>
-                    </Style>
-                    <ChartAxisTitle>
-                      <Caption>Axis Title</Caption>
-                      <Style>
-                        <FontSize>8pt</FontSize>
-                      </Style>
-                    </ChartAxisTitle>
-                    <ChartMajorGridLines>
-                      <Enabled>False</Enabled>
-                      <Style>
-                        <Border>
-                          <Color>Gainsboro</Color>
-                        </Border>
-                      </Style>
-                    </ChartMajorGridLines>
-                    <ChartMinorGridLines>
-                      <Style>
-                        <Border>
-                          <Color>Gainsboro</Color>
-                          <Style>Dotted</Style>
-                        </Border>
-                      </Style>
-                    </ChartMinorGridLines>
-                    <ChartMinorTickMarks>
-                      <Length>0.5</Length>
-                    </ChartMinorTickMarks>
-                    <CrossAt>NaN</CrossAt>
-                    <Location>Opposite</Location>
-                    <Minimum>NaN</Minimum>
-                    <Maximum>NaN</Maximum>
-                    <ChartAxisScaleBreak>
-                      <Style />
-                    </ChartAxisScaleBreak>
-                  </ChartAxis>
-                </ChartCategoryAxes>
-                <ChartValueAxes>
-                  <ChartAxis Name="Primary">
-                    <Style>
-                      <FontSize>8pt</FontSize>
-                    </Style>
-                    <ChartAxisTitle>
-                      <Caption>Axis Title</Caption>
-                      <Style>
-                        <FontSize>8pt</FontSize>
-                      </Style>
-                    </ChartAxisTitle>
-                    <ChartMajorGridLines>
-                      <Style>
-                        <Border>
-                          <Color>Gainsboro</Color>
-                        </Border>
-                      </Style>
-                    </ChartMajorGridLines>
-                    <ChartMinorGridLines>
-                      <Style>
-                        <Border>
-                          <Color>Gainsboro</Color>
-                          <Style>Dotted</Style>
-                        </Border>
-                      </Style>
-                    </ChartMinorGridLines>
-                    <ChartMinorTickMarks>
-                      <Length>0.5</Length>
-                    </ChartMinorTickMarks>
-                    <CrossAt>NaN</CrossAt>
-                    <Minimum>NaN</Minimum>
-                    <Maximum>NaN</Maximum>
-                    <ChartAxisScaleBreak>
-                      <Style />
-                    </ChartAxisScaleBreak>
-                  </ChartAxis>
-                  <ChartAxis Name="Secondary">
-                    <Style>
-                      <FontSize>8pt</FontSize>
-                    </Style>
-                    <ChartAxisTitle>
-                      <Caption>Axis Title</Caption>
-                      <Style>
-                        <FontSize>8pt</FontSize>
-                      </Style>
-                    </ChartAxisTitle>
-                    <ChartMajorGridLines>
-                      <Style>
-                        <Border>
-                          <Color>Gainsboro</Color>
-                        </Border>
-                      </Style>
-                    </ChartMajorGridLines>
-                    <ChartMinorGridLines>
-                      <Style>
-                        <Border>
-                          <Color>Gainsboro</Color>
-                          <Style>Dotted</Style>
-                        </Border>
-                      </Style>
-                    </ChartMinorGridLines>
-                    <ChartMinorTickMarks>
-                      <Length>0.5</Length>
-                    </ChartMinorTickMarks>
-                    <CrossAt>NaN</CrossAt>
-                    <Location>Opposite</Location>
-                    <Minimum>NaN</Minimum>
-                    <Maximum>NaN</Maximum>
-                    <ChartAxisScaleBreak>
-                      <Style />
-                    </ChartAxisScaleBreak>
-                  </ChartAxis>
-                </ChartValueAxes>
-                <Style>
-                  <BackgroundGradientType>None</BackgroundGradientType>
-                </Style>
-              </ChartArea>
-            </ChartAreas>
-            <ChartLegends>
-              <ChartLegend Name="Default">
-                <Style>
-                  <BackgroundGradientType>None</BackgroundGradientType>
-                  <FontSize>8pt</FontSize>
-                </Style>
-                <ChartLegendTitle>
-                  <Caption />
-                  <Style>
-                    <FontSize>8pt</FontSize>
-                    <FontWeight>Bold</FontWeight>
-                    <TextAlign>Center</TextAlign>
-                  </Style>
-                </ChartLegendTitle>
-                <HeaderSeparatorColor>Black</HeaderSeparatorColor>
-                <ColumnSeparatorColor>Black</ColumnSeparatorColor>
-              </ChartLegend>
-            </ChartLegends>
-            <ChartTitles>
-              <ChartTitle Name="Default">
-                <Caption>Updates Enabled</Caption>
-                <Style>
-                  <BackgroundGradientType>None</BackgroundGradientType>
-                  <FontWeight>Bold</FontWeight>
-                  <TextAlign>General</TextAlign>
-                  <VerticalAlign>Top</VerticalAlign>
-                </Style>
-              </ChartTitle>
-            </ChartTitles>
-            <Palette>BrightPastel</Palette>
-            <ChartBorderSkin>
-              <Style>
-                <BackgroundColor>Gray</BackgroundColor>
-                <BackgroundGradientType>None</BackgroundGradientType>
-                <Color>White</Color>
-              </Style>
-            </ChartBorderSkin>
-            <ChartNoDataMessage Name="NoDataMessage">
-              <Caption>No Data Available</Caption>
-              <Style>
-                <BackgroundGradientType>None</BackgroundGradientType>
-                <TextAlign>General</TextAlign>
-                <VerticalAlign>Top</VerticalAlign>
-              </Style>
-            </ChartNoDataMessage>
-            <DataSetName>DataSet1</DataSetName>
-            <Top>0.37222in</Top>
-            <Height>5.01389in</Height>
-            <Width>5.10417in</Width>
-            <ZIndex>3</ZIndex>
-            <Style>
-              <Border>
-                <Color>LightGrey</Color>
-                <Style>Solid</Style>
-              </Border>
-              <BackgroundColor>White</BackgroundColor>
-              <BackgroundGradientType>None</BackgroundGradientType>
-            </Style>
-          </Chart>
           <Chart Name="Chart2">
             <ChartCategoryHierarchy>
               <ChartMembers>
@@ -1714,8 +1308,6 @@ END</CommandText>
                       </ChartDataPointValues>
                       <ChartDataLabel>
                         <Style />
-                        <UseValueAsLabel>true</UseValueAsLabel>
-                        <Visible>true</Visible>
                       </ChartDataLabel>
                       <Style />
                       <ChartMarker>
@@ -1928,14 +1520,7 @@ END</CommandText>
                 </Style>
               </ChartTitle>
             </ChartTitles>
-            <Palette>Custom</Palette>
-            <ChartCustomPaletteColors>
-              <ChartCustomPaletteColor>#84bdff</ChartCustomPaletteColor>
-              <ChartCustomPaletteColor>#ff6c40</ChartCustomPaletteColor>
-              <ChartCustomPaletteColor>#3d6899</ChartCustomPaletteColor>
-              <ChartCustomPaletteColor>#00fcff</ChartCustomPaletteColor>
-              <ChartCustomPaletteColor>#cc2414</ChartCustomPaletteColor>
-            </ChartCustomPaletteColors>
+            <Palette>BrightPastel</Palette>
             <ChartBorderSkin>
               <Style>
                 <BackgroundColor>Gray</BackgroundColor>
@@ -1952,11 +1537,10 @@ END</CommandText>
               </Style>
             </ChartNoDataMessage>
             <DataSetName>DataSet1</DataSetName>
-            <Top>0.4in</Top>
-            <Left>5.10417in</Left>
-            <Height>5.01389in</Height>
-            <Width>6.37041in</Width>
-            <ZIndex>4</ZIndex>
+            <Top>0.42778in</Top>
+            <Height>7.98611in</Height>
+            <Width>17.275in</Width>
+            <ZIndex>1</ZIndex>
             <Style>
               <Border>
                 <Color>LightGrey</Color>
@@ -1966,337 +1550,196 @@ END</CommandText>
               <BackgroundGradientType>None</BackgroundGradientType>
             </Style>
           </Chart>
-          <Chart Name="Chart3">
-            <ChartCategoryHierarchy>
-              <ChartMembers>
-                <ChartMember>
-                  <Group Name="Chart3_CategoryGroup">
-                    <GroupExpressions>
-                      <GroupExpression>=Fields!UpdateURL.Value</GroupExpression>
-                    </GroupExpressions>
-                  </Group>
-                  <SortExpressions>
-                    <SortExpression>
-                      <Value>=Fields!UpdateURL.Value</Value>
-                    </SortExpression>
-                  </SortExpressions>
-                  <Label>=Fields!UpdateURL.Value</Label>
-                </ChartMember>
-              </ChartMembers>
-            </ChartCategoryHierarchy>
-            <ChartSeriesHierarchy>
-              <ChartMembers>
-                <ChartMember>
-                  <Group Name="Chart3_SeriesGroup">
-                    <GroupExpressions>
-                      <GroupExpression>=Fields!UpdateURL.Value</GroupExpression>
-                    </GroupExpressions>
-                  </Group>
-                  <SortExpressions>
-                    <SortExpression>
-                      <Value>=Fields!UpdateURL.Value</Value>
-                    </SortExpression>
-                  </SortExpressions>
-                  <Label>=Fields!UpdateURL.Value</Label>
-                </ChartMember>
-              </ChartMembers>
-            </ChartSeriesHierarchy>
-            <ChartData>
-              <ChartSeriesCollection>
-                <ChartSeries Name="UpdateURL">
-                  <ChartDataPoints>
-                    <ChartDataPoint>
-                      <ChartDataPointValues>
-                        <Y>=Count(Fields!UpdateURL.Value)</Y>
-                      </ChartDataPointValues>
-                      <ChartDataLabel>
-                        <Style />
-                      </ChartDataLabel>
-                      <Style />
-                      <ChartMarker>
-                        <Style />
-                      </ChartMarker>
-                      <DataElementOutput>Output</DataElementOutput>
-                    </ChartDataPoint>
-                  </ChartDataPoints>
-                  <Style />
-                  <ChartEmptyPoints>
-                    <Style />
-                    <ChartMarker>
-                      <Style />
-                    </ChartMarker>
-                    <ChartDataLabel>
-                      <Style />
-                    </ChartDataLabel>
-                  </ChartEmptyPoints>
-                  <ValueAxisName>Primary</ValueAxisName>
-                  <CategoryAxisName>Primary</CategoryAxisName>
-                  <ChartSmartLabel>
-                    <CalloutLineColor>Black</CalloutLineColor>
-                    <MinMovingDistance>0pt</MinMovingDistance>
-                  </ChartSmartLabel>
-                </ChartSeries>
-              </ChartSeriesCollection>
-            </ChartData>
-            <ChartAreas>
-              <ChartArea Name="Default">
-                <ChartCategoryAxes>
-                  <ChartAxis Name="Primary">
-                    <Style>
-                      <FontSize>8pt</FontSize>
-                    </Style>
-                    <ChartAxisTitle>
-                      <Caption>Axis Title</Caption>
-                      <Style>
-                        <FontSize>8pt</FontSize>
-                      </Style>
-                    </ChartAxisTitle>
-                    <ChartMajorGridLines>
-                      <Enabled>False</Enabled>
-                      <Style>
-                        <Border>
-                          <Color>Gainsboro</Color>
-                        </Border>
-                      </Style>
-                    </ChartMajorGridLines>
-                    <ChartMinorGridLines>
-                      <Style>
-                        <Border>
-                          <Color>Gainsboro</Color>
-                          <Style>Dotted</Style>
-                        </Border>
-                      </Style>
-                    </ChartMinorGridLines>
-                    <ChartMinorTickMarks>
-                      <Length>0.5</Length>
-                    </ChartMinorTickMarks>
-                    <CrossAt>NaN</CrossAt>
-                    <Minimum>NaN</Minimum>
-                    <Maximum>NaN</Maximum>
-                    <ChartAxisScaleBreak>
-                      <Style />
-                    </ChartAxisScaleBreak>
-                  </ChartAxis>
-                  <ChartAxis Name="Secondary">
-                    <Style>
-                      <FontSize>8pt</FontSize>
-                    </Style>
-                    <ChartAxisTitle>
-                      <Caption>Axis Title</Caption>
-                      <Style>
-                        <FontSize>8pt</FontSize>
-                      </Style>
-                    </ChartAxisTitle>
-                    <ChartMajorGridLines>
-                      <Enabled>False</Enabled>
-                      <Style>
-                        <Border>
-                          <Color>Gainsboro</Color>
-                        </Border>
-                      </Style>
-                    </ChartMajorGridLines>
-                    <ChartMinorGridLines>
-                      <Style>
-                        <Border>
-                          <Color>Gainsboro</Color>
-                          <Style>Dotted</Style>
-                        </Border>
-                      </Style>
-                    </ChartMinorGridLines>
-                    <ChartMinorTickMarks>
-                      <Length>0.5</Length>
-                    </ChartMinorTickMarks>
-                    <CrossAt>NaN</CrossAt>
-                    <Location>Opposite</Location>
-                    <Minimum>NaN</Minimum>
-                    <Maximum>NaN</Maximum>
-                    <ChartAxisScaleBreak>
-                      <Style />
-                    </ChartAxisScaleBreak>
-                  </ChartAxis>
-                </ChartCategoryAxes>
-                <ChartValueAxes>
-                  <ChartAxis Name="Primary">
-                    <Style>
-                      <FontSize>8pt</FontSize>
-                    </Style>
-                    <ChartAxisTitle>
-                      <Caption>Axis Title</Caption>
-                      <Style>
-                        <FontSize>8pt</FontSize>
-                      </Style>
-                    </ChartAxisTitle>
-                    <ChartMajorGridLines>
-                      <Style>
-                        <Border>
-                          <Color>Gainsboro</Color>
-                        </Border>
-                      </Style>
-                    </ChartMajorGridLines>
-                    <ChartMinorGridLines>
-                      <Style>
-                        <Border>
-                          <Color>Gainsboro</Color>
-                          <Style>Dotted</Style>
-                        </Border>
-                      </Style>
-                    </ChartMinorGridLines>
-                    <ChartMinorTickMarks>
-                      <Length>0.5</Length>
-                    </ChartMinorTickMarks>
-                    <CrossAt>NaN</CrossAt>
-                    <Minimum>NaN</Minimum>
-                    <Maximum>NaN</Maximum>
-                    <ChartAxisScaleBreak>
-                      <Style />
-                    </ChartAxisScaleBreak>
-                  </ChartAxis>
-                  <ChartAxis Name="Secondary">
-                    <Style>
-                      <FontSize>8pt</FontSize>
-                    </Style>
-                    <ChartAxisTitle>
-                      <Caption>Axis Title</Caption>
-                      <Style>
-                        <FontSize>8pt</FontSize>
-                      </Style>
-                    </ChartAxisTitle>
-                    <ChartMajorGridLines>
-                      <Style>
-                        <Border>
-                          <Color>Gainsboro</Color>
-                        </Border>
-                      </Style>
-                    </ChartMajorGridLines>
-                    <ChartMinorGridLines>
-                      <Style>
-                        <Border>
-                          <Color>Gainsboro</Color>
-                          <Style>Dotted</Style>
-                        </Border>
-                      </Style>
-                    </ChartMinorGridLines>
-                    <ChartMinorTickMarks>
-                      <Length>0.5</Length>
-                    </ChartMinorTickMarks>
-                    <CrossAt>NaN</CrossAt>
-                    <Location>Opposite</Location>
-                    <Minimum>NaN</Minimum>
-                    <Maximum>NaN</Maximum>
-                    <ChartAxisScaleBreak>
-                      <Style />
-                    </ChartAxisScaleBreak>
-                  </ChartAxis>
-                </ChartValueAxes>
+          <Rectangle Name="ReportDescriptionRectangle2">
+            <ReportItems>
+              <Tablix Name="ReportDescriptionTablix2">
+                <TablixBody>
+                  <TablixColumns>
+                    <TablixColumn>
+                      <Width>1.25in</Width>
+                    </TablixColumn>
+                    <TablixColumn>
+                      <Width>6.45in</Width>
+                    </TablixColumn>
+                  </TablixColumns>
+                  <TablixRows>
+                    <TablixRow>
+                      <Height>0.4in</Height>
+                      <TablixCells>
+                        <TablixCell>
+                          <CellContents>
+                            <Textbox Name="DescriptionLabelTextbox2">
+                              <CanGrow>true</CanGrow>
+                              <KeepTogether>true</KeepTogether>
+                              <Paragraphs>
+                                <Paragraph>
+                                  <TextRuns>
+                                    <TextRun>
+                                      <Value>=SrsResources.Localization.GetString("Description", User!Language)</Value>
+                                      <Style>
+                                        <FontFamily>Segoe UI</FontFamily>
+                                        <FontSize>9pt</FontSize>
+                                        <FontWeight>Bold</FontWeight>
+                                      </Style>
+                                    </TextRun>
+                                  </TextRuns>
+                                  <Style />
+                                </Paragraph>
+                              </Paragraphs>
+                              <rd:DefaultName>Textbox16</rd:DefaultName>
+                              <Style>
+                                <Border>
+                                  <Color>LightGrey</Color>
+                                  <Style>Solid</Style>
+                                </Border>
+                                <BackgroundColor>Gainsboro</BackgroundColor>
+                                <PaddingLeft>2pt</PaddingLeft>
+                                <PaddingRight>2pt</PaddingRight>
+                                <PaddingTop>2pt</PaddingTop>
+                                <PaddingBottom>2pt</PaddingBottom>
+                              </Style>
+                            </Textbox>
+                          </CellContents>
+                        </TablixCell>
+                        <TablixCell>
+                          <CellContents>
+                            <Textbox Name="DescriptionTextbox2">
+                              <CanGrow>true</CanGrow>
+                              <KeepTogether>true</KeepTogether>
+                              <Paragraphs>
+                                <Paragraph>
+                                  <TextRuns>
+                                    <TextRun>
+                                      <Value>Displays the Office 365 Client update source details with a graph</Value>
+                                      <Style>
+                                        <FontFamily>Segoe UI</FontFamily>
+                                        <FontSize>9pt</FontSize>
+                                        <FontWeight>Normal</FontWeight>
+                                      </Style>
+                                    </TextRun>
+                                  </TextRuns>
+                                  <Style />
+                                </Paragraph>
+                              </Paragraphs>
+                              <rd:DefaultName>Textbox18</rd:DefaultName>
+                              <Visibility>
+                                <Hidden>true</Hidden>
+                                <ToggleItem>DescriptionLabelTextbox2</ToggleItem>
+                              </Visibility>
+                              <Style>
+                                <Border>
+                                  <Color>LightGrey</Color>
+                                  <Style>Solid</Style>
+                                </Border>
+                                <BackgroundColor>Gainsboro</BackgroundColor>
+                                <PaddingLeft>5pt</PaddingLeft>
+                                <PaddingRight>2pt</PaddingRight>
+                                <PaddingTop>2pt</PaddingTop>
+                                <PaddingBottom>2pt</PaddingBottom>
+                              </Style>
+                            </Textbox>
+                          </CellContents>
+                        </TablixCell>
+                      </TablixCells>
+                    </TablixRow>
+                  </TablixRows>
+                </TablixBody>
+                <TablixColumnHierarchy>
+                  <TablixMembers>
+                    <TablixMember />
+                    <TablixMember />
+                  </TablixMembers>
+                </TablixColumnHierarchy>
+                <TablixRowHierarchy>
+                  <TablixMembers>
+                    <TablixMember />
+                  </TablixMembers>
+                </TablixRowHierarchy>
+                <DataSetName>DataSet1</DataSetName>
+                <Height>0.4in</Height>
+                <Width>7.7in</Width>
                 <Style>
-                  <BackgroundGradientType>None</BackgroundGradientType>
+                  <Border>
+                    <Style>None</Style>
+                  </Border>
                 </Style>
-              </ChartArea>
-            </ChartAreas>
-            <ChartLegends>
-              <ChartLegend Name="Default">
-                <Style>
-                  <BackgroundGradientType>None</BackgroundGradientType>
-                  <FontSize>8pt</FontSize>
-                </Style>
-                <ChartLegendTitle>
-                  <Caption />
-                  <Style>
-                    <FontSize>8pt</FontSize>
-                    <FontWeight>Bold</FontWeight>
-                    <TextAlign>Center</TextAlign>
-                  </Style>
-                </ChartLegendTitle>
-                <HeaderSeparatorColor>Black</HeaderSeparatorColor>
-                <ColumnSeparatorColor>Black</ColumnSeparatorColor>
-              </ChartLegend>
-            </ChartLegends>
-            <ChartTitles>
-              <ChartTitle Name="Default">
-                <Caption>Local Source URLs</Caption>
-                <Style>
-                  <BackgroundGradientType>None</BackgroundGradientType>
-                  <FontWeight>Bold</FontWeight>
-                  <TextAlign>General</TextAlign>
-                  <VerticalAlign>Top</VerticalAlign>
-                </Style>
-              </ChartTitle>
-            </ChartTitles>
-            <Palette>Custom</Palette>
-            <ChartCustomPaletteColors>
-              <ChartCustomPaletteColor>#2772ff</ChartCustomPaletteColor>
-              <ChartCustomPaletteColor>#cc2f14</ChartCustomPaletteColor>
-              <ChartCustomPaletteColor>#3d5d99</ChartCustomPaletteColor>
-              <ChartCustomPaletteColor>#00dfff</ChartCustomPaletteColor>
-              <ChartCustomPaletteColor>#ff7840</ChartCustomPaletteColor>
-            </ChartCustomPaletteColors>
-            <ChartBorderSkin>
-              <Style>
-                <BackgroundColor>Gray</BackgroundColor>
-                <BackgroundGradientType>None</BackgroundGradientType>
-                <Color>White</Color>
-              </Style>
-            </ChartBorderSkin>
-            <ChartNoDataMessage Name="NoDataMessage">
-              <Caption>No Data Available</Caption>
-              <Style>
-                <BackgroundGradientType>None</BackgroundGradientType>
-                <TextAlign>General</TextAlign>
-                <VerticalAlign>Top</VerticalAlign>
-              </Style>
-            </ChartNoDataMessage>
-            <DataSetName>UpdateURLGraph</DataSetName>
-            <Top>0.4in</Top>
-            <Left>11.47458in</Left>
-            <Height>5.01389in</Height>
-            <Width>5.8275in</Width>
-            <ZIndex>5</ZIndex>
+              </Tablix>
+            </ReportItems>
+            <KeepTogether>true</KeepTogether>
+            <Height>0.4in</Height>
+            <Width>17.275in</Width>
+            <ZIndex>2</ZIndex>
             <Style>
               <Border>
-                <Color>LightGrey</Color>
-                <Style>Solid</Style>
+                <Style>None</Style>
               </Border>
-              <BackgroundColor>White</BackgroundColor>
-              <BackgroundGradientType>None</BackgroundGradientType>
+              <BackgroundColor>Gainsboro</BackgroundColor>
             </Style>
-          </Chart>
+          </Rectangle>
+          <Line Name="ReportDescriptionLine2">
+            <Top>0.25in</Top>
+            <Height>0in</Height>
+            <Width>17.275in</Width>
+            <ZIndex>3</ZIndex>
+            <Style>
+              <Border>
+                <Style>Double</Style>
+                <Width>1.5pt</Width>
+              </Border>
+              <TopBorder>
+                <Style>Double</Style>
+                <Width>1.5pt</Width>
+              </TopBorder>
+              <BottomBorder>
+                <Style>Double</Style>
+                <Width>1.5pt</Width>
+              </BottomBorder>
+              <LeftBorder>
+                <Style>Double</Style>
+                <Width>1.5pt</Width>
+              </LeftBorder>
+              <RightBorder>
+                <Style>Double</Style>
+                <Width>1.5pt</Width>
+              </RightBorder>
+            </Style>
+          </Line>
         </ReportItems>
-        <Height>5.91389in</Height>
+        <Height>12.76563in</Height>
         <Style>
           <Border>
             <Style>None</Style>
           </Border>
         </Style>
       </Body>
-      <Width>17.30208in</Width>
+      <Width>18.74375in</Width>
       <Page>
         <PageHeader>
-          <Height>1.11389in</Height>
+          <Height>1.1in</Height>
           <PrintOnFirstPage>true</PrintOnFirstPage>
           <PrintOnLastPage>true</PrintOnLastPage>
           <ReportItems>
             <Rectangle Name="BackgroundColorRectangle">
               <ReportItems>
-                <Image Name="CenterHeaderImage">
+                <Image Name="CenterHeaderImage2">
                   <Source>External</Source>
                   <Value>/ConfigMgr_S01/Report Resources/Report_Header_Center.png</Value>
                   <Sizing>Fit</Sizing>
-                  <Top>0.01389in</Top>
                   <Left>0.21in</Left>
                   <Height>0.75in</Height>
-                  <Width>14.75208in</Width>
+                  <Width>14.725in</Width>
                   <Style>
                     <Border>
                       <Style>None</Style>
                     </Border>
                   </Style>
                 </Image>
-                <Image Name="LeftHeaderImage">
+                <Image Name="RightHeaderImage2">
                   <Source>External</Source>
-                  <Value>/ConfigMgr_S01/Report Resources/Report_Header_Left.png</Value>
-                  <Top>0.01389in</Top>
+                  <Value>/ConfigMgr_S01/Report Resources/Report_Header_Right.png</Value>
+                  <Left>14.935in</Left>
                   <Height>0.75in</Height>
-                  <Width>0.21in</Width>
+                  <Width>2.34in</Width>
                   <ZIndex>1</ZIndex>
                   <Style>
                     <Border>
@@ -2304,13 +1747,11 @@ END</CommandText>
                     </Border>
                   </Style>
                 </Image>
-                <Image Name="RightHeaderImage">
+                <Image Name="LeftHeaderImage2">
                   <Source>External</Source>
-                  <Value>/ConfigMgr_S01/Report Resources/Report_Header_Right.png</Value>
-                  <Top>0.01389in</Top>
-                  <Left>14.96208in</Left>
+                  <Value>/ConfigMgr_S01/Report Resources/Report_Header_Left.png</Value>
                   <Height>0.75in</Height>
-                  <Width>2.34in</Width>
+                  <Width>0.21in</Width>
                   <ZIndex>2</ZIndex>
                   <Style>
                     <Border>
@@ -2320,8 +1761,8 @@ END</CommandText>
                 </Image>
               </ReportItems>
               <KeepTogether>true</KeepTogether>
-              <Height>0.76389in</Height>
-              <Width>17.30208in</Width>
+              <Height>0.75in</Height>
+              <Width>17.275in</Width>
               <Style>
                 <Border>
                   <Style>None</Style>
@@ -2329,14 +1770,14 @@ END</CommandText>
                 <BackgroundColor>#e2e9f2</BackgroundColor>
               </Style>
             </Rectangle>
-            <Textbox Name="ReportTitleTextbox">
+            <Textbox Name="ReportTitleTextbox2">
               <CanGrow>true</CanGrow>
               <KeepTogether>true</KeepTogether>
               <Paragraphs>
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value>Office 365 Client update source with graph</Value>
+                      <Value>Office 365 Client update source details with graph</Value>
                       <Style>
                         <FontFamily>Segoe UI</FontFamily>
                         <FontSize>17pt</FontSize>
@@ -2348,9 +1789,9 @@ END</CommandText>
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox54</rd:DefaultName>
-              <Top>0.76389in</Top>
+              <Top>0.75in</Top>
               <Height>0.35in</Height>
-              <Width>17.30208in</Width>
+              <Width>17.275in</Width>
               <ZIndex>1</ZIndex>
               <Style>
                 <Border>
@@ -2371,7 +1812,7 @@ END</CommandText>
           </Style>
         </PageHeader>
         <PageFooter>
-          <Height>0.6375in</Height>
+          <Height>1.74167in</Height>
           <PrintOnFirstPage>true</PrintOnFirstPage>
           <PrintOnLastPage>true</PrintOnLastPage>
           <Style>
@@ -2457,22 +1898,6 @@ END</CommandText>
         </ParameterValues>
       </ValidValues>
     </ReportParameter>
-    <ReportParameter Name="UpdateURL">
-      <DataType>String</DataType>
-      <DefaultValue>
-        <Values>
-          <Value>All</Value>
-        </Values>
-      </DefaultValue>
-      <Prompt>Update Path</Prompt>
-      <ValidValues>
-        <DataSetReference>
-          <DataSetName>UpdateUrls</DataSetName>
-          <ValueField>UpdateUrl00</ValueField>
-          <LabelField>UpdateUrl00</LabelField>
-        </DataSetReference>
-      </ValidValues>
-    </ReportParameter>
     <ReportParameter Name="UpdateSource">
       <DataType>String</DataType>
       <DefaultValue>
@@ -2502,6 +1927,22 @@ END</CommandText>
         </ParameterValues>
       </ValidValues>
     </ReportParameter>
+    <ReportParameter Name="UpdateURL">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>All</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>Update Path</Prompt>
+      <ValidValues>
+        <DataSetReference>
+          <DataSetName>UpdateUrls</DataSetName>
+          <ValueField>UpdateUrl00</ValueField>
+          <LabelField>UpdateUrl00</LabelField>
+        </DataSetReference>
+      </ValidValues>
+    </ReportParameter>
     <ReportParameter Name="UpdatesEnabled">
       <DataType>String</DataType>
       <DefaultValue>
@@ -2528,53 +1969,10 @@ END</CommandText>
       </ValidValues>
     </ReportParameter>
   </ReportParameters>
-  <ReportParametersLayout>
-    <GridLayoutDefinition>
-      <NumberOfColumns>2</NumberOfColumns>
-      <NumberOfRows>4</NumberOfRows>
-      <CellDefinitions>
-        <CellDefinition>
-          <ColumnIndex>0</ColumnIndex>
-          <RowIndex>0</RowIndex>
-          <ParameterName>UserTokenSIDs</ParameterName>
-        </CellDefinition>
-        <CellDefinition>
-          <ColumnIndex>1</ColumnIndex>
-          <RowIndex>0</RowIndex>
-          <ParameterName>UserSIDs</ParameterName>
-        </CellDefinition>
-        <CellDefinition>
-          <ColumnIndex>0</ColumnIndex>
-          <RowIndex>1</RowIndex>
-          <ParameterName>ComputerName</ParameterName>
-        </CellDefinition>
-        <CellDefinition>
-          <ColumnIndex>1</ColumnIndex>
-          <RowIndex>1</RowIndex>
-          <ParameterName>Channels</ParameterName>
-        </CellDefinition>
-        <CellDefinition>
-          <ColumnIndex>0</ColumnIndex>
-          <RowIndex>2</RowIndex>
-          <ParameterName>UpdateURL</ParameterName>
-        </CellDefinition>
-        <CellDefinition>
-          <ColumnIndex>1</ColumnIndex>
-          <RowIndex>2</RowIndex>
-          <ParameterName>UpdateSource</ParameterName>
-        </CellDefinition>
-        <CellDefinition>
-          <ColumnIndex>0</ColumnIndex>
-          <RowIndex>3</RowIndex>
-          <ParameterName>UpdatesEnabled</ParameterName>
-        </CellDefinition>
-      </CellDefinitions>
-    </GridLayoutDefinition>
-  </ReportParametersLayout>
   <CodeModules>
     <CodeModule>SrsResources, culture=neutral</CodeModule>
   </CodeModules>
   <rd:ReportUnitType>Inch</rd:ReportUnitType>
-  <rd:ReportServerUrl>http://cm/ReportServer</rd:ReportServerUrl>
+  <rd:ReportServerUrl>http://2012-cm/ReportServer</rd:ReportServerUrl>
   <rd:ReportID>6fbd236a-d836-4950-8788-14b828deb616</rd:ReportID>
 </Report>

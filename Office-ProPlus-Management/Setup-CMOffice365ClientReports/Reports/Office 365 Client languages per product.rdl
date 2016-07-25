@@ -1,6 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Report xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner" xmlns:cl="http://schemas.microsoft.com/sqlserver/reporting/2010/01/componentdefinition" xmlns="http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition">
-  <Description>Displays a list of all of the Office 365 Client product languages installed in the environment.</Description>
+<Report xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner" xmlns:cl="http://schemas.microsoft.com/sqlserver/reporting/2010/01/componentdefinition" xmlns="http://schemas.microsoft.com/sqlserver/reporting/2010/01/reportdefinition">
   <AutoRefresh>0</AutoRefresh>
   <DataSources>
     <DataSource Name="AutoGen__5C6358F2_4BB6_4a1b_A16E_8D96795D8602_">
@@ -19,7 +18,6 @@
           </QueryParameter>
         </QueryParameters>
         <CommandText>select dbo.fn_rbac_GetAdminIDsfromUserSIDs(@UserTokenSIDs) as UserSIDs</CommandText>
-        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
       </Query>
       <Fields>
         <Field Name="UserSIDs">
@@ -40,14 +38,14 @@
 INSERT INTO @TABLE
 SELECT SUBSTRING([DisplayName00], CHARINDEX('-',[DisplayName00])+2, 5) AS Language, SUBSTRING([DisplayName00], 0, CHARINDEX('-',[DisplayName00])) AS Product FROM dbo.Add_Remove_Programs_64_DATA
 INNER JOIN dbo.System_DATA ON dbo.System_DATA.MachineID = dbo.Add_Remove_Programs_64_DATA.MachineID
-INNER JOIN dbo.Office365ProPlusConfigurations_DATA ON dbo.Office365ProPlusConfigurations_DATA.MachineID = dbo.Add_Remove_Programs_64_DATA.MachineID
+INNER JOIN dbo.Office365ClientConfigurations_DATA ON dbo.Office365ClientConfigurations_DATA.MachineID = dbo.Add_Remove_Programs_64_DATA.MachineID
 INNER JOIN v_FullCollectionMembership ON v_FullCollectionMembership.Name = dbo.System_DATA.Name0
 WHERE (dbo.Add_Remove_Programs_64_DATA.DisplayName00 LIKE 'Microsoft Office 365 ProPlus -%' OR dbo.Add_Remove_Programs_64_DATA.DisplayName00 LIKE '%visio%' OR dbo.Add_Remove_Programs_64_DATA.DisplayName00 LIKE '%project%') AND v_FullCollectionMembership.CollectionID = @CollectionID
 AND dbo.Add_Remove_Programs_64_DATA.Version00 LIKE '16.%'
 INSERT INTO @TABLE
 SELECT DISTINCT SUBSTRING([DisplayName00], CHARINDEX('-',[DisplayName00])+2, 5) AS Language, SUBSTRING([DisplayName00], 0, CHARINDEX('-',[DisplayName00])) AS Product FROM dbo.Add_Remove_Programs_DATA
 INNER JOIN dbo.System_DATA ON dbo.System_DATA.MachineID = dbo.Add_Remove_Programs_DATA.MachineID
-INNER JOIN dbo.Office365ProPlusConfigurations_DATA ON dbo.Office365ProPlusConfigurations_DATA.MachineID = dbo.Add_Remove_Programs_DATA.MachineID
+INNER JOIN dbo.Office365ClientConfigurations_DATA ON dbo.Office365ClientConfigurations_DATA.MachineID = dbo.Add_Remove_Programs_DATA.MachineID
 INNER JOIN v_FullCollectionMembership ON v_FullCollectionMembership.Name = dbo.System_DATA.Name0
 WHERE (dbo.Add_Remove_Programs_DATA.DisplayName00 LIKE 'Microsoft Office 365 ProPlus -%' OR dbo.Add_Remove_Programs_DATA.DisplayName00 LIKE '%visio%' OR dbo.Add_Remove_Programs_DATA.DisplayName00 LIKE '%project%') AND v_FullCollectionMembership.CollectionID = @CollectionID
 AND dbo.Add_Remove_Programs_DATA.Version00 LIKE '16.%'
@@ -68,20 +66,19 @@ AND dbo.Add_Remove_Programs_DATA.Version00 LIKE '15.%'
 
 SELECT DISTINCT([Language]), [Product], COUNT([Language]) FROM @TABLE
 GROUP BY [Product], [Language]</CommandText>
-        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
       </Query>
       <Fields>
         <Field Name="Language">
           <DataField>Language</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
-        <Field Name="ID">
-          <DataField />
-          <rd:TypeName>System.Int32</rd:TypeName>
-        </Field>
         <Field Name="Product">
           <DataField>Product</DataField>
           <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="ID">
+          <DataField />
+          <rd:TypeName>System.Int32</rd:TypeName>
         </Field>
       </Fields>
     </DataSet>
@@ -95,7 +92,6 @@ GROUP BY [Product], [Language]</CommandText>
         </QueryParameters>
         <CommandText>SELECT Name , Comment, CollectionID FROM fn_rbac_Collection(@UserSIDs)
 order by Name</CommandText>
-        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
       </Query>
       <Fields>
         <Field Name="Name">
@@ -143,17 +139,17 @@ WHERE Name = 'All Systems'</CommandText>
     <ReportSection>
       <Body>
         <ReportItems>
-          <Tablix Name="Tablix2">
+          <Tablix Name="Tablix1">
             <TablixBody>
               <TablixColumns>
                 <TablixColumn>
-                  <Width>1.76042in</Width>
+                  <Width>2.11in</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>3.14583in</Width>
+                  <Width>4.27667in</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>1in</Width>
+                  <Width>1.31333in</Width>
                 </TablixColumn>
               </TablixColumns>
               <TablixRows>
@@ -162,7 +158,7 @@ WHERE Name = 'All Systems'</CommandText>
                   <TablixCells>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="Textbox3">
+                        <Textbox Name="Textbox17">
                           <CanGrow>true</CanGrow>
                           <UserSort>
                             <SortExpression>=Fields!Language.Value</SortExpression>
@@ -173,36 +169,36 @@ WHERE Name = 'All Systems'</CommandText>
                               <TextRuns>
                                 <TextRun>
                                   <Value>Languages</Value>
-                                  <Style />
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
                                 </TextRun>
                               </TextRuns>
                               <Style />
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>Textbox3</rd:DefaultName>
+                          <rd:DefaultName>Textbox17</rd:DefaultName>
                           <Style>
                             <Border>
-                              <Color>LightGrey</Color>
-                              <Style>Solid</Style>
+                              <Color>#557eb9</Color>
+                              <Style>None</Style>
                             </Border>
                             <TopBorder>
-                              <Color>#557eb9</Color>
-                              <Style>Double</Style>
+                              <Style>Solid</Style>
+                              <Width>1.5pt</Width>
                             </TopBorder>
                             <BottomBorder>
-                              <Color>#557eb9</Color>
-                              <Style>Double</Style>
+                              <Style>Solid</Style>
+                              <Width>1.5pt</Width>
                             </BottomBorder>
-                            <LeftBorder>
-                              <Style>None</Style>
-                            </LeftBorder>
-                            <RightBorder>
-                              <Style>None</Style>
-                            </RightBorder>
-                            <PaddingLeft>2pt</PaddingLeft>
-                            <PaddingRight>2pt</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
+                            <BackgroundColor>White</BackgroundColor>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                            <PaddingLeft>5pt</PaddingLeft>
+                            <PaddingRight>5pt</PaddingRight>
+                            <PaddingTop>5pt</PaddingTop>
+                            <PaddingBottom>5pt</PaddingBottom>
                           </Style>
                         </Textbox>
                       </CellContents>
@@ -211,13 +207,20 @@ WHERE Name = 'All Systems'</CommandText>
                       <CellContents>
                         <Textbox Name="Textbox2">
                           <CanGrow>true</CanGrow>
+                          <UserSort>
+                            <SortExpression>=Fields!Product.Value</SortExpression>
+                          </UserSort>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
                                   <Value>Product Name</Value>
-                                  <Style />
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
                                 </TextRun>
                               </TextRuns>
                               <Style />
@@ -226,34 +229,30 @@ WHERE Name = 'All Systems'</CommandText>
                           <rd:DefaultName>Textbox2</rd:DefaultName>
                           <Style>
                             <Border>
-                              <Color>LightGrey</Color>
-                              <Style>Solid</Style>
+                              <Color>#557eb9</Color>
+                              <Style>None</Style>
                             </Border>
                             <TopBorder>
-                              <Color>#557eb9</Color>
-                              <Style>Double</Style>
+                              <Style>Solid</Style>
+                              <Width>1.5pt</Width>
                             </TopBorder>
                             <BottomBorder>
-                              <Color>#557eb9</Color>
-                              <Style>Double</Style>
+                              <Style>Solid</Style>
+                              <Width>1.5pt</Width>
                             </BottomBorder>
-                            <LeftBorder>
-                              <Style>None</Style>
-                            </LeftBorder>
-                            <RightBorder>
-                              <Style>None</Style>
-                            </RightBorder>
-                            <PaddingLeft>2pt</PaddingLeft>
-                            <PaddingRight>2pt</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
+                            <BackgroundColor>White</BackgroundColor>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                            <PaddingLeft>5pt</PaddingLeft>
+                            <PaddingRight>5pt</PaddingRight>
+                            <PaddingTop>5pt</PaddingTop>
+                            <PaddingBottom>5pt</PaddingBottom>
                           </Style>
                         </Textbox>
                       </CellContents>
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="Textbox1">
+                        <Textbox Name="Textbox3">
                           <CanGrow>true</CanGrow>
                           <UserSort>
                             <SortExpression>=Fields!ID.Value</SortExpression>
@@ -264,36 +263,36 @@ WHERE Name = 'All Systems'</CommandText>
                               <TextRuns>
                                 <TextRun>
                                   <Value>Count</Value>
-                                  <Style />
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
                                 </TextRun>
                               </TextRuns>
                               <Style />
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>Textbox1</rd:DefaultName>
+                          <rd:DefaultName>Textbox2</rd:DefaultName>
                           <Style>
                             <Border>
-                              <Color>LightGrey</Color>
-                              <Style>Solid</Style>
+                              <Color>#557eb9</Color>
+                              <Style>None</Style>
                             </Border>
                             <TopBorder>
-                              <Color>#557eb9</Color>
-                              <Style>Double</Style>
+                              <Style>Solid</Style>
+                              <Width>1.5pt</Width>
                             </TopBorder>
                             <BottomBorder>
-                              <Color>#557eb9</Color>
-                              <Style>Double</Style>
+                              <Style>Solid</Style>
+                              <Width>1.5pt</Width>
                             </BottomBorder>
-                            <LeftBorder>
-                              <Style>None</Style>
-                            </LeftBorder>
-                            <RightBorder>
-                              <Style>None</Style>
-                            </RightBorder>
-                            <PaddingLeft>2pt</PaddingLeft>
-                            <PaddingRight>2pt</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
+                            <BackgroundColor>White</BackgroundColor>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                            <PaddingLeft>5pt</PaddingLeft>
+                            <PaddingRight>5pt</PaddingRight>
+                            <PaddingTop>5pt</PaddingTop>
+                            <PaddingBottom>5pt</PaddingBottom>
                           </Style>
                         </Textbox>
                       </CellContents>
@@ -305,7 +304,7 @@ WHERE Name = 'All Systems'</CommandText>
                   <TablixCells>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="Language1">
+                        <Textbox Name="Language">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
@@ -313,27 +312,30 @@ WHERE Name = 'All Systems'</CommandText>
                               <TextRuns>
                                 <TextRun>
                                   <Value>=Fields!Language.Value</Value>
-                                  <Style />
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                  </Style>
                                 </TextRun>
                               </TextRuns>
                               <Style />
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>Language1</rd:DefaultName>
+                          <rd:DefaultName>Language</rd:DefaultName>
                           <Style>
                             <Border>
-                              <Color>LightGrey</Color>
+                              <Color>#e5e5e5</Color>
                               <Style>Solid</Style>
                             </Border>
-                            <TopBorder>
+                            <BottomBorder>
                               <Style>None</Style>
-                            </TopBorder>
+                            </BottomBorder>
                             <LeftBorder>
                               <Style>None</Style>
                             </LeftBorder>
                             <RightBorder>
                               <Style>None</Style>
                             </RightBorder>
+                            <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "LightSteelBlue")</BackgroundColor>
                             <PaddingLeft>2pt</PaddingLeft>
                             <PaddingRight>2pt</PaddingRight>
                             <PaddingTop>2pt</PaddingTop>
@@ -352,27 +354,32 @@ WHERE Name = 'All Systems'</CommandText>
                               <TextRuns>
                                 <TextRun>
                                   <Value>=Fields!Product.Value</Value>
-                                  <Style />
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                  </Style>
                                 </TextRun>
                               </TextRuns>
-                              <Style />
+                              <Style>
+                                <TextAlign>Left</TextAlign>
+                              </Style>
                             </Paragraph>
                           </Paragraphs>
                           <rd:DefaultName>Product</rd:DefaultName>
                           <Style>
                             <Border>
-                              <Color>LightGrey</Color>
+                              <Color>#e5e5e5</Color>
                               <Style>Solid</Style>
                             </Border>
-                            <TopBorder>
+                            <BottomBorder>
                               <Style>None</Style>
-                            </TopBorder>
+                            </BottomBorder>
                             <LeftBorder>
                               <Style>None</Style>
                             </LeftBorder>
                             <RightBorder>
                               <Style>None</Style>
                             </RightBorder>
+                            <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "LightSteelBlue")</BackgroundColor>
                             <PaddingLeft>2pt</PaddingLeft>
                             <PaddingRight>2pt</PaddingRight>
                             <PaddingTop>2pt</PaddingTop>
@@ -383,7 +390,7 @@ WHERE Name = 'All Systems'</CommandText>
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="ID">
+                        <Textbox Name="ClientStateDescription2">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
@@ -391,27 +398,30 @@ WHERE Name = 'All Systems'</CommandText>
                               <TextRuns>
                                 <TextRun>
                                   <Value>=Fields!ID.Value</Value>
-                                  <Style />
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                  </Style>
                                 </TextRun>
                               </TextRuns>
                               <Style />
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>ID</rd:DefaultName>
+                          <rd:DefaultName>ClientStateDescription</rd:DefaultName>
                           <Style>
                             <Border>
-                              <Color>LightGrey</Color>
+                              <Color>#e5e5e5</Color>
                               <Style>Solid</Style>
                             </Border>
-                            <TopBorder>
+                            <BottomBorder>
                               <Style>None</Style>
-                            </TopBorder>
+                            </BottomBorder>
                             <LeftBorder>
                               <Style>None</Style>
                             </LeftBorder>
                             <RightBorder>
                               <Style>None</Style>
                             </RightBorder>
+                            <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "LightSteelBlue")</BackgroundColor>
                             <PaddingLeft>2pt</PaddingLeft>
                             <PaddingRight>2pt</PaddingRight>
                             <PaddingTop>2pt</PaddingTop>
@@ -435,32 +445,35 @@ WHERE Name = 'All Systems'</CommandText>
               <TablixMembers>
                 <TablixMember>
                   <KeepWithGroup>After</KeepWithGroup>
+                  <RepeatOnNewPage>true</RepeatOnNewPage>
                 </TablixMember>
                 <TablixMember>
-                  <Group Name="Details1" />
+                  <Group Name="Details" />
                 </TablixMember>
               </TablixMembers>
             </TablixRowHierarchy>
+            <NoRowsMessage>=SrsResources.Localization.GetString("NoDataAvailable", User!Language)</NoRowsMessage>
             <DataSetName>DataSet1</DataSetName>
             <Top>0.41389in</Top>
             <Height>0.5in</Height>
-            <Width>5.90625in</Width>
+            <Width>7.7in</Width>
             <Style>
               <Border>
                 <Style>None</Style>
               </Border>
+              <TextAlign>Center</TextAlign>
             </Style>
           </Tablix>
-          <Rectangle Name="ReportDescriptionRectangle3">
+          <Rectangle Name="ReportDescriptionRectangle2">
             <ReportItems>
-              <Tablix Name="ReportDescriptionTablix3">
+              <Tablix Name="ReportDescriptionTablix2">
                 <TablixBody>
                   <TablixColumns>
                     <TablixColumn>
                       <Width>1.25in</Width>
                     </TablixColumn>
                     <TablixColumn>
-                      <Width>7.98in</Width>
+                      <Width>6.45in</Width>
                     </TablixColumn>
                   </TablixColumns>
                   <TablixRows>
@@ -469,7 +482,7 @@ WHERE Name = 'All Systems'</CommandText>
                       <TablixCells>
                         <TablixCell>
                           <CellContents>
-                            <Textbox Name="DescriptionLabelTextbox3">
+                            <Textbox Name="DescriptionLabelTextbox2">
                               <CanGrow>true</CanGrow>
                               <KeepTogether>true</KeepTogether>
                               <Paragraphs>
@@ -504,21 +517,18 @@ WHERE Name = 'All Systems'</CommandText>
                         </TablixCell>
                         <TablixCell>
                           <CellContents>
-                            <Textbox Name="DescriptionTextbox3">
+                            <Textbox Name="DescriptionTextbox2">
                               <CanGrow>true</CanGrow>
                               <KeepTogether>true</KeepTogether>
                               <Paragraphs>
                                 <Paragraph>
                                   <TextRuns>
                                     <TextRun>
-                                      <Value>Displays a list of all of the Office 365 Client languages installed in the environment.</Value>
+                                      <Value>Displays a list of all the Office 365 Client languages per product</Value>
                                       <Style>
-                                        <FontStyle>Normal</FontStyle>
                                         <FontFamily>Segoe UI</FontFamily>
                                         <FontSize>9pt</FontSize>
                                         <FontWeight>Normal</FontWeight>
-                                        <TextDecoration>None</TextDecoration>
-                                        <Color>#000000</Color>
                                       </Style>
                                     </TextRun>
                                   </TextRuns>
@@ -528,7 +538,7 @@ WHERE Name = 'All Systems'</CommandText>
                               <rd:DefaultName>Textbox18</rd:DefaultName>
                               <Visibility>
                                 <Hidden>true</Hidden>
-                                <ToggleItem>DescriptionLabelTextbox3</ToggleItem>
+                                <ToggleItem>DescriptionLabelTextbox2</ToggleItem>
                               </Visibility>
                               <Style>
                                 <Border>
@@ -561,7 +571,7 @@ WHERE Name = 'All Systems'</CommandText>
                 </TablixRowHierarchy>
                 <DataSetName>DataSet0</DataSetName>
                 <Height>0.4in</Height>
-                <Width>9.23in</Width>
+                <Width>7.7in</Width>
                 <Style>
                   <Border>
                     <Style>None</Style>
@@ -571,7 +581,7 @@ WHERE Name = 'All Systems'</CommandText>
             </ReportItems>
             <KeepTogether>true</KeepTogether>
             <Height>0.4in</Height>
-            <Width>9.48in</Width>
+            <Width>7.7in</Width>
             <ZIndex>1</ZIndex>
             <Style>
               <Border>
@@ -580,10 +590,10 @@ WHERE Name = 'All Systems'</CommandText>
               <BackgroundColor>Gainsboro</BackgroundColor>
             </Style>
           </Rectangle>
-          <Line Name="ReportDescriptionLine3">
+          <Line Name="ReportDescriptionLine2">
             <Top>0.25in</Top>
             <Height>0in</Height>
-            <Width>9.48in</Width>
+            <Width>7.7in</Width>
             <ZIndex>2</ZIndex>
             <Style>
               <Border>
@@ -609,39 +619,39 @@ WHERE Name = 'All Systems'</CommandText>
             </Style>
           </Line>
         </ReportItems>
-        <Height>2.98333in</Height>
+        <Height>4.60417in</Height>
         <Style>
           <Border>
             <Style>None</Style>
           </Border>
         </Style>
       </Body>
-      <Width>12.32583in</Width>
+      <Width>13.63958in</Width>
       <Page>
         <PageHeader>
-          <Height>1.10417in</Height>
+          <Height>1.1in</Height>
           <PrintOnFirstPage>true</PrintOnFirstPage>
           <PrintOnLastPage>true</PrintOnLastPage>
           <ReportItems>
             <Rectangle Name="BackgroundColorRectangle">
               <ReportItems>
-                <Image Name="CenterHeaderImage">
+                <Image Name="CenterHeaderImage2">
                   <Source>External</Source>
                   <Value>/ConfigMgr_S01/Report Resources/Report_Header_Center.png</Value>
                   <Sizing>Fit</Sizing>
                   <Left>0.21in</Left>
                   <Height>0.75in</Height>
-                  <Width>6.93in</Width>
+                  <Width>5.15in</Width>
                   <Style>
                     <Border>
                       <Style>None</Style>
                     </Border>
                   </Style>
                 </Image>
-                <Image Name="RightHeaderImage">
+                <Image Name="RightHeaderImage2">
                   <Source>External</Source>
                   <Value>/ConfigMgr_S01/Report Resources/Report_Header_Right.png</Value>
-                  <Left>7.14in</Left>
+                  <Left>5.36in</Left>
                   <Height>0.75in</Height>
                   <Width>2.34in</Width>
                   <ZIndex>1</ZIndex>
@@ -651,7 +661,7 @@ WHERE Name = 'All Systems'</CommandText>
                     </Border>
                   </Style>
                 </Image>
-                <Image Name="LeftHeaderImage">
+                <Image Name="LeftHeaderImage2">
                   <Source>External</Source>
                   <Value>/ConfigMgr_S01/Report Resources/Report_Header_Left.png</Value>
                   <Height>0.75in</Height>
@@ -666,7 +676,7 @@ WHERE Name = 'All Systems'</CommandText>
               </ReportItems>
               <KeepTogether>true</KeepTogether>
               <Height>0.75in</Height>
-              <Width>9.48in</Width>
+              <Width>7.7in</Width>
               <Style>
                 <Border>
                   <Style>None</Style>
@@ -674,14 +684,14 @@ WHERE Name = 'All Systems'</CommandText>
                 <BackgroundColor>#e2e9f2</BackgroundColor>
               </Style>
             </Rectangle>
-            <Textbox Name="ReportTitleTextbox">
+            <Textbox Name="ReportTitleTextbox2">
               <CanGrow>true</CanGrow>
               <KeepTogether>true</KeepTogether>
               <Paragraphs>
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value>All Office 365 Client languages per product</Value>
+                      <Value>Office 365 Client languages per product</Value>
                       <Style>
                         <FontFamily>Segoe UI</FontFamily>
                         <FontSize>17pt</FontSize>
@@ -695,7 +705,7 @@ WHERE Name = 'All Systems'</CommandText>
               <rd:DefaultName>Textbox54</rd:DefaultName>
               <Top>0.75in</Top>
               <Height>0.35in</Height>
-              <Width>9.48in</Width>
+              <Width>7.7in</Width>
               <ZIndex>1</ZIndex>
               <Style>
                 <Border>
@@ -716,7 +726,7 @@ WHERE Name = 'All Systems'</CommandText>
           </Style>
         </PageHeader>
         <PageFooter>
-          <Height>2.16875in</Height>
+          <Height>1.87708in</Height>
           <PrintOnFirstPage>true</PrintOnFirstPage>
           <PrintOnLastPage>true</PrintOnLastPage>
           <Style>
@@ -772,33 +782,10 @@ WHERE Name = 'All Systems'</CommandText>
       </ValidValues>
     </ReportParameter>
   </ReportParameters>
-  <ReportParametersLayout>
-    <GridLayoutDefinition>
-      <NumberOfColumns>2</NumberOfColumns>
-      <NumberOfRows>2</NumberOfRows>
-      <CellDefinitions>
-        <CellDefinition>
-          <ColumnIndex>0</ColumnIndex>
-          <RowIndex>0</RowIndex>
-          <ParameterName>UserTokenSIDs</ParameterName>
-        </CellDefinition>
-        <CellDefinition>
-          <ColumnIndex>1</ColumnIndex>
-          <RowIndex>0</RowIndex>
-          <ParameterName>UserSIDs</ParameterName>
-        </CellDefinition>
-        <CellDefinition>
-          <ColumnIndex>0</ColumnIndex>
-          <RowIndex>1</RowIndex>
-          <ParameterName>CollectionID</ParameterName>
-        </CellDefinition>
-      </CellDefinitions>
-    </GridLayoutDefinition>
-  </ReportParametersLayout>
   <CodeModules>
     <CodeModule>SrsResources, culture=neutral</CodeModule>
   </CodeModules>
   <rd:ReportUnitType>Inch</rd:ReportUnitType>
-  <rd:ReportServerUrl>http://cm/ReportServer</rd:ReportServerUrl>
+  <rd:ReportServerUrl>http://2012-cm/ReportServer</rd:ReportServerUrl>
   <rd:ReportID>6fbd236a-d836-4950-8788-14b828deb616</rd:ReportID>
 </Report>
