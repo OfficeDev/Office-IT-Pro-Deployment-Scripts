@@ -103,12 +103,22 @@ namespace OfficeInstallGenerator
                     {
                         throw (new DirectoryNotFoundException("Invalid Source Path: " + installProperties.SourceFilePath));
                     }
-                    
+
                     //commenting out, trying to go a different path with this, copy out the source files to the same dir as exe file
                     //possibly only copy out if contents of source file greater than 1.5 GB
+                    long embeddedFileSize = CalcSize(parameters, installProperties.SourceFilePath + @"\Office", installProperties.BuildVersion, installProperties.OfficeClientEdition);
                     
-                    //EmbedSourceFiles(parameters, installProperties.SourceFilePath + @"\Office", installProperties.BuildVersion, installProperties.OfficeClientEdition);
-                    CopyFolder(new DirectoryInfo(installProperties.SourceFilePath), new DirectoryInfo(installProperties.ExecutablePath.Substring(0, installProperties.ExecutablePath.LastIndexOf(@"\"))));
+                    //find file size of embedded files, if less than 1.5 GB, then embed, if greater, copy out as separate folder in same dir as the MSI or exe file
+                    if (embeddedFileSize < 1900000000)
+                    {
+                        EmbedSourceFiles(parameters, installProperties.SourceFilePath + @"\Office",
+                            installProperties.BuildVersion, installProperties.OfficeClientEdition);
+                    }
+                    else
+                    {
+                        CopyFolder(new DirectoryInfo(installProperties.SourceFilePath), new DirectoryInfo(installProperties.ExecutablePath.Substring(0, installProperties.ExecutablePath.LastIndexOf(@"\"))));
+                    }
+                    
                 }
 
                 if (installProperties.OfficeVersion == OfficeVersion.Office2013)
@@ -241,6 +251,54 @@ namespace OfficeInstallGenerator
             }
 
             parameters.EmbeddedResources.Add(xmlFilePath);
+        }
+
+        private long CalcSize(CompilerParameters parameters, string sourcePath, string version = null, OfficeClientEdition officeClientEdition = OfficeClientEdition.Office32Bit)
+        {
+            long runningTotalFileSize = 0;
+            var xmlFilePath = DirectoryHelper.GetCurrentDirectoryFilePath("Files.xml");
+
+            var dirInfo = new DirectoryInfo(sourcePath);
+            var sourceFiles = dirInfo.GetFiles("*.*", SearchOption.AllDirectories);
+
+            var fileCacher = new FilePathCacher(xmlFilePath);
+
+            foreach (var sourceFile in sourceFiles)
+            {
+                if (!string.IsNullOrEmpty(version))
+                {
+                    if (!(sourceFile.FullName.ToLower().Contains(version.ToLower()) ||
+                        sourceFile.Name.ToLower() == "v32.cab" ||
+                        sourceFile.Name.ToLower() == "v64.cab"))
+                    {
+                        continue;
+                    }
+                }
+
+                if (officeClientEdition == OfficeClientEdition.Office32Bit)
+                {
+                    if (sourceFile.Name.ToLower().Contains(".x64."))
+                    {
+                        continue;
+                    }
+                }
+                else
+                {
+                    if (sourceFile.Name.ToLower().Contains(".x86."))
+                    {
+                        continue;
+                    }
+                }
+
+                //fileCacher.AddFile(dirInfo.Parent.FullName, sourceFile.FullName);
+
+                //parameters.EmbeddedResources.Add(sourceFile.FullName);
+                FileInfo file = new FileInfo(sourceFile.FullName);
+                runningTotalFileSize += file.Length;
+            }
+
+            //parameters.EmbeddedResources.Add(xmlFilePath);
+            return runningTotalFileSize;
         }
 
 

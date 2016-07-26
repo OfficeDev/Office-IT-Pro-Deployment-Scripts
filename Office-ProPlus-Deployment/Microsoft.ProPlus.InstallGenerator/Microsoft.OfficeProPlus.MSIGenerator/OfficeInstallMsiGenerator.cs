@@ -151,13 +151,36 @@ public class MsiGenerator
 
     private void project_Load(SetupEventArgs e)
     {
-        OriginalMsiPath = e.MsiFile;
-        
-        MessageBox.Show(OriginalMsiPath);
+        string launchLocation = e.MsiFile;
+        string officeFolder = "";
+        foreach (var currentDirectory in Directory.GetDirectories(launchLocation.Substring(0, launchLocation.LastIndexOf(@"\"))))
+        {
+            if (currentDirectory.ToLower().EndsWith("office"))
+            {
+                officeFolder = currentDirectory;
+            }
+        }
+        if (!string.IsNullOrEmpty(officeFolder))
+        {
+            //copy files to install location
+            CopyFolder(new DirectoryInfo(officeFolder), new DirectoryInfo(@"C:\Windows\Temp\OfficeProPlus\Office"));
+        }
+
         if (e.IsUISupressed)
         {
             
         }
+    }
+
+
+    public static void CopyFolder(DirectoryInfo source, DirectoryInfo target)
+    {
+        foreach (DirectoryInfo dir in source.GetDirectories())
+            CopyFolder(dir, target.CreateSubdirectory(dir.Name));
+        foreach (FileInfo file in source.GetFiles())
+            file.CopyTo(Path.Combine(target.FullName, file.Name), true);
+
+
     }
 
     private void project_AfterInstall(SetupEventArgs e)
@@ -334,7 +357,6 @@ public class CustomActions
     {
         try
         {
-           
             var installDir = session.CustomActionData["INSTALLDIR"];
             if (installDir == null) return ActionResult.Failure;
             var isSilent = false;
