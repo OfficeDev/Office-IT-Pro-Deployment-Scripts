@@ -29,9 +29,9 @@ public class MsiGenerator
             UI = WUI.WixUI_ProgressOnly,
             Actions = new WixSharp.Action[]
             {
-                new SetPropertyAction("InstallDirectory", installProperties.ProgramFilesPath)
-                //new ElevatedManagedAction("InstallOffice", Return.check, When.After, Step.InstallFiles, Condition.NOT_Installed), 
-                //new ElevatedManagedAction("UninstallOffice", Return.check, When.Before, Step.RemoveFiles, Condition.BeingRemoved),
+                new SetPropertyAction("InstallDirectory", installProperties.ProgramFilesPath),
+                new ElevatedManagedAction(CustomActions.InstallOffice, Return.check, When.After, Step.InstallFiles, Condition.NOT_Installed),
+                new ElevatedManagedAction(CustomActions.UninstallOffice, Return.check, When.Before, Step.RemoveFiles, Condition.BeingRemoved),
             },
             Properties = new[] 
             { 
