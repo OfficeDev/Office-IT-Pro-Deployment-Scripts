@@ -21,7 +21,7 @@ using File = WixSharp.File;
 
 public class MsiGenerator 
 {
-
+    public string OriginalMsiPath { get; set; }
     public MsiGeneratorReturn Generate(MsiGeneratorProperties installProperties)
     {
         var project = new ManagedProject(installProperties.Name)
@@ -29,9 +29,9 @@ public class MsiGenerator
             UI = WUI.WixUI_ProgressOnly,
             Actions = new WixSharp.Action[]
             {
-                new SetPropertyAction("InstallDirectory", installProperties.ProgramFilesPath),
-                new ElevatedManagedAction("InstallOffice", Return.check, When.After, Step.InstallFiles, Condition.NOT_Installed), 
-                new ElevatedManagedAction("UninstallOffice", Return.check, When.Before, Step.RemoveFiles, Condition.BeingRemoved),
+                new SetPropertyAction("InstallDirectory", installProperties.ProgramFilesPath)
+                //new ElevatedManagedAction("InstallOffice", Return.check, When.After, Step.InstallFiles, Condition.NOT_Installed), 
+                //new ElevatedManagedAction("UninstallOffice", Return.check, When.Before, Step.RemoveFiles, Condition.BeingRemoved),
             },
             Properties = new[] 
             { 
@@ -151,6 +151,9 @@ public class MsiGenerator
 
     private void project_Load(SetupEventArgs e)
     {
+        OriginalMsiPath = e.MsiFile;
+        
+        MessageBox.Show(OriginalMsiPath);
         if (e.IsUISupressed)
         {
             
@@ -331,6 +334,7 @@ public class CustomActions
     {
         try
         {
+           
             var installDir = session.CustomActionData["INSTALLDIR"];
             if (installDir == null) return ActionResult.Failure;
             var isSilent = false;
