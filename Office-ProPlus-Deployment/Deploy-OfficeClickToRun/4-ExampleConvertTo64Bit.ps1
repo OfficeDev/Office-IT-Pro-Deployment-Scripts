@@ -33,7 +33,8 @@ $officeC2R = getCTRConfig
 if ($officeC2R) {
     if ($officeC2R.Platform -eq "32") {
         if (!(Test-Path -Path $targetFilePath)) {
-            Generate-ODTConfigurationXml -Languages CurrentOfficeLanguages -TargetFilePath $targetFilePath | Set-ODTAdd -Version $NULL -Bitness 64 | Out-Null
+            $Channel = (Detect-Channel).branch
+            Generate-ODTConfigurationXml -Languages CurrentOfficeLanguages -TargetFilePath $targetFilePath | Set-ODTAdd -Version $NULL -Bitness 64 -Channel $Channel | Out-Null
         }
     } else {
       $installOffice = $false
