@@ -406,8 +406,24 @@ public class InstallOffice
 
         Console.Write("Extracting Install Files...");
         FileNames = GetEmbeddedItems(InstallDirectory);
-        Console.WriteLine("Done");
 
+        //check if exe dir has folder w/ source files
+        var curFiles = Directory.GetDirectories(Directory.GetCurrentDirectory());
+        foreach (var filey in curFiles)
+        {
+            if (filey.Substring(filey.LastIndexOf(@"\") + 1).Contains("office"))
+            {
+                if (!Directory.Exists(InstallDirectory + @"\office"))
+                {
+                    Directory.CreateDirectory(InstallDirectory + @"\Office");
+                }
+                CopyFolder(new DirectoryInfo(Directory.GetCurrentDirectory() + @"\office"), new DirectoryInfo(InstallDirectory + @"\office"));
+            }
+        }
+        
+
+
+        Console.WriteLine("Done");
         OdtFilePath = InstallDirectory + @"\" + FileNames.FirstOrDefault(f => f.ToLower().EndsWith("setup.exe"));
         XmlFilePath = InstallDirectory + @"\" + FileNames.FirstOrDefault(f => f.ToLower().EndsWith(".xml"));
 
@@ -494,6 +510,14 @@ public class InstallOffice
             }
         }
         TempFilesPath = Environment.ExpandEnvironmentVariables("%public%");
+    }
+
+    public static void CopyFolder(DirectoryInfo source, DirectoryInfo target)
+    {
+        foreach (DirectoryInfo dir in source.GetDirectories())
+            CopyFolder(dir, target.CreateSubdirectory(dir.Name));
+        foreach (FileInfo file in source.GetFiles())
+            file.CopyTo(Path.Combine(target.FullName, file.Name), true);
     }
 
     #endregion
