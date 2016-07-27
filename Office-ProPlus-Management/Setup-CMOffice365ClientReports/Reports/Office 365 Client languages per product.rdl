@@ -52,20 +52,21 @@ AND dbo.Add_Remove_Programs_DATA.Version00 LIKE '16.%'
 INSERT INTO @TABLE
 SELECT SUBSTRING([DisplayName00], CHARINDEX('-',[DisplayName00])+2, 5) AS Language, SUBSTRING([DisplayName00], 0, CHARINDEX('-',[DisplayName00])) AS Product FROM dbo.Add_Remove_Programs_64_DATA
 INNER JOIN dbo.System_DATA ON dbo.System_DATA.MachineID = dbo.Add_Remove_Programs_64_DATA.MachineID
-INNER JOIN dbo.Office365ProPlusConfigurations2013_DATA ON dbo.Office365ProPlusConfigurations2013_DATA.MachineID = dbo.Add_Remove_Programs_64_DATA.MachineID
+INNER JOIN dbo.Office365ClientConfigurations2013_DATA ON dbo.Office365ClientConfigurations2013_DATA.MachineID = dbo.Add_Remove_Programs_64_DATA.MachineID
 INNER JOIN v_FullCollectionMembership ON v_FullCollectionMembership.Name = dbo.System_DATA.Name0
 WHERE (dbo.Add_Remove_Programs_64_DATA.DisplayName00 LIKE 'Microsoft Office 365 ProPlus -%' OR dbo.Add_Remove_Programs_64_DATA.DisplayName00 LIKE '%visio%' OR dbo.Add_Remove_Programs_64_DATA.DisplayName00 LIKE '%project%') AND v_FullCollectionMembership.CollectionID = @CollectionID
 AND dbo.Add_Remove_Programs_64_DATA.Version00 LIKE '15.%'
 INSERT INTO @TABLE
 SELECT DISTINCT SUBSTRING([DisplayName00], CHARINDEX('-',[DisplayName00])+2, 5) AS Language, SUBSTRING([DisplayName00], 0, CHARINDEX('-',[DisplayName00])) AS Product FROM dbo.Add_Remove_Programs_DATA
 INNER JOIN dbo.System_DATA ON dbo.System_DATA.MachineID = dbo.Add_Remove_Programs_DATA.MachineID
-INNER JOIN dbo.Office365ProPlusConfigurations2013_DATA ON dbo.Office365ProPlusConfigurations2013_DATA.MachineID = dbo.Add_Remove_Programs_DATA.MachineID
+INNER JOIN dbo.Office365ClientConfigurations2013_DATA ON dbo.Office365ClientConfigurations2013_DATA.MachineID = dbo.Add_Remove_Programs_DATA.MachineID
 INNER JOIN v_FullCollectionMembership ON v_FullCollectionMembership.Name = dbo.System_DATA.Name0
 WHERE (dbo.Add_Remove_Programs_DATA.DisplayName00 LIKE 'Microsoft Office 365 ProPlus -%' OR dbo.Add_Remove_Programs_DATA.DisplayName00 LIKE '%visio%' OR dbo.Add_Remove_Programs_DATA.DisplayName00 LIKE '%project%') AND v_FullCollectionMembership.CollectionID = @CollectionID
 AND dbo.Add_Remove_Programs_DATA.Version00 LIKE '15.%'
 
 SELECT DISTINCT([Language]), [Product], COUNT([Language]) FROM @TABLE
 GROUP BY [Product], [Language]</CommandText>
+        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
       </Query>
       <Fields>
         <Field Name="Language">

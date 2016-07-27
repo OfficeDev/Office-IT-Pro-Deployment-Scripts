@@ -4,7 +4,7 @@
 ###Copy the required files locally
 *       Configuration.txt  
 *	Office365ClientConfigurations.mof  
-*	Office365ProPlusConfigurations2013.mof  
+*	Office365ClientConfigurations2013.mof  
 *	Setup-Office365ClientReports.ps1  
 *	Reports  
       *	Office 365 Client computers with shared activation.rdl  

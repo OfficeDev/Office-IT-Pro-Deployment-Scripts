@@ -136,15 +136,15 @@ CASE WHEN @ComputerName = 'All'
 SYS.User_Name0 AS Name, 
 dbo.System_DATA.Name0 AS ComputerName, 
 SUBSTRING(dbo.Add_Remove_Programs_DATA.DisplayName00, 0 ,CHARINDEX('-',dbo.Add_Remove_Programs_DATA.DisplayName00)) AS ProgramName, 
-dbo.Office365ProPlusConfigurations2013_DATA.ClientCulture00 AS Language, 
+dbo.Office365ClientConfigurations2013_DATA.ClientCulture00 AS Language, 
 tm.NumLangs,
 dbo.Add_Remove_Programs_DATA.Version00 AS Version, 
 Channel = 'N/A',
-dbo.Office365ProPlusConfigurations2013_DATA.Platform00 AS Architecture 
+dbo.Office365ClientConfigurations2013_DATA.Platform00 AS Architecture 
 FROM dbo.Add_Remove_Programs_DATA
 INNER JOIN dbo.System_DATA ON dbo.System_DATA.MachineID = dbo.Add_Remove_Programs_DATA.MachineID
-INNER JOIN dbo.Office365ProPlusConfigurations2013_DATA ON dbo.Office365ProPlusConfigurations2013_DATA.MachineID = dbo.Add_Remove_Programs_DATA.MachineID
-INNER JOIN @ChannelTable CT ON CT.CPath = dbo.Office365ProPlusConfigurations2013_DATA.CDNBaseUrl00
+INNER JOIN dbo.Office365ClientConfigurations2013_DATA ON dbo.Office365ClientConfigurations2013_DATA.MachineID = dbo.Add_Remove_Programs_DATA.MachineID
+INNER JOIN @ChannelTable CT ON CT.CPath = dbo.Office365ClientConfigurations2013_DATA.CDNBaseUrl00
 INNER JOIN dbo.CollectionMembers ON dbo.CollectionMembers.MachineID = dbo.Add_Remove_Programs_DATA.MachineID
 INNER JOIN @TempTable tm ON tm.MachineID = dbo.Add_Remove_Programs_DATA.MachineID
 INNER JOIN fn_rbac_R_System(@UserSIDs)  SYS ON SYS.Netbios_Name0 = dbo.System_DATA.Name0
@@ -154,7 +154,7 @@ CASE WHEN @Uservar = 'All'
 	THEN '%'
 	ELSE @Uservar
 	END
-AND dbo.Add_Remove_Programs_DATA.DisplayName00 LIKE '%'+dbo.Office365ProPlusConfigurations2013_DATA.ClientCulture00
+AND dbo.Add_Remove_Programs_DATA.DisplayName00 LIKE '%'+dbo.Office365ClientConfigurations2013_DATA.ClientCulture00
 AND dbo.System_DATA.Name0 LIKE 
 CASE WHEN @ComputerName = 'All'
 	THEN '%'
@@ -167,15 +167,15 @@ CASE WHEN @ComputerName = 'All'
 SYS.User_Name0 AS Name, 
 dbo.System_DATA.Name0 AS ComputerName, 
 SUBSTRING(dbo.Add_Remove_Programs_64_DATA.DisplayName00, 0 ,CHARINDEX('-',dbo.Add_Remove_Programs_64_DATA.DisplayName00)) AS ProgramName, 
-dbo.Office365ProPlusConfigurations2013_DATA.ClientCulture00 AS Language, 
+dbo.Office365ClientConfigurations2013_DATA.ClientCulture00 AS Language, 
 tm.NumLangs,
 dbo.Add_Remove_Programs_64_DATA.Version00 AS Version, 
 Channel = 'N/A',
-dbo.Office365ProPlusConfigurations2013_DATA.Platform00 AS Architecture 
+dbo.Office365ClientConfigurations2013_DATA.Platform00 AS Architecture 
 FROM dbo.Add_Remove_Programs_64_DATA
 INNER JOIN dbo.System_DATA ON dbo.System_DATA.MachineID = dbo.Add_Remove_Programs_64_DATA.MachineID
-INNER JOIN dbo.Office365ProPlusConfigurations2013_DATA ON dbo.Office365ProPlusConfigurations2013_DATA.MachineID = dbo.Add_Remove_Programs_64_DATA.MachineID
-INNER JOIN @ChannelTable CT ON CT.CPath = dbo.Office365ProPlusConfigurations2013_DATA.CDNBaseUrl00
+INNER JOIN dbo.Office365ClientConfigurations2013_DATA ON dbo.Office365ClientConfigurations2013_DATA.MachineID = dbo.Add_Remove_Programs_64_DATA.MachineID
+INNER JOIN @ChannelTable CT ON CT.CPath = dbo.Office365ClientConfigurations2013_DATA.CDNBaseUrl00
 INNER JOIN dbo.CollectionMembers ON dbo.CollectionMembers.MachineID = dbo.Add_Remove_Programs_64_DATA.MachineID
 INNER JOIN @TempTable tm ON tm.MachineID = dbo.Add_Remove_Programs_64_DATA.MachineID
 INNER JOIN fn_rbac_R_System(@UserSIDs)  SYS ON SYS.Netbios_Name0 = dbo.System_DATA.Name0
@@ -185,12 +185,13 @@ CASE WHEN @Uservar = 'All'
 	THEN '%'
 	ELSE @Uservar
 	END
-AND dbo.Add_Remove_Programs_64_DATA.DisplayName00 LIKE '%'+dbo.Office365ProPlusConfigurations2013_DATA.ClientCulture00
+AND dbo.Add_Remove_Programs_64_DATA.DisplayName00 LIKE '%'+dbo.Office365ClientConfigurations2013_DATA.ClientCulture00
 AND dbo.System_DATA.Name0 LIKE 
 CASE WHEN @ComputerName = 'All'
 	THEN '%'
 	ELSE @ComputerName
 	END</CommandText>
+        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
       </Query>
       <Fields>
         <Field Name="Name">

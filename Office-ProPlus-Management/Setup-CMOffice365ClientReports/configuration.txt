@@ -43,9 +43,9 @@ KeyName="Office365ClientConfigurations";
 };
 
 #pragma namespace ("\\\\.\\root\\cimv2")
-#pragma deleteclass("Office365ProPlusConfigurations2013", NOFAIL)
+#pragma deleteclass("Office365ClientConfigurations2013", NOFAIL)
 [DYNPROPS]
-Class Office365ProPlusConfigurations2013
+Class Office365ClientConfigurations2013
 {
 [key] string KeyName;
 String InstallationPath;
@@ -65,9 +65,9 @@ String UpdatePath;
 };
 
 [DYNPROPS]
-Instance of Office365ProPlusConfigurations2013
+Instance of Office365ClientConfigurations2013
 {
-KeyName="Office365ProPlusConfigurations";
+KeyName="Office365ClientConfigurations2013";
 [PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Office\\15.0\\ClickToRun\\Configuration|InstallationPath"),Dynamic,Provider("RegPropProv")] InstallationPath;
 [PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Office\\15.0\\ClickToRun\\Configuration|ClientFolder"),Dynamic,Provider("RegPropProv")] ClientFolder;
 [PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Office\\15.0\\ClickToRun\\Configuration|VersionToReport"),Dynamic,Provider("RegPropProv")] VersionToReport;

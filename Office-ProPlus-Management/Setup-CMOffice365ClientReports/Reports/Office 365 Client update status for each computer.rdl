@@ -105,9 +105,9 @@ WHEN cust.UpdateUrl00 LIKE '\\%' THEN cust.UpdateUrl00
 WHEN cust.UpdateUrl00 LIKE 'http%' THEN 'Cloud'
 WHEN cust.CDNBaseUrl00 LIKE 'http%' THEN 'Cloud'
 END
-FROM [dbo].Office365ProPlusConfigurations2013_DATA cust
+FROM [dbo].Office365ClientConfigurations2013_DATA cust
 JOIN dbo.Add_Remove_Programs_64_DATA  addr on addr.MachineID = cust.MachineID
-INNER JOIN dbo.Office365ProPlusConfigurations2013_DATA custOf on cust.MachineID = custOf.MachineID
+INNER JOIN dbo.Office365ClientConfigurations2013_DATA custOf on cust.MachineID = custOf.MachineID
 INNER JOIN dbo.System_DATA sysd ON sysd.MachineID = cust.MachineID
 WHERE addr.DisplayName00 LIKE '%Microsoft Office 365 ProPlus -%'
 AND addr.Version00 LIKE '15%'
@@ -131,9 +131,9 @@ WHEN cust.UpdateUrl00 LIKE '\\%' THEN cust.UpdateUrl00
 WHEN cust.UpdateUrl00 LIKE 'http%' THEN 'Cloud'
 WHEN cust.CDNBaseUrl00 LIKE 'http%' THEN 'Cloud'
 END
-FROM [dbo].Office365ProPlusConfigurations2013_DATA cust
+FROM [dbo].Office365ClientConfigurations2013_DATA cust
 JOIN dbo.Add_Remove_Programs_DATA  addr on addr.MachineID = cust.MachineID
-INNER JOIN dbo.Office365ProPlusConfigurations2013_DATA custOf on cust.MachineID = custOf.MachineID
+INNER JOIN dbo.Office365ClientConfigurations2013_DATA custOf on cust.MachineID = custOf.MachineID
 INNER JOIN dbo.System_DATA sysd ON sysd.MachineID = cust.MachineID
 WHERE addr.DisplayName00 LIKE '%Microsoft Office 365 ProPlus -%'
 AND addr.Version00 LIKE '15%'
@@ -143,6 +143,7 @@ CASE WHEN @Status = 'all'
 	 THEN '%'
 	 ELSE @Status
 END</CommandText>
+        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
       </Query>
       <Fields>
         <Field Name="Name0">

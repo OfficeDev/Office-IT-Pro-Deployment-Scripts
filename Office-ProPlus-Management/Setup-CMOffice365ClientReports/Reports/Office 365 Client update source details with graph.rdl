@@ -165,7 +165,7 @@ END,
 Channel = 'N/A'
 FROM
 dbo.Add_Remove_Programs_DATA Addr
-INNER JOIN dbo.Office365ProPlusConfigurations2013_DATA OffCL  ON OffCL.MachineID = Addr.MachineID
+INNER JOIN dbo.Office365ClientConfigurations2013_DATA OffCL  ON OffCL.MachineID = Addr.MachineID
 INNER JOIN dbo.System_DATA SysD ON SysD.MachineID = Addr.MachineID
 WHERE Addr.DisplayName00 LIKE '%proplus%' AND Addr.Version00 LIKE '15%'
 
@@ -187,7 +187,7 @@ END,
 Channel = 'N/A'
 FROM
 dbo.Add_Remove_Programs_64_DATA Addr
-INNER JOIN dbo.Office365ProPlusConfigurations2013_DATA OffCL  ON OffCL.MachineID = Addr.MachineID
+INNER JOIN dbo.Office365ClientConfigurations2013_DATA OffCL  ON OffCL.MachineID = Addr.MachineID
 INNER JOIN dbo.System_DATA SysD ON SysD.MachineID = Addr.MachineID
 WHERE Addr.DisplayName00 LIKE '%proplus%' AND Addr.Version00 LIKE '15%'
 
@@ -378,7 +378,7 @@ OffCL.UpdateUrl00,
 Channel = 'N/A'
 FROM
 dbo.Add_Remove_Programs_DATA Addr
-INNER JOIN dbo.Office365ProPlusConfigurations2013_DATA OffCL  ON OffCL.MachineID = Addr.MachineID
+INNER JOIN dbo.Office365ClientConfigurations2013_DATA OffCL  ON OffCL.MachineID = Addr.MachineID
 INNER JOIN dbo.System_DATA SysD ON SysD.MachineID = Addr.MachineID
 WHERE Addr.DisplayName00 LIKE '%proplus%' AND Addr.Version00 LIKE '15%'
 
@@ -401,7 +401,7 @@ OffCL.UpdateUrl00,
 Channel = 'N/A'
 FROM
 dbo.Add_Remove_Programs_64_DATA Addr
-INNER JOIN dbo.Office365ProPlusConfigurations2013_DATA OffCL  ON OffCL.MachineID = Addr.MachineID
+INNER JOIN dbo.Office365ClientConfigurations2013_DATA OffCL  ON OffCL.MachineID = Addr.MachineID
 INNER JOIN dbo.System_DATA SysD ON SysD.MachineID = Addr.MachineID
 WHERE Addr.DisplayName00 LIKE '%proplus%' AND Addr.Version00 LIKE '15%'
 
@@ -445,6 +445,7 @@ CASE WHEN @UpdateSource = 'All'
 THEN '%'
 ELSE @UpdateSource
 END</CommandText>
+        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
       </Query>
       <Fields>
         <Field Name="UpdateURL">

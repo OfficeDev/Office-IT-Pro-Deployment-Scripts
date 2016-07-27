@@ -65,11 +65,11 @@ SUBSTRING(dbo.Add_Remove_Programs_64_DATA.DisplayName00, 0 ,CHARINDEX('-',dbo.Ad
  SUBSTRING(dbo.Add_Remove_Programs_64_DATA.DisplayName00, CHARINDEX('-',dbo.Add_Remove_Programs_64_DATA.DisplayName00)+2 ,5) AS Language,
 dbo.Add_Remove_Programs_64_DATA.Version00 AS Version,
 'Enabled' AS SharedComputerLicensing,
-dbo.Office365ProPlusConfigurations2013_DATA.Platform00 AS Bitness FROM dbo.Add_Remove_Programs_64_DATA
+dbo.Office365ClientConfigurations2013_DATA.Platform00 AS Bitness FROM dbo.Add_Remove_Programs_64_DATA
 INNER JOIN dbo.System_DATA ON dbo.System_DATA.MachineID = dbo.Add_Remove_Programs_64_DATA.MachineID
-INNER JOIN dbo.Office365ProPlusConfigurations2013_DATA ON dbo.Office365ProPlusConfigurations2013_DATA.MachineID = dbo.Add_Remove_Programs_64_DATA.MachineID
+INNER JOIN dbo.Office365ClientConfigurations2013_DATA ON dbo.Office365ClientConfigurations2013_DATA.MachineID = dbo.Add_Remove_Programs_64_DATA.MachineID
 INNER JOIN v_FullCollectionMembership ON v_FullCollectionMembership.Name = dbo.System_DATA.Name0
-WHERE [dbo].Office365ProPlusConfigurations2013_DATA.SharedComputerLicensing00 LIKE '1' AND dbo.Add_Remove_Programs_64_DATA.DisplayName00 LIKE 'Microsoft Office 365 ProPlus -%' AND dbo.Add_Remove_Programs_64_DATA.Version00 LIKE '15%' AND dbo.Add_Remove_Programs_64_DATA.DisplayName00 LIKE '%' + dbo.Office365ProPlusConfigurations2013_DATA.ClientCulture00 AND v_FullCollectionMembership.CollectionID = @CollectionID
+WHERE [dbo].Office365ClientConfigurations2013_DATA.SharedComputerLicensing00 LIKE '1' AND dbo.Add_Remove_Programs_64_DATA.DisplayName00 LIKE 'Microsoft Office 365 ProPlus -%' AND dbo.Add_Remove_Programs_64_DATA.Version00 LIKE '15%' AND dbo.Add_Remove_Programs_64_DATA.DisplayName00 LIKE '%' + dbo.Office365ClientConfigurations2013_DATA.ClientCulture00 AND v_FullCollectionMembership.CollectionID = @CollectionID
 
 UNION
 
@@ -78,11 +78,11 @@ SUBSTRING(dbo.Add_Remove_Programs_DATA.DisplayName00, 0 ,CHARINDEX('-',dbo.Add_R
  SUBSTRING(dbo.Add_Remove_Programs_DATA.DisplayName00, CHARINDEX('-',dbo.Add_Remove_Programs_DATA.DisplayName00)+2 ,5) AS Language, 
 dbo.Add_Remove_Programs_DATA.Version00 AS Version,
 'Enabled' AS SharedComputerLicensing,
-dbo.Office365ProPlusConfigurations2013_DATA.Platform00 AS Bitness FROM dbo.Add_Remove_Programs_DATA
+dbo.Office365ClientConfigurations2013_DATA.Platform00 AS Bitness FROM dbo.Add_Remove_Programs_DATA
 INNER JOIN dbo.System_DATA ON dbo.System_DATA.MachineID = dbo.Add_Remove_Programs_DATA.MachineID
-INNER JOIN dbo.Office365ProPlusConfigurations2013_DATA ON dbo.Office365ProPlusConfigurations2013_DATA.MachineID = dbo.Add_Remove_Programs_DATA.MachineID
+INNER JOIN dbo.Office365ClientConfigurations2013_DATA ON dbo.Office365ClientConfigurations2013_DATA.MachineID = dbo.Add_Remove_Programs_DATA.MachineID
 INNER JOIN v_FullCollectionMembership ON v_FullCollectionMembership.Name = dbo.System_DATA.Name0
-WHERE [dbo].Office365ProPlusConfigurations2013_DATA.SharedComputerLicensing00 LIKE '1' AND dbo.Add_Remove_Programs_DATA.DisplayName00 LIKE 'Microsoft Office 365 ProPlus -%' AND dbo.Add_Remove_Programs_DATA.Version00 LIKE '15%' AND dbo.Add_Remove_Programs_DATA.DisplayName00 LIKE '%' + dbo.Office365ProPlusConfigurations2013_DATA.ClientCulture00 AND v_FullCollectionMembership.CollectionID = @CollectionID</CommandText>
+WHERE [dbo].Office365ClientConfigurations2013_DATA.SharedComputerLicensing00 LIKE '1' AND dbo.Add_Remove_Programs_DATA.DisplayName00 LIKE 'Microsoft Office 365 ProPlus -%' AND dbo.Add_Remove_Programs_DATA.Version00 LIKE '15%' AND dbo.Add_Remove_Programs_DATA.DisplayName00 LIKE '%' + dbo.Office365ClientConfigurations2013_DATA.ClientCulture00 AND v_FullCollectionMembership.CollectionID = @CollectionID</CommandText>
         <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
       </Query>
       <Fields>
