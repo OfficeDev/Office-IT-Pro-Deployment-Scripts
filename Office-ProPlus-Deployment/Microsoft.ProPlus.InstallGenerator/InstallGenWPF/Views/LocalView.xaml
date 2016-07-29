@@ -98,6 +98,43 @@
 
                                 </Grid>
 
+                                <Grid x:Name="VersionRow" Width="800" HorizontalAlignment="Left" >
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="50"></RowDefinition>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="50" />
+                                        <ColumnDefinition Width="280" />
+                                        <ColumnDefinition x:Name="ChannelName" Width="220" />
+                                        <ColumnDefinition Width="220" />
+                                    </Grid.ColumnDefinitions>
+                                    <Button x:Name="InstalledVersion" Width="30" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" Margin="10,9,-40,9"
+                                            Focusable="False"  Style="{StaticResource CustomMetroInfoButton}" Click="InstalledVersion_Click" >
+                                        <StackPanel Orientation="Horizontal">
+                                            <Image Source="../images/info.png" Width="20" Height="20"/>
+                                        </StackPanel>
+                                    </Button>
+                                    <Label Content="Installed channel and version" Style="{StaticResource CustomMetroLabelHeader}" Margin="0 0 0 0" Grid.Column="1"
+                                           Height="30" VerticalAlignment="Center" FontFamily="Segoe UI Semibold" />
+                                    <Grid Margin="0,0,0,0" Grid.Column="2">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="200" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <Label x:Name="ChannelLabel" Content="Current" Style="{StaticResource CustomMetroLabelHeader}"
+                                               Margin="0 0 0 0" Grid.Column="0" Height="30" VerticalAlignment="Center" />
+                                    </Grid>
+                                    <Grid Margin="0,0,0,0" Grid.Column="3">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="200" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <Label x:Name="VersionLabel" Content="(16.0.0000.0000)" Style="{StaticResource CustomMetroLabelHeader}"
+                                               Margin="0 0 0 0" Grid.Column="0" Height="30" VerticalAlignment="Center" />
+                                    </Grid>
+
+                                </Grid>
+                                
                                 <Grid x:Name="UpdateRow" Width="800" HorizontalAlignment="Left" >
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="50"></RowDefinition>
@@ -136,43 +173,6 @@
 
                                         <Button x:Name="RetryUpdateOffice"  Width="75" Grid.Column="1" Height="40" FontSize="14" HorizontalAlignment="Left" Visibility="Visible"  
                                                 Content="Retry"  Click="UpdateOffice_OnClick" Style="{StaticResource MetroFlatButtonStyle1}" FontFamily="Segoe UI Semibold"   />
-                                    </Grid>
-
-                                </Grid>
-
-                                <Grid x:Name="VersionRow" Width="800" HorizontalAlignment="Left" >
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="50"></RowDefinition>
-                                    </Grid.RowDefinitions>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="50" />
-                                        <ColumnDefinition Width="280" />
-                                        <ColumnDefinition Width="220" />
-                                        <ColumnDefinition Width="220" />
-                                    </Grid.ColumnDefinitions>
-                                    <Button x:Name="InstalledVersion" Width="30" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" Margin="10,9,-40,9"
-                                            Focusable="False"  Style="{StaticResource CustomMetroInfoButton}" Click="InstalledVersion_Click" >
-                                        <StackPanel Orientation="Horizontal">
-                                            <Image Source="../images/info.png" Width="20" Height="20"/>
-                                        </StackPanel>
-                                    </Button>
-                                    <Label Content="Installed channel and version" Style="{StaticResource CustomMetroLabelHeader}" Margin="0 0 0 0" Grid.Column="1"
-                                           Height="30" VerticalAlignment="Center" FontFamily="Segoe UI Semibold" />
-                                    <Grid Margin="0,0,0,0" Grid.Column="2">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="200" />
-                                        </Grid.ColumnDefinitions>
-
-                                        <Label x:Name="ChannelLabel" Content="Current" Style="{StaticResource CustomMetroLabelHeader}"
-                                               Margin="0 0 0 0" Grid.Column="0" Height="30" VerticalAlignment="Center" FontFamily="Segoe UI Semilight" />
-                                    </Grid>
-                                    <Grid Margin="0,0,0,0" Grid.Column="3">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="200" />
-                                        </Grid.ColumnDefinitions>
-
-                                        <Label x:Name="VersionLabel" Content="16.0.0000.0000" Style="{StaticResource CustomMetroLabelHeader}"
-                                               Margin="0 0 0 0" Grid.Column="0" Height="30" VerticalAlignment="Center" FontFamily="Segoe UI Semilight" />
                                     </Grid>
 
                                 </Grid>

@@ -137,8 +137,9 @@ namespace MetroDemo.ExampleViews
 
                         Dispatcher.Invoke(() =>
                         {
-                            VersionLabel.Content = LocalInstall.Version;
+                            VersionLabel.Content = "(" + LocalInstall.Version + ")";
                             ChannelLabel.Content = LocalInstall.Channel;
+
                             var selectIndex = 0;
                             if (LocalInstall.Channel != null)
                             {
