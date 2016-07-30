@@ -408,12 +408,8 @@ Function GetScriptRoot() {
      if ($PSScriptRoot) {
        $scriptPath = $PSScriptRoot
      } else {
-       $scriptPath = split-path -parent $MyInvocation.MyCommand.Definition
-       if (!($scriptPath)) {
-          $scriptPath = (Get-Location).Path
-       }
+       $scriptPath = (Get-Item -Path ".\").FullName
      }
-
      return $scriptPath
  }
 }
