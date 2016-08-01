@@ -119,7 +119,7 @@ param(
 Begin {
 
     if(!$SourcePath){
-        $SourcePath = Get-Location
+        $SourcePath = (Get-Location).Path + "\Reports"
     }
 
     #Build the Uri

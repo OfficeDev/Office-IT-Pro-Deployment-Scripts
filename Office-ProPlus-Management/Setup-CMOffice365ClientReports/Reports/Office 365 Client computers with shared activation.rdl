@@ -1,6 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Report xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner" xmlns:cl="http://schemas.microsoft.com/sqlserver/reporting/2010/01/componentdefinition" xmlns="http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition">
-  <Description>Displays all computers that have shared computer activation enabled.</Description>
+<Report xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner" xmlns:cl="http://schemas.microsoft.com/sqlserver/reporting/2010/01/componentdefinition" xmlns="http://schemas.microsoft.com/sqlserver/reporting/2010/01/reportdefinition">
   <AutoRefresh>0</AutoRefresh>
   <DataSources>
     <DataSource Name="AutoGen__5C6358F2_4BB6_4a1b_A16E_8D96795D8602_">
@@ -10,84 +9,6 @@
     </DataSource>
   </DataSources>
   <DataSets>
-    <DataSet Name="DataSet1">
-      <Query>
-        <DataSourceName>AutoGen__5C6358F2_4BB6_4a1b_A16E_8D96795D8602_</DataSourceName>
-        <QueryParameters>
-          <QueryParameter Name="@CollectionID">
-            <Value>=Parameters!CollectionID.Value</Value>
-          </QueryParameter>
-        </QueryParameters>
-        <CommandText>SELECT dbo.System_DATA.Name0 AS ComputerName, 
-SUBSTRING(dbo.Add_Remove_Programs_64_DATA.DisplayName00, 0 ,CHARINDEX('-',dbo.Add_Remove_Programs_64_DATA.DisplayName00)) AS ProgramName,
- SUBSTRING(dbo.Add_Remove_Programs_64_DATA.DisplayName00, CHARINDEX('-',dbo.Add_Remove_Programs_64_DATA.DisplayName00)+2 ,5) AS Language,
-dbo.Add_Remove_Programs_64_DATA.Version00 AS Version,
-dbo.Office365ProPlusConfigurations_DATA.Platform00 AS Bitness FROM dbo.Add_Remove_Programs_64_DATA
-INNER JOIN dbo.System_DATA ON dbo.System_DATA.MachineID = dbo.Add_Remove_Programs_64_DATA.MachineID
-INNER JOIN dbo.Office365ProPlusConfigurations_DATA ON dbo.Office365ProPlusConfigurations_DATA.MachineID = dbo.Add_Remove_Programs_64_DATA.MachineID
-INNER JOIN v_FullCollectionMembership ON v_FullCollectionMembership.Name = dbo.System_DATA.Name0
-WHERE [dbo].Office365ProPlusConfigurations_DATA.SharedComputerLicensing00 LIKE '1' AND dbo.Add_Remove_Programs_64_DATA.DisplayName00 LIKE 'Microsoft Office 365 ProPlus -%' AND dbo.Add_Remove_Programs_64_DATA.Version00 LIKE '16%' AND dbo.Add_Remove_Programs_64_DATA.DisplayName00 LIKE '%' + dbo.Office365ProPlusConfigurations_DATA.ClientCulture00 AND v_FullCollectionMembership.CollectionID = @CollectionID
-
-UNION
-
-SELECT dbo.System_DATA.Name0 AS ComputerName, 
-SUBSTRING(dbo.Add_Remove_Programs_DATA.DisplayName00, 0 ,CHARINDEX('-',dbo.Add_Remove_Programs_DATA.DisplayName00)) AS ProgramName,
- SUBSTRING(dbo.Add_Remove_Programs_DATA.DisplayName00, CHARINDEX('-',dbo.Add_Remove_Programs_DATA.DisplayName00)+2 ,5) AS Language, 
-dbo.Add_Remove_Programs_DATA.Version00 AS Version,
-dbo.Office365ProPlusConfigurations_DATA.Platform00 AS Bitness FROM dbo.Add_Remove_Programs_DATA
-INNER JOIN dbo.System_DATA ON dbo.System_DATA.MachineID = dbo.Add_Remove_Programs_DATA.MachineID
-INNER JOIN dbo.Office365ProPlusConfigurations_DATA ON dbo.Office365ProPlusConfigurations_DATA.MachineID = dbo.Add_Remove_Programs_DATA.MachineID
-INNER JOIN v_FullCollectionMembership ON v_FullCollectionMembership.Name = dbo.System_DATA.Name0
-WHERE [dbo].Office365ProPlusConfigurations_DATA.SharedComputerLicensing00 LIKE '1' AND dbo.Add_Remove_Programs_DATA.DisplayName00 LIKE 'Microsoft Office 365 ProPlus -%' AND dbo.Add_Remove_Programs_DATA.Version00 LIKE '16%' AND dbo.Add_Remove_Programs_DATA.DisplayName00 LIKE '%' + dbo.Office365ProPlusConfigurations_DATA.ClientCulture00 AND v_FullCollectionMembership.CollectionID = @CollectionID
-
-UNION
-
-SELECT dbo.System_DATA.Name0 AS ComputerName, 
-SUBSTRING(dbo.Add_Remove_Programs_64_DATA.DisplayName00, 0 ,CHARINDEX('-',dbo.Add_Remove_Programs_64_DATA.DisplayName00)) AS ProgramName,
- SUBSTRING(dbo.Add_Remove_Programs_64_DATA.DisplayName00, CHARINDEX('-',dbo.Add_Remove_Programs_64_DATA.DisplayName00)+2 ,5) AS Language,
-dbo.Add_Remove_Programs_64_DATA.Version00 AS Version,
-dbo.Office365ProPlusConfigurations2013_DATA.Platform00 AS Bitness FROM dbo.Add_Remove_Programs_64_DATA
-INNER JOIN dbo.System_DATA ON dbo.System_DATA.MachineID = dbo.Add_Remove_Programs_64_DATA.MachineID
-INNER JOIN dbo.Office365ProPlusConfigurations2013_DATA ON dbo.Office365ProPlusConfigurations2013_DATA.MachineID = dbo.Add_Remove_Programs_64_DATA.MachineID
-INNER JOIN v_FullCollectionMembership ON v_FullCollectionMembership.Name = dbo.System_DATA.Name0
-WHERE [dbo].Office365ProPlusConfigurations2013_DATA.SharedComputerLicensing00 LIKE '1' AND dbo.Add_Remove_Programs_64_DATA.DisplayName00 LIKE 'Microsoft Office 365 ProPlus -%' AND dbo.Add_Remove_Programs_64_DATA.Version00 LIKE '15%' AND dbo.Add_Remove_Programs_64_DATA.DisplayName00 LIKE '%' + dbo.Office365ProPlusConfigurations2013_DATA.ClientCulture00 AND v_FullCollectionMembership.CollectionID = @CollectionID
-
-UNION
-
-SELECT dbo.System_DATA.Name0 AS ComputerName, 
-SUBSTRING(dbo.Add_Remove_Programs_DATA.DisplayName00, 0 ,CHARINDEX('-',dbo.Add_Remove_Programs_DATA.DisplayName00)) AS ProgramName,
- SUBSTRING(dbo.Add_Remove_Programs_DATA.DisplayName00, CHARINDEX('-',dbo.Add_Remove_Programs_DATA.DisplayName00)+2 ,5) AS Language, 
-dbo.Add_Remove_Programs_DATA.Version00 AS Version,
-dbo.Office365ProPlusConfigurations2013_DATA.Platform00 AS Bitness FROM dbo.Add_Remove_Programs_DATA
-INNER JOIN dbo.System_DATA ON dbo.System_DATA.MachineID = dbo.Add_Remove_Programs_DATA.MachineID
-INNER JOIN dbo.Office365ProPlusConfigurations2013_DATA ON dbo.Office365ProPlusConfigurations2013_DATA.MachineID = dbo.Add_Remove_Programs_DATA.MachineID
-INNER JOIN v_FullCollectionMembership ON v_FullCollectionMembership.Name = dbo.System_DATA.Name0
-WHERE [dbo].Office365ProPlusConfigurations2013_DATA.SharedComputerLicensing00 LIKE '1' AND dbo.Add_Remove_Programs_DATA.DisplayName00 LIKE 'Microsoft Office 365 ProPlus -%' AND dbo.Add_Remove_Programs_DATA.Version00 LIKE '15%' AND dbo.Add_Remove_Programs_DATA.DisplayName00 LIKE '%' + dbo.Office365ProPlusConfigurations2013_DATA.ClientCulture00 AND v_FullCollectionMembership.CollectionID = @CollectionID</CommandText>
-        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
-      </Query>
-      <Fields>
-        <Field Name="ComputerName">
-          <DataField>ComputerName</DataField>
-          <rd:TypeName>System.String</rd:TypeName>
-        </Field>
-        <Field Name="ProgramName">
-          <DataField>ProgramName</DataField>
-          <rd:TypeName>System.String</rd:TypeName>
-        </Field>
-        <Field Name="Version">
-          <DataField>Version</DataField>
-          <rd:TypeName>System.String</rd:TypeName>
-        </Field>
-        <Field Name="Language">
-          <DataField>Language</DataField>
-          <rd:TypeName>System.String</rd:TypeName>
-        </Field>
-        <Field Name="Bitness">
-          <DataField>Bitness</DataField>
-          <rd:TypeName>System.String</rd:TypeName>
-        </Field>
-      </Fields>
-    </DataSet>
     <DataSet Name="DataSetAdminID">
       <Query>
         <DataSourceName>AutoGen__5C6358F2_4BB6_4a1b_A16E_8D96795D8602_</DataSourceName>
@@ -101,6 +22,92 @@ WHERE [dbo].Office365ProPlusConfigurations2013_DATA.SharedComputerLicensing00 LI
       <Fields>
         <Field Name="UserSIDs">
           <DataField>UserSIDs</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+    <DataSet Name="DataSet1">
+      <Query>
+        <DataSourceName>AutoGen__5C6358F2_4BB6_4a1b_A16E_8D96795D8602_</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@CollectionID">
+            <Value>=Parameters!CollectionID.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandText>SELECT dbo.System_DATA.Name0 AS ComputerName, 
+SUBSTRING(dbo.Add_Remove_Programs_64_DATA.DisplayName00, 0 ,CHARINDEX('-',dbo.Add_Remove_Programs_64_DATA.DisplayName00)) AS ProgramName,
+ SUBSTRING(dbo.Add_Remove_Programs_64_DATA.DisplayName00, CHARINDEX('-',dbo.Add_Remove_Programs_64_DATA.DisplayName00)+2 ,5) AS Language,
+dbo.Add_Remove_Programs_64_DATA.Version00 AS Version,
+'Enabled' AS SharedComputerLicensing,
+dbo.Office365ClientConfigurations_DATA.Platform00 AS Bitness FROM dbo.Add_Remove_Programs_64_DATA
+INNER JOIN dbo.System_DATA ON dbo.System_DATA.MachineID = dbo.Add_Remove_Programs_64_DATA.MachineID
+INNER JOIN dbo.Office365ClientConfigurations_DATA ON dbo.Office365ClientConfigurations_DATA.MachineID = dbo.Add_Remove_Programs_64_DATA.MachineID
+INNER JOIN v_FullCollectionMembership ON v_FullCollectionMembership.Name = dbo.System_DATA.Name0
+WHERE [dbo].Office365ClientConfigurations_DATA.SharedComputerLicensing00 LIKE '1' AND dbo.Add_Remove_Programs_64_DATA.DisplayName00 LIKE 'Microsoft Office 365 ProPlus -%' AND dbo.Add_Remove_Programs_64_DATA.Version00 LIKE '16%' AND dbo.Add_Remove_Programs_64_DATA.DisplayName00 LIKE '%' + dbo.Office365ClientConfigurations_DATA.ClientCulture00 AND v_FullCollectionMembership.CollectionID = @CollectionID
+
+UNION
+
+SELECT dbo.System_DATA.Name0 AS ComputerName, 
+SUBSTRING(dbo.Add_Remove_Programs_DATA.DisplayName00, 0 ,CHARINDEX('-',dbo.Add_Remove_Programs_DATA.DisplayName00)) AS ProgramName,
+ SUBSTRING(dbo.Add_Remove_Programs_DATA.DisplayName00, CHARINDEX('-',dbo.Add_Remove_Programs_DATA.DisplayName00)+2 ,5) AS Language, 
+dbo.Add_Remove_Programs_DATA.Version00 AS Version,
+'Enabled' AS SharedComputerLicensing,
+dbo.Office365ClientConfigurations_DATA.Platform00 AS Bitness FROM dbo.Add_Remove_Programs_DATA
+INNER JOIN dbo.System_DATA ON dbo.System_DATA.MachineID = dbo.Add_Remove_Programs_DATA.MachineID
+INNER JOIN dbo.Office365ClientConfigurations_DATA ON dbo.Office365ClientConfigurations_DATA.MachineID = dbo.Add_Remove_Programs_DATA.MachineID
+INNER JOIN v_FullCollectionMembership ON v_FullCollectionMembership.Name = dbo.System_DATA.Name0
+WHERE [dbo].Office365ClientConfigurations_DATA.SharedComputerLicensing00 LIKE '1' AND dbo.Add_Remove_Programs_DATA.DisplayName00 LIKE 'Microsoft Office 365 ProPlus -%' AND dbo.Add_Remove_Programs_DATA.Version00 LIKE '16%' AND dbo.Add_Remove_Programs_DATA.DisplayName00 LIKE '%' + dbo.Office365ClientConfigurations_DATA.ClientCulture00 AND v_FullCollectionMembership.CollectionID = @CollectionID
+
+UNION
+
+SELECT dbo.System_DATA.Name0 AS ComputerName, 
+SUBSTRING(dbo.Add_Remove_Programs_64_DATA.DisplayName00, 0 ,CHARINDEX('-',dbo.Add_Remove_Programs_64_DATA.DisplayName00)) AS ProgramName,
+ SUBSTRING(dbo.Add_Remove_Programs_64_DATA.DisplayName00, CHARINDEX('-',dbo.Add_Remove_Programs_64_DATA.DisplayName00)+2 ,5) AS Language,
+dbo.Add_Remove_Programs_64_DATA.Version00 AS Version,
+'Enabled' AS SharedComputerLicensing,
+dbo.Office365ClientConfigurations2013_DATA.Platform00 AS Bitness FROM dbo.Add_Remove_Programs_64_DATA
+INNER JOIN dbo.System_DATA ON dbo.System_DATA.MachineID = dbo.Add_Remove_Programs_64_DATA.MachineID
+INNER JOIN dbo.Office365ClientConfigurations2013_DATA ON dbo.Office365ClientConfigurations2013_DATA.MachineID = dbo.Add_Remove_Programs_64_DATA.MachineID
+INNER JOIN v_FullCollectionMembership ON v_FullCollectionMembership.Name = dbo.System_DATA.Name0
+WHERE [dbo].Office365ClientConfigurations2013_DATA.SharedComputerLicensing00 LIKE '1' AND dbo.Add_Remove_Programs_64_DATA.DisplayName00 LIKE 'Microsoft Office 365 ProPlus -%' AND dbo.Add_Remove_Programs_64_DATA.Version00 LIKE '15%' AND dbo.Add_Remove_Programs_64_DATA.DisplayName00 LIKE '%' + dbo.Office365ClientConfigurations2013_DATA.ClientCulture00 AND v_FullCollectionMembership.CollectionID = @CollectionID
+
+UNION
+
+SELECT dbo.System_DATA.Name0 AS ComputerName, 
+SUBSTRING(dbo.Add_Remove_Programs_DATA.DisplayName00, 0 ,CHARINDEX('-',dbo.Add_Remove_Programs_DATA.DisplayName00)) AS ProgramName,
+ SUBSTRING(dbo.Add_Remove_Programs_DATA.DisplayName00, CHARINDEX('-',dbo.Add_Remove_Programs_DATA.DisplayName00)+2 ,5) AS Language, 
+dbo.Add_Remove_Programs_DATA.Version00 AS Version,
+'Enabled' AS SharedComputerLicensing,
+dbo.Office365ClientConfigurations2013_DATA.Platform00 AS Bitness FROM dbo.Add_Remove_Programs_DATA
+INNER JOIN dbo.System_DATA ON dbo.System_DATA.MachineID = dbo.Add_Remove_Programs_DATA.MachineID
+INNER JOIN dbo.Office365ClientConfigurations2013_DATA ON dbo.Office365ClientConfigurations2013_DATA.MachineID = dbo.Add_Remove_Programs_DATA.MachineID
+INNER JOIN v_FullCollectionMembership ON v_FullCollectionMembership.Name = dbo.System_DATA.Name0
+WHERE [dbo].Office365ClientConfigurations2013_DATA.SharedComputerLicensing00 LIKE '1' AND dbo.Add_Remove_Programs_DATA.DisplayName00 LIKE 'Microsoft Office 365 ProPlus -%' AND dbo.Add_Remove_Programs_DATA.Version00 LIKE '15%' AND dbo.Add_Remove_Programs_DATA.DisplayName00 LIKE '%' + dbo.Office365ClientConfigurations2013_DATA.ClientCulture00 AND v_FullCollectionMembership.CollectionID = @CollectionID</CommandText>
+        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
+      </Query>
+      <Fields>
+        <Field Name="ComputerName">
+          <DataField>ComputerName</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="ProgramName">
+          <DataField>ProgramName</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Language">
+          <DataField>Language</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Version">
+          <DataField>Version</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Bitness">
+          <DataField>Bitness</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="SharedComputerLicensing">
+          <DataField>SharedComputerLicensing</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
       </Fields>
@@ -160,599 +167,48 @@ WHERE [dbo].Office365ProPlusConfigurations2013_DATA.SharedComputerLicensing00 LI
     <ReportSection>
       <Body>
         <ReportItems>
-          <Tablix Name="Tablix1">
-            <TablixBody>
-              <TablixColumns>
-                <TablixColumn>
-                  <Width>2.78275in</Width>
-                </TablixColumn>
-                <TablixColumn>
-                  <Width>2.89734in</Width>
-                </TablixColumn>
-                <TablixColumn>
-                  <Width>1.07442in</Width>
-                </TablixColumn>
-                <TablixColumn>
-                  <Width>1.79317in</Width>
-                </TablixColumn>
-                <TablixColumn>
-                  <Width>2.33977in</Width>
-                </TablixColumn>
-                <TablixColumn>
-                  <Width>1.06253in</Width>
-                </TablixColumn>
-              </TablixColumns>
-              <TablixRows>
-                <TablixRow>
-                  <Height>0.25in</Height>
-                  <TablixCells>
-                    <TablixCell>
-                      <CellContents>
-                        <Textbox Name="Textbox2">
-                          <CanGrow>true</CanGrow>
-                          <UserSort>
-                            <SortExpression>=Fields!ComputerName.Value</SortExpression>
-                          </UserSort>
-                          <KeepTogether>true</KeepTogether>
-                          <Paragraphs>
-                            <Paragraph>
-                              <TextRuns>
-                                <TextRun>
-                                  <Value>Computer Name</Value>
-                                  <Style />
-                                </TextRun>
-                              </TextRuns>
-                              <Style />
-                            </Paragraph>
-                          </Paragraphs>
-                          <rd:DefaultName>Textbox2</rd:DefaultName>
-                          <Style>
-                            <Border>
-                              <Color>LightGrey</Color>
-                              <Style>Solid</Style>
-                            </Border>
-                            <TopBorder>
-                              <Color>#557eb9</Color>
-                              <Style>Double</Style>
-                              <Width>1pt</Width>
-                            </TopBorder>
-                            <BottomBorder>
-                              <Color>#557eb9</Color>
-                              <Style>Double</Style>
-                              <Width>1pt</Width>
-                            </BottomBorder>
-                            <LeftBorder>
-                              <Style>None</Style>
-                            </LeftBorder>
-                            <RightBorder>
-                              <Style>None</Style>
-                            </RightBorder>
-                            <PaddingLeft>2pt</PaddingLeft>
-                            <PaddingRight>2pt</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
-                          </Style>
-                        </Textbox>
-                      </CellContents>
-                    </TablixCell>
-                    <TablixCell>
-                      <CellContents>
-                        <Textbox Name="Textbox3">
-                          <CanGrow>true</CanGrow>
-                          <UserSort>
-                            <SortExpression>=Fields!ProgramName.Value</SortExpression>
-                          </UserSort>
-                          <KeepTogether>true</KeepTogether>
-                          <Paragraphs>
-                            <Paragraph>
-                              <TextRuns>
-                                <TextRun>
-                                  <Value>Product Name</Value>
-                                  <Style />
-                                </TextRun>
-                              </TextRuns>
-                              <Style />
-                            </Paragraph>
-                          </Paragraphs>
-                          <rd:DefaultName>Textbox3</rd:DefaultName>
-                          <Style>
-                            <Border>
-                              <Color>LightGrey</Color>
-                              <Style>Solid</Style>
-                            </Border>
-                            <TopBorder>
-                              <Color>#557eb9</Color>
-                              <Style>Double</Style>
-                              <Width>1pt</Width>
-                            </TopBorder>
-                            <BottomBorder>
-                              <Color>#557eb9</Color>
-                              <Style>Double</Style>
-                              <Width>1pt</Width>
-                            </BottomBorder>
-                            <LeftBorder>
-                              <Style>None</Style>
-                            </LeftBorder>
-                            <RightBorder>
-                              <Style>None</Style>
-                            </RightBorder>
-                            <PaddingLeft>2pt</PaddingLeft>
-                            <PaddingRight>2pt</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
-                          </Style>
-                        </Textbox>
-                      </CellContents>
-                    </TablixCell>
-                    <TablixCell>
-                      <CellContents>
-                        <Textbox Name="Textbox7">
-                          <CanGrow>true</CanGrow>
-                          <KeepTogether>true</KeepTogether>
-                          <Paragraphs>
-                            <Paragraph>
-                              <TextRuns>
-                                <TextRun>
-                                  <Value>Language</Value>
-                                  <Style />
-                                </TextRun>
-                              </TextRuns>
-                              <Style />
-                            </Paragraph>
-                          </Paragraphs>
-                          <rd:DefaultName>Textbox7</rd:DefaultName>
-                          <Style>
-                            <Border>
-                              <Color>LightGrey</Color>
-                              <Style>Solid</Style>
-                            </Border>
-                            <TopBorder>
-                              <Color>#557eb9</Color>
-                              <Style>Double</Style>
-                              <Width>1pt</Width>
-                            </TopBorder>
-                            <BottomBorder>
-                              <Color>#557eb9</Color>
-                              <Style>Double</Style>
-                              <Width>1pt</Width>
-                            </BottomBorder>
-                            <LeftBorder>
-                              <Style>None</Style>
-                            </LeftBorder>
-                            <RightBorder>
-                              <Style>None</Style>
-                            </RightBorder>
-                            <PaddingLeft>2pt</PaddingLeft>
-                            <PaddingRight>2pt</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
-                          </Style>
-                        </Textbox>
-                      </CellContents>
-                    </TablixCell>
-                    <TablixCell>
-                      <CellContents>
-                        <Textbox Name="Textbox1">
-                          <CanGrow>true</CanGrow>
-                          <UserSort>
-                            <SortExpression>=Fields!Version.Value</SortExpression>
-                          </UserSort>
-                          <KeepTogether>true</KeepTogether>
-                          <Paragraphs>
-                            <Paragraph>
-                              <TextRuns>
-                                <TextRun>
-                                  <Value>Version</Value>
-                                  <Style />
-                                </TextRun>
-                              </TextRuns>
-                              <Style />
-                            </Paragraph>
-                          </Paragraphs>
-                          <rd:DefaultName>Textbox1</rd:DefaultName>
-                          <Style>
-                            <Border>
-                              <Color>LightGrey</Color>
-                              <Style>Solid</Style>
-                            </Border>
-                            <TopBorder>
-                              <Color>#557eb9</Color>
-                              <Style>Double</Style>
-                              <Width>1pt</Width>
-                            </TopBorder>
-                            <BottomBorder>
-                              <Color>#557eb9</Color>
-                              <Style>Double</Style>
-                              <Width>1pt</Width>
-                            </BottomBorder>
-                            <LeftBorder>
-                              <Style>None</Style>
-                            </LeftBorder>
-                            <RightBorder>
-                              <Style>None</Style>
-                            </RightBorder>
-                            <PaddingLeft>2pt</PaddingLeft>
-                            <PaddingRight>2pt</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
-                          </Style>
-                        </Textbox>
-                      </CellContents>
-                    </TablixCell>
-                    <TablixCell>
-                      <CellContents>
-                        <Textbox Name="Textbox5">
-                          <CanGrow>true</CanGrow>
-                          <KeepTogether>true</KeepTogether>
-                          <Paragraphs>
-                            <Paragraph>
-                              <TextRuns>
-                                <TextRun>
-                                  <Value>Shared Computer Activation</Value>
-                                  <Style />
-                                </TextRun>
-                              </TextRuns>
-                              <Style />
-                            </Paragraph>
-                          </Paragraphs>
-                          <rd:DefaultName>Textbox5</rd:DefaultName>
-                          <Style>
-                            <Border>
-                              <Style>None</Style>
-                            </Border>
-                            <TopBorder>
-                              <Color>#557eb9</Color>
-                              <Style>Double</Style>
-                            </TopBorder>
-                            <BottomBorder>
-                              <Color>#557eb9</Color>
-                              <Style>Double</Style>
-                            </BottomBorder>
-                            <PaddingLeft>2pt</PaddingLeft>
-                            <PaddingRight>2pt</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
-                          </Style>
-                        </Textbox>
-                      </CellContents>
-                    </TablixCell>
-                    <TablixCell>
-                      <CellContents>
-                        <Textbox Name="Textbox4">
-                          <CanGrow>true</CanGrow>
-                          <KeepTogether>true</KeepTogether>
-                          <Paragraphs>
-                            <Paragraph>
-                              <TextRuns>
-                                <TextRun>
-                                  <Value>Architecture</Value>
-                                  <Style />
-                                </TextRun>
-                              </TextRuns>
-                              <Style />
-                            </Paragraph>
-                          </Paragraphs>
-                          <rd:DefaultName>Textbox4</rd:DefaultName>
-                          <Style>
-                            <Border>
-                              <Color>LightGrey</Color>
-                              <Style>Solid</Style>
-                            </Border>
-                            <TopBorder>
-                              <Color>#557eb9</Color>
-                              <Style>Double</Style>
-                              <Width>1pt</Width>
-                            </TopBorder>
-                            <BottomBorder>
-                              <Color>#557eb9</Color>
-                              <Style>Double</Style>
-                              <Width>1pt</Width>
-                            </BottomBorder>
-                            <LeftBorder>
-                              <Style>None</Style>
-                            </LeftBorder>
-                            <RightBorder>
-                              <Style>None</Style>
-                            </RightBorder>
-                            <PaddingLeft>2pt</PaddingLeft>
-                            <PaddingRight>2pt</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
-                          </Style>
-                        </Textbox>
-                      </CellContents>
-                    </TablixCell>
-                  </TablixCells>
-                </TablixRow>
-                <TablixRow>
-                  <Height>0.25in</Height>
-                  <TablixCells>
-                    <TablixCell>
-                      <CellContents>
-                        <Textbox Name="ComputerName">
-                          <CanGrow>true</CanGrow>
-                          <KeepTogether>true</KeepTogether>
-                          <Paragraphs>
-                            <Paragraph>
-                              <TextRuns>
-                                <TextRun>
-                                  <Value>=Fields!ComputerName.Value</Value>
-                                  <Style>
-                                    <TextDecoration>Underline</TextDecoration>
-                                  </Style>
-                                </TextRun>
-                              </TextRuns>
-                              <Style />
-                            </Paragraph>
-                          </Paragraphs>
-                          <rd:DefaultName>ComputerName</rd:DefaultName>
-                          <ActionInfo>
-                            <Actions>
-                              <Action>
-                                <Drillthrough>
-                                  <ReportName>../Hardware - General/Computer information for a specific computer</ReportName>
-                                  <Parameters>
-                                    <Parameter Name="variable">
-                                      <Value>=Fields!ComputerName.Value</Value>
-                                    </Parameter>
-                                  </Parameters>
-                                </Drillthrough>
-                              </Action>
-                            </Actions>
-                          </ActionInfo>
-                          <Style>
-                            <Border>
-                              <Color>LightGrey</Color>
-                              <Style>Solid</Style>
-                            </Border>
-                            <TopBorder>
-                              <Style>None</Style>
-                            </TopBorder>
-                            <LeftBorder>
-                              <Style>None</Style>
-                            </LeftBorder>
-                            <RightBorder>
-                              <Style>None</Style>
-                            </RightBorder>
-                            <PaddingLeft>2pt</PaddingLeft>
-                            <PaddingRight>2pt</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
-                          </Style>
-                        </Textbox>
-                      </CellContents>
-                    </TablixCell>
-                    <TablixCell>
-                      <CellContents>
-                        <Textbox Name="ProgramName">
-                          <CanGrow>true</CanGrow>
-                          <KeepTogether>true</KeepTogether>
-                          <Paragraphs>
-                            <Paragraph>
-                              <TextRuns>
-                                <TextRun>
-                                  <Value>=Fields!ProgramName.Value</Value>
-                                  <Style />
-                                </TextRun>
-                              </TextRuns>
-                              <Style />
-                            </Paragraph>
-                          </Paragraphs>
-                          <rd:DefaultName>ProgramName</rd:DefaultName>
-                          <Style>
-                            <Border>
-                              <Color>LightGrey</Color>
-                              <Style>Solid</Style>
-                            </Border>
-                            <TopBorder>
-                              <Style>None</Style>
-                            </TopBorder>
-                            <LeftBorder>
-                              <Style>None</Style>
-                            </LeftBorder>
-                            <RightBorder>
-                              <Style>None</Style>
-                            </RightBorder>
-                            <PaddingLeft>2pt</PaddingLeft>
-                            <PaddingRight>2pt</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
-                          </Style>
-                        </Textbox>
-                      </CellContents>
-                    </TablixCell>
-                    <TablixCell>
-                      <CellContents>
-                        <Textbox Name="Language">
-                          <CanGrow>true</CanGrow>
-                          <KeepTogether>true</KeepTogether>
-                          <Paragraphs>
-                            <Paragraph>
-                              <TextRuns>
-                                <TextRun>
-                                  <Value>=Fields!Language.Value</Value>
-                                  <Style />
-                                </TextRun>
-                              </TextRuns>
-                              <Style />
-                            </Paragraph>
-                          </Paragraphs>
-                          <rd:DefaultName>Language</rd:DefaultName>
-                          <Style>
-                            <Border>
-                              <Color>LightGrey</Color>
-                              <Style>Solid</Style>
-                            </Border>
-                            <TopBorder>
-                              <Style>None</Style>
-                            </TopBorder>
-                            <LeftBorder>
-                              <Style>None</Style>
-                            </LeftBorder>
-                            <RightBorder>
-                              <Style>None</Style>
-                            </RightBorder>
-                            <PaddingLeft>2pt</PaddingLeft>
-                            <PaddingRight>2pt</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
-                          </Style>
-                        </Textbox>
-                      </CellContents>
-                    </TablixCell>
-                    <TablixCell>
-                      <CellContents>
-                        <Textbox Name="Version">
-                          <CanGrow>true</CanGrow>
-                          <KeepTogether>true</KeepTogether>
-                          <Paragraphs>
-                            <Paragraph>
-                              <TextRuns>
-                                <TextRun>
-                                  <Value>=Fields!Version.Value</Value>
-                                  <Style />
-                                </TextRun>
-                              </TextRuns>
-                              <Style />
-                            </Paragraph>
-                          </Paragraphs>
-                          <rd:DefaultName>Version</rd:DefaultName>
-                          <Style>
-                            <Border>
-                              <Color>LightGrey</Color>
-                              <Style>Solid</Style>
-                            </Border>
-                            <TopBorder>
-                              <Style>None</Style>
-                            </TopBorder>
-                            <LeftBorder>
-                              <Style>None</Style>
-                            </LeftBorder>
-                            <RightBorder>
-                              <Style>None</Style>
-                            </RightBorder>
-                            <PaddingLeft>2pt</PaddingLeft>
-                            <PaddingRight>2pt</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
-                          </Style>
-                        </Textbox>
-                      </CellContents>
-                    </TablixCell>
-                    <TablixCell>
-                      <CellContents>
-                        <Textbox Name="Textbox6">
-                          <CanGrow>true</CanGrow>
-                          <KeepTogether>true</KeepTogether>
-                          <Paragraphs>
-                            <Paragraph>
-                              <TextRuns>
-                                <TextRun>
-                                  <Value>Enabled</Value>
-                                  <Style />
-                                </TextRun>
-                              </TextRuns>
-                              <Style />
-                            </Paragraph>
-                          </Paragraphs>
-                          <rd:DefaultName>Textbox6</rd:DefaultName>
-                          <Style>
-                            <Border>
-                              <Color>LightGrey</Color>
-                              <Style>Solid</Style>
-                            </Border>
-                            <TopBorder>
-                              <Style>None</Style>
-                            </TopBorder>
-                            <LeftBorder>
-                              <Style>None</Style>
-                            </LeftBorder>
-                            <RightBorder>
-                              <Style>None</Style>
-                            </RightBorder>
-                            <PaddingLeft>2pt</PaddingLeft>
-                            <PaddingRight>2pt</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
-                          </Style>
-                        </Textbox>
-                      </CellContents>
-                    </TablixCell>
-                    <TablixCell>
-                      <CellContents>
-                        <Textbox Name="Bitness">
-                          <CanGrow>true</CanGrow>
-                          <KeepTogether>true</KeepTogether>
-                          <Paragraphs>
-                            <Paragraph>
-                              <TextRuns>
-                                <TextRun>
-                                  <Value>=Fields!Bitness.Value</Value>
-                                  <Style />
-                                </TextRun>
-                              </TextRuns>
-                              <Style />
-                            </Paragraph>
-                          </Paragraphs>
-                          <rd:DefaultName>Bitness</rd:DefaultName>
-                          <Style>
-                            <Border>
-                              <Color>LightGrey</Color>
-                              <Style>Solid</Style>
-                            </Border>
-                            <TopBorder>
-                              <Style>None</Style>
-                            </TopBorder>
-                            <LeftBorder>
-                              <Style>None</Style>
-                            </LeftBorder>
-                            <RightBorder>
-                              <Style>None</Style>
-                            </RightBorder>
-                            <PaddingLeft>2pt</PaddingLeft>
-                            <PaddingRight>2pt</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
-                          </Style>
-                        </Textbox>
-                      </CellContents>
-                    </TablixCell>
-                  </TablixCells>
-                </TablixRow>
-              </TablixRows>
-            </TablixBody>
-            <TablixColumnHierarchy>
-              <TablixMembers>
-                <TablixMember />
-                <TablixMember />
-                <TablixMember />
-                <TablixMember />
-                <TablixMember />
-                <TablixMember />
-              </TablixMembers>
-            </TablixColumnHierarchy>
-            <TablixRowHierarchy>
-              <TablixMembers>
-                <TablixMember>
-                  <KeepWithGroup>After</KeepWithGroup>
-                </TablixMember>
-                <TablixMember>
-                  <Group Name="Details" />
-                </TablixMember>
-              </TablixMembers>
-            </TablixRowHierarchy>
-            <DataSetName>DataSet1</DataSetName>
-            <Top>0.41389in</Top>
-            <Left>0.00002in</Left>
-            <Height>0.5in</Height>
-            <Width>11.94998in</Width>
+          <Image Name="CenterHeaderImage">
+            <Source>External</Source>
+            <Value>/ConfigMgr_S01/Report Resources/Report_Header_Center.png</Value>
+            <Sizing>Fit</Sizing>
+            <Top>0.02083in</Top>
+            <Left>0.21in</Left>
+            <Height>0.75in</Height>
+            <Width>9.48889in</Width>
             <Style>
               <Border>
                 <Style>None</Style>
               </Border>
             </Style>
-          </Tablix>
-          <Rectangle Name="ReportDescriptionRectangle2">
+          </Image>
+          <Image Name="LeftHeaderImage">
+            <Source>External</Source>
+            <Value>/ConfigMgr_S01/Report Resources/Report_Header_Left.png</Value>
+            <Top>0.02083in</Top>
+            <Height>0.75in</Height>
+            <Width>0.21in</Width>
+            <ZIndex>1</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+            </Style>
+          </Image>
+          <Image Name="RightHeaderImage">
+            <Source>External</Source>
+            <Value>/ConfigMgr_S01/Report Resources/Report_Header_Right.png</Value>
+            <Top>0.02083in</Top>
+            <Left>9.685in</Left>
+            <Height>0.75in</Height>
+            <Width>2.34in</Width>
+            <ZIndex>2</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+            </Style>
+          </Image>
+          <Rectangle Name="ReportDescriptionRectangle">
             <ReportItems>
               <Tablix Name="ReportDescriptionTablix">
                 <TablixBody>
@@ -761,7 +217,7 @@ WHERE [dbo].Office365ProPlusConfigurations2013_DATA.SharedComputerLicensing00 LI
                       <Width>1.25in</Width>
                     </TablixColumn>
                     <TablixColumn>
-                      <Width>10.45in</Width>
+                      <Width>9.9in</Width>
                     </TablixColumn>
                   </TablixColumns>
                   <TablixRows>
@@ -770,7 +226,7 @@ WHERE [dbo].Office365ProPlusConfigurations2013_DATA.SharedComputerLicensing00 LI
                       <TablixCells>
                         <TablixCell>
                           <CellContents>
-                            <Textbox Name="DescriptionLabelTextbox2">
+                            <Textbox Name="DescriptionLabelTextbox">
                               <CanGrow>true</CanGrow>
                               <KeepTogether>true</KeepTogether>
                               <Paragraphs>
@@ -812,14 +268,11 @@ WHERE [dbo].Office365ProPlusConfigurations2013_DATA.SharedComputerLicensing00 LI
                                 <Paragraph>
                                   <TextRuns>
                                     <TextRun>
-                                      <Value>Displays all computers that have shared computer activation enabled.</Value>
+                                      <Value>Displays a list of Office 365 clients with shared computer activation enabled</Value>
                                       <Style>
-                                        <FontStyle>Normal</FontStyle>
                                         <FontFamily>Segoe UI</FontFamily>
                                         <FontSize>9pt</FontSize>
                                         <FontWeight>Normal</FontWeight>
-                                        <TextDecoration>None</TextDecoration>
-                                        <Color>#000000</Color>
                                       </Style>
                                     </TextRun>
                                   </TextRuns>
@@ -829,7 +282,7 @@ WHERE [dbo].Office365ProPlusConfigurations2013_DATA.SharedComputerLicensing00 LI
                               <rd:DefaultName>Textbox18</rd:DefaultName>
                               <Visibility>
                                 <Hidden>true</Hidden>
-                                <ToggleItem>DescriptionLabelTextbox2</ToggleItem>
+                                <ToggleItem>DescriptionLabelTextbox</ToggleItem>
                               </Visibility>
                               <Style>
                                 <Border>
@@ -862,7 +315,7 @@ WHERE [dbo].Office365ProPlusConfigurations2013_DATA.SharedComputerLicensing00 LI
                 </TablixRowHierarchy>
                 <DataSetName>DataSet1</DataSetName>
                 <Height>0.4in</Height>
-                <Width>11.7in</Width>
+                <Width>11.15in</Width>
                 <Style>
                   <Border>
                     <Style>None</Style>
@@ -871,9 +324,10 @@ WHERE [dbo].Office365ProPlusConfigurations2013_DATA.SharedComputerLicensing00 LI
               </Tablix>
             </ReportItems>
             <KeepTogether>true</KeepTogether>
+            <Top>1.11389in</Top>
             <Height>0.4in</Height>
-            <Width>11.95in</Width>
-            <ZIndex>1</ZIndex>
+            <Width>12.025in</Width>
+            <ZIndex>3</ZIndex>
             <Style>
               <Border>
                 <Style>None</Style>
@@ -881,11 +335,45 @@ WHERE [dbo].Office365ProPlusConfigurations2013_DATA.SharedComputerLicensing00 LI
               <BackgroundColor>Gainsboro</BackgroundColor>
             </Style>
           </Rectangle>
+          <Textbox Name="ReportTitleTextbox">
+            <CanGrow>true</CanGrow>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>Office 365 Client computers with shared activation</Value>
+                    <Style>
+                      <FontFamily>Segoe UI</FontFamily>
+                      <FontSize>17pt</FontSize>
+                      <FontWeight>Bold</FontWeight>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style />
+              </Paragraph>
+            </Paragraphs>
+            <rd:DefaultName>Textbox54</rd:DefaultName>
+            <Top>0.76389in</Top>
+            <Height>0.35in</Height>
+            <Width>12.025in</Width>
+            <ZIndex>4</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+              <BackgroundColor>Gainsboro</BackgroundColor>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
           <Line Name="ReportDescriptionLine">
-            <Top>0.25in</Top>
+            <Top>1.38889in</Top>
             <Height>0in</Height>
-            <Width>11.95in</Width>
-            <ZIndex>2</ZIndex>
+            <Width>12.025in</Width>
+            <ZIndex>5</ZIndex>
             <Style>
               <Border>
                 <Style>Double</Style>
@@ -909,115 +397,636 @@ WHERE [dbo].Office365ProPlusConfigurations2013_DATA.SharedComputerLicensing00 LI
               </RightBorder>
             </Style>
           </Line>
+          <Tablix Name="Tablix1">
+            <TablixBody>
+              <TablixColumns>
+                <TablixColumn>
+                  <Width>2.0625in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>2.935in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.42708in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.79167in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.25in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>2.55874in</Width>
+                </TablixColumn>
+              </TablixColumns>
+              <TablixRows>
+                <TablixRow>
+                  <Height>0.25in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox18">
+                          <CanGrow>true</CanGrow>
+                          <UserSort>
+                            <SortExpression>=Fields!ComputerName.Value</SortExpression>
+                          </UserSort>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Computer Name</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox17</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#557eb9</Color>
+                              <Style>None</Style>
+                            </Border>
+                            <TopBorder>
+                              <Style>Solid</Style>
+                              <Width>1.5pt</Width>
+                            </TopBorder>
+                            <BottomBorder>
+                              <Style>Solid</Style>
+                              <Width>1.5pt</Width>
+                            </BottomBorder>
+                            <BackgroundColor>White</BackgroundColor>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                            <PaddingLeft>5pt</PaddingLeft>
+                            <PaddingRight>5pt</PaddingRight>
+                            <PaddingTop>5pt</PaddingTop>
+                            <PaddingBottom>5pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox2">
+                          <CanGrow>true</CanGrow>
+                          <UserSort>
+                            <SortExpression>=Fields!ProgramName.Value</SortExpression>
+                          </UserSort>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Product Name</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox2</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#557eb9</Color>
+                              <Style>None</Style>
+                            </Border>
+                            <TopBorder>
+                              <Style>Solid</Style>
+                              <Width>1.5pt</Width>
+                            </TopBorder>
+                            <BottomBorder>
+                              <Style>Solid</Style>
+                              <Width>1.5pt</Width>
+                            </BottomBorder>
+                            <BackgroundColor>White</BackgroundColor>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                            <PaddingLeft>5pt</PaddingLeft>
+                            <PaddingRight>5pt</PaddingRight>
+                            <PaddingTop>5pt</PaddingTop>
+                            <PaddingBottom>5pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox3">
+                          <CanGrow>true</CanGrow>
+                          <UserSort>
+                            <SortExpression>=Fields!Language.Value</SortExpression>
+                          </UserSort>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Primary Language</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox2</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#557eb9</Color>
+                              <Style>None</Style>
+                            </Border>
+                            <TopBorder>
+                              <Style>Solid</Style>
+                              <Width>1.5pt</Width>
+                            </TopBorder>
+                            <BottomBorder>
+                              <Style>Solid</Style>
+                              <Width>1.5pt</Width>
+                            </BottomBorder>
+                            <BackgroundColor>White</BackgroundColor>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                            <PaddingLeft>5pt</PaddingLeft>
+                            <PaddingRight>5pt</PaddingRight>
+                            <PaddingTop>5pt</PaddingTop>
+                            <PaddingBottom>5pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox10">
+                          <CanGrow>true</CanGrow>
+                          <UserSort>
+                            <SortExpression>=Fields!Version.Value</SortExpression>
+                          </UserSort>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Version</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox10</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#557eb9</Color>
+                              <Style>None</Style>
+                            </Border>
+                            <TopBorder>
+                              <Style>Solid</Style>
+                              <Width>1.5pt</Width>
+                            </TopBorder>
+                            <BottomBorder>
+                              <Style>Solid</Style>
+                              <Width>1.5pt</Width>
+                            </BottomBorder>
+                            <BackgroundColor>White</BackgroundColor>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                            <PaddingLeft>5pt</PaddingLeft>
+                            <PaddingRight>5pt</PaddingRight>
+                            <PaddingTop>5pt</PaddingTop>
+                            <PaddingBottom>5pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox14">
+                          <CanGrow>true</CanGrow>
+                          <UserSort>
+                            <SortExpression>=Fields!Bitness.Value</SortExpression>
+                          </UserSort>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Architecture</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox12</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#557eb9</Color>
+                              <Style>None</Style>
+                            </Border>
+                            <TopBorder>
+                              <Style>Solid</Style>
+                              <Width>1.5pt</Width>
+                            </TopBorder>
+                            <BottomBorder>
+                              <Style>Solid</Style>
+                              <Width>1.5pt</Width>
+                            </BottomBorder>
+                            <BackgroundColor>White</BackgroundColor>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                            <PaddingLeft>5pt</PaddingLeft>
+                            <PaddingRight>5pt</PaddingRight>
+                            <PaddingTop>5pt</PaddingTop>
+                            <PaddingBottom>5pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox16">
+                          <CanGrow>true</CanGrow>
+                          <UserSort>
+                            <SortExpression>=Fields!SharedComputerLicensing.Value</SortExpression>
+                          </UserSort>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Shared Computer Licensing</Value>
+                                  <Style>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox14</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#557eb9</Color>
+                              <Style>None</Style>
+                            </Border>
+                            <TopBorder>
+                              <Style>Solid</Style>
+                              <Width>1.5pt</Width>
+                            </TopBorder>
+                            <BottomBorder>
+                              <Style>Solid</Style>
+                              <Width>1.5pt</Width>
+                            </BottomBorder>
+                            <BackgroundColor>White</BackgroundColor>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                            <PaddingLeft>5pt</PaddingLeft>
+                            <PaddingRight>5pt</PaddingRight>
+                            <PaddingTop>5pt</PaddingTop>
+                            <PaddingBottom>5pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+                <TablixRow>
+                  <Height>0.25in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="ComputerName2">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!ComputerName.Value</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <TextDecoration>Underline</TextDecoration>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>ComputerName</rd:DefaultName>
+                          <ActionInfo>
+                            <Actions>
+                              <Action>
+                                <Drillthrough>
+                                  <ReportName>/ConfigMgr_S01/Hardware - General/Computer information for a specific computer</ReportName>
+                                  <Parameters>
+                                    <Parameter Name="variable">
+                                      <Value>=Fields!ComputerName.Value</Value>
+                                    </Parameter>
+                                  </Parameters>
+                                </Drillthrough>
+                              </Action>
+                            </Actions>
+                          </ActionInfo>
+                          <Style>
+                            <Border>
+                              <Color>#e5e5e5</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BottomBorder>
+                              <Style>None</Style>
+                            </BottomBorder>
+                            <LeftBorder>
+                              <Style>None</Style>
+                            </LeftBorder>
+                            <RightBorder>
+                              <Style>None</Style>
+                            </RightBorder>
+                            <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "LightSteelBlue")</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="ProductName">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!ProgramName.Value</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Left</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>ProductName</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#e5e5e5</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BottomBorder>
+                              <Style>None</Style>
+                            </BottomBorder>
+                            <LeftBorder>
+                              <Style>None</Style>
+                            </LeftBorder>
+                            <RightBorder>
+                              <Style>None</Style>
+                            </RightBorder>
+                            <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "LightSteelBlue")</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="ClientStateDescription2">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!Language.Value</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>ClientStateDescription</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#e5e5e5</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BottomBorder>
+                              <Style>None</Style>
+                            </BottomBorder>
+                            <LeftBorder>
+                              <Style>None</Style>
+                            </LeftBorder>
+                            <RightBorder>
+                              <Style>None</Style>
+                            </RightBorder>
+                            <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "LightSteelBlue")</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="ProductVersion">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!Version.Value</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>ProductVersion</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#e5e5e5</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BottomBorder>
+                              <Style>None</Style>
+                            </BottomBorder>
+                            <LeftBorder>
+                              <Style>None</Style>
+                            </LeftBorder>
+                            <RightBorder>
+                              <Style>None</Style>
+                            </RightBorder>
+                            <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "LightSteelBlue")</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Architecture">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!Bitness.Value</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Architecture</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#e5e5e5</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BottomBorder>
+                              <Style>None</Style>
+                            </BottomBorder>
+                            <LeftBorder>
+                              <Style>None</Style>
+                            </LeftBorder>
+                            <RightBorder>
+                              <Style>None</Style>
+                            </RightBorder>
+                            <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "LightSteelBlue")</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="UpdatesEnabled">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!SharedComputerLicensing.Value</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>UpdatesEnabled</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#e5e5e5</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BottomBorder>
+                              <Style>None</Style>
+                            </BottomBorder>
+                            <LeftBorder>
+                              <Style>None</Style>
+                            </LeftBorder>
+                            <RightBorder>
+                              <Style>None</Style>
+                            </RightBorder>
+                            <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "LightSteelBlue")</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+              </TablixRows>
+            </TablixBody>
+            <TablixColumnHierarchy>
+              <TablixMembers>
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+              </TablixMembers>
+            </TablixColumnHierarchy>
+            <TablixRowHierarchy>
+              <TablixMembers>
+                <TablixMember>
+                  <KeepWithGroup>After</KeepWithGroup>
+                  <RepeatOnNewPage>true</RepeatOnNewPage>
+                </TablixMember>
+                <TablixMember>
+                  <Group Name="Details2" />
+                </TablixMember>
+              </TablixMembers>
+            </TablixRowHierarchy>
+            <NoRowsMessage>=SrsResources.Localization.GetString("NoDataAvailable", User!Language)</NoRowsMessage>
+            <DataSetName>DataSet1</DataSetName>
+            <Top>1.52778in</Top>
+            <Height>0.5in</Height>
+            <Width>12.02499in</Width>
+            <ZIndex>6</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+              <TextAlign>Center</TextAlign>
+            </Style>
+          </Tablix>
         </ReportItems>
-        <Height>2.80556in</Height>
+        <Height>4.00139in</Height>
         <Style>
           <Border>
             <Style>None</Style>
           </Border>
         </Style>
       </Body>
-      <Width>13.6375in</Width>
+      <Width>17.32438in</Width>
       <Page>
-        <PageHeader>
-          <Height>1.1in</Height>
-          <PrintOnFirstPage>true</PrintOnFirstPage>
-          <PrintOnLastPage>true</PrintOnLastPage>
-          <ReportItems>
-            <Rectangle Name="BackgroundColorRectangle">
-              <ReportItems>
-                <Image Name="CenterHeaderImage2">
-                  <Source>External</Source>
-                  <Value>/ConfigMgr_S01/Report Resources/Report_Header_Center.png</Value>
-                  <Sizing>Fit</Sizing>
-                  <Left>0.21in</Left>
-                  <Height>0.75in</Height>
-                  <Width>9.4in</Width>
-                  <Style>
-                    <Border>
-                      <Style>None</Style>
-                    </Border>
-                  </Style>
-                </Image>
-                <Image Name="RightHeaderImage2">
-                  <Source>External</Source>
-                  <Value>/ConfigMgr_S01/Report Resources/Report_Header_Right.png</Value>
-                  <Left>9.61in</Left>
-                  <Height>0.75in</Height>
-                  <Width>2.34in</Width>
-                  <ZIndex>1</ZIndex>
-                  <Style>
-                    <Border>
-                      <Style>None</Style>
-                    </Border>
-                  </Style>
-                </Image>
-                <Image Name="LeftHeaderImage">
-                  <Source>External</Source>
-                  <Value>/ConfigMgr_S01/Report Resources/Report_Header_Left.png</Value>
-                  <Height>0.75in</Height>
-                  <Width>0.21in</Width>
-                  <ZIndex>2</ZIndex>
-                  <Style>
-                    <Border>
-                      <Style>None</Style>
-                    </Border>
-                  </Style>
-                </Image>
-              </ReportItems>
-              <KeepTogether>true</KeepTogether>
-              <Height>0.75in</Height>
-              <Width>11.95in</Width>
-              <Style>
-                <Border>
-                  <Style>None</Style>
-                </Border>
-                <BackgroundColor>#e2e9f2</BackgroundColor>
-              </Style>
-            </Rectangle>
-            <Textbox Name="ReportTitleTextbox">
-              <CanGrow>true</CanGrow>
-              <KeepTogether>true</KeepTogether>
-              <Paragraphs>
-                <Paragraph>
-                  <TextRuns>
-                    <TextRun>
-                      <Value>Office 365 Client computers with shared activation</Value>
-                      <Style>
-                        <FontFamily>Segoe UI</FontFamily>
-                        <FontSize>17pt</FontSize>
-                        <FontWeight>Bold</FontWeight>
-                      </Style>
-                    </TextRun>
-                  </TextRuns>
-                  <Style />
-                </Paragraph>
-              </Paragraphs>
-              <rd:DefaultName>Textbox54</rd:DefaultName>
-              <Top>0.75in</Top>
-              <Height>0.35in</Height>
-              <Width>11.95in</Width>
-              <ZIndex>1</ZIndex>
-              <Style>
-                <Border>
-                  <Style>None</Style>
-                </Border>
-                <BackgroundColor>Gainsboro</BackgroundColor>
-                <PaddingLeft>2pt</PaddingLeft>
-                <PaddingRight>2pt</PaddingRight>
-                <PaddingTop>2pt</PaddingTop>
-                <PaddingBottom>2pt</PaddingBottom>
-              </Style>
-            </Textbox>
-          </ReportItems>
-          <Style>
-            <Border>
-              <Style>None</Style>
-            </Border>
-          </Style>
-        </PageHeader>
         <PageFooter>
-          <Height>2.575in</Height>
+          <Height>0.71042in</Height>
           <PrintOnFirstPage>true</PrintOnFirstPage>
           <PrintOnLastPage>true</PrintOnLastPage>
           <Style>
@@ -1052,7 +1061,6 @@ WHERE [dbo].Office365ProPlusConfigurations2013_DATA.SharedComputerLicensing00 LI
           <ValueField>UserSIDs</ValueField>
         </DataSetReference>
       </DefaultValue>
-      <Prompt>UserSIDs</Prompt>
       <Hidden>true</Hidden>
     </ReportParameter>
     <ReportParameter Name="CollectionID">
@@ -1073,33 +1081,10 @@ WHERE [dbo].Office365ProPlusConfigurations2013_DATA.SharedComputerLicensing00 LI
       </ValidValues>
     </ReportParameter>
   </ReportParameters>
-  <ReportParametersLayout>
-    <GridLayoutDefinition>
-      <NumberOfColumns>2</NumberOfColumns>
-      <NumberOfRows>2</NumberOfRows>
-      <CellDefinitions>
-        <CellDefinition>
-          <ColumnIndex>0</ColumnIndex>
-          <RowIndex>0</RowIndex>
-          <ParameterName>UserTokenSIDs</ParameterName>
-        </CellDefinition>
-        <CellDefinition>
-          <ColumnIndex>1</ColumnIndex>
-          <RowIndex>0</RowIndex>
-          <ParameterName>UserSIDs</ParameterName>
-        </CellDefinition>
-        <CellDefinition>
-          <ColumnIndex>0</ColumnIndex>
-          <RowIndex>1</RowIndex>
-          <ParameterName>CollectionID</ParameterName>
-        </CellDefinition>
-      </CellDefinitions>
-    </GridLayoutDefinition>
-  </ReportParametersLayout>
   <CodeModules>
     <CodeModule>SrsResources, culture=neutral</CodeModule>
   </CodeModules>
   <rd:ReportUnitType>Inch</rd:ReportUnitType>
-  <rd:ReportServerUrl>http://cm/ReportServer</rd:ReportServerUrl>
+  <rd:ReportServerUrl>http://2012-cm/ReportServer</rd:ReportServerUrl>
   <rd:ReportID>6fbd236a-d836-4950-8788-14b828deb616</rd:ReportID>
 </Report>
