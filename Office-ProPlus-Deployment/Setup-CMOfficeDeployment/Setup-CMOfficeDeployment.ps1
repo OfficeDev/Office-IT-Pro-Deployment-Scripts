@@ -475,6 +475,17 @@ Update-CMOfficePackage -Channels Current -Bitness Both -OfficeSourceFilesPath D:
                 $tempofficeFileChannelPath = "$officeFileChannelPath\Office\Data"
                 $tempLocalChannelPath = "$LocalChannelPath\$ChannelShortName\Office\Data"
 
+                [string]$oclVersion = $NULL
+                if ($officeFileChannelPath) {
+                    if (Test-Path -Path "$officeFileChannelPath\Office\Data") {
+                       $oclVersion = Get-LatestVersion -UpdateURLPath $officeFileChannelPath
+                    }
+                }
+
+                if ($oclVersion) {
+                   $latestVersion = $oclVersion
+                }
+
                 if ($MoveSourceFiles){                                
                     if(!(Test-Path -Path $officeFileTargetPath)) {
                         #[System.IO.Directory]::CreateDirectory($officeFileTargetPath) | Out-Null
@@ -483,7 +494,19 @@ Update-CMOfficePackage -Channels Current -Bitness Both -OfficeSourceFilesPath D:
                     }else{
                         $subfiles = Get-ChildItem $tempofficeFileChannelPath
                         foreach($file in $subfiles){
-                            Move-Item -Path $tempofficeFileChannelPath\$file -Destination $tempLocalChannelPath -Force
+                            [array]$tempLocalChannelPathFiles = (Get-ChildItem -Path $tempLocalChannelPath).Name
+                            if($tempLocalChannelPathFiles -notcontains $file.Name){
+                                Move-Item -Path $tempofficeFileChannelPath\$file -Destination $tempLocalChannelPath -Force
+                            }
+                            else{
+                                [array]$versionFiles = (Get-ChildItem -Path $tempLocalChannelPath\$latestVersion).Name
+                                [array]$officeChannelVersionFiles = (Get-ChildItem -Path "$tempofficeFileChannelPath\$latestVersion").Name
+                                foreach($officeChannelVersionFile in $officeChannelVersionFiles) {
+                                    if($versionFiles -notcontains $officeChannelVersionFile){
+                                        Move-Item -Path $tempofficeFileChannelPath\$latestVersion\$officeChannelVersionFile -Destination $tempLocalChannelPath\$latestVersion -Force
+                                    }
+                                }
+                            }           
                         }
 
                         Get-ChildItem -Path $officeFileChannelPath -Recurse | Remove-Item -Force -Recurse | Out-Null
@@ -509,16 +532,6 @@ Update-CMOfficePackage -Channels Current -Bitness Both -OfficeSourceFilesPath D:
                     Copy-Item -Path $cabFilePath -Destination "$LocalPath\ofl.cab" -Force
                 }
 
-                [string]$oclVersion = $NULL
-                if ($officeFileChannelPath) {
-                    if (Test-Path -Path "$officeFileChannelPath\Office\Data") {
-                       $oclVersion = Get-LatestVersion -UpdateURLPath $officeFileChannelPath
-                    }
-                }
-
-                if ($oclVersion) {
-                   $latestVersion = $oclVersion
-                }
            }
 
            $cabFilePath = "$env:TEMP/ofl.cab"
