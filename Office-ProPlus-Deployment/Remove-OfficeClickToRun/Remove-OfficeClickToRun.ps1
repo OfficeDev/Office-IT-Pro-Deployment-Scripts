@@ -52,7 +52,7 @@ Will uninstall Office Click-to-Run.
             write-host "Please wait while $c2rName is being uninstalled..."
         }
    
-        if($c2rVersion -match "15"){
+        if($c2rVersion.Version -like "15*"){
             $OdtExe = "$scriptRoot\Office2013Setup.exe"
         }
         else{
@@ -319,7 +319,7 @@ process {
            
            $name = $regProv.GetStringValue($HKLM, $path, "DisplayName").sValue          
 
-           if ($ConfigItemList.Contains($key.ToUpper()) -and $name.ToUpper().Contains("MICROSOFT OFFICE")) {
+           if ($ConfigItemList.Contains($key.ToUpper()) -and $name.ToUpper().Contains("MICROSOFT OFFICE") -and $name.ToUpper() -notlike "*MUI*") {
               $primaryOfficeProduct = $true
            }
 
