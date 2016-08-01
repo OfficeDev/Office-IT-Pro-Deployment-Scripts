@@ -23,6 +23,7 @@ namespace Microsoft.Office
          ProjectProXVolume = 128,
          ProjectStdXVolume = 256,
          InfoPathRetail = 512,
+         LanguagePack = 1024
      }
 }
 "
