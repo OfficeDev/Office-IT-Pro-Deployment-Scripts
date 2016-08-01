@@ -1,10 +1,10 @@
-#Configure and setup Office 365 client reports in System Center Configuration Manager
+﻿#Configure and setup Office 365 client reports in System Center Configuration Manager
 
 ##Before you begin
 ###Copy the required files locally
 *       Configuration.txt  
 *	Office365ClientConfigurations.mof  
-*	Office365ProPlusConfigurations2013.mof  
+*	Office365ClientConfigurations2013.mof  
 *	Setup-Office365ClientReports.ps1  
 *	Reports  
       *	Office 365 Client computers with shared activation.rdl  
@@ -19,26 +19,10 @@
       *	Office 365 Client update status for each computer.rdl  
       *	Office 365 Client users and their associated computers with details.rdl  
       
-##Deactivate the current Office365ProPlusConfigurations class
-
-Update 1606 for Configuration Manager introduced an inventory class to collect some of the Office 365 client 
-information. In order to collect all of the necessary information required for the Office 365 client reports 
-we should disable this class and add the two required Inventory classes; **Office365ClientConfigurations** 
-and **Office365ProPlusConfigurations2013**.
-
-1.	Open the Configuration Manager console.
-2.	Go to **Administration/Overview/Client Settings**.
-3.	Right click on **Default Client Settings** and choose **Properties**.
-4.	Click **Hardware Inventory**.
-5.	Click **Set Classes …**
-6.	Deselect **OFFICE365PROPLUSCONFIGURATIONS** and click **OK**.
-7.	Click **OK** to close the Default Settings window.
-
-
 ##Add the new classes into Hardware Inventory
 ###Step 1: Append the configuration.mof file  
 
-Before we can create the reports we need to modify the configuration.mof file with the new class information. There are two options available:
+Before we can create the reports we need to modify the configuration.mof file with the new class information. There are two methods available:
       
   * PowerShell 
   
@@ -50,7 +34,7 @@ Before we can create the reports we need to modify the configuration.mof file wi
         The IT Pro will need to locate the configuration.mof file and manually copy the contents 
         of configuration.txt to the end of the file.  
         
-You can find more information about MOF files at https://technet.microsoft.com/en-us/library/bb632896.aspx
+You can find more information about MOF, Managed Object Format, files at https://technet.microsoft.com/en-us/library/bb632896.aspx
 
 ####Use PowerShell to copy the content to the MOF file
 1.	Open a PowerShell console  
