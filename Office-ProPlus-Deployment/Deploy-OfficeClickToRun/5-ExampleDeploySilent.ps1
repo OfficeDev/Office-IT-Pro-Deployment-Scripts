@@ -14,10 +14,16 @@ Process {
 
 #Importing all required functions
 . $scriptPath\Generate-ODTConfigurationXML.ps1
+. $scriptPath\SharedFunctions.ps1
 . $scriptPath\Edit-OfficeConfigurationFile.ps1
 . $scriptPath\Install-OfficeClickToRun.ps1
 
 $targetFilePath = "$env:temp\configuration.xml"
+
+$SourcePath = $scriptPath
+if((Validate-UpdateSource -UpdateSource $SourcePath) -eq $false) {
+    $SourcePath = $NULL    
+}
 
 #This example will create an Office Deployment Tool (ODT) configuration file and include all of the Languages currently in use on the computer
 #from which the script is run.  It will then remove the Version attribute from the XML to ensure the installation gets the latest version
@@ -25,7 +31,7 @@ $targetFilePath = "$env:temp\configuration.xml"
 
 #This script additionally sets the "AcceptEULA" to "True" and the display "Level" to "None" so the install is silent.
 
-Generate-ODTConfigurationXml -Languages AllInUseLanguages -TargetFilePath $targetFilePath | Set-ODTAdd -Version $NULL | Set-ODTDisplay -Level None -AcceptEULA $true | Install-OfficeClickToRun
+Generate-ODTConfigurationXml -Languages AllInUseLanguages -TargetFilePath $targetFilePath | Set-ODTAdd -Version $NULL -Channel Deferred -SourcePath $SourcePath | Set-ODTDisplay -Level None -AcceptEULA $true | Install-OfficeClickToRun
 
 # Configuration.xml file for Click-to-Run for Office 365 products reference. https://technet.microsoft.com/en-us/library/JJ219426.aspx
 }
