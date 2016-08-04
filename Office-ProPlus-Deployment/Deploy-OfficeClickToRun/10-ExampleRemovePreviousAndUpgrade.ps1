@@ -17,10 +17,11 @@ $UseVolumeLicensing = $false
 
 #Importing all required functions
 . $scriptPath\Generate-ODTConfigurationXML.ps1
-. $scriptPath\Edit-OfficeConfigurationFile.ps1
 . $scriptPath\Install-OfficeClickToRun.ps1
 . $scriptPath\Remove-PreviousOfficeInstalls.ps1
 . $scriptPath\Remove-OfficeClickToRun.ps1
+. $scriptPath\SharedFunctions.ps1
+. $scriptPath\Edit-OfficeConfigurationFile.ps1
 
 $targetFilePath = "$env:temp\configuration.xml"
 
@@ -34,11 +35,16 @@ $officeProducts = Get-OfficeVersion -ShowAllInstalledProducts | Select *
 
 $Office2016C2RExists = $officeProducts | Where {$_.ClickToRun -eq $true -and $_.Version -like '16.*' }
 
+$SourcePath = $scriptPath
+if((Validate-UpdateSource -UpdateSource $SourcePath) -eq $false) {
+    $SourcePath = $NULL    
+}
+
 if ($Office2016C2RExists) {
   Write-Host "Office 2016 Click-To-Run is already installed"
 } else {
     if (!(Test-Path -Path $targetFilePath)) {
-       Generate-ODTConfigurationXml -Languages AllInUseLanguages -TargetFilePath $targetFilePath | Set-ODTAdd -Version $NULL | Set-ODTDisplay -Level None -AcceptEULA $true | Out-Null
+       Generate-ODTConfigurationXml -Languages AllInUseLanguages -TargetFilePath $targetFilePath | Set-ODTAdd -Version $NULL -SourcePath $SourcePath -Channel Deferred | Set-ODTDisplay -Level None -AcceptEULA $true | Out-Null
 
        $products = Get-ODTProductToAdd -TargetFilePath $targetFilePath -All
        if ($products) { $languages = $products.Languages } else { $languages = @("en-us") }
@@ -59,6 +65,8 @@ if ($Office2016C2RExists) {
            if ($ProjectPro.Count -gt 0) { Add-ODTProductToAdd -ProductId ProjectProXVolume -TargetFilePath $targetFilePath -LanguageIds $languages | Out-Null }
            if ($ProjectStd.Count -gt 0) { Add-ODTProductToAdd -ProductId ProjectStdXVolume -TargetFilePath $targetFilePath -LanguageIds $languages | Out-Null }
        }
+    }else {
+        Set-ODTAdd -SourcePath $SourcePath -TargetFilePath $TargetFilePath | Out-Null
     }
 
     Remove-OfficeClickToRun 
