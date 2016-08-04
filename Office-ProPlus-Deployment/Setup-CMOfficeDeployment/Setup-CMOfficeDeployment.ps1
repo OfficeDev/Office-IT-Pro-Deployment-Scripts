@@ -1451,7 +1451,7 @@ to install additional languages on a client
                 $ProgramName = "Deploy Language Pack-$Languages-$Bit-Bit"
 
                 $CommandLine = "%windir%\Sysnative\windowsPowershell\V1.0\powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive " + `
-                               "-NoProfile -WindowStyle Hidden -Command .\DeployConfigFile.ps11 -ConfigFileName $configFileName"
+                               "-NoProfile -WindowStyle Hidden -Command .\DeployConfigFile.ps1 -ConfigFileName $configFileName"
                
                 if($MainOfficeLanguage.ToLower() -ne "en-us") {
                     [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
