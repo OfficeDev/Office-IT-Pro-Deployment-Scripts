@@ -272,7 +272,8 @@
             <remarks>
             Note that both localization entries and MSI properties must be enclosed in the square brackets 
             (e.g. "[ProductName] Setup", "[InstallDirDlg_Title]").
-            </remarks>/// </summary>
+            </remarks>
+            </summary>
         </member>
         <member name="M:WixSharp.UI.Forms.ManagedForm.SetShellSize(System.Int32,System.Int32)">
             <summary>
@@ -355,6 +356,9 @@
             </summary>
         </member>
         <member name="T:WixSharp.UI.Forms.WelcomeDialog">
+            <summary>
+            The standard Welcome dialog
+            </summary>
             <summary>
             The standard Welcome dialog
             </summary>
@@ -500,6 +504,13 @@
             Called when MSI execution is complete.
             </summary>
         </member>
+        <member name="M:WixSharp.UI.Forms.ProgressDialog.cancel_Click(System.Object,System.EventArgs)">
+            <summary>
+            Handles the Click event of the cancel control.
+            </summary>
+            <param name="sender">The source of the event.</param>
+            <param name="e">The <see cref="T:System.EventArgs" /> instance containing the event data.</param>
+        </member>
         <member name="F:WixSharp.UI.Forms.ProgressDialog.components">
             <summary>
             Required designer variable.
@@ -613,6 +624,14 @@
             </summary>
             <param name="project">The project.</param>
         </member>
+        <member name="M:WixSharp.ManagedUI.ValidateUITextFile(System.String,System.Boolean)">
+            <summary>
+            Validates the UI text file (localization file) for being compatible with ManagedUI.
+            </summary>
+            <param name="file">The file.</param>
+            <param name="throwOnError">if set to <c>true</c> [throw on error].</param>
+            <returns></returns>
+        </member>
         <member name="P:WixSharp.ManagedUI.InstallDirId">
             <summary>
             Gets or sets the id of the 'installdir' (destination folder) directory. It is the directory,
@@ -630,6 +649,11 @@
         <member name="P:WixSharp.ManagedUI.ModifyDialogs">
             <summary>
             Sequence of the dialogs to be displayed during the customization of the installed product.
+            </summary>
+        </member>
+        <member name="P:WixSharp.ManagedUI.Icon">
+            <summary>
+            A window icon that appears in the left top corner of the UI shell window.
             </summary>
         </member>
         <member name="M:WixSharp.ManagedUI.Initialize(Microsoft.Deployment.WindowsInstaller.Session,System.String,Microsoft.Deployment.WindowsInstaller.InstallUIOptions@)">
@@ -773,9 +797,19 @@
             Starts the execution of the MSI installation.
             </summary>
         </member>
+        <member name="F:WixSharp.MsiRuntime.CancelExecute">
+            <summary>
+            Cancels the execution of the MSI installation, which is already started (progress is displayed).
+            </summary>
+        </member>
         <member name="F:WixSharp.MsiRuntime.Session">
             <summary>
             The session object.
+            </summary>
+        </member>
+        <member name="F:WixSharp.MsiRuntime.Data">
+            <summary>
+            Repository of the session properties to be captured and transfered to the deferred CAs.for 
             </summary>
         </member>
         <member name="F:WixSharp.MsiRuntime.UIText">
@@ -965,6 +999,12 @@
             The standard Exit dialog
             </summary>
         </member>
+        <member name="P:WixSharp.Forms.ShellView.CurrentDialog">
+            <summary>
+            Gets and sets the current dialog of the UI sequence.
+            </summary>
+            <value>The current dialog.</value>
+        </member>
         <member name="M:WixSharp.UIExtensions.GetDirectoryPath(Microsoft.Deployment.WindowsInstaller.Session,System.String)">
             <summary>
             Gets the target system directory path based on specified directory name (MSI Directory table).
@@ -1053,6 +1093,21 @@
             The runtime context.
             </value>
         </member>
+        <member name="P:WixSharp.UIShell.MsiRuntime">
+            <summary>
+            Gets or sets the runtime context object. Typically this object is of the <see cref="T:WixSharp.MsiRuntime" /> type.
+            </summary>
+            <value>
+            The runtime context.
+            </value>
+            
+        </member>
+        <member name="P:WixSharp.UIShell.UI">
+            <summary>
+            Gets or sets the UI.
+            </summary>
+            <value>The UI.</value>
+        </member>
         <member name="P:WixSharp.UIShell.UserInterrupted">
             <summary>
             Gets a value indicating whether the MSI session was interrupted (canceled) by user.
@@ -1082,6 +1137,18 @@
             The dialogs.
             </value>
         </member>
+        <member name="P:WixSharp.UIShell.CurrentDialog">
+            <summary>
+            Gets the current dialog of the UI sequence.
+            </summary>
+            <value>The current dialog.</value>
+        </member>
+        <member name="P:WixSharp.UIShell.CurrentDialogIndex">
+            <summary>
+            Gets or sets the current dialog by the dialog index.
+            </summary>
+            <value>The index of the current dialog.</value>
+        </member>
         <member name="M:WixSharp.UIShell.ShowModal(WixSharp.MsiRuntime,WixSharp.IManagedUI)">
             <summary>
             Shows the modal window of the MSI UI. This method is called by the <see cref="T:Microsoft.Deployment.WindowsInstaller.IEmbeddedUI" />
@@ -1089,6 +1156,32 @@
             </summary>
             <param name="msiRuntime">The MSI runtime.</param>
             <param name="ui">The MSI external/embedded UI.</param>
+        </member>
+        <member name="M:WixSharp.UIShell.Play(WixSharp.ManagedDialogs)">
+            <summary>
+            Plays the specified dialogs in demo mode.
+            </summary>
+            <param name="dialogs">The dialogs.</param>
+        </member>
+        <member name="M:WixSharp.UIShell.Play``1">
+            <summary>
+            Plays the specified dialog in demo mode.
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:WixSharp.UIShell.Play(System.Type)">
+            <summary>
+            Plays the specified dialog in demo mode.
+            </summary>
+            <param name="dialog">The dialog.</param>
+        </member>
+        <member name="P:WixSharp.UIShell.IsDemoMode">
+            <summary>
+            Gets or sets a value indicating whether the UIShell is demo mode.
+            </summary>
+            <value>
+            <c>true</c> if this instance is demo mode; otherwise, <c>false</c>.
+            </value>
         </member>
         <member name="M:WixSharp.UIShell.GoNext">
             <summary>
@@ -1151,6 +1244,12 @@
             <summary>
             Called when MSI execution is complete.
             </summary>
+        </member>
+        <member name="M:WixSharp.UIShell.InUIThread(System.Action)">
+            <summary>
+            Marshaling the action execution into UI thread
+            </summary>
+            <param name="action">The action.</param>
         </member>
         <member name="T:WixSharp.Win32">
             <summary>
@@ -1260,9 +1359,15 @@
             Inits this instance.
             </summary>
         </member>
+        <member name="M:WixSharp.WixCLRDialog.GetMsiForegroundWindow">
+            <summary>
+            Gets the msi foreground window.
+            </summary>
+            <returns></returns>
+        </member>
         <member name="F:WixSharp.WixCLRDialog.delta">
             <summary>
-            There is some strange resizing artefact (at least on Win7) when MoveWindow does not resize the window accurately.
+            There is some strange resizing artifact (at least on Win7) when MoveWindow does not resize the window accurately.
             Thus special adjustment ('delta') is needed to fix the problem.
             <para>
             The delta value is used in the ReplaceHost method.</para>

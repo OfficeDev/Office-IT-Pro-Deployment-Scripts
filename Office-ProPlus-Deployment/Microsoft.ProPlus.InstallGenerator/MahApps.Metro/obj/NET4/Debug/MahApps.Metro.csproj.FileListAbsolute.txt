@@ -946,7 +946,6 @@ D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\MahApps.Metro\bin\Debug\ru\System.Windows.Interactivity.resources.dll
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\MahApps.Metro\bin\Debug\zh-Hans\System.Windows.Interactivity.resources.dll
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\MahApps.Metro\bin\Debug\zh-Hant\System.Windows.Interactivity.resources.dll
-D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\MahApps.Metro\obj\NET4\Debug\MahApps.Metro.csprojResolveAssemblyReference.cache
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\MahApps.Metro\obj\NET4\Debug\Styles\Accents\Amber.baml
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\MahApps.Metro\obj\NET4\Debug\Styles\Accents\Brown.baml
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\MahApps.Metro\obj\NET4\Debug\Styles\Accents\Cobalt.baml
@@ -1067,3 +1066,4 @@ D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\MahApps.Metro\obj\NET4\Debug\MahApps.Metro.g.resources
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\MahApps.Metro\obj\NET4\Debug\MahApps.Metro.dll
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\MahApps.Metro\obj\NET4\Debug\MahApps.Metro.pdb
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\MahApps.Metro\obj\NET4\Debug\MahApps.Metro.csprojResolveAssemblyReference.cache

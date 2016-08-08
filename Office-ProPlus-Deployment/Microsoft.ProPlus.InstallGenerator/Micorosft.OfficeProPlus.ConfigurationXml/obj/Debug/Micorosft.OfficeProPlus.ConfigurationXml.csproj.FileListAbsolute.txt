@@ -22,6 +22,5 @@ C:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deplo
 C:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Micorosft.OfficeProPlus.ConfigurationXml\obj\Debug\Micorosft.OfficeProPlus.ConfigurationXml.pdb
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Micorosft.OfficeProPlus.ConfigurationXml\bin\Debug\Micorosft.OfficeProPlus.ConfigurationXml.dll
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Micorosft.OfficeProPlus.ConfigurationXml\bin\Debug\Micorosft.OfficeProPlus.ConfigurationXml.pdb
-D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Micorosft.OfficeProPlus.ConfigurationXml\obj\Debug\Micorosft.OfficeProPlus.ConfigurationXml.csprojResolveAssemblyReference.cache
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Micorosft.OfficeProPlus.ConfigurationXml\obj\Debug\Micorosft.OfficeProPlus.ConfigurationXml.dll
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Micorosft.OfficeProPlus.ConfigurationXml\obj\Debug\Micorosft.OfficeProPlus.ConfigurationXml.pdb
