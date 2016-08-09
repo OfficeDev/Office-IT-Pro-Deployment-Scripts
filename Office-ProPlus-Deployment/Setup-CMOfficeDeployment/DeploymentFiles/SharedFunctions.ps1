@@ -1477,7 +1477,6 @@ function Get-ChannelXml() {
            }
        }
 
-
        if($PSVersionTable.PSVersion.Major -ge '3'){
            $tmpName = "o365client_64bit.xml"
            expand $XMLFilePath $env:TEMP -f:$tmpName | Out-Null
