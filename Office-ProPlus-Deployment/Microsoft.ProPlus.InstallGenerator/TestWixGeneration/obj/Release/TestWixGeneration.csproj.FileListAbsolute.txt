@@ -1,0 +1,5 @@
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\TestWixGeneration\bin\Release\TestWixGeneration.exe
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\TestWixGeneration\bin\Release\TestWixGeneration.pdb
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\TestWixGeneration\obj\Release\TestWixGeneration.csprojResolveAssemblyReference.cache
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\TestWixGeneration\obj\Release\TestWixGeneration.exe
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\TestWixGeneration\obj\Release\TestWixGeneration.pdb
