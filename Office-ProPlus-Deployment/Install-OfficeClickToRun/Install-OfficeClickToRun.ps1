@@ -858,11 +858,6 @@ Function Wait-ForOfficeCTRInstall() {
               }
            }
 
-
-           if ($allComplete) {
-              break;
-           }
-
            if ($startTime -lt (Get-Date).AddHours(-$TimeOutInMinutes)) {
               throw "Waiting for Update Timed-Out"
               break;
@@ -871,18 +866,19 @@ Function Wait-ForOfficeCTRInstall() {
            Start-Sleep -Seconds 5
        } while($updateRunning -eq $true) 
 
-       if ($updateRunning) {
+       if((!$updateRunning) -and $trackProgress.Count -gt '0') {
           if ($failure) {
-            Write-host ""
-            Write-Host "Update Failed"
-          } else {
-            Write-host ""
-            Write-Host "Update Complete"
+              Write-host ""
+              Write-Host "Update Failed"
+              break;
+          }else {
+              Write-host ""
+              Write-Host "Update Complete"
           }
-       } else {
-          Write-host ""
-          Write-Host "Update Not Running"
-       } 
+       }else {
+           Write-host ""
+           Write-Host "Update Not Running"
+       }
     }
 }
 

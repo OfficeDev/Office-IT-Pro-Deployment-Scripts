@@ -15,6 +15,7 @@ Process {
 
 #Importing all required functions - These files must be in the same directory as this script
 . $scriptPath\Generate-ODTConfigurationXML.ps1
+. $scriptPath\SharedFunctions.ps1
 . $scriptPath\Edit-OfficeConfigurationFile.ps1
 . $scriptPath\Install-OfficeClickToRun.ps1
 . $scriptPath\Remove-OfficeClickToRun.ps1
@@ -22,6 +23,11 @@ Process {
 . $scriptPath\Remove-PreviousOfficeInstalls.ps1
 
 $targetFilePath = "$env:temp\configuration.xml"
+
+$SourcePath = $scriptPath
+if((Validate-UpdateSource -UpdateSource $SourcePath) -eq $false) {
+    $SourcePath = $NULL    
+}
 
 #This example will detect the current install of Office that is currently installed. If the current install of Office Click-To-Run 32-bit it will
 #then generate a Configuration XML based on the current configuration It will then remove the Version attribute from the XML to ensure the installation gets the latest version
@@ -46,7 +52,7 @@ if ($installOffice) {
 
       Remove-PreviousOfficeInstalls
 
-      Set-ODTAdd -TargetFilePath $targetFilePath -Version $NULL -Bitness 64 | Out-Null
+      Set-ODTAdd -TargetFilePath $targetFilePath -Version $NULL -Bitness 64 -SourcePath $SourcePath | Out-Null
       Set-ODTDisplay -TargetFilePath $targetFilePath -Level None -AcceptEULA $true | Out-Null
 
       $updates = Get-ODTUpdates -TargetFilePath $targetFilePath

@@ -39,7 +39,8 @@ using System;
         ChangeChannel = 2,
         RollBack = 3,
         UpdateWithConfigMgr = 4,
-        UpdateWithTask = 5
+        UpdateWithTask = 5,
+        LanguagePack = 6
     }
 "
 Add-Type -TypeDefinition $enum2 -ErrorAction SilentlyContinue
@@ -1299,6 +1300,207 @@ be prompted before updating and will display the progress.
     }
 }
 
+function Create-CMOfficeLanguageProgram{   
+<#
+.SYNOPSIS
+Automates the configuration of System Center Configuration Manager (CM) to configure Office 365 ProPlus program deployments.
+
+.DESCRIPTION
+Creates a program in System Center Configuration Manager (CM) to deploy and install a specified language or multiple languages.
+
+.PARAMETER Channel
+The target update channel; Current, Deferred, FirstReleaseDeferred, or FirstReleaseCurrent.
+
+.PARAMETER Languages
+All office languages are supported in the ll-cc format "en-us"
+
+.PARAMETER Bitness
+The architecture of Office specified as v32 or v64.
+
+.PARAMETER MainOfficeLanguage
+The Shell UI language of Office.
+
+.PARAMETER Version
+The version of Office containing the language files.
+
+.PARAMETER ConfigurationXml
+Sets the configuration file to be used for the instalation.
+
+.EXAMPLE
+Create-CMOfficeLanguageProgram -Channel Deferred -Languages de-de,fr-fr -Bitness v32
+A language pack configuration file will be created to add the German and French language packs. A program will be created
+for the Office 365 ProPlus package that can be deployed to install additional languages on a client.
+
+.EXAMPLE
+Create-CMOfficeLanguageProgram -Channel Deferred -Languages de-de,fr-fr -Bitness v32 -MainOfficeLanguage ja-jp
+A language pack configuration file will be created to add the German and French language packs. The Japanese language will
+replace English as the Shell UI language. A program will be created for the Office 365 ProPlus package that can be deployed 
+to install additional languages on a client
+
+#>   
+    [CmdletBinding(SupportsShouldProcess=$true)]
+    Param
+    (
+        [Parameter()]
+        [OfficeChannel]$Channel = "Deferred",
+
+        [Parameter()]
+        [ValidateSet("en-us","ar-sa","bg-bg","zh-cn","zh-tw","hr-hr","cs-cz","da-dk","nl-nl","et-ee","fi-fi","fr-fr","de-de","el-gr","he-il","hi-in","hu-hu","id-id","it-it",
+                    "ja-jp","kk-kz","ko-kr","lv-lv","lt-lt","ms-my","nb-no","pl-pl","pt-br","pt-pt","ro-ro","ru-ru","sr-latn-rs","sk-sk","sl-si","es-es","sv-se","th-th",
+                    "tr-tr","uk-ua")]
+        [string[]]$Languages = ("en-us"),
+
+        [Parameter()]
+        [Bitness]$Bitness = "v32",
+
+        [Parameter()]
+        [string]$MainOfficeLanguage = "en-us",
+
+        [Parameter()]
+        [string]$Version = $NULL,
+
+        [Parameter()]
+	    [String]$ConfigurationXml = ".\DeploymentFiles\LanguageConfiguration.xml"        
+    )
+    
+    Begin {
+        $currentExecutionPolicy = Get-ExecutionPolicy
+	    Set-ExecutionPolicy Unrestricted -Scope Process -Force  
+        $startLocation = Get-Location
+    }
+
+    Process {
+        try{
+
+        Check-AdminAccess
+
+        $LargeDrv = Get-LargestDrive
+        $LocalPath = "$LargeDrv\OfficeDeployment"
+
+        $ChannelList = @("FirstReleaseCurrent", "Current", "FirstReleaseDeferred", "Deferred")
+        $ChannelXml = Get-ChannelXml -FolderPath $LocalPath -OverWrite $true
+
+        foreach ($ChannelName in $ChannelList) {
+            if ($Channel -eq $ChannelName) {
+                $selectChannel = $ChannelXml.UpdateFiles.baseURL | ? {$_.branch -eq $ChannelName.ToString() }
+                $latestVersion = Get-ChannelLatestVersion -ChannelUrl $selectChannel.URL -Channel $ChannelName
+                $ChannelShortName = ConvertChannelNameToShortName -ChannelName $ChannelName
+
+                if ($Version) {
+                    $latestVersion = $Version
+                }
+
+                $Bit = $Bitness.ToString().Replace("v", "")
+
+                LoadCMPrereqs -SiteCode $SiteCode -CMPSModulePath $CMPSModulePath
+
+                $siteDrive = Get-Location
+
+                $existingPackage = CheckIfPackageExists
+                if (!($existingPackage)) {
+                    throw "You must run the Create-CMOfficePackage function before running this function"
+                }
+        
+                [string]$CommandLine = ""
+                [string]$ProgramName = ""
+
+                [string]$channelShortNameLabel = $ChannelName
+                if ($Channel -eq "FirstReleaseCurrent") {
+                    $channelShortNameLabel = "FRCC"
+                }
+                if ($Channel -eq "FirstReleaseDeferred") {
+                    $channelShortNameLabel = "FRDC"
+                }
+                if ($Channel -eq "Current") {
+                    $channelShortNameLabel = "CC"
+                }
+                if ($Channel -eq "Deferred") {
+                    $channelShortNameLabel = "DC"
+                }
+                             
+                $SharePath = $existingPackage.PkgSourcePath
+
+                $OSSourcePath = "$PSScriptRoot\DeploymentFiles\DeployConfigFile.ps1"
+                $OCScriptPath = "$SharePath\DeployConfigFile.ps1"
+
+                $configId = "Language pack-$Channel-$Languages-$Bit-Bit"
+                $configFileName = $configId + ".xml"
+
+                if ($CustomName) {
+                    $configFileName = $configId + "-" + $CustomName + ".xml"
+                }
+
+                $configFilePath = "$LocalPath\$configFileName"
+
+                Set-Location $startLocation
+
+                Copy-Item -Path $ConfigurationXml -Destination $configFilePath
+
+                $sourcePath = $NULL
+
+                $sourceFilePath = "$LocalPath\SourceFiles\$channelShortName\Office\Data"
+                if (Test-Path -Path $sourceFilePath) {
+                    $sourcePath = ".\SourceFiles\$channelShortName"
+                } else {
+                    $sourceFilePath = "$LocalPath\SourceFiles\$Channel\Office\Data"
+                    if (Test-Path -Path $sourceFilePath) {
+                        $sourcePath = ".\SourceFiles\$Channel"
+                    }
+                }
+        
+                $ProgramName = "Deploy Language Pack-$Languages-$Bit-Bit"
+
+                $CommandLine = "%windir%\Sysnative\windowsPowershell\V1.0\powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive " + `
+                               "-NoProfile -WindowStyle Hidden -Command .\DeployConfigFile.ps1 -ConfigFileName $configFileName"
+               
+                if($MainOfficeLanguage.ToLower() -ne "en-us") {
+                    [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
+                    $ConfigFile.Load($configFilePath) | Out-Null
+                    [System.XML.XMLElement]$nodes = $ConfigFile.Configuration.Add.Product.Language
+                    foreach($node in $nodes) {
+                        $node.SetAttribute("ID", "$MainOfficeLanguage")
+                    }
+                    $ConfigFile.Save($configFilePath)
+                }
+                
+                foreach ($language in $Languages){
+                    if(!(Get-ChildItem -Path $SharePath\SourceFiles\$channelShortName\Office\Data\$latestVersion | Where-Object {$_ -like "*$language*"})){
+                        Remove-Item -Path $configFilePath
+                        throw "The language pack $language was not found. To download the language run Download-CMOfficeChannelFiles using the -Languages parameter"
+                    }
+                    else{
+                        UpdateConfigurationXml -Path $configFilePath -Channel $ChannelName -Bitness $Bit -SourcePath $sourcePath -Language $language
+                    }
+                }
+        
+                [string]$packageId = $null
+
+                Set-Location $siteDrive
+
+                $packageId = $existingPackage.PackageId
+                if ($packageId) {
+                    $comment = "DeployLanguagePack-$Channel-$Bit-$Languages"
+
+                    if ($CustomName) {
+                        $comment += "-$CustomName"
+                    }
+
+                    CreateCMProgram -Name $ProgramName -PackageID $packageId -RequiredPlatformNames $requiredPlatformNames -CommandLine $CommandLine -Comment $comment
+                }
+            }
+        }
+
+        } catch{
+            throw;
+        }
+    }
+
+    End {
+        Set-ExecutionPolicy $currentExecutionPolicy -Scope Process -Force
+        Set-Location $startLocation 
+    }
+}
+
 function Distribute-CMOfficePackage {
 <#
 .SYNOPSIS
@@ -1527,6 +1729,12 @@ clients in the target collection 'Office Update'.
 
         [Parameter()]
 	    [BitnessOptions]$Bitness = "v32",
+
+        [Parameter()]
+        [ValidateSet("en-us","ar-sa","bg-bg","zh-cn","zh-tw","hr-hr","cs-cz","da-dk","nl-nl","et-ee","fi-fi","fr-fr","de-de","el-gr","he-il","hi-in","hu-hu","id-id","it-it",
+                    "ja-jp","kk-kz","ko-kr","lv-lv","lt-lt","ms-my","nb-no","pl-pl","pt-br","pt-pt","ro-ro","ru-ru","sr-latn-rs","sk-sk","sl-si","es-es","sv-se","th-th",
+                    "tr-tr","uk-ua")]
+        [string[]]$Languages = ("en-us"),
     
 	    [Parameter()]
 	    [String]$SiteCode = $NULL,
@@ -1626,6 +1834,13 @@ clients in the target collection 'Office Update'.
                          }
                          $CustomName = $NULL
                     }
+                    "LanguagePack" {
+                         $pType = "DeployLanguagePack-$Channel-$Languages";
+                         if ($DeploymentPurpose -eq "Default") {
+                            $DeploymentPurpose = "Available"  
+                         }
+                         $CustomName = $NULL
+                    }
                 }
 
                 if ($DeploymentPurpose -eq "Default") {
@@ -1637,7 +1852,35 @@ clients in the target collection 'Office Update'.
                    $tmpPType += "-$CustomName"
                 }
 
-                $Program = Get-CMProgram | Where {$_.Comment.ToLower() -eq $tmpPType.ToLower() }
+                if($ProgramType -ne "LanguagePack") {
+                    $Program = Get-CMProgram | Where {$_.Comment.ToLower() -eq $tmpPType.ToLower() }
+                }
+                else{
+                    [bool]$useProgram = $true
+                    $badLanguages = @()
+                    $LanguagePrograms = Get-CMProgram | where {$_.Comment.ToLower() -like "deploylanguagepack*"}
+                    foreach($LanguageProgram in $LanguagePrograms) {
+                        $programCommentLangs = $LanguageProgram.Comment.Replace("DeployLanguagePack-$Channel-","").Split()
+                        foreach($language in $programCommentLangs) {
+                            if($Languages -notcontains $language) {
+                                $badLanguages += $language
+                            }                      
+                        }
+                        foreach($language in $Languages){
+                            if($programCommentLangs -notcontains $language){
+                                $badLanguages += $language
+                            }
+                        }
+
+                        if($badLanguages.Count -gt 0){
+                            $useProgram = $false
+                        }
+
+                        if($useProgram){
+                            $Program = $LanguageProgram
+                        }
+                    }   
+                }
 
                 $programName = $Program.ProgramName
 
@@ -1827,12 +2070,17 @@ function UpdateConfigurationXml() {
 		[String]$Bitness,
 
 		[Parameter()]
-		[String]$SourcePath = $NULL
+		[String]$SourcePath = $NULL,
+		
+        [Parameter()]
+		[String]$Language
+        
 	) 
     Process {
 	  $doc = [Xml] (Get-Content $Path)
 
       $addNode = $doc.Configuration.Add
+      $languageNode = $addNode.Product.Language
 
       if ($addNode.OfficeClientEdition) {
           $addNode.OfficeClientEdition = $Bitness
@@ -1850,6 +2098,18 @@ function UpdateConfigurationXml() {
           $addNode.SourcePath = $SourcePath
       } else {
           $addNode.SetAttribute("SourcePath", $SourcePath)
+      }
+
+      if ($languageNode.ID){
+          if($languageNode.ID -contains $Language) {
+              Write-Host "$Language already exists in the xml"
+          } else {
+              $newLanguageElement = $doc.CreateElement("Language")
+              $newLanguage = $doc.Configuration.Add.Product.AppendChild($newLanguageElement)
+              $newLanguage.SetAttribute("ID", $Language)
+          }
+      } else {
+          $languageNode.SetAttribute("ID", $language)
       }
 
       $doc.Save($Path)

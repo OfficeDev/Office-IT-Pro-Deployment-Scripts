@@ -9,23 +9,28 @@ Process {
  if ($PSScriptRoot) {
    $scriptPath = $PSScriptRoot
  } else {
-   $scriptPath = split-path -parent $MyInvocation.MyCommand.Definition
    $scriptPath = (Get-Item -Path ".\").FullName
  }
 
 #Importing all required functions
 . $scriptPath\Generate-ODTConfigurationXML.ps1
+. $scriptPath\SharedFunctions.ps1
 . $scriptPath\Edit-OfficeConfigurationFile.ps1
 . $scriptPath\Install-OfficeClickToRun.ps1
 
 $targetFilePath = "$env:temp\configuration.xml"
+
+$SourcePath = $scriptPath
+if((Validate-UpdateSource -UpdateSource $SourcePath) -eq $false) {
+    $SourcePath = $NULL    
+}
 
 #This example will create an Office Deployment Tool (ODT) configuration file and include all of the Languages currently in use on the computer
 #from which the script is run.  It will then remove the Version attribute from the XML to ensure the installation gets the latest version and 
 #will set the Channel to 'Deferred'.  It will then detect if O365ProPlusRetail or O365BusinessRetail is in the configuration file and if so
 #it will add Lync and Groove to the excluded apps. It will then initiate the Office installation.
 
-Generate-ODTConfigurationXml -Languages AllInUseLanguages -TargetFilePath $targetFilePath | Set-ODTAdd -Version $NULL -Channel Deferred | Out-Null
+Generate-ODTConfigurationXml -Languages AllInUseLanguages -TargetFilePath $targetFilePath | Set-ODTAdd -Version $NULL -Channel Deferred -SourcePath $SourcePath | Out-Null
 
 #Get the languages currently in use so the additional products can be installed with the same languages
 $products = Get-ODTProductToAdd -TargetFilePath $targetFilePath -All
