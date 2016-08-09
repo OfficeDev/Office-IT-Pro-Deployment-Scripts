@@ -1465,6 +1465,7 @@ to install additional languages on a client
                 
                 foreach ($language in $Languages){
                     if(!(Get-ChildItem -Path $SharePath\SourceFiles\$channelShortName\Office\Data\$latestVersion | Where-Object {$_ -like "*$language*"})){
+                        Remove-Item -Path $configFilePath
                         throw "The language pack $language was not found. To download the language run Download-CMOfficeChannelFiles using the -Languages parameter"
                     }
                     else{
@@ -1478,7 +1479,7 @@ to install additional languages on a client
 
                 $packageId = $existingPackage.PackageId
                 if ($packageId) {
-                    $comment = "DeployLanguagePack-$Channel-$Languages"
+                    $comment = "DeployLanguagePack-$Channel-$Bit-$Languages"
 
                     if ($CustomName) {
                         $comment += "-$CustomName"
