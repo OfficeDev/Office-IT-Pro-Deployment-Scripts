@@ -21,7 +21,7 @@ Process {
 $targetFilePath = "$env:temp\configuration.xml"
 
 $SourcePath = $scriptPath
-if((Validate-UpdateSource -UpdateSource $SourcePath) -eq $false) {
+if((Test-UpdateSource -UpdateSource $SourcePath) -eq $false) {
     $SourcePath = $NULL    
 }
 
