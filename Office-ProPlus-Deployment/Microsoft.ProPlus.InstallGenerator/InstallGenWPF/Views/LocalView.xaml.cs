@@ -140,6 +140,21 @@ namespace MetroDemo.ExampleViews
                             VersionLabel.Content = "(" + LocalInstall.Version + ")";
                             ChannelLabel.Content = LocalInstall.Channel;
 
+                           // ChannelLabel.Content = "First Release Deferred";
+
+                            if (ChannelLabel.Content.ToString().Length < 10)
+                            {
+                                ChannelName.Width = new GridLength(100);
+                            }
+                            else if (ChannelLabel.Content.ToString().Length < 20)
+                            {
+                                ChannelName.Width = new GridLength(150);
+                            }
+                            else 
+                            {
+                                ChannelName.Width = new GridLength(200);
+                            }
+
                             var selectIndex = 0;
                             if (LocalInstall.Channel != null)
                             {

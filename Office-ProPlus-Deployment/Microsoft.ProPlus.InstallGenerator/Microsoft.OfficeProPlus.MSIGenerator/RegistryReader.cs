@@ -21,6 +21,7 @@ namespace RegistryReader
         AllAccess = 0x000f003f
     }
 
+
     public static class RegHive
     {
         public static UIntPtr HKEY_LOCAL_MACHINE = new UIntPtr(0x80000002u);

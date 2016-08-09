@@ -122,7 +122,7 @@
                                         </Grid.ColumnDefinitions>
 
                                         <Label x:Name="ChannelLabel" Content="Current" Style="{StaticResource CustomMetroLabelHeader}"
-                                               Margin="0 0 0 0" Grid.Column="0" Height="30" VerticalAlignment="Center" />
+                                               Margin="0 0 0 0" Grid.Column="0" Height="35" VerticalAlignment="Center" />
                                     </Grid>
                                     <Grid Margin="0,0,0,0" Grid.Column="3">
                                         <Grid.ColumnDefinitions>
@@ -130,7 +130,7 @@
                                         </Grid.ColumnDefinitions>
 
                                         <Label x:Name="VersionLabel" Content="(16.0.0000.0000)" Style="{StaticResource CustomMetroLabelHeader}"
-                                               Margin="0 0 0 0" Grid.Column="0" Height="30" VerticalAlignment="Center" />
+                                               Margin="0 0 0 0" Grid.Column="0" Height="35" VerticalAlignment="Center" />
                                     </Grid>
 
                                 </Grid>
