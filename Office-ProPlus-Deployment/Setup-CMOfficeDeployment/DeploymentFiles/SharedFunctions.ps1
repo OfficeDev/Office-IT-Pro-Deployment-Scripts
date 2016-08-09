@@ -1080,7 +1080,6 @@ Function GetScriptRoot() {
      if ($PSScriptRoot) {
        $scriptPath = $PSScriptRoot
      } else {
-       $scriptPath = split-path -parent $MyInvocation.MyCommand.Definition
        $scriptPath = (Get-Item -Path ".\").FullName
      }
 
@@ -1478,9 +1477,15 @@ function Get-ChannelXml() {
            }
        }
 
-       $tmpName = "o365client_" + $Bitness + "bit.xml"
-       expand $XMLFilePath $env:TEMP -f:$tmpName | Out-Null
-       $tmpName = $env:TEMP + "\" + $tmpName
+
+       if($PSVersionTable.PSVersion.Major -ge '3'){
+           $tmpName = "o365client_64bit.xml"
+           expand $XMLFilePath $env:TEMP -f:$tmpName | Out-Null
+           $tmpName = $env:TEMP + "\o365client_64bit.xml"
+       }else {
+           $scriptPath = GetScriptRoot
+           $tmpName = $scriptPath + "\o365client_64bit.xml"           
+       }
        
        [xml]$channelXml = Get-Content $tmpName
 
