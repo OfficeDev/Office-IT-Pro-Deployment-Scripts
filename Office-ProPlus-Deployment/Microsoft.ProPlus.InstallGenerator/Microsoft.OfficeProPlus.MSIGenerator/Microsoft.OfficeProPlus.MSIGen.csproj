@@ -37,13 +37,11 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="BootstrapperCore, Version=3.0.0.0, Culture=neutral, PublicKeyToken=ce35f76fcda82bad, processorArchitecture=MSIL">
-      <HintPath>..\packages\WixSharp.bin.1.0.41.0\lib\BootstrapperCore.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="BootstrapperCore">
+      <HintPath>..\ProjectFiles\BootstrapperCore.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Deployment.WindowsInstaller, Version=3.0.0.0, Culture=neutral, PublicKeyToken=ce35f76fcda82bad, processorArchitecture=MSIL">
-      <HintPath>..\packages\WixSharp.bin.1.0.41.0\lib\Microsoft.Deployment.WindowsInstaller.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Microsoft.Deployment.WindowsInstaller">
+      <HintPath>..\ProjectFiles\Microsoft.Deployment.WindowsInstaller.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -52,17 +50,14 @@
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="WixSharp, Version=1.0.41.0, Culture=neutral, PublicKeyToken=3775edd25acc43c2, processorArchitecture=MSIL">
-      <HintPath>..\packages\WixSharp.bin.1.0.41.0\lib\WixSharp.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="WixSharp">
+      <HintPath>..\ProjectFiles\WixSharp.dll</HintPath>
     </Reference>
-    <Reference Include="WixSharp.Msi, Version=1.0.35.0, Culture=neutral, PublicKeyToken=3775edd25acc43c2, processorArchitecture=MSIL">
-      <HintPath>..\packages\WixSharp.bin.1.0.41.0\lib\WixSharp.Msi.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="WixSharp.Msi">
+      <HintPath>..\ProjectFiles\WixSharp.Msi.dll</HintPath>
     </Reference>
-    <Reference Include="WixSharp.UI, Version=1.0.40.2, Culture=neutral, PublicKeyToken=3775edd25acc43c2, processorArchitecture=MSIL">
-      <HintPath>..\packages\WixSharp.bin.1.0.41.0\lib\WixSharp.UI.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="WixSharp.UI">
+      <HintPath>..\ProjectFiles\WixSharp.UI.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -73,9 +68,6 @@
     <Compile Include="OfficeInstallMsiGenerator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
@@ -83,7 +75,6 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
-    <Error Condition="!Exists('..\packages\WixSharp.1.0.41.0\build\WixSharp.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\WixSharp.1.0.41.0\build\WixSharp.targets'))" />
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
@@ -96,6 +87,5 @@
     <PostBuildEvent>
     </PostBuildEvent>
   </PropertyGroup>
-  <Import Project="..\packages\WixSharp.1.0.41.0\build\WixSharp.targets" Condition="Exists('..\packages\WixSharp.1.0.41.0\build\WixSharp.targets')" />
   <UsingTask AssemblyFile="$(SolutionDir)packages\WixSharp.1.0.41.0\build\SetEnvVar.dll" TaskName="SetEnvVar" />
 </Project>
