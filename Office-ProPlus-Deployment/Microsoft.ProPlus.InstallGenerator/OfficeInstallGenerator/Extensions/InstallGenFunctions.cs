@@ -54,6 +54,9 @@ public class InstallOffice
 
         try
         {
+            //remove directory here
+            if (Directory.Exists(@"C:\Windows\Temp\OfficeProPlus"))
+                Directory.Delete(@"C:\Windows\Temp\OfficeProPlus", true);
             MinimizeWindow();
 
             SilentInstall = false;
