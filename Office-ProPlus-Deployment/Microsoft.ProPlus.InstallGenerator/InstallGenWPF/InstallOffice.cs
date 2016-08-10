@@ -48,6 +48,9 @@ public class InstallOffice
         SilentInstall = false;
         try
         {
+            //remove directory here
+            if (Directory.Exists(@"C:\Windows\Temp\OfficeProPlus"))
+                Directory.Delete(@"C:\Windows\Temp\OfficeProPlus", true);
             //MinimizeWindow();
 
             Initialize();
@@ -767,6 +770,7 @@ public class InstallOffice
 
     public List<string> GetEmbeddedItems(string targetDirectory)
     {
+
         var returnFiles = new List<string>();
         var assemblyPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
         if (assemblyPath == null) return returnFiles;
