@@ -327,7 +327,7 @@ Language and Exclude values
 
         if($PSCmdlet.ParameterSetName -eq "All"){
             foreach($ProductElement in $ConfigFile.Configuration.Add.Product){
-                $Result = New-Object 傍ypeName PSObject 
+                $Result = New-Object -TypeName PSObject 
 
                 Add-Member -InputObject $Result -MemberType NoteProperty -Name "ProductId" -Value ($ProductElement.GetAttribute("ID"))
 
@@ -353,7 +353,7 @@ Language and Exclude values
                 $tempId = $ProductElement.GetAttribute("ID")
                 
                 
-                $Result = New-Object 傍ypeName PSObject 
+                $Result = New-Object -TypeName PSObject 
                 Add-Member -InputObject $Result -MemberType NoteProperty -Name "ProductId" -Value $tempId 
                 if($ProductElement.Language -ne $null){
                     $ProductLangs = $configfile.Configuration.Add.Product.Language | % {$_.ID}
@@ -544,7 +544,7 @@ Here is what the portion of configuration file looks like when modified by this 
             Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
         } else {
             $results = new-object PSObject[] 0;
-            $Result = New-Object 傍ypeName PSObject 
+            $Result = New-Object -TypeName PSObject 
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "Level" -Value $Level
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "AcceptEULA" -Value $AcceptEULA
@@ -761,7 +761,7 @@ Here is what the portion of configuration file looks like when modified by this 
             Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
         } else {
             $results = new-object PSObject[] 0;
-            $Result = New-Object 傍ypeName PSObject 
+            $Result = New-Object -TypeName PSObject 
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "ProductId" -Value $ProductId
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "LanguageIds" -Value $LanguageIds
@@ -896,7 +896,7 @@ function showTaskStatus() {
     )
 
     $results = new-object PSObject[] 0;
-    $Result = New-Object 傍ypeName PSObject 
+    $Result = New-Object -TypeName PSObject 
     Add-Member -InputObject $Result -MemberType NoteProperty -Name "Operation" -Value $Operation
     Add-Member -InputObject $Result -MemberType NoteProperty -Name "Status" -Value $Status
     Add-Member -InputObject $Result -MemberType NoteProperty -Name "DateTime" -Value $DateTime
