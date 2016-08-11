@@ -46,6 +46,8 @@ namespace Microsoft.Office
          VisioStdXVolume = 64,
          ProjectProXVolume = 128,
          ProjectStdXVolume = 256,
+         InfoPathRetail = 512,
+         SkypeforBusinessEntryRetail = 1024,
      }
 }
 "
