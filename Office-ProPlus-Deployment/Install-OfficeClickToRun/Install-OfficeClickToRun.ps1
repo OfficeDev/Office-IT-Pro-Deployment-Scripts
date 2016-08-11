@@ -134,12 +134,14 @@ function Install-OfficeClickToRun {
 
     Write-Host "Installing Office Click-To-Run..."
 
-    StartProcess -execFilePath $cmdLine -execParams $cmdArgs -WaitForExit $false
-
     if ($WaitForInstallToFinish) {
-         Start-Sleep -Seconds 5
+        StartProcess -execFilePath $cmdLine -execParams $cmdArgs -WaitForExit $false
+        
+        Start-Sleep -Seconds 5
 
-         Wait-ForOfficeCTRInstall -OfficeVersion $OfficeVersion
+        Wait-ForOfficeCTRInstall -OfficeVersion $OfficeVersion
+    }else {
+        StartProcess -execFilePath $cmdLine -execParams $cmdArgs -WaitForExit $true
     }
 }
 
