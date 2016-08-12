@@ -868,6 +868,10 @@ Function Wait-ForOfficeCTRInstall() {
               break;
            }
 
+           if($allComplete){
+               $updateRunning = $false
+           }
+
            Start-Sleep -Seconds 5
        } while($updateRunning -eq $true) 
 

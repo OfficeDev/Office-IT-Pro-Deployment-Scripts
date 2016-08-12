@@ -153,14 +153,28 @@ Function Set-Reg {
 Function StartProcess {
 	Param
 	(
+        [Parameter()]
 		[String]$execFilePath,
-        [String]$execParams
+
+        [Parameter()]
+        [String]$execParams,
+
+        [Parameter()]
+        [bool]$WaitForExit = $false
 	)
 
     Try
     {
-        $execStatement = [System.Diagnostics.Process]::Start( $execFilePath, $execParams ) 
-        $execStatement.WaitForExit()
+        $startExe = new-object System.Diagnostics.ProcessStartInfo
+        $startExe.FileName = $execFilePath
+        $startExe.Arguments = $execParams
+        $startExe.CreateNoWindow = $false
+        $startExe.UseShellExecute = $false
+
+        $execStatement = [System.Diagnostics.Process]::Start($startExe) 
+        if ($WaitForExit) {
+           $execStatement.WaitForExit()
+        }
     }
     Catch
     {
