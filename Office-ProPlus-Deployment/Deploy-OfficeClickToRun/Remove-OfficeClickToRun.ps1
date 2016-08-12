@@ -48,8 +48,10 @@ Will uninstall Office Click-to-Run.
 
         $c2rName = $c2rVersion.DisplayName
              
-        if(!($isInPipe)) {
-            write-host "Please wait while $c2rName is being uninstalled..."
+        if($c2rVersion) {
+            if(!($isInPipe)) {
+                Write-Host "Please wait while $c2rName is being uninstalled..."
+            }
         }
    
         if($c2rVersion.Version -like "15*"){
@@ -68,9 +70,11 @@ Will uninstall Office Click-to-Run.
             $c2rTest = $true
         }
 
-        if(!($c2rTest)){                           
-            if (!($isInPipe)) {                        
-                Write-Host "Office Click-to-Run has been successfully uninstalled." 
+        if($c2rVersion){
+            if(!($c2rTest)){                           
+                if (!($isInPipe)) {                        
+                    Write-Host "Office Click-to-Run has been successfully uninstalled." 
+                }
             }
         }                                      
                                                                                

@@ -1,7 +1,7 @@
 ﻿[String]$global:saveLastConfigFile = $NULL
 [String]$global:saveLastFilePath = $NULL
 
-$validProductIds = @("O365ProPlusRetail","O365BusinessRetail","VisioProRetail","ProjectProRetail", "SPDRetail", "VisioProXVolume", "VisioStdXVolume", "ProjectProXVolume", "ProjectStdXVolume", "InfoPathRetail")
+$validProductIds = @("O365ProPlusRetail","O365BusinessRetail","VisioProRetail","ProjectProRetail", "SPDRetail", "VisioProXVolume", "VisioStdXVolume", "ProjectProXVolume", "ProjectStdXVolume", "InfoPathRetail", "SkypeforBusinessEntryRetail", "LyncEntryRetail")
 
 try {
 $enum = "
@@ -23,6 +23,8 @@ namespace Microsoft.Office
          ProjectProXVolume = 128,
          ProjectStdXVolume = 256,
          InfoPathRetail = 512,
+         SkypeforBusinessEntryRetail = 1024,
+         LyncEntryRetail = 2048,
      }
 }
 "
@@ -894,6 +896,52 @@ Removes the ProductToAdd with the ProductId 'O365ProPlusRetail' from the XML Con
     }
 
 }
+
+Function Get-LanguagesFromXML{
+<#
+.SYNOPSIS
+retreives languages from the configuration file
+
+
+.PARAMETER TargetFilePath
+Full file path for the file to be modified and be output to.
+
+
+#>
+Param(
+        [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
+        [string] $ConfigurationXML = $NULL,
+                
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [string] $ProductId = "Unknown",
+                                
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [string] $TargetFilePath,
+                                                
+        [Parameter(ParameterSetName="All", ValueFromPipelineByPropertyName=$true)]
+        [switch] $All
+     )
+
+    Process{
+    [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
+    $ConfigFile.Load($TargetFilePath) | Out-Null    
+    $productsWithLangs = $ConfigFile.SelectNodes("/Configuration/Add/Product")
+    $LangsToReturn = @()
+    foreach($prodWithLang in $productsWithLangs){
+        foreach($lang in $prodWithLang.Language){
+            if(!($LangsToReturn -contains $lang.ID)){
+                $LangsToReturn += $lang.ID
+            }     
+       }
+    }
+    
+    
+    return $LangsToReturn
+    
+    }
+}
+
+
 
 Function Remove-ODTExcludeApp{
 <#
@@ -3317,7 +3365,10 @@ Function Validate-UpdateSource() {
         [string] $Bitness = "x86",
 
         [Parameter()]
-        [string[]] $OfficeLanguages = $null
+        [string[]] $OfficeLanguages = $null,
+
+        [Parameter()]
+        [bool]$ShowMissingFiles = $true
     )
 
     [bool]$validUpdateSource = $true
@@ -3386,7 +3437,9 @@ Function Validate-UpdateSource() {
               $fileExists = $missingFiles.Contains($fullPath)
               if (!($fileExists)) {
                  $missingFiles.Add($fullPath)
-                 Write-Host "Source File Missing: $fullPath"
+                 if($ShowMissingFiles){
+                    Write-Host "Source File Missing: $fullPath"
+                 }
                  Write-Log -Message "Source File Missing: $fullPath" -severity 1 -component "Office 365 Update Anywhere" 
               }     
               $validUpdateSource = $false

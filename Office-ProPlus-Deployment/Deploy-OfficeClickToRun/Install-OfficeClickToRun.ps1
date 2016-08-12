@@ -27,6 +27,9 @@ namespace Microsoft.Office
          VisioStdXVolume = 64,
          ProjectProXVolume = 128,
          ProjectStdXVolume = 256,
+         InfoPathRetail = 512,
+         SkypeforBusinessEntryRetail = 1024,
+         LyncEntryRetail = 2048,
      }
 }
 "
@@ -134,12 +137,14 @@ function Install-OfficeClickToRun {
 
     Write-Host "Installing Office Click-To-Run..."
 
-    StartProcess -execFilePath $cmdLine -execParams $cmdArgs -WaitForExit $false
-
     if ($WaitForInstallToFinish) {
-         Start-Sleep -Seconds 5
+        StartProcess -execFilePath $cmdLine -execParams $cmdArgs -WaitForExit $false
 
-         Wait-ForOfficeCTRInstall -OfficeVersion $OfficeVersion
+        Start-Sleep -Seconds 5
+
+        Wait-ForOfficeCTRInstall -OfficeVersion $OfficeVersion
+    }else {
+        StartProcess -execFilePath $cmdLine -execParams $cmdArgs -WaitForExit $true
     }
 }
 
@@ -327,7 +332,7 @@ Language and Exclude values
 
         if($PSCmdlet.ParameterSetName -eq "All"){
             foreach($ProductElement in $ConfigFile.Configuration.Add.Product){
-                $Result = New-Object 傍ypeName PSObject 
+                $Result = New-Object -TypeName PSObject 
 
                 Add-Member -InputObject $Result -MemberType NoteProperty -Name "ProductId" -Value ($ProductElement.GetAttribute("ID"))
 
@@ -353,7 +358,7 @@ Language and Exclude values
                 $tempId = $ProductElement.GetAttribute("ID")
                 
                 
-                $Result = New-Object 傍ypeName PSObject 
+                $Result = New-Object -TypeName PSObject 
                 Add-Member -InputObject $Result -MemberType NoteProperty -Name "ProductId" -Value $tempId 
                 if($ProductElement.Language -ne $null){
                     $ProductLangs = $configfile.Configuration.Add.Product.Language | % {$_.ID}
@@ -544,7 +549,7 @@ Here is what the portion of configuration file looks like when modified by this 
             Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
         } else {
             $results = new-object PSObject[] 0;
-            $Result = New-Object 傍ypeName PSObject 
+            $Result = New-Object -TypeName PSObject 
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "Level" -Value $Level
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "AcceptEULA" -Value $AcceptEULA
@@ -761,7 +766,7 @@ Here is what the portion of configuration file looks like when modified by this 
             Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
         } else {
             $results = new-object PSObject[] 0;
-            $Result = New-Object 傍ypeName PSObject 
+            $Result = New-Object -TypeName PSObject 
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "ProductId" -Value $ProductId
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "LanguageIds" -Value $LanguageIds
@@ -863,6 +868,10 @@ Function Wait-ForOfficeCTRInstall() {
               break;
            }
 
+           if($allComplete){
+               $updateRunning = $false
+           }
+
            Start-Sleep -Seconds 5
        } while($updateRunning -eq $true) 
 
@@ -896,7 +905,7 @@ function showTaskStatus() {
     )
 
     $results = new-object PSObject[] 0;
-    $Result = New-Object 傍ypeName PSObject 
+    $Result = New-Object -TypeName PSObject 
     Add-Member -InputObject $Result -MemberType NoteProperty -Name "Operation" -Value $Operation
     Add-Member -InputObject $Result -MemberType NoteProperty -Name "Status" -Value $Status
     Add-Member -InputObject $Result -MemberType NoteProperty -Name "DateTime" -Value $DateTime

@@ -36,7 +36,7 @@ $officeProducts = Get-OfficeVersion -ShowAllInstalledProducts | Select *
 $Office2016C2RExists = $officeProducts | Where {$_.ClickToRun -eq $true -and $_.Version -like '16.*' }
 
 $SourcePath = $scriptPath
-if((Validate-UpdateSource -UpdateSource $SourcePath) -eq $false) {
+if((Validate-UpdateSource -UpdateSource $SourcePath -ShowMissingFiles $false) -eq $false) {
     $SourcePath = $NULL    
 }
 
