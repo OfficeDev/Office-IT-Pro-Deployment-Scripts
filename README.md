@@ -10,7 +10,8 @@ For more detailed documentation of each script, check the [Wiki](https://github.
 
 ## XML Editor
 Tired of manually editing the Office Click-To-Run Configuration XML File?  Try our online XML Editor.
-Also try the Install Toolkit a tool used to manage Office Click to Run installs, the link to download can be found in the XML Editor.  Please note that the Install Toolkit requires .net 4.5 to run properly.
+
+Please note that the Install Toolkit requires .net 4.5 to run properly.
 
 [Office Click-To-Run Configuration XML Editor](http://officedev.github.io/Office-IT-Pro-Deployment-Scripts/XmlEditor.html)
 
