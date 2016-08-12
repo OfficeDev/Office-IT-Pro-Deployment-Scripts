@@ -6,3 +6,4 @@ obj/
 # or
 */bin/*
 */obj/*
+/Office-ProPlus-Deployment/SelfServiceWebDeployment/Deploy/csx/Debug/roles/OfficeProPlusSelfServiceSite/plugins/Diagnostics/Monitor/x64/Extensions/ApplicationInsightsExtension/System.Threading.Tasks.xml
