@@ -48,6 +48,7 @@ namespace Microsoft.Office
          ProjectStdXVolume = 256,
          InfoPathRetail = 512,
          SkypeforBusinessEntryRetail = 1024,
+         LyncEntryRetail = 2048,
      }
 }
 "
