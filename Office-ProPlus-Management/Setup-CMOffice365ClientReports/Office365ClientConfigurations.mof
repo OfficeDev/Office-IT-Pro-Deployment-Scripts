@@ -20,4 +20,5 @@ Class Office365ClientConfigurations: SMS_Class_Template
 [SMS_Report(TRUE)] string UpdateChannel;
 [SMS_Report(TRUE)] string UpdatePath;
 [SMS_Report(TRUE)] string GPOOfficeMgmtCOM;
+[SMS_Report(TRUE)] string cfgUpdateChannel;
 };
