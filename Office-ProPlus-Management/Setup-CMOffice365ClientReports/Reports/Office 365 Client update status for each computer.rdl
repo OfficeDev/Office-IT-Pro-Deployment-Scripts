@@ -41,6 +41,7 @@ custOf.VersionToReport00,
 cust.LastScenario00, 
 cust.LastScenarioResult00,
 UpdateSource = CASE 
+WHEN (cust.cfgUpdateChannel00 IS NOT NULL AND cust.cfgUpdateChannel00 != '') THEN 'Cloud'
 WHEN (cust.GPOOfficeMgmtCOM00 IS NULL AND cust.OfficeMgmtCOM00 = 'True') THEN 'Configuration Manager' 
 WHEN cust.GPOOfficeMgmtCOM00 = '1' THEN 'Configuration Manager' 
 WHEN (cust.UpdateChannel00 IS NOT NULL AND cust.UpdateChannel00 != '') THEN 'Cloud'
@@ -70,6 +71,7 @@ custOf.VersionToReport00,
 cust.LastScenario00, 
 cust.LastScenarioResult00,
 UpdateSource = CASE 
+WHEN (cust.cfgUpdateChannel00 IS NOT NULL AND cust.cfgUpdateChannel00 != '') THEN 'Cloud'
 WHEN (cust.GPOOfficeMgmtCOM00 IS NULL AND cust.OfficeMgmtCOM00 = 'True') THEN 'Configuration Manager' 
 WHEN cust.GPOOfficeMgmtCOM00 = '1' THEN 'Configuration Manager' 
 WHEN (cust.UpdateChannel00 IS NOT NULL AND cust.UpdateChannel00 != '') THEN 'Cloud'
@@ -1222,6 +1224,6 @@ END</CommandText>
     <CodeModule>SrsResources, culture=neutral</CodeModule>
   </CodeModules>
   <rd:ReportUnitType>Inch</rd:ReportUnitType>
-  <rd:ReportServerUrl>http://2012-cm/ReportServer</rd:ReportServerUrl>
+  <rd:ReportServerUrl>http://sccm2012-cm/ReportServer</rd:ReportServerUrl>
   <rd:ReportID>6fbd236a-d836-4950-8788-14b828deb616</rd:ReportID>
 </Report>

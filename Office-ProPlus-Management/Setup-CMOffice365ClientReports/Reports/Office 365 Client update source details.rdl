@@ -87,6 +87,7 @@ OffCL.VersionToReport00,
 OffCL.Platform00,
 UpdateEnabled = CASE WHEN OffCL.UpdatesEnabled00 = 'True' THEN 'True' ELSE 'False' END,
 UpdateSource = CASE 
+WHEN (OffCL.cfgUpdateChannel00 IS NOT NULL AND OffCL.cfgUpdateChannel00 != '') THEN 'Cloud'
 WHEN (OffCL.GPOOfficeMgmtCOM00 IS NULL AND OffCL.OfficeMgmtCOM00 = 'True') THEN 'Configuration Manager' 
 WHEN OffCL.GPOOfficeMgmtCOM00 = '1' THEN 'Configuration Manager' 
 WHEN (OffCL.UpdateChannel00 IS NOT NULL AND OffCL.UpdateChannel00 != '') THEN 'Cloud'
@@ -97,6 +98,7 @@ WHEN OffCL.UpdateUrl00 LIKE 'http://officecdn%' THEN 'Cloud'
 WHEN OffCL.CDNBaseUrl00 LIKE 'http://officecdn%' THEN 'Cloud'
 END,
 Channel = CASE 
+WHEN (OffCL.cfgUpdateChannel00 IS NOT NULL AND OffCL.cfgUpdateChannel00 != '') THEN OffCL.cfgUpdateChannel00
 WHEN (OffCL.GPOOfficeMgmtCOM00 IS NULL AND OffCL.OfficeMgmtCOM00 = 'True') THEN (SELECT Channel FROM @ChannelTable ct WHERE ct.CPath = OffCL.CDNBaseUrl00)
 WHEN OffCL.GPOOfficeMgmtCOM00 = '1' THEN (SELECT Channel FROM @ChannelTable ct WHERE ct.CPath = OffCL.CDNBaseUrl00)
 WHEN (OffCL.UpdateChannel00 IS NOT NULL AND OffCL.UpdateChannel00 != '') THEN OffCL.UpdateChannel00
@@ -110,7 +112,7 @@ FROM
 dbo.Add_Remove_Programs_64_DATA Addr
 INNER JOIN dbo.Office365ClientConfigurations_DATA OffCL  ON OffCL.MachineID = Addr.MachineID
 INNER JOIN dbo.System_DATA SysD ON SysD.MachineID = Addr.MachineID
-WHERE Addr.DisplayName00 LIKE '%proplus%' AND Addr.Version00 LIKE '16%'
+WHERE Addr.DisplayName00 LIKE '%proplus%' AND Addr.DisplayName00 LIKE '%-%' AND Addr.Version00 LIKE '16%'
 
 
 INSERT INTO @ResultsTable
@@ -122,6 +124,7 @@ OffCL.VersionToReport00,
 OffCL.Platform00,
 UpdateEnabled = CASE WHEN OffCL.UpdatesEnabled00 = 'True' THEN 'True' ELSE 'False' END,
 UpdateSource = CASE 
+WHEN (OffCL.cfgUpdateChannel00 IS NOT NULL AND OffCL.cfgUpdateChannel00 != '') THEN 'Cloud'
 WHEN (OffCL.GPOOfficeMgmtCOM00 IS NULL AND OffCL.OfficeMgmtCOM00 = 'True') THEN 'Configuration Manager' 
 WHEN OffCL.GPOOfficeMgmtCOM00 = '1' THEN 'Configuration Manager' 
 WHEN (OffCL.UpdateChannel00 IS NOT NULL AND OffCL.UpdateChannel00 != '') THEN 'Cloud'
@@ -132,6 +135,7 @@ WHEN OffCL.UpdateUrl00 LIKE 'http://officecdn%' THEN 'Cloud'
 WHEN OffCL.CDNBaseUrl00 LIKE 'http://officecdn%' THEN 'Cloud'
 END,
 Channel = CASE 
+WHEN (OffCL.cfgUpdateChannel00 IS NOT NULL AND OffCL.cfgUpdateChannel00 != '') THEN OffCL.cfgUpdateChannel00
 WHEN (OffCL.GPOOfficeMgmtCOM00 IS NULL AND OffCL.OfficeMgmtCOM00 = 'True') THEN (SELECT Channel FROM @ChannelTable ct WHERE ct.CPath = OffCL.CDNBaseUrl00)
 WHEN OffCL.GPOOfficeMgmtCOM00 = '1' THEN (SELECT Channel FROM @ChannelTable ct WHERE ct.CPath = OffCL.CDNBaseUrl00)
 WHEN (OffCL.UpdateChannel00 IS NOT NULL AND OffCL.UpdateChannel00 != '') THEN OffCL.UpdateChannel00
@@ -145,7 +149,7 @@ FROM
 dbo.Add_Remove_Programs_DATA Addr
 INNER JOIN dbo.Office365ClientConfigurations_DATA OffCL  ON OffCL.MachineID = Addr.MachineID
 INNER JOIN dbo.System_DATA SysD ON SysD.MachineID = Addr.MachineID
-WHERE Addr.DisplayName00 LIKE '%proplus%' AND Addr.Version00 LIKE '16%'
+WHERE Addr.DisplayName00 LIKE '%proplus%' AND Addr.DisplayName00 LIKE '%-%' AND Addr.Version00 LIKE '16%'
 
 INSERT INTO @ResultsTable
 SELECT
@@ -167,7 +171,7 @@ FROM
 dbo.Add_Remove_Programs_DATA Addr
 INNER JOIN dbo.Office365ClientConfigurations2013_DATA OffCL  ON OffCL.MachineID = Addr.MachineID
 INNER JOIN dbo.System_DATA SysD ON SysD.MachineID = Addr.MachineID
-WHERE Addr.DisplayName00 LIKE '%proplus%' AND Addr.Version00 LIKE '15%'
+WHERE Addr.DisplayName00 LIKE '%proplus%' AND Addr.DisplayName00 LIKE '%-%' AND Addr.Version00 LIKE '15%'
 
 INSERT INTO @ResultsTable
 SELECT
@@ -189,7 +193,7 @@ FROM
 dbo.Add_Remove_Programs_64_DATA Addr
 INNER JOIN dbo.Office365ClientConfigurations2013_DATA OffCL  ON OffCL.MachineID = Addr.MachineID
 INNER JOIN dbo.System_DATA SysD ON SysD.MachineID = Addr.MachineID
-WHERE Addr.DisplayName00 LIKE '%proplus%' AND Addr.Version00 LIKE '15%'
+WHERE Addr.DisplayName00 LIKE '%proplus%' AND Addr.DisplayName00 LIKE '%-%' AND Addr.Version00 LIKE '15%'
 
 UPDATE @ResultsTable
 SET ComputerName = '' WHERE ComputerName IS NULL
@@ -200,7 +204,7 @@ SET Channel = '' WHERE Channel IS NULL
 
  
 
-SELECT * FROM @ResultsTable
+SELECT DISTINCT * FROM @ResultsTable
 WHERE ComputerName LIKE
 CASE WHEN @ComputerName = 'All'
 THEN '%'
@@ -1498,6 +1502,6 @@ END</CommandText>
     <CodeModule>SrsResources, culture=neutral</CodeModule>
   </CodeModules>
   <rd:ReportUnitType>Inch</rd:ReportUnitType>
-  <rd:ReportServerUrl>http://2012-cm/ReportServer</rd:ReportServerUrl>
+  <rd:ReportServerUrl>http://sccm2012-cm/ReportServer</rd:ReportServerUrl>
   <rd:ReportID>6fbd236a-d836-4950-8788-14b828deb616</rd:ReportID>
 </Report>

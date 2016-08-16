@@ -75,6 +75,7 @@
   INNER JOIN dbo.System_DATA ON dbo.System_DATA.MachineID = AddR.MachineID
   INNER JOIN v_FullCollectionMembership ON v_FullCollectionMembership.Name = dbo.System_DATA.Name0
   WHERE (addr.ProdID00 LIKE 'ProjectProRetail%' OR addr.ProdID00 LIKE 'VisioProRetail%' OR addr.ProdID00 LIKE 'O365ProPlusRetail%') 
+  AND (addr.ProdID00 LIKE '%-%')
   AND (addr.Version00 LIKE '16%')
   AND v_FullCollectionMembership.CollectionID = @CollectionID
   
@@ -88,6 +89,7 @@
   INNER JOIN dbo.System_DATA ON dbo.System_DATA.MachineID = AddR.MachineID
   INNER JOIN v_FullCollectionMembership ON v_FullCollectionMembership.Name = dbo.System_DATA.Name0
   WHERE (addr.ProdID00 LIKE 'ProjectProRetail%' OR addr.ProdID00 LIKE 'VisioProRetail%' OR addr.ProdID00 LIKE 'O365ProPlusRetail%') 
+  AND (addr.ProdID00 LIKE '%-%')
   AND (addr.Version00 LIKE '16%')
   AND v_FullCollectionMembership.CollectionID = @CollectionID
 
@@ -101,6 +103,7 @@
   INNER JOIN dbo.System_DATA ON dbo.System_DATA.MachineID = AddR.MachineID  
   INNER JOIN v_FullCollectionMembership ON v_FullCollectionMembership.Name = dbo.System_DATA.Name0
   WHERE (addr.ProdID00 LIKE 'ProjectProRetail%' OR addr.ProdID00 LIKE 'VisioProRetail%' OR addr.ProdID00 LIKE 'O365ProPlusRetail%') 
+  AND (addr.ProdID00 LIKE '%-%')
   AND (addr.Version00 LIKE '15%')
   AND v_FullCollectionMembership.CollectionID = @CollectionID
   
@@ -114,6 +117,7 @@
   INNER JOIN dbo.System_DATA ON dbo.System_DATA.MachineID = AddR.MachineID  
   INNER JOIN v_FullCollectionMembership ON v_FullCollectionMembership.Name = dbo.System_DATA.Name0
   WHERE (addr.ProdID00 LIKE 'ProjectProRetail%' OR addr.ProdID00 LIKE 'VisioProRetail%' OR addr.ProdID00 LIKE 'O365ProPlusRetail%') 
+  AND (addr.ProdID00 LIKE '%-%')
   AND (addr.Version00 LIKE '15%')
   AND v_FullCollectionMembership.CollectionID = @CollectionID
 
@@ -1442,6 +1446,6 @@
     <CodeModule>SrsResources, culture=neutral</CodeModule>
   </CodeModules>
   <rd:ReportUnitType>Inch</rd:ReportUnitType>
-  <rd:ReportServerUrl>http://2012-cm/ReportServer</rd:ReportServerUrl>
+  <rd:ReportServerUrl>http://sccm2012-cm/ReportServer</rd:ReportServerUrl>
   <rd:ReportID>6fbd236a-d836-4950-8788-14b828deb616</rd:ReportID>
 </Report>

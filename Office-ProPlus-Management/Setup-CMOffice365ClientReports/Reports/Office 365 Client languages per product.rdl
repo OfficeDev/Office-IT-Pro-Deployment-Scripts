@@ -40,28 +40,28 @@ SELECT SUBSTRING([DisplayName00], CHARINDEX('-',[DisplayName00])+2, 5) AS Langua
 INNER JOIN dbo.System_DATA ON dbo.System_DATA.MachineID = dbo.Add_Remove_Programs_64_DATA.MachineID
 INNER JOIN dbo.Office365ClientConfigurations_DATA ON dbo.Office365ClientConfigurations_DATA.MachineID = dbo.Add_Remove_Programs_64_DATA.MachineID
 INNER JOIN v_FullCollectionMembership ON v_FullCollectionMembership.Name = dbo.System_DATA.Name0
-WHERE (dbo.Add_Remove_Programs_64_DATA.DisplayName00 LIKE 'Microsoft Office 365 ProPlus -%' OR dbo.Add_Remove_Programs_64_DATA.DisplayName00 LIKE '%visio%' OR dbo.Add_Remove_Programs_64_DATA.DisplayName00 LIKE '%project%') AND v_FullCollectionMembership.CollectionID = @CollectionID
+WHERE (dbo.Add_Remove_Programs_64_DATA.DisplayName00 LIKE 'Microsoft Office 365 ProPlus -%' OR (dbo.Add_Remove_Programs_64_DATA.DisplayName00 LIKE '%visio%' AND dbo.Add_Remove_Programs_64_DATA.DisplayName00 LIKE '%-%') OR (dbo.Add_Remove_Programs_64_DATA.DisplayName00 LIKE '%project%' AND dbo.Add_Remove_Programs_64_DATA.DisplayName00 LIKE '%-%')) AND v_FullCollectionMembership.CollectionID = @CollectionID
 AND dbo.Add_Remove_Programs_64_DATA.Version00 LIKE '16.%'
 INSERT INTO @TABLE
 SELECT DISTINCT SUBSTRING([DisplayName00], CHARINDEX('-',[DisplayName00])+2, 5) AS Language, SUBSTRING([DisplayName00], 0, CHARINDEX('-',[DisplayName00])) AS Product FROM dbo.Add_Remove_Programs_DATA
 INNER JOIN dbo.System_DATA ON dbo.System_DATA.MachineID = dbo.Add_Remove_Programs_DATA.MachineID
 INNER JOIN dbo.Office365ClientConfigurations_DATA ON dbo.Office365ClientConfigurations_DATA.MachineID = dbo.Add_Remove_Programs_DATA.MachineID
 INNER JOIN v_FullCollectionMembership ON v_FullCollectionMembership.Name = dbo.System_DATA.Name0
-WHERE (dbo.Add_Remove_Programs_DATA.DisplayName00 LIKE 'Microsoft Office 365 ProPlus -%' OR dbo.Add_Remove_Programs_DATA.DisplayName00 LIKE '%visio%' OR dbo.Add_Remove_Programs_DATA.DisplayName00 LIKE '%project%') AND v_FullCollectionMembership.CollectionID = @CollectionID
+WHERE (dbo.Add_Remove_Programs_DATA.DisplayName00 LIKE 'Microsoft Office 365 ProPlus -%' OR (dbo.Add_Remove_Programs_DATA.DisplayName00 LIKE '%visio%' AND dbo.Add_Remove_Programs_DATA.DisplayName00 LIKE '%-%') OR (dbo.Add_Remove_Programs_DATA.DisplayName00 LIKE '%project%' AND dbo.Add_Remove_Programs_DATA.DisplayName00 LIKE '%-%')) AND v_FullCollectionMembership.CollectionID = @CollectionID
 AND dbo.Add_Remove_Programs_DATA.Version00 LIKE '16.%'
 INSERT INTO @TABLE
 SELECT SUBSTRING([DisplayName00], CHARINDEX('-',[DisplayName00])+2, 5) AS Language, SUBSTRING([DisplayName00], 0, CHARINDEX('-',[DisplayName00])) AS Product FROM dbo.Add_Remove_Programs_64_DATA
 INNER JOIN dbo.System_DATA ON dbo.System_DATA.MachineID = dbo.Add_Remove_Programs_64_DATA.MachineID
 INNER JOIN dbo.Office365ClientConfigurations2013_DATA ON dbo.Office365ClientConfigurations2013_DATA.MachineID = dbo.Add_Remove_Programs_64_DATA.MachineID
 INNER JOIN v_FullCollectionMembership ON v_FullCollectionMembership.Name = dbo.System_DATA.Name0
-WHERE (dbo.Add_Remove_Programs_64_DATA.DisplayName00 LIKE 'Microsoft Office 365 ProPlus -%' OR dbo.Add_Remove_Programs_64_DATA.DisplayName00 LIKE '%visio%' OR dbo.Add_Remove_Programs_64_DATA.DisplayName00 LIKE '%project%') AND v_FullCollectionMembership.CollectionID = @CollectionID
+WHERE (dbo.Add_Remove_Programs_64_DATA.DisplayName00 LIKE 'Microsoft Office 365 ProPlus -%' OR (dbo.Add_Remove_Programs_64_DATA.DisplayName00 LIKE '%visio%' AND dbo.Add_Remove_Programs_64_DATA.DisplayName00 LIKE '%-%') OR (dbo.Add_Remove_Programs_64_DATA.DisplayName00 LIKE '%project%' AND dbo.Add_Remove_Programs_64_DATA.DisplayName00 LIKE '%-%')) AND v_FullCollectionMembership.CollectionID = @CollectionID
 AND dbo.Add_Remove_Programs_64_DATA.Version00 LIKE '15.%'
 INSERT INTO @TABLE
 SELECT DISTINCT SUBSTRING([DisplayName00], CHARINDEX('-',[DisplayName00])+2, 5) AS Language, SUBSTRING([DisplayName00], 0, CHARINDEX('-',[DisplayName00])) AS Product FROM dbo.Add_Remove_Programs_DATA
 INNER JOIN dbo.System_DATA ON dbo.System_DATA.MachineID = dbo.Add_Remove_Programs_DATA.MachineID
 INNER JOIN dbo.Office365ClientConfigurations2013_DATA ON dbo.Office365ClientConfigurations2013_DATA.MachineID = dbo.Add_Remove_Programs_DATA.MachineID
 INNER JOIN v_FullCollectionMembership ON v_FullCollectionMembership.Name = dbo.System_DATA.Name0
-WHERE (dbo.Add_Remove_Programs_DATA.DisplayName00 LIKE 'Microsoft Office 365 ProPlus -%' OR dbo.Add_Remove_Programs_DATA.DisplayName00 LIKE '%visio%' OR dbo.Add_Remove_Programs_DATA.DisplayName00 LIKE '%project%') AND v_FullCollectionMembership.CollectionID = @CollectionID
+WHERE (dbo.Add_Remove_Programs_DATA.DisplayName00 LIKE 'Microsoft Office 365 ProPlus -%' OR (dbo.Add_Remove_Programs_DATA.DisplayName00 LIKE '%visio%' AND dbo.Add_Remove_Programs_DATA.DisplayName00 LIKE '%-%') OR (dbo.Add_Remove_Programs_DATA.DisplayName00 LIKE '%project%' AND dbo.Add_Remove_Programs_DATA.DisplayName00 LIKE '%-%')) AND v_FullCollectionMembership.CollectionID = @CollectionID
 AND dbo.Add_Remove_Programs_DATA.Version00 LIKE '15.%'
 
 SELECT DISTINCT([Language]), [Product], COUNT([Language]) FROM @TABLE
@@ -787,6 +787,6 @@ WHERE Name = 'All Systems'</CommandText>
     <CodeModule>SrsResources, culture=neutral</CodeModule>
   </CodeModules>
   <rd:ReportUnitType>Inch</rd:ReportUnitType>
-  <rd:ReportServerUrl>http://2012-cm/ReportServer</rd:ReportServerUrl>
+  <rd:ReportServerUrl>http://sccm2012-cm/ReportServer</rd:ReportServerUrl>
   <rd:ReportID>6fbd236a-d836-4950-8788-14b828deb616</rd:ReportID>
 </Report>

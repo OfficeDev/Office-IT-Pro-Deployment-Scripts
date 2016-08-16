@@ -45,6 +45,7 @@ SUBSTRING(dbo.Add_Remove_Programs_64_DATA.DisplayName00, 0 ,CHARINDEX('-',dbo.Ad
 SUBSTRING(dbo.Add_Remove_Programs_64_DATA.DisplayName00, CHARINDEX('-',dbo.Add_Remove_Programs_64_DATA.DisplayName00)+2 ,5) AS Language, 
 dbo.Add_Remove_Programs_64_DATA.Version00 AS Version, 
 Channel = CASE 
+WHEN (Office365ClientConfigurations_DATA.cfgUpdateChannel00 IS NOT NULL AND Office365ClientConfigurations_DATA.cfgUpdateChannel00 != '') THEN Office365ClientConfigurations_DATA.cfgUpdateChannel00
 WHEN (Office365ClientConfigurations_DATA.GPOOfficeMgmtCOM00 IS NULL AND Office365ClientConfigurations_DATA.OfficeMgmtCOM00 = 'True') THEN (SELECT Channel FROM @ChannelTable TCT WHERE TCT.CPath = Office365ClientConfigurations_DATA.CDNBaseUrl00)
 WHEN Office365ClientConfigurations_DATA.GPOOfficeMgmtCOM00 = '1' THEN (SELECT Channel FROM @ChannelTable TCT WHERE TCT.CPath = Office365ClientConfigurations_DATA.CDNBaseUrl00)
 WHEN (Office365ClientConfigurations_DATA.UpdateChannel00 IS NOT NULL AND Office365ClientConfigurations_DATA.UpdateChannel00 != '') THEN Office365ClientConfigurations_DATA.UpdateChannel00
@@ -59,7 +60,7 @@ ConfigManaged = (CASE WHEN dbo.Office365ClientConfigurations_DATA.OfficeMgmtCOM0
 FROM dbo.Add_Remove_Programs_64_DATA
 INNER JOIN dbo.System_DATA ON dbo.System_DATA.MachineID = dbo.Add_Remove_Programs_64_DATA.MachineID
 INNER JOIN dbo.Office365ClientConfigurations_DATA ON dbo.Office365ClientConfigurations_DATA.MachineID = dbo.Add_Remove_Programs_64_DATA.MachineID
-WHERE dbo.Add_Remove_Programs_64_DATA.DisplayName00 LIKE 'Microsoft Office 365 ProPlus%' AND dbo.Add_Remove_Programs_64_DATA.Version00 LIKE '16%' AND dbo.Add_Remove_Programs_64_DATA.DisplayName00 LIKE '%' + dbo.Office365ClientConfigurations_DATA.ClientCulture00
+WHERE dbo.Add_Remove_Programs_64_DATA.DisplayName00 LIKE 'Microsoft Office 365 ProPlus -%' AND dbo.Add_Remove_Programs_64_DATA.Version00 LIKE '16%' AND dbo.Add_Remove_Programs_64_DATA.DisplayName00 LIKE '%' + dbo.Office365ClientConfigurations_DATA.ClientCulture00
 
 
 INSERT INTO @ResultsTable
@@ -68,6 +69,7 @@ SUBSTRING(dbo.Add_Remove_Programs_DATA.DisplayName00, 0 ,CHARINDEX('-',dbo.Add_R
 SUBSTRING(dbo.Add_Remove_Programs_DATA.DisplayName00, CHARINDEX('-',dbo.Add_Remove_Programs_DATA.DisplayName00)+2 ,5) AS Language, 
 dbo.Add_Remove_Programs_DATA.Version00 AS Version, 
 Channel = CASE 
+WHEN (Office365ClientConfigurations_DATA.cfgUpdateChannel00 IS NOT NULL AND Office365ClientConfigurations_DATA.cfgUpdateChannel00 != '') THEN Office365ClientConfigurations_DATA.cfgUpdateChannel00
 WHEN (Office365ClientConfigurations_DATA.GPOOfficeMgmtCOM00 IS NULL AND Office365ClientConfigurations_DATA.OfficeMgmtCOM00 = 'True') THEN (SELECT Channel FROM @ChannelTable TCT WHERE TCT.CPath = Office365ClientConfigurations_DATA.CDNBaseUrl00)
 WHEN Office365ClientConfigurations_DATA.GPOOfficeMgmtCOM00 = '1' THEN (SELECT Channel FROM @ChannelTable TCT WHERE TCT.CPath = Office365ClientConfigurations_DATA.CDNBaseUrl00)
 WHEN (Office365ClientConfigurations_DATA.UpdateChannel00 IS NOT NULL AND Office365ClientConfigurations_DATA.UpdateChannel00 != '') THEN Office365ClientConfigurations_DATA.UpdateChannel00
@@ -82,7 +84,7 @@ ConfigManaged = (CASE WHEN dbo.Office365ClientConfigurations_DATA.OfficeMgmtCOM0
 FROM dbo.Add_Remove_Programs_DATA
 INNER JOIN dbo.System_DATA ON dbo.System_DATA.MachineID = dbo.Add_Remove_Programs_DATA.MachineID
 INNER JOIN dbo.Office365ClientConfigurations_DATA ON dbo.Office365ClientConfigurations_DATA.MachineID = dbo.Add_Remove_Programs_DATA.MachineID
-WHERE dbo.Add_Remove_Programs_DATA.DisplayName00 LIKE 'Microsoft Office 365 ProPlus%' AND dbo.Add_Remove_Programs_DATA.Version00 LIKE '16%' AND dbo.Add_Remove_Programs_DATA.DisplayName00 LIKE '%' + dbo.Office365ClientConfigurations_DATA.ClientCulture00 
+WHERE dbo.Add_Remove_Programs_DATA.DisplayName00 LIKE 'Microsoft Office 365 ProPlus -%' AND dbo.Add_Remove_Programs_DATA.Version00 LIKE '16%' AND dbo.Add_Remove_Programs_DATA.DisplayName00 LIKE '%' + dbo.Office365ClientConfigurations_DATA.ClientCulture00 
 
 SELECT DISTINCT(Channel), COUNT(Channel) FROM @ResultsTable RT 
 WHERE ComManaged LIKE 
@@ -91,6 +93,7 @@ THEN '%'
 ELSE @ComManaged
 END
 GROUP BY Channel</CommandText>
+        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
       </Query>
       <Fields>
         <Field Name="Channel">
@@ -664,6 +667,6 @@ GROUP BY Channel</CommandText>
     <CodeModule>SrsResources, culture=neutral</CodeModule>
   </CodeModules>
   <rd:ReportUnitType>Inch</rd:ReportUnitType>
-  <rd:ReportServerUrl>http://2012-cm/ReportServer</rd:ReportServerUrl>
+  <rd:ReportServerUrl>http://sccm2012-cm/ReportServer</rd:ReportServerUrl>
   <rd:ReportID>6fbd236a-d836-4950-8788-14b828deb616</rd:ReportID>
 </Report>
