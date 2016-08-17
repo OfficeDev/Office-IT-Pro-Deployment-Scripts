@@ -2100,17 +2100,19 @@ function UpdateConfigurationXml() {
           $addNode.SetAttribute("SourcePath", $SourcePath)
       }
 
-      if ($languageNode.ID){
-          if($languageNode.ID -contains $Language) {
-              Write-Host "$Language already exists in the xml"
+      if($Language){
+          if ($languageNode.ID){
+              if($languageNode.ID -contains $Language) {
+                  Write-Host "$Language already exists in the xml"
+              } else {
+                  $newLanguageElement = $doc.CreateElement("Language")
+                  $newLanguage = $doc.Configuration.Add.Product.AppendChild($newLanguageElement)
+                  $newLanguage.SetAttribute("ID", $Language)
+              }
           } else {
-              $newLanguageElement = $doc.CreateElement("Language")
-              $newLanguage = $doc.Configuration.Add.Product.AppendChild($newLanguageElement)
-              $newLanguage.SetAttribute("ID", $Language)
+              $languageNode.SetAttribute("ID", $language)
           }
-      } else {
-          $languageNode.SetAttribute("ID", $language)
-      }
+     }
 
       $doc.Save($Path)
     }
