@@ -208,6 +208,9 @@ Here is what the configuration file looks like when created from this function:
     Param(
 
     [Parameter()]
+    [string] $OfficeClientEdition = $NULL,
+
+    [Parameter()]
     [string] $Bitness = $NULL,
 
     [Parameter(HelpMessage="Example: O365ProPlusRetail")]
@@ -231,8 +234,15 @@ Here is what the configuration file looks like when created from this function:
             $ProductId = SelectProductId
         }
 
-        if (!$Bitness) {
-            $Bitness = SelectBitness
+        if(!$OfficeClientEdition)
+        {
+            if (!$Bitness) {
+                $Bitness = SelectBitness
+            }
+        }
+        else
+        {
+            $Bitness = $OfficeClientEdition
         }
 
         $ProductId = IsValidProductId -ProductId $ProductId
@@ -2152,6 +2162,9 @@ Here is what the portion of configuration file looks like when modified by this 
         [string] $Version,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [string] $OfficeClientEdition,
+
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $Bitness,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
@@ -2169,6 +2182,16 @@ Here is what the portion of configuration file looks like when modified by this 
     )
 
     Process{
+
+        if(!$OfficeClientEdition)
+        {
+            #checking if office client edition is null, if not, set bitness to client office edition
+        }
+        else
+        {
+            $Bitness = $OfficeClientEdition
+        }
+
         $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
 
         #Load file
@@ -3328,8 +3351,20 @@ Function Test-UpdateSource() {
         [string[]] $OfficeLanguages = $null,
 
         [Parameter()]
+        [String] $OfficeClientEdition = $NULL,
+        
+        [Parameter()]
         [String] $Bitness = $NULL
     )
+
+    if(!$OfficeClientEdition)
+        {
+            #checking if office client edition is null, if not, set bitness to client office edition
+        }
+        else
+        {
+            $Bitness = $OfficeClientEdition
+        }
 
   	$uri = [System.Uri]$UpdateSource
 
@@ -3362,6 +3397,9 @@ Function Validate-UpdateSource() {
         [string] $UpdateSource = $NULL,
 
         [Parameter()]
+        [string] $OfficeClientEdition,
+        
+        [Parameter()]
         [string] $Bitness = "x86",
 
         [Parameter()]
@@ -3370,6 +3408,15 @@ Function Validate-UpdateSource() {
         [Parameter()]
         [bool]$ShowMissingFiles = $true
     )
+
+    if(!$OfficeClientEdition)
+        {
+            #checking if office client edition is null, if not, set bitness to client office edition
+        }
+        else
+        {
+            $Bitness = $OfficeClientEdition
+        }
 
     [bool]$validUpdateSource = $true
     [string]$cabPath = ""
