@@ -1920,11 +1920,13 @@ function Get-ChannelUrl() {
 function Get-ChannelXml() {
    [CmdletBinding()]
    param( 
-      
+    [Parameter()]
+    [string]$LogFilePath = "$env:temp\RollBackLogFile.log"  
    )
 
    process {
        $XMLFilePath = "$PSScriptRoot\ofl.cab"
+       Write-Logfile "Line 520: XMLFilePath set to $XMLFilePath"
 
        if (!(Test-Path -Path $XMLFilePath)) {
            $webclient = New-Object System.Net.WebClient
@@ -1933,9 +1935,15 @@ function Get-ChannelXml() {
            $webclient.DownloadFile($XMLDownloadURL,$XMLFilePath)
        }
 
-       $tmpName = "o365client_64bit.xml"
-       expand $XMLFilePath $env:TEMP -f:$tmpName | Out-Null
-       $tmpName = $env:TEMP + "\o365client_64bit.xml"
+       if($PSVersionTable.PSVersion.Major -ge '3'){
+           $tmpName = "o365client_64bit.xml"
+           expand $XMLFilePath $env:TEMP -f:$tmpName | Out-Null
+           $tmpName = $env:TEMP + "\o365client_64bit.xml"
+       }else {
+           $scriptPath = GetScriptPath
+           $tmpName = $scriptPath + "\o365client_64bit.xml"           
+       }
+
        [xml]$channelXml = Get-Content $tmpName
 
        return $channelXml

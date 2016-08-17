@@ -46,6 +46,9 @@ namespace Microsoft.Office
          VisioStdXVolume = 64,
          ProjectProXVolume = 128,
          ProjectStdXVolume = 256,
+         InfoPathRetail = 512,
+         SkypeforBusinessEntryRetail = 1024,
+         LyncEntryRetail = 2048,
      }
 }
 "
@@ -150,14 +153,28 @@ Function Set-Reg {
 Function StartProcess {
 	Param
 	(
+        [Parameter()]
 		[String]$execFilePath,
-        [String]$execParams
+
+        [Parameter()]
+        [String]$execParams,
+
+        [Parameter()]
+        [bool]$WaitForExit = $false
 	)
 
     Try
     {
-        $execStatement = [System.Diagnostics.Process]::Start( $execFilePath, $execParams ) 
-        $execStatement.WaitForExit()
+        $startExe = new-object System.Diagnostics.ProcessStartInfo
+        $startExe.FileName = $execFilePath
+        $startExe.Arguments = $execParams
+        $startExe.CreateNoWindow = $false
+        $startExe.UseShellExecute = $false
+
+        $execStatement = [System.Diagnostics.Process]::Start($startExe) 
+        if ($WaitForExit) {
+           $execStatement.WaitForExit()
+        }
     }
     Catch
     {
@@ -281,7 +298,7 @@ begin {
 
     $defaultDisplaySet = 'DisplayName','Version', 'ComputerName'
 
-    $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet(‘DefaultDisplayPropertySet’,[string[]]$defaultDisplaySet)
+    $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet('DefaultDisplayPropertySet',[string[]]$defaultDisplaySet)
     $PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultDisplayPropertySet)
 }
 
@@ -1111,7 +1128,7 @@ Function getOperationTime() {
 
     $operationTime = ""
 
-    $dateDiff = NEW-TIMESPAN –Start $OperationStart –End (GET-DATE)
+    $dateDiff = New-TimeSpan -Start $OperationStart -End (Get-Date)
     $strHours = formatTimeItem -TimeItem $dateDiff.Hours.ToString() 
     $strMinutes = formatTimeItem -TimeItem $dateDiff.Minutes.ToString() 
     $strSeconds = formatTimeItem -TimeItem $dateDiff.Seconds.ToString() 
@@ -1403,7 +1420,7 @@ function Get-Fileshare() {
 }
 
 function Check-AdminAccess() {
-If (-NOT ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole(`    [Security.Principal.WindowsBuiltInRole] “Administrator”)){    throw “You do not have Administrator rights to run this script!`nPlease re-run this script as an Administrator!”}
+If (-NOT ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole(`    [Security.Principal.WindowsBuiltInRole] "Administrator")){    throw "You do not have Administrator rights to run this script!`nPlease re-run this script as an Administrator!"}
 }
 
 function Get-LargestDrive() {

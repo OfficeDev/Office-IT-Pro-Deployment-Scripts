@@ -23,6 +23,7 @@ namespace Microsoft.Office
          ProjectProXVolume = 128,
          ProjectStdXVolume = 256,
          InfoPathRetail = 512,
+         LanguagePack = 1024
      }
 }
 "
@@ -3156,7 +3157,6 @@ Function GetScriptRoot() {
      if ($PSScriptRoot) {
        $scriptPath = $PSScriptRoot
      } else {
-       $scriptPath = split-path -parent $MyInvocation.MyCommand.Definition
        $scriptPath = (Get-Item -Path ".\").FullName
      }
      return $scriptPath
@@ -3397,4 +3397,38 @@ Function Validate-UpdateSource() {
     }
     
     return $validUpdateSource
+}
+
+function Get-ChannelXml() {
+   [CmdletBinding()]
+   param( 
+    [Parameter()]
+    [string]$LogFilePath = "$env:temp\RollBackLogFile.log"  
+   )
+
+   process {
+       $XMLFilePath = "$PSScriptRoot\ofl.cab"
+       Write-Logfile "Line 520: XMLFilePath set to $XMLFilePath"
+
+       if (!(Test-Path -Path $XMLFilePath)) {
+           $webclient = New-Object System.Net.WebClient
+           $XMLFilePath = "$env:TEMP/ofl.cab"
+           $XMLDownloadURL = "http://officecdn.microsoft.com/pr/wsus/ofl.cab"
+           $webclient.DownloadFile($XMLDownloadURL,$XMLFilePath)
+       }
+
+       if($PSVersionTable.PSVersion.Major -ge '3'){
+           $tmpName = "o365client_64bit.xml"
+           expand $XMLFilePath $env:TEMP -f:$tmpName | Out-Null
+           $tmpName = $env:TEMP + "\o365client_64bit.xml"
+       }else {
+           $scriptPath = GetScriptPath
+           $tmpName = $scriptPath + "\o365client_64bit.xml"           
+       }
+
+       [xml]$channelXml = Get-Content $tmpName
+
+       return $channelXml
+   }
+
 }
