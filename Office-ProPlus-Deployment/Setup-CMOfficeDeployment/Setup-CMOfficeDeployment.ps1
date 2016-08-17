@@ -2073,7 +2073,7 @@ function UpdateConfigurationXml() {
 		[String]$SourcePath = $NULL,
 		
         [Parameter()]
-		[String]$Language
+		[String]$Language = "en-us"
         
 	) 
     Process {
