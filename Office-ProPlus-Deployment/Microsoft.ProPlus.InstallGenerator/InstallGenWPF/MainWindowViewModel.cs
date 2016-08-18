@@ -345,6 +345,22 @@ namespace MetroDemo
                 }
             };
 
+            SkypeProducts = new List<Product>()
+            {
+                new Product()
+                {
+                    DisplayName = "Skype For Business 2016",
+                    Id = "SkypeforBusinessRetail",
+                    ShortName = "Skype For Business 2016"
+                },
+                new Product()
+                {
+                    DisplayName = "Skype For Business Basic 2016",
+                    Id = "SkypeforBusinessEntryRetail",
+                    ShortName = "Skype For Business Basic 2016"
+                }
+            };
+
             ExcludeProducts = new List<ExcludeProduct>()
             {
                 new ExcludeProduct()
@@ -567,6 +583,8 @@ namespace MetroDemo
         public List<Product> VisioProducts { get; set; }
 
         public List<Product> ProjectProducts { get; set; }
+
+        public List<Product> SkypeProducts { get; set; }
 
         public List<ExcludeProduct> ExcludeProducts { get; set; }
 

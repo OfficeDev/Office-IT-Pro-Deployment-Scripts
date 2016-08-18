@@ -51,9 +51,9 @@
 
                         <Grid HorizontalAlignment="Left">
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="20"></RowDefinition>
-                                <RowDefinition Height="350"></RowDefinition>
-                                <RowDefinition Height="224"></RowDefinition>
+                                <RowDefinition Height="1"></RowDefinition>
+                                <RowDefinition Height="450"></RowDefinition>
+                                <RowDefinition Height="2"></RowDefinition>
                             </Grid.RowDefinitions>
 
                             <Grid Width="900" Grid.Row="1" HorizontalAlignment="Left" Margin="10 0 0 0">
@@ -68,7 +68,7 @@
 
                                 <StackPanel Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" Width="520">
 
-                                    <Grid Height="35" >
+                                    <Grid Height="30" >
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="30" />
                                             <ColumnDefinition Width="450" />
@@ -92,7 +92,7 @@
                                             SelectedIndex="0" SelectionMode="Single" FontSize="20" SelectionChanged="Products_OnSelectionChanged" 
                                              BorderThickness="2,2,2,2" RenderTransformOrigin="0.508,0.123" FontFamily="Segoe UI Semilight"/>
 
-                                    <Grid Height="35" Margin="0 20 0 0" >
+                                    <Grid Height="30" Margin="0 20 0 0" >
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="30" />
                                             <ColumnDefinition Width="450" />
@@ -117,7 +117,7 @@
                                               Foreground="{StaticResource GrayBrush}" HorizontalAlignment="Left" BorderThickness="2"
                                               VerticalAlignment="Center" SelectionChanged="CbVisio_OnSelectionChanged" FontFamily="Segoe UI Semilight" />
 
-                                    <Grid Height="35" Margin="0 20 0 0" >
+                                    <Grid Height="34" Margin="0 20 0 0" >
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="30" />
                                             <ColumnDefinition Width="450" />
@@ -141,6 +141,32 @@
                                               Height="40" ItemsSource="{Binding ProjectProducts}" DisplayMemberPath="DisplayName"
                                               Foreground="{StaticResource GrayBrush}" HorizontalAlignment="Left" VerticalAlignment="Center"
                                               SelectionChanged="CbProject_OnSelectionChanged" FontFamily="Segoe UI Semilight" />
+
+
+                                    <Grid Height="35" Margin="0 20 0 0" >
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="30" />
+                                            <ColumnDefinition Width="450" />
+                                            <ColumnDefinition Width="30" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <Button x:Name="SkypeInfo" Width="30" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" 
+                                                Focusable="False"  Style="{StaticResource MetroInfoButton}" Click="ProductInfo_OnClick" >
+                                            <StackPanel Orientation="Horizontal">
+                                                <Image Source="../images/info.png" Width="20" Height="20"/>
+                                            </StackPanel>
+                                        </Button>
+                                        <Label Grid.Row="0" Grid.Column="1" Content="Skype" Style="{StaticResource CustomMetroLabelHeader}"  
+                                               HorizontalAlignment="Left"  Width="100" VerticalAlignment="Center" FontFamily="Segoe UI Semibold"/>
+                                        <CheckBox x:Name="ChkSkype" Grid.Column="2" Style="{StaticResource MetroCheckBox}"  
+                                                  Click="chkofficeProd_Click" Checked="ChkSkype_Checked" Unchecked="ChkSkype_Unchecked" ></CheckBox>
+                                    </Grid>
+
+                                    <ComboBox x:Name="CbSkype" Width="500" FontSize="20" BorderThickness="2" Margin="0 5 0 0"
+                                              BorderBrush="{StaticResource GrayBrush}"
+                                              Height="40" ItemsSource="{Binding SkypeProducts}" DisplayMemberPath="DisplayName"
+                                              Foreground="{StaticResource GrayBrush}" HorizontalAlignment="Left" VerticalAlignment="Center"
+                                               FontFamily="Segoe UI Semilight" SelectionChanged="CbSkype_SelectionChanged" />
 
                                 </StackPanel>
 

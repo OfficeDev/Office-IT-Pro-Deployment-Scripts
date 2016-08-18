@@ -1445,6 +1445,20 @@ namespace MetroDemo.ExampleViews
             }
         }
 
+        private void ChkSkype_Checked(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void ChkSkype_Unchecked(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void CbSkype_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
     }
 }
 
