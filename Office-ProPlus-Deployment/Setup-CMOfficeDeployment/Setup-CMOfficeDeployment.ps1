@@ -1423,7 +1423,7 @@ to install additional languages on a client
                 $OSSourcePath = "$PSScriptRoot\DeploymentFiles\DeployConfigFile.ps1"
                 $OCScriptPath = "$SharePath\DeployConfigFile.ps1"
 
-                $configId = "Language pack-$Channel-$Languages-$Bit-Bit"
+                $configId = "LanguagePack-$Channel-$Languages-$Bit-Bit"
                 $configFileName = $configId + ".xml"
 
                 if ($CustomName) {
@@ -1448,7 +1448,7 @@ to install additional languages on a client
                     }
                 }
         
-                $ProgramName = "Deploy Language Pack-$Languages-$Bit-Bit"
+                $ProgramName = "DeployLanguagePack-$Channel-$Languages-$Bit-Bit"
 
                 $CommandLine = "%windir%\Sysnative\windowsPowershell\V1.0\powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive " + `
                                "-NoProfile -WindowStyle Hidden -Command .\DeployConfigFile.ps1 -ConfigFileName $configFileName"
@@ -1860,7 +1860,7 @@ clients in the target collection 'Office Update'.
                     $badLanguages = @()
                     $LanguagePrograms = Get-CMProgram | where {$_.Comment.ToLower() -like "deploylanguagepack*"}
                     foreach($LanguageProgram in $LanguagePrograms) {
-                        $programCommentLangs = $LanguageProgram.Comment.Replace("DeployLanguagePack-$Channel-","").Split()
+                        $programCommentLangs = $LanguageProgram.Comment.Replace("DeployLanguagePack-$Channel-$strBitness-","").Split()
                         foreach($language in $programCommentLangs) {
                             if($Languages -notcontains $language) {
                                 $badLanguages += $language
