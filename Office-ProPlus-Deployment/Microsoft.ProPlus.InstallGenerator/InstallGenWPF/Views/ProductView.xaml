@@ -159,7 +159,7 @@
                                         <Label Grid.Row="0" Grid.Column="1" Content="Skype" Style="{StaticResource CustomMetroLabelHeader}"  
                                                HorizontalAlignment="Left"  Width="100" VerticalAlignment="Center" FontFamily="Segoe UI Semibold"/>
                                         <CheckBox x:Name="ChkSkype" Grid.Column="2" Style="{StaticResource MetroCheckBox}"  
-                                                  Click="chkofficeProd_Click" Checked="ChkSkype_Checked" Unchecked="ChkSkype_Unchecked" ></CheckBox>
+                                                  Click="chkofficeProd_Click" Checked="ChkSkype_Checked" Unchecked="ChkSkype_Checked" HorizontalAlignment="Right" Margin="0,0,-0.2,0" Width="31" ></CheckBox>
                                     </Grid>
 
                                     <ComboBox x:Name="CbSkype" Width="500" FontSize="20" BorderThickness="2" Margin="0 5 0 0"

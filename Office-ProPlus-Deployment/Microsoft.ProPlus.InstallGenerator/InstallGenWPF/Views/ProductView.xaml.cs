@@ -57,7 +57,8 @@ namespace MetroDemo.ExampleViews
             {
                 // LoadExcludedProducts();
                 cbProject.IsEnabled = false;
-                cbVisio.IsEnabled = false;                
+                cbVisio.IsEnabled = false;
+                CbSkype.IsEnabled = false;           
                 if (MainTabControl == null) return;
                 MainTabControl.SelectedIndex = 0;
 
@@ -240,6 +241,7 @@ namespace MetroDemo.ExampleViews
                 _blockUpdate = true;
                 cbVisio.SelectedIndex = 0;
                 cbProject.SelectedIndex = 0;
+                CbSkype.SelectedIndex = 0;
                 chkVisio.IsChecked = false;
                 chkProject.IsChecked = false;                
                 if (chBxMainProductFirstInitialize)
@@ -356,7 +358,16 @@ namespace MetroDemo.ExampleViews
                                 cbProject.IsEnabled = true;
                                 cbProject.SelectedItem = item;
                                 break;
-                            }                            
+                            }
+
+                            foreach (Product item in CbSkype.Items)
+                            {
+                                if (item.Id.ToUpper() != product.ID.ToUpper()) continue;
+                                ChkSkype.IsChecked = true;
+                                CbSkype.IsEnabled = true;
+                                CbSkype.SelectedItem = item;
+                                break;
+                            }
 
                             if (product.Languages != null)
                             {
@@ -588,6 +599,16 @@ namespace MetroDemo.ExampleViews
                     configXml.Add.Products.Add(additionalProduct);
                 }
 
+                if (ChkSkype.IsChecked.HasValue && ChkSkype.IsChecked.Value)
+                {
+                    var addProduct = (Product)CbSkype.SelectedItem;
+                    var additionalProduct = new ODTProduct()
+                    {
+                        ID = addProduct.Id
+                    };
+                    configXml.Add.Products.Add(additionalProduct);
+                }
+
                 if (existingProduct.Languages == null)
                 {
                     existingProduct.Languages = new List<ODTLanguage>();
@@ -787,6 +808,12 @@ namespace MetroDemo.ExampleViews
             {
                 var projetProduct = (Product)cbProject.SelectedItem;
                 products.Add(projetProduct);
+            }
+
+            if (ChkSkype.IsChecked.HasValue && ChkSkype.IsChecked.Value)
+            {
+                var skypeProduct = (Product)CbSkype.SelectedItem;
+                products.Add(skypeProduct);
             }
 
             LanguageUnique.DisplayMemberPath = "ShortName";
@@ -1427,7 +1454,7 @@ namespace MetroDemo.ExampleViews
         {
             try
             {
-                if ((chkVisio.IsChecked.HasValue && chkVisio.IsChecked.Value == false) && (chkProject.IsChecked.HasValue && chkProject.IsChecked.Value == false) && (chkofficeProd.IsChecked.HasValue && chkofficeProd.IsChecked.Value == false))
+                if ((chkVisio.IsChecked.HasValue && chkVisio.IsChecked.Value == false) && (chkProject.IsChecked.HasValue && chkProject.IsChecked.Value == false) && (ChkSkype.IsChecked.HasValue && chkProject.IsChecked.Value == false) && (chkofficeProd.IsChecked.HasValue && chkofficeProd.IsChecked.Value == false))
                 {
 
                     GlobalObjects.ViewModel.BlockNavigation = true;
@@ -1447,17 +1474,27 @@ namespace MetroDemo.ExampleViews
 
         private void ChkSkype_Checked(object sender, RoutedEventArgs e)
         {
-
-        }
-
-        private void ChkSkype_Unchecked(object sender, RoutedEventArgs e)
-        {
-
+            try
+            {
+                CbSkype.IsEnabled = (ChkSkype.IsChecked.HasValue && ChkSkype.IsChecked.Value);
+                ProductsSelectionChanged();
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
         }
 
         private void CbSkype_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-
+            try
+            {
+                ProductsSelectionChanged();
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
         }
     }
 }
