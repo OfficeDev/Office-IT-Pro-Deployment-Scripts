@@ -80,6 +80,9 @@ param(
     [bool]$IncludeUpdatePathAsSourcePath = $false,
 
     [Parameter(ValueFromPipelineByPropertyName=$true)]
+    [String]$DownloadPath = $NULL,
+
+    [Parameter(ValueFromPipelineByPropertyName=$true)]
     [string]$DefaultConfigurationXml = $NULL
 )
 
@@ -416,6 +419,10 @@ process {
       if ($officeConfig.UpdateUrl) {
           odtSetAdd -ConfigDoc $ConfigFile -SourcePath $officeConfig.UpdateUrl
       }
+    }
+
+    if ($DownloadPath) {      
+          odtSetAdd -ConfigDoc $ConfigFile -DownloadPath $DownloadPath   
     }
 
     $formattedXml = Format-XML ([xml]($ConfigFile)) -indent 4
@@ -1665,6 +1672,9 @@ Function odtSetAdd{
         [string] $SourcePath = $NULL,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [string] $DownloadPath = $NULL,
+
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $Version,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
@@ -1690,6 +1700,14 @@ Function odtSetAdd{
         } else {
             if ($PSBoundParameters.ContainsKey('SourcePath')) {
                 $ConfigDoc.Configuration.Add.RemoveAttribute("SourcePath")
+            }
+        }
+
+        if($DownloadPath){
+            $ConfigFile.Configuration.Add.SetAttribute("DownloadPath", $DownloadPath) | Out-Null
+        } else {
+            if ($PSBoundParameters.ContainsKey('DownloadPath')) {
+                $ConfigDoc.Configuration.Add.RemoveAttribute("DownloadPath")
             }
         }
 
