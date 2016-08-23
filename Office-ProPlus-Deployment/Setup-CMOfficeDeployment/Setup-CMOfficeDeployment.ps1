@@ -1423,21 +1423,7 @@ to install additional languages on a client
                 $OSSourcePath = "$PSScriptRoot\DeploymentFiles\DeployConfigFile.ps1"
                 $OCScriptPath = "$SharePath\DeployConfigFile.ps1"
 
-                $configId = "LanguagePack-$Channel-" + $Bit + "bit-$languages"
-                $configFileName = $configId + ".xml"
-
-                if ($CustomName) {
-                    $configFileName = $configId + "-" + $CustomName + ".xml"
-                }
-
-                $configFilePath = "$LocalPath\$configFileName"
-
-                Set-Location $startLocation
-
-                Copy-Item -Path $ConfigurationXml -Destination $configFilePath
-
                 $sourcePath = $NULL
-
                 $sourceFilePath = "$LocalPath\SourceFiles\$channelShortName\Office\Data"
                 if (Test-Path -Path $sourceFilePath) {
                     $sourcePath = ".\SourceFiles\$channelShortName"
@@ -1465,6 +1451,8 @@ to install additional languages on a client
 
                             $ProgramName = "DeployLanguagePack-$Channel-" + $Bit + "bit-Multi-$newLanguageProgramNum"
 
+
+
                         }
                     } else {
                         $ProgramName = "DeployLanguagePack-$Channel-" + $Bit + "bit-Multi-1"    
@@ -1473,7 +1461,17 @@ to install additional languages on a client
                     $ProgramName = "DeployLanguagePack-$Channel-" + "$Bit" + "bit-$Languages"
                 }
 
+                $configFileName = $ProgramName + ".xml"
+
+                if ($CustomName) {
+                    $configFileName = $ProgramName + "-" + $CustomName + ".xml"
+                }
+
+                $configFilePath = "$LocalPath\$configFileName"
+
                 Set-Location $startLocation
+
+                Copy-Item -Path $ConfigurationXml -Destination $configFilePath
 
                 $CommandLine = "%windir%\Sysnative\windowsPowershell\V1.0\powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive " + `
                                "-NoProfile -WindowStyle Hidden -Command .\DeployConfigFile.ps1 -ConfigFileName $configFileName"
@@ -1504,7 +1502,15 @@ to install additional languages on a client
 
                 $packageId = $existingPackage.PackageId
                 if ($packageId) {
-                    $comment = "DeployLanguagePack-$Channel-$Bit-$Languages"
+                    $comment = $NULL
+                    foreach($language in $Languages){
+                        if($comment -eq $NULL){
+                            $comment += $language
+                        } else {
+                            $comment += ",$language"
+                        }
+                    }
+                    #$comment = "DeployLanguagePack-$Channel-$Bit-$Languages"
 
                     if ($CustomName) {
                         $comment += "-$CustomName"
@@ -1881,30 +1887,34 @@ clients in the target collection 'Office Update'.
                     $Program = Get-CMProgram | Where {$_.Comment.ToLower() -eq $tmpPType.ToLower() }
                 }
                 else{
-                    [bool]$useProgram = $true
-                    $badLanguages = @()
-                    $LanguagePrograms = Get-CMProgram | where {$_.Comment.ToLower() -like "deploylanguagepack*"}
-                    foreach($LanguageProgram in $LanguagePrograms) {
-                        $programCommentLangs = $LanguageProgram.Comment.Replace("DeployLanguagePack-$Channel-$strBitness-","").Split()
-                        foreach($language in $programCommentLangs) {
-                            if($Languages -notcontains $language) {
-                                $badLanguages += $language
-                            }                      
+                    $languagePrograms = Get-CMProgram | ? {$_.ProgramName -like "DeployLanguage*"}
+                    $tempLanguages = @()
+                    foreach($lang in $Languages){
+                        $tempLanguages += $lang
+                    }
+                    $tempLanguages = $tempLanguages | Sort-Object -Descending
+                    [string]$sortedTempLanguages = $NULL
+                    foreach($lang in $tempLanguages){
+                        if(!$sortedTempLanguages){
+                            $sortedTempLanguages += $lang
+                        } else {
+                            $sortedTempLanguages += ",$lang"
                         }
-                        foreach($language in $Languages){
-                            if($programCommentLangs -notcontains $language){
-                                $badLanguages += $language
+                    }
+                    foreach($langProgram in $languagePrograms){
+                        $commentLang = $langProgram.Comment.Split(",") | Sort-Object -Descending
+                        [string]$sortedCommentLangs = $NULL
+                        foreach($comLang in $commentLang){
+                            if(!$sortedCommentLangs){
+                                $sortedCommentLangs += $comLang
+                            } else {
+                                $sortedCommentLangs += ",$comLang"
                             }
                         }
-
-                        if($badLanguages.Count -gt 0){
-                            $useProgram = $false
+                        if($langProgram.ProgramName -like "DeployLanguagePack-$Channel-$strBitness*" -and $sortedCommentLangs -eq $sortedTempLanguages){
+                            $Program = $langProgram
                         }
-
-                        if($useProgram){
-                            $Program = $LanguageProgram
-                        }
-                    }   
+                    }
                 }
 
                 $programName = $Program.ProgramName
@@ -1923,9 +1933,18 @@ clients in the target collection 'Office Update'.
                             }
                         }
 
-                        $comment = $ProgramType.ToString() + "-" + $ChannelName + "-" + $Bitness.ToString() + "-" + $Collection.ToString()
-                        if ($CustomName) {
-                           $comment += "-$CustomName" 
+                        if($ProgramType -ne "LanguagePack") {
+                            $comment = $ProgramType.ToString() + "-" + $ChannelName + "-" + $Bitness.ToString() + "-" + $Collection.ToString()
+                            if ($CustomName) {
+                               $comment += "-$CustomName" 
+                            }
+                        } else {
+                            if($programName -like "*Multi*"){
+                                $programComment = $ProgramName.Split("-")[3] + $ProgramName.Split("-")[4]
+                            } else {
+                                $programComment = $ProgramName.Split("-")[3]
+                            }
+                            $comment = $ProgramType.ToString() + "-" + $ChannelName + "-" + $Bitness.ToString() + "-$programComment-" + $Collection.ToString()
                         }
 
                         $packageDeploy = Get-WmiObject -Namespace "root\sms\site_$SiteCode" -Class SMS_Advertisement  | where {$_.PackageId -eq $package.PackageId -and $_.Comment -eq $comment }
