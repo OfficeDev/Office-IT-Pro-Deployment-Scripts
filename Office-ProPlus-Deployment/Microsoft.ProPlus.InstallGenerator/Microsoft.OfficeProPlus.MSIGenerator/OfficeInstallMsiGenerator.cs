@@ -84,7 +84,7 @@ public class MsiGenerator
 
         project.Load += project_Load;
         project.AfterInstall += project_AfterInstall;
-        project.InstallScope = InstallScope.perMachine;
+        //project.InstallScope = InstallScope.perMachine;
         
 
         if (!string.IsNullOrEmpty(installProperties.Language))
