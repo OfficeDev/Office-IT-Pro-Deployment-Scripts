@@ -1423,7 +1423,7 @@ to install additional languages on a client
                 $OSSourcePath = "$PSScriptRoot\DeploymentFiles\DeployConfigFile.ps1"
                 $OCScriptPath = "$SharePath\DeployConfigFile.ps1"
 
-                $configId = "LanguagePack-$Channel-$Languages-$Bit-Bit"
+                $configId = "LanguagePack-$Channel-" + $Bit + "bit-$languages"
                 $configFileName = $configId + ".xml"
 
                 if ($CustomName) {
@@ -1447,8 +1447,29 @@ to install additional languages on a client
                         $sourcePath = ".\SourceFiles\$Channel"
                     }
                 }
-        
-                $ProgramName = "DeployLanguagePack-$Channel-$Languages-$Bit-Bit"
+                
+                if($Languages.Count -gt "1"){
+                    Set-Location $siteDrive
+
+                    $languagePrograms = Get-CMProgram | ? {$_.ProgramName -like "DeployLanguagePack*" -and $_.ProgramName -like "*Multi*"}
+                    $languageProgramNumList = @()
+                    if($languagePrograms.Count -gt "0"){
+                        foreach($Program in $languagePrograms){
+                            $languageProgramName = $Program.ProgramName
+                            $languageProgramNumList += $languageProgramName.Split("-")[4]
+                        }
+
+                        $languageProgramNumList = $languageProgramNumList | Sort-Object -Descending
+                        $newLanguageProgramNum = [int]$languageProgramNumList[0] + 1
+
+                        $ProgramName = "DeployLanguagePack-$Channel-" + $Bit + "bit-Multi-$newLanguageProgramNum"
+
+                    } 
+                } else {
+                    $ProgramName = "DeployLanguagePack-$Channel-" + "$Bit" + "bit-$Languages"
+                }
+
+                Set-Location $startLocation
 
                 $CommandLine = "%windir%\Sysnative\windowsPowershell\V1.0\powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive " + `
                                "-NoProfile -WindowStyle Hidden -Command .\DeployConfigFile.ps1 -ConfigFileName $configFileName"
@@ -2359,14 +2380,13 @@ function CreateCMProgram() {
 
 	) 
 
-    $program = Get-CMProgram | Where { $_.PackageID -eq $PackageID -and $_.Comment -eq $Comment }
+    $program = Get-CMProgram | Where { $_.PackageID -eq $PackageID -and $_.Comment -eq $Comment -and $_.ProgramName -eq $Name }
 
-    if($program -eq $null -or !$program)
-    {
+    if($program -eq $null -or !$program) {
         Write-Host "`t`tCreating Program: $Name ..."	        
 	    $program = New-CMProgram -PackageId $PackageID -StandardProgramName $Name -DriveMode RenameWithUnc `
                                  -CommandLine $CommandLine -ProgramRunType OnlyWhenUserIsLoggedOn `
-                                 -RunMode RunWithAdministrativeRights -UserInteraction $true -RunType Normal 
+                                 -RunMode RunWithAdministrativeRights -UserInteraction $true -RunType Normal
     } else {
         Write-Host "`t`tProgram Already Exists: $Name"
     }
