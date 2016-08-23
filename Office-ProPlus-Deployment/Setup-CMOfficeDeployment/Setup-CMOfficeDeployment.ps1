@@ -1452,19 +1452,23 @@ to install additional languages on a client
                     Set-Location $siteDrive
 
                     $languagePrograms = Get-CMProgram | ? {$_.ProgramName -like "DeployLanguagePack*" -and $_.ProgramName -like "*Multi*"}
-                    $languageProgramNumList = @()
-                    if($languagePrograms.Count -gt "0"){
-                        foreach($Program in $languagePrograms){
-                            $languageProgramName = $Program.ProgramName
-                            $languageProgramNumList += $languageProgramName.Split("-")[4]
+                    if($languagePrograms){
+                        $languageProgramNumList = @()
+                        if($languagePrograms.Count -gt "0"){
+                            foreach($Program in $languagePrograms){
+                                $languageProgramName = $Program.ProgramName
+                                $languageProgramNumList += $languageProgramName.Split("-")[4]
+                            }
+
+                            $languageProgramNumList = $languageProgramNumList | Sort-Object -Descending
+                            $newLanguageProgramNum = [int]$languageProgramNumList[0] + 1
+
+                            $ProgramName = "DeployLanguagePack-$Channel-" + $Bit + "bit-Multi-$newLanguageProgramNum"
+
                         }
-
-                        $languageProgramNumList = $languageProgramNumList | Sort-Object -Descending
-                        $newLanguageProgramNum = [int]$languageProgramNumList[0] + 1
-
-                        $ProgramName = "DeployLanguagePack-$Channel-" + $Bit + "bit-Multi-$newLanguageProgramNum"
-
-                    } 
+                    } else {
+                        $ProgramName = "DeployLanguagePack-$Channel-" + $Bit + "bit-Multi-1"    
+                    }
                 } else {
                     $ProgramName = "DeployLanguagePack-$Channel-" + "$Bit" + "bit-$Languages"
                 }
