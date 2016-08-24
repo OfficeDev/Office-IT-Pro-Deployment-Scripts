@@ -26,15 +26,15 @@ This PowerShell function automates the setup of Office 365 Click-To-Run deployme
 
 4. Distribute the package to the distribution point.
  
-		Distribute-CMOfficePackage -Channels Deferred -DistributionPoint cm.contoso.com
+		Distribute-CMOfficePackage -Channels Deferred -DistributionPoint cm.contoso.com -WaitForDistributionToFinish $true
 		
-	* The files in the OfficeDeployment$ folder will be distributed to the distribution point called cm.contoso.com.
+	* The files in the OfficeDeployment$ folder will be distributed to the distribution point called cm.contoso.com and the script will wait until the files are distributed
 
 5. Deploy the program to the collection.
  
 		Deploy-CMOfficeProgram -Collection 'Human Resources' -Channel Deferred -Bitness v32 -SiteCode S01 -DeploymentPurpose Available
 		
-	* A deployment will be created and made available to the collection 'Human Resources' that will install the "Deploy Deferred Channel with Config File - 32-Bit" program.
+	* A deployment will be created and made available to the collection 'Human Resources' that will install the "Deploy Deferred Channel with Config File - 32-Bit" program and make it "Available" for install from the software center.
 
 ###Change the channel of an Office 365 client.
 1. Download the channel files from the CDN.
