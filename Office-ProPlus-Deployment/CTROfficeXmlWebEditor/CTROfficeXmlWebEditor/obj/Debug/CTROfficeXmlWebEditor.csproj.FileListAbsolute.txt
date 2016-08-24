@@ -39,3 +39,9 @@ C:\Users\jojones\Desktop\CTROfficeXmlWebEditor\CTROfficeXmlWebEditor\bin\CTROffi
 C:\Users\jojones\Desktop\CTROfficeXmlWebEditor\CTROfficeXmlWebEditor\obj\Debug\CTROfficeXmlWebEditor.csprojResolveAssemblyReference.cache
 C:\Users\jojones\Desktop\CTROfficeXmlWebEditor\CTROfficeXmlWebEditor\obj\Debug\CTROfficeXmlWebEditor.dll
 C:\Users\jojones\Desktop\CTROfficeXmlWebEditor\CTROfficeXmlWebEditor\obj\Debug\CTROfficeXmlWebEditor.pdb
+C:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\CTROfficeXmlWebEditor\CTROfficeXmlWebEditor\bin\CTROfficeXmlWebEditor.dll.config
+C:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\CTROfficeXmlWebEditor\CTROfficeXmlWebEditor\bin\CTROfficeXmlWebEditor.dll
+C:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\CTROfficeXmlWebEditor\CTROfficeXmlWebEditor\bin\CTROfficeXmlWebEditor.pdb
+C:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\CTROfficeXmlWebEditor\CTROfficeXmlWebEditor\obj\Debug\CTROfficeXmlWebEditor.csprojResolveAssemblyReference.cache
+C:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\CTROfficeXmlWebEditor\CTROfficeXmlWebEditor\obj\Debug\CTROfficeXmlWebEditor.dll
+C:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\CTROfficeXmlWebEditor\CTROfficeXmlWebEditor\obj\Debug\CTROfficeXmlWebEditor.pdb
