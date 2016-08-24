@@ -283,7 +283,17 @@ This PowerShell function automates the setup of Office 365 Click-To-Run deployme
 	* **UseScriptLocationAsUpdateSource** If not specified the location where the script is ran will be assumed the location of the SourceFiles. Default value is $true.
 
 			Example: Create-CMOfficeUpdateAsTaskProgram -WaitForUpdateToFinish $false -EnableUpdateAnywhere $false -ForceAppShutdown $true -UpdatePromptUser $true -UpdateToVersion 16.0.6001.1078
-			
+		
+##Create-CMOfficeLanguageProgram
+1. To create an Office 365 language pack deployment use **Create-CMOfficeLanguageProgram**
+
+	The available parameters with the functions are as follows.
+	* **Channels** The available options are **Current, Deferred, FirstReleaseDeferred, FirstReleaseCurrent** 
+	* **Bitness** Available options are **v32, v64, Both**. Default value is Both.
+	* **Language** All office languages are supported in the ll-cc format "en-us".
+	* **MainOfficeLanguage** The Shell UI Language of office.(files must exist in source)
+	* **Version** You can specify a version to download. Versions and the associated channels can be found [Here](https://technet.microsoft.com/en-us/library/mt592918.aspx)
+	* **ConfigurationXml** Default value has the name of the "programname".xml
 ##Distribute the Office 365 ProPlus Package
 
 1. To distribute the Office 365 package use **Distribute-CMOfficePackage**
@@ -295,8 +305,9 @@ This PowerShell function automates the setup of Office 365 Click-To-Run deployme
 	* **DeploymentExpiryDurationInDays** Default value is 15.
 	* **SiteCode** Three digit site code, example **S01**. Left blank it will default to the current site.
 	* **CMPSModulePath** Default value will use the default location.
+	* **WaitForDistributionToFinish** Values are $true or $false
 
-			Example: Distribute-CMOfficePackage -Channels Deferred -DistributionPoint cm.contoso.com
+			Example: Distribute-CMOfficePackage -Channels Deferred -DistributionPoint cm.contoso.com -WaitForDistributionToFinish $true
 			
 ##Deploy the Office 365 ProPlus programs
 
@@ -313,3 +324,10 @@ This PowerShell function automates the setup of Office 365 Click-To-Run deployme
 	* **CustomName** Default value combines the channel with the platform.
 
 			Example: Deploy-CMOfficeProgram -Collection 'Human Resources' -ProgramType DeployWithConfigurationFile -Channel Deferred -Bitness v32 -SiteCode S01 -DeploymentPurpose Available
+
+
+##Advisories
+
+1. These scripts make the assumption that your Configuration Manager Distribution Point is in a healthy state as they rely heavily on it.
+2. When createing the package you must not be in the file explorer location for the source files.
+3. The the scripts need to be run from the script location not the Powershell site location.
