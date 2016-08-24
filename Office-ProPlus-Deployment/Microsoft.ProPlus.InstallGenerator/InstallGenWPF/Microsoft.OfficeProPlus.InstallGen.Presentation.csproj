@@ -186,6 +186,9 @@
     <Compile Include="Views\ProductView.xaml.cs">
       <DependentUpon>ProductView.xaml</DependentUpon>
     </Compile>
+    <Content Include="HelpFiles\DownloadPathInfo.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="HelpFiles\RemoteLoggingInfo.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

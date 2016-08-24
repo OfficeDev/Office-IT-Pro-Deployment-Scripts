@@ -292,7 +292,7 @@
                                     </Grid.RowDefinitions>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="30" />
-                                        <ColumnDefinition Width="120" />
+                                        <ColumnDefinition Width="140" />
                                         <ColumnDefinition Width="360" />
                                         <ColumnDefinition Width="70" />
                                         <ColumnDefinition Width="60" />
@@ -350,7 +350,7 @@
                                     </Grid.RowDefinitions>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="30" />
-                                        <ColumnDefinition Width="120" />
+                                        <ColumnDefinition Width="140" />
                                         <ColumnDefinition Width="620" />
                                     </Grid.ColumnDefinitions>
                                     <Button x:Name="SourcePathInfo" Width="30" Height="32" HorizontalAlignment="Left"  Grid.Column="0" Margin="0 5 0 0"
@@ -384,6 +384,55 @@
                                             Content="Browse" x:Name="UpdatePath" Click="UpdatePath_OnClick" Margin="2,5" FontFamily="Segoe UI Semibold" />
                                         <Button Width="50" Height="40" Grid.Column="4"  Style="{StaticResource MetroFlatButtonStyle1}"
                                             Content="Open" x:Name="OpenFolderButton" IsEnabled="False" Click="OpenFolderButton_OnClick" Margin="5" FontFamily="Segoe UI Semibold"   />
+
+                                    </Grid>
+
+
+
+
+                                </Grid>
+
+
+                                <Grid Margin="50 0 0 0" >
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="50"></RowDefinition>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="30" />
+                                        <ColumnDefinition Width="140" />
+                                        <ColumnDefinition Width="620" />
+                                    </Grid.ColumnDefinitions>
+                                    <Button x:Name="DownloadPathInfo" Width="30" Height="32" HorizontalAlignment="Left"  Grid.Column="0" Margin="0 5 0 0"
+                                                Focusable="False"  Style="{StaticResource MetroInfoButton}" Click="ProductInfo_OnClick" >
+                                        <StackPanel Orientation="Horizontal">
+                                            <Image Source="../images/info.png" Width="20" Height="20"/>
+                                        </StackPanel>
+                                    </Button>
+                                    <Label Content="Download Path" Style="{StaticResource CustomMetroLabelHeader}" Margin="0 10 0 0" Grid.Column="1"  Height="51" FontFamily="Segoe UI Semibold"/>
+
+                                    <Grid Margin="0,0,0,0" Grid.Column="2">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="26.78" />
+                                            <ColumnDefinition Width="263.287"/>
+                                            <ColumnDefinition Width="79.713"/>
+                                            <ColumnDefinition Width="60" />
+                                            <ColumnDefinition Width="60" />
+                                            <ColumnDefinition Width="75" />
+                                            <ColumnDefinition Width="75" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <Controls:MetroProgressBar x:Name="DownloadProgressBarPath"  Grid.Column="0" Height="38" Background="White" Width="360" HorizontalAlignment="Left" Grid.ColumnSpan="3" Margin="0,6" />
+                                        <TextBox x:Name="ProductDownloadSource" Background="#00ffffff" FontSize="20" Grid.Column="0" HorizontalAlignment="Left"
+                                             Controls:TextBoxHelper.Watermark="Local, UNC or HTTP Path" Height="37" Width="360"
+                                             Controls:TextBoxHelper.ClearTextButton="True" 
+                                             Text="" Grid.ColumnSpan="3" Margin="0,6" FontFamily="Segoe UI Semilight" TextChanged="ProductDownloadSource_TextChanged">
+                                        </TextBox>
+
+                                        <Button Width="55" Grid.Column="3"
+                                            Height="40"  Style="{StaticResource MetroFlatButtonStyle1}"
+                                            Content="Browse" x:Name="DownloadPath" Margin="2,5" FontFamily="Segoe UI Semibold" Click="DownloadPath_Click" />
+                                        <Button Width="50" Height="40" Grid.Column="4"  Style="{StaticResource MetroFlatButtonStyle1}"
+                                            Content="Open" x:Name="OpenDownloadFolderButton" IsEnabled="False"  Margin="5" FontFamily="Segoe UI Semibold" Click="OpenDownloadFolderButton_Click"   />
 
                                     </Grid>
 

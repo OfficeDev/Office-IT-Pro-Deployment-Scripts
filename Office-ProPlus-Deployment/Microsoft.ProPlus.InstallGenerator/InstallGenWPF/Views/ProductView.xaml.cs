@@ -257,6 +257,7 @@ namespace MetroDemo.ExampleViews
                 ProductBranch.SelectedIndex = 0;
                 ProductVersion.Text = "";
                 ProductUpdateSource.Text = "";
+                ProductDownloadSource.Text = "";
 
                 UseLangForAllProducts.IsChecked = true;
 
@@ -298,6 +299,7 @@ namespace MetroDemo.ExampleViews
 
                     ProductVersion.Text = configXml.Add.Version?.ToString() ?? "";
                     ProductUpdateSource.Text = configXml.Add.SourcePath?.ToString() ?? "";
+                    ProductDownloadSource.Text = configXml.Add.DownloadPath?.ToString() ?? "";
 
                     var branchIndex = 0;
                     foreach (OfficeBranch branchItem in ProductBranch.Items)
@@ -563,7 +565,7 @@ namespace MetroDemo.ExampleViews
             catch { }
 
             configXml.Add.SourcePath = ProductUpdateSource.Text.Length > 0 ? ProductUpdateSource.Text : null;
-
+            configXml.Add.DownloadPath = ProductDownloadSource.Text.Length > 0 ? ProductDownloadSource.Text : null;
             
             var mainProduct = (Product) MainProducts.SelectedItem;
             if (mainProduct != null)
@@ -1490,6 +1492,86 @@ namespace MetroDemo.ExampleViews
             try
             {
                 ProductsSelectionChanged();
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
+
+        private async void ProductDownloadSource_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            try
+            {
+                var enabled = false;
+                var openFolderEnabled = false;
+                if (ProductDownloadSource.Text.Trim().Length > 0)
+                {
+                    var match = Regex.Match(ProductDownloadSource.Text, @"^\w:\\|\\\\.*\\..*");
+                    if (match.Success)
+                    {
+                        enabled = true;
+                        var folderExists = await GlobalObjects.DirectoryExists(ProductDownloadSource.Text);
+                        if (!folderExists)
+                        {
+                            folderExists = await GlobalObjects.DirectoryExists(ProductDownloadSource.Text);
+                        }
+
+                        openFolderEnabled = folderExists;
+                    }
+                }
+
+                OpenDownloadFolderButton.IsEnabled = openFolderEnabled;
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
+
+        private async void OpenDownloadFolderButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var folderPath = ProductDownloadSource.Text.Trim();
+                if (string.IsNullOrEmpty(folderPath)) return;
+
+                if (await GlobalObjects.DirectoryExists(folderPath))
+                {
+                    Process.Start("explorer", folderPath);
+                }
+                else
+                {
+                    MessageBox.Show("Directory path does not exist.");
+                }
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
+
+        private void DownloadPath_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var dlg1 = new Ionic.Utils.FolderBrowserDialogEx
+                {
+                    Description = "Select a folder:",
+                    ShowNewFolderButton = true,
+                    ShowEditBox = true,
+                    SelectedPath = ProductDownloadSource.Text,
+                    ShowFullPathInEditBox = true,
+                    RootFolder = System.Environment.SpecialFolder.MyComputer
+                };
+                //dlg1.NewStyle = false;
+
+                // Show the FolderBrowserDialog.
+                var result = dlg1.ShowDialog();
+                if (result == DialogResult.OK)
+                {
+                    ProductDownloadSource.Text = dlg1.SelectedPath;
+                }
             }
             catch (Exception ex)
             {

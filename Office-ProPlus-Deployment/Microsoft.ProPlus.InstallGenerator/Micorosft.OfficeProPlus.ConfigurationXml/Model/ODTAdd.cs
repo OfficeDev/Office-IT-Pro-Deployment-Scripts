@@ -19,6 +19,8 @@ namespace OfficeInstallGenerator.Model
 
         public string SourcePath { get; set; }
 
+        public string DownloadPath { get; set; }
+
         public Version Version { get; set; }
 
         public List<ODTProduct> Products { get; set; }
