@@ -1447,7 +1447,9 @@ to install additional languages on a client
                             }
 
                             $languageProgramNumList = $languageProgramNumList | Sort-Object -Descending
-                            $newLanguageProgramNum = [int]$languageProgramNumList[0] + 1
+                            $sortedProgramNum = $languageProgramNumList[0]
+                            [int]$oldLanguageProgramNum = [convert]::ToInt32($sortedProgramNum, 10)                  
+                            $newLanguageProgramNum = $oldLanguageProgramNum + 1
 
                             $ProgramName = "DeployLanguagePack-$Channel-" + $Bit + "bit-Multi-$newLanguageProgramNum"
 
