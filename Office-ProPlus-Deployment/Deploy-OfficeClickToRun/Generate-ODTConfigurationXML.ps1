@@ -322,8 +322,9 @@ process {
             $additionalLanguages += $msiLanguage
          }
          
-         if (!($additionalLanguages)) {
+         
              foreach ($officeLang in $officeLangs) {
+             if(!($additionalLanguages -contains $officeLang)){
                 $additionalLanguages += $officeLang
              }
          }
@@ -702,9 +703,7 @@ process {
                 $installReg = "^" + $installPath.Replace('\', '\\')
                 $installReg = $installReg.Replace('(', '\(')
                 $installReg = $installReg.Replace(')', '\)')
-                try {
-                  if ($officeInstallPath -match $installReg) { $officeProduct = $true }
-                } catch { }
+                if ($officeInstallPath -match $installReg) { $officeProduct = $true }
              }
            }
 
@@ -712,7 +711,7 @@ process {
            
            $name = $regProv.GetStringValue($HKLM, $path, "DisplayName").sValue          
 
-           if ($ConfigItemList.Contains($key.ToUpper()) -and $name.ToUpper().Contains("MICROSOFT OFFICE")) {
+           if ($ConfigItemList.Contains($key.ToUpper()) -and $name.ToUpper().Contains("MICROSOFT OFFICE") -and $name.ToUpper() -notlike "*MUI*") {
               $primaryOfficeProduct = $true
            }
 
