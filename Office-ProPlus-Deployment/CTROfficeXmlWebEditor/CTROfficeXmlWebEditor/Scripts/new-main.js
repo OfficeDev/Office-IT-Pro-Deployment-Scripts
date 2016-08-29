@@ -201,7 +201,9 @@ $(document).ready(function () {
 
 
         $("#btAddProduct").text('Edit Product');
-
+        if ($("#cbProduct").val() === "LanguagePack") {
+            alert("If creating a language pack, please set the first language to the computer's culture language, as there is a bug with setting the first language if it's not the culture language of the client computer.");
+        }
         return false;
     });
 
