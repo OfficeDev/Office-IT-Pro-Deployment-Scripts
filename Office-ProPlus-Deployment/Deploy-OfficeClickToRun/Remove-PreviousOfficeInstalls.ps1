@@ -644,10 +644,8 @@ function Unpin-OfficeApps() {
         ((New-Object -Com Shell.Application).NameSpace('shell:::{4234d49b-0245-4df3-b780-3893943456e1}').Items() | ? {$_.Name -like "$app*"}).Verbs() | ? {$_.Name.replace('&','') -match 'Unpin from taskbar'} | % {$_.DoIt(); $exec = $true}
         if(!$exec){
             if($AppPath) {
-                Pin-OfficeAppByPath -Path $AppPath -Action "UnpinFromTaskbar"
-            } else {
-                Write-Host "'$app' not found or 'Unpin from taskbar' not found on item"
-            }
+                Pin-OfficeAppByPath -Path $AppPath -Action "UnpinFromTaskbar -app $app"
+            } 
         }
     }    
 }
@@ -662,7 +660,10 @@ function Pin-OfficeAppByPath {
         [string]$Action,
 
         [Parameter()]
-        [string]$PinTo
+        [string]$PinTo,
+
+        [Parameter()]
+        [string]$app
     )
 
     if ((Get-Item -Path $Path -ErrorAction SilentlyContinue) -eq $null){
@@ -696,7 +697,7 @@ function Pin-OfficeAppByPath {
     }
     
     if(!$Verb){
-        Write-Error -Message "'$verb' is not an available option for this app" -ErrorAction Stop
+        Write-Host "'$verb' is not an available option for $app"
     } else {
         $Result = $Verb.DoIt()
     }
@@ -705,5 +706,5 @@ function Pin-OfficeAppByPath {
 $dotSourced = IsDotSourced -InvocationLine $MyInvocation.Line
 
 if (!($dotSourced)) {
-   Remove-PreviousOfficeInstalls -RemoveClickToRunVersions $RemoveClickToRunVersions -Remove2016Installs $Remove2016Installs -Force $Force -KeepUserSettings $KeepUserSettings -KeepLync $KeepLync -NoReboot $NoReboot -UnpinOfficeApps $true
+   Remove-PreviousOfficeInstalls -RemoveClickToRunVersions $RemoveClickToRunVersions -Remove2016Installs $Remove2016Installs -Force $Force -KeepUserSettings $KeepUserSettings -KeepLync $KeepLync -NoReboot $NoReboot -UnpinOfficeApps $UnpinOfficeApps
 }
