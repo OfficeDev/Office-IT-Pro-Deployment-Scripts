@@ -202,7 +202,7 @@ $(document).ready(function () {
 
         $("#btAddProduct").text('Edit Product');
         if ($("#cbProduct").val() === "LanguagePack") {
-            alert("If creating a language pack, please set the first language to the computer's culture language, as there is a bug with setting the first language if it's not the culture language of the client computer.");
+            alert("If creating a language pack, please set the first language to the client computer's culture language.  If the first language set does not match the client's culture language then the chosen language will be installed as the Shell UI language.");
         }
         return false;
     });
