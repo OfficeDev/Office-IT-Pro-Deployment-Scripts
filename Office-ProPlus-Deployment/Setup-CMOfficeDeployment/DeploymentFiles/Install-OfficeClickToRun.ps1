@@ -134,8 +134,6 @@ function Install-OfficeClickToRun {
 
     Write-Host "Installing Office Click-To-Run..."
 
-    StartProcess -execFilePath $cmdLine -execParams $cmdArgs -WaitForExit $false
-
     if ($WaitForInstallToFinish) {
         StartProcess -execFilePath $cmdLine -execParams $cmdArgs -WaitForExit $false
         
@@ -331,7 +329,7 @@ Language and Exclude values
 
         if($PSCmdlet.ParameterSetName -eq "All"){
             foreach($ProductElement in $ConfigFile.Configuration.Add.Product){
-                $Result = New-Object -TypeName PSObject 
+                $Result = New-Object –TypeName PSObject 
 
                 Add-Member -InputObject $Result -MemberType NoteProperty -Name "ProductId" -Value ($ProductElement.GetAttribute("ID"))
 

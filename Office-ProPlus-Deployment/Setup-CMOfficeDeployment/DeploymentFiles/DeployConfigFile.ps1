@@ -1,6 +1,9 @@
   param(
 	[Parameter(Mandatory=$true)]
-	[String]$ConfigFileName = $NULL
+	[String]$ConfigFileName = $NULL,
+
+    [Parameter()]
+    [bool]$InstallLanguagePack = $false
   )
 
 Process {
@@ -40,8 +43,7 @@ Process {
  [string]$Channel = (Get-ODTAdd -TargetFilePath $targetFilePath | select Channel).Channel
  if($Bitness -eq '64'){
     $Bitness = "x64"
- }
- else{
+ } else {
     $Bitness = "x32"
  }
 
@@ -62,17 +64,24 @@ Process {
     $Channel = 'Current'
  }
 
-$languages = Get-XMLLanguages -Path $targetFilePath
+ $languages = Get-XMLLanguages -Path $targetFilePath
 
-if ($UpdateSource) {
-    $ValidUpdateSource = Test-UpdateSource -UpdateSource $UpdateSource -OfficeLanguages $languages -Bitness $Bitness
-    if ($ValidUpdateSource) {
-       Set-ODTAdd -TargetFilePath $targetFilePath -SourcePath $UpdateSource -Channel $Channel | Set-ODTUpdates -Channel $Channel -UpdatePath $UpdateURLPath | Out-Null
-    } else {
-       throw "Invalid Update Source: $UpdateSource"
-    }
-}
+ if ($UpdateSource) {
+     $ValidUpdateSource = Test-UpdateSource -UpdateSource $UpdateSource -OfficeLanguages $languages -Bitness $Bitness
+     if ($ValidUpdateSource) {
+        if ($InstallLanguagePack) {
+            Set-ODTAdd -TargetFilePath $targetFilePath -SourcePath $UpdateSource -Channel $Channel | Out-Null
+        } else {
+            Set-ODTAdd -TargetFilePath $targetFilePath -SourcePath $UpdateSource -Channel $Channel | Set-ODTUpdates -Channel $Channel -UpdatePath $UpdateURLPath | Out-Null
+        }
+     } else {
+        throw "Invalid Update Source: $UpdateSource"
+     }
+ }
 
-Install-OfficeClickToRun -TargetFilePath $targetFilePath
-
+ if($InstallLanguagePack){
+     Install-OfficeClickToRun -TargetFilePath $targetFilePath -ConfigurationXML $configFilePath
+ } else {
+     Install-OfficeClickToRun -TargetFilePath $targetFilePath
+ }
 }

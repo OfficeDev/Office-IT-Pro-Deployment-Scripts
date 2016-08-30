@@ -16,7 +16,10 @@ param(
 [bool]$KeepLync = $false,
 
 [Parameter(ValueFromPipelineByPropertyName=$true)]
-[bool]$NoReboot = $false
+[bool]$NoReboot = $false,
+
+[Parameter(ValueFromPipelineByPropertyName=$true)]
+[bool]$UnpinOfficeApps = $true
 )
 
 Function IsDotSourced() {
@@ -275,7 +278,7 @@ process {
            
            $name = $regProv.GetStringValue($HKLM, $path, "DisplayName").sValue          
 
-           if ($ConfigItemList.Contains($key.ToUpper()) -and $name.ToUpper().Contains("MICROSOFT OFFICE") -and $name.ToUpper() -notlike "*MUI*") {
+           if ($ConfigItemList.Contains($key.ToUpper()) -and $name.ToUpper().Contains("MICROSOFT OFFICE")) {
               $primaryOfficeProduct = $true
            }
 
@@ -367,7 +370,10 @@ Function Remove-PreviousOfficeInstalls{
     [bool]$NoReboot = $false,
 
     [Parameter(ValueFromPipelineByPropertyName=$true)]
-    [bool]$Quiet = $true
+    [bool]$Quiet = $true,
+
+    [Parameter(ValueFromPipelineByPropertyName=$true)]
+    [bool]$UnpinOfficeApps = $true
   )
 
   Process {
@@ -583,7 +589,10 @@ Function Remove-PreviousOfficeInstalls{
 
 
     }
-
+    
+    if($UnpinOfficeApps) {
+        Unpin-OfficeApps -OfficeApps All
+    }
 
   }
 }
@@ -603,8 +612,99 @@ Function GetScriptRoot() {
  }
 }
 
+function Unpin-OfficeApps() {
+    [CmdletBinding()]
+    param(
+        [Parameter()]
+        [string[]]$OfficeApps = "All",
+
+        [Parameter()]
+        [string]$AppPath
+    )
+
+    if(!$OfficeApps -or $OfficeApps.ToLower() -eq "all"){
+        $OfficeApps = @("Word", "Excel", "PowerPoint", "OneNote", "Access", "Publisher",
+                        "Outlook", "Skype For Business", "OneDrive For Business", "Project", "Visio")  
+    }
+
+    $appList = (New-Object -Com Shell.Application).NameSpace('shell:::{4234d49b-0245-4df3-b780-3893943456e1}').Items()
+    $availableApps = ($appList | select Name).Name
+    $availableOfficeApps = @()
+    foreach($OfficeApp in $OfficeApps){
+        foreach($availableApp in $availableApps){
+            if($availableApp -like "$OfficeApp*"){
+                $availableOfficeApps += $OfficeApp
+            }
+        }
+    }
+
+    $availableOfficeApps = $availableOfficeApps | Get-Unique
+
+    foreach($app in $availableOfficeApps){
+        ((New-Object -Com Shell.Application).NameSpace('shell:::{4234d49b-0245-4df3-b780-3893943456e1}').Items() | ? {$_.Name -like "$app*"}).Verbs() | ? {$_.Name.replace('&','') -match 'Unpin from taskbar'} | % {$_.DoIt(); $exec = $true}
+        if(!$exec){
+            if($AppPath) {
+                Pin-OfficeAppByPath -Path $AppPath -Action "UnpinFromTaskbar -app $app"
+            } 
+        }
+    }    
+}
+
+function Pin-OfficeAppByPath {
+    Param(
+        [Parameter(Mandatory=$true)]
+        [string]$Path,
+
+        [Parameter(Mandatory=$true)]
+        [ValidateSet("UnpinFromTaskbar", "PinToTaskbar", "UnpinFromStart", "PinToStart")]
+        [string]$Action,
+
+        [Parameter()]
+        [string]$PinTo,
+
+        [Parameter()]
+        [string]$app
+    )
+
+    if ((Get-Item -Path $Path -ErrorAction SilentlyContinue) -eq $null){
+        Write-Error -Message "$Path not found" -ErrorAction Stop
+    }
+
+    $Shell = New-Object -ComObject "Shell.Application"
+    $ItemParent = Split-Path -Path $Path -Parent
+    $ItemLeaf = Split-Path -Path $Path -Leaf
+    $Folder = $Shell.NameSpace($ItemParent)
+    $ItemObject = $Folder.ParseName($ItemLeaf)
+    $Verbs = $ItemObject.Verbs()
+       
+    switch($Action){
+        "UnpinFromTaskbar" 
+        {
+            $Verb = $Verbs | Where-Object -Property Name -EQ "Unpin from taskbar"
+        }
+        "PinToTaskbar" 
+        {
+            $Verb = $Verbs | Where-Object -Property Name -EQ "Pin to taskbar"
+        }
+        "UnpinFromStart"
+        {
+            $Verb = $Verbs | Where-Object -Property Name -EQ "Unpin from start"
+        }
+        "PinToStart"
+        {
+            $Verb = $Verbs | Where-Object -Property Name -EQ "Pin to start"
+        }
+    }
+    
+    if(!$Verb){
+        Write-Host "'$verb' is not an available option for $app"
+    } else {
+        $Result = $Verb.DoIt()
+    }
+}
+
 $dotSourced = IsDotSourced -InvocationLine $MyInvocation.Line
 
 if (!($dotSourced)) {
-   Remove-PreviousOfficeInstalls -RemoveClickToRunVersions $RemoveClickToRunVersions -Remove2016Installs $Remove2016Installs -Force $Force -KeepUserSettings $KeepUserSettings -KeepLync $KeepLync -NoReboot $NoReboot
+   Remove-PreviousOfficeInstalls -RemoveClickToRunVersions $RemoveClickToRunVersions -Remove2016Installs $Remove2016Installs -Force $Force -KeepUserSettings $KeepUserSettings -KeepLync $KeepLync -NoReboot $NoReboot -UnpinOfficeApps $UnpinOfficeApps
 }

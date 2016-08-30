@@ -2159,6 +2159,9 @@ Here is what the portion of configuration file looks like when modified by this 
         [string] $SourcePath = $NULL,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [string] $DownloadPath = $NULL,
+
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $Version,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
@@ -2249,6 +2252,14 @@ Here is what the portion of configuration file looks like when modified by this 
             }
         }
 
+        if($DownloadPath){
+            $ConfigFile.Configuration.Add.SetAttribute("DownloadPath", $DownloadPath) | Out-Null
+        } else {
+            if ($PSBoundParameters.ContainsKey('DownloadPath')) {
+                $ConfigFile.Configuration.Add.RemoveAttribute("DownloadPath")
+            }
+        }
+
         if($Version){
             $ConfigFile.Configuration.Add.SetAttribute("Version", $Version) | Out-Null
         } else {
@@ -2293,6 +2304,7 @@ Here is what the portion of configuration file looks like when modified by this 
             $Result = New-Object –TypeName PSObject 
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "SourcePath" -Value $SourcePath
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "DownloadPath" -Value $DownloadPath
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "Version" -Value $Version
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "Bitness" -Value $Bitness
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "OfficeMgmtCOM" -Value $OfficeMgmtCOM
@@ -2349,7 +2361,7 @@ file.
             throw $NoConfigurationElement
         }
         
-        $ConfigFile.Configuration.GetElementsByTagName("Add") | Select OfficeClientEdition, SourcePath, Version, Channel, Branch, OfficeMgmtCOM
+        $ConfigFile.Configuration.GetElementsByTagName("Add") | Select OfficeClientEdition, SourcePath, DownloadPath, Version, Channel, Branch, OfficeMgmtCOM
     }
 
 }
@@ -3496,4 +3508,62 @@ Function Validate-UpdateSource() {
     }
     
     return $validUpdateSource
+}
+
+function Get-ChannelXml() {
+    [CmdletBinding()]	
+    Param
+	(
+	    [Parameter()]
+	    [string]$FolderPath = $null,
+
+	    [Parameter()]
+	    [bool]$OverWrite = $false,
+
+        [Parameter()]
+        [string] $Bitness = "32"
+	)
+
+   process {
+       $cabPath = "$PSScriptRoot\ofl.cab"
+       [bool]$downloadFile = $true
+
+       if (!($OverWrite)) {
+          if ($FolderPath) {
+              $XMLFilePath = "$FolderPath\ofl.cab"
+              if (Test-Path -Path $XMLFilePath) {
+                 $downloadFile = $false
+              } else {
+                throw "File missing $FolderPath\ofl.cab"
+              }
+          }
+       }
+
+       if ($downloadFile) {
+           $webclient = New-Object System.Net.WebClient
+           $XMLFilePath = "$env:TEMP/ofl.cab"
+           $XMLDownloadURL = "http://officecdn.microsoft.com/pr/wsus/ofl.cab"
+           $webclient.DownloadFile($XMLDownloadURL,$XMLFilePath)
+
+           if ($FolderPath) {
+             [System.IO.Directory]::CreateDirectory($FolderPath) | Out-Null
+             $targetFile = "$FolderPath\ofl.cab"
+             Copy-Item -Path $XMLFilePath -Destination $targetFile -Force
+           }
+       }
+
+       if($PSVersionTable.PSVersion.Major -ge '3'){
+           $tmpName = "o365client_$Bitness" + "bit.xml"
+           expand $XMLFilePath $env:TEMP -f:$tmpName | Out-Null
+           $tmpName = $env:TEMP + "\o365client_$Bitness" + "bit.xml"
+       }else {
+           $scriptPath = GetScriptRoot
+           $tmpName = $scriptPath + "\o365client_$Bitness" + "bit.xml"         
+       }
+       
+       [xml]$channelXml = Get-Content $tmpName
+
+       return $channelXml
+   }
+
 }
