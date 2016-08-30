@@ -1493,12 +1493,12 @@ function Get-ChannelXml() {
        }
 
        if($PSVersionTable.PSVersion.Major -ge '3'){
-           $tmpName = "o365client_64bit.xml"
+           $tmpName = "o365client_$Bitness" + "bit.xml"
            expand $XMLFilePath $env:TEMP -f:$tmpName | Out-Null
-           $tmpName = $env:TEMP + "\o365client_64bit.xml"
+           $tmpName = $env:TEMP + "\o365client_$Bitness" + "bit.xml"
        }else {
            $scriptPath = GetScriptRoot
-           $tmpName = $scriptPath + "\o365client_64bit.xml"           
+           $tmpName = $scriptPath + "\o365client_$Bitness" + "bit.xml"          
        }
        
        [xml]$channelXml = Get-Content $tmpName

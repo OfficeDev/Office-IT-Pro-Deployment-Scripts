@@ -80,6 +80,9 @@ param(
     [bool]$IncludeUpdatePathAsSourcePath = $false,
 
     [Parameter(ValueFromPipelineByPropertyName=$true)]
+    [String]$DownloadPath = $NULL,
+
+    [Parameter(ValueFromPipelineByPropertyName=$true)]
     [string]$DefaultConfigurationXml = $NULL
 )
 
@@ -319,8 +322,9 @@ process {
             $additionalLanguages += $msiLanguage
          }
          
-         if (!($additionalLanguages)) {
+         
              foreach ($officeLang in $officeLangs) {
+             if(!($additionalLanguages -contains $officeLang)){
                 $additionalLanguages += $officeLang
              }
          }
@@ -416,6 +420,10 @@ process {
       if ($officeConfig.UpdateUrl) {
           odtSetAdd -ConfigDoc $ConfigFile -SourcePath $officeConfig.UpdateUrl
       }
+    }
+
+    if ($DownloadPath) {      
+          odtSetAdd -ConfigDoc $ConfigFile -DownloadPath $DownloadPath   
     }
 
     $formattedXml = Format-XML ([xml]($ConfigFile)) -indent 4
@@ -695,9 +703,7 @@ process {
                 $installReg = "^" + $installPath.Replace('\', '\\')
                 $installReg = $installReg.Replace('(', '\(')
                 $installReg = $installReg.Replace(')', '\)')
-                try {
-                  if ($officeInstallPath -match $installReg) { $officeProduct = $true }
-                } catch { }
+                if ($officeInstallPath -match $installReg) { $officeProduct = $true }
              }
            }
 
@@ -705,7 +711,7 @@ process {
            
            $name = $regProv.GetStringValue($HKLM, $path, "DisplayName").sValue          
 
-           if ($ConfigItemList.Contains($key.ToUpper()) -and $name.ToUpper().Contains("MICROSOFT OFFICE")) {
+           if ($ConfigItemList.Contains($key.ToUpper()) -and $name.ToUpper().Contains("MICROSOFT OFFICE") -and $name.ToUpper() -notlike "*MUI*") {
               $primaryOfficeProduct = $true
            }
 
@@ -1665,6 +1671,9 @@ Function odtSetAdd{
         [string] $SourcePath = $NULL,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [string] $DownloadPath = $NULL,
+
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $Version,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
@@ -1690,6 +1699,14 @@ Function odtSetAdd{
         } else {
             if ($PSBoundParameters.ContainsKey('SourcePath')) {
                 $ConfigDoc.Configuration.Add.RemoveAttribute("SourcePath")
+            }
+        }
+
+        if($DownloadPath){
+            $ConfigFile.Configuration.Add.SetAttribute("DownloadPath", $DownloadPath) | Out-Null
+        } else {
+            if ($PSBoundParameters.ContainsKey('DownloadPath')) {
+                $ConfigDoc.Configuration.Add.RemoveAttribute("DownloadPath")
             }
         }
 

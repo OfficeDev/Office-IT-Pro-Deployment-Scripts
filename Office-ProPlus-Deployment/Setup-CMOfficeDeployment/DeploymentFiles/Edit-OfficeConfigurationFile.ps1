@@ -3400,32 +3400,56 @@ Function Validate-UpdateSource() {
 }
 
 function Get-ChannelXml() {
-   [CmdletBinding()]
-   param( 
-    [Parameter()]
-    [string]$LogFilePath = "$env:temp\RollBackLogFile.log"  
-   )
+    [CmdletBinding()]	
+    Param
+	(
+	    [Parameter()]
+	    [string]$FolderPath = $null,
+
+	    [Parameter()]
+	    [bool]$OverWrite = $false,
+
+        [Parameter()]
+        [string] $Bitness = "32"
+	)
 
    process {
-       $XMLFilePath = "$PSScriptRoot\ofl.cab"
-       Write-Logfile "Line 520: XMLFilePath set to $XMLFilePath"
+       $cabPath = "$PSScriptRoot\ofl.cab"
+       [bool]$downloadFile = $true
 
-       if (!(Test-Path -Path $XMLFilePath)) {
+       if (!($OverWrite)) {
+          if ($FolderPath) {
+              $XMLFilePath = "$FolderPath\ofl.cab"
+              if (Test-Path -Path $XMLFilePath) {
+                 $downloadFile = $false
+              } else {
+                throw "File missing $FolderPath\ofl.cab"
+              }
+          }
+       }
+
+       if ($downloadFile) {
            $webclient = New-Object System.Net.WebClient
            $XMLFilePath = "$env:TEMP/ofl.cab"
            $XMLDownloadURL = "http://officecdn.microsoft.com/pr/wsus/ofl.cab"
            $webclient.DownloadFile($XMLDownloadURL,$XMLFilePath)
+
+           if ($FolderPath) {
+             [System.IO.Directory]::CreateDirectory($FolderPath) | Out-Null
+             $targetFile = "$FolderPath\ofl.cab"
+             Copy-Item -Path $XMLFilePath -Destination $targetFile -Force
+           }
        }
 
        if($PSVersionTable.PSVersion.Major -ge '3'){
-           $tmpName = "o365client_64bit.xml"
+           $tmpName = "o365client_$Bitness" + "bit.xml"
            expand $XMLFilePath $env:TEMP -f:$tmpName | Out-Null
-           $tmpName = $env:TEMP + "\o365client_64bit.xml"
+           $tmpName = $env:TEMP + "\o365client_$Bitness" + "bit.xml"
        }else {
-           $scriptPath = GetScriptPath
-           $tmpName = $scriptPath + "\o365client_64bit.xml"           
+           $scriptPath = GetScriptRoot
+           $tmpName = $scriptPath + "\o365client_$Bitness" + "bit.xml"         
        }
-
+       
        [xml]$channelXml = Get-Content $tmpName
 
        return $channelXml
