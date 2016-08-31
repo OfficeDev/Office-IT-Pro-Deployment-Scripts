@@ -201,7 +201,9 @@ $(document).ready(function () {
 
 
         $("#btAddProduct").text('Edit Product');
-
+        if ($("#cbProduct").val() === "LanguagePack") {
+            alert("If creating a language pack, please set the first language to the client computer's culture language.  If the first language set does not match the client's culture language then the chosen language will be installed as the Shell UI language.");
+        }
         return false;
     });
 
@@ -463,6 +465,14 @@ $(document).ready(function () {
             document.getElementById("sourcepathSignal").style.display = "none";
         } else {
             document.getElementById("sourcepathSignal").style.display = "block";
+        }
+    });
+
+    $('#txtDownloadPath').on('input propertychange paste focus click', function () {
+        if (this.value.length == 0) {
+            document.getElementById("downloadpathSignal").style.display = "none";
+        } else {
+            document.getElementById("downloadpathSignal").style.display = "block";
         }
     });
 
@@ -1448,6 +1458,7 @@ function odtAddProduct(xmlDoc) {
     var selectBitness = $("#cbEdition").val();
     var selectVersion = $("#txtVersion").val();
     var selectSourcePath = $("#txtSourcePath").val();
+    var selectDownloadPath = $("#txtDownloadPath").val();
     var selectLanguage = $("#cbLanguage").val();
     var selectPidKey = $("#txtPidKey").val();
     var mgtCOM = $('#mgtToggle')[0].checked;
@@ -1495,6 +1506,12 @@ function odtAddProduct(xmlDoc) {
         addNode.setAttribute("SourcePath", selectSourcePath);
     } else {
         addNode.removeAttribute("SourcePath");
+    }
+
+    if (selectDownloadPath) {
+        addNode.setAttribute("DownloadPath", selectDownloadPath);
+    } else {
+        addNode.removeAttribute("DownloadPath");
     }
 
     if (selectVersion) {
@@ -2464,6 +2481,9 @@ function loadUploadXmlFile(inXmlDoc) {
         var version = addNode.getAttribute("SourcePath");
         $("#txtSourcePath").val(version);
 
+        var selectedDownloadPath = addNode.getAttribute("DownloadPath");
+        $("#txtDownloadPath").val(selectedDownloadPath);
+
         var selectedBranch = addNode.getAttribute("Branch");
         if (selectedBranch) {
             if (selectedBranch.toLowerCase() == "validation") {
@@ -2681,6 +2701,7 @@ function clearXml() {
     $("#txtLoggingUpdatePath").val("");
     $("#txtPidKey").val("");
     $("#txtSourcePath").val("");
+    $("#txtDownloadPath").val("");
     $("#txtTargetVersion").val("");
     $("#txtUpdatePath").val("");
     $("#txtVersion").val("");
