@@ -16,10 +16,7 @@ param(
 [bool]$KeepLync = $false,
 
 [Parameter(ValueFromPipelineByPropertyName=$true)]
-[bool]$NoReboot = $false,
-
-[Parameter(ValueFromPipelineByPropertyName=$true)]
-[bool]$UnpinOfficeApps = $true
+[bool]$NoReboot = $false
 )
 
 Function IsDotSourced() {
@@ -370,10 +367,7 @@ Function Remove-PreviousOfficeInstalls{
     [bool]$NoReboot = $false,
 
     [Parameter(ValueFromPipelineByPropertyName=$true)]
-    [bool]$Quiet = $true,
-
-    [Parameter(ValueFromPipelineByPropertyName=$true)]
-    [bool]$UnpinOfficeApps = $true
+    [bool]$Quiet = $true
   )
 
   Process {
@@ -586,14 +580,13 @@ Function Remove-PreviousOfficeInstalls{
                 }
             }
         }
-
-
     }
 
-    if($UnpinOfficeApps) {
-        Unpin-OfficeApps -OfficeApps All
+    $osVersion = (Get-WmiObject -Class Win32_OperatingSystem).Version
+    [int]$osVersion = $osVersion.Split('.')[0]
+    if($osVersion -ge '10') {
+        Set-PinnedApplication
     }
-
   }
 }
 
@@ -616,15 +609,15 @@ function Unpin-OfficeApps() {
     [CmdletBinding()]
     param(
         [Parameter()]
-        [string[]]$OfficeApps = "All",
+        [string]$OfficeApps,
 
         [Parameter()]
         [string]$AppPath
     )
 
-    if(!$OfficeApps -or $OfficeApps.ToLower() -eq "all"){
-        $OfficeApps = @("Word", "Excel", "PowerPoint", "OneNote", "Access", "Publisher",
-                        "Outlook", "Skype For Business", "OneDrive For Business", "Project", "Visio")  
+    if(!$OfficeApps){
+        $OfficeApps = @("Word", "Excel", "PowerPoint", "OneNote", "Access", "Publisher", "Outlook",
+                        "Skype For Business", "OneDrive For Business", "Project", "Visio")  
     }
 
     $appList = (New-Object -Com Shell.Application).NameSpace('shell:::{4234d49b-0245-4df3-b780-3893943456e1}').Items()
