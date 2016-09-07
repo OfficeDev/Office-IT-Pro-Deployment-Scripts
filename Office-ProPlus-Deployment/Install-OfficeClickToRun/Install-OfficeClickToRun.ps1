@@ -27,6 +27,9 @@ namespace Microsoft.Office
          VisioStdXVolume = 64,
          ProjectProXVolume = 128,
          ProjectStdXVolume = 256,
+         InfoPathRetail = 512,
+         SkypeforBusinessEntryRetail = 1024,
+         LyncEntryRetail = 2048,
      }
 }
 "
@@ -136,7 +139,7 @@ function Install-OfficeClickToRun {
 
     if ($WaitForInstallToFinish) {
         StartProcess -execFilePath $cmdLine -execParams $cmdArgs -WaitForExit $false
-        
+
         Start-Sleep -Seconds 5
 
         Wait-ForOfficeCTRInstall -OfficeVersion $OfficeVersion
@@ -791,100 +794,110 @@ Function Wait-ForOfficeCTRInstall() {
     }
 
     process {
-       Write-Host "Waiting for Install to Complete..."
+        Write-Host "Waiting for Install to Begin..."
+ 
+        #Start-Sleep -Seconds 25
 
-       Start-Sleep -Seconds 25
+        if($OfficeVersion -eq 'Office2016'){
+            $mainRegPath = 'SOFTWARE\Microsoft\Office\ClickToRun'
+        } else {
+            $mainRegPath = Get-OfficeCTRRegPath
+        } 
 
-       if($OfficeVersion -eq 'Office2016'){
-           $mainRegPath = 'SOFTWARE\Microsoft\Office\ClickToRun'
-       }
-       else{
-          $mainRegPath = Get-OfficeCTRRegPath
-       } 
+        $scenarioPath = $mainRegPath + "\scenario"
 
-       $scenarioPath = $mainRegPath + "\scenario"
+        $regProv = Get-Wmiobject -list "StdRegProv" -namespace root\default -ErrorAction Stop
 
-       $regProv = Get-Wmiobject -list "StdRegProv" -namespace root\default -ErrorAction Stop
+        [DateTime]$startTime = Get-Date
 
-       [DateTime]$startTime = Get-Date
+        [string]$executingScenario = ""
+        $failure = $false
+        $updateRunning=$false
+        [string[]]$trackProgress = @()
+        [string[]]$trackComplete = @()
+        
+        $timeout = New-TimeSpan -Minutes 2
+        $sw = [diagnostics.stopwatch]::StartNew()
+        while ($sw.elapsed -lt $timeout){
+            try {
+                $exScenario = $regProv.GetStringValue($HKLM, $mainRegPath, "ExecutingScenario")
+                if($exScenario.sValue){ break; }
+            } catch {}
 
-       [string]$executingScenario = ""
-       $failure = $false
-       $updateRunning=$false
-       [string[]]$trackProgress = @()
-       [string[]]$trackComplete = @()
-       do {
-           $allComplete = $true
-           try {
-              $exScenario = $regProv.GetStringValue($HKLM, $mainRegPath, "ExecutingScenario")
-           } catch { }
-           if ($exScenario) {
-              $executingScenario = $exScenario.sValue
-           }
+            Start-Sleep -Seconds 5
+        }
+       
+        if ($exScenario) {
+            $executingScenario = $exScenario.sValue
+        }
+         
+        do {
+            $allComplete = $true
+            $scenarioKeys = $regProv.EnumKey($HKLM, $scenarioPath)
+            foreach ($scenarioKey in $scenarioKeys.sNames) {
+                if (!($executingScenario)) { continue }
+                if ($scenarioKey.ToLower() -eq $executingScenario.ToLower()) {
+                    $taskKeyPath = $scenarioPath + "\$scenarioKey\TasksState"
+                    $taskValues = $regProv.EnumValues($HKLM, $taskKeyPath).sNames
 
-           $scenarioKeys = $regProv.EnumKey($HKLM, $scenarioPath)
-           foreach ($scenarioKey in $scenarioKeys.sNames) {
-              if (!($executingScenario)) { continue }
-              if ($scenarioKey.ToLower() -eq $executingScenario.ToLower()) {
-                $taskKeyPath = $scenarioPath + "\$scenarioKey\TasksState"
-                $taskValues = $regProv.EnumValues($HKLM, $taskKeyPath).sNames
+                    foreach ($taskValue in $taskValues) {
+                        [string]$status = $regProv.GetStringValue($HKLM, $taskKeyPath, $taskValue).sValue
+                        $operation = $taskValue.Split(':')[0]
+                        $keyValue = $taskValue
 
-                foreach ($taskValue in $taskValues) {
-                    [string]$status = $regProv.GetStringValue($HKLM, $taskKeyPath, $taskValue).sValue
-                    $operation = $taskValue.Split(':')[0]
-                    $keyValue = $taskValue
-
-                    if ($status.ToUpper() -eq "TASKSTATE_FAILED") {
-                        $failure = $true
-                    }
-
-                    $displayValue = showTaskStatus -Operation $operation -Status $status -DateTime (Get-Date).ToString('yyyy-MM-dd HH:mm:ss')
-
-                    if (($status.ToUpper() -eq "TASKSTATE_COMPLETED") -or`
-                        ($status.ToUpper() -eq "TASKSTATE_CANCELLED") -or`
-                        ($status.ToUpper() -eq "TASKSTATE_FAILED")) {
-                        if (($trackProgress -contains $keyValue) -and !($trackComplete -contains $keyValue) ) {
-                            $displayValue
-                            $trackComplete += $keyValue 
+                        if ($status.ToUpper() -eq "TASKSTATE_FAILED") {
+                            $failure = $true
                         }
-                    } else {
-                        $allComplete = $false
-                        $updateRunning = $true
 
-                        if ($trackProgress -notcontains $keyValue) {
-                            $trackProgress += $keyValue 
-                            $displayValue
+                        $displayValue = showTaskStatus -Operation $operation -Status $status -DateTime (Get-Date).ToString('yyyy-MM-dd HH:mm:ss')
+
+                        if (($status.ToUpper() -eq "TASKSTATE_COMPLETED") -or`
+                            ($status.ToUpper() -eq "TASKSTATE_CANCELLED") -or`
+                            ($status.ToUpper() -eq "TASKSTATE_FAILED")) {
+                                if (($trackProgress -contains $keyValue) -and !($trackComplete -contains $keyValue)) {
+                                    $displayValue
+                                    $trackComplete += $keyValue
+                                    Start-Sleep -Seconds 1
+                                }
+                        } else {
+                            $allComplete = $false
+                            $updateRunning = $true
+
+                            if ($trackProgress -notcontains $keyValue) {
+                                $displayValue
+                                $trackProgress += $keyValue                                
+                                Start-Sleep -Seconds 1
+                            }
                         }
                     }
                 }
-              }
-           }
+            }
 
-           if ($startTime -lt (Get-Date).AddHours(-$TimeOutInMinutes)) {
-              throw "Waiting for Update Timed-Out"
-              break;
-           }
+            if ($startTime -lt (Get-Date).AddHours(-$TimeOutInMinutes)) {
+                throw "Waiting for Update Timed-Out"
+                break;
+            }
 
-           if($allComplete){
-               $updateRunning = $false
-           }
+            if($allComplete){
+                $updateRunning = $false
+            }
 
-           Start-Sleep -Seconds 5
-       } while($updateRunning -eq $true) 
+            Start-Sleep -Seconds 5
 
-       if((!$updateRunning) -and $trackProgress.Count -gt '0') {
-          if ($failure) {
-              Write-host ""
-              Write-Host "Update Failed"
-              break;
-          }else {
-              Write-host ""
-              Write-Host "Update Complete"
-          }
-       }else {
-           Write-host ""
-           Write-Host "Update Not Running"
-       }
+        } while($updateRunning -eq $true)
+    
+        if($failure){
+            Write-Host ""
+            Write-Host 'Update failed'
+        } else {
+            if($trackProgress.Count -gt 0){
+                Write-Host ""
+                Write-Host 'Update complete'
+            } else {
+                Write-Host ""
+                Write-Host 'Update not running'
+            }
+        } 
     }
 }
 
@@ -901,7 +914,6 @@ function showTaskStatus() {
         [string] $DateTime = ""
     )
 
-    $results = new-object PSObject[] 0;
     $Result = New-Object -TypeName PSObject 
     Add-Member -InputObject $Result -MemberType NoteProperty -Name "Operation" -Value $Operation
     Add-Member -InputObject $Result -MemberType NoteProperty -Name "Status" -Value $Status
@@ -948,15 +960,10 @@ Function GetScriptRoot() {
      if ($PSScriptRoot) {
        $scriptPath = $PSScriptRoot
      } else {
-       $scriptPath = split-path -parent $MyInvocation.MyCommand.Definition
        $scriptPath = (Get-Item -Path ".\").FullName
      }
      return $scriptPath
  }
-}
-
-Function GetScriptPath() {
- return GetScriptRoot
 }
 
 Function Format-XML ([xml]$xml, $indent=2) { 
