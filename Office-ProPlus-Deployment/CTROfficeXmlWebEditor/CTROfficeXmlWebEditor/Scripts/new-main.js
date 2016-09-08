@@ -192,6 +192,12 @@ $(document).ready(function () {
     });
 
     $("#btAddProduct").on('click', function () {
+        
+
+        if ($("#cbProduct").val() === "LanguagePack" && $("#btAddProduct").text() !== "Edit Product") {
+            alert("If creating a language pack, please set the first language to the client computer's culture language.  If the first language set does not match the client's culture language then the chosen language will be installed as the Shell UI language.");
+        }
+
         var xmlDoc = getXmlDocument();
 
 
@@ -199,11 +205,8 @@ $(document).ready(function () {
 
         displayXml(xmlDoc);
 
-
         $("#btAddProduct").text('Edit Product');
-        if ($("#cbProduct").val() === "LanguagePack") {
-            alert("If creating a language pack, please set the first language to the client computer's culture language.  If the first language set does not match the client's culture language then the chosen language will be installed as the Shell UI language.");
-        }
+
         return false;
     });
 
@@ -236,14 +239,14 @@ $(document).ready(function () {
     });
 
 
-    $("#cbBranch").change(function () {
-        //office2016Select
-        if ($("#office2016Select").hasClass('is-selected')) {
-            setVersionPanel("office2016Select");
-        } else {
-            setVersionPanel("office2013Select");
-        }
-    });
+    //$("#cbBranch").change(function () {
+    //    //office2016Select
+    //    if ($("#office2016Select").hasClass('is-selected')) {
+    //        setVersionPanel("office2016Select");
+    //    } else {
+    //        setVersionPanel("office2013Select");
+    //    }
+    //});
 
     $("#cbProduct").change(function () {
         var end = this.value;
@@ -1464,7 +1467,7 @@ function odtAddProduct(xmlDoc) {
     var mgtCOM = $('#mgtToggle')[0].checked;
 
 
-    if (selectedProduct === "LanguagePack") {
+    if (selectedProduct === "LanguagePack" && $("#btAddProduct").text() !== "Edit Product") {
         $('#xmlText').empty();
 
         var addNode = xmlDoc.documentElement.getElementsByTagName("Add")[0];
@@ -1496,7 +1499,7 @@ function odtAddProduct(xmlDoc) {
 
     var products = addNode.getElementsByTagName("Product");
 
-    if (products.length === 1 && products[0].getAttribute("ID") === "LanguagePack") {
+    if (products.length === 1 && products[0].getAttribute("ID") === "LanguagePack" && $("#btAddProduct").text() !== "Edit Product") {
         addNode.removeChild(products[0]);
     }
 
