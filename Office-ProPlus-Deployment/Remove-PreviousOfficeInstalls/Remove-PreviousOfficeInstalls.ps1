@@ -16,10 +16,7 @@ param(
 [bool]$KeepLync = $false,
 
 [Parameter(ValueFromPipelineByPropertyName=$true)]
-[bool]$NoReboot = $false,
-
-[Parameter(ValueFromPipelineByPropertyName=$true)]
-[bool]$UnpinOfficeApps = $true
+[bool]$NoReboot = $false
 )
 
 Function IsDotSourced() {
@@ -278,7 +275,7 @@ process {
            
            $name = $regProv.GetStringValue($HKLM, $path, "DisplayName").sValue          
 
-           if ($ConfigItemList.Contains($key.ToUpper()) -and $name.ToUpper().Contains("MICROSOFT OFFICE")) {
+           if ($ConfigItemList.Contains($key.ToUpper()) -and $name.ToUpper().Contains("MICROSOFT OFFICE") -and $name.ToUpper() -notlike "*MUI*") {
               $primaryOfficeProduct = $true
            }
 
@@ -370,10 +367,7 @@ Function Remove-PreviousOfficeInstalls{
     [bool]$NoReboot = $false,
 
     [Parameter(ValueFromPipelineByPropertyName=$true)]
-    [bool]$Quiet = $true,
-
-    [Parameter(ValueFromPipelineByPropertyName=$true)]
-    [bool]$UnpinOfficeApps = $true
+    [bool]$Quiet = $true
   )
 
   Process {
@@ -424,6 +418,12 @@ Function Remove-PreviousOfficeInstalls{
     }
 
     if ($removeOffice) {
+        $osVersion = (Get-WmiObject -Class Win32_OperatingSystem).Version
+        [int]$osVersion = $osVersion.Split('.')[0]
+        if($osVersion -ge '10') {
+            Remove-PinnedOfficeApplications
+        }
+
         [bool]$office03Removed = $false
         [bool]$office07Removed = $false
         [bool]$office10Removed = $false
@@ -586,14 +586,7 @@ Function Remove-PreviousOfficeInstalls{
                 }
             }
         }
-
-
     }
-    
-    if($UnpinOfficeApps) {
-        Unpin-OfficeApps -OfficeApps All
-    }
-
   }
 }
 
@@ -612,99 +605,163 @@ Function GetScriptRoot() {
  }
 }
 
-function Unpin-OfficeApps() {
+function Remove-PinnedOfficeApplications { 
+    [CmdletBinding()] 
+    Param( 
+        [Parameter()]
+        [string]$Action = "Unpin from taskbar"
+    ) 
+
+    $ctr = (Get-OfficeVersion).ClickToRun
+    $InstallPath = (Get-OfficeVersion).InstallPath
+    $officeVersion = (Get-OfficeVersion).Version.Split('.')[0]
+
+    if($ctr -eq $true) {
+        $officeAppPath = $InstallPath + "\root\Office" + $officeVersion
+    } else {
+        $officeAppPath = $InstallPath + "Office" + $officeVersion
+    }
+
+    $officeAppList = @("WINWORD.EXE", "EXCEL.EXE", "POWERPNT.EXE", "ONENOTE.EXE", "MSACCESS.EXE", "MSPUB.EXE", "OUTLOOK.EXE",
+                       "lync.exe", "GROOVE.EXE", "PROJECT.EXE", "VISIO.EXE")
+
+    $osVersion = (Get-WmiObject -Class Win32_OperatingSystem).Version
+    [int]$osVersion = $osVersion.Split('.')[0]
+    
+    foreach($app in $officeAppList){
+        if(Test-Path ($officeAppPath + "\$app")){
+            switch($Action) {
+                "Pin to Start" {
+                    if($osVersion -ge '10'){
+                        $actionId = '51201'
+                    } else { 
+                        $actionId = '5381'
+                    }
+                }
+                "Unpin from Start" {
+                    if($osVersion -ge '10'){
+                        $actionId = '51394'
+                    } else { 
+                        $actionId = '5382'
+                    } 
+                }
+                "Pin to taskbar" {
+                    $actionId = '5386'
+                }
+                "Unpin from taskbar" {
+                    $actionId = '5387'
+                }   
+            }
+
+            InvokeVerb -FilePath ($officeAppPath + "\$app") -Verb $(GetVerb -VerbId $actionId)
+            
+        }
+    }
+}
+
+function Remove-PinnedOfficeAppsForWindows10() {
     [CmdletBinding()]
     param(
         [Parameter()]
-        [string[]]$OfficeApps = "All",
+        [string]$OfficeApp,
 
         [Parameter()]
-        [string]$AppPath
+        [string]$Action = 'Unpin from taskbar'
     )
 
-    if(!$OfficeApps -or $OfficeApps.ToLower() -eq "all"){
-        $OfficeApps = @("Word", "Excel", "PowerPoint", "OneNote", "Access", "Publisher",
-                        "Outlook", "Skype For Business", "OneDrive For Business", "Project", "Visio")  
-    }
-
-    $appList = (New-Object -Com Shell.Application).NameSpace('shell:::{4234d49b-0245-4df3-b780-3893943456e1}').Items()
-    $availableApps = ($appList | select Name).Name
-    $availableOfficeApps = @()
-    foreach($OfficeApp in $OfficeApps){
-        foreach($availableApp in $availableApps){
-            if($availableApp -like "$OfficeApp*"){
-                $availableOfficeApps += $OfficeApp
-            }
+    switch($OfficeApp){
+        "WINWORD" {
+            $officeAppName = "Word"  
+        }
+        "EXCEL" {
+            $officeAppName = "Excel"
+        }
+        "POWERPNT" {
+            $officeAppName = "PowerPoint"
+        }
+        "ONENOTE" {
+            $officeAppName = "OneNote"
+        }
+        "MSACCESS" {
+            $officeAppName = "Access"
+        }
+        "MSPUB" { 
+            $officeAppName = "Publisher"
+        }
+        "OUTLOOK" {
+            $officeAppName = "Outlook"
+        }
+        "lync" {
+            $officeAppName = "Skype For Business"
+        }
+        "GROOVE" {
+            $officeAppName = "OneDrive For Business"
+        }
+        "PROJECT" {
+            $officeAppName = "Project"
+        }
+        "VISIO" {
+            $officeAppName = "Visio"
         }
     }
 
-    $availableOfficeApps = $availableOfficeApps | Get-Unique
-
-    foreach($app in $availableOfficeApps){
-        ((New-Object -Com Shell.Application).NameSpace('shell:::{4234d49b-0245-4df3-b780-3893943456e1}').Items() | ? {$_.Name -like "$app*"}).Verbs() | ? {$_.Name.replace('&','') -match 'Unpin from taskbar'} | % {$_.DoIt(); $exec = $true}
-        if(!$exec){
-            if($AppPath) {
-                Pin-OfficeAppByPath -Path $AppPath -Action "UnpinFromTaskbar -app $app"
-            } 
-        }
-    }    
+    ((New-Object -Com Shell.Application).NameSpace('shell:::{4234d49b-0245-4df3-b780-3893943456e1}').Items() | ? {$_.Name -like "$officeAppName*"}).Verbs() | ? {$_.Name.replace('&','') -match $Action} | % {$_.DoIt()}
+       
 }
 
-function Pin-OfficeAppByPath {
+function InvokeVerb {
     Param(
-        [Parameter(Mandatory=$true)]
-        [string]$Path,
-
-        [Parameter(Mandatory=$true)]
-        [ValidateSet("UnpinFromTaskbar", "PinToTaskbar", "UnpinFromStart", "PinToStart")]
-        [string]$Action,
-
-        [Parameter()]
-        [string]$PinTo,
-
-        [Parameter()]
-        [string]$app
+    [string]$FilePath,
+    [string]$verb
     )
 
-    if ((Get-Item -Path $Path -ErrorAction SilentlyContinue) -eq $null){
-        Write-Error -Message "$Path not found" -ErrorAction Stop
-    }
-
-    $Shell = New-Object -ComObject "Shell.Application"
-    $ItemParent = Split-Path -Path $Path -Parent
-    $ItemLeaf = Split-Path -Path $Path -Leaf
-    $Folder = $Shell.NameSpace($ItemParent)
-    $ItemObject = $Folder.ParseName($ItemLeaf)
-    $Verbs = $ItemObject.Verbs()
-       
-    switch($Action){
-        "UnpinFromTaskbar" 
-        {
-            $Verb = $Verbs | Where-Object -Property Name -EQ "Unpin from taskbar"
-        }
-        "PinToTaskbar" 
-        {
-            $Verb = $Verbs | Where-Object -Property Name -EQ "Pin to taskbar"
-        }
-        "UnpinFromStart"
-        {
-            $Verb = $Verbs | Where-Object -Property Name -EQ "Unpin from start"
-        }
-        "PinToStart"
-        {
-            $Verb = $Verbs | Where-Object -Property Name -EQ "Pin to start"
-        }
-    }
+    $verb = $verb.Replace("&","") 
+    $path = Split-Path $FilePath 
+    $shell = New-Object -ComObject "Shell.Application"  
+    $folder = $shell.Namespace($path)    
+    $item = $folder.Parsename((Split-Path $FilePath -leaf)) 
+    $itemVerb = $item.Verbs() | ? {$_.Name.Replace("&","") -eq $verb} 
     
-    if(!$Verb){
-        Write-Host "'$verb' is not an available option for $app"
-    } else {
-        $Result = $Verb.DoIt()
-    }
+    $osVersion = (Get-WmiObject -Class Win32_OperatingSystem).Version
+    [int]$osVersion = $osVersion.Split('.')[0]
+    
+    if(($itemVerb -eq $null) -and ($osVersion -ge '10')){ 
+        Remove-PinnedOfficeAppsForWindows10 -OfficeApp $item.Name -Action $verb             
+    } else { 
+        if($itemVerb){
+            $itemVerb.DoIt() 
+        }
+    } 
+}
+
+function GetVerb { 
+    Param(
+        [int]$verbId
+    ) 
+    
+    try { 
+        $t = [type]"CosmosKey.Util.MuiHelper" 
+    } catch { 
+        $def = [Text.StringBuilder]"" 
+        [void]$def.AppendLine('[DllImport("user32.dll")]') 
+        [void]$def.AppendLine('public static extern int LoadString(IntPtr h,uint id, System.Text.StringBuilder sb,int maxBuffer);') 
+        [void]$def.AppendLine('[DllImport("kernel32.dll")]') 
+        [void]$def.AppendLine('public static extern IntPtr LoadLibrary(string s);') 
+        Add-Type -MemberDefinition $def.ToString() -Name MuiHelper -Namespace CosmosKey.Util             
+    } 
+    if($global:CosmosKey_Utils_MuiHelper_Shell32 -eq $null){         
+        $global:CosmosKey_Utils_MuiHelper_Shell32 = [CosmosKey.Util.MuiHelper]::LoadLibrary("shell32.dll") 
+    } 
+
+    $maxVerbLength=255 
+    $verbBuilder = New-Object Text.StringBuilder "",$maxVerbLength 
+    [void][CosmosKey.Util.MuiHelper]::LoadString($CosmosKey_Utils_MuiHelper_Shell32,$verbId,$verbBuilder,$maxVerbLength) 
+    
+    return $verbBuilder.ToString() 
 }
 
 $dotSourced = IsDotSourced -InvocationLine $MyInvocation.Line
 
 if (!($dotSourced)) {
-   Remove-PreviousOfficeInstalls -RemoveClickToRunVersions $RemoveClickToRunVersions -Remove2016Installs $Remove2016Installs -Force $Force -KeepUserSettings $KeepUserSettings -KeepLync $KeepLync -NoReboot $NoReboot -UnpinOfficeApps $UnpinOfficeApps
+   Remove-PreviousOfficeInstalls -RemoveClickToRunVersions $RemoveClickToRunVersions -Remove2016Installs $Remove2016Installs -Force $Force -KeepUserSettings $KeepUserSettings -KeepLync $KeepLync -NoReboot $NoReboot
 }
