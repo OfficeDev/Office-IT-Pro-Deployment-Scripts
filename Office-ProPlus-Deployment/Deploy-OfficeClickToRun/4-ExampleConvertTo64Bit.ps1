@@ -54,6 +54,7 @@ if ($installOffice) {
 
       Set-ODTAdd -TargetFilePath $targetFilePath -Version $NULL -Bitness 64 -SourcePath $SourcePath | Out-Null
       Set-ODTDisplay -TargetFilePath $targetFilePath -Level None -AcceptEULA $true | Out-Null
+      Set-ODTLogging -TargetFilePath $targetFilePath -Path $env:temp -Level Standard | Out-Null 
 
       $updates = Get-ODTUpdates -TargetFilePath $targetFilePath
       $addNode = Get-ODTAdd -TargetFilePath $targetFilePath
