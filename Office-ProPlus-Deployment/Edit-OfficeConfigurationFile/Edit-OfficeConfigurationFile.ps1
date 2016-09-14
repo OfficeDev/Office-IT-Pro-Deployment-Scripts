@@ -1,7 +1,7 @@
 ﻿[String]$global:saveLastConfigFile = $NULL
 [String]$global:saveLastFilePath = $NULL
 
-$validProductIds = @("O365ProPlusRetail","O365BusinessRetail","VisioProRetail","ProjectProRetail", "SPDRetail", "VisioProXVolume", "VisioStdXVolume", "ProjectProXVolume", "ProjectStdXVolume", "InfoPathRetail")
+$validProductIds = @("O365ProPlusRetail","O365BusinessRetail","VisioProRetail","ProjectProRetail", "SPDRetail", "VisioProXVolume", "VisioStdXVolume", "ProjectProXVolume", "ProjectStdXVolume", "InfoPathRetail", "SkypeforBusinessEntryRetail", "LyncEntryRetail")
 
 try {
 $enum = "
@@ -23,6 +23,8 @@ namespace Microsoft.Office
          ProjectProXVolume = 128,
          ProjectStdXVolume = 256,
          InfoPathRetail = 512,
+         SkypeforBusinessEntryRetail = 1024,
+         LyncEntryRetail = 2048,
      }
 }
 "
@@ -206,6 +208,9 @@ Here is what the configuration file looks like when created from this function:
     Param(
 
     [Parameter()]
+    [string] $OfficeClientEdition = $NULL,
+
+    [Parameter()]
     [string] $Bitness = $NULL,
 
     [Parameter(HelpMessage="Example: O365ProPlusRetail")]
@@ -229,8 +234,15 @@ Here is what the configuration file looks like when created from this function:
             $ProductId = SelectProductId
         }
 
-        if (!$Bitness) {
-            $Bitness = SelectBitness
+        if(!$OfficeClientEdition)
+        {
+            if (!$Bitness) {
+                $Bitness = SelectBitness
+            }
+        }
+        else
+        {
+            $Bitness = $OfficeClientEdition
         }
 
         $ProductId = IsValidProductId -ProductId $ProductId
@@ -894,6 +906,52 @@ Removes the ProductToAdd with the ProductId 'O365ProPlusRetail' from the XML Con
     }
 
 }
+
+Function Get-LanguagesFromXML{
+<#
+.SYNOPSIS
+retreives languages from the configuration file
+
+
+.PARAMETER TargetFilePath
+Full file path for the file to be modified and be output to.
+
+
+#>
+Param(
+        [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
+        [string] $ConfigurationXML = $NULL,
+                
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [string] $ProductId = "Unknown",
+                                
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [string] $TargetFilePath,
+                                                
+        [Parameter(ParameterSetName="All", ValueFromPipelineByPropertyName=$true)]
+        [switch] $All
+     )
+
+    Process{
+    [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
+    $ConfigFile.Load($TargetFilePath) | Out-Null    
+    $productsWithLangs = $ConfigFile.SelectNodes("/Configuration/Add/Product")
+    $LangsToReturn = @()
+    foreach($prodWithLang in $productsWithLangs){
+        foreach($lang in $prodWithLang.Language){
+            if(!($LangsToReturn -contains $lang.ID)){
+                $LangsToReturn += $lang.ID
+            }     
+       }
+    }
+    
+    
+    return $LangsToReturn
+    
+    }
+}
+
+
 
 Function Remove-ODTExcludeApp{
 <#
@@ -2101,7 +2159,13 @@ Here is what the portion of configuration file looks like when modified by this 
         [string] $SourcePath = $NULL,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [string] $DownloadPath = $NULL,
+
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $Version,
+
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [string] $OfficeClientEdition,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $Bitness,
@@ -2121,6 +2185,16 @@ Here is what the portion of configuration file looks like when modified by this 
     )
 
     Process{
+
+        if(!$OfficeClientEdition)
+        {
+            #checking if office client edition is null, if not, set bitness to client office edition
+        }
+        else
+        {
+            $Bitness = $OfficeClientEdition
+        }
+
         $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
 
         #Load file
@@ -2178,6 +2252,14 @@ Here is what the portion of configuration file looks like when modified by this 
             }
         }
 
+        if($DownloadPath){
+            $ConfigFile.Configuration.Add.SetAttribute("DownloadPath", $DownloadPath) | Out-Null
+        } else {
+            if ($PSBoundParameters.ContainsKey('DownloadPath')) {
+                $ConfigFile.Configuration.Add.RemoveAttribute("DownloadPath")
+            }
+        }
+
         if($Version){
             $ConfigFile.Configuration.Add.SetAttribute("Version", $Version) | Out-Null
         } else {
@@ -2222,6 +2304,7 @@ Here is what the portion of configuration file looks like when modified by this 
             $Result = New-Object –TypeName PSObject 
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "SourcePath" -Value $SourcePath
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "DownloadPath" -Value $DownloadPath
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "Version" -Value $Version
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "Bitness" -Value $Bitness
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "OfficeMgmtCOM" -Value $OfficeMgmtCOM
@@ -2278,7 +2361,7 @@ file.
             throw $NoConfigurationElement
         }
         
-        $ConfigFile.Configuration.GetElementsByTagName("Add") | Select OfficeClientEdition, SourcePath, Version, Channel, Branch, OfficeMgmtCOM
+        $ConfigFile.Configuration.GetElementsByTagName("Add") | Select OfficeClientEdition, SourcePath, DownloadPath, Version, Channel, Branch, OfficeMgmtCOM
     }
 
 }
@@ -3280,8 +3363,20 @@ Function Test-UpdateSource() {
         [string[]] $OfficeLanguages = $null,
 
         [Parameter()]
+        [String] $OfficeClientEdition = $NULL,
+        
+        [Parameter()]
         [String] $Bitness = $NULL
     )
+
+    if(!$OfficeClientEdition)
+        {
+            #checking if office client edition is null, if not, set bitness to client office edition
+        }
+        else
+        {
+            $Bitness = $OfficeClientEdition
+        }
 
   	$uri = [System.Uri]$UpdateSource
 
@@ -3314,11 +3409,26 @@ Function Validate-UpdateSource() {
         [string] $UpdateSource = $NULL,
 
         [Parameter()]
+        [string] $OfficeClientEdition,
+        
+        [Parameter()]
         [string] $Bitness = "x86",
 
         [Parameter()]
-        [string[]] $OfficeLanguages = $null
+        [string[]] $OfficeLanguages = $null,
+
+        [Parameter()]
+        [bool]$ShowMissingFiles = $true
     )
+
+    if(!$OfficeClientEdition)
+        {
+            #checking if office client edition is null, if not, set bitness to client office edition
+        }
+        else
+        {
+            $Bitness = $OfficeClientEdition
+        }
 
     [bool]$validUpdateSource = $true
     [string]$cabPath = ""
@@ -3386,7 +3496,9 @@ Function Validate-UpdateSource() {
               $fileExists = $missingFiles.Contains($fullPath)
               if (!($fileExists)) {
                  $missingFiles.Add($fullPath)
-                 Write-Host "Source File Missing: $fullPath"
+                 if($ShowMissingFiles){
+                    Write-Host "Source File Missing: $fullPath"
+                 }
                  Write-Log -Message "Source File Missing: $fullPath" -severity 1 -component "Office 365 Update Anywhere" 
               }     
               $validUpdateSource = $false
@@ -3396,4 +3508,62 @@ Function Validate-UpdateSource() {
     }
     
     return $validUpdateSource
+}
+
+function Get-ChannelXml() {
+    [CmdletBinding()]	
+    Param
+	(
+	    [Parameter()]
+	    [string]$FolderPath = $null,
+
+	    [Parameter()]
+	    [bool]$OverWrite = $false,
+
+        [Parameter()]
+        [string] $Bitness = "32"
+	)
+
+   process {
+       $cabPath = "$PSScriptRoot\ofl.cab"
+       [bool]$downloadFile = $true
+
+       if (!($OverWrite)) {
+          if ($FolderPath) {
+              $XMLFilePath = "$FolderPath\ofl.cab"
+              if (Test-Path -Path $XMLFilePath) {
+                 $downloadFile = $false
+              } else {
+                throw "File missing $FolderPath\ofl.cab"
+              }
+          }
+       }
+
+       if ($downloadFile) {
+           $webclient = New-Object System.Net.WebClient
+           $XMLFilePath = "$env:TEMP/ofl.cab"
+           $XMLDownloadURL = "http://officecdn.microsoft.com/pr/wsus/ofl.cab"
+           $webclient.DownloadFile($XMLDownloadURL,$XMLFilePath)
+
+           if ($FolderPath) {
+             [System.IO.Directory]::CreateDirectory($FolderPath) | Out-Null
+             $targetFile = "$FolderPath\ofl.cab"
+             Copy-Item -Path $XMLFilePath -Destination $targetFile -Force
+           }
+       }
+
+       if($PSVersionTable.PSVersion.Major -ge '3'){
+           $tmpName = "o365client_$Bitness" + "bit.xml"
+           expand $XMLFilePath $env:TEMP -f:$tmpName | Out-Null
+           $tmpName = $env:TEMP + "\o365client_$Bitness" + "bit.xml"
+       }else {
+           $scriptPath = GetScriptRoot
+           $tmpName = $scriptPath + "\o365client_$Bitness" + "bit.xml"         
+       }
+       
+       [xml]$channelXml = Get-Content $tmpName
+
+       return $channelXml
+   }
+
 }
