@@ -67,9 +67,10 @@ Will uninstall Office Click-to-Run.
             $OdtExe = "$scriptRoot\Office2016Setup.exe"
         } 
 
-        $command = "$OdtExe /configure $RemoveCTRXmlPath"
+        $cmdLine = '"' + $OdtExe + '"'
+        $cmdArgs = "/configure " + '"' + $RemoveCTRXmlPath + '"'
 
-        Invoke-Expression $command | Out-Null 
+        StartProcess -execFilePath $cmdLine -execParams $cmdArgs -WaitForExit $true  
                         
         [bool] $c2rTest = $false 
         if( Get-OfficeVersion | Where-Object {$_.ClickToRun -eq "True"} ){
@@ -445,7 +446,7 @@ function Remove-PinnedOfficeApplications {
     }
 
     $officeAppList = @("WINWORD.EXE", "EXCEL.EXE", "POWERPNT.EXE", "ONENOTE.EXE", "MSACCESS.EXE", "MSPUB.EXE", "OUTLOOK.EXE",
-                       "lync.exe", "GROOVE.EXE", "PROJECT.EXE", "VISIO.EXE")
+                       "lync.exe", "GROOVE.EXE", "WINPROJ.EXE", "VISIO.EXE")
 
     $osVersion = (Get-WmiObject -Class Win32_OperatingSystem).Version
     [int]$osVersion = $osVersion.Split('.')[0]
@@ -519,7 +520,7 @@ function Remove-PinnedOfficeAppsForWindows10() {
         "GROOVE" {
             $officeAppName = "OneDrive For Business"
         }
-        "PROJECT" {
+        "WINPROJ" {
             $officeAppName = "Project"
         }
         "VISIO" {
@@ -580,4 +581,36 @@ function GetVerb {
     [void][CosmosKey.Util.MuiHelper]::LoadString($CosmosKey_Utils_MuiHelper_Shell32,$verbId,$verbBuilder,$maxVerbLength) 
     
     return $verbBuilder.ToString() 
+}
+
+Function StartProcess {
+	Param
+	(
+        [Parameter()]
+		[String]$execFilePath,
+
+        [Parameter()]
+        [String]$execParams,
+
+        [Parameter()]
+        [bool]$WaitForExit = $false
+	)
+
+    Try
+    {
+        $startExe = new-object System.Diagnostics.ProcessStartInfo
+        $startExe.FileName = $execFilePath
+        $startExe.Arguments = $execParams
+        $startExe.CreateNoWindow = $false
+        $startExe.UseShellExecute = $false
+
+        $execStatement = [System.Diagnostics.Process]::Start($startExe) 
+        if ($WaitForExit) {
+           $execStatement.WaitForExit()
+        }
+    }
+    Catch
+    {
+        Write-Log -Message $_.Exception.Message -severity 1 -component "Office 365 Update Anywhere"
+    }
 }
