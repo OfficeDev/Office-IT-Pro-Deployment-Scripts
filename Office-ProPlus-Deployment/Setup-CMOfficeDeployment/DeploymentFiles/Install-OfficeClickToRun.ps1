@@ -133,7 +133,7 @@ function Install-OfficeClickToRun {
     Copy-Item -Path $officeCtrPath -Destination $localPath -Force
 
     $cmdLine = $localPath
-    $cmdArgs = "/configure " + $TargetFilePath
+    $cmdArgs = "/configure " + '"' + $TargetFilePath + '"'
 
     Write-Host "Installing Office Click-To-Run..."
 
