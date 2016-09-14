@@ -623,7 +623,7 @@ function Remove-PinnedOfficeApplications {
     }
 
     $officeAppList = @("WINWORD.EXE", "EXCEL.EXE", "POWERPNT.EXE", "ONENOTE.EXE", "MSACCESS.EXE", "MSPUB.EXE", "OUTLOOK.EXE",
-                       "lync.exe", "GROOVE.EXE", "PROJECT.EXE", "VISIO.EXE")
+                       "lync.exe", "GROOVE.EXE", "WINPROJ.EXE", "VISIO.EXE")
 
     $osVersion = (Get-WmiObject -Class Win32_OperatingSystem).Version
     [int]$osVersion = $osVersion.Split('.')[0]
@@ -697,7 +697,7 @@ function Remove-PinnedOfficeAppsForWindows10() {
         "GROOVE" {
             $officeAppName = "OneDrive For Business"
         }
-        "PROJECT" {
+        "WINPROJ" {
             $officeAppName = "Project"
         }
         "VISIO" {
