@@ -10,3 +10,15 @@ max download size would be without delta compression. Comparing these two values
 delta compression value.
 
 [README](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/wiki/README_Check-OfficeUpdateNetworkLoad)
+
+1. Open a PowerShell console.
+
+		From the Run dialog type PowerShell 
+
+2. Change directory to the location where the PowerShell Script is saved.
+
+		Example: cd C:\PowerShellScripts
+
+3. Run the Check-OfficeUpdateNetworkLoad function and specify a GPO Name and the versions of Office to block. 
+
+		Check-OfficeUpdateNetworkLoad -VersionStart 15.0.4623.1003 -VersionEnd 15.0.4631.1002

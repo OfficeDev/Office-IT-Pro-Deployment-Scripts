@@ -17,7 +17,7 @@ More information can be found at: https://blogs.technet.microsoft.com/odsupport/
 
 ###Example
 
-1. Open a PowerShell console.
+1. Open an elevated PowerShell console.
 
 		From the Run dialog type PowerShell 
 		
@@ -35,7 +35,7 @@ More information can be found at: https://blogs.technet.microsoft.com/odsupport/
 
 3. Run the function.
 
-		Type  Remove-PreviousOfficeInstalls
+		Type  **Remove-PreviousOfficeInstalls**
 		
 		The version of Office will be detected automatically and the appropriate Offscrub file will be used to remove any Office products. If Office is not detected on the client the script will notify the admin and stop running.
 			

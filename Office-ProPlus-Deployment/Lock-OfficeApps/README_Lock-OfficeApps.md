@@ -5,7 +5,7 @@ This PowerShell function will prevent a client in the domain from opening a spec
 ###Pre-requisites
 1. Active Directory
 2. Server Manager
-3. Copy the New-OfficeAppLockGPO and Manage-OfficeWmiFilters functions to a local folder.
+3. Copy the New-OfficeAppLockGPO and Manage-OfficeWmiFilters scripts to a local folder.
 
 ###Links
 Group Policy Management Console - https://technet.microsoft.com/en-us/library/cc753298.aspx
