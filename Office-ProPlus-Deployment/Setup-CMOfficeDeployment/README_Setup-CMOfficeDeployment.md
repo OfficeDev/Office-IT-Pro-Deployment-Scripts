@@ -1,10 +1,10 @@
 #Setup Config Manager Office Deployment
 
-This PowerShell function automates the setup of Office 365 Click-To-Run deployment and update scenarios in Config Manager. 
+This PowerShell function automates the setup of Office 365 Click-To-Run deployment and update scenarios in Config Manager. For more reading on how to create packages and programs outside of this script visit https://technet.microsoft.com/en-us/library/gg699369.aspx and https://technet.microsoft.com/en-us/library/gg682112.aspx
 
 [README](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/wiki/Readme_Setup-CMOfficeDeployment)
 
-##Scenarios for creating, updating, and deploying the Office 365 ProPlus programs.
+##**Section 1:** These are the scenarios for creating, updating, and deploying the Office 365 ProPlus programs using System Center Configuration Manager. Please see the next section for step by step instructions on how to use these Functions
 ###Deploy Office 365 ProPlus
 1. Download the channel files from the CDN.
 
@@ -143,15 +143,16 @@ This PowerShell function automates the setup of Office 365 Click-To-Run deployme
 
 		Deploy-CMOfficeProgram -Collection 'Human Resources' -ProgramType UpdateWithTask -Channel FirstReleaseDeferred -Bitness v32 -SiteCode S01 -DeploymentPurpose Required
 
-##Creating the Office ProPlus Package
-###Prepare the environment
+##**Section 2:** Creating the Office ProPlus Package. This section will walk you through setting up your System Center Configuration Manager environment to create the package that your programs will exist under. 
+###First you need to prepare the environment
 
-1. Download the **Setup-CMOfficeDeployment** folder to your Config Manager Server. 
+1. Download the **Setup-CMOfficeDeployment** script folder to your Config Manager Server. Save it to a place that is easy to access. 
+
 2. Open PowerShell as an administrator.
 
-		From the Run dialog type PowerShell, right click it and choose Run as Administrator.
+		Open powershell in administrative mode (elevated session) you will get errors if you do not use an elevated session.
 		
-3. Change the directory to the location where the PowerShell Script is saved. 
+3. Change the directory to the location where the PowerShell Scripts are saved. 
 
 		Example: cd C:\PowerShellScripts
 		
@@ -192,7 +193,8 @@ This PowerShell function automates the setup of Office 365 Click-To-Run deployme
 	
 			Example: Create-CMOfficePackage -Channels Deferred -OfficeSourceFilesPath D:\OfficeChanels -MoveSourceFiles $true -SiteCode S01 -Bitness v32
 
-##Updating the Office 365 ProPlus package
+##**Section 2a:** Updating the Office 365 ProPlus package.
+### This is used when you download new content that needs to be included in the package. 
 
 1. To update the Office ProPlus package use **Update-CMOfficePackage**
 
@@ -203,7 +205,7 @@ This PowerShell function automates the setup of Office 365 Click-To-Run deployme
 	
 			Example: Update-CMOfficePackage -Channels FirstReleaseDeferred -OfficeSourceFilesPath D:\OfficeChannels -MoveSourceFiles $true
 
-##Creating Office 365 Client Programs
+##**Section 2b**Creating Office 365 Client Programs. Once the package is created you create the various programs as lined out below.
 ###Create-CMOfficeDeploymentProgram
 1. To create an Office 365 deployment program use **Create-CMOfficeDeploymentProgram**
 
@@ -284,7 +286,7 @@ This PowerShell function automates the setup of Office 365 Click-To-Run deployme
 
 			Example: Create-CMOfficeUpdateAsTaskProgram -WaitForUpdateToFinish $false -EnableUpdateAnywhere $false -ForceAppShutdown $true -UpdatePromptUser $true -UpdateToVersion 16.0.6001.1078
 		
-##Create-CMOfficeLanguageProgram
+###Create-CMOfficeLanguageProgram
 1. To create an Office 365 language pack deployment use **Create-CMOfficeLanguageProgram**
 
 	The available parameters with the functions are as follows.
@@ -294,7 +296,8 @@ This PowerShell function automates the setup of Office 365 Click-To-Run deployme
 	* **MainOfficeLanguage** The Shell UI Language of office.(files must exist in source)
 	* **Version** You can specify a version to download. Versions and the associated channels can be found [Here](https://technet.microsoft.com/en-us/library/mt592918.aspx)
 	* **ConfigurationXml** Default value has the name of the "programname".xml
-##Distribute the Office 365 ProPlus Package
+
+##**Section 2c:**Distribute the Office 365 ProPlus Package. Once the package and programs have been made you need to distribute the content(performed only once). If you add or update programs after the initial distribution please use the update package funtion.
 
 1. To distribute the Office 365 package use **Distribute-CMOfficePackage**
 	
@@ -309,7 +312,7 @@ This PowerShell function automates the setup of Office 365 Click-To-Run deployme
 
 			Example: Distribute-CMOfficePackage -Channels Deferred -DistributionPoint cm.contoso.com -WaitForDistributionToFinish $true
 			
-##Deploy the Office 365 ProPlus programs
+##**Section 2d:**Deploy the Office 365 ProPlus programs. Once you have dsitributed the content to the distribution points you need to deploy each package using the below script. 
 
 1. To create an Office 365 deployment use **Deploy-CMOfficeProgram**
 
@@ -331,3 +334,4 @@ This PowerShell function automates the setup of Office 365 Click-To-Run deployme
 1. These scripts make the assumption that your Configuration Manager Distribution Point is in a healthy state as they rely heavily on it.
 2. When createing the package you must not be in the file explorer location for the source files.
 3. The the scripts need to be run from the script location not the Powershell site location.
+4. Everything above can be done directly from the package and program wizard UI however by using powershell we can specify certain details with greater ease. 
