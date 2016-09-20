@@ -2114,7 +2114,7 @@ Here is what the portion of configuration file looks like when modified by this 
         [Microsoft.Office.Branches] $Branch,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [Microsoft.Office.Channel] $Channel = "Current",
+        [Microsoft.Office.Channel] $Channel,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
         [System.Nullable[bool]] $OfficeMgmtCOM = $NULL
