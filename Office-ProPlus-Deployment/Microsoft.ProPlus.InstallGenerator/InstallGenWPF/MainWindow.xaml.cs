@@ -61,6 +61,9 @@ namespace MetroDemo
                 GenerateView.TransitionTab += TransitionTab;
                 DownloadView.TransitionTab += TransitionTab;
                 LocalView.TransitionTab += TransitionTab;
+                SccmView.TransitionTab += TransitionTab;
+      
+                
                 
 
                 LocalView.BranchChanged += BranchChanged;
@@ -206,6 +209,8 @@ namespace MetroDemo
                     ProductView.ProductTab.Visibility = Visibility.Visible;
                     ProductView.OptionalTab.Visibility = Visibility.Visible;
                     ProductView.ExcludedTab.Visibility = Visibility.Visible;
+                    SccmTabName.Visibility = Visibility.Collapsed;
+
                 }
 
                 if (GlobalObjects.ViewModel.ApplicationMode == ApplicationMode.LanguagePack)
@@ -215,6 +220,8 @@ namespace MetroDemo
                     ProductView.ProductTab.Visibility = Visibility.Collapsed;
                     ProductView.OptionalTab.Visibility = Visibility.Collapsed;
                     ProductView.ExcludedTab.Visibility = Visibility.Collapsed;
+                    SccmTabName.Visibility = Visibility.Collapsed;
+
                 }
 
                 if (GlobalObjects.ViewModel.ApplicationMode == ApplicationMode.ManageLocal)
@@ -222,26 +229,45 @@ namespace MetroDemo
                     GenerateTabName.Visibility = Visibility.Collapsed;
                     RemoteTabName.Visibility = Visibility.Collapsed;
                     LocalTabName.Visibility = Visibility.Visible;
+                    SccmTabName.Visibility = Visibility.Collapsed;
+
                     GenerateView.Tag = 99;
                     LocalView.Tag = 5;
                 }
-                else if(GlobalObjects.ViewModel.ApplicationMode == ApplicationMode.ManageRemote)
+                else if (GlobalObjects.ViewModel.ApplicationMode == ApplicationMode.ManageRemote)
                 {
                     GenerateTabName.Visibility = Visibility.Collapsed;
                     LocalTabName.Visibility = Visibility.Collapsed;
                     TabProducts.Visibility = Visibility.Collapsed;
                     TabDownload.Visibility = Visibility.Collapsed;
                     TabUpdates.Visibility = Visibility.Collapsed;
-                    TabOptions.Visibility = Visibility.Collapsed; 
-                             
+                    TabOptions.Visibility = Visibility.Collapsed;
+                    SccmTabName.Visibility = Visibility.Collapsed;
+
+
                     RemoteTabName.Visibility = Visibility.Visible;
                     RemoteTabName.IsSelected = true;
+                }
+                else if (GlobalObjects.ViewModel.ApplicationMode == ApplicationMode.ManageSccm)
+                {
+                    GenerateTabName.Visibility = Visibility.Collapsed;
+                    LocalTabName.Visibility = Visibility.Collapsed;
+                    TabProducts.Visibility = Visibility.Collapsed;
+                    TabDownload.Visibility = Visibility.Collapsed;
+                    TabUpdates.Visibility = Visibility.Collapsed;
+                    TabOptions.Visibility = Visibility.Collapsed;
+                    RemoteTabName.Visibility = Visibility.Collapsed;
+
+                    SccmTabName.Visibility = Visibility.Visible;
+                    SccmTabName.IsSelected = true;
                 }
                 else
                 {
                     GenerateTabName.Visibility = Visibility.Visible;
                     LocalTabName.Visibility = Visibility.Collapsed;
                     RemoteTabName.Visibility = Visibility.Collapsed;
+                    SccmTabName.Visibility = Visibility.Collapsed;
+
                     GenerateView.Tag = 5;
                     LocalView.Tag = 99;
                 }

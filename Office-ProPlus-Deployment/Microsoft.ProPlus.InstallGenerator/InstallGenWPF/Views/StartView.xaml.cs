@@ -6,6 +6,7 @@ using MetroDemo.Events;
 using Microsoft.OfficeProPlus.InstallGen.Presentation.Enums;
 using Microsoft.OfficeProPlus.InstallGen.Presentation.Logging;
 using Microsoft.OfficeProPlus.InstallGenerator.Implementation;
+using Microsoft.Win32;
 
 namespace MetroDemo.ExampleViews
 {
@@ -24,6 +25,7 @@ namespace MetroDemo.ExampleViews
         public StartView()
         {
             InitializeComponent();
+
         }
 
         private void StartView_OnLoaded(object sender, RoutedEventArgs e)
@@ -37,7 +39,14 @@ namespace MetroDemo.ExampleViews
                     cbActions.Items.Add("Manage your local Office 365 ProPlus installation");
                     cbActions.Items.Add("Create Office 365 ProPlus language pack");
                     cbActions.Items.Add("Manage remote Office 365 ProPlus installation");
+
+                    if (isSccmServer())
+                    {
+                        cbActions.Items.Add("SCCM Configuration");
+                    }
+
                     cbActions.SelectedIndex = 0;
+
                 }
                 
                 LogAnaylytics("/", "StartView");
@@ -46,6 +55,15 @@ namespace MetroDemo.ExampleViews
             {
                 ex.LogException();
             }
+        }
+
+        private bool isSccmServer()
+        {
+            string subKey = @"SOFTWARE\Microsoft\System Center Configuration Manager";
+
+            var key = Registry.LocalMachine.OpenSubKey(subKey,false);
+
+            return key != null; 
         }
 
         private void StartNew()
@@ -329,9 +347,57 @@ namespace MetroDemo.ExampleViews
                 case 4:
                     ManageRemote();
                     break;
+                case 5:
+                    ManageSccm();
+                    break;
                 default:
                     LogErrorMessage(new Exception("invalid selection"));
                     break;
+            }
+        }
+
+        private void ManageSccm()
+        {
+            try
+            {
+                if (_running) return;
+
+                GlobalObjects.ViewModel.BlockNavigation = true;
+                _running = true;
+
+
+
+                GlobalObjects.ViewModel.ApplicationMode = ApplicationMode.ManageSccm;
+
+                if (RestartWorkflow != null)
+                {
+                    this.RestartWorkflow(this, new EventArgs());
+                }
+
+                GlobalObjects.ViewModel.BlockNavigation = false;
+
+                this.TransitionTab(this, new TransitionTabEventArgs()
+                {
+                    Direction = TransitionTabDirection.Forward,
+                    Index = 10,
+                    UseIndex = true
+                });
+
+
+                LogAnaylytics("/StartView", "StartNew");
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+            finally
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    WaitManageLocal.Visibility = Visibility.Collapsed;
+                    //ImgManageLocal.Visibility = Visibility.Visible;
+                });
+                _running = false;
             }
         }
 
@@ -353,6 +419,9 @@ namespace MetroDemo.ExampleViews
                     break;
                 case 4:
                     txtBlock.Text = "Select this option if you would like to install, modify or manage the installation of Office 365 ProPlus on a remote computer.";
+                    break;
+                case 5:
+                    txtBlock.Text = "Select this option if you would like to configure your SCCM Server.";
                     break;
                 default:
                     txtBlock.Text = "";

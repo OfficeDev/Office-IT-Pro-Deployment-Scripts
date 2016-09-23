@@ -157,6 +157,9 @@
     <Compile Include="Views\AboutView.xaml.cs">
       <DependentUpon>AboutView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\SccmView.xaml.cs">
+      <DependentUpon>SccmView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\RemoteView.xaml.cs">
       <DependentUpon>RemoteView.xaml</DependentUpon>
     </Compile>
@@ -301,6 +304,10 @@
     <Page Include="Views\AboutView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SccmView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\RemoteView.xaml">
       <Generator>MSBuild:Compile</Generator>
