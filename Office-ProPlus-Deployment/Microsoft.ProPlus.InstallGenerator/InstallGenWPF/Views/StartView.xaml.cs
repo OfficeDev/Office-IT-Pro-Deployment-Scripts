@@ -40,7 +40,8 @@ namespace MetroDemo.ExampleViews
                     cbActions.Items.Add("Create Office 365 ProPlus language pack");
                     cbActions.Items.Add("Manage remote Office 365 ProPlus installation");
 
-                    if (isSccmServer())
+                    if(true)
+                    //if (isSccmServer())
                     {
                         cbActions.Items.Add("SCCM Configuration");
                     }
@@ -379,7 +380,7 @@ namespace MetroDemo.ExampleViews
                 this.TransitionTab(this, new TransitionTabEventArgs()
                 {
                     Direction = TransitionTabDirection.Forward,
-                    Index = 10,
+                    Index = 8,
                     UseIndex = true
                 });
 

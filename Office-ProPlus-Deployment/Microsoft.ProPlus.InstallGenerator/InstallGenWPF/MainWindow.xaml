@@ -289,18 +289,7 @@
                             </DockPanel>
                         </Controls:MetroTabItem.Header>
                     </Controls:MetroTabItem>
-                    <Controls:MetroTabItem IsEnabled="True" Width="160" x:Name="SccmTabName" Visibility="Collapsed" >
-                        <Controls:MetroTabItem.Header>
-                            <DockPanel Margin="10" Height="30">
-                                <Rectangle Height="16" Width="16">
-                                    <Rectangle.Fill>
-                                        <VisualBrush  Visual="{StaticResource appbar_monitor}" ></VisualBrush>
-                                    </Rectangle.Fill>
-                                </Rectangle>
-                                <Label FontSize="16" Foreground="white" x:Name="lblSccm">SCCM Scripts</Label>
-                            </DockPanel>
-                        </Controls:MetroTabItem.Header>
-                    </Controls:MetroTabItem>
+                    
                     <Controls:MetroTabItem IsEnabled="True" Width="160" x:Name="RemoteTabName" Visibility="Collapsed" >
                         <Controls:MetroTabItem.Header>
                             <DockPanel Margin="10" Height="30">
@@ -310,6 +299,18 @@
                                     </Rectangle.Fill>
                                 </Rectangle>
                                 <Label FontSize="16" Foreground="white" x:Name="lblRemote">Remote</Label>
+                            </DockPanel>
+                        </Controls:MetroTabItem.Header>
+                    </Controls:MetroTabItem>
+                    <Controls:MetroTabItem IsEnabled="True" Width="160" x:Name="SccmTabName" Visibility="Collapsed" >
+                        <Controls:MetroTabItem.Header>
+                            <DockPanel Margin="10" Height="32">
+                                <Rectangle Height="16" Width="16">
+                                    <Rectangle.Fill>
+                                        <VisualBrush  Visual="{StaticResource appbar_monitor}" ></VisualBrush>
+                                    </Rectangle.Fill>
+                                </Rectangle>
+                                <Label FontSize="16" Foreground="white" x:Name="lblSccm">SCCM Config</Label>
                             </DockPanel>
                         </Controls:MetroTabItem.Header>
                     </Controls:MetroTabItem>
@@ -354,10 +355,10 @@
                     <exampleViews:RemoteView x:Name="RemoteView" DataContext="{Binding}" Tag="7"   IsEnabled="true"/>
                 </TabItem>
                 <TabItem>
-                    <exampleViews:AboutView x:Name="AboutView" DataContext="{Binding}" Tag="8"  IsEnabled="True" />
+                    <exampleViews:SccmView x:Name="SccmView" DataContext="{Binding}" Tag="8"   IsEnabled="true"/>
                 </TabItem>
                 <TabItem>
-                    <exampleViews:SccmView x:Name="SccmView" DataContext="{Binding}" Tag="9"   IsEnabled="true"/>
+                    <exampleViews:AboutView x:Name="AboutView" DataContext="{Binding}" Tag="9"  IsEnabled="True" />
                 </TabItem>
             </Controls:MetroAnimatedSingleRowTabControl>
 

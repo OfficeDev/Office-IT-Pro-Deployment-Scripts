@@ -62,9 +62,7 @@ namespace MetroDemo
                 DownloadView.TransitionTab += TransitionTab;
                 LocalView.TransitionTab += TransitionTab;
                 SccmView.TransitionTab += TransitionTab;
-      
-                
-                
+                  
 
                 LocalView.BranchChanged += BranchChanged;
                 LocalView.MainWindow = this;
@@ -89,6 +87,9 @@ namespace MetroDemo
 
                 LocalView.InfoMessage += GenerateViewInfoMessage;
                 LocalView.ErrorMessage += GenerateView_ErrorMessage;
+
+                SccmView.InfoMessage += GenerateViewInfoMessage;
+                SccmView.ErrorMessage += GenerateView_ErrorMessage;
             }
             catch (Exception ex)
             {
@@ -437,6 +438,7 @@ namespace MetroDemo
                 lblAbout.Visibility = Visibility.Collapsed;
                 lblLocal.Visibility = Visibility.Collapsed;
                 lblRemote.Visibility = Visibility.Collapsed;
+                lblSccm.Visibility = Visibility.Collapsed; 
 
                 var margin = ((Button)sender).Margin;
                 margin.Left = -1;
@@ -465,6 +467,8 @@ namespace MetroDemo
                 lblAbout.Visibility = Visibility.Visible;
                 lblLocal.Visibility = Visibility.Visible;
                 lblRemote.Visibility = Visibility.Visible;
+                lblSccm.Visibility = Visibility.Visible;
+
 
                 var margin = ((Button)sender).Margin;
                 margin.Left = 100;
