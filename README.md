@@ -6,20 +6,20 @@ Read more about it here: [Office Blogs](https://blogs.office.com/2015/08/19/intr
 The software is licensed “as-is.” under the [MIT License](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/master/LICENSE).
 
 ## Do you have Systems Center Configuration Manager?
-[Deploying Office ProPlus with Configuration Manager](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/master/Office-ProPlus-Deployment/Setup-CMOfficeDeployment)
+You can automate the configuration of ConfigMgr to deploy and manage your Office ProPlus environment using [Deploying Office ProPlus with Configuration Manager](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/master/Office-ProPlus-Deployment/Setup-CMOfficeDeployment)
 
 ## Are you manually editing your configuration XML files?
-Tired of manually editing the Office ProPlus Configuration XML File?  Try our online XML Editor.
+Tired of manually editing the Office ProPlus Configuration XML File?
 
-[Office Click-To-Run Configuration XML Editor](http://officedev.github.io/Office-IT-Pro-Deployment-Scripts/XmlEditor.html)
+Try our online XML Editor [Office Click-To-Run Configuration XML Editor](http://officedev.github.io/Office-IT-Pro-Deployment-Scripts/XmlEditor.html)
 
 ## Would you like a faster and easier way to download your Office ProPlus files
 
-Try using [Download-OfficeProPlusChannels](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/master/Office-ProPlus-Deployment/Download-OfficeProPlusBranch)
+Try using [Download-OfficeProPlusChannels](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/master/Office-ProPlus-Deployment/Download-OfficeProPlusBranch) to quickly and easily download from multiple Channels and languages with one operation.
 
 ## Do you use Group Policy to configure your Office Clients?
 
-[Copy-OfficeGPOSettings](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/master/Office-ProPlus-Preparation/Copy-OfficeGPOSettings)
+If you have Group Policy setting from previous versions of Office use our [Copy-OfficeGPOSettings](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/master/Office-ProPlus-Preparation/Copy-OfficeGPOSettings) to migrate your settings to Office 2016.
 
 ## Scripts
 For more detailed documentation of each script, check the [Wiki](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/wiki) or the readme file in the corresponding folder
