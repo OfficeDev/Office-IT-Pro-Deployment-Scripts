@@ -21,6 +21,10 @@ Try using [Download-OfficeProPlusChannels](https://github.com/OfficeDev/Office-I
 
 If you have Group Policy setting from previous versions of Office use our [Copy-OfficeGPOSettings](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/master/Office-ProPlus-Preparation/Copy-OfficeGPOSettings) to migrate your settings to Office 2016.
 
+## Would you like to see example of how to use our scripts to create deployment solutions?
+
+[Deploy Office ProPlus](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/master/Office-ProPlus-Deployment/Deploy-OfficeClickToRun)
+
 ## Scripts
 For more detailed documentation of each script, check the [Wiki](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/wiki) or the readme file in the corresponding folder
 
