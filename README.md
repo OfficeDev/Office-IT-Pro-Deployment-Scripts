@@ -13,7 +13,7 @@ Tired of manually editing the Office ProPlus Configuration XML File?  Try our on
 
 [Office Click-To-Run Configuration XML Editor](http://officedev.github.io/Office-IT-Pro-Deployment-Scripts/XmlEditor.html)
 
-## Would you like a faster and easier way to download your Office ProPlus source files
+## Would you like a faster and easier way to download your Office ProPlus files
 
 Try using [Download-OfficeProPlusChannels](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/master/Office-ProPlus-Deployment/Download-OfficeProPlusBranch)
 
