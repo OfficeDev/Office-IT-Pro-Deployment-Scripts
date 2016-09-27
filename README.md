@@ -11,9 +11,11 @@ The software is licensed “as-is.” under the [MIT License](https://github.com
 ## Are you manually editing your configuration XML files?
 Tired of manually editing the Office ProPlus Configuration XML File?  Try our online XML Editor.
 
-Please note that the Install Toolkit requires .Net 4.5 to run properly.
-
 [Office Click-To-Run Configuration XML Editor](http://officedev.github.io/Office-IT-Pro-Deployment-Scripts/XmlEditor.html)
+
+## Would you like a faster and easier way to download your Office ProPlus source files
+
+Try using [Download-OfficeProPlusChannels](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/master/Office-ProPlus-Deployment/Download-OfficeProPlusBranch)
 
 ## Scripts
 For more detailed documentation of each script, check the [Wiki](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/wiki) or the readme file in the corresponding folder
