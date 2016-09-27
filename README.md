@@ -17,6 +17,10 @@ Tired of manually editing the Office ProPlus Configuration XML File?  Try our on
 
 Try using [Download-OfficeProPlusChannels](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/master/Office-ProPlus-Deployment/Download-OfficeProPlusBranch)
 
+## Do you use Group Policy to configure your Office Clients?
+
+[Copy-OfficeGPOSettings](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/master/Office-ProPlus-Preparation/Copy-OfficeGPOSettings)
+
 ## Scripts
 For more detailed documentation of each script, check the [Wiki](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/wiki) or the readme file in the corresponding folder
 
