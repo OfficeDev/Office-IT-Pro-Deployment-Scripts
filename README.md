@@ -5,18 +5,18 @@ Read more about it here: [Office Blogs](https://blogs.office.com/2015/08/19/intr
 
 The software is licensed “as-is.” under the [MIT License](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/master/LICENSE).
 
-## Do you have Systems Center Configuration Manager
+## Do you have Systems Center Configuration Manager?
 [Deploying Office ProPlus with Configuration Manager](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/master/Office-ProPlus-Deployment/Setup-CMOfficeDeployment)
 
-## Scripts
-For more detailed documentation of each script, check the [Wiki](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/wiki) or the readme file in the corresponding folder
-
-## XML Editor
+## Are you manually editing your configuration XML files?
 Tired of manually editing the Office ProPlus Configuration XML File?  Try our online XML Editor.
 
 Please note that the Install Toolkit requires .Net 4.5 to run properly.
 
 [Office Click-To-Run Configuration XML Editor](http://officedev.github.io/Office-IT-Pro-Deployment-Scripts/XmlEditor.html)
+
+## Scripts
+For more detailed documentation of each script, check the [Wiki](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/wiki) or the readme file in the corresponding folder
 
 ## New to PowerShell and Office 365?
 Check out [PowerShell for Office 365](http://powershell.office.com) for advice on getting started, key scenarios and script samples.  
