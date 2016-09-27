@@ -227,9 +227,6 @@ namespace MetroDemo.ExampleViews
                 LogErrorMessage(ex);
             }
         }
-        
-        public BranchChangedEventHandler BranchChanged { get; set; }
-
         #endregion
 
         #region "Info"
