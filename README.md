@@ -3,6 +3,20 @@ This repo is a collection of useful PowerShell scripts to make deploying Office 
 
 Read more about it here: [Office Blogs](https://blogs.office.com/2015/08/19/introducing-the-office-it-pro-deployment-script-project/)
 
+The software is licensed “as-is.” under the [MIT License](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/master/LICENSE).
+
+## Do you have Systems Center Configuration Manager?
+[Deploying Office ProPlus with Configuration Manager](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/master/Office-ProPlus-Deployment/Setup-CMOfficeDeployment)
+
+## Are you manually editing your configuration XML files?
+Tired of manually editing the Office ProPlus Configuration XML File?  Try our online XML Editor.
+
+[Office Click-To-Run Configuration XML Editor](http://officedev.github.io/Office-IT-Pro-Deployment-Scripts/XmlEditor.html)
+
+## Would you like a faster and easier way to download your Office ProPlus files
+
+Try using [Download-OfficeProPlusChannels](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/master/Office-ProPlus-Deployment/Download-OfficeProPlusBranch)
+
 ## Scripts
 For more detailed documentation of each script, check the [Wiki](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/wiki) or the readme file in the corresponding folder
 
@@ -11,7 +25,6 @@ Check out [PowerShell for Office 365](http://powershell.office.com) for advice o
 
 ##Questions and comments
 If you have any trouble running this sample, please log an issue.
-For more general feedback, send an email to o16scripts@microsoft.com.
 
 ## How to Contribute to this project
 This is high level plan for contributing and the structure that we have in place for pulling changes.
@@ -30,5 +43,4 @@ This is high level plan for contributing and the structure that we have in place
 <LI>For bugs, use the label "bug"
 <LI>All issues will be reviewed and prioritized each day as we work to add new scripts and improve existing ones</UL>
 </UL>
-
-[![Analytics](https://ga-beacon.appspot.com/UA-70271323-4/welcome-page?pixel)](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts)
+[![Analytics](https://ga-beacon.appspot.com/UA-70271323-4/Main_Readme?pixel)](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts)
