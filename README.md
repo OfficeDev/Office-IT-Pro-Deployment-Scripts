@@ -5,11 +5,14 @@ Read more about it here: [Office Blogs](https://blogs.office.com/2015/08/19/intr
 
 The software is licensed “as-is.” under the [MIT License](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/master/LICENSE).
 
+## Do you have Systems Center Configuration Manager
+[Deploying Office ProPlus with Configuration Manager](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/master/Office-ProPlus-Deployment/Setup-CMOfficeDeployment)
+
 ## Scripts
 For more detailed documentation of each script, check the [Wiki](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/wiki) or the readme file in the corresponding folder
 
 ## XML Editor
-Tired of manually editing the Office Click-To-Run Configuration XML File?  Try our online XML Editor.
+Tired of manually editing the Office ProPlus Configuration XML File?  Try our online XML Editor.
 
 Please note that the Install Toolkit requires .Net 4.5 to run properly.
 
