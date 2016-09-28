@@ -59,6 +59,9 @@ function Install-OfficeClickToRun {
         [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $TargetFilePath = $NULL,
 
+        [Parameter()]
+        [bool] $PinToStart = $true, 
+
         [Parameter(ValueFromPipelineByPropertyName=$true)]
         [OfficeCTRVersion] $OfficeVersion = "Office2016",
 
@@ -145,6 +148,41 @@ function Install-OfficeClickToRun {
         Wait-ForOfficeCTRInstall -OfficeVersion $OfficeVersion
     }else {
         StartProcess -execFilePath $cmdLine -execParams $cmdArgs -WaitForExit $true
+    }
+
+    if($PinToStart -and [Environment]::OSVersion.Version.Major -ge 10){
+         Pin-ToStart
+    }
+}
+
+function Pin-ToStart { 
+   
+    $ctr = (Get-OfficeVersion).ClickToRun
+    $InstallPath = (Get-OfficeVersion).InstallPath
+    $officeVersion = (Get-OfficeVersion).Version.Split('.')[0]
+
+     if($InstallPath.GetType().Name -eq "Object[]"){
+        $InstallPath = $InstallPath[0]
+    }
+
+    if($ctr -eq $true) {
+        $officeAppPath = $InstallPath + "\root\Office" + $officeVersion
+    } else {
+        $officeAppPath = $InstallPath + "Office" + $officeVersion
+    }
+
+    $officeAppList = @("WINWORD.EXE", "EXCEL.EXE", "POWERPNT.EXE", "ONENOTE.EXE", "MSACCESS.EXE", "MSPUB.EXE", "OUTLOOK.EXE",
+                       "lync.exe", "GROOVE.EXE", "WINPROJ.EXE", "VISIO.EXE")
+    
+    foreach($app in $officeAppList){
+        if(Test-Path ($officeAppPath + "\$app")){
+            try{
+            ((New-Object -Com Shell.Application).NameSpace($officeAppPath).Items() | ?{$_.Name -eq $app.Split('.')[0]}).Verbs() | ?{$_.Name.replace('&','') -match 'Pin to Start'} | %{$_.DoIt()}
+            }catch{
+                Write-Output $_.Exception.Message
+            }
+                   
+        }
     }
 }
 
@@ -932,6 +970,8 @@ Function StartProcess {
 
         [Parameter()]
         [bool]$WaitForExit = $false
+
+
 	)
 
     Try

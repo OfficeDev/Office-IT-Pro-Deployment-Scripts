@@ -616,10 +616,14 @@ function Remove-PinnedOfficeApplications {
     $InstallPath = (Get-OfficeVersion).InstallPath
     $officeVersion = (Get-OfficeVersion).Version.Split('.')[0]
 
+     if($InstallPath.GetType().Name -eq "Object[]"){
+        $InstallPath = $InstallPath[0]
+    }
+
     if($ctr -eq $true) {
-        $officeAppPath = $InstallPath[0] + "\root\Office" + $officeVersion
+        $officeAppPath = $InstallPath + "\root\Office" + $officeVersion
     } else {
-        $officeAppPath = $InstallPath[0] + "Office" + $officeVersion
+        $officeAppPath = $InstallPath + "Office" + $officeVersion
     }
 
     $officeAppList = @("WINWORD.EXE", "EXCEL.EXE", "POWERPNT.EXE", "ONENOTE.EXE", "MSACCESS.EXE", "MSPUB.EXE", "OUTLOOK.EXE",
