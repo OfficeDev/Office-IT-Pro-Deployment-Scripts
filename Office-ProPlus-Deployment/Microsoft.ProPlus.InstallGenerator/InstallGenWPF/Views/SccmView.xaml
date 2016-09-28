@@ -7,6 +7,7 @@
              xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:exampleViews="clr-namespace:MetroDemo.ExampleViews"
              xmlns:models="clr-namespace:MetroDemo.Models"
+             xmlns:gif="http://wpfanimatedgif.codeplex.com"
              mc:Ignorable="d"
              d:DesignHeight="600"
              d:DesignWidth="900"
@@ -42,22 +43,70 @@
                 <StackPanel Grid.Row="0" Grid.Column="1"  Background="{StaticResource GrayBrush}" Width="auto" Height="40" HorizontalAlignment="Stretch" VerticalAlignment="Top" />
                 <Controls:MetroAnimatedSingleRowTabControl Grid.Row="0" Grid.Column="1"  x:Name="MainTabControl"  SelectionChanged="MainTabControl_OnSelectionChanged"
                                                            Height="600" VerticalAlignment="Top" >
-                    <TabItem x:Name="ProductTab" Height="50" >
+                    
+                    <TabItem x:Name="StartTab" Height="50">
                         <TabItem.Header>
                             <DockPanel Margin="0,5,0,0">
-                                <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,0,0,0" Height="19">Sccm Tab 1</Label>
+                                <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,0,0,0" Height="19">Choose Your Scenario</Label>
                             </DockPanel>
                         </TabItem.Header>
 
-                      
+                        <Grid HorizontalAlignment="Left" Margin="30 30 0 0" Height="450" VerticalAlignment="Top" x:Name="StartPage">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="50" />
+                                <RowDefinition Height="80" />
+                                <RowDefinition Height="300" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="550" />
+                                <ColumnDefinition Width="250" />
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Grid.Row="2" Name="txtBlock" TextWrapping="WrapWithOverflow" FontSize="18" FontWeight="SemiBold" Style="{StaticResource CustomMetroLabelTextBlock}" />
+
+                            <TextBlock Grid.Row="0" Grid.Column="0" TextWrapping="WrapWithOverflow" FontSize="25" FontWeight="Bold" Style="{StaticResource CustomMetroLabelTextBlock}">
+                                <Run Text="What would you like to do?"/>
+                            </TextBlock>
+
+                            <ComboBox x:Name="cbActions" Grid.Row="1" Grid.Column="0" Width="550" FontSize="20" Height="50" Foreground="{StaticResource GrayBrush}"
+                                      HorizontalAlignment="Left" VerticalAlignment="Center"  SelectionChanged="cbActions_SelectionChanged"/>
+
+                            <Button x:Name="strtButton" Grid.Row="1" Grid.Column="1" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center" Width="200" Height="55" Click="strtButton_Click">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="65" />
+                                        <ColumnDefinition Width="140" />
+                                    </Grid.ColumnDefinitions>
+                                    <Image x:Name="WaitManageLocal" Visibility="Collapsed" Height="40" HorizontalAlignment="Left" gif:ImageBehavior.RepeatBehavior="Forever" 
+                                                    Grid.Row="0" Grid.Column="0" gif:ImageBehavior.AnimatedSource="../images/InstallRing.GIF" />
+                                    <Label Content="Start" Grid.Column="1" VerticalAlignment="Center" FontSize="22" Style="{StaticResource CustomMetroLabelHeader}" HorizontalContentAlignment="Left" ></Label>
+                                </Grid>
+                            </Button>
+                        </Grid>
                     </TabItem>
-                    <TabItem x:Name="LanguagesTab" Height="50">
+                    
+                    <TabItem x:Name="DownloadTab" Height="50">
                         <TabItem.Header>
                             <DockPanel Margin="0,5,0,0">
-                                <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,0,0,0">Sccm Tab 2</Label>
+                                <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,0,0,0">Download Channel Files</Label>
                             </DockPanel>
                         </TabItem.Header>
                         
+                        <Grid HorizontalAlignment="Left" Margin="30 30 0 0" Height="450" VerticalAlignment="Top" x:Name="DownloadPage">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="50" />
+                                <RowDefinition Height="80" />
+                                <RowDefinition Height="300" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="550" />
+                                <ColumnDefinition Width="250" />
+                            </Grid.ColumnDefinitions>
+
+                            <ComboBox x:Name="DownloadChannel" Grid.Row="1" Grid.Column="0" Width="550" FontSize="20" Height="50" Foreground="{StaticResource GrayBrush}"
+                                      HorizontalAlignment="Left" VerticalAlignment="Center"  SelectionChanged="DownloadChannel_SelectionChanged"/>
+
+                        </Grid>
                     </TabItem>
                     <TabItem x:Name="OptionalTab" Height="50" >
                         <TabItem.Header>

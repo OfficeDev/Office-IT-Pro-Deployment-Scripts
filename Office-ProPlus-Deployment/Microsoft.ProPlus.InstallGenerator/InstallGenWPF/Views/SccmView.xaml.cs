@@ -36,15 +36,12 @@ namespace MetroDemo.ExampleViews
         private CancellationTokenSource _tokenSource = new CancellationTokenSource();
 
         public event TransitionTabEventHandler TransitionTab;
-        public event MessageEventHandler InfoMessage;
         public event MessageEventHandler ErrorMessage;
+        public event MessageEventHandler InfoMessage;
 
-        private Task _downloadTask = null;
+
         private int _cachedIndex = 0;
-        private bool _blockUpdate = false;
-        private bool chBxMainProductFirstInitialize = true;        
-        
-
+   
         public SccmView()
         {
             InitializeComponent();
@@ -55,7 +52,32 @@ namespace MetroDemo.ExampleViews
         {
             try
             {
-               
+
+                if (cbActions.Items.Count < 1)
+                {
+                    cbActions.Items.Add("Deploy Office 365 ProPlus");
+                    cbActions.Items.Add("Change the channel of an Office 365 client");
+                    cbActions.Items.Add("Rollback the version of an Office 365 client");
+                    cbActions.Items.Add("Update an Office 365 ProPlus client with ConfigMgr");
+                    cbActions.Items.Add("Update an Office 365 ProPlus client using a scheduled task");
+                }
+
+                cbActions.SelectedIndex = 0; 
+
+                Dispatcher.Invoke(() =>
+                {
+                    StartTab.Visibility = Visibility.Visible;
+                    StartPage.Visibility = Visibility.Visible;
+                    StartTab.IsSelected = true;
+
+                    DownloadTab.Visibility = Visibility.Collapsed;
+                    DownloadPage.Visibility = Visibility.Collapsed;
+
+                    OptionalTab.Visibility = Visibility.Collapsed;
+                    ExcludedTab.Visibility = Visibility.Collapsed;
+                    PreviousButton.Visibility = Visibility.Collapsed;
+                    NextButton.Visibility = Visibility.Collapsed;
+                });
             }
             catch (Exception ex)
             {
@@ -72,7 +94,7 @@ namespace MetroDemo.ExampleViews
             catch { }
         }
 
-        private bool TransitionProductTabs(TransitionTabDirection direction)
+        private void TransitionSccmTabs(TransitionTabDirection direction)
         {
             var currentIndex = MainTabControl.SelectedIndex;
             var tmpIndex = currentIndex;
@@ -80,52 +102,36 @@ namespace MetroDemo.ExampleViews
             {
                 if (MainTabControl.SelectedIndex < MainTabControl.Items.Count - 1)
                 {
-                    do
+                    while (tmpIndex < MainTabControl.Items.Count - 1)
                     {
-                        tmpIndex ++;
-                        if (tmpIndex < MainTabControl.Items.Count)
+                        tmpIndex++;
+                        var item = (TabItem)MainTabControl.Items[tmpIndex];
+
+                        if (item.IsVisible)
                         {
-                            var item = (TabItem) MainTabControl.Items[tmpIndex];
-                            if (item == null || item.IsVisible) break;
+                            MainTabControl.SelectedIndex = tmpIndex;
+                            break;
                         }
-                        else
-                        {
-                            return true;
-                        }
-                    } while (true);
-                    MainTabControl.SelectedIndex = tmpIndex;
-                }
-                else
-                {
-                    return true;
-                }
+                    }
+                }      
             }
             else
             {
                 if (MainTabControl.SelectedIndex > 0)
                 {
-                    do
+                    while (tmpIndex != 0)
                     {
                         tmpIndex--;
-                        if (tmpIndex > 0)
+                        var item = (TabItem)MainTabControl.Items[tmpIndex];
+
+                        if (item.IsVisible)
                         {
-                            var item = (TabItem)MainTabControl.Items[tmpIndex];
-                            if (item == null || item.IsVisible) break;
+                            MainTabControl.SelectedIndex = tmpIndex;
+                            break;
                         }
-                        else
-                        {
-                            return true;
-                        }
-                    } while (true);
-                    MainTabControl.SelectedIndex = tmpIndex;
-                }
-                else
-                {
-                    return true;
+                    }
                 }
             }
-
-            return false;
         }
 
         private void LogErrorMessage(Exception ex)
@@ -145,11 +151,44 @@ namespace MetroDemo.ExampleViews
         {
             Dispatcher.Invoke(() =>
             {
-                ProductTab.IsEnabled = enabled;
-                LanguagesTab.IsEnabled = enabled;
+                StartTab.IsEnabled = enabled;
+                DownloadTab.IsEnabled = enabled;
                 OptionalTab.IsEnabled = enabled;
                 ExcludedTab.IsEnabled = enabled;
             });
+        }
+
+        private void UpdateViaSheduledTask()
+        {
+            throw new NotImplementedException();
+        }
+
+        private void UpdateViaConfigMgr()
+        {
+            throw new NotImplementedException();
+        }
+
+        private void RollbackOffice()
+        {
+            throw new NotImplementedException();
+        }
+
+        private void ChangeOfficeChannel()
+        {
+            throw new NotImplementedException();
+        }
+
+        private void DeployOffice()
+        {
+            PreviousButton.Visibility = Visibility.Visible;
+            NextButton.Visibility = Visibility.Visible;
+
+            StartPage.Visibility = Visibility.Collapsed;
+            StartTab.IsSelected = false;
+
+            DownloadTab.Visibility = Visibility.Visible;
+            DownloadPage.Visibility = Visibility.Visible;
+            DownloadTab.IsSelected = true;
         }
 
         #region "Events"
@@ -168,10 +207,22 @@ namespace MetroDemo.ExampleViews
                 switch (MainTabControl.SelectedIndex)
                 {
                     case 0:
-                        LogAnaylytics("/SccmView", "Products");
+                        StartPage.Visibility = Visibility.Visible;
+
+                        var tabIndex = MainTabControl.Items.Count - 1;
+
+                        while (tabIndex > 0)
+                        {
+                            var tabItem = (TabItem) MainTabControl.Items[tabIndex];
+                            tabItem.Visibility = Visibility.Collapsed;
+                            tabIndex--; 
+                        } 
+
+                        LogAnaylytics("/SccmView", "Start");
                         break;
                     case 1:
-                        LogAnaylytics("/SccmView", "Languages");
+                        DownloadPage.Visibility = Visibility.Visible;
+                        LogAnaylytics("/SccmView", "Download");
                         break;
                     case 2:
                         LogAnaylytics("/SccmView", "Optional");
@@ -193,15 +244,7 @@ namespace MetroDemo.ExampleViews
         {
             try
             {
-
-                if (TransitionProductTabs(TransitionTabDirection.Forward))
-                {
-                    this.TransitionTab?.Invoke(this, new TransitionTabEventArgs()
-                    {
-                        Direction = TransitionTabDirection.Forward,
-                        Index = 1
-                    });
-                }
+                TransitionSccmTabs(TransitionTabDirection.Forward);
             }
             catch (Exception ex)
             {
@@ -213,19 +256,67 @@ namespace MetroDemo.ExampleViews
         {
             try
             {
-                if (TransitionProductTabs(TransitionTabDirection.Back))
-                {
-                    this.TransitionTab(this, new TransitionTabEventArgs()
-                    {
-                        Direction = TransitionTabDirection.Back,
-                        Index = 1
-                    });
-                }
+                TransitionSccmTabs(TransitionTabDirection.Back);
             }
             catch (Exception ex)
             {
                 LogErrorMessage(ex);
             }
+        }
+ 
+        private void cbActions_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            switch (cbActions.SelectedIndex)
+            {
+                case 0:
+                    txtBlock.Text = "Select this option if you would like to deploy Office 365 ProPlus.";
+                    break;
+                case 1:
+                    txtBlock.Text = "Select this option if would like to change the installed channel of an Office 365 client.";
+                    break;
+                case 2:
+                    txtBlock.Text = "Select this option if you would like to rollback the version of Office 365 installed on a client.";
+                    break;
+                case 3:
+                    txtBlock.Text = "Select this option if you would like to update the version of Office 365 ProPlus installed on a client via ConfigMgr.";
+                    break;
+                case 4:
+                    txtBlock.Text = "Select this option if you would like to update the version of Office 365 ProPlus installed on a client via a scheduled task.";
+                    break;
+                default:
+                    txtBlock.Text = "";
+                    break;
+            }
+        }
+
+        private void strtButton_Click(object sender, RoutedEventArgs e)
+        {
+            switch (cbActions.SelectedIndex)
+            {
+                case 0:
+                    DeployOffice();
+                    break;
+                case 1:
+                    ChangeOfficeChannel();
+                    break;
+                case 2:
+                    RollbackOffice();
+                    break;
+                case 3:
+                    UpdateViaConfigMgr();
+                    break;
+                case 4:
+                    UpdateViaSheduledTask();
+                    break;
+                default:
+                    LogErrorMessage(new Exception("invalid selection"));
+                    break;
+            }
+        }
+
+        private void DownloadChannel_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            throw new NotImplementedException();
         }
         #endregion
 
@@ -284,14 +375,9 @@ namespace MetroDemo.ExampleViews
             }
         }
 
-
-
-
-
-
         #endregion
 
-  
+    
     }
 }
 
