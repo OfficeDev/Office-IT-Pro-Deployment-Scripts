@@ -21,6 +21,8 @@ using Microsoft.OfficeProPlus.InstallGen.Presentation.Models;
 using Microsoft.OfficeProPlus.InstallGenerator.Models;
 using OfficeInstallGenerator.Model;
 using System.Xml;
+using CheckBox = System.Windows.Controls.CheckBox;
+using ComboBox = System.Windows.Controls.ComboBox;
 using File = System.IO.File;
 using MessageBox = System.Windows.MessageBox;
 using UserControl = System.Windows.Controls.UserControl;
@@ -32,12 +34,26 @@ namespace MetroDemo.ExampleViews
     /// </summary>
     public partial class SccmView : UserControl
     {
+    #region declarations
         private LanguagesDialog languagesDialog = null;
         private CancellationTokenSource _tokenSource = new CancellationTokenSource();
 
         public event TransitionTabEventHandler TransitionTab;
         public event MessageEventHandler ErrorMessage;
         public event MessageEventHandler InfoMessage;
+
+
+        public List<Language> PackageLanguages { get; set; }
+        public List<Bitness> OfficeBitnesses { get; set; }
+
+        public List<OfficeBranch> OfficeChannels { get; set; }
+        public string OfficeBitness { get; set; }
+        public string ChannelDownloadLocation { get; set; }
+
+
+
+        #endregion
+
 
 
         private int _cachedIndex = 0;
@@ -78,6 +94,12 @@ namespace MetroDemo.ExampleViews
                     PreviousButton.Visibility = Visibility.Collapsed;
                     NextButton.Visibility = Visibility.Collapsed;
                 });
+
+                OfficeChannels = new List<OfficeBranch>();
+                PackageLanguages = new List<Language>();
+                OfficeBitnesses = new List<Bitness>();
+
+
             }
             catch (Exception ex)
             {
@@ -180,8 +202,15 @@ namespace MetroDemo.ExampleViews
 
         private void DeployOffice()
         {
+            DownloadPage_Loaded();
+        }
+
+        private void DownloadPage_Loaded()
+        {
             PreviousButton.Visibility = Visibility.Visible;
             NextButton.Visibility = Visibility.Visible;
+            NextButton.IsEnabled = false;
+
 
             StartPage.Visibility = Visibility.Collapsed;
             StartTab.IsSelected = false;
@@ -189,6 +218,15 @@ namespace MetroDemo.ExampleViews
             DownloadTab.Visibility = Visibility.Visible;
             DownloadPage.Visibility = Visibility.Visible;
             DownloadTab.IsSelected = true;
+
+
+            if (cbDownloadBitness.Items.Count < 1)
+            {
+                cbDownloadBitness.Items.Add("v32");
+                cbDownloadBitness.Items.Add("v64");
+
+                cbDownloadBitness.SelectedIndex = 0;
+            }
         }
 
         #region "Events"
@@ -208,6 +246,8 @@ namespace MetroDemo.ExampleViews
                 {
                     case 0:
                         StartPage.Visibility = Visibility.Visible;
+                        PreviousButton.Visibility = Visibility.Collapsed;
+                        NextButton.Visibility = Visibility.Collapsed;
 
                         var tabIndex = MainTabControl.Items.Count - 1;
 
@@ -314,7 +354,123 @@ namespace MetroDemo.ExampleViews
             }
         }
 
-        private void DownloadChannel_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void Channel_ToggleButton_OnChecked(object sender, RoutedEventArgs e)
+        {
+            var checkbox = (CheckBox)sender;
+            var selectedBranch = checkbox.DataContext as OfficeBranch;
+
+            OfficeChannels.Add(selectedBranch);
+
+            //cbDownloadChannel.Text = "";
+            //OfficeChannels.ForEach(c => cbDownloadChannel.Text += c.Name + ", ");
+
+            Download_ToggleNextButton();
+        }
+
+        private void Channel_ToggleButton_OnUnchecked(object sender, RoutedEventArgs e)
+        {
+            var checkbox = (CheckBox)sender;
+            var unselectedBranch = checkbox.DataContext as OfficeBranch;
+
+            OfficeChannels.Remove(unselectedBranch);
+
+            //cbDownloadChannel.Text = "";
+            //OfficeChannels.ForEach(c => cbDownloadChannel.Text += c.Name + ", ");
+
+            Download_ToggleNextButton();
+        }
+
+        private void Language_ToggleButton_OnChecked(object sender, RoutedEventArgs e)
+        {
+            var checkbox = (CheckBox)sender;
+            var selectedLanguage = checkbox.DataContext as Language;
+
+            PackageLanguages.Add(selectedLanguage);
+
+            //cbDownloadLanguages.Text = "";
+            //PackageLanguages.ForEach(b => cbDownloadLanguages.Text += b.Id + ", ");
+
+            Download_ToggleNextButton();
+        }
+
+        private void Language_ToggleButton_OnUnchecked(object sender, RoutedEventArgs e)
+        {
+            var checkbox = (CheckBox)sender;
+            var unSelectedLanguage = checkbox.DataContext as Language;
+
+            PackageLanguages.Remove(unSelectedLanguage);
+
+            //cbDownloadLanguages.Text = "";
+            //PackageLanguages.ForEach(b => cbDownloadLanguages.Text += b.Id + ", ");
+
+            Download_ToggleNextButton();
+        }
+
+        private void Download_ToggleNextButton()
+        {
+            if (OfficeChannels.Count > 0 && OfficeBitness != null && ChannelDownloadLocation != null && PackageLanguages.Count > 0 && OfficeBitnesses.Count > 0)
+            {
+                NextButton.IsEnabled = true;
+            }
+            else
+            {
+                NextButton.IsEnabled = false;
+            }
+        }
+
+        private void Bitness_ToggleButton_OnUnchecked(object sender, RoutedEventArgs e)
+        {
+            var checkbox = (CheckBox)sender;
+            var selectedBitness = checkbox.DataContext as Bitness;
+
+            OfficeBitnesses.Remove(selectedBitness);
+
+            //cbDownloadBitness.Text = "";
+            //OfficeBitnesses.ForEach(b => cbDownloadBitness.Text += b.Name + ",");
+
+            Download_ToggleNextButton();
+        }
+
+        private void Bitness_ToggleButton_OnChecked(object sender, RoutedEventArgs e)
+        {
+            var checkbox = (CheckBox)sender;
+            var unSelectedBitness = checkbox.DataContext as Bitness;
+
+            OfficeBitnesses.Add(unSelectedBitness);
+
+            //cbDownloadBitness.Text = "";
+            //OfficeBitnesses.ForEach(b => cbDownloadBitness.Text += b.Name + ",");
+
+            Download_ToggleNextButton();
+        }
+
+        private void FileSavePath_OnTextChanged(object sender, TextChangedEventArgs e)
+        {
+            ChannelDownloadLocation = FileSavePath.Text;
+
+            if (OfficeChannels.Count > 0 && OfficeBitness != null && ChannelDownloadLocation != null)
+            {
+                NextButton.IsEnabled = true;
+            }
+            else
+            {
+                NextButton.IsEnabled = false;
+            }
+        }
+
+        private void DownloadSaveButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                //GetSaveFilePath();
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
+
+        private void DownloadOpenExeFolderButton_OnClick(object sender, RoutedEventArgs e)
         {
             throw new NotImplementedException();
         }
@@ -376,8 +532,6 @@ namespace MetroDemo.ExampleViews
         }
 
         #endregion
-
-    
     }
 }
 

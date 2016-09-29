@@ -95,17 +95,77 @@
                         <Grid HorizontalAlignment="Left" Margin="30 30 0 0" Height="450" VerticalAlignment="Top" x:Name="DownloadPage">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="50" />
-                                <RowDefinition Height="80" />
+                                <RowDefinition Height="60" />
+                                <RowDefinition Height="60" />
+                                <RowDefinition Height="60" />
+                                <RowDefinition Height="60" />
                                 <RowDefinition Height="300" />
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="550" />
-                                <ColumnDefinition Width="250" />
+                                <ColumnDefinition Width="400" />
+                                <ColumnDefinition Width="400" />
+                                <ColumnDefinition Width="60" />
+                                <ColumnDefinition Width="60" />
                             </Grid.ColumnDefinitions>
 
-                            <ComboBox x:Name="DownloadChannel" Grid.Row="1" Grid.Column="0" Width="550" FontSize="20" Height="50" Foreground="{StaticResource GrayBrush}"
-                                      HorizontalAlignment="Left" VerticalAlignment="Center"  SelectionChanged="DownloadChannel_SelectionChanged"/>
+                            <Label Content="Which Channels Would You Like to Use?" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="0" Grid.Row="1" 
+                                   HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="20" />
+                            
+                            <ComboBox x:Name="cbDownloadChannel" Grid.Row="1" Grid.Column="1" Width="350" FontSize="20" Height="40" Foreground="{StaticResource GrayBrush}"
+                                      HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0 0 10 0" ItemsSource="{Binding Branches}">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <CheckBox IsChecked="False"  Width="20" Checked="Channel_ToggleButton_OnChecked" Unchecked="Channel_ToggleButton_OnUnchecked" Content="{Binding RelativeSource={RelativeSource Self}, Path=x}"/>
+                                            <TextBlock Width="200" Margin="2 0 0 0" Text="{Binding Name}"/>
+                                            <TextBlock Width="200" Text="{Binding CurrentVersion}" HorizontalAlignment="Right"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
 
+                                <Label Content="Which Bitnesses Will You Install?" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="0" Grid.Row="2" 
+                                   HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="20" />
+
+                            <ComboBox x:Name="cbDownloadBitness" Grid.Row="2" Grid.Column="1" Width="350" FontSize="20" Height="40" Foreground="{StaticResource GrayBrush}"
+                                      HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0 0 10 0" ItemsSource="{Binding OfficeBitnesses}">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <CheckBox IsChecked="False"  Width="20" Checked="Bitness_ToggleButton_OnChecked" Unchecked="Bitness_ToggleButton_OnUnchecked" Content="{Binding RelativeSource={RelativeSource Self}, Path=x}"/>
+                                            <TextBlock Width="200" Margin="2 0 0 0" Text="{Binding Name}"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+
+                            <Label Content="Which Channels Would You Like to Use?" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="0" Grid.Row="3" 
+                                   HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="20" />
+
+                            <ComboBox x:Name="cbDownloadLanguages" Grid.Row="3" Grid.Column="1" Width="350" FontSize="20" Height="40" Foreground="{StaticResource GrayBrush}"
+                                      HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0 0 10 0" ItemsSource="{Binding Languages}" IsEditable="True" IsReadOnly="True">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <CheckBox IsChecked="False"  Width="20" Checked="Language_ToggleButton_OnChecked"  Unchecked="Language_ToggleButton_OnUnchecked"  Content="{Binding RelativeSource={RelativeSource Self}, Path=x}"/>
+                                            <TextBlock Width="250" Text="{Binding Name}" HorizontalAlignment="Left" Margin="2 0 0 0"/>
+                                            <TextBlock Width="150"  Text="{Binding Id}" HorizontalAlignment="Right"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+
+
+                            <Label Content="Where Would You Like to Put These Files?" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="0" Grid.Row="4"
+                                   HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="20" />
+
+                            <TextBox x:Name="FileSavePath" FontSize="20" Grid.Column="1" VerticalAlignment="Center" Foreground="{StaticResource GrayBrush}" Background="White"
+                                             Controls:TextBoxHelper.Watermark="" Height="35" Width="250" Grid.Row="4" HorizontalAlignment="Left"
+                                             Controls:TextBoxHelper.ClearTextButton="True" TextChanged="FileSavePath_OnTextChanged"
+                                             Text=""/>
+                            
+                            <Button Grid.Column="1" Grid.Row="4" Height="40" Width="60" Margin="200 0 0 0" Style="{StaticResource MetroFlatButtonStyle1}" Content="Browse" x:Name="DownloadSaveButton" Click="DownloadSaveButton_OnClick" />
+                            <Button Grid.Column="1"  Grid.Row="4" Height="40" Width="50" Margin="320 0 0 0" Style="{StaticResource MetroFlatButtonStyle1}" Content="Open" x:Name="DownloadOpenExeFolderButton" IsEnabled="False" Click="DownloadOpenExeFolderButton_OnClick" />
                         </Grid>
                     </TabItem>
                     <TabItem x:Name="OptionalTab" Height="50" >

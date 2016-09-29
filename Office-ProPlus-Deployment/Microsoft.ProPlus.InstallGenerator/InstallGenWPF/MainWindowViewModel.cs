@@ -144,6 +144,21 @@ namespace MetroDemo
                 }
             };
 
+            OfficeBitnesses = new List<Bitness>()
+            {
+                new Bitness()
+                {
+                    Id = "64",
+                    Name = "v64"
+                },
+
+                new Bitness()
+                {
+                    Id = "32",
+                    Name = "v32"
+                }
+            };
+
             Branches = new List<OfficeBranch>()
             {
                 new OfficeBranch()
@@ -462,6 +477,8 @@ namespace MetroDemo
         public List<Certificate> Certificates { get; set; } 
 
         public List<OfficeBranch> Branches { get; set; }
+
+        public List<Bitness> OfficeBitnesses { get; set; }
 
         public bool UseSameLanguagesForAllProducts { get; set; }
 

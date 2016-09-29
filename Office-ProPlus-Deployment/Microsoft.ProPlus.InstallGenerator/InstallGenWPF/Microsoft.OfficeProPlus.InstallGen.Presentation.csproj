@@ -152,6 +152,7 @@
     <Compile Include="Engine\OfficeInstaller.cs" />
     <Compile Include="Enums\Enums.cs" />
     <Compile Include="Events\Events.cs" />
+    <Compile Include="Models\Bitness.cs" />
     <Compile Include="Models\RemoteMachine.cs" />
     <Compile Include="Models\officeVersion.cs" />
     <Compile Include="Views\AboutView.xaml.cs">
