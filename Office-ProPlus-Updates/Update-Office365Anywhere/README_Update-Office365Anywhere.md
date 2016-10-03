@@ -8,8 +8,8 @@ This functionality is available with this function but it's use can be controlle
 
 The script considers the primary Update source whatever is configured in the following registry values.
 
-		Office 2013 - HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Office\15.0\Configuration\UpdateUrl
-		Office 2016 - HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Office\Configuration\UpdateUrl
+		Office 2013 - HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Office\15.0\ClickToRun\Configuration\UpdateUrl
+		Office 2016 - HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Office\ClickToRun\Configuration\UpdateUrl
 
 The configuration of this attribute is not in scope of this script but the there are ways to manage this update source to include a script for SCCM called [Setup-SCCMOfficeUpdates](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/Development/Office-ProPlus-Updates/Setup-SCCMOfficeUpdates)
 
