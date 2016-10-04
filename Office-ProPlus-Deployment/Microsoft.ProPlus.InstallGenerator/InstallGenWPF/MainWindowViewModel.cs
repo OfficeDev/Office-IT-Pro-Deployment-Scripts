@@ -11,6 +11,7 @@ using MahApps.Metro;
 using MetroDemo.Models;
 using System.Windows.Input;
 using MahApps.Metro.Controls.Dialogs;
+using MetroDemo.ExampleViews;
 using Micorosft.OfficeProPlus.ConfigurationXml;
 using Microsoft.OfficeProPlus.InstallGen.Presentation.Enums;
 using Microsoft.OfficeProPlus.InstallGen.Presentation.Extentions;
@@ -425,8 +426,9 @@ namespace MetroDemo
             Certificates = new List<Certificate>();
 
             SelectedCertificate = new Certificate();
-             
 
+            SccmConfiguration = new SccmConfiguration();
+            
         }
 
         public bool LocalConfig { get; set; }
@@ -447,6 +449,8 @@ namespace MetroDemo
         }
 
         public ApplicationMode ApplicationMode { get; set; }
+
+        public SccmConfiguration SccmConfiguration { get; set; }
 
         public bool AllowMultipleDownloads { get; set; }
 

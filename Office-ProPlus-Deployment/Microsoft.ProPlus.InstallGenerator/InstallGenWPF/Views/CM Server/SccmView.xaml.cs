@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -8,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
+using System.Windows.Media;
 using MahApps.Metro.Controls;
 using MetroDemo.Events;
 using MetroDemo.ExampleWindows;
@@ -21,6 +23,9 @@ using Microsoft.OfficeProPlus.InstallGen.Presentation.Models;
 using Microsoft.OfficeProPlus.InstallGenerator.Models;
 using OfficeInstallGenerator.Model;
 using System.Xml;
+using MahApps.Metro.Converters;
+using Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config;
+using Button = System.Windows.Controls.Button;
 using CheckBox = System.Windows.Controls.CheckBox;
 using ComboBox = System.Windows.Controls.ComboBox;
 using File = System.IO.File;
@@ -46,7 +51,7 @@ namespace MetroDemo.ExampleViews
         public List<Language> PackageLanguages { get; set; }
         public List<Bitness> OfficeBitnesses { get; set; }
 
-        public List<OfficeBranch> OfficeChannels { get; set; }
+        public List<SelectedChannel> OfficeChannels { get; set; }
         public string OfficeBitness { get; set; }
         public string ChannelDownloadLocation { get; set; }
 
@@ -85,21 +90,13 @@ namespace MetroDemo.ExampleViews
                     StartTab.Visibility = Visibility.Visible;
                     StartPage.Visibility = Visibility.Visible;
                     StartTab.IsSelected = true;
-
-                    DownloadTab.Visibility = Visibility.Collapsed;
-                    DownloadPage.Visibility = Visibility.Collapsed;
-
-                    OptionalTab.Visibility = Visibility.Collapsed;
-                    ExcludedTab.Visibility = Visibility.Collapsed;
                     PreviousButton.Visibility = Visibility.Collapsed;
                     NextButton.Visibility = Visibility.Collapsed;
                 });
 
-                OfficeChannels = new List<OfficeBranch>();
+                OfficeChannels = new List<SelectedChannel>();
                 PackageLanguages = new List<Language>();
                 OfficeBitnesses = new List<Bitness>();
-
-
             }
             catch (Exception ex)
             {
@@ -174,35 +171,7 @@ namespace MetroDemo.ExampleViews
             Dispatcher.Invoke(() =>
             {
                 StartTab.IsEnabled = enabled;
-                DownloadTab.IsEnabled = enabled;
-                OptionalTab.IsEnabled = enabled;
-                ExcludedTab.IsEnabled = enabled;
             });
-        }
-
-        private void UpdateViaSheduledTask()
-        {
-            throw new NotImplementedException();
-        }
-
-        private void UpdateViaConfigMgr()
-        {
-            throw new NotImplementedException();
-        }
-
-        private void RollbackOffice()
-        {
-            throw new NotImplementedException();
-        }
-
-        private void ChangeOfficeChannel()
-        {
-            throw new NotImplementedException();
-        }
-
-        private void DeployOffice()
-        {
-            DownloadPage_Loaded();
         }
 
         private void DownloadPage_Loaded()
@@ -215,18 +184,10 @@ namespace MetroDemo.ExampleViews
             StartPage.Visibility = Visibility.Collapsed;
             StartTab.IsSelected = false;
 
-            DownloadTab.Visibility = Visibility.Visible;
-            DownloadPage.Visibility = Visibility.Visible;
-            DownloadTab.IsSelected = true;
+            //DownloadTab.Visibility = Visibility.Visible;
+            //DownloadPage.Visibility = Visibility.Visible;
+            //DownloadTab.IsSelected = true;
 
-
-            if (cbDownloadBitness.Items.Count < 1)
-            {
-                cbDownloadBitness.Items.Add("v32");
-                cbDownloadBitness.Items.Add("v64");
-
-                cbDownloadBitness.SelectedIndex = 0;
-            }
         }
 
         #region "Events"
@@ -261,7 +222,7 @@ namespace MetroDemo.ExampleViews
                         LogAnaylytics("/SccmView", "Start");
                         break;
                     case 1:
-                        DownloadPage.Visibility = Visibility.Visible;
+                        //DownloadPage.Visibility = Visibility.Visible;
                         LogAnaylytics("/SccmView", "Download");
                         break;
                     case 2:
@@ -303,7 +264,7 @@ namespace MetroDemo.ExampleViews
                 LogErrorMessage(ex);
             }
         }
- 
+
         private void cbActions_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             switch (cbActions.SelectedIndex)
@@ -337,16 +298,19 @@ namespace MetroDemo.ExampleViews
                     DeployOffice();
                     break;
                 case 1:
-                    ChangeOfficeChannel();
-                    break;
+                    GlobalObjects.ViewModel.SccmConfiguration = new SccmConfiguration();
+                    break;  
                 case 2:
-                    RollbackOffice();
+                    GlobalObjects.ViewModel.SccmConfiguration = new SccmConfiguration();
+
                     break;
                 case 3:
-                    UpdateViaConfigMgr();
+                    GlobalObjects.ViewModel.SccmConfiguration = new SccmConfiguration();
+
                     break;
                 case 4:
-                    UpdateViaSheduledTask();
+                    GlobalObjects.ViewModel.SccmConfiguration = new SccmConfiguration();
+
                     break;
                 default:
                     LogErrorMessage(new Exception("invalid selection"));
@@ -354,126 +318,46 @@ namespace MetroDemo.ExampleViews
             }
         }
 
-        private void Channel_ToggleButton_OnChecked(object sender, RoutedEventArgs e)
+        private void DeployOffice()
         {
-            var checkbox = (CheckBox)sender;
-            var selectedBranch = checkbox.DataContext as OfficeBranch;
+            var SourceView = new DeploySourceView();
+            var ChannelVersionView = new ChannelVersionView();
+            var ProductsLanguagesView = new ProductsLanguagesView();
+            var DeployOtherView = new DeployOtherView();
 
-            OfficeChannels.Add(selectedBranch);
 
-            //cbDownloadChannel.Text = "";
-            //OfficeChannels.ForEach(c => cbDownloadChannel.Text += c.Name + ", ");
+            SourceView.MainTabControl.Items.Remove(SourceView.SourceTab);
+            ChannelVersionView.MainTabControl.Items.Remove(ChannelVersionView.ChannelVersionTab);
+            ProductsLanguagesView.MainTabControl.Items.Remove(ProductsLanguagesView.ProductsLanguagesTab);
+            DeployOtherView.MainTabControl.Items.Remove(DeployOtherView.OtherTab);
 
-            Download_ToggleNextButton();
-        }
+            MainTabControl.Items.Add(SourceView.SourceTab);
+            MainTabControl.Items.Add(ChannelVersionView.ChannelVersionTab);
+            MainTabControl.Items.Add(ProductsLanguagesView.ProductsLanguagesTab);
+            MainTabControl.Items.Add(DeployOtherView.OtherTab);
 
-        private void Channel_ToggleButton_OnUnchecked(object sender, RoutedEventArgs e)
-        {
-            var checkbox = (CheckBox)sender;
-            var unselectedBranch = checkbox.DataContext as OfficeBranch;
-
-            OfficeChannels.Remove(unselectedBranch);
-
-            //cbDownloadChannel.Text = "";
-            //OfficeChannels.ForEach(c => cbDownloadChannel.Text += c.Name + ", ");
-
-            Download_ToggleNextButton();
-        }
-
-        private void Language_ToggleButton_OnChecked(object sender, RoutedEventArgs e)
-        {
-            var checkbox = (CheckBox)sender;
-            var selectedLanguage = checkbox.DataContext as Language;
-
-            PackageLanguages.Add(selectedLanguage);
-
-            //cbDownloadLanguages.Text = "";
-            //PackageLanguages.ForEach(b => cbDownloadLanguages.Text += b.Id + ", ");
-
-            Download_ToggleNextButton();
-        }
-
-        private void Language_ToggleButton_OnUnchecked(object sender, RoutedEventArgs e)
-        {
-            var checkbox = (CheckBox)sender;
-            var unSelectedLanguage = checkbox.DataContext as Language;
-
-            PackageLanguages.Remove(unSelectedLanguage);
-
-            //cbDownloadLanguages.Text = "";
-            //PackageLanguages.ForEach(b => cbDownloadLanguages.Text += b.Id + ", ");
-
-            Download_ToggleNextButton();
-        }
-
-        private void Download_ToggleNextButton()
-        {
-            if (OfficeChannels.Count > 0 && OfficeBitness != null && ChannelDownloadLocation != null && PackageLanguages.Count > 0 && OfficeBitnesses.Count > 0)
+            var tabIndex = 2;`
+            while (tabIndex < MainTabControl.Items.Count)
             {
-                NextButton.IsEnabled = true;
+                var tempTab = (TabItem) MainTabControl.Items[tabIndex];
+                tempTab.IsEnabled = false;
+
+                tabIndex++; 
             }
-            else
-            {
-                NextButton.IsEnabled = false;
-            }
+
+            var sourceTab = (TabItem) MainTabControl.Items[1];
+            sourceTab.IsSelected = true;
+            sourceTab.IsEnabled = true;
+
+            GlobalObjects.ViewModel.SccmConfiguration = new SccmConfiguration();
+            GlobalObjects.ViewModel.SccmConfiguration.Scenario = SccmScenario.Deploy;
+
+            NextButton.Visibility = Visibility.Visible;
+            PreviousButton.Visibility = Visibility.Visible;
+
+            NextButton.IsEnabled = false;
         }
 
-        private void Bitness_ToggleButton_OnUnchecked(object sender, RoutedEventArgs e)
-        {
-            var checkbox = (CheckBox)sender;
-            var selectedBitness = checkbox.DataContext as Bitness;
-
-            OfficeBitnesses.Remove(selectedBitness);
-
-            //cbDownloadBitness.Text = "";
-            //OfficeBitnesses.ForEach(b => cbDownloadBitness.Text += b.Name + ",");
-
-            Download_ToggleNextButton();
-        }
-
-        private void Bitness_ToggleButton_OnChecked(object sender, RoutedEventArgs e)
-        {
-            var checkbox = (CheckBox)sender;
-            var unSelectedBitness = checkbox.DataContext as Bitness;
-
-            OfficeBitnesses.Add(unSelectedBitness);
-
-            //cbDownloadBitness.Text = "";
-            //OfficeBitnesses.ForEach(b => cbDownloadBitness.Text += b.Name + ",");
-
-            Download_ToggleNextButton();
-        }
-
-        private void FileSavePath_OnTextChanged(object sender, TextChangedEventArgs e)
-        {
-            ChannelDownloadLocation = FileSavePath.Text;
-
-            if (OfficeChannels.Count > 0 && OfficeBitness != null && ChannelDownloadLocation != null)
-            {
-                NextButton.IsEnabled = true;
-            }
-            else
-            {
-                NextButton.IsEnabled = false;
-            }
-        }
-
-        private void DownloadSaveButton_OnClick(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                //GetSaveFilePath();
-            }
-            catch (Exception ex)
-            {
-                LogErrorMessage(ex);
-            }
-        }
-
-        private void DownloadOpenExeFolderButton_OnClick(object sender, RoutedEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
         #endregion
 
         #region "Info"
@@ -532,6 +416,8 @@ namespace MetroDemo.ExampleViews
         }
 
         #endregion
+
+
     }
 }
 

@@ -422,7 +422,7 @@ namespace MetroDemo.ExampleViews
                     txtBlock.Text = "Select this option if you would like to install, modify or manage the installation of Office 365 ProPlus on a remote computer.";
                     break;
                 case 5:
-                    txtBlock.Text = "Select this option if you would like to configure your SCCM Server.";
+                    txtBlock.Text = "Select this option if you would like to mangage Office via your SCCM Server.";
                     break;
                 default:
                     txtBlock.Text = "";

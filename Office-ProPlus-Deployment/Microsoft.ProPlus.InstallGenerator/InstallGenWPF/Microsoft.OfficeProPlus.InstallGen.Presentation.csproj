@@ -119,6 +119,7 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Management" />
     <Reference Include="System.Net" />
     <Reference Include="System.Windows.Forms" />
@@ -155,10 +156,24 @@
     <Compile Include="Models\Bitness.cs" />
     <Compile Include="Models\RemoteMachine.cs" />
     <Compile Include="Models\officeVersion.cs" />
+    <Compile Include="Models\SccmConfiguration.cs" />
+    <Compile Include="Models\SelectedChannel.cs" />
     <Compile Include="Views\AboutView.xaml.cs">
       <DependentUpon>AboutView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\SccmView.xaml.cs">
+    <Compile Include="Views\CM Server\ChannelVersionView.xaml.cs">
+      <DependentUpon>ChannelVersionView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\CM Server\DeployOtherView.xaml.cs">
+      <DependentUpon>DeployOtherView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\CM Server\DeploySourceView.xaml.cs">
+      <DependentUpon>DeploySourceView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\CM Server\ProductsLanguagesView.xaml.cs">
+      <DependentUpon>ProductsLanguagesView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\CM Server\SccmView.xaml.cs">
       <DependentUpon>SccmView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\RemoteView.xaml.cs">
@@ -243,6 +258,8 @@
     <Content Include="HelpFiles\VisioInfo.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Resource Include="images\minus.png" />
+    <Resource Include="images\plus.png" />
     <Content Include="InstallOffice.cs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -306,7 +323,23 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\SccmView.xaml">
+    <Page Include="Views\CM Server\ChannelVersionView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\CM Server\DeployOtherView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\CM Server\DeploySourceView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\CM Server\ProductsLanguagesView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\CM Server\SccmView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

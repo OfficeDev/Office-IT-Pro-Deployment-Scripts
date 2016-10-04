@@ -14,4 +14,13 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Enums
         ManageRemote = 3,
         ManageSccm = 4
     }
+
+    public enum SccmScenario
+    {
+        Deploy = 0, 
+        ChangeChannel = 1, 
+        Rollback = 2, 
+        UpdateConfigMgr = 3, 
+        UpdateScheduledTask = 4 
+    }
 }
