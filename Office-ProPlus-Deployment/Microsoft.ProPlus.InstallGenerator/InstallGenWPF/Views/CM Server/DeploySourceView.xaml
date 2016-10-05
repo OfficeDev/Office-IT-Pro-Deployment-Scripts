@@ -50,7 +50,7 @@
                             </DockPanel>
                         </TabItem.Header>
 
-                        <Grid HorizontalAlignment="Left" Margin="30 30 0 0" Height="450" VerticalAlignment="Top" x:Name="DownloadPage">
+                        <Grid HorizontalAlignment="Left" Margin="30 30 0 0" Height="450" VerticalAlignment="Top" x:Name="DownloadPage" IsVisibleChanged="DownloadPage_OnIsVisibleChanged">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="80" />
                                 <RowDefinition Height="60" />
@@ -67,27 +67,24 @@
                                 <ColumnDefinition Width="60" />
                             </Grid.ColumnDefinitions>
 
-                            <TextBlock Grid.Row="0" Grid.Column="0" TextWrapping="WrapWithOverflow" FontSize="25" FontWeight="Bold" Style="{StaticResource CustomMetroLabelTextBlock}">
-                                <Run Text="Where would you like to deploy from?"/>
-                            </TextBlock>
+                            <TextBlock Grid.Row="0" Grid.Column="0" TextWrapping="WrapWithOverflow" FontSize="25" FontWeight="Bold" Style="{StaticResource CustomMetroLabelTextBlock}"
+                                Text="Where would you like to deploy from?"/>
 
-                            <TextBlock Grid.Row="1" Grid.Column="0" TextWrapping="WrapWithOverflow" FontSize="20" FontWeight="SemiBold" VerticalAlignment="Center" Style="{StaticResource CustomMetroLabelTextBlock}">
-                                <Run Text="Use files from an existing Office CDN"/>
-                            </TextBlock>
+                            <TextBlock Grid.Row="1" Grid.Column="0" TextWrapping="WrapWithOverflow" FontSize="20" FontWeight="SemiBold" VerticalAlignment="Center" Style="{StaticResource CustomMetroLabelTextBlock}"
+                                Text="Use files from an existing Office CDN"/>
+                            
                             <RadioButton x:Name="rdbCDN" Content="CDN"  Grid.Row="1" Grid.Column="1" Foreground="{StaticResource GrayBrush}"
                                             GroupName="deploySource" HorizontalContentAlignment="Left"
                                             IsChecked="True" FontSize="20" Height="28" Checked="rdb_SourceChanged"/>
 
-                            <TextBlock Grid.Row="2" Grid.Column="0" TextWrapping="WrapWithOverflow" FontSize="20" FontWeight="SemiBold" VerticalAlignment="Center" Style="{StaticResource CustomMetroLabelTextBlock}">
-                                <Run Text="Use files from a Distribution Point"/>
-                            </TextBlock>
+                            <TextBlock Grid.Row="2" Grid.Column="0" TextWrapping="WrapWithOverflow" FontSize="20" FontWeight="SemiBold" VerticalAlignment="Center" Style="{StaticResource CustomMetroLabelTextBlock}"
+                                Text="Use files from a Distribution Point"/>
                             <RadioButton x:Name="rdbDeployPoint" Content="Distribution Point"  Grid.Row="2" Grid.Column="1"  Foreground="{StaticResource GrayBrush}"
                                              GroupName="deploySource" HorizontalContentAlignment="Left"
                                              IsChecked="False" FontSize="20" Height="28" Checked="rdb_SourceChanged"/>
                             
-                            <TextBlock Grid.Row="3" Grid.Column="0" TextWrapping="WrapWithOverflow" FontSize="20" FontWeight="SemiBold" VerticalAlignment="Center" Style="{StaticResource CustomMetroLabelTextBlock}">
-                                <Run Text="Use local install files"/>
-                            </TextBlock>
+                            <TextBlock Grid.Row="3" Grid.Column="0" TextWrapping="WrapWithOverflow" FontSize="20" FontWeight="SemiBold" VerticalAlignment="Center" Style="{StaticResource CustomMetroLabelTextBlock}"
+                                Text="Use local install files"/>
                             <RadioButton x:Name="rdbLocalSource" Content="Local Source" Grid.Row="3" Grid.Column="1"  Foreground="{StaticResource GrayBrush}"
                                              GroupName="deploySource" HorizontalContentAlignment="Left" 
                                              IsChecked="False" FontSize="20" Height="28"  Checked="rdb_SourceChanged"/>

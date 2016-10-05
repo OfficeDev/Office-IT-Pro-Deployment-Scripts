@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using MetroDemo.Events;
 
 namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
 {
@@ -20,6 +21,8 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
     /// </summary>
     public partial class ProductsLanguagesView : UserControl
     {
+        public event ToggleNextEventHandler ToggleNextButton;
+
         public ProductsLanguagesView()
         {
             InitializeComponent();

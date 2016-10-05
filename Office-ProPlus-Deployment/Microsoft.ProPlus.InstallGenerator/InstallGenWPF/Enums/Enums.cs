@@ -30,4 +30,10 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Enums
         DistributionPoint =1,
         Local = 2
     }
+
+    public enum BranchVersion
+    {
+        Current = 0,
+        Previous = 1
+    }
 }

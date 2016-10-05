@@ -70,7 +70,7 @@ namespace MetroDemo.ExampleViews
 
         }
 
-        private  void ToggleNextbuton(object sender, Events.ToggleEventArgs e)
+        private  void ToggleNext(object sender, Events.ToggleEventArgs e)
         {
             NextButton.IsEnabled = e.Enabled;
         }
@@ -178,22 +178,6 @@ namespace MetroDemo.ExampleViews
             {
                 StartTab.IsEnabled = enabled;
             });
-        }
-
-        private void DownloadPage_Loaded()
-        {
-            PreviousButton.Visibility = Visibility.Visible;
-            NextButton.Visibility = Visibility.Visible;
-            NextButton.IsEnabled = false;
-
-
-            StartPage.Visibility = Visibility.Collapsed;
-            StartTab.IsSelected = false;
-
-            //DownloadTab.Visibility = Visibility.Visible;
-            //DownloadPage.Visibility = Visibility.Visible;
-            //DownloadTab.IsSelected = true;
-
         }
 
         #region "Events"
@@ -331,8 +315,11 @@ namespace MetroDemo.ExampleViews
             var ProductsLanguagesView = new ProductsLanguagesView();
             var DeployOtherView = new DeployOtherView();
 
-            SourceView.ToggleNextButton += ToggleNextbuton; 
 
+            SourceView.ToggleNextButton += ToggleNext;
+            ChannelVersionView.ToggleNextButton += ToggleNext;
+            ProductsLanguagesView.ToggleNextButton += ToggleNext;
+            DeployOtherView.ToggleNextButton += ToggleNext;
 
             SourceView.MainTabControl.Items.Remove(SourceView.SourceTab);
             ChannelVersionView.MainTabControl.Items.Remove(ChannelVersionView.ChannelVersionTab);
@@ -344,6 +331,8 @@ namespace MetroDemo.ExampleViews
             MainTabControl.Items.Add(ProductsLanguagesView.ProductsLanguagesTab);
             MainTabControl.Items.Add(DeployOtherView.OtherTab);
 
+            ChannelVersionView.cbChannelVersion.SelectedIndex = 0;
+            
 
             var tabIndex = 2;
             while (tabIndex < MainTabControl.Items.Count)
@@ -358,15 +347,10 @@ namespace MetroDemo.ExampleViews
             sourceTab.IsSelected = true;
             sourceTab.IsEnabled = true;
 
-            GlobalObjects.ViewModel.SccmConfiguration = new SccmConfiguration();
             GlobalObjects.ViewModel.SccmConfiguration.Scenario = SccmScenario.Deploy;
 
             NextButton.Visibility = Visibility.Visible;
             PreviousButton.Visibility = Visibility.Visible;
-        }
-
-        private void ToggleNext(object sender, ToggleEventArgs e)
-        {
         }
 
 

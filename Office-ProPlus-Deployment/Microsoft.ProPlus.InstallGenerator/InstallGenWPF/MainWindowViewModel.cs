@@ -99,7 +99,7 @@ namespace MetroDemo
         private readonly IDialogCoordinator _dialogCoordinator;
         private List<Language> _selectedLanguages = null;
         private List<Language> _removedLanguages = null;
-        
+
         public MainWindowViewModel(IDialogCoordinator dialogCoordinator)
         {
             _dialogCoordinator = dialogCoordinator;
@@ -120,9 +120,9 @@ namespace MetroDemo
             if (_selectedLanguages == null)
             {
                 _selectedLanguages = new List<Language>()
-                    {
-                        DefaultLanguage,
-                    };
+                {
+                    DefaultLanguage,
+                };
             }
 
             _removedLanguages = new List<Language>();
@@ -134,14 +134,14 @@ namespace MetroDemo
                     Version = "16.0.4949.1003"
                 }
             };
-            
-            
+
+
 
             Channels = new List<Channel>()
             {
                 new Channel()
                 {
-                    
+
                 }
             };
 
@@ -171,22 +171,22 @@ namespace MetroDemo
                     CurrentVersion = "16.0.6769.2017",
                     Versions = new List<Build>()
                     {
-                        new Build() { Version = "16.0.6769.2017"},
-                        new Build() { Version = "16.0.6769.2015"},
-                        new Build() { Version = "16.0.6741.2021"},
-                        new Build() { Version = "16.0.6741.2017"},
-                        new Build() { Version = "16.0.6568.2036"},
-                        new Build() { Version = "16.0.6568.2034"},
-                        new Build() { Version = "16.0.6568.2025"},
-                        new Build() { Version = "16.0.6366.2068"},
-                        new Build() { Version = "16.0.6366.2062"},
-                        new Build() { Version = "16.0.6366.2056"},
-                        new Build() { Version = "16.0.6366.2036"},
-                        new Build() { Version = "16.0.6001.1043"},
-                        new Build() { Version = "16.0.6001.1038"},
-                        new Build() { Version = "16.0.6001.1034"},
-                        new Build() { Version = "16.0.4229.1029"},
-                        new Build() { Version = "16.0.4229.1024"},
+                        new Build() {Version = "16.0.6769.2017"},
+                        new Build() {Version = "16.0.6769.2015"},
+                        new Build() {Version = "16.0.6741.2021"},
+                        new Build() {Version = "16.0.6741.2017"},
+                        new Build() {Version = "16.0.6568.2036"},
+                        new Build() {Version = "16.0.6568.2034"},
+                        new Build() {Version = "16.0.6568.2025"},
+                        new Build() {Version = "16.0.6366.2068"},
+                        new Build() {Version = "16.0.6366.2062"},
+                        new Build() {Version = "16.0.6366.2056"},
+                        new Build() {Version = "16.0.6366.2036"},
+                        new Build() {Version = "16.0.6001.1043"},
+                        new Build() {Version = "16.0.6001.1038"},
+                        new Build() {Version = "16.0.6001.1034"},
+                        new Build() {Version = "16.0.4229.1029"},
+                        new Build() {Version = "16.0.4229.1024"},
                     }
                 },
                 new OfficeBranch()
@@ -198,9 +198,9 @@ namespace MetroDemo
                     CurrentVersion = "16.0.6001.1073",
                     Versions = new List<Build>()
                     {
-                       new Build() { Version = "16.0.6001.1073"},
-                       new Build() { Version = "16.0.6001.1068"},
-                       new Build() { Version = "16.0.6001.1061"}
+                        new Build() {Version = "16.0.6001.1073"},
+                        new Build() {Version = "16.0.6001.1068"},
+                        new Build() {Version = "16.0.6001.1061"}
                     }
                 },
                 new OfficeBranch()
@@ -212,22 +212,22 @@ namespace MetroDemo
                     CurrentVersion = "16.0.6769.2015",
                     Versions = new List<Build>()
                     {
-                        new Build() { Version = "16.0.6769.2015"},
-                        new Build() { Version = "16.0.6769.2011"},
-                        new Build() { Version = "16.0.6741.2017"},
-                        new Build() { Version = "16.0.6741.2015"},
-                        new Build() { Version = "16.0.6741.2014"},
-                        new Build() { Version = "16.0.6568.2036"},
-                        new Build() { Version = "16.0.6568.2025"},
-                        new Build() { Version = "16.0.6568.2016"},
-                        new Build() { Version = "16.0.6366.2062"},
-                        new Build() { Version = "16.0.6366.2056"},
-                        new Build() { Version = "16.0.6366.2047"},
-                        new Build() { Version = "16.0.6366.2036"},
-                        new Build() { Version = "16.0.6366.2025"},
-                        new Build() { Version = "16.0.6228.1010"},
-                        new Build() { Version = "16.0.6228.1007"},
-                        new Build() { Version = "16.0.6228.1004"}
+                        new Build() {Version = "16.0.6769.2015"},
+                        new Build() {Version = "16.0.6769.2011"},
+                        new Build() {Version = "16.0.6741.2017"},
+                        new Build() {Version = "16.0.6741.2015"},
+                        new Build() {Version = "16.0.6741.2014"},
+                        new Build() {Version = "16.0.6568.2036"},
+                        new Build() {Version = "16.0.6568.2025"},
+                        new Build() {Version = "16.0.6568.2016"},
+                        new Build() {Version = "16.0.6366.2062"},
+                        new Build() {Version = "16.0.6366.2056"},
+                        new Build() {Version = "16.0.6366.2047"},
+                        new Build() {Version = "16.0.6366.2036"},
+                        new Build() {Version = "16.0.6366.2025"},
+                        new Build() {Version = "16.0.6228.1010"},
+                        new Build() {Version = "16.0.6228.1007"},
+                        new Build() {Version = "16.0.6228.1004"}
                     }
                 },
                 new OfficeBranch()
@@ -239,19 +239,19 @@ namespace MetroDemo
                     CurrentVersion = "16.0.6741.2026",
                     Versions = new List<Build>()
                     {
-                        new Build() { Version = "16.0.6741.2026"},
-                        new Build() { Version = "16.0.6741.2025"},
-                        new Build() { Version = "16.0.6741.2021"},
-                        new Build() { Version = "16.0.6741.2017"},
-                        new Build() { Version = "16.0.6741.2015"},
-                        new Build() { Version = "16.0.6741.2014"},
-                        new Build() { Version = "16.0.6001.1061"},
-                        new Build() { Version = "16.0.6001.1054"},
-                        new Build() { Version = "16.0.6001.1043"},
-                        new Build() { Version = "16.0.6001.1038"},
-                        new Build() { Version = "16.0.6001.1034"},
-                        new Build() { Version = "16.0.4229.1029"},
-                        new Build() { Version = "16.0.4229.1024"}
+                        new Build() {Version = "16.0.6741.2026"},
+                        new Build() {Version = "16.0.6741.2025"},
+                        new Build() {Version = "16.0.6741.2021"},
+                        new Build() {Version = "16.0.6741.2017"},
+                        new Build() {Version = "16.0.6741.2015"},
+                        new Build() {Version = "16.0.6741.2014"},
+                        new Build() {Version = "16.0.6001.1061"},
+                        new Build() {Version = "16.0.6001.1054"},
+                        new Build() {Version = "16.0.6001.1043"},
+                        new Build() {Version = "16.0.6001.1038"},
+                        new Build() {Version = "16.0.6001.1034"},
+                        new Build() {Version = "16.0.4229.1029"},
+                        new Build() {Version = "16.0.4229.1024"}
                     }
                 }
             };
@@ -298,7 +298,7 @@ namespace MetroDemo
                     Id = "VisioProXVolume",
                     ShortName = "Visio for Office 365"
                 },
-                 new Product()
+                new Product()
                 {
                     DisplayName = "Visio for Office 365 Standard (Volume License)",
                     Id = "VisioStdXVolume",
@@ -382,53 +382,66 @@ namespace MetroDemo
 
             Languages = new List<Language>()
             {
-                new Language { Id="en-us", Name="English" },
-                new Language { Id="ar-sa", Name="Arabic" },
-                new Language { Id="bg-bg", Name="Bulgarian" },
-                new Language { Id="zh-cn", Name="Chinese - Simplified" },
-                new Language { Id="zh-tw", Name="Chinese" },
-                new Language { Id="hr-hr", Name="Croatian" },
-                new Language { Id="cs-cz", Name="Czech" },
-                new Language { Id="da-dk", Name="Danish" },
-                new Language { Id="nl-nl", Name="Dutch" },
-                new Language { Id="et-ee", Name="Estonian" },
-                new Language { Id="fi-fi", Name="Finnish" },
-                new Language { Id="fr-fr", Name="French" },
-                new Language { Id="de-de", Name="German" },
-                new Language { Id="el-gr", Name="Greek" },
-                new Language { Id="he-il", Name="Hebrew" },
-                new Language { Id="hi-in", Name="Hindi" },
-                new Language { Id="hu-hu", Name="Hungarian" },
-                new Language { Id="id-id", Name="Indonesian" },
-                new Language { Id="it-it", Name="Italian" },
-                new Language { Id="ja-jp", Name="Japanese" },
-                new Language { Id="kk-kz", Name="Kazakh" },
-                new Language { Id="ko-kr", Name="Korean" },
-                new Language { Id="lv-lv", Name="Latvian" },
-                new Language { Id="lt-lt", Name="Lithuanian" },
-                new Language { Id="ms-my", Name="Malay" },
-                new Language { Id="nb-no", Name="Norwegian - Bokml" },
-                new Language { Id="pl-pl", Name="Polish" },
-                new Language { Id="pt-br", Name="Portuguese - Brazil" },
-                new Language { Id="pt-pt", Name="Portuguese - Portugal" },
-                new Language { Id="ro-ro", Name="Romanian" },
-                new Language { Id="ru-ru", Name="Russian" },
-                new Language { Id="sr-latn-rs", Name="Serbian - Latin" },
-                new Language { Id="sk-sk", Name="Slovak" },
-                new Language { Id="sl-si", Name="Slovenian" },
-                new Language { Id="es-es", Name="Spanish" },
-                new Language { Id="sv-se", Name="Swedish" },
-                new Language { Id="th-th", Name="Thai" },
-                new Language { Id="tr-tr", Name="Turkish" },
-                new Language { Id="uk-ua", Name="Ukrainian" }
+                new Language {Id = "en-us", Name = "English"},
+                new Language {Id = "ar-sa", Name = "Arabic"},
+                new Language {Id = "bg-bg", Name = "Bulgarian"},
+                new Language {Id = "zh-cn", Name = "Chinese - Simplified"},
+                new Language {Id = "zh-tw", Name = "Chinese"},
+                new Language {Id = "hr-hr", Name = "Croatian"},
+                new Language {Id = "cs-cz", Name = "Czech"},
+                new Language {Id = "da-dk", Name = "Danish"},
+                new Language {Id = "nl-nl", Name = "Dutch"},
+                new Language {Id = "et-ee", Name = "Estonian"},
+                new Language {Id = "fi-fi", Name = "Finnish"},
+                new Language {Id = "fr-fr", Name = "French"},
+                new Language {Id = "de-de", Name = "German"},
+                new Language {Id = "el-gr", Name = "Greek"},
+                new Language {Id = "he-il", Name = "Hebrew"},
+                new Language {Id = "hi-in", Name = "Hindi"},
+                new Language {Id = "hu-hu", Name = "Hungarian"},
+                new Language {Id = "id-id", Name = "Indonesian"},
+                new Language {Id = "it-it", Name = "Italian"},
+                new Language {Id = "ja-jp", Name = "Japanese"},
+                new Language {Id = "kk-kz", Name = "Kazakh"},
+                new Language {Id = "ko-kr", Name = "Korean"},
+                new Language {Id = "lv-lv", Name = "Latvian"},
+                new Language {Id = "lt-lt", Name = "Lithuanian"},
+                new Language {Id = "ms-my", Name = "Malay"},
+                new Language {Id = "nb-no", Name = "Norwegian - Bokml"},
+                new Language {Id = "pl-pl", Name = "Polish"},
+                new Language {Id = "pt-br", Name = "Portuguese - Brazil"},
+                new Language {Id = "pt-pt", Name = "Portuguese - Portugal"},
+                new Language {Id = "ro-ro", Name = "Romanian"},
+                new Language {Id = "ru-ru", Name = "Russian"},
+                new Language {Id = "sr-latn-rs", Name = "Serbian - Latin"},
+                new Language {Id = "sk-sk", Name = "Slovak"},
+                new Language {Id = "sl-si", Name = "Slovenian"},
+                new Language {Id = "es-es", Name = "Spanish"},
+                new Language {Id = "sv-se", Name = "Swedish"},
+                new Language {Id = "th-th", Name = "Thai"},
+                new Language {Id = "tr-tr", Name = "Turkish"},
+                new Language {Id = "uk-ua", Name = "Ukrainian"}
             };
 
             Certificates = new List<Certificate>();
 
             SelectedCertificate = new Certificate();
 
-            SccmConfiguration = new SccmConfiguration();
-            
+            SccmConfiguration = new SccmConfiguration()
+            {
+                Bitnesses = new List<Bitness>(),
+                Channels = new List<SelectedChannel>(),
+                DeploymentDirectory = String.Empty,
+                DeploymentSource = DeploymentSource.CDN,
+                Languages = new List<Language>(),
+                Products = new List<Product>(),
+                Version = BranchVersion.Current
+            };
+
+            Versions = new List<BranchVersion>();
+            Versions.Add(BranchVersion.Current);
+            Versions.Add(BranchVersion.Previous);
+
         }
 
         public bool LocalConfig { get; set; }
@@ -465,6 +478,8 @@ namespace MetroDemo
         public List<RemoteMachine> RemoteMachines { get; set; } 
 
         public List<Channel> Channels { get; set; }
+
+        public List<BranchVersion> Versions { get; set; }
 
         public List<Product> MainProducts { get; set; }
 

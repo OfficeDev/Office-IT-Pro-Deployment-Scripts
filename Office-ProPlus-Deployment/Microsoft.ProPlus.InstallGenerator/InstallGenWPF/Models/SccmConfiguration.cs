@@ -24,5 +24,7 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Models
         public SccmScenario Scenario { get; set; }
 
         public DeploymentSource DeploymentSource { get; set; }
+
+        public BranchVersion Version { get; set; }
     }
 }

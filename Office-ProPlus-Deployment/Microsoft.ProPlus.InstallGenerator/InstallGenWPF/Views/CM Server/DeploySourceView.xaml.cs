@@ -31,12 +31,8 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
     /// </summary>
     public partial class DeploySourceView : UserControl
     {
-
-        #region events
-
         public event ToggleNextEventHandler ToggleNextButton;
 
-        #endregion 
         public DeploySourceView()
         {
             InitializeComponent();
@@ -129,6 +125,30 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
             }
             fileBrowser.ShowDialog();
             FilePath.Text = fileBrowser.SelectedPath;
+        }
+
+        private void DownloadPage_OnIsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            var grid = (Grid) sender;
+
+            if (grid.Visibility == Visibility.Visible)
+            {
+                if (FilePath.IsEnabled &&
+                    !Directory.Exists(GlobalObjects.ViewModel.SccmConfiguration.DeploymentDirectory))
+                {
+                    ToggleNextButton?.Invoke(this, new ToggleEventArgs()
+                    {
+                        Enabled = false
+                    });
+                }
+                else
+                {
+                    ToggleNextButton?.Invoke(this, new ToggleEventArgs()
+                    {
+                        Enabled = true
+                    });
+                }
+            }
         }
     }
 }
