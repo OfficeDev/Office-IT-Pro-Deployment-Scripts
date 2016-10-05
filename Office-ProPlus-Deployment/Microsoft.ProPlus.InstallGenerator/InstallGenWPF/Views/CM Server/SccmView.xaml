@@ -11,7 +11,8 @@
              mc:Ignorable="d"
              d:DesignHeight="600"
              d:DesignWidth="900"
-             d:DataContext="{d:DesignInstance MetroDemo:MainWindowViewModel}" Loaded="SccmView_Loaded" >
+             d:DataContext="{d:DesignInstance MetroDemo:MainWindowViewModel}" Loaded="SccmView_Loaded"
+             >
 
     <UserControl.Resources>
         <ResourceDictionary>

@@ -18,6 +18,13 @@ namespace MetroDemo.Events
 
     public delegate void MessageEventHandler(object sender, MessageEventArgs e);
 
+    public delegate void ToggleNextEventHandler(object sender, ToggleEventArgs e);
+
+    public class ToggleEventArgs
+    {
+        public bool Enabled { get; set; }
+    }
+
     public class MessageEventArgs : EventArgs
     {
         public string Title { get; set; }

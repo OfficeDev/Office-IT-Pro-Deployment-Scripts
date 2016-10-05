@@ -23,4 +23,11 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Enums
         UpdateConfigMgr = 3, 
         UpdateScheduledTask = 4 
     }
+
+    public enum DeploymentSource
+    {
+        CDN = 0,
+        DistributionPoint =1,
+        Local = 2
+    }
 }

@@ -45,6 +45,7 @@ namespace MetroDemo.ExampleViews
 
         public event TransitionTabEventHandler TransitionTab;
         public event MessageEventHandler ErrorMessage;
+        public event ToggleNextEventHandler ToggleNextButton;
         public event MessageEventHandler InfoMessage;
 
 
@@ -66,7 +67,12 @@ namespace MetroDemo.ExampleViews
         public SccmView()
         {
             InitializeComponent();
-            
+
+        }
+
+        private  void ToggleNextbuton(object sender, Events.ToggleEventArgs e)
+        {
+            NextButton.IsEnabled = e.Enabled;
         }
 
         private void SccmView_Loaded(object sender, RoutedEventArgs e)             
@@ -325,6 +331,8 @@ namespace MetroDemo.ExampleViews
             var ProductsLanguagesView = new ProductsLanguagesView();
             var DeployOtherView = new DeployOtherView();
 
+            SourceView.ToggleNextButton += ToggleNextbuton; 
+
 
             SourceView.MainTabControl.Items.Remove(SourceView.SourceTab);
             ChannelVersionView.MainTabControl.Items.Remove(ChannelVersionView.ChannelVersionTab);
@@ -336,7 +344,8 @@ namespace MetroDemo.ExampleViews
             MainTabControl.Items.Add(ProductsLanguagesView.ProductsLanguagesTab);
             MainTabControl.Items.Add(DeployOtherView.OtherTab);
 
-            var tabIndex = 2;`
+
+            var tabIndex = 2;
             while (tabIndex < MainTabControl.Items.Count)
             {
                 var tempTab = (TabItem) MainTabControl.Items[tabIndex];
@@ -354,9 +363,12 @@ namespace MetroDemo.ExampleViews
 
             NextButton.Visibility = Visibility.Visible;
             PreviousButton.Visibility = Visibility.Visible;
-
-            NextButton.IsEnabled = false;
         }
+
+        private void ToggleNext(object sender, ToggleEventArgs e)
+        {
+        }
+
 
         #endregion
 
@@ -374,6 +386,7 @@ namespace MetroDemo.ExampleViews
                 LogErrorMessage(ex);
             }
         }
+
 
         private InformationDialog informationDialog = null;
 

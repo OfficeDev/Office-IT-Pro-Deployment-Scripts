@@ -55,8 +55,8 @@
                                 <RowDefinition Height="80" />
                                 <RowDefinition Height="60" />
                                 <RowDefinition Height="60" />
-                                <RowDefinition Height="60" />
-                                <RowDefinition Height="60" />
+                                <RowDefinition Height="40" />
+                                <RowDefinition Height="40" />
                                 <RowDefinition Height="60" />
                                 <RowDefinition Height="300" />
                             </Grid.RowDefinitions>
@@ -71,16 +71,32 @@
                                 <Run Text="Where would you like to deploy from?"/>
                             </TextBlock>
 
-                            <RadioButton x:Name="rdbCDN" Content="CDN" Grid.Row="1" Grid.Column="1" Foreground="{StaticResource GrayBrush}"
-                                            GroupName="deploySource" HorizontalContentAlignment="Left" Margin="5 0 0 0"
+                            <TextBlock Grid.Row="1" Grid.Column="0" TextWrapping="WrapWithOverflow" FontSize="20" FontWeight="SemiBold" VerticalAlignment="Center" Style="{StaticResource CustomMetroLabelTextBlock}">
+                                <Run Text="Use files from an existing Office CDN"/>
+                            </TextBlock>
+                            <RadioButton x:Name="rdbCDN" Content="CDN"  Grid.Row="1" Grid.Column="1" Foreground="{StaticResource GrayBrush}"
+                                            GroupName="deploySource" HorizontalContentAlignment="Left"
                                             IsChecked="True" FontSize="20" Height="28" Checked="rdb_SourceChanged"/>
-                            <RadioButton x:Name="rdbDeployPoint" Content="DeployPoint"  Grid.Row="2" Grid.Column="1"  Foreground="{StaticResource GrayBrush}"
-                                             GroupName="deploySource" HorizontalContentAlignment="Left" Margin="5 0 0 0"
+
+                            <TextBlock Grid.Row="2" Grid.Column="0" TextWrapping="WrapWithOverflow" FontSize="20" FontWeight="SemiBold" VerticalAlignment="Center" Style="{StaticResource CustomMetroLabelTextBlock}">
+                                <Run Text="Use files from a Distribution Point"/>
+                            </TextBlock>
+                            <RadioButton x:Name="rdbDeployPoint" Content="Distribution Point"  Grid.Row="2" Grid.Column="1"  Foreground="{StaticResource GrayBrush}"
+                                             GroupName="deploySource" HorizontalContentAlignment="Left"
                                              IsChecked="False" FontSize="20" Height="28" Checked="rdb_SourceChanged"/>
                             
-                            <RadioButton x:Name="rdbLocalSource" Content="LocalSource" Grid.Row="3" Grid.Column="1"  Foreground="{StaticResource GrayBrush}"
-                                             GroupName="deploySource" HorizontalContentAlignment="Left" Margin="5 0 0 0"
-                                             IsChecked="False" FontSize="20" Height="28" Checked="rdb_SourceChanged"/>
+                            <TextBlock Grid.Row="3" Grid.Column="0" TextWrapping="WrapWithOverflow" FontSize="20" FontWeight="SemiBold" VerticalAlignment="Center" Style="{StaticResource CustomMetroLabelTextBlock}">
+                                <Run Text="Use local install files"/>
+                            </TextBlock>
+                            <RadioButton x:Name="rdbLocalSource" Content="Local Source" Grid.Row="3" Grid.Column="1"  Foreground="{StaticResource GrayBrush}"
+                                             GroupName="deploySource" HorizontalContentAlignment="Left" 
+                                             IsChecked="False" FontSize="20" Height="28"  Checked="rdb_SourceChanged"/>
+                            <TextBox x:Name="FilePath" FontSize="20" Grid.Row="4" Grid.Column="1"  Height="35"  VerticalAlignment="Center" HorizontalAlignment="Left" IsEnabled="False" Foreground="{StaticResource GrayBrush}" Background="White"
+                                             Controls:TextBoxHelper.ClearTextButton="True" TextChanged="FilePath_OnTextChanged"
+                                             Text="" Width="300"></TextBox>
+                            <Button x:Name="BrowseButton"  Grid.Row="4" Grid.Column="1" Height="40" Width="60" HorizontalAlignment="Right" IsEnabled="False"
+                                      Margin="-10 0 0 0" Style="{StaticResource MetroFlatButtonStyle1}" Content="Browse"  Click="BrowseButton_OnClick" />
+
 
                         </Grid>
                     </TabItem>

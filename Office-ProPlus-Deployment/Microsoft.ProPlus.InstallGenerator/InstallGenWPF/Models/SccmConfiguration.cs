@@ -19,6 +19,10 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Models
 
         public List<Product> Products { get; set; }
 
+        public string DeploymentDirectory { get; set; }
+
         public SccmScenario Scenario { get; set; }
+
+        public DeploymentSource DeploymentSource { get; set; }
     }
 }
