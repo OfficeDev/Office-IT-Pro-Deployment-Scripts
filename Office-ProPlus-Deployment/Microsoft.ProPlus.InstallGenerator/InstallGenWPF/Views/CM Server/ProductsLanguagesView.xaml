@@ -63,10 +63,86 @@
                             <TabItem x:Name="ProductsLanguagesTab" Height="50">
                                 <TabItem.Header>
                                     <DockPanel Margin="0,5,0,0">
-                                    <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,0,0,0" Height="19">Products/Languages</Label>
+                                    <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,0,0,0" Height="25">Products/Languages</Label>
                                     </DockPanel>
                                 </TabItem.Header>
-                            </TabItem>
+
+                            <Grid HorizontalAlignment="Left" Margin="30 30 0 0" Height="450" VerticalAlignment="Top" x:Name="ChannelVersionPage" IsVisibleChanged="ChannelVersionPage_OnIsVisibleChanged">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="100" />
+                                    <RowDefinition Height="110" />
+                                    <RowDefinition Height="80" />
+                                    <RowDefinition Height="80" />
+                                    <RowDefinition Height="60" />
+                                    <RowDefinition Height="60" />
+                                    <RowDefinition Height="300" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="400" />
+                                    <ColumnDefinition Width="400" />
+                                    <ColumnDefinition Width="60" />
+                                    <ColumnDefinition Width="60" />
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Grid.Row="0" Grid.Column="0" TextWrapping="WrapWithOverflow" FontSize="25" FontWeight="Bold" Style="{StaticResource CustomMetroLabelTextBlock}" Text="Choose the products and language packs that will be installed." />
+
+                                <StackPanel  Grid.Column="0" Grid.Row="1" >
+                                    <TextBlock Text="What Office Products Would You Like To Install?" TextWrapping="WrapWithOverflow" Style="{StaticResource CustomMetroLabelTextBlock}" FontWeight="SemiBold"  VerticalAlignment="Top" FontSize="20"/>
+                                    <TextBlock x:Name="tbSelectedProducts" TextWrapping="WrapWithOverflow" FontSize="10" FontWeight="Medium" VerticalAlignment="Bottom"  Margin="5 0 0 0" Style="{StaticResource CustomMetroLabelTextBlock}" 
+                                               Text="Selected: "/>
+                                </StackPanel>
+                                <ComboBox x:Name="cbProducts" Grid.Row="1" Grid.Column="1" Width="350" FontSize="20" Height="40" Foreground="{StaticResource GrayBrush}"
+                                      HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0 0 10 0" ItemsSource="{Binding AllProducts}" SelectionChanged="CbProducts_OnSelectionChanged">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal">
+                                                <CheckBox IsChecked="False"  Width="Auto" Checked="IncludeProductsToggleButton_OnChecked"  Unchecked="IncludeProductsToggleButton_OnUnchecked"  Content="{Binding RelativeSource={RelativeSource Self}, Path=x}"/>
+                                                <TextBlock Width="Auto" Text="{Binding DisplayName}"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+
+
+                                <StackPanel  Grid.Column="0" Grid.Row="2" >
+                                    <TextBlock Text="What Office Products Would You Like To Exclude?" TextWrapping="WrapWithOverflow" Style="{StaticResource CustomMetroLabelTextBlock}" FontWeight="SemiBold"  VerticalAlignment="Top" FontSize="20"/>
+                                    <TextBlock x:Name="tbExcludedProducts" TextWrapping="WrapWithOverflow" FontSize="10" FontWeight="Medium" VerticalAlignment="Bottom"  Margin="5 0 0 0" Style="{StaticResource CustomMetroLabelTextBlock}" 
+                                               Text="Selected: "/>
+                                </StackPanel>
+                                <ComboBox x:Name="cbExcludedProducts" Grid.Row="2" Grid.Column="1" Width="350" FontSize="20" Height="40" Foreground="{StaticResource GrayBrush}"
+                                      HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0 0 10 0" ItemsSource="{Binding ExcludeProducts}" SelectionChanged="CbExcludedProducts_OnSelectionChanged">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal">
+                                                <CheckBox IsChecked="False"  Width="Auto" Checked="ExludeProductsToggleButton_OnChecked"  Unchecked="ExcludeProductsToggleButton_OnUnchecked"  Content="{Binding RelativeSource={RelativeSource Self}, Path=x}"/>
+                                                <TextBlock Width="Auto" Text="{Binding DisplayName}"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+
+
+                                <StackPanel  Grid.Column="0" Grid.Row="3" >
+                                    <TextBlock Text="What Language Packs Would You Like Installed?" TextWrapping="WrapWithOverflow" Style="{StaticResource CustomMetroLabelTextBlock}" FontWeight="SemiBold"  VerticalAlignment="Top" FontSize="20"/>
+                                    <TextBlock x:Name="tbLanguages" TextWrapping="WrapWithOverflow" FontSize="10" FontWeight="Medium" VerticalAlignment="Bottom"  Margin="5 0 0 0" Style="{StaticResource CustomMetroLabelTextBlock}" 
+                                               Text="Selected: "/>
+                                </StackPanel>
+                                <ComboBox x:Name="cbLanguages" Grid.Row="3" Grid.Column="1" Width="350" FontSize="20" Height="40" Foreground="{StaticResource GrayBrush}"
+                                      HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0 0 10 0" ItemsSource="{Binding Languages}" SelectionChanged="CbLanguages_OnSelectionChanged">
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal">
+                                                <CheckBox IsChecked="False"  Width="Auto" Checked="LanguageToggleButton_OnChecked"  Unchecked="LanguageToggleButton_OnUnchecked"  Content="{Binding RelativeSource={RelativeSource Self}, Path=x}"/>
+                                                <TextBlock Width="Auto" Text="{Binding Name}" Margin="0 0 20 0"  HorizontalAlignment="Left"/>
+                                                <TextBlock Width="Auto" Text="{Binding Id}" HorizontalAlignment="Right"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+
+
+                            </Grid>
+                        </TabItem>
                         </Controls:MetroAnimatedSingleRowTabControl>
                     </Grid>
             </Grid>

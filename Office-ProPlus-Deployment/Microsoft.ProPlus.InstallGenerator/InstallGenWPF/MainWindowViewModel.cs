@@ -435,13 +435,18 @@ namespace MetroDemo
                 DeploymentSource = DeploymentSource.CDN,
                 Languages = new List<Language>(),
                 Products = new List<Product>(),
-                Version = BranchVersion.Current
+                Version = BranchVersion.Current,
+                ExcludedProducts = new List<ExcludeProduct>()
             };
 
             Versions = new List<BranchVersion>();
             Versions.Add(BranchVersion.Current);
             Versions.Add(BranchVersion.Previous);
 
+            AllProducts = new List<Product>();
+            MainProducts.ForEach(p => {AllProducts.Add(p);});
+            VisioProducts.ForEach(p => {AllProducts.Add(p);});
+            ProjectProducts.ForEach(p => {AllProducts.Add(p);});
         }
 
         public bool LocalConfig { get; set; }
@@ -460,6 +465,8 @@ namespace MetroDemo
             var branches = JsonConvert.DeserializeObject<List<OfficeBranch>>(json);
             return branches;
         }
+
+        public List<Product> AllProducts { get; set; }
 
         public ApplicationMode ApplicationMode { get; set; }
 
