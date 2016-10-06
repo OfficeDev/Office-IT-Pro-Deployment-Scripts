@@ -67,7 +67,7 @@
                                 <ColumnDefinition Width="60" />
                             </Grid.ColumnDefinitions>
 
-                            <TextBlock Grid.Row="0" Grid.Column="0" TextWrapping="WrapWithOverflow" FontSize="25" FontWeight="Bold" Style="{StaticResource CustomMetroLabelTextBlock}"
+                            <TextBlock Grid.Row="0" Grid.ColumnSpan="2" TextWrapping="WrapWithOverflow" FontSize="25" FontWeight="Bold" Style="{StaticResource CustomMetroLabelTextBlock}"
                                 Text="Where would you like to deploy from?"/>
 
                             <TextBlock Grid.Row="1" Grid.Column="0" TextWrapping="WrapWithOverflow" FontSize="20" FontWeight="SemiBold" VerticalAlignment="Center" Style="{StaticResource CustomMetroLabelTextBlock}"

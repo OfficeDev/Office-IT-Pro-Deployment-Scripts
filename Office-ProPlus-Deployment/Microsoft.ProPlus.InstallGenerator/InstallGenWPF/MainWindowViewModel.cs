@@ -439,9 +439,9 @@ namespace MetroDemo
                 ExcludedProducts = new List<ExcludeProduct>()
             };
 
-            Versions = new List<BranchVersion>();
-            Versions.Add(BranchVersion.Current);
-            Versions.Add(BranchVersion.Previous);
+            ChannelVersions = new List<BranchVersion>();
+            ChannelVersions.Add(BranchVersion.Current);
+            ChannelVersions.Add(BranchVersion.Previous);
 
             AllProducts = new List<Product>();
             MainProducts.ForEach(p => {AllProducts.Add(p);});
@@ -486,7 +486,7 @@ namespace MetroDemo
 
         public List<Channel> Channels { get; set; }
 
-        public List<BranchVersion> Versions { get; set; }
+        public List<BranchVersion> ChannelVersions { get; set; }
 
         public List<Product> MainProducts { get; set; }
 

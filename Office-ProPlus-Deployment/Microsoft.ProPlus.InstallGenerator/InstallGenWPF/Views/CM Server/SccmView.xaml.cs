@@ -331,7 +331,7 @@ namespace MetroDemo.ExampleViews
             MainTabControl.Items.Add(ProductsLanguagesView.ProductsLanguagesTab);
             MainTabControl.Items.Add(DeployOtherView.OtherTab);
 
-            ChannelVersionView.cbChannelVersion.SelectedIndex = 0;
+            //ChannelVersionView.cbChannelVersion.SelectedIndex = 0;
             
 
             var tabIndex = 2;

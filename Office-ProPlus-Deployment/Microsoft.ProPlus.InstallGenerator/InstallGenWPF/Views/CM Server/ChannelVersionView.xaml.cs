@@ -45,6 +45,10 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
         {
             var checkbox = (CheckBox) sender;
             var branch = checkbox.DataContext as OfficeBranch;
+            var index = ChannelList.Items.IndexOf(branch);
+
+            var row = (DataGridRow) ChannelList.ItemContainerGenerator.ContainerFromIndex(index);
+           
 
             var selectedBranch = new SelectedChannel()
             {
@@ -68,7 +72,7 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
                 }
             }
 
-            DisplaySelectedChannels();
+            //DisplaySelectedChannels();
             ToggleNext();
         }
 
@@ -93,7 +97,7 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
                 }
             }
 
-            DisplaySelectedChannels();
+            //DisplaySelectedChannels();
             ToggleNext();
         }
 
@@ -128,7 +132,6 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
             }
 
 
-            DisplaySelectedBitnesses();
             ToggleNext();
         }
 
@@ -146,42 +149,13 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
                 }
             }
 
-            DisplaySelectedBitnesses();
             ToggleNext();
         }
 
-        private void CbDownloadChannel_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            cbDownloadChannel.Text = null;
-        }
-
-        private void CbDownloadBitness_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            cbDownloadBitness.Text = null;
-        }
-
-        private void CbChannelVersion_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            GlobalObjects.ViewModel.SccmConfiguration.Version = (BranchVersion) cbChannelVersion.SelectedItem;
-        }
-
-        private void DisplaySelectedChannels()
-        {
-            tbSelectedChannels.Text = "Selected: ";
-            GlobalObjects.ViewModel.SccmConfiguration.Channels.ForEach(c =>
-            {
-                tbSelectedChannels.Text += c.Branch.Name + ", ";
-            });
-        }
-
-        private void DisplaySelectedBitnesses()
-        {
-            tbSelectedBitnesses.Text = "Selected: ";
-            GlobalObjects.ViewModel.SccmConfiguration.Bitnesses.ForEach(b =>
-            {
-                tbSelectedBitnesses.Text += b.Name + ", ";
-            });
-        }
+        //private void CbChannelVersion_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        //{
+        //    GlobalObjects.ViewModel.SccmConfiguration.Version = (BranchVersion) cbChannelVersion.SelectedItem;
+        //}
 
 
         private void ChannelVersionPage_OnIsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -192,6 +166,16 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
             {
                 ToggleNext();
             }
+        }
+
+        private void AddChannel_OnClick(object sender, RoutedEventArgs e)
+        {
+           //open channel window....
+        }
+
+        private void RemoveChannel_OnClick(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
         }
     }
 }

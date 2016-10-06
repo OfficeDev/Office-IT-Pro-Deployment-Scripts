@@ -81,7 +81,7 @@
                                     <ColumnDefinition Width="60" />
                                 </Grid.ColumnDefinitions>
 
-                                <TextBlock Grid.Row="0" Grid.Column="0" TextWrapping="WrapWithOverflow" FontSize="25" FontWeight="Bold" Style="{StaticResource CustomMetroLabelTextBlock}" Text="Choose the products and language packs that will be installed." />
+                                <TextBlock Grid.Row="0" Grid.ColumnSpan="2" TextWrapping="WrapWithOverflow" FontSize="25" FontWeight="Bold" Style="{StaticResource CustomMetroLabelTextBlock}"  Text="Choose the products and language packs that will be installed." />
 
                                 <StackPanel  Grid.Column="0" Grid.Row="1" >
                                     <TextBlock Text="What Office Products Would You Like To Install?" TextWrapping="WrapWithOverflow" Style="{StaticResource CustomMetroLabelTextBlock}" FontWeight="SemiBold"  VerticalAlignment="Top" FontSize="20"/>

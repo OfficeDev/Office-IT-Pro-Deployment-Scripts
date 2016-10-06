@@ -8,6 +8,8 @@
              xmlns:exampleViews="clr-namespace:MetroDemo.ExampleViews"
              xmlns:models="clr-namespace:MetroDemo.Models"
              xmlns:gif="http://wpfanimatedgif.codeplex.com"
+             xmlns:System="clr-namespace:System;assembly=mscorlib"
+             xmlns:LocalValueEntry="clr-namespace:Microsoft.OfficeProPlus.InstallGen.Presentation.Enums"
              mc:Ignorable="d"
              d:DesignHeight="600"
              d:DesignWidth="900"
@@ -18,9 +20,18 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro.Resources;component/Icons.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <CollectionViewSource x:Key="ChannelVersions" Source="{Binding ChannelVersions}"/>
 
             <Thickness x:Key="ColumnMargin">10 5 10 5</Thickness>
             <Thickness x:Key="ControlMargin">0 5 0 0</Thickness>
+            
+            <ObjectDataProvider x:Key="BranchVersionValues"
+       MethodName="GetValues" ObjectType="{x:Type System:Enum}">
+                <ObjectDataProvider.MethodParameters>
+                    <x:Type TypeName="LocalValueEntry:BranchVersion"/>
+                </ObjectDataProvider.MethodParameters>
+            </ObjectDataProvider>
+            
         </ResourceDictionary>
     </UserControl.Resources>
 
@@ -70,9 +81,9 @@
 
                                 <Grid HorizontalAlignment="Left" Margin="30 30 0 0" Height="450" VerticalAlignment="Top" x:Name="ChannelVersionPage" IsVisibleChanged="ChannelVersionPage_OnIsVisibleChanged">
                                     <Grid.RowDefinitions>
-                                        <RowDefinition Height="120" />
-                                        <RowDefinition Height="60" />
-                                        <RowDefinition Height="60" />
+                                        <RowDefinition Height="70" />
+                                        <RowDefinition Height="40" />
+                                        <RowDefinition Height="Auto" />
                                         <RowDefinition Height="60" />
                                         <RowDefinition Height="60" />
                                         <RowDefinition Height="60" />
@@ -81,20 +92,47 @@
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="400" />
                                         <ColumnDefinition Width="400" />
-                                        <ColumnDefinition Width="60" />
-                                        <ColumnDefinition Width="60" />
+                                        <ColumnDefinition Width="20" />
+                                        <ColumnDefinition Width="20" />
                                     </Grid.ColumnDefinitions>
 
-                                    <TextBlock Grid.Row="0" Grid.Column="0" TextWrapping="WrapWithOverflow" FontSize="25" FontWeight="Bold" Style="{StaticResource CustomMetroLabelTextBlock}" Text="Choose the channel, version, and bitness to be used by your installation" />
+                                    <TextBlock Grid.Row="0" Grid.ColumnSpan="2" Margin="0 0 0 10" TextWrapping="WrapWithOverflow" FontSize="25" FontWeight="Bold" Style="{StaticResource CustomMetroLabelTextBlock}" Text="Choose the channel, version, and bitness to be used by your installation" />
 
-                                    <StackPanel  Grid.Column="0" Grid.Row="1" >
-                                        <Label Content="What Channels Would You Like to Use?" Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" FontSize="20"  VerticalContentAlignment="Top"/>
-                                        <TextBlock x:Name="tbSelectedChannels" TextWrapping="WrapWithOverflow" FontSize="10" FontWeight="Medium" VerticalAlignment="Bottom"  Margin="5 0 0 0" Style="{StaticResource CustomMetroLabelTextBlock}" 
-                                               Text="Selected: "/>
-                                    </StackPanel>
+                                    <Label Grid.Row="1" Grid.ColumnSpan="3"   Content="What Channels Would You Like to Use?" Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20"  Margin="-5 0 0 0" />
+
+                                    <Border Grid.ColumnSpan="2"  Grid.Row="2" BorderThickness="2" BorderBrush="Gray">
+                                        <DataGrid x:Name="ChannelList" Height="Auto" 
+                                              RenderOptions.ClearTypeHint="Enabled" Background="White"
+                                              TextOptions.TextFormattingMode="Display" BorderThickness="0" BorderBrush="Gray"
+                                              Margin="0 0 0 0"  Style="{DynamicResource MetroDataGrid}"
+                                              AutoGenerateColumns="False" HeadersVisibility="Column"
+                                              ItemsSource="{Binding Branches}"
+                                              CanUserAddRows="False">
+                                            <DataGrid.Columns>
+                                                <DataGridTemplateColumn  >
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <CheckBox IsChecked="False" Checked="ChannelToggleButton_OnChecked"  Unchecked="ChannelToggleButton_OnUnchecked"  Content="{Binding RelativeSource={RelativeSource Self}, Path=x}" Margin="5 0 0 0"/>
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+                                                <DataGridTextColumn Header="Channel" Binding="{Binding Name}" Width="400" 
+                                                      IsReadOnly="True" FontSize="20" Foreground="{DynamicResource LabelTextBrushCustom}" />
+                                                <DataGridTemplateColumn Header="Version" x:Name="cbChannelVersion" >
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <ComboBox  Width="200" FontSize="20" Height="40" Foreground="{StaticResource GrayBrush}"
+                                                              HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0 0 10 0" ItemsSource="{Binding Source={StaticResource BranchVersionValues}}" SelectedIndex="0">
+                                                            </ComboBox>
+                                                        </DataTemplate>
+                                                        </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+                                    </Border>
 
 
-                                    <ComboBox x:Name="cbDownloadChannel" Grid.Row="1" Grid.Column="1" Width="350" FontSize="20" Height="40" Foreground="{StaticResource GrayBrush}"
+                                    <!--<ComboBox x:Name="cbDownloadChannel" Grid.Row="1" Grid.Column="1" Width="350" FontSize="20" Height="40" Foreground="{StaticResource GrayBrush}"
                                       HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0 0 10 0" ItemsSource="{Binding Branches}" SelectionChanged="CbDownloadChannel_OnSelectionChanged">
                                         <ComboBox.ItemTemplate>
                                             <DataTemplate>
@@ -104,9 +142,9 @@
                                                 </StackPanel>
                                             </DataTemplate>
                                         </ComboBox.ItemTemplate>
-                                    </ComboBox>
+                                    </ComboBox>-->
 
-                                    <StackPanel Grid.Column="0" Grid.Row="2" >
+                                    <!--<StackPanel Grid.Column="0" Grid.Row="2" >
                                         <Label Content="What Bitnesses Will You Install?" Style="{StaticResource CustomMetroLabelHeader}" VerticalAlignment="Top" FontSize="20" />
                                         <TextBlock x:Name="tbSelectedBitnesses" TextWrapping="WrapWithOverflow" FontSize="10" FontWeight="Medium" VerticalAlignment="Bottom"  Margin="5 0 0 0" Style="{StaticResource CustomMetroLabelTextBlock}" 
                                                Text="Selected: " />
@@ -122,22 +160,26 @@
                                                 </StackPanel>
                                             </DataTemplate>
                                         </ComboBox.ItemTemplate>
-                                    </ComboBox>
+                                    </ComboBox>-->
 
 
-                                    <Label Content="Which Version Would You Like to Use?" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="0" Grid.Row="3" 
-                                   HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="20" />
+                                    <!--<Label Content="Which Version Would You Like to Use?" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="0" Grid.Row="3" 
+                                   HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="20" Margin="-5 0 0 0" />-->
 
-                                    <ComboBox x:Name="cbChannelVersion" Grid.Row="3" Grid.Column="1" Width="350" FontSize="20" Height="40" Foreground="{StaticResource GrayBrush}"
-                                      HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0 0 10 0" ItemsSource="{Binding Versions}" SelectionChanged="CbChannelVersion_OnSelectionChanged">
-                                        <!--<ComboBox.ItemTemplate>
-                                            <DataTemplate>
-                                                <StackPanel Orientation="Horizontal">
-                                                    <TextBlock Width="200" Margin="2 0 0 0" Text="{Binding Versions}"/>
-                                                </StackPanel>
-                                            </DataTemplate>
-                                        </ComboBox.ItemTemplate>-->
-                                    </ComboBox>
+                                    <!--<ComboBox x:Name="cbChannelVersion" Grid.Row="3" Grid.Column="1" Width="350" FontSize="20" Height="40" Foreground="{StaticResource GrayBrush}"
+                                      HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0 0 10 0" ItemsSource="{Binding ChannelVersions}" SelectionChanged="CbChannelVersion_OnSelectionChanged">
+                                    </ComboBox>-->
+
+                                    <Label Grid.Row="3" Grid.Column="0" Content="Which Bitness Would You Like to Use?" Style="{StaticResource CustomMetroLabelHeader}"
+                                    HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="20"  Margin="-5 0 0 0" />
+                                    <CheckBox Grid.Row="3" Grid.Column="1"  IsChecked="False"  Width="Auto" Checked="ToggleButton_OnChecked"  Unchecked="ToggleButton_OnUnchecked" Content="{Binding OfficeBitnesses[0].Name}"  Foreground="{StaticResource GrayBrush}" Style="{StaticResource MetroCheckBox}"
+                                                  VerticalAlignment="Center"/>
+                                    <CheckBox Grid.Row="3" Grid.Column="2"  IsChecked="False"  Width="Auto" Checked="ToggleButton_OnChecked"  Unchecked="ToggleButton_OnUnchecked" Content="{Binding OfficeBitnesses[1].Name}"  Foreground="{StaticResource GrayBrush}" Style="{StaticResource MetroCheckBox}"
+                                                   VerticalAlignment="Center" Margin="-320 0 0 0"/>
+
+
+
+
 
 
                                 </Grid>
