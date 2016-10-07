@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -12,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using MahApps.Metro.Controls;
 using MetroDemo;
 using MetroDemo.Events;
 using Microsoft.OfficeProPlus.InstallGen.Presentation.Enums;
@@ -48,12 +50,13 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
             var index = ChannelList.Items.IndexOf(branch);
 
             var row = (DataGridRow) ChannelList.ItemContainerGenerator.ContainerFromIndex(index);
-           
+            var comobBox = FindVisualChild<ComboBox>(row);
+            var selectedVersion = comobBox.SelectedValue;
 
             var selectedBranch = new SelectedChannel()
             {
                 Branch = branch,
-                SelectedVersion = SelectedVersion
+                SelectedVersion = (BranchVersion)Enum.Parse(typeof(BranchVersion), selectedVersion.ToString(), true)
             };
 
         
@@ -71,8 +74,6 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
                     }
                 }
             }
-
-            //DisplaySelectedChannels();
             ToggleNext();
         }
 
@@ -97,7 +98,6 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
                 }
             }
 
-            //DisplaySelectedChannels();
             ToggleNext();
         }
 
@@ -131,7 +131,6 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
                 GlobalObjects.ViewModel.SccmConfiguration.Bitnesses.Add(bitness);
             }
 
-
             ToggleNext();
         }
 
@@ -152,12 +151,6 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
             ToggleNext();
         }
 
-        //private void CbChannelVersion_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
-        //{
-        //    GlobalObjects.ViewModel.SccmConfiguration.Version = (BranchVersion) cbChannelVersion.SelectedItem;
-        //}
-
-
         private void ChannelVersionPage_OnIsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             var grid = (Grid) sender;
@@ -168,14 +161,45 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
             }
         }
 
-        private void AddChannel_OnClick(object sender, RoutedEventArgs e)
-        {
-           //open channel window....
+        private childItem FindVisualChild<childItem>(DependencyObject obj)
+         where childItem : DependencyObject
+            {
+                for (int i = 0; i < VisualTreeHelper.GetChildrenCount(obj); i++)
+                {
+                    DependencyObject child = VisualTreeHelper.GetChild(obj, i);
+                    if (child != null && child is childItem)
+                        return (childItem)child;
+                    else
+                    {
+                        childItem childOfChild = FindVisualChild<childItem>(child);
+                        if (childOfChild != null)
+                            return childOfChild;
+                    }
+                }
+                return null;
         }
 
-        private void RemoveChannel_OnClick(object sender, RoutedEventArgs e)
+        private void CbChannelVersion_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            throw new NotImplementedException();
+            var combobox = (ComboBox) sender;
+            var selectedVersion = combobox.SelectedValue;
+            var row = combobox.TryFindParent<DataGridRow>(); 
+    
+            var checkBox = FindVisualChild<CheckBox>(row);
+            var branch = checkBox.DataContext as OfficeBranch;
+
+            if (checkBox.IsChecked.Value)
+            {
+                foreach (var channel in GlobalObjects.ViewModel.SccmConfiguration.Channels)
+                {
+                    if (channel.Branch.Name == branch.Name)
+                    {
+                        channel.SelectedVersion =
+                            (BranchVersion)Enum.Parse(typeof(BranchVersion), selectedVersion.ToString(), true);
+                        break;
+                    }
+                }
+            }
         }
     }
 }
