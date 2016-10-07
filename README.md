@@ -3,6 +3,12 @@ This repo is a collection of useful PowerShell scripts to make deploying Office 
 
 Read more about it here: [Office Blogs](https://blogs.office.com/2015/08/19/introducing-the-office-it-pro-deployment-script-project/)
 
+Watch the video presentation from [Microsoft Ignite](https://www.youtube.com/watch?v=TPAFTXae4g4)
+
+More related videos from Microsoft Ignite 2016  
+[Deploy and manage Office in complex scenarios with Configuration Manager](https://www.youtube.com/watch?v=59nxWjFFeWg)  
+[Grok the Office engineering roadmap for deployment and management](https://www.youtube.com/watch?v=KrnfswbJb8g)
+
 The software is licensed “as-is.” under the [MIT License](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/master/LICENSE).
 
 ## Do you have Systems Center Configuration Manager?
