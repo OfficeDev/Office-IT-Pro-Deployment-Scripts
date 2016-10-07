@@ -71,11 +71,11 @@
 
                             <Grid HorizontalAlignment="Left" Margin="30 30 0 0" Height="450" VerticalAlignment="Top" x:Name="ChannelVersionPage" IsVisibleChanged="ChannelVersionPage_OnIsVisibleChanged">
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="70" />
+                                    <RowDefinition Height="60" />
                                     <RowDefinition Height="50" />
                                     <RowDefinition Height="100" />
                                     <RowDefinition Height="50" />
-                                    <RowDefinition Height="100" />
+                                    <RowDefinition Height="110" />
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="400" />
@@ -83,7 +83,7 @@
                                     <ColumnDefinition Width="300" />
                                 </Grid.ColumnDefinitions>
 
-                                <TextBlock Grid.Row="0" Grid.ColumnSpan="2" TextWrapping="WrapWithOverflow" FontSize="25" FontWeight="Bold" Style="{StaticResource CustomMetroLabelTextBlock}"  Text="Choose the products and language packs that will be installed." />
+                                <TextBlock Grid.Row="0" Grid.ColumnSpan="3" TextWrapping="WrapWithOverflow" FontSize="25" FontWeight="Bold" Style="{StaticResource CustomMetroLabelTextBlock}"  Text="Choose the products and language packs that will be installed." />
 
                                 <TextBlock Grid.ColumnSpan="2"  Grid.Row="1"    Text="What Office Products Would You Like To Install/Exclude?"  HorizontalAlignment="Left" TextWrapping="WrapWithOverflow" Style="{StaticResource CustomMetroLabelTextBlock}" 
                                             FontWeight="SemiBold"  VerticalAlignment="Center" FontSize="20" />
@@ -100,10 +100,10 @@
                                               Margin="0 0 0 0"  Style="{DynamicResource MetroDataGrid}"
                                               AutoGenerateColumns="False" HeadersVisibility="Column"
                                               ItemsSource="{Binding SccmConfiguration.Products}"
-                                              CanUserAddRows="False" IsEnabled="True">
+                                              CanUserAddRows="False" IsEnabled="True" IsReadOnly="False">
                                         <DataGrid.Columns>
-                                            <DataGridTextColumn Header="Product" Width="600"></DataGridTextColumn>
-                                            <DataGridTextColumn Header="Action" Width="200"></DataGridTextColumn>
+                                            <DataGridTextColumn Header="Product" Binding="{Binding DisplayName}" Width="400"></DataGridTextColumn>
+                                            <DataGridTextColumn Header="Action" Binding="{Binding ProductAction}"  Width="400"></DataGridTextColumn>
                                         </DataGrid.Columns>
                                     </DataGrid>
                                 </Border>

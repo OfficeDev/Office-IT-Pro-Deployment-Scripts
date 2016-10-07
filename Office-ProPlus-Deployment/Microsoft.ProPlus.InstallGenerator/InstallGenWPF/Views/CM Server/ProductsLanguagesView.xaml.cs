@@ -17,6 +17,7 @@ using MetroDemo;
 using MetroDemo.Events;
 using MetroDemo.ExampleWindows;
 using MetroDemo.Models;
+using Microsoft.OfficeProPlus.InstallGen.Presentation.Enums;
 using Microsoft.OfficeProPlus.InstallGen.Presentation.Logging;
 using Microsoft.OfficeProPlus.InstallGenerator.Models;
 
@@ -29,6 +30,9 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
     {
         public event ToggleNextEventHandler ToggleNextButton;
         private SccmAddLanguages AddlanguagesDialog = null;
+        private SccmAddProducts AddproductsDialog = null;
+        private SccmRemoveProducts RemoveproductsDialog = null;
+
         public event MessageEventHandler ErrorMessage;
 
 
@@ -158,13 +162,7 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
             {
                 if (AddlanguagesDialog == null)
                 {
-                    var currentItems1 = (ObservableCollection<Language>)LanguageList.ItemsSource ?? new ObservableCollection<Language>();
-
                     var languageList = GlobalObjects.ViewModel.Languages.ToList();
-                    foreach (var language in currentItems1)
-                    {
-                        languageList.Remove(language);
-                    }
 
                     AddlanguagesDialog = new SccmAddLanguages
                     {
@@ -197,6 +195,82 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
             }
         }
 
+        private void LaunchAddProductDialog()
+        {
+            try
+            {
+                if (AddproductsDialog == null)
+                {
+                    var productList = GlobalObjects.ViewModel.AllProductsNoExclude.ToList();
+
+
+                    AddproductsDialog = new SccmAddProducts
+                    {
+                        ProductSource = productList
+                    };
+                    AddproductsDialog.Closed += (o, args) =>
+                    {
+                        AddproductsDialog = null;
+                    };
+                    AddproductsDialog.Closing += (o, args) =>
+                    {
+                        var selectedProducts = AddproductsDialog.SelectedItems;
+
+                        selectedProducts.ForEach(p =>
+                        {                   
+                            if (GlobalObjects.ViewModel.SccmConfiguration.Products.IndexOf(p) == -1)
+                            {
+                                p.ProductAction = ProductAction.Install;
+                                GlobalObjects.ViewModel.SccmConfiguration.Products.Add(p);
+                            }
+                        });
+                    };
+                }
+                AddproductsDialog.Launch();
+
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
+
+        private void LaunchRemoveProductDialog()
+        {
+            try
+            {
+                if (RemoveproductsDialog == null)
+                {
+                    var productList = GlobalObjects.ViewModel.AllProductsNoExclude.ToList();
+
+
+                    RemoveproductsDialog = new SccmRemoveProducts
+                    {
+                        ProductSource = productList
+                    };
+                    RemoveproductsDialog.Closed += (o, args) =>
+                    {
+                        AddproductsDialog = null;
+                    };
+                    RemoveproductsDialog.Closing += (o, args) =>
+                    {
+                        var selectedProducts = AddproductsDialog.SelectedItems;
+
+                        selectedProducts.ForEach(p =>
+                        {
+                            GlobalObjects.ViewModel.SccmConfiguration.Products.Remove(p);
+                        });
+                    };
+                }
+                RemoveproductsDialog.Launch();
+
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
+
         private void LogErrorMessage(Exception ex)
         {
             ex.LogException(false);
@@ -214,8 +288,9 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
 
         private void BAddProducts_OnClick(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
+            LaunchAddProductDialog();
         }
+
 
         private void BExcludeApps_OnClick(object sender, RoutedEventArgs e)
         {
@@ -224,7 +299,7 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
 
         private void BRemoveProduct_OnClick(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
+            LaunchRemoveProductDialog();
         }
 
         private void BAddLanguage_OnClick(object sender, RoutedEventArgs e)

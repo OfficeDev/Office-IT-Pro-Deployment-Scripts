@@ -435,7 +435,7 @@ namespace MetroDemo
                 DeploymentDirectory = String.Empty,
                 DeploymentSource = DeploymentSource.CDN,
                 Languages = new ObservableCollection<Language>(),
-                Products = new List<Product>(),
+                Products = new ObservableCollection<Product>(),
                 Version = BranchVersion.Latest,
                 ExcludedProducts = new List<ExcludeProduct>()
             };
@@ -445,9 +445,16 @@ namespace MetroDemo
             ChannelVersions.Add(BranchVersion.Previous);
 
             AllProducts = new List<Product>();
+            AllProductsNoExclude = new List<Product>();
             MainProducts.ForEach(p => {AllProducts.Add(p);});
             VisioProducts.ForEach(p => {AllProducts.Add(p);});
             ProjectProducts.ForEach(p => {AllProducts.Add(p);});
+
+            AllProducts.ForEach(p =>
+            {
+                AllProductsNoExclude.Add(p);
+            });
+
             ExcludeProducts.ForEach(p =>
             {
                 var tempProduct = new Product()
@@ -482,6 +489,8 @@ namespace MetroDemo
         public List<Product> ExcludedAppsList { get; set; }
 
         public List<Product> AllProducts { get; set; }
+
+        public List<Product> AllProductsNoExclude { get; set; }
 
         public ApplicationMode ApplicationMode { get; set; }
 

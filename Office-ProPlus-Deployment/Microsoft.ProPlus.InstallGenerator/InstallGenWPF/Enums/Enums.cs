@@ -36,4 +36,10 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Enums
         Latest = 0,
         Previous = 1
     }
+
+    public enum ProductAction
+    {
+        Install = 0,
+        Exclude = 1
+    }
 }

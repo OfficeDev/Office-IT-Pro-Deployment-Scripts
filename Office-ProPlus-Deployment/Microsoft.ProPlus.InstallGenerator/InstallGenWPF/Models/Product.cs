@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using MetroDemo.Annotations;
+using Microsoft.OfficeProPlus.InstallGen.Presentation.Enums;
 
 namespace MetroDemo.Models
 {
@@ -46,6 +47,7 @@ namespace MetroDemo.Models
             }
         }
 
+        public ProductAction ProductAction { get; set; }
 
         public bool Selected { get; set; }
 

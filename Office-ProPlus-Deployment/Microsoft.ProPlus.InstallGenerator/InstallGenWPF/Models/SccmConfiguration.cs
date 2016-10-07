@@ -18,6 +18,7 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Models
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
 
         private ObservableCollection<Language> _languages = new ObservableCollection<Language>();
+        private ObservableCollection<Product> _products = new ObservableCollection<Product>();
 
 
         public List<SelectedChannel> Channels { get; set; }
@@ -34,8 +35,16 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Models
             }
         }
 
-        public List<Product> Products { get; set; }
-        
+        public ObservableCollection<Product> Products
+        {
+            get { return _products; }
+            set
+            {
+                _products = value; 
+                OnPropertyChanged();
+            }
+        }
+
         public List<ExcludeProduct> ExcludedProducts { get; set; }
 
         public string DeploymentDirectory { get; set; }
