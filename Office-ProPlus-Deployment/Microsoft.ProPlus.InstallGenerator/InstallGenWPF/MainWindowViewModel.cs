@@ -435,12 +435,12 @@ namespace MetroDemo
                 DeploymentSource = DeploymentSource.CDN,
                 Languages = new List<Language>(),
                 Products = new List<Product>(),
-                Version = BranchVersion.Current,
+                Version = BranchVersion.Latest,
                 ExcludedProducts = new List<ExcludeProduct>()
             };
 
             ChannelVersions = new List<BranchVersion>();
-            ChannelVersions.Add(BranchVersion.Current);
+            ChannelVersions.Add(BranchVersion.Latest);
             ChannelVersions.Add(BranchVersion.Previous);
 
             AllProducts = new List<Product>();

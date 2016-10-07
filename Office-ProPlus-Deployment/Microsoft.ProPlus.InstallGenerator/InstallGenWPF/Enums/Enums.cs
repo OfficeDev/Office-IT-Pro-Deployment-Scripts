@@ -33,7 +33,7 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Enums
 
     public enum BranchVersion
     {
-        Current = 0,
+        Latest = 0,
         Previous = 1
     }
 }

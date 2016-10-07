@@ -27,7 +27,6 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
     public partial class ChannelVersionView : UserControl
     {
         public event ToggleNextEventHandler ToggleNextButton;
-        private BranchVersion SelectedVersion = BranchVersion.Current;
 
         public ChannelVersionView()
         {
@@ -51,7 +50,8 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
 
             var row = (DataGridRow) ChannelList.ItemContainerGenerator.ContainerFromIndex(index);
             var comobBox = FindVisualChild<ComboBox>(row);
-            var selectedVersion = comobBox.SelectedValue;
+            var selectedVersion =
+                (BranchVersion) Enum.Parse(typeof(BranchVersion), comobBox.SelectedValue.ToString(), true);
 
             var selectedBranch = new SelectedChannel()
             {
@@ -68,9 +68,9 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
             {
                 foreach (var channel in GlobalObjects.ViewModel.SccmConfiguration.Channels)
                 {
-                    if (channel.Branch == branch && channel.SelectedVersion != SelectedVersion)
+                    if (channel.Branch == branch && channel.SelectedVersion != selectedVersion)
                     {
-                        channel.SelectedVersion = SelectedVersion;
+                        channel.SelectedVersion = selectedVersion;
                     }
                 }
             }
@@ -81,13 +81,6 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
         {
             var checkbox = (CheckBox)sender;
             var branch = checkbox.DataContext as OfficeBranch;
-
-            var unSelectedBranch = new SelectedChannel()
-            {
-                Branch = branch,
-                SelectedVersion = SelectedVersion
-            };
-
 
             foreach (var channel in GlobalObjects.ViewModel.SccmConfiguration.Channels)
             {
