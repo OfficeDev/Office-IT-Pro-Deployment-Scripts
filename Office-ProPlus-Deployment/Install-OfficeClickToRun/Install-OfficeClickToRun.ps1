@@ -51,6 +51,41 @@ Add-Type -TypeDefinition $enum2 -ErrorAction SilentlyContinue
 } catch {}
 
 function Install-OfficeClickToRun {
+<#
+.SYNOPSIS
+Installs Office Click-To-Run
+
+.DESCRIPTION
+Installs Office Click-To-Run using a specified configuration file or targetfilepath.
+
+.PARAMETER ConfigurationXML
+The path to a pre-configured configuration.xml file used for installation.
+
+.PARAMETER TargetFilePath
+If no ConfigurationXML is specified, this is the path where the generated configuration.xml will be saved.
+
+.PARAMETER PinToStart 
+If $true, all Office apps will be pinned to the Start Menu in Windows 10.
+
+.PARAMETER OfficeVersion
+The version of Office Click-To-Run to install. Available options are Office2013 and Office2016. 
+
+.PARAMETER WaitForInstallToFinish
+If $true, the PowerShell console will remain open and provide status updates until Office is finished installing.
+
+.EXAMPLE
+Install-OfficeClickToRun -ConfigurationXML C:\OfficeDeployment\configuration.xml
+Office 2016 Click-To-Run will be installed using the settings in the specified configuration.xml.
+
+.EXAMPLE
+Install-OfficeClickToRun -TargetFilePath $env:temp\configuration.xml
+Office 2016 Click-To-Run will be installed using an auto-generated configuration file that will be saved to the temp directory.
+
+.EXAMPLE
+Install-OfficeClickToRun -TargetFilePath $env:temp\configuration.xml -PinToStart $false -WaitForInstallToFinish $false
+Office 2016 Click-To-Run will be installed using an auto-generated configuration file that will be saved to the temp directory. The 
+Office apps will not be pinned to the Start Menu. The PowerShell console will not provide status updates of the installation.
+#>
     [CmdletBinding()]
     Param(
         [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
@@ -146,6 +181,7 @@ function Install-OfficeClickToRun {
     }else {
         StartProcess -execFilePath $cmdLine -execParams $cmdArgs -WaitForExit $true
     }
+  
 }
 
 Function checkForLanguagesInSourceFiles() {
@@ -932,6 +968,8 @@ Function StartProcess {
 
         [Parameter()]
         [bool]$WaitForExit = $false
+
+
 	)
 
     Try

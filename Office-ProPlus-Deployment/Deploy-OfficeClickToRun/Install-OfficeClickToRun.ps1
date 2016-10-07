@@ -51,6 +51,41 @@ Add-Type -TypeDefinition $enum2 -ErrorAction SilentlyContinue
 } catch {}
 
 function Install-OfficeClickToRun {
+<#
+.SYNOPSIS
+Installs Office Click-To-Run
+
+.DESCRIPTION
+Installs Office Click-To-Run using a specified configuration file or targetfilepath.
+
+.PARAMETER ConfigurationXML
+The path to a pre-configured configuration.xml file used for installation.
+
+.PARAMETER TargetFilePath
+If no ConfigurationXML is specified, this is the path where the generated configuration.xml will be saved.
+
+.PARAMETER PinToStart 
+If $true, all Office apps will be pinned to the Start Menu in Windows 10.
+
+.PARAMETER OfficeVersion
+The version of Office Click-To-Run to install. Available options are Office2013 and Office2016. 
+
+.PARAMETER WaitForInstallToFinish
+If $true, the PowerShell console will remain open and provide status updates until Office is finished installing.
+
+.EXAMPLE
+Install-OfficeClickToRun -ConfigurationXML C:\OfficeDeployment\configuration.xml
+Office 2016 Click-To-Run will be installed using the settings in the specified configuration.xml.
+
+.EXAMPLE
+Install-OfficeClickToRun -TargetFilePath $env:temp\configuration.xml
+Office 2016 Click-To-Run will be installed using an auto-generated configuration file that will be saved to the temp directory.
+
+.EXAMPLE
+Install-OfficeClickToRun -TargetFilePath $env:temp\configuration.xml -PinToStart $false -WaitForInstallToFinish $false
+Office 2016 Click-To-Run will be installed using an auto-generated configuration file that will be saved to the temp directory. The 
+Office apps will not be pinned to the Start Menu. The PowerShell console will not provide status updates of the installation.
+#>
     [CmdletBinding()]
     Param(
         [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
@@ -58,9 +93,6 @@ function Install-OfficeClickToRun {
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $TargetFilePath = $NULL,
-
-        [Parameter()]
-        [bool] $PinToStart = $true, 
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
         [OfficeCTRVersion] $OfficeVersion = "Office2016",
@@ -149,41 +181,7 @@ function Install-OfficeClickToRun {
     }else {
         StartProcess -execFilePath $cmdLine -execParams $cmdArgs -WaitForExit $true
     }
-
-    if($PinToStart -and [Environment]::OSVersion.Version.Major -ge 10){
-         Pin-ToStart
-    }
-}
-
-function Pin-ToStart { 
-   
-    $ctr = (Get-OfficeVersion).ClickToRun
-    $InstallPath = (Get-OfficeVersion).InstallPath
-    $officeVersion = (Get-OfficeVersion).Version.Split('.')[0]
-
-     if($InstallPath.GetType().Name -eq "Object[]"){
-        $InstallPath = $InstallPath[0]
-    }
-
-    if($ctr -eq $true) {
-        $officeAppPath = $InstallPath + "\root\Office" + $officeVersion
-    } else {
-        $officeAppPath = $InstallPath + "Office" + $officeVersion
-    }
-
-    $officeAppList = @("WINWORD.EXE", "EXCEL.EXE", "POWERPNT.EXE", "ONENOTE.EXE", "MSACCESS.EXE", "MSPUB.EXE", "OUTLOOK.EXE",
-                       "lync.exe", "GROOVE.EXE", "WINPROJ.EXE", "VISIO.EXE")
-    
-    foreach($app in $officeAppList){
-        if(Test-Path ($officeAppPath + "\$app")){
-            try{
-            ((New-Object -Com Shell.Application).NameSpace($officeAppPath).Items() | ?{$_.Name -eq $app.Split('.')[0]}).Verbs() | ?{$_.Name.replace('&','') -match 'Pin to Start'} | %{$_.DoIt()}
-            }catch{
-                Write-Output $_.Exception.Message
-            }
-                   
-        }
-    }
+  
 }
 
 Function checkForLanguagesInSourceFiles() {

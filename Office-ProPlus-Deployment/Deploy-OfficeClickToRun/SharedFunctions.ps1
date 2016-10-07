@@ -80,6 +80,18 @@ namespace Microsoft.Office
 Add-Type -TypeDefinition $enum -ErrorAction SilentlyContinue
 } catch {}
 
+try {
+Add-Type -ErrorAction SilentlyContinue -TypeDefinition @"
+    public enum PinAction
+    {
+        PinToStartMenu,
+        UnpinFromStartMenu,
+        PinToTaskbar,
+        UnpinFromTaskbar
+    }
+"@
+} catch {}
+
 [System.Collections.ArrayList]$missingFiles = @()
 
 Function Write-Log {
@@ -1891,4 +1903,249 @@ function Remove-ProductLanguage() {
         }
     }
    }
+}
+
+
+function Set-OfficePinnedApplication { 
+<#  
+.SYNOPSIS  
+Automate the process for pinning or unpinning Office apps
+
+.DESCRIPTION  
+Pin or unpin Office apps from the Start Menu or Taskbarb setting the action
+
+.EXAMPLE 
+Set-PinnedApplication -Action PinToTaskbar
+
+.EXAMPLE 
+Set-PinnedApplication -Action UnPinFromTaskbar 
+
+.EXAMPLE 
+Set-PinnedApplication -Action PinToStartMenur
+
+.EXAMPLE 
+Set-PinnedApplication -Action UnPinFromStartMenu 
+
+#>  
+    [CmdletBinding()] 
+    param( 
+        [Parameter(Mandatory=$true)]
+        [PinAction]$Action,
+
+        [Parameter()]
+        [ValidateSet("Word","Excel","PowerPoint","OneNote","Access","Publisher","Outlook","Lync",
+                     "OneDriveForBusiness","Project","Visio")]
+        [string[]]$OfficeApps = $null
+    )
+
+    $ctr = (Get-OfficeVersion).ClickToRun
+    $InstallPath = (Get-OfficeVersion).InstallPath
+    $officeVersion = (Get-OfficeVersion).Version.Split('.')[0]
+
+    if($InstallPath.GetType().Name -eq "Object[]"){
+        $InstallPath = $InstallPath[0]
+    }
+
+    if($ctr -eq $true) {
+        $officeAppPath = $InstallPath + "\root\Office" + $officeVersion
+    } else {
+        $officeAppPath = $InstallPath + "Office" + $officeVersion
+    }
+
+    $officeAppList = @()
+
+    if(!$OfficeApps){
+        $officeAppList = @("WINWORD.EXE", "EXCEL.EXE", "POWERPNT.EXE", "ONENOTE.EXE", "MSACCESS.EXE", "MSPUB.EXE", "OUTLOOK.EXE",
+                           "lync.exe", "GROOVE.EXE", "WINPROJ.EXE", "VISIO.EXE")
+    } else {
+        foreach($app in $OfficeApps){
+            switch($app){
+                "Word" {
+                    $officeAppList += "WINWORD.EXE"
+                }
+                "Excel" {
+                    $officeAppList += "EXCEL.EXE"
+                }
+                "PowerPoint" {
+                    $officeAppList += "POWERPNT.EXE"
+                }
+                "OneNote" {
+                    $officeAppList += "ONENOTE.EXE"
+                }
+                "Access" {
+                    $officeAppList += "MSACCESS.EXE"
+                }
+                "Publisher" {
+                    $officeAppList += "MSPUB.EXE"
+                }
+                "Outlook" {
+                    $officeAppList += "OUTLOOK.EXE"
+                }
+                "Lync" {
+                    $officeAppList += "lync.exe"
+                }
+                "OneDriveForBusiness" {
+                    $officeAppList += "GROOVE.EXE"
+                }
+                "Project" {
+                    $officeAppList += "WINPROJ.EXE"
+                }
+                "Visio" {
+                    $officeAppList += "VISIO.EXE"
+                }
+            }
+        }
+    }
+
+    switch($Action) {
+        "PinToStartMenu" {
+            Write-Host "Pinning Office apps to the Start Menu..."
+            if([Environment]::OSVersion.Version.Major -ge 10){
+                $actionId = '51201'
+            } else { 
+                $actionId = '5381'
+            }
+        }
+        "UnpinFromStartMenu" {
+            Write-Host "Removing Office apps from the Start Menu..."
+            if([Environment]::OSVersion.Version.Major -ge 10){
+                $actionId = '51394'
+            } else { 
+                $actionId = '5382'
+            } 
+        }
+        "PinToTaskbar" {
+            Write-Host "Pinning Office apps to the TaskBar..."
+            if([Environment]::OSVersion.Version.Major -ge 10){
+                throw "    Unable to pin items to the taskbar in Windows 10"
+            }
+            
+            $actionId = '5386'
+        }
+        "UnpinFromTaskbar" {
+            Write-Host "Removing Office apps from the TaskBar..."
+            $actionId = '5387'
+        }
+    }  
+
+    foreach($app in $officeAppList){
+        if(Test-Path ($officeAppPath + "\$app")){
+            InvokeVerb -FilePath ($officeAppPath + "\$app") -Verb $(GetVerb -VerbId $actionId) -officeVersion $officeVersion
+        }
+    } 
+} 
+
+function GetVerb { 
+    param(
+        [int]$verbId
+    ) 
+
+    try { 
+        $t = [type]"CosmosKey.Util.MuiHelper" 
+    } catch { 
+        $def = [Text.StringBuilder]"" 
+        [void]$def.AppendLine('[DllImport("user32.dll")]') 
+        [void]$def.AppendLine('public static extern int LoadString(IntPtr h,uint id, System.Text.StringBuilder sb,int maxBuffer);') 
+        [void]$def.AppendLine('[DllImport("kernel32.dll")]') 
+        [void]$def.AppendLine('public static extern IntPtr LoadLibrary(string s);') 
+        Add-Type -MemberDefinition $def.ToString() -name MuiHelper -namespace CosmosKey.Util             
+    } 
+    if($global:CosmosKey_Utils_MuiHelper_Shell32 -eq $null){         
+        $global:CosmosKey_Utils_MuiHelper_Shell32 = [CosmosKey.Util.MuiHelper]::LoadLibrary("shell32.dll") 
+    } 
+    $maxVerbLength=255 
+    $verbBuilder = new-object Text.StringBuilder "",$maxVerbLength 
+    [void][CosmosKey.Util.MuiHelper]::LoadString($CosmosKey_Utils_MuiHelper_Shell32,$verbId,$verbBuilder,$maxVerbLength) 
+    
+    return $verbBuilder.ToString() 
+} 
+
+function InvokeVerb { 
+    param([string]$FilePath,$verb,$officeVersion) 
+
+    $verb = $verb.Replace("&","") 
+    $path= split-path $FilePath 
+    $shell=new-object -com "Shell.Application"  
+    $folder=$shell.Namespace($path)    
+    $item = $folder.Parsename((split-path $FilePath -leaf)) 
+    $itemVerb = $item.Verbs() | ? {$_.Name.Replace("&","") -eq $verb} 
+   
+    try{
+        if(([Environment]::OSVersion.Version.Major -ge 10) -and ($verb -eq 'Unpin from taskbar')){
+            Remove-PinnedOfficeAppsForWindows10 -OfficeApp $item.Name -officeVersion $officeVersion
+        }else { 
+            $itemVerb.DoIt() 
+        }
+    }catch{}
+     
+}
+
+function Remove-PinnedOfficeAppsForWindows10() {
+    [CmdletBinding()]
+    param(
+        [Parameter()]
+        [string]$OfficeApp,
+
+        [Parameter()]
+        [string]$officeVersion
+    )
+
+    $Action = 'Unpin from taskbar'
+
+    switch($OfficeApp){
+        "WINWORD" {
+            $officeAppName = "Word"  
+        }
+        "EXCEL" {
+            $officeAppName = "Excel"
+        }
+        "POWERPNT" {
+            $officeAppName = "PowerPoint"
+        }
+        "ONENOTE" {
+            $officeAppName = "OneNote"
+        }
+        "MSACCESS" {
+            $officeAppName = "Access"
+        }
+        "MSPUB" { 
+            $officeAppName = "Publisher"
+        }
+        "OUTLOOK" {
+            $officeAppName = "Outlook"
+        }
+        "lync" {
+            $officeAppName = "Skype For Business"
+        }
+        "GROOVE" {
+            $officeAppName = "OneDrive For Business"
+        }
+        "WINPROJ" {
+            $officeAppName = "Project"
+        }
+        "VISIO" {
+            $officeAppName = "Visio"
+        }
+    }
+
+        switch($officeVersion){
+        "11" {
+            $officeAppVersion = "Microsoft Office " + $officeAppName + " 2003"
+        }
+        "12" {
+            $officeAppVersion = "Microsoft Office " + $officeAppName + " 2007"
+        }
+        "14" {
+            $officeAppVersion = "Microsoft " + $officeAppName + " 2010"
+        }
+        "15" {
+            $officeAppVersion = $officeAppName + " 2013"
+        }
+        "16" {
+            $officeAppVersion = $officeAppName + " 2016"
+        }
+    }
+
+    ((New-Object -Com Shell.Application).NameSpace('shell:::{4234d49b-0245-4df3-b780-3893943456e1}').Items() | ? {$_.Name -like $officeAppVersion}).Verbs() | ? {$_.Name.replace('&','') -match $Action} | % {$_.DoIt()}
+       
 }
