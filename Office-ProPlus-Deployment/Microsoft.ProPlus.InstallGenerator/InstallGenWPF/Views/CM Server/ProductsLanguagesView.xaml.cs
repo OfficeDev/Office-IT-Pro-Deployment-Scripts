@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,7 +15,9 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using MetroDemo;
 using MetroDemo.Events;
+using MetroDemo.ExampleWindows;
 using MetroDemo.Models;
+using Microsoft.OfficeProPlus.InstallGen.Presentation.Logging;
 using Microsoft.OfficeProPlus.InstallGenerator.Models;
 
 namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
@@ -25,6 +28,9 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
     public partial class ProductsLanguagesView : UserControl
     {
         public event ToggleNextEventHandler ToggleNextButton;
+        private SccmAddLanguages AddlanguagesDialog = null;
+        public event MessageEventHandler ErrorMessage;
+
 
         public ProductsLanguagesView()
         {
@@ -43,15 +49,6 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
             ToggleNext();
         }
 
-        private void CbProducts_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            cbProducts.Text = null;
-        }
-        private void CbLanguages_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            cbLanguages.Text = null;
-        }
-
         private void IncludeProductsToggleButton_OnChecked(object sender, RoutedEventArgs e)
         {
             var checkbox = (CheckBox)sender;
@@ -59,7 +56,6 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
 
             GlobalObjects.ViewModel.SccmConfiguration.Products.Add(selectedProduct);
 
-            UpdateProductText();
             ToggleNext();
         }
 
@@ -77,13 +73,7 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
                 }
             }
 
-            UpdateProductText();
             ToggleNext();
-        }
-
-        private void CbExcludedProducts_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            cbExcludedProducts.Text = null;
         }
 
         private void ExludeProductsToggleButton_OnChecked(object sender, RoutedEventArgs e)
@@ -93,8 +83,7 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
 
             GlobalObjects.ViewModel.SccmConfiguration.ExcludedProducts.Add(selectedProduct);
 
-            UpdateExlcudeProductText();
-        }
+       }
 
         private void ExcludeProductsToggleButton_OnUnchecked(object sender, RoutedEventArgs e)
         {
@@ -110,7 +99,6 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
                 }
             }
 
-            UpdateExlcudeProductText();
         }
 
         private void LanguageToggleButton_OnChecked(object sender, RoutedEventArgs e)
@@ -120,7 +108,6 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
 
             GlobalObjects.ViewModel.SccmConfiguration.Languages.Add(selectedLanguage);
 
-            UpdateLanguagesText();
             ToggleNext();
         }
 
@@ -138,40 +125,12 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
                 }
             }
 
-            UpdateLanguagesText();
             ToggleNext();
         }
 
         #endregion
 
         #region helpers    
-        private void UpdateProductText()
-        {
-            tbSelectedProducts.Text = "Selected: ";
-            GlobalObjects.ViewModel.SccmConfiguration.Products.ForEach(p =>
-            {
-                tbSelectedProducts.Text += p.DisplayName + ", ";
-            });
-        }
-
-        private void UpdateExlcudeProductText()
-        {
-            tbExcludedProducts.Text = "Selected: ";
-            GlobalObjects.ViewModel.SccmConfiguration.ExcludedProducts.ForEach(p =>
-            {
-                tbExcludedProducts.Text += p.DisplayName + ", ";
-            });
-        }
-
-        private void UpdateLanguagesText()
-        {
-            tbLanguages.Text = "Selected: ";
-            GlobalObjects.ViewModel.SccmConfiguration.Languages.ForEach(l =>
-            {
-                tbLanguages.Text += l.Id + ", ";
-            });
-        }
-
         private void ToggleNext()
         {
             var SccmConfig = GlobalObjects.ViewModel.SccmConfiguration;
@@ -192,6 +151,92 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
             }
         }
 
+
+        private void LaunchLanguageDialog()
+        {
+            try
+            {
+                if (AddlanguagesDialog == null)
+                {
+                    var currentItems1 = (ObservableCollection<Language>)LanguageList.ItemsSource ?? new ObservableCollection<Language>();
+
+                    var languageList = GlobalObjects.ViewModel.Languages.ToList();
+                    foreach (var language in currentItems1)
+                    {
+                        languageList.Remove(language);
+                    }
+
+                    AddlanguagesDialog = new SccmAddLanguages
+                    {
+                        LanguageSource = languageList
+                    };
+                    AddlanguagesDialog.Closed += (o, args) =>
+                    {
+                        AddlanguagesDialog = null;
+                    };
+                    AddlanguagesDialog.Closing += (o, args) =>
+                    {
+
+                        var selectedLanguages = AddlanguagesDialog.SelectedItems;
+
+                        selectedLanguages.ForEach(l =>
+                        {
+                            if (GlobalObjects.ViewModel.SccmConfiguration.Languages.IndexOf(l) == -1)
+                            {
+                                GlobalObjects.ViewModel.SccmConfiguration.Languages.Add(l);
+                            }
+                        });
+                    };
+                }
+                AddlanguagesDialog.Launch();
+
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
+
+        private void LogErrorMessage(Exception ex)
+        {
+            ex.LogException(false);
+            if (ErrorMessage != null)
+            {
+                ErrorMessage(this, new MessageEventArgs()
+                {
+                    Title = "Error",
+                    Message = ex.Message
+                });
+            }
+        }
+
         #endregion
+
+        private void BAddProducts_OnClick(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void BExcludeApps_OnClick(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void BRemoveProduct_OnClick(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void BAddLanguage_OnClick(object sender, RoutedEventArgs e)
+        {
+            LaunchLanguageDialog();
+        }
+
+        private void BRemoveLanguage_OnClick(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+
     }
 }

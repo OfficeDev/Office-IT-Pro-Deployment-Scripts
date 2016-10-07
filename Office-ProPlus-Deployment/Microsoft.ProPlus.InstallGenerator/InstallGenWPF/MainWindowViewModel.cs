@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.ComponentModel;
@@ -433,7 +434,7 @@ namespace MetroDemo
                 Channels = new List<SelectedChannel>(),
                 DeploymentDirectory = String.Empty,
                 DeploymentSource = DeploymentSource.CDN,
-                Languages = new List<Language>(),
+                Languages = new ObservableCollection<Language>(),
                 Products = new List<Product>(),
                 Version = BranchVersion.Latest,
                 ExcludedProducts = new List<ExcludeProduct>()
@@ -447,6 +448,18 @@ namespace MetroDemo
             MainProducts.ForEach(p => {AllProducts.Add(p);});
             VisioProducts.ForEach(p => {AllProducts.Add(p);});
             ProjectProducts.ForEach(p => {AllProducts.Add(p);});
+            ExcludeProducts.ForEach(p =>
+            {
+                var tempProduct = new Product()
+                {
+                    DisplayName = p.DisplayName,
+                    Id = p.DisplayName,
+                    ShortName = p.DisplayName
+                };
+
+                AllProducts.Add(tempProduct);
+            });
+
         }
 
         public bool LocalConfig { get; set; }
@@ -465,6 +478,8 @@ namespace MetroDemo
             var branches = JsonConvert.DeserializeObject<List<OfficeBranch>>(json);
             return branches;
         }
+
+        public List<Product> ExcludedAppsList { get; set; }
 
         public List<Product> AllProducts { get; set; }
 

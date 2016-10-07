@@ -158,6 +158,7 @@
     <Compile Include="Models\officeVersion.cs" />
     <Compile Include="Models\SccmConfiguration.cs" />
     <Compile Include="Models\SelectedChannel.cs" />
+    <Compile Include="Properties\Annotations1.cs" />
     <Compile Include="Views\AboutView.xaml.cs">
       <DependentUpon>AboutView.xaml</DependentUpon>
     </Compile>
@@ -302,6 +303,9 @@
     <Compile Include="Windows\DownloadAdvanced.xaml.cs">
       <DependentUpon>DownloadAdvanced.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Windows\SccmAddLanguages.xaml.cs">
+      <DependentUpon>SccmAddLanguages.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\Languages.xaml.cs">
       <DependentUpon>Languages.xaml</DependentUpon>
     </Compile>
@@ -425,6 +429,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Windows\DownloadAdvanced.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Windows\SccmAddLanguages.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

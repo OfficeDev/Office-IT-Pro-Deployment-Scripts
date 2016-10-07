@@ -27,7 +27,7 @@
     <AdornerDecorator>
         <Grid Background="#e6e6e6" x:Name="Product" HorizontalAlignment="Stretch">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"  />
+                <ColumnDefinition Width="900"  />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="450"></RowDefinition>
@@ -56,7 +56,9 @@
                             <ColumnDefinition Width="400" />
                             <ColumnDefinition Width="60" />
                             <ColumnDefinition Width="60" />
-                        </Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="60" />
+
+                    </Grid.ColumnDefinitions>
                         <Controls:MetroAnimatedSingleRowTabControl Grid.Row="0" Grid.Column="1"  x:Name="MainTabControl" 
                                                            Height="600" VerticalAlignment="Top" >
 
@@ -69,26 +71,68 @@
 
                             <Grid HorizontalAlignment="Left" Margin="30 30 0 0" Height="450" VerticalAlignment="Top" x:Name="ChannelVersionPage" IsVisibleChanged="ChannelVersionPage_OnIsVisibleChanged">
                                 <Grid.RowDefinitions>
+                                    <RowDefinition Height="70" />
+                                    <RowDefinition Height="50" />
                                     <RowDefinition Height="100" />
-                                    <RowDefinition Height="110" />
-                                    <RowDefinition Height="80" />
-                                    <RowDefinition Height="110" />
+                                    <RowDefinition Height="50" />
+                                    <RowDefinition Height="100" />
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="400" />
-                                    <ColumnDefinition Width="400" />
-                                    <ColumnDefinition Width="60" />
-                                    <ColumnDefinition Width="60" />
+                                    <ColumnDefinition Width="200" />
+                                    <ColumnDefinition Width="300" />
                                 </Grid.ColumnDefinitions>
 
                                 <TextBlock Grid.Row="0" Grid.ColumnSpan="2" TextWrapping="WrapWithOverflow" FontSize="25" FontWeight="Bold" Style="{StaticResource CustomMetroLabelTextBlock}"  Text="Choose the products and language packs that will be installed." />
 
-                                <StackPanel  Grid.Column="0" Grid.Row="1" >
-                                    <TextBlock Text="What Office Products Would You Like To Install?" TextWrapping="WrapWithOverflow" Style="{StaticResource CustomMetroLabelTextBlock}" FontWeight="SemiBold"  VerticalAlignment="Top" FontSize="20"/>
-                                    <TextBlock x:Name="tbSelectedProducts" TextWrapping="WrapWithOverflow" FontSize="10" FontWeight="Medium" VerticalAlignment="Bottom" Style="{StaticResource CustomMetroLabelTextBlock}" 
-                                               Text="Selected: "/>
-                                </StackPanel>
-                                <ComboBox x:Name="cbProducts" Grid.Row="1" Grid.Column="1" Width="350" FontSize="20" Height="40" Foreground="{StaticResource GrayBrush}"
+                                <TextBlock Grid.ColumnSpan="2"  Grid.Row="1"    Text="What Office Products Would You Like To Install/Exclude?"  HorizontalAlignment="Left" TextWrapping="WrapWithOverflow" Style="{StaticResource CustomMetroLabelTextBlock}" 
+                                            FontWeight="SemiBold"  VerticalAlignment="Center" FontSize="20" />
+                                <Button Grid.Column="2" Grid.Row="1"   x:Name="bAddProduct"  Width="50" Height="40" Content="Add"   VerticalAlignment="Center" Click="BAddProducts_OnClick" Margin="-400 0 0 0"/>
+                                <Button Grid.Column="2" Grid.Row="1" x:Name="bRemoveProduct" Width="75" Height="40" Content="Remove"  VerticalAlignment="Center"  Click="BRemoveProduct_OnClick" Margin="-250 0 0 0"/>
+                                <Button Grid.Column="2" Grid.Row="1" x:Name="bExcludeApps" Width="75" Height="40" Content="Exclude"  VerticalAlignment="Center" Click="BExcludeApps_OnClick" Margin="-75 0 0 0"/>
+
+
+
+                                <Border Grid.ColumnSpan="3"  Grid.Row="2" BorderThickness="2" BorderBrush="Gray" Width="800"  HorizontalAlignment="Left">
+                                    <DataGrid x:Name="ProductList" Height="Auto" 
+                                              RenderOptions.ClearTypeHint="Enabled" Background="White"
+                                              TextOptions.TextFormattingMode="Display" BorderThickness="0" BorderBrush="Gray"
+                                              Margin="0 0 0 0"  Style="{DynamicResource MetroDataGrid}"
+                                              AutoGenerateColumns="False" HeadersVisibility="Column"
+                                              ItemsSource="{Binding SccmConfiguration.Products}"
+                                              CanUserAddRows="False" IsEnabled="True">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Product" Width="600"></DataGridTextColumn>
+                                            <DataGridTextColumn Header="Action" Width="200"></DataGridTextColumn>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </Border>
+
+
+
+                                <TextBlock Grid.ColumnSpan="2"  Grid.Row="3"    Text="What Languages Would You Like To Install/Exclude?"  HorizontalAlignment="Left" TextWrapping="WrapWithOverflow" Style="{StaticResource CustomMetroLabelTextBlock}" 
+                                            FontWeight="SemiBold"  VerticalAlignment="Center" FontSize="20" />
+                                <Button Grid.Column="2" Grid.Row="3"   x:Name="bAddLanguage"  Width="50" Height="40" Content="Add"   VerticalAlignment="Center" Click="BAddLanguage_OnClick"  Margin="-400 0 0 0"/>
+                                <Button Grid.Column="2" Grid.Row="3" x:Name="bRemoveLanguage" Width="75" Height="40" Content="Remove"  VerticalAlignment="Center"  Click="BRemoveLanguage_OnClick"  Margin="-250 0 0 0"/>
+                                
+
+
+                                <Border Grid.ColumnSpan="3"  Grid.Row="4" BorderThickness="2" BorderBrush="Gray" Width="800"  HorizontalAlignment="Left">
+                                    <DataGrid x:Name="LanguageList" Height="Auto" 
+                                              RenderOptions.ClearTypeHint="Enabled" Background="White"
+                                              TextOptions.TextFormattingMode="Display" BorderThickness="0" BorderBrush="Gray"
+                                              Margin="0 0 0 0"  Style="{DynamicResource MetroDataGrid}"
+                                              AutoGenerateColumns="False" HeadersVisibility="Column"
+                                              ItemsSource="{Binding SccmConfiguration.Languages}"
+                                              CanUserAddRows="False" IsEnabled="True" IsReadOnly="True">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Header="Name" Binding="{Binding Name}"  Width="400"></DataGridTextColumn>
+                                            <DataGridTextColumn Header="ID"  Binding="{Binding Id}"  Width="400"></DataGridTextColumn>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </Border>
+
+                                <!--<ComboBox x:Name="cbProducts" Grid.Row="1" Grid.Column="1" Width="350" FontSize="20" Height="40" Foreground="{StaticResource GrayBrush}"
                                       HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0 0 10 0" ItemsSource="{Binding AllProducts}" SelectionChanged="CbProducts_OnSelectionChanged">
                                     <ComboBox.ItemTemplate>
                                         <DataTemplate>
@@ -135,7 +179,7 @@
                                             </StackPanel>
                                         </DataTemplate>
                                     </ComboBox.ItemTemplate>
-                                </ComboBox>
+                                </ComboBox>-->
 
 
                             </Grid>
