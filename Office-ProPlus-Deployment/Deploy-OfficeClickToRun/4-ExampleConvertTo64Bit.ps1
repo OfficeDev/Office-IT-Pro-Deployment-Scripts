@@ -69,9 +69,8 @@ if ($installOffice) {
 
       Set-ODTUpdates -TargetFilePath $targetFilePath -Channel $addNode.Channel -Enabled $true -UpdatePath $UpdatePath | Out-Null
 
-      Install-OfficeClickToRun -TargetFilePath $targetFilePath
+      Install-OfficeClickToRun -TargetFilePath $targetFilePath -PinToStartMenu AllOfficeApps
       
-      Set-OfficePinnedApplication -Action PinToStartMenu
   }
 }
 

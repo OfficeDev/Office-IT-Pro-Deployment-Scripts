@@ -50,6 +50,18 @@ using System;
 Add-Type -TypeDefinition $enum2 -ErrorAction SilentlyContinue
 } catch {}
 
+try {
+Add-Type -ErrorAction SilentlyContinue -TypeDefinition @"
+    public enum PinAction
+    {
+        PinToStartMenu,
+        UnpinFromStartMenu,
+        PinToTaskbar,
+        UnpinFromTaskbar
+    }
+"@
+} catch {}
+
 function Install-OfficeClickToRun {
 <#
 .SYNOPSIS
@@ -98,7 +110,17 @@ Office apps will not be pinned to the Start Menu. The PowerShell console will no
         [OfficeCTRVersion] $OfficeVersion = "Office2016",
 
         [Parameter()]
-        [bool] $WaitForInstallToFinish = $true
+        [bool] $WaitForInstallToFinish = $true,
+
+        [Parameter()]
+        [ValidateSet("AllOfficeApps","Word","Excel","PowerPoint","OneNote","Access","Publisher","Outlook","Skype for Business",
+                     "OneDrive for Business","Project","Visio")]
+        [string[]]$PinToStartMenu = "AllOfficeApps",
+
+        [Parameter()]
+        [ValidateSet("AllOfficeApps","Word","Excel","PowerPoint","OneNote","Access","Publisher","Outlook","Skype for Business",
+                     "OneDrive for Business","Project","Visio")]
+        [string[]]$PinToTaskbar = "AllOfficeApps"
 
     )
 
@@ -182,6 +204,346 @@ Office apps will not be pinned to the Start Menu. The PowerShell console will no
         StartProcess -execFilePath $cmdLine -execParams $cmdArgs -WaitForExit $true
     }
   
+    if(($PinToStartMenu) -or ($PinToTaskbar)){
+        Write-Host ""
+
+        $ClickToRun = (Get-OfficeVersion).ClickToRun
+        $InstallPath = (Get-OfficeVersion).InstallPath
+        $officeVersionInt = (Get-OfficeVersion).Version.Split('.')[0]
+
+        if($PinToStartMenu){
+            if($PinToStartMenu -eq 'AllOfficeApps'){
+                $OfficeAppPinnedStatus = GetOfficeAppVerbStatus
+            } else {
+                $OfficeAppPinnedStatus = GetOfficeAppVerbStatus -OfficeApps $PinToStartMenu
+            }
+            
+            foreach($app in $OfficeAppPinnedStatus){
+                if($app.PinToStartMenuAvailable -eq $true){
+                    Set-OfficePinnedApplication -Action PinToStartMenu -OfficeApps $app.Name -ClickToRun $ClickToRun -InstallPath $InstallPath -OfficeVersion $officeVersionInt
+                }          
+            }           
+        }
+
+        if(($PinToTaskbar) -and ([Environment]::OSVersion.Version.Major -lt 10)){
+            if($PinToTaskbar -eq 'AllOfficeApps'){
+                $OfficeAppPinnedStatus = GetOfficeAppVerbStatus
+            } else {
+                $OfficeAppPinnedStatus = GetOfficeAppVerbStatus -OfficeApps $PinToTaskbar
+            }    
+            
+            foreach($app in $OfficeAppPinnedStatus){
+                if($app.PinToStartMenuAvailable -eq $true){
+                    Set-OfficePinnedApplication -Action PinToTaskbar -OfficeApps $app.Name -ClickToRun $ClickToRun -InstallPath $InstallPath -OfficeVersion $officeVersionInt
+                }     
+            }            
+        }
+    }    
+}
+
+Function Get-OfficeVersion {
+<#
+.Synopsis
+Gets the Office Version installed on the computer
+.DESCRIPTION
+This function will query the local or a remote computer and return the information about Office Products installed on the computer
+.NOTES   
+Name: Get-OfficeVersion
+Version: 1.0.5
+DateCreated: 2015-07-01
+DateUpdated: 2016-07-20
+.LINK
+https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
+.PARAMETER ComputerName
+The computer or list of computers from which to query 
+.PARAMETER ShowAllInstalledProducts
+Will expand the output to include all installed Office products
+.EXAMPLE
+Get-OfficeVersion
+Description:
+Will return the locally installed Office product
+.EXAMPLE
+Get-OfficeVersion -ComputerName client01,client02
+Description:
+Will return the installed Office product on the remote computers
+.EXAMPLE
+Get-OfficeVersion | select *
+Description:
+Will return the locally installed Office product with all of the available properties
+#>
+[CmdletBinding(SupportsShouldProcess=$true)]
+param(
+    [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
+    [string[]]$ComputerName = $env:COMPUTERNAME,
+    [switch]$ShowAllInstalledProducts,
+    [System.Management.Automation.PSCredential]$Credentials
+)
+
+begin {
+    $HKLM = [UInt32] "0x80000002"
+    $HKCR = [UInt32] "0x80000000"
+
+    $excelKeyPath = "Excel\DefaultIcon"
+    $wordKeyPath = "Word\DefaultIcon"
+   
+    $installKeys = 'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall',
+                   'SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall'
+
+    $officeKeys = 'SOFTWARE\Microsoft\Office',
+                  'SOFTWARE\Wow6432Node\Microsoft\Office'
+
+    $defaultDisplaySet = 'DisplayName','Version', 'ComputerName'
+
+    $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet(‘DefaultDisplayPropertySet’,[string[]]$defaultDisplaySet)
+    $PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultDisplayPropertySet)
+}
+
+process {
+
+ $results = new-object PSObject[] 0;
+
+ foreach ($computer in $ComputerName) {
+    if ($Credentials) {
+       $os=Get-WMIObject win32_operatingsystem -computername $computer -Credential $Credentials
+    } else {
+       $os=Get-WMIObject win32_operatingsystem -computername $computer
+    }
+
+    $osArchitecture = $os.OSArchitecture
+
+    if ($Credentials) {
+       $regProv = Get-Wmiobject -list "StdRegProv" -namespace root\default -computername $computer -Credential $Credentials
+    } else {
+       $regProv = Get-Wmiobject -list "StdRegProv" -namespace root\default -computername $computer
+    }
+
+    [System.Collections.ArrayList]$VersionList = New-Object -TypeName System.Collections.ArrayList
+    [System.Collections.ArrayList]$PathList = New-Object -TypeName System.Collections.ArrayList
+    [System.Collections.ArrayList]$PackageList = New-Object -TypeName System.Collections.ArrayList
+    [System.Collections.ArrayList]$ClickToRunPathList = New-Object -TypeName System.Collections.ArrayList
+    [System.Collections.ArrayList]$ConfigItemList = New-Object -TypeName  System.Collections.ArrayList
+    $ClickToRunList = new-object PSObject[] 0;
+
+    foreach ($regKey in $officeKeys) {
+       $officeVersion = $regProv.EnumKey($HKLM, $regKey)
+       foreach ($key in $officeVersion.sNames) {
+          if ($key -match "\d{2}\.\d") {
+            if (!$VersionList.Contains($key)) {
+              $AddItem = $VersionList.Add($key)
+            }
+
+            $path = join-path $regKey $key
+
+            $configPath = join-path $path "Common\Config"
+            $configItems = $regProv.EnumKey($HKLM, $configPath)
+            if ($configItems) {
+               foreach ($configId in $configItems.sNames) {
+                 if ($configId) {
+                    $Add = $ConfigItemList.Add($configId.ToUpper())
+                 }
+               }
+            }
+
+            $cltr = New-Object -TypeName PSObject
+            $cltr | Add-Member -MemberType NoteProperty -Name InstallPath -Value ""
+            $cltr | Add-Member -MemberType NoteProperty -Name UpdatesEnabled -Value $false
+            $cltr | Add-Member -MemberType NoteProperty -Name UpdateUrl -Value ""
+            $cltr | Add-Member -MemberType NoteProperty -Name StreamingFinished -Value $false
+            $cltr | Add-Member -MemberType NoteProperty -Name Platform -Value ""
+            $cltr | Add-Member -MemberType NoteProperty -Name ClientCulture -Value ""
+            
+            $packagePath = join-path $path "Common\InstalledPackages"
+            $clickToRunPath = join-path $path "ClickToRun\Configuration"
+            $virtualInstallPath = $regProv.GetStringValue($HKLM, $clickToRunPath, "InstallationPath").sValue
+
+            [string]$officeLangResourcePath = join-path  $path "Common\LanguageResources"
+            $mainLangId = $regProv.GetDWORDValue($HKLM, $officeLangResourcePath, "SKULanguage").uValue
+            if ($mainLangId) {
+                $mainlangCulture = [globalization.cultureinfo]::GetCultures("allCultures") | where {$_.LCID -eq $mainLangId}
+                if ($mainlangCulture) {
+                    $cltr.ClientCulture = $mainlangCulture.Name
+                }
+            }
+
+            [string]$officeLangPath = join-path  $path "Common\LanguageResources\InstalledUIs"
+            $langValues = $regProv.EnumValues($HKLM, $officeLangPath);
+            if ($langValues) {
+               foreach ($langValue in $langValues) {
+                  $langCulture = [globalization.cultureinfo]::GetCultures("allCultures") | where {$_.LCID -eq $langValue}
+               } 
+            }
+
+            if ($virtualInstallPath) {
+
+            } else {
+              $clickToRunPath = join-path $regKey "ClickToRun\Configuration"
+              $virtualInstallPath = $regProv.GetStringValue($HKLM, $clickToRunPath, "InstallationPath").sValue
+            }
+
+            if ($virtualInstallPath) {
+               if (!$ClickToRunPathList.Contains($virtualInstallPath.ToUpper())) {
+                  $AddItem = $ClickToRunPathList.Add($virtualInstallPath.ToUpper())
+               }
+
+               $cltr.InstallPath = $virtualInstallPath
+               $cltr.StreamingFinished = $regProv.GetStringValue($HKLM, $clickToRunPath, "StreamingFinished").sValue
+               $cltr.UpdatesEnabled = $regProv.GetStringValue($HKLM, $clickToRunPath, "UpdatesEnabled").sValue
+               $cltr.UpdateUrl = $regProv.GetStringValue($HKLM, $clickToRunPath, "UpdateUrl").sValue
+               $cltr.Platform = $regProv.GetStringValue($HKLM, $clickToRunPath, "Platform").sValue
+               $cltr.ClientCulture = $regProv.GetStringValue($HKLM, $clickToRunPath, "ClientCulture").sValue
+               $ClickToRunList += $cltr
+            }
+
+            $packageItems = $regProv.EnumKey($HKLM, $packagePath)
+            $officeItems = $regProv.EnumKey($HKLM, $path)
+
+            foreach ($itemKey in $officeItems.sNames) {
+              $itemPath = join-path $path $itemKey
+              $installRootPath = join-path $itemPath "InstallRoot"
+
+              $filePath = $regProv.GetStringValue($HKLM, $installRootPath, "Path").sValue
+              if (!$PathList.Contains($filePath)) {
+                  $AddItem = $PathList.Add($filePath)
+              }
+            }
+
+            foreach ($packageGuid in $packageItems.sNames) {
+              $packageItemPath = join-path $packagePath $packageGuid
+              $packageName = $regProv.GetStringValue($HKLM, $packageItemPath, "").sValue
+            
+              if (!$PackageList.Contains($packageName)) {
+                if ($packageName) {
+                   $AddItem = $PackageList.Add($packageName.Replace(' ', '').ToLower())
+                }
+              }
+            }
+
+          }
+       }
+    }
+
+    
+
+    foreach ($regKey in $installKeys) {
+        $keyList = new-object System.Collections.ArrayList
+        $keys = $regProv.EnumKey($HKLM, $regKey)
+
+        foreach ($key in $keys.sNames) {
+           $path = join-path $regKey $key
+           $installPath = $regProv.GetStringValue($HKLM, $path, "InstallLocation").sValue
+           if (!($installPath)) { continue }
+           if ($installPath.Length -eq 0) { continue }
+
+           $buildType = "64-Bit"
+           if ($osArchitecture -eq "32-bit") {
+              $buildType = "32-Bit"
+           }
+
+           if ($regKey.ToUpper().Contains("Wow6432Node".ToUpper())) {
+              $buildType = "32-Bit"
+           }
+
+           if ($key -match "{.{8}-.{4}-.{4}-1000-0000000FF1CE}") {
+              $buildType = "64-Bit" 
+           }
+
+           if ($key -match "{.{8}-.{4}-.{4}-0000-0000000FF1CE}") {
+              $buildType = "32-Bit" 
+           }
+
+           if ($modifyPath) {
+               if ($modifyPath.ToLower().Contains("platform=x86")) {
+                  $buildType = "32-Bit"
+               }
+
+               if ($modifyPath.ToLower().Contains("platform=x64")) {
+                  $buildType = "64-Bit"
+               }
+           }
+
+           $primaryOfficeProduct = $false
+           $officeProduct = $false
+           foreach ($officeInstallPath in $PathList) {
+             if ($officeInstallPath) {
+                $installReg = "^" + $installPath.Replace('\', '\\')
+                $installReg = $installReg.Replace('(', '\(')
+                $installReg = $installReg.Replace(')', '\)')
+                if ($officeInstallPath -match $installReg) { $officeProduct = $true }
+             }
+           }
+
+           if (!$officeProduct) { continue };
+           
+           $name = $regProv.GetStringValue($HKLM, $path, "DisplayName").sValue          
+
+           if ($ConfigItemList.Contains($key.ToUpper()) -and $name.ToUpper().Contains("MICROSOFT OFFICE") -and $name.ToUpper() -notlike "*MUI*") {
+              $primaryOfficeProduct = $true
+           }
+
+           $clickToRunComponent = $regProv.GetDWORDValue($HKLM, $path, "ClickToRunComponent").uValue
+           $uninstallString = $regProv.GetStringValue($HKLM, $path, "UninstallString").sValue
+           if (!($clickToRunComponent)) {
+              if ($uninstallString) {
+                 if ($uninstallString.Contains("OfficeClickToRun")) {
+                     $clickToRunComponent = $true
+                 }
+              }
+           }
+
+           $modifyPath = $regProv.GetStringValue($HKLM, $path, "ModifyPath").sValue 
+           $version = $regProv.GetStringValue($HKLM, $path, "DisplayVersion").sValue
+
+           $cltrUpdatedEnabled = $NULL
+           $cltrUpdateUrl = $NULL
+           $clientCulture = $NULL;
+
+           [string]$clickToRun = $false
+
+           if ($clickToRunComponent) {
+               $clickToRun = $true
+               if ($name.ToUpper().Contains("MICROSOFT OFFICE")) {
+                  $primaryOfficeProduct = $true
+               }
+
+               foreach ($cltr in $ClickToRunList) {
+                 if ($cltr.InstallPath) {
+                   if ($cltr.InstallPath.ToUpper() -eq $installPath.ToUpper()) {
+                       $cltrUpdatedEnabled = $cltr.UpdatesEnabled
+                       $cltrUpdateUrl = $cltr.UpdateUrl
+                       if ($cltr.Platform -eq 'x64') {
+                           $buildType = "64-Bit" 
+                       }
+                       if ($cltr.Platform -eq 'x86') {
+                           $buildType = "32-Bit" 
+                       }
+                       $clientCulture = $cltr.ClientCulture
+                   }
+                 }
+               }
+           }
+           
+           if (!$primaryOfficeProduct) {
+              if (!$ShowAllInstalledProducts) {
+                  continue
+              }
+           }
+
+           $object = New-Object PSObject -Property @{DisplayName = $name; Version = $version; InstallPath = $installPath; ClickToRun = $clickToRun; 
+                     Bitness=$buildType; ComputerName=$computer; ClickToRunUpdatesEnabled=$cltrUpdatedEnabled; ClickToRunUpdateUrl=$cltrUpdateUrl;
+                     ClientCulture=$clientCulture }
+           $object | Add-Member MemberSet PSStandardMembers $PSStandardMembers
+           $results += $object
+
+        }
+    }
+
+  }
+
+  $results = Get-Unique -InputObject $results 
+
+  return $results;
+}
+
 }
 
 Function checkForLanguagesInSourceFiles() {
@@ -1013,4 +1375,429 @@ Function Format-XML ([xml]$xml, $indent=2) {
     $XmlWriter.Flush() 
     $StringWriter.Flush() 
     Write-Output $StringWriter.ToString() 
+}
+
+function Set-OfficePinnedApplication { 
+<#  
+.SYNOPSIS  
+Automate the process for pinning or unpinning Office apps
+
+.DESCRIPTION  
+Pin or unpin Office apps from the Start Menu or Taskbarb setting the action
+
+.EXAMPLE 
+Set-PinnedApplication -Action PinToTaskbar
+
+.EXAMPLE 
+Set-PinnedApplication -Action UnPinFromTaskbar 
+
+.EXAMPLE 
+Set-PinnedApplication -Action PinToStartMenur
+
+.EXAMPLE 
+Set-PinnedApplication -Action UnPinFromStartMenu 
+
+#>  
+    [CmdletBinding()] 
+    param( 
+        [Parameter(Mandatory=$true)]
+        [PinAction]$Action,
+
+        [Parameter()]
+        [ValidateSet("Word","Excel","PowerPoint","OneNote","Access","Publisher","Outlook","Skype for Business",
+                     "OneDrive for Business","Project","Visio")]
+        [string[]]$OfficeApps = $null,
+
+        [Parameter()]
+        [string]$ClickToRun = $false,
+
+        [Parameter()]
+        [string]$InstallPath,
+
+        [Parameter()]
+        [string]$OfficeVersion
+    )
+
+    if(!$ClickToRun){
+        $ClickToRun = (Get-OfficeVersion).ClickToRun
+    }
+    if(!$InstallPath){
+        $InstallPath = (Get-OfficeVersion).InstallPath
+    }
+    if(!$officeVersion){
+        $officeVersion = (Get-OfficeVersion).Version.Split('.')[0]
+    }
+
+    if($InstallPath.GetType().Name -eq "Object[]"){
+        $InstallPath = $InstallPath[0]
+    }
+
+    if($ClickToRun -eq $true) {
+        $officeAppPath = $InstallPath + "\root\Office" + $officeVersion
+    } else {
+        $officeAppPath = $InstallPath + "Office" + $officeVersion
+    }
+
+    $officeAppList = @()
+
+    if(!$OfficeApps){
+        $officeAppList = @("WINWORD.EXE", "EXCEL.EXE", "POWERPNT.EXE", "ONENOTE.EXE", "MSACCESS.EXE", "MSPUB.EXE", "OUTLOOK.EXE",
+                           "lync.exe", "GROOVE.EXE", "WINPROJ.EXE", "VISIO.EXE")
+    } else {
+        foreach($app in $OfficeApps){
+            switch($app){
+                "Word" {
+                    $officeAppList += "WINWORD.EXE"
+                }
+                "Excel" {
+                    $officeAppList += "EXCEL.EXE"
+                }
+                "PowerPoint" {
+                    $officeAppList += "POWERPNT.EXE"
+                }
+                "OneNote" {
+                    $officeAppList += "ONENOTE.EXE"
+                }
+                "Access" {
+                    $officeAppList += "MSACCESS.EXE"
+                }
+                "Publisher" {
+                    $officeAppList += "MSPUB.EXE"
+                }
+                "Outlook" {
+                    $officeAppList += "OUTLOOK.EXE"
+                }
+                "Skype for Business" {
+                    $officeAppList += "lync.exe"
+                }
+                "OneDrive for Business" {
+                    $officeAppList += "GROOVE.EXE"
+                }
+                "Project" {
+                    $officeAppList += "WINPROJ.EXE"
+                }
+                "Visio" {
+                    $officeAppList += "VISIO.EXE"
+                }
+            }
+        }
+    }
+
+    foreach($app in $officeAppList){
+        if(Test-Path ($officeAppPath + "\$app")){
+            switch($Action) {
+                "PinToStartMenu" {
+                    Write-Host "Pinning $app to the Start Menu..."
+                    if([Environment]::OSVersion.Version.Major -ge 10){
+                        $actionId = '51201'
+                    } else { 
+                        $actionId = '5381'
+                    }
+                }
+                "UnpinFromStartMenu" {
+                    Write-Host "Removing $app from the Start Menu..."
+                    if([Environment]::OSVersion.Version.Major -ge 10){
+                        $actionId = '51394'
+                    } else { 
+                        $actionId = '5382'
+                    } 
+                }
+                "PinToTaskbar" {
+                    Write-Host "Pinning $app to the TaskBar..."
+                    if([Environment]::OSVersion.Version.Major -ge 10){
+                        throw "Unable to pin items to the taskbar in Windows 10"
+                    }
+            
+                    $actionId = '5386'
+                }
+                "UnpinFromTaskbar" {
+                    Write-Host "Removing $app from the TaskBar..."
+                    $actionId = '5387'
+                }
+            }
+
+            InvokeVerb -FilePath ($officeAppPath + "\$app") -Verb $(GetVerb -VerbId $actionId) -officeVersion $officeVersion
+        }
+    } 
+} 
+
+function GetVerb { 
+    param(
+        [int]$verbId
+    ) 
+
+    try { 
+        $t = [type]"CosmosKey.Util.MuiHelper" 
+    } catch { 
+        $def = [Text.StringBuilder]"" 
+        [void]$def.AppendLine('[DllImport("user32.dll")]') 
+        [void]$def.AppendLine('public static extern int LoadString(IntPtr h,uint id, System.Text.StringBuilder sb,int maxBuffer);') 
+        [void]$def.AppendLine('[DllImport("kernel32.dll")]') 
+        [void]$def.AppendLine('public static extern IntPtr LoadLibrary(string s);') 
+        Add-Type -MemberDefinition $def.ToString() -name MuiHelper -namespace CosmosKey.Util             
+    } 
+    if($global:CosmosKey_Utils_MuiHelper_Shell32 -eq $null){         
+        $global:CosmosKey_Utils_MuiHelper_Shell32 = [CosmosKey.Util.MuiHelper]::LoadLibrary("shell32.dll") 
+    } 
+    $maxVerbLength=255 
+    $verbBuilder = new-object Text.StringBuilder "",$maxVerbLength 
+    [void][CosmosKey.Util.MuiHelper]::LoadString($CosmosKey_Utils_MuiHelper_Shell32,$verbId,$verbBuilder,$maxVerbLength) 
+    
+    return $verbBuilder.ToString() 
+} 
+
+function InvokeVerb { 
+    param([string]$FilePath,$verb,$officeVersion) 
+
+    $verb = $verb.Replace("&","") 
+    $path= split-path $FilePath 
+    $shell=new-object -com "Shell.Application"  
+    $folder=$shell.Namespace($path)    
+    $item = $folder.Parsename((split-path $FilePath -leaf)) 
+    $itemVerb = $item.Verbs() | ? {$_.Name.Replace("&","") -eq $verb} 
+   
+    try{
+        if(([Environment]::OSVersion.Version.Major -ge 10) -and ($verb -eq 'Unpin from taskbar')){
+            Remove-PinnedOfficeAppsForWindows10 -OfficeApp $item.Name -officeVersion $officeVersion
+        }else { 
+            $itemVerb.DoIt() 
+        }
+    }catch{}
+     
+}
+
+function Remove-PinnedOfficeAppsForWindows10() {
+    [CmdletBinding()]
+    param(
+        [Parameter()]
+        [string]$OfficeApp,
+
+        [Parameter()]
+        [string]$officeVersion
+    )
+
+    $Action = 'Unpin from taskbar'
+
+    switch($OfficeApp){
+        "WINWORD" {
+            $officeAppName = "Word"  
+        }
+        "EXCEL" {
+            $officeAppName = "Excel"
+        }
+        "POWERPNT" {
+            $officeAppName = "PowerPoint"
+        }
+        "ONENOTE" {
+            $officeAppName = "OneNote"
+        }
+        "MSACCESS" {
+            $officeAppName = "Access"
+        }
+        "MSPUB" { 
+            $officeAppName = "Publisher"
+        }
+        "OUTLOOK" {
+            $officeAppName = "Outlook"
+        }
+        "lync" {
+            $officeAppName = "Skype for Business"
+        }
+        "GROOVE" {
+            $officeAppName = "OneDrive for Business"
+        }
+        "WINPROJ" {
+            $officeAppName = "Project"
+        }
+        "VISIO" {
+            $officeAppName = "Visio"
+        }
+    }
+
+        switch($officeVersion){
+        "11" {
+            $officeAppVersion = "Microsoft Office " + $officeAppName + " 2003"
+        }
+        "12" {
+            $officeAppVersion = "Microsoft Office " + $officeAppName + " 2007"
+        }
+        "14" {
+            $officeAppVersion = "Microsoft " + $officeAppName + " 2010"
+        }
+        "15" {
+            $officeAppVersion = $officeAppName + " 2013"
+        }
+        "16" {
+            $officeAppVersion = $officeAppName + " 2016"
+        }
+    }
+
+    ((New-Object -Com Shell.Application).NameSpace('shell:::{4234d49b-0245-4df3-b780-3893943456e1}').Items() | ? {$_.Name -like $officeAppVersion}).Verbs() | ? {$_.Name.replace('&','') -match $Action} | % {$_.DoIt()}
+       
+}
+
+function GetOfficeAppVerbStatus{
+    [CmdletBinding()]
+    param(
+        [Parameter()]
+        [ValidateSet("Word","Excel","PowerPoint","OneNote","Access","Publisher","Outlook","Skype for Business",
+                     "OneDrive for Business","Project","Visio")]
+        [string[]]$OfficeApps
+    )
+
+    Begin{
+        $defaultDisplaySet = 'Name','PinToStartMenuAvailable', 'PinToTaskbarAvailable'
+        $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet(‘DefaultDisplayPropertySet’,[string[]]$defaultDisplaySet)
+        $PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultDisplayPropertySet)
+    }
+
+    Process{
+        $results = new-object PSObject[] 0;
+
+        $ctr = (Get-OfficeVersion).ClickToRun
+        $InstallPath = (Get-OfficeVersion).InstallPath
+        $officeVersion = (Get-OfficeVersion).Version.Split('.')[0]
+
+        if($InstallPath.GetType().Name -eq "Object[]"){
+            $InstallPath = $InstallPath[0]
+        }
+
+        if($ctr -eq $true) {
+            $officeAppPath = $InstallPath + "\root\Office" + $officeVersion
+        } else {
+            $officeAppPath = $InstallPath + "Office" + $officeVersion
+        }
+
+        $availableApps = @()
+        $officeAppList = @()
+
+        if(!$OfficeApps){
+            $officeAppList += @("WINWORD.EXE", "EXCEL.EXE", "POWERPNT.EXE", "ONENOTE.EXE", "MSACCESS.EXE", "MSPUB.EXE", "OUTLOOK.EXE",
+                            "lync.exe", "GROOVE.EXE", "WINPROJ.EXE", "VISIO.EXE")
+        } else {
+            foreach($app in $OfficeApps){
+                switch($app){
+                    "Word" {
+                        $officeAppList += "WINWORD.EXE"
+                    }
+                    "Excel" {
+                        $officeAppList += "EXCEL.EXE"
+                    }
+                    "PowerPoint" {
+                        $officeAppList += "POWERPNT.EXE"
+                    }
+                    "OneNote" {
+                        $officeAppList += "ONENOTE.EXE"
+                    }
+                    "Access" {
+                        $officeAppList += "MSACCESS.EXE"
+                    }
+                    "Publisher" {
+                        $officeAppList += "MSPUB.EXE"
+                    }
+                    "Outlook" {
+                        $officeAppList += "OUTLOOK.EXE"
+                    }
+                    "Lync" {
+                        $officeAppList += "lync.exe"
+                    }
+                    "OneDriveForBusiness" {
+                        $officeAppList += "GROOVE.EXE"
+                    }
+                    "Project" {
+                        $officeAppList += "WINPROJ.EXE"
+                    }
+                    "Visio" {
+                        $officeAppList += "VISIO.EXE"
+                    }
+                }
+            }
+        }
+
+        foreach($app in $OfficeAppList){
+            if(Test-Path ($officeAppPath + "\$app")){
+                $availableApps += $app
+            }
+        }
+
+        foreach($app in $availableApps){
+            switch($app){
+                "WINWORD.EXE" {
+                    $officeAppName = "Word"  
+                }
+                "EXCEL.EXE" {
+                    $officeAppName = "Excel"
+                }
+                "POWERPNT.EXE" {
+                    $officeAppName = "PowerPoint"
+                }
+                "ONENOTE.EXE" {
+                    $officeAppName = "OneNote"
+                }
+                "MSACCESS.EXE" {
+                    $officeAppName = "Access"
+                }
+                "MSPUB.EXE" { 
+                    $officeAppName = "Publisher"
+                }
+                "OUTLOOK.EXE" {
+                    $officeAppName = "Outlook"
+                }
+                "lync.exe" {
+                    $officeAppName = "Skype for Business"
+                }
+                "GROOVE.EXE" {
+                    $officeAppName = "OneDrive for Business"
+                }
+                "WINPROJ.EXE" {
+                    $officeAppName = "Project"
+                }
+                "VISIO.EXE" {
+                    $officeAppName = "Visio"
+                }
+            }
+
+            if(!($officeAppName -eq "OneDrive for Business")){
+                switch($officeVersion){
+                    "11" {
+                        $officeAppVersion = "Microsoft Office " + $officeAppName + " 2003"
+                    }
+                    "12" {
+                        $officeAppVersion = "Microsoft Office " + $officeAppName + " 2007"
+                    }
+                    "14" {
+                        $officeAppVersion = "Microsoft " + $officeAppName + " 2010"
+                    }
+                    "15" {
+                        $officeAppVersion = $officeAppName + " 2013"
+                    }
+                    "16" {
+                        $officeAppVersion = $officeAppName + " 2016"
+                    }
+                }
+            }
+
+            $verbs = ((New-Object -Com Shell.Application).NameSpace('shell:::{4234d49b-0245-4df3-b780-3893943456e1}').Items() | ? {$_.Name -like $officeAppVersion}).Verbs() | select Name
+
+            [bool]$availablePinToStartMenu = $false
+            [bool]$availablePinToTaskbar = $false
+            foreach($verb in $verbs.name){
+                switch($verb.Replace('&','')){
+                    "Pin to Start" {
+                        $availablePinToStartMenu = $true
+                    }
+                    "Pin to Taskbar" {
+                        $availablePinToTaskbar = $true
+                    }
+                }
+            }
+
+            $object = New-Object PSObject -Property @{Name = $officeAppName; PinToStartMenuAvailable = $availablePinToStartMenu; PinToTaskbarAvailable = $availablePinToTaskbar;}
+                                                      
+            $object | Add-Member MemberSet PSStandardMembers $PSStandardMembers
+            $results += $object
+        }
+
+        return $results
+    }
 }
