@@ -290,7 +290,7 @@ This PowerShell function automates the setup of Office 365 Click-To-Run deployme
 	
 	The available parameters with the function are as follows.
 	* **Channels** The available options are **Current, Deferred, FirstReleaseDeferred, FirstReleaseCurrent**
-	* **DistributionPoint** The distribution point name. A distribution point or distirbution point group must be specified.
+	* **DistributionPoint** The distribution point name. A distribution point or distribution point group must be specified.
 	* **DistributionPointGroupName** The distribution point group name. A distribution point or distirbution point group must be specified.
 	* **DeploymentExpiryDurationInDays** Default value is 15.
 	* **SiteCode** Three digit site code, example **S01**. Left blank it will default to the current site.
