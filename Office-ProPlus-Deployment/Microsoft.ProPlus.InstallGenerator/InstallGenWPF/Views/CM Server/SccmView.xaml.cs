@@ -87,6 +87,7 @@ namespace MetroDemo.ExampleViews
                     cbActions.Items.Add("Rollback the version of an Office 365 client");
                     cbActions.Items.Add("Update an Office 365 ProPlus client with ConfigMgr");
                     cbActions.Items.Add("Update an Office 365 ProPlus client using a scheduled task");
+                    cbActions.Items.Add("Deploy Language Pack");
                 }
 
                 cbActions.SelectedIndex = 0; 

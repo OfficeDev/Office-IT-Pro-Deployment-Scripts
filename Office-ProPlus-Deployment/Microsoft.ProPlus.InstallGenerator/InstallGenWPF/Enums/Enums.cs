@@ -21,7 +21,8 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Enums
         ChangeChannel = 1, 
         Rollback = 2, 
         UpdateConfigMgr = 3, 
-        UpdateScheduledTask = 4 
+        UpdateScheduledTask = 4,
+        DeployLanguagePack = 5
     }
 
     public enum DeploymentSource
@@ -41,5 +42,28 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Enums
     {
         Install = 0,
         Exclude = 1
+    }
+
+    public enum ProgramType
+    {
+        DeployWithScript = 0,
+        DeployWithConfigurationFile = 1,
+        ChangeChannel = 2,
+        RollBack = 3,
+        UpdateWithConfigMgr = 4,
+        UpdateWithTask = 5
+    }
+
+    public enum DeploymentPurpose
+    {
+        Default = 0,
+        Required = 1,
+        Available = 2
+    }
+
+    public enum DeploymentType
+    {
+        DeployWithScript = 0,
+        DeployWithConfigurationFile =1
     }
 }

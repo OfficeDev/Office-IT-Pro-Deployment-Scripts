@@ -12,7 +12,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using MahApps.Metro.Controls;
+using MetroDemo;
 using MetroDemo.Events;
+using Microsoft.OfficeProPlus.InstallGen.Presentation.Models;
 
 namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
 {
@@ -23,12 +26,25 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
     {
         public event ToggleNextEventHandler ToggleNextButton;
 
+
         public DeployOtherView()
         {
             InitializeComponent();
         }
 
+      
+
         private void DeployOtherView_OnLoaded(object sender, RoutedEventArgs e)
+        {
+           
+        }
+
+        private void OtherOptionsPage_OnIsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            //throw new NotImplementedException();
+        }
+
+        private void DistributionPoint_OnTextChanged(object sender, TextChangedEventArgs e)
         {
             throw new NotImplementedException();
         }

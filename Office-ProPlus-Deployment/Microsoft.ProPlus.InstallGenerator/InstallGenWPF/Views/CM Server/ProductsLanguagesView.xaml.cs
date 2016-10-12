@@ -43,7 +43,6 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
             InitializeComponent();
         }
 
-
         #region events
         private void ProductsLanguagesView_OnLoaded(object sender, RoutedEventArgs e)
         {

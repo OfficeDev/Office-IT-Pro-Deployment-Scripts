@@ -428,17 +428,19 @@ namespace MetroDemo
 
             SelectedCertificate = new Certificate();
 
-            SccmConfiguration = new SccmConfiguration()
-            {
-                Bitnesses = new List<Bitness>(),
-                Channels = new List<SelectedChannel>(),
-                DeploymentDirectory = String.Empty,
-                DeploymentSource = DeploymentSource.CDN,
-                Languages = new ObservableCollection<Language>(),
-                Products = new ObservableCollection<Product>(),
-                Version = BranchVersion.Latest,
-                ExcludedProducts = new List<ExcludeProduct>()
-            };
+            SccmConfiguration = new SccmConfiguration();
+            //{
+            //    Bitnesses = new List<Bitness>(),
+            //    Channels = new List<SelectedChannel>(),
+            //    DeploymentDirectory = String.Empty,
+            //    DeploymentSource = DeploymentSource.CDN,
+            //    Languages = new ObservableCollection<Language>(),
+            //    Products = new ObservableCollection<Product>(),
+            //    Version = BranchVersion.Latest,
+            //    ExcludedProducts = new List<ExcludeProduct>(),
+            //    MoveFiles = true,
+
+            //};
 
             ChannelVersions = new List<BranchVersion>();
             ChannelVersions.Add(BranchVersion.Latest);
