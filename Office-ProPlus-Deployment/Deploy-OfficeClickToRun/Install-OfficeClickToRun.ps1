@@ -115,12 +115,12 @@ Office apps will not be pinned to the Start Menu. The PowerShell console will no
         [Parameter()]
         [ValidateSet("AllOfficeApps","Word","Excel","PowerPoint","OneNote","Access","Publisher","Outlook","Skype for Business",
                      "OneDrive for Business","Project","Visio")]
-        [string[]]$PinToStartMenu = "AllOfficeApps",
+        [string[]]$PinToStartMenu,
 
         [Parameter()]
         [ValidateSet("AllOfficeApps","Word","Excel","PowerPoint","OneNote","Access","Publisher","Outlook","Skype for Business",
                      "OneDrive for Business","Project","Visio")]
-        [string[]]$PinToTaskbar = "AllOfficeApps"
+        [string[]]$PinToTaskbar
 
     )
 
@@ -1776,26 +1776,53 @@ function GetOfficeAppVerbStatus{
                     }
                 }
             }
-
-            $verbs = ((New-Object -Com Shell.Application).NameSpace('shell:::{4234d49b-0245-4df3-b780-3893943456e1}').Items() | ? {$_.Name -like $officeAppVersion}).Verbs() | select Name
-
+            
             [bool]$availablePinToStartMenu = $false
             [bool]$availablePinToTaskbar = $false
-            foreach($verb in $verbs.name){
-                switch($verb.Replace('&','')){
-                    "Pin to Start" {
-                        $availablePinToStartMenu = $true
-                    }
-                    "Pin to Taskbar" {
-                        $availablePinToTaskbar = $true
+            
+            if([Environment]::OSVersion.Version.Major -ge 10){
+                $verbs = ((New-Object -Com Shell.Application).NameSpace('shell:::{4234d49b-0245-4df3-b780-3893943456e1}').Items() | ? {$_.Name -like $officeAppVersion}).Verbs() | select Name
+                
+                foreach($verb in $verbs.name){
+                    switch($verb.Replace('&','')){
+                        "Pin to Start" {
+                            $availablePinToStartMenu = $true
+                        }
+                        "Pin to Taskbar" {
+                            $availablePinToTaskbar = $true
+                        }
                     }
                 }
+            } else {
+                $pinActions = @("5381","5386")
+                
+                foreach($action in $pinActions){
+                    $verb = GetVerb -verbId $action
+                    $verb = $verb.Replace("&","")
+                    $FilePath = $officeAppPath + "\" + $app
+                    $path = Split-Path $FilePath
+                    $shell = New-Object -ComObject "Shell.Application"
+                    $folder = $shell.Namespace($path)
+                    $item = $folder.Parsename((Split-Path $filepath -Leaf))
+                    $itemverb = $item.Verbs() | ? {$_.Name.Replace("&","") -eq $verb}
+                    
+                    if($itemverb){
+                        switch($verb){
+                            "Pin to Start Menu" {
+                                $availablePinToStartMenu = $true
+                            }
+                            "Pin to Taskbar" {
+                                $availablePinToTaskbar = $true
+                            }
+                        }
+                    }
+                }         
             }
-
+            
             $object = New-Object PSObject -Property @{Name = $officeAppName; PinToStartMenuAvailable = $availablePinToStartMenu; PinToTaskbarAvailable = $availablePinToTaskbar;}
                                                       
             $object | Add-Member MemberSet PSStandardMembers $PSStandardMembers
-            $results += $object
+            $results += $object 
         }
 
         return $results
