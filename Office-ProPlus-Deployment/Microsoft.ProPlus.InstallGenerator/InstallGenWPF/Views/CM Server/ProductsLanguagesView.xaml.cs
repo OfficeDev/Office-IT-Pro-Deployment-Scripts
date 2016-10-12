@@ -32,6 +32,7 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
         private SccmAddLanguages AddlanguagesDialog = null;
         private SccmAddProducts AddproductsDialog = null;
         private SccmRemoveProducts RemoveproductsDialog = null;
+        private SccmExcludeProducts ExcludeProductsDialog = null; 
 
         public event MessageEventHandler ErrorMessage;
 
@@ -185,6 +186,7 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
                             }
                         });
                     };
+                    AddlanguagesDialog = null;
                 }
                 AddlanguagesDialog.Launch();
 
@@ -224,10 +226,10 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
                                 GlobalObjects.ViewModel.SccmConfiguration.Products.Add(p);
                             }
                         });
+                        AddproductsDialog = null;
                     };
                 }
                 AddproductsDialog.Launch();
-
             }
             catch (Exception ex)
             {
@@ -241,8 +243,7 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
             {
                 if (RemoveproductsDialog == null)
                 {
-                    var productList = GlobalObjects.ViewModel.AllProductsNoExclude.ToList();
-
+                    var productList = GlobalObjects.ViewModel.SccmConfiguration.Products.ToList();
 
                     RemoveproductsDialog = new SccmRemoveProducts
                     {
@@ -254,15 +255,64 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
                     };
                     RemoveproductsDialog.Closing += (o, args) =>
                     {
-                        var selectedProducts = AddproductsDialog.SelectedItems;
+                        var selectedProducts = RemoveproductsDialog.SelectedItems;
 
                         selectedProducts.ForEach(p =>
                         {
+                            if(GlobalObjects.ViewModel.SccmConfiguration.Products.IndexOf(p) > -1)  
                             GlobalObjects.ViewModel.SccmConfiguration.Products.Remove(p);
                         });
+
+                        RemoveproductsDialog = null; 
                     };
                 }
                 RemoveproductsDialog.Launch();
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
+
+        private void LaunchExcludeProductsDialog()
+        {
+            try
+            {
+                if (ExcludeProductsDialog == null)
+                {
+                    var productList = GlobalObjects.ViewModel.ExcludeProducts.ToList();
+
+
+                    ExcludeProductsDialog = new SccmExcludeProducts
+                    {
+                        ProductSource = productList
+                    };
+
+                    ExcludeProductsDialog.Closed += (o, args) =>
+                    {
+                        ExcludeProductsDialog = null;
+                    };
+
+                    ExcludeProductsDialog.Closing += (o, args) =>
+                    {
+                        var selectedProducts = ExcludeProductsDialog.SelectedItems;
+
+                        selectedProducts.ForEach(p =>
+                        {
+                            var tempProduct = new Product();
+                            tempProduct.DisplayName = p.DisplayName;
+                            tempProduct.Id = p.DisplayName;
+                            tempProduct.ProductAction = ProductAction.Exclude;
+
+                            if (GlobalObjects.ViewModel.SccmConfiguration.Products.IndexOf(tempProduct) == -1)
+                            {
+                                GlobalObjects.ViewModel.SccmConfiguration.Products.Add(tempProduct);
+                            }
+                        });
+                        ExcludeProductsDialog = null;
+                    };
+                }
+                ExcludeProductsDialog.Launch();
 
             }
             catch (Exception ex)
@@ -294,7 +344,7 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
 
         private void BExcludeApps_OnClick(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
+            LaunchExcludeProductsDialog();
         }
 
         private void BRemoveProduct_OnClick(object sender, RoutedEventArgs e)
