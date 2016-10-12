@@ -30,6 +30,7 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
     {
         public event ToggleNextEventHandler ToggleNextButton;
         private SccmAddLanguages AddlanguagesDialog = null;
+        private SccmRemoveLanguages RemovelanguagesDialog = null; 
         private SccmAddProducts AddproductsDialog = null;
         private SccmRemoveProducts RemoveproductsDialog = null;
         private SccmExcludeProducts ExcludeProductsDialog = null; 
@@ -53,86 +54,6 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
         {
             ToggleNext();
         }
-
-        private void IncludeProductsToggleButton_OnChecked(object sender, RoutedEventArgs e)
-        {
-            var checkbox = (CheckBox)sender;
-            var selectedProduct = checkbox.DataContext as Product;
-
-            GlobalObjects.ViewModel.SccmConfiguration.Products.Add(selectedProduct);
-
-            ToggleNext();
-        }
-
-        private void IncludeProductsToggleButton_OnUnchecked(object sender, RoutedEventArgs e)
-        {
-            var checkbox = (CheckBox)sender;
-            var unSelectedProduct = checkbox.DataContext as Product;
-
-            foreach (var product in GlobalObjects.ViewModel.SccmConfiguration.Products)
-            {
-                if (product.DisplayName == unSelectedProduct.DisplayName)
-                {
-                    GlobalObjects.ViewModel.SccmConfiguration.Products.Remove(product);
-                    break;
-                }
-            }
-
-            ToggleNext();
-        }
-
-        private void ExludeProductsToggleButton_OnChecked(object sender, RoutedEventArgs e)
-        {
-            var checkbox = (CheckBox) sender;
-            var selectedProduct = checkbox.DataContext as ExcludeProduct; 
-
-            GlobalObjects.ViewModel.SccmConfiguration.ExcludedProducts.Add(selectedProduct);
-
-       }
-
-        private void ExcludeProductsToggleButton_OnUnchecked(object sender, RoutedEventArgs e)
-        {
-            var checkbox = (CheckBox) sender;
-            var unSelectedProduct = checkbox.DataContext as ExcludeProduct;
-
-            foreach (var product in GlobalObjects.ViewModel.SccmConfiguration.ExcludedProducts)
-            {
-                if (product.DisplayName == unSelectedProduct.DisplayName)
-                {
-                    GlobalObjects.ViewModel.SccmConfiguration.ExcludedProducts.Remove(product);
-                    break;
-                }
-            }
-
-        }
-
-        private void LanguageToggleButton_OnChecked(object sender, RoutedEventArgs e)
-        {
-            var checkbox = (CheckBox) sender;
-            var selectedLanguage = checkbox.DataContext as Language; 
-
-            GlobalObjects.ViewModel.SccmConfiguration.Languages.Add(selectedLanguage);
-
-            ToggleNext();
-        }
-
-        private void LanguageToggleButton_OnUnchecked(object sender, RoutedEventArgs e)
-        {
-            var checkbox = (CheckBox)sender;
-            var unSelectedLanguage = checkbox.DataContext as Language;
-
-            foreach (var language in GlobalObjects.ViewModel.SccmConfiguration.Languages)
-            {
-                if (language.Id == unSelectedLanguage.Id)
-                {
-                    GlobalObjects.ViewModel.SccmConfiguration.Languages.Remove(language);
-                    break;
-                }
-            }
-
-            ToggleNext();
-        }
-
         #endregion
 
         #region helpers    
@@ -140,7 +61,7 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
         {
             var SccmConfig = GlobalObjects.ViewModel.SccmConfiguration;
 
-            if (SccmConfig.Products.Count > 0 && SccmConfig.Languages.Count > 0)
+            if (SccmConfig.Languages.Count > 0 && SccmConfig.Products.Count > 0)
             {
                 ToggleNextButton?.Invoke(this, new ToggleEventArgs()
                 {
@@ -155,7 +76,6 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
                 });
             }
         }
-
 
         private void LaunchLanguageDialog()
         {
@@ -185,11 +105,11 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
                                 GlobalObjects.ViewModel.SccmConfiguration.Languages.Add(l);
                             }
                         });
+                        AddlanguagesDialog = null;
+                        ToggleNext();
                     };
-                    AddlanguagesDialog = null;
                 }
                 AddlanguagesDialog.Launch();
-
             }
             catch (Exception ex)
             {
@@ -227,6 +147,7 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
                             }
                         });
                         AddproductsDialog = null;
+                        ToggleNext();
                     };
                 }
                 AddproductsDialog.Launch();
@@ -262,11 +183,52 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
                             if(GlobalObjects.ViewModel.SccmConfiguration.Products.IndexOf(p) > -1)  
                             GlobalObjects.ViewModel.SccmConfiguration.Products.Remove(p);
                         });
-
-                        RemoveproductsDialog = null; 
+                        RemoveproductsDialog = null;
+                        ToggleNext();
                     };
                 }
                 RemoveproductsDialog.Launch();
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
+
+        private void LauncheRemoveLanguagesDialog()
+        {
+            try
+            {
+                if (RemovelanguagesDialog == null)
+                {
+                    var languageList = GlobalObjects.ViewModel.SccmConfiguration.Languages.ToList();
+
+                    RemovelanguagesDialog = new SccmRemoveLanguages()
+                    {
+                        LanguageSource = languageList
+                    };
+                    RemovelanguagesDialog.Closed += (o, args) =>
+                    {
+                        AddlanguagesDialog = null;
+                    };
+                    RemovelanguagesDialog.Closing += (o, args) =>
+                    {
+
+                        var selectedLanguages = RemovelanguagesDialog.SelectedItems;
+
+                        selectedLanguages.ForEach(l =>
+                        {
+                            if (GlobalObjects.ViewModel.SccmConfiguration.Languages.IndexOf(l) > -1)
+                            {
+                                GlobalObjects.ViewModel.SccmConfiguration.Languages.Remove(l);
+                            }
+                        });
+                        RemovelanguagesDialog = null;
+                        ToggleNext();
+                    };
+                }
+                RemovelanguagesDialog.Launch();
+
             }
             catch (Exception ex)
             {
@@ -310,6 +272,7 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
                             }
                         });
                         ExcludeProductsDialog = null;
+                        ToggleNext();
                     };
                 }
                 ExcludeProductsDialog.Launch();
@@ -333,14 +296,12 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
                 });
             }
         }
-
         #endregion
 
         private void BAddProducts_OnClick(object sender, RoutedEventArgs e)
         {
             LaunchAddProductDialog();
         }
-
 
         private void BExcludeApps_OnClick(object sender, RoutedEventArgs e)
         {
@@ -359,9 +320,9 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
 
         private void BRemoveLanguage_OnClick(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
+            LauncheRemoveLanguagesDialog();
         }
 
-
+    
     }
 }

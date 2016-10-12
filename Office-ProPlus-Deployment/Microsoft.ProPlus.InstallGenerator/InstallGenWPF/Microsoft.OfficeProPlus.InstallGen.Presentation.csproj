@@ -303,6 +303,9 @@
     <Compile Include="Windows\DownloadAdvanced.xaml.cs">
       <DependentUpon>DownloadAdvanced.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Windows\SccmRemoveLanguages.xaml.cs">
+      <DependentUpon>SccmRemoveLanguages.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\SccmExcludeProducts.xaml.cs">
       <DependentUpon>SccmExcludeProducts.xaml</DependentUpon>
     </Compile>
@@ -438,6 +441,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Windows\DownloadAdvanced.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Windows\SccmRemoveLanguages.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
