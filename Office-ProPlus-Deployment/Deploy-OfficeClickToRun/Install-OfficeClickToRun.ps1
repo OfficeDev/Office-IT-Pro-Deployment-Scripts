@@ -85,6 +85,13 @@ The version of Office Click-To-Run to install. Available options are Office2013 
 .PARAMETER WaitForInstallToFinish
 If $true, the PowerShell console will remain open and provide status updates until Office is finished installing.
 
+.PARAMETER PinToStartMenu
+Choose one or multiple Office applications to pin to the Start Menu after the installation is finished. 
+
+.PARAMETER PinToTaskbar
+Choose one or multiple Office applications to pin to the Taskbar after the installation is finished. Pinning applications
+to the Taskbar in Windows 10 is not natively supported.
+
 .EXAMPLE
 Install-OfficeClickToRun -ConfigurationXML C:\OfficeDeployment\configuration.xml
 Office 2016 Click-To-Run will be installed using the settings in the specified configuration.xml.
@@ -94,9 +101,9 @@ Install-OfficeClickToRun -TargetFilePath $env:temp\configuration.xml
 Office 2016 Click-To-Run will be installed using an auto-generated configuration file that will be saved to the temp directory.
 
 .EXAMPLE
-Install-OfficeClickToRun -TargetFilePath $env:temp\configuration.xml -PinToStart $false -WaitForInstallToFinish $false
-Office 2016 Click-To-Run will be installed using an auto-generated configuration file that will be saved to the temp directory. The 
-Office apps will not be pinned to the Start Menu. The PowerShell console will not provide status updates of the installation.
+Install-OfficeClickToRun -TargetFilePath $env:temp\configuration.xml -PinToStartMenu Word,Excel,Outlook -WaitForInstallToFinish $false
+Office 2016 Click-To-Run will be installed using an auto-generated configuration file that will be saved to the temp directory. Microsoft
+Word, Excel, and Outlook will be pinned to the Start Menu. The PowerShell console will not provide status updates of the installation.
 #>
     [CmdletBinding()]
     Param(
