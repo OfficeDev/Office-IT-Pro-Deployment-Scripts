@@ -113,14 +113,16 @@
                                                        Margin="{StaticResource ControlMargin}" 
                                                        HorizontalAlignment="Right" VerticalAlignment="Center"/>
 
-                                    <Label Grid.Row="2" Grid.ColumnSpan="3" x:Name="lblDistributionPoint" Content="Distribution Point Name?" ToolTip="The distribution point name. A distribution point or distribution point group must be specified." Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
+                                    <Label Grid.Row="2" Grid.ColumnSpan="3" x:Name="lblDistributionPoint" Content="Distribution Point Name?" ToolTip="The distribution point name. A distribution point or distribution point group must be specified." Style="{StaticResource CustomMetroLabelHeader}" 
+                                           VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" Visibility="Collapsed" />
                                     <TextBox Grid.Row="2" Grid.Column="2"  x:Name="DistributionPoint" FontSize="15" VerticalContentAlignment="Top" HorizontalAlignment="Right" ToolTip="The distribution point name. A distribution point or distribution point group must be specified."
-                                             Height="30" Width="200" Text="{Binding SccmConfiguration.DistributionPoint, Mode=TwoWay}"  Foreground="{StaticResource GrayBrush}" Background="White">
+                                             Height="30" Width="200" Text="{Binding SccmConfiguration.DistributionPoint, Mode=TwoWay}"  Foreground="{StaticResource GrayBrush}" Background="White" TextChanged="DistributionPoint_OnTextChanged">
                                     </TextBox>
 
-                                    <Label Grid.Row="3" Grid.ColumnSpan="3" x:Name="lblDistributionPointGroupName" Content="Distribution Point Group Name?" ToolTip="The distribution point group name. A distribution point or distirbution point group must be specified." Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
+                                    <Label Grid.Row="3" Grid.ColumnSpan="3" x:Name="lblDistributionPointGroupName" Content="Distribution Point Group Name?" ToolTip="The distribution point group name. A distribution point or distirbution point group must be specified." 
+                                           Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" Visibility="Collapsed" />
                                     <TextBox Grid.Row="3" Grid.Column="2"  x:Name="DistributionPointGroupName"  FontSize="15" HorizontalAlignment="Right" VerticalContentAlignment="Top" ToolTip="The distribution point group name. A distribution point or distirbution point group must be specified."
-                                            Height="30" Width="200" Text="{Binding SccmConfiguration.DistributionPointGroupName, Mode=TwoWay}"  Foreground="{StaticResource GrayBrush}" Background="White">
+                                            Height="30" Width="200" Text="{Binding SccmConfiguration.DistributionPointGroupName, Mode=TwoWay}"  Foreground="{StaticResource GrayBrush}" Background="White" TextChanged="DistributionPointGroupName_OnTextChanged">
                                     </TextBox>
 
                                     <Label Grid.Row="4" Grid.ColumnSpan="3" x:Name="lblDeploymentExpiryDurationInDays" Content="How Long Will this Package be Available (days)?" ToolTip="Default value is 15 days." Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
