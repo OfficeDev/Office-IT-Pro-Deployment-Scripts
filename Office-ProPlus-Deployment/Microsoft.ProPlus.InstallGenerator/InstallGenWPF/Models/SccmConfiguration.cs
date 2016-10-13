@@ -48,7 +48,6 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Models
             Collection = string.Empty;
 
             //dropdowns
-            ProgramType = ProgramType.DeployWithScript;
             DeploymentPurpose = DeploymentPurpose.Required;
             DeploymentType = DeploymentType.DeployWithConfigurationFile;
         }
@@ -86,8 +85,6 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Models
         public DeploymentSource DeploymentSource { get; set; }
 
         public BranchVersion Version { get; set; }
-
-        public ProgramType ProgramType { get; set; }
 
         public DeploymentPurpose DeploymentPurpose { get; set; }
 

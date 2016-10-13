@@ -67,99 +67,177 @@
                                     </DockPanel>
                                 </TabItem.Header>
 
-                            <Grid HorizontalAlignment="Left" Margin="30 30 0 0" Height="450" VerticalAlignment="Top" x:Name="OtherOptionsPage" IsVisibleChanged="OtherOptionsPage_OnIsVisibleChanged">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="50" />
-                                    <RowDefinition Height="50" />
-                                    <RowDefinition Height="50" />
-                                    <RowDefinition Height="50" />
-                                    <RowDefinition Height="50" />
-                                    <RowDefinition Height="50" />
-                                    <RowDefinition Height="50" />
-                                    <RowDefinition Height="100" />
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="225" />
-                                    <ColumnDefinition Width="75" />
-                                    <ColumnDefinition Width="325" />
-                                    <ColumnDefinition Width="75" />
+                            <Controls:MetroAnimatedSingleRowTabControl  x:Name="OptionsTabControl" 
+                                                           Height="650" VerticalAlignment="Top" >
 
-                                </Grid.ColumnDefinitions>
 
-                                <TextBlock Grid.Row="0" Grid.ColumnSpan="2" TextWrapping="WrapWithOverflow" FontSize="25" FontWeight="Bold" Style="{StaticResource CustomMetroLabelTextBlock}"  Text="Other possible options." />
+                                <TabItem x:Name="OptionsTab1" Height="50">
+                                    <TabItem.Header>
+                                        <DockPanel Margin="0,5,0,0">
+                                            <Label Style="{StaticResource CustomMetroLabelTopHeader1}" Padding="0,0,0,0" Height="19">Options 1</Label>
+                                        </DockPanel>
+                                    </TabItem.Header>
 
-                                <Label Grid.Row="1" Grid.Column="0" x:Name="lblMoveFiles"  Content="Move the source files?" ToolTip="Moves the source files to the new package share vs copying." Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
-                                <Controls:ToggleSwitch Grid.Row="1" Grid.Column="1" Name="tsMoveFiles" IsChecked="{Binding SccmConfiguration.MoveFiles, Mode=TwoWay}"
+                                    <Grid HorizontalAlignment="Left" Margin="30 10 0 0" Height="450" VerticalAlignment="Top" x:Name="OtherOptionsPage" IsVisibleChanged="OtherOptionsPage_OnIsVisibleChanged">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="50" />
+                                        <RowDefinition Height="50" />
+                                        <RowDefinition Height="50" />
+                                        <RowDefinition Height="50" />
+                                        <RowDefinition Height="50" />
+                                        <RowDefinition Height="50" />
+                                        <RowDefinition Height="50" />
+                                        <RowDefinition Height="100" />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="225" />
+                                        <ColumnDefinition Width="75" />
+                                        <ColumnDefinition Width="325" />
+                                        <ColumnDefinition Width="75" />
+
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock Grid.Row="0" Grid.ColumnSpan="2" TextWrapping="WrapWithOverflow" FontSize="25" FontWeight="Bold" Style="{StaticResource CustomMetroLabelTextBlock}"  Text="Other possible options." />
+
+                                    <Label Grid.Row="1" Grid.Column="0" x:Name="lblMoveFiles"  Content="Move the source files?" ToolTip="Moves the source files to the new package share vs copying." Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
+                                    <Controls:ToggleSwitch Grid.Row="1" Grid.Column="1" Name="tsMoveFiles" IsChecked="{Binding SccmConfiguration.MoveFiles, Mode=TwoWay}"
                                                        Style="{StaticResource MetroToggleSwitchStyle}"
                                                        OffLabel="" OnLabel=""
                                                        Margin="{StaticResource ControlMargin}" 
                                                        HorizontalAlignment="Right" VerticalAlignment="Center"/>
 
-                                <Label Grid.Row="1" Grid.Column="2" x:Name="lblUpdateBits" Content="Update changed bits of package?" ToolTip="Used when the package share already exists." Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
-                                <Controls:ToggleSwitch Grid.Row="1" Grid.Column="3" Name="tsUpdateBits" IsChecked="{Binding SccmConfiguration.UpdateOnlyChangedBits, Mode=TwoWay}"
+                                    <Label Grid.Row="1" Grid.Column="2" x:Name="lblUpdateBits" Content="Update changed bits of package?" ToolTip="Used when the package share already exists." Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
+                                    <Controls:ToggleSwitch Grid.Row="1" Grid.Column="3" Name="tsUpdateBits" IsChecked="{Binding SccmConfiguration.UpdateOnlyChangedBits, Mode=TwoWay}"
                                                        Style="{StaticResource MetroToggleSwitchStyle}"
                                                        OffLabel="" OnLabel=""
                                                        Margin="{StaticResource ControlMargin}" 
                                                        HorizontalAlignment="Right" VerticalAlignment="Center"/>
 
-                                <Label Grid.Row="2" Grid.ColumnSpan="3" x:Name="lblDistributionPoint" Content="Distribution Point Name?" ToolTip="The distribution point name. A distribution point or distribution point group must be specified." Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
-                                <TextBox Grid.Row="2" Grid.Column="2"  x:Name="DistributionPoint" FontSize="15" VerticalContentAlignment="Top" HorizontalAlignment="Right" ToolTip="The distribution point name. A distribution point or distribution point group must be specified."
+                                    <Label Grid.Row="2" Grid.ColumnSpan="3" x:Name="lblDistributionPoint" Content="Distribution Point Name?" ToolTip="The distribution point name. A distribution point or distribution point group must be specified." Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
+                                    <TextBox Grid.Row="2" Grid.Column="2"  x:Name="DistributionPoint" FontSize="15" VerticalContentAlignment="Top" HorizontalAlignment="Right" ToolTip="The distribution point name. A distribution point or distribution point group must be specified."
                                              Height="30" Width="200" Text="{Binding SccmConfiguration.DistributionPoint, Mode=TwoWay}"  Foreground="{StaticResource GrayBrush}" Background="White">
-                                </TextBox>
+                                    </TextBox>
 
-                                <Label Grid.Row="3" Grid.ColumnSpan="3" x:Name="lblDistributionPointGroupName" Content="Distribution Point Group Name?" ToolTip="The distribution point group name. A distribution point or distirbution point group must be specified." Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
-                                <TextBox Grid.Row="3" Grid.Column="2"  x:Name="DistributionPointGroupName"  FontSize="15" HorizontalAlignment="Right" VerticalContentAlignment="Top" ToolTip="The distribution point group name. A distribution point or distirbution point group must be specified."
+                                    <Label Grid.Row="3" Grid.ColumnSpan="3" x:Name="lblDistributionPointGroupName" Content="Distribution Point Group Name?" ToolTip="The distribution point group name. A distribution point or distirbution point group must be specified." Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
+                                    <TextBox Grid.Row="3" Grid.Column="2"  x:Name="DistributionPointGroupName"  FontSize="15" HorizontalAlignment="Right" VerticalContentAlignment="Top" ToolTip="The distribution point group name. A distribution point or distirbution point group must be specified."
                                             Height="30" Width="200" Text="{Binding SccmConfiguration.DistributionPointGroupName, Mode=TwoWay}"  Foreground="{StaticResource GrayBrush}" Background="White">
-                                </TextBox>
+                                    </TextBox>
 
-                                <Label Grid.Row="4" Grid.ColumnSpan="3" x:Name="lblDeploymentExpiryDurationInDays" Content="How Long Will this Package be Available (days)?" ToolTip="Default value is 15 days." Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
-                                <TextBox Grid.Row="4" Grid.Column="2"  x:Name="DeploymentExpiryDurationInDays" FontSize="15" HorizontalAlignment="Right" VerticalContentAlignment="Top" ToolTip="Default value is 15 days." Margin="150 0 0 0"
+                                    <Label Grid.Row="4" Grid.ColumnSpan="3" x:Name="lblDeploymentExpiryDurationInDays" Content="How Long Will this Package be Available (days)?" ToolTip="Default value is 15 days." Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
+                                    <TextBox Grid.Row="4" Grid.Column="2"  x:Name="DeploymentExpiryDurationInDays" FontSize="15" HorizontalAlignment="Right" VerticalContentAlignment="Top" ToolTip="Default value is 15 days." Margin="150 0 0 0"
                                            Height="30" Width="150" Text="{Binding SccmConfiguration.DeploymentExpiryDurationInDays, Mode=TwoWay}"  Foreground="{StaticResource GrayBrush}" Background="White">
-                                </TextBox>
+                                    </TextBox>
 
-                                <Label Grid.Row="5" Grid.ColumnSpan="3" x:Name="lblPackName" Content="Would You Like To Use a Custom Package Name?" ToolTip="Create a custom package share name. Default value is OfficeDeployment." Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
-                                <TextBox Grid.Row="5" Grid.Column="2"  x:Name="PackageName" FontSize="15" HorizontalAlignment="Right" VerticalContentAlignment="Top" ToolTip="Create a custom package share name. Default value is OfficeDeployment." Margin="155 0 0 0"
+                                    <Label Grid.Row="5" Grid.ColumnSpan="3" x:Name="lblPackName" Content="Would You Like To Use a Custom Package Name?" ToolTip="Create a custom package share name. Default value is OfficeDeployment." Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
+                                        <TextBox Grid.Row="5" Grid.Column="2"  x:Name="PackageName" FontSize="15" HorizontalAlignment="Right" VerticalContentAlignment="Top" ToolTip="Create a custom package share name. Default value is OfficeDeployment." Margin="155 0 0 0"
                                            Height="30" Width="160" Text="{Binding SccmConfiguration.CustomPackageShareName, Mode=TwoWay}"  Foreground="{StaticResource GrayBrush}" Background="White">
-                                </TextBox>
+                                        </TextBox>
+                                    </Grid>
+                                </TabItem>
+                                <TabItem x:Name="OptionsTab2" Height="50">
+                                    <TabItem.Header>
+                                        <DockPanel Margin="0,5,0,0">
+                                            <Label Style="{StaticResource CustomMetroLabelTopHeader1}" Padding="0,0,0,0" Height="19">Options 2</Label>
+                                        </DockPanel>
+                                    </TabItem.Header>
+
+                                    <Grid HorizontalAlignment="Left" Margin="30 10 0 0" Height="450" VerticalAlignment="Top">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="50" />
+                                            <RowDefinition Height="50" />
+                                            <RowDefinition Height="50" />
+                                            <RowDefinition Height="50" />
+                                            <RowDefinition Height="50" />
+                                            <RowDefinition Height="50" />
+                                            <RowDefinition Height="50" />
+                                            <RowDefinition Height="100" />
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="225" />
+                                            <ColumnDefinition Width="75" />
+                                            <ColumnDefinition Width="325" />
+                                            <ColumnDefinition Width="75" />
+
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock Grid.Row="0" Grid.ColumnSpan="2" TextWrapping="WrapWithOverflow" FontSize="25" FontWeight="Bold" Style="{StaticResource CustomMetroLabelTextBlock}"  Text="More possible options." />
+
+                                        <Label Grid.Row="1" Grid.ColumnSpan="3" x:Name="lblCMPSModulePath" Content="Where is the ConfigurationManager.psd1 Module?" ToolTip="Allows the user to specify that full path to the ConfigurationManager.psd1 PowerShell Module. This is especially useful if CM is installed in a non standard path. " Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
+                                        <TextBox Grid.Row="1" Grid.Column="2"  x:Name="CMPSModulePath" FontSize="15" HorizontalAlignment="Left" VerticalContentAlignment="Top" ToolTip="Allows the user to specify that full path to the ConfigurationManager.psd1 PowerShell Module. This is especially useful if CM is installed in a non standard path. " Margin="180 0 0 0"
+                                                   Height="30" Width="130" Text="{Binding SccmConfiguration.CMPSModulePath, Mode=TwoWay}"  Foreground="{StaticResource GrayBrush}" Background="White">
+                                        </TextBox>
+                                        <Button x:Name="BrowseButton"  Grid.Row="1" Grid.Column="3" Height="40" Width="60" HorizontalAlignment="Right" IsEnabled="False"
+                                        Margin="0 0 0 0" Style="{StaticResource MetroFlatButtonStyle1}" Content="Browse"  Click="BrowseButton_OnClick" />
+
+                                        <Label Grid.Row="2" Grid.ColumnSpan="2" x:Name="lblSiteCode" Content="Which Site Code Will You Use?" ToolTip="Three character site code, example S01. Left blank it will default to the current site." Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
+                                        <TextBox Grid.Row="2" Grid.ColumnSpan="3"  x:Name="SiteCode" FontSize="15" HorizontalAlignment="Right" VerticalContentAlignment="Top" ToolTip="Three character site code, example S01. Left blank it will default to the current site." Margin="180 0 0 0"
+                                                   Height="30" Width="200" Text="{Binding SccmConfiguration.SiteCode, Mode=TwoWay}"  Foreground="{StaticResource GrayBrush}" Background="White">
+                                        </TextBox>
+
+                                        <Label Grid.Row="3" Grid.ColumnSpan="3" x:Name="lbScriptName" Content="What Will The Deployment Script be Named?" ToolTip="Default value is CM-OfficeDeploymentScript.ps1." Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
+                                        <TextBox Grid.Row="3" Grid.ColumnSpan="3"  x:Name="ScriptName" FontSize="15" HorizontalAlignment="Right" VerticalContentAlignment="Top" ToolTip="Default value is CM-OfficeDeploymentScript.ps1." Margin="180 0 0 0"
+                                                   Height="30" Width="200" Text="{Binding SccmConfiguration.ScriptName, Mode=TwoWay}"  Foreground="{StaticResource GrayBrush}" Background="White">
+                                        </TextBox>
+
+                                        <Label Grid.Row="4" Grid.ColumnSpan="3" x:Name="lbConfigurationXml" Content="What Will the Configuration XML be Named?" ToolTip="Default value is .\DeploymentFiles\DefaultConfiguration.xml." Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
+                                        <TextBox Grid.Row="4" Grid.ColumnSpan="3"  x:Name="ConfigurationXml" FontSize="15" HorizontalAlignment="Right" VerticalContentAlignment="Top" ToolTip="Default value is .\DeploymentFiles\DefaultConfiguration.xml." Margin="180 0 0 0"
+                                                   Height="30" Width="200" Text="{Binding SccmConfiguration.ConfigurationXml, Mode=TwoWay}"  Foreground="{StaticResource GrayBrush}" Background="White">
+                                        </TextBox>
+
+                                        <Label Grid.Row="5" Grid.ColumnSpan="3" x:Name="lbCustomName" Content="Custom Name of the Deployment Program?" ToolTip="Default value combines the channel with the platform." Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
+                                        <TextBox Grid.Row="5" Grid.ColumnSpan="3"   FontSize="15" HorizontalAlignment="Right" VerticalContentAlignment="Top" ToolTip="Default value combines the channel with the platform. " Margin="180 0 0 0"
+                                                   Height="30" Width="200" Text="{Binding SccmConfiguration.CustomName, Mode=TwoWay}"  Foreground="{StaticResource GrayBrush}" Background="White">
+                                        </TextBox>
 
 
-                                <DockPanel  Grid.Row="6" Grid.ColumnSpan="3" Height="30" Width="150" Name="MoreOptions" HorizontalAlignment="Right">
-                                    <Label FontSize="16" Foreground="{StaticResource GrayBrush}" FontWeight="SemiBold"  x:Name="lblMoreOptions">More Options</Label>
-                                    <Button  HorizontalContentAlignment="Center" HorizontalAlignment="Right"  VerticalContentAlignment="Top" BorderThickness="0" 
-                                        FontSize="15" FontWeight="SemiBold"   Height="20" Width="20">
-                                        <Button.Background>
-                                            <VisualBrush Visual="{StaticResource appbar_arrow_right}"/>
-                                        </Button.Background>
-                                        <!--<Button.Style>
-                                            <Style TargetType="{x:Type VisualBrush}">
-                                                <Setter Property="Visual" Value="{StaticResource GrayBrush}"/>
-                                                <Setter Property>
-                                                    <Setter.Value>
-                                                        <ControlTemplate TargetType="{x:Type Button}">
-                                                            <Border Background="{TemplateBinding Background}">
-                                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                            </Border>
-                                                        </ControlTemplate>
-                                                    </Setter.Value>
-                                                </Setter>
-                                                <Style.Triggers>
-                                                    <Trigger Property="IsMouseOver" Value="True">
-                                                        <Setter Property="Background" Value="#00BCF2"/>
-                                                    </Trigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Button.Style>-->
-                                    </Button>
-                                </DockPanel>
+                                    </Grid>
+                                </TabItem>
+                                <TabItem x:Name="OptionsTab3" Height="50">
+                                    <TabItem.Header>
+                                        <DockPanel Margin="0,5,0,0">
+                                            <Label Style="{StaticResource CustomMetroLabelTopHeader1}" Padding="0,0,0,0" Height="19">Options 3</Label>
+                                        </DockPanel>
+                                    </TabItem.Header>
+
+                                    <Grid HorizontalAlignment="Left" Margin="30 10 0 0" Height="450" VerticalAlignment="Top">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="50" />
+                                            <RowDefinition Height="50" />
+                                            <RowDefinition Height="50" />
+                                            <RowDefinition Height="50" />
+                                            <RowDefinition Height="50" />
+                                            <RowDefinition Height="50" />
+                                            <RowDefinition Height="50" />
+                                            <RowDefinition Height="100" />
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="225" />
+                                            <ColumnDefinition Width="75" />
+                                            <ColumnDefinition Width="325" />
+                                            <ColumnDefinition Width="75" />
+
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock Grid.Row="0" Grid.ColumnSpan="2" TextWrapping="WrapWithOverflow" FontSize="25" FontWeight="Bold" Style="{StaticResource CustomMetroLabelTextBlock}"  Text="More possible options." />
+
+                                        <Label Grid.Row="1" Grid.ColumnSpan="3" x:Name="lblCollection" Content="Which Collection Will You Deploy To?" ToolTip="The name of the collection to deploy the program to." Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
+                                        <TextBox Grid.Row="1" Grid.ColumnSpan="3"  x:Name="Collection" FontSize="15" HorizontalAlignment="Right" VerticalContentAlignment="Top" ToolTip="The name of the collection to deploy the program to." Margin="180 0 0 0"
+                                                   Height="30" Width="200" Text="{Binding SccmConfiguration.Collection, Mode=TwoWay}"  Foreground="{StaticResource GrayBrush}" Background="White">
+                                        </TextBox>
+
+                                        <Label Grid.Row="2" Grid.ColumnSpan="3" x:Name="lblDeploymentPurpose" Content="What Purpose Does This Deployment Have?" ToolTip="Default value is Required. Available options are Default,Required, and Available." Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
+                                        <ComboBox Grid.Row="2" Grid.ColumnSpan="3" x:Name="cbDeploymentPurpose"  FontSize="20"  Height="30" Width="200" Foreground="{StaticResource GrayBrush}"
+                                      HorizontalAlignment="Right" VerticalAlignment="Center"  SelectionChanged="CbDeploymentPurpose_OnSelectionChanged"  ItemsSource="{Binding DeploymentPurposes}" SelectedIndex="1" ToolTip="Default value is Required. Available options are Default,Required, and Available."/>
+
+                                        <Label Grid.Row="3" Grid.ColumnSpan="3" x:Name="lbleploymentType" Content="What Purpose Does This Deployment Have?" ToolTip="The available options are DeployWithScript,DeployWithConfigurationFile." Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
+                                        <ComboBox Grid.Row="3" Grid.ColumnSpan="3" x:Name="cbDeploymentType"  FontSize="20"  Height="30" Width="200" Foreground="{StaticResource GrayBrush}"
+                                      HorizontalAlignment="Right" VerticalAlignment="Center"  SelectionChanged="CbDeploymentType_OnSelectionChanged"  ItemsSource="{Binding DeploymentTypes}" SelectedIndex="1" ToolTip="The available options are DeployWithScript,DeployWithConfigurationFile."/>
 
 
-                                <!--<Label Grid.Row="7" Grid.ColumnSpan="3" x:Name="lblCMPSModulePath" Content="What is the path to the ConfigurationManager.psd1 PowerShell Module?" ToolTip="Allows the user to specify that full path to the ConfigurationManager.psd1 PowerShell Module. This is especially useful if CM is installed in a non standard path. " Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
-                                <TextBox Grid.Row="7" Grid.Column="2"  x:Name="CMPSModulePath" FontSize="15" HorizontalAlignment="Left" VerticalContentAlignment="Top" ToolTip="Allows the user to specify that full path to the ConfigurationManager.psd1 PowerShell Module. This is especially useful if CM is installed in a non standard path. " Margin="155 0 0 0"
-                                           Height="30" Width="160" Text="{Binding SccmConfiguration.CMPSModulePath, Mode=TwoWay}"  Foreground="{StaticResource GrayBrush}" Background="White">
-                                </TextBox>-->
 
-
-                            </Grid>
+                                    </Grid>
+                                </TabItem>
+                            </Controls:MetroAnimatedSingleRowTabControl>
                         </TabItem>
                         </Controls:MetroAnimatedSingleRowTabControl>
                 </Grid>

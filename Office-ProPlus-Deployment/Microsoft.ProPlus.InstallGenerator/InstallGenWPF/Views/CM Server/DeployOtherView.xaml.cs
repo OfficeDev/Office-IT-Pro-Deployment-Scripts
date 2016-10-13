@@ -44,9 +44,20 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
             //throw new NotImplementedException();
         }
 
-        private void DistributionPoint_OnTextChanged(object sender, TextChangedEventArgs e)
+        private void BrowseButton_OnClick(object sender, RoutedEventArgs e)
         {
             throw new NotImplementedException();
+        }
+
+
+        private void CbDeploymentPurpose_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            //throw new NotImplementedException();
+        }
+
+        private void CbDeploymentType_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            //throw new NotImplementedException();
         }
     }
 }

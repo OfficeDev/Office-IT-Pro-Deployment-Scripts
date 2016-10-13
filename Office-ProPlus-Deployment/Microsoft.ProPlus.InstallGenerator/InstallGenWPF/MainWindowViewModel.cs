@@ -469,6 +469,14 @@ namespace MetroDemo
                 AllProducts.Add(tempProduct);
             });
 
+            DeploymentPurposes = new List<DeploymentPurpose>();
+            DeploymentPurposes.Add(DeploymentPurpose.Available);
+            DeploymentPurposes.Add(DeploymentPurpose.Default);
+            DeploymentPurposes.Add(DeploymentPurpose.Required);
+
+            DeploymentTypes = new List<DeploymentType>();
+            DeploymentTypes.Add(DeploymentType.DeployWithConfigurationFile);
+            DeploymentTypes.Add(DeploymentType.DeployWithScript);
         }
 
         public bool LocalConfig { get; set; }
@@ -494,7 +502,11 @@ namespace MetroDemo
 
         public List<Product> AllProductsNoExclude { get; set; }
 
+        public List<DeploymentType> DeploymentTypes { get; set; }
+
         public ApplicationMode ApplicationMode { get; set; }
+
+        public List<DeploymentPurpose> DeploymentPurposes { get; set; }
 
         public SccmConfiguration SccmConfiguration { get; set; }
 
