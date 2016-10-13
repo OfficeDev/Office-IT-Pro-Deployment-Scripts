@@ -50,18 +50,6 @@ using System;
 Add-Type -TypeDefinition $enum2 -ErrorAction SilentlyContinue
 } catch {}
 
-try {
-Add-Type -ErrorAction SilentlyContinue -TypeDefinition @"
-    public enum PinAction
-    {
-        PinToStartMenu,
-        UnpinFromStartMenu,
-        PinToTaskbar,
-        UnpinFromTaskbar
-    }
-"@
-} catch {}
-
 function Install-OfficeClickToRun {
 <#
 .SYNOPSIS
