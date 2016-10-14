@@ -283,9 +283,11 @@ namespace MetroDemo.ExampleViews
 
         private void strtButton_Click(object sender, RoutedEventArgs e)
         {
+
             switch (cbActions.SelectedIndex)
             {
                 case 0:
+                    GlobalObjects.ViewModel.SccmConfiguration = new SccmConfiguration();
                     DeployOffice();
                     break;
                 case 1:
@@ -315,22 +317,27 @@ namespace MetroDemo.ExampleViews
             var ChannelVersionView = new ChannelVersionView();
             var ProductsLanguagesView = new ProductsLanguagesView();
             var DeployOtherView = new DeployOtherView();
+            var DeployView =  new DeployView();
+            
 
 
             SourceView.ToggleNextButton += ToggleNext;
             ChannelVersionView.ToggleNextButton += ToggleNext;
             ProductsLanguagesView.ToggleNextButton += ToggleNext;
             DeployOtherView.ToggleNextButton += ToggleNext;
+            DeployView.ToggleNextButton += ToggleNext;
 
             SourceView.MainTabControl.Items.Remove(SourceView.SourceTab);
             ChannelVersionView.MainTabControl.Items.Remove(ChannelVersionView.ChannelVersionTab);
             ProductsLanguagesView.MainTabControl.Items.Remove(ProductsLanguagesView.ProductsLanguagesTab);
             DeployOtherView.MainTabControl.Items.Remove(DeployOtherView.OtherTab);
+            DeployView.MainTabControl.Items.Remove(DeployView.DeployTab);
 
             MainTabControl.Items.Add(SourceView.SourceTab);
             MainTabControl.Items.Add(ChannelVersionView.ChannelVersionTab);
             MainTabControl.Items.Add(ProductsLanguagesView.ProductsLanguagesTab);
             MainTabControl.Items.Add(DeployOtherView.OtherTab);
+            MainTabControl.Items.Add(DeployView.DeployTab);
 
             //ChannelVersionView.cbChannelVersion.SelectedIndex = 0;
             

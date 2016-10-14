@@ -104,22 +104,22 @@
                                                        Style="{StaticResource MetroToggleSwitchStyle}"
                                                        OffLabel="" OnLabel=""
                                                        Margin="{StaticResource ControlMargin}" 
-                                                       HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                                       HorizontalAlignment="Right" VerticalAlignment="Center" Checked="TsMoveFiles_OnChecked" Unchecked="TsMoveFiles_OnUnchecked"/>
 
                                     <Label Grid.Row="1" Grid.Column="2" x:Name="lblUpdateBits" Content="Update changed bits of package?" ToolTip="Used when the package share already exists." Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
                                     <Controls:ToggleSwitch Grid.Row="1" Grid.Column="3" Name="tsUpdateBits" IsChecked="{Binding SccmConfiguration.UpdateOnlyChangedBits, Mode=TwoWay}"
                                                        Style="{StaticResource MetroToggleSwitchStyle}"
                                                        OffLabel="" OnLabel=""
                                                        Margin="{StaticResource ControlMargin}" 
-                                                       HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                                       HorizontalAlignment="Right" VerticalAlignment="Center" Checked="TsUpdateBits_OnChecked" Unchecked="TsUpdateBits_OnUnchecked"/>
 
-                                    <Label Grid.Row="2" Grid.ColumnSpan="3" x:Name="lblDistributionPoint" Content="Distribution Point Name?" ToolTip="The distribution point name. A distribution point or distribution point group must be specified." Style="{StaticResource CustomMetroLabelHeader}" 
+                                        <Label Grid.Row="2" Grid.ColumnSpan="3" x:Name="lblDistributionPoint" Content="Distribution Point Name?*" ToolTip="The distribution point name. A distribution point or distribution point group must be specified.  This field is required if you are not using a distribution point group." Style="{StaticResource CustomMetroLabelHeader}" 
                                            VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" Visibility="Collapsed" />
                                     <TextBox Grid.Row="2" Grid.Column="2"  x:Name="DistributionPoint" FontSize="15" VerticalContentAlignment="Top" HorizontalAlignment="Right" ToolTip="The distribution point name. A distribution point or distribution point group must be specified."
                                              Height="30" Width="200" Text="{Binding SccmConfiguration.DistributionPoint, Mode=TwoWay}"  Foreground="{StaticResource GrayBrush}" Background="White" TextChanged="DistributionPoint_OnTextChanged">
                                     </TextBox>
 
-                                    <Label Grid.Row="3" Grid.ColumnSpan="3" x:Name="lblDistributionPointGroupName" Content="Distribution Point Group Name?" ToolTip="The distribution point group name. A distribution point or distirbution point group must be specified." 
+                                    <Label Grid.Row="3" Grid.ColumnSpan="3" x:Name="lblDistributionPointGroupName" Content="Distribution Point Group Name?*" ToolTip="The distribution point group name. A distribution point or distirbution point group must be specified.  This field is required if you are not using a distribution group." 
                                            Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" Visibility="Collapsed" />
                                     <TextBox Grid.Row="3" Grid.Column="2"  x:Name="DistributionPointGroupName"  FontSize="15" HorizontalAlignment="Right" VerticalContentAlignment="Top" ToolTip="The distribution point group name. A distribution point or distirbution point group must be specified."
                                             Height="30" Width="200" Text="{Binding SccmConfiguration.DistributionPointGroupName, Mode=TwoWay}"  Foreground="{StaticResource GrayBrush}" Background="White" TextChanged="DistributionPointGroupName_OnTextChanged">
@@ -127,12 +127,12 @@
 
                                     <Label Grid.Row="4" Grid.ColumnSpan="3" x:Name="lblDeploymentExpiryDurationInDays" Content="How Long Will this Package be Available (days)?" ToolTip="Default value is 15 days." Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
                                     <TextBox Grid.Row="4" Grid.Column="2"  x:Name="DeploymentExpiryDurationInDays" FontSize="15" HorizontalAlignment="Right" VerticalContentAlignment="Top" ToolTip="Default value is 15 days." Margin="150 0 0 0"
-                                           Height="30" Width="150" Text="{Binding SccmConfiguration.DeploymentExpiryDurationInDays, Mode=TwoWay}"  Foreground="{StaticResource GrayBrush}" Background="White">
+                                           Height="30" Width="150" Text="{Binding SccmConfiguration.DeploymentExpiryDurationInDays, Mode=TwoWay}"  Foreground="{StaticResource GrayBrush}" Background="White" TextChanged="DeploymentExpiryDurationInDays_OnTextChanged">
                                     </TextBox>
 
                                     <Label Grid.Row="5" Grid.ColumnSpan="3" x:Name="lblPackName" Content="Would You Like To Use a Custom Package Name?" ToolTip="Create a custom package share name. Default value is OfficeDeployment." Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
                                         <TextBox Grid.Row="5" Grid.Column="2"  x:Name="PackageName" FontSize="15" HorizontalAlignment="Right" VerticalContentAlignment="Top" ToolTip="Create a custom package share name. Default value is OfficeDeployment." Margin="155 0 0 0"
-                                           Height="30" Width="160" Text="{Binding SccmConfiguration.CustomPackageShareName, Mode=TwoWay}"  Foreground="{StaticResource GrayBrush}" Background="White">
+                                           Height="30" Width="160" Text="{Binding SccmConfiguration.CustomPackageShareName, Mode=TwoWay}"  Foreground="{StaticResource GrayBrush}" Background="White" TextChanged="PackageName_OnTextChanged">
                                         </TextBox>
                                     </Grid>
                                 </TabItem>
@@ -166,29 +166,29 @@
 
                                         <Label Grid.Row="1" Grid.ColumnSpan="3" x:Name="lblCMPSModulePath" Content="Where is the ConfigurationManager.psd1 Module?" ToolTip="Allows the user to specify that full path to the ConfigurationManager.psd1 PowerShell Module. This is especially useful if CM is installed in a non standard path. " Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
                                         <TextBox Grid.Row="1" Grid.Column="2"  x:Name="CMPSModulePath" FontSize="15" HorizontalAlignment="Left" VerticalContentAlignment="Top" ToolTip="Allows the user to specify that full path to the ConfigurationManager.psd1 PowerShell Module. This is especially useful if CM is installed in a non standard path. " Margin="180 0 0 0"
-                                                   Height="30" Width="130" Text="{Binding SccmConfiguration.CMPSModulePath, Mode=TwoWay}"  Foreground="{StaticResource GrayBrush}" Background="White">
+                                                   Height="30" Width="130" Text="{Binding SccmConfiguration.CMPSModulePath, Mode=TwoWay}"  Foreground="{StaticResource GrayBrush}" Background="White" TextChanged="CMPSModulePath_OnTextChanged">
                                         </TextBox>
                                         <Button x:Name="BrowseButton"  Grid.Row="1" Grid.Column="3" Height="40" Width="60" HorizontalAlignment="Right" IsEnabled="False"
                                         Margin="0 0 0 0" Style="{StaticResource MetroFlatButtonStyle1}" Content="Browse"  Click="BrowseButton_OnClick" />
 
                                         <Label Grid.Row="2" Grid.ColumnSpan="2" x:Name="lblSiteCode" Content="Which Site Code Will You Use?" ToolTip="Three character site code, example S01. Left blank it will default to the current site." Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
                                         <TextBox Grid.Row="2" Grid.ColumnSpan="3"  x:Name="SiteCode" FontSize="15" HorizontalAlignment="Right" VerticalContentAlignment="Top" ToolTip="Three character site code, example S01. Left blank it will default to the current site." Margin="180 0 0 0"
-                                                   Height="30" Width="200" Text="{Binding SccmConfiguration.SiteCode, Mode=TwoWay}"  Foreground="{StaticResource GrayBrush}" Background="White">
+                                                   Height="30" Width="200" Text="{Binding SccmConfiguration.SiteCode, Mode=TwoWay}"  Foreground="{StaticResource GrayBrush}" Background="White" TextChanged="SiteCode_OnTextChanged">
                                         </TextBox>
 
                                         <Label Grid.Row="3" Grid.ColumnSpan="3" x:Name="lbScriptName" Content="What Will The Deployment Script be Named?" ToolTip="Default value is CM-OfficeDeploymentScript.ps1." Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
                                         <TextBox Grid.Row="3" Grid.ColumnSpan="3"  x:Name="ScriptName" FontSize="15" HorizontalAlignment="Right" VerticalContentAlignment="Top" ToolTip="Default value is CM-OfficeDeploymentScript.ps1." Margin="180 0 0 0"
-                                                   Height="30" Width="200" Text="{Binding SccmConfiguration.ScriptName, Mode=TwoWay}"  Foreground="{StaticResource GrayBrush}" Background="White">
+                                                   Height="30" Width="200" Text="{Binding SccmConfiguration.ScriptName, Mode=TwoWay}"  Foreground="{StaticResource GrayBrush}" Background="White" TextChanged="ScriptName_OnTextChanged">
                                         </TextBox>
 
                                         <Label Grid.Row="4" Grid.ColumnSpan="3" x:Name="lbConfigurationXml" Content="What Will the Configuration XML be Named?" ToolTip="Default value is .\DeploymentFiles\DefaultConfiguration.xml." Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
                                         <TextBox Grid.Row="4" Grid.ColumnSpan="3"  x:Name="ConfigurationXml" FontSize="15" HorizontalAlignment="Right" VerticalContentAlignment="Top" ToolTip="Default value is .\DeploymentFiles\DefaultConfiguration.xml." Margin="180 0 0 0"
-                                                   Height="30" Width="200" Text="{Binding SccmConfiguration.ConfigurationXml, Mode=TwoWay}"  Foreground="{StaticResource GrayBrush}" Background="White">
+                                                   Height="30" Width="200" Text="{Binding SccmConfiguration.ConfigurationXml, Mode=TwoWay}"  Foreground="{StaticResource GrayBrush}" Background="White" TextChanged="ConfigurationXml_OnTextChanged">
                                         </TextBox>
 
                                         <Label Grid.Row="5" Grid.ColumnSpan="3" x:Name="lbCustomName" Content="Custom Name of the Deployment Program?" ToolTip="Default value combines the channel with the platform." Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
-                                        <TextBox Grid.Row="5" Grid.ColumnSpan="3"   FontSize="15" HorizontalAlignment="Right" VerticalContentAlignment="Top" ToolTip="Default value combines the channel with the platform. " Margin="180 0 0 0"
-                                                   Height="30" Width="200" Text="{Binding SccmConfiguration.CustomName, Mode=TwoWay}"  Foreground="{StaticResource GrayBrush}" Background="White">
+                                        <TextBox Grid.Row="5" Grid.ColumnSpan="3"  x:Name="CustomName"  FontSize="15" HorizontalAlignment="Right" VerticalContentAlignment="Top" ToolTip="Default value combines the channel with the platform. " Margin="180 0 0 0"
+                                                   Height="30" Width="200" Text="{Binding SccmConfiguration.CustomName, Mode=TwoWay}"  Foreground="{StaticResource GrayBrush}" Background="White" TextChanged="CustomName_OnTextChanged">
                                         </TextBox>
 
 
@@ -222,18 +222,20 @@
 
                                         <TextBlock Grid.Row="0" Grid.ColumnSpan="2" TextWrapping="WrapWithOverflow" FontSize="25" FontWeight="Bold" Style="{StaticResource CustomMetroLabelTextBlock}"  Text="More possible options." />
 
-                                        <Label Grid.Row="1" Grid.ColumnSpan="3" x:Name="lblCollection" Content="Which Collection Will You Deploy To?" ToolTip="The name of the collection to deploy the program to." Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
+                                        <Label Grid.Row="1" Grid.ColumnSpan="3" x:Name="lblCollection" Content="Which Collection Will You Deploy To?*" ToolTip="The name of the collection to deploy the program to.  This field is required." Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
                                         <TextBox Grid.Row="1" Grid.ColumnSpan="3"  x:Name="Collection" FontSize="15" HorizontalAlignment="Right" VerticalContentAlignment="Top" ToolTip="The name of the collection to deploy the program to." Margin="180 0 0 0"
-                                                   Height="30" Width="200" Text="{Binding SccmConfiguration.Collection, Mode=TwoWay}"  Foreground="{StaticResource GrayBrush}" Background="White">
+                                                   Height="30" Width="200" Text="{Binding SccmConfiguration.Collection, Mode=TwoWay}"  Foreground="{StaticResource GrayBrush}" Background="White" TextChanged="Collection_OnTextChanged">
                                         </TextBox>
 
-                                        <Label Grid.Row="2" Grid.ColumnSpan="3" x:Name="lblDeploymentPurpose" Content="What Purpose Does This Deployment Have?" ToolTip="Default value is Required. Available options are Default,Required, and Available." Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
+                                        <Label Grid.Row="2" Grid.ColumnSpan="3" x:Name="lblDeploymentPurpose" Content="What Purpose Does This Deployment Have?*" ToolTip="Default value is Required. Available options are Default,Required, and Available." Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
                                         <ComboBox Grid.Row="2" Grid.ColumnSpan="3" x:Name="cbDeploymentPurpose"  FontSize="20"  Height="30" Width="200" Foreground="{StaticResource GrayBrush}"
-                                      HorizontalAlignment="Right" VerticalAlignment="Center"  SelectionChanged="CbDeploymentPurpose_OnSelectionChanged"  ItemsSource="{Binding DeploymentPurposes}" SelectedIndex="1" ToolTip="Default value is Required. Available options are Default,Required, and Available."/>
+                                      HorizontalAlignment="Right" VerticalAlignment="Center" ItemsSource="{Binding DeploymentPurposes}" SelectedIndex="1" ToolTip="Default value is Required. Available options are Default,Required, and Available."
+                                                  SelectionChanged="CbDeploymentPurpose_OnSelectionChanged"/>
 
-                                        <Label Grid.Row="3" Grid.ColumnSpan="3" x:Name="lbleploymentType" Content="What Purpose Does This Deployment Have?" ToolTip="The available options are DeployWithScript,DeployWithConfigurationFile." Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
+                                        <Label Grid.Row="3" Grid.ColumnSpan="3" x:Name="lbleploymentType" Content="What Purpose Does This Deployment Have?*" ToolTip="The available options are DeployWithScript,DeployWithConfigurationFile." Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
                                         <ComboBox Grid.Row="3" Grid.ColumnSpan="3" x:Name="cbDeploymentType"  FontSize="20"  Height="30" Width="200" Foreground="{StaticResource GrayBrush}"
-                                      HorizontalAlignment="Right" VerticalAlignment="Center"  SelectionChanged="CbDeploymentType_OnSelectionChanged"  ItemsSource="{Binding DeploymentTypes}" SelectedIndex="1" ToolTip="The available options are DeployWithScript,DeployWithConfigurationFile."/>
+                                      HorizontalAlignment="Right" VerticalAlignment="Center" ItemsSource="{Binding DeploymentTypes}" SelectedIndex="1" ToolTip="The available options are DeployWithScript,DeployWithConfigurationFile." 
+                                                  SelectionChanged="CbDeploymentType_OnSelectionChanged"/>
 
 
 
