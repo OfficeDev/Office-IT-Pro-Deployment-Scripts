@@ -20,6 +20,7 @@ namespace Microsoft.OfficeProPlus.InstallGenerator
             }
         }
 
+
         private static dynamic GetAppSetting<T>(string name)
         {
             var objConfig = ConfigurationManager.AppSettings[name] ?? "";

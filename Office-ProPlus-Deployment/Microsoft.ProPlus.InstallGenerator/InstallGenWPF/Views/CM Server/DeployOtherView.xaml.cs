@@ -73,8 +73,6 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
                         lblDistributionPointGroupName.Visibility = Visibility.Collapsed;
                         DistributionPoint.Visibility = Visibility.Collapsed;
                         DistributionPointGroupName.Visibility = Visibility.Collapsed;
-
-
                     }
                     break;
                 case SccmScenario.ChangeChannel:

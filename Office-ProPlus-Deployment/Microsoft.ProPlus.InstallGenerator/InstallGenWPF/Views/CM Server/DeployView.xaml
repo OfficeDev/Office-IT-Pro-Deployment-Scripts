@@ -52,26 +52,62 @@
 
                         <Grid HorizontalAlignment="Left" Margin="30 30 0 0" Height="450" VerticalAlignment="Top" x:Name="DeployPage" IsVisibleChanged="DeployPage_OnIsVisibleChanged">
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="80" />
                                 <RowDefinition Height="60" />
                                 <RowDefinition Height="60" />
-                                <RowDefinition Height="40" />
-                                <RowDefinition Height="40" />
                                 <RowDefinition Height="60" />
-                                <RowDefinition Height="300" />
+                                <RowDefinition Height="60" />
+                                <RowDefinition Height="60" />
+                                <RowDefinition Height="60" />
+                                <RowDefinition Height="60" />
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="450" />
                                 <ColumnDefinition Width="400" />
-                                <ColumnDefinition Width="400" />
-                                <ColumnDefinition Width="60" />
-                                <ColumnDefinition Width="60" />
                             </Grid.ColumnDefinitions>
 
-                            <TextBlock Grid.Row="0" Grid.ColumnSpan="2" TextWrapping="WrapWithOverflow" FontSize="25" FontWeight="Bold" Style="{StaticResource CustomMetroLabelTextBlock}"
-                                Text="Where would you like to deploy from?"/>
+                            <Label Grid.Row="0" Grid.Column="0" FontSize="25" Style="{StaticResource CustomMetroLabelHeader}"
+                                Content="Downloading Channel Files"/>
+                            <Image Grid.Row="0" Grid.Column="1"  x:Name="ImgFilesDownloaded" Source="../../images/Ok48.png" Height="38" HorizontalAlignment="Left" VerticalAlignment="top" Visibility="Collapsed" Margin="50 0 0 0"></Image>
+                            <Image Grid.Row="0" Grid.Column="1" x:Name="ImgFilesDownloadFail" Source="../../images/fail.png" Height="38" HorizontalAlignment="Left" VerticalAlignment="top" Visibility="Collapsed" Margin="50 0 0 0"></Image>
 
-                           
+                            <Image Grid.Row="0" Grid.Column="1" x:Name="WaitFilesDownloading" Visibility="Collapsed" Height="38" HorizontalAlignment="Left" VerticalAlignment="top" gif:ImageBehavior.RepeatBehavior="Forever" 
+                                                    gif:ImageBehavior.AnimatedSource="../../images/InstallRing.GIF" Margin="50 0 0 0"/>
 
+                            <Label Grid.Row="1" Grid.Column="0" FontSize="25" Style="{StaticResource CustomMetroLabelHeader}"
+                                Content="Creating Package"/>
+                            <Image Grid.Row="1" Grid.Column="1"  x:Name="ImgPackageCreated" Source="../../images/Ok48.png" Height="38" HorizontalAlignment="Left" VerticalAlignment="top" Visibility="Collapsed" Margin="50 0 0 0"></Image>
+                            <Image Grid.Row="1" Grid.Column="1" x:Name="ImgPackageCreateFail" Source="../../images/fail.png" Height="38" HorizontalAlignment="Left" VerticalAlignment="top" Visibility="Collapsed" Margin="50 0 0 0"></Image>
+
+                            <Image Grid.Row="1" Grid.Column="1" x:Name="WaitCreatingPackage" Visibility="Collapsed" Height="38" HorizontalAlignment="Left" VerticalAlignment="top" gif:ImageBehavior.RepeatBehavior="Forever" 
+                                                    gif:ImageBehavior.AnimatedSource="../../images/InstallRing.GIF" Margin="50 0 0 0"/>
+
+
+                            <Label Grid.Row="2" Grid.Column="0" FontSize="25" Style="{StaticResource CustomMetroLabelHeader}"
+                                Content="Creating the Deployment Program"/>
+                            <Image Grid.Row="2" Grid.Column="1"  x:Name="ImgProgramCreated" Source="../../images/Ok48.png" Height="38" HorizontalAlignment="Left" VerticalAlignment="top" Visibility="Collapsed" Margin="50 0 0 0"></Image>
+                            <Image Grid.Row="2" Grid.Column="1" x:Name="ImgProgramCreateFail" Source="../../images/fail.png" Height="38" HorizontalAlignment="Left" VerticalAlignment="top" Visibility="Collapsed" Margin="50 0 0 0"></Image>
+
+                            <Image Grid.Row="2" Grid.Column="1" x:Name="WaitCreatingProgram" Visibility="Collapsed" Height="38" HorizontalAlignment="Left" VerticalAlignment="top" gif:ImageBehavior.RepeatBehavior="Forever" 
+                                                    gif:ImageBehavior.AnimatedSource="../../images/InstallRing.GIF" Margin="50 0 0 0"/>
+
+                            <Label Grid.Row="3" Grid.Column="0" FontSize="25" Style="{StaticResource CustomMetroLabelHeader}"
+                                Content="Moving Package To Distribution Point"/>
+                            <Image Grid.Row="3" Grid.Column="1"  x:Name="ImgMoveToDP" Source="../../images/Ok48.png" Height="38" HorizontalAlignment="Left" VerticalAlignment="top" Visibility="Collapsed" Margin="50 0 0 0" ></Image>
+                            <Image Grid.Row="3" Grid.Column="1" x:Name="ImgMoveToDPFail" Source="../../images/fail.png" Height="38" HorizontalAlignment="Left" VerticalAlignment="top" Visibility="Collapsed" Margin="50 0 0 0"></Image>
+
+                            <Image Grid.Row="3" Grid.Column="1" x:Name="WaitMovingToDP" Visibility="Collapsed" Height="38" HorizontalAlignment="Left" VerticalAlignment="top" gif:ImageBehavior.RepeatBehavior="Forever" 
+                                                    gif:ImageBehavior.AnimatedSource="../../images/InstallRing.GIF" Margin="50 0 0 0"/>
+
+                            <Label Grid.Row="4" Grid.Column="0" FontSize="25" Style="{StaticResource CustomMetroLabelHeader}"
+                                Content="Deploying Program to Collection"/>
+                            <Image Grid.Row="4" Grid.Column="1"  x:Name="ImgDeploy" Source="../../images/Ok48.png" Height="38" HorizontalAlignment="Left" VerticalAlignment="top" Visibility="Collapsed" Margin="50 0 0 0" ></Image>
+                            <Image Grid.Row="4" Grid.Column="1" x:Name="ImgDeployFail" Source="../../images/fail.png" Height="38" HorizontalAlignment="Left" VerticalAlignment="top" Visibility="Collapsed" Margin="50 0 0 0"></Image>
+
+                            <Image Grid.Row="4" Grid.Column="1" x:Name="WaitDeployToDP" Visibility="Collapsed" Height="38" HorizontalAlignment="Left" VerticalAlignment="top" gif:ImageBehavior.RepeatBehavior="Forever" 
+                                                    gif:ImageBehavior.AnimatedSource="../../images/InstallRing.GIF" Margin="50 0 0 0"/>
+
+
+                            <Button Grid.Row="5" Grid.ColumnSpan="2" x:Name="DeployButton" Width="100" Height="40" Content="Deploy" Click="DeployButton_OnClick"/>
                         </Grid>
                     </TabItem>
                 </Controls:MetroAnimatedSingleRowTabControl>

@@ -12,7 +12,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using MetroDemo;
 using MetroDemo.Events;
+using Microsoft.OfficeProPlus.InstallGen.Presentation.Enums;
 
 namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
 
@@ -37,6 +39,21 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
 
         private void DeployPage_OnIsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
+           
         }
+
+        private void DeployButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            
+        }
+
+        #region helpers
+
+        private async Task GetScripts()
+        {
+            
+        }
+
+        #endregion
     }
 }

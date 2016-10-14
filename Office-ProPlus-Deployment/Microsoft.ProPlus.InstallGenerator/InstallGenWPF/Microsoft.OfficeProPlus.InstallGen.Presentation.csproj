@@ -155,6 +155,7 @@
     <Compile Include="Enums\Enums.cs" />
     <Compile Include="Events\Events.cs" />
     <Compile Include="Models\Bitness.cs" />
+    <Compile Include="Models\DownloadUrl.cs" />
     <Compile Include="Models\RemoteMachine.cs" />
     <Compile Include="Models\officeVersion.cs" />
     <Compile Include="Models\SccmConfiguration.cs" />
@@ -530,12 +531,18 @@
     <Content Include="Resources\FindVersion.ps1">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="Scripts\Download-OfficeProPlusChannels.ps1" />
     <None Include="Scripts\Generate-ODTConfigurationXML.ps1">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="Scripts\Office 365 ProPlus XML Editor.url" />
+    <None Include="Scripts\README.md" />
+    <None Include="Scripts\README_Setup-CMOfficeDeployment.md" />
     <None Include="Scripts\RunGenerateXML.ps1">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="Scripts\Setup-CMOfficeDeployment.ps1" />
+    <None Include="Scripts\SharedFunctions.ps1" />
     <Resource Include="Resources\Entypo-license.txt" />
     <Resource Include="Resources\WindowsIcons-license.txt" />
     <None Include="Resources\signtool.exe" />
@@ -671,7 +678,9 @@
     </Content>
     <Resource Include="images\wait.GIF" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Scripts\DeploymentFiles\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
