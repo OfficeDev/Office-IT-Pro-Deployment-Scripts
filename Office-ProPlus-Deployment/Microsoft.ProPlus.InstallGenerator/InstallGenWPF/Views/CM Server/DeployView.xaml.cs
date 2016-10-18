@@ -170,12 +170,15 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
                 arguments += bitnesses[0];
             }           
 
-            await Retry.BlockAsync(2, 1, async () =>
-            {         
+            await Retry.Block(2, 1, async () =>
+            {
+                var tcs = new TaskCompletionSource<bool>();
+
                 if (n == 2)
                 {
                     System.IO.File.Copy(scriptPathTmp, scriptPath, true);
                 }
+
 
                 var p = new Process
                 {
@@ -192,8 +195,16 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
                     },
                 };
 
+                p.EnableRaisingEvents = true;
+
+                p.Exited += (sender, args) =>
+                {
+                    tcs.SetResult(true);
+                    p.Dispose();
+                };
+
                 p.Start();
-                p.WaitForExit();
+
 
                 var error = await p.StandardError.ReadToEndAsync();
                 if (!string.IsNullOrEmpty(error)) throw (new Exception(error));
