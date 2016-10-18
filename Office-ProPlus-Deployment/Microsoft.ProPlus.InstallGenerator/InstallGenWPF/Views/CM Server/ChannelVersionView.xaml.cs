@@ -27,6 +27,7 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
     public partial class ChannelVersionView : UserControl
     {
         public event ToggleNextEventHandler ToggleNextButton;
+        private CmProgram CurrentCmProgram = GlobalObjects.ViewModel.CmPackage.Programs[GlobalObjects.ViewModel.CmPackage.Programs.Count - 1]; 
 
         public ChannelVersionView()
         {
@@ -42,16 +43,35 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
             
         }
 
+        private void ChannelVersionPage_OnIsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            var grid = (Grid)sender;
+
+            if (grid.Visibility == Visibility.Visible)
+            {
+                CurrentCmProgram =
+                    GlobalObjects.ViewModel.CmPackage.Programs[GlobalObjects.ViewModel.CmPackage.Programs.Count - 1];
+
+                if (CurrentCmProgram.Channels.Count == 0 && CurrentCmProgram.Bitnesses.Count == 0)
+                {
+                    ChannelList.ItemsSource = null;
+                    ChannelList.ItemsSource = GlobalObjects.ViewModel.Branches;
+                    cbChannelVersion.SelectedIndex = 0;
+                    Bit32ToggleButton.IsChecked = false;
+                    Bit64ToggleButton.IsChecked = false; 
+                }
+
+                ToggleNext();
+            }
+        }
+
         private void ChannelToggleButton_OnChecked(object sender, RoutedEventArgs e)
         {
             var checkbox = (CheckBox) sender;
             var branch = checkbox.DataContext as OfficeBranch;
-            var index = ChannelList.Items.IndexOf(branch);
 
-            var row = (DataGridRow) ChannelList.ItemContainerGenerator.ContainerFromIndex(index);
-            var comobBox = FindVisualChild<ComboBox>(row);
             var selectedVersion =
-                (BranchVersion) Enum.Parse(typeof(BranchVersion), comobBox.SelectedValue.ToString(), true);
+                (BranchVersion) Enum.Parse(typeof(BranchVersion), cbChannelVersion.SelectedValue.ToString(), true);
 
             var selectedBranch = new SelectedChannel()
             {
@@ -59,21 +79,9 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
                 SelectedVersion = (BranchVersion)Enum.Parse(typeof(BranchVersion), selectedVersion.ToString(), true)
             };
 
-        
-            if (GlobalObjects.ViewModel.SccmConfiguration.Channels.IndexOf(selectedBranch) == -1)
-            {
-                GlobalObjects.ViewModel.SccmConfiguration.Channels.Add(selectedBranch);
-            }
-            else
-            {
-                foreach (var channel in GlobalObjects.ViewModel.SccmConfiguration.Channels)
-                {
-                    if (channel.Branch == branch && channel.SelectedVersion != selectedVersion)
-                    {
-                        channel.SelectedVersion = selectedVersion;
-                    }
-                }
-            }
+            if (CurrentCmProgram.Channels != null && !CurrentCmProgram.Channels.Contains(selectedBranch))
+                CurrentCmProgram.Channels.Add(selectedBranch); 
+
             ToggleNext();
         }
 
@@ -82,11 +90,20 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
             var checkbox = (CheckBox)sender;
             var branch = checkbox.DataContext as OfficeBranch;
 
-            foreach (var channel in GlobalObjects.ViewModel.SccmConfiguration.Channels)
+            var selectedVersion =
+                (BranchVersion)Enum.Parse(typeof(BranchVersion), cbChannelVersion.SelectedValue.ToString(), true);
+
+            var selectedBranch = new SelectedChannel()
             {
-                if (channel.Branch == branch)
+                Branch = branch,
+                SelectedVersion = (BranchVersion)Enum.Parse(typeof(BranchVersion), selectedVersion.ToString(), true)
+            };
+
+            foreach (var channel in CurrentCmProgram.Channels)
+            {
+                if (channel.Branch.Branch == selectedBranch.Branch.Branch)
                 {
-                    GlobalObjects.ViewModel.SccmConfiguration.Channels.Remove(channel);
+                    CurrentCmProgram.Channels.Remove(channel);
                     break;
                 }
             }
@@ -96,9 +113,8 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
 
         private void ToggleNext()
         {
-            var SccmConfiguration = GlobalObjects.ViewModel.SccmConfiguration;
-
-            if (SccmConfiguration.Channels.Count > 0 && SccmConfiguration.Bitnesses.Count > 0)
+            
+            if (CurrentCmProgram.Channels.Count > 0 && CurrentCmProgram.Bitnesses.Count > 0)
             {
                 ToggleNextButton?.Invoke(this, new ToggleEventArgs()
                 {
@@ -114,45 +130,31 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
             }
         }
 
-        private void ToggleButton_OnChecked(object sender, RoutedEventArgs e)
+        private void Bit64ToggleButton_OnChecked(object sender, RoutedEventArgs e)
         {
-            var checkBox = (CheckBox) sender;
-            var bitness = checkBox.DataContext as Bitness;
 
-            if (GlobalObjects.ViewModel.SccmConfiguration.Bitnesses.IndexOf(bitness) == -1)
-            {
-                GlobalObjects.ViewModel.SccmConfiguration.Bitnesses.Add(bitness);
-            }
-
+            CurrentCmProgram.Bitnesses.Add(GlobalObjects.ViewModel.OfficeBitnesses[0]);
             ToggleNext();
         }
 
-        private void ToggleButton_OnUnchecked(object sender, RoutedEventArgs e)
+        private void Bit32ToggleButton_OnChecked(object sender, RoutedEventArgs e)
         {
-            var checkBox = (CheckBox)sender;
-            var bitness = checkBox.DataContext as Bitness;
-
-            foreach (var bitnesses in GlobalObjects.ViewModel.SccmConfiguration.Bitnesses)
-            {
-                if (bitnesses == bitness)
-                {
-                    GlobalObjects.ViewModel.SccmConfiguration.Bitnesses.Remove(bitnesses);
-                    break;
-                }
-            }
-
+            CurrentCmProgram.Bitnesses.Add(GlobalObjects.ViewModel.OfficeBitnesses[1]);
             ToggleNext();
         }
 
-        private void ChannelVersionPage_OnIsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        private void Bit64ToggleButton_OnUnchecked(object sender, RoutedEventArgs e)
         {
-            var grid = (Grid) sender;
-
-            if (grid.Visibility == Visibility.Visible)
-            {
-                ToggleNext();
-            }
+            CurrentCmProgram.Bitnesses.Remove(GlobalObjects.ViewModel.OfficeBitnesses[0]);
+            ToggleNext();
         }
+
+        private void Bit32ToggleButton_OnUnchecked(object sender, RoutedEventArgs e)
+        {
+            CurrentCmProgram.Bitnesses.Add(GlobalObjects.ViewModel.OfficeBitnesses[1]);
+            ToggleNext();
+        }
+
 
         private childItem FindVisualChild<childItem>(DependencyObject obj)
          where childItem : DependencyObject
@@ -176,23 +178,13 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
         {
             var combobox = (ComboBox) sender;
             var selectedVersion = combobox.SelectedValue;
-            var row = combobox.TryFindParent<DataGridRow>(); 
-    
-            var checkBox = FindVisualChild<CheckBox>(row);
-            var branch = checkBox.DataContext as OfficeBranch;
-
-            if (checkBox.IsChecked.Value)
+            
+            CurrentCmProgram.Channels.ForEach(c =>
             {
-                foreach (var channel in GlobalObjects.ViewModel.SccmConfiguration.Channels)
-                {
-                    if (channel.Branch.Name == branch.Name)
-                    {
-                        channel.SelectedVersion =
-                            (BranchVersion)Enum.Parse(typeof(BranchVersion), selectedVersion.ToString(), true);
-                        break;
-                    }
-                }
-            }
+                c.SelectedVersion = (BranchVersion)Enum.Parse(typeof(BranchVersion), selectedVersion.ToString(), true);
+            });
         }
+
+       
     }
 }

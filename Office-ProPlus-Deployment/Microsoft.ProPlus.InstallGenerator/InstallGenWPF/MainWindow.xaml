@@ -187,7 +187,7 @@
                         </DockPanel>
                     </DataTemplate>
                 </Controls:Flyout.HeaderTemplate>
-                <Controls:MetroTabControl  TabStripPlacement="Left" Height="500" SelectionChanged="MainTabControl_SelectionChanged" 
+                <Controls:MetroTabControl  TabStripPlacement="Left" Height="650" SelectionChanged="MainTabControl_SelectionChanged" 
                                                    x:Name="MainTabControl" VerticalAlignment="Top"  >
                     <Controls:MetroTabControl.Resources>
                         <Style TargetType="{x:Type Controls:MetroTabItem}">
@@ -302,7 +302,7 @@
                             </DockPanel>
                         </Controls:MetroTabItem.Header>
                     </Controls:MetroTabItem>
-                    <Controls:MetroTabItem IsEnabled="True" Width="160" x:Name="SccmTabName" Visibility="Collapsed" >
+                    <Controls:MetroTabItem IsEnabled="True" Width="160" x:Name="CMTabName" Visibility="Collapsed" >
                         <Controls:MetroTabItem.Header>
                             <DockPanel Margin="10" Height="32">
                                 <Rectangle Height="16" Width="16">
@@ -310,7 +310,7 @@
                                         <VisualBrush  Visual="{StaticResource appbar_monitor}" ></VisualBrush>
                                     </Rectangle.Fill>
                                 </Rectangle>
-                                <Label FontSize="16" Foreground="white" x:Name="lblSccm">SCCM Config</Label>
+                                <Label FontSize="16" Foreground="white" x:Name="lblCM">CM Config</Label>
                             </DockPanel>
                         </Controls:MetroTabItem.Header>
                     </Controls:MetroTabItem>
@@ -355,7 +355,7 @@
                     <exampleViews:RemoteView x:Name="RemoteView" DataContext="{Binding}" Tag="7"   IsEnabled="true"/>
                 </TabItem>
                 <TabItem>
-                    <exampleViews:SccmView x:Name="SccmView" DataContext="{Binding}" Tag="8"   IsEnabled="true"/>
+                    <exampleViews:CMView x:Name="CMView" DataContext="{Binding}" Tag="8"   IsEnabled="true"/>
                 </TabItem>
                 <TabItem>
                     <exampleViews:AboutView x:Name="AboutView" DataContext="{Binding}" Tag="9"  IsEnabled="True" />

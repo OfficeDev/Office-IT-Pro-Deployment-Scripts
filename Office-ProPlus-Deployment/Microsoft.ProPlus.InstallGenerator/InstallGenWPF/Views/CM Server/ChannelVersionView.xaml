@@ -90,7 +90,7 @@
                                         <RowDefinition Height="300" />
                                     </Grid.RowDefinitions>
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="400" />
+                                        <ColumnDefinition Width="450" />
                                         <ColumnDefinition Width="400" />
                                         <ColumnDefinition Width="20" />
                                         <ColumnDefinition Width="20" />
@@ -100,11 +100,11 @@
 
                                     <Label Grid.Row="1" Grid.ColumnSpan="3"   Content="What Channels Would You Like to Use?" Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20"  Margin="-5 0 0 0" />
 
-                                    <Border Grid.ColumnSpan="2"  Grid.Row="2" BorderThickness="2" BorderBrush="Gray">
+                                    <Border Grid.ColumnSpan="2"  Grid.Row="2" BorderThickness="2" BorderBrush="Gray"  Margin="0 0 150 0">
                                         <DataGrid x:Name="ChannelList" Height="Auto" 
                                               RenderOptions.ClearTypeHint="Enabled" Background="White"
                                               TextOptions.TextFormattingMode="Display" BorderThickness="0" BorderBrush="Gray"
-                                              Margin="0 0 0 0"  Style="{DynamicResource MetroDataGrid}"
+                                              Style="{DynamicResource MetroDataGrid}"
                                               AutoGenerateColumns="False" HeadersVisibility="Column"
                                               ItemsSource="{Binding Branches}"
                                               CanUserAddRows="False" IsEnabled="True">
@@ -112,31 +112,27 @@
                                                 <DataGridTemplateColumn  >
                                                     <DataGridTemplateColumn.CellTemplate>
                                                         <DataTemplate>
-                                                            <CheckBox IsChecked="False" Checked="ChannelToggleButton_OnChecked"  Unchecked="ChannelToggleButton_OnUnchecked"  Content="{Binding RelativeSource={RelativeSource Self}, Path=x}" Margin="5 0 0 0"/>
+                                                            <CheckBox  IsChecked="False" Checked="ChannelToggleButton_OnChecked"  Unchecked="ChannelToggleButton_OnUnchecked" Style="{StaticResource MetroCheckBox}" Content="{Binding RelativeSource={RelativeSource Self}, Path=x}" Margin="5 0 0 0"/>
                                                         </DataTemplate>
                                                     </DataGridTemplateColumn.CellTemplate>
                                                 </DataGridTemplateColumn>
                                                 <DataGridTextColumn Header="Channel" Binding="{Binding Name}" Width="400" 
                                                       IsReadOnly="True" FontSize="20" Foreground="{DynamicResource LabelTextBrushCustom}" />
-                                                <DataGridTemplateColumn Header="Version" >
-                                                    <DataGridTemplateColumn.CellTemplate>
-                                                        <DataTemplate>
-                                                            <ComboBox  x:Name="cbChannelVersion" Width="200" FontSize="20" Height="40" Foreground="{StaticResource GrayBrush}"
-                                                              HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0 0 10 0" ItemsSource="{Binding Source={StaticResource BranchVersionValues}}" SelectedIndex="0" SelectionChanged="CbChannelVersion_OnSelectionChanged">
-                                                            </ComboBox>
-                                                        </DataTemplate>
-                                                    </DataGridTemplateColumn.CellTemplate>
-                                                </DataGridTemplateColumn>
                                             </DataGrid.Columns>
                                         </DataGrid>
                                     </Border>
 
-                                    <Label Grid.Row="3" Grid.Column="0" Content="Which Bitness Would You Like to Use?" Style="{StaticResource CustomMetroLabelHeader}"
+                                    <Label Grid.Row="3" Grid.Column="0" Content="Which Version of Channel Files Will You Use?" Style="{StaticResource CustomMetroLabelHeader}"
                                     HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="20"  Margin="-5 0 0 0" />
-                                    <CheckBox Grid.Row="3" Grid.Column="1"  IsChecked="False"  Width="Auto" Checked="ToggleButton_OnChecked"  Unchecked="ToggleButton_OnUnchecked" Content="{Binding OfficeBitnesses[0].Name}"  Foreground="{StaticResource GrayBrush}" Style="{StaticResource MetroCheckBox}"
-                                                  VerticalAlignment="Center"/>
-                                    <CheckBox Grid.Row="3" Grid.Column="2"  IsChecked="False"  Width="Auto" Checked="ToggleButton_OnChecked"  Unchecked="ToggleButton_OnUnchecked" Content="{Binding OfficeBitnesses[1].Name}"  Foreground="{StaticResource GrayBrush}" Style="{StaticResource MetroCheckBox}"
-                                                   VerticalAlignment="Center" Margin="-320 0 0 0"/>
+                                    <ComboBox Grid.Row="3" Grid.Column="1"  x:Name="cbChannelVersion" Width="200" FontSize="20" Height="40" Foreground="{StaticResource GrayBrush}"
+                                                              HorizontalAlignment="Left" VerticalAlignment="Center" Margin="50 0 10 0" ItemsSource="{Binding Source={StaticResource BranchVersionValues}}" SelectedIndex="0" SelectionChanged="CbChannelVersion_OnSelectionChanged">
+                                    </ComboBox>
+
+                                    <Label Grid.Row="4" Grid.Column="0" Content="Which Bitness Would You Like to Use?" Style="{StaticResource CustomMetroLabelHeader}"
+                                    HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="20"  Margin="-5 0 0 0" />
+                                    <CheckBox Grid.Row="4" Grid.Column="1" Name="Bit64ToggleButton"  IsChecked="False" Width="Auto" Checked="Bit64ToggleButton_OnChecked" Unchecked="Bit64ToggleButton_OnUnchecked" Content="v64"   Foreground="{StaticResource GrayBrush}" VerticalAlignment="Center" Style="{StaticResource MetroCheckBox}"/>
+                                    <CheckBox Grid.Row="4" Grid.Column="2" Name="Bit32ToggleButton" IsChecked="False" Width="Auto" Checked="Bit32ToggleButton_OnChecked" Unchecked="Bit32ToggleButton_OnUnchecked" Content="v32"  Foreground="{StaticResource GrayBrush}" VerticalAlignment="Center" Style="{StaticResource MetroCheckBox}"
+                                                 Margin="-320 0 0 0"/>
 
 
 

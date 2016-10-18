@@ -68,6 +68,7 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
         public async Task<string> GenerateConfigXml()
         {
             var currentDirectory = Directory.GetCurrentDirectory() + @"\Scripts";
+
             if (!System.IO.File.Exists(currentDirectory + @"\Generate-ODTConfigurationXML.ps1"))
             {
                 currentDirectory = Directory.GetCurrentDirectory() + @"\Project\Scripts";

@@ -19,6 +19,7 @@ using MetroDemo.ExampleWindows;
 using MetroDemo.Models;
 using Microsoft.OfficeProPlus.InstallGen.Presentation.Enums;
 using Microsoft.OfficeProPlus.InstallGen.Presentation.Logging;
+using Microsoft.OfficeProPlus.InstallGen.Presentation.Models;
 using Microsoft.OfficeProPlus.InstallGenerator.Models;
 
 namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
@@ -29,11 +30,13 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
     public partial class ProductsLanguagesView : UserControl
     {
         public event ToggleNextEventHandler ToggleNextButton;
-        private SccmAddLanguages AddlanguagesDialog = null;
-        private SccmRemoveLanguages RemovelanguagesDialog = null; 
-        private SccmAddProducts AddproductsDialog = null;
-        private SccmRemoveProducts RemoveproductsDialog = null;
-        private SccmExcludeProducts ExcludeProductsDialog = null; 
+        private CMAddLanguages AddlanguagesDialog = null;
+        private CMRemoveLanguages RemovelanguagesDialog = null; 
+        private CMAddProducts AddproductsDialog = null;
+        private CMRemoveProducts RemoveproductsDialog = null;
+        private CMExcludeProducts ExcludeProductsDialog = null;
+
+        public CmProgram CurrentCmProgram = GlobalObjects.ViewModel.CmPackage.Programs[GlobalObjects.ViewModel.CmPackage.Programs.Count - 1]; 
 
         public event MessageEventHandler ErrorMessage;
 
@@ -41,6 +44,7 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
         public ProductsLanguagesView()
         {
             InitializeComponent();
+           
         }
 
         #region events
@@ -51,6 +55,21 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
 
         private void ChannelVersionPage_OnIsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
+
+            var grid = (Grid)sender;
+
+            if (grid.Visibility == Visibility.Visible)
+            {
+                CurrentCmProgram =
+                    GlobalObjects.ViewModel.CmPackage.Programs[GlobalObjects.ViewModel.CmPackage.Programs.Count - 1];
+
+                if (CurrentCmProgram.Languages.Count == 0 && CurrentCmProgram.Products.Count == 0)
+                {
+                    ProductList.ItemsSource = null;
+                    LanguageList.ItemsSource = null;
+                }
+            }
+
             ToggleNext();
         }
         #endregion
@@ -58,9 +77,9 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
         #region helpers    
         private void ToggleNext()
         {
-            var SccmConfig = GlobalObjects.ViewModel.SccmConfiguration;
+            var CMConfig = GlobalObjects.ViewModel.CmPackage;
 
-            if (SccmConfig.Languages.Count > 0 && SccmConfig.Products.Count > 0)
+            if (CurrentCmProgram.Languages.Count > 0 && CurrentCmProgram.Products.Count > 0)
             {
                 ToggleNextButton?.Invoke(this, new ToggleEventArgs()
                 {
@@ -84,7 +103,7 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
                 {
                     var languageList = GlobalObjects.ViewModel.Languages.ToList();
 
-                    AddlanguagesDialog = new SccmAddLanguages
+                    AddlanguagesDialog = new CMAddLanguages
                     {
                         LanguageSource = languageList
                     };
@@ -99,12 +118,14 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
 
                         selectedLanguages.ForEach(l =>
                         {
-                            if (GlobalObjects.ViewModel.SccmConfiguration.Languages.IndexOf(l) == -1)
+                            if (CurrentCmProgram.Languages.IndexOf(l) == -1)
                             {
-                                GlobalObjects.ViewModel.SccmConfiguration.Languages.Add(l);
+                                CurrentCmProgram.Languages.Add(l);
                             }
                         });
                         AddlanguagesDialog = null;
+                        LanguageList.ItemsSource = null;
+                        LanguageList.ItemsSource = CurrentCmProgram.Languages;
                         ToggleNext();
                     };
                 }
@@ -125,7 +146,7 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
                     var productList = GlobalObjects.ViewModel.AllProductsNoExclude.ToList();
 
 
-                    AddproductsDialog = new SccmAddProducts
+                    AddproductsDialog = new CMAddProducts
                     {
                         ProductSource = productList
                     };
@@ -139,13 +160,15 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
 
                         selectedProducts.ForEach(p =>
                         {                   
-                            if (GlobalObjects.ViewModel.SccmConfiguration.Products.IndexOf(p) == -1)
+                            if (CurrentCmProgram.Products.IndexOf(p) == -1)
                             {
                                 p.ProductAction = ProductAction.Install;
-                                GlobalObjects.ViewModel.SccmConfiguration.Products.Add(p);
+                                CurrentCmProgram.Products.Add(p);
                             }
                         });
                         AddproductsDialog = null;
+                        ProductList.ItemsSource = null; 
+                        ProductList.ItemsSource = CurrentCmProgram.Products; 
                         ToggleNext();
                     };
                 }
@@ -163,15 +186,15 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
             {
                 if (RemoveproductsDialog == null)
                 {
-                    var productList = GlobalObjects.ViewModel.SccmConfiguration.Products.ToList();
+                    var productList = CurrentCmProgram.Products.ToList();
 
-                    RemoveproductsDialog = new SccmRemoveProducts
+                    RemoveproductsDialog = new CMRemoveProducts
                     {
                         ProductSource = productList
                     };
                     RemoveproductsDialog.Closed += (o, args) =>
                     {
-                        AddproductsDialog = null;
+                        RemoveproductsDialog = null;
                     };
                     RemoveproductsDialog.Closing += (o, args) =>
                     {
@@ -179,9 +202,11 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
 
                         selectedProducts.ForEach(p =>
                         {
-                            if(GlobalObjects.ViewModel.SccmConfiguration.Products.IndexOf(p) > -1)  
-                            GlobalObjects.ViewModel.SccmConfiguration.Products.Remove(p);
+                            if(CurrentCmProgram.Products.IndexOf(p) > -1)
+                                CurrentCmProgram.Products.Remove(p);
                         });
+                        ProductList.ItemsSource = null;
+                        ProductList.ItemsSource = CurrentCmProgram.Products;
                         RemoveproductsDialog = null;
                         ToggleNext();
                     };
@@ -200,15 +225,15 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
             {
                 if (RemovelanguagesDialog == null)
                 {
-                    var languageList = GlobalObjects.ViewModel.SccmConfiguration.Languages.ToList();
+                    var languageList = CurrentCmProgram.Languages.ToList();
 
-                    RemovelanguagesDialog = new SccmRemoveLanguages()
+                    RemovelanguagesDialog = new CMRemoveLanguages()
                     {
                         LanguageSource = languageList
                     };
                     RemovelanguagesDialog.Closed += (o, args) =>
                     {
-                        AddlanguagesDialog = null;
+                        RemovelanguagesDialog = null;
                     };
                     RemovelanguagesDialog.Closing += (o, args) =>
                     {
@@ -217,12 +242,14 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
 
                         selectedLanguages.ForEach(l =>
                         {
-                            if (GlobalObjects.ViewModel.SccmConfiguration.Languages.IndexOf(l) > -1)
+                            if (CurrentCmProgram.Languages.IndexOf(l) > -1)
                             {
-                                GlobalObjects.ViewModel.SccmConfiguration.Languages.Remove(l);
+                                CurrentCmProgram.Languages.Remove(l);
                             }
                         });
                         RemovelanguagesDialog = null;
+                        LanguageList.ItemsSource = null;
+                        LanguageList.ItemsSource = CurrentCmProgram.Languages;
                         ToggleNext();
                     };
                 }
@@ -244,7 +271,7 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
                     var productList = GlobalObjects.ViewModel.ExcludeProducts.ToList();
 
 
-                    ExcludeProductsDialog = new SccmExcludeProducts
+                    ExcludeProductsDialog = new CMExcludeProducts
                     {
                         ProductSource = productList
                     };
@@ -265,12 +292,14 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
                             tempProduct.Id = p.DisplayName;
                             tempProduct.ProductAction = ProductAction.Exclude;
 
-                            if (GlobalObjects.ViewModel.SccmConfiguration.Products.IndexOf(tempProduct) == -1)
+                            if (CurrentCmProgram.Products.IndexOf(tempProduct) == -1)
                             {
-                                GlobalObjects.ViewModel.SccmConfiguration.Products.Add(tempProduct);
+                                CurrentCmProgram.Products.Add(tempProduct);
                             }
                         });
                         ExcludeProductsDialog = null;
+                        ProductList.ItemsSource = null;
+                        ProductList.ItemsSource = CurrentCmProgram.Products;
                         ToggleNext();
                     };
                 }

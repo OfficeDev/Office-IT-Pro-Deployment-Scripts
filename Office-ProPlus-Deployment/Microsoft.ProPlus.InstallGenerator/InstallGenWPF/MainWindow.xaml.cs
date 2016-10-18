@@ -61,7 +61,7 @@ namespace MetroDemo
                 GenerateView.TransitionTab += TransitionTab;
                 DownloadView.TransitionTab += TransitionTab;
                 LocalView.TransitionTab += TransitionTab;
-                SccmView.TransitionTab += TransitionTab;
+                CMView.TransitionTab += TransitionTab;
                   
 
                 LocalView.BranchChanged += BranchChanged;
@@ -88,8 +88,8 @@ namespace MetroDemo
                 LocalView.InfoMessage += GenerateViewInfoMessage;
                 LocalView.ErrorMessage += GenerateView_ErrorMessage;
 
-                SccmView.InfoMessage += GenerateViewInfoMessage;
-                SccmView.ErrorMessage += GenerateView_ErrorMessage;
+                CMView.InfoMessage += GenerateViewInfoMessage;
+                CMView.ErrorMessage += GenerateView_ErrorMessage;
             }
             catch (Exception ex)
             {
@@ -210,7 +210,7 @@ namespace MetroDemo
                     ProductView.ProductTab.Visibility = Visibility.Visible;
                     ProductView.OptionalTab.Visibility = Visibility.Visible;
                     ProductView.ExcludedTab.Visibility = Visibility.Visible;
-                    SccmTabName.Visibility = Visibility.Collapsed;
+                    CMTabName.Visibility = Visibility.Collapsed;
 
                 }
 
@@ -221,7 +221,7 @@ namespace MetroDemo
                     ProductView.ProductTab.Visibility = Visibility.Collapsed;
                     ProductView.OptionalTab.Visibility = Visibility.Collapsed;
                     ProductView.ExcludedTab.Visibility = Visibility.Collapsed;
-                    SccmTabName.Visibility = Visibility.Collapsed;
+                    CMTabName.Visibility = Visibility.Collapsed;
 
                 }
 
@@ -230,7 +230,7 @@ namespace MetroDemo
                     GenerateTabName.Visibility = Visibility.Collapsed;
                     RemoteTabName.Visibility = Visibility.Collapsed;
                     LocalTabName.Visibility = Visibility.Visible;
-                    SccmTabName.Visibility = Visibility.Collapsed;
+                    CMTabName.Visibility = Visibility.Collapsed;
 
                     GenerateView.Tag = 99;
                     LocalView.Tag = 5;
@@ -243,13 +243,13 @@ namespace MetroDemo
                     TabDownload.Visibility = Visibility.Collapsed;
                     TabUpdates.Visibility = Visibility.Collapsed;
                     TabOptions.Visibility = Visibility.Collapsed;
-                    SccmTabName.Visibility = Visibility.Collapsed;
+                    CMTabName.Visibility = Visibility.Collapsed;
 
 
                     RemoteTabName.Visibility = Visibility.Visible;
                     RemoteTabName.IsSelected = true;
                 }
-                else if (GlobalObjects.ViewModel.ApplicationMode == ApplicationMode.ManageSccm)
+                else if (GlobalObjects.ViewModel.ApplicationMode == ApplicationMode.ManageCM)
                 {
                     GenerateTabName.Visibility = Visibility.Collapsed;
                     LocalTabName.Visibility = Visibility.Collapsed;
@@ -259,15 +259,15 @@ namespace MetroDemo
                     TabOptions.Visibility = Visibility.Collapsed;
                     RemoteTabName.Visibility = Visibility.Collapsed;
 
-                    SccmTabName.Visibility = Visibility.Visible;
-                    SccmTabName.IsSelected = true;
+                    CMTabName.Visibility = Visibility.Visible;
+                    CMTabName.IsSelected = true;
                 }
                 else
                 {
                     GenerateTabName.Visibility = Visibility.Visible;
                     LocalTabName.Visibility = Visibility.Collapsed;
                     RemoteTabName.Visibility = Visibility.Collapsed;
-                    SccmTabName.Visibility = Visibility.Collapsed;
+                    CMTabName.Visibility = Visibility.Collapsed;
 
                     GenerateView.Tag = 5;
                     LocalView.Tag = 99;
@@ -438,7 +438,7 @@ namespace MetroDemo
                 lblAbout.Visibility = Visibility.Collapsed;
                 lblLocal.Visibility = Visibility.Collapsed;
                 lblRemote.Visibility = Visibility.Collapsed;
-                lblSccm.Visibility = Visibility.Collapsed; 
+                lblCM.Visibility = Visibility.Collapsed; 
 
                 var margin = ((Button)sender).Margin;
                 margin.Left = -1;
@@ -467,7 +467,7 @@ namespace MetroDemo
                 lblAbout.Visibility = Visibility.Visible;
                 lblLocal.Visibility = Visibility.Visible;
                 lblRemote.Visibility = Visibility.Visible;
-                lblSccm.Visibility = Visibility.Visible;
+                lblCM.Visibility = Visibility.Visible;
 
 
                 var margin = ((Button)sender).Margin;

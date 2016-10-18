@@ -13,7 +13,7 @@ using MessageBox = System.Windows.Forms.MessageBox;
 
 namespace MetroDemo.ExampleWindows
 {
-    public partial class SccmRemoveLanguages : IDisposable
+    public partial class CMRemoveLanguages : IDisposable
     {
 
         public List<Language> SelectedItems { get; set; }
@@ -23,7 +23,7 @@ namespace MetroDemo.ExampleWindows
         private bool _disposed;
         private bool _hideOnClose = true;
 
-        public SccmRemoveLanguages()
+        public CMRemoveLanguages()
         {
             this.DataContext = GlobalObjects.ViewModel;
             this.InitializeComponent();

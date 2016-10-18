@@ -28,8 +28,10 @@ using Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config;
 using Button = System.Windows.Controls.Button;
 using CheckBox = System.Windows.Controls.CheckBox;
 using ComboBox = System.Windows.Controls.ComboBox;
+using DataGrid = System.Windows.Controls.DataGrid;
 using File = System.IO.File;
 using MessageBox = System.Windows.MessageBox;
+using TextBox = System.Windows.Controls.TextBox;
 using UserControl = System.Windows.Controls.UserControl;
 
 namespace MetroDemo.ExampleViews
@@ -37,7 +39,7 @@ namespace MetroDemo.ExampleViews
     /// <summary>
     /// Interaction logic for TextExamples.xaml
     /// </summary>
-    public partial class SccmView : UserControl
+    public partial class CMView : UserControl
     {
     #region declarations
         private LanguagesDialog languagesDialog = null;
@@ -64,7 +66,7 @@ namespace MetroDemo.ExampleViews
 
         private int _cachedIndex = 0;
    
-        public SccmView()
+        public CMView()
         {
             InitializeComponent();
 
@@ -75,19 +77,17 @@ namespace MetroDemo.ExampleViews
             NextButton.IsEnabled = e.Enabled;
         }
 
-        private void SccmView_Loaded(object sender, RoutedEventArgs e)             
+        private void CMView_Loaded(object sender, RoutedEventArgs e)             
         {
             try
             {
 
                 if (cbActions.Items.Count < 1)
                 {
-                    cbActions.Items.Add("Deploy Office 365 ProPlus");
-                    cbActions.Items.Add("Change the channel of an Office 365 client");
-                    cbActions.Items.Add("Rollback the version of an Office 365 client");
-                    cbActions.Items.Add("Update an Office 365 ProPlus client with ConfigMgr");
-                    cbActions.Items.Add("Update an Office 365 ProPlus client using a scheduled task");
-                    cbActions.Items.Add("Deploy Language Pack");
+                    cbActions.Items.Add("Start an Office ProPlus Deployment");
+                    cbActions.Items.Add("Manage an Existing Office ProPlus Deployment");
+                    cbActions.Items.Add("Update an Existing Office ProPlus Deployment");
+                    cbActions.Items.Add("Remove an Instance of Office ProPlus");
                 }
 
                 cbActions.SelectedIndex = 0; 
@@ -120,7 +120,7 @@ namespace MetroDemo.ExampleViews
             catch { }
         }
 
-        private void TransitionSccmTabs(TransitionTabDirection direction)
+        private void TransitionCMTabs(TransitionTabDirection direction)
         {
             var currentIndex = MainTabControl.SelectedIndex;
             var tmpIndex = currentIndex;
@@ -210,17 +210,17 @@ namespace MetroDemo.ExampleViews
                             tabIndex--; 
                         } 
 
-                        LogAnaylytics("/SccmView", "Start");
+                        LogAnaylytics("/CMView", "Start");
                         break;
                     case 1:
                         //DownloadPage.Visibility = Visibility.Visible;
-                        LogAnaylytics("/SccmView", "Download");
+                        LogAnaylytics("/CMView", "Download");
                         break;
                     case 2:
-                        LogAnaylytics("/SccmView", "Optional");
+                        LogAnaylytics("/CMView", "Optional");
                         break;
                     case 3:
-                        LogAnaylytics("/SccmView", "Excluded");
+                        LogAnaylytics("/CMView", "Excluded");
                         break;
                 }
 
@@ -236,7 +236,19 @@ namespace MetroDemo.ExampleViews
         {
             try
             {
-                TransitionSccmTabs(TransitionTabDirection.Forward);
+
+                var currentProgram =
+                    GlobalObjects.ViewModel.CmPackage.Programs[GlobalObjects.ViewModel.CmPackage.Programs.Count - 1];
+
+                if (GlobalObjects.ViewModel.CmPackage.Scenario == CMScenario.Deploy && MainTabControl.SelectedIndex == 4 && currentProgram.Channels.Count == 0)
+                {
+                    MainTabControl.SelectedIndex = 2;
+                }
+                else
+                {
+                    TransitionCMTabs(TransitionTabDirection.Forward);
+                }
+
             }
             catch (Exception ex)
             {
@@ -248,7 +260,7 @@ namespace MetroDemo.ExampleViews
         {
             try
             {
-                TransitionSccmTabs(TransitionTabDirection.Back);
+                TransitionCMTabs(TransitionTabDirection.Back);
             }
             catch (Exception ex)
             {
@@ -261,19 +273,16 @@ namespace MetroDemo.ExampleViews
             switch (cbActions.SelectedIndex)
             {
                 case 0:
-                    txtBlock.Text = "Select this option if you would like to deploy Office 365 ProPlus.";
+                    txtBlock.Text = "Select this option to begin an Office ProPlus deployment.";
                     break;
                 case 1:
-                    txtBlock.Text = "Select this option if would like to change the installed channel of an Office 365 client.";
+                    txtBlock.Text = "Select this option to manage an existing Office ProPlus deployment.";
                     break;
                 case 2:
-                    txtBlock.Text = "Select this option if you would like to rollback the version of Office 365 installed on a client.";
+                    txtBlock.Text = "Select this option to update an exist Office ProPlus deployment.";
                     break;
                 case 3:
-                    txtBlock.Text = "Select this option if you would like to update the version of Office 365 ProPlus installed on a client via ConfigMgr.";
-                    break;
-                case 4:
-                    txtBlock.Text = "Select this option if you would like to update the version of Office 365 ProPlus installed on a client via a scheduled task.";
+                    txtBlock.Text = "Select this option to remove an instance of Office ProPlus.";
                     break;
                 default:
                     txtBlock.Text = "";
@@ -287,22 +296,26 @@ namespace MetroDemo.ExampleViews
             switch (cbActions.SelectedIndex)
             {
                 case 0:
-                    GlobalObjects.ViewModel.SccmConfiguration = new SccmConfiguration();
+                    GlobalObjects.ViewModel.CmPackage = new CmPackage();
                     DeployOffice();
                     break;
                 case 1:
-                    GlobalObjects.ViewModel.SccmConfiguration = new SccmConfiguration();
+                    GlobalObjects.ViewModel.CmPackage = new CmPackage();
                     break;  
                 case 2:
-                    GlobalObjects.ViewModel.SccmConfiguration = new SccmConfiguration();
+                    GlobalObjects.ViewModel.CmPackage = new CmPackage();
 
                     break;
                 case 3:
-                    GlobalObjects.ViewModel.SccmConfiguration = new SccmConfiguration();
+                    GlobalObjects.ViewModel.CmPackage = new CmPackage();
 
                     break;
                 case 4:
-                    GlobalObjects.ViewModel.SccmConfiguration = new SccmConfiguration();
+                    GlobalObjects.ViewModel.CmPackage = new CmPackage();
+
+                    break;
+                case 5:
+                    GlobalObjects.ViewModel.CmPackage = new CmPackage();
 
                     break;
                 default:
@@ -316,32 +329,30 @@ namespace MetroDemo.ExampleViews
             var SourceView = new DeploySourceView();
             var ChannelVersionView = new ChannelVersionView();
             var ProductsLanguagesView = new ProductsLanguagesView();
-            var DeployOtherView = new DeployOtherView();
-            var DeployView =  new DeployView();
-            
-
+            var ProgramOptionsView = new ProgramOptionsView();
+            var DeploymentStagingView =  new DeploymentStagingView();
 
             SourceView.ToggleNextButton += ToggleNext;
             ChannelVersionView.ToggleNextButton += ToggleNext;
             ProductsLanguagesView.ToggleNextButton += ToggleNext;
-            DeployOtherView.ToggleNextButton += ToggleNext;
-            DeployView.ToggleNextButton += ToggleNext;
+            ProgramOptionsView.ToggleNextButton += ToggleNext;
+            DeploymentStagingView.ToggleNextButton += ToggleNext;
+            DeploymentStagingView.ErrorMessage += ErrorMessage; 
 
             SourceView.MainTabControl.Items.Remove(SourceView.SourceTab);
             ChannelVersionView.MainTabControl.Items.Remove(ChannelVersionView.ChannelVersionTab);
             ProductsLanguagesView.MainTabControl.Items.Remove(ProductsLanguagesView.ProductsLanguagesTab);
-            DeployOtherView.MainTabControl.Items.Remove(DeployOtherView.OtherTab);
-            DeployView.MainTabControl.Items.Remove(DeployView.DeployTab);
+            ProgramOptionsView.MainTabControl.Items.Remove(ProgramOptionsView.OtherTab);
+            DeploymentStagingView.MainTabControl.Items.Remove(DeploymentStagingView.StagingTab);
 
             MainTabControl.Items.Add(SourceView.SourceTab);
             MainTabControl.Items.Add(ChannelVersionView.ChannelVersionTab);
             MainTabControl.Items.Add(ProductsLanguagesView.ProductsLanguagesTab);
-            MainTabControl.Items.Add(DeployOtherView.OtherTab);
-            MainTabControl.Items.Add(DeployView.DeployTab);
+            MainTabControl.Items.Add(ProgramOptionsView.OtherTab);
+            MainTabControl.Items.Add(DeploymentStagingView.StagingTab);
 
-            //ChannelVersionView.cbChannelVersion.SelectedIndex = 0;
+            ChannelVersionView.cbChannelVersion.SelectedIndex = 0;
             
-
             var tabIndex = 2;
             while (tabIndex < MainTabControl.Items.Count)
             {
@@ -355,7 +366,7 @@ namespace MetroDemo.ExampleViews
             sourceTab.IsSelected = true;
             sourceTab.IsEnabled = true;
 
-            GlobalObjects.ViewModel.SccmConfiguration.Scenario = SccmScenario.Deploy;
+            GlobalObjects.ViewModel.CmPackage.Scenario = CMScenario.Deploy;
 
             NextButton.Visibility = Visibility.Visible;
             PreviousButton.Visibility = Visibility.Visible;

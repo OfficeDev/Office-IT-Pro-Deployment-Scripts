@@ -155,10 +155,11 @@
     <Compile Include="Enums\Enums.cs" />
     <Compile Include="Events\Events.cs" />
     <Compile Include="Models\Bitness.cs" />
+    <Compile Include="Models\CmProgram.cs" />
     <Compile Include="Models\DownloadUrl.cs" />
     <Compile Include="Models\RemoteMachine.cs" />
     <Compile Include="Models\officeVersion.cs" />
-    <Compile Include="Models\SccmConfiguration.cs" />
+    <Compile Include="Models\CmPackage.cs" />
     <Compile Include="Models\SelectedChannel.cs" />
     <Compile Include="Properties\Annotations1.cs" />
     <Compile Include="Views\AboutView.xaml.cs">
@@ -167,8 +168,8 @@
     <Compile Include="Views\CM Server\ChannelVersionView.xaml.cs">
       <DependentUpon>ChannelVersionView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\CM Server\DeployOtherView.xaml.cs">
-      <DependentUpon>DeployOtherView.xaml</DependentUpon>
+    <Compile Include="Views\CM Server\ProgramOptionsView.xaml.cs">
+      <DependentUpon>ProgramOptionsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\CM Server\DeploySourceView.xaml.cs">
       <DependentUpon>DeploySourceView.xaml</DependentUpon>
@@ -348,7 +349,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\CM Server\DeployOtherView.xaml">
+    <Page Include="Views\CM Server\ProgramOptionsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

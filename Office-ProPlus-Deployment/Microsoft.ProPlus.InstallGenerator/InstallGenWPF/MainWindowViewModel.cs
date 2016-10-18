@@ -428,7 +428,7 @@ namespace MetroDemo
 
             SelectedCertificate = new Certificate();
 
-            SccmConfiguration = new SccmConfiguration();
+            CmPackage = new CmPackage();
             //{
             //    Bitnesses = new List<Bitness>(),
             //    Channels = new List<SelectedChannel>(),
@@ -508,7 +508,7 @@ namespace MetroDemo
 
         public List<DeploymentPurpose> DeploymentPurposes { get; set; }
 
-        public SccmConfiguration SccmConfiguration { get; set; }
+        public CmPackage CmPackage { get; set; }
 
         public bool AllowMultipleDownloads { get; set; }
 

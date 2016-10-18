@@ -13,7 +13,7 @@ using MessageBox = System.Windows.Forms.MessageBox;
 
 namespace MetroDemo.ExampleWindows
 {
-    public partial class SccmExcludeProducts : IDisposable
+    public partial class CMExcludeProducts : IDisposable
     {
 
         public List<ExcludeProduct> SelectedItems { get; set; }
@@ -23,7 +23,7 @@ namespace MetroDemo.ExampleWindows
         private bool _disposed;
         private bool _hideOnClose = true;
 
-        public SccmExcludeProducts()
+        public CMExcludeProducts()
         {
             this.DataContext = GlobalObjects.ViewModel;
             this.InitializeComponent();

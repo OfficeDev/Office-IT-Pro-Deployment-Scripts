@@ -51,7 +51,7 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
 
             if (source.Content.ToString() == "CDN")
             {
-                GlobalObjects.ViewModel.SccmConfiguration.DeploymentSource = DeploymentSource.CDN;
+                GlobalObjects.ViewModel.CmPackage.DeploymentSource = DeploymentSource.CDN;
 
                 if (BrowseButton != null)
                 {
@@ -66,7 +66,7 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
             }
             else if (source.Content.ToString() == "Distribution Point")
             {
-                GlobalObjects.ViewModel.SccmConfiguration.DeploymentSource = DeploymentSource.DistributionPoint;
+                GlobalObjects.ViewModel.CmPackage.DeploymentSource = DeploymentSource.DistributionPoint;
                 BrowseButton.IsEnabled = false;
                 FilePath.IsEnabled = false;
 
@@ -77,7 +77,7 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
             }
             else
             {
-                GlobalObjects.ViewModel.SccmConfiguration.DeploymentSource = DeploymentSource.Local;
+                GlobalObjects.ViewModel.CmPackage.DeploymentSource = DeploymentSource.Local;
                 BrowseButton.IsEnabled = true;
                 FilePath.IsEnabled = true;
 
@@ -98,7 +98,7 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
 
             if (Directory.Exists(filePath))
             {
-                GlobalObjects.ViewModel.SccmConfiguration.DeploymentDirectory = filePath;
+                GlobalObjects.ViewModel.CmPackage.DeploymentDirectory = filePath;
 
                 ToggleNextButton?.Invoke(this, new ToggleEventArgs()
                 {
@@ -134,7 +134,7 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
             if (grid.Visibility == Visibility.Visible)
             {
                 if (FilePath.IsEnabled &&
-                    !Directory.Exists(GlobalObjects.ViewModel.SccmConfiguration.DeploymentDirectory))
+                    !Directory.Exists(GlobalObjects.ViewModel.CmPackage.DeploymentDirectory))
                 {
                     ToggleNextButton?.Invoke(this, new ToggleEventArgs()
                     {

@@ -1,0 +1,183 @@
+﻿<UserControl x:Class="Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config.ProgramOptionsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:MetroDemo="clr-namespace:MetroDemo"
+             xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:exampleViews="clr-namespace:MetroDemo.ExampleViews"
+             xmlns:models="clr-namespace:MetroDemo.Models"
+             xmlns:gif="http://wpfanimatedgif.codeplex.com"
+             mc:Ignorable="d"
+             d:DesignHeight="600"
+             d:DesignWidth="900"
+             d:DataContext="{d:DesignInstance MetroDemo:MainWindowViewModel}" Loaded="ProgramOptionsView_OnLoaded" >
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro.Resources;component/Icons.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <Thickness x:Key="ColumnMargin">10 5 10 5</Thickness>
+            <Thickness x:Key="ControlMargin">0 5 0 0</Thickness>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <AdornerDecorator>
+        <Grid Background="#e6e6e6" x:Name="Product" HorizontalAlignment="Stretch">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"  />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="450"></RowDefinition>
+                <RowDefinition></RowDefinition>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0" HorizontalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="0"/>
+                </Grid.ColumnDefinitions>
+                
+                <Grid HorizontalAlignment="Left" Margin="30 30 0 0" Height="450" VerticalAlignment="Top" x:Name="OptionsPage">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="50" />
+                            <RowDefinition Height="60" />
+                            <RowDefinition Height="60" />
+                            <RowDefinition Height="60" />
+                            <RowDefinition Height="60" />
+                            <RowDefinition Height="60" />
+                            <RowDefinition Height="350" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="400" />
+                            <ColumnDefinition Width="400" />
+                            <ColumnDefinition Width="60" />
+                            <ColumnDefinition Width="60" />
+                        </Grid.ColumnDefinitions>
+                        <Controls:MetroAnimatedSingleRowTabControl Grid.Row="0" Grid.Column="1"  x:Name="MainTabControl" 
+                                                           Height="650" VerticalAlignment="Top" IsVisibleChanged="OtherOptionsPage_OnIsVisibleChanged">
+
+                            <TabItem x:Name="OtherTab" Height="50">
+                                <TabItem.Header>
+                                    <DockPanel Margin="0,5,0,0">
+                                    <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,0,0,0" Height="19">Other Options</Label>
+                                    </DockPanel>
+                                </TabItem.Header>
+
+                            <Controls:MetroAnimatedSingleRowTabControl  x:Name="OptionsTabControl" 
+                                                           Height="650" VerticalAlignment="Top" >
+
+
+                                <TabItem x:Name="OptionsTab1" Height="50">
+                                    <TabItem.Header>
+                                        <DockPanel Margin="0,5,0,0">
+                                            <Label Style="{StaticResource CustomMetroLabelTopHeader1}" Padding="0,0,0,0" Height="19">Options</Label>
+                                        </DockPanel>
+                                    </TabItem.Header>
+
+                                    <Grid HorizontalAlignment="Left" Margin="30 10 0 0" Height="450" VerticalAlignment="Top" x:Name="OtherOptionsPage" IsVisibleChanged="OtherOptionsPage_OnIsVisibleChanged">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="50" />
+                                            <RowDefinition Height="50" />
+                                            <RowDefinition Height="50" />
+                                            <RowDefinition Height="50" />
+                                            <RowDefinition Height="50" />
+                                            <RowDefinition Height="50" />
+                                            <RowDefinition Height="50" />
+                                            <RowDefinition Height="50" />
+                                            <RowDefinition Height="50" />
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="225" />
+                                            <ColumnDefinition Width="75" />
+                                            <ColumnDefinition Width="325" />
+                                            <ColumnDefinition Width="75" />
+
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock Grid.Row="0" Grid.ColumnSpan="2" TextWrapping="WrapWithOverflow" FontSize="25" FontWeight="Bold" Style="{StaticResource CustomMetroLabelTextBlock}"  Text="Other possible options." />
+
+                                        <Label Grid.Row="1" Grid.ColumnSpan="3" x:Name="lbScriptName" Content="What Will The Deployment Script be Named?" ToolTip="Default value is CM-OfficeDeploymentScript.ps1." Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
+                                        <TextBox Grid.Row="1" Grid.ColumnSpan="3"  x:Name="ScriptName" FontSize="15" HorizontalAlignment="Right" VerticalContentAlignment="Top" ToolTip="Default value is CM-OfficeDeploymentScript.ps1." Margin="180 0 0 0"
+                                                   Height="30" Width="200" Text="{Binding CmPackage.ScriptName, Mode=TwoWay}"  Foreground="{StaticResource GrayBrush}" Background="White" TextChanged="ScriptName_OnTextChanged">
+                                        </TextBox>
+
+                                        <Label Grid.Row="2" Grid.ColumnSpan="3" x:Name="lbConfigurationXml" Content="What Will the Configuration XML be Named?" ToolTip="Default value is .\DeploymentFiles\DefaultConfiguration.xml." Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
+                                        <TextBox Grid.Row="2" Grid.ColumnSpan="3"  x:Name="ConfigurationXml" FontSize="15" HorizontalAlignment="Right" VerticalContentAlignment="Top" ToolTip="Default value is .\DeploymentFiles\DefaultConfiguration.xml." Margin="180 0 0 0"
+                                                   Height="30" Width="200" Text="{Binding CmPackage.ConfigurationXml, Mode=TwoWay}"  Foreground="{StaticResource GrayBrush}" Background="White" TextChanged="ConfigurationXml_OnTextChanged">
+                                        </TextBox>
+                                        
+                                        <Label Grid.Row="3" Grid.ColumnSpan="3" x:Name="lbCustomName" Content="Custom Name of the Deployment Program?" ToolTip="Default value combines the channel with the platform." Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
+                                        <TextBox Grid.Row="3" Grid.ColumnSpan="3"  x:Name="CustomName"  FontSize="15" HorizontalAlignment="Right" VerticalContentAlignment="Top" ToolTip="Default value combines the channel with the platform. " Margin="180 0 0 0"
+                                                   Height="30" Width="200" Text="{Binding CmPackage.CustomName, Mode=TwoWay}"  Foreground="{StaticResource GrayBrush}" Background="White" TextChanged="CustomName_OnTextChanged">
+                                        </TextBox>
+
+                                        <Label Grid.Row="4" Grid.ColumnSpan="3" x:Name="lblCollection" Content="Which Collection Will You Deploy To?*" ToolTip="The name of the collection to deploy the program to.  This field is required." Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
+                                        <TextBox Grid.Row="4" Grid.ColumnSpan="3"  x:Name="Collection" FontSize="15" HorizontalAlignment="Right" VerticalContentAlignment="Top" ToolTip="The name of the collection to deploy the program to." Margin="180 0 0 0"
+                                                   Height="30" Width="200" Text="{Binding CmPackage.Collection, Mode=TwoWay}"  Foreground="{StaticResource GrayBrush}" Background="White" TextChanged="Collection_OnTextChanged">
+                                        </TextBox>
+
+                                       
+
+
+                                    </Grid>
+                                </TabItem>
+
+                                <TabItem x:Name="OptionsTab2" Height="50">
+                                    <TabItem.Header>
+                                        <DockPanel Margin="0,5,0,0">
+                                            <Label Style="{StaticResource CustomMetroLabelTopHeader1}" Padding="0,0,0,0" Height="19">Options Continued</Label>
+                                        </DockPanel>
+                                    </TabItem.Header>
+
+                                    <Grid HorizontalAlignment="Left" Margin="30 10 0 0" Height="450" VerticalAlignment="Top" x:Name="OtherOptionsPage1" IsVisibleChanged="OtherOptionsPage_OnIsVisibleChanged">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="50" />
+                                            <RowDefinition Height="50" />
+                                            <RowDefinition Height="50" />
+                                            <RowDefinition Height="50" />
+                                            <RowDefinition Height="50" />
+                                            <RowDefinition Height="50" />
+                                            <RowDefinition Height="50" />
+                                            <RowDefinition Height="50" />
+                                            <RowDefinition Height="50" />
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="225" />
+                                            <ColumnDefinition Width="75" />
+                                            <ColumnDefinition Width="325" />
+                                            <ColumnDefinition Width="75" />
+
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock Grid.Row="0" Grid.ColumnSpan="2" TextWrapping="WrapWithOverflow" FontSize="25" FontWeight="Bold" Style="{StaticResource CustomMetroLabelTextBlock}"  Text="More options." />
+                                        
+                                        <Label Grid.Row="1" Grid.ColumnSpan="3" x:Name="lblDeploymentPurpose" Content="What Purpose Does This Deployment Have?" ToolTip="Default value is Required. Available options are Default,Required, and Available." Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
+                                        <ComboBox Grid.Row="1" Grid.ColumnSpan="3" x:Name="cbDeploymentPurpose"  FontSize="20"  Height="30" Width="200" Foreground="{StaticResource GrayBrush}"
+                                      HorizontalAlignment="Right" VerticalAlignment="Center" ItemsSource="{Binding DeploymentPurposes}" SelectedIndex="1" ToolTip="Default value is Required. Available options are Default,Required, and Available."
+                                                  SelectionChanged="CbDeploymentPurpose_OnSelectionChanged"/>
+
+                                        <Label Grid.Row="2" Grid.ColumnSpan="3" x:Name="lbleploymentType" Content="What Type Of Deployment Will This Be?" ToolTip="The available options are DeployWithScript,DeployWithConfigurationFile." Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
+                                        <ComboBox Grid.Row="2" Grid.ColumnSpan="3" x:Name="cbDeploymentType"  FontSize="20"  Height="30" Width="200" Foreground="{StaticResource GrayBrush}"
+                                      HorizontalAlignment="Right" VerticalAlignment="Center" ItemsSource="{Binding DeploymentTypes}" SelectedIndex="1" ToolTip="The available options are DeployWithScript,DeployWithConfigurationFile." 
+                                                  SelectionChanged="CbDeploymentType_OnSelectionChanged"/>
+
+                                        <Label Grid.Row="3" Grid.ColumnSpan="3" x:Name="lblAddProgram" Content="Do You Want to Add Another Deployment Program?" ToolTip="" Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
+                                        <CheckBox Grid.Row="3" Grid.ColumnSpan="3" x:Name="AddProgram"  FontSize="20"  Height="30" Width="200" Foreground="{StaticResource GrayBrush}" Style="{StaticResource MetroCheckBox}"
+                                      HorizontalAlignment="Right" VerticalAlignment="Center" ToolTip="" IsChecked="False" Checked="AddProgram_OnChecked" Unchecked="AddProgram_OnUnchecked" Margin="50 0 0 0"/>
+
+
+                                    </Grid>
+                                </TabItem>
+                            </Controls:MetroAnimatedSingleRowTabControl>
+                        </TabItem>
+                        </Controls:MetroAnimatedSingleRowTabControl>
+                </Grid>
+            </Grid>
+        </Grid>
+
+    </AdornerDecorator>
+</UserControl>

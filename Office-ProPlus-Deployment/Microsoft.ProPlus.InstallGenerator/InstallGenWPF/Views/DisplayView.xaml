@@ -208,14 +208,14 @@
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="40"></RowDefinition>
                                     </Grid.RowDefinitions>
-                                    <Button Grid.Column="0" x:Name="EnableSCCMSupportInfo" Height="40" HorizontalAlignment="Center" VerticalAlignment="Center"  
+                                    <Button Grid.Column="0" x:Name="EnableCMSupportInfo" Height="40" HorizontalAlignment="Center" VerticalAlignment="Center"  
                                                             Focusable="False"  Style="{StaticResource CustomMetroInfoButton}" Click="ProductInfo_OnClick" >
                                         <Image Source="../images/info.png" Width="20" Height="20"/>
                                     </Button>
                                     <Label Content="Enable Configuration Manager support" Style="{StaticResource CustomMetroLabelHeader}" 
                                        HorizontalAlignment="Left"  Grid.Column="1" Width="330"/>
 
-                                    <Controls:ToggleSwitch x:Name="EnableSCCMSupport" Grid.Column="2"
+                                    <Controls:ToggleSwitch x:Name="EnableCMSupport" Grid.Column="2"
                                                IsChecked="False" Style="{StaticResource MetroToggleSwitchStyle}"
                                                OnLabel="True"
                                                OffLabel="False"

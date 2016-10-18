@@ -155,9 +155,9 @@ namespace MetroDemo.ExampleViews
             var configXml = GlobalObjects.ViewModel.ConfigXmlParser.ConfigurationXml;
             if (configXml.Add != null)
             {
-                if (EnableSCCMSupport.IsChecked.HasValue)
+                if (EnableCMSupport.IsChecked.HasValue)
                 {
-                    configXml.Add.OfficeMgmtCOM = EnableSCCMSupport.IsChecked.Value;
+                    configXml.Add.OfficeMgmtCOM = EnableCMSupport.IsChecked.Value;
                 }
             }
         }

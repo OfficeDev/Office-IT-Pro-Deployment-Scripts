@@ -12,10 +12,10 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Enums
         ManageLocal = 1,
         LanguagePack = 2,
         ManageRemote = 3,
-        ManageSccm = 4
+        ManageCM = 4
     }
 
-    public enum SccmScenario
+    public enum CMScenario
     {
         Deploy = 0, 
         ChangeChannel = 1, 
