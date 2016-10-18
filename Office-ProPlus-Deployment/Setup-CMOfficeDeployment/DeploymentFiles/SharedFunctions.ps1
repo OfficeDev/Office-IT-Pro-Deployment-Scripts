@@ -234,31 +234,43 @@ Function Get-OfficeVersion {
 <#
 .Synopsis
 Gets the Office Version installed on the computer
+
 .DESCRIPTION
 This function will query the local or a remote computer and return the information about Office Products installed on the computer
+
 .NOTES   
 Name: Get-OfficeVersion
-Version: 1.0.5
+Version: 1.0.4
 DateCreated: 2015-07-01
-DateUpdated: 2016-07-20
+DateUpdated: 2015-08-28
+
 .LINK
 https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
+
 .PARAMETER ComputerName
 The computer or list of computers from which to query 
+
 .PARAMETER ShowAllInstalledProducts
 Will expand the output to include all installed Office products
+
 .EXAMPLE
 Get-OfficeVersion
+
 Description:
 Will return the locally installed Office product
+
 .EXAMPLE
 Get-OfficeVersion -ComputerName client01,client02
+
 Description:
 Will return the installed Office product on the remote computers
+
 .EXAMPLE
 Get-OfficeVersion | select *
+
 Description:
 Will return the locally installed Office product with all of the available properties
+
 #>
 [CmdletBinding(SupportsShouldProcess=$true)]
 param(
@@ -283,7 +295,7 @@ begin {
 
     $defaultDisplaySet = 'DisplayName','Version', 'ComputerName'
 
-    $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet(‘DefaultDisplayPropertySet’,[string[]]$defaultDisplaySet)
+    $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet('DefaultDisplayPropertySet',[string[]]$defaultDisplaySet)
     $PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultDisplayPropertySet)
 }
 
@@ -465,30 +477,19 @@ process {
            
            $name = $regProv.GetStringValue($HKLM, $path, "DisplayName").sValue          
 
-           if ($ConfigItemList.Contains($key.ToUpper()) -and $name.ToUpper().Contains("MICROSOFT OFFICE") -and $name.ToUpper() -notlike "*MUI*" -and $name.ToUpper() -notlike "*VISIO*" -and $name.ToUpper() -notlike "*PROJECT*") {
+           if ($ConfigItemList.Contains($key.ToUpper()) -and $name.ToUpper().Contains("MICROSOFT OFFICE")) {
               $primaryOfficeProduct = $true
            }
 
-           $clickToRunComponent = $regProv.GetDWORDValue($HKLM, $path, "ClickToRunComponent").uValue
-           $uninstallString = $regProv.GetStringValue($HKLM, $path, "UninstallString").sValue
-           if (!($clickToRunComponent)) {
-              if ($uninstallString) {
-                 if ($uninstallString.Contains("OfficeClickToRun")) {
-                     $clickToRunComponent = $true
-                 }
-              }
-           }
-
-           $modifyPath = $regProv.GetStringValue($HKLM, $path, "ModifyPath").sValue 
            $version = $regProv.GetStringValue($HKLM, $path, "DisplayVersion").sValue
+           $modifyPath = $regProv.GetStringValue($HKLM, $path, "ModifyPath").sValue 
 
            $cltrUpdatedEnabled = $NULL
            $cltrUpdateUrl = $NULL
            $clientCulture = $NULL;
 
            [string]$clickToRun = $false
-
-           if ($clickToRunComponent) {
+           if ($ClickToRunPathList.Contains($installPath.ToUpper())) {
                $clickToRun = $true
                if ($name.ToUpper().Contains("MICROSOFT OFFICE")) {
                   $primaryOfficeProduct = $true
