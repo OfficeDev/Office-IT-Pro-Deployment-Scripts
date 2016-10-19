@@ -48,36 +48,36 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
                     GlobalObjects.ViewModel.CmPackage.Programs[GlobalObjects.ViewModel.CmPackage.Programs.Count - 1];
             ToggleNext();
 
-            if (CurrentCmProgram.CollectionNames.Count == 0 && CurrentCmProgram.ScriptName == string.Empty &&
-                CurrentCmProgram.ConfigurationXml == null && CurrentCmProgram.CustomName == string.Empty)
-            {
-                ScriptName.Text = string.Empty;
-                ConfigurationXml.Text = string.Empty;
-                CustomName.Text = string.Empty;
-                cbDeploymentPurpose.SelectedIndex = 1;
-                cbDeploymentType.SelectedIndex = 1;
-                AddProgram.IsChecked = false;
+            //if (CurrentCmProgram.CollectionNames.Count == 0 && CurrentCmProgram.ScriptName != "CM-OfficeDeploymentScript.ps1" &&
+            //   CurrentCmProgram.ConfigurationXml != @".\DeploymentFiles\DefaultConfiguration.xml ")
+            //{
+            //    ScriptName.Text = string.Empty;
+            //    ConfigurationXml.Text = string.Empty;
+            //    CustomName.Text = string.Empty;
+            //    cbDeploymentPurpose.SelectedIndex = 1;
+            //    cbDeploymentType.SelectedIndex = 1;
+            //    AddProgram.IsChecked = false;
 
-                OptionsTab1.IsSelected = true;
-            }
+            //    OptionsTab1.IsSelected = true;
+            //}
         }
 
         private void ToggleNext()
         {     
-            if (Collection.Text.Length > 0)
-            {
-                ToggleNextButton?.Invoke(this, new ToggleEventArgs()
-                {
-                    Enabled = true
-                });
-            }
-            else
-            {
-                ToggleNextButton?.Invoke(this, new ToggleEventArgs()
-                {
-                    Enabled = false
-                });
-            }
+            //if (Collection.Text.Length > 0)
+            //{
+            //    ToggleNextButton?.Invoke(this, new ToggleEventArgs()
+            //    {
+            //        Enabled = true
+            //    });
+            //}
+            //else
+            //{
+            //    ToggleNextButton?.Invoke(this, new ToggleEventArgs()
+            //    {
+            //        Enabled = false
+            //    });
+            //}
         }
 
      
@@ -120,20 +120,35 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
 
         private void CbDeploymentPurpose_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var comboBox = (ComboBox) sender;
-            var index = comboBox.SelectedIndex;
-            var value = GlobalObjects.ViewModel.DeploymentPurposes[index];
+            try
+            {
+                var comboBox = (ComboBox) sender;
+                var index = comboBox.SelectedIndex;
+                var value = GlobalObjects.ViewModel.DeploymentPurposes[index];
 
-            CurrentCmProgram.DeploymentPurpose = value; 
+                CurrentCmProgram.DeploymentPurpose = value;
+            }
+            catch (Exception ex)
+            {
+                
+            }
+           
         }
 
         private void CbDeploymentType_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var comboBox = (ComboBox)sender;
-            var index = comboBox.SelectedIndex;
-            var value = GlobalObjects.ViewModel.DeploymentTypes[index];
+            try
+            {
+                var comboBox = (ComboBox) sender;
+                var index = comboBox.SelectedIndex;
+                var value = GlobalObjects.ViewModel.DeploymentTypes[index];
 
-            CurrentCmProgram.DeploymentType = value;
+                CurrentCmProgram.DeploymentType = value;
+            }
+            catch (Exception ex)
+            {
+                
+            }
         }
 
 
@@ -151,6 +166,16 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
             if(CurrentCmProgram.Channels.Count == 0)
             GlobalObjects.ViewModel.CmPackage.Programs.RemoveAt(
             GlobalObjects.ViewModel.CmPackage.Programs.Count-1);
+        }
+
+        private void BAddCollection_OnClick(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void BRemoveCollection_OnClick(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
         }
     }
 }

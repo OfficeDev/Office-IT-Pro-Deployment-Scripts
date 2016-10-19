@@ -22,11 +22,12 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Models
 
         private ObservableCollection<Language> _languages = new ObservableCollection<Language>();
         private ObservableCollection<Product> _products = new ObservableCollection<Product>();
+        private ObservableCollection<string> _collections = new ObservableCollection<string>();
 
 
         public CmProgram()
         {
-            CollectionNames = new List<string>();
+            CollectionNames = new ObservableCollection<string>();
             ScriptName = "CM-OfficeDeploymentScript.ps1";
             ConfigurationXml = @".\DeploymentFiles\DefaultConfiguration.xml ";
             CustomName = string.Empty;
@@ -42,7 +43,15 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Models
 
         public List<Bitness> Bitnesses { get; set; }
 
-        public List<string> CollectionNames { get; set;}
+        public ObservableCollection<string> CollectionNames {
+
+            get { return _collections; }
+            set
+            {
+                _collections = value;
+                OnPropertyChanged();
+            }
+        }
 
         public string ScriptName { get; set;}
 

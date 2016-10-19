@@ -42,7 +42,7 @@
                     <ColumnDefinition Width="0"/>
                 </Grid.ColumnDefinitions>
 
-                    <Grid HorizontalAlignment="Left" Margin="30 30 0 0" Height="450" VerticalAlignment="Top" x:Name="DownloadPage">
+                    <Grid HorizontalAlignment="Left" Margin="30 10 0 0" Height="450" VerticalAlignment="Top" x:Name="DownloadPage">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="50" />
                             <RowDefinition Height="60" />
@@ -70,13 +70,13 @@
                                     </DockPanel>
                                 </TabItem.Header>
 
-                            <Grid HorizontalAlignment="Left" Margin="30 30 0 0" Height="450" VerticalAlignment="Top" x:Name="ChannelVersionPage" IsVisibleChanged="ChannelVersionPage_OnIsVisibleChanged">
+                            <Grid HorizontalAlignment="Left" Margin="30 20 0 0" Height="450" VerticalAlignment="Top" x:Name="ChannelVersionPage" IsVisibleChanged="ChannelVersionPage_OnIsVisibleChanged">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="60" />
                                     <RowDefinition Height="50" />
                                     <RowDefinition Height="100" />
                                     <RowDefinition Height="50" />
-                                    <RowDefinition Height="110" />
+                                    <RowDefinition Height="100" />
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="400" />
@@ -132,56 +132,6 @@
                                         </DataGrid.Columns>
                                     </DataGrid>
                                 </Border>
-
-                                <!--<ComboBox x:Name="cbProducts" Grid.Row="1" Grid.Column="1" Width="350" FontSize="20" Height="40" Foreground="{StaticResource GrayBrush}"
-                                      HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0 0 10 0" ItemsSource="{Binding AllProducts}" SelectionChanged="CbProducts_OnSelectionChanged">
-                                    <ComboBox.ItemTemplate>
-                                        <DataTemplate>
-                                            <StackPanel Orientation="Horizontal">
-                                                <CheckBox IsChecked="False"  Width="Auto" Checked="IncludeProductsToggleButton_OnChecked"  Unchecked="IncludeProductsToggleButton_OnUnchecked"  Content="{Binding RelativeSource={RelativeSource Self}, Path=x}"/>
-                                                <TextBlock Width="Auto" Text="{Binding DisplayName}"/>
-                                            </StackPanel>
-                                        </DataTemplate>
-                                    </ComboBox.ItemTemplate>
-                                </ComboBox>
-
-
-                                <StackPanel  Grid.Column="0" Grid.Row="2" >
-                                    <TextBlock Text="What Office Products Would You Like To Exclude?" TextWrapping="WrapWithOverflow" Style="{StaticResource CustomMetroLabelTextBlock}" FontWeight="SemiBold"  VerticalAlignment="Top" FontSize="20"/>
-                                    <TextBlock x:Name="tbExcludedProducts" TextWrapping="WrapWithOverflow" FontSize="10" FontWeight="Medium" VerticalAlignment="Bottom" Style="{StaticResource CustomMetroLabelTextBlock}" 
-                                               Text="Selected: "/>
-                                </StackPanel>
-                                <ComboBox x:Name="cbExcludedProducts" Grid.Row="2" Grid.Column="1" Width="350" FontSize="20" Height="40" Foreground="{StaticResource GrayBrush}"
-                                      HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0 0 10 0" ItemsSource="{Binding ExcludeProducts}" SelectionChanged="CbExcludedProducts_OnSelectionChanged">
-                                    <ComboBox.ItemTemplate>
-                                        <DataTemplate>
-                                            <StackPanel Orientation="Horizontal">
-                                                <CheckBox IsChecked="False"  Width="Auto" Checked="ExludeProductsToggleButton_OnChecked"  Unchecked="ExcludeProductsToggleButton_OnUnchecked"  Content="{Binding RelativeSource={RelativeSource Self}, Path=x}"/>
-                                                <TextBlock Width="Auto" Text="{Binding DisplayName}"/>
-                                            </StackPanel>
-                                        </DataTemplate>
-                                    </ComboBox.ItemTemplate>
-                                </ComboBox>
-
-
-                                <StackPanel  Grid.Column="0" Grid.Row="3">
-                                    <TextBlock Text="What Languages Would You Like Install?" TextWrapping="WrapWithOverflow" Style="{StaticResource CustomMetroLabelTextBlock}" FontWeight="SemiBold"  VerticalAlignment="Top" FontSize="20"/>
-                                    <TextBlock x:Name="tbLanguages" TextWrapping="WrapWithOverflow" FontSize="10" FontWeight="Medium" VerticalAlignment="Bottom" Style="{StaticResource CustomMetroLabelTextBlock}" 
-                                               Text="Selected: "/>
-                                </StackPanel>
-                                <ComboBox x:Name="cbLanguages" Grid.Row="3" Grid.Column="1" Width="350" FontSize="20" Height="40" Foreground="{StaticResource GrayBrush}"
-                                      HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0 0 10 0" ItemsSource="{Binding Languages}" SelectionChanged="CbLanguages_OnSelectionChanged">
-                                    <ComboBox.ItemTemplate>
-                                        <DataTemplate>
-                                            <StackPanel Orientation="Horizontal">
-                                                <CheckBox IsChecked="False"  Width="Auto" Checked="LanguageToggleButton_OnChecked"  Unchecked="LanguageToggleButton_OnUnchecked"  Content="{Binding RelativeSource={RelativeSource Self}, Path=x}"/>
-                                                <TextBlock Width="Auto" Text="{Binding Name}" Margin="0 0 20 0"  HorizontalAlignment="Left"/>
-                                                <TextBlock Width="Auto" Text="{Binding Id}" HorizontalAlignment="Right"/>
-                                            </StackPanel>
-                                        </DataTemplate>
-                                    </ComboBox.ItemTemplate>
-                                </ComboBox>-->
-
 
                             </Grid>
                         </TabItem>

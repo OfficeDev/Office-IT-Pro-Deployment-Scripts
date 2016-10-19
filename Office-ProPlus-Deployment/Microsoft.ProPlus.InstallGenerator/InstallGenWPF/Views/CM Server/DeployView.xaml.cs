@@ -75,8 +75,9 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
                 });
 
                 await DownloadScripts();
+
+
                 await DownloadChannelFiles();
-                //await DownloadChannelFiles();
                 WaitFilesDownloading.Visibility = Visibility.Collapsed;
                 ImgFilesDownloaded.Visibility = Visibility.Visible;
             }
@@ -100,14 +101,17 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
             var scriptPath = currentDirectory + $"\\Setup-CMOfficeDeployment.ps1";
             var scriptPathTmp = currentDirectory + $"\\Tmp-Setup-CMOfficeDeployment.ps1";
 
-            var arguments = $"/c Powershell -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden . .\\Setup-CMOfficeDeployment.ps1;Download-CMOfficeChannelFiles -Channels ";
-            var channels = new List<string>();
-            var languages = new List<string>();
-            var bitnesses = new List<string>();
+         
 
-            CMConfig.Programs.ToList().ForEach(p =>
+            foreach (var program in CMConfig.Programs)
             {
-                p.Channels.ForEach(c =>
+                var channels = new List<string>();
+                var languages = new List<string>();
+                var bitnesses = new List<string>();
+                var arguments = $"/c Powershell -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden . .\\Setup-CMOfficeDeployment.ps1;Download-CMOfficeChannelFiles -Channels ";
+
+
+                program.Channels.ForEach(c =>
                 {
                     if (!channels.Contains(c.Branch.NewName.ToString()))
                     {
@@ -115,7 +119,7 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
                     }
                 });
 
-                p.Languages.ToList().ForEach(l =>
+                program.Languages.ToList().ForEach(l =>
                 {
                     if (!languages.Contains(l.Id))
                     {
@@ -123,7 +127,7 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
                     }
                 });
 
-                p.Bitnesses.ToList().ForEach(b =>
+                program.Bitnesses.ToList().ForEach(b =>
                 {
                     if (!bitnesses.Contains(b.Name))
                     {
@@ -131,85 +135,88 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
                     }
                 });
 
-            });                                              
+              
 
-            channels.ForEach(c =>
-            {
-                if (channels.IndexOf(c) < channels.Count - 1)
+                channels.ForEach(c =>
                 {
-                    arguments += $"{c},"; 
-                }
-                else
-                {
-                    arguments += c; 
-                }
-            });
-
-            arguments += " -OfficeFilesPath C:\\OfficeChannels -Languages ";
-
-            languages.ForEach(c =>
-            {
-                if (languages.IndexOf(c) < languages.Count - 1)
-                {
-                    arguments += $"{c},";
-                }
-                else
-                {
-                    arguments += c;
-                }
-            });
-
-            arguments += " -Bitness ";
-
-            if (bitnesses.Count == 2)
-            {
-                arguments += "Both";
-            }
-            else
-            {
-                arguments += bitnesses[0];
-            }           
-
-            await Retry.Block(2, 1, async () =>
-            {
-                var tcs = new TaskCompletionSource<bool>();
-
-                if (n == 2)
-                {
-                    System.IO.File.Copy(scriptPathTmp, scriptPath, true);
-                }
-
-
-                var p = new Process
-                {
-                    StartInfo = new ProcessStartInfo()
+                    if (channels.IndexOf(c) < channels.Count - 1)
                     {
-                        FileName = "cmd",
-                        Arguments = arguments,
-                        CreateNoWindow = true,
-                        UseShellExecute = false,
-                        WorkingDirectory = currentDirectory,
-                        RedirectStandardOutput = true,
-                        RedirectStandardError = true,
-                        
-                    },
-                };
+                        arguments += $"{c},";
+                    }
+                    else
+                    {
+                        arguments += c;
+                    }
+                });
 
-                p.EnableRaisingEvents = true;
+                arguments += " -OfficeFilesPath C:\\OfficeChannels -Languages ";
 
-                p.Exited += (sender, args) =>
+                languages.ForEach(c =>
                 {
-                    tcs.SetResult(true);
-                    p.Dispose();
-                };
+                    if (languages.IndexOf(c) < languages.Count - 1)
+                    {
+                        arguments += $"{c},";
+                    }
+                    else
+                    {
+                        arguments += c;
+                    }
+                });
 
-                p.Start();
+                arguments += " -Bitness ";
+
+                if (bitnesses.Count == 2)
+                {
+                    arguments += "Both";
+                }
+                else
+                {
+                    arguments += bitnesses[0];
+                }
+
+                await Retry.Block(2, 1, async () =>
+                {
+                    var tcs = new TaskCompletionSource<bool>();
+
+                    if (n == 2)
+                    {
+                        System.IO.File.Copy(scriptPathTmp, scriptPath, true);
+                    }
 
 
-                var error = await p.StandardError.ReadToEndAsync();
-                if (!string.IsNullOrEmpty(error)) throw (new Exception(error));
-                n++;
-            });
+                    var p = new Process
+                    {
+                        StartInfo = new ProcessStartInfo()
+                        {
+                            FileName = "cmd",
+                            Arguments = arguments,
+                            CreateNoWindow = true,
+                            UseShellExecute = false,
+                            WorkingDirectory = currentDirectory,
+                            RedirectStandardOutput = true,
+                            RedirectStandardError = true,
+
+                        },
+                    };
+
+                    p.EnableRaisingEvents = true;
+
+                    p.Exited += (sender, args) =>
+                    {
+                        tcs.SetResult(true);
+                        p.Dispose();
+                    };
+
+                    p.Start();
+
+
+                    var error = await p.StandardError.ReadToEndAsync();
+                    if (!string.IsNullOrEmpty(error)) throw (new Exception(error));
+                    n++;
+                });
+            }
+
+         
         }
         private async Task DownloadScripts()
         {

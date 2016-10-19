@@ -168,6 +168,9 @@
     <Compile Include="Views\CM Server\ChannelVersionView.xaml.cs">
       <DependentUpon>ChannelVersionView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\CM Server\PackageOptionsView.xaml.cs">
+      <DependentUpon>PackageOptionsView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\CM Server\ProgramOptionsView.xaml.cs">
       <DependentUpon>ProgramOptionsView.xaml</DependentUpon>
     </Compile>
@@ -348,6 +351,10 @@
     <Page Include="Views\CM Server\ChannelVersionView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\CM Server\PackageOptionsView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\CM Server\ProgramOptionsView.xaml">
       <SubType>Designer</SubType>

@@ -62,12 +62,6 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
             {
                 CurrentCmProgram =
                     GlobalObjects.ViewModel.CmPackage.Programs[GlobalObjects.ViewModel.CmPackage.Programs.Count - 1];
-
-                if (CurrentCmProgram.Languages.Count == 0 && CurrentCmProgram.Products.Count == 0)
-                {
-                    ProductList.ItemsSource = null;
-                    LanguageList.ItemsSource = null;
-                }
             }
 
             ToggleNext();

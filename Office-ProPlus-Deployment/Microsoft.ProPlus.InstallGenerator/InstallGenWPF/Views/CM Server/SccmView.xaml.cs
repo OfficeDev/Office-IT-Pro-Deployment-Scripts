@@ -242,7 +242,30 @@ namespace MetroDemo.ExampleViews
 
                 if (GlobalObjects.ViewModel.CmPackage.Scenario == CMScenario.Deploy && MainTabControl.SelectedIndex == 4 && currentProgram.Channels.Count == 0)
                 {
+
+                    var ChannelVersionView = new ChannelVersionView();
+                    var ProductsLanguagesView = new ProductsLanguagesView();
+                    var ProgramOptionsView = new ProgramOptionsView();
+
+                    ChannelVersionView.ToggleNextButton += ToggleNext;
+                    ProductsLanguagesView.ToggleNextButton += ToggleNext;
+                    ProgramOptionsView.ToggleNextButton += ToggleNext;
+                  
+
+                    ChannelVersionView.MainTabControl.Items.Remove(ChannelVersionView.ChannelVersionTab);
+                    ProductsLanguagesView.MainTabControl.Items.Remove(ProductsLanguagesView.ProductsLanguagesTab);
+                    ProgramOptionsView.MainTabControl.Items.Remove(ProgramOptionsView.OtherTab);
+
+                    MainTabControl.Items[2] = ChannelVersionView.ChannelVersionTab;
+                    MainTabControl.Items[3] = ProductsLanguagesView.ProductsLanguagesTab;
+
                     MainTabControl.SelectedIndex = 2;
+
+                    var tab = (TabItem) MainTabControl.Items[4];
+                    tab.Visibility = Visibility.Collapsed;
+
+
+                    MainTabControl.Items[4] = ProgramOptionsView.OtherTab;
                 }
                 else
                 {
@@ -330,12 +353,14 @@ namespace MetroDemo.ExampleViews
             var ChannelVersionView = new ChannelVersionView();
             var ProductsLanguagesView = new ProductsLanguagesView();
             var ProgramOptionsView = new ProgramOptionsView();
+            var PackageOptionsView = new PackageOptionsView();
             var DeploymentStagingView =  new DeploymentStagingView();
 
             SourceView.ToggleNextButton += ToggleNext;
             ChannelVersionView.ToggleNextButton += ToggleNext;
             ProductsLanguagesView.ToggleNextButton += ToggleNext;
             ProgramOptionsView.ToggleNextButton += ToggleNext;
+            PackageOptionsView.ToggleNextButton += ToggleNext;
             DeploymentStagingView.ToggleNextButton += ToggleNext;
             DeploymentStagingView.ErrorMessage += ErrorMessage; 
 
@@ -343,12 +368,14 @@ namespace MetroDemo.ExampleViews
             ChannelVersionView.MainTabControl.Items.Remove(ChannelVersionView.ChannelVersionTab);
             ProductsLanguagesView.MainTabControl.Items.Remove(ProductsLanguagesView.ProductsLanguagesTab);
             ProgramOptionsView.MainTabControl.Items.Remove(ProgramOptionsView.OtherTab);
+            PackageOptionsView.MainTabControl.Items.Remove(PackageOptionsView.PackageTab);
             DeploymentStagingView.MainTabControl.Items.Remove(DeploymentStagingView.StagingTab);
 
             MainTabControl.Items.Add(SourceView.SourceTab);
             MainTabControl.Items.Add(ChannelVersionView.ChannelVersionTab);
             MainTabControl.Items.Add(ProductsLanguagesView.ProductsLanguagesTab);
             MainTabControl.Items.Add(ProgramOptionsView.OtherTab);
+            MainTabControl.Items.Add(PackageOptionsView.PackageTab);
             MainTabControl.Items.Add(DeploymentStagingView.StagingTab);
 
             ChannelVersionView.cbChannelVersion.SelectedIndex = 0;

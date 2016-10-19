@@ -1,0 +1,197 @@
+﻿<UserControl x:Class="Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config.PackageOptionsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:MetroDemo="clr-namespace:MetroDemo"
+             xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:exampleViews="clr-namespace:MetroDemo.ExampleViews"
+             xmlns:models="clr-namespace:MetroDemo.Models"
+             xmlns:gif="http://wpfanimatedgif.codeplex.com"
+             mc:Ignorable="d"
+             d:DesignHeight="600"
+             d:DesignWidth="900"
+             d:DataContext="{d:DesignInstance MetroDemo:MainWindowViewModel}" Loaded="PackageOptionsView_OnLoaded" >
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro.Resources;component/Icons.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <Thickness x:Key="ColumnMargin">10 5 10 5</Thickness>
+            <Thickness x:Key="ControlMargin">0 5 0 0</Thickness>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <AdornerDecorator>
+        <Grid Background="#e6e6e6" x:Name="Product" HorizontalAlignment="Stretch">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"  />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="450"></RowDefinition>
+                <RowDefinition></RowDefinition>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0" HorizontalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="0"/>
+                </Grid.ColumnDefinitions>
+                
+                <Grid HorizontalAlignment="Left" Margin="30 30 0 0" Height="450" VerticalAlignment="Top" x:Name="PackageOptionsPage">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="50" />
+                            <RowDefinition Height="60" />
+                            <RowDefinition Height="60" />
+                            <RowDefinition Height="60" />
+                            <RowDefinition Height="60" />
+                            <RowDefinition Height="60" />
+                            <RowDefinition Height="350" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="400" />
+                            <ColumnDefinition Width="400" />
+                            <ColumnDefinition Width="60" />
+                            <ColumnDefinition Width="60" />
+                        </Grid.ColumnDefinitions>
+                        <Controls:MetroAnimatedSingleRowTabControl Grid.Row="0" Grid.Column="1"  x:Name="MainTabControl" 
+                                                           Height="650" VerticalAlignment="Top" IsVisibleChanged="PackageOptionsPage_OnIsVisibleChanged">
+
+                            <TabItem x:Name="PackageTab" Height="50">
+                                <TabItem.Header>
+                                    <DockPanel Margin="0,5,0,0">
+                                    <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,0,0,0" Height="25">Package Options</Label>
+                                    </DockPanel>
+                                </TabItem.Header>
+
+                            <Controls:MetroAnimatedSingleRowTabControl  x:Name="OptionsTabControl" 
+                                                           Height="650" VerticalAlignment="Top" >
+
+
+                                <TabItem x:Name="OptionsTab1" Height="50">
+                                    <TabItem.Header>
+                                        <DockPanel Margin="0,5,0,0">
+                                            <Label Style="{StaticResource CustomMetroLabelTopHeader1}" Padding="0,0,0,0" Height="19">Options</Label>
+                                        </DockPanel>
+                                    </TabItem.Header>
+
+                                    <Grid HorizontalAlignment="Left" Margin="30 30 0 0" Height="450" VerticalAlignment="Top" x:Name="OtherOptionsPage" IsVisibleChanged="PackageOptionsPage_OnIsVisibleChanged">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="50" />
+                                            <RowDefinition Height="50" />
+                                            <RowDefinition Height="50" />
+                                            <RowDefinition Height="50" />
+                                            <RowDefinition Height="50" />
+                                            <RowDefinition Height="50" />
+                                            <RowDefinition Height="50" />
+                                            <RowDefinition Height="50" />
+                                            <RowDefinition Height="50" />
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="225" />
+                                            <ColumnDefinition Width="75" />
+                                            <ColumnDefinition Width="325" />
+                                            <ColumnDefinition Width="75" />
+
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock Grid.Row="0" Grid.ColumnSpan="2" TextWrapping="WrapWithOverflow" FontSize="25" FontWeight="Bold" Style="{StaticResource CustomMetroLabelTextBlock}"  Text="Package options." />
+
+                                        <Label Grid.Row="1" Grid.Column="0" x:Name="lblMoveFiles"  Content="Move the source files?" ToolTip="Moves the source files to the new package share vs copying." Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
+                                        <Controls:ToggleSwitch Grid.Row="1" Grid.Column="1" Name="tsMoveFiles" IsChecked="{Binding CmPackage.MoveFiles, Mode=TwoWay}"
+                                                       Style="{StaticResource MetroToggleSwitchStyle}"
+                                                       OffLabel="" OnLabel=""
+                                                       Margin="{StaticResource ControlMargin}" 
+                                                       HorizontalAlignment="Right" VerticalAlignment="Center" Checked="TsMoveFiles_OnChecked" Unchecked="TsMoveFiles_OnUnchecked"/>
+
+                                        <Label Grid.Row="1" Grid.Column="2" x:Name="lblUpdateBits" Content="Update changed bits of package?" ToolTip="Used when the package share already exists." Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
+                                        <Controls:ToggleSwitch Grid.Row="1" Grid.Column="3" Name="tsUpdateBits" IsChecked="{Binding CmPackage.UpdateOnlyChangedBits, Mode=TwoWay}"
+                                                       Style="{StaticResource MetroToggleSwitchStyle}"
+                                                       OffLabel="" OnLabel=""
+                                                       Margin="{StaticResource ControlMargin}" 
+                                                       HorizontalAlignment="Right" VerticalAlignment="Center" Checked="TsUpdateBits_OnChecked" Unchecked="TsUpdateBits_OnUnchecked"/>
+
+                                        <Label Grid.Row="2" Grid.ColumnSpan="3" x:Name="lblDistributionPoint" Content="Distribution Point Name?*" ToolTip="The distribution point name. A distribution point or distribution point group must be specified.  This field is required if you are not using a distribution point group." Style="{StaticResource CustomMetroLabelHeader}" 
+                                           VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" IsEnabled="False" />
+                                        <TextBox Grid.Row="2" Grid.Column="2"  x:Name="DistributionPoint" FontSize="15" VerticalContentAlignment="Top" HorizontalAlignment="Right" ToolTip="The distribution point name. A distribution point or distribution point group must be specified."
+                                             Height="30" Width="200" Text="{Binding CmPackage.DistributionPoint, Mode=TwoWay}"  Foreground="{StaticResource GrayBrush}" Background="White" TextChanged="DistributionPoint_OnTextChanged" IsEnabled="False">
+                                        </TextBox>
+
+                                        <Label Grid.Row="3" Grid.ColumnSpan="3" x:Name="lblDistributionPointGroupName" Content="Distribution Point Group Name?*" ToolTip="The distribution point group name. A distribution point or distirbution point group must be specified.  This field is required if you are not using a distribution group." 
+                                           Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" IsEnabled="False" />
+                                        <TextBox Grid.Row="3" Grid.Column="2"  x:Name="DistributionPointGroupName"  FontSize="15" HorizontalAlignment="Right" VerticalContentAlignment="Top" ToolTip="The distribution point group name. A distribution point or distirbution point group must be specified."
+                                            Height="30" Width="200" Text="{Binding CmPackage.DistributionPointGroupName, Mode=TwoWay}"  Foreground="{StaticResource GrayBrush}" Background="White" TextChanged="DistributionPointGroupName_OnTextChanged" IsEnabled="False">
+                                        </TextBox>
+
+
+                                    </Grid>
+                                </TabItem>
+
+                                <TabItem x:Name="OptionsTab2" Height="50">
+                                    <TabItem.Header>
+                                        <DockPanel Margin="0,5,0,0">
+                                            <Label Style="{StaticResource CustomMetroLabelTopHeader1}" Padding="0,0,0,0" Height="19">Options Continued</Label>
+                                        </DockPanel>
+                                    </TabItem.Header>
+
+                                    <Grid HorizontalAlignment="Left" Margin="30 10 0 0" Height="450" VerticalAlignment="Top" x:Name="OtherOptionsPage1" IsVisibleChanged="PackageOptionsPage_OnIsVisibleChanged">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="50" />
+                                            <RowDefinition Height="50" />
+                                            <RowDefinition Height="50" />
+                                            <RowDefinition Height="50" />
+                                            <RowDefinition Height="50" />
+                                            <RowDefinition Height="50" />
+                                            <RowDefinition Height="50" />
+                                            <RowDefinition Height="50" />
+                                            <RowDefinition Height="50" />
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="225" />
+                                            <ColumnDefinition Width="75" />
+                                            <ColumnDefinition Width="325" />
+                                            <ColumnDefinition Width="75" />
+
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock Grid.Row="0" Grid.ColumnSpan="2" TextWrapping="WrapWithOverflow" FontSize="25" FontWeight="Bold" Style="{StaticResource CustomMetroLabelTextBlock}"  Text="More package options." />
+
+
+                                        <Label Grid.Row="1" Grid.ColumnSpan="3" x:Name="lblDeploymentExpiryDurationInDays" Content="How Long Will this Package be Available (days)?" ToolTip="Default value is 15 days." Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
+                                        <TextBox Grid.Row="1" Grid.Column="2"  x:Name="DeploymentExpiryDurationInDays" FontSize="15" HorizontalAlignment="Right" VerticalContentAlignment="Top" ToolTip="Default value is 15 days." Margin="150 0 0 0"
+                                           Height="30" Width="150" Text="{Binding CmPackage.DeploymentExpiryDurationInDays, Mode=TwoWay}"  Foreground="{StaticResource GrayBrush}" Background="White" TextChanged="DeploymentExpiryDurationInDays_OnTextChanged">
+                                        </TextBox>
+
+                                        <Label Grid.Row="2" Grid.ColumnSpan="3" x:Name="lblPackName" Content="Would You Like To Use a Custom Package Name?" ToolTip="Create a custom package share name. Default value is OfficeDeployment." Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
+                                        <TextBox Grid.Row="2" Grid.Column="2"  x:Name="PackageName" FontSize="15" HorizontalAlignment="Right" VerticalContentAlignment="Top" ToolTip="Create a custom package share name. Default value is OfficeDeployment." Margin="155 0 0 0"
+                                           Height="30" Width="160" Text="{Binding CmPackage.CustomPackageShareName, Mode=TwoWay}"  Foreground="{StaticResource GrayBrush}" Background="White" TextChanged="PackageName_OnTextChanged">
+                                        </TextBox>
+
+
+                                        <Label Grid.Row="3" Grid.ColumnSpan="3" x:Name="lblCMPSModulePath" Content="Where is the ConfigurationManager.psd1 Module?" ToolTip="Allows the user to specify that full path to the ConfigurationManager.psd1 PowerShell Module. This is especially useful if CM is installed in a non standard path. " Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
+                                        <TextBox Grid.Row="3" Grid.Column="2"  x:Name="CMPSModulePath" FontSize="15" HorizontalAlignment="Left" VerticalContentAlignment="Top" ToolTip="Allows the user to specify that full path to the ConfigurationManager.psd1 PowerShell Module. This is especially useful if CM is installed in a non standard path. " Margin="180 0 0 0"
+                                                   Height="30" Width="130" Text="{Binding CmPackage.CMPSModulePath, Mode=TwoWay}"  Foreground="{StaticResource GrayBrush}" Background="White" TextChanged="CMPSModulePath_OnTextChanged">
+                                        </TextBox>
+                                        <Button x:Name="BrowseButton"  Grid.Row="3" Grid.Column="3" Height="40" Width="60" HorizontalAlignment="Right" IsEnabled="False"
+                                        Margin="0 0 0 0" Style="{StaticResource MetroFlatButtonStyle1}" Content="Browse"  Click="BrowseButton_OnClick" />
+
+                                        <Label Grid.Row="4" Grid.ColumnSpan="2" x:Name="lblSiteCode" Content="Which Site Code Will You Use?" ToolTip="Three character site code, example S01. Left blank it will default to the current site." Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
+                                        <TextBox Grid.Row="4" Grid.ColumnSpan="3"  x:Name="SiteCode" FontSize="15" HorizontalAlignment="Right" VerticalContentAlignment="Top" ToolTip="Three character site code, example S01. Left blank it will default to the current site." Margin="180 0 0 0"
+                                                   Height="30" Width="200" Text="{Binding CmPackage.SiteCode, Mode=TwoWay}"  Foreground="{StaticResource GrayBrush}" Background="White" TextChanged="SiteCode_OnTextChanged">
+                                        </TextBox>
+
+
+                                    </Grid>
+                                </TabItem>
+                            </Controls:MetroAnimatedSingleRowTabControl>
+                        </TabItem>
+                        </Controls:MetroAnimatedSingleRowTabControl>
+                </Grid>
+            </Grid>
+        </Grid>
+
+    </AdornerDecorator>
+</UserControl>

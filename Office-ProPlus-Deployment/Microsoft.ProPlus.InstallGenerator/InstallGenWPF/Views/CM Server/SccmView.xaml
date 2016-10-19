@@ -43,7 +43,7 @@
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Row="0" Grid.Column="1"  Background="{StaticResource GrayBrush}" Width="auto" Height="40" HorizontalAlignment="Stretch" VerticalAlignment="Top" />
                 <Controls:MetroAnimatedSingleRowTabControl Grid.Row="0" Grid.Column="1"  x:Name="MainTabControl"  SelectionChanged="MainTabControl_OnSelectionChanged"
-                                                           Height="600" VerticalAlignment="Top" >
+                                                           Height="600" VerticalAlignment="Top">
                     <TabItem x:Name="StartTab" Height="50">
                         <TabItem.Header>
                             <DockPanel Margin="0,5,0,0">
@@ -51,7 +51,7 @@
                             </DockPanel>
                         </TabItem.Header>
 
-                        <Grid HorizontalAlignment="Left" Margin="30 30 0 0" Height="450" VerticalAlignment="Top" x:Name="StartPage">
+                        <Grid HorizontalAlignment="Left" Margin="30 20 0 0" Height="450" VerticalAlignment="Top" x:Name="StartPage">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="50" />
                                 <RowDefinition Height="80" />

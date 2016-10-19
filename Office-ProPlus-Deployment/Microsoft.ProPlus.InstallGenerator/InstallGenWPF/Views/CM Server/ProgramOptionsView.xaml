@@ -63,7 +63,7 @@
                             <TabItem x:Name="OtherTab" Height="50">
                                 <TabItem.Header>
                                     <DockPanel Margin="0,5,0,0">
-                                    <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,0,0,0" Height="19">Other Options</Label>
+                                    <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,0,0,0" Height="25">Program Options</Label>
                                     </DockPanel>
                                 </TabItem.Header>
 
@@ -78,7 +78,7 @@
                                         </DockPanel>
                                     </TabItem.Header>
 
-                                    <Grid HorizontalAlignment="Left" Margin="30 10 0 0" Height="450" VerticalAlignment="Top" x:Name="OtherOptionsPage" IsVisibleChanged="OtherOptionsPage_OnIsVisibleChanged">
+                                    <Grid HorizontalAlignment="Left" Margin="30 30 0 0" Height="450" VerticalAlignment="Top" x:Name="OtherOptionsPage" IsVisibleChanged="OtherOptionsPage_OnIsVisibleChanged">
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="50" />
                                             <RowDefinition Height="50" />
@@ -100,25 +100,35 @@
 
                                         <TextBlock Grid.Row="0" Grid.ColumnSpan="2" TextWrapping="WrapWithOverflow" FontSize="25" FontWeight="Bold" Style="{StaticResource CustomMetroLabelTextBlock}"  Text="Other possible options." />
 
-                                        <Label Grid.Row="1" Grid.ColumnSpan="3" x:Name="lbScriptName" Content="What Will The Deployment Script be Named?" ToolTip="Default value is CM-OfficeDeploymentScript.ps1." Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
-                                        <TextBox Grid.Row="1" Grid.ColumnSpan="3"  x:Name="ScriptName" FontSize="15" HorizontalAlignment="Right" VerticalContentAlignment="Top" ToolTip="Default value is CM-OfficeDeploymentScript.ps1." Margin="180 0 0 0"
-                                                   Height="30" Width="200" Text="{Binding CmPackage.ScriptName, Mode=TwoWay}"  Foreground="{StaticResource GrayBrush}" Background="White" TextChanged="ScriptName_OnTextChanged">
+                                     
+
+                                        <Label Grid.Row="1" Grid.ColumnSpan="3" x:Name="lblCollection" Content="Which Collection(s) Will You Deploy To?*" ToolTip="The name of the collection to deploy the program to.  This field is required." Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
+                                        <Button Grid.Column="2" Grid.Row="1"   x:Name="bAddCollection"  Width="50" Height="40" Content="Add"   VerticalAlignment="Center" Click="BAddCollection_OnClick"  Margin="0 0 0 0"/>
+                                        <Button Grid.Column="2" Grid.Row="1" x:Name="bRemoveCollection" Width="75" Height="40" Content="Remove"  VerticalAlignment="Center"  Click="BRemoveCollection_OnClick"  Margin="150 0 0 0"/>
+
+                                        <Border Grid.ColumnSpan="3"  Grid.Row="2" BorderThickness="2" BorderBrush="Gray" Width="600"  HorizontalAlignment="Left" Margin="5 0 0 0">
+                                            <DataGrid x:Name="LanguageList" Height="200" 
+                                              RenderOptions.ClearTypeHint="Enabled" Background="White"
+                                              TextOptions.TextFormattingMode="Display" BorderThickness="0" BorderBrush="Gray"
+                                              Margin="0 0 0 0"  Style="{DynamicResource MetroDataGrid}"
+                                              AutoGenerateColumns="False"
+                                              ItemsSource="{Binding CmPackage.Programs[CmPackage.Programs.Count-1].CollectionNames}"
+                                              CanUserAddRows="False" IsEnabled="True" IsReadOnly="True">
+                                                <DataGrid.Columns>
+                                                    <DataGridTextColumn Header="Collection" Binding="{Binding Name}"  Width="600"></DataGridTextColumn>
+                                                </DataGrid.Columns>
+                                            </DataGrid>
+                                        </Border>
+
+                                        <Label Grid.Row="4" Grid.ColumnSpan="3" x:Name="lbScriptName" Content="What Will The Deployment Script be Named?" ToolTip="Default value is CM-OfficeDeploymentScript.ps1." Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
+                                        <TextBox Grid.Row="4" Grid.ColumnSpan="3"  x:Name="ScriptName" FontSize="15" HorizontalAlignment="Right" VerticalContentAlignment="Top" ToolTip="Default value is CM-OfficeDeploymentScript.ps1." Margin="180 0 0 0"
+                                                   Height="30" Width="200" Text="{Binding CmPackage.Programs[CmPackage.Programs.Count-1].ScriptName, Mode=TwoWay}"  Foreground="{StaticResource GrayBrush}" Background="White" TextChanged="ScriptName_OnTextChanged">
                                         </TextBox>
 
-                                        <Label Grid.Row="2" Grid.ColumnSpan="3" x:Name="lbConfigurationXml" Content="What Will the Configuration XML be Named?" ToolTip="Default value is .\DeploymentFiles\DefaultConfiguration.xml." Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
-                                        <TextBox Grid.Row="2" Grid.ColumnSpan="3"  x:Name="ConfigurationXml" FontSize="15" HorizontalAlignment="Right" VerticalContentAlignment="Top" ToolTip="Default value is .\DeploymentFiles\DefaultConfiguration.xml." Margin="180 0 0 0"
-                                                   Height="30" Width="200" Text="{Binding CmPackage.ConfigurationXml, Mode=TwoWay}"  Foreground="{StaticResource GrayBrush}" Background="White" TextChanged="ConfigurationXml_OnTextChanged">
-                                        </TextBox>
-                                        
-                                        <Label Grid.Row="3" Grid.ColumnSpan="3" x:Name="lbCustomName" Content="Custom Name of the Deployment Program?" ToolTip="Default value combines the channel with the platform." Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
-                                        <TextBox Grid.Row="3" Grid.ColumnSpan="3"  x:Name="CustomName"  FontSize="15" HorizontalAlignment="Right" VerticalContentAlignment="Top" ToolTip="Default value combines the channel with the platform. " Margin="180 0 0 0"
-                                                   Height="30" Width="200" Text="{Binding CmPackage.CustomName, Mode=TwoWay}"  Foreground="{StaticResource GrayBrush}" Background="White" TextChanged="CustomName_OnTextChanged">
-                                        </TextBox>
 
-                                        <Label Grid.Row="4" Grid.ColumnSpan="3" x:Name="lblCollection" Content="Which Collection Will You Deploy To?*" ToolTip="The name of the collection to deploy the program to.  This field is required." Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
-                                        <TextBox Grid.Row="4" Grid.ColumnSpan="3"  x:Name="Collection" FontSize="15" HorizontalAlignment="Right" VerticalContentAlignment="Top" ToolTip="The name of the collection to deploy the program to." Margin="180 0 0 0"
-                                                   Height="30" Width="200" Text="{Binding CmPackage.Collection, Mode=TwoWay}"  Foreground="{StaticResource GrayBrush}" Background="White" TextChanged="Collection_OnTextChanged">
-                                        </TextBox>
+                                        <!--<TextBox Grid.Row="4" Grid.ColumnSpan="3"  x:Name="Collection" FontSize="15" HorizontalAlignment="Right" VerticalContentAlignment="Top" ToolTip="The name of the collection to deploy the program to." Margin="180 0 0 0"
+                                                   Height="30" Width="200" Foreground="{StaticResource GrayBrush}" Background="White" TextChanged="Collection_OnTextChanged">
+                                        </TextBox>-->
 
                                        
 
@@ -166,8 +176,18 @@
                                                   SelectionChanged="CbDeploymentType_OnSelectionChanged"/>
 
                                         <Label Grid.Row="3" Grid.ColumnSpan="3" x:Name="lblAddProgram" Content="Do You Want to Add Another Deployment Program?" ToolTip="" Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
-                                        <CheckBox Grid.Row="3" Grid.ColumnSpan="3" x:Name="AddProgram"  FontSize="20"  Height="30" Width="200" Foreground="{StaticResource GrayBrush}" Style="{StaticResource MetroCheckBox}"
-                                      HorizontalAlignment="Right" VerticalAlignment="Center" ToolTip="" IsChecked="False" Checked="AddProgram_OnChecked" Unchecked="AddProgram_OnUnchecked" Margin="50 0 0 0"/>
+                                        <CheckBox Grid.Row="3" Grid.Column="3" x:Name="AddProgram"  FontSize="20"  Height="30" Width="200" Foreground="{StaticResource GrayBrush}" Style="{StaticResource MetroCheckBox}"
+                                      HorizontalAlignment="Left" VerticalAlignment="Center" ToolTip="" IsChecked="False" Checked="AddProgram_OnChecked" Unchecked="AddProgram_OnUnchecked" Margin="-20 0 0 0"/>
+
+                                        <Label Grid.Row="4" Grid.ColumnSpan="3" x:Name="lbConfigurationXml" Content="What Will the Configuration XML be Named?" ToolTip="Default value is .\DeploymentFiles\DefaultConfiguration.xml." Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
+                                        <TextBox Grid.Row="4" Grid.ColumnSpan="3"  x:Name="ConfigurationXml" FontSize="15" HorizontalAlignment="Right" VerticalContentAlignment="Top" ToolTip="Default value is .\DeploymentFiles\DefaultConfiguration.xml." Margin="180 0 0 0"
+                                                   Height="30" Width="200" Text="{Binding CmPackage.Programs[CmPackage.Programs.Count-1].ConfigurationXml, Mode=TwoWay}"  Foreground="{StaticResource GrayBrush}" Background="White" TextChanged="ConfigurationXml_OnTextChanged">
+                                        </TextBox>
+
+                                        <Label Grid.Row="5" Grid.ColumnSpan="3" x:Name="lbCustomName" Content="Custom Name of the Deployment Program?" ToolTip="Default value combines the channel with the platform." Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
+                                        <TextBox Grid.Row="5" Grid.ColumnSpan="3"  x:Name="CustomName"  FontSize="15" HorizontalAlignment="Right" VerticalContentAlignment="Top" ToolTip="Default value combines the channel with the platform. " Margin="180 0 0 0"
+                                                   Height="30" Width="200" Text="{Binding CmPackage.Programs[CmPackage.Programs.Count-1].CustomName, Mode=TwoWay}"  Foreground="{StaticResource GrayBrush}" Background="White" TextChanged="CustomName_OnTextChanged">
+                                        </TextBox>
 
 
                                     </Grid>

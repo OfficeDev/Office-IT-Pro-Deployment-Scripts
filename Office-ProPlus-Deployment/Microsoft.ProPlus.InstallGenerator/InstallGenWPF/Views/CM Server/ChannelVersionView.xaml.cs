@@ -54,11 +54,11 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
 
                 if (CurrentCmProgram.Channels.Count == 0 && CurrentCmProgram.Bitnesses.Count == 0)
                 {
-                    ChannelList.ItemsSource = null;
-                    ChannelList.ItemsSource = GlobalObjects.ViewModel.Branches;
-                    cbChannelVersion.SelectedIndex = 0;
-                    Bit32ToggleButton.IsChecked = false;
-                    Bit64ToggleButton.IsChecked = false; 
+                    //ChannelList.ItemsSource = null;
+                    //ChannelList.ItemsSource = GlobalObjects.ViewModel.Branches;
+                    //cbChannelVersion.SelectedIndex = 0;
+                    //Bit32ToggleButton.IsChecked = false;
+                    //Bit64ToggleButton.IsChecked = false; 
                 }
 
                 ToggleNext();
