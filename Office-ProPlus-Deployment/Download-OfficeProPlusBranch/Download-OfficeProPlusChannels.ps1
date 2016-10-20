@@ -1,4 +1,5 @@
-﻿$enumDef = "
+﻿try {
+$enumDef = "
 using System;
        [FlagsAttribute]
        public enum Bitness
@@ -8,9 +9,10 @@ using System;
           v64 = 2
        }
 "
+Add-Type -TypeDefinition $enumDef -ErrorAction SilentlyContinue
+} catch { }
 
-Add-Type -TypeDefinition $enumDef
-
+try {
 $enumDef = "
 using System;
        [FlagsAttribute]
@@ -23,9 +25,10 @@ using System;
           CMValidation = 4
        }
 "
+Add-Type -TypeDefinition $enumDef -ErrorAction SilentlyContinue
+} catch { }
 
-Add-Type -TypeDefinition $enumDef
-
+try {
 $enumDef = "
 using System;
        [FlagsAttribute]
@@ -37,23 +40,23 @@ using System;
           Deferred = 3
        }
 "
-
-Add-Type -TypeDefinition $enumDef
+Add-Type -TypeDefinition $enumDef -ErrorAction SilentlyContinue
+} catch { }
 
 function Download-OfficeProPlusChannels{
 <#
 .SYNOPSIS
-Downloads each Office ProPlus Branch with installation files
+Downloads each Office ProPlus Channel with installation files
 .DESCRIPTION
-This script will dynamically downloaded the most current Office ProPlus version for each deployment Branch
+This script will dynamically downloaded the most current Office ProPlus version for each deployment Channel
 .PARAMETER Version
 The version number you wish to download. For example: 16.0.6228.1010
 .PARAMETER TargetDirectory
-Required. Where all the branches will be downloaded. Each branch then goes into a folder of the same name as the branch.
+Required. Where all the channels will be downloaded. Each channel then goes into a folder of the same name as the channel.
 .PARAMETER Languages
 Array of Microsoft language codes. Will throw error if provided values don't match the validation set. Defaults to "en-us"
 ("en-us","ar-sa","bg-bg","zh-cn","zh-tw","hr-hr","cs-cz","da-dk","nl-nl","et-ee","fi-fi","fr-fr","de-de","el-gr","he-il","hi-in","hu-hu","id-id","it-it",
-"ja-jp","kk-kh","ko-kr","lv-lv","lt-lt","ms-my","nb-no","pl-pl","pt-br","pt-pt","ro-ro","ru-ru","sr-latn-rs","sk-sk","sl-si","es-es","sv-se","th-th",
+"ja-jp","kk-kz","ko-kr","lv-lv","lt-lt","ms-my","nb-no","pl-pl","pt-br","pt-pt","ro-ro","ru-ru","sr-latn-rs","sk-sk","sl-si","es-es","sv-se","th-th",
 "tr-tr","uk-ua")
 .PARAMETER Bitness
 v32, v64, or Both. What bitness of office you wish to download. Defaults to Both.
@@ -72,8 +75,8 @@ This parameter Controls the number of times the script will retry if a failure h
 .PARAMETER IncludeChannelInfo
 This parameter Controls whether the ofl.cab file is downloaded and cached in the root of the TargetDirectory folder
 .Example
-Download-OfficeBranch -TargetDirectory "\\server\updateshare"
-Default downloads all available branches of the most recent version for both bitnesses into an update source. Downloads the English language pack by default if language is not specified.
+Download-OfficeProPlusChannels -TargetDirectory "\\server\updateshare"
+Default downloads all available channels of the most recent version for both bitnesses into an update source. Downloads the English language pack by default if language is not specified.
 .Link
 https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
 #>
@@ -87,7 +90,7 @@ Param(
 
     [Parameter()]
     [ValidateSet("en-us","ar-sa","bg-bg","zh-cn","zh-tw","hr-hr","cs-cz","da-dk","nl-nl","et-ee","fi-fi","fr-fr","de-de","el-gr","he-il","hi-in","hu-hu","id-id","it-it",
-                "ja-jp","kk-kh","ko-kr","lv-lv","lt-lt","ms-my","nb-no","pl-pl","pt-br","pt-pt","ro-ro","ru-ru","sr-latn-rs","sk-sk","sl-si","es-es","sv-se","th-th",
+                "ja-jp","kk-kz","ko-kr","lv-lv","lt-lt","ms-my","nb-no","pl-pl","pt-br","pt-pt","ro-ro","ru-ru","sr-latn-rs","sk-sk","sl-si","es-es","sv-se","th-th",
                 "tr-tr","uk-ua")]
     [string[]] $Languages = ("en-us"),
 
@@ -186,7 +189,7 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
                 $currentBranch = $_
                 $b++
 
-                Write-Progress -id 1 -Activity "Downloading Channel" -status "Branch: $($currentBranch.ToString()) : $currentBitness" -percentComplete ($b / $BranchCount *100) 
+                Write-Progress -id 1 -Activity "Downloading Channel" -status "Channel: $($currentBranch.ToString()) : $currentBitness" -percentComplete ($b / $BranchCount *100) 
                 Write-Host "`tDownloading Channel: $currentBranch"
 
                 $FolderName = $($_.ToString())

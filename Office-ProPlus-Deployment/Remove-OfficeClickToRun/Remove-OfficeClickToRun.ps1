@@ -31,7 +31,7 @@ Will uninstall Office Click-to-Run.
     )
 
      Process{
-    
+ 
         $scriptRoot = GetScriptRoot
 
         newCTRRemoveXml | Out-File $RemoveCTRXmlPath
@@ -48,29 +48,34 @@ Will uninstall Office Click-to-Run.
 
         $c2rName = $c2rVersion.DisplayName
              
-        if(!($isInPipe)) {
-            write-host "Please wait while $c2rName is being uninstalled..."
+        if($c2rVersion) {
+            if(!($isInPipe)) {
+                Write-Host "Please wait while $c2rName is being uninstalled..."
+            }
         }
    
-        if($c2rVersion -match "15"){
+        if($c2rVersion.Version -like "15*"){
             $OdtExe = "$scriptRoot\Office2013Setup.exe"
         }
         else{
             $OdtExe = "$scriptRoot\Office2016Setup.exe"
         } 
 
-        $command = "$OdtExe /configure $RemoveCTRXmlPath"
+        $cmdLine = '"' + $OdtExe + '"'
+        $cmdArgs = "/configure " + '"' + $RemoveCTRXmlPath + '"'
 
-        Invoke-Expression $command | Out-Null 
+        StartProcess -execFilePath $cmdLine -execParams $cmdArgs -WaitForExit $true 
                         
         [bool] $c2rTest = $false 
         if( Get-OfficeVersion | Where-Object {$_.ClickToRun -eq "True"} ){
             $c2rTest = $true
         }
 
-        if(!($c2rTest)){                           
-            if (!($isInPipe)) {                        
-                Write-Host "Office Click-to-Run has been successfully uninstalled." 
+        if($c2rVersion){
+            if(!($c2rTest)){                           
+                if (!($isInPipe)) {                        
+                    Write-Host "Office Click-to-Run has been successfully uninstalled." 
+                }
             }
         }                                      
                                                                                
@@ -79,8 +84,7 @@ Will uninstall Office Click-to-Run.
             $Result = New-Object –TypeName PSObject 
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
             $Result
-        } 
-
+        }
     }
 }
 
@@ -88,34 +92,31 @@ Function Get-OfficeVersion {
 <#
 .Synopsis
 Gets the Office Version installed on the computer
-
 .DESCRIPTION
 This function will query the local or a remote computer and return the information about Office Products installed on the computer
-
+.NOTES   
+Name: Get-OfficeVersion
+Version: 1.0.5
+DateCreated: 2015-07-01
+DateUpdated: 2016-10-14
+.LINK
+https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
 .PARAMETER ComputerName
 The computer or list of computers from which to query 
-
 .PARAMETER ShowAllInstalledProducts
 Will expand the output to include all installed Office products
-
 .EXAMPLE
 Get-OfficeVersion
-
 Description:
 Will return the locally installed Office product
-
 .EXAMPLE
 Get-OfficeVersion -ComputerName client01,client02
-
 Description:
 Will return the installed Office product on the remote computers
-
 .EXAMPLE
 Get-OfficeVersion | select *
-
 Description:
 Will return the locally installed Office product with all of the available properties
-
 #>
 [CmdletBinding(SupportsShouldProcess=$true)]
 param(
@@ -144,7 +145,6 @@ begin {
     $PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultDisplayPropertySet)
 }
 
-
 process {
 
  $results = new-object PSObject[] 0;
@@ -164,11 +164,11 @@ process {
        $regProv = Get-Wmiobject -list "StdRegProv" -namespace root\default -computername $computer
     }
 
-    $VersionList = New-Object -TypeName System.Collections.ArrayList
-    $PathList = New-Object -TypeName System.Collections.ArrayList
-    $PackageList = New-Object -TypeName System.Collections.ArrayList
-    $ClickToRunPathList = New-Object -TypeName System.Collections.ArrayList
-    $ConfigItemList = New-Object -TypeName System.Collections.ArrayList
+    [System.Collections.ArrayList]$VersionList = New-Object -TypeName System.Collections.ArrayList
+    [System.Collections.ArrayList]$PathList = New-Object -TypeName System.Collections.ArrayList
+    [System.Collections.ArrayList]$PackageList = New-Object -TypeName System.Collections.ArrayList
+    [System.Collections.ArrayList]$ClickToRunPathList = New-Object -TypeName System.Collections.ArrayList
+    [System.Collections.ArrayList]$ConfigItemList = New-Object -TypeName  System.Collections.ArrayList
     $ClickToRunList = new-object PSObject[] 0;
 
     foreach ($regKey in $officeKeys) {
@@ -182,11 +182,12 @@ process {
             $path = join-path $regKey $key
 
             $configPath = join-path $path "Common\Config"
-            
             $configItems = $regProv.EnumKey($HKLM, $configPath)
-            foreach ($configId in $configItems.sNames) {
-               if ($configId) {
-                 $Add = $ConfigItemList.Add($configId.ToUpper())
+            if ($configItems) {
+               foreach ($configId in $configItems.sNames) {
+                 if ($configId) {
+                    $Add = $ConfigItemList.Add($configId.ToUpper())
+                 }
                }
             }
 
@@ -201,6 +202,23 @@ process {
             $packagePath = join-path $path "Common\InstalledPackages"
             $clickToRunPath = join-path $path "ClickToRun\Configuration"
             $virtualInstallPath = $regProv.GetStringValue($HKLM, $clickToRunPath, "InstallationPath").sValue
+
+            [string]$officeLangResourcePath = join-path  $path "Common\LanguageResources"
+            $mainLangId = $regProv.GetDWORDValue($HKLM, $officeLangResourcePath, "SKULanguage").uValue
+            if ($mainLangId) {
+                $mainlangCulture = [globalization.cultureinfo]::GetCultures("allCultures") | where {$_.LCID -eq $mainLangId}
+                if ($mainlangCulture) {
+                    $cltr.ClientCulture = $mainlangCulture.Name
+                }
+            }
+
+            [string]$officeLangPath = join-path  $path "Common\LanguageResources\InstalledUIs"
+            $langValues = $regProv.EnumValues($HKLM, $officeLangPath);
+            if ($langValues) {
+               foreach ($langValue in $langValues) {
+                  $langCulture = [globalization.cultureinfo]::GetCultures("allCultures") | where {$_.LCID -eq $langValue}
+               } 
+            }
 
             if ($virtualInstallPath) {
 
@@ -239,10 +257,11 @@ process {
             foreach ($packageGuid in $packageItems.sNames) {
               $packageItemPath = join-path $packagePath $packageGuid
               $packageName = $regProv.GetStringValue($HKLM, $packageItemPath, "").sValue
-              if ($packageName) {
-                 if (!$PackageList.Contains($packageName)) {
-                    $AddItem = $PackageList.Add($packageName.Replace(' ', '').ToLower())
-                 }
+            
+              if (!$PackageList.Contains($packageName)) {
+                if ($packageName) {
+                   $AddItem = $PackageList.Add($packageName.Replace(' ', '').ToLower())
+                }
               }
             }
 
@@ -259,6 +278,7 @@ process {
         foreach ($key in $keys.sNames) {
            $path = join-path $regKey $key
            $installPath = $regProv.GetStringValue($HKLM, $path, "InstallLocation").sValue
+           if (!($installPath)) { continue }
            if ($installPath.Length -eq 0) { continue }
 
            $buildType = "64-Bit"
@@ -291,7 +311,7 @@ process {
            $primaryOfficeProduct = $false
            $officeProduct = $false
            foreach ($officeInstallPath in $PathList) {
-             if (($officeInstallPath) -and ($installPath)) {
+             if ($officeInstallPath) {
                 $installReg = "^" + $installPath.Replace('\', '\\')
                 $installReg = $installReg.Replace('(', '\(')
                 $installReg = $installReg.Replace(')', '\)')
@@ -303,19 +323,30 @@ process {
            
            $name = $regProv.GetStringValue($HKLM, $path, "DisplayName").sValue          
 
-           if ($ConfigItemList.Contains($key.ToUpper()) -and $name.ToUpper().Contains("MICROSOFT OFFICE")) {
+           if ($ConfigItemList.Contains($key.ToUpper()) -and $name.ToUpper().Contains("MICROSOFT OFFICE") -and $name.ToUpper() -notlike "*MUI*" -and $name.ToUpper() -notlike "*VISIO*" -and $name.ToUpper() -notlike "*PROJECT*") {
               $primaryOfficeProduct = $true
            }
 
-           $version = $regProv.GetStringValue($HKLM, $path, "DisplayVersion").sValue
+           $clickToRunComponent = $regProv.GetDWORDValue($HKLM, $path, "ClickToRunComponent").uValue
+           $uninstallString = $regProv.GetStringValue($HKLM, $path, "UninstallString").sValue
+           if (!($clickToRunComponent)) {
+              if ($uninstallString) {
+                 if ($uninstallString.Contains("OfficeClickToRun")) {
+                     $clickToRunComponent = $true
+                 }
+              }
+           }
+
            $modifyPath = $regProv.GetStringValue($HKLM, $path, "ModifyPath").sValue 
+           $version = $regProv.GetStringValue($HKLM, $path, "DisplayVersion").sValue
 
            $cltrUpdatedEnabled = $NULL
            $cltrUpdateUrl = $NULL
            $clientCulture = $NULL;
 
            [string]$clickToRun = $false
-           if ($ClickToRunPathList.Contains($installPath.ToUpper())) {
+
+           if ($clickToRunComponent) {
                $clickToRun = $true
                if ($name.ToUpper().Contains("MICROSOFT OFFICE")) {
                   $primaryOfficeProduct = $true
@@ -354,12 +385,14 @@ process {
     }
 
   }
- 
-  return $results;           
-   
+
+  $results = Get-Unique -InputObject $results 
+
+  return $results;
 }
 
 }
+
 
 Function newCTRRemoveXml {
 #Create a xml configuration file to remove all Office CTR products.
@@ -387,4 +420,36 @@ Function GetScriptRoot() {
 
      return $scriptPath
  }
+}
+
+Function StartProcess {
+	Param
+	(
+        [Parameter()]
+		[String]$execFilePath,
+
+        [Parameter()]
+        [String]$execParams,
+
+        [Parameter()]
+        [bool]$WaitForExit = $false
+	)
+
+    Try
+    {
+        $startExe = new-object System.Diagnostics.ProcessStartInfo
+        $startExe.FileName = $execFilePath
+        $startExe.Arguments = $execParams
+        $startExe.CreateNoWindow = $false
+        $startExe.UseShellExecute = $false
+
+        $execStatement = [System.Diagnostics.Process]::Start($startExe) 
+        if ($WaitForExit) {
+           $execStatement.WaitForExit()
+        }
+    }
+    Catch
+    {
+        Write-Log -Message $_.Exception.Message -severity 1 -component "Office 365 Update Anywhere"
+    }
 }

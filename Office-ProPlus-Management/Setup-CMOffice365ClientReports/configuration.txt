@@ -1,0 +1,85 @@
+#pragma namespace ("\\\\.\\root\\cimv2")
+#pragma deleteclass("Office365ClientConfigurations", NOFAIL)
+[DYNPROPS]
+Class Office365ClientConfigurations
+{
+[key] string KeyName;
+String InstallationPath;
+String ClientFolder;
+String VersionToReport;
+String ClientCulture;
+String CDNBaseUrl;
+String UpdatesEnabled;
+String Platform;
+String UpdateUrl;
+String SharedComputerLicensing;
+String LastScenario;
+String LastScenarioResult;
+String OfficeMgmtCOM;
+String UpdateChannel;
+String UpdatePath;
+String GPOOfficeMgmtCOM;
+};
+
+[DYNPROPS]
+Instance of Office365ClientConfigurations
+{
+KeyName="Office365ClientConfigurations";
+[PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Office\\ClickToRun\\Configuration|InstallationPath"),Dynamic,Provider("RegPropProv")] InstallationPath;
+[PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Office\\ClickToRun\\Configuration|ClientFolder"),Dynamic,Provider("RegPropProv")] ClientFolder;
+[PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Office\\ClickToRun\\Configuration|VersionToReport"),Dynamic,Provider("RegPropProv")] VersionToReport;
+[PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Office\\ClickToRun\\Configuration|ClientCulture"),Dynamic,Provider("RegPropProv")] ClientCulture;
+[PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Office\\ClickToRun\\Configuration|CDNBaseUrl"),Dynamic,Provider("RegPropProv")] CDNBaseUrl;
+[PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Office\\ClickToRun\\Configuration|UpdatesEnabled"),Dynamic,Provider("RegPropProv")] UpdatesEnabled;
+[PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Office\\ClickToRun\\Configuration|Platform"),Dynamic,Provider("RegPropProv")] Platform;
+[PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Office\\ClickToRun\\Configuration|UpdateUrl"),Dynamic,Provider("RegPropProv")] UpdateUrl;
+[PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Office\\ClickToRun\\Configuration|SharedComputerLicensing"),Dynamic,Provider("RegPropProv")] SharedComputerLicensing;
+[PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Office\\ClickToRun|LastScenario"),Dynamic,Provider("RegPropProv")] LastScenario;
+[PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Office\\ClickToRun|LastScenarioResult"),Dynamic,Provider("RegPropProv")] LastScenarioResult;
+[PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Office\\ClickToRun\\Configuration|OfficeMgmtCOM"),Dynamic,Provider("RegPropProv")] OfficeMgmtCOM;
+[PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\office\\16.0\\common\\officeupdate|updatechannel"),Dynamic,Provider("RegPropProv")] UpdateChannel;
+[PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\office\\16.0\\common\\officeupdate|updatepath"),Dynamic,Provider("RegPropProv")] UpdatePath;
+[PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\office\\16.0\\common\\officeupdate|officemgmtcom"),Dynamic,Provider("RegPropProv")] GPOOfficeMgmtCOM;
+};
+
+#pragma namespace ("\\\\.\\root\\cimv2")
+#pragma deleteclass("Office365ClientConfigurations2013", NOFAIL)
+[DYNPROPS]
+Class Office365ClientConfigurations2013
+{
+[key] string KeyName;
+String InstallationPath;
+String ClientFolder;
+String VersionToReport;
+String ClientCulture;
+String CDNBaseUrl;
+String UpdatesEnabled;
+String AutoUpgrade;
+String Platform;
+String UpdateUrl;
+String SharedComputerLicensing;
+String UpgradeBlocked;
+String LastScenario;
+String LastScenarioResult;
+String UpdatePath;
+};
+
+[DYNPROPS]
+Instance of Office365ClientConfigurations2013
+{
+KeyName="Office365ClientConfigurations2013";
+[PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Office\\15.0\\ClickToRun\\Configuration|InstallationPath"),Dynamic,Provider("RegPropProv")] InstallationPath;
+[PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Office\\15.0\\ClickToRun\\Configuration|ClientFolder"),Dynamic,Provider("RegPropProv")] ClientFolder;
+[PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Office\\15.0\\ClickToRun\\Configuration|VersionToReport"),Dynamic,Provider("RegPropProv")] VersionToReport;
+[PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Office\\15.0\\ClickToRun\\Configuration|ClientCulture"),Dynamic,Provider("RegPropProv")] ClientCulture;
+[PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Office\\15.0\\ClickToRun\\Configuration|CDNBaseUrl"),Dynamic,Provider("RegPropProv")] CDNBaseUrl;
+[PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Office\\15.0\\ClickToRun\\Configuration|UpdatesEnabled"),Dynamic,Provider("RegPropProv")] UpdatesEnabled;
+[PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Office\\15.0\\ClickToRun\\Configuration|AutoUpgrade"),Dynamic,Provider("RegPropProv")] AutoUpgrade;
+[PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Office\\15.0\\ClickToRun\\Configuration|Platform"),Dynamic,Provider("RegPropProv")] Platform;
+[PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Office\\15.0\\ClickToRun\\Configuration|UpdateUrl"),Dynamic,Provider("RegPropProv")] UpdateUrl;
+[PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Office\\15.0\\ClickToRun\\Configuration|SharedComputerLicensing"),Dynamic,Provider("RegPropProv")] SharedComputerLicensing;
+[PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Office\\15.0\\ClickToRun\\Configuration|UpgradeBlocked"),Dynamic,Provider("RegPropProv")] UpgradeBlocked;
+[PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Office\\15.0\\ClickToRun|LastScenario"),Dynamic,Provider("RegPropProv")] LastScenario;
+[PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Office\\15.0\\ClickToRun|LastScenarioResult"),Dynamic,Provider("RegPropProv")] LastScenarioResult;
+[PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\office\\15.0\\common\\officeupdate|updatepath"),Dynamic,Provider("RegPropProv")] UpdatePath;
+};

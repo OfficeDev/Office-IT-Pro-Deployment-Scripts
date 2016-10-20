@@ -1,0 +1,1979 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner" xmlns:cl="http://schemas.microsoft.com/sqlserver/reporting/2010/01/componentdefinition" xmlns="http://schemas.microsoft.com/sqlserver/reporting/2010/01/reportdefinition">
+  <AutoRefresh>0</AutoRefresh>
+  <DataSources>
+    <DataSource Name="AutoGen__5C6358F2_4BB6_4a1b_A16E_8D96795D8602_">
+      <DataSourceReference>/ConfigMgr_S01/{5C6358F2-4BB6-4a1b-A16E-8D96795D8602}</DataSourceReference>
+      <rd:SecurityType>None</rd:SecurityType>
+      <rd:DataSourceID>11111111-1111-1111-1111-111111111111</rd:DataSourceID>
+    </DataSource>
+  </DataSources>
+  <DataSets>
+    <DataSet Name="DataSetAdminID">
+      <Query>
+        <DataSourceName>AutoGen__5C6358F2_4BB6_4a1b_A16E_8D96795D8602_</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@UserTokenSIDs">
+            <Value>=Parameters!UserTokenSIDs.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandText>select dbo.fn_rbac_GetAdminIDsfromUserSIDs(@UserTokenSIDs) as UserSIDs</CommandText>
+      </Query>
+      <Fields>
+        <Field Name="UserSIDs">
+          <DataField>UserSIDs</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+    <DataSet Name="UpdateUrls">
+      <Query>
+        <DataSourceName>AutoGen__5C6358F2_4BB6_4a1b_A16E_8D96795D8602_</DataSourceName>
+        <CommandText>SELECT DISTINCT UpdateUrl00 FROM dbo.Office365ClientConfigurations_DATA
+WHERE UpdateUrl00 LIKE '\\%'
+UNION
+SELECT DISTINCT 'All' AS UpdateUrl00</CommandText>
+      </Query>
+      <Fields>
+        <Field Name="UpdateUrl00">
+          <DataField>UpdateUrl00</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+    <DataSet Name="ComputerNames">
+      <Query>
+        <DataSourceName>AutoGen__5C6358F2_4BB6_4a1b_A16E_8D96795D8602_</DataSourceName>
+        <CommandText>SELECT DISTINCT Name0 FROM dbo.System_DATA
+  UNION
+  SELECT DISTINCT 'All' AS Name0 FROM dbo.System_DATA</CommandText>
+      </Query>
+      <Fields>
+        <Field Name="Name0">
+          <DataField>Name0</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+    <DataSet Name="DataSet1">
+      <Query>
+        <DataSourceName>AutoGen__5C6358F2_4BB6_4a1b_A16E_8D96795D8602_</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@ComputerName">
+            <Value>=Parameters!ComputerName.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@Channels">
+            <Value>=Parameters!Channels.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@UpdateSource">
+            <Value>=Parameters!UpdateSource.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@UpdatesEnabled">
+            <Value>=Parameters!UpdatesEnabled.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@UpdateURL">
+            <Value>=Parameters!UpdateURL.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandText>DECLARE @ChannelTable TABLE(Channel VARCHAR(100) NULL, CPath VARCHAR(100));
+INSERT INTO @ChannelTable VALUES ('Deferred','http://officecdn.microsoft.com/pr/7ffbc6bf-bc32-4f92-8982-f9dd17fd3114'),('FirstReleaseDeferred','http://officecdn.microsoft.com/pr/b8f9b850-328d-4355-9145-c59439a0c4cf'),('Current','http://officecdn.microsoft.com/pr/492350f6-3a01-4f97-b9c0-c7c6ddf67d60'),('FirstReleaseCurrent','http://officecdn.microsoft.com/pr/64256afe-f5d9-4f86-8936-8840a6a4f5be')
+DECLARE @ResultsTable TABLE(ComputerName VARCHAR(100), ProductName VARCHAR(100), PrimaryLanguage VARCHAR(100), ProductVersion VARCHAR(100), Architecture VARCHAR(100), UpdatesEnabled VARCHAR(100), UpdateSource VARCHAR(100), Channel VARCHAR(100));
+INSERT INTO @ResultsTable
+SELECT
+SysD.Name0,
+SUBSTRING(Addr.DisplayName00, 0 ,CHARINDEX('-',Addr.DisplayName00)) AS ProgramName, 
+OffCL.ClientCulture00,
+OffCL.VersionToReport00,
+OffCL.Platform00,
+UpdateEnabled = CASE WHEN OffCL.UpdatesEnabled00 = 'True' THEN 'True' ELSE 'False' END,
+UpdateSource = CASE 
+WHEN (OffCL.GPOOfficeMgmtCOM00 IS NULL AND OffCL.OfficeMgmtCOM00 = 'True') THEN 'Configuration Manager' 
+WHEN OffCL.GPOOfficeMgmtCOM00 = '1' THEN 'Configuration Manager' 
+WHEN (OffCL.UpdateChannel00 IS NOT NULL AND OffCL.UpdateChannel00 != '') THEN 'Cloud'
+WHEN OffCL.UpdatePath00 LIKE '\\%' THEN OffCL.UpdatePath00
+WHEN OffCL.UpdatePath00 LIKE 'http://officecdn%' THEN 'Cloud'
+WHEN OffCL.UpdateUrl00 LIKE '\\%' THEN OffCL.UpdateUrl00
+WHEN OffCL.UpdateUrl00 LIKE 'http://officecdn%' THEN 'Cloud'
+WHEN OffCL.CDNBaseUrl00 LIKE 'http://officecdn%' THEN 'Cloud'
+END,
+Channel = CASE 
+WHEN (OffCL.GPOOfficeMgmtCOM00 IS NULL AND OffCL.OfficeMgmtCOM00 = 'True') THEN (SELECT Channel FROM @ChannelTable ct WHERE ct.CPath = OffCL.CDNBaseUrl00)
+WHEN OffCL.GPOOfficeMgmtCOM00 = '1' THEN (SELECT Channel FROM @ChannelTable ct WHERE ct.CPath = OffCL.CDNBaseUrl00)
+WHEN (OffCL.UpdateChannel00 IS NOT NULL AND OffCL.UpdateChannel00 != '') THEN OffCL.UpdateChannel00
+WHEN OffCL.UpdatePath00 LIKE '\\%' THEN (SELECT Channel FROM @ChannelTable ct WHERE ct.CPath = OffCL.CDNBaseUrl00)
+WHEN OffCL.UpdatePath00 LIKE 'http://officecdn%' THEN (SELECT Channel FROM @ChannelTable TCT WHERE TCT.CPath = OffCL.UpdatePath00)
+WHEN OffCL.UpdateUrl00 LIKE '\\%' THEN (SELECT Channel FROM @ChannelTable ct WHERE ct.CPath = OffCL.CDNBaseUrl00)
+WHEN OffCL.UpdateUrl00 LIKE 'http://officecdn%' THEN  (SELECT Channel FROM @ChannelTable TCT WHERE TCT.CPath = OffCL.UpdateUrl00)
+WHEN OffCL.CDNBaseUrl00 LIKE 'http://officecdn%' THEN (SELECT Channel FROM @ChannelTable ct WHERE ct.CPath = OffCL.CDNBaseUrl00)
+END
+FROM
+dbo.Add_Remove_Programs_64_DATA Addr
+INNER JOIN dbo.Office365ClientConfigurations_DATA OffCL  ON OffCL.MachineID = Addr.MachineID
+INNER JOIN dbo.System_DATA SysD ON SysD.MachineID = Addr.MachineID
+WHERE Addr.DisplayName00 LIKE '%proplus%' AND Addr.Version00 LIKE '16%'
+
+
+INSERT INTO @ResultsTable
+SELECT
+SysD.Name0,
+SUBSTRING(Addr.DisplayName00, 0 ,CHARINDEX('-',Addr.DisplayName00)) AS ProgramName, 
+OffCL.ClientCulture00,
+OffCL.VersionToReport00,
+OffCL.Platform00,
+UpdateEnabled = CASE WHEN OffCL.UpdatesEnabled00 = 'True' THEN 'True' ELSE 'False' END,
+UpdateSource = CASE 
+WHEN (OffCL.GPOOfficeMgmtCOM00 IS NULL AND OffCL.OfficeMgmtCOM00 = 'True') THEN 'Configuration Manager' 
+WHEN OffCL.GPOOfficeMgmtCOM00 = '1' THEN 'Configuration Manager' 
+WHEN (OffCL.UpdateChannel00 IS NOT NULL AND OffCL.UpdateChannel00 != '') THEN 'Cloud'
+WHEN OffCL.UpdatePath00 LIKE '\\%' THEN OffCL.UpdatePath00
+WHEN OffCL.UpdatePath00 LIKE 'http://officecdn%' THEN 'Cloud'
+WHEN OffCL.UpdateUrl00 LIKE '\\%' THEN OffCL.UpdateUrl00
+WHEN OffCL.UpdateUrl00 LIKE 'http://officecdn%' THEN 'Cloud'
+WHEN OffCL.CDNBaseUrl00 LIKE 'http://officecdn%' THEN 'Cloud'
+END,
+Channel = CASE 
+WHEN (OffCL.GPOOfficeMgmtCOM00 IS NULL AND OffCL.OfficeMgmtCOM00 = 'True') THEN (SELECT Channel FROM @ChannelTable ct WHERE ct.CPath = OffCL.CDNBaseUrl00)
+WHEN OffCL.GPOOfficeMgmtCOM00 = '1' THEN (SELECT Channel FROM @ChannelTable ct WHERE ct.CPath = OffCL.CDNBaseUrl00)
+WHEN (OffCL.UpdateChannel00 IS NOT NULL AND OffCL.UpdateChannel00 != '') THEN OffCL.UpdateChannel00
+WHEN OffCL.UpdatePath00 LIKE '\\%' THEN (SELECT Channel FROM @ChannelTable ct WHERE ct.CPath = OffCL.CDNBaseUrl00)
+WHEN OffCL.UpdatePath00 LIKE 'http://officecdn%' THEN (SELECT Channel FROM @ChannelTable TCT WHERE TCT.CPath = OffCL.UpdatePath00)
+WHEN OffCL.UpdateUrl00 LIKE '\\%' THEN (SELECT Channel FROM @ChannelTable ct WHERE ct.CPath = OffCL.CDNBaseUrl00)
+WHEN OffCL.UpdateUrl00 LIKE 'http://officecdn%' THEN  (SELECT Channel FROM @ChannelTable TCT WHERE TCT.CPath = OffCL.UpdateUrl00)
+WHEN OffCL.CDNBaseUrl00 LIKE 'http://officecdn%' THEN (SELECT Channel FROM @ChannelTable ct WHERE ct.CPath = OffCL.CDNBaseUrl00)
+END
+FROM
+dbo.Add_Remove_Programs_DATA Addr
+INNER JOIN dbo.Office365ClientConfigurations_DATA OffCL  ON OffCL.MachineID = Addr.MachineID
+INNER JOIN dbo.System_DATA SysD ON SysD.MachineID = Addr.MachineID
+WHERE Addr.DisplayName00 LIKE '%proplus%' AND Addr.Version00 LIKE '16%'
+
+INSERT INTO @ResultsTable
+SELECT
+SysD.Name0,
+SUBSTRING(Addr.DisplayName00, 0 ,CHARINDEX('-',Addr.DisplayName00)) AS ProgramName, 
+OffCL.ClientCulture00,
+OffCL.VersionToReport00,
+OffCL.Platform00,
+UpdateEnabled = CASE WHEN OffCL.UpdatesEnabled00 = 'True' THEN 'True' ELSE 'False' END,
+UpdateSource = CASE 
+WHEN OffCL.UpdatePath00 LIKE '\\%' THEN OffCL.UpdatePath00
+WHEN OffCL.UpdatePath00 LIKE 'http://officecdn%' THEN 'Cloud'
+WHEN OffCL.UpdateUrl00 LIKE '\\%' THEN OffCL.UpdateUrl00
+WHEN OffCL.UpdateUrl00 LIKE 'http://officecdn%' THEN 'Cloud'
+WHEN OffCL.CDNBaseUrl00 LIKE 'http://officecdn%' THEN 'Cloud'
+END,
+Channel = 'N/A'
+FROM
+dbo.Add_Remove_Programs_DATA Addr
+INNER JOIN dbo.Office365ClientConfigurations2013_DATA OffCL  ON OffCL.MachineID = Addr.MachineID
+INNER JOIN dbo.System_DATA SysD ON SysD.MachineID = Addr.MachineID
+WHERE Addr.DisplayName00 LIKE '%proplus%' AND Addr.Version00 LIKE '15%'
+
+INSERT INTO @ResultsTable
+SELECT
+SysD.Name0,
+SUBSTRING(Addr.DisplayName00, 0 ,CHARINDEX('-',Addr.DisplayName00)) AS ProgramName, 
+OffCL.ClientCulture00,
+OffCL.VersionToReport00,
+OffCL.Platform00,
+UpdateEnabled = CASE WHEN OffCL.UpdatesEnabled00 = 'True' THEN 'True' ELSE 'False' END,
+UpdateSource = CASE 
+WHEN OffCL.UpdatePath00 LIKE '\\%' THEN OffCL.UpdatePath00
+WHEN OffCL.UpdatePath00 LIKE 'http://officecdn%' THEN 'Cloud'
+WHEN OffCL.UpdateUrl00 LIKE '\\%' THEN OffCL.UpdateUrl00
+WHEN OffCL.UpdateUrl00 LIKE 'http://officecdn%' THEN 'Cloud'
+WHEN OffCL.CDNBaseUrl00 LIKE 'http://officecdn%' THEN 'Cloud'
+END,
+Channel = 'N/A'
+FROM
+dbo.Add_Remove_Programs_64_DATA Addr
+INNER JOIN dbo.Office365ClientConfigurations2013_DATA OffCL  ON OffCL.MachineID = Addr.MachineID
+INNER JOIN dbo.System_DATA SysD ON SysD.MachineID = Addr.MachineID
+WHERE Addr.DisplayName00 LIKE '%proplus%' AND Addr.Version00 LIKE '15%'
+
+UPDATE @ResultsTable
+SET ComputerName = '' WHERE ComputerName IS NULL
+UPDATE @ResultsTable
+SET UpdatesEnabled = '' WHERE UpdatesEnabled IS NULL
+UPDATE @ResultsTable
+SET Channel = '' WHERE Channel IS NULL
+
+ 
+
+SELECT * FROM @ResultsTable
+WHERE ComputerName LIKE
+CASE WHEN @ComputerName = 'All'
+THEN '%'
+ELSE @ComputerName
+END
+AND Channel LIKE
+CASE WHEN @Channels = 'All'
+THEN '%'
+ELSE @Channels
+END
+AND UpdateSource LIKE
+CASE WHEN @UpdateSource = 'All'
+THEN '%'
+WHEN @UpdateSource = 'Local'
+THEN  '\\%'
+ELSE @UpdateSource
+END
+AND UpdatesEnabled LIKE
+CASE WHEN @UpdatesEnabled = 'All'
+THEN '%'
+ELSE @UpdatesEnabled
+END
+AND UpdateSource LIKE
+CASE WHEN @UpdateURL = 'All'
+THEN '%'
+ELSE @UpdateURL
+END</CommandText>
+        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
+      </Query>
+      <Fields>
+        <Field Name="ComputerName">
+          <DataField>ComputerName</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="ProductName">
+          <DataField>ProductName</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="PrimaryLanguage">
+          <DataField>PrimaryLanguage</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="ProductVersion">
+          <DataField>ProductVersion</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Architecture">
+          <DataField>Architecture</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="UpdatesEnabled">
+          <DataField>UpdatesEnabled</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="UpdateSource">
+          <DataField>UpdateSource</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Channel">
+          <DataField>Channel</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+    <DataSet Name="UpdateURLGraph">
+      <Query>
+        <DataSourceName>AutoGen__5C6358F2_4BB6_4a1b_A16E_8D96795D8602_</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@ComputerName">
+            <Value>=Parameters!ComputerName.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@Channels">
+            <Value>=Parameters!Channels.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@UpdateURL">
+            <Value>=Parameters!UpdateURL.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@UpdatesEnabled">
+            <Value>=Parameters!UpdatesEnabled.Value</Value>
+          </QueryParameter>
+          <QueryParameter Name="@UpdateSource">
+            <Value>=Parameters!UpdateSource.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandText>DECLARE @ChannelTable TABLE(Channel VARCHAR(100) NULL, CPath VARCHAR(100));
+INSERT INTO @ChannelTable VALUES ('Deferred','http://officecdn.microsoft.com/pr/7ffbc6bf-bc32-4f92-8982-f9dd17fd3114'),('FirstReleaseDeferred','http://officecdn.microsoft.com/pr/b8f9b850-328d-4355-9145-c59439a0c4cf'),('Current','http://officecdn.microsoft.com/pr/492350f6-3a01-4f97-b9c0-c7c6ddf67d60'),('FirstReleaseCurrent','http://officecdn.microsoft.com/pr/64256afe-f5d9-4f86-8936-8840a6a4f5be')
+DECLARE @ResultsTable TABLE(ComputerName VARCHAR(100), ProductName VARCHAR(100), PrimaryLanguage VARCHAR(100), ProductVersion VARCHAR(100), Architecture VARCHAR(100), UpdatesEnabled VARCHAR(100), UpdateSource VARCHAR(100), UpdateURL VARCHAR(100), Channel VARCHAR(100));
+INSERT INTO @ResultsTable
+SELECT
+SysD.Name0,
+SUBSTRING(Addr.DisplayName00, 0 ,CHARINDEX('-',Addr.DisplayName00)) AS ProgramName, 
+OffCL.ClientCulture00,
+OffCL.VersionToReport00,
+OffCL.Platform00,
+UpdateEnabled = CASE WHEN OffCL.UpdatesEnabled00 = 'True' THEN 'True' ELSE 'False' END,
+UpdateSource = CASE 
+WHEN (OffCL.GPOOfficeMgmtCOM00 IS NULL AND OffCL.OfficeMgmtCOM00 = 'True') THEN 'Configuration Manager' 
+WHEN OffCL.GPOOfficeMgmtCOM00 = '1' THEN 'Configuration Manager' 
+WHEN (OffCL.UpdateChannel00 IS NOT NULL AND OffCL.UpdateChannel00 != '') THEN 'Cloud'
+WHEN OffCL.UpdatePath00 LIKE '\\%' THEN OffCL.UpdatePath00
+WHEN OffCL.UpdatePath00 LIKE 'http://officecdn%' THEN 'Cloud'
+WHEN OffCL.UpdateUrl00 LIKE '\\%' THEN OffCL.UpdateUrl00
+WHEN OffCL.UpdateUrl00 LIKE 'http://officecdn%' THEN 'Cloud'
+WHEN OffCL.CDNBaseUrl00 LIKE 'http://officecdn%' THEN 'Cloud'
+END,
+OffCL.UpdateUrl00,
+Channel = CASE 
+WHEN (OffCL.GPOOfficeMgmtCOM00 IS NULL AND OffCL.OfficeMgmtCOM00 = 'True') THEN (SELECT Channel FROM @ChannelTable ct WHERE ct.CPath = OffCL.CDNBaseUrl00)
+WHEN OffCL.GPOOfficeMgmtCOM00 = '1' THEN (SELECT Channel FROM @ChannelTable ct WHERE ct.CPath = OffCL.CDNBaseUrl00)
+WHEN (OffCL.UpdateChannel00 IS NOT NULL AND OffCL.UpdateChannel00 != '') THEN OffCL.UpdateChannel00
+WHEN OffCL.UpdatePath00 LIKE '\\%' THEN (SELECT Channel FROM @ChannelTable ct WHERE ct.CPath = OffCL.CDNBaseUrl00)
+WHEN OffCL.UpdatePath00 LIKE 'http://officecdn%' THEN (SELECT Channel FROM @ChannelTable TCT WHERE TCT.CPath = OffCL.UpdatePath00)
+WHEN OffCL.UpdateUrl00 LIKE '\\%' THEN (SELECT Channel FROM @ChannelTable ct WHERE ct.CPath = OffCL.CDNBaseUrl00)
+WHEN OffCL.UpdateUrl00 LIKE 'http://officecdn%' THEN  (SELECT Channel FROM @ChannelTable TCT WHERE TCT.CPath = OffCL.UpdateUrl00)
+WHEN OffCL.CDNBaseUrl00 LIKE 'http://officecdn%' THEN (SELECT Channel FROM @ChannelTable ct WHERE ct.CPath = OffCL.CDNBaseUrl00)
+END
+FROM
+dbo.Add_Remove_Programs_64_DATA Addr
+INNER JOIN dbo.Office365ClientConfigurations_DATA OffCL  ON OffCL.MachineID = Addr.MachineID
+INNER JOIN dbo.System_DATA SysD ON SysD.MachineID = Addr.MachineID
+WHERE Addr.DisplayName00 LIKE '%proplus%' AND Addr.Version00 LIKE '16%'
+
+
+INSERT INTO @ResultsTable
+SELECT
+SysD.Name0,
+SUBSTRING(Addr.DisplayName00, 0 ,CHARINDEX('-',Addr.DisplayName00)) AS ProgramName, 
+OffCL.ClientCulture00,
+OffCL.VersionToReport00,
+OffCL.Platform00,
+UpdateEnabled = CASE WHEN OffCL.UpdatesEnabled00 = 'True' THEN 'True' ELSE 'False' END,
+UpdateSource = CASE 
+WHEN (OffCL.GPOOfficeMgmtCOM00 IS NULL AND OffCL.OfficeMgmtCOM00 = 'True') THEN 'Configuration Manager' 
+WHEN OffCL.GPOOfficeMgmtCOM00 = '1' THEN 'Configuration Manager' 
+WHEN (OffCL.UpdateChannel00 IS NOT NULL AND OffCL.UpdateChannel00 != '') THEN 'Cloud'
+WHEN OffCL.UpdatePath00 LIKE '\\%' THEN OffCL.UpdatePath00
+WHEN OffCL.UpdatePath00 LIKE 'http://officecdn%' THEN 'Cloud'
+WHEN OffCL.UpdateUrl00 LIKE '\\%' THEN OffCL.UpdateUrl00
+WHEN OffCL.UpdateUrl00 LIKE 'http://officecdn%' THEN 'Cloud'
+WHEN OffCL.CDNBaseUrl00 LIKE 'http://officecdn%' THEN 'Cloud'
+END,
+OffCL.UpdateUrl00,
+Channel = CASE 
+WHEN (OffCL.GPOOfficeMgmtCOM00 IS NULL AND OffCL.OfficeMgmtCOM00 = 'True') THEN (SELECT Channel FROM @ChannelTable ct WHERE ct.CPath = OffCL.CDNBaseUrl00)
+WHEN OffCL.GPOOfficeMgmtCOM00 = '1' THEN (SELECT Channel FROM @ChannelTable ct WHERE ct.CPath = OffCL.CDNBaseUrl00)
+WHEN (OffCL.UpdateChannel00 IS NOT NULL AND OffCL.UpdateChannel00 != '') THEN OffCL.UpdateChannel00
+WHEN OffCL.UpdatePath00 LIKE '\\%' THEN (SELECT Channel FROM @ChannelTable ct WHERE ct.CPath = OffCL.CDNBaseUrl00)
+WHEN OffCL.UpdatePath00 LIKE 'http://officecdn%' THEN (SELECT Channel FROM @ChannelTable TCT WHERE TCT.CPath = OffCL.UpdatePath00)
+WHEN OffCL.UpdateUrl00 LIKE '\\%' THEN (SELECT Channel FROM @ChannelTable ct WHERE ct.CPath = OffCL.CDNBaseUrl00)
+WHEN OffCL.UpdateUrl00 LIKE 'http://officecdn%' THEN  (SELECT Channel FROM @ChannelTable TCT WHERE TCT.CPath = OffCL.UpdateUrl00)
+WHEN OffCL.CDNBaseUrl00 LIKE 'http://officecdn%' THEN (SELECT Channel FROM @ChannelTable ct WHERE ct.CPath = OffCL.CDNBaseUrl00)
+END
+FROM
+dbo.Add_Remove_Programs_DATA Addr
+INNER JOIN dbo.Office365ClientConfigurations_DATA OffCL  ON OffCL.MachineID = Addr.MachineID
+INNER JOIN dbo.System_DATA SysD ON SysD.MachineID = Addr.MachineID
+WHERE Addr.DisplayName00 LIKE '%proplus%' AND Addr.Version00 LIKE '16%'
+
+INSERT INTO @ResultsTable
+SELECT
+SysD.Name0,
+SUBSTRING(Addr.DisplayName00, 0 ,CHARINDEX('-',Addr.DisplayName00)) AS ProgramName, 
+OffCL.ClientCulture00,
+OffCL.VersionToReport00,
+OffCL.Platform00,
+UpdateEnabled = CASE WHEN OffCL.UpdatesEnabled00 = 'True' THEN 'True' ELSE 'False' END,
+UpdateSource = CASE 
+WHEN OffCL.UpdatePath00 LIKE '\\%' THEN OffCL.UpdatePath00
+WHEN OffCL.UpdatePath00 LIKE 'http://officecdn%' THEN 'Cloud'
+WHEN OffCL.UpdateUrl00 LIKE '\\%' THEN OffCL.UpdateUrl00
+WHEN OffCL.UpdateUrl00 LIKE 'http://officecdn%' THEN 'Cloud'
+WHEN OffCL.CDNBaseUrl00 LIKE 'http://officecdn%' THEN 'Cloud'
+END,
+OffCL.UpdateUrl00,
+Channel = 'N/A'
+FROM
+dbo.Add_Remove_Programs_DATA Addr
+INNER JOIN dbo.Office365ClientConfigurations2013_DATA OffCL  ON OffCL.MachineID = Addr.MachineID
+INNER JOIN dbo.System_DATA SysD ON SysD.MachineID = Addr.MachineID
+WHERE Addr.DisplayName00 LIKE '%proplus%' AND Addr.Version00 LIKE '15%'
+
+INSERT INTO @ResultsTable
+SELECT
+SysD.Name0,
+SUBSTRING(Addr.DisplayName00, 0 ,CHARINDEX('-',Addr.DisplayName00)) AS ProgramName, 
+OffCL.ClientCulture00,
+OffCL.VersionToReport00,
+OffCL.Platform00,
+UpdateEnabled = CASE WHEN OffCL.UpdatesEnabled00 = 'True' THEN 'True' ELSE 'False' END,
+UpdateSource = CASE 
+WHEN OffCL.UpdatePath00 LIKE '\\%' THEN OffCL.UpdatePath00
+WHEN OffCL.UpdatePath00 LIKE 'http://officecdn%' THEN 'Cloud'
+WHEN OffCL.UpdateUrl00 LIKE '\\%' THEN OffCL.UpdateUrl00
+WHEN OffCL.UpdateUrl00 LIKE 'http://officecdn%' THEN 'Cloud'
+WHEN OffCL.CDNBaseUrl00 LIKE 'http://officecdn%' THEN 'Cloud'
+END,
+OffCL.UpdateUrl00,
+Channel = 'N/A'
+FROM
+dbo.Add_Remove_Programs_64_DATA Addr
+INNER JOIN dbo.Office365ClientConfigurations2013_DATA OffCL  ON OffCL.MachineID = Addr.MachineID
+INNER JOIN dbo.System_DATA SysD ON SysD.MachineID = Addr.MachineID
+WHERE Addr.DisplayName00 LIKE '%proplus%' AND Addr.Version00 LIKE '15%'
+
+UPDATE @ResultsTable
+SET ComputerName = '' WHERE ComputerName IS NULL
+UPDATE @ResultsTable
+SET UpdatesEnabled = '' WHERE UpdatesEnabled IS NULL
+UPDATE @ResultsTable
+SET UpdateURL = '' WHERE UpdateURL IS NULL
+UPDATE @ResultsTable
+SET Channel = '' WHERE Channel IS NULL
+
+ 
+
+SELECT UpdateURL FROM @ResultsTable
+WHERE UpdateSource = 'Local'
+AND UpdateURL != ''
+AND
+ComputerName LIKE
+CASE WHEN @ComputerName = 'All'
+THEN '%'
+ELSE @ComputerName
+END
+AND Channel LIKE
+CASE WHEN @Channels = 'All'
+THEN '%'
+ELSE @Channels
+END
+AND UpdateURL LIKE
+CASE WHEN @UpdateURL = 'All'
+THEN '%'
+ELSE @UpdateURL
+END
+AND UpdatesEnabled LIKE
+CASE WHEN @UpdatesEnabled = 'All'
+THEN '%'
+ELSE @UpdatesEnabled
+END
+AND UpdateSource LIKE
+CASE WHEN @UpdateSource = 'All'
+THEN '%'
+ELSE @UpdateSource
+END</CommandText>
+        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
+      </Query>
+      <Fields>
+        <Field Name="UpdateURL">
+          <DataField>UpdateURL</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+  </DataSets>
+  <ReportSections>
+    <ReportSection>
+      <Body>
+        <ReportItems>
+          <Tablix Name="Tablix1">
+            <TablixBody>
+              <TablixColumns>
+                <TablixColumn>
+                  <Width>2.11in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>3.04917in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.31333in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.57833in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.54167in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.90625in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>4.34917in</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.42708in</Width>
+                </TablixColumn>
+              </TablixColumns>
+              <TablixRows>
+                <TablixRow>
+                  <Height>0.25in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox17">
+                          <CanGrow>true</CanGrow>
+                          <UserSort>
+                            <SortExpression>=Fields!ComputerName.Value</SortExpression>
+                          </UserSort>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Computer Name</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox17</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#557eb9</Color>
+                              <Style>None</Style>
+                            </Border>
+                            <TopBorder>
+                              <Style>Solid</Style>
+                              <Width>1.5pt</Width>
+                            </TopBorder>
+                            <BottomBorder>
+                              <Style>Solid</Style>
+                              <Width>1.5pt</Width>
+                            </BottomBorder>
+                            <BackgroundColor>White</BackgroundColor>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                            <PaddingLeft>5pt</PaddingLeft>
+                            <PaddingRight>5pt</PaddingRight>
+                            <PaddingTop>5pt</PaddingTop>
+                            <PaddingBottom>5pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox2">
+                          <CanGrow>true</CanGrow>
+                          <UserSort>
+                            <SortExpression>=Fields!ProductName.Value</SortExpression>
+                          </UserSort>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Product Name</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox2</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#557eb9</Color>
+                              <Style>None</Style>
+                            </Border>
+                            <TopBorder>
+                              <Style>Solid</Style>
+                              <Width>1.5pt</Width>
+                            </TopBorder>
+                            <BottomBorder>
+                              <Style>Solid</Style>
+                              <Width>1.5pt</Width>
+                            </BottomBorder>
+                            <BackgroundColor>White</BackgroundColor>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                            <PaddingLeft>5pt</PaddingLeft>
+                            <PaddingRight>5pt</PaddingRight>
+                            <PaddingTop>5pt</PaddingTop>
+                            <PaddingBottom>5pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox3">
+                          <CanGrow>true</CanGrow>
+                          <UserSort>
+                            <SortExpression>=Fields!PrimaryLanguage.Value</SortExpression>
+                          </UserSort>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Primary language</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox2</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#557eb9</Color>
+                              <Style>None</Style>
+                            </Border>
+                            <TopBorder>
+                              <Style>Solid</Style>
+                              <Width>1.5pt</Width>
+                            </TopBorder>
+                            <BottomBorder>
+                              <Style>Solid</Style>
+                              <Width>1.5pt</Width>
+                            </BottomBorder>
+                            <BackgroundColor>White</BackgroundColor>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                            <PaddingLeft>5pt</PaddingLeft>
+                            <PaddingRight>5pt</PaddingRight>
+                            <PaddingTop>5pt</PaddingTop>
+                            <PaddingBottom>5pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox29">
+                          <CanGrow>true</CanGrow>
+                          <UserSort>
+                            <SortExpression>=Fields!ProductVersion.Value</SortExpression>
+                          </UserSort>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Product Version</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox29</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#557eb9</Color>
+                              <Style>None</Style>
+                            </Border>
+                            <TopBorder>
+                              <Style>Solid</Style>
+                              <Width>1.5pt</Width>
+                            </TopBorder>
+                            <BottomBorder>
+                              <Style>Solid</Style>
+                              <Width>1.5pt</Width>
+                            </BottomBorder>
+                            <BackgroundColor>White</BackgroundColor>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                            <PaddingLeft>5pt</PaddingLeft>
+                            <PaddingRight>5pt</PaddingRight>
+                            <PaddingTop>5pt</PaddingTop>
+                            <PaddingBottom>5pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox31">
+                          <CanGrow>true</CanGrow>
+                          <UserSort>
+                            <SortExpression>=Fields!ProductVersion.Value</SortExpression>
+                          </UserSort>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Architecture</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox31</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#557eb9</Color>
+                              <Style>None</Style>
+                            </Border>
+                            <TopBorder>
+                              <Style>Solid</Style>
+                              <Width>1.5pt</Width>
+                            </TopBorder>
+                            <BottomBorder>
+                              <Style>Solid</Style>
+                              <Width>1.5pt</Width>
+                            </BottomBorder>
+                            <BackgroundColor>White</BackgroundColor>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                            <PaddingLeft>5pt</PaddingLeft>
+                            <PaddingRight>5pt</PaddingRight>
+                            <PaddingTop>5pt</PaddingTop>
+                            <PaddingBottom>5pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox33">
+                          <CanGrow>true</CanGrow>
+                          <UserSort>
+                            <SortExpression>=Fields!UpdatesEnabled.Value</SortExpression>
+                          </UserSort>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Updates Enabled</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox33</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#557eb9</Color>
+                              <Style>None</Style>
+                            </Border>
+                            <TopBorder>
+                              <Style>Solid</Style>
+                              <Width>1.5pt</Width>
+                            </TopBorder>
+                            <BottomBorder>
+                              <Style>Solid</Style>
+                              <Width>1.5pt</Width>
+                            </BottomBorder>
+                            <BackgroundColor>White</BackgroundColor>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                            <PaddingLeft>5pt</PaddingLeft>
+                            <PaddingRight>5pt</PaddingRight>
+                            <PaddingTop>5pt</PaddingTop>
+                            <PaddingBottom>5pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox35">
+                          <CanGrow>true</CanGrow>
+                          <UserSort>
+                            <SortExpression>=Fields!UpdateSource.Value</SortExpression>
+                          </UserSort>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Update Source</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox35</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#557eb9</Color>
+                              <Style>None</Style>
+                            </Border>
+                            <TopBorder>
+                              <Style>Solid</Style>
+                              <Width>1.5pt</Width>
+                            </TopBorder>
+                            <BottomBorder>
+                              <Style>Solid</Style>
+                              <Width>1.5pt</Width>
+                            </BottomBorder>
+                            <BackgroundColor>White</BackgroundColor>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                            <PaddingLeft>5pt</PaddingLeft>
+                            <PaddingRight>5pt</PaddingRight>
+                            <PaddingTop>5pt</PaddingTop>
+                            <PaddingBottom>5pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox37">
+                          <CanGrow>true</CanGrow>
+                          <UserSort>
+                            <SortExpression>=Fields!Channel.Value</SortExpression>
+                          </UserSort>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Channel</Value>
+                                  <Style>
+                                    <FontFamily>Segoe UI</FontFamily>
+                                    <FontSize>9pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox37</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#557eb9</Color>
+                              <Style>None</Style>
+                            </Border>
+                            <TopBorder>
+                              <Style>Solid</Style>
+                              <Width>1.5pt</Width>
+                            </TopBorder>
+                            <BottomBorder>
+                              <Style>Solid</Style>
+                              <Width>1.5pt</Width>
+                            </BottomBorder>
+                            <BackgroundColor>White</BackgroundColor>
+                            <VerticalAlign>Bottom</VerticalAlign>
+                            <PaddingLeft>5pt</PaddingLeft>
+                            <PaddingRight>5pt</PaddingRight>
+                            <PaddingTop>5pt</PaddingTop>
+                            <PaddingBottom>5pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+                <TablixRow>
+                  <Height>0.25in</Height>
+                  <TablixCells>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="ComputerName">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!ComputerName.Value</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                    <TextDecoration>Underline</TextDecoration>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>ComputerName</rd:DefaultName>
+                          <ActionInfo>
+                            <Actions>
+                              <Action>
+                                <Drillthrough>
+                                  <ReportName>/ConfigMgr_S01/Hardware - General/Computer information for a specific computer</ReportName>
+                                  <Parameters>
+                                    <Parameter Name="variable">
+                                      <Value>=Fields!ComputerName.Value</Value>
+                                    </Parameter>
+                                  </Parameters>
+                                </Drillthrough>
+                              </Action>
+                            </Actions>
+                          </ActionInfo>
+                          <Style>
+                            <Border>
+                              <Color>#e5e5e5</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BottomBorder>
+                              <Style>None</Style>
+                            </BottomBorder>
+                            <LeftBorder>
+                              <Style>None</Style>
+                            </LeftBorder>
+                            <RightBorder>
+                              <Style>None</Style>
+                            </RightBorder>
+                            <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "LightSteelBlue")</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="ProductName">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!ProductName.Value</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Left</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>ProductName</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#e5e5e5</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BottomBorder>
+                              <Style>None</Style>
+                            </BottomBorder>
+                            <LeftBorder>
+                              <Style>None</Style>
+                            </LeftBorder>
+                            <RightBorder>
+                              <Style>None</Style>
+                            </RightBorder>
+                            <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "LightSteelBlue")</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="ClientStateDescription2">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!PrimaryLanguage.Value</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>ClientStateDescription</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#e5e5e5</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BottomBorder>
+                              <Style>None</Style>
+                            </BottomBorder>
+                            <LeftBorder>
+                              <Style>None</Style>
+                            </LeftBorder>
+                            <RightBorder>
+                              <Style>None</Style>
+                            </RightBorder>
+                            <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "LightSteelBlue")</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="ProductVersion">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!ProductVersion.Value</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>ProductVersion</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#e5e5e5</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BottomBorder>
+                              <Style>None</Style>
+                            </BottomBorder>
+                            <LeftBorder>
+                              <Style>None</Style>
+                            </LeftBorder>
+                            <RightBorder>
+                              <Style>None</Style>
+                            </RightBorder>
+                            <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "LightSteelBlue")</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Architecture">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!Architecture.Value</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Architecture</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#e5e5e5</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BottomBorder>
+                              <Style>None</Style>
+                            </BottomBorder>
+                            <LeftBorder>
+                              <Style>None</Style>
+                            </LeftBorder>
+                            <RightBorder>
+                              <Style>None</Style>
+                            </RightBorder>
+                            <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "LightSteelBlue")</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="UpdatesEnabled">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!UpdatesEnabled.Value</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>UpdatesEnabled</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#e5e5e5</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BottomBorder>
+                              <Style>None</Style>
+                            </BottomBorder>
+                            <LeftBorder>
+                              <Style>None</Style>
+                            </LeftBorder>
+                            <RightBorder>
+                              <Style>None</Style>
+                            </RightBorder>
+                            <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "LightSteelBlue")</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="UpdateSource">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!UpdateSource.Value</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>UpdateSource</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#e5e5e5</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BottomBorder>
+                              <Style>None</Style>
+                            </BottomBorder>
+                            <LeftBorder>
+                              <Style>None</Style>
+                            </LeftBorder>
+                            <RightBorder>
+                              <Style>None</Style>
+                            </RightBorder>
+                            <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "LightSteelBlue")</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Channel">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=Fields!Channel.Value</Value>
+                                  <Style>
+                                    <FontFamily>Tahoma</FontFamily>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Channel</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Color>#e5e5e5</Color>
+                              <Style>Solid</Style>
+                            </Border>
+                            <BottomBorder>
+                              <Style>None</Style>
+                            </BottomBorder>
+                            <LeftBorder>
+                              <Style>None</Style>
+                            </LeftBorder>
+                            <RightBorder>
+                              <Style>None</Style>
+                            </RightBorder>
+                            <BackgroundColor>=iif(RowNumber(Nothing) Mod 2, "Transparent", "LightSteelBlue")</BackgroundColor>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                  </TablixCells>
+                </TablixRow>
+              </TablixRows>
+            </TablixBody>
+            <TablixColumnHierarchy>
+              <TablixMembers>
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
+              </TablixMembers>
+            </TablixColumnHierarchy>
+            <TablixRowHierarchy>
+              <TablixMembers>
+                <TablixMember>
+                  <KeepWithGroup>After</KeepWithGroup>
+                  <RepeatOnNewPage>true</RepeatOnNewPage>
+                </TablixMember>
+                <TablixMember>
+                  <Group Name="Details" />
+                </TablixMember>
+              </TablixMembers>
+            </TablixRowHierarchy>
+            <NoRowsMessage>=SrsResources.Localization.GetString("NoDataAvailable", User!Language)</NoRowsMessage>
+            <DataSetName>DataSet1</DataSetName>
+            <Top>8.46945in</Top>
+            <Height>0.5in</Height>
+            <Width>17.275in</Width>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+              <TextAlign>Center</TextAlign>
+            </Style>
+          </Tablix>
+          <Chart Name="Chart2">
+            <ChartCategoryHierarchy>
+              <ChartMembers>
+                <ChartMember>
+                  <Group Name="Chart2_CategoryGroup">
+                    <GroupExpressions>
+                      <GroupExpression>=Fields!UpdateSource.Value</GroupExpression>
+                    </GroupExpressions>
+                  </Group>
+                  <SortExpressions>
+                    <SortExpression>
+                      <Value>=Fields!UpdateSource.Value</Value>
+                    </SortExpression>
+                  </SortExpressions>
+                  <Label>=Fields!UpdateSource.Value</Label>
+                </ChartMember>
+              </ChartMembers>
+            </ChartCategoryHierarchy>
+            <ChartSeriesHierarchy>
+              <ChartMembers>
+                <ChartMember>
+                  <Group Name="Chart2_SeriesGroup">
+                    <GroupExpressions>
+                      <GroupExpression>=Fields!Channel.Value</GroupExpression>
+                    </GroupExpressions>
+                  </Group>
+                  <SortExpressions>
+                    <SortExpression>
+                      <Value>=Fields!Channel.Value</Value>
+                    </SortExpression>
+                  </SortExpressions>
+                  <Label>=Fields!Channel.Value</Label>
+                </ChartMember>
+              </ChartMembers>
+            </ChartSeriesHierarchy>
+            <ChartData>
+              <ChartSeriesCollection>
+                <ChartSeries Name="UpdateSource">
+                  <ChartDataPoints>
+                    <ChartDataPoint>
+                      <ChartDataPointValues>
+                        <Y>=Count(Fields!UpdateSource.Value)</Y>
+                      </ChartDataPointValues>
+                      <ChartDataLabel>
+                        <Style />
+                      </ChartDataLabel>
+                      <Style />
+                      <ChartMarker>
+                        <Style />
+                      </ChartMarker>
+                      <DataElementOutput>Output</DataElementOutput>
+                    </ChartDataPoint>
+                  </ChartDataPoints>
+                  <Subtype>Stacked</Subtype>
+                  <Style />
+                  <ChartEmptyPoints>
+                    <Style />
+                    <ChartMarker>
+                      <Style />
+                    </ChartMarker>
+                    <ChartDataLabel>
+                      <Style />
+                    </ChartDataLabel>
+                  </ChartEmptyPoints>
+                  <ValueAxisName>Primary</ValueAxisName>
+                  <CategoryAxisName>Primary</CategoryAxisName>
+                  <ChartSmartLabel>
+                    <CalloutLineColor>Black</CalloutLineColor>
+                    <MinMovingDistance>0pt</MinMovingDistance>
+                  </ChartSmartLabel>
+                </ChartSeries>
+              </ChartSeriesCollection>
+            </ChartData>
+            <ChartAreas>
+              <ChartArea Name="Default">
+                <ChartCategoryAxes>
+                  <ChartAxis Name="Primary">
+                    <Style>
+                      <FontSize>8pt</FontSize>
+                    </Style>
+                    <ChartAxisTitle>
+                      <Caption />
+                      <Style>
+                        <FontSize>8pt</FontSize>
+                      </Style>
+                    </ChartAxisTitle>
+                    <ChartMajorGridLines>
+                      <Enabled>False</Enabled>
+                      <Style>
+                        <Border>
+                          <Color>Gainsboro</Color>
+                        </Border>
+                      </Style>
+                    </ChartMajorGridLines>
+                    <ChartMinorGridLines>
+                      <Style>
+                        <Border>
+                          <Color>Gainsboro</Color>
+                          <Style>Dotted</Style>
+                        </Border>
+                      </Style>
+                    </ChartMinorGridLines>
+                    <ChartMinorTickMarks>
+                      <Length>0.5</Length>
+                    </ChartMinorTickMarks>
+                    <CrossAt>NaN</CrossAt>
+                    <Minimum>NaN</Minimum>
+                    <Maximum>NaN</Maximum>
+                    <ChartAxisScaleBreak>
+                      <Style />
+                    </ChartAxisScaleBreak>
+                  </ChartAxis>
+                  <ChartAxis Name="Secondary">
+                    <Style>
+                      <FontSize>8pt</FontSize>
+                    </Style>
+                    <ChartAxisTitle>
+                      <Caption>Axis Title</Caption>
+                      <Style>
+                        <FontSize>8pt</FontSize>
+                      </Style>
+                    </ChartAxisTitle>
+                    <ChartMajorGridLines>
+                      <Enabled>False</Enabled>
+                      <Style>
+                        <Border>
+                          <Color>Gainsboro</Color>
+                        </Border>
+                      </Style>
+                    </ChartMajorGridLines>
+                    <ChartMinorGridLines>
+                      <Style>
+                        <Border>
+                          <Color>Gainsboro</Color>
+                          <Style>Dotted</Style>
+                        </Border>
+                      </Style>
+                    </ChartMinorGridLines>
+                    <ChartMinorTickMarks>
+                      <Length>0.5</Length>
+                    </ChartMinorTickMarks>
+                    <CrossAt>NaN</CrossAt>
+                    <Location>Opposite</Location>
+                    <Minimum>NaN</Minimum>
+                    <Maximum>NaN</Maximum>
+                    <ChartAxisScaleBreak>
+                      <Style />
+                    </ChartAxisScaleBreak>
+                  </ChartAxis>
+                </ChartCategoryAxes>
+                <ChartValueAxes>
+                  <ChartAxis Name="Primary">
+                    <Style>
+                      <FontSize>8pt</FontSize>
+                    </Style>
+                    <ChartAxisTitle>
+                      <Caption />
+                      <Style>
+                        <FontSize>8pt</FontSize>
+                      </Style>
+                    </ChartAxisTitle>
+                    <ChartMajorGridLines>
+                      <Style>
+                        <Border>
+                          <Color>Gainsboro</Color>
+                        </Border>
+                      </Style>
+                    </ChartMajorGridLines>
+                    <ChartMinorGridLines>
+                      <Style>
+                        <Border>
+                          <Color>Gainsboro</Color>
+                          <Style>Dotted</Style>
+                        </Border>
+                      </Style>
+                    </ChartMinorGridLines>
+                    <ChartMinorTickMarks>
+                      <Length>0.5</Length>
+                    </ChartMinorTickMarks>
+                    <CrossAt>NaN</CrossAt>
+                    <Minimum>NaN</Minimum>
+                    <Maximum>NaN</Maximum>
+                    <ChartAxisScaleBreak>
+                      <Style />
+                    </ChartAxisScaleBreak>
+                  </ChartAxis>
+                  <ChartAxis Name="Secondary">
+                    <Style>
+                      <FontSize>8pt</FontSize>
+                    </Style>
+                    <ChartAxisTitle>
+                      <Caption>Axis Title</Caption>
+                      <Style>
+                        <FontSize>8pt</FontSize>
+                      </Style>
+                    </ChartAxisTitle>
+                    <ChartMajorGridLines>
+                      <Style>
+                        <Border>
+                          <Color>Gainsboro</Color>
+                        </Border>
+                      </Style>
+                    </ChartMajorGridLines>
+                    <ChartMinorGridLines>
+                      <Style>
+                        <Border>
+                          <Color>Gainsboro</Color>
+                          <Style>Dotted</Style>
+                        </Border>
+                      </Style>
+                    </ChartMinorGridLines>
+                    <ChartMinorTickMarks>
+                      <Length>0.5</Length>
+                    </ChartMinorTickMarks>
+                    <CrossAt>NaN</CrossAt>
+                    <Location>Opposite</Location>
+                    <Minimum>NaN</Minimum>
+                    <Maximum>NaN</Maximum>
+                    <ChartAxisScaleBreak>
+                      <Style />
+                    </ChartAxisScaleBreak>
+                  </ChartAxis>
+                </ChartValueAxes>
+                <Style>
+                  <BackgroundGradientType>None</BackgroundGradientType>
+                </Style>
+              </ChartArea>
+            </ChartAreas>
+            <ChartLegends>
+              <ChartLegend Name="Default">
+                <Style>
+                  <BackgroundGradientType>None</BackgroundGradientType>
+                  <FontSize>8pt</FontSize>
+                </Style>
+                <ChartLegendTitle>
+                  <Caption />
+                  <Style>
+                    <FontSize>8pt</FontSize>
+                    <FontWeight>Bold</FontWeight>
+                    <TextAlign>Center</TextAlign>
+                  </Style>
+                </ChartLegendTitle>
+                <HeaderSeparatorColor>Black</HeaderSeparatorColor>
+                <ColumnSeparatorColor>Black</ColumnSeparatorColor>
+              </ChartLegend>
+            </ChartLegends>
+            <ChartTitles>
+              <ChartTitle Name="Default">
+                <Caption>Update Source with Channel</Caption>
+                <Style>
+                  <BackgroundGradientType>None</BackgroundGradientType>
+                  <FontWeight>Bold</FontWeight>
+                  <TextAlign>General</TextAlign>
+                  <VerticalAlign>Top</VerticalAlign>
+                </Style>
+              </ChartTitle>
+            </ChartTitles>
+            <Palette>BrightPastel</Palette>
+            <ChartBorderSkin>
+              <Style>
+                <BackgroundColor>Gray</BackgroundColor>
+                <BackgroundGradientType>None</BackgroundGradientType>
+                <Color>White</Color>
+              </Style>
+            </ChartBorderSkin>
+            <ChartNoDataMessage Name="NoDataMessage">
+              <Caption>No Data Available</Caption>
+              <Style>
+                <BackgroundGradientType>None</BackgroundGradientType>
+                <TextAlign>General</TextAlign>
+                <VerticalAlign>Top</VerticalAlign>
+              </Style>
+            </ChartNoDataMessage>
+            <DataSetName>DataSet1</DataSetName>
+            <Top>0.42778in</Top>
+            <Height>7.98611in</Height>
+            <Width>17.275in</Width>
+            <ZIndex>1</ZIndex>
+            <Style>
+              <Border>
+                <Color>LightGrey</Color>
+                <Style>Solid</Style>
+              </Border>
+              <BackgroundColor>White</BackgroundColor>
+              <BackgroundGradientType>None</BackgroundGradientType>
+            </Style>
+          </Chart>
+          <Rectangle Name="ReportDescriptionRectangle2">
+            <ReportItems>
+              <Tablix Name="ReportDescriptionTablix2">
+                <TablixBody>
+                  <TablixColumns>
+                    <TablixColumn>
+                      <Width>1.25in</Width>
+                    </TablixColumn>
+                    <TablixColumn>
+                      <Width>6.45in</Width>
+                    </TablixColumn>
+                  </TablixColumns>
+                  <TablixRows>
+                    <TablixRow>
+                      <Height>0.4in</Height>
+                      <TablixCells>
+                        <TablixCell>
+                          <CellContents>
+                            <Textbox Name="DescriptionLabelTextbox2">
+                              <CanGrow>true</CanGrow>
+                              <KeepTogether>true</KeepTogether>
+                              <Paragraphs>
+                                <Paragraph>
+                                  <TextRuns>
+                                    <TextRun>
+                                      <Value>=SrsResources.Localization.GetString("Description", User!Language)</Value>
+                                      <Style>
+                                        <FontFamily>Segoe UI</FontFamily>
+                                        <FontSize>9pt</FontSize>
+                                        <FontWeight>Bold</FontWeight>
+                                      </Style>
+                                    </TextRun>
+                                  </TextRuns>
+                                  <Style />
+                                </Paragraph>
+                              </Paragraphs>
+                              <rd:DefaultName>Textbox16</rd:DefaultName>
+                              <Style>
+                                <Border>
+                                  <Color>LightGrey</Color>
+                                  <Style>Solid</Style>
+                                </Border>
+                                <BackgroundColor>Gainsboro</BackgroundColor>
+                                <PaddingLeft>2pt</PaddingLeft>
+                                <PaddingRight>2pt</PaddingRight>
+                                <PaddingTop>2pt</PaddingTop>
+                                <PaddingBottom>2pt</PaddingBottom>
+                              </Style>
+                            </Textbox>
+                          </CellContents>
+                        </TablixCell>
+                        <TablixCell>
+                          <CellContents>
+                            <Textbox Name="DescriptionTextbox2">
+                              <CanGrow>true</CanGrow>
+                              <KeepTogether>true</KeepTogether>
+                              <Paragraphs>
+                                <Paragraph>
+                                  <TextRuns>
+                                    <TextRun>
+                                      <Value>Displays the Office 365 Client update source details with a graph</Value>
+                                      <Style>
+                                        <FontFamily>Segoe UI</FontFamily>
+                                        <FontSize>9pt</FontSize>
+                                        <FontWeight>Normal</FontWeight>
+                                      </Style>
+                                    </TextRun>
+                                  </TextRuns>
+                                  <Style />
+                                </Paragraph>
+                              </Paragraphs>
+                              <rd:DefaultName>Textbox18</rd:DefaultName>
+                              <Visibility>
+                                <Hidden>true</Hidden>
+                                <ToggleItem>DescriptionLabelTextbox2</ToggleItem>
+                              </Visibility>
+                              <Style>
+                                <Border>
+                                  <Color>LightGrey</Color>
+                                  <Style>Solid</Style>
+                                </Border>
+                                <BackgroundColor>Gainsboro</BackgroundColor>
+                                <PaddingLeft>5pt</PaddingLeft>
+                                <PaddingRight>2pt</PaddingRight>
+                                <PaddingTop>2pt</PaddingTop>
+                                <PaddingBottom>2pt</PaddingBottom>
+                              </Style>
+                            </Textbox>
+                          </CellContents>
+                        </TablixCell>
+                      </TablixCells>
+                    </TablixRow>
+                  </TablixRows>
+                </TablixBody>
+                <TablixColumnHierarchy>
+                  <TablixMembers>
+                    <TablixMember />
+                    <TablixMember />
+                  </TablixMembers>
+                </TablixColumnHierarchy>
+                <TablixRowHierarchy>
+                  <TablixMembers>
+                    <TablixMember />
+                  </TablixMembers>
+                </TablixRowHierarchy>
+                <DataSetName>DataSet1</DataSetName>
+                <Height>0.4in</Height>
+                <Width>7.7in</Width>
+                <Style>
+                  <Border>
+                    <Style>None</Style>
+                  </Border>
+                </Style>
+              </Tablix>
+            </ReportItems>
+            <KeepTogether>true</KeepTogether>
+            <Height>0.4in</Height>
+            <Width>17.275in</Width>
+            <ZIndex>2</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+              <BackgroundColor>Gainsboro</BackgroundColor>
+            </Style>
+          </Rectangle>
+          <Line Name="ReportDescriptionLine2">
+            <Top>0.25in</Top>
+            <Height>0in</Height>
+            <Width>17.275in</Width>
+            <ZIndex>3</ZIndex>
+            <Style>
+              <Border>
+                <Style>Double</Style>
+                <Width>1.5pt</Width>
+              </Border>
+              <TopBorder>
+                <Style>Double</Style>
+                <Width>1.5pt</Width>
+              </TopBorder>
+              <BottomBorder>
+                <Style>Double</Style>
+                <Width>1.5pt</Width>
+              </BottomBorder>
+              <LeftBorder>
+                <Style>Double</Style>
+                <Width>1.5pt</Width>
+              </LeftBorder>
+              <RightBorder>
+                <Style>Double</Style>
+                <Width>1.5pt</Width>
+              </RightBorder>
+            </Style>
+          </Line>
+        </ReportItems>
+        <Height>12.76563in</Height>
+        <Style>
+          <Border>
+            <Style>None</Style>
+          </Border>
+        </Style>
+      </Body>
+      <Width>18.74375in</Width>
+      <Page>
+        <PageHeader>
+          <Height>1.1in</Height>
+          <PrintOnFirstPage>true</PrintOnFirstPage>
+          <PrintOnLastPage>true</PrintOnLastPage>
+          <ReportItems>
+            <Rectangle Name="BackgroundColorRectangle">
+              <ReportItems>
+                <Image Name="CenterHeaderImage2">
+                  <Source>External</Source>
+                  <Value>/ConfigMgr_S01/Report Resources/Report_Header_Center.png</Value>
+                  <Sizing>Fit</Sizing>
+                  <Left>0.21in</Left>
+                  <Height>0.75in</Height>
+                  <Width>14.725in</Width>
+                  <Style>
+                    <Border>
+                      <Style>None</Style>
+                    </Border>
+                  </Style>
+                </Image>
+                <Image Name="RightHeaderImage2">
+                  <Source>External</Source>
+                  <Value>/ConfigMgr_S01/Report Resources/Report_Header_Right.png</Value>
+                  <Left>14.935in</Left>
+                  <Height>0.75in</Height>
+                  <Width>2.34in</Width>
+                  <ZIndex>1</ZIndex>
+                  <Style>
+                    <Border>
+                      <Style>None</Style>
+                    </Border>
+                  </Style>
+                </Image>
+                <Image Name="LeftHeaderImage2">
+                  <Source>External</Source>
+                  <Value>/ConfigMgr_S01/Report Resources/Report_Header_Left.png</Value>
+                  <Height>0.75in</Height>
+                  <Width>0.21in</Width>
+                  <ZIndex>2</ZIndex>
+                  <Style>
+                    <Border>
+                      <Style>None</Style>
+                    </Border>
+                  </Style>
+                </Image>
+              </ReportItems>
+              <KeepTogether>true</KeepTogether>
+              <Height>0.75in</Height>
+              <Width>17.275in</Width>
+              <Style>
+                <Border>
+                  <Style>None</Style>
+                </Border>
+                <BackgroundColor>#e2e9f2</BackgroundColor>
+              </Style>
+            </Rectangle>
+            <Textbox Name="ReportTitleTextbox2">
+              <CanGrow>true</CanGrow>
+              <KeepTogether>true</KeepTogether>
+              <Paragraphs>
+                <Paragraph>
+                  <TextRuns>
+                    <TextRun>
+                      <Value>Office 365 Client update source details with graph</Value>
+                      <Style>
+                        <FontFamily>Segoe UI</FontFamily>
+                        <FontSize>17pt</FontSize>
+                        <FontWeight>Bold</FontWeight>
+                      </Style>
+                    </TextRun>
+                  </TextRuns>
+                  <Style />
+                </Paragraph>
+              </Paragraphs>
+              <rd:DefaultName>Textbox54</rd:DefaultName>
+              <Top>0.75in</Top>
+              <Height>0.35in</Height>
+              <Width>17.275in</Width>
+              <ZIndex>1</ZIndex>
+              <Style>
+                <Border>
+                  <Style>None</Style>
+                </Border>
+                <BackgroundColor>Gainsboro</BackgroundColor>
+                <PaddingLeft>2pt</PaddingLeft>
+                <PaddingRight>2pt</PaddingRight>
+                <PaddingTop>2pt</PaddingTop>
+                <PaddingBottom>2pt</PaddingBottom>
+              </Style>
+            </Textbox>
+          </ReportItems>
+          <Style>
+            <Border>
+              <Style>None</Style>
+            </Border>
+          </Style>
+        </PageHeader>
+        <PageFooter>
+          <Height>1.74167in</Height>
+          <PrintOnFirstPage>true</PrintOnFirstPage>
+          <PrintOnLastPage>true</PrintOnLastPage>
+          <Style>
+            <Border>
+              <Style>None</Style>
+            </Border>
+          </Style>
+        </PageFooter>
+        <LeftMargin>1in</LeftMargin>
+        <RightMargin>1in</RightMargin>
+        <TopMargin>1in</TopMargin>
+        <BottomMargin>1in</BottomMargin>
+        <Style />
+      </Page>
+    </ReportSection>
+  </ReportSections>
+  <ReportParameters>
+    <ReportParameter Name="UserTokenSIDs">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>=SrsResources.UserIdentity.GetUserSIDs(User!UserID)</Value>
+        </Values>
+      </DefaultValue>
+      <Hidden>true</Hidden>
+    </ReportParameter>
+    <ReportParameter Name="UserSIDs">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <DataSetReference>
+          <DataSetName>DataSetAdminID</DataSetName>
+          <ValueField>UserSIDs</ValueField>
+        </DataSetReference>
+      </DefaultValue>
+      <Hidden>true</Hidden>
+    </ReportParameter>
+    <ReportParameter Name="ComputerName">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>All</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>Computer Name</Prompt>
+      <ValidValues>
+        <DataSetReference>
+          <DataSetName>ComputerNames</DataSetName>
+          <ValueField>Name0</ValueField>
+          <LabelField>Name0</LabelField>
+        </DataSetReference>
+      </ValidValues>
+    </ReportParameter>
+    <ReportParameter Name="Channels">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>All</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>Channels</Prompt>
+      <ValidValues>
+        <ParameterValues>
+          <ParameterValue>
+            <Value>All</Value>
+            <Label>All</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>Current</Value>
+            <Label>Current</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>Deferred</Value>
+            <Label>Deferred</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>FirstReleaseCurrent</Value>
+            <Label>FirstReleaseCurrent</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>FirstReleaseDeferred</Value>
+            <Label>FirstReleaseDeferred</Label>
+          </ParameterValue>
+        </ParameterValues>
+      </ValidValues>
+    </ReportParameter>
+    <ReportParameter Name="UpdateSource">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>All</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>Update Source</Prompt>
+      <ValidValues>
+        <ParameterValues>
+          <ParameterValue>
+            <Value>All</Value>
+            <Label>All</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>Configuration Manager</Value>
+            <Label>Configuration Manager</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>Local</Value>
+            <Label>Local</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>Cloud</Value>
+            <Label>Cloud</Label>
+          </ParameterValue>
+        </ParameterValues>
+      </ValidValues>
+    </ReportParameter>
+    <ReportParameter Name="UpdateURL">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>All</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>Update Path</Prompt>
+      <ValidValues>
+        <DataSetReference>
+          <DataSetName>UpdateUrls</DataSetName>
+          <ValueField>UpdateUrl00</ValueField>
+          <LabelField>UpdateUrl00</LabelField>
+        </DataSetReference>
+      </ValidValues>
+    </ReportParameter>
+    <ReportParameter Name="UpdatesEnabled">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>All</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>Updates Enabled</Prompt>
+      <ValidValues>
+        <ParameterValues>
+          <ParameterValue>
+            <Value>All</Value>
+            <Label>All</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>True</Value>
+            <Label>True</Label>
+          </ParameterValue>
+          <ParameterValue>
+            <Value>False</Value>
+            <Label>False</Label>
+          </ParameterValue>
+        </ParameterValues>
+      </ValidValues>
+    </ReportParameter>
+  </ReportParameters>
+  <CodeModules>
+    <CodeModule>SrsResources, culture=neutral</CodeModule>
+  </CodeModules>
+  <rd:ReportUnitType>Inch</rd:ReportUnitType>
+  <rd:ReportServerUrl>http://2012-cm/ReportServer</rd:ReportServerUrl>
+  <rd:ReportID>6fbd236a-d836-4950-8788-14b828deb616</rd:ReportID>
+</Report>

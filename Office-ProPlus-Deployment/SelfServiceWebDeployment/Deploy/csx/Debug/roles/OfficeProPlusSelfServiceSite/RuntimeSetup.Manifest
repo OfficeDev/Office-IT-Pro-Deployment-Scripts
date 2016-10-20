@@ -1,0 +1,5 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RuntimeSetup>
+  <Operation type="Path" path="base\x64" />
+  <Operation type="Path" path="base\x86" />
+</RuntimeSetup>

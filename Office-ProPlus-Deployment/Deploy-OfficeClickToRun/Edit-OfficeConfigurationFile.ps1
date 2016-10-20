@@ -1,7 +1,8 @@
 ﻿[String]$global:saveLastConfigFile = $NULL
 [String]$global:saveLastFilePath = $NULL
 
-$validProductIds = @("O365ProPlusRetail","O365BusinessRetail","VisioProRetail","ProjectProRetail", "SPDRetail")
+$validProductIds = @("O365ProPlusRetail","O365BusinessRetail","VisioProRetail","ProjectProRetail", "SPDRetail", "VisioProXVolume", "VisioStdXVolume", "ProjectProXVolume", "ProjectStdXVolume", "InfoPathRetail", "SkypeforBusinessEntryRetail", "LyncEntryRetail")
+
 try {
 $enum = "
 using System;
@@ -16,12 +17,19 @@ namespace Microsoft.Office
          O365BusinessRetail = 2,
          VisioProRetail = 4,
          ProjectProRetail = 8,
-         SPDRetail = 16
+         SPDRetail = 16,
+         VisioProXVolume = 32,
+         VisioStdXVolume = 64,
+         ProjectProXVolume = 128,
+         ProjectStdXVolume = 256,
+         InfoPathRetail = 512,
+         SkypeforBusinessEntryRetail = 1024,
+         LyncEntryRetail = 2048,
      }
 }
 "
 Add-Type -TypeDefinition $enum -ErrorAction SilentlyContinue
-} catch { }
+} catch {}
 
 try {
 $enum2 = "
@@ -35,7 +43,7 @@ using System;
     }
 "
 Add-Type -TypeDefinition $enum2 -ErrorAction SilentlyContinue
-} catch { }
+} catch {}
 
 try {
 $enum3 = "
@@ -55,7 +63,7 @@ namespace Microsoft.Office
 }
 "
 Add-Type -TypeDefinition $enum3 -ErrorAction SilentlyContinue
-} catch { }
+} catch {}
 
 try {
 $enum4 = "
@@ -75,7 +83,7 @@ $enum4 = "
  }
  "
  Add-Type -TypeDefinition $enum4 -ErrorAction SilentlyContinue
- } catch { }
+} catch {}
 
 $validLanguages = @(
 "English|en-us",
@@ -98,7 +106,7 @@ $validLanguages = @(
 "Indonesian|id-id",
 "Italian|it-it",
 "Japanese|ja-jp",
-"Kazakh|kk-kh",
+"Kazakh|kk-kz",
 "Korean|ko-kr",
 "Latvian|lv-lv",
 "Lithuanian|lt-lt",
@@ -200,6 +208,9 @@ Here is what the configuration file looks like when created from this function:
     Param(
 
     [Parameter()]
+    [string] $OfficeClientEdition = $NULL,
+
+    [Parameter()]
     [string] $Bitness = $NULL,
 
     [Parameter(HelpMessage="Example: O365ProPlusRetail")]
@@ -223,8 +234,15 @@ Here is what the configuration file looks like when created from this function:
             $ProductId = SelectProductId
         }
 
-        if (!$Bitness) {
-            $Bitness = SelectBitness
+        if(!$OfficeClientEdition)
+        {
+            if (!$Bitness) {
+                $Bitness = SelectBitness
+            }
+        }
+        else
+        {
+            $Bitness = $OfficeClientEdition
         }
 
         $ProductId = IsValidProductId -ProductId $ProductId
@@ -440,12 +458,11 @@ Here is what the portion of configuration file looks like when modified by this 
         }
 
         #Set the desired values
-        [System.XML.XMLElement]$ProductElement = $ConfigFile.Configuration.Add.Product | ?  ID -eq $ProductId
+        [System.XML.XMLElement]$ProductElement = $ConfigFile.Configuration.Add.Product | Where { $_.ID -eq $ProductId }
         if($ProductElement -eq $null){
             [System.XML.XMLElement]$ProductElement=$ConfigFile.CreateElement("Product")
             $AddElement.appendChild($ProductElement) | Out-Null
             $ProductElement.SetAttribute("ID", $ProductId) | Out-Null
-
             if($PIDKEY -ne $null){
               if($PIDKEY){
                 $ProductElement.SetAttribute("PIDKEY", $PIDKEY) | Out-Null
@@ -454,7 +471,7 @@ Here is what the portion of configuration file looks like when modified by this 
         }
 
         foreach($LanguageId in $LanguageIds){
-            [System.XML.XMLElement]$LanguageElement = $ProductElement.Language | ?  ID -eq $LanguageId
+            [System.XML.XMLElement]$LanguageElement = $ProductElement.Language | Where { $_.ID -eq $LanguageId }
             if($LanguageElement -eq $null){
                 [System.XML.XMLElement]$LanguageElement=$ConfigFile.CreateElement("Language")
                 $ProductElement.appendChild($LanguageElement) | Out-Null
@@ -463,7 +480,7 @@ Here is what the portion of configuration file looks like when modified by this 
         }
 
         foreach($ExcludeApp in $ExcludeApps){
-            [System.XML.XMLElement]$ExcludeAppElement = $ProductElement.ExcludeApp | ?  ID -eq $ExcludeApp
+            [System.XML.XMLElement]$ExcludeAppElement = $ProductElement.ExcludeApp | Where { $_.ID -eq $ExcludeApp }
             if($ExcludeAppElement -eq $null){
                 [System.XML.XMLElement]$ExcludeAppElement=$ConfigFile.CreateElement("ExcludeApp")
                 $ProductElement.appendChild($ExcludeAppElement) | Out-Null
@@ -610,13 +627,15 @@ Here is what the portion of configuration file looks like when modified by this 
         $AddElement = $ConfigFile.Configuration.Add 
 
         #Set the desired values
-        [System.XML.XMLElement]$ProductElement = $ConfigFile.Configuration.Add.Product | ?  ID -eq $ProductId
+        [System.XML.XMLElement]$ProductElement = $ConfigFile.Configuration.Add.Product | Where { $_.ID -eq $ProductId }
         if($ProductElement -eq $null){
            throw "Cannot find Product with Id '$ProductId'"
         }
 
         if($PIDKEY -ne $null){
+          if($PIDKEY){
             $ProductElement.SetAttribute("PIDKEY", $PIDKEY) | Out-Null
+          }
         }
 
         if ($LanguageIds) {
@@ -627,7 +646,7 @@ Here is what the portion of configuration file looks like when modified by this 
                 }
 
                 foreach($LanguageId in $LanguageIds){
-                    [System.XML.XMLElement]$LanguageElement = $ProductElement.Language | ?  ID -eq $LanguageId
+                    [System.XML.XMLElement]$LanguageElement = $ProductElement.Language | Where { $_.ID -eq $LanguageId }
                     if($LanguageElement -eq $null){
                         [System.XML.XMLElement]$LanguageElement=$ConfigFile.CreateElement("Language")
                         $ProductElement.appendChild($LanguageElement) | Out-Null
@@ -646,7 +665,7 @@ Here is what the portion of configuration file looks like when modified by this 
             }
 
             foreach($ExcludeApp in $ExcludeApps){
-                [System.XML.XMLElement]$ExcludeAppElement = $ProductElement.ExcludeApp | ?  ID -eq $ExcludeApp
+                [System.XML.XMLElement]$ExcludeAppElement = $ProductElement.ExcludeApp | Where { $_.ID -eq $ExcludeApp }
                 if($ExcludeAppElement -eq $null){
                     [System.XML.XMLElement]$ExcludeAppElement=$ConfigFile.CreateElement("ExcludeApp")
                     $ProductElement.appendChild($ExcludeAppElement) | Out-Null
@@ -762,17 +781,19 @@ Language and Exclude values
                 $Result
             }
         }else{
-            [System.XML.XMLElement]$ProductElement = $ConfigFile.Configuration.Add.Product | ?  ID -eq $ProductId
-            $Result = New-Object –TypeName PSObject 
-            Add-Member -InputObject $Result -MemberType NoteProperty -Name "ProductId" -Value ($ProductElement.GetAttribute("ID"))
-            if($ProductElement.Language -ne $null){
-                Add-Member -InputObject $Result -MemberType NoteProperty -Name "Languages" -Value ($ProductElement.Language.GetAttribute("ID"))
-            }
+            [System.XML.XMLElement]$ProductElement = $ConfigFile.Configuration.Add.Product | Where { $_.ID -eq $ProductId }
+            if ($ProductElement) {
+                $Result = New-Object –TypeName PSObject 
+                Add-Member -InputObject $Result -MemberType NoteProperty -Name "ProductId" -Value ($ProductElement.GetAttribute("ID"))
+                if($ProductElement.Language -ne $null){
+                    Add-Member -InputObject $Result -MemberType NoteProperty -Name "Languages" -Value ($ProductElement.Language.GetAttribute("ID"))
+                }
 
-            if($ProductElement.ExcludeApp -ne $null){
-                Add-Member -InputObject $Result -MemberType NoteProperty -Name "ExcludedApps" -Value ($ProductElement.ExcludeApp.GetAttribute("ID"))
+                if($ProductElement.ExcludeApp -ne $null){
+                    Add-Member -InputObject $Result -MemberType NoteProperty -Name "ExcludedApps" -Value ($ProductElement.ExcludeApp.GetAttribute("ID"))
+                }
+                $Result
             }
-            $Result
         }
 
     }
@@ -847,9 +868,9 @@ Removes the ProductToAdd with the ProductId 'O365ProPlusRetail' from the XML Con
             throw $NoAddElement
         }
 
-        if ($All) {
+        if (!($All)) {
             #Set the desired values
-            [System.XML.XMLElement]$ProductElement = $ConfigFile.Configuration.Add.Product | ?  ID -eq $ProductId
+            [System.XML.XMLElement]$ProductElement = $ConfigFile.Configuration.Add.Product | Where { $_.ID -eq $ProductId }
             if($ProductElement -ne $null){
                 $ConfigFile.Configuration.Add.removeChild($ProductElement) | Out-Null
             }
@@ -861,7 +882,8 @@ Removes the ProductToAdd with the ProductId 'O365ProPlusRetail' from the XML Con
                 }
             }
         } else {
-           $ConfigFile.Configuration.Product.RemoveAll() | Out-Null
+           $ConfigFile.Configuration.Add.RemoveAll() | Out-Null
+           
         }
 
         $ConfigFile.Save($TargetFilePath) | Out-Null
@@ -884,6 +906,52 @@ Removes the ProductToAdd with the ProductId 'O365ProPlusRetail' from the XML Con
     }
 
 }
+
+Function Get-LanguagesFromXML{
+<#
+.SYNOPSIS
+retreives languages from the configuration file
+
+
+.PARAMETER TargetFilePath
+Full file path for the file to be modified and be output to.
+
+
+#>
+Param(
+        [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
+        [string] $ConfigurationXML = $NULL,
+                
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [string] $ProductId = "Unknown",
+                                
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [string] $TargetFilePath,
+                                                
+        [Parameter(ParameterSetName="All", ValueFromPipelineByPropertyName=$true)]
+        [switch] $All
+     )
+
+    Process{
+    [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
+    $ConfigFile.Load($TargetFilePath) | Out-Null    
+    $productsWithLangs = $ConfigFile.SelectNodes("/Configuration/Add/Product")
+    $LangsToReturn = @()
+    foreach($prodWithLang in $productsWithLangs){
+        foreach($lang in $prodWithLang.Language){
+            if(!($LangsToReturn -contains $lang.ID)){
+                $LangsToReturn += $lang.ID
+            }     
+       }
+    }
+    
+    
+    return $LangsToReturn
+    
+    }
+}
+
+
 
 Function Remove-ODTExcludeApp{
 <#
@@ -953,7 +1021,7 @@ Removes the ExcludeApp with the Id 'Lync' (which is Skype for Business) from the
         }
 
         #Search matching ExcludeApp element and remove it
-        [System.XML.XMLElement]$ExcludeAppElement = $ConfigFile.Configuration.Add.Product.ExcludeApp | ?  ID -eq $ExcludeAppId
+        [System.XML.XMLElement]$ExcludeAppElement = $ConfigFile.Configuration.Add.Product.ExcludeApp | Where { $_.ID -eq $ExcludeAppId }
         if($ExcludeAppElement -ne $null){
             $ConfigFile.Configuration.Add.Product.removeChild($ExcludeAppElement) | Out-Null
         }
@@ -1089,14 +1157,14 @@ Here is what the portion of configuration file looks like when modified by this 
         if($All){
              $RemoveElement.SetAttribute("All", "TRUE") | Out-Null
         }else{
-            [System.XML.XMLElement]$ProductElement = $RemoveElement.Product | ?  ID -eq $ProductId
+            [System.XML.XMLElement]$ProductElement = $RemoveElement.Product | Where { $_.ID -eq $ProductId }
             if($ProductElement -eq $null){
                 [System.XML.XMLElement]$ProductElement=$ConfigFile.CreateElement("Product")
                 $RemoveElement.appendChild($ProductElement) | Out-Null
                 $ProductElement.SetAttribute("ID", $ProductId) | Out-Null
             }
             foreach($LanguageId in $LanguageIds){
-                [System.XML.XMLElement]$LanguageElement = $ProductElement.Language | ?  ID -eq $LanguageId
+                [System.XML.XMLElement]$LanguageElement = $ProductElement.Language | Where { $_.ID -eq $LanguageId }
                 if($LanguageElement -eq $null){
                     [System.XML.XMLElement]$LanguageElement=$ConfigFile.CreateElement("Language")
                     $ProductElement.appendChild($LanguageElement) | Out-Null
@@ -1295,7 +1363,7 @@ Removes the ProductToRemove with the ProductId 'O365ProPlusRetail' from the XML 
         }
 
         #Set the desired values
-        [System.XML.XMLElement]$ProductElement = $ConfigFile.Configuration.Remove.Product | ?  ID -eq $ProductId
+        [System.XML.XMLElement]$ProductElement = $ConfigFile.Configuration.Remove.Product | Where { $_.ID -eq $ProductId }
         if($ProductElement -ne $null){
             $ConfigFile.Configuration.Remove.removeChild($ProductElement) | Out-Null
         }
@@ -1398,7 +1466,7 @@ Here is what the portion of configuration file looks like when modified by this 
         [string] $TargetFilePath,
         
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [string] $Enabled,
+        [System.Nullable[bool]] $Enabled,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $UpdatePath,
@@ -1463,7 +1531,7 @@ Here is what the portion of configuration file looks like when modified by this 
              $UpdateElement.SetAttribute("Channel", $Channel);
         }
 
-        if($Enabled){
+        if($Enabled -ne $NULL){
             $UpdateElement.SetAttribute("Enabled", $Enabled.ToString().ToUpper()) | Out-Null
         } else {
           if ($PSBoundParameters.ContainsKey('Enabled')) {
@@ -1685,6 +1753,9 @@ computers by using Remote Desktop Services.
 .PARAMETER TargetFilePath
 Full file path for the file to be modified and be output to.
 
+.PARAMETER PinIconsToTaskbar
+Optional. Set PinIconsToTaskbar to $true to pin icons to taskbar and $false to not.  Does not apply to Windows 10
+
 .Example
 Set-ODTConfigProperties -AutoActivate "1" -TargetFilePath "$env:Public/Documents/config.xml"
 Sets config to automatically activate the products
@@ -1703,6 +1774,7 @@ Here is what the portion of configuration file looks like when modified by this 
   <Property Name="FORCEAPPSHUTDOWN" Value="TRUE" />
   <Property Name="PACKAGEGUID" Value="12345678-ABCD-1234-ABCD-1234567890AB" />
   <Property Name="SharedComputerLicensing" Value="0" />
+  <Property Name="PinIconsToTaskbar" Value="1" />
   ...
 </Configuration>
 
@@ -1714,19 +1786,22 @@ Here is what the portion of configuration file looks like when modified by this 
         [string] $ConfigurationXML = $NULL,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [string] $AutoActivate,
+        [System.Nullable[bool]] $AutoActivate,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [string] $ForceAppShutDown,
+        [System.Nullable[bool]] $ForceAppShutDown,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [string] $PackageGUID,
+        [string] $PackageGUID = $NULL,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [string] $SharedComputerLicensing,
+        [System.Nullable[bool]] $SharedComputerLicensing = $NULL,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [string] $TargetFilePath
+        [string] $TargetFilePath,
+
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [System.Nullable[bool]] $PinIconsToTaskbar = $NULL
     )
 
     Process{
@@ -1754,19 +1829,26 @@ Here is what the portion of configuration file looks like when modified by this 
         }
 
         #Set each property as desired
-        if($AutoActivate){
-            [System.XML.XMLElement]$AutoActivateElement = $ConfigFile.Configuration.Property | ?  Name -eq "AUTOACTIVATE"
+        if($AutoActivate -ne $NULL){
+            [System.XML.XMLElement]$AutoActivateElement = $ConfigFile.Configuration.Property | Where { $_.Name -eq "AUTOACTIVATE" }
             if($AutoActivateElement -eq $null){
                 [System.XML.XMLElement]$AutoActivateElement=$ConfigFile.CreateElement("Property")
             }
                 
             $ConfigFile.Configuration.appendChild($AutoActivateElement) | Out-Null
             $AutoActivateElement.SetAttribute("Name", "AUTOACTIVATE") | Out-Null
-            $AutoActivateElement.SetAttribute("Value", $AutoActivate) | Out-Null
+            $AutoActivateElement.SetAttribute("Value", $AutoActivate.ToString().ToUpper()) | Out-Null
+        } Else {
+            [System.XML.XMLElement]$AutoActivateElement = $ConfigFile.Configuration.Property | Where { $_.Name -eq "AUTOACTIVATE" }
+            if($AutoActivateElement -ne $null){
+               if ($PSBoundParameters.ContainsKey('AUTOACTIVATE')) {
+                   $ConfigFile.Configuration.removeChild($AutoActivateElement) | Out-Null
+               }
+            }
         }
 
-        if($ForceAppShutDown){
-            [System.XML.XMLElement]$ForceAppShutDownElement = $ConfigFile.Configuration.Property | ?  Name -eq "FORCEAPPSHUTDOWN"
+        if($ForceAppShutDown -ne $NULL){
+            [System.XML.XMLElement]$ForceAppShutDownElement = $ConfigFile.Configuration.Property | Where { $_.Name -eq "FORCEAPPSHUTDOWN" }
             if($ForceAppShutDownElement -eq $null){
                 [System.XML.XMLElement]$ForceAppShutDownElement=$ConfigFile.CreateElement("Property")
             }
@@ -1774,10 +1856,17 @@ Here is what the portion of configuration file looks like when modified by this 
             $ConfigFile.Configuration.appendChild($ForceAppShutDownElement) | Out-Null
             $ForceAppShutDownElement.SetAttribute("Name", "FORCEAPPSHUTDOWN") | Out-Null
             $ForceAppShutDownElement.SetAttribute("Value", $ForceAppShutDown.ToString().ToUpper()) | Out-Null
+        } Else {
+            [System.XML.XMLElement]$ForceAppShutDownElement = $ConfigFile.Configuration.Property | Where { $_.Name -eq "FORCEAPPSHUTDOWN" }
+            if($ForceAppShutDownElement -ne $null){
+               if ($PSBoundParameters.ContainsKey('FORCEAPPSHUTDOWN')) {
+                   $ConfigFile.Configuration.removeChild($ForceAppShutDownElement) | Out-Null
+               }
+            }
         }
 
         if($PackageGUID){
-            [System.XML.XMLElement]$PackageGUIDElement = $ConfigFile.Configuration.Property | ?  Name -eq "PACKAGEGUID"
+            [System.XML.XMLElement]$PackageGUIDElement = $ConfigFile.Configuration.Property | Where { $_.Name -eq "PACKAGEGUID" }
             if($PackageGUIDElement -eq $null){
                 [System.XML.XMLElement]$PackageGUIDElement=$ConfigFile.CreateElement("Property")
             }
@@ -1785,17 +1874,49 @@ Here is what the portion of configuration file looks like when modified by this 
             $ConfigFile.Configuration.appendChild($PackageGUIDElement) | Out-Null
             $PackageGUIDElement.SetAttribute("Name", "PACKAGEGUID") | Out-Null
             $PackageGUIDElement.SetAttribute("Value", $PackageGUID) | Out-Null
+        } Else {
+            [System.XML.XMLElement]$PackageGUIDElement = $ConfigFile.Configuration.Property | Where { $_.Name -eq "PACKAGEGUID" }
+            if($PackageGUIDElement -ne $null){
+               if ($PSBoundParameters.ContainsKey('PACKAGEGUID')) {
+                   $ConfigFile.Configuration.removeChild($PackageGUIDElement) | Out-Null
+               }
+            }
         }
 
-        if($SharedComputerLicensing){
-            [System.XML.XMLElement]$SharedComputerLicensingElement = $ConfigFile.Configuration.Property | ?  Name -eq "SharedComputerLicensing"
+        if($SharedComputerLicensing -ne $NULL){
+            [System.XML.XMLElement]$SharedComputerLicensingElement = $ConfigFile.Configuration.Property | Where { $_.Name -eq "SharedComputerLicensing" }
             if($SharedComputerLicensingElement -eq $null){
                 [System.XML.XMLElement]$SharedComputerLicensingElement=$ConfigFile.CreateElement("Property")
             }
                 
             $ConfigFile.Configuration.appendChild($SharedComputerLicensingElement) | Out-Null
             $SharedComputerLicensingElement.SetAttribute("Name", "SharedComputerLicensing") | Out-Null
-            $SharedComputerLicensingElement.SetAttribute("Value", $SharedComputerLicensing) | Out-Null
+            $SharedComputerLicensingElement.SetAttribute("Value", $SharedComputerLicensing.ToString().ToUpper()) | Out-Null
+        } Else {
+            [System.XML.XMLElement]$SharedComputerLicensingElement = $ConfigFile.Configuration.Property | Where { $_.Name -eq "SharedComputerLicensing" }
+            if($SharedComputerLicensingElement -ne $null){
+               if ($PSBoundParameters.ContainsKey('SharedComputerLicensing')) {
+                   $ConfigFile.Configuration.removeChild($SharedComputerLicensingElement) | Out-Null
+               }
+            }
+        }
+
+        if ($PinIconsToTaskbar -ne $NULL) {
+            [System.XML.XMLElement]$PinIconsToTaskbarElement = $ConfigFile.Configuration.Property | Where { $_.Name -eq "PinIconsToTaskbar" }
+            if($PinIconsToTaskbarElement -eq $null){
+                [System.XML.XMLElement]$PinIconsToTaskbarElement=$ConfigFile.CreateElement("Property")
+            }
+                
+            $ConfigFile.Configuration.appendChild($PinIconsToTaskbarElement) | Out-Null
+            $PinIconsToTaskbarElement.SetAttribute("Name", "PinIconsToTaskbar") | Out-Null
+            $PinIconsToTaskbarElement.SetAttribute("Value", $PinIconsToTaskbar.ToString().ToUpper()) | Out-Null
+        } Else {
+            [System.XML.XMLElement]$PinIconsToTaskbarElement = $ConfigFile.Configuration.Property | Where { $_.Name -eq "PinIconsToTaskbar" }
+            if($PinIconsToTaskbarElement -ne $null){
+               if ($PSBoundParameters.ContainsKey('PinIconsToTaskbar')) {
+                   $ConfigFile.Configuration.removeChild($PinIconsToTaskbarElement) | Out-Null
+               }
+            }
         }
 
         $ConfigFile.Save($TargetFilePath) | Out-Null
@@ -1941,7 +2062,7 @@ Here is what the portion of configuration file that would be removed by this fun
         }
 
         if ($Name) {
-          [System.XML.XMLElement]$ForceAppShutDownElement = $ConfigFile.Configuration.Property | ?  Name -eq $Name.ToUpper()
+          [System.XML.XMLElement]$ForceAppShutDownElement = $ConfigFile.Configuration.Property | Where { $_.Name -eq $Name.ToUpper() }
           if ($ForceAppShutDownElement) {
               $removeNode = $ConfigFile.Configuration.removeChild($ForceAppShutDownElement)
           }
@@ -2006,6 +2127,9 @@ Full file path for the file to be modified and be output to.
 .PARAMETER Branch
 Optional. Specifies the update branch for the product that you want to download or install.
 
+.PARAMETER OfficeMgmtCOM
+Optional. Configures Office 365 client to receive updates from Configuration Manager
+
 .Example
 Set-ODTAdd -SourcePath "C:\Preload\Office" -TargetFilePath "$env:Public/Documents/config.xml"
 Sets config SourcePath property of the add element to C:\Preload\Office
@@ -2035,7 +2159,13 @@ Here is what the portion of configuration file looks like when modified by this 
         [string] $SourcePath = $NULL,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [string] $DownloadPath = $NULL,
+
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $Version,
+
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [string] $OfficeClientEdition,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $Bitness,
@@ -2047,11 +2177,24 @@ Here is what the portion of configuration file looks like when modified by this 
         [Microsoft.Office.Branches] $Branch,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [Microsoft.Office.Channel] $Channel = "Current"
+        [Microsoft.Office.Channel] $Channel,
+
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [System.Nullable[bool]] $OfficeMgmtCOM = $NULL
 
     )
 
     Process{
+
+        if(!$OfficeClientEdition)
+        {
+            #checking if office client edition is null, if not, set bitness to client office edition
+        }
+        else
+        {
+            $Bitness = $OfficeClientEdition
+        }
+
         $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
 
         #Load file
@@ -2109,6 +2252,14 @@ Here is what the portion of configuration file looks like when modified by this 
             }
         }
 
+        if($DownloadPath){
+            $ConfigFile.Configuration.Add.SetAttribute("DownloadPath", $DownloadPath) | Out-Null
+        } else {
+            if ($PSBoundParameters.ContainsKey('DownloadPath')) {
+                $ConfigFile.Configuration.Add.RemoveAttribute("DownloadPath")
+            }
+        }
+
         if($Version){
             $ConfigFile.Configuration.Add.SetAttribute("Version", $Version) | Out-Null
         } else {
@@ -2123,6 +2274,18 @@ Here is what the portion of configuration file looks like when modified by this 
             if ($PSBoundParameters.ContainsKey('OfficeClientEdition')) {
                 $ConfigFile.Configuration.Add.RemoveAttribute("OfficeClientEdition")
             }
+        }
+
+        if ($OfficeMgmtCOM -ne $NULL) {
+           if ($OfficeMgmtCOM) {
+             $ConfigFile.Configuration.Add.SetAttribute("OfficeMgmtCOM", "True") | Out-Null
+           } else {
+             $ConfigFile.Configuration.Add.SetAttribute("OfficeMgmtCOM", "False") | Out-Null
+           }
+        } else {
+          if ($PSBoundParameters.ContainsKey('OfficeMgmtCOM')) {
+              $ConfigFile.Configuration.Add.RemoveAttribute("OfficeMgmtCOM")
+          }
         }
 
         $ConfigFile.Save($TargetFilePath) | Out-Null
@@ -2141,8 +2304,10 @@ Here is what the portion of configuration file looks like when modified by this 
             $Result = New-Object –TypeName PSObject 
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "SourcePath" -Value $SourcePath
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "DownloadPath" -Value $DownloadPath
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "Version" -Value $Version
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "Bitness" -Value $Bitness
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "OfficeMgmtCOM" -Value $OfficeMgmtCOM
             $Result
         }
     }
@@ -2196,7 +2361,7 @@ file.
             throw $NoConfigurationElement
         }
         
-        $ConfigFile.Configuration.GetElementsByTagName("Add") | Select OfficeClientEdition, SourcePath, Version, Channel, Branch
+        $ConfigFile.Configuration.GetElementsByTagName("Add") | Select OfficeClientEdition, SourcePath, DownloadPath, Version, Channel, Branch, OfficeMgmtCOM
     }
 
 }
@@ -3074,7 +3239,6 @@ Function GetScriptRoot() {
      if ($PSScriptRoot) {
        $scriptPath = $PSScriptRoot
      } else {
-       $scriptPath = split-path -parent $MyInvocation.MyCommand.Definition
        $scriptPath = (Get-Item -Path ".\").FullName
      }
      return $scriptPath
@@ -3115,7 +3279,7 @@ function Change-UpdatePathToChannel {
      [string] $UpdatePath,
      
      [Parameter()]
-     [Channel] $Channel
+     [String] $Channel
    )
 
    $newUpdatePath = $UpdatePath
@@ -3190,8 +3354,29 @@ Function Test-UpdateSource() {
     [CmdletBinding()]
     Param(
         [Parameter(Mandatory=$true)]
-        [string] $UpdateSource = $NULL
+        [string] $UpdateSource = $NULL,
+
+        [Parameter()]
+        [bool] $ValidateUpdateSourceFiles = $true,
+
+        [Parameter()]
+        [string[]] $OfficeLanguages = $null,
+
+        [Parameter()]
+        [String] $OfficeClientEdition = $NULL,
+        
+        [Parameter()]
+        [String] $Bitness = $NULL
     )
+
+    if(!$OfficeClientEdition)
+        {
+            #checking if office client edition is null, if not, set bitness to client office edition
+        }
+        else
+        {
+            $Bitness = $OfficeClientEdition
+        }
 
   	$uri = [System.Uri]$UpdateSource
 
@@ -3203,8 +3388,15 @@ Function Test-UpdateSource() {
         $sourceIsAlive = Test-Path $uri.LocalPath -ErrorAction SilentlyContinue
     }
 
-    if ($sourceIsAlive) {
-        $sourceIsAlive = Validate-UpdateSource -UpdateSource $UpdateSource
+    if ($ValidateUpdateSourceFiles) {
+       if ($sourceIsAlive) {
+           [string]$strIsAlive = Validate-UpdateSource -UpdateSource $UpdateSource -OfficeLanguages $OfficeLanguages -Bitness $Bitness
+           if ($strIsAlive.ToLower() -eq "true") {
+              $sourceIsAlive = $true
+           } else {
+              $sourceIsAlive = $false
+           }
+       }
     }
 
     return $sourceIsAlive
@@ -3214,47 +3406,164 @@ Function Validate-UpdateSource() {
     [CmdletBinding()]
     Param(
         [Parameter(Mandatory=$true)]
-        [string] $UpdateSource = $NULL
+        [string] $UpdateSource = $NULL,
+
+        [Parameter()]
+        [string] $OfficeClientEdition,
+        
+        [Parameter()]
+        [string] $Bitness = "x86",
+
+        [Parameter()]
+        [string[]] $OfficeLanguages = $null,
+
+        [Parameter()]
+        [bool]$ShowMissingFiles = $true
     )
 
-    Process {
-    [bool]$validUpdateSource = $false
+    if(!$OfficeClientEdition)
+        {
+            #checking if office client edition is null, if not, set bitness to client office edition
+        }
+        else
+        {
+            $Bitness = $OfficeClientEdition
+        }
+
+    [bool]$validUpdateSource = $true
     [string]$cabPath = ""
 
     if ($UpdateSource) {
         $mainRegPath = Get-OfficeCTRRegPath
-        $configRegPath = $mainRegPath + "\Configuration"
-        $currentplatform = (Get-ItemProperty HKLM:\$configRegPath -Name Platform -ErrorAction SilentlyContinue).Platform
-        $updateToVersion = (Get-ItemProperty HKLM:\$configRegPath -Name UpdateToVersion -ErrorAction SilentlyContinue).UpdateToVersion
-
-        if ($updateToVersion) {
-            if ($currentplatform.ToLower() -eq "x86") {
-               $cabPath = $UpdateSource + "\Office\Data\v32_" + $updateToVersion + ".cab"
-            }
-            if ($currentplatform.ToLower() -eq "x64") {
-               $cabPath = $UpdateSource + "\Office\Data\v64_" + $updateToVersion + ".cab"
-            }
-        } else {
-            if ($currentplatform.ToLower() -eq "x86") {
-               $cabPath = $UpdateSource + "\Office\Data\v32.cab"
-            }
-            if ($currentplatform.ToLower() -eq "x64") {
-               $cabPath = $UpdateSource + "\Office\Data\v64.cab"
-            }
+        if ($mainRegPath) {
+            $configRegPath = $mainRegPath + "\Configuration"
+            $currentplatform = (Get-ItemProperty HKLM:\$configRegPath -Name Platform -ErrorAction SilentlyContinue).Platform
+            $updateToVersion = (Get-ItemProperty HKLM:\$configRegPath -Name UpdateToVersion -ErrorAction SilentlyContinue).UpdateToVersion
+            $llcc = (Get-ItemProperty HKLM:\$configRegPath -Name ClientCulture -ErrorAction SilentlyContinue).ClientCulture
         }
 
-        if ($cabPath.ToLower().StartsWith("http")) {
-           $cabPath = $cabPath.Replace("\", "/")
-           $validUpdateSource = Test-URL -url $cabPath
+        $currentplatform = $Bitness
+
+        $mainCab = "$UpdateSource\Office\Data\v32.cab"
+        $bitness = "32"
+        if ($currentplatform -eq "x64") {
+            $mainCab = "$UpdateSource\Office\Data\v64.cab"
+            $bitness = "64"
+        }
+
+        if (!($updateToVersion)) {
+           $cabXml = Get-CabVersion -FilePath $mainCab
+           if ($cabXml) {
+               $updateToVersion = $cabXml.Version.Available.Build
+           }
+        }
+
+        [xml]$xml = Get-ChannelXml -Bitness $bitness
+        if ($OfficeLanguages) {
+          $languages = $OfficeLanguages
         } else {
-           $validUpdateSource = Test-Path -Path $cabPath
+          $languages = Get-InstalledLanguages
         }
-        
-        if (!$validUpdateSource) {
-           throw "Invalid UpdateSource. File Not Found: $cabPath"
+
+        $checkFiles = $xml.UpdateFiles.File | Where {   $_.language -eq "0" }
+        foreach ($language in $languages) {
+           $checkFiles += $xml.UpdateFiles.File | Where { $_.language -eq $language.LCID}
         }
+
+        foreach ($checkFile in $checkFiles) {
+           $fileName = $checkFile.name -replace "%version%", $updateToVersion
+           $relativePath = $checkFile.relativePath -replace "%version%", $updateToVersion
+
+           $fullPath = "$UpdateSource$relativePath$fileName"
+           if ($fullPath.ToLower().StartsWith("http")) {
+              $fullPath = $fullPath -replace "\\", "/"
+           } else {
+              $fullPath = $fullPath -replace "/", "\"
+           }
+           
+           $updateFileExists = $false
+           if ($fullPath.ToLower().StartsWith("http")) {
+               $updateFileExists = Test-URL -url $fullPath
+           } else {
+               if ($fullPath.StartsWith("\\")) {
+                  $updateFileExists = Test-ItemPathUNC -Path $fullPath
+               } else {
+                  $updateFileExists = Test-Path -Path $fullPath
+               }
+           }
+
+           if (!($updateFileExists)) {
+              $fileExists = $missingFiles.Contains($fullPath)
+              if (!($fileExists)) {
+                 $missingFiles.Add($fullPath)
+                 if($ShowMissingFiles){
+                    Write-Host "Source File Missing: $fullPath"
+                 }
+                 Write-Log -Message "Source File Missing: $fullPath" -severity 1 -component "Office 365 Update Anywhere" 
+              }     
+              $validUpdateSource = $false
+           }
+        }
+
     }
-
+    
     return $validUpdateSource
-    }
+}
+
+function Get-ChannelXml() {
+    [CmdletBinding()]	
+    Param
+	(
+	    [Parameter()]
+	    [string]$FolderPath = $null,
+
+	    [Parameter()]
+	    [bool]$OverWrite = $false,
+
+        [Parameter()]
+        [string] $Bitness = "32"
+	)
+
+   process {
+       $cabPath = "$PSScriptRoot\ofl.cab"
+       [bool]$downloadFile = $true
+
+       if (!($OverWrite)) {
+          if ($FolderPath) {
+              $XMLFilePath = "$FolderPath\ofl.cab"
+              if (Test-Path -Path $XMLFilePath) {
+                 $downloadFile = $false
+              } else {
+                throw "File missing $FolderPath\ofl.cab"
+              }
+          }
+       }
+
+       if ($downloadFile) {
+           $webclient = New-Object System.Net.WebClient
+           $XMLFilePath = "$env:TEMP/ofl.cab"
+           $XMLDownloadURL = "http://officecdn.microsoft.com/pr/wsus/ofl.cab"
+           $webclient.DownloadFile($XMLDownloadURL,$XMLFilePath)
+
+           if ($FolderPath) {
+             [System.IO.Directory]::CreateDirectory($FolderPath) | Out-Null
+             $targetFile = "$FolderPath\ofl.cab"
+             Copy-Item -Path $XMLFilePath -Destination $targetFile -Force
+           }
+       }
+
+       if($PSVersionTable.PSVersion.Major -ge '3'){
+           $tmpName = "o365client_$Bitness" + "bit.xml"
+           expand $XMLFilePath $env:TEMP -f:$tmpName | Out-Null
+           $tmpName = $env:TEMP + "\o365client_$Bitness" + "bit.xml"
+       }else {
+           $scriptPath = GetScriptRoot
+           $tmpName = $scriptPath + "\o365client_$Bitness" + "bit.xml"         
+       }
+       
+       [xml]$channelXml = Get-Content $tmpName
+
+       return $channelXml
+   }
+
 }

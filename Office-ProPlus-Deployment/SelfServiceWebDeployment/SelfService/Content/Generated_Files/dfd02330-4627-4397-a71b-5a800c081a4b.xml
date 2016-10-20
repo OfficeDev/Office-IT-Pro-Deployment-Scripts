@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Configuration>
+  <Add OfficeClientEdition="64" Branch="Business">
+    <Product ID="O365ProPlusRetail">
+      <Language ID="en-us" />
+    </Product>
+  </Add>
+</Configuration>

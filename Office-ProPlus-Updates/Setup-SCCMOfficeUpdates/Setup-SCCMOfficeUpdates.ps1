@@ -1,23 +1,40 @@
+Add-Type  -ErrorAction SilentlyContinue -TypeDefinition @"
+   public enum OfficeCTRVersion
+   {
+      Office2013,
+      Office2016
+   }
+"@
+
 function Download-OfficeUpdates {
 <#
 .SYNOPSIS
 This method will download the Office updates to a share
+
 .DESCRIPTION
 This method is used to download the updates for Office Click-to-Run to a netork share.  This network share could then either be used as a update source for Office Click-to-Run or it could be used as a package source for SCCM.
+
 .PARAMETER Path
-The path to the UNC share to download the Office updates to
+The path to the UNC share to download the Office updates to.
+
 .PARAMETER Version
 The version of Office 2013 you wish to update to. E.g. 15.0.4737.1003
+
 .PARAMETER Bitness
 Specifies if the target installation is 32 bit or 64 bit. Defaults to 64 bit.
+
 .PARAMETER ProductVersion
 Specifies Office 2013 vs Office 2016, defaults to 2013, type in either 2013 or 2016 to specify.
+
 .Example
 Download-OfficeUpdates 
 Default without parameters specified this will create a local folder named 'OfficeUpdates' on the system drive and then create a hidden share named 'OfficeUpdates$'. It will then download the latest Office update to that folder.
+
 .Example
 Download-OfficeUpdates -Path "\\Server\OfficeShare"
-If you do not want to host the update files on the local server you can specify a UNC share path. The script must be run with a user account that has Read/Write permissions to the share. 
+
+If you do not want to host the update files on the local server you can specify a UNC share path. The script must be run with a user account that has Read/Write permissions to the share.
+ 
 .Example
 Download-OfficeUpdates -Path "\\Server\OfficeShare" -Version "15.0.4737.1003" 
 If you specify a Version then the script will download that version.  You can see the version history at https://support.microsoft.com/en-us/gp/office-2013-365-update
@@ -26,7 +43,7 @@ If you specify a Version then the script will download that version.  You can se
     Param
     (
         [Parameter(Mandatory=$True)]
-	    [String]$ProductVersion = '2013',
+	    [OfficeCTRVersion]$ProductVersion = 'Office2013',
 
 	    [Parameter()]
 	    [String]$Path = $NULL,
@@ -53,10 +70,13 @@ If you specify a Version then the script will download that version.  You can se
         CreateDownloadXmlFile -Path $path -ConfigFileName $UpdateSourceConfigFileName32 -Bitness 32 -Version $version
         CreateDownloadXmlFile -Path $path -ConfigFileName $UpdateSourceConfigFileName64 -Bitness 64 -Version $version
 
-        $c2rFileName = "Office2013Setup.exe"
         
-        if($ProductVersion.Contains('2016')){
-        $c2rFileName = "Office2016Setup.exe"
+        
+        if($ProductVersion -eq 'Office2016'){
+            $c2rFileName = "Office2016Setup.exe"
+        }
+        else{
+            $c2rFileName = "Office2013Setup.exe"
         }
 
 
@@ -109,27 +129,36 @@ function Setup-SCCMOfficeUpdates {
 <#
 .SYNOPSIS
 Automates the configuration of System Center Configuration Manager (SCCM) to configure Office Click-To-Run Updates
+
 .DESCRIPTION
+
+.PARAMETER Collection
+Required. The name of the collection to deploy the updates to.
+
+.PARAMETER $ProductVersion
+Required. The version of Office to update.
+
+.PARAMETER path
+The UNC Path where the downloaded bits will be stored for updating the target machines.
 
 .PARAMETER version
 The version of Office 2013 you wish to update to. E.g. 15.0.4737.1003
-.PARAMETER path
-The UNC Path where the downloaded bits will be stored for updating the target machines.
+
+.PARAMETER $SiteCode
+The 3 Letter Site ID.
+
 .PARAMETER bitness
 Specifies if the target installation is 32 bit or 64 bit. Defaults to 64 bit.
-.PARAMETER siteId
-The 3 Letter Site ID
-.PARAMETER UpdateSourceConfigFileName
-The config file that is used to download the bits for the intended version.
-.PARAMETER UpdateTestGroupConfigFileName
-The config file that is used to update the target machines to the intended version.
+
 .PARAMETER SCCMPSModulePath
 Allows the user to specify that full path to the ConfigurationManager.psd1 PowerShell Module. This is especially useful if SCCM is installed in a non standard path.
+
 .Example
-.\SetupOfficeUpdatesSCCM.ps1 -version "15.0.4737.1003" -path "\\OfficeShare" -siteId "ABC"
+.\SetupOfficeUpdatesSCCM.ps1 -version "15.0.4737.1003" -path "\\OfficeShare" -SiteCode "ABC"
 Default update Office 2013 to version 15.0.4737.1003
+
 .Example
-.\SetupOfficeUpdatesSCCM.ps1 -version "15.0.4737.1003" -path "\\OfficeShare" -bitness "32" -siteId "ABC" -UpdateSourceConfigFileName "SourceConfig.xml" -UpdateTestGroupConfigFileName "TargetConfig.xml" 
+.\SetupOfficeUpdatesSCCM.ps1 -version "15.0.4737.1003" -path "\\OfficeShare" -bitness "32" -SiteCode "ABC" 
 Update Office 2013 to version 15.0.4737.1003 for 32 bit clients
 #>
 
@@ -138,6 +167,9 @@ Param
 (
 	[Parameter(Mandatory=$True)]
 	[String]$Collection,
+
+    [Parameter(Mandatory=$True)]
+    [OfficeCTRVersion]$ProductVersion = 'Office2013',
 
 	[Parameter()]
 	[String]$Path = $null,
@@ -188,8 +220,13 @@ Process
 
     Set-Location $PSScriptRoot
 
-    $c2rFileName = "Office2013Setup.exe"
-	$setupExePath = "$path\$c2rFileName"
+    if($ProductVersion -eq 'Office2016'){
+        $c2rFileName = "Office2016Setup.exe"	    
+    }
+    else{      
+        $c2rFileName = "Office2013Setup.exe"
+	}
+    $setupExePath = "$path\$c2rFileName"
 
 	Set-Location $startLocation
     Set-Location $PSScriptRoot
@@ -243,18 +280,24 @@ function Deploy-SCCMOfficeUpdates {
 <#
 .SYNOPSIS
 Automates the configuration of System Center Configuration Manager (SCCM) to configure Office Click-To-Run Updates
+
 .DESCRIPTION
 
 .PARAMETER Collection
 The target SCCM Collection
+
 .PARAMETER PackageName
 The Name of the SCCM package create by the Setup-SCCMOfficeUpdates function
+
 .PARAMETER ProgramName
 The Name of the SCCM program create by the Setup-SCCMOfficeUpdates function
+
 .PARAMETER UpdateOnlyChangedBits
 Determines whether or not the EnableBinaryDeltaReplication enabled or not
+
 .PARAMETER SCCMPSModulePath
 Allows the user to specify that full path to the ConfigurationManager.psd1 PowerShell Module. This is especially useful if SCCM is installed in a non standard path.
+
 .Example
 Deploy-SCCMOfficeUpdates -Collection "CollectionName"
 Deploys the Package created by the Setup-SCCMOfficeUpdates function
@@ -443,8 +486,8 @@ function CreateOfficeUpdateShare() {
 
 function GetSupportedPlatforms([String[]] $requiredPlatformNames){
     $computerName = $env:COMPUTERNAME
-    $assignedSite = $([WmiClass]"\\$computerName\ROOT\ccm:SMS_Client").getassignedsite()
-    $siteCode = $assignedSite.sSiteCode  
+    #$assignedSite = $([WmiClass]"\\$computerName\ROOT\ccm:SMS_Client").getassignedsite()
+    $siteCode = Get-Site  
     $filteredPlatforms = Get-WmiObject -ComputerName $computerName -Class SMS_SupportedPlatforms -Namespace "root\sms\site_$siteCode" | Where-Object {$_.IsSupported -eq $true -and  $_.OSName -like 'Win NT' -and ($_.OSMinVersion -match "6\.[0-9]{1,2}\.[0-9]{1,4}\.[0-9]{1,4}" -or $_.OSMinVersion -match "10\.[0-9]{1,2}\.[0-9]{1,4}\.[0-9]{1,4}") -and ($_.OSPlatform -like 'I386' -or $_.OSPlatform -like 'x64')}
 
     $requiredPlatforms = $filteredPlatforms| Where-Object {$requiredPlatformNames.Contains($_.DisplayText) } #| Select DisplayText, OSMaxVersion, OSMinVersion, OSName, OSPlatform | Out-GridView
@@ -673,4 +716,16 @@ function GetSCCMPSModulePath() {
     }
 
     return $sccmModulePath
+}
+
+# Specify one of SCCM servers and Site code is returned automatically 
+Function Get-Site([string[]]$computerName = $env:COMPUTERNAME) {
+    Get-WmiObject -ComputerName $ComputerName -Namespace "root\SMS" -Class "SMS_ProviderLocation" | foreach-object{ 
+        if ($_.ProviderForLocalSite -eq $true){$SiteCode=$_.sitecode} 
+    } 
+    if ($SiteCode -eq "") { 
+        throw ("Sitecode of ConfigMgr Site at " + $ComputerName + " could not be determined.") 
+    } else { 
+        Return $SiteCode 
+    } 
 }
