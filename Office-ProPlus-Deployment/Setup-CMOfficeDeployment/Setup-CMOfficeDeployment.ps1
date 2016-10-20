@@ -443,7 +443,7 @@ Update-CMOfficePackage -Channels Current -Bitness Both -OfficeSourceFilesPath D:
 
            $existingShare = Get-Fileshare -Name $shareName
            if (!($existingShare)) {
-              throw "No Package Exists to Update. Please run the Create-CMOfficePackage function first to create the package."
+              throw "Network share for Package doesn't exist. Please restore network share or delete and re-create the package using Create-CMOfficePackage."
            }
 
            $packageName = $existingPackage.Name
@@ -2656,7 +2656,7 @@ Param(
     [string]$PkgID
 )
 
-    $query = Get-WmiObject –NameSpace Root\SMS\Site_$SiteCode –Class SMS_DistributionDPStatus –Filter "PackageID='$PkgID'" | Select Name, MessageID, MessageState, LastUpdateDate
+    $query = Get-WmiObject Â–NameSpace Root\SMS\Site_$SiteCode Â–Class SMS_DistributionDPStatus Â–Filter "PackageID='$PkgID'" | Select Name, MessageID, MessageState, LastUpdateDate
 
     if ($query -eq $null)
     {  
@@ -2727,7 +2727,7 @@ function showTaskStatus() {
         [string] $DateTime = ""
     )
 
-    $Result = New-Object –TypeName PSObject 
+    $Result = New-Object Â–TypeName PSObject 
     Add-Member -InputObject $Result -MemberType NoteProperty -Name "Operation" -Value $Operation
     Add-Member -InputObject $Result -MemberType NoteProperty -Name "Status" -Value $Status
     Add-Member -InputObject $Result -MemberType NoteProperty -Name "DateTime" -Value $DateTime
