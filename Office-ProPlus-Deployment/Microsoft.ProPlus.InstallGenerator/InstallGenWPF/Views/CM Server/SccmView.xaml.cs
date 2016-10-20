@@ -250,7 +250,8 @@ namespace MetroDemo.ExampleViews
                     ChannelVersionView.ToggleNextButton += ToggleNext;
                     ProductsLanguagesView.ToggleNextButton += ToggleNext;
                     ProgramOptionsView.ToggleNextButton += ToggleNext;
-                  
+
+                    ProgramOptionsView.ErrorMessage += ErrorMessage;
 
                     ChannelVersionView.MainTabControl.Items.Remove(ChannelVersionView.ChannelVersionTab);
                     ProductsLanguagesView.MainTabControl.Items.Remove(ProductsLanguagesView.ProductsLanguagesTab);
@@ -362,7 +363,9 @@ namespace MetroDemo.ExampleViews
             ProgramOptionsView.ToggleNextButton += ToggleNext;
             PackageOptionsView.ToggleNextButton += ToggleNext;
             DeploymentStagingView.ToggleNextButton += ToggleNext;
-            DeploymentStagingView.ErrorMessage += ErrorMessage; 
+
+            DeploymentStagingView.ErrorMessage += ErrorMessage;
+            ProgramOptionsView.ErrorMessage += ErrorMessage;
 
             SourceView.MainTabControl.Items.Remove(SourceView.SourceTab);
             ChannelVersionView.MainTabControl.Items.Remove(ChannelVersionView.ChannelVersionTab);

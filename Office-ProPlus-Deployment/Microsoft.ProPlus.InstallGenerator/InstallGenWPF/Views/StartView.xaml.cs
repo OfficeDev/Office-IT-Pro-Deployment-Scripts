@@ -60,7 +60,7 @@ namespace MetroDemo.ExampleViews
 
         private bool isCMServer()
         {
-            string subKey = @"SOFTWARE\Microsoft\System Center Configuration Manager";
+            string subKey = @"SOFTWARE\Microsoft\SMS\Providers";
 
             var key = Registry.LocalMachine.OpenSubKey(subKey,false);
 

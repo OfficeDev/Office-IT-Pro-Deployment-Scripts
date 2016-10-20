@@ -99,6 +99,9 @@
     <TargetZone>LocalIntranet</TargetZone>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AdminUI.WqlQueryEngine">
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\ConfigMgr 2012 Toolkit R2\ServerTools\AdminUI.WqlQueryEngine.dll</HintPath>
+    </Reference>
     <Reference Include="BouncyCastle.Crypto, Version=1.7.4137.9688, Culture=neutral, PublicKeyToken=a4292a325f69b123, processorArchitecture=MSIL">
       <HintPath>..\packages\BouncyCastle.1.7.0\lib\Net40-Client\BouncyCastle.Crypto.dll</HintPath>
       <Private>True</Private>
@@ -110,6 +113,9 @@
     <Reference Include="GrayscaleEffect, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\GrayscaleEffect.1.0.1\lib\GrayscaleEffect.dll</HintPath>
       <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.ConfigurationManagement.ManagementProvider">
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\ConfigMgr 2012 Toolkit R2\ServerTools\Microsoft.ConfigurationManagement.ManagementProvider.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -312,6 +318,12 @@
     <Compile Include="Windows\DownloadAdvanced.xaml.cs">
       <DependentUpon>DownloadAdvanced.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Windows\SccmRemoveCollection.xaml.cs">
+      <DependentUpon>SccmRemoveCollection.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\SccmAddCollection.xaml.cs">
+      <DependentUpon>SccmAddCollection.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\SccmRemoveLanguages.xaml.cs">
       <DependentUpon>SccmRemoveLanguages.xaml</DependentUpon>
     </Compile>
@@ -458,6 +470,14 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Windows\DownloadAdvanced.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Windows\SccmRemoveCollection.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Windows\SccmAddCollection.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

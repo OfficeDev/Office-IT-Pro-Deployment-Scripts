@@ -178,10 +178,7 @@
                                         <Button x:Name="BrowseButton"  Grid.Row="3" Grid.Column="3" Height="40" Width="60" HorizontalAlignment="Right" IsEnabled="False"
                                         Margin="0 0 0 0" Style="{StaticResource MetroFlatButtonStyle1}" Content="Browse"  Click="BrowseButton_OnClick" />
 
-                                        <Label Grid.Row="4" Grid.ColumnSpan="2" x:Name="lblSiteCode" Content="Which Site Code Will You Use?" ToolTip="Three character site code, example S01. Left blank it will default to the current site." Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
-                                        <TextBox Grid.Row="4" Grid.ColumnSpan="3"  x:Name="SiteCode" FontSize="15" HorizontalAlignment="Right" VerticalContentAlignment="Top" ToolTip="Three character site code, example S01. Left blank it will default to the current site." Margin="180 0 0 0"
-                                                   Height="30" Width="200" Text="{Binding CmPackage.SiteCode, Mode=TwoWay}"  Foreground="{StaticResource GrayBrush}" Background="White" TextChanged="SiteCode_OnTextChanged">
-                                        </TextBox>
+                                     
 
 
                                     </Grid>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -16,8 +17,14 @@ using System.Windows.Shapes;
 using MahApps.Metro.Controls;
 using MetroDemo;
 using MetroDemo.Events;
+using MetroDemo.ExampleWindows;
 using Microsoft.OfficeProPlus.InstallGen.Presentation.Enums;
 using Microsoft.OfficeProPlus.InstallGen.Presentation.Models;
+using Microsoft.ConfigurationManagement;
+using Microsoft.ConfigurationManagement.ManagementProvider;
+using Microsoft.ConfigurationManagement.ManagementProvider.WqlQueryEngine;
+using Microsoft.OfficeProPlus.InstallGen.Presentation.Logging;
+using Microsoft.Win32;
 
 namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
 {
@@ -27,11 +34,16 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
     public partial class ProgramOptionsView : UserControl
     {
         public event ToggleNextEventHandler ToggleNextButton;
-        private CmProgram CurrentCmProgram = GlobalObjects.ViewModel.CmPackage.Programs[GlobalObjects.ViewModel.CmPackage.Programs.Count - 1]; 
+        public event MessageEventHandler ErrorMessage;
 
+        private CmProgram CurrentCmProgram = GlobalObjects.ViewModel.CmPackage.Programs[GlobalObjects.ViewModel.CmPackage.Programs.Count - 1];
+        private CMAddCollection AddCollectionDialog = null;
+        private CMRemoveCollection RemoveCollectionsDialog = null; 
 
+        
         public ProgramOptionsView()
         {
+
             InitializeComponent();
         }
 
@@ -46,38 +58,28 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
         {
             CurrentCmProgram =
                     GlobalObjects.ViewModel.CmPackage.Programs[GlobalObjects.ViewModel.CmPackage.Programs.Count - 1];
+
+            GetSiteCodes();
             ToggleNext();
 
-            //if (CurrentCmProgram.CollectionNames.Count == 0 && CurrentCmProgram.ScriptName != "CM-OfficeDeploymentScript.ps1" &&
-            //   CurrentCmProgram.ConfigurationXml != @".\DeploymentFiles\DefaultConfiguration.xml ")
-            //{
-            //    ScriptName.Text = string.Empty;
-            //    ConfigurationXml.Text = string.Empty;
-            //    CustomName.Text = string.Empty;
-            //    cbDeploymentPurpose.SelectedIndex = 1;
-            //    cbDeploymentType.SelectedIndex = 1;
-            //    AddProgram.IsChecked = false;
-
-            //    OptionsTab1.IsSelected = true;
-            //}
         }
 
         private void ToggleNext()
-        {     
-            //if (Collection.Text.Length > 0)
-            //{
-            //    ToggleNextButton?.Invoke(this, new ToggleEventArgs()
-            //    {
-            //        Enabled = true
-            //    });
-            //}
-            //else
-            //{
-            //    ToggleNextButton?.Invoke(this, new ToggleEventArgs()
-            //    {
-            //        Enabled = false
-            //    });
-            //}
+        {
+            if (CurrentCmProgram.CollectionNames.Count > 0)
+            {
+                ToggleNextButton?.Invoke(this, new ToggleEventArgs()
+                {
+                    Enabled = true
+                });
+            }
+            else
+            {
+                ToggleNextButton?.Invoke(this, new ToggleEventArgs()
+                {
+                    Enabled = false
+                });
+            }
         }
 
      
@@ -151,7 +153,6 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
             }
         }
 
-
         private void AddProgram_OnChecked(object sender, RoutedEventArgs e)
         {
           var newProgram = new CmProgram();
@@ -170,12 +171,164 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
 
         private void BAddCollection_OnClick(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if (AddCollectionDialog == null)
+                {
+                    var collectionList = GetCollections();
+
+                    AddCollectionDialog = new CMAddCollection
+                    {
+                        CollectionSource = collectionList
+                    };
+                    AddCollectionDialog.Closed += (o, args) =>
+                    {
+                        AddCollectionDialog = null;
+                    };
+                    AddCollectionDialog.Closing += (o, args) =>
+                    {
+
+                        var selectedCollections = AddCollectionDialog.SelectedItems;
+
+                        selectedCollections.ForEach(c =>
+                        {
+                            if (CurrentCmProgram.CollectionNames.IndexOf(c) == -1)
+                            {
+                                CurrentCmProgram.CollectionNames.Add(c);
+                            }
+                        });
+                        AddCollectionDialog = null;
+                        CollectionList.ItemsSource = null;
+                        CollectionList.ItemsSource = CurrentCmProgram.CollectionNames;
+
+                        ToggleNext();
+                    };
+                }
+                AddCollectionDialog.Launch();
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+
+          
         }
 
         private void BRemoveCollection_OnClick(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if (RemoveCollectionsDialog == null)
+                {
+                    var collectionList = CurrentCmProgram.CollectionNames.ToList();
+
+                    RemoveCollectionsDialog = new CMRemoveCollection()
+                    {
+                        CollectionSource = collectionList
+                    };
+                    RemoveCollectionsDialog.Closed += (o, args) =>
+                    {
+                        RemoveCollectionsDialog = null;
+                    };
+                    RemoveCollectionsDialog.Closing += (o, args) =>
+                    {
+                        var selectedProducts = RemoveCollectionsDialog.SelectedItems;
+
+                        selectedProducts.ForEach(p =>
+                        {
+                            if (CurrentCmProgram.CollectionNames.IndexOf(p) > -1)
+                                CurrentCmProgram.CollectionNames.Remove(p);
+                        });
+                        CollectionList.ItemsSource = null;
+                        CollectionList.ItemsSource = CurrentCmProgram.CollectionNames;
+                        RemoveCollectionsDialog = null;
+                        ToggleNext();
+                    };
+                }
+                RemoveCollectionsDialog.Launch();
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
         }
+
+        private void CbSiteCode_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var comboBox = (ComboBox)sender;
+            var siteCode = comboBox.SelectedValue.ToString();
+
+            CurrentCmProgram.SiteCode = siteCode;
+            CollectionList.ItemsSource = null;
+
+            ToggleNext();
+
+        }
+
+        #region helpers
+
+        private void GetSiteCodes()
+        {
+            var siteCodes = new List<string>();
+            var sitePath = @"SOFTWARE\Microsoft\SMS\Providers\Sites";
+            var siteKey = Registry.LocalMachine.OpenSubKey(sitePath);
+
+            if (siteKey != null)
+                siteCodes = siteKey.GetSubKeyNames().ToList();
+
+            if (siteCodes.Count == 0)
+                siteCodes.Add("S01");
+
+            cbSiteCode.ItemsSource = siteCodes; 
+        }
+
+        private List<string> GetCollections()
+        {
+            var collections = new List<string>();
+            var siteCode = CurrentCmProgram.SiteCode;
+            var sitePath = @"SOFTWARE\Microsoft\SMS\Providers\Sites";
+            var siteKey = Registry.LocalMachine.OpenSubKey(sitePath + $"\\{siteCode}");
+            var dbKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\SMS\SQL Server\Site System SQL Account");
+            var dbName = dbKey.GetValue("Database Name").ToString();
+            var sqlServerName = siteKey.GetValue("SQL Server Name").ToString();
+            var connectionString = $"Server= {sqlServerName}; Database= {dbName};Integrated Security=SSPI;";
+            var query = $"select [CollectionName] from [{dbName}].[dbo].[Collections_G]";
+            SqlDataReader dataReader;
+
+            var connection = new SqlConnection(connectionString);
+
+
+            connection.Open();
+            var command = new SqlCommand(query, connection);
+            dataReader = command.ExecuteReader();
+
+            while (dataReader.Read())
+            {
+                collections.Add(dataReader.GetValue(0).ToString());
+            }
+
+            dataReader.Close();
+            command.Dispose();
+            connection.Close();
+
+
+            return collections;
+        }
+
+        private void LogErrorMessage(Exception ex)
+        {
+            ex.LogException(false);
+            if (ErrorMessage != null)
+            {
+                ErrorMessage(this, new MessageEventArgs()
+                {
+                    Title = "Error",
+                    Message = ex.Message
+                });
+            }
+        }
+
+        #endregion
+
     }
 }

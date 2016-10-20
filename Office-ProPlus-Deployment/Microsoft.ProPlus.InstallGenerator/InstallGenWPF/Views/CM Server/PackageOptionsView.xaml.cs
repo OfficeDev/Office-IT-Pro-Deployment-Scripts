@@ -112,8 +112,6 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
            
         }
 
-
-
         private void DistributionPoint_OnTextChanged(object sender, TextChangedEventArgs e)
         {
             var textbox = (TextBox)sender;
@@ -172,14 +170,6 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
 
             if (Directory.Exists(text))
                 GlobalObjects.ViewModel.CmPackage.CMPSModulePath = text;
-        }
-
-        private void SiteCode_OnTextChanged(object sender, TextChangedEventArgs e)
-        {
-            var textbox = (TextBox)sender;
-            var text = textbox.Text;
-
-            GlobalObjects.ViewModel.CmPackage.SiteCode = text;
         }
 
         private void TsMoveFiles_OnChecked(object sender, RoutedEventArgs e)

@@ -58,6 +58,5 @@ C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deploy
 C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Microsoft.OfficeProPlus.MSIGenerator\bin\Debug\WixSharp.UI.dll
 C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Microsoft.OfficeProPlus.MSIGenerator\bin\Debug\BootstrapperCore.dll
 C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Microsoft.OfficeProPlus.MSIGenerator\bin\Debug\Microsoft.Deployment.WindowsInstaller.xml
-C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Microsoft.OfficeProPlus.MSIGenerator\obj\Debug\Microsoft.OfficeProPlus.MSIGen.csprojResolveAssemblyReference.cache
 C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Microsoft.OfficeProPlus.MSIGenerator\obj\Debug\Microsoft.OfficeProPlus.MSIGen.dll
 C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\Microsoft.OfficeProPlus.MSIGenerator\obj\Debug\Microsoft.OfficeProPlus.MSIGen.pdb

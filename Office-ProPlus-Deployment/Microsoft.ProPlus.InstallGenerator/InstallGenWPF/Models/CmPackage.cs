@@ -34,7 +34,6 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Models
             DistributionPoint = string.Empty;
             DeploymentExpiryDurationInDays = 15;
             CustomPackageShareName = "OfficeDeployment";
-            SiteCode = string.Empty;
             CMPSModulePath = string.Empty;
 
             PopulateDownloadUrls();
@@ -215,8 +214,6 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Models
         public string DistributionPointGroupName { get; set; }
 
         public string CustomPackageShareName { get; set; }
-
-        public string SiteCode { get; set; }
 
         public string CMPSModulePath { get; set; }
 

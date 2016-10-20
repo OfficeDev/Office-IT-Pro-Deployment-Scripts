@@ -83,7 +83,7 @@
                                             <RowDefinition Height="50" />
                                             <RowDefinition Height="50" />
                                             <RowDefinition Height="50" />
-                                            <RowDefinition Height="50" />
+                                            <RowDefinition Height="300" />
                                             <RowDefinition Height="50" />
                                             <RowDefinition Height="50" />
                                             <RowDefinition Height="50" />
@@ -100,14 +100,20 @@
 
                                         <TextBlock Grid.Row="0" Grid.ColumnSpan="2" TextWrapping="WrapWithOverflow" FontSize="25" FontWeight="Bold" Style="{StaticResource CustomMetroLabelTextBlock}"  Text="Other possible options." />
 
-                                     
+                                        <Label Grid.Row="1" Grid.ColumnSpan="2" x:Name="lblSiteCode" Content="Which Site Code Will You Use?" ToolTip="Three character site code, example S01. Left blank it will default to the current site." Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
+                                        <ComboBox Grid.Row="1"  Grid.Column="2" Width="200" x:Name="cbSiteCode" Height="35" HorizontalAlignment="Left" Style="{StaticResource MetroComboBoxStyle}" SelectedIndex="0" FontSize="20"
+                                                  SelectionChanged="CbSiteCode_OnSelectionChanged"/>
 
-                                        <Label Grid.Row="1" Grid.ColumnSpan="3" x:Name="lblCollection" Content="Which Collection(s) Will You Deploy To?*" ToolTip="The name of the collection to deploy the program to.  This field is required." Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
-                                        <Button Grid.Column="2" Grid.Row="1"   x:Name="bAddCollection"  Width="50" Height="40" Content="Add"   VerticalAlignment="Center" Click="BAddCollection_OnClick"  Margin="0 0 0 0"/>
-                                        <Button Grid.Column="2" Grid.Row="1" x:Name="bRemoveCollection" Width="75" Height="40" Content="Remove"  VerticalAlignment="Center"  Click="BRemoveCollection_OnClick"  Margin="150 0 0 0"/>
+                                        <!--<TextBox Grid.Row="4" Grid.ColumnSpan="3"  x:Name="SiteCode" FontSize="15" HorizontalAlignment="Right" VerticalContentAlignment="Top" ToolTip="Three character site code, example S01. Left blank it will default to the current site." Margin="180 0 0 0"
+                                                   Height="30" Width="200" Text="{Binding CmPackage.SiteCode, Mode=TwoWay}"  Foreground="{StaticResource GrayBrush}" Background="White" TextChanged="SiteCode_OnTextChanged">
+                                        </TextBox>-->
 
-                                        <Border Grid.ColumnSpan="3"  Grid.Row="2" BorderThickness="2" BorderBrush="Gray" Width="600"  HorizontalAlignment="Left" Margin="5 0 0 0">
-                                            <DataGrid x:Name="LanguageList" Height="200" 
+                                        <Label Grid.Row="2" Grid.ColumnSpan="3" x:Name="lblCollection" Content="Which Collection(s) Will You Deploy To?*" ToolTip="The name of the collection to deploy the program to.  This field is required." Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
+                                        <Button Grid.Column="2" Grid.Row="2"   x:Name="bAddCollection"  Width="50" Height="40" Content="Add"   VerticalAlignment="Center" Click="BAddCollection_OnClick"  Margin="0 0 0 0"/>
+                                        <Button Grid.Column="2" Grid.Row="2" x:Name="bRemoveCollection" Width="75" Height="40" Content="Remove"  VerticalAlignment="Center"  Click="BRemoveCollection_OnClick"  Margin="150 0 0 0"/>
+
+                                        <Border Grid.Row="3" Grid.ColumnSpan="4" BorderThickness="2" BorderBrush="Gray" Width="625" HorizontalAlignment="Left" Margin="5 0 0 0" VerticalAlignment="Top">
+                                            <DataGrid x:Name="CollectionList" Height="100" 
                                               RenderOptions.ClearTypeHint="Enabled" Background="White"
                                               TextOptions.TextFormattingMode="Display" BorderThickness="0" BorderBrush="Gray"
                                               Margin="0 0 0 0"  Style="{DynamicResource MetroDataGrid}"
@@ -115,15 +121,12 @@
                                               ItemsSource="{Binding CmPackage.Programs[CmPackage.Programs.Count-1].CollectionNames}"
                                               CanUserAddRows="False" IsEnabled="True" IsReadOnly="True">
                                                 <DataGrid.Columns>
-                                                    <DataGridTextColumn Header="Collection" Binding="{Binding Name}"  Width="600"></DataGridTextColumn>
+                                                    <DataGridTextColumn Header="Collection" Binding="{Binding}"  Width="625"></DataGridTextColumn>
                                                 </DataGrid.Columns>
                                             </DataGrid>
                                         </Border>
 
-                                        <Label Grid.Row="4" Grid.ColumnSpan="3" x:Name="lbScriptName" Content="What Will The Deployment Script be Named?" ToolTip="Default value is CM-OfficeDeploymentScript.ps1." Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
-                                        <TextBox Grid.Row="4" Grid.ColumnSpan="3"  x:Name="ScriptName" FontSize="15" HorizontalAlignment="Right" VerticalContentAlignment="Top" ToolTip="Default value is CM-OfficeDeploymentScript.ps1." Margin="180 0 0 0"
-                                                   Height="30" Width="200" Text="{Binding CmPackage.Programs[CmPackage.Programs.Count-1].ScriptName, Mode=TwoWay}"  Foreground="{StaticResource GrayBrush}" Background="White" TextChanged="ScriptName_OnTextChanged">
-                                        </TextBox>
+                           
 
 
                                         <!--<TextBox Grid.Row="4" Grid.ColumnSpan="3"  x:Name="Collection" FontSize="15" HorizontalAlignment="Right" VerticalContentAlignment="Top" ToolTip="The name of the collection to deploy the program to." Margin="180 0 0 0"
@@ -189,6 +192,10 @@
                                                    Height="30" Width="200" Text="{Binding CmPackage.Programs[CmPackage.Programs.Count-1].CustomName, Mode=TwoWay}"  Foreground="{StaticResource GrayBrush}" Background="White" TextChanged="CustomName_OnTextChanged">
                                         </TextBox>
 
+                                        <Label Grid.Row="6" Grid.ColumnSpan="3" x:Name="lbScriptName" Content="What Will The Deployment Script be Named?" ToolTip="Default value is CM-OfficeDeploymentScript.ps1." Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
+                                        <TextBox Grid.Row="6" Grid.ColumnSpan="3"  x:Name="ScriptName" FontSize="15" HorizontalAlignment="Right" VerticalContentAlignment="Top" ToolTip="Default value is CM-OfficeDeploymentScript.ps1." Margin="180 0 0 0"
+                                                   Height="30" Width="200" Text="{Binding CmPackage.Programs[CmPackage.Programs.Count-1].ScriptName, Mode=TwoWay}"  Foreground="{StaticResource GrayBrush}" Background="White" TextChanged="ScriptName_OnTextChanged">
+                                        </TextBox>
 
                                     </Grid>
                                 </TabItem>
