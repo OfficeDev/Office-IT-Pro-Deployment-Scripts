@@ -186,6 +186,9 @@
     <Compile Include="Views\CM Server\DeployView.xaml.cs">
       <DependentUpon>DeployView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\CM Server\StagingView.xaml.cs">
+      <DependentUpon>StagingView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\CM Server\ProductsLanguagesView.xaml.cs">
       <DependentUpon>ProductsLanguagesView.xaml</DependentUpon>
     </Compile>
@@ -377,6 +380,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\CM Server\DeployView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\CM Server\StagingView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

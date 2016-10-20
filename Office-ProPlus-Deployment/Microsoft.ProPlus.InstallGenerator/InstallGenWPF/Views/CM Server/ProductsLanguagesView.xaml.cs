@@ -44,7 +44,8 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
         public ProductsLanguagesView()
         {
             InitializeComponent();
-           
+
+          
         }
 
         #region events

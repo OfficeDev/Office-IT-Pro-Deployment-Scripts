@@ -64,7 +64,7 @@ namespace MetroDemo.ExampleWindows
         private List<string> GetCollections()
         {
             var collections = new List<string>();
-            var siteCode = CurrentCmProgram.SiteCode;
+            var siteCode = GlobalObjects.ViewModel.CmPackage.SiteCode;
             var sitePath = @"SOFTWARE\Microsoft\SMS\Providers\Sites";
             var siteKey = Registry.LocalMachine.OpenSubKey(sitePath + $"\\{siteCode}");
             var dbKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\SMS\SQL Server\Site System SQL Account");

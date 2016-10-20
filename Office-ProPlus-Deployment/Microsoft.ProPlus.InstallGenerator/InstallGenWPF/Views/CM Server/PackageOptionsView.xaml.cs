@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -18,6 +19,8 @@ using MetroDemo;
 using MetroDemo.Events;
 using Microsoft.OfficeProPlus.InstallGen.Presentation.Enums;
 using Microsoft.OfficeProPlus.InstallGen.Presentation.Models;
+using TextBox = System.Windows.Controls.TextBox;
+using UserControl = System.Windows.Controls.UserControl;
 
 namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
 {
@@ -196,7 +199,15 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
 
         private void BrowseButton_OnClick(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
+            var filepath = CMPSModulePath.Text;
+            var fileBrowser = new FolderBrowserDialog();
+
+            if (filepath != null && Directory.Exists(filepath))
+            {
+                fileBrowser.SelectedPath = filepath;
+            }
+            fileBrowser.ShowDialog();
+            CMPSModulePath.Text = fileBrowser.SelectedPath;
         }
     }
 }

@@ -175,7 +175,7 @@
                                         <TextBox Grid.Row="3" Grid.Column="2"  x:Name="CMPSModulePath" FontSize="15" HorizontalAlignment="Left" VerticalContentAlignment="Top" ToolTip="Allows the user to specify that full path to the ConfigurationManager.psd1 PowerShell Module. This is especially useful if CM is installed in a non standard path. " Margin="180 0 0 0"
                                                    Height="30" Width="130" Text="{Binding CmPackage.CMPSModulePath, Mode=TwoWay}"  Foreground="{StaticResource GrayBrush}" Background="White" TextChanged="CMPSModulePath_OnTextChanged">
                                         </TextBox>
-                                        <Button x:Name="BrowseButton"  Grid.Row="3" Grid.Column="3" Height="40" Width="60" HorizontalAlignment="Right" IsEnabled="False"
+                                        <Button x:Name="BrowseButton"  Grid.Row="3" Grid.Column="3" Height="40" Width="60" HorizontalAlignment="Right"
                                         Margin="0 0 0 0" Style="{StaticResource MetroFlatButtonStyle1}" Content="Browse"  Click="BrowseButton_OnClick" />
 
                                      

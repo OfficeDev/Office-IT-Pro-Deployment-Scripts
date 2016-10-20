@@ -18,6 +18,7 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Models
     {
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
         private ObservableCollection<CmProgram> _programs = new ObservableCollection<CmProgram>();
+        
 
         public CmPackage()
         {
@@ -27,6 +28,7 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Models
             DeploymentSource = DeploymentSource.CDN;
             MoveFiles = true;
             UpdateOnlyChangedBits = false;
+            SiteCode = "S01";
 
             Programs = new ObservableCollection<CmProgram> {new CmProgram()};
 
@@ -208,6 +210,8 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Models
                 OnPropertyChanged();
             }
         }
+
+        public string SiteCode { get; set;}
 
         public string DistributionPoint { get; set; }
 

@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config.DeployView"
+﻿<UserControl x:Class="Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config.DeploymentStagingView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"

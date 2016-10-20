@@ -356,6 +356,7 @@ namespace MetroDemo.ExampleViews
             var ProgramOptionsView = new ProgramOptionsView();
             var PackageOptionsView = new PackageOptionsView();
             var DeploymentStagingView =  new DeploymentStagingView();
+            var DeployView = new DeployView();
 
             SourceView.ToggleNextButton += ToggleNext;
             ChannelVersionView.ToggleNextButton += ToggleNext;
@@ -363,9 +364,11 @@ namespace MetroDemo.ExampleViews
             ProgramOptionsView.ToggleNextButton += ToggleNext;
             PackageOptionsView.ToggleNextButton += ToggleNext;
             DeploymentStagingView.ToggleNextButton += ToggleNext;
+            DeployView.ToggleNextButton += ToggleNext;
 
             DeploymentStagingView.ErrorMessage += ErrorMessage;
             ProgramOptionsView.ErrorMessage += ErrorMessage;
+            DeployView.ErrorMessage += ErrorMessage;
 
             SourceView.MainTabControl.Items.Remove(SourceView.SourceTab);
             ChannelVersionView.MainTabControl.Items.Remove(ChannelVersionView.ChannelVersionTab);
@@ -373,6 +376,7 @@ namespace MetroDemo.ExampleViews
             ProgramOptionsView.MainTabControl.Items.Remove(ProgramOptionsView.OtherTab);
             PackageOptionsView.MainTabControl.Items.Remove(PackageOptionsView.PackageTab);
             DeploymentStagingView.MainTabControl.Items.Remove(DeploymentStagingView.StagingTab);
+            DeployView.MainTabControl.Items.Remove(DeployView.StagingTab);
 
             MainTabControl.Items.Add(SourceView.SourceTab);
             MainTabControl.Items.Add(ChannelVersionView.ChannelVersionTab);
@@ -380,6 +384,8 @@ namespace MetroDemo.ExampleViews
             MainTabControl.Items.Add(ProgramOptionsView.OtherTab);
             MainTabControl.Items.Add(PackageOptionsView.PackageTab);
             MainTabControl.Items.Add(DeploymentStagingView.StagingTab);
+            MainTabControl.Items.Add(DeployView.StagingTab);
+
 
             ChannelVersionView.cbChannelVersion.SelectedIndex = 0;
             

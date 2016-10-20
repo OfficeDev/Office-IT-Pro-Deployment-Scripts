@@ -45,19 +45,38 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
         {
 
             InitializeComponent();
+
+            if (GlobalObjects.ViewModel.CmPackage.SiteCode != string.Empty)
+            {
+                cbSiteCode.SelectedItem = GlobalObjects.ViewModel.CmPackage.SiteCode;
+            }
+            else
+            {
+                cbSiteCode.SelectedIndex = 0; 
+            }
+
         }
 
       
 
         private void ProgramOptionsView_OnLoaded(object sender, RoutedEventArgs e)
         {
-           
+          
         }
 
         private void OtherOptionsPage_OnIsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             CurrentCmProgram =
-                    GlobalObjects.ViewModel.CmPackage.Programs[GlobalObjects.ViewModel.CmPackage.Programs.Count - 1];
+              GlobalObjects.ViewModel.CmPackage.Programs[GlobalObjects.ViewModel.CmPackage.Programs.Count - 1];
+
+            if (GlobalObjects.ViewModel.CmPackage.Programs.Count > 1)
+            {
+                cbSiteCode.IsEnabled = false;
+            }
+            else
+            {
+                cbSiteCode.IsEnabled = true;
+            }
 
             GetSiteCodes();
             ToggleNext();
@@ -81,9 +100,7 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
                 });
             }
         }
-
-     
-
+ 
         private void ScriptName_OnTextChanged(object sender, TextChangedEventArgs e)
         {
             var textbox = (TextBox)sender;
@@ -107,17 +124,6 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
             var text = textbox.Text;
 
             CurrentCmProgram.CustomName = text;
-        }
-
-        private void Collection_OnTextChanged(object sender, TextChangedEventArgs e)
-        {
-
-            var textbox = (TextBox)sender;
-            var text = textbox.Text;
-
-            CurrentCmProgram.CollectionNames.Add(text);
-
-            ToggleNext();
         }
 
         private void CbDeploymentPurpose_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -258,7 +264,7 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
             var comboBox = (ComboBox)sender;
             var siteCode = comboBox.SelectedValue.ToString();
 
-            CurrentCmProgram.SiteCode = siteCode;
+            GlobalObjects.ViewModel.CmPackage.SiteCode = siteCode;
             CollectionList.ItemsSource = null;
 
             ToggleNext();
@@ -279,13 +285,13 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
             if (siteCodes.Count == 0)
                 siteCodes.Add("S01");
 
-            cbSiteCode.ItemsSource = siteCodes; 
+            cbSiteCode.ItemsSource = siteCodes;
         }
 
         private List<string> GetCollections()
         {
             var collections = new List<string>();
-            var siteCode = CurrentCmProgram.SiteCode;
+            var siteCode = GlobalObjects.ViewModel.CmPackage.SiteCode;
             var sitePath = @"SOFTWARE\Microsoft\SMS\Providers\Sites";
             var siteKey = Registry.LocalMachine.OpenSubKey(sitePath + $"\\{siteCode}");
             var dbKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\SMS\SQL Server\Site System SQL Account");

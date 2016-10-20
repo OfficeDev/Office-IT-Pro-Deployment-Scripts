@@ -27,14 +27,14 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
     /// <summary>
     /// Interaction logic for DeploymentStagingView.xaml
     /// </summary>
-    public partial class DeploymentStagingView : UserControl
+    public partial class DeployView : UserControl
     {
         public event ToggleNextEventHandler ToggleNextButton;
         public event MessageEventHandler ErrorMessage;
 
 
 
-        public DeploymentStagingView()
+        public DeployView()
         {
 
             InitializeComponent();

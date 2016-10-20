@@ -37,7 +37,6 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Models
             Channels = new List<SelectedChannel>();
             Languages = new ObservableCollection<Language>();
             Products= new ObservableCollection<Product>();
-            SiteCode = "S01"; 
         }
 
         public List<SelectedChannel> Channels { get; set; }
@@ -59,8 +58,6 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Models
         public string ConfigurationXml { get; set; }
 
         public string CustomName { get; set; }
-
-        public string SiteCode { get; set; }
 
         public DeploymentPurpose DeploymentPurpose { get; set;}
 
