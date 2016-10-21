@@ -45,54 +45,53 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
 
         }
 
-        private void StagingPage_OnIsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        private void DeployingPage_OnIsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            var cm = GlobalObjects.ViewModel.CmPackage;
-
         }
 
         private async void DeployButton_OnClick(object sender, RoutedEventArgs e)
         {
-            await DeployPackage(); 
+            await BeginDeploy(); 
         }
 
         #region helpers
 
-        private async Task DeployPackage()
+        private async Task BeginDeploy()
         {
-
-
-
+            ImgFilesDistributed.Visibility = Visibility.Collapsed;
+            ImgFilesDistributingFailed.Visibility = Visibility.Collapsed;
+            ImgDeployed.Visibility = Visibility.Collapsed;
+            ImgDeployFail.Visibility = Visibility.Collapsed;
 
             try
             {
                 GlobalObjects.ViewModel.BlockNavigation = true;
-                StageButton.IsEnabled = false;
+                DeployButton.IsEnabled = false;
 
-                Dispatcher.Invoke(() =>
+                await StartDistributeFiles();
+                await StartDeployFiles();
+
+                DeployButton.IsEnabled = true;
+
+                ToggleNextButton?.Invoke(this, new ToggleEventArgs()
                 {
-                    WaitFilesDownloading.Visibility = Visibility.Visible;
+                    Enabled = true
                 });
 
-                await DownloadScripts();
+                GlobalObjects.ViewModel.BlockNavigation = false;
 
-
-                await DownloadChannelFiles();
-                WaitFilesDownloading.Visibility = Visibility.Collapsed;
-                ImgFilesDownloaded.Visibility = Visibility.Visible;
+                //TODO hide Next button, need to create event 
             }
             catch (Exception ex)
             {
-                WaitFilesDownloading.Visibility = Visibility.Collapsed;
-                ImgFilesDownloadFail.Visibility = Visibility.Visible;
-                StageButton.IsEnabled = true;
+                GlobalObjects.ViewModel.BlockNavigation = false;
 
                 LogErrorMessage(ex);
             }
            
         }
 
-        private async Task DownloadChannelFiles()
+        private async Task DistributeFiles()
         {         
             var n = 1;
             var CMConfig = GlobalObjects.ViewModel.CmPackage; 
@@ -101,14 +100,109 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
             var scriptPath = currentDirectory + $"\\Setup-CMOfficeDeployment.ps1";
             var scriptPathTmp = currentDirectory + $"\\Tmp-Setup-CMOfficeDeployment.ps1";
 
-         
+            var channels = new List<string>();
+            var arguments = $"/c Powershell -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden . .\\Setup-CMOfficeDeployment.ps1;Distribute-CMOfficePackage -Channels ";
+
 
             foreach (var program in CMConfig.Programs)
             {
+                program.Channels.ForEach(c =>
+                {
+                    if (!channels.Contains(c.Branch.NewName.ToString()))
+                    {
+                        channels.Add(c.Branch.NewName.ToString());
+                    }
+                });
+            }
+
+            channels.ForEach(c =>
+            {
+                if (channels.IndexOf(c) < channels.Count - 1)
+                {
+                    arguments += $"{c},";
+                }
+                else
+                {
+                    arguments += c;
+                }
+            });
+
+            //arguments +=
+            //    $" -DeploymentExpiryDurationInDays {GlobalObjects.ViewModel.CmPackage.DeploymentExpiryDurationInDays} ";
+
+            arguments += $" -SiteCode {GlobalObjects.ViewModel.CmPackage.SiteCode} ";
+
+            if (GlobalObjects.ViewModel.CmPackage.CMPSModulePath != "")
+                arguments += $" -CMPSModulePath {GlobalObjects.ViewModel.CmPackage.CMPSModulePath} ";
+
+            if (GlobalObjects.ViewModel.CmPackage.DistributionPoint != "")
+            {
+                arguments += $" -DistributionPoint {GlobalObjects.ViewModel.CmPackage.DistributionPoint}";
+            }
+            else
+            {
+                arguments += $" -DistributionPointGroupName  {GlobalObjects.ViewModel.CmPackage.DistributionPointGroupName}";
+            }
+
+            arguments += " -WaitForDistributionToFinish $true ";
+
+            await Retry.Block(2, 1, async () =>
+            {
+                var tcs = new TaskCompletionSource<bool>();
+
+                if (n == 2)
+                {
+                    System.IO.File.Copy(scriptPathTmp, scriptPath, true);
+                }
+
+
+                var p = new Process
+                {
+                    StartInfo = new ProcessStartInfo()
+                    {
+                        FileName = "cmd",
+                        Arguments = arguments,
+                        CreateNoWindow = true,
+                        UseShellExecute = false,
+                        WorkingDirectory = currentDirectory,
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true,
+
+                    },
+                };
+
+                p.EnableRaisingEvents = true;
+
+                p.Exited += (sender, args) =>
+                {
+                    tcs.SetResult(true);
+                    p.Dispose();
+                };
+
+                p.Start();
+
+
+                var error = await p.StandardError.ReadToEndAsync();
+                if (!string.IsNullOrEmpty(error)) throw (new Exception(error));
+                n++;
+            });
+        }
+
+        private async Task DeployPrograms()
+        {
+            var n = 1;
+            var CMConfig = GlobalObjects.ViewModel.CmPackage;
+            var currentDirectory = Directory.GetCurrentDirectory() + @"\Scripts";
+
+            var scriptPath = currentDirectory + $"\\Setup-CMOfficeDeployment.ps1";
+            var scriptPathTmp = currentDirectory + $"\\Tmp-Setup-CMOfficeDeployment.ps1";
+
+            foreach (var program in CMConfig.Programs)
+            {
+                
                 var channels = new List<string>();
-                var languages = new List<string>();
                 var bitnesses = new List<string>();
-                var arguments = $"/c Powershell -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden . .\\Setup-CMOfficeDeployment.ps1;Download-CMOfficeChannelFiles -Channels ";
+                var arguments = $"/c Powershell -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden . .\\Setup-CMOfficeDeployment.ps1;Deploy-CMOfficeProgram -Channels ";
 
 
                 program.Channels.ForEach(c =>
@@ -119,13 +213,6 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
                     }
                 });
 
-                program.Languages.ToList().ForEach(l =>
-                {
-                    if (!languages.Contains(l.Id))
-                    {
-                        languages.Add(l.Id);
-                    }
-                });
 
                 program.Bitnesses.ToList().ForEach(b =>
                 {
@@ -135,7 +222,7 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
                     }
                 });
 
-              
+
 
                 channels.ForEach(c =>
                 {
@@ -149,19 +236,7 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
                     }
                 });
 
-                arguments += " -OfficeFilesPath C:\\OfficeChannels -Languages ";
-
-                languages.ForEach(c =>
-                {
-                    if (languages.IndexOf(c) < languages.Count - 1)
-                    {
-                        arguments += $"{c},";
-                    }
-                    else
-                    {
-                        arguments += c;
-                    }
-                });
+                arguments += " -OfficeFilesPath C:\\OfficeChannels ";
 
                 arguments += " -Bitness ";
 
@@ -174,90 +249,121 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
                     arguments += bitnesses[0];
                 }
 
-                await Retry.Block(2, 1, async () =>
+                arguments += $" -ProgramType {program.DeploymentType} ";
+                arguments += $" -SiteCode {GlobalObjects.ViewModel.CmPackage.SiteCode}";
+                arguments += $" -DeploymentPurpose {program.DeploymentPurpose} ";
+
+
+                if (GlobalObjects.ViewModel.CmPackage.CMPSModulePath != "")
+                    arguments += $" -CMPSModulePath {GlobalObjects.ViewModel.CmPackage.CMPSModulePath} ";
+
+                if (program.CustomName != "")
+                    arguments += $" -CustomName {program.CustomName}";  
+
+                program.CollectionNames.ToList().ForEach(async  c =>
                 {
-                    var tcs = new TaskCompletionSource<bool>();
+                    var argumentsCopy = arguments;
+                    argumentsCopy += $" -Collection '{c}' ";
 
-                    if (n == 2)
+                   await Retry.Block(2, 1, async () =>
                     {
-                        System.IO.File.Copy(scriptPathTmp, scriptPath, true);
-                    }
+                        var tcs = new TaskCompletionSource<bool>();
 
-
-                    var p = new Process
-                    {
-                        StartInfo = new ProcessStartInfo()
+                        if (n == 2)
                         {
-                            FileName = "cmd",
-                            Arguments = arguments,
-                            CreateNoWindow = true,
-                            UseShellExecute = false,
-                            WorkingDirectory = currentDirectory,
-                            RedirectStandardOutput = true,
-                            RedirectStandardError = true,
-
-                        },
-                    };
-
-                    p.EnableRaisingEvents = true;
-
-                    p.Exited += (sender, args) =>
-                    {
-                        tcs.SetResult(true);
-                        p.Dispose();
-                    };
-
-                    p.Start();
+                            System.IO.File.Copy(scriptPathTmp, scriptPath, true);
+                        }
 
 
-                    var error = await p.StandardError.ReadToEndAsync();
-                    if (!string.IsNullOrEmpty(error)) throw (new Exception(error));
-                    n++;
+                        var p = new Process
+                        {
+                            StartInfo = new ProcessStartInfo()
+                            {
+                                FileName = "cmd",
+                                Arguments = argumentsCopy,
+                                CreateNoWindow = true,
+                                UseShellExecute = false,
+                                WorkingDirectory = currentDirectory,
+                                RedirectStandardOutput = true,
+                                RedirectStandardError = true,
+
+                            },
+                        };
+
+                        p.EnableRaisingEvents = true;
+
+                        p.Exited += (sender, args) =>
+                        {
+                            tcs.SetResult(true);
+                            p.Dispose();
+                        };
+
+                        p.Start();
+
+
+                        var error = await p.StandardError.ReadToEndAsync();
+                        if (!string.IsNullOrEmpty(error)) throw (new Exception(error));
+                        n++;
+                    });
                 });
             }
 
-         
         }
-        private async Task DownloadScripts()
+
+        private async Task StartDistributeFiles()
         {
-            var downloadUrls = GlobalObjects.ViewModel.CmPackage.DownloadUrls;
-            var currentDirectory = Directory.GetCurrentDirectory() + @"\Scripts";
-
-            foreach (var url in downloadUrls)
+            try
             {
-                var splitUrl = url.Url.Split('/');
+                GlobalObjects.ViewModel.BlockNavigation = true;
 
-                if (url.Url.Split('/')[splitUrl.Length - 2] == "DeploymentFiles")
+                Dispatcher.Invoke(() =>
                 {
-                    currentDirectory = Directory.GetCurrentDirectory() + @"\Scripts\DeploymentFiles";
-                }
+                    WaitFilesDistributing.Visibility = Visibility.Visible;
+                });
 
-                var scriptPath = currentDirectory + $"\\{url.Name}";
-                var scriptPathTmp = currentDirectory + $"\\Tmp-{url.Name}";
+                await DistributeFiles();
 
+                WaitFilesDistributing.Visibility = Visibility.Collapsed;
+                ImgFilesDistributed.Visibility = Visibility.Visible;
 
-                if (!File.Exists(scriptPathTmp))
-                {
-                    File.Copy(scriptPath, scriptPathTmp, true);
-                }
-
-                var scriptUrl = url.Url;
-
-                try
-                {
-                    await Retry.BlockAsync(5, 1, async () =>
-                    {
-                        using (var webClient = new WebClient())
-                        {
-                            await webClient.DownloadFileTaskAsync(new Uri(scriptUrl), scriptPath);
-                        }
-                    });
-                }
-                catch (Exception ex) { }
             }
+            catch (Exception ex)
+            {
 
+                WaitFilesDistributing.Visibility = Visibility.Collapsed;
+                ImgFilesDistributingFailed.Visibility = Visibility.Visible;
+                DeployButton.IsEnabled = true;
+
+                LogErrorMessage(ex); ;
+            }
         }
 
+        private async Task StartDeployFiles()
+        {
+            try
+            {
+                GlobalObjects.ViewModel.BlockNavigation = true;
+
+                Dispatcher.Invoke(() =>
+                {
+                    WaitDeployingPrograms.Visibility = Visibility.Visible;
+                });
+
+                await DeployPrograms();
+
+                WaitDeployingPrograms.Visibility = Visibility.Collapsed;
+                ImgDeployed.Visibility = Visibility.Visible;
+            }
+            catch (Exception ex)
+            {
+
+                WaitDeployingPrograms.Visibility = Visibility.Collapsed;
+                ImgDeployFail.Visibility = Visibility.Visible;
+                DeployButton.IsEnabled = true;
+
+                LogErrorMessage(ex); ;
+            }
+        }
 
         private void LogErrorMessage(Exception ex)
         {
@@ -273,5 +379,7 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
         }
 
         #endregion
+
+     
     }
 }

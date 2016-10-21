@@ -114,17 +114,27 @@
                                                        Margin="{StaticResource ControlMargin}" 
                                                        HorizontalAlignment="Right" VerticalAlignment="Center" Checked="TsUpdateBits_OnChecked" Unchecked="TsUpdateBits_OnUnchecked"/>
 
-                                        <Label Grid.Row="2" Grid.ColumnSpan="3" x:Name="lblDistributionPoint" Content="Distribution Point Name?*" ToolTip="The distribution point name. A distribution point or distribution point group must be specified.  This field is required if you are not using a distribution point group." Style="{StaticResource CustomMetroLabelHeader}" 
-                                           VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" IsEnabled="False" />
-                                        <TextBox Grid.Row="2" Grid.Column="2"  x:Name="DistributionPoint" FontSize="15" VerticalContentAlignment="Top" HorizontalAlignment="Right" ToolTip="The distribution point name. A distribution point or distribution point group must be specified."
-                                             Height="30" Width="200" Text="{Binding CmPackage.DistributionPoint, Mode=TwoWay}"  Foreground="{StaticResource GrayBrush}" Background="White" TextChanged="DistributionPoint_OnTextChanged" IsEnabled="False">
-                                        </TextBox>
+                                        
 
-                                        <Label Grid.Row="3" Grid.ColumnSpan="3" x:Name="lblDistributionPointGroupName" Content="Distribution Point Group Name?*" ToolTip="The distribution point group name. A distribution point or distirbution point group must be specified.  This field is required if you are not using a distribution group." 
+                                        <!--<TextBox Grid.Row="2" Grid.Column="2"  x:Name="DistributionPoint" FontSize="15" VerticalContentAlignment="Top" HorizontalAlignment="Right" ToolTip="The distribution point name. A distribution point or distribution point group must be specified."
+                                             Height="30" Width="200" Text="{Binding CmPackage.DistributionPoint, Mode=TwoWay}"  Foreground="{StaticResource GrayBrush}" Background="White" TextChanged="DistributionPoint_OnTextChanged" IsEnabled="False">
+                                        </TextBox>-->
+
+                                        <Label Grid.Row="2" Grid.ColumnSpan="3" x:Name="lblDistributionPointGroupName" Content="Distribution Point Group Name?*" ToolTip="The distribution point group name. A distribution point or distirbution point group must be specified.  This field is required if you are not using a distribution group." 
                                            Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" IsEnabled="False" />
-                                        <TextBox Grid.Row="3" Grid.Column="2"  x:Name="DistributionPointGroupName"  FontSize="15" HorizontalAlignment="Right" VerticalContentAlignment="Top" ToolTip="The distribution point group name. A distribution point or distirbution point group must be specified."
-                                            Height="30" Width="200" Text="{Binding CmPackage.DistributionPointGroupName, Mode=TwoWay}"  Foreground="{StaticResource GrayBrush}" Background="White" TextChanged="DistributionPointGroupName_OnTextChanged" IsEnabled="False">
-                                        </TextBox>
+                                        <ComboBox Grid.Row="2"  Grid.Column="2" Width="200" x:Name="DistributionPointGroup" Height="35" HorizontalAlignment="Left" Style="{StaticResource MetroComboBoxStyle}"  FontSize="20"
+                                                  SelectionChanged="DistributionPointGroup_OnSelectionChanged" Margin="50 0 0 0 "/>
+                                        <RadioButton Grid.Row="2" Grid.Column="3"  x:Name="rdbDistributionPointGroup"  HorizontalContentAlignment="Right"
+                                         Content="" Foreground="{StaticResource GrayBrush}" Margin="0 0 0 0"
+                                         GroupName="1" FontSize="20" Height="27" IsChecked="False" Checked="RdbDistributionPointGroup_OnChecked"/>
+
+                                        <Label Grid.Row="3" Grid.ColumnSpan="3" x:Name="lblDistributionPoint" Content="Distribution Point Name?*" ToolTip="The distribution point name. A distribution point or distribution point group must be specified.  This field is required if you are not using a distribution point group." Style="{StaticResource CustomMetroLabelHeader}" 
+                                           VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" IsEnabled="False" />
+                                        <ComboBox Grid.Row="3"  Grid.Column="2" Width="200" x:Name="DistributionPoint" Height="35" HorizontalAlignment="Left" Style="{StaticResource MetroComboBoxStyle}"  FontSize="20"
+                                                  SelectionChanged="DistributionPoint_OnSelectionChanged" Margin="50 0 0 0" IsEnabled="False"/>
+                                        <RadioButton Grid.Row="3" Grid.Column="3"  x:Name="rdbDistributionPoint"  HorizontalContentAlignment="Right"
+                                         Content="" Foreground="{StaticResource GrayBrush}" Margin="0 0 0 0"
+                                         GroupName="1" FontSize="20" Height="27" IsChecked="True" Checked="RdbDistributionPoint_OnChecked"/>
 
 
                                     </Grid>

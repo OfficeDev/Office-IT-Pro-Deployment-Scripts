@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -19,6 +20,8 @@ using MetroDemo;
 using MetroDemo.Events;
 using Microsoft.OfficeProPlus.InstallGen.Presentation.Enums;
 using Microsoft.OfficeProPlus.InstallGen.Presentation.Models;
+using Microsoft.Win32;
+using ComboBox = System.Windows.Controls.ComboBox;
 using TextBox = System.Windows.Controls.TextBox;
 using UserControl = System.Windows.Controls.UserControl;
 
@@ -31,6 +34,7 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
     {
         public event ToggleNextEventHandler ToggleNextButton;
         private CmProgram CurrentCmProgram = GlobalObjects.ViewModel.CmPackage.Programs[GlobalObjects.ViewModel.CmPackage.Programs.Count - 1]; 
+    
 
 
         public PackageOptionsView()
@@ -42,7 +46,8 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
 
         private void PackageOptionsView_OnLoaded(object sender, RoutedEventArgs e)
         {
-           
+            GetDistributionPointGroups();
+            GetDistributionPoints();
         }
 
         private void PackageOptionsPage_OnIsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -50,37 +55,28 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
             CurrentCmProgram =
                     GlobalObjects.ViewModel.CmPackage.Programs[GlobalObjects.ViewModel.CmPackage.Programs.Count - 1];
 
-            if (GlobalObjects.ViewModel.CmPackage.DeploymentSource == DeploymentSource.DistributionPoint)
+            GetDistributionPointGroups();
+            GetDistributionPoints();
+
+            lblDistributionPoint.IsEnabled = true;
+            lblDistributionPointGroupName.IsEnabled = true;
+
+            rdbDistributionPointGroup.IsEnabled = true;
+            rdbDistributionPoint.IsEnabled = true;
+
+            if (rdbDistributionPointGroup.IsChecked.Value)
             {
-                lblDistributionPoint.IsEnabled = true;
-                lblDistributionPointGroupName.IsEnabled = true;
-
-                if (DistributionPoint.Text.Length == 0 && DistributionPointGroupName.Text.Length > 0)
-                {
-                    DistributionPoint.IsEnabled = false;
-                    DistributionPointGroupName.IsEnabled = true;
-                }
-                else if (DistributionPoint.Text.Length > 0 && DistributionPointGroupName.Text.Length == 0)
-                {
-                    DistributionPoint.IsEnabled = true;
-                    DistributionPointGroupName.IsEnabled = false;
-                }
-                else
-                {
-                    DistributionPoint.IsEnabled = true;
-                    DistributionPointGroupName.IsEnabled = true;
-
-                }
-               
+                DistributionPoint.IsEnabled = false;
+                DistributionPointGroup.IsEnabled = true;
             }
             else
             {
-                lblDistributionPoint.IsEnabled = false;
-                lblDistributionPointGroupName.IsEnabled = false;
-                DistributionPoint.IsEnabled = false;
-                DistributionPointGroupName.IsEnabled = false;
-            }
+                DistributionPoint.IsEnabled = true;
+                DistributionPointGroup.IsEnabled = true;
 
+            }
+               
+            
             ToggleNext();
         }
 
@@ -114,36 +110,6 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
             }
            
         }
-
-        private void DistributionPoint_OnTextChanged(object sender, TextChangedEventArgs e)
-        {
-            var textbox = (TextBox)sender;
-            var text = textbox.Text;
-            GlobalObjects.ViewModel.CmPackage.DistributionPoint = text;
-
-            DistributionPointGroupName.IsEnabled = false;
-
-            if (DistributionPoint.Text.Length == 0)
-                DistributionPointGroupName.IsEnabled = true;
-
-            ToggleNext();
-        }
-
-        private void DistributionPointGroupName_OnTextChanged(object sender, TextChangedEventArgs e)
-        {
-            var textbox = (TextBox)sender;
-            var text = textbox.Text;
-            GlobalObjects.ViewModel.CmPackage.DistributionPointGroupName = text;
-
-            DistributionPoint.IsEnabled = false;
-
-            if (DistributionPointGroupName.Text.Length == 0)
-                DistributionPoint.IsEnabled = true;
-
-            ToggleNext();
-        }
-
-
 
         private void DeploymentExpiryDurationInDays_OnTextChanged(object sender, TextChangedEventArgs e)
         {
@@ -209,5 +175,118 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
             fileBrowser.ShowDialog();
             CMPSModulePath.Text = fileBrowser.SelectedPath;
         }
+
+        private void DistributionPoint_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var comboBox = (ComboBox) sender;
+            var value = comboBox.SelectedValue.ToString();
+
+            GlobalObjects.ViewModel.CmPackage.DistributionPoint = value; 
+        }
+
+        private void DistributionPointGroup_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var comboBox = (ComboBox)sender;
+            var value = comboBox.SelectedValue.ToString();
+
+            GlobalObjects.ViewModel.CmPackage.DistributionPointGroupName = value;
+        }
+
+        private void RdbDistributionPoint_OnChecked(object sender, RoutedEventArgs e)
+        {
+            DistributionPoint.IsEnabled = true;
+            DistributionPointGroup.IsEnabled = false;
+
+            if (DistributionPoint.Items.Count > 0)
+            {
+                DistributionPoint.SelectedIndex = 0;
+                GlobalObjects.ViewModel.CmPackage.DistributionPointGroupName = "";
+                GlobalObjects.ViewModel.CmPackage.DistributionPoint = DistributionPoint.SelectedValue.ToString(); 
+            }
+
+        }
+
+        private void RdbDistributionPointGroup_OnChecked(object sender, RoutedEventArgs e)
+        {
+            DistributionPoint.IsEnabled = false;
+            DistributionPointGroup.IsEnabled = true;
+
+            if (DistributionPointGroup.Items.Count > 0)
+            {
+                DistributionPointGroup.SelectedIndex = 0;
+                GlobalObjects.ViewModel.CmPackage.DistributionPoint = "";
+                GlobalObjects.ViewModel.CmPackage.DistributionPointGroupName = DistributionPointGroup.SelectedValue.ToString();
+
+            }
+        }
+
+
+        #region helpers
+        private void GetDistributionPointGroups()
+        {
+            var dpGroups = new List<string>();
+            var siteCode = GlobalObjects.ViewModel.CmPackage.SiteCode;
+            var sitePath = @"SOFTWARE\Microsoft\SMS\Providers\Sites";
+            var siteKey = Registry.LocalMachine.OpenSubKey(sitePath + $"\\{siteCode}");
+            var dbKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\SMS\SQL Server\Site System SQL Account");
+            var dbName = dbKey.GetValue("Database Name").ToString();
+            var sqlServerName = siteKey.GetValue("SQL Server Name").ToString();
+            var connectionString = $"Server= {sqlServerName}; Database= {dbName};Integrated Security=SSPI;";
+            var query = $"select [Name] from [{dbName}].[dbo].[DistributionPointGroup]";
+            SqlDataReader dataReader;
+
+            var connection = new SqlConnection(connectionString);
+
+            connection.Open();
+            var command = new SqlCommand(query, connection);
+            dataReader = command.ExecuteReader();
+
+            while (dataReader.Read())
+            {
+                dpGroups.Add(dataReader.GetValue(0).ToString());
+            }
+
+            dataReader.Close();
+            command.Dispose();
+            connection.Close();
+
+            if(dpGroups.Count > 0)
+                DistributionPointGroup.ItemsSource = dpGroups;
+        }
+
+
+        private void GetDistributionPoints()
+        {
+            var distribtutionPoints = new List<string>();
+            var siteCode = GlobalObjects.ViewModel.CmPackage.SiteCode;
+            var sitePath = @"SOFTWARE\Microsoft\SMS\Providers\Sites";
+            var siteKey = Registry.LocalMachine.OpenSubKey(sitePath + $"\\{siteCode}");
+            var dbKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\SMS\SQL Server\Site System SQL Account");
+            var dbName = dbKey.GetValue("Database Name").ToString();
+            var sqlServerName = siteKey.GetValue("SQL Server Name").ToString();
+            var connectionString = $"Server= {sqlServerName}; Database= {dbName};Integrated Security=SSPI;";
+            var query = $"select [ServerName] from [{dbName}].[dbo].[DistributionPoints]";
+            SqlDataReader dataReader;
+
+            var connection = new SqlConnection(connectionString);
+
+            connection.Open();
+            var command = new SqlCommand(query, connection);
+            dataReader = command.ExecuteReader();
+
+            while (dataReader.Read())
+            {
+                distribtutionPoints.Add(dataReader.GetValue(0).ToString());
+            }
+
+            dataReader.Close();
+            command.Dispose();
+            connection.Close();
+
+            if(distribtutionPoints.Count > 0)
+                DistributionPoint.ItemsSource = distribtutionPoints;
+        }
+
+        #endregion
     }
 }

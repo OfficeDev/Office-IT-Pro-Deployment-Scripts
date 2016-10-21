@@ -376,7 +376,7 @@ namespace MetroDemo.ExampleViews
             ProgramOptionsView.MainTabControl.Items.Remove(ProgramOptionsView.OtherTab);
             PackageOptionsView.MainTabControl.Items.Remove(PackageOptionsView.PackageTab);
             DeploymentStagingView.MainTabControl.Items.Remove(DeploymentStagingView.StagingTab);
-            DeployView.MainTabControl.Items.Remove(DeployView.StagingTab);
+            DeployView.MainTabControl.Items.Remove(DeployView.DeployingTab);
 
             MainTabControl.Items.Add(SourceView.SourceTab);
             MainTabControl.Items.Add(ChannelVersionView.ChannelVersionTab);
@@ -384,7 +384,7 @@ namespace MetroDemo.ExampleViews
             MainTabControl.Items.Add(ProgramOptionsView.OtherTab);
             MainTabControl.Items.Add(PackageOptionsView.PackageTab);
             MainTabControl.Items.Add(DeploymentStagingView.StagingTab);
-            MainTabControl.Items.Add(DeployView.StagingTab);
+            MainTabControl.Items.Add(DeployView.DeployingTab);
 
 
             ChannelVersionView.cbChannelVersion.SelectedIndex = 0;

@@ -47,8 +47,13 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
 
         private void StagingPage_OnIsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            var cm = GlobalObjects.ViewModel.CmPackage;
-
+            if (ImgProgramCreated.IsVisible)
+            {
+                ToggleNextButton?.Invoke(this, new ToggleEventArgs()
+                {
+                    Enabled = true
+                });
+            }
         }
 
         private async void DeployButton_OnClick(object sender, RoutedEventArgs e)
@@ -56,11 +61,12 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
             await StageDeployment();         
         }
 
+
+
+        #region helpers
+
         private async Task StartCreatePrograms()
         {
-            ImgProgramCreateFail.Visibility = Visibility.Collapsed;
-            ImgProgramCreated.Visibility = Visibility.Collapsed;
-
             try
             {
                 GlobalObjects.ViewModel.BlockNavigation = true;
@@ -72,6 +78,9 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
                 });
 
                 await CreatePrograms();
+
+                WaitCreatingProgram.Visibility = Visibility.Collapsed;
+                ImgProgramCreated.Visibility = Visibility.Visible;
             }
             catch (Exception ex)
             {
@@ -93,7 +102,7 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
             var scriptPath = currentDirectory + $"\\Setup-CMOfficeDeployment.ps1";
             var scriptPathTmp = currentDirectory + $"\\Tmp-Setup-CMOfficeDeployment.ps1";
 
-         
+
 
 
             foreach (var program in CMConfig.Programs)
@@ -212,15 +221,11 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
                 });
             }
 
-         
+
         }
 
-        #region helpers
         private async Task StartCreatePackages()
         {
-            ImgPackageCreateFail.Visibility = Visibility.Collapsed;
-            ImgPackageCreated.Visibility = Visibility.Collapsed;
-
             try
             {
                 GlobalObjects.ViewModel.BlockNavigation = true;
@@ -232,12 +237,48 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
                 });
 
                 await CreatePackages();
+
+                WaitCreatingPackage.Visibility = Visibility.Collapsed;
+                ImgPackageCreated.Visibility = Visibility.Visible;
             }
             catch (Exception ex)
             {
 
                 WaitCreatingPackage.Visibility = Visibility.Collapsed;
                 ImgPackageCreateFail.Visibility = Visibility.Visible;
+                StageButton.IsEnabled = true;
+
+                LogErrorMessage(ex);
+            }
+        }
+
+        private async Task StartDownloadFiles()
+        {
+            try
+            {
+                GlobalObjects.ViewModel.BlockNavigation = true;
+                StageButton.IsEnabled = false;
+
+                Dispatcher.Invoke(() =>
+                {
+                    WaitFilesDownloading.Visibility = Visibility.Visible;
+                });
+
+                await DownloadScripts();
+
+                if (GlobalObjects.ViewModel.CmPackage.DeploymentSource == DeploymentSource.CDN)
+                {
+                    await DownloadChannelFiles();
+                }
+
+                WaitFilesDownloading.Visibility = Visibility.Collapsed;
+                ImgFilesDownloaded.Visibility = Visibility.Visible;
+            }
+            catch (Exception ex)
+            {
+
+                WaitFilesDownloading.Visibility = Visibility.Collapsed;
+                ImgFilesDownloadFail.Visibility = Visibility.Visible;
                 StageButton.IsEnabled = true;
 
                 LogErrorMessage(ex);
@@ -293,7 +334,15 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
                 }
             });
 
-            arguments += " -OfficeSourceFilesPath  C:\\OfficeChannels ";
+
+            if (GlobalObjects.ViewModel.CmPackage.DeploymentSource == DeploymentSource.CDN)
+            {
+                arguments += " -OfficeSourceFilesPath  C:\\OfficeChannels ";
+            }
+            else
+            {
+                arguments += $" -OfficeSourceFilesPath  {GlobalObjects.ViewModel.CmPackage.DeploymentDirectory} ";
+            }
 
             arguments += " -Bitness ";
 
@@ -365,34 +414,20 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
         {
             ImgFilesDownloadFail.Visibility = Visibility.Collapsed;
             ImgFilesDownloaded.Visibility = Visibility.Collapsed;
-
+            ImgProgramCreated.Visibility = Visibility.Collapsed;
+            ImgProgramCreateFail.Visibility = Visibility.Collapsed;
+            ImgPackageCreated.Visibility = Visibility.Collapsed; 
+            ImgPackageCreateFail.Visibility = Visibility.Collapsed;
+            
             try
             {
              
                 GlobalObjects.ViewModel.BlockNavigation = true;
                 StageButton.IsEnabled = false;
 
-                Dispatcher.Invoke(() =>
-                {
-                    WaitFilesDownloading.Visibility = Visibility.Visible;
-                });
-
-                await DownloadScripts();
-                await DownloadChannelFiles();
-
-                WaitFilesDownloading.Visibility = Visibility.Collapsed;
-                ImgFilesDownloaded.Visibility = Visibility.Visible;
-
-                await StartCreatePackages();
-
-                WaitCreatingPackage.Visibility = Visibility.Collapsed;
-                ImgPackageCreated.Visibility = Visibility.Visible;
-
+                await StartDownloadFiles();
+                await StartCreatePackages();         
                 await StartCreatePrograms();
-
-                WaitCreatingProgram.Visibility = Visibility.Collapsed;
-                ImgProgramCreated.Visibility = Visibility.Visible;
-
 
                 GlobalObjects.ViewModel.BlockNavigation = false;
                 StageButton.IsEnabled = true;
@@ -404,8 +439,6 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
             }
             catch (Exception ex)
             {
-                WaitFilesDownloading.Visibility = Visibility.Collapsed;
-                ImgFilesDownloadFail.Visibility = Visibility.Visible;
                 StageButton.IsEnabled = true;
 
                 LogErrorMessage(ex);

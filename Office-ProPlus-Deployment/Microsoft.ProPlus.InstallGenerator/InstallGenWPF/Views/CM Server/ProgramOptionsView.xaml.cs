@@ -303,7 +303,6 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
 
             var connection = new SqlConnection(connectionString);
 
-
             connection.Open();
             var command = new SqlCommand(query, connection);
             dataReader = command.ExecuteReader();
