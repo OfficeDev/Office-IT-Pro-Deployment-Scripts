@@ -1892,3 +1892,13 @@ function Remove-ProductLanguage() {
     }
    }
 }
+
+function Restart-ExplorerExe() {
+    $process = Get-Process
+    foreach($obj in $process){
+        if($obj.ProcessName -like "explorer*"){
+            kill $obj.ID
+            Start-Sleep -Seconds 20
+        }
+    }
+}

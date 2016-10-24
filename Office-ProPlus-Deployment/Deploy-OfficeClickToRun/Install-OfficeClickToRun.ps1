@@ -50,6 +50,16 @@ using System;
 Add-Type -TypeDefinition $enum2 -ErrorAction SilentlyContinue
 } catch {}
 
+try {
+Add-Type  -ErrorAction SilentlyContinue -TypeDefinition @"
+   public enum PinAction
+   {
+      PinToStartMenu,
+      PinToTaskbar
+   }
+"@
+} catch {}
+
 function Install-OfficeClickToRun {
 <#
 .SYNOPSIS
@@ -202,10 +212,17 @@ Word, Excel, and Outlook will be pinned to the Start Menu. The PowerShell consol
     if(($PinToStartMenu) -or ($PinToTaskbar)){
         Write-Host ""
 
-        $ClickToRun = (Get-OfficeVersion).ClickToRun
-        $InstallPath = (Get-OfficeVersion).InstallPath
-        $officeVersionInt = (Get-OfficeVersion).Version.Split('.')[0]
-
+        $ClickToRun = Get-OfficeVersion
+        if($ClickToRun.GetType().Name -eq "Object[]"){
+            $C2RVersion = $ClickToRun[0]
+        } else {
+            $C2RVersion = $ClickToRun
+        }
+            
+        $ClickToRun = $true
+        $InstallPath = $C2RVersion.InstallPath
+        $officeVersionInt = $C2RVersion.Version.Split('.')[0]
+        
         if($PinToStartMenu){
             if($PinToStartMenu -eq 'AllOfficeApps'){
                 $OfficeAppPinnedStatus = GetOfficeAppVerbStatus
@@ -246,7 +263,7 @@ This function will query the local or a remote computer and return the informati
 Name: Get-OfficeVersion
 Version: 1.0.5
 DateCreated: 2015-07-01
-DateUpdated: 2016-07-20
+DateUpdated: 2016-10-14
 .LINK
 https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
 .PARAMETER ComputerName
@@ -471,7 +488,7 @@ process {
            
            $name = $regProv.GetStringValue($HKLM, $path, "DisplayName").sValue          
 
-           if ($ConfigItemList.Contains($key.ToUpper()) -and $name.ToUpper().Contains("MICROSOFT OFFICE") -and $name.ToUpper() -notlike "*MUI*") {
+           if ($ConfigItemList.Contains($key.ToUpper()) -and $name.ToUpper().Contains("MICROSOFT OFFICE") -and $name.ToUpper() -notlike "*MUI*" -and $name.ToUpper() -notlike "*VISIO*" -and $name.ToUpper() -notlike "*PROJECT*") {
               $primaryOfficeProduct = $true
            }
 
@@ -1404,7 +1421,7 @@ Set-PinnedApplication -Action UnPinFromStartMenu
         [string[]]$OfficeApps = $null,
 
         [Parameter()]
-        [string]$ClickToRun = $false,
+        [string]$ClickToRun,
 
         [Parameter()]
         [string]$InstallPath,
@@ -1414,13 +1431,30 @@ Set-PinnedApplication -Action UnPinFromStartMenu
     )
 
     if(!$ClickToRun){
-        $ClickToRun = (Get-OfficeVersion).ClickToRun
+        $ctr = Get-OfficeVersion
+        if($ctr.GetType().Name -eq "Object[]"){
+            $ClickToRun = $ctr[0].ClickToRun
+        } else {
+            $ClickToRun = (Get-OfficeVersion).ClickToRun
+        }
     }
+    
     if(!$InstallPath){
-        $InstallPath = (Get-OfficeVersion).InstallPath
+        $ctr = Get-OfficeVersion
+        if($ctr.GetType().Name -eq "Object[]"){
+            $InstallPath = $ctr[0].InstallPath
+        } else {
+            $InstallPath = (Get-OfficeVersion).InstallPath
+        }   
     }
+    
     if(!$officeVersion){
-        $officeVersion = (Get-OfficeVersion).Version.Split('.')[0]
+        $ctr = Get-OfficeVersion
+        if($ctr.GetType().Name -eq "Object[]"){
+            $officeVersion = $ctr[0].Version.Split('.')[0]
+        } else {
+            $officeVersion = (Get-OfficeVersion).Version.Split('.')[0]
+        }             
     }
 
     if($InstallPath.GetType().Name -eq "Object[]"){
@@ -1649,13 +1683,17 @@ function GetOfficeAppVerbStatus{
     Process{
         $results = new-object PSObject[] 0;
 
-        $ctr = (Get-OfficeVersion).ClickToRun
-        $InstallPath = (Get-OfficeVersion).InstallPath
-        $officeVersion = (Get-OfficeVersion).Version.Split('.')[0]
-
-        if($InstallPath.GetType().Name -eq "Object[]"){
-            $InstallPath = $InstallPath[0]
+        $ctr = Get-OfficeVersion 
+                     
+        if($ctr.GetType().Name -eq "Object[]"){
+            $ctr = $ctr[0]
+            $officeversion = $ctr.Version.Split('.')[0]                      
+        } else {
+            $officeVersion = (Get-OfficeVersion).Version.Split('.')[0]
         }
+        
+        $InstallPath = $ctr.InstallPath 
+        $ctr = $ctr.ClickToRun
 
         if($ctr -eq $true) {
             $officeAppPath = $InstallPath + "\root\Office" + $officeVersion

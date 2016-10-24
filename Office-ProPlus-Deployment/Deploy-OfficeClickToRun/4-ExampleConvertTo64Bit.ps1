@@ -69,6 +69,8 @@ if ($installOffice) {
 
       Set-ODTUpdates -TargetFilePath $targetFilePath -Channel $addNode.Channel -Enabled $true -UpdatePath $UpdatePath | Out-Null
 
+      Restart-ExplorerExe
+
       Install-OfficeClickToRun -TargetFilePath $targetFilePath -PinToStartMenu AllOfficeApps
       
   }
