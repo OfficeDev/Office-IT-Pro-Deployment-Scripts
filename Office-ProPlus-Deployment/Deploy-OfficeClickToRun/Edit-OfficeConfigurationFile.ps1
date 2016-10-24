@@ -825,7 +825,7 @@ Removes the ProductToAdd with the ProductId 'O365ProPlusRetail' from the XML Con
         [string] $ConfigurationXML = $NULL,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [string] $ProductId = "Unknown",
+        [string[]] $ProductId = "Unknown",
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $TargetFilePath,
@@ -837,74 +837,75 @@ Removes the ProductToAdd with the ProductId 'O365ProPlusRetail' from the XML Con
     Process{
         $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
 
-        if ($ProductId -eq "Unknown") {
-            $ProductId = SelectProductId
-        }
-
-        $ProductId = IsValidProductId -ProductId $ProductId
-
-        #Load the file
-        [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
-
-        if ($TargetFilePath) {
-           $ConfigFile.Load($TargetFilePath) | Out-Null
-        } else {
-            if ($ConfigurationXml) 
-            {
-              $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
-              $global:saveLastConfigFile = $NULL
-              $global:saveLastFilePath = $NULL
-            }
-        }
-
-        $global:saveLastConfigFile = $ConfigFile.OuterXml
-
-        #Check that the file is properly formatted
-        if($ConfigFile.Configuration -eq $null){
-            throw $NoConfigurationElement
-        }
-
-        if($ConfigFile.Configuration.Add -eq $null){
-            throw $NoAddElement
-        }
-
-        if (!($All)) {
-            #Set the desired values
-            [System.XML.XMLElement]$ProductElement = $ConfigFile.Configuration.Add.Product | Where { $_.ID -eq $ProductId }
-            if($ProductElement -ne $null){
-                $ConfigFile.Configuration.Add.removeChild($ProductElement) | Out-Null
+        foreach($Product in $ProductId){
+            if ($Product -eq "Unknown") {
+                $Product = SelectProductId
             }
 
-            if ($ConfigFile.Configuration.Add.Product.Count -eq 0) {
-                [System.XML.XMLElement]$AddNode = $ConfigFile.SelectSingleNode("/Configuration/Add")
-                if ($AddNode) {
-                    $ConfigFile.Configuration.removeChild($AddNode) | Out-Null
+            $Product = IsValidProductId -ProductId $Product
+
+            #Load the file
+            [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
+
+            if ($TargetFilePath) {
+               $ConfigFile.Load($TargetFilePath) | Out-Null
+            } else {
+                if ($ConfigurationXml) 
+                {
+                  $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
+                  $global:saveLastConfigFile = $NULL
+                  $global:saveLastFilePath = $NULL
                 }
             }
-        } else {
-           $ConfigFile.Configuration.Add.RemoveAll() | Out-Null
+
+            $global:saveLastConfigFile = $ConfigFile.OuterXml
+
+            #Check that the file is properly formatted
+            if($ConfigFile.Configuration -eq $null){
+                throw $NoConfigurationElement
+            }
+
+            if($ConfigFile.Configuration.Add -eq $null){
+                throw $NoAddElement
+            }
+
+            if (!($All)) {
+                #Set the desired values
+                [System.XML.XMLElement]$ProductElement = $ConfigFile.Configuration.Add.Product | Where { $_.ID -eq $Product }
+                if($ProductElement -ne $null){
+                    $ConfigFile.Configuration.Add.removeChild($ProductElement) | Out-Null
+                }
+
+                if ($ConfigFile.Configuration.Add.Product.Count -eq 0) {
+                    [System.XML.XMLElement]$AddNode = $ConfigFile.SelectSingleNode("/Configuration/Add")
+                    if ($AddNode) {
+                        $ConfigFile.Configuration.removeChild($AddNode) | Out-Null
+                    }
+                }
+            } else {
+               $ConfigFile.Configuration.Add.RemoveAll() | Out-Null
            
-        }
+            }
+        
+            $ConfigFile.Save($TargetFilePath) | Out-Null
+            $global:saveLastFilePath = $TargetFilePath
 
-        $ConfigFile.Save($TargetFilePath) | Out-Null
-        $global:saveLastFilePath = $TargetFilePath
+            if (($PSCmdlet.MyInvocation.PipelineLength -eq 1) -or `
+                ($PSCmdlet.MyInvocation.PipelineLength -eq $PSCmdlet.MyInvocation.PipelinePosition)) {
+                Write-Host
 
-        if (($PSCmdlet.MyInvocation.PipelineLength -eq 1) -or `
-            ($PSCmdlet.MyInvocation.PipelineLength -eq $PSCmdlet.MyInvocation.PipelinePosition)) {
-            Write-Host
+                Format-XML ([xml](cat $TargetFilePath)) -indent 4
 
-            Format-XML ([xml](cat $TargetFilePath)) -indent 4
-
-            Write-Host
-            Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
-        } else {
-            $results = new-object PSObject[] 0;
-            $Result = New-Object –TypeName PSObject 
-            Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
-            $Result
+                Write-Host
+                Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+            } else {
+                $results = new-object PSObject[] 0;
+                $Result = New-Object –TypeName PSObject 
+                Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
+                $Result
+            }
         }
     }
-
 }
 
 Function Get-LanguagesFromXML{
