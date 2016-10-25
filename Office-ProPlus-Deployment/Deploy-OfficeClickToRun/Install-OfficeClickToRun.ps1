@@ -240,13 +240,15 @@ Word, Excel, and Outlook will be pinned to the Start Menu. The PowerShell consol
             
             $allPinnedApps = GetOfficeAppVerbStatus
 
-            foreach($app in $allPinnedApps){
-                if($PinToStartMenu -notcontains $app.Name){
-                    if($app.PinToStartMenuAvailable -eq $false){
-                        Set-OfficePinnedApplication -Action UnpinFromStartMenu -OfficeApps $app.Name -ClickToRun $ClickToRun -InstallPath $InstallPath -OfficeVersion $officeVersionInt
-                    }  
-                }
-            }        
+            if($PinToStartMenu -ne 'AllOfficeApps'){
+                foreach($app in $allPinnedApps){
+                    if($PinToStartMenu -notcontains $app.Name){
+                        if($app.PinToStartMenuAvailable -eq $false){
+                            Set-OfficePinnedApplication -Action UnpinFromStartMenu -OfficeApps $app.Name -ClickToRun $ClickToRun -InstallPath $InstallPath -OfficeVersion $officeVersionInt
+                        }  
+                    }
+                } 
+            }       
         }
 
         if(($PinToTaskbar) -and ([Environment]::OSVersion.Version.Major -lt 10)){
@@ -265,13 +267,15 @@ Word, Excel, and Outlook will be pinned to the Start Menu. The PowerShell consol
             
             $allPinnedApps = GetOfficeAppVerbStatus
 
-            foreach($app in $allPinnedApps){
-                if($PinToTaskbar -notcontains $app.Name){
-                    if($app.PinToTaskbarAvailable -eq $false){
-                        Set-OfficePinnedApplication -Action UnpinFromTaskbar -OfficeApps $app.Name -ClickToRun $ClickToRun -InstallPath $InstallPath -OfficeVersion $officeVersionInt
-                    }  
-                }
-            }              
+            if($PinToTaskbar -ne 'AllOfficeApps'){
+                foreach($app in $allPinnedApps){
+                    if($PinToTaskbar -notcontains $app.Name){
+                        if($app.PinToTaskbarAvailable -eq $false){
+                            Set-OfficePinnedApplication -Action UnpinFromTaskbar -OfficeApps $app.Name -ClickToRun $ClickToRun -InstallPath $InstallPath -OfficeVersion $officeVersionInt
+                        }  
+                    }
+                } 
+            }             
         }
     }    
 }
