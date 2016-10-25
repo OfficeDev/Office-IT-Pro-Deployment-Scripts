@@ -150,7 +150,7 @@
                                         </DockPanel>
                                     </TabItem.Header>
 
-                                    <Grid HorizontalAlignment="Left" Margin="30 10 0 0" Height="450" VerticalAlignment="Top" x:Name="OtherOptionsPage1" IsVisibleChanged="OtherOptionsPage_OnIsVisibleChanged">
+                                    <Grid HorizontalAlignment="Left" Margin="30 10 0 0" Height="450" VerticalAlignment="Top" x:Name="OtherOptionsPage1">
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="50" />
                                             <RowDefinition Height="50" />
@@ -185,17 +185,17 @@
                                     
                                         <Label Grid.Row="3" Grid.ColumnSpan="3" x:Name="lbConfigurationXml" Content="What Will the Configuration XML be Named?" ToolTip="Default value is .\DeploymentFiles\DefaultConfiguration.xml." Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
                                         <TextBox Grid.Row="3" Grid.ColumnSpan="3"  x:Name="ConfigurationXml" FontSize="15" HorizontalAlignment="Right" VerticalContentAlignment="Top" ToolTip="Default value is .\DeploymentFiles\DefaultConfiguration.xml." Margin="180 0 0 0"
-                                                   Height="30" Width="200" Text="{Binding CmPackage.Programs[CmPackage.Programs.Count-1].ConfigurationXml, Mode=TwoWay}"  Foreground="{StaticResource GrayBrush}" Background="White" TextChanged="ConfigurationXml_OnTextChanged">
+                                                   Height="30" Width="200" Text="{Binding CmPackage.Programs[CmPackage.Programs.Count-1].ConfigurationXml}"  Foreground="{StaticResource GrayBrush}" Background="White" TextChanged="ConfigurationXml_OnTextChanged">
                                         </TextBox>
 
                                         <Label Grid.Row="4" Grid.ColumnSpan="3" x:Name="lbCustomName" Content="Custom Name of the Deployment Program?" ToolTip="Default value combines the channel with the platform." Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
                                         <TextBox Grid.Row="4" Grid.ColumnSpan="3"  x:Name="CustomName"  FontSize="15" HorizontalAlignment="Right" VerticalContentAlignment="Top" ToolTip="Default value combines the channel with the platform. " Margin="180 0 0 0"
-                                                   Height="30" Width="200" Text="{Binding CmPackage.Programs[CmPackage.Programs.Count-1].CustomName, Mode=TwoWay}"  Foreground="{StaticResource GrayBrush}" Background="White" TextChanged="CustomName_OnTextChanged">
+                                                   Height="30" Width="200" Text="{Binding CmPackage.Programs[CmPackage.Programs.Count-1].CustomName}"  Foreground="{StaticResource GrayBrush}" Background="White" TextChanged="CustomName_OnTextChanged">
                                         </TextBox>
 
                                         <Label Grid.Row="5" Grid.ColumnSpan="3" x:Name="lbScriptName" Content="What Will The Deployment Script be Named?" ToolTip="Default value is CM-OfficeDeploymentScript.ps1." Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
                                         <TextBox Grid.Row="5" Grid.ColumnSpan="3"  x:Name="ScriptName" FontSize="15" HorizontalAlignment="Right" VerticalContentAlignment="Top" ToolTip="Default value is CM-OfficeDeploymentScript.ps1." Margin="180 0 0 0"
-                                                   Height="30" Width="200" Text="{Binding CmPackage.Programs[CmPackage.Programs.Count-1].ScriptName, Mode=TwoWay}"  Foreground="{StaticResource GrayBrush}" Background="White" TextChanged="ScriptName_OnTextChanged">
+                                                   Height="30" Width="200" Text="{Binding CmPackage.Programs[CmPackage.Programs.Count-1].ScriptName}"  Foreground="{StaticResource GrayBrush}" Background="White" TextChanged="ScriptName_OnTextChanged">
                                         </TextBox>
 
                                     </Grid>

@@ -310,7 +310,7 @@
                                         <VisualBrush  Visual="{StaticResource appbar_monitor}" ></VisualBrush>
                                     </Rectangle.Fill>
                                 </Rectangle>
-                                <Label FontSize="16" Foreground="white" x:Name="lblCM">CM Config</Label>
+                                <Label FontSize="16" Foreground="white" x:Name="lblCM">Config Mgr</Label>
                             </DockPanel>
                         </Controls:MetroTabItem.Header>
                     </Controls:MetroTabItem>

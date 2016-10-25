@@ -62,7 +62,7 @@
                                 <ColumnDefinition Width="250" />
                             </Grid.ColumnDefinitions>
 
-                            <TextBlock Grid.Row="2" Name="txtBlock" TextWrapping="WrapWithOverflow" FontSize="18" FontWeight="SemiBold" Style="{StaticResource CustomMetroLabelTextBlock}" />
+                            <TextBlock Grid.Row="2" Grid.ColumnSpan="3" Name="txtBlock" TextWrapping="WrapWithOverflow" FontSize="18" FontWeight="SemiBold" Style="{StaticResource CustomMetroLabelTextBlock}" />
 
                             <TextBlock Grid.Row="0" Grid.Column="0" TextWrapping="WrapWithOverflow" FontSize="25" FontWeight="Bold" Style="{StaticResource CustomMetroLabelTextBlock}">
                                 <Run Text="What would you like to do?"/>

@@ -25,12 +25,14 @@ using OfficeInstallGenerator.Model;
 using System.Xml;
 using MahApps.Metro.Converters;
 using Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config;
+using Microsoft.Win32;
 using Button = System.Windows.Controls.Button;
 using CheckBox = System.Windows.Controls.CheckBox;
 using ComboBox = System.Windows.Controls.ComboBox;
 using DataGrid = System.Windows.Controls.DataGrid;
 using File = System.IO.File;
 using MessageBox = System.Windows.MessageBox;
+using TabControl = System.Windows.Controls.TabControl;
 using TextBox = System.Windows.Controls.TextBox;
 using UserControl = System.Windows.Controls.UserControl;
 
@@ -89,6 +91,14 @@ namespace MetroDemo.ExampleViews
                     cbActions.Items.Add("Update an Existing Office ProPlus Deployment");
                     cbActions.Items.Add("Remove an Instance of Office ProPlus");
                 }
+
+                //if (!isCMServer())
+                //{
+                //    cbActions.IsEnabled = false;
+                //    strtButton.IsEnabled = false;
+                //    txtBlock.Text =
+                //        "This specific function is only available on a machine that has Configuration Manager installed.";
+                //}
 
                 cbActions.SelectedIndex = 0; 
 
@@ -181,6 +191,15 @@ namespace MetroDemo.ExampleViews
             });
         }
 
+        private bool isCMServer()
+        {
+            string subKey = @"SOFTWARE\Microsoft\SMS\Providers";
+
+            var key = Registry.LocalMachine.OpenSubKey(subKey, false);
+
+            return key != null;
+        }
+
         #region "Events"
 
         private void MainTabControl_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -236,37 +255,49 @@ namespace MetroDemo.ExampleViews
         {
             try
             {
-
-                var currentProgram =
-                    GlobalObjects.ViewModel.CmPackage.Programs[GlobalObjects.ViewModel.CmPackage.Programs.Count - 1];
-
-                if (GlobalObjects.ViewModel.CmPackage.Scenario == CMScenario.Deploy && MainTabControl.SelectedIndex == 4 && currentProgram.Channels.Count == 0)
+                if (GlobalObjects.ViewModel.CmPackage.Scenario == CMScenario.Deploy && MainTabControl.SelectedIndex == 4)
                 {
+                    var currentItem = (TabItem) MainTabControl.Items[4];
+                    var tabControl = (TabControl) currentItem.Content;
+                    var optionsTab = (TabItem) tabControl.Items[0];
+                    var optionsGrid = (Grid) optionsTab.Content;
+                    var AddCheckBox = VisualTreeHelper.GetChild(optionsGrid, 8) as CheckBox;
 
-                    var ChannelVersionView = new ChannelVersionView();
-                    var ProductsLanguagesView = new ProductsLanguagesView();
-                    var ProgramOptionsView = new ProgramOptionsView();
+                    if (AddCheckBox.IsChecked.Value)
+                    {
+                        var ChannelVersionView = new ChannelVersionView();
+                        var ProductsLanguagesView = new ProductsLanguagesView();
+                        var ProgramOptionsView = new ProgramOptionsView();
 
-                    ChannelVersionView.ToggleNextButton += ToggleNext;
-                    ProductsLanguagesView.ToggleNextButton += ToggleNext;
-                    ProgramOptionsView.ToggleNextButton += ToggleNext;
-
-                    ProgramOptionsView.ErrorMessage += ErrorMessage;
-
-                    ChannelVersionView.MainTabControl.Items.Remove(ChannelVersionView.ChannelVersionTab);
-                    ProductsLanguagesView.MainTabControl.Items.Remove(ProductsLanguagesView.ProductsLanguagesTab);
-                    ProgramOptionsView.MainTabControl.Items.Remove(ProgramOptionsView.OtherTab);
-
-                    MainTabControl.Items[2] = ChannelVersionView.ChannelVersionTab;
-                    MainTabControl.Items[3] = ProductsLanguagesView.ProductsLanguagesTab;
-
-                    MainTabControl.SelectedIndex = 2;
-
-                    var tab = (TabItem) MainTabControl.Items[4];
-                    tab.Visibility = Visibility.Collapsed;
+                        var newProgram = new CmProgram();
+                        GlobalObjects.ViewModel.CmPackage.Programs.Add(newProgram);
 
 
-                    MainTabControl.Items[4] = ProgramOptionsView.OtherTab;
+                        ChannelVersionView.ToggleNextButton += ToggleNext;
+                        ProductsLanguagesView.ToggleNextButton += ToggleNext;
+                        ProgramOptionsView.ToggleNextButton += ToggleNext;
+
+                        ProgramOptionsView.ErrorMessage += ErrorMessage;
+
+                        ChannelVersionView.MainTabControl.Items.Remove(ChannelVersionView.ChannelVersionTab);
+                        ProductsLanguagesView.MainTabControl.Items.Remove(ProductsLanguagesView.ProductsLanguagesTab);
+                        ProgramOptionsView.MainTabControl.Items.Remove(ProgramOptionsView.OtherTab);
+
+                        MainTabControl.Items[2] = ChannelVersionView.ChannelVersionTab;
+                        MainTabControl.Items[3] = ProductsLanguagesView.ProductsLanguagesTab;
+
+                        MainTabControl.SelectedIndex = 2;
+
+                        var tab = (TabItem) MainTabControl.Items[4];
+                        tab.Visibility = Visibility.Collapsed;
+
+                        MainTabControl.Items[4] = ProgramOptionsView.OtherTab;
+                    }
+                    else
+                    {
+                        TransitionCMTabs(TransitionTabDirection.Forward);
+                    }
+
                 }
                 else
                 {
@@ -387,7 +418,7 @@ namespace MetroDemo.ExampleViews
             MainTabControl.Items.Add(DeployView.DeployingTab);
 
 
-            ChannelVersionView.cbChannelVersion.SelectedIndex = 0;
+            //ChannelVersionView.cbChannelVersion.SelectedIndex = 0;
             
             var tabIndex = 2;
             while (tabIndex < MainTabControl.Items.Count)
@@ -407,7 +438,6 @@ namespace MetroDemo.ExampleViews
             NextButton.Visibility = Visibility.Visible;
             PreviousButton.Visibility = Visibility.Visible;
         }
-
 
         #endregion
 

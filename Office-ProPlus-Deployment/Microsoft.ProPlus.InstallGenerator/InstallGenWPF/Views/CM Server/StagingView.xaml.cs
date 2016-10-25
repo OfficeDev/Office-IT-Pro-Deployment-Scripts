@@ -102,11 +102,10 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
             var scriptPath = currentDirectory + $"\\Setup-CMOfficeDeployment.ps1";
             var scriptPathTmp = currentDirectory + $"\\Tmp-Setup-CMOfficeDeployment.ps1";
 
-
-
-
             foreach (var program in CMConfig.Programs)
             {
+
+
                 var channels = new List<string>();
                 var bitnesses = new List<string>();
 
@@ -141,7 +140,7 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
                     }
                 });
 
-                arguments += $" -DeploymentType {program.DeploymentType} -";
+                arguments += $" -DeploymentType {program.DeploymentType}";
 
                 arguments += " -Bitness ";
 
@@ -169,55 +168,62 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
                     arguments += $" -ConfigurationXml {program.ConfigurationXml}";
                 }
 
-                if (program.CustomName != "")
-                {
-                    arguments += $" -CustomName {program.CustomName}";
-                }
 
                 if (GlobalObjects.ViewModel.CmPackage.SiteCode != "")
                 {
                     arguments += $" -SiteCode {GlobalObjects.ViewModel.CmPackage.SiteCode} ";
                 }
 
-                await Retry.BlockAsync(2, 1, async () =>
+                program.CollectionNames.ToList().ForEach( async c =>
                 {
-                    var tcs = new TaskCompletionSource<bool>();
 
-                    if (n == 2)
+                    var agrumentsCopy = arguments; 
+
+                    if (program.CustomName != "")
                     {
-                        System.IO.File.Copy(scriptPathTmp, scriptPath, true);
+                        agrumentsCopy += $" -CustomName {program.CustomName}-{c.Replace(' ','-')}";
                     }
 
-
-                    var p = new Process
+                    await Retry.BlockAsync(2, 1, async () =>
                     {
-                        StartInfo = new ProcessStartInfo()
+                        var tcs = new TaskCompletionSource<bool>();
+
+                        if (n == 2)
                         {
-                            FileName = "cmd",
-                            Arguments = arguments,
-                            CreateNoWindow = true,
-                            UseShellExecute = false,
-                            WorkingDirectory = currentDirectory,
-                            RedirectStandardOutput = true,
-                            RedirectStandardError = true,
-
-                        },
-                    };
-
-                    p.EnableRaisingEvents = true;
-
-                    p.Exited += (sender, args) =>
-                    {
-                        tcs.SetResult(true);
-                        p.Dispose();
-                    };
-
-                    p.Start();
+                            System.IO.File.Copy(scriptPathTmp, scriptPath, true);
+                        }
 
 
-                    var error = await p.StandardError.ReadToEndAsync();
-                    if (!string.IsNullOrEmpty(error)) throw (new Exception(error));
-                    n++;
+                        var p = new Process
+                        {
+                            StartInfo = new ProcessStartInfo()
+                            {
+                                FileName = "cmd",
+                                Arguments = agrumentsCopy,
+                                CreateNoWindow = true,
+                                UseShellExecute = false,
+                                WorkingDirectory = currentDirectory,
+                                RedirectStandardOutput = true,
+                                RedirectStandardError = true,
+
+                            },
+                        };
+
+                        p.EnableRaisingEvents = true;
+
+                        p.Exited += (sender, args) =>
+                        {
+                            tcs.SetResult(true);
+                            p.Dispose();
+                        };
+
+                        p.Start();
+
+
+                        var error = await p.StandardError.ReadToEndAsync();
+                        if (!string.IsNullOrEmpty(error)) throw (new Exception(error));
+                        n++;
+                    });
                 });
             }
 
@@ -310,6 +316,10 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
                     {
                         channels.Add(c.Branch.NewName.ToString());
                     }
+                    //else
+                    //{
+                    //    GlobalObjects.ViewModel.CmPackage.MoveFiles = false;
+                    //}
                 });
 
                 program.Bitnesses.ToList().ForEach(b =>
@@ -319,7 +329,6 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
                         bitnesses.Add(b.Name);
                     }
                 });
-
             }
 
             channels.ForEach(c =>
@@ -335,15 +344,12 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
             });
 
 
-            if (GlobalObjects.ViewModel.CmPackage.DeploymentSource == DeploymentSource.CDN)
-            {
-                arguments += " -OfficeSourceFilesPath  C:\\OfficeChannels ";
-            }
-            else
+            if (GlobalObjects.ViewModel.CmPackage.DeploymentSource != DeploymentSource.CDN &&
+                GlobalObjects.ViewModel.CmPackage.DeploymentDirectory != "")
             {
                 arguments += $" -OfficeSourceFilesPath  {GlobalObjects.ViewModel.CmPackage.DeploymentDirectory} ";
             }
-
+        
             arguments += " -Bitness ";
 
             if (bitnesses.Count == 2)
@@ -360,7 +366,7 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
             if (GlobalObjects.ViewModel.CmPackage.CustomPackageShareName.Trim() != "")
             {
                 arguments +=
-                    $" -CustomPackageShareName {GlobalObjects.ViewModel.CmPackage.CustomPackageShareName.Trim()}";
+                    $" -CustomPackageShareName {GlobalObjects.ViewModel.CmPackage.CustomPackageShareName.Trim().Replace(' ','-')}";
             }
 
             if (GlobalObjects.ViewModel.CmPackage.CMPSModulePath != "")
@@ -449,6 +455,7 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
         private async Task DownloadChannelFiles()
         {         
             var n = 1;
+            var driveName = GetDrive();
             var CMConfig = GlobalObjects.ViewModel.CmPackage; 
             var currentDirectory = Directory.GetCurrentDirectory() + @"\Scripts";
 
@@ -462,16 +469,28 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
                 var channels = new List<string>();
                 var languages = new List<string>();
                 var bitnesses = new List<string>();
-                var arguments = $"/c Powershell -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden . .\\Setup-CMOfficeDeployment.ps1;Download-CMOfficeChannelFiles -Channels ";
+                var arguments = $"/c Powershell -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden . .\\Setup-CMOfficeDeployment.ps1;Download-CMOfficeChannelFiles ";
 
 
-                program.Channels.ForEach(c =>
-                {
-                    if (!channels.Contains(c.Branch.NewName.ToString()))
-                    {
-                        channels.Add(c.Branch.NewName.ToString());
-                    }
-                });
+                //program.Channels.ForEach(c =>
+                //{
+                //    if (!channels.Contains(c.Branch.NewName.ToString()))
+                //    {
+                //        channels.Add(c.Branch.NewName.ToString());
+                //    }
+                //});
+
+                //channels.ForEach(c =>
+                //{
+                //    if (channels.IndexOf(c) < channels.Count - 1)
+                //    {
+                //        arguments += $"{c},";
+                //    }
+                //    else
+                //    {
+                //        arguments += c;
+                //    }
+                //});
 
                 program.Languages.ToList().ForEach(l =>
                 {
@@ -489,31 +508,28 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
                     }
                 });
 
-              
 
-                channels.ForEach(c =>
+                if (GlobalObjects.ViewModel.CmPackage.DeploymentSource != DeploymentSource.CDN &&
+                    GlobalObjects.ViewModel.CmPackage.DeploymentDirectory != "")
                 {
-                    if (channels.IndexOf(c) < channels.Count - 1)
+                    arguments +=
+                        $" -OfficeFilesPath {GlobalObjects.ViewModel.CmPackage.DeploymentDirectory} -Languages ";
+                }
+                else
+                {
+                    GlobalObjects.ViewModel.CmPackage.DeploymentDirectory = driveName + "OfficeChannelFiles";
+                    arguments += $" -OfficeFilesPath  {driveName}OfficeChannelFiles -Languages ";
+                }
+
+                languages.ForEach(l =>
+                {
+                    if (languages.IndexOf(l) < languages.Count - 1)
                     {
-                        arguments += $"{c},";
+                        arguments += $"{l},";
                     }
                     else
                     {
-                        arguments += c;
-                    }
-                });
-
-                arguments += " -OfficeFilesPath C:\\OfficeChannels -Languages ";
-
-                languages.ForEach(c =>
-                {
-                    if (languages.IndexOf(c) < languages.Count - 1)
-                    {
-                        arguments += $"{c},";
-                    }
-                    else
-                    {
-                        arguments += c;
+                        arguments += l;
                     }
                 });
 
@@ -528,45 +544,54 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
                     arguments += bitnesses[0];
                 }
 
-                await Retry.BlockAsync(2, 1, async () =>
+                program.Channels.ForEach(async c =>
                 {
-                    var tcs = new TaskCompletionSource<bool>();
+                    var argumentsCopy = arguments;
+                    if (c.SelectedVersion == BranchVersion.Previous)
+                        argumentsCopy += $" -Version {c.Branch.Versions[1].Version} ";
 
-                    if (n == 2)
+                    argumentsCopy += $" -Channels {c.Branch.NewName}";
+
+                    await Retry.BlockAsync(2, 1, async () =>
                     {
-                        System.IO.File.Copy(scriptPathTmp, scriptPath, true);
-                    }
+                        var tcs = new TaskCompletionSource<bool>();
 
-
-                    var p = new Process
-                    {
-                        StartInfo = new ProcessStartInfo()
+                        if (n == 2)
                         {
-                            FileName = "cmd",
-                            Arguments = arguments,
-                            CreateNoWindow = true,
-                            UseShellExecute = false,
-                            WorkingDirectory = currentDirectory,
-                            RedirectStandardOutput = true,
-                            RedirectStandardError = true,
-
-                        },
-                    };
-
-                    p.EnableRaisingEvents = true;
-
-                    p.Exited += (sender, args) =>
-                    {
-                        tcs.SetResult(true);
-                        p.Dispose();
-                    };
-
-                    p.Start();
+                            System.IO.File.Copy(scriptPathTmp, scriptPath, true);
+                        }
 
 
-                    var error = await p.StandardError.ReadToEndAsync();
-                    if (!string.IsNullOrEmpty(error)) throw (new Exception(error));
-                    n++;
+                        var p = new Process
+                        {
+                            StartInfo = new ProcessStartInfo()
+                            {
+                                FileName = "cmd",
+                                Arguments = argumentsCopy,
+                                CreateNoWindow = true,
+                                UseShellExecute = false,
+                                WorkingDirectory = currentDirectory,
+                                RedirectStandardOutput = true,
+                                RedirectStandardError = true,
+
+                            },
+                        };
+
+                        p.EnableRaisingEvents = true;
+
+                        p.Exited += (sender, args) =>
+                        {
+                            tcs.SetResult(true);
+                            p.Dispose();
+                        };
+
+                        p.Start();
+
+
+                        var error = await p.StandardError.ReadToEndAsync();
+                        if (!string.IsNullOrEmpty(error)) throw (new Exception(error));
+                        n++;
+                    });
                 });
             }
         }
@@ -622,6 +647,24 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
                     Message = ex.Message
                 });
             }
+        }
+
+        private string GetDrive()
+        {
+            var allDrives = DriveInfo.GetDrives().Where(d =>
+                        d.DriveType != DriveType.CDRom && d.DriveType != DriveType.Removable &&
+                        d.DriveType != DriveType.Unknown).ToList();
+
+            var maxDrive = allDrives[0];
+             
+            allDrives.ForEach(d =>
+            {
+                if (maxDrive.IsReady && d.IsReady)
+                    if (d.AvailableFreeSpace > maxDrive.AvailableFreeSpace)
+                    maxDrive = d;
+            });
+
+            return maxDrive.Name;
         }
 
         #endregion

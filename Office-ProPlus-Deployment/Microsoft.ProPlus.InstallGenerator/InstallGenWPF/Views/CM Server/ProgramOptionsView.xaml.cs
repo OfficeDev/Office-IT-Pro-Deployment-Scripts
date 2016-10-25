@@ -61,7 +61,6 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
 
         private void ProgramOptionsView_OnLoaded(object sender, RoutedEventArgs e)
         {
-          
         }
 
         private void OtherOptionsPage_OnIsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -69,18 +68,20 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
             CurrentCmProgram =
               GlobalObjects.ViewModel.CmPackage.Programs[GlobalObjects.ViewModel.CmPackage.Programs.Count - 1];
 
-            if (GlobalObjects.ViewModel.CmPackage.Programs.Count > 1)
+            if (GlobalObjects.ViewModel.CmPackage.Programs.Count > 1 && CurrentCmProgram.CollectionNames.Count == 0)
             {
                 cbSiteCode.IsEnabled = false;
+                cbSiteCode.Text = GlobalObjects.ViewModel.CmPackage.SiteCode; 
             }
             else
             {
                 cbSiteCode.IsEnabled = true;
             }
 
-            GetSiteCodes();
             ToggleNext();
 
+            if(cbSiteCode.Items.Count == 0 && GlobalObjects.ViewModel.CmPackage.Programs.Count == 1)
+                GetSiteCodes();
         }
 
         private void ToggleNext()
@@ -103,6 +104,9 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
  
         private void ScriptName_OnTextChanged(object sender, TextChangedEventArgs e)
         {
+            CurrentCmProgram =
+              GlobalObjects.ViewModel.CmPackage.Programs[GlobalObjects.ViewModel.CmPackage.Programs.Count - 1];
+
             var textbox = (TextBox)sender;
             var text = textbox.Text;
 
@@ -111,6 +115,9 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
 
         private void ConfigurationXml_OnTextChanged(object sender, TextChangedEventArgs e)
         {
+            CurrentCmProgram =
+              GlobalObjects.ViewModel.CmPackage.Programs[GlobalObjects.ViewModel.CmPackage.Programs.Count - 1];
+
             var textbox = (TextBox)sender;
             var text = textbox.Text;
 
@@ -119,6 +126,8 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
 
         private void CustomName_OnTextChanged(object sender, TextChangedEventArgs e)
         {
+            CurrentCmProgram =
+             GlobalObjects.ViewModel.CmPackage.Programs[GlobalObjects.ViewModel.CmPackage.Programs.Count - 1];
 
             var textbox = (TextBox)sender;
             var text = textbox.Text;
@@ -130,6 +139,9 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
         {
             try
             {
+                CurrentCmProgram =
+                GlobalObjects.ViewModel.CmPackage.Programs[GlobalObjects.ViewModel.CmPackage.Programs.Count - 1];
+
                 var comboBox = (ComboBox) sender;
                 var index = comboBox.SelectedIndex;
                 var value = GlobalObjects.ViewModel.DeploymentPurposes[index];
@@ -147,6 +159,9 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
         {
             try
             {
+                CurrentCmProgram =
+                GlobalObjects.ViewModel.CmPackage.Programs[GlobalObjects.ViewModel.CmPackage.Programs.Count - 1];
+
                 var comboBox = (ComboBox) sender;
                 var index = comboBox.SelectedIndex;
                 var value = GlobalObjects.ViewModel.DeploymentTypes[index];
@@ -161,8 +176,7 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
 
         private void AddProgram_OnChecked(object sender, RoutedEventArgs e)
         {
-          var newProgram = new CmProgram();
-          GlobalObjects.ViewModel.CmPackage.Programs.Add(newProgram);
+
         }
 
         private void AddProgram_OnUnchecked(object sender, RoutedEventArgs e)
@@ -179,6 +193,9 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
         {
             try
             {
+                CurrentCmProgram =
+                GlobalObjects.ViewModel.CmPackage.Programs[GlobalObjects.ViewModel.CmPackage.Programs.Count - 1];
+
                 if (AddCollectionDialog == null)
                 {
                     var collectionList = GetCollections();
@@ -261,6 +278,9 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
 
         private void CbSiteCode_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            CurrentCmProgram =
+            GlobalObjects.ViewModel.CmPackage.Programs[GlobalObjects.ViewModel.CmPackage.Programs.Count - 1];
+
             var comboBox = (ComboBox)sender;
             var siteCode = comboBox.SelectedValue.ToString();
 

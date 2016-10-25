@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -67,11 +68,14 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
 
         private void ChannelToggleButton_OnChecked(object sender, RoutedEventArgs e)
         {
-            var checkbox = (CheckBox) sender;
+            var checkbox = (CheckBox)sender;
             var branch = checkbox.DataContext as OfficeBranch;
+            var index = ChannelList.Items.IndexOf(branch);
 
+            var row = (DataGridRow)ChannelList.ItemContainerGenerator.ContainerFromIndex(index);
+            var comobBox = FindVisualChild<ComboBox>(row);
             var selectedVersion =
-                (BranchVersion) Enum.Parse(typeof(BranchVersion), cbChannelVersion.SelectedValue.ToString(), true);
+                (BranchVersion)Enum.Parse(typeof(BranchVersion), comobBox.SelectedValue.ToString(), true);
 
             var selectedBranch = new SelectedChannel()
             {
@@ -79,8 +83,7 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
                 SelectedVersion = (BranchVersion)Enum.Parse(typeof(BranchVersion), selectedVersion.ToString(), true)
             };
 
-            if (CurrentCmProgram.Channels != null && !CurrentCmProgram.Channels.Contains(selectedBranch))
-                CurrentCmProgram.Channels.Add(selectedBranch); 
+            CurrentCmProgram.Channels.Add(selectedBranch);
 
             ToggleNext();
         }
@@ -89,15 +92,29 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
         {
             var checkbox = (CheckBox)sender;
             var branch = checkbox.DataContext as OfficeBranch;
+            var index = ChannelList.Items.IndexOf(branch);
 
+            var row = (DataGridRow)ChannelList.ItemContainerGenerator.ContainerFromIndex(index);
+            var comobBox = FindVisualChild<ComboBox>(row);
             var selectedVersion =
-                (BranchVersion)Enum.Parse(typeof(BranchVersion), cbChannelVersion.SelectedValue.ToString(), true);
+                (BranchVersion)Enum.Parse(typeof(BranchVersion), comobBox.SelectedValue.ToString(), true);
 
             var selectedBranch = new SelectedChannel()
             {
                 Branch = branch,
                 SelectedVersion = (BranchVersion)Enum.Parse(typeof(BranchVersion), selectedVersion.ToString(), true)
             };
+
+
+
+            //var selectedVersion =
+            //    (BranchVersion)Enum.Parse(typeof(BranchVersion), cbChannelVersion.SelectedValue.ToString(), true);
+
+            //var selectedBranch = new SelectedChannel()
+            //{
+            //    Branch = branch,
+            //    SelectedVersion = (BranchVersion)Enum.Parse(typeof(BranchVersion), selectedVersion.ToString(), true)
+            //};
 
             foreach (var channel in CurrentCmProgram.Channels)
             {
@@ -178,11 +195,24 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
         {
             var combobox = (ComboBox) sender;
             var selectedVersion = combobox.SelectedValue;
-            
-            CurrentCmProgram.Channels.ForEach(c =>
+            var rowIndex = ChannelList.SelectedIndex;
+
+            if (rowIndex >= 0)
             {
-                c.SelectedVersion = (BranchVersion)Enum.Parse(typeof(BranchVersion), selectedVersion.ToString(), true);
-            });
+                var branch = ChannelList.SelectedCells[0].Item; 
+                
+                CurrentCmProgram.Channels.ForEach(c =>
+                {
+                    if (c.Branch == branch)
+                        c.SelectedVersion = (BranchVersion)Enum.Parse(typeof(BranchVersion), selectedVersion.ToString(), true);
+                });
+            }
+
+
+            //CurrentCmProgram.Channels.ForEach(c =>
+            //{
+            //    c.SelectedVersion = (BranchVersion)Enum.Parse(typeof(BranchVersion), selectedVersion.ToString(), true);
+            //});
         }
 
        

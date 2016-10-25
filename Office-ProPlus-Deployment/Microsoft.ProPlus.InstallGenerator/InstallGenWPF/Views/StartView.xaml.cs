@@ -39,15 +39,9 @@ namespace MetroDemo.ExampleViews
                     cbActions.Items.Add("Manage your local Office 365 ProPlus installation");
                     cbActions.Items.Add("Create Office 365 ProPlus language pack");
                     cbActions.Items.Add("Manage remote Office 365 ProPlus installation");
-
-                    if(true)
-                    //if (isCMServer())
-                    {
-                        cbActions.Items.Add("CM Configuration");
-                    }
-
+                    cbActions.Items.Add("Manage Installations using Configuration Manager");
+                    
                     cbActions.SelectedIndex = 0;
-
                 }
                 
                 LogAnaylytics("/", "StartView");
@@ -56,15 +50,6 @@ namespace MetroDemo.ExampleViews
             {
                 ex.LogException();
             }
-        }
-
-        private bool isCMServer()
-        {
-            string subKey = @"SOFTWARE\Microsoft\SMS\Providers";
-
-            var key = Registry.LocalMachine.OpenSubKey(subKey,false);
-
-            return key != null; 
         }
 
         private void StartNew()

@@ -129,7 +129,6 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
 
             //arguments +=
             //    $" -DeploymentExpiryDurationInDays {GlobalObjects.ViewModel.CmPackage.DeploymentExpiryDurationInDays} ";
-
             arguments += $" -SiteCode {GlobalObjects.ViewModel.CmPackage.SiteCode} ";
 
             if (GlobalObjects.ViewModel.CmPackage.CMPSModulePath != "")
@@ -202,7 +201,7 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
                 
                 var channels = new List<string>();
                 var bitnesses = new List<string>();
-                var arguments = $"/c Powershell -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden . .\\Setup-CMOfficeDeployment.ps1;Deploy-CMOfficeProgram -Channels ";
+                var arguments = $"/c Powershell -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden . .\\Setup-CMOfficeDeployment.ps1;Deploy-CMOfficeProgram -Channel ";
 
 
                 program.Channels.ForEach(c =>
@@ -236,7 +235,7 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
                     }
                 });
 
-                arguments += " -OfficeFilesPath C:\\OfficeChannels ";
+                //arguments += " -OfficeFilesPath C:\\OfficeChannels ";
 
                 arguments += " -Bitness ";
 
@@ -257,13 +256,16 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
                 if (GlobalObjects.ViewModel.CmPackage.CMPSModulePath != "")
                     arguments += $" -CMPSModulePath {GlobalObjects.ViewModel.CmPackage.CMPSModulePath} ";
 
-                if (program.CustomName != "")
-                    arguments += $" -CustomName {program.CustomName}";  
+               
 
-                program.CollectionNames.ToList().ForEach(async  c =>
+                program.CollectionNames.ToList().ForEach(async c =>
                 {
                     var argumentsCopy = arguments;
                     argumentsCopy += $" -Collection '{c}' ";
+
+                    if (program.CustomName != "")
+                        argumentsCopy += $" -CustomName {program.CustomName}-{c.Replace(' ','-')}";
+
 
                    await Retry.Block(2, 1, async () =>
                     {

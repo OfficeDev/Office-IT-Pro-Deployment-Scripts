@@ -109,7 +109,7 @@
                                               ItemsSource="{Binding Branches}"
                                               CanUserAddRows="False" IsEnabled="True">
                                             <DataGrid.Columns>
-                                                <DataGridTemplateColumn  >
+                                                <DataGridTemplateColumn>
                                                     <DataGridTemplateColumn.CellTemplate>
                                                         <DataTemplate>
                                                             <CheckBox  IsChecked="False" Checked="ChannelToggleButton_OnChecked"  Unchecked="ChannelToggleButton_OnUnchecked" Style="{StaticResource MetroCheckBox}" Content="{Binding RelativeSource={RelativeSource Self}, Path=x}" Margin="5 0 0 0"/>
@@ -118,20 +118,23 @@
                                                 </DataGridTemplateColumn>
                                                 <DataGridTextColumn Header="Channel" Binding="{Binding Name}" Width="400" 
                                                       IsReadOnly="True" FontSize="20" Foreground="{DynamicResource LabelTextBrushCustom}" />
+                                                <DataGridTemplateColumn x:Name="ChannelVersion" >
+                                                    <DataGridTemplateColumn.CellTemplate>
+                                                        <DataTemplate >
+                                                            <ComboBox ItemsSource="{Binding Source={StaticResource BranchVersionValues}}" SelectedIndex="0" Width="150" Margin="5 0 0 0" 
+                                                                      Foreground="{StaticResource GrayBrush}" 
+                                                                      SelectionChanged="CbChannelVersion_OnSelectionChanged"/>
+                                                        </DataTemplate>
+                                                    </DataGridTemplateColumn.CellTemplate>
+                                                </DataGridTemplateColumn>
                                             </DataGrid.Columns>
                                         </DataGrid>
                                     </Border>
 
-                                    <Label Grid.Row="3" Grid.Column="0" Content="Which Version of Channel Files Will You Use?" Style="{StaticResource CustomMetroLabelHeader}"
+                                    <Label Grid.Row="3" Grid.Column="0" Content="Which Bitness Would You Like to Use?" Style="{StaticResource CustomMetroLabelHeader}"
                                     HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="20"  Margin="-5 0 0 0" />
-                                    <ComboBox Grid.Row="3" Grid.Column="1"  x:Name="cbChannelVersion" Width="200" FontSize="20" Height="40" Foreground="{StaticResource GrayBrush}"
-                                                              HorizontalAlignment="Left" VerticalAlignment="Center" Margin="50 0 10 0" ItemsSource="{Binding Source={StaticResource BranchVersionValues}}" SelectedIndex="0" SelectionChanged="CbChannelVersion_OnSelectionChanged">
-                                    </ComboBox>
-
-                                    <Label Grid.Row="4" Grid.Column="0" Content="Which Bitness Would You Like to Use?" Style="{StaticResource CustomMetroLabelHeader}"
-                                    HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="20"  Margin="-5 0 0 0" />
-                                    <CheckBox Grid.Row="4" Grid.Column="1" Name="Bit64ToggleButton"  IsChecked="False" Width="Auto" Checked="Bit64ToggleButton_OnChecked" Unchecked="Bit64ToggleButton_OnUnchecked" Content="v64"   Foreground="{StaticResource GrayBrush}" VerticalAlignment="Center" Style="{StaticResource MetroCheckBox}"/>
-                                    <CheckBox Grid.Row="4" Grid.Column="2" Name="Bit32ToggleButton" IsChecked="False" Width="Auto" Checked="Bit32ToggleButton_OnChecked" Unchecked="Bit32ToggleButton_OnUnchecked" Content="v32"  Foreground="{StaticResource GrayBrush}" VerticalAlignment="Center" Style="{StaticResource MetroCheckBox}"
+                                    <CheckBox Grid.Row="3" Grid.Column="1" Name="Bit64ToggleButton"  IsChecked="False" Width="Auto" Checked="Bit64ToggleButton_OnChecked" Unchecked="Bit64ToggleButton_OnUnchecked" Content="v64"   Foreground="{StaticResource GrayBrush}" VerticalAlignment="Center" Style="{StaticResource MetroCheckBox}"/>
+                                    <CheckBox Grid.Row="3" Grid.Column="2" Name="Bit32ToggleButton" IsChecked="False" Width="Auto" Checked="Bit32ToggleButton_OnChecked" Unchecked="Bit32ToggleButton_OnUnchecked" Content="v32"  Foreground="{StaticResource GrayBrush}" VerticalAlignment="Center" Style="{StaticResource MetroCheckBox}"
                                                  Margin="-320 0 0 0"/>
 
 
