@@ -211,8 +211,6 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
                         channels.Add(c.Branch.NewName.ToString());
                     }
                 });
-
-
                 program.Bitnesses.ToList().ForEach(b =>
                 {
                     if (!bitnesses.Contains(b.Name))
@@ -220,9 +218,6 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
                         bitnesses.Add(b.Name);
                     }
                 });
-
-
-
                 channels.ForEach(c =>
                 {
                     if (channels.IndexOf(c) < channels.Count - 1)
@@ -234,8 +229,6 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
                         arguments += c;
                     }
                 });
-
-                //arguments += " -OfficeFilesPath C:\\OfficeChannels ";
 
                 arguments += " -Bitness ";
 
@@ -249,6 +242,16 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
                 }
 
                 arguments += $" -ProgramType {program.DeploymentType} ";
+
+                //if (program.DeploymentType == DeploymentType.DeployWithScript)
+                //{
+                //    //EditDeploymentScript(program);
+                //}
+                //else
+                //{
+                //    //edit configuration.xml
+                //}
+
                 arguments += $" -SiteCode {GlobalObjects.ViewModel.CmPackage.SiteCode}";
                 arguments += $" -DeploymentPurpose {program.DeploymentPurpose} ";
 
@@ -380,8 +383,12 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
             }
         }
 
+
+
+
+
         #endregion
 
-     
+
     }
 }

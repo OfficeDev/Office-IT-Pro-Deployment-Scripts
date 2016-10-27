@@ -101,7 +101,7 @@
                                         <TextBlock Grid.Row="0" Grid.ColumnSpan="2" TextWrapping="WrapWithOverflow" FontSize="25" FontWeight="Bold" Style="{StaticResource CustomMetroLabelTextBlock}"  Text="Other possible options." />
 
                                         <Label Grid.Row="1" Grid.ColumnSpan="2" x:Name="lblSiteCode" Content="Which Site Code Will You Use?" ToolTip="Three character site code, example S01. Left blank it will default to the current site." Style="{StaticResource CustomMetroLabelHeader}"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="20" />
-                                        <ComboBox Grid.Row="1"  Grid.Column="2" Width="200" x:Name="cbSiteCode" Height="35" HorizontalAlignment="Left" Style="{StaticResource MetroComboBoxStyle}"  FontSize="20"
+                                        <ComboBox Grid.Row="1"  Grid.Column="2" Width="200" x:Name="cbSiteCode" Height="35" HorizontalAlignment="Left" Style="{StaticResource MetroComboBoxStyle}"  FontSize="20" SelectedIndex="0"
                                                   SelectionChanged="CbSiteCode_OnSelectionChanged"/>
 
                                         <!--<TextBox Grid.Row="4" Grid.ColumnSpan="3"  x:Name="SiteCode" FontSize="15" HorizontalAlignment="Right" VerticalContentAlignment="Top" ToolTip="Three character site code, example S01. Left blank it will default to the current site." Margin="180 0 0 0"

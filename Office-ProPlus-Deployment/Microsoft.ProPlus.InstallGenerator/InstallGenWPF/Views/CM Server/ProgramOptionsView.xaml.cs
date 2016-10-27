@@ -46,14 +46,14 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
 
             InitializeComponent();
 
-            if (GlobalObjects.ViewModel.CmPackage.SiteCode != string.Empty)
-            {
-                cbSiteCode.SelectedItem = GlobalObjects.ViewModel.CmPackage.SiteCode;
-            }
-            else
-            {
-                cbSiteCode.SelectedIndex = 0; 
-            }
+            //if (GlobalObjects.ViewModel.CmPackage.SiteCode != string.Empty)
+            //{
+            //    cbSiteCode.SelectedItem = GlobalObjects.ViewModel.CmPackage.SiteCode;
+            //}
+            //else
+            //{
+            //    cbSiteCode.SelectedIndex = 0; 
+            //}
 
         }
 
