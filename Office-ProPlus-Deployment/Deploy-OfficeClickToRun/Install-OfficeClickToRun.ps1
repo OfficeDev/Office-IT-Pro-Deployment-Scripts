@@ -127,7 +127,10 @@ Word, Excel, and Outlook will be pinned to the Start Menu. The PowerShell consol
         [Parameter()]
         [ValidateSet("AllOfficeApps","Word","Excel","PowerPoint","OneNote","Access","Publisher","Outlook","Skype for Business",
                      "OneDrive for Business","Project","Visio")]
-        [string[]]$PinToTaskbar
+        [string[]]$PinToTaskbar,
+
+        [Parameter()]
+        [bool]$InstallProofingTools = $false
 
     )
 
@@ -277,7 +280,26 @@ Word, Excel, and Outlook will be pinned to the Start Menu. The PowerShell consol
                 } 
             }             
         }
-    }    
+    }
+    
+    if($InstallProofingTools -eq $true){
+        Write-Host ""
+        Write-Host "Installing Proofing Tools..."
+
+        if((Get-OfficeVersion).Bitness -eq "32-bit"){
+            $proofingToolFileName = "proofingtools2016_en-us-x86.exe"
+        } else {
+            $proofingToolFileName = "proofingtools2016_en-us-x64.exe"
+        }
+
+        $clientCulture = (Get-OfficeVersion).ClientCulture
+        $proofingLangLCID = ([globalization.cultureinfo]::GetCultures("allCultures") | where {$_.Name.ToLower() -match $clientCulture}).LCID
+
+        $commandArgs = "/lang:$proofingLangLCID /quiet /passive /norestart"
+
+        Start-Process -FilePath .\$proofingToolFileName -ArgumentList $commandArgs
+          
+     }    
 }
 
 Function Get-OfficeVersion {
