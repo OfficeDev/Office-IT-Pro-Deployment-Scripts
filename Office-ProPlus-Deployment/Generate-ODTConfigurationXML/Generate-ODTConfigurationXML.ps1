@@ -96,7 +96,7 @@ begin {
 
     $defaultDisplaySet = 'DisplayName','Version', 'ComputerName'
 
-    $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet(‘DefaultDisplayPropertySet’,[string[]]$defaultDisplaySet)
+    $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet(â€˜DefaultDisplayPropertySetâ€™,[string[]]$defaultDisplaySet)
     $PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultDisplayPropertySet)
     
     [string]$tempStr = $MyInvocation.MyCommand.Path
@@ -431,7 +431,7 @@ process {
         ($PSCmdlet.MyInvocation.PipelineLength -eq $PSCmdlet.MyInvocation.PipelinePosition)) {
 
         $results = new-object PSObject[] 0;
-        $Result = New-Object –TypeName PSObject 
+        $Result = New-Object â€“TypeName PSObject 
         Add-Member -InputObject $Result -MemberType NoteProperty -Name "ConfigurationXML" -Value $formattedXml
 
         if ($ComputerName.Length -gt 1) {
@@ -456,7 +456,7 @@ process {
         $allLanguages = Get-Unique -InputObject $allLanguages
 
         $results = new-object PSObject[] 0;
-        $Result = New-Object –TypeName PSObject 
+        $Result = New-Object â€“TypeName PSObject 
         Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
         Add-Member -InputObject $Result -MemberType NoteProperty -Name "LanguageIds" -Value $allLanguages
         Add-Member -InputObject $Result -MemberType NoteProperty -Name "ConfigurationXML" -Value $formattedXml
@@ -528,7 +528,7 @@ begin {
 
     $defaultDisplaySet = 'DisplayName','Version', 'ComputerName'
 
-    $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet(‘DefaultDisplayPropertySet’,[string[]]$defaultDisplaySet)
+    $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet(â€˜DefaultDisplayPropertySetâ€™,[string[]]$defaultDisplaySet)
     $PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultDisplayPropertySet)
 }
 
@@ -1292,7 +1292,7 @@ function officeGetExcludedApps() {
         $HKLM = [UInt32] "0x80000002"
         $HKCR = [UInt32] "0x80000000"
 
-        $allExcludeApps = 'Access','Excel','Groove','InfoPath','OneNote','Outlook',
+        $allExcludeApps = 'Access','Excel','Groove','InfoPath','OneDrive','OneNote','Outlook',
                        'PowerPoint','Publisher','Word'
 
         if ($Credentials) {
