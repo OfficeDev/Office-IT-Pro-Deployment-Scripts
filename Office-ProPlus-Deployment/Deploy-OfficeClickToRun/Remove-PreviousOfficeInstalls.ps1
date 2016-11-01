@@ -16,7 +16,11 @@ param(
 [bool]$KeepLync = $false,
 
 [Parameter(ValueFromPipelineByPropertyName=$true)]
-[bool]$NoReboot = $false
+[bool]$NoReboot = $false,
+
+[Parameter()]
+[ValidateSet('AllOfficeProducts','MainOfficeProduct','Visio','Project')]
+[string[]]$ProductsToRemove = 'AllOfficeProducts'
 )
 
 Function IsDotSourced() {
@@ -367,7 +371,11 @@ Function Remove-PreviousOfficeInstalls{
     [bool]$NoReboot = $false,
 
     [Parameter(ValueFromPipelineByPropertyName=$true)]
-    [bool]$Quiet = $true
+    [bool]$Quiet = $true,
+
+    [Parameter(ValueFromPipelineByPropertyName=$true)]
+    [ValidateSet('AllOfficeProducts','MainOfficeProduct','Visio','Project')]
+    [string[]]$ProductsToRemove = 'AllOfficeProducts'
   )
 
   Process {
@@ -378,12 +386,34 @@ Function Remove-PreviousOfficeInstalls{
     $15MSIVBS = "OffScrub_O15msi.vbs"
     $16MSIVBS = "OffScrub_O16msi.vbs"
 
-    if ($Quiet) {
-      $argList = "CLIENTALL /QUIET"
-    } else {
-      $argList = "CLIENTALL"
-    }
+    $argList = ""
+    $argListProducts = @()
     
+    if($ProductsToRemove -eq 'AllOfficeProducts'){
+        $argListProducts += "CLIENTALL"
+    } else {       
+        foreach($product in $ProductsToRemove){
+            switch($product){
+                "MainOfficeProduct"{
+                    $MainOfficeProduct = GetProductName -ProductName MainOfficeProduct
+                    $argListProducts += $MainOfficeProduct
+                }
+                "Visio" {
+                    $VisioProduct = GetProductName -ProductName Visio
+                    $argListProducts += $VisioProduct
+                }
+                "Project" {
+                    $ProjectProduct = GetProductName -ProductName Project
+                    $argListProducts += $ProjectProduct
+                }
+            }
+        }
+    }
+
+    if($Quiet){
+        $argList += " /QUIET"
+    }
+       
     if ($Force) {
         $argList += " /FORCE"
     }
@@ -513,18 +543,37 @@ Function Remove-PreviousOfficeInstalls{
                     "14.*"
                     {
                         if (!($office10Removed)) {
-                            Write-Host "`tRemoving Office 2010..."
                             $ActionFile = "$scriptPath\$10VBS"
-                            $cmdLine = """$ActionFile"" $argList"
-                        
                             if (Test-Path -Path $ActionFile) {
-                                $cmd = "cmd /c cscript //Nologo $cmdLine"
-                                Invoke-Expression $cmd
-                                $office10Removed = $true
+                                if($ProductsToRemove -ne 'AllOfficeProducts'){
+                                    foreach($product in $ProductsToRemove){
+                                        switch($product){
+                                            "MainOfficeProduct" {
+                                                Write-Host "`tRemoving Office 2010..."
+                                                $cmdLine = """$ActionFile"" $MainOfficeProduct $argList"
+                                                $cmd = "cmd /c cscript //Nologo $cmdLine"
+                                                Invoke-Expression $cmd
+                                            }
+                                            "Visio" {
+                                                Write-Host "`tRemoving Visio..."
+                                                $cmdLine = """$ActionFile"" $VisioProduct $argList"
+                                                $cmd = "cmd /c cscript //Nologo $cmdLine"
+                                                Invoke-Expression $cmd
+                                            }
+                                            "Project" {
+                                                Write-Host "`tRemoving Project..."
+                                                $cmdLine = """$ActionFile"" $ProjectProduct $argList"
+                                                $cmd = "cmd /c cscript //Nologo $cmdLine"
+                                                Invoke-Expression $cmd
+                                            }
+                                        }
+                                    }
+
+                                    $office10Removed = $true
+                                }
                             } else {
                                throw "Required file missing: $ActionFile"
-                            }
-                            Write-Host ""
+                            }                                                     
                         }
                     }
                     "15.*"
@@ -597,6 +646,46 @@ Function GetScriptRoot() {
 
      return $scriptPath
  }
+}
+
+function GetProductName {
+param(
+    [Parameter()]
+    [string]$ProductName
+)
+    if($ProductName -eq 'MainOfficeProduct'){
+        $ProductName = (Get-OfficeVersion).DisplayName | select -Unique
+    } 
+        
+    $HKLM = [UInt32] "0x80000002"
+    $HKCR = [UInt32] "0x80000000"
+ 
+    $installKeys = 'SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall',
+                   'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall'
+                   
+
+    $regProv = Get-WmiObject -list "StdRegProv" -namespace root\default -ComputerName $env:COMPUTERNAME
+
+    foreach ($regKey in $installKeys) {
+        $keyList = new-object System.Collections.ArrayList
+        $keys = $regProv.EnumKey($HKLM, $regKey)
+
+        foreach ($key in $keys.sNames) {
+            $path = Join-Path $regKey $key
+            $name = $regProv.GetStringValue($HKLM, $path, "DisplayName").sValue
+            
+            if($name){
+                if($name.ToLower() -match $ProductName.ToLower()){
+                    if($path -notmatch "{.{8}-.{4}-.{4}-.{4}-0000000FF1CE}"){
+                        $prodName = $key.Split(".")[1]
+                    }
+                }
+            }
+        }
+    }
+
+    return $prodName
+
 }
 
 $dotSourced = IsDotSourced -InvocationLine $MyInvocation.Line
