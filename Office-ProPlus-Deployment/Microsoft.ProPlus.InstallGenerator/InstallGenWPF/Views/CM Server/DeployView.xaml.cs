@@ -189,130 +189,135 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
 
         private async Task DeployPrograms()
         {
-            var n = 1;
-            var CMConfig = GlobalObjects.ViewModel.CmPackage;
-            var currentDirectory = Directory.GetCurrentDirectory() + @"\Scripts";
-
-            var scriptPath = currentDirectory + $"\\Setup-CMOfficeDeployment.ps1";
-            var scriptPathTmp = currentDirectory + $"\\Tmp-Setup-CMOfficeDeployment.ps1";
-
-            foreach (var program in CMConfig.Programs)
+            await Task.Run(() =>
             {
-                
-                var channels = new List<string>();
-                var bitnesses = new List<string>();
-                var arguments = $"/c Powershell -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden . .\\Setup-CMOfficeDeployment.ps1;Deploy-CMOfficeProgram -Channel ";
 
 
-                program.Channels.ForEach(c =>
+                var n = 1;
+                var CMConfig = GlobalObjects.ViewModel.CmPackage;
+                var currentDirectory = Directory.GetCurrentDirectory() + @"\Scripts";
+
+                var scriptPath = currentDirectory + $"\\Setup-CMOfficeDeployment.ps1";
+                var scriptPathTmp = currentDirectory + $"\\Tmp-Setup-CMOfficeDeployment.ps1";
+
+                foreach (var program in CMConfig.Programs)
                 {
-                    if (!channels.Contains(c.Branch.NewName.ToString()))
+
+                    var channels = new List<string>();
+                    var bitnesses = new List<string>();
+                    var arguments =
+                        $"/c Powershell -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden . .\\Setup-CMOfficeDeployment.ps1;Deploy-CMOfficeProgram -Channel ";
+
+
+                    program.Channels.ForEach(c =>
                     {
-                        channels.Add(c.Branch.NewName.ToString());
-                    }
-                });
-                program.Bitnesses.ToList().ForEach(b =>
-                {
-                    if (!bitnesses.Contains(b.Name))
+                        if (!channels.Contains(c.Branch.NewName.ToString()))
+                        {
+                            channels.Add(c.Branch.NewName.ToString());
+                        }
+                    });
+                    program.Bitnesses.ToList().ForEach(b =>
                     {
-                        bitnesses.Add(b.Name);
-                    }
-                });
-                channels.ForEach(c =>
-                {
-                    if (channels.IndexOf(c) < channels.Count - 1)
+                        if (!bitnesses.Contains(b.Name))
+                        {
+                            bitnesses.Add(b.Name);
+                        }
+                    });
+                    channels.ForEach(c =>
                     {
-                        arguments += $"{c},";
+                        if (channels.IndexOf(c) < channels.Count - 1)
+                        {
+                            arguments += $"{c},";
+                        }
+                        else
+                        {
+                            arguments += c;
+                        }
+                    });
+
+                    arguments += " -Bitness ";
+
+                    if (bitnesses.Count == 2)
+                    {
+                        arguments += "Both";
                     }
                     else
                     {
-                        arguments += c;
+                        arguments += bitnesses[0];
                     }
-                });
 
-                arguments += " -Bitness ";
+                    arguments += $" -ProgramType {program.DeploymentType} ";
 
-                if (bitnesses.Count == 2)
-                {
-                    arguments += "Both";
-                }
-                else
-                {
-                    arguments += bitnesses[0];
-                }
+                    //if (program.DeploymentType == DeploymentType.DeployWithScript)
+                    //{
+                    //    //EditDeploymentScript(program);
+                    //}
+                    //else
+                    //{
+                    //    //edit configuration.xml
+                    //}
 
-                arguments += $" -ProgramType {program.DeploymentType} ";
-
-                //if (program.DeploymentType == DeploymentType.DeployWithScript)
-                //{
-                //    //EditDeploymentScript(program);
-                //}
-                //else
-                //{
-                //    //edit configuration.xml
-                //}
-
-                arguments += $" -SiteCode {GlobalObjects.ViewModel.CmPackage.SiteCode}";
-                arguments += $" -DeploymentPurpose {program.DeploymentPurpose} ";
+                    arguments += $" -SiteCode {GlobalObjects.ViewModel.CmPackage.SiteCode}";
+                    arguments += $" -DeploymentPurpose {program.DeploymentPurpose} ";
 
 
-                if (GlobalObjects.ViewModel.CmPackage.CMPSModulePath != "")
-                    arguments += $" -CMPSModulePath {GlobalObjects.ViewModel.CmPackage.CMPSModulePath} ";
-
-               
-
-                program.CollectionNames.ToList().ForEach(async c =>
-                {
-                    var argumentsCopy = arguments;
-                    argumentsCopy += $" -Collection '{c}' ";
-
-                    if (program.CustomName != "")
-                        argumentsCopy += $" -CustomName {program.CustomName}-{c.Replace(' ','-')}";
+                    if (GlobalObjects.ViewModel.CmPackage.CMPSModulePath != "")
+                        arguments += $" -CMPSModulePath {GlobalObjects.ViewModel.CmPackage.CMPSModulePath} ";
 
 
-                   await Retry.Block(2, 1, async () =>
+
+                    program.CollectionNames.ToList().ForEach(async c =>
                     {
-                        var tcs = new TaskCompletionSource<bool>();
+                        var argumentsCopy = arguments;
+                        argumentsCopy += $" -Collection '{c}' ";
 
-                        if (n == 2)
+                        if (program.CustomName != "")
+                            argumentsCopy += $" -CustomName {program.CustomName}-{c.Replace(' ', '-')}";
+
+
+                        await Retry.Block(2, 1, async () =>
                         {
-                            System.IO.File.Copy(scriptPathTmp, scriptPath, true);
-                        }
+                            var tcs = new TaskCompletionSource<bool>();
 
-
-                        var p = new Process
-                        {
-                            StartInfo = new ProcessStartInfo()
+                            if (n == 2)
                             {
-                                FileName = "cmd",
-                                Arguments = argumentsCopy,
-                                CreateNoWindow = true,
-                                UseShellExecute = false,
-                                WorkingDirectory = currentDirectory,
-                                RedirectStandardOutput = true,
-                                RedirectStandardError = true,
-
-                            },
-                        };
-
-                        p.EnableRaisingEvents = true;
-
-                        p.Exited += (sender, args) =>
-                        {
-                            tcs.SetResult(true);
-                            p.Dispose();
-                        };
-
-                        p.Start();
+                                System.IO.File.Copy(scriptPathTmp, scriptPath, true);
+                            }
 
 
-                        var error = await p.StandardError.ReadToEndAsync();
-                        if (!string.IsNullOrEmpty(error)) throw (new Exception(error));
-                        n++;
+                            var p = new Process
+                            {
+                                StartInfo = new ProcessStartInfo()
+                                {
+                                    FileName = "cmd",
+                                    Arguments = argumentsCopy,
+                                    CreateNoWindow = true,
+                                    UseShellExecute = false,
+                                    WorkingDirectory = currentDirectory,
+                                    RedirectStandardOutput = true,
+                                    RedirectStandardError = true,
+
+                                },
+                            };
+
+                            p.EnableRaisingEvents = true;
+
+                            //p.Exited += (sender, args) =>
+                            //{
+                            //    tcs.SetResult(true);
+                            //    p.Dispose();
+                            //};
+
+                            p.Start();
+                            p.WaitForExit();
+
+                            var error = await p.StandardError.ReadToEndAsync();
+                            if (!string.IsNullOrEmpty(error)) throw (new Exception(error));
+                            n++;
+                        });
                     });
-                });
-            }
-
+                }
+            });
         }
 
         private async Task StartDistributeFiles()

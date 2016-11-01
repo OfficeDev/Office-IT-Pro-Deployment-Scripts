@@ -1,16 +1,14 @@
 <Files>
-  <File Path="Office\data\v32.cab" FileName="v32.cab" FolderPath="Office\data" Hash="1d8c1a000b6a589fe1cc39e24323b5a7" />
-  <File Path="Office\data\v32_16.0.6868.2062.cab" FileName="v32_16.0.6868.2062.cab" FolderPath="Office\data" Hash="1d8c1a000b6a589fe1cc39e24323b5a7" />
-  <File Path="Office\data\v64.cab" FileName="v64.cab" FolderPath="Office\data" Hash="92136b90f0ffc416feb3fbccf8c9a9d0" />
-  <File Path="Office\data\v64_16.0.6868.2062.cab" FileName="v64_16.0.6868.2062.cab" FolderPath="Office\data" Hash="92136b90f0ffc416feb3fbccf8c9a9d0" />
-  <File Path="Office\data\16.0.6868.2062\i320.cab" FileName="i320.cab" FolderPath="Office\data\16.0.6868.2062" Hash="013042ea5b8688636a1d7bfabd244445" />
-  <File Path="Office\data\16.0.6868.2062\i321033.cab" FileName="i321033.cab" FolderPath="Office\data\16.0.6868.2062" Hash="2a333df3dd13714c8f56594ecbd89ee9" />
-  <File Path="Office\data\16.0.6868.2062\i640.cab" FileName="i640.cab" FolderPath="Office\data\16.0.6868.2062" Hash="d6dfd11624b7f2ca4dd5ed2e73854996" />
-  <File Path="Office\data\16.0.6868.2062\i641033.cab" FileName="i641033.cab" FolderPath="Office\data\16.0.6868.2062" Hash="696d8ce03508bc0c71cfd5968ad2a7d3" />
-  <File Path="Office\data\16.0.6868.2062\s320.cab" FileName="s320.cab" FolderPath="Office\data\16.0.6868.2062" Hash="1659af74dc6a830369b17eac849a210a" />
-  <File Path="Office\data\16.0.6868.2062\s321033.cab" FileName="s321033.cab" FolderPath="Office\data\16.0.6868.2062" Hash="049701b7a44ea470ee824b0ac34ed1d8" />
-  <File Path="Office\data\16.0.6868.2062\s640.cab" FileName="s640.cab" FolderPath="Office\data\16.0.6868.2062" Hash="91ced2aafb4df59a849551df832d5395" />
-  <File Path="Office\data\16.0.6868.2062\s641033.cab" FileName="s641033.cab" FolderPath="Office\data\16.0.6868.2062" Hash="fcfa968531d2937d68fcdbf0be7b29a4" />
-  <File Path="Office\data\16.0.6868.2062\stream.x86.en-us.dat" FileName="stream.x86.en-us.dat" FolderPath="Office\data\16.0.6868.2062" Hash="8dffabfdcf99b88673754c44b5dcde42" />
-  <File Path="Office\data\16.0.6868.2062\stream.x86.x-none.dat" FileName="stream.x86.x-none.dat" FolderPath="Office\data\16.0.6868.2062" Hash="3094c1f9facd8aef639f75a5eb451ed3" />
+  <File Path="Office\data\v32.cab" FileName="v32.cab" FolderPath="Office\data" Hash="42a6d45a7c55137ee3bff41b04f11840" />
+  <File Path="Office\data\v32_16.0.7369.2038.cab" FileName="v32_16.0.7369.2038.cab" FolderPath="Office\data" Hash="42a6d45a7c55137ee3bff41b04f11840" />
+  <File Path="Office\data\16.0.7369.2038\i320.cab" FileName="i320.cab" FolderPath="Office\data\16.0.7369.2038" Hash="8a52ac5c4c35177106ef523ee38b5404" />
+  <File Path="Office\data\16.0.7369.2038\i321033.cab" FileName="i321033.cab" FolderPath="Office\data\16.0.7369.2038" Hash="9d2c26f9336e4e72a3ef68c89cd894cc" />
+  <File Path="Office\data\16.0.7369.2038\i640.cab" FileName="i640.cab" FolderPath="Office\data\16.0.7369.2038" Hash="a5c18d50383e8a731ea1d8a22f47801c" />
+  <File Path="Office\data\16.0.7369.2038\i641033.cab" FileName="i641033.cab" FolderPath="Office\data\16.0.7369.2038" Hash="611db74e3ac62875ed0338755a524555" />
+  <File Path="Office\data\16.0.7369.2038\s320.cab" FileName="s320.cab" FolderPath="Office\data\16.0.7369.2038" Hash="ae353239bb938e879fd2ba06a528afab" />
+  <File Path="Office\data\16.0.7369.2038\s321033.cab" FileName="s321033.cab" FolderPath="Office\data\16.0.7369.2038" Hash="8c974a883f182af3fbbcac94e8cd083d" />
+  <File Path="Office\data\16.0.7369.2038\stream.x86.en-us.dat" FileName="stream.x86.en-us.dat" FolderPath="Office\data\16.0.7369.2038" Hash="8c2264454204115480808d99edbcdfb4" />
+  <File Path="Office\data\16.0.7369.2038\stream.x86.x-none.dat" FileName="stream.x86.x-none.dat" FolderPath="Office\data\16.0.7369.2038" Hash="6764d13634946791dd236b7e9a9b5a99" />
+  <File Path="Office\data\16.0.7369.2038\Experiment\i320.cab" FileName="i320.cab" FolderPath="Office\data\16.0.7369.2038\Experiment" Hash="a3513d50528193d0e27da2250335040b" />
+  <File Path="Office\data\16.0.7369.2038\Experiment\i640.cab" FileName="i640.cab" FolderPath="Office\data\16.0.7369.2038\Experiment" Hash="c985d94dbf5d9e2c343e05266a6534fe" />
 </Files>

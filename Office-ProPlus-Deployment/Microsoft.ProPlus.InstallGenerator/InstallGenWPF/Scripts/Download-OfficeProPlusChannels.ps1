@@ -208,6 +208,9 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
                 if(!(Test-Path "$TargetDirectory\$FolderName\Office\Data")){
                     New-Item -Path "$TargetDirectory\$FolderName\Office\Data" -ItemType directory -Force | Out-Null
                 }
+                     if(!(Test-Path "$TargetDirectory\$FolderName\Office\Data\$Version\Experiment")){
+                    New-Item -Path "$TargetDirectory\$FolderName\Office\Data\$Version\Experiment" -ItemType directory -Force | Out-Null
+                } 
 
                 if([String]::IsNullOrWhiteSpace($Version)){
                     #get base .cab to get current version

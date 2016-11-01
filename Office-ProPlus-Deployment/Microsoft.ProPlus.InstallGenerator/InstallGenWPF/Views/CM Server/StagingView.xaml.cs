@@ -164,10 +164,6 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
                     {
                         EditDeploymentScript(program);
                     }
-                    else
-                    {
-                        //edit configuration.xml
-                    }
 
                     if (program.ScriptName != "")
                     {
@@ -281,7 +277,7 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
                     WaitFilesDownloading.Visibility = Visibility.Visible;
                 });
 
-                await DownloadScripts();
+                //await DownloadScripts();
 
                 if (GlobalObjects.ViewModel.CmPackage.DeploymentSource == DeploymentSource.CDN)
                 {
@@ -678,6 +674,7 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
 
             //Add-ProductSku -TargetFilePath $targetFilePath -Languages $languages -ProductIDs O365ProPlusRetail,O365BusinessRetail,VisioProRetail,ProjectProRetail
             var addAppsCommand = "Add-ProductSku -TargetFilePath $targetFilePath -Languages $languages -ProductIDs ";
+            var languages = @"$languages = """; 
 
             //Add-ProductLanguage -TargetFilePath $targetFilePath -ProductIDs All -Languages fr-fr,it-it 
             var addLanguagesCommand = "Add-ProductLanguage -TargetFilePath $targetFilePath -ProductIDs All -Languages ";
@@ -723,14 +720,17 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
             program.Languages.ToList().ForEach(l =>
             {
                 addLanguagesCommand += l.Id;
-
+                languages += l.Id;
                 if (program.Languages.IndexOf(l) != program.Languages.Count - 1)
                     addLanguagesCommand += ",";
             });
 
+            languages += @"""";
+
             powershellScript[installLineNum - 1] = excludeAppsCommand.Replace("\\", "");
             powershellScript[installLineNum - 2] = addAppsCommand.Replace("\\", "");
             powershellScript[installLineNum - 3] = addLanguagesCommand.Replace("\\", "");
+            powershellScript[installLineNum - 4] = languages.Replace("\\", "");
 
             //if (program.ScriptName != "")
             //    program.ScriptName = GlobalObjects.ViewModel.CmPackage.Programs.IndexOf(program) + "-" +
