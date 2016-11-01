@@ -53,7 +53,7 @@ Will uninstall Office Click-to-Run.
                 Write-Host "Please wait while $c2rName is being uninstalled..."
             }
         }
-   
+  
         if($c2rVersion.Version -like "15*"){
             $OdtExe = "$scriptRoot\Office2013Setup.exe"
         }
@@ -402,6 +402,7 @@ Function newCTRRemoveXml {
   <Remove All="True">
   </Remove>
   <Display Level="None" AcceptEULA="TRUE" />
+  <Property Name="FORCEAPPSHUTDOWN" Value="TRUE" />
 </Configuration>
 "@
 }
