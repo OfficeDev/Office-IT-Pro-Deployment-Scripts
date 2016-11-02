@@ -855,6 +855,10 @@ param(
 
     $regProv = Get-WmiObject -list "StdRegProv" -namespace root\default -ComputerName $env:COMPUTERNAME
 
+    if($ProductName.ToLower() -match "visio" -or $ProductName.ToLower() -match "project"){
+        $ProductName = " " + $ProductName + " "
+    }
+
     foreach ($regKey in $installKeys) {
         $keyList = new-object System.Collections.ArrayList
         $keys = $regProv.EnumKey($HKLM, $regKey)
