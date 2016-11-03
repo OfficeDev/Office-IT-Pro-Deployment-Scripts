@@ -861,7 +861,10 @@ Function Validate-UpdateSource() {
         [string] $Bitness = $NULL,
 
         [Parameter()]
-        [string[]] $OfficeLanguages = $NULL
+        [string[]] $OfficeLanguages = $NULL,
+
+        [Parameter()]
+        [bool]$ShowMissingFiles = $true
     )
 
     [bool]$validUpdateSource = $true
@@ -937,8 +940,10 @@ Function Validate-UpdateSource() {
               $fileExists = $missingFiles.Contains($fullPath)
               if (!($fileExists)) {
                  $missingFiles.Add($fullPath)
-                 Write-Host "Source File Missing: $fullPath"
-                 Write-Log -Message "Source File Missing: $fullPath" -severity 1 -component "Office 365 Update Anywhere" 
+                 if($ShowMissingFiles -eq $true){
+                    Write-Host "Source File Missing: $fullPath"
+                    Write-Log -Message "Source File Missing: $fullPath" -severity 1 -component "Office 365 Update Anywhere" 
+                 }
               }     
               $validUpdateSource = $false
            }
