@@ -101,7 +101,7 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
             var scriptPathTmp = currentDirectory + $"\\Tmp-Setup-CMOfficeDeployment.ps1";
 
             var channels = new List<string>();
-            var arguments = $"/c Powershell -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden . .\\Setup-CMOfficeDeployment.ps1;Distribute-CMOfficePackage -Channels ";
+            var arguments = $"/c Powershell -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden . .\\Setup-CMOfficeDeployment.ps1;Distribute-CMOfficePackage ";
 
 
             foreach (var program in CMConfig.Programs)
@@ -115,17 +115,17 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
                 });
             }
 
-            channels.ForEach(c =>
-            {
-                if (channels.IndexOf(c) < channels.Count - 1)
-                {
-                    arguments += $"{c},";
-                }
-                else
-                {
-                    arguments += c;
-                }
-            });
+            //channels.ForEach(c =>ZXP
+            //{
+            //    if (channels.IndexOf(c) < channels.Count - 1)
+            //    {
+            //        arguments += $"{c},";
+            //    }
+            //    else
+            //    {
+            //        arguments += c;
+            //    }
+            //});
 
             //arguments +=
             //    $" -DeploymentExpiryDurationInDays {GlobalObjects.ViewModel.CmPackage.DeploymentExpiryDurationInDays} ";
@@ -161,12 +161,13 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
                     {
                         FileName = "cmd",
                         Arguments = arguments,
+                        //Arguments = @"/c Powershell -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden . .\\Setup-CMOfficeDeployment.ps1; Distribute-CMOfficePackage -DistributionPoint 2012-cm.contoso.com -SiteCode S01 -WaitForDistributionToFinish $true",
                         CreateNoWindow = true,
                         UseShellExecute = false,
                         WorkingDirectory = currentDirectory,
                         RedirectStandardOutput = true,
                         RedirectStandardError = true,
-
+                        //Verb = "runas"
                     },
                 };
 
@@ -179,7 +180,7 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
                 };
 
                 p.Start();
-
+                //p.WaitForExit();
 
                 var error = await p.StandardError.ReadToEndAsync();
                 if (!string.IsNullOrEmpty(error)) throw (new Exception(error));
@@ -193,7 +194,6 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
             {
 
 
-                var n = 1;
                 var CMConfig = GlobalObjects.ViewModel.CmPackage;
                 var currentDirectory = Directory.GetCurrentDirectory() + @"\Scripts";
 
@@ -203,48 +203,48 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
                 foreach (var program in CMConfig.Programs)
                 {
 
-                    var channels = new List<string>();
-                    var bitnesses = new List<string>();
+                    //var channels = new List<string>();
+                    //var bitnesses = new List<string>();
                     var arguments =
-                        $"/c Powershell -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden . .\\Setup-CMOfficeDeployment.ps1;Deploy-CMOfficeProgram -Channel ";
+                        $"/c Powershell -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden . .\\Setup-CMOfficeDeployment.ps1;Deploy-CMOfficeProgram ";
 
 
-                    program.Channels.ForEach(c =>
-                    {
-                        if (!channels.Contains(c.Branch.NewName.ToString()))
-                        {
-                            channels.Add(c.Branch.NewName.ToString());
-                        }
-                    });
-                    program.Bitnesses.ToList().ForEach(b =>
-                    {
-                        if (!bitnesses.Contains(b.Name))
-                        {
-                            bitnesses.Add(b.Name);
-                        }
-                    });
-                    channels.ForEach(c =>
-                    {
-                        if (channels.IndexOf(c) < channels.Count - 1)
-                        {
-                            arguments += $"{c},";
-                        }
-                        else
-                        {
-                            arguments += c;
-                        }
-                    });
+                    //program.Channels.ForEach(c =>
+                    //{
+                    //    if (!channels.Contains(c.Branch.NewName.ToString()))
+                    //    {
+                    //        channels.Add(c.Branch.NewName.ToString());
+                    //    }
+                    //});
+                    //program.Bitnesses.ToList().ForEach(b =>
+                    //{
+                    //    if (!bitnesses.Contains(b.Name))
+                    //    {
+                    //        bitnesses.Add(b.Name);
+                    //    }
+                    //});
+                    //channels.ForEach(c =>
+                    //{
+                    //    if (channels.IndexOf(c) < channels.Count - 1)
+                    //    {
+                    //        arguments += $"{c},";
+                    //    }
+                    //    else
+                    //    {
+                    //        arguments += c;
+                    //    }
+                    //});
 
-                    arguments += " -Bitness ";
+                    //arguments += " -Bitness ";
 
-                    if (bitnesses.Count == 2)
-                    {
-                        arguments += "Both";
-                    }
-                    else
-                    {
-                        arguments += bitnesses[0];
-                    }
+                    //if (bitnesses.Count == 2)
+                    //{
+                    //    arguments += "Both";
+                    //}
+                    //else
+                    //{
+                    //    arguments += bitnesses[0];
+                    //}
 
                     arguments += $" -ProgramType {program.DeploymentType} ";
 
@@ -266,7 +266,7 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
 
 
 
-                    program.CollectionNames.ToList().ForEach(async c =>
+                    program.CollectionNames.ToList().ForEach( c =>
                     {
                         var argumentsCopy = arguments;
                         argumentsCopy += $" -Collection '{c}' ";
@@ -274,46 +274,59 @@ namespace Microsoft.OfficeProPlus.InstallGen.Presentation.Views.CM_Config
                         if (program.CustomName != "")
                             argumentsCopy += $" -CustomName {program.CustomName}-{c.Replace(' ', '-')}";
 
-
-                        await Retry.Block(2, 1, async () =>
+                        program.Channels.ForEach(ch =>
                         {
-                            var tcs = new TaskCompletionSource<bool>();
+                            var argumentsCopy1 = argumentsCopy;
+                            argumentsCopy1 += $" -Channel {ch.Branch.NewName} ";
 
-                            if (n == 2)
+                            program.Bitnesses.ForEach(async b =>
                             {
-                                System.IO.File.Copy(scriptPathTmp, scriptPath, true);
-                            }
-
-
-                            var p = new Process
-                            {
-                                StartInfo = new ProcessStartInfo()
+                                var n = 1;
+                                var argumentsCopy2 = argumentsCopy1;
+                                argumentsCopy2 += $" -Bitness {b.Name} ";
+                                             
+                                await Retry.Block(2, 1, async () =>
                                 {
-                                    FileName = "cmd",
-                                    Arguments = argumentsCopy,
-                                    CreateNoWindow = true,
-                                    UseShellExecute = false,
-                                    WorkingDirectory = currentDirectory,
-                                    RedirectStandardOutput = true,
-                                    RedirectStandardError = true,
+                                    var tcs = new TaskCompletionSource<bool>();
 
-                                },
-                            };
+                                    if (n == 2)
+                                    {
+                                        System.IO.File.Copy(scriptPathTmp, scriptPath, true);
+                                    }
 
-                            p.EnableRaisingEvents = true;
 
-                            //p.Exited += (sender, args) =>
-                            //{
-                            //    tcs.SetResult(true);
-                            //    p.Dispose();
-                            //};
+                                    var p = new Process
+                                    {
+                                        StartInfo = new ProcessStartInfo()
+                                        {
+                                            FileName = "cmd",
+                                            Arguments = argumentsCopy2,
+                                            CreateNoWindow = true,
+                                            UseShellExecute = false,
+                                            WorkingDirectory = currentDirectory,
+                                            RedirectStandardOutput = true,
+                                            RedirectStandardError = true,
+                                            //Verb = "runas"
 
-                            p.Start();
-                            p.WaitForExit();
+                                        },
+                                    };
 
-                            var error = await p.StandardError.ReadToEndAsync();
-                            if (!string.IsNullOrEmpty(error)) throw (new Exception(error));
-                            n++;
+                                    p.EnableRaisingEvents = true;
+
+                                    //p.Exited += (sender, args) =>
+                                    //{
+                                    //    tcs.SetResult(true);
+                                    //    p.Dispose();
+                                    //};
+
+                                    p.Start();
+                                    p.WaitForExit();
+
+                                    var error = await p.StandardError.ReadToEndAsync();
+                                    if (!string.IsNullOrEmpty(error)) throw (new Exception(error));
+                                    n++;
+                                });
+                            });
                         });
                     });
                 }
