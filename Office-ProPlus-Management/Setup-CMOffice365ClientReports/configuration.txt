@@ -19,6 +19,7 @@ String OfficeMgmtCOM;
 String UpdateChannel;
 String UpdatePath;
 String GPOOfficeMgmtCOM;
+String cfgUpdateChannel;
 };
 
 [DYNPROPS]
@@ -40,6 +41,7 @@ KeyName="Office365ClientConfigurations";
 [PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\office\\16.0\\common\\officeupdate|updatechannel"),Dynamic,Provider("RegPropProv")] UpdateChannel;
 [PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\office\\16.0\\common\\officeupdate|updatepath"),Dynamic,Provider("RegPropProv")] UpdatePath;
 [PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\office\\16.0\\common\\officeupdate|officemgmtcom"),Dynamic,Provider("RegPropProv")] GPOOfficeMgmtCOM;
+[PropertyContext("Local|HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Office\\ClickToRun\\Configuration|UpdateChannel"),Dynamic,Provider("RegPropProv")] cfgUpdateChannel;
 };
 
 #pragma namespace ("\\\\.\\root\\cimv2")
