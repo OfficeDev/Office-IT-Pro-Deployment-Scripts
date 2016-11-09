@@ -3,7 +3,7 @@
   <AutoRefresh>0</AutoRefresh>
   <DataSources>
     <DataSource Name="AutoGen__5C6358F2_4BB6_4a1b_A16E_8D96795D8602_">
-      <DataSourceReference>/ConfigMgr_S01/{5C6358F2-4BB6-4a1b-A16E-8D96795D8602}</DataSourceReference>
+      <DataSourceReference>/ConfigMgr_S02/{5C6358F2-4BB6-4a1b-A16E-8D96795D8602}</DataSourceReference>
       <rd:SecurityType>None</rd:SecurityType>
       <rd:DataSourceID>11111111-1111-1111-1111-111111111111</rd:DataSourceID>
     </DataSource>
@@ -42,9 +42,9 @@ INSERT INTO @table
 SELECT SUBSTRING(addr64.DisplayName00, 0, CHARINDEX('-',addr64.DisplayName00)) AS ProductName 
 FROM dbo.Add_Remove_Programs_64_DATA addr64
 INNER JOIN fn_rbac_RA_System_SMSInstalledSites(@UserSIDs)  as ASSG ON ASSG.ResourceID = addr64.MachineID
-WHERE (addr64.ProdID00 LIKE '%project%'
-OR addr64.ProdID00 LIKE '%visio%'
-OR addr64.ProdID00 LIKE '%proplus%')
+WHERE ((addr64.ProdID00 LIKE '%project%' AND addr64.ProdID00 LIKE '%-%')
+OR (addr64.ProdID00 LIKE '%visio%' AND addr64.ProdID00 LIKE '%-%')
+OR (addr64.ProdID00 LIKE '%proplus%' AND addr64.ProdID00 LIKE '%-%'))
 AND (addr64.Version00 LIKE '16%' OR addr64.Version00 LIKE '15%')
 AND assg.SMS_Installed_Sites0 LIKE 
 CASE WHEN @variable = 'All'
@@ -55,9 +55,9 @@ INSERT INTO @table
 SELECT SUBSTRING(addr.DisplayName00, 0, CHARINDEX('-',addr.DisplayName00)) AS ProductName 
 FROM dbo.Add_Remove_Programs_DATA addr
 INNER JOIN fn_rbac_RA_System_SMSInstalledSites(@UserSIDs)  as ASSG ON ASSG.ResourceID = addr.MachineID
-WHERE (addr.ProdID00 LIKE '%project%'
-OR addr.ProdID00 LIKE '%visio%'
-OR addr.ProdID00 LIKE '%proplus%')
+WHERE ((addr.ProdID00 LIKE '%project%' AND addr.ProdID00 LIKE '%-%')
+OR (addr.ProdID00 LIKE '%visio%' AND addr.ProdID00 LIKE '%-%')
+OR (addr.ProdID00 LIKE '%proplus%' AND addr.ProdID00 LIKE '%-%'))
 AND (addr.Version00 LIKE '16%' OR addr.Version00 LIKE '15%')
 AND assg.SMS_Installed_Sites0 LIKE
 CASE WHEN @variable = 'All'
@@ -68,6 +68,7 @@ SELECT ProductName,
 COUNT(ProductName)
 FROM @table
 GROUP BY ProductName</CommandText>
+        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
       </Query>
       <Fields>
         <Field Name="ProductName">
@@ -663,6 +664,6 @@ SELECT * FROM @TABLE</CommandText>
     <CodeModule>SrsResources, culture=neutral</CodeModule>
   </CodeModules>
   <rd:ReportUnitType>Inch</rd:ReportUnitType>
-  <rd:ReportServerUrl>http://2012-cm/ReportServer</rd:ReportServerUrl>
+  <rd:ReportServerUrl>http://sccm-2012-cm/ReportServer</rd:ReportServerUrl>
   <rd:ReportID>6fbd236a-d836-4950-8788-14b828deb616</rd:ReportID>
 </Report>
