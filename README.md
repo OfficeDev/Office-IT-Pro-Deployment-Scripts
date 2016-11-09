@@ -5,7 +5,7 @@ Read more about it here: [Office Blogs](https://blogs.office.com/2015/08/19/intr
 
 The software is licensed “as-is.” under the [MIT License](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/master/LICENSE).
 
-## Do you have Systems Center Configuration Manager?
+## Do you have System Center Configuration Manager?
 You can automate the configuration of ConfigMgr to deploy and manage your Office ProPlus environment using [Deploying Office ProPlus with Configuration Manager](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/master/Office-ProPlus-Deployment/Setup-CMOfficeDeployment)
 
 We also provide Office ProPlus specific reports. [Office ProPlus ConfigMgr Reports](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/master/Office-ProPlus-Management/Setup-CMOffice365ClientReports)
