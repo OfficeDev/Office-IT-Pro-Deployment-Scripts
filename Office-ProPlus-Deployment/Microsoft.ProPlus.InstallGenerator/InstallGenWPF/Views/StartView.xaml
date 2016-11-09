@@ -1,0 +1,97 @@
+﻿<UserControl x:Class="MetroDemo.ExampleViews.StartView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:MetroDemo="clr-namespace:MetroDemo"
+             xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:gif="http://wpfanimatedgif.codeplex.com"
+             mc:Ignorable="d"
+             d:DesignHeight="600"
+             d:DesignWidth="900"
+             d:DataContext="{d:DesignInstance MetroDemo:MainWindowViewModel}"
+             Loaded="StartView_OnLoaded">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro.Resources;component/Icons.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <Thickness x:Key="ColumnMargin">10 5 10 5</Thickness>
+            <Thickness x:Key="ControlMargin">0 5 0 0</Thickness>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <AdornerDecorator>
+        <Grid Background="#e6e6e6" x:Name="Product" HorizontalAlignment="Stretch">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"  />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="550"></RowDefinition>
+                <RowDefinition></RowDefinition>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0" HorizontalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="0"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Row="0" Grid.Column="1"  Background="{StaticResource GrayBrush}" Width="auto" Height="40" HorizontalAlignment="Stretch" VerticalAlignment="Top" />
+                <Controls:MetroAnimatedSingleRowTabControl Grid.Row="0" Grid.Column="1"  x:Name="MainTabControl" 
+                                                           Height="600" VerticalAlignment="Top" >
+                    <TabItem x:Name="OptionalTab" Height="50" >
+                        <TabItem.Header>
+                            <DockPanel Margin="0,5,0,0">
+                                <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,2,0,0" FontFamily="Segoe UI Semilight">Office 365 ProPlus Install Toolkit</Label>
+                            </DockPanel>
+                        </TabItem.Header>
+
+                        <Grid  Margin="30 30 0 0" VerticalAlignment="Top" HorizontalAlignment="Left"  Height="500" Width="800">
+
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="550" />
+                                <ColumnDefinition Width="250" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="50" />
+                                <RowDefinition Height="80" />
+                                <RowDefinition Height="300" />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="2" Name="txtBlock" TextWrapping="WrapWithOverflow" FontSize="18" FontWeight="SemiBold" Style="{StaticResource CustomMetroLabelTextBlock}" />
+                            
+                            <TextBlock Grid.Row="0" Grid.Column="0" TextWrapping="WrapWithOverflow" FontSize="25" FontWeight="Bold" Style="{StaticResource CustomMetroLabelTextBlock}" FontFamily="Segoe UI Semibold">
+                                <Run Text="What would you like to do?"/>
+                            </TextBlock>
+
+                            <ComboBox x:Name="cbActions" Grid.Row="1" Grid.Column="0" Width="550" FontSize="20" Height="50" Foreground="{StaticResource GrayBrush}"
+                                      HorizontalAlignment="Left" VerticalAlignment="Center"  SelectionChanged="cbActions_SelectionChanged" FontFamily="Segoe UI Semilight"/>
+                            
+                            <Button x:Name="strtButton" Grid.Row="1" Grid.Column="1" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center" Width="200" Height="55" Click="strtButton_Click" FontFamily="Segoe UI Semibold">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="65" />
+                                        <ColumnDefinition Width="140" />
+                                    </Grid.ColumnDefinitions>                                    
+                                    <Image x:Name="WaitManageLocal" Visibility="Collapsed" Height="40" HorizontalAlignment="Left" gif:ImageBehavior.RepeatBehavior="Forever" 
+                                                    Grid.Row="0" Grid.Column="0" gif:ImageBehavior.AnimatedSource="../images/InstallRing.GIF" />
+                                    <Label Content="Start" Grid.Column="1" VerticalAlignment="Center" FontSize="22" Style="{StaticResource CustomMetroLabelHeader}" HorizontalContentAlignment="Left" FontFamily="Segoe UI Semibold" ></Label>
+                                </Grid>
+                            </Button>
+
+
+
+                        </Grid>
+
+                    </TabItem>
+
+                </Controls:MetroAnimatedSingleRowTabControl>
+            </Grid>
+        </Grid>
+    </AdornerDecorator>
+
+</UserControl>

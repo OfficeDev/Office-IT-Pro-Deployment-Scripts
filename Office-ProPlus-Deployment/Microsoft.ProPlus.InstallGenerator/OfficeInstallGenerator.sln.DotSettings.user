@@ -1,0 +1,10 @@
+﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<s:String x:Key="/Default/Environment/AssemblyExplorer/XmlDocument/@EntryValue">&lt;AssemblyExplorer&gt;&#xD;
+  &lt;Assembly Path="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\System.dll" /&gt;&#xD;
+&lt;/AssemblyExplorer&gt;</s:String>
+	<s:Boolean x:Key="/Default/Housekeeping/UnitTestingMru/UnitTestSessionPersistentData/=EEB13D62C1A8485AB6E0A96B692A60C5/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/Housekeeping/UnitTestingMru/UnitTestSessionPersistentData/=EEB13D62C1A8485AB6E0A96B692A60C5/Name/@EntryValue">TestProPlusGenerator</s:String>
+	<s:String x:Key="/Default/Housekeeping/UnitTestingMru/UnitTestSessionPersistentData/=EEB13D62C1A8485AB6E0A96B692A60C5/XmlSerializedElements/@EntryValue">&lt;Session&gt;&lt;Elements&gt;&lt;UnitTestElement Provider="MSTest" Id="MsTest:OfficeInstallGeneratorTests.UnitTests" type="MsTestTestClassElement" TypeName="OfficeInstallGeneratorTests.UnitTests" Project="FC7461AC-28CF-4F50-8FB5-D771A69D636A" /&gt;&lt;UnitTestElement Provider="MSTest" Id="MsTest:OfficeInstallGeneratorTests.UnitTests.TestProPlusGenerator" ParentId="MsTest:OfficeInstallGeneratorTests.UnitTests" type="MsTestTestMethodElement" MethodName="TestProPlusGenerator" TypeName="OfficeInstallGeneratorTests.UnitTests" Project="FC7461AC-28CF-4F50-8FB5-D771A69D636A" /&gt;&lt;/Elements&gt;&lt;/Session&gt;</s:String>
+	
+	
+	</wpf:ResourceDictionary>

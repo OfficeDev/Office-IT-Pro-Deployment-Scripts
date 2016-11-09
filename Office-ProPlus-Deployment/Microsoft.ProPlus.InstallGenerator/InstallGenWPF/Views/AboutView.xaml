@@ -1,0 +1,100 @@
+﻿<UserControl x:Class="MetroDemo.ExampleViews.AboutView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:MetroDemo="clr-namespace:MetroDemo"
+             xmlns:xmlBrowser="clr-namespace:MahApps.Metro.Controls.XmlBrowser"
+             xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:exampleViews="clr-namespace:MetroDemo.ExampleViews"
+             xmlns:models="clr-namespace:MetroDemo.Models"
+             mc:Ignorable="d" 
+             d:DesignHeight="600" d:DesignWidth="900"
+             Loaded="AboutView_OnLoaded">
+    <Grid Background="#e6e6e6">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0" />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0" Grid.Column="1"  Background="{StaticResource GrayBrush}" Width="auto" Height="40"  HorizontalAlignment="Stretch" VerticalAlignment="Top"/>
+
+        <DockPanel Grid.Column="1" LastChildFill="True"  >
+            <Grid DockPanel.Dock="Top" Margin="10" HorizontalAlignment="Left" VerticalAlignment="Top">
+
+                <Controls:MetroAnimatedSingleRowTabControl Grid.Row="0" Grid.Column="0" x:Name="MainTabControl" Margin="-9,-10,-29.6,0">
+                    <TabItem Background="{StaticResource GrayBrush}" Height="40">
+                        <TabItem.Header >
+                            <DockPanel Margin="0,5,0,0" >
+                                <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,2,0,0" FontFamily="Segoe UI Semilight">About Github</Label>
+                            </DockPanel>
+                        </TabItem.Header>
+
+                        <Grid HorizontalAlignment="Center" Margin="50 20 0 0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="110" />
+                                <RowDefinition Height="5" />
+                                <RowDefinition Height="370" />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock HorizontalAlignment="Left" Style="{StaticResource CustomMetroLabelTextBlock}" 
+                                           FontSize="16" Grid.Row="0" TextWrapping="Wrap" 
+                                           Text="The OfficeDev GitHub organization has a Repository named Office-IT-Pro-Deployment-Scripts. It contains a collection of useful PowerShell scripts to make deploying Office 2016 and Office 365 ProPlus easier for IT Pros and administrators. The repository contains deployment solutions for Office 365 ProPlus. If you would like to visit the GitHub repository please click on the image below." VerticalAlignment="Top" Width="793" Grid.ColumnSpan="4" FontFamily="Segoe UI Semilight"/>
+
+                            <TextBlock Grid.Row="2" TextWrapping="Wrap" HorizontalAlignment="Center" VerticalAlignment="Center" >
+                                <Hyperlink NavigateUri="https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/" 
+                                            FontSize="18" RequestNavigate="Hyperlink_RequestNavigate">
+                                    <Image Grid.Row="2" Source="../images/GitHubSite2.jpg" Width="793" Height="416" >
+                                
+                                    </Image>
+                                </Hyperlink>
+                            </TextBlock>
+
+
+
+                        </Grid>
+                    </TabItem>
+                    <TabItem Background="{StaticResource GrayBrush}" Height="40" >
+                        <TabItem.Header>
+                            <DockPanel Margin="0,5,0,0">
+                                <Label Style="{StaticResource CustomMetroLabelTopHeader}"  Padding="0,2,0,0" FontFamily="Segoe UI Semilight">About Install Toolkit</Label>
+                            </DockPanel>
+                        </TabItem.Header>
+
+                        <Grid HorizontalAlignment="Center" Margin="80 20 0 0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="700" />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="110" />
+                                <RowDefinition Height="20" />
+                                <RowDefinition Height="80" />
+                                <RowDefinition Height="20" />
+                                <RowDefinition Height="150" />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock HorizontalAlignment="Left" FontSize="16" Style="{StaticResource CustomMetroLabelTextBlock}"
+                                       Grid.Row="0" TextWrapping="Wrap" Text="The Office 365 ProPlus Install Toolkit is application that allows you to generate an executable or MSI installer file that allows you to deploy Office 365 ProPlus with traditional methods. The generated installer contains the configuration options that you select so you can distribute a file that allows users to install Office 365 ProPlus with specific configuration but only requires them to run one file.
+                                       " 
+                                      VerticalAlignment="Top"  Grid.Column="0" FontFamily="Segoe UI Semilight"/>
+
+                            <TextBlock HorizontalAlignment="Left" FontSize="16" Style="{StaticResource CustomMetroLabelTextBlock}"
+                                       Grid.Row="2" TextWrapping="Wrap" Text="The toolkit also allows you to manage Office 365 ProPlus on the local workstation.  If you choose the 'Manage local' option it will check for an existing installation of Microsoft Office. If Office 365 ProPlus is not installed you can install it. You can also modify an existing installation.  " 
+                                      VerticalAlignment="Top"  Grid.Column="0" FontFamily="Segoe UI Semilight"/>
+
+                            <TextBlock HorizontalAlignment="Left" FontSize="16" Style="{StaticResource CustomMetroLabelTextBlock}"
+                                       Grid.Row="4" TextWrapping="Wrap" Text="If you are using the Office 365 ProPlus 2016 version then you can take advantage of the update Channels. The toolkit allows you to change the Channel of an existing Office 365 ProPlus install.  To change the Channel it does not reinstall Office, it actually uses the update process to switch Channels." 
+                                      VerticalAlignment="Top"  Grid.Column="0" FontFamily="Segoe UI Semilight"/>
+                        </Grid>
+                    </TabItem>
+                </Controls:MetroAnimatedSingleRowTabControl>
+            </Grid>
+        </DockPanel>
+    </Grid>
+</UserControl>
