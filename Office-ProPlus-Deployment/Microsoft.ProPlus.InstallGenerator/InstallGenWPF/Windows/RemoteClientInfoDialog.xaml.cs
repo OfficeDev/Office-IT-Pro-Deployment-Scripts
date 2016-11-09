@@ -2,6 +2,7 @@
 using Microsoft.OfficeProPlus.InstallGen.Presentation.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,25 +28,23 @@ namespace MetroDemo.ExampleWindows
             InitializeComponent();
         }
         public DialogResult Result = System.Windows.Forms.DialogResult.Cancel;
+
         public void Launch()
         {
            
             this.Show();
         }
 
-        public void Dispose()
-        {
-            throw new NotImplementedException();
-        }
-
         private void OkButton_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                if(!String.IsNullOrEmpty(txtBxAddMachines.Text))
+                if(!string.IsNullOrEmpty(txtBxAddMachines.Text))
                 {
                     Result = System.Windows.Forms.DialogResult.OK;
-                    GlobalObjects.ViewModel.remoteConnectionInfo = txtBxAddMachines.Text;
+                    if(txtBxAddMachines.Text.Contains(" "))
+                        throw new Exception("Please add IP addresses or machine names only");
+                    GlobalObjects.ViewModel.RemoteConnectionInfo(txtBxAddMachines.Text.Trim());
                 }
               
                 this.Close();                
@@ -61,24 +60,55 @@ namespace MetroDemo.ExampleWindows
             Result = System.Windows.Forms.DialogResult.Cancel;
             this.Close();
         }
+        
 
-     
-
-        private List<String> getVersions(OfficeBranch currentChannel, List<String> versions, string currentVersion)
+        public void Dispose()
         {
-
-            foreach (var version in currentChannel.Versions)
-            {
-                if (version.Version.ToString() != currentVersion)
-                {
-                    versions.Add(version.Version.ToString());
-                }
-            }
-
-            return versions;
+            throw new NotImplementedException();
         }
 
-    
+        private void ImportComputers_OnClick_Click(object sender, RoutedEventArgs e)
+        {
+            var dlg = new Microsoft.Win32.OpenFileDialog
+            {
+                DefaultExt = ".png",
+                Filter = "CSV Files (.csv)|*.csv"
+            };
 
+            var result = dlg.ShowDialog();
+            if (result == true)
+            {
+                string line;
+                txtBxAddMachines.Text = "";
+                try
+                {
+
+                    StreamReader file = new StreamReader(dlg.FileName);
+
+                    while ((line = file.ReadLine()) != null)
+                    {
+                        txtBxAddMachines.Text += line + Environment.NewLine;
+                    }
+                    txtBxAddMachines.Text = txtBxAddMachines.Text.TrimEnd();
+                }
+                catch (Exception ex)
+                {
+
+                }
+            }
+        }
+
+        private void AddCredentials_OnClick(object sender, RoutedEventArgs e)
+        {
+            var credentialsDialogue = new CredentialsDialog();
+            credentialsDialogue.Closing += CredentialsDialogue_Closing;
+            
+            credentialsDialogue.Launch();
+        }
+
+        private void CredentialsDialogue_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            //do stuff here, I guess
+        }
     }
 }

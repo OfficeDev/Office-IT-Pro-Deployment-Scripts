@@ -8,6 +8,8 @@ using Microsoft.OfficeProPlus.InstallGenerator.Model;
 using Microsoft.OfficeProPlus.Downloader;
 using Microsoft.Win32;
 using System.Management;
+using System.Runtime.ExceptionServices;
+
 namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
 {
     class OfficeWmiInstallManager : IManageOfficeInstall
@@ -23,29 +25,65 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
         public ManagementScope scope { get; set;}
 
 
-        public  async Task initConnection()
+        public async Task InitConnection()
         {
 
             var timeOut = new TimeSpan(0, 5, 0);
-            ConnectionOptions options = new ConnectionOptions();
-            options.Authority = "NTLMDOMAIN:" + remoteDomain.Trim();
-            options.Username = remoteUser.Trim();
-            options.Password = remotePass.Trim();
-            options.Impersonation = ImpersonationLevel.Impersonate;
-            options.Timeout = timeOut;
+            var options = new ConnectionOptions
+            {
+                Impersonation = ImpersonationLevel.Impersonate,
+                Timeout = timeOut
+            };
 
-            scope = new ManagementScope("\\\\" + remoteComputerName.Trim() + connectionNamespace , options);
-            scope.Options.EnablePrivileges = true;
+            if (remoteDomain != null)
+            {
+                options.Authority = "NTLMDOMAIN:" + remoteDomain.Trim();
+            }
 
+            if (remoteUser != null && remotePass != null)
+            {
+                options.Username = remoteUser.Trim();
+                options.Password = remotePass.Trim();
+            }
+            
+            scope = new ManagementScope("\\\\" + remoteComputerName.Trim() + connectionNamespace, options)
+            {
+                Options = {EnablePrivileges = true}
+            };
+
+            ExceptionDispatchInfo exception = null;
             try
             {
-               await Task.Run(() => { scope.Connect(); });
+               await Task.Run(() => {
+                    try
+                    {
+                        scope.Connect();
+                    }
+                    catch(Exception ex)
+                    {
+                       exception = ExceptionDispatchInfo.Capture(ex);
+                    }
+              });
+              exception?.Throw();
             }
             catch (Exception)
             {
+                exception = null;
                 try
                 {
-                    await Task.Run(() => { scope.Connect(); });
+                    await Task.Run(() =>
+                    {
+                        try
+                        {
+                            scope.Connect();
+                        }
+                        catch (Exception ex)
+                        {
+                            exception = ExceptionDispatchInfo.Capture(ex);
+                        }
+                    });
+
+                    exception?.Throw();
                 }
                 catch (Exception)
                 {
@@ -57,38 +95,10 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
 
         public async Task<OfficeInstallation> CheckForOfficeInstallAsync()
         {         
-                var officeInstance = new OfficeInstallation() { Installed = false };
-                var officeRegPathKey = @"SOFTWARE\Microsoft\Office\ClickToRun\Configuration";
+            var officeInstance = new OfficeInstallation() { Installed = false };
+            var officeRegPathKey = @"SOFTWARE\Microsoft\Office\ClickToRun\Configuration";
 
-#if DEBUG
-            officeInstance.Channel = "Deferred";
-            officeInstance.Installed = true;
-            officeInstance.Version = "16.0.6001.1068";
-            officeInstance.LatestVersion = "16.0.6001.1078";
-            if (!string.IsNullOrEmpty(officeInstance.Version))
-            {
-                officeInstance.Installed = true;
-                var currentBaseCDNUrl = "http://officecdn.microsoft.com/pr/7ffbc6bf-bc32-4f92-8982-f9dd17fd3114";
-
-
-                var installFile = await GetOfficeInstallFileXml();
-                if (installFile == null) return officeInstance;
-
-                var currentBranch = installFile.BaseURL.FirstOrDefault(b => b.URL.Equals(currentBaseCDNUrl) &&
-                                                                      !b.Branch.ToLower().Contains("business"));
-                if (currentBranch != null)
-                {
-                    officeInstance.Channel = currentBranch.Branch;
-
-                    var latestVersion = await GetOfficeLatestVersion(currentBranch.Branch, OfficeEdition.Office32Bit);
-                    officeInstance.LatestVersion = latestVersion;
-                }
-
-
-            }
-#else
             officeInstance.Version = await GetRegistryValue(officeRegPathKey, "VersionToReport", "GetStringValue");
-
 
             if (string.IsNullOrEmpty(officeInstance.Version))
                 {
@@ -122,13 +132,10 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
                         var latestVersion = await GetOfficeLatestVersion(currentBranch.Branch, OfficeEdition.Office32Bit);
                         officeInstance.LatestVersion = latestVersion;
                     }
-
-
             }
-#endif
 
             return officeInstance;
-            
+ 
         }
 
 
@@ -229,7 +236,7 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
         {
 
 
-            await initConnection();
+            await InitConnection();
             var currentInstall = await CheckForOfficeInstallAsync();
 
         }

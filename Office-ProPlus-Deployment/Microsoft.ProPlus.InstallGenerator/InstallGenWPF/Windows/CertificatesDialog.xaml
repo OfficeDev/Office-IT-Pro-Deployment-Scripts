@@ -11,7 +11,7 @@
                       Title="Certificates Browser"
                       TitleForeground="#333333"
                       WindowTitleBrush="#f4f4f4"
-                      Background="#e6e6e6"
+                      Background="#FFCCCCCC"
                       MinWidth="400"
                       Width="1100"
                       MinHeight="200"
@@ -91,8 +91,8 @@
         </StackPanel>
 
         <StackPanel Grid.Column="0" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,5,5,5" Height="50"  >
-            <Button Name="OkButton" Content="OK" Margin="2" Height="30" Click="OkButton_Click"  />
-            <Button Name="CancelButton" Content="Cancel" Margin="2" Height="30" Click="CancelButton_OnClick"  />
+            <Button Name="OkButton" Content="OK" Margin="2" Height="30" Click="OkButton_Click" Background="#FFF7F7F7"  />
+            <Button Name="CancelButton" Content="Cancel" Margin="2" Height="30" Click="CancelButton_OnClick" Background="#FFF7F7F7"  />
         </StackPanel>
     </Grid>
 

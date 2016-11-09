@@ -11,7 +11,7 @@
                       Title="Client Connection Information"
                       TitleForeground="#333333"
                       WindowTitleBrush="#f4f4f4"
-                      Background="#e6e6e6"
+                      Background="#FFCCCCCC"
                       MinWidth="300"
                       MinHeight="400"
                       MaxWidth="430"
@@ -67,12 +67,16 @@
 
         <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0"   >
             <TextBox x:Name="txtBxAddMachines" Width="400" Height="300" TextWrapping="Wrap" Style="{StaticResource MetroTextBox}" AcceptsReturn="True"  
-                 Text="smsadmin	pass@word1	cl2	Contoso,smsadmin	pass@word1	cl1	Contoso,smsadmin	pass@word1	10.76.10.202	Contoso,smsadmin	pass@word1	10.76.10.201	Contoso," HorizontalAlignment="Center"  />
+                 Text="cl2" HorizontalAlignment="Center"  />
         </StackPanel>
 
+        <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Left" >
+            <Button Name="ImportComputers" Content="Import" Margin="2" Height="30" Click="ImportComputers_OnClick_Click" Background="#FFF7F7F7" />
+            <Button Name="AddCredentials" Content="Credentials" Margin="2" Height="30" Click='AddCredentials_OnClick' Background="#FFF7F7F7" />
+        </StackPanel>
         <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Right" >
-            <Button Name="OkButton" Content="OK" Margin="2" Height="30" Click="OkButton_Click" />
-            <Button Name="CancelButton" Content="Cancel" Margin="2" Height="30" Click="CancelButton_Click"  />
+            <Button Name="OkButton" Content="OK" Margin="2" Height="30" Click="OkButton_Click" Background="#FFF7F7F7" />
+            <Button Name="CancelButton" Content="Cancel" Margin="2" Height="30" Click="CancelButton_Click" Background="#FFF7F7F7"  />
         </StackPanel>
     </Grid>
 

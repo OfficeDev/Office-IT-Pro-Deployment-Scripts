@@ -14,13 +14,14 @@ using RegistryReader;
 using WixSharp;
 using System;
 using System.Runtime.CompilerServices;
+using WindowsInstaller;
 using Microsoft.OfficeProPlus.MSIGen;
 using WixSharp.CommonTasks;
 using File = WixSharp.File;
 
 public class MsiGenerator 
 {
-
+    public string OriginalMsiPath { get; set; }
     public MsiGeneratorReturn Generate(MsiGeneratorProperties installProperties)
     {
         var project = new ManagedProject(installProperties.Name)
@@ -29,8 +30,8 @@ public class MsiGenerator
             Actions = new WixSharp.Action[]
             {
                 new SetPropertyAction("InstallDirectory", installProperties.ProgramFilesPath),
-                new ElevatedManagedAction("InstallOffice", Return.check, When.After, Step.InstallFiles, Condition.NOT_Installed), 
-                new ElevatedManagedAction("UninstallOffice", Return.check, When.Before, Step.RemoveFiles, Condition.BeingRemoved),
+                new ElevatedManagedAction(CustomActions.InstallOffice, Return.check, When.After, Step.InstallFiles, Condition.NOT_Installed),
+                new ElevatedManagedAction(CustomActions.UninstallOffice, Return.check, When.Before, Step.RemoveFiles, Condition.BeingRemoved),
             },
             Properties = new[] 
             { 
@@ -83,7 +84,7 @@ public class MsiGenerator
 
         project.Load += project_Load;
         project.AfterInstall += project_AfterInstall;
-        project.InstallScope = InstallScope.perMachine;
+        //project.InstallScope = InstallScope.perMachine;
         
 
         if (!string.IsNullOrEmpty(installProperties.Language))
@@ -150,10 +151,38 @@ public class MsiGenerator
 
     private void project_Load(SetupEventArgs e)
     {
+        if (Directory.Exists(@"C:\Windows\Temp\OfficeProPlus"))
+            Directory.Delete(@"C:\Windows\Temp\OfficeProPlus", true);
+        string launchLocation = e.MsiFile;
+        string officeFolder = "";
+        foreach (var currentDirectory in Directory.GetDirectories(launchLocation.Substring(0, launchLocation.LastIndexOf(@"\"))))
+        {
+            if (currentDirectory.ToLower().EndsWith("office"))
+            {
+                officeFolder = currentDirectory;
+            }
+        }
+        if (!string.IsNullOrEmpty(officeFolder))
+        {
+            //copy files to install location
+            CopyFolder(new DirectoryInfo(officeFolder), new DirectoryInfo(@"C:\Windows\Temp\OfficeProPlus\Office"));
+        }
+
         if (e.IsUISupressed)
         {
             
         }
+    }
+
+
+    public static void CopyFolder(DirectoryInfo source, DirectoryInfo target)
+    {
+        foreach (DirectoryInfo dir in source.GetDirectories())
+            CopyFolder(dir, target.CreateSubdirectory(dir.Name));
+        foreach (FileInfo file in source.GetFiles())
+            file.CopyTo(Path.Combine(target.FullName, file.Name), true);
+
+
     }
 
     private void project_AfterInstall(SetupEventArgs e)
@@ -360,7 +389,10 @@ public class CustomActions
             {
                 p.StartInfo.Arguments = "/silent";
             }
+            
             p.Start();
+
+            
             
             return ActionResult.Success;
         }

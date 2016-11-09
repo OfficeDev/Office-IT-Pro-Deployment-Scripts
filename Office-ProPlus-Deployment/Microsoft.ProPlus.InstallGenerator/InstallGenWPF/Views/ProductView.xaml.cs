@@ -57,7 +57,8 @@ namespace MetroDemo.ExampleViews
             {
                 // LoadExcludedProducts();
                 cbProject.IsEnabled = false;
-                cbVisio.IsEnabled = false;                
+                cbVisio.IsEnabled = false;
+                CbSkype.IsEnabled = false;           
                 if (MainTabControl == null) return;
                 MainTabControl.SelectedIndex = 0;
 
@@ -240,6 +241,7 @@ namespace MetroDemo.ExampleViews
                 _blockUpdate = true;
                 cbVisio.SelectedIndex = 0;
                 cbProject.SelectedIndex = 0;
+                CbSkype.SelectedIndex = 0;
                 chkVisio.IsChecked = false;
                 chkProject.IsChecked = false;                
                 if (chBxMainProductFirstInitialize)
@@ -255,6 +257,7 @@ namespace MetroDemo.ExampleViews
                 ProductBranch.SelectedIndex = 0;
                 ProductVersion.Text = "";
                 ProductUpdateSource.Text = "";
+                ProductDownloadSource.Text = "";
 
                 UseLangForAllProducts.IsChecked = true;
 
@@ -296,6 +299,7 @@ namespace MetroDemo.ExampleViews
 
                     ProductVersion.Text = configXml.Add.Version?.ToString() ?? "";
                     ProductUpdateSource.Text = configXml.Add.SourcePath?.ToString() ?? "";
+                    ProductDownloadSource.Text = configXml.Add.DownloadPath?.ToString() ?? "";
 
                     var branchIndex = 0;
                     foreach (OfficeBranch branchItem in ProductBranch.Items)
@@ -356,7 +360,16 @@ namespace MetroDemo.ExampleViews
                                 cbProject.IsEnabled = true;
                                 cbProject.SelectedItem = item;
                                 break;
-                            }                            
+                            }
+
+                            foreach (Product item in CbSkype.Items)
+                            {
+                                if (item.Id.ToUpper() != product.ID.ToUpper()) continue;
+                                ChkSkype.IsChecked = true;
+                                CbSkype.IsEnabled = true;
+                                CbSkype.SelectedItem = item;
+                                break;
+                            }
 
                             if (product.Languages != null)
                             {
@@ -552,7 +565,7 @@ namespace MetroDemo.ExampleViews
             catch { }
 
             configXml.Add.SourcePath = ProductUpdateSource.Text.Length > 0 ? ProductUpdateSource.Text : null;
-
+            configXml.Add.DownloadPath = ProductDownloadSource.Text.Length > 0 ? ProductDownloadSource.Text : null;
             
             var mainProduct = (Product) MainProducts.SelectedItem;
             if (mainProduct != null)
@@ -581,6 +594,16 @@ namespace MetroDemo.ExampleViews
                 if (chkProject.IsChecked.HasValue && chkProject.IsChecked.Value)
                 {
                     var addProduct = (Product)cbProject.SelectedItem;
+                    var additionalProduct = new ODTProduct()
+                    {
+                        ID = addProduct.Id
+                    };
+                    configXml.Add.Products.Add(additionalProduct);
+                }
+
+                if (ChkSkype.IsChecked.HasValue && ChkSkype.IsChecked.Value)
+                {
+                    var addProduct = (Product)CbSkype.SelectedItem;
                     var additionalProduct = new ODTProduct()
                     {
                         ID = addProduct.Id
@@ -787,6 +810,12 @@ namespace MetroDemo.ExampleViews
             {
                 var projetProduct = (Product)cbProject.SelectedItem;
                 products.Add(projetProduct);
+            }
+
+            if (ChkSkype.IsChecked.HasValue && ChkSkype.IsChecked.Value)
+            {
+                var skypeProduct = (Product)CbSkype.SelectedItem;
+                products.Add(skypeProduct);
             }
 
             LanguageUnique.DisplayMemberPath = "ShortName";
@@ -1044,6 +1073,28 @@ namespace MetroDemo.ExampleViews
             }
         }
 
+        private async void OpenLoggingFolderButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var folderPath = RemoteLoggingPath.Text.Trim();
+                if (string.IsNullOrEmpty(folderPath)) return;
+
+                if (await GlobalObjects.DirectoryExists(folderPath))
+                {
+                    Process.Start("explorer", folderPath);
+                }
+                else
+                {
+                    MessageBox.Show("Directory path does not exist.");
+                }
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
+
         private async void BuildFilePath_OnTextChanged(object sender, TextChangedEventArgs e)
         {
             try
@@ -1073,7 +1124,44 @@ namespace MetroDemo.ExampleViews
                 LogErrorMessage(ex);
             }
         }
-      
+
+        private async void RemoteLoggingPath_OnTextChanged(object sender, TextChangedEventArgs e)
+        {
+            try
+            {
+                var enabled = false;
+                var openFolderEnabled = false;
+                if (RemoteLoggingPath.Text.Trim().Length > 0)
+                {
+                    var match = Regex.Match(RemoteLoggingPath.Text, @"^\w:\\|\\\\.*\\..*");
+                    if (match.Success)
+                    {
+                        enabled = true;
+                        var folderExists = await GlobalObjects.DirectoryExists(RemoteLoggingPath.Text);
+                        GlobalObjects.ViewModel.RemoteLoggingPath = RemoteLoggingPath.Text;
+                        if (!folderExists)
+                        {
+                            folderExists = await GlobalObjects.DirectoryExists(RemoteLoggingPath.Text);
+                            GlobalObjects.ViewModel.RemoteLoggingPath = "";
+                        }
+
+
+                        openFolderEnabled = folderExists;
+                    }
+                }
+
+                OpenLoggingFolderButton.IsEnabled = openFolderEnabled;
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
+
+        private void RemotePath_Click(object sender, RoutedEventArgs e)
+        {
+        }
+
         private void UpdatePath_OnClick(object sender, RoutedEventArgs e)
         {
             try
@@ -1094,6 +1182,34 @@ namespace MetroDemo.ExampleViews
                 if (result == DialogResult.OK)
                 {
                     ProductUpdateSource.Text = dlg1.SelectedPath;
+                }
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
+
+        private void RemoteLoggingPath_OnClick(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var dlg1 = new Ionic.Utils.FolderBrowserDialogEx
+                {
+                    Description = "Select a folder:",
+                    ShowNewFolderButton = true,
+                    ShowEditBox = true,
+                    SelectedPath = ProductUpdateSource.Text,
+                    ShowFullPathInEditBox = true,
+                    RootFolder = System.Environment.SpecialFolder.MyComputer
+                };
+                //dlg1.NewStyle = false;
+
+                // Show the FolderBrowserDialog.
+                var result = dlg1.ShowDialog();
+                if (result == DialogResult.OK)
+                {
+                    RemoteLoggingPath.Text = dlg1.SelectedPath;
                 }
             }
             catch (Exception ex)
@@ -1269,6 +1385,7 @@ namespace MetroDemo.ExampleViews
             }
         }
         
+
         public BranchChangedEventHandler BranchChanged { get; set; }
 
         #endregion
@@ -1339,7 +1456,7 @@ namespace MetroDemo.ExampleViews
         {
             try
             {
-                if ((chkVisio.IsChecked.HasValue && chkVisio.IsChecked.Value == false) && (chkProject.IsChecked.HasValue && chkProject.IsChecked.Value == false) && (chkofficeProd.IsChecked.HasValue && chkofficeProd.IsChecked.Value == false))
+                if ((chkVisio.IsChecked.HasValue && chkVisio.IsChecked.Value == false) && (chkProject.IsChecked.HasValue && chkProject.IsChecked.Value == false) && (ChkSkype.IsChecked.HasValue && chkProject.IsChecked.Value == false) && (chkofficeProd.IsChecked.HasValue && chkofficeProd.IsChecked.Value == false))
                 {
 
                     GlobalObjects.ViewModel.BlockNavigation = true;
@@ -1352,6 +1469,111 @@ namespace MetroDemo.ExampleViews
                 }
             }
             catch(Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
+
+        private void ChkSkype_Checked(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                CbSkype.IsEnabled = (ChkSkype.IsChecked.HasValue && ChkSkype.IsChecked.Value);
+                ProductsSelectionChanged();
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
+
+        private void CbSkype_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            try
+            {
+                ProductsSelectionChanged();
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
+
+        private async void ProductDownloadSource_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            try
+            {
+                var enabled = false;
+                var openFolderEnabled = false;
+                if (ProductDownloadSource.Text.Trim().Length > 0)
+                {
+                    var match = Regex.Match(ProductDownloadSource.Text, @"^\w:\\|\\\\.*\\..*");
+                    if (match.Success)
+                    {
+                        enabled = true;
+                        var folderExists = await GlobalObjects.DirectoryExists(ProductDownloadSource.Text);
+                        if (!folderExists)
+                        {
+                            folderExists = await GlobalObjects.DirectoryExists(ProductDownloadSource.Text);
+                        }
+
+                        openFolderEnabled = folderExists;
+                    }
+                }
+
+                OpenDownloadFolderButton.IsEnabled = openFolderEnabled;
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
+
+        private async void OpenDownloadFolderButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var folderPath = ProductDownloadSource.Text.Trim();
+                if (string.IsNullOrEmpty(folderPath)) return;
+
+                if (await GlobalObjects.DirectoryExists(folderPath))
+                {
+                    Process.Start("explorer", folderPath);
+                }
+                else
+                {
+                    MessageBox.Show("Directory path does not exist.");
+                }
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
+
+        private void DownloadPath_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var dlg1 = new Ionic.Utils.FolderBrowserDialogEx
+                {
+                    Description = "Select a folder:",
+                    ShowNewFolderButton = true,
+                    ShowEditBox = true,
+                    SelectedPath = ProductDownloadSource.Text,
+                    ShowFullPathInEditBox = true,
+                    RootFolder = System.Environment.SpecialFolder.MyComputer
+                };
+                //dlg1.NewStyle = false;
+
+                // Show the FolderBrowserDialog.
+                var result = dlg1.ShowDialog();
+                if (result == DialogResult.OK)
+                {
+                    ProductDownloadSource.Text = dlg1.SelectedPath;
+                }
+            }
+            catch (Exception ex)
             {
                 LogErrorMessage(ex);
             }

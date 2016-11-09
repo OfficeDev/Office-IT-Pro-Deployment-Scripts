@@ -21,6 +21,9 @@ using System.Windows.Threading;
 using UserControl = System.Windows.Controls.UserControl;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.Remoting.Messaging;
+using System.Windows.Data;
+using Microsoft.OfficeProPlus.InstallGenerator.Models;
 
 namespace MetroDemo.ExampleViews
 {
@@ -57,7 +60,459 @@ namespace MetroDemo.ExampleViews
             RemoteMachineList.ItemsSource = remoteClients;
         }
 
-        private  void LogErrorMessage(Exception ex)
+        private async Task CollectMachineData(RemoteMachine remoteMachine)
+        {
+            var installGenerator = new OfficeInstallManager(remoteMachine.Machine, remoteMachine.WorkGroup, remoteMachine.UserName, remoteMachine.Password);
+            try
+            {
+                remoteMachine.Status = "Checking...";
+
+                RemoteMachineList.ItemsSource = null;
+                RemoteMachineList.ItemsSource = remoteClients;
+
+                await installGenerator.InitConnections();
+
+                var officeInstall = await installGenerator.CheckForOfficeInstallAsync();
+
+                var channels = new List<Channel>();
+
+                var versions = new List<officeVersion>();
+
+                if (officeInstall.Channel != null)
+                {
+                    var branches = GlobalObjects.ViewModel.Branches;
+
+                    var currentChannel = new Channel()
+                    {
+                        Name = officeInstall.Channel.Trim()
+                    };
+
+                    var currentVersion = new officeVersion()
+                    {
+                        Number = officeInstall.Version.Trim()
+                    };
+
+                    versions.Add(currentVersion);
+                    channels.Add(currentChannel);
+
+                    foreach (var branch in branches)
+                    {
+                        if (branch.NewName.ToString() != officeInstall.Channel)
+                        {
+                            var tempChannel = new Channel()
+                            {
+                                Name = branch.NewName.ToString()
+                            };
+                            channels.Add(tempChannel);
+                        }
+                        else
+                        {
+                            versions = GetVersions(branch, versions, currentVersion.Number);
+                        }
+                    }
+
+                    remoteMachine.include = false;
+                    remoteMachine.Machine = remoteMachine.Machine;
+                    remoteMachine.UserName = remoteMachine.UserName;
+                    remoteMachine.Password = remoteMachine.Password;
+                    remoteMachine.WorkGroup = remoteMachine.WorkGroup;
+                    remoteMachine.Status = "Found";
+                    remoteMachine.Channels = channels;
+                    remoteMachine.Channel = currentChannel;
+                    remoteMachine.OriginalChannel = currentChannel;
+                    remoteMachine.Versions = versions;
+                    remoteMachine.Version = currentVersion;
+                    remoteMachine.OriginalVersion = currentVersion;
+                 
+                    RemoteMachineList.ItemsSource = null;
+                    RemoteMachineList.ItemsSource = remoteClients;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                remoteMachine.Status = ex.Message;
+                RemoteMachineList.ItemsSource = null;
+                RemoteMachineList.ItemsSource = remoteClients;
+
+                LogWmiErrorMessage(ex, new RemoteComputer()
+                {
+                    Name = remoteMachine.Machine,
+                    Domain = remoteMachine.WorkGroup,
+                    UserName = remoteMachine.UserName,
+                    Password = remoteMachine.Password
+                });
+            }
+            if (remoteMachine.Status == "Checking...")
+            {
+                remoteMachine.Status = "Not Found";
+            }
+            RemoteMachineList.ItemsSource = null;
+            RemoteMachineList.ItemsSource = remoteClients;
+        }
+
+        private Task UpdateMachineMultiThread(RemoteMachine mech, int i)
+        {
+            //allows for updates to be run at the same time.  otherwise, each task stays in queue until al awaits have finished
+            return Task.Run(() =>
+            {
+                UpdateMachine(mech, i);
+            });
+        }
+
+
+        private async Task UpdateMachine(RemoteMachine client, int i)
+        {
+                var connectionInfo = new string[4];
+                RemoteMachineList.Dispatcher.Invoke(new Action(() => {
+                                                                         RemoteMachineList.UpdateLayout();
+                }));
+
+                var row = (DataGridRow) RemoteMachineList.ItemContainerGenerator.ContainerFromIndex(i);
+
+                System.Windows.Controls.TextBlock statusText = null;
+
+
+                if (row != null)
+                {
+                    row.Dispatcher.Invoke(new Action(() =>
+                    {
+                        statusText = row.FindChild<System.Windows.Controls.TextBlock>("TxtStatus");
+                    }));
+                }
+                else
+                {
+                    return;
+                }
+
+
+                RemoteMachineList.Dispatcher.Invoke(new Action(() =>
+                {
+                    RemoteMachineList.Items.Refresh();
+                }));
+
+
+                try
+                {
+
+                    client.Status = "Updating";
+
+                    statusText.Dispatcher.Invoke(new Action(() =>
+                    {
+                        statusText.Text = "Updating";
+                    }));
+
+                    RemoteMachineList.Dispatcher.Invoke(new Action(() =>
+                    {
+                        RemoteMachineList.Items.Refresh();
+                    }));
+
+                    //throw (new Exception(""));
+
+                    connectionInfo = new string[4] {client.UserName, client.Password, client.Machine, client.WorkGroup};
+                    var installGenerator = new OfficeInstallManager(client.Machine, client.WorkGroup, client.UserName,
+                        client.Password);
+
+                    var newVersion = client.Version;
+                    var newChannel = client.Channel;
+
+                    await Task.Run(async () => { await installGenerator.InitConnections(); });
+                    var officeInstall = await Task.Run(() => { return installGenerator.CheckForOfficeInstallAsync(); });
+
+                    await Task.Run(async () => { await ChangeOfficeChannelWmi(client, officeInstall); });
+
+                    client.Status = "Success";
+
+                    statusText.Dispatcher.Invoke(new Action(() =>
+                    {
+                        statusText.Text = "Success";
+                    }));
+
+                    RemoteMachineList.Dispatcher.Invoke(new Action(() =>
+                    {
+                        RemoteMachineList.Items.Refresh();
+                    }));
+
+                }
+                catch (Exception ex) // if fails via WMI, try via powershell
+                {
+
+
+                    try
+                    {
+                        LogWmiErrorMessage(ex, new RemoteComputer()
+                        {
+                            Name = client.Machine,
+                            Domain = client.WorkGroup,
+                            Password = client.Password,
+                            UserName = client.UserName
+                        });
+
+                        string PSPath = System.IO.Path.GetTempPath() + client.Machine + "PowershellAttempt.txt";
+                        System.IO.File.Delete(PSPath);
+                    
+                        var powerShellInstance = System.Management.Automation.PowerShell.Create();
+                        if (!String.IsNullOrEmpty(client.OriginalVersion.Number) ||
+                            client.Version.Number != client.OriginalVersion.Number)
+                        {
+
+                            powerShellInstance.AddScript(System.IO.Directory.GetCurrentDirectory() +
+                                                         "\\Resources\\UpdateScriptLaunch.ps1 -Channel " +
+                                                         client.Channel.Name + " -DisplayLevel $false -machineToRun " +
+                                                         client.Machine + " -UpdateToVersion " + client.Version.Number);
+                            var asyncResult = powerShellInstance.BeginInvoke();
+                            //possible make async so toolkit doesn't freeze the console
+                            client.Status = "Updating...";
+                        //statusText.Dispatcher.Invoke(new Action(() =>
+                        //{
+                        //    statusText.Text = "Updating...";
+                        //}));
+
+                        //RemoteMachineList.Dispatcher.Invoke(new Action(() =>
+                        //{
+                        //    RemoteMachineList.Items.Refresh();
+                        //    RemoteMachineList.ItemsSource = null;
+                        //    RemoteMachineList.ItemsSource = remoteClients;
+                        //}));
+                        
+                        powerShellInstance.EndInvoke(asyncResult);
+                        }
+                        else
+                        {
+                            //statusText.Dispatcher.Invoke(new Action(() =>
+                            //{
+                            //    statusText.Text = "Success";
+                            //}));
+                        client.Status = "Success";
+                        //RemoteMachineList.Dispatcher.Invoke(new Action(() =>
+                        //    {
+                        //        RemoteMachineList.Items.Refresh();
+                        //    }));
+                        RemoteMachineList.Items.Refresh();
+                    }
+
+
+
+
+                        PsUpdateExited(PSPath, statusText, client);
+
+
+                    }
+                    catch (Exception ex1)
+                    {
+
+
+                        client.Status = "Error: " + ex.Message;
+                        using (System.IO.StreamWriter file =
+                            new System.IO.StreamWriter(
+                                System.IO.Path.GetTempPath() + client.Machine + "PowershellError.txt", true))
+                        {
+                            file.WriteLine(ex1.Message);
+                            file.WriteLine(ex1.StackTrace);
+                        }
+                        statusText.Dispatcher.Invoke(new Action(() =>
+                        {
+                            statusText.Text = "Error: " + ex.Message;
+                        }));
+
+                        RemoteMachineList.Dispatcher.Invoke(new Action(() =>
+                        {
+                            RemoteMachineList.Items.Refresh();
+                        }));
+                    }
+
+                }
+        }
+
+        private void PsUpdateExited(string psPath, TextBlock statusText, RemoteMachine client)
+        {
+
+            string readtext = System.IO.File.ReadAllText(psPath);
+            if (readtext.Contains("Update Completed") && !readtext.Contains("Update Not Running"))
+            {
+
+                client.Status = "Success";
+                statusText.Dispatcher.Invoke(new Action(() =>
+                {
+                    statusText.Text = "Success";
+                }));
+
+                RemoteMachineList.Dispatcher.Invoke(new Action(() =>
+                {
+                    RemoteMachineList.Items.Refresh();
+                }));
+
+
+            }
+            else
+            {
+
+                client.Status = "Failed";
+                //statusText.Text = "Failed";
+                //RemoteMachineList.Items.Refresh();
+                statusText.Dispatcher.Invoke(new Action(() =>
+                {
+                    statusText.Text = "Failed";
+                }));
+
+                RemoteMachineList.Dispatcher.Invoke(new Action(() =>
+                {
+                    RemoteMachineList.Items.Refresh();
+                }));
+            }
+
+        }
+
+        public async Task ChangeOfficeChannelWmi(RemoteMachine client, OfficeInstallation localInstall)
+        {
+            var newChannel = client.Channel.ToString();
+            string version = null;
+            if (client.Version != null)
+            {
+                version = client.Version.ToString();
+            }
+
+            await Task.Run(async () =>
+            {
+                var installOffice = new InstallOfficeWmi
+                {
+                    remoteUser = client.UserName,
+                    remoteComputerName = client.Machine,
+                    remoteDomain = client.WorkGroup,
+                    remotePass = client.Password,
+                    newChannel = client.Channel.ToString(),
+                    newVersion = version,
+                    connectionNamespace = "\\root\\cimv2"
+                };
+
+                try
+                {
+                    var ppDownloader = new ProPlusDownloader();
+                    var baseUrl = await ppDownloader.GetChannelBaseUrlAsync(newChannel, OfficeEdition.Office32Bit);
+                    if (string.IsNullOrEmpty(baseUrl))
+                        throw (new Exception(string.Format("Cannot find BaseUrl for Channel: {0}", newChannel)));
+
+                    var channelToChangeTo = newChannel;
+
+                    if (string.IsNullOrEmpty(channelToChangeTo))
+                    {
+                        throw (new Exception("Version required"));
+                    }
+
+                    await installOffice.ChangeOfficeChannel(channelToChangeTo, baseUrl);
+                    var installGenerator = new OfficeInstallManager();
+                }
+                catch (Exception ex)
+                {
+                    LogWmiErrorMessage(ex, new RemoteComputer()
+                    {
+                        Name = client.Machine,
+                        Domain = client.WorkGroup,
+                        UserName = client.UserName,
+                        Password = client.Password
+                    });
+                    throw (new Exception("Update Failed"));
+                }
+
+            });
+        }
+
+        private static List<officeVersion> GetVersions(OfficeBranch currentChannel, List<officeVersion> versions, string currentVersion)
+        {
+
+         
+            foreach (var version in currentChannel.Versions)
+            {
+                if (version.Version.ToString() != currentVersion)
+                {
+                    var tempVersion = new officeVersion()
+                    {
+                        Number = version.Version.ToString()
+                    };
+
+                    versions.Add(tempVersion);
+                }
+                
+            }
+
+            var selectedVersion = new officeVersion()
+            {
+                Number = currentVersion
+            };
+
+            versions.Insert(0, selectedVersion);
+
+            return versions;
+        }
+
+        private void ToggleControls(bool enabled)
+        {
+            AddComputersButton.IsEnabled = enabled;
+            btnChangeChannelOrVersion.IsEnabled = enabled;
+            btnUpdateRemote.IsEnabled = enabled;
+            btnRemoveComputers.IsEnabled = enabled;
+
+        }
+
+        private void ToggleControlsMulti(bool enabled)
+        {
+
+            AddComputersButton.Dispatcher.Invoke(new Action(() => { this.IsEnabled = enabled;}));
+            btnChangeChannelOrVersion.Dispatcher.Invoke(new Action(() => { this.IsEnabled = enabled; }));
+            btnUpdateRemote.Dispatcher.Invoke(new Action(() => { this.IsEnabled = enabled; }));
+            btnRemoveComputers.Dispatcher.Invoke(new Action(() => { this.IsEnabled = enabled; }));
+
+        }
+        
+        public T GetAncestorOfType<T>(FrameworkElement child) where T : FrameworkElement
+        {
+            var parent = VisualTreeHelper.GetParent(child);
+            if (parent != null && !(parent is T))
+                return (T)GetAncestorOfType<T>((FrameworkElement)parent);
+            return (T)parent;
+        }
+        
+        private void LaunchInformationDialog(string sourceName)
+        {
+            try
+            {
+                if (informationDialog == null)
+                {
+
+                    informationDialog = new InformationDialog
+                    {
+                        Height = 700,
+                        Width = 600
+                    };
+                    informationDialog.Closed += (o, args) =>
+                    {
+                        informationDialog = null;
+                    };
+                    informationDialog.Closing += (o, args) =>
+                    {
+
+                    };
+                }
+
+                informationDialog.Height = 700;
+                informationDialog.Width = 600;
+
+                var filePath = AppDomain.CurrentDomain.BaseDirectory + @"HelpFiles\" + sourceName + ".html";
+                var helpFile = System.IO.File.ReadAllText(filePath);
+
+                informationDialog.HelpInfo.NavigateToString(helpFile);
+                informationDialog.Launch();
+
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
+
+        #region Logging
+
+        private void LogErrorMessage(Exception ex)
         {
             ex.LogException(false);
             if (ErrorMessage != null)
@@ -70,10 +525,17 @@ namespace MetroDemo.ExampleViews
             }
         }
 
-        private void LogWmiErrorMessage(Exception ex, string[] connectionInfo = null)
+        private void LogWmiErrorMessage(Exception ex, RemoteComputer machine = null)
         {
-            var logPath = Path.GetTempPath() + "\\"+connectionInfo[2]+"wmiLog.txt";
-            var stackTrace = new StackTrace(ex,true);
+            var computerName = "";
+
+            if (machine != null)
+            {
+                computerName = machine.Name;
+            }
+
+            var logPath = Path.GetTempPath() + "\\" + computerName + "wmiLog.txt";
+            var stackTrace = new StackTrace(ex, true);
             var frame = stackTrace.GetFrame(0);
             var lineNumber = frame.GetFileColumnNumber();
 
@@ -81,13 +543,13 @@ namespace MetroDemo.ExampleViews
             {
                 using (TextWriter sw = System.IO.File.AppendText(logPath))
                 {
-                    if (connectionInfo == null)
+                    if (machine == null)
                     {
                         sw.WriteLine(ex.Message);
                     }
                     else
                     {
-                        sw.WriteLine("Client Error: " + ex.Message + "," + connectionInfo[2]+","+ stackTrace.ToString());
+                        sw.WriteLine("Client Error: " + ex.Message + "," + computerName + "," + stackTrace.ToString());
                     }
                 }
             }
@@ -95,20 +557,20 @@ namespace MetroDemo.ExampleViews
             {
                 using (TextWriter sw = new StreamWriter(logPath))
                 {
-                    if (connectionInfo == null)
+                    if (machine == null)
                     {
                         sw.WriteLine(ex.Message);
                     }
                     else
                     {
-                        sw.WriteLine("Client Error: " + ex.Message + "," + connectionInfo[2] + ","+ stackTrace.ToString());
+                        sw.WriteLine("Client Error: " + ex.Message + "," + computerName + "," + stackTrace.ToString());
                     }
                 }
             }
 
         }
 
-        private void clearLogFile()
+        private void ClearLogFile()
         {
             var logPath = Path.GetTempPath() + "\\wmiLog.txt";
 
@@ -127,6 +589,113 @@ namespace MetroDemo.ExampleViews
             catch { }
         }
 
+        #endregion
+
+        #region Events
+
+        private async void btnUpdateRemote_Click(object sender, RoutedEventArgs e)
+        {
+            List<Task> updateTasks = new List<Task>();
+
+
+            try
+            {
+                ClearLogFile();
+                GlobalObjects.ViewModel.BlockNavigation = true;
+                ToggleControlsMulti(false);
+                WaitImage.Visibility = Visibility.Visible;
+                RemoteMachineList.Items.Refresh();
+
+                for (var i = 0; i < remoteClients.Count; i++)
+                {
+                    var client = remoteClients[i];
+
+                    //use common username/password for each client
+                    if (!string.IsNullOrEmpty(GlobalObjects.ViewModel.GetUsername()) &&
+                        !string.IsNullOrEmpty(GlobalObjects.ViewModel.GetPassword()))
+                    {
+                        client.Password = GlobalObjects.ViewModel.GetPassword();
+                        client.UserName = GlobalObjects.ViewModel.GetUsername();
+                        client.WorkGroup = GlobalObjects.ViewModel.GetDomain();
+                    }
+
+                    if (client.include && client.Status.Trim() != "Not Found")
+                    {
+                        int tempInt = i;
+                        Task tempTask = UpdateMachineMultiThread(client, tempInt);// UpdateMachine(client, i);
+                        updateTasks.Add(tempTask);
+                    }
+                }
+
+                await Task.Factory.ContinueWhenAll(updateTasks.ToArray(), t =>
+                {
+                    RemoteMachineList.Dispatcher.Invoke(new Action(() =>
+                    {
+                        RemoteMachineList.Items.Refresh();
+                    }));
+                });
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+
+                RemoteMachineList.Dispatcher.Invoke(new Action(() =>
+                {
+                    RemoteMachineList.Items.Refresh();
+                }));
+            }
+
+        }
+
+        private void ProductChannel_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            try
+            {
+
+
+                var selectedBranch = (sender as System.Windows.Controls.ComboBox).SelectedValue as string;
+                var newVersions = new List<officeVersion>();
+                var branches = GlobalObjects.ViewModel.Branches;
+                var row = GetAncestorOfType<DataGridRow>(sender as System.Windows.Controls.ComboBox);
+                var versionCB = row.FindChild<System.Windows.Controls.ComboBox>("ProductVersion");
+
+
+                var branch = branches.Find(a => a.NewName == GlobalObjects.ViewModel.newChannel);
+
+                if (String.IsNullOrEmpty(GlobalObjects.ViewModel.newChannel))
+                {
+                    branch = branches.Find(a => a.NewName == selectedBranch);
+                }
+
+
+                foreach (var version in branch.Versions)
+                {
+                    var tempVersion = new officeVersion()
+                    {
+                        Number = version.Version
+                    };
+
+                    newVersions.Add(tempVersion);
+                }
+
+                if (row != null)
+                {
+                    var client = remoteClients[row.GetIndex()];
+                    versionCB.ItemsSource = newVersions;
+                    versionCB.Items.Refresh();
+
+                    if (String.IsNullOrEmpty(GlobalObjects.ViewModel.newVersion))
+                    {
+                        versionCB.SelectedValue = client.Version.Number;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
+        
         private void MainTabControl_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             try
@@ -160,161 +729,66 @@ namespace MetroDemo.ExampleViews
                 LogErrorMessage(ex);
             }
         }
-
-        private async Task addMachines(string[] connectionInfo)
+        
+        private async void RemoteClientInfoDialog_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-
-            var installGenerator = new OfficeInstallManager(connectionInfo);
-
-            var info = new RemoteMachine
-            {
-                include = false,
-                Machine = connectionInfo[2],
-                UserName = connectionInfo[0],
-                Password = connectionInfo[1],
-                WorkGroup = connectionInfo[3],
-                Status = "Not Found",
-                Channels = null,
-                Channel = null,
-                OriginalChannel = null,
-                Versions = null,
-                Version = null,
-                OriginalVersion = null
-            };
-
             try
             {
+                var dialog = (RemoteClientInfoDialog)sender;
 
-                await installGenerator.initConnections();
-                var officeInstall = await installGenerator.CheckForOfficeInstallAsync();
+                if (GlobalObjects.ViewModel.RemoteConnectionInfo() == null || dialog.Result != DialogResult.OK) return;
+                var connectionInfo = GlobalObjects.ViewModel.RemoteConnectionInfo();
 
-                var channels = new List<Channel>();
-
-                var versions = new List<officeVersion>();
-
-                if (officeInstall.Channel != null)
+                foreach (var client in connectionInfo)
                 {
-                    var branches = GlobalObjects.ViewModel.Branches;
-
-                    var currentChannel = new Channel()
-                    {
-                        Name = officeInstall.Channel.Trim()
-                    };
-
-                    var currentVersion = new officeVersion()
-                    {
-                        Number = officeInstall.Version.Trim()
-                    };
-
-                    versions.Add(currentVersion);
-                    channels.Add(currentChannel);
-
-
-
-
-                    foreach (var branch in branches)
-                    {
-                        if (branch.NewName.ToString() != officeInstall.Channel)
-                        {
-                            var tempChannel = new Channel()
-                            {
-                                Name = branch.NewName.ToString()
-                            };
-                            channels.Add(tempChannel);
-                        }
-                        else
-                        {
-
-                            versions = getVersions(branch, versions, currentVersion.Number);
-                        }
-
-
-                    }
-
-                    info = new RemoteMachine
+                    var info = new RemoteMachine
                     {
                         include = false,
-                        Machine = connectionInfo[2],
-                        UserName = connectionInfo[0],
-                        Password = connectionInfo[1],
-                        WorkGroup = connectionInfo[3],
-                        Status = "Found",
-                        Channels = channels,
-                        Channel = currentChannel,
-                        OriginalChannel = currentChannel,
-                        Versions = versions,
-                        Version = currentVersion,
-                        OriginalVersion = currentVersion
-
+                        Machine = client.Name,
+                        UserName = client.UserName,
+                        Password = client.Password,
+                        WorkGroup = client.Domain,
+                        Status = "",
+                        Channels = null,
+                        Channel = null,
+                        OriginalChannel = null,
+                        Versions = null,
+                        Version = null,
+                        OriginalVersion = null
                     };
-                }    
-                
+
+                    GlobalObjects.ViewModel.RemoteMachines.Add(info);
+                    remoteClients.Add(info);
+                }
+
+                RemoteMachineList.ItemsSource = null;
+                RemoteMachineList.ItemsSource = remoteClients;
+
+                var taskList = new List<Task>();
+                foreach (var client in remoteClients)
+                {
+                    taskList.Add(CollectMachineData(client));
+                    await Task.Delay(1000);
+                }
+
+                foreach (var task in taskList)
+                {
+                    await task;
+                }
             }
             catch (Exception ex)
             {
                 LogErrorMessage(ex);
-                LogWmiErrorMessage(ex, connectionInfo);
-
             }
             finally
             {
-                GlobalObjects.ViewModel.RemoteMachines.Add(info);
-                remoteClients.Add(info);
-            }
-        }
-
-        private async void RemoteClientInfoDialog_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-        
-            try
-            {
-         
-                //toggleControlsMulti(false);
-                //WaitImage.Visibility = Visibility.Visible;
-                //WaitImage.Visibility = Visibility.Visible;
-              
-
-                var dialog = (RemoteClientInfoDialog)sender;
-                var textBox = dialog.FindChild<System.Windows.Controls.TextBox>("txtBxAddMachines");
-
-                if (!String.IsNullOrEmpty(GlobalObjects.ViewModel.remoteConnectionInfo) && dialog.Result == DialogResult.OK) 
-                {
-                    var connectionInfo = GlobalObjects.ViewModel.remoteConnectionInfo.Split(',');
-
-                    foreach (var client in connectionInfo)
-                    {
-                        var clientInfo = client.Split(' ');
-
-
-                        if(clientInfo.Length > 1)
-                        {
-                            await Task.Run(async () => { await addMachines(clientInfo); });
-                        }
-                    }
-
-                    RemoteMachineList.ItemsSource = null;
-                    RemoteMachineList.ItemsSource = remoteClients;
-
-                }
-
-
-            }
-            catch(Exception ex)
-            {
-                LogErrorMessage(ex);
-            }
-            finally
-            {
-                toggleControlsMulti(true);
+                ToggleControlsMulti(true);
                 WaitImage.Dispatcher.Invoke(new Action(() =>
                 {
                     WaitImage.Visibility = Visibility.Hidden;
                 }));
                 GlobalObjects.ViewModel.BlockNavigation = false;
-
             }
-
-
         }
 
         private void AddComputersButton_Click(object sender, RoutedEventArgs e)
@@ -325,8 +799,8 @@ namespace MetroDemo.ExampleViews
                 remoteClientDialog = new RemoteClientInfoDialog();
                 remoteClientDialog.Closing += RemoteClientInfoDialog_Closing;
 
-                toggleControlsMulti(false);
-                WaitImage.Visibility = Visibility.Visible;
+                //ToggleControlsMulti(false);
+                //WaitImage.Visibility = Visibility.Visible;
                 GlobalObjects.ViewModel.BlockNavigation = true;
 
                 remoteClientDialog.Launch();
@@ -346,7 +820,7 @@ namespace MetroDemo.ExampleViews
                 remoteUpdateDialog.Closing += RemoteUpdateDialog_Closing;
 
 
-                toggleControlsMulti(false);
+                ToggleControlsMulti(false);
                 WaitImage.Visibility = Visibility.Visible;
                 GlobalObjects.ViewModel.BlockNavigation = true;
 
@@ -401,7 +875,7 @@ namespace MetroDemo.ExampleViews
                 GlobalObjects.ViewModel.newChannel = null;
                 GlobalObjects.ViewModel.newVersion = null;
 
-                toggleControlsMulti(true);
+                ToggleControlsMulti(true);
                 WaitImage.Dispatcher.Invoke(new Action(() =>
                 {
                     WaitImage.Visibility = Visibility.Hidden;
@@ -411,52 +885,6 @@ namespace MetroDemo.ExampleViews
                 RemoteMachineList.Items.Refresh();
             }
         }
-
-        private async void ImportComputersButton_Click(object sender, RoutedEventArgs e)
-        {
-            var dlg = new Microsoft.Win32.OpenFileDialog
-            {
-                DefaultExt = ".png",
-                Filter = "CSV Files (.csv)|*.csv"
-            };
-
-            var result = dlg.ShowDialog();
-            if (result == true)
-            {
-
-
-                List<string> versions = new List<String>();
-                string line;
-
-                try
-                {
-                    GlobalObjects.ViewModel.BlockNavigation = true;
-                    toggleControls(false);
-                    WaitImage.Visibility = Visibility.Visible;
-
-                    StreamReader file = new StreamReader(dlg.FileName);
-
-                    while ((line = file.ReadLine()) != null)
-                    {
-
-                        string[] tempStrArray = line.Split(',');
-                        await Task.Run(async () => { await addMachines(tempStrArray); });
-                    }
-                }
-                catch (Exception ex)
-                {
-                    LogErrorMessage(ex);
-
-                }
-
-
-                RemoteMachineList.ItemsSource = remoteClients;
-                toggleControls(true);
-                WaitImage.Visibility = Visibility.Hidden;
-                RemoteMachineList.Items.Refresh();
-            }
-        }
-
         private void chkAll_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -470,410 +898,10 @@ namespace MetroDemo.ExampleViews
             catch (Exception) { }
             RemoteMachineList.Items.Refresh();
         }
-
-        private async Task UpdateMachine(RemoteMachine client, int i)
-        {
-
-
-            var connectionInfo = new string[4];
-            RemoteMachineList.Dispatcher.Invoke(new Action(() => {
-                RemoteMachineList.UpdateLayout();
-            }));
-
-            var row = (DataGridRow)RemoteMachineList.ItemContainerGenerator.ContainerFromIndex(i);
-
-            System.Windows.Controls.TextBlock statusText = null;
-
-
-            if (row != null)
-            {
-                row.Dispatcher.Invoke(new Action(() =>
-                {
-                    statusText = row.FindChild<System.Windows.Controls.TextBlock>("TxtStatus");
-                }));
-            }
-            else
-            {
-                return;
-            }
-
-
-            RemoteMachineList.Dispatcher.Invoke(new Action(() =>
-            {
-                RemoteMachineList.Items.Refresh();
-            }));
-
-
-            try
-            {
-
-                client.Status = "Updating";
-
-                statusText.Dispatcher.Invoke(new Action(() =>
-                {
-                    statusText.Text = "Updating";
-                }));
-
-                RemoteMachineList.Dispatcher.Invoke(new Action(() =>
-                {
-                    RemoteMachineList.Items.Refresh();
-                }));
-
-                //throw (new Exception(""));
-
-                connectionInfo = new string[4] { client.UserName, client.Password, client.Machine, client.WorkGroup };
-                var installGenerator = new OfficeInstallManager(connectionInfo); 
-
-                var newVersion = client.Version;
-                var newChannel = client.Channel;
-
-                await Task.Run(async () => { await installGenerator.initConnections(); });
-                var officeInstall = await Task.Run(() => { return installGenerator.CheckForOfficeInstallAsync(); });
-                var updateInfo = new List<string> { client.UserName, client.Password, client.Machine, client.WorkGroup, client.Channel.Name, client.Version.Number };
-
-                await Task.Run(async () => { await ChangeOfficeChannelWmi(updateInfo, officeInstall); });
-
-                client.Status = "Success";
-
-                statusText.Dispatcher.Invoke(new Action(() =>
-                {
-                    statusText.Text = "Success";
-                }));
-
-                RemoteMachineList.Dispatcher.Invoke(new Action(() =>
-                {
-                    RemoteMachineList.Items.Refresh();
-                }));
-
-            }
-            catch (Exception ex)// if fails via WMI, try via powershell
-            {
-
-
-                try
-                {
-                    LogWmiErrorMessage(ex, connectionInfo);
-
-                    string PSPath = System.IO.Path.GetTempPath()+ client.Machine + "PowershellAttempt.txt";
-                    System.IO.File.Delete(PSPath);
-                    Process p = new Process();
-                    p.EnableRaisingEvents = true;
-                    p.StartInfo.CreateNoWindow = true;
-                    p.StartInfo.UseShellExecute = false;
-                    p.StartInfo.FileName = "Powershell.exe";                                //replace path to use local path                            switch out arguments so your program throws in the necessary args
-                    p.StartInfo.Arguments = @"-ExecutionPolicy Bypass -NoExit -Command ""& {& '" + System.IO.Directory.GetCurrentDirectory() + "\\Resources\\UpdateScriptLaunch.ps1' -Channel " + client.Channel.Name + " -DisplayLevel $false -machineToRun " + client.Machine + " -UpdateToVersion " + client.Version.Number + "}\"";
-                  
-
-
-                    if (!String.IsNullOrEmpty(client.OriginalVersion.Number) || client.Version.Number != client.OriginalVersion.Number)
-                    {
-                        p.Start();
-                    }
-                    else
-                    {
-                        statusText.Dispatcher.Invoke(new Action(() =>
-                        {
-                            statusText.Text = "Success";
-                        }));
-
-                        RemoteMachineList.Dispatcher.Invoke(new Action(() =>
-                        {
-                            RemoteMachineList.Items.Refresh();
-                        }));
-                    }
-
-
-
-                    await Task.Run(() => { p.WaitForExit(); });
-                    p.Close();
-                    PsUpdateExited(PSPath, statusText, client);
-
-              
-                }
-                catch (Exception ex1)
-                {
-
-
-                    client.Status = "Error: "+ ex.Message;
-                    using (System.IO.StreamWriter file =
-                    new System.IO.StreamWriter(System.IO.Path.GetTempPath() + client.Machine + "PowershellError.txt", true))
-                    {
-                        file.WriteLine(ex1.Message);
-                        file.WriteLine(ex1.StackTrace);
-                    }
-                    statusText.Dispatcher.Invoke(new Action(() =>
-                    {
-                        statusText.Text = "Error: " + ex.Message;
-                    }));
-
-                    RemoteMachineList.Dispatcher.Invoke(new Action(() =>
-                    {
-                        RemoteMachineList.Items.Refresh();
-                    }));
-                }
-
-            }
-        }
-
-        private void PsUpdateExited(string PSPath, TextBlock statusText, RemoteMachine client)
-        {
-
-            string readtext = System.IO.File.ReadAllText(PSPath);
-            if (readtext.Contains("Update Completed") && !readtext.Contains("Update Not Running"))
-            {
-
-                client.Status = "Success";
-                statusText.Dispatcher.Invoke(new Action(() =>
-                {
-                    statusText.Text = "Success";
-                }));
-
-                RemoteMachineList.Dispatcher.Invoke(new Action(() =>
-                {
-                    RemoteMachineList.Items.Refresh();
-                }));
-
-
-            }
-            else
-            {
-
-                client.Status = "Failed";
-                //statusText.Text = "Failed";
-                //RemoteMachineList.Items.Refresh();
-                statusText.Dispatcher.Invoke(new Action(() =>
-                {
-                    statusText.Text = "Failed";
-                }));
-
-                RemoteMachineList.Dispatcher.Invoke(new Action(() =>
-                {
-                    RemoteMachineList.Items.Refresh();
-                }));
-            }
-
-        }
-
-        private async void btnUpdateRemote_Click(object sender, RoutedEventArgs e)
-        {
-            List<Task> updateTasks = new List<Task>();
-
-
-            try
-            {
-                clearLogFile();
-            GlobalObjects.ViewModel.BlockNavigation = true;
-            toggleControlsMulti(false);
-            WaitImage.Visibility = Visibility.Visible;
-            RemoteMachineList.Items.Refresh();
-            var copyOfI = 0;
-          
-                for (var i = 0; i < remoteClients.Count; i++)
-            {
-                copyOfI = i; 
-                var client = remoteClients[copyOfI];
-
-
-            
-                    if (client.include && client.Status.Trim() != "Not Found")
-                    {
-
-                        updateTasks.Add(UpdateMachine(client, copyOfI));
-                    }
-
-            }
-          
-            await Task.Factory.ContinueWhenAll(updateTasks.ToArray(), t =>
-            {
-                toggleControlsMulti(true);
-
-                WaitImage.Dispatcher.Invoke(new Action(() =>
-                {
-                    WaitImage.Visibility = Visibility.Hidden;
-                }));
-
-
-                RemoteMachineList.Dispatcher.Invoke(new Action(() =>
-                {
-                    RemoteMachineList.Items.Refresh();
-                }));
-            });
-
-            }
-            catch (Exception ex)
-            {
-                LogErrorMessage(ex);
-
-                toggleControlsMulti(true);
-
-                WaitImage.Dispatcher.Invoke(new Action(() =>
-                {
-                    WaitImage.Visibility = Visibility.Hidden;
-                }));
-
-
-                RemoteMachineList.Dispatcher.Invoke(new Action(() =>
-                {
-                    RemoteMachineList.Items.Refresh();
-                }));
-            }
-           
-
-        }
-
-        public async Task ChangeOfficeChannelWmi(List<string> updateinfo, OfficeInstallation LocalInstall)
-        {
-            var newChannel = updateinfo[4];
-
-            await Task.Run(async () =>
-            {
-                var installOffice = new InstallOfficeWmi();
-
-                installOffice.remoteUser = updateinfo[0];
-                installOffice.remoteComputerName = updateinfo[2];
-                installOffice.remoteDomain = updateinfo[3];
-                installOffice.remotePass = updateinfo[1];
-                installOffice.newChannel = updateinfo[4];
-                installOffice.newVersion = updateinfo[5];
-                installOffice.connectionNamespace = "\\root\\cimv2";
-
-                try
-                {
-
-                    var ppDownloader = new ProPlusDownloader();
-                    var baseUrl = await ppDownloader.GetChannelBaseUrlAsync(newChannel, OfficeEdition.Office32Bit);
-                    if (string.IsNullOrEmpty(baseUrl))
-                        throw (new Exception(string.Format("Cannot find BaseUrl for Channel: {0}", newChannel)));
-
-
-
-                    var channelToChangeTo = updateinfo[5];
-
-                    if (string.IsNullOrEmpty(channelToChangeTo))
-                    {
-                        throw (new Exception("Version required"));
-                    }
-
-                    await installOffice.ChangeOfficeChannel(channelToChangeTo, baseUrl);
-                    var installGenerator = new OfficeInstallManager();
-                }
-                catch (Exception ex)
-                {
-                    LogErrorMessage(ex);
-                    LogWmiErrorMessage(ex, updateinfo.ToArray());
-                    throw (new Exception("Update Failed"));
-                }
-
-            });
-        }
-
-        private List<officeVersion> getVersions(OfficeBranch currentChannel, List<officeVersion> versions, string currentVersion)
-        {
-
-         
-            foreach (var version in currentChannel.Versions)
-            {
-                if (version.Version.ToString() != currentVersion)
-                {
-                    var tempVersion = new officeVersion()
-                    {
-                        Number = version.Version.ToString()
-                    };
-
-                    versions.Add(tempVersion);
-                }
-                
-            }
-
-            var selectedVersion = new officeVersion()
-            {
-                Number = currentVersion
-            };
-
-            versions.Insert(0, selectedVersion);
-
-            return versions;
-        }
-
-        private void toggleControls(bool enabled)
-        {
-            AddComputersButton.IsEnabled = enabled;
-            ImportComputersButton.IsEnabled = enabled;
-            btnChangeChannelOrVersion.IsEnabled = enabled;
-            btnUpdateRemote.IsEnabled = enabled;
-            btnRemoveComputers.IsEnabled = enabled;
-
-        }
-
-        private void toggleControlsMulti(bool enabled)
-        {
-
-            AddComputersButton.Dispatcher.Invoke(new Action(() => { this.IsEnabled = enabled;}));
-            ImportComputersButton.Dispatcher.Invoke(new Action(() => { this.IsEnabled = enabled; }));
-            btnChangeChannelOrVersion.Dispatcher.Invoke(new Action(() => { this.IsEnabled = enabled; }));
-            btnUpdateRemote.Dispatcher.Invoke(new Action(() => { this.IsEnabled = enabled; }));
-            btnRemoveComputers.Dispatcher.Invoke(new Action(() => { this.IsEnabled = enabled; }));
-
-        }
-
-        private void ProductChannel_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            try
-            {
-
-                
-                var selectedBranch = (sender as System.Windows.Controls.ComboBox).SelectedValue as string;
-                var newVersions = new List<officeVersion>();
-                var branches = GlobalObjects.ViewModel.Branches;
-                var row = GetAncestorOfType<DataGridRow>(sender as System.Windows.Controls.ComboBox);
-                var versionCB = row.FindChild<System.Windows.Controls.ComboBox>("ProductVersion");
-
-
-                var branch = branches.Find(a => a.NewName == GlobalObjects.ViewModel.newChannel);
-
-                if (String.IsNullOrEmpty(GlobalObjects.ViewModel.newChannel))
-                {
-                    branch = branches.Find(a => a.NewName == selectedBranch);
-                }
-               
-
-                foreach(var version in branch.Versions)
-                {
-                    var tempVersion = new officeVersion()
-                    {
-                        Number = version.Version
-                    };
-
-                    newVersions.Add(tempVersion);
-                }
-
-                var client = remoteClients[row.GetIndex()];
-                versionCB.ItemsSource = newVersions;
-                versionCB.Items.Refresh();
-
-                if(String.IsNullOrEmpty(GlobalObjects.ViewModel.newVersion))
-                {
-                    versionCB.SelectedValue = client.Version.Number;
-                }
-               
-            }
-            catch (Exception ex)
-            {
-                LogErrorMessage(ex);
-            }
-        }
-
-        public T GetAncestorOfType<T>(FrameworkElement child) where T : FrameworkElement
-        {
-            var parent = VisualTreeHelper.GetParent(child);
-            if (parent != null && !(parent is T))
-                return (T)GetAncestorOfType<T>((FrameworkElement)parent);
-            return (T)parent;
-        }
-
+        
         private void btnRemoveComputers_Click(object sender, RoutedEventArgs e)
         {
-            remoteClients.RemoveAll(a => a.include == true); 
+            remoteClients.RemoveAll(a => a.include == true);
 
             RemoteMachineList.ItemsSource = remoteClients;
             RemoteMachineList.Items.Refresh();
@@ -891,42 +919,33 @@ namespace MetroDemo.ExampleViews
                 LogErrorMessage(ex);
             }
         }
+        
 
-        private void LaunchInformationDialog(string sourceName)
+        #endregion
+
+        
+        private void TxtStatus_OnTargetUpdated(object sender, DataTransferEventArgs e)
         {
-            try
+            //check text in status, block nav if it's working on something, unblock if not
+            bool inProgress = false;
+            foreach (var client in remoteClients)
             {
-                if (informationDialog == null)
+                if (client.Status.ToLower().Contains("checking") || client.Status.ToLower().Contains("updat"))
                 {
-
-                    informationDialog = new InformationDialog
-                    {
-                        Height = 700,
-                        Width = 600
-                    };
-                    informationDialog.Closed += (o, args) =>
-                    {
-                        informationDialog = null;
-                    };
-                    informationDialog.Closing += (o, args) =>
-                    {
-
-                    };
+                    inProgress = true;
                 }
-
-                informationDialog.Height = 700;
-                informationDialog.Width = 600;
-
-                var filePath = AppDomain.CurrentDomain.BaseDirectory + @"HelpFiles\" + sourceName + ".html";
-                var helpFile = System.IO.File.ReadAllText(filePath);
-
-                informationDialog.HelpInfo.NavigateToString(helpFile);
-                informationDialog.Launch();
-
             }
-            catch (Exception ex)
+            if (inProgress)
             {
-                LogErrorMessage(ex);
+                GlobalObjects.ViewModel.BlockNavigation = true;
+                ToggleControlsMulti(false);
+                WaitImage.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                ToggleControlsMulti(true);
+                WaitImage.Visibility = Visibility.Hidden;
+                GlobalObjects.ViewModel.BlockNavigation = false;
             }
         }
     }

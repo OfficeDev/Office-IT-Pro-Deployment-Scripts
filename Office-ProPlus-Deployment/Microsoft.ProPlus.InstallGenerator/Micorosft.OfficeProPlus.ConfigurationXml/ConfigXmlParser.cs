@@ -138,6 +138,16 @@ namespace OfficeInstallGenerator
                     }
                 }
 
+                odtAdd.DownloadPath = null;
+                if (addNode.Attributes["DownloadPath"] != null)
+                {
+                    var downloadPath = addNode.Attributes["DownloadPath"].Value;
+                    if (!string.IsNullOrEmpty(downloadPath))
+                    {
+                        odtAdd.DownloadPath = downloadPath;
+                    }
+                }
+
                 odtAdd.Version = null;
                 if (addNode.Attributes["Version"] != null)
                 {
@@ -263,6 +273,7 @@ namespace OfficeInstallGenerator
                 RemoveAttribute(addNode, "Branch");
                 RemoveAttribute(addNode, "Version");
                 RemoveAttribute(addNode, "SourcePath");
+                RemoveAttribute(addNode, "DownloadPath");
                 RemoveAttribute(addNode, "OfficeMgmtCOM");
 
                 if (!IsLanguagePack)
@@ -279,6 +290,11 @@ namespace OfficeInstallGenerator
                     if (this.ConfigurationXml.Add.SourcePath != null)
                     {
                         SetAttribute(addNode, "SourcePath", this.ConfigurationXml.Add.SourcePath);
+                    }
+
+                    if (this.ConfigurationXml.Add.DownloadPath != null)
+                    {
+                        SetAttribute(addNode, "DownloadPath", this.ConfigurationXml.Add.DownloadPath);
                     }
 
                     if (this.ConfigurationXml.Add.OfficeMgmtCOM.HasValue &&

@@ -43,7 +43,7 @@
                     <TabItem Background="{StaticResource GrayBrush}" Height="40">
                         <TabItem.Header>
                             <DockPanel Margin="0,5,0,0">
-                                <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,0,0,0">Install wrapper</Label>
+                                <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,2,0,0" FontFamily="Segoe UI Semilight">Install wrapper</Label>
                             </DockPanel>
                         </TabItem.Header>
 
@@ -78,14 +78,14 @@
                                         <Image Source="../images/info.png" Width="20" Height="20"/>
                                     </StackPanel>
                                 </Button>
-                                <Label Content="Install type" Style="{StaticResource CustomMetroLabelHeader}" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="1"  />
+                                <Label Content="Install type" Style="{StaticResource CustomMetroLabelHeader}" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="1" FontFamily="Segoe UI Semibold"  />
                                 <RadioButton x:Name="InstallMsi" Grid.Column="2" Checked="InstallExecutable_OnChecked"
                                          Content="MSI" IsChecked="True" Foreground="{StaticResource GrayBrush}"
-                                         GroupName="1" FontSize="20"  />
+                                         GroupName="1" FontSize="20" FontFamily="Segoe UI Semilight"  />
 
                                 <RadioButton x:Name="InstallExecutable" Grid.Column="3" Checked="InstallExecutable_OnChecked"
                                          Content="Executable" IsChecked="False" Foreground="{StaticResource GrayBrush}"
-                                         GroupName="1" FontSize="20"  />
+                                         GroupName="1" FontSize="20" FontFamily="Segoe UI Semilight"  />
                             </Grid>
 
                             <Grid Grid.Column="0" Grid.Row="2" >
@@ -117,17 +117,17 @@
                                         </StackPanel>
                                     </Button>
                                     <Label Content="Sign installer"  HorizontalAlignment="Left" VerticalAlignment="Center"
-                                           Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="1" Height="34" Width="254" Grid.ColumnSpan="2"  />
+                                           Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="1" Height="34" Width="254" Grid.ColumnSpan="2" FontFamily="Segoe UI Semibold"  />
 
                                     <CheckBox Style="{StaticResource MetroCheckBox}" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center"
                                      x:Name="SignInstaller" Checked="SignWithCert_OnCheck" Unchecked="SignWithCert_OnCheck" IsEnabled="True" Height="18" Width="19" ></CheckBox>
 
                                     <Button x:Name="OpenCertificateBrowser" Width="120" Height="35" Grid.Row="0" Grid.Column="3" HorizontalAlignment="Center"
                                             VerticalAlignment="Center"   Style="{StaticResource MetroFlatButtonStyle1}"
-                                            Focusable="False" Content="Select Certificate" Click="OpenCertificateBrowser_OnClick" IsEnabled="False" >
+                                            Focusable="False" Content="Select Certificate" Click="OpenCertificateBrowser_OnClick" IsEnabled="False" FontFamily="Segoe UI Semibold" >
                                     </Button>
                                     <Button x:Name="OpenCertGenerator" Width="129" Height="35" Grid.Row="0" Grid.Column="4" HorizontalAlignment="Center" VerticalAlignment="Center" 
-                                    Focusable="False" Content="Generate Certificate" Style="{StaticResource MetroFlatButtonStyle1}" Click="OpenCertGenerator_OnClick"  IsEnabled="False" >
+                                    Focusable="False" Content="Generate Certificate" Style="{StaticResource MetroFlatButtonStyle1}" Click="OpenCertGenerator_OnClick"  IsEnabled="False" FontFamily="Segoe UI Semibold" >
                                     </Button>
                                 </Grid>
 
@@ -191,19 +191,19 @@
                                         </StackPanel>
                                     </Button>
                                     <Label Content="Version"  HorizontalAlignment="Left" VerticalAlignment="Center"
-                                           Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="1" Height="34" Width="254"  />
+                                           Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="1" Height="34" Width="254" FontFamily="Segoe UI Semibold"  />
 
                                     <controls:NumericUpDown x:Name="MajorVersion" FontSize="20" Grid.Column="2" VerticalAlignment="Center" Background="White" 
                                              Height="35" Grid.Row="0"  Width="90" HorizontalAlignment="Left" Maximum="99" Minimum="1"
-                                              Foreground="{StaticResource GrayBrush}" />
+                                              Foreground="{StaticResource GrayBrush}" FontFamily="Segoe UI Semilight" />
 
                                     <controls:NumericUpDown x:Name="MinorVersion" FontSize="20" Grid.Column="3" VerticalAlignment="Center" Background="White" 
                                              Height="35" Grid.Row="0" Width="90" HorizontalAlignment="Left" Maximum="99" Minimum="0"
-                                              Foreground="{StaticResource GrayBrush}" />
+                                              Foreground="{StaticResource GrayBrush}" FontFamily="Segoe UI Semilight" />
 
                                     <controls:NumericUpDown x:Name="ReleaseVersion" FontSize="20" Grid.Column="4" VerticalAlignment="Center" Background="White" 
                                              Height="35" Grid.Row="0" Width="90" HorizontalAlignment="Left" Maximum="9999" Minimum="0"
-                                              Foreground="{StaticResource GrayBrush}" />
+                                              Foreground="{StaticResource GrayBrush}" FontFamily="Segoe UI Semilight" />
                                 </Grid>
 
                             </Grid>
@@ -224,7 +224,7 @@
                                         <Image Source="../images/info.png" Width="20" Height="20"/>
                                     </StackPanel>
                                 </Button>
-                                <Label Content="Silent install" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="1" VerticalAlignment="Center"  />
+                                <Label Content="Silent install" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="1" VerticalAlignment="Center" FontFamily="Segoe UI Semibold"  />
 
                                 <controls:ToggleSwitch x:Name="SilentInstall" Grid.Column="2" Grid.Row="0" 
                                    VerticalAlignment="Center"  Style="{StaticResource MetroToggleSwitchStyle}"
@@ -250,14 +250,14 @@
                                         <Image Source="../images/info.png" Width="20" Height="20"/>
                                     </StackPanel>
                                 </Button>
-                                <Label Content="File Path" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="1" VerticalAlignment="Center" />
+                                <Label Content="File Path" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="1" VerticalAlignment="Center" FontFamily="Segoe UI Semibold" />
                                 <TextBox x:Name="FileSavePath" FontSize="20" Grid.Column="2" VerticalAlignment="Center" Foreground="{StaticResource GrayBrush}" Background="White"
                                              controls:TextBoxHelper.Watermark="Office365ProPlus.msi" Height="35" Grid.Row="0"
                                              controls:TextBoxHelper.ClearTextButton="True" TextChanged="FileSavePath_OnTextChanged"
-                                             Text="">
+                                             Text="" FontFamily="Segoe UI Semilight">
                                 </TextBox>
-                                <Button Grid.Column="3" Height="40" Width="60" Style="{StaticResource MetroFlatButtonStyle1}" Content="Browse" x:Name="SaveButton" Click="SaveButton_Click" />
-                                <Button Grid.Column="4" Height="40" Width="60" Style="{StaticResource MetroFlatButtonStyle1}" Content="Open" x:Name="OpenExeFolderButton" IsEnabled="False" Click="OpenExeFolderButton_OnClick" />
+                                <Button Grid.Column="3" Height="40" Width="60" Style="{StaticResource MetroFlatButtonStyle1}" Content="Browse" x:Name="SaveButton" Click="SaveButton_Click" FontFamily="Segoe UI Semibold" />
+                                <Button Grid.Column="4" Height="40" Width="60" Style="{StaticResource MetroFlatButtonStyle1}" Content="Open" x:Name="OpenExeFolderButton" IsEnabled="False" Click="OpenExeFolderButton_OnClick" FontFamily="Segoe UI Semibold" />
                             </Grid>
 
                             <Grid Grid.Column="0" Grid.Row="7">
@@ -285,7 +285,7 @@
                                         </StackPanel>
                                     </Button>
                                     <Label Content="Embed Office installation files"  HorizontalAlignment="Left" VerticalAlignment="Center" 
-                                            Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="1"  />
+                                            Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="1" FontFamily="Segoe UI Semibold"  />
                                     <CheckBox Style="{StaticResource MetroCheckBox}" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center"
                                         x:Name="IncludeBuild" Checked="IncludeBuild_OnChecked" Unchecked="IncludeBuild_OnChecked" IsEnabled="True" Height="18"  Width="19" ></CheckBox>
 
@@ -347,8 +347,8 @@
                                     <ColumnDefinition Width="20"  />
                                     <ColumnDefinition  />
                                 </Grid.ColumnDefinitions>
-                                <Button x:Name="PreviousButton" Width="100" Height="40" Grid.Column="0" Content="Previous" Click="PreviousButton_Click" />
-                                <Button x:Name="GenerateButton" Width="100" Height="40" Grid.Column="2" Content="Generate" Click="GenerateButton_OnClick" />
+                                <Button x:Name="PreviousButton" Width="100" Height="40" Grid.Column="0" Content="Previous" Click="PreviousButton_Click" Background="#FFF7F7F7" FontFamily="Segoe UI Semilight" />
+                                <Button x:Name="GenerateButton" Width="100" Height="40" Grid.Column="2" Content="Generate" Click="GenerateButton_OnClick" Background="#FFF7F7F7" FontFamily="Segoe UI Semilight" />
                             </Grid>
 
 
@@ -358,7 +358,7 @@
                     <TabItem  Background="{StaticResource GrayBrush}" Height="40" >
                         <TabItem.Header>
                             <DockPanel Margin="0,5,0,0">
-                                <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,0,0,0">Configuration</Label>
+                                <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,2,0,0" FontFamily="Segoe UI Semilight">Configuration</Label>
                             </DockPanel>
                         </TabItem.Header>
 

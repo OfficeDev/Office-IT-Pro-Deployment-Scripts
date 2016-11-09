@@ -86,6 +86,8 @@ namespace MetroDemo
 
                 LocalView.InfoMessage += GenerateViewInfoMessage;
                 LocalView.ErrorMessage += GenerateView_ErrorMessage;
+
+                RemoteView.ErrorMessage += GenerateView_ErrorMessage;
             }
             catch (Exception ex)
             {
@@ -192,6 +194,19 @@ namespace MetroDemo
             }
         }
 
+        public void SetToDefaultNonStatic()
+        {
+            try
+            {
+                
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("ERROR:" + ex.Message);
+            }
+        }
+
+
         private void TransitionTab(object sender, Events.TransitionTabEventArgs e)
         {
             try
@@ -236,12 +251,20 @@ namespace MetroDemo
                              
                     RemoteTabName.Visibility = Visibility.Visible;
                     RemoteTabName.IsSelected = true;
+                    GenerateView.Tag = 99;
+                    LocalView.Tag = 5;
                 }
                 else
                 {
                     GenerateTabName.Visibility = Visibility.Visible;
-                    LocalTabName.Visibility = Visibility.Collapsed;
+                    TabProducts.Visibility = Visibility.Visible;
+                    TabDownload.Visibility = Visibility.Visible;
+                    TabUpdates.Visibility = Visibility.Visible;
+                    TabOptions.Visibility = Visibility.Visible;
+
                     RemoteTabName.Visibility = Visibility.Collapsed;
+                    LocalTabName.Visibility = Visibility.Collapsed;
+
                     GenerateView.Tag = 5;
                     LocalView.Tag = 99;
                 }

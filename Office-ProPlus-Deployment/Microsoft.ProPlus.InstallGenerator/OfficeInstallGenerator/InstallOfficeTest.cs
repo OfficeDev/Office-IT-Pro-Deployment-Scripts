@@ -91,8 +91,7 @@ public class InstallOffice2
 
 
             SetLoggingPath(xmlFilePath);
-
-            SetSourcePath(xmlFilePath);
+           
 
             if (!File.Exists(odtFilePath)) { throw (new Exception("Cannot find ODT Executable")); }
             if (!File.Exists(xmlFilePath)) { throw (new Exception("Cannot find Configuration Xml file")); }
@@ -1016,6 +1015,8 @@ public class InstallOffice2
             }
         }
     }
+
+
 
     public string LoggingPath { get; set; }
 

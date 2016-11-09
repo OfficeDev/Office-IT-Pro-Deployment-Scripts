@@ -120,6 +120,10 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Management" />
+    <Reference Include="System.Management.Automation, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\WindowsPowerShell\3.0\System.Management.Automation.dll</HintPath>
+    </Reference>
     <Reference Include="System.Net" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -152,6 +156,7 @@
     <Compile Include="Engine\OfficeInstaller.cs" />
     <Compile Include="Enums\Enums.cs" />
     <Compile Include="Events\Events.cs" />
+    <Compile Include="Models\RemoteComputer.cs" />
     <Compile Include="Models\RemoteMachine.cs" />
     <Compile Include="Models\officeVersion.cs" />
     <Compile Include="Views\AboutView.xaml.cs">
@@ -181,6 +186,12 @@
     <Compile Include="Views\ProductView.xaml.cs">
       <DependentUpon>ProductView.xaml</DependentUpon>
     </Compile>
+    <Content Include="HelpFiles\DownloadPathInfo.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="HelpFiles\RemoteLoggingInfo.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="HelpFiles\RemoteConfiguration.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -239,6 +250,7 @@
     <Content Include="HelpFiles\VisioInfo.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Resource Include="images\GitHubSite2.jpg" />
     <Content Include="InstallOffice.cs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -289,6 +301,9 @@
     </Compile>
     <Compile Include="Windows\RemoteChannelVersionDialog.xaml.cs">
       <DependentUpon>RemoteChannelVersionDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\CredentialsDialog.xaml.cs">
+      <DependentUpon>CredentialsDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="XmlBrowser\Converters\NullToBooleanConverter.cs" />
     <Compile Include="XmlBrowser\ValidationResultControl.xaml.cs">
@@ -396,6 +411,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Windows\RemoteChannelVersionDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\CredentialsDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

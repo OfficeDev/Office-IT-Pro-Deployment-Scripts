@@ -45,15 +45,15 @@
                     <TabItem x:Name="ProductTab" Height="50" >
                         <TabItem.Header>
                             <DockPanel Margin="0,5,0,0">
-                                <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,0,0,0" Height="19">Products</Label>
+                                <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,2,0,0" Height="19" FontFamily="Segoe UI Semilight">Products</Label>
                             </DockPanel>
                         </TabItem.Header>
 
                         <Grid HorizontalAlignment="Left">
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="20"></RowDefinition>
-                                <RowDefinition Height="350"></RowDefinition>
-                                <RowDefinition Height="224"></RowDefinition>
+                                <RowDefinition Height="1"></RowDefinition>
+                                <RowDefinition Height="450"></RowDefinition>
+                                <RowDefinition Height="2"></RowDefinition>
                             </Grid.RowDefinitions>
 
                             <Grid Width="900" Grid.Row="1" HorizontalAlignment="Left" Margin="10 0 0 0">
@@ -68,13 +68,13 @@
 
                                 <StackPanel Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" Width="520">
 
-                                    <Grid Height="35" >
+                                    <Grid Height="30" >
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="30" />
                                             <ColumnDefinition Width="450" />
                                             <ColumnDefinition Width="30" />
                                         </Grid.ColumnDefinitions>
-                                        
+
                                         <Button x:Name="ProductInfo" Width="30" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" 
                                                 Focusable="False"  Style="{StaticResource MetroInfoButton}" Click="ProductInfo_OnClick" >
                                             <StackPanel Orientation="Horizontal">
@@ -82,7 +82,7 @@
                                             </StackPanel>
                                         </Button>
                                         <Label Grid.Row="0" Grid.Column="1" Content="Product" Style="{StaticResource CustomMetroLabelHeader}"  
-                                               HorizontalAlignment="Left"  Width="100" VerticalAlignment="Center"/>
+                                               HorizontalAlignment="Left"  Width="100" VerticalAlignment="Center" FontFamily="Segoe UI Semibold"/>
                                         <CheckBox x:Name="chkofficeProd" Grid.Column="2" Style="{StaticResource MetroCheckBox}" Checked="chkofficeProd_Checked" Unchecked="chkofficeProd_Checked" Click="chkofficeProd_Click" ></CheckBox>
                                     </Grid>
 
@@ -90,9 +90,9 @@
                                             ItemsSource="{Binding MainProducts}" Width="500" HorizontalAlignment="Left"
                                             DisplayMemberPath="DisplayName" Height="60" Margin="0 10 0 0" FontWeight="Normal"
                                             SelectedIndex="0" SelectionMode="Single" FontSize="20" SelectionChanged="Products_OnSelectionChanged" 
-                                             BorderThickness="2,2,2,2" RenderTransformOrigin="0.508,0.123"/>
+                                             BorderThickness="2,2,2,2" RenderTransformOrigin="0.508,0.123" FontFamily="Segoe UI Semilight"/>
 
-                                    <Grid Height="35" Margin="0 20 0 0" >
+                                    <Grid Height="30" Margin="0 20 0 0" >
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="30" />
                                             <ColumnDefinition Width="450" />
@@ -106,18 +106,18 @@
                                             </StackPanel>
                                         </Button>
                                         <Label Grid.Row="0" Grid.Column="1" Content="Visio" Style="{StaticResource CustomMetroLabelHeader}"  
-                                               HorizontalAlignment="Left"  Width="100" VerticalAlignment="Center"/>
+                                               HorizontalAlignment="Left"  Width="100" VerticalAlignment="Center" FontFamily="Segoe UI Semibold"/>
                                         <CheckBox x:Name="chkVisio" Grid.Column="2" Style="{StaticResource MetroCheckBox}" Checked="ChkVisio_OnChecked"
                                                   Unchecked="ChkVisio_OnChecked" Click="chkofficeProd_Click"></CheckBox>
                                     </Grid>
-                                    
+
 
                                     <ComboBox x:Name="cbVisio" Width="500" FontSize="20" Height="40" BorderBrush="{StaticResource GrayBrush}"
                                               ItemsSource="{Binding VisioProducts}" DisplayMemberPath="DisplayName" Margin="0 5 0 0"
                                               Foreground="{StaticResource GrayBrush}" HorizontalAlignment="Left" BorderThickness="2"
-                                              VerticalAlignment="Center" SelectionChanged="CbVisio_OnSelectionChanged" />
+                                              VerticalAlignment="Center" SelectionChanged="CbVisio_OnSelectionChanged" FontFamily="Segoe UI Semilight" />
 
-                                    <Grid Height="35" Margin="0 20 0 0" >
+                                    <Grid Height="34" Margin="0 20 0 0" >
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="30" />
                                             <ColumnDefinition Width="450" />
@@ -131,16 +131,42 @@
                                             </StackPanel>
                                         </Button>
                                         <Label Grid.Row="0" Grid.Column="1" Content="Project" Style="{StaticResource CustomMetroLabelHeader}"  
-                                               HorizontalAlignment="Left"  Width="100" VerticalAlignment="Center"/>
+                                               HorizontalAlignment="Left"  Width="100" VerticalAlignment="Center" FontFamily="Segoe UI Semibold"/>
                                         <CheckBox x:Name="chkProject" Grid.Column="2" Style="{StaticResource MetroCheckBox}" Checked="ChkProject_OnChecked" 
                                                  Unchecked="ChkProject_OnChecked" Click="chkofficeProd_Click" ></CheckBox>
                                     </Grid>
-                                    
+
                                     <ComboBox x:Name="cbProject" Width="500" FontSize="20" BorderThickness="2" Margin="0 5 0 0"
                                               BorderBrush="{StaticResource GrayBrush}"
                                               Height="40" ItemsSource="{Binding ProjectProducts}" DisplayMemberPath="DisplayName"
                                               Foreground="{StaticResource GrayBrush}" HorizontalAlignment="Left" VerticalAlignment="Center"
-                                              SelectionChanged="CbProject_OnSelectionChanged" />
+                                              SelectionChanged="CbProject_OnSelectionChanged" FontFamily="Segoe UI Semilight" />
+
+
+                                    <Grid Height="35" Margin="0 20 0 0" >
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="30" />
+                                            <ColumnDefinition Width="450" />
+                                            <ColumnDefinition Width="30" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <Button x:Name="SkypeInfo" Width="30" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" 
+                                                Focusable="False"  Style="{StaticResource MetroInfoButton}" Click="ProductInfo_OnClick" >
+                                            <StackPanel Orientation="Horizontal">
+                                                <Image Source="../images/info.png" Width="20" Height="20"/>
+                                            </StackPanel>
+                                        </Button>
+                                        <Label Grid.Row="0" Grid.Column="1" Content="Skype" Style="{StaticResource CustomMetroLabelHeader}"  
+                                               HorizontalAlignment="Left"  Width="100" VerticalAlignment="Center" FontFamily="Segoe UI Semibold"/>
+                                        <CheckBox x:Name="ChkSkype" Grid.Column="2" Style="{StaticResource MetroCheckBox}"  
+                                                  Click="chkofficeProd_Click" Checked="ChkSkype_Checked" Unchecked="ChkSkype_Checked" HorizontalAlignment="Right" Margin="0,0,-0.2,0" Width="31" ></CheckBox>
+                                    </Grid>
+
+                                    <ComboBox x:Name="CbSkype" Width="500" FontSize="20" BorderThickness="2" Margin="0 5 0 0"
+                                              BorderBrush="{StaticResource GrayBrush}"
+                                              Height="40" ItemsSource="{Binding SkypeProducts}" DisplayMemberPath="DisplayName"
+                                              Foreground="{StaticResource GrayBrush}" HorizontalAlignment="Left" VerticalAlignment="Center"
+                                               FontFamily="Segoe UI Semilight" SelectionChanged="CbSkype_SelectionChanged" />
 
                                 </StackPanel>
 
@@ -156,14 +182,14 @@
                                                 <Image Source="../images/info.png" Width="20" Height="20"/>
                                             </StackPanel>
                                         </Button>
-                                        <Label Content="Edition" Style="{StaticResource CustomMetroLabelHeader}" HorizontalAlignment="Left" Grid.Column="1"/>
+                                        <Label Content="Edition" Style="{StaticResource CustomMetroLabelHeader}" HorizontalAlignment="Left" Grid.Column="1" FontFamily="Segoe UI Semibold"/>
                                     </Grid>
                                     <RadioButton x:Name="ProductEdition32Bit" Content="32-Bit"  Foreground="{StaticResource GrayBrush}"
                                          GroupName="1" HorizontalContentAlignment="Left" Margin="5 0 0 0"
-                                         IsChecked="True" FontSize="20" Height="28" />
+                                         IsChecked="True" FontSize="20" Height="28" FontFamily="Segoe UI Semilight" />
                                     <RadioButton  x:Name="ProductEdition64Bit" HorizontalContentAlignment="Left"
                                          Content="64-Bit" Foreground="{StaticResource GrayBrush}" Margin="5 0 0 0"
-                                         GroupName="1" FontSize="20" Height="27" />
+                                         GroupName="1" FontSize="20" Height="27" FontFamily="Segoe UI Semilight" />
 
                                     <Grid Margin="0 20 0 0">
                                         <Grid.ColumnDefinitions>
@@ -177,13 +203,13 @@
                                                 <Image Source="../images/info.png" Width="20" Height="20"/>
                                             </StackPanel>
                                         </Button>
-                                        <Label Content="Channel" Style="{StaticResource CustomMetroLabelHeader}" HorizontalAlignment="Left" Grid.Column="1" />
+                                        <Label Content="Channel" Style="{StaticResource CustomMetroLabelHeader}" HorizontalAlignment="Left" Grid.Column="1" FontFamily="Segoe UI Semibold" />
                                     </Grid>
 
 
                                     <ComboBox x:Name="ProductBranch" Width="270" Height="35"  Margin="10, 10, 0, 0" SelectedIndex="0" 
                                               FontSize="20" ItemsSource="{Binding Branches}" DisplayMemberPath="Name" SelectionChanged="ProductBranch_OnSelectionChanged" 
-                                              Style="{StaticResource MetroComboBoxStyle}">
+                                              Style="{StaticResource MetroComboBoxStyle}" FontFamily="Segoe UI Semilight">
                                     </ComboBox>
                                 </StackPanel>
 
@@ -194,7 +220,7 @@
                     <TabItem x:Name="LanguagesTab" Height="50">
                         <TabItem.Header>
                             <DockPanel Margin="0,5,0,0">
-                                <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,0,0,0">Languages</Label>
+                                <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,2,0,0" FontFamily="Segoe UI Semilight">Languages</Label>
                             </DockPanel>
                         </TabItem.Header>
                         <StackPanel Margin="50,0,0,0">
@@ -211,7 +237,7 @@
                                               TextOptions.TextFormattingMode="Display" BorderThickness="0" BorderBrush="Gray"
                                               Margin="0 0 0 0"  Style="{DynamicResource MetroDataGrid}"
                                               AutoGenerateColumns="False" HeadersVisibility="Column"
-                                              CanUserAddRows="False">
+                                              CanUserAddRows="False" FontFamily="Segoe UI Semibold">
                                         <DataGrid.Columns>
                                             <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="400" 
                                                       IsReadOnly="True" FontSize="20" Foreground="{DynamicResource LabelTextBrushCustom}" />
@@ -222,9 +248,9 @@
                                 </Border>
 
                                 <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal">
-                                    <Button x:Name="AddLanguageButton" Content="Add Language" Margin="2,10,2,9" Click="AddLanguageButton_Click" Style="{StaticResource MetroFlatButtonStyle1}" />
-                                    <Button x:Name="RemoveLanguageButton" Content="Remove Language" Margin="2,10,2,9" Click="RemoveLanguageButton_Click" Style="{StaticResource MetroFlatButtonStyle1}" />
-                                    <Button x:Name="SetPrimaryButton" Content="Set Primary" Margin="2,10" Click="SetPrimaryButton_OnClick" Style="{StaticResource MetroFlatButtonStyle1}" />
+                                    <Button x:Name="AddLanguageButton" Content="Add Language" Margin="2,10,2,9" Click="AddLanguageButton_Click" Style="{StaticResource MetroFlatButtonStyle1}" FontFamily="Segoe UI Semibold" />
+                                    <Button x:Name="RemoveLanguageButton" Content="Remove Language" Margin="2,10,2,9" Click="RemoveLanguageButton_Click" Style="{StaticResource MetroFlatButtonStyle1}" FontFamily="Segoe UI Semibold" />
+                                    <Button x:Name="SetPrimaryButton" Content="Set Primary" Margin="2,10" Click="SetPrimaryButton_OnClick" Style="{StaticResource MetroFlatButtonStyle1}" FontFamily="Segoe UI Semibold" />
                                     <Button x:Name="LanguageInfo" Width="30" Height="32" HorizontalAlignment="Left" Margin="0 0 0 0" 
                                                 Focusable="False"  Style="{StaticResource MetroInfoButton}" Click="ProductInfo_OnClick" >
                                         <StackPanel Orientation="Horizontal">
@@ -234,7 +260,7 @@
                                 </StackPanel>
 
                                 <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,35.6,320.4" Grid.RowSpan="2">
-                                    <Label x:Name="UseLangForAllLabel" Style="{StaticResource MetroLabelTextSmall}" VerticalAlignment="Center" >Use Languages for all Products</Label>
+                                    <Label x:Name="UseLangForAllLabel" Style="{StaticResource MetroLabelTextSmall}" VerticalAlignment="Center" Foreground="Black" FontFamily="Segoe UI Semilight" >Use Languages for all Products</Label>
                                     <CheckBox x:Name="UseLangForAllProducts" Checked="UseLangForAllProducts_OnChecked" Unchecked="UseLangForAllProducts_OnChecked" IsChecked="True"
                                     Style="{StaticResource MetroCheckBox}"></CheckBox>
                                     <ComboBox x:Name="LanguageUnique" Height="20" Width="164" IsEnabled="False" SelectionChanged="LanguageUnique_OnSelectionChanged" Margin="0,12,0,11.6" 
@@ -248,7 +274,7 @@
                     <TabItem x:Name="OptionalTab" Height="50" >
                         <TabItem.Header>
                             <DockPanel Margin="0,5,0,0">
-                                <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,0,0,0">Optional</Label>
+                                <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,2,0,0" FontFamily="Segoe UI Semilight">Optional</Label>
                             </DockPanel>
                         </TabItem.Header>
 
@@ -262,11 +288,14 @@
                                 <Grid Margin="50 0 0 0" >
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="50"></RowDefinition>
+                                        <RowDefinition Height="50"></RowDefinition>
                                     </Grid.RowDefinitions>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="30" />
-                                        <ColumnDefinition Width="120" />
+                                        <ColumnDefinition Width="140" />
                                         <ColumnDefinition Width="360" />
+                                        <ColumnDefinition Width="70" />
+                                        <ColumnDefinition Width="60" />
                                     </Grid.ColumnDefinitions>
                                     <Button x:Name="VersionInfo" Width="30" Height="32" HorizontalAlignment="Center"  
                                                 Focusable="False"  Style="{StaticResource MetroInfoButton}" Click="ProductInfo_OnClick"  >
@@ -274,10 +303,10 @@
                                             <Image Source="../images/info.png" Width="20" Height="20"/>
                                         </StackPanel>
                                     </Button>
-                                    <Label Content="Version" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                                    <Label Content="Version" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" FontFamily="Segoe UI Semibold" />
 
 
-                                    <ComboBox Width="360" x:Name="ProductVersion" Grid.Column="2"  
+                                    <ComboBox Width="360" x:Name="ProductVersion" Grid.Column="2"  Grid.Row="0"
                                               Height="35" HorizontalAlignment="Left" IsTextSearchEnabled="True"
                                               Style="{StaticResource MetroComboBoxStyle}" 
                                               Controls:TextBoxHelper.Watermark="16.0.4949.1003"
@@ -286,7 +315,33 @@
                                               ItemsSource="{Binding Builds}"
                                               MaxDropDownHeight="125"
                                               FontSize="20"
-                                              Text="{Binding Path=Version}"  />
+                                              Text="{Binding Path=Version}" FontFamily="Segoe UI Semilight"  />
+
+
+                                    <Button x:Name="RemoteLoggingInfo" Width="30" Height="32" HorizontalAlignment="Center"   Grid.Row="1"
+                                                Focusable="False"  Style="{StaticResource MetroInfoButton}" Click="ProductInfo_OnClick"  >
+                                        <StackPanel Orientation="Horizontal">
+                                            <Image Source="../images/info.png" Width="20" Height="20"/>
+                                        </StackPanel>
+                                    </Button>
+
+                                    <Label Content="Remote Path" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" FontFamily="Segoe UI Semibold" />
+
+                                    <TextBox Width="360" x:Name="RemoteLoggingPath" FontSize="20" Grid.Column="2" Grid.Row="1" Background="White"
+                                             Height="35" HorizontalAlignment="Left"
+                                             Controls:TextBoxHelper.Watermark="Remote Logging Path"
+                                             Controls:TextBoxHelper.ClearTextButton="True" TextChanged="RemoteLoggingPath_OnTextChanged"
+                                              Text="" FontFamily="Segoe UI Semilight" 
+                                            />
+                                    <Button Width="55" Grid.Column="3" Grid.Row="1"
+                                            Height="40"  Style="{StaticResource MetroFlatButtonStyle1}"
+                                            Content="Browse" x:Name="RemotePath" Click="RemoteLoggingPath_OnClick" Margin="0" FontFamily="Segoe UI Semibold" />
+                                    <Button Width="50" Height="40" Grid.Column="4" Grid.Row="1"  Style="{StaticResource MetroFlatButtonStyle1}"
+                                            Content="Open" x:Name="OpenLoggingFolderButton" IsEnabled="False" Click="OpenLoggingFolderButton_OnClick" Margin="0" FontFamily="Segoe UI Semibold"   />
+
+                                    <!--<Button Width="55" Grid.Column="3" Grid.Row="1"
+                                            Height="40"  Style="{StaticResource MetroFlatButtonStyle1}"
+                                            Content="Set" x:Name="RemotePath" Click="RemotePath_Click"  Margin="2,5" />-->
 
                                 </Grid>
                                 <Grid Margin="50 0 0 0" >
@@ -295,7 +350,7 @@
                                     </Grid.RowDefinitions>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="30" />
-                                        <ColumnDefinition Width="120" />
+                                        <ColumnDefinition Width="140" />
                                         <ColumnDefinition Width="620" />
                                     </Grid.ColumnDefinitions>
                                     <Button x:Name="SourcePathInfo" Width="30" Height="32" HorizontalAlignment="Left"  Grid.Column="0" Margin="0 5 0 0"
@@ -304,30 +359,84 @@
                                             <Image Source="../images/info.png" Width="20" Height="20"/>
                                         </StackPanel>
                                     </Button>
-                                    <Label Content="Source Path" Style="{StaticResource CustomMetroLabelHeader}" Margin="0 10 0 0" Grid.Column="1"  Height="51"/>
+                                    <Label Content="Source Path" Style="{StaticResource CustomMetroLabelHeader}" Margin="0 10 0 0" Grid.Column="1"  Height="51" FontFamily="Segoe UI Semibold"/>
 
                                     <Grid Margin="0,0,0,0" Grid.Column="2">
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="370" />
+                                            <ColumnDefinition Width="26.78" />
+                                            <ColumnDefinition Width="263.287"/>
+                                            <ColumnDefinition Width="79.713"/>
                                             <ColumnDefinition Width="60" />
                                             <ColumnDefinition Width="60" />
                                             <ColumnDefinition Width="75" />
                                             <ColumnDefinition Width="75" />
                                         </Grid.ColumnDefinitions>
 
-                                        <Controls:MetroProgressBar x:Name="DownloadProgressBar"  Grid.Column="0" Height="37" Background="White" Width="360" HorizontalAlignment="Left" />
+                                        <Controls:MetroProgressBar x:Name="DownloadProgressBar"  Grid.Column="0" Height="38" Background="White" Width="360" HorizontalAlignment="Left" Grid.ColumnSpan="3" Margin="0,6" />
                                         <TextBox x:Name="ProductUpdateSource" Background="#00ffffff" FontSize="20" Grid.Column="0" HorizontalAlignment="Left"
                                              Controls:TextBoxHelper.Watermark="Local, UNC or HTTP Path" Height="37" Width="360"
                                              Controls:TextBoxHelper.ClearTextButton="True" TextChanged="BuildFilePath_OnTextChanged"
-                                             Text="">
+                                             Text="" Grid.ColumnSpan="3" Margin="0,6" FontFamily="Segoe UI Semilight">
                                         </TextBox>
 
-                                        <Button Width="55" Grid.Column="1"
+                                        <Button Width="55" Grid.Column="3"
                                             Height="40"  Style="{StaticResource MetroFlatButtonStyle1}"
-                                            Content="Browse" x:Name="UpdatePath" Click="UpdatePath_OnClick" />
-                                        <Button Width="50" Height="40" Grid.Column="2"  Style="{StaticResource MetroFlatButtonStyle1}"
-                                            Content="Open" x:Name="OpenFolderButton" IsEnabled="False" Click="OpenFolderButton_OnClick"   />
+                                            Content="Browse" x:Name="UpdatePath" Click="UpdatePath_OnClick" Margin="2,5" FontFamily="Segoe UI Semibold" />
+                                        <Button Width="50" Height="40" Grid.Column="4"  Style="{StaticResource MetroFlatButtonStyle1}"
+                                            Content="Open" x:Name="OpenFolderButton" IsEnabled="False" Click="OpenFolderButton_OnClick" Margin="5" FontFamily="Segoe UI Semibold"   />
+
                                     </Grid>
+
+
+
+
+                                </Grid>
+
+
+                                <Grid Margin="50 0 0 0" >
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="50"></RowDefinition>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="30" />
+                                        <ColumnDefinition Width="140" />
+                                        <ColumnDefinition Width="620" />
+                                    </Grid.ColumnDefinitions>
+                                    <Button x:Name="DownloadPathInfo" Width="30" Height="32" HorizontalAlignment="Left"  Grid.Column="0" Margin="0 5 0 0"
+                                                Focusable="False"  Style="{StaticResource MetroInfoButton}" Click="ProductInfo_OnClick" >
+                                        <StackPanel Orientation="Horizontal">
+                                            <Image Source="../images/info.png" Width="20" Height="20"/>
+                                        </StackPanel>
+                                    </Button>
+                                    <Label Content="Download Path" Style="{StaticResource CustomMetroLabelHeader}" Margin="0 10 0 0" Grid.Column="1"  Height="51" FontFamily="Segoe UI Semibold"/>
+
+                                    <Grid Margin="0,0,0,0" Grid.Column="2">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="26.78" />
+                                            <ColumnDefinition Width="263.287"/>
+                                            <ColumnDefinition Width="79.713"/>
+                                            <ColumnDefinition Width="60" />
+                                            <ColumnDefinition Width="60" />
+                                            <ColumnDefinition Width="75" />
+                                            <ColumnDefinition Width="75" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <Controls:MetroProgressBar x:Name="DownloadProgressBarPath"  Grid.Column="0" Height="38" Background="White" Width="360" HorizontalAlignment="Left" Grid.ColumnSpan="3" Margin="0,6" />
+                                        <TextBox x:Name="ProductDownloadSource" Background="#00ffffff" FontSize="20" Grid.Column="0" HorizontalAlignment="Left"
+                                             Controls:TextBoxHelper.Watermark="Local, UNC or HTTP Path" Height="37" Width="360"
+                                             Controls:TextBoxHelper.ClearTextButton="True" 
+                                             Text="" Grid.ColumnSpan="3" Margin="0,6" FontFamily="Segoe UI Semilight" TextChanged="ProductDownloadSource_TextChanged">
+                                        </TextBox>
+
+                                        <Button Width="55" Grid.Column="3"
+                                            Height="40"  Style="{StaticResource MetroFlatButtonStyle1}"
+                                            Content="Browse" x:Name="DownloadPath" Margin="2,5" FontFamily="Segoe UI Semibold" Click="DownloadPath_Click" />
+                                        <Button Width="50" Height="40" Grid.Column="4"  Style="{StaticResource MetroFlatButtonStyle1}"
+                                            Content="Open" x:Name="OpenDownloadFolderButton" IsEnabled="False"  Margin="5" FontFamily="Segoe UI Semibold" Click="OpenDownloadFolderButton_Click"   />
+
+                                    </Grid>
+
+
 
 
                                 </Grid>
@@ -339,7 +448,7 @@
                     <TabItem x:Name="ExcludedTab" Height="50">
                         <TabItem.Header>
                             <DockPanel Margin="0,5,0,0">
-                                <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,0,0,0">Excluded</Label>
+                                <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,2,0,0" FontFamily="Segoe UI Semilight">Excluded</Label>
                             </DockPanel>
                         </TabItem.Header>
                         <Grid Margin="50,30,0,0" HorizontalAlignment="Left">
@@ -352,7 +461,7 @@
                                 <RowDefinition Height="Auto"></RowDefinition>
                             </Grid.RowDefinitions>
 
-                            <Button x:Name="ExcludeAppInfo" Width="30" Height="32" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0 10 0 0"
+                            <Button x:Name="ExcludeAppInfo" Width="30" Height="32" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0 305 0 0"
                                                 Focusable="False"  Style="{StaticResource MetroInfoButton}" Click="ProductInfo_OnClick"  >
                                 <StackPanel Orientation="Horizontal">
                                     <Image Source="../images/info.png" Width="20" Height="20"/>
@@ -366,7 +475,7 @@
                                   ItemsSource="{Binding Path=ExcludeProducts}"
                                   Style="{DynamicResource MetroDataGrid}"
                                   AutoGenerateColumns="False" HeadersVisibility="None"
-                                  CanUserAddRows="False" Grid.ColumnSpan="3">
+                                  CanUserAddRows="False" Grid.ColumnSpan="3" FontFamily="Segoe UI Semibold">
                                 <DataGrid.RowStyle>
                                     <Style TargetType="{x:Type DataGridRow}">
                                         <Setter Property="Background" Value="#e6e6e6" />
@@ -454,8 +563,8 @@
                     <ColumnDefinition Width="20"  />
                     <ColumnDefinition  />
                 </Grid.ColumnDefinitions>
-                <Button x:Name="PreviousButton" Width="100" Height="40" Grid.Column="0" Content="Previous"  Click="PreviousButton_Click" />
-                <Button x:Name="NextButton" Width="100" Height="40" Grid.Column="2" Content="Next" Click="NextButton_Click" />
+                <Button x:Name="PreviousButton" Width="100" Height="40" Grid.Column="0" Content="Previous"  Click="PreviousButton_Click" Background="#FFF7F7F7" FontFamily="Segoe UI Semilight" />
+                <Button x:Name="NextButton" Width="100" Height="40" Grid.Column="2" Content="Next" Click="NextButton_Click" Background="#FFF7F7F7" FontFamily="Segoe UI Semilight" />
             </Grid>
         </Grid>
 

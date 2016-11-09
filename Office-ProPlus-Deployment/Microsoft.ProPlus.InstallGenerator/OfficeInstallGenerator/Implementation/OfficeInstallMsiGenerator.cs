@@ -15,7 +15,7 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
     public class OfficeInstallMsiGenerator : IOfficeInstallGenerator
     {
 
-        public IOfficeInstallReturn Generate(IOfficeInstallProperties installProperties)
+        public IOfficeInstallReturn Generate(IOfficeInstallProperties installProperties, string remoteLogPath = "")
         {
             var msiPath = installProperties.ExecutablePath;
             var exePath = Path.GetDirectoryName(installProperties.ExecutablePath) + @"\InstallOfficeProPlus.exe";
@@ -48,7 +48,7 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
                     version = installProperties.Version.ToString();
                 }
 
-                var exeReturn = exeGenerator.Generate(installProperties);
+                var exeReturn = exeGenerator.Generate(installProperties, remoteLogPath);
                 var exeFilePath = exeReturn.GeneratedFilePath;
 
                 var msiCreatePath = Regex.Replace(msiPath, ".msi$", "", RegexOptions.IgnoreCase);
@@ -71,7 +71,6 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
                     Language = installProperties.Language,
                     SourceFilePath = installProperties.SourceFilePath
                 };
-
                 var msiGenerator = new MsiGenerator();
                 msiGenerator.Generate(msiInstallProperties);
 

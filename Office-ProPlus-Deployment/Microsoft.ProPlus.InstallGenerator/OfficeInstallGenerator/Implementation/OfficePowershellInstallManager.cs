@@ -10,6 +10,9 @@ using System.Diagnostics;
 using System.Management;
 using System.Windows.Forms.VisualStyles;
 using Microsoft.OfficeProPlus.Downloader;
+using System.Management.Automation;
+using System.Collections.ObjectModel;
+using Microsoft.OfficeProPlus.InstallGenerator.Implementation;
 
 namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
 {
@@ -26,7 +29,7 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
         public string connectionNamespace { get; set; }
         public ManagementScope scope { get; set; }
 
-        public void initConnection()
+        public void InitConnection()
         {
            //implement me
 
@@ -38,45 +41,50 @@ namespace Microsoft.OfficeProPlus.InstallGenerator.Implementation
             string readtext = "";
             try
             {
+                
                 string PSPath = System.IO.Path.GetTempPath() + remoteComputerName + "PowershellAttemptVersion.txt";
                 System.IO.File.Delete(PSPath);
-                Process p = new Process();
-                p.StartInfo.FileName = "Powershell.exe";                                //replace path to use local path                            switch out arguments so your program throws in the necessary args
-                p.StartInfo.Arguments = @"-ExecutionPolicy Bypass -NoExit -Command ""& {& '" + System.IO.Directory.GetCurrentDirectory() + "\\Resources\\FindVersion.ps1' -machineToRun " + remoteComputerName + "}\"";
-                p.StartInfo.UseShellExecute = false;
-                p.StartInfo.CreateNoWindow = true;
-                p.Start();
-                p.WaitForExit();
-                p.Close();
+                using (var powerShellInstance = System.Management.Automation.PowerShell.Create())
+                {
+                    powerShellInstance.AddScript(System.IO.Directory.GetCurrentDirectory() + "\\Resources\\FindVersion.ps1 -machineToRun " + remoteComputerName);
+                    var async = powerShellInstance.Invoke();
+                }
                 readtext = System.IO.File.ReadAllText(PSPath);
                 readtext = readtext.Trim();
 
                 officeInstance.Version = readtext.Split('\\')[0];
-            }
-            catch (Exception)
-            {
-
-            }
-            if (!string.IsNullOrEmpty(officeInstance.Version))
-            {
-                officeInstance.Installed = true;
-                var currentBaseCDNUrl = readtext.Split('\\')[1];
-
-
-                var installFile = await GetOfficeInstallFileXml();
-                if (installFile == null) return officeInstance;
-
-                var currentBranch = installFile.BaseURL.FirstOrDefault(b => b.URL.Equals(currentBaseCDNUrl) &&
-                                                                      !b.Branch.ToLower().Contains("business"));
-                if (currentBranch != null)
+            
+                if (!string.IsNullOrEmpty(officeInstance.Version))
                 {
-                    officeInstance.Channel = currentBranch.Branch;
+                    officeInstance.Installed = true;
+                    var currentBaseCDNUrl = readtext.Split('\\')[1];
 
-                    var latestVersion = await GetOfficeLatestVersion(currentBranch.Branch, OfficeEdition.Office32Bit);
-                    officeInstance.LatestVersion = latestVersion;
+
+                    var installFile = await GetOfficeInstallFileXml();
+                    if (installFile == null) return officeInstance;
+
+                    var currentBranch = installFile.BaseURL.FirstOrDefault(b => b.URL.Equals(currentBaseCDNUrl) &&
+                                                                                !b.Branch.ToLower().Contains("business"));
+                    if (currentBranch != null)
+                    {
+                        officeInstance.Channel = currentBranch.Branch;
+
+                        var latestVersion =
+                            await GetOfficeLatestVersion(currentBranch.Branch, OfficeEdition.Office32Bit);
+                        officeInstance.LatestVersion = latestVersion;
+                    }
+
+
                 }
-
-
+            }
+            catch (Exception ex)
+            {
+                using (System.IO.StreamWriter file =
+           new System.IO.StreamWriter(System.IO.Path.GetTempPath() + "failure.txt", true))
+                {
+                    file.WriteLine(ex.Message);
+                }
+                throw new Exception(ex.Message);
             }
             return officeInstance;
         }
