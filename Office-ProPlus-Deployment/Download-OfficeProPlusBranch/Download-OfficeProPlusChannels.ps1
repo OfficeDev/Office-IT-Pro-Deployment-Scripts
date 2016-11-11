@@ -240,6 +240,9 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
                 if(!(Test-Path "$TargetDirectory\$FolderName\Office\Data\$currentVersion")){
                     New-Item -Path "$TargetDirectory\$FolderName\Office\Data\$currentVersion" -ItemType directory -Force | Out-Null
                 }
+                if(!(Test-Path "$TargetDirectory\$FolderName\Office\Data\$currentVersion\Experiment")){
+                     New-Item -Path "$TargetDirectory\$FolderName\Office\Data\$currentVersion\Experiment" -ItemType directory -Force | Out-Null
+ 				}
 
                 $numberOfFiles = 0
                 $j = 0
