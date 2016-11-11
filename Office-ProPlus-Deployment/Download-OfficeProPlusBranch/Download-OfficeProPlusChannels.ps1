@@ -241,6 +241,11 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
                     New-Item -Path "$TargetDirectory\$FolderName\Office\Data\$currentVersion" -ItemType directory -Force | Out-Null
                 }
 
+                
+                if(!(Test-Path "$TargetDirectory\$FolderName\Office\Data\$currentVersion\Experiment")){
+                    New-Item -Path "$TargetDirectory\$FolderName\Office\Data\$currentVersion\Experiment" -ItemType directory -Force | Out-Null
+                }
+
                 $numberOfFiles = 0
                 $j = 0
 
@@ -267,9 +272,54 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
                     $relativePath = $_.relativePath -replace "`%version`%", $currentVersion
                     $url = "$baseURL$relativePath$name"
                     $destination = "$TargetDirectory\$FolderName$relativePath$name"
+                   
+             
+                    for( $retryCount = 0; $retryCount -lt 5;  $retryCount++) {
+                        try {
 
-                    if (!(Test-Path -Path $destination) -or $OverWrite) {
-                       DownloadFile -url $url -targetFile $destination
+                            if (!(Test-Path -Path $destination) -or $OverWrite ) { 
+                               DownloadFile -url $url -targetFile $destination
+                     
+                               if($name -eq "stream.x86.x-none.dat")
+                               {                                   
+                                   $hashFileName = $name.replace("dat","hash")
+                                   $noneHashLocation = $CurrentVersionXML.UpdateFiles.File | ? name -eq $name |%{$_.hashLocation}                    
+                                   expand "$TargetDirectory\$FolderName$relativePath\s320.cab" f:* $env:Temp\ | Out-Null
+
+                                   $fileHash = Get-FileHash $destination
+                                   $providedHash = Get-Content $env:Temp\$hashFileName
+
+                                   if($fileHash.hash -eq $providedHash)
+                                   {
+                                     Write-Progress "$name hash does not match, trying download again $retryCount\4"
+                                     throw 
+                                   }           
+                               }
+                               elseif($name -eq "stream.x64.x-none.dat")
+                               {
+                                   $hashFileName = $name.replace("dat","hash")
+                                   $noneHashLocation = $CurrentVersionXML.UpdateFiles.File | ? name -eq $name |%{$_.hashLocation}                    
+                                   expand "$TargetDirectory\$FolderName$relativePath\s640.cab" f:* $env:Temp\ | Out-Null
+
+                                   $fileHash = Get-FileHash $destination
+                                   $providedHash = Get-Content $env:Temp\$hashFileName
+
+                                   if($fileHash.hash -eq $providedHash)
+                                   {
+                                     Write-Progress "$name hash does not match, trying download again $retryCount\4"
+                                     throw 
+                                   }           
+
+                       
+                               }
+                           }
+                        }
+                        catch{
+                            $OverWrite = $true 
+                            if ($retyCount -ge 1) {
+                                 throw "$name file hash is not correct." 
+                            }
+                        }
                     }
 
                     $j = $j + 1
@@ -290,6 +340,8 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
 
                         if (!(Test-Path -Path $destination) -or $OverWrite) {
                            DownloadFile -url $url -targetFile $destination
+                        
+
                         }
 
                         $j = $j + 1
