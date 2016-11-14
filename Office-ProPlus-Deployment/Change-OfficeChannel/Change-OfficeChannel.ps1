@@ -753,7 +753,7 @@ try {
     if ($UpdateURLPath) {
         if ($PolicyPath) {
             New-ItemProperty $OfficePolicyPath -Name updatepath -PropertyType String -Value $UpdateURLPath -Force | Out-Null
-        } else {
+        } elseif($oldUpdatePath) {
             New-ItemProperty $Office2RClientKey -Name UpdateUrl -PropertyType String -Value $UpdateURLPath -Force | Out-Null
         }
     }
