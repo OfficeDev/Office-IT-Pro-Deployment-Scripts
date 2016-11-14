@@ -1901,3 +1901,15 @@ function Restart-ExplorerExe() {
         }
     }
 }
+
+function GetPinnedStartMenuApps {
+    $PreOfficeAppPinnedStatus = GetOfficeAppVerbStatus
+    $PinnedStartMenuApps = $PreOfficeAppPinnedStatus | ? {$_.PinToStartMenuAvailable -eq $false}
+    return $PinnedStartMenuApps.Name
+}
+
+function GetPinnedTaskbarApps {
+    $PreOfficeAppPinnedStatus = GetOfficeAppVerbStatus
+    $PinnedTaskbarApps = $PreOfficeAppPinnedStatus | ? {$_.PinToTaskbarAvailable -eq $false}
+    return $PinnedTaskbarApps.Name
+}
