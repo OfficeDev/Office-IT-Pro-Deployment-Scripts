@@ -274,7 +274,7 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
                     $destination = "$TargetDirectory\$FolderName$relativePath$name"
                    
              
-                    for( $retryCount = 0; $retryCount -lt 5;  $retryCount++) {
+                    for( $retryCount = 0; $retryCount -lt 3;  $retryCount++) {
                         try {
 
                             if (!(Test-Path -Path $destination) -or $OverWrite ) { 
@@ -289,10 +289,12 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
                                    $fileHash = Get-FileHash $destination
                                    $providedHash = Get-Content $env:Temp\$hashFileName
 
-                                   if($fileHash.hash -eq $providedHash)
+                                   if($fileHash.hash -ne $providedHash)
                                    {
-                                     Write-Progress "$name hash does not match, trying download again $retryCount\4"
-                                     throw 
+                                    throw 
+                                   }
+                                    else{
+                                        break
                                    }           
                                }
                                elseif($name -eq "stream.x64.x-none.dat")
@@ -304,11 +306,13 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
                                    $fileHash = Get-FileHash $destination
                                    $providedHash = Get-Content $env:Temp\$hashFileName
 
-                                   if($fileHash.hash -eq $providedHash)
+                                   if($fileHash.hash -ne $providedHash)
                                    {
-                                     Write-Progress "$name hash does not match, trying download again $retryCount\4"
-                                     throw 
-                                   }           
+                                     throw
+                                   }      
+                                    else{
+                                        break
+                                    }     
 
                        
                                }
@@ -316,9 +320,9 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
                         }
                         catch{
                             $OverWrite = $true 
-                            if ($retyCount -ge 1) {
-                                 throw "$name file hash is not correct." 
-                            }
+                            if ($retryCount -eq 2) {
+                                    throw "$name file hash is not correct" 
+                                }        
                         }
                     }
 
@@ -331,17 +335,50 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
                 %{
                     #LANGUAGE LOGIC HERE
                     $languageId  = [globalization.cultureinfo]::GetCultures("allCultures") | ? Name -eq $_ | %{$_.LCID}
+                    $bitnessValue = $currentBitness.split('-')[0].ToString()
                     $CurrentVersionXML.UpdateFiles.File | ? language -eq $languageId | 
+
                     %{
-                        $name = $_.name -replace "`%version`%", $currentVersion
-                        $relativePath = $_.relativePath -replace "`%version`%", $currentVersion
-                        $url = "$baseURL$relativePath$name"
-                        $destination = "$TargetDirectory\$FolderName$relativePath$name"
+                    
+                    $name = $_.name -replace "`%version`%", $currentVersion                    
+                    for( $retryCount = 0; $retryCount -lt 3;  $retryCount++) {
+                            try {
 
-                        if (!(Test-Path -Path $destination) -or $OverWrite) {
-                           DownloadFile -url $url -targetFile $destination
-                        
+                          
+                            $fileType = $name.split('.')[$name.split['.'].Count - 1]
+                            $relativePath = $_.relativePath -replace "`%version`%", $currentVersion
+                            $url = "$baseURL$relativePath$name"
+                            $destination = "$TargetDirectory\$FolderName$relativePath$name"
+                     
 
+                            if (!(Test-Path -Path $destination) -or $OverWrite) {
+                               DownloadFile -url $url -targetFile $destination
+
+                               if($fileType -eq 'dat'){
+                                    $cabFile = "s$bitnessValue$languageId.cab"
+                                    $hashFile = $name.replace('dat','hash')
+                                    expand "$TargetDirectory\$FolderName$relativePath$cabfile" f:* $env:Temp\ | Out-Null
+
+                                    $fileHash = Get-FileHash $destination
+                                    $providedHash = Get-Content $env:TEMP\$hashFile
+
+                                    if($fileHash.hash -ne $providedHash){
+                                        throw 
+                                    }
+                                    else{
+                                        break
+                                    }
+
+
+                               }
+                            }
+                            }
+                            catch{
+                            $OverWrite = $true 
+                                if ($retryCount -eq 2) {
+                                     throw "$name file hash is not correct" 
+                            }
+                            }
                         }
 
                         $j = $j + 1
