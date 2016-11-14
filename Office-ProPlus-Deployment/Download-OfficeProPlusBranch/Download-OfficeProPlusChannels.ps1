@@ -291,10 +291,10 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
 
                                    if($fileHash.hash -ne $providedHash)
                                    {
-                                    throw 
+                                    throw;
                                    }
                                     else{
-                                        break
+                                        break;
                                    }           
                                }
                                elseif($name -eq "stream.x64.x-none.dat")
@@ -308,10 +308,10 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
 
                                    if($fileHash.hash -ne $providedHash)
                                    {
-                                     throw
+                                     throw;
                                    }      
                                     else{
-                                        break
+                                        break;
                                     }     
 
                        
@@ -363,10 +363,11 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
                                     $providedHash = Get-Content $env:TEMP\$hashFile
 
                                     if($fileHash.hash -ne $providedHash){
-                                        throw 
+                                        throw;
                                     }
                                     else{
-                                        break
+                                        #$OverWrite = $false
+                                        break;
                                     }
 
 
