@@ -241,8 +241,13 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
                     New-Item -Path "$TargetDirectory\$FolderName\Office\Data\$currentVersion" -ItemType directory -Force | Out-Null
                 }
                 if(!(Test-Path "$TargetDirectory\$FolderName\Office\Data\$currentVersion\Experiment")){
+                     New-Item -Path "$TargetDirectory\$FolderName\Office\Data\$currentVersion\Experiment" -ItemType directory -Force | Out-Null
+ 				}
+
+                
+                if(!(Test-Path "$TargetDirectory\$FolderName\Office\Data\$currentVersion\Experiment")){
                     New-Item -Path "$TargetDirectory\$FolderName\Office\Data\$currentVersion\Experiment" -ItemType directory -Force | Out-Null
-				}
+                }
 
                 $numberOfFiles = 0
                 $j = 0
@@ -269,10 +274,42 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
                     $name = $_.name -replace "`%version`%", $currentVersion
                     $relativePath = $_.relativePath -replace "`%version`%", $currentVersion
                     $url = "$baseURL$relativePath$name"
+                    $fileType = $name.split('.')[$name.split['.'].Count - 1]
+                    $bitnessValue = $currentBitness.split('-')[0].ToString()
                     $destination = "$TargetDirectory\$FolderName$relativePath$name"
+                               
+                    for( $retryCount = 0; $retryCount -lt 3;  $retryCount++) {
+                        try {
 
-                    if (!(Test-Path -Path $destination) -or $OverWrite) {
-                       DownloadFile -url $url -targetFile $destination
+                            if (!(Test-Path -Path $destination) -or $OverWrite ) { 
+                               DownloadFile -url $url -targetFile $destination
+                     
+                               if($fileType -ne 'dat')
+                               {                                   
+                                   $hashFileName = $name.replace("dat","hash")
+                                   $cabFile = "$TargetDirectory\$FolderName"+$relativePath.Replace('/','\')+"s"+$bitnessValue+"0.cab"
+                                   $noneHashLocation = $CurrentVersionXML.UpdateFiles.File | ? name -eq $name |%{$_.hashLocation}                    
+                                   expand $cabFile f:* $env:Temp\ | Out-Null
+                                   
+                                   $fileHash = Get-FileHash $destination.replace('/','\')
+                                   $providedHash = Get-Content $env:Temp\$hashFileName
+
+                                   if($fileHash.hash -eq $providedHash)
+                                   {
+                                    throw;
+                                   }
+                                    else{
+                                        break;
+                                   }           
+                               }
+                           }
+                        }
+                        catch{
+                            $OverWrite = $true 
+                            if ($retryCount -eq 2) {
+                                    throw "$name file hash is not correct" 
+                                }        
+                        }
                     }
 
                     $j = $j + 1
@@ -284,15 +321,47 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
                 %{
                     #LANGUAGE LOGIC HERE
                     $languageId  = [globalization.cultureinfo]::GetCultures("allCultures") | ? Name -eq $_ | %{$_.LCID}
+                    $bitnessValue = $currentBitness.split('-')[0].ToString()
                     $CurrentVersionXML.UpdateFiles.File | ? language -eq $languageId | 
-                    %{
-                        $name = $_.name -replace "`%version`%", $currentVersion
-                        $relativePath = $_.relativePath -replace "`%version`%", $currentVersion
-                        $url = "$baseURL$relativePath$name"
-                        $destination = "$TargetDirectory\$FolderName$relativePath$name"
 
-                        if (!(Test-Path -Path $destination) -or $OverWrite) {
-                           DownloadFile -url $url -targetFile $destination
+                    %{
+                    
+                    $name = $_.name -replace "`%version`%", $currentVersion                    
+                    for( $retryCount = 0; $retryCount -lt 3;  $retryCount++) {
+                            try {
+                        
+                            $fileType = $name.split('.')[$name.split['.'].Count - 1]
+                            $relativePath = $_.relativePath -replace "`%version`%", $currentVersion
+                            $url = "$baseURL$relativePath$name"
+                            $destination = "$TargetDirectory\$FolderName"+$relativePath.replace('/','\')+"$name"
+                     
+
+                            if (!(Test-Path -Path $destination) -or $OverWrite) {
+                               DownloadFile -url $url -targetFile $destination
+
+                               if($fileType -eq 'dat'){
+                                    $cabFile = "s$bitnessValue$languageId.cab"
+                                    $hashFile = $name.replace('dat','hash')
+                                    expand "$TargetDirectory\$FolderName$relativePath$cabfile" f:* $env:Temp\ | Out-Null
+
+                                    $fileHash = Get-FileHash $destination
+                                    $providedHash = Get-Content $env:TEMP\$hashFile
+
+                                    if($fileHash.hash -ne $providedHash){
+                                        throw;
+                                    }
+                                    else{
+                                        break;
+                                    }
+                               }
+                            }
+                            }
+                            catch{
+                            $OverWrite = $true 
+                                if ($retryCount -eq 2) {
+                                     throw "$name file hash is not correct" 
+                            }
+                            }
                         }
 
                         $j = $j + 1
@@ -328,6 +397,7 @@ function DownloadFile($url, $targetFile) {
 
   for($t=1;$t -lt 10; $t++) {
    try {
+
        $uri = New-Object "System.Uri" "$url"
        $request = [System.Net.HttpWebRequest]::Create($uri)
        $request.set_Timeout(15000) #15 second timeout
@@ -335,7 +405,7 @@ function DownloadFile($url, $targetFile) {
        $response = $request.GetResponse()
        $totalLength = [System.Math]::Floor($response.get_ContentLength()/1024)
        $responseStream = $response.GetResponseStream()
-       $targetStream = New-Object -TypeName System.IO.FileStream -ArgumentList $targetFile, Create
+       $targetStream = New-Object -TypeName System.IO.FileStream -ArgumentList $targetFile.replace('/','\'), Create
        $buffer = new-object byte[] 8192KB
        $count = $responseStream.Read($buffer,0,$buffer.length)
        $downloadedBytes = $count
@@ -357,7 +427,7 @@ function DownloadFile($url, $targetFile) {
        break;
    } catch {
      if ($t -ge 9) {
-        throw
+        throw "Download of $targetFile at $url failed."
      }
    }
    Start-Sleep -Milliseconds 500
