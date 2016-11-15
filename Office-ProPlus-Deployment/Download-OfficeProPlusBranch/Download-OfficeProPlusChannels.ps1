@@ -271,50 +271,33 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
                     $name = $_.name -replace "`%version`%", $currentVersion
                     $relativePath = $_.relativePath -replace "`%version`%", $currentVersion
                     $url = "$baseURL$relativePath$name"
+                    $fileType = $name.split('.')[$name.split['.'].Count - 1]
+                    $bitnessValue = $currentBitness.split('-')[0].ToString()
                     $destination = "$TargetDirectory\$FolderName$relativePath$name"
-                   
-             
+                               
                     for( $retryCount = 0; $retryCount -lt 3;  $retryCount++) {
                         try {
 
                             if (!(Test-Path -Path $destination) -or $OverWrite ) { 
                                DownloadFile -url $url -targetFile $destination
                      
-                               if($name -eq "stream.x86.x-none.dat")
+                               if($fileType -ne 'dat')
                                {                                   
                                    $hashFileName = $name.replace("dat","hash")
+                                   $cabFile = "$TargetDirectory\$FolderName"+$relativePath.Replace('/','\')+"s"+$bitnessValue+"0.cab"
                                    $noneHashLocation = $CurrentVersionXML.UpdateFiles.File | ? name -eq $name |%{$_.hashLocation}                    
-                                   expand "$TargetDirectory\$FolderName$relativePath\s320.cab" f:* $env:Temp\ | Out-Null
-
-                                   $fileHash = Get-FileHash $destination
+                                   expand $cabFile f:* $env:Temp\ | Out-Null
+                                   
+                                   $fileHash = Get-FileHash $destination.replace('/','\')
                                    $providedHash = Get-Content $env:Temp\$hashFileName
 
-                                   if($fileHash.hash -ne $providedHash)
+                                   if($fileHash.hash -eq $providedHash)
                                    {
                                     throw;
                                    }
                                     else{
                                         break;
                                    }           
-                               }
-                               elseif($name -eq "stream.x64.x-none.dat")
-                               {
-                                   $hashFileName = $name.replace("dat","hash")
-                                   $noneHashLocation = $CurrentVersionXML.UpdateFiles.File | ? name -eq $name |%{$_.hashLocation}                    
-                                   expand "$TargetDirectory\$FolderName$relativePath\s640.cab" f:* $env:Temp\ | Out-Null
-
-                                   $fileHash = Get-FileHash $destination
-                                   $providedHash = Get-Content $env:Temp\$hashFileName
-
-                                   if($fileHash.hash -ne $providedHash)
-                                   {
-                                     throw;
-                                   }      
-                                    else{
-                                        break;
-                                    }     
-
-                       
                                }
                            }
                         }
@@ -343,12 +326,11 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
                     $name = $_.name -replace "`%version`%", $currentVersion                    
                     for( $retryCount = 0; $retryCount -lt 3;  $retryCount++) {
                             try {
-
-                          
+                        
                             $fileType = $name.split('.')[$name.split['.'].Count - 1]
                             $relativePath = $_.relativePath -replace "`%version`%", $currentVersion
                             $url = "$baseURL$relativePath$name"
-                            $destination = "$TargetDirectory\$FolderName$relativePath$name"
+                            $destination = "$TargetDirectory\$FolderName"+$relativePath.replace('/','\')+"$name"
                      
 
                             if (!(Test-Path -Path $destination) -or $OverWrite) {
@@ -366,11 +348,8 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
                                         throw;
                                     }
                                     else{
-                                        #$OverWrite = $false
                                         break;
                                     }
-
-
                                }
                             }
                             }
@@ -415,6 +394,7 @@ function DownloadFile($url, $targetFile) {
 
   for($t=1;$t -lt 10; $t++) {
    try {
+
        $uri = New-Object "System.Uri" "$url"
        $request = [System.Net.HttpWebRequest]::Create($uri)
        $request.set_Timeout(15000) #15 second timeout
@@ -422,7 +402,7 @@ function DownloadFile($url, $targetFile) {
        $response = $request.GetResponse()
        $totalLength = [System.Math]::Floor($response.get_ContentLength()/1024)
        $responseStream = $response.GetResponseStream()
-       $targetStream = New-Object -TypeName System.IO.FileStream -ArgumentList $targetFile, Create
+       $targetStream = New-Object -TypeName System.IO.FileStream -ArgumentList $targetFile.replace('/','\'), Create
        $buffer = new-object byte[] 8192KB
        $count = $responseStream.Read($buffer,0,$buffer.length)
        $downloadedBytes = $count
@@ -444,7 +424,7 @@ function DownloadFile($url, $targetFile) {
        break;
    } catch {
      if ($t -ge 9) {
-        throw
+        throw "Download of $targetFile at $url failed."
      }
    }
    Start-Sleep -Milliseconds 500
