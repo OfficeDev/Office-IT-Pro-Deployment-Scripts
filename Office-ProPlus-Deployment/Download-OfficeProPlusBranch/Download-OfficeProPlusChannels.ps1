@@ -284,7 +284,7 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
                             if (!(Test-Path -Path $destination) -or $OverWrite ) { 
                                DownloadFile -url $url -targetFile $destination
                      
-                               if($fileType -ne 'dat')
+                               if($fileType -eq 'dat')
                                {                                   
                                    $hashFileName = $name.replace("dat","hash")
                                    $cabFile = "$TargetDirectory\$FolderName"+$relativePath.Replace('/','\')+"s"+$bitnessValue+"0.cab"
@@ -294,7 +294,7 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
                                    $fileHash = Get-FileHash $destination.replace('/','\')
                                    $providedHash = Get-Content $env:Temp\$hashFileName
 
-                                   if($fileHash.hash -eq $providedHash)
+                                   if($fileHash.hash -ne $providedHash)
                                    {
                                     throw;
                                    }
