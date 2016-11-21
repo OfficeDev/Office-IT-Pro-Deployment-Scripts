@@ -570,7 +570,8 @@ Function Get-InstalledLanguages() {
        $mainRegPath = Get-OfficeCTRRegPath
 
        $activeConfig = Get-ItemProperty -Path "hklm:\$mainRegPath\ProductReleaseIDs"
-       $activeId = $activeConfig.ActiveConfiguration       $languages = Get-ChildItem -Path "hklm:\$mainRegPath\ProductReleaseIDs\$activeId\culture"
+       $activeId = $activeConfig.ActiveConfiguration
+       $languages = Get-ChildItem -Path "hklm:\$mainRegPath\ProductReleaseIDs\$activeId\culture"
 
        foreach ($language in $languages) {
           $lang = Get-ItemProperty -Path  $language.pspath
