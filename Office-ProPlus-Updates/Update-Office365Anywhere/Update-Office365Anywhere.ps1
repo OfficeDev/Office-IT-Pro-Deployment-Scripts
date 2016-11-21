@@ -1,4 +1,4 @@
-﻿[CmdletBinding()]
+[CmdletBinding()]
 Param(
     [Parameter()]
     [bool] $WaitForUpdateToFinish = $true,
@@ -637,7 +637,7 @@ Function getOperationTime() {
     return $operationTime
 }
 
-Function Wait-ForOfficeCTRUpadate() {
+Function Wait-ForOfficeCTRUpdate() {
     [CmdletBinding()]
     Param(
         [Parameter()]
@@ -1273,7 +1273,7 @@ Will generate the Office Deployment Tool (ODT) configuration XML based on the lo
                StartProcess -execFilePath $oc2rcFilePath -execParams $oc2rcParams
 
                if ($WaitForUpdateToFinish) {
-                    Wait-ForOfficeCTRUpadate
+                    Wait-ForOfficeCTRUpdate
                }
 
                $saveUpdateSource = (Get-ItemProperty HKLM:\$configRegPath -Name SaveUpdateUrl -ErrorAction SilentlyContinue).SaveUpdateUrl
