@@ -570,8 +570,7 @@ Function Get-InstalledLanguages() {
        $mainRegPath = Get-OfficeCTRRegPath
 
        $activeConfig = Get-ItemProperty -Path "hklm:\$mainRegPath\ProductReleaseIDs"
-       $activeId = $activeConfig.ActiveConfiguration
-       $languages = Get-ChildItem -Path "hklm:\$mainRegPath\ProductReleaseIDs\$activeId\culture"
+       $activeId = $activeConfig.ActiveConfiguration       $languages = Get-ChildItem -Path "hklm:\$mainRegPath\ProductReleaseIDs\$activeId\culture"
 
        foreach ($language in $languages) {
           $lang = Get-ItemProperty -Path  $language.pspath
@@ -637,7 +636,7 @@ Function getOperationTime() {
     return $operationTime
 }
 
-Function Wait-ForOfficeCTRUpadate() {
+Function Wait-ForOfficeCTRUpdate() {
     [CmdletBinding()]
     Param(
         [Parameter()]
@@ -1273,7 +1272,7 @@ Will generate the Office Deployment Tool (ODT) configuration XML based on the lo
                StartProcess -execFilePath $oc2rcFilePath -execParams $oc2rcParams
 
                if ($WaitForUpdateToFinish) {
-                    Wait-ForOfficeCTRUpadate
+                    Wait-ForOfficeCTRUpdate
                }
 
                $saveUpdateSource = (Get-ItemProperty HKLM:\$configRegPath -Name SaveUpdateUrl -ErrorAction SilentlyContinue).SaveUpdateUrl
@@ -1300,6 +1299,3 @@ Will generate the Office Deployment Tool (ODT) configuration XML based on the lo
 }
 
 Update-Office365Anywhere -WaitForUpdateToFinish $WaitForUpdateToFinish -EnableUpdateAnywhere $EnableUpdateAnywhere -ForceAppShutdown $ForceAppShutdown -UpdatePromptUser $UpdatePromptUser -DisplayLevel $DisplayLevel -UpdateToVersion $UpdateToVersion -LogPath $LogPath -LogName $LogName -ValidateUpdateSourceFiles $ValidateUpdateSourceFiles
-
-
-
