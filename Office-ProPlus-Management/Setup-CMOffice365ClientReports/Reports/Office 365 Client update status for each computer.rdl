@@ -3,7 +3,7 @@
   <AutoRefresh>0</AutoRefresh>
   <DataSources>
     <DataSource Name="AutoGen__5C6358F2_4BB6_4a1b_A16E_8D96795D8602_">
-      <DataSourceReference>/ConfigMgr_S01/{5C6358F2-4BB6-4a1b-A16E-8D96795D8602}</DataSourceReference>
+      <DataSourceReference>/ConfigMgr_S02/{5C6358F2-4BB6-4a1b-A16E-8D96795D8602}</DataSourceReference>
       <rd:SecurityType>None</rd:SecurityType>
       <rd:DataSourceID>11111111-1111-1111-1111-111111111111</rd:DataSourceID>
     </DataSource>
@@ -41,6 +41,7 @@ custOf.VersionToReport00,
 cust.LastScenario00, 
 cust.LastScenarioResult00,
 UpdateSource = CASE 
+WHEN (cust.cfgUpdateChannel00 IS NOT NULL AND cust.cfgUpdateChannel00 != '') THEN 'Cloud'
 WHEN (cust.GPOOfficeMgmtCOM00 IS NULL AND cust.OfficeMgmtCOM00 = 'True') THEN 'Configuration Manager' 
 WHEN cust.GPOOfficeMgmtCOM00 = '1' THEN 'Configuration Manager' 
 WHEN (cust.UpdateChannel00 IS NOT NULL AND cust.UpdateChannel00 != '') THEN 'Cloud'
@@ -70,6 +71,7 @@ custOf.VersionToReport00,
 cust.LastScenario00, 
 cust.LastScenarioResult00,
 UpdateSource = CASE 
+WHEN (cust.cfgUpdateChannel00 IS NOT NULL AND cust.cfgUpdateChannel00 != '') THEN 'Cloud'
 WHEN (cust.GPOOfficeMgmtCOM00 IS NULL AND cust.OfficeMgmtCOM00 = 'True') THEN 'Configuration Manager' 
 WHEN cust.GPOOfficeMgmtCOM00 = '1' THEN 'Configuration Manager' 
 WHEN (cust.UpdateChannel00 IS NOT NULL AND cust.UpdateChannel00 != '') THEN 'Cloud'
@@ -1222,6 +1224,6 @@ END</CommandText>
     <CodeModule>SrsResources, culture=neutral</CodeModule>
   </CodeModules>
   <rd:ReportUnitType>Inch</rd:ReportUnitType>
-  <rd:ReportServerUrl>http://2012-cm/ReportServer</rd:ReportServerUrl>
+  <rd:ReportServerUrl>http://sccm-2012-cm/ReportServer</rd:ReportServerUrl>
   <rd:ReportID>6fbd236a-d836-4950-8788-14b828deb616</rd:ReportID>
 </Report>

@@ -1,0 +1,87 @@
+﻿<Controls:MetroWindow x:Class="MetroDemo.ExampleWindows.RemoteChannelVersionDialog"
+                      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                      xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+                      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                      xmlns:metroDemo="clr-namespace:MetroDemo"
+                      xmlns:exampleWindows="clr-namespace:MetroDemo.ExampleWindows"
+                      xmlns:converters="http://metro.mahapps.com/winfx/xaml/shared"
+                      xmlns:dialogs="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
+                      Title="Update Channel/Version Remote Computer"
+                      TitleForeground="#333333"
+                      WindowTitleBrush="#f4f4f4"
+                      Background="#FFCCCCCC"
+                      MinWidth="750"
+                      MinHeight="150"
+                      MaxWidth="950"
+                      MaxHeight="200"
+                      SaveWindowPosition="True"
+                      WindowStartupLocation="CenterScreen"
+                      BorderThickness="1"
+                      GlowBrush="{DynamicResource WindowTitleColorBrush}"
+                      NonActiveGlowBrush="#333333"
+                      mc:Ignorable="d"
+                      d:DataContext="{d:DesignInstance metroDemo:MainWindowViewModel}"
+                      x:Name="RemoteChannel_VersionDialog"  
+                      TitleCaps="False" Width="452" Height="150">
+
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/FlatButton.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro.Resources;component/Icons.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+        </ResourceDictionary>
+    </Window.Resources>
+
+
+    <Controls:MetroWindow.TitleTemplate>
+        <DataTemplate>
+            <TextBlock Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Content}"
+                       TextTrimming="CharacterEllipsis"
+                       HorizontalAlignment="Left"
+                       VerticalAlignment="Center"
+                       Margin="0,5,-81,0" 
+                       Padding="10,0,0,0" 
+                       Background="#f4f4f4"
+                       Height="28"
+                       FontSize="14"
+                       FontWeight="Bold"
+                       FontFamily="{DynamicResource HeaderFontFamily}" />
+        </DataTemplate>
+    </Controls:MetroWindow.TitleTemplate>
+
+    <Grid Margin="10 20 0 0">
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="75" />
+            <ColumnDefinition Width="275" />
+            <ColumnDefinition Width="75" />
+            <ColumnDefinition Width="275" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50" />
+            <RowDefinition Height="40" />
+            <RowDefinition Height="50" />
+            <RowDefinition Height="40" />
+        </Grid.RowDefinitions>
+
+        <Label x:Name="ChannelLabel" Content="Channel:" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="0" Grid.Row="0" 
+                                   HorizontalAlignment="Left" Width="75"  />
+
+        <ComboBox Grid.Row="0" x:Name="ChannelSelection" Style="{StaticResource MetroComboBox}" FontSize="18" Foreground="{StaticResource GrayBrush}" IsReadOnly="True"
+                 HorizontalAlignment="Left" VerticalAlignment="Top" Width="275" Height="34"  Grid.Column="1" FontWeight="SemiBold" SelectionChanged="ChannelSelection_SelectionChanged"/>
+        <Label x:Name="VersionLabel" Content="Version:" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="2" Grid.Row="0" 
+                                   HorizontalAlignment="Left" Width="75"  />
+        <ComboBox Grid.Row="0" x:Name="VersionSelection" Style="{StaticResource MetroComboBox}" FontSize="18" Foreground="{StaticResource GrayBrush}" IsReadOnly="True"
+                 HorizontalAlignment="Left" VerticalAlignment="Top" Width="275" Height="34"  Grid.Column="3" FontWeight="SemiBold" />
+        <StackPanel Grid.Column="3" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="108"  >
+            <Button Name="OkButton" Content="OK" Margin="2" Height="30" Click="OkButton_Click" Background="#FFF7F7F7" />
+            <Button Name="CancelButton" Content="Cancel" Margin="2" Height="30" Click="CancelButton_Click" Background="#FFF7F7F7"  />
+        </StackPanel>
+    </Grid>
+
+</Controls:MetroWindow>

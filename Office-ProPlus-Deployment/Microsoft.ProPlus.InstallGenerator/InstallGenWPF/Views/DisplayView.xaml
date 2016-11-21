@@ -1,0 +1,254 @@
+﻿<UserControl x:Class="MetroDemo.ExampleViews.DisplayView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:MetroDemo="clr-namespace:MetroDemo"
+             xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+             mc:Ignorable="d"
+             d:DesignHeight="600"
+             d:DesignWidth="800"
+             d:DataContext="{d:DesignInstance MetroDemo:MainWindowViewModel}" Loaded="DisplayView_OnLoaded" >
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro.Resources;component/Icons.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <Thickness x:Key="ColumnMargin">10 5 10 5</Thickness>
+            <Thickness x:Key="ControlMargin">0 5 0 0</Thickness>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <AdornerDecorator>
+        <Grid Background="#e6e6e6" x:Name="Product" HorizontalAlignment="Stretch">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"  />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="450"></RowDefinition>
+                <RowDefinition></RowDefinition>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0" HorizontalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="0"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Row="0" Grid.Column="1"  Background="{StaticResource GrayBrush}" Width="auto" Height="40" HorizontalAlignment="Stretch" VerticalAlignment="Top" />
+                <Controls:MetroAnimatedSingleRowTabControl Grid.Row="0" Grid.Column="1"  x:Name="MainTabControl" 
+                                                           Height="600" VerticalAlignment="Top" >
+                    <TabItem x:Name="OptionalTab" Height="50" >
+                        <TabItem.Header>
+                            <DockPanel Margin="0,5,0,0">
+                                <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,2,0,0" FontFamily="Segoe UI Semilight">Additional Options</Label>
+                            </DockPanel>
+                        </TabItem.Header>
+            
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="400"></RowDefinition>
+                                <RowDefinition Height="50"></RowDefinition>
+                            </Grid.RowDefinitions>
+
+                            <StackPanel Grid.Row="0" Grid.Column="0"
+                                HorizontalAlignment="Left" Orientation="Vertical" >
+                                <StackPanel.Resources>
+                                    <BooleanToVisibilityConverter x:Key="btv" />
+                                </StackPanel.Resources>
+
+                                <Grid Margin="50 40 0 0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="30" />
+                                        <ColumnDefinition Width="390" />
+                                        <ColumnDefinition Width="120" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="40"></RowDefinition>
+                                    </Grid.RowDefinitions>
+                                    <Button Grid.Column="0" x:Name="DisplayLevelInfo" Height="40" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                            Focusable="False"  Style="{StaticResource CustomMetroInfoButton}" Click="ProductInfo_OnClick" >
+                                        <Image Source="../images/info.png" Height="20" Width="20" />
+                                    </Button>
+                                    <Label Content="Display Level" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="1" HorizontalAlignment="Left" Grid.ColumnSpan="2" FontFamily="Segoe UI Semibold" />
+
+                                    <Controls:ToggleSwitch x:Name="DisplayLevel" Grid.Column="2" 
+                                                   IsChecked="True"  Style="{StaticResource MetroToggleSwitchStyle}"
+                                                   OnLabel="Full" 
+                                                   OffLabel="None"
+                                                   HorizontalAlignment="Left" Width="110" FontFamily="Segoe UI Semibold" />
+                                </Grid>
+
+                                <Grid Margin="50 0 0 0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="30" />
+                                        <ColumnDefinition Width="390" />
+                                        <ColumnDefinition Width="120" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="40"></RowDefinition>
+                                    </Grid.RowDefinitions>
+                                    <Button Grid.Column="0" x:Name="AcceptEulaInfo" Height="40" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                            Focusable="False"  Style="{StaticResource CustomMetroInfoButton}" Click="ProductInfo_OnClick" >
+                                        <Image Source="../images/info.png" Width="20" Height="20"/>
+                                    </Button>
+                                    <Label Content="Accept EULA" Style="{StaticResource CustomMetroLabelHeader}" 
+                                       HorizontalAlignment="Left" Grid.Column="1"  Width="143" FontFamily="Segoe UI Semibold" />
+
+                                    <Controls:ToggleSwitch x:Name="AcceptEula" Grid.Column="2"
+                                               IsChecked="False" Style="{StaticResource MetroToggleSwitchStyle}"
+                                               OnLabel="True"
+                                               OffLabel="False"
+                                                HorizontalAlignment="Left" Width="110" FontFamily="Segoe UI Semibold" />
+                                </Grid>
+
+                                <Grid Margin="50 0 0 0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="30" />
+                                        <ColumnDefinition Width="390" />
+                                        <ColumnDefinition Width="120" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="40"></RowDefinition>
+                                    </Grid.RowDefinitions>
+                                    <Button Grid.Column="0" x:Name="AutoActivateInfo" Height="40" HorizontalAlignment="Center" VerticalAlignment="Center"  
+                                                            Focusable="False"  Style="{StaticResource CustomMetroInfoButton}" Click="ProductInfo_OnClick" >
+                                        <Image Source="../images/info.png" Width="20" Height="20"/>
+                                    </Button>
+                                    <Label Content="Auto Activate" Style="{StaticResource CustomMetroLabelHeader}" 
+                                       HorizontalAlignment="Left" Grid.Column="1" Grid.ColumnSpan="2" Width="158" FontFamily="Segoe UI Semibold" />
+
+                                    <Controls:ToggleSwitch x:Name="AutoActivate" Grid.Column="2"
+                                               IsChecked="False" Style="{StaticResource MetroToggleSwitchStyle}"
+                                               OnLabel="Yes"
+                                               OffLabel="No"
+                                              HorizontalAlignment="Left" Width="110" FontFamily="Segoe UI Semibold" />
+                                </Grid>
+
+                                <Grid Margin="50 0 0 0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="30" />
+                                        <ColumnDefinition Width="390" />
+                                        <ColumnDefinition Width="120" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="40"></RowDefinition>
+                                    </Grid.RowDefinitions>
+                                    <Button Grid.Column="0" x:Name="ForceAppShutdownInfo" Height="40" HorizontalAlignment="Center" VerticalAlignment="Center"  
+                                                            Focusable="False"  Style="{StaticResource CustomMetroInfoButton}" Click="ProductInfo_OnClick" >
+                                        <Image Source="../images/info.png" Width="20" Height="20"/>
+                                    </Button>
+                                    <Label Content="Force App Shutdown" Style="{StaticResource CustomMetroLabelHeader}" 
+                                       HorizontalAlignment="Left"  Grid.Column="1" Grid.ColumnSpan="2" Width="180" FontFamily="Segoe UI Semibold"/>
+
+                                    <Controls:ToggleSwitch x:Name="ForceAppShutdown" Grid.Column="2"
+                                               IsChecked="False" Style="{StaticResource MetroToggleSwitchStyle}"
+                                               OnLabel="True"
+                                               OffLabel="False"
+                                               HorizontalAlignment="Left" Width="110" FontFamily="Segoe UI Semibold" />
+                                </Grid>
+
+                                <Grid Margin="50 0 0 0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="30" />
+                                        <ColumnDefinition Width="390" />
+                                        <ColumnDefinition Width="120" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="40"></RowDefinition>
+                                    </Grid.RowDefinitions>
+                                    <Button Grid.Column="0" x:Name="SharedComputerLicensingInfo" Height="40" HorizontalAlignment="Center" VerticalAlignment="Center"  
+                                                            Focusable="False"  Style="{StaticResource CustomMetroInfoButton}" Click="ProductInfo_OnClick" >
+                                        <Image Source="../images/info.png" Width="20" Height="20"/>
+                                    </Button>
+                                    <Label Content="Shared Computer Licensing" Style="{StaticResource CustomMetroLabelHeader}" 
+                                       HorizontalAlignment="Left"  Grid.Column="1" Width="310" FontFamily="Segoe UI Semibold"/>
+
+                                    <Controls:ToggleSwitch x:Name="SharedComputerLicensing" Grid.Column="2"
+                                               IsChecked="False" Style="{StaticResource MetroToggleSwitchStyle}"
+                                               OnLabel="True"
+                                               OffLabel="False"
+                                                HorizontalAlignment="Left" Width="110" FontFamily="Segoe UI Semibold" />
+                                </Grid>
+
+                                <Grid Margin="50 0 0 0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="30" />
+                                        <ColumnDefinition Width="390" />
+                                        <ColumnDefinition Width="120" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="40"></RowDefinition>
+                                    </Grid.RowDefinitions>
+                                    <Button Grid.Column="0" x:Name="PinIconsToTaskbarInfo" Height="40" HorizontalAlignment="Center" VerticalAlignment="Center"  
+                                                            Focusable="False"  Style="{StaticResource CustomMetroInfoButton}" Click="ProductInfo_OnClick" >
+                                        <Image Source="../images/info.png" Width="20" Height="20"/>
+                                    </Button>
+                                    <Label Content="Pin Icons To Taskbar" Style="{StaticResource CustomMetroLabelHeader}" 
+                                       HorizontalAlignment="Left"  Grid.Column="1" Width="330" FontFamily="Segoe UI Semibold"/>
+
+                                    <Controls:ToggleSwitch x:Name="PinIconsToTaskbar" Grid.Column="2"
+                                               IsChecked="False" Style="{StaticResource MetroToggleSwitchStyle}"
+                                               OnLabel="True"
+                                               OffLabel="False"
+                                                HorizontalAlignment="Left" Width="110" FontFamily="Segoe UI Semibold" />
+                                </Grid>
+
+                                <Grid Margin="50 0 0 0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="30" />
+                                        <ColumnDefinition Width="390" />
+                                        <ColumnDefinition Width="120" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="40"></RowDefinition>
+                                    </Grid.RowDefinitions>
+                                    <Button Grid.Column="0" x:Name="EnableSCCMSupportInfo" Height="40" HorizontalAlignment="Center" VerticalAlignment="Center"  
+                                                            Focusable="False"  Style="{StaticResource CustomMetroInfoButton}" Click="ProductInfo_OnClick" >
+                                        <Image Source="../images/info.png" Width="20" Height="20"/>
+                                    </Button>
+                                    <Label Content="Enable Configuration Manager support" Style="{StaticResource CustomMetroLabelHeader}" 
+                                       HorizontalAlignment="Left"  Grid.Column="1" Width="330" FontFamily="Segoe UI Semibold"/>
+
+                                    <Controls:ToggleSwitch x:Name="EnableSCCMSupport" Grid.Column="2"
+                                               IsChecked="False" Style="{StaticResource MetroToggleSwitchStyle}"
+                                               OnLabel="True"
+                                               OffLabel="False"
+                                                HorizontalAlignment="Left" Width="110" FontFamily="Segoe UI Semibold" />
+                                </Grid>
+
+                            </StackPanel>
+
+
+                        </Grid>
+                        
+                    </TabItem>
+                </Controls:MetroAnimatedSingleRowTabControl>
+            </Grid>
+
+            <Grid Grid.Row="1" Margin="0 0 0 30" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Bottom" >
+                <Grid.Resources>
+                    <ResourceDictionary>
+                        <ResourceDictionary.MergedDictionaries>
+                            <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/FlatButton.xaml" />
+                        </ResourceDictionary.MergedDictionaries>
+                    </ResourceDictionary>
+                </Grid.Resources>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition  />
+                    <ColumnDefinition Width="20"  />
+                    <ColumnDefinition  />
+                </Grid.ColumnDefinitions>
+                <Button x:Name="PreviousButton" Width="100" Height="40" Grid.Column="0" Content="Previous"  Click="PreviousButton_OnClick" Background="#FFF7F7F7" FontFamily="Segoe UI Semilight" />
+                <Button x:Name="NextButton" Width="100" Height="40" Grid.Column="2" Content="Next" Click="NextButton_OnClick" Background="#FFF7F7F7" FontFamily="Segoe UI Semilight" />
+            </Grid>
+            
+        </Grid>
+    </AdornerDecorator>
+
+</UserControl>

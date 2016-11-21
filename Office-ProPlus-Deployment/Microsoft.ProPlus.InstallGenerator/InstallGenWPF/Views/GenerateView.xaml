@@ -1,0 +1,372 @@
+﻿<UserControl x:Class="MetroDemo.ExampleViews.GenerateView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:xmlBrowser="clr-namespace:MahApps.Metro.Controls.XmlBrowser"
+        xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+        xmlns:exampleViews="clr-namespace:MetroDemo.ExampleViews"
+        xmlns:gif="http://wpfanimatedgif.codeplex.com"
+        xmlns:valueConverter="clr-namespace:Microsoft.OfficeProPlus.InstallGen.Presentation.ValueConverter"
+        Loaded="GenerateView_OnLoaded" >
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro.Resources;component/Icons.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <Thickness x:Key="ColumnMargin">10 5 10 5</Thickness>
+            <Thickness x:Key="ControlMargin">0 5 0 0</Thickness>
+            
+
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <AdornerDecorator>
+        <Grid Background="#e6e6e6" x:Name="Product" HorizontalAlignment="Stretch">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"  />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="550"></RowDefinition>
+                <RowDefinition></RowDefinition>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0" HorizontalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="0"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Row="0" Grid.Column="1"  Background="{StaticResource GrayBrush}" Width="auto" Height="40" HorizontalAlignment="Stretch" VerticalAlignment="Top" />
+                <controls:MetroAnimatedSingleRowTabControl Grid.Row="0" Grid.Column="1"  x:Name="MainTabControl" 
+                                                           Height="550" VerticalAlignment="Top" >
+                    <TabItem Background="{StaticResource GrayBrush}" Height="40">
+                        <TabItem.Header>
+                            <DockPanel Margin="0,5,0,0">
+                                <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,2,0,0" FontFamily="Segoe UI Semilight">Install wrapper</Label>
+                            </DockPanel>
+                        </TabItem.Header>
+
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="20" />
+                                <RowDefinition Height="50" />
+                                <RowDefinition Height="50" />
+                                <RowDefinition Height="0" x:Name="PublisherRow" />
+                                <RowDefinition Height="50" />
+                                <RowDefinition Height="50" />
+                                <RowDefinition Height="50" />
+                                <RowDefinition Height="120"  />
+                                <RowDefinition Height="114" x:Name="SpacerRow" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <Grid Grid.Column="0" Grid.Row="1">
+
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="50"></RowDefinition>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="50" />
+                                    <ColumnDefinition Width="165" />
+                                    <ColumnDefinition Width="100" />
+                                    <ColumnDefinition Width="150" />
+                                </Grid.ColumnDefinitions>
+                                <Button x:Name="ProductInfo" Width="30" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" 
+                                                Focusable="False"  Style="{StaticResource MetroInfoButton}" Click="ProductInfo_OnClick" >
+                                    <StackPanel Orientation="Horizontal">
+                                        <Image Source="../images/info.png" Width="20" Height="20"/>
+                                    </StackPanel>
+                                </Button>
+                                <Label Content="Install type" Style="{StaticResource CustomMetroLabelHeader}" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="1" FontFamily="Segoe UI Semibold"  />
+                                <RadioButton x:Name="InstallMsi" Grid.Column="2" Checked="InstallExecutable_OnChecked"
+                                         Content="MSI" IsChecked="True" Foreground="{StaticResource GrayBrush}"
+                                         GroupName="1" FontSize="20" FontFamily="Segoe UI Semilight"  />
+
+                                <RadioButton x:Name="InstallExecutable" Grid.Column="3" Checked="InstallExecutable_OnChecked"
+                                         Content="Executable" IsChecked="False" Foreground="{StaticResource GrayBrush}"
+                                         GroupName="1" FontSize="20" FontFamily="Segoe UI Semilight"  />
+                            </Grid>
+
+                            <Grid Grid.Column="0" Grid.Row="2" >
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="50"></RowDefinition>
+                                    <RowDefinition Height="50"></RowDefinition>
+                                    <RowDefinition Height="50"></RowDefinition>
+                                    <RowDefinition Height="50"></RowDefinition>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <Grid Grid.Row="0" Grid.Column="0" >
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="50"></RowDefinition>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="50" />
+                                        <ColumnDefinition Width="150" />
+                                        <ColumnDefinition Width="50" />
+                                        <ColumnDefinition Width="130" />
+                                        <ColumnDefinition Width="130" />
+                                    </Grid.ColumnDefinitions>
+                                    <Button x:Name="SignInstallerInfo" Width="30" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" Margin="10,9,-40,9"
+                                            Focusable="False"  Style="{StaticResource CustomMetroInfoButton}" Click="SignInstallerInfo_Click">
+                                        <StackPanel Orientation="Horizontal">
+                                            <Image Source="../images/info.png" Width="20" Height="20"/>
+                                        </StackPanel>
+                                    </Button>
+                                    <Label Content="Sign installer"  HorizontalAlignment="Left" VerticalAlignment="Center"
+                                           Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="1" Height="34" Width="254" Grid.ColumnSpan="2" FontFamily="Segoe UI Semibold"  />
+
+                                    <CheckBox Style="{StaticResource MetroCheckBox}" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                     x:Name="SignInstaller" Checked="SignWithCert_OnCheck" Unchecked="SignWithCert_OnCheck" IsEnabled="True" Height="18" Width="19" ></CheckBox>
+
+                                    <Button x:Name="OpenCertificateBrowser" Width="120" Height="35" Grid.Row="0" Grid.Column="3" HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"   Style="{StaticResource MetroFlatButtonStyle1}"
+                                            Focusable="False" Content="Select Certificate" Click="OpenCertificateBrowser_OnClick" IsEnabled="False" FontFamily="Segoe UI Semibold" >
+                                    </Button>
+                                    <Button x:Name="OpenCertGenerator" Width="129" Height="35" Grid.Row="0" Grid.Column="4" HorizontalAlignment="Center" VerticalAlignment="Center" 
+                                    Focusable="False" Content="Generate Certificate" Style="{StaticResource MetroFlatButtonStyle1}" Click="OpenCertGenerator_OnClick"  IsEnabled="False" FontFamily="Segoe UI Semibold" >
+                                    </Button>
+                                </Grid>
+
+                            </Grid>
+
+
+                            <Grid Grid.Column="0" Grid.Row="3">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="50"></RowDefinition>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <Grid Grid.Row="0" Grid.Column="0" >
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="50"></RowDefinition>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="50" />
+                                        <ColumnDefinition Width="165" />
+                                        <ColumnDefinition Width="400" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <Label Content="Publisher"  HorizontalAlignment="Left" VerticalAlignment="Center"
+                                           Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="1" Height="34" Width="150"  />
+
+                                    <TextBox x:Name="Publisher" FontSize="20" Grid.Column="2" VerticalAlignment="Center" Background="White" 
+                                             Height="35" Grid.Row="0" IsReadOnly="True"
+                                             Text="" Foreground="{StaticResource GrayBrush}" />
+
+                                </Grid>
+
+                            </Grid>
+
+                            <Grid Grid.Column="0" Grid.Row="4">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="50"></RowDefinition>
+                                    <RowDefinition Height="50"></RowDefinition>
+                                    <RowDefinition Height="50"></RowDefinition>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <Grid Grid.Row="0" Grid.Column="0" >
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="50"></RowDefinition>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="50" />
+                                        <ColumnDefinition Width="165" />
+                                        <ColumnDefinition Width="110" />
+                                        <ColumnDefinition Width="110" />
+                                        <ColumnDefinition Width="110" />
+                                    </Grid.ColumnDefinitions>
+                                    <Button x:Name="VersionInfoGen" Width="30" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" Margin="10,9,-40,9"
+                                            Focusable="False"  Style="{StaticResource CustomMetroInfoButton}" Click="VersionInfoGen_Click">
+                                        <StackPanel Orientation="Horizontal">
+                                            <Image Source="../images/info.png" Width="20" Height="20"/>
+                                        </StackPanel>
+                                    </Button>
+                                    <Label Content="Version"  HorizontalAlignment="Left" VerticalAlignment="Center"
+                                           Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="1" Height="34" Width="254" FontFamily="Segoe UI Semibold"  />
+
+                                    <controls:NumericUpDown x:Name="MajorVersion" FontSize="20" Grid.Column="2" VerticalAlignment="Center" Background="White" 
+                                             Height="35" Grid.Row="0"  Width="90" HorizontalAlignment="Left" Maximum="99" Minimum="1"
+                                              Foreground="{StaticResource GrayBrush}" FontFamily="Segoe UI Semilight" />
+
+                                    <controls:NumericUpDown x:Name="MinorVersion" FontSize="20" Grid.Column="3" VerticalAlignment="Center" Background="White" 
+                                             Height="35" Grid.Row="0" Width="90" HorizontalAlignment="Left" Maximum="99" Minimum="0"
+                                              Foreground="{StaticResource GrayBrush}" FontFamily="Segoe UI Semilight" />
+
+                                    <controls:NumericUpDown x:Name="ReleaseVersion" FontSize="20" Grid.Column="4" VerticalAlignment="Center" Background="White" 
+                                             Height="35" Grid.Row="0" Width="90" HorizontalAlignment="Left" Maximum="9999" Minimum="0"
+                                              Foreground="{StaticResource GrayBrush}" FontFamily="Segoe UI Semilight" />
+                                </Grid>
+
+                            </Grid>
+
+
+                            <Grid Grid.Column="0" Grid.Row="5">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="50"></RowDefinition>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="50" />
+                                    <ColumnDefinition Width="145" />
+                                    <ColumnDefinition Width="110" />
+                                </Grid.ColumnDefinitions>
+                                <Button x:Name="SilentInstallInfo" Width="30" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" 
+                                            Focusable="False"  Style="{StaticResource CustomMetroInfoButton}" Click="SilentInstallInfo_Click" >
+                                    <StackPanel Orientation="Horizontal">
+                                        <Image Source="../images/info.png" Width="20" Height="20"/>
+                                    </StackPanel>
+                                </Button>
+                                <Label Content="Silent install" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="1" VerticalAlignment="Center" FontFamily="Segoe UI Semibold"  />
+
+                                <controls:ToggleSwitch x:Name="SilentInstall" Grid.Column="2" Grid.Row="0" 
+                                   VerticalAlignment="Center"  Style="{StaticResource MetroToggleSwitchStyle}"
+                                   IsChecked="False" Checked="SilentInstall_OnChecked" Unchecked="SilentInstall_OnChecked"
+                                   OnLabel="Yes" OffLabel="No" HorizontalAlignment="Right" />
+
+                            </Grid>
+
+                            <Grid Grid.Column="0" Grid.Row="6">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="50"></RowDefinition>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="50" />
+                                    <ColumnDefinition Width="165" />
+                                    <ColumnDefinition Width="400" />
+                                    <ColumnDefinition Width="80" />
+                                    <ColumnDefinition Width="60" />
+                                </Grid.ColumnDefinitions>
+                                <Button x:Name="FilePathGen" Width="30" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" 
+                                            Focusable="False"  Style="{StaticResource CustomMetroInfoButton}" Click="FilePathGen_Click">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Image Source="../images/info.png" Width="20" Height="20"/>
+                                    </StackPanel>
+                                </Button>
+                                <Label Content="File Path" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="1" VerticalAlignment="Center" FontFamily="Segoe UI Semibold" />
+                                <TextBox x:Name="FileSavePath" FontSize="20" Grid.Column="2" VerticalAlignment="Center" Foreground="{StaticResource GrayBrush}" Background="White"
+                                             controls:TextBoxHelper.Watermark="Office365ProPlus.msi" Height="35" Grid.Row="0"
+                                             controls:TextBoxHelper.ClearTextButton="True" TextChanged="FileSavePath_OnTextChanged"
+                                             Text="" FontFamily="Segoe UI Semilight">
+                                </TextBox>
+                                <Button Grid.Column="3" Height="40" Width="60" Style="{StaticResource MetroFlatButtonStyle1}" Content="Browse" x:Name="SaveButton" Click="SaveButton_Click" FontFamily="Segoe UI Semibold" />
+                                <Button Grid.Column="4" Height="40" Width="60" Style="{StaticResource MetroFlatButtonStyle1}" Content="Open" x:Name="OpenExeFolderButton" IsEnabled="False" Click="OpenExeFolderButton_OnClick" FontFamily="Segoe UI Semibold" />
+                            </Grid>
+
+                            <Grid Grid.Column="0" Grid.Row="7">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="50"></RowDefinition>
+                                    <RowDefinition Height="50"></RowDefinition>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <Grid Grid.Row="0" Grid.Column="0">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="50"></RowDefinition>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="50" />
+                                        <ColumnDefinition Width="260" />
+                                        <ColumnDefinition Width="100" />
+                                    </Grid.ColumnDefinitions>
+                                    <Button x:Name="EmbedOfficeInstall" Width="30" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" 
+                                            Focusable="False"  Style="{StaticResource CustomMetroInfoButton}" Click="ProductInfo_OnClick" >
+                                        <StackPanel Orientation="Horizontal">
+                                            <Image Source="../images/info.png" Width="20" Height="20"/>
+                                        </StackPanel>
+                                    </Button>
+                                    <Label Content="Embed Office installation files"  HorizontalAlignment="Left" VerticalAlignment="Center" 
+                                            Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="1" FontFamily="Segoe UI Semibold"  />
+                                    <CheckBox Style="{StaticResource MetroCheckBox}" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                        x:Name="IncludeBuild" Checked="IncludeBuild_OnChecked" Unchecked="IncludeBuild_OnChecked" IsEnabled="True" Height="18"  Width="19" ></CheckBox>
+
+                                    
+                                </Grid>
+
+                                <Grid x:Name="SourceFilePath" Grid.Row="1" Grid.Column="0" Visibility="Collapsed">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="50"></RowDefinition>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="50" />
+                                        <ColumnDefinition Width="145" />
+                                        <ColumnDefinition Width="20" />
+                                        <ColumnDefinition Width="400" />
+                                        <ColumnDefinition Width="80" />
+                                        <ColumnDefinition Width="60" />
+                                    </Grid.ColumnDefinitions>
+                                    <Button x:Name="SourceFilePathGen" Width="30" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" 
+                                            Focusable="False"  Style="{StaticResource CustomMetroInfoButton}" Click="SourceFilePathGen_Click" >
+                                        <StackPanel Orientation="Horizontal">
+                                            <Image Source="../images/info.png" Width="20" Height="20"/>
+                                        </StackPanel>
+                                    </Button>
+                                    <Label x:Name="SourcePathLabel" Content="Source file path" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="1" Grid.Row="0" 
+                                        HorizontalAlignment="Left" VerticalAlignment="Center"  />
+
+                                    <TextBox x:Name="BuildFilePath" Margin="{StaticResource ControlMargin}" Background="White" FontSize="20" Grid.Column="3" Grid.Row="0"
+                                                controls:TextBoxHelper.Watermark="Local or UNC Path" Height="35"
+                                                controls:TextBoxHelper.ClearTextButton="True" VerticalAlignment="Center"
+                                                Text="" TextChanged="BuildFilePath_OnTextChanged" IsEnabled="True" >
+                                    </TextBox>
+
+                                    <Button Width="70"  Height="40" Grid.Column="4" IsEnabled="False" Grid.Row="0"
+                                            Content="Browse" x:Name="BrowseSourcePathButton" Click="BrowseSourcePathButton_OnClick"   />
+                                    <Button Width="50" Height="40"  Grid.Column="5" Grid.Row="0"
+                                            Content="Open" x:Name="OpenFolderButton" IsEnabled="False" Click="OpenFolderButton_OnClick" />
+
+
+                                </Grid>
+
+                            </Grid>
+
+                            <Grid Grid.Row="7" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" >
+                                <Image x:Name="WaitImage" Visibility="Hidden" VerticalAlignment="Bottom" gif:ImageBehavior.RepeatBehavior="Forever" 
+                                   Height="60" Grid.Row="0" Grid.Column="0" gif:ImageBehavior.AnimatedSource="../images/wait.GIF" />
+                            </Grid>
+
+                            <Grid Margin="0 0 0 10" Grid.Row="8" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Bottom"  >
+                                <Grid.Resources>
+                                    <ResourceDictionary>
+                                        <ResourceDictionary.MergedDictionaries>
+                                            <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/FlatButton.xaml" />
+                                        </ResourceDictionary.MergedDictionaries>
+                                    </ResourceDictionary>
+                                </Grid.Resources>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition  />
+                                    <ColumnDefinition Width="20"  />
+                                    <ColumnDefinition  />
+                                </Grid.ColumnDefinitions>
+                                <Button x:Name="PreviousButton" Width="100" Height="40" Grid.Column="0" Content="Previous" Click="PreviousButton_Click" Background="#FFF7F7F7" FontFamily="Segoe UI Semilight" />
+                                <Button x:Name="GenerateButton" Width="100" Height="40" Grid.Column="2" Content="Generate" Click="GenerateButton_OnClick" Background="#FFF7F7F7" FontFamily="Segoe UI Semilight" />
+                            </Grid>
+
+
+                        </Grid>
+                    </TabItem>
+
+                    <TabItem  Background="{StaticResource GrayBrush}" Height="40" >
+                        <TabItem.Header>
+                            <DockPanel Margin="0,5,0,0">
+                                <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,2,0,0" FontFamily="Segoe UI Semilight">Configuration</Label>
+                            </DockPanel>
+                        </TabItem.Header>
+
+                        <xmlBrowser:XmlBrowserControl x:Name="xmlBrowser" Margin="10" Loaded="xmlBrowser_Loaded" Height="500" VerticalAlignment="Top" />
+                    </TabItem>
+
+                </controls:MetroAnimatedSingleRowTabControl>
+            </Grid>
+        </Grid>
+    </AdornerDecorator>
+</UserControl>

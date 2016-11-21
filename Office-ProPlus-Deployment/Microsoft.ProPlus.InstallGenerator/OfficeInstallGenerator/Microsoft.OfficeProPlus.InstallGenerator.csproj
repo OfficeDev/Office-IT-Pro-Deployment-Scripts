@@ -1,0 +1,160 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{0702F643-0467-43A4-BDBC-B54F006E8244}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Microsoft.OfficeProPlus.InstallGenerator</RootNamespace>
+    <AssemblyName>OfficeInstallGenerator</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+    <NuGetPackageImportStamp>6a06bdf4</NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.Management.Automation, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\WindowsPowerShell\3.0\System.Management.Automation.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Management.Instrumentation" />
+    <Reference Include="System.ServiceProcess" />
+    <Reference Include="System.Windows" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AppSettings.cs" />
+    <Compile Include="Enums\ConnectionType.cs" />
+    <Compile Include="Events\Events.cs" />
+    <Compile Include="Extensions\DirectoryHelper.cs" />
+    <Compile Include="Extensions\Extensions.cs" />
+    <Compile Include="IManageOfficeInstall.cs" />
+    <Compile Include="Implementation\OfficeConfigXMLExtractor.cs" />
+    <Compile Include="Implementation\OfficeInstallManager.cs" />
+    <Compile Include="Implementation\OfficeInstallMsiGenerator.cs" />
+    <Compile Include="Implementation\OfficeInstallProperties.cs" />
+    <Compile Include="Implementation\OfficeInstallReturn.cs" />
+    <Compile Include="Implementation\OfficeLocalInstallManager.cs" />
+    <Compile Include="Implementation\OfficePowershellInstallManager.cs" />
+    <Compile Include="Implementation\OfficeWmiInstallManager.cs" />
+    <Compile Include="Implementation\ZipExtractor.cs" />
+    <Compile Include="Extensions\InstallGenFunctionsWmi.cs" />
+    <Compile Include="InstallOfficeTest.cs" />
+    <Compile Include="IOfficeInstallGenerator.cs" />
+    <Compile Include="IOfficeInstallProperties.cs" />
+    <Compile Include="IOfficeInstallReturn.cs" />
+    <Compile Include="Model\OfficeInstallation.cs" />
+    <Compile Include="Model\OfficeRemoteInstall.cs" />
+    <Compile Include="Model\OfficeLocalInstall.cs" />
+    <Compile Include="Support\EmbeddedResources.cs" />
+    <Compile Include="Enums\OfficeVersion.cs" />
+    <Compile Include="Implementation\OfficeInstallExecutableGenerator.cs" />
+    <Compile Include="Support\FilePathCacher.cs" />
+    <Compile Include="Support\GetArguments.cs" />
+    <Compile Include="Extensions\InstallGenFunctions.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="defaultconfiguration.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Office2016Setup.exe" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Office2013Setup.exe" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Resources\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Micorosft.OfficeProPlus.ConfigurationXml\Micorosft.OfficeProPlus.ConfigurationXml.csproj">
+      <Project>{ce88a24e-73c3-4b1d-b72c-f41894485a14}</Project>
+      <Name>Micorosft.OfficeProPlus.ConfigurationXml</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Microsoft.OfficeProPlus.Downloader\Microsoft.OfficeProPlus.Downloader.csproj">
+      <Project>{ea30b98d-401b-46ee-ba77-31efc287e9af}</Project>
+      <Name>Microsoft.OfficeProPlus.Downloader</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Microsoft.OfficeProPlus.MSIGenerator\Microsoft.OfficeProPlus.MSIGen.csproj">
+      <Project>{57e3e5c7-ff48-4538-8b90-5ab106d87c6d}</Project>
+      <Name>Microsoft.OfficeProPlus.MSIGen</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="wixTools.zip" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <UsingTask AssemblyFile="packages\WixSharp.1.0.30.0\build\SetEnvVar.dll" TaskName="SetEnvVar" />
+</Project>

@@ -1,0 +1,220 @@
+﻿<UserControl x:Class="MetroDemo.ExampleViews.DownloadView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:MetroDemo="clr-namespace:MetroDemo"
+             xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+             xmlns:exampleViews="clr-namespace:MetroDemo.ExampleViews"
+             xmlns:models="clr-namespace:MetroDemo.Models"
+             xmlns:valueConverter="clr-namespace:Microsoft.OfficeProPlus.InstallGen.Presentation.ValueConverter"
+             mc:Ignorable="d"
+             d:DesignHeight="600"
+             d:DesignWidth="900"
+             d:DataContext="{d:DesignInstance MetroDemo:MainWindowViewModel}" Loaded="DownloadView_Loaded" >
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro.Resources;component/Icons.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <Thickness x:Key="ColumnMargin">10 5 10 5</Thickness>
+            <Thickness x:Key="ControlMargin">0 5 0 0</Thickness>
+            <valueConverter:NegateConverter x:Key="negate" />
+
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <AdornerDecorator>
+        <Grid Background="#e6e6e6" x:Name="Product" HorizontalAlignment="Stretch">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"  />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="450"></RowDefinition>
+                <RowDefinition></RowDefinition>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0" HorizontalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="0"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Row="0" Grid.Column="1"  Background="{StaticResource GrayBrush}" Width="auto" Height="40" HorizontalAlignment="Stretch" VerticalAlignment="Top" />
+                <Controls:MetroAnimatedSingleRowTabControl Grid.Row="0" Grid.Column="1"  x:Name="MainTabControl"  SelectionChanged="MainTabControl_OnSelectionChanged"
+                                                           Height="600" VerticalAlignment="Top" >
+                    <TabItem x:Name="OptionalTab" Height="50" >
+                        <TabItem.Header>
+                            <DockPanel Margin="0,5,0,0">
+                                <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,2,0,0" FontFamily="Segoe UI Semilight">Optional</Label>
+                            </DockPanel>
+                        </TabItem.Header>
+
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="30"></RowDefinition>
+                                <RowDefinition Height="500"></RowDefinition>
+                            </Grid.RowDefinitions>
+
+                            <StackPanel Grid.Column="0" Grid.Row="1">
+
+                                <Grid Margin="50 0 0 0" >
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="50"></RowDefinition>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="150" />
+                                        <ColumnDefinition Width="620" />
+                                    </Grid.ColumnDefinitions>
+                                    <Label Content="Download Path" Style="{StaticResource CustomMetroLabelHeader}" Margin="0 10 0 0" Grid.Column="0"  Height="51" FontFamily="Segoe UI Semibold"/>
+
+                                    <Grid Margin="0,0,0,0" Grid.Column="1">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="370" />
+                                            <ColumnDefinition Width="60" />
+                                            <ColumnDefinition Width="60" />
+                                            <ColumnDefinition Width="75" />
+                                            <ColumnDefinition Width="75" />
+                                        </Grid.ColumnDefinitions>
+        
+                                        <Controls:MetroProgressBar x:Name="DownloadProgressBar"  Grid.Column="0" Height="37" Background="White" Width="360" HorizontalAlignment="Left" />
+                                        <TextBox x:Name="ProductUpdateSource" Background="#00ffffff" FontSize="20" Grid.Column="0" HorizontalAlignment="Left"
+                                             Controls:TextBoxHelper.Watermark="Local, UNC or HTTP Path" Height="37" Width="360" Foreground="{StaticResource GrayBrush}"
+                                             Controls:TextBoxHelper.ClearTextButton="True" TextChanged="BuildFilePath_OnTextChanged"
+                                             Text="" FontFamily="Segoe UI Semilight">
+                                        </TextBox>
+
+                                        <Button Width="55" Grid.Column="1"
+                                            Height="40" Style="{StaticResource MetroFlatButtonStyle1}"
+                                            Content="Browse" x:Name="UpdatePath" Click="UpdatePath_OnClick" FontFamily="Segoe UI Semibold" />
+                                        <Button Width="50" Height="40" Grid.Column="2" Style="{StaticResource MetroFlatButtonStyle1}"
+                                            Content="Open" x:Name="OpenFolderButton" IsEnabled="False" Click="OpenFolderButton_OnClick" FontFamily="Segoe UI Semibold"   />
+
+                                        <Label x:Name="DownloadPercent" Grid.Column="4" Content="" Margin="0 8 0 0" Style="{StaticResource CustomMetroLabelHeader}" />
+                                    </Grid>
+
+                                </Grid>
+
+                                <Grid Margin="50 0 0 0" >
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="50"></RowDefinition>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="150" />
+                                        <ColumnDefinition Width="620" />
+                                    </Grid.ColumnDefinitions>
+                                    <Label Content="Editions" Style="{StaticResource CustomMetroLabelHeader}" Margin="0 10 0 0" Grid.Column="0"  Height="51" FontFamily="Segoe UI Semibold"/>
+
+                                    <Grid Margin="0,0,0,0" Grid.Column="1">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="100" />
+                                            <ColumnDefinition Width="100" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <CheckBox x:Name="Download32Bit" Grid.Column="0" Content="32-Bit" Checked="ToggleButton_OnChecked" Unchecked="ToggleButton_OnChecked"
+                                                  Foreground="{StaticResource GrayBrush}" Style="{StaticResource MetroCheckBox}" FontFamily="Segoe UI Semibold"></CheckBox>
+                                        <CheckBox x:Name="Download64Bit" Grid.Column="1" Content="64-Bit"  Checked="ToggleButton_OnChecked" Unchecked="ToggleButton_OnChecked"
+                                                  Foreground="{StaticResource GrayBrush}" Style="{StaticResource MetroCheckBox}" FontFamily="Segoe UI Semibold"></CheckBox>
+                                    </Grid>
+
+                                </Grid>
+
+                                <Grid Margin="50 0 0 0">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="195"></RowDefinition>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="790" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <Border BorderThickness="2" BorderBrush="Gray" Height="189" >
+                                        <ListView Margin="0" Name="lvUsers" BorderThickness="0" FontFamily="Segoe UI Semibold">
+                                            <ListView.View>
+                                                <GridView  >
+                                                <GridViewColumn Header="" Width="35">
+                                                    <GridViewColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <CheckBox IsChecked="{Binding Selected}" IsEnabled="{Binding Editable, Converter={StaticResource negate}}"
+                                                                     Checked="ToggleButton_OnChecked" Unchecked="ToggleButton_OnChecked" ></CheckBox>
+                                                        </DataTemplate>
+                                                    </GridViewColumn.CellTemplate>
+                                                </GridViewColumn>
+                                                <GridViewColumn Header="Name" Width="220" DisplayMemberBinding="{Binding Name}" />
+                                                <GridViewColumn Header="Version" Width="255">
+                                                    <GridViewColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                            <Grid Margin="0 1 0 1">
+                                                                    <Controls:MetroProgressBar x:Name="DownloadProgressBar"  Grid.Column="0" Height="35" Foreground="#999999" 
+                                                                                            Background="White" Width="250" HorizontalAlignment="Left" Value="{Binding PercentDownload}" />
+                                                                <ComboBox Width="250" x:Name="ProductVersion" BorderThickness="0" Grid.Column="0" Background="Transparent"
+                                                                        Height="35" HorizontalAlignment="Left" 
+                                                                        Style="{DynamicResource MetroComboBox}"
+                                                                        Controls:TextBoxHelper.Watermark="{Binding Version}"
+                                                                        DisplayMemberPath="Version" Foreground="{StaticResource GrayBrush}"
+                                                                        IsEditable="True" IsTextSearchEnabled="True"
+                                                                        ItemsSource="{Binding Builds}"
+                                                                        MaxDropDownHeight="125"
+                                                                        FontSize="20"
+                                                                        Text="{Binding DisplayVersion}"  />
+                                                            </Grid>
+                                                        </DataTemplate>
+                                                    </GridViewColumn.CellTemplate>
+                                                </GridViewColumn>
+                                                <GridViewColumn Header="" Width="250" >
+                                                    <GridViewColumn.CellTemplate>
+                                                        <DataTemplate>
+                                                                <Label HorizontalAlignment="Left" Margin="10 0 0 0" Foreground="{StaticResource GrayBrush}" Content="{Binding PercentDownloadText}"></Label>
+                                                        </DataTemplate>
+                                                    </GridViewColumn.CellTemplate>
+                                                </GridViewColumn>
+                                                    
+                                            </GridView>
+                                        </ListView.View>
+                                        </ListView>
+                                    </Border>
+
+
+                                </Grid>
+
+                                <Grid Margin="50 10 0 0" HorizontalAlignment="Left">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="790" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <Button Width="70" Height="40" Style="{StaticResource MetroFlatButtonStyle1}"
+                                            Content="Download" x:Name="DownloadButton"  HorizontalAlignment="Left"
+                                            Click="DownloadButton_OnClick" IsEnabled="False" FontFamily="Segoe UI Semibold"   />
+                                    <Button Width="70" Height="40" HorizontalAlignment="Right" Style="{StaticResource MetroFlatButtonStyle1}"
+                                            Content="Advanced" x:Name="AdvDownloadButton" Click="AdvDownloadButton_OnClick" IsEnabled="True" FontFamily="Segoe UI Semibold"   />
+                                </Grid>
+
+                            </StackPanel>
+
+
+                        </Grid>
+                    </TabItem>
+                </Controls:MetroAnimatedSingleRowTabControl>
+            </Grid>
+
+            <Grid Grid.Row="1" Margin="0 0 0 30" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Bottom" >
+                <Grid.Resources>
+                    <ResourceDictionary>
+                        <ResourceDictionary.MergedDictionaries>
+                            <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/FlatButton.xaml" />
+                        </ResourceDictionary.MergedDictionaries>
+                    </ResourceDictionary>
+                </Grid.Resources>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition  />
+                    <ColumnDefinition Width="20"  />
+                    <ColumnDefinition  />
+                </Grid.ColumnDefinitions>
+                <Button x:Name="PreviousButton" Width="100" Height="40" Grid.Column="0" Content="Previous"  Click="PreviousButton_Click" Background="#FFF7F7F7" FontFamily="Segoe UI Semilight" />
+                <Button x:Name="NextButton" Width="100" Height="40" Grid.Column="2" Content="Next" Click="NextButton_Click" Background="#FFF7F7F7" FontFamily="Segoe UI Semilight" />
+            </Grid>
+        </Grid>
+
+    </AdornerDecorator>
+</UserControl>

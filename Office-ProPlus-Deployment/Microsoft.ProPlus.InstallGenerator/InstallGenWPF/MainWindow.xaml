@@ -1,0 +1,363 @@
+﻿<Controls:MetroWindow x:Class="MetroDemo.MainWindow"
+                      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                      xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+                      xmlns:MetroDemo="clr-namespace:MetroDemo"
+                      xmlns:Dialog="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
+                      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                      xmlns:exampleViews="clr-namespace:MetroDemo.ExampleViews"
+                      xmlns:actions="clr-namespace:MahApps.Metro.Actions;assembly=MahApps.Metro"
+                      xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+                      Title=""
+                      Width="960"
+                      MinWidth="1025"
+                      Height="600"
+                      MinHeight="600"
+                      Icon="1447297750_gear_settings_cog_preferences.ico"
+                      ShowIconOnTitleBar="false"
+                      ShowTitleBar="True"
+                      WindowStartupLocation="CenterScreen" 
+                      NonActiveGlowBrush="#333333"
+                      WindowTransitionsEnabled="False"
+                      mc:Ignorable="d"
+                      d:DesignHeight="600"
+                      d:DesignWidth="800"
+                      d:DataContext="{d:DesignInstance MetroDemo:MainWindowViewModel}"
+                      Closing="MetroWindow_Closing"
+                      Dialog:DialogParticipation.Register="{Binding}" Loaded="MainWindow_OnLoaded" TitleAlignment="Left" TitleCaps="False" TitlebarHeight="29">
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro.Resources;component/Icons.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/FlatSlider.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <Ellipse x:Key="AppThemeMenuIcon"
+                     x:Shared="False"
+                     Width="16"
+                     Height="16"
+                     StrokeThickness="1"
+                     Stroke="{Binding BorderColorBrush, Mode=OneWay}"
+                     Fill="{Binding ColorBrush, Mode=OneWay}" />
+            <Ellipse x:Key="AccentMenuIcon"
+                     x:Shared="False"
+                     Width="16"
+                     Height="16"
+                     Fill="{Binding ColorBrush, Mode=OneWay}" />
+
+            <Style x:Key="AppThemeMenuItemStyle"
+                   TargetType="{x:Type MenuItem}"
+                   BasedOn="{StaticResource MetroMenuItem}">
+                <Setter Property="Command"
+                        Value="{Binding ChangeAccentCommand}" />
+                <Setter Property="Icon"
+                        Value="{StaticResource AppThemeMenuIcon}" />
+                <Setter Property="Header"
+                        Value="{Binding Name, Mode=OneWay}" />
+            </Style>
+
+            <Style x:Key="AccentColorMenuItemStyle"
+                   TargetType="{x:Type MenuItem}"
+                   BasedOn="{StaticResource MetroMenuItem}">
+                <Setter Property="Command"
+                        Value="{Binding ChangeAccentCommand}" />
+                <Setter Property="Icon"
+                        Value="{StaticResource AccentMenuIcon}" />
+                <Setter Property="Header"
+                        Value="{Binding Name, Mode=OneWay}" />
+            </Style>
+
+
+
+            <Dialog:CustomDialog x:Key="MessageDialog"
+                                 Title="Message"
+                                 x:Name="MessageDialog">
+
+                <StackPanel>
+                    <TextBlock Height="30" Text="" 
+                               TextWrapping="Wrap"
+                               Foreground="{DynamicResource AccentColorBrush}" />
+                    <Button Content="Ok" Click="CloseCustomDialog"/>
+                </StackPanel>
+
+
+            </Dialog:CustomDialog>
+
+            <Dialog:CustomDialog x:Key="CustomDialogTest"
+                                 Title="This dialog allows arbitrary content."
+                                 x:Name="CustomTestDialog">
+                <TextBlock Height="200" x:Name="MessageTextBlock" Text="{Binding Artists[0].Name}" Foreground="{DynamicResource AccentColorBrush}" />
+            </Dialog:CustomDialog>
+
+            <Dialog:CustomDialog x:Key="CustomCloseDialogTest"
+                                 Title="Custom Dialog which is awaitable"
+                                 x:Name="CustomCloseDialogTest">
+
+                <StackPanel>
+                    <TextBlock Height="30" Text="This dialog allows arbitrary content. You have to close it yourself by clicking the close button below." 
+                               TextWrapping="Wrap"
+                               Foreground="{DynamicResource AccentColorBrush}" />
+                    <Button Content="Close Me!" Click="CloseCustomDialog"/>
+                </StackPanel>
+
+
+            </Dialog:CustomDialog>
+
+
+        </ResourceDictionary>
+
+
+    </Window.Resources>
+
+    <ContentControl>
+        <Grid Name="MyGrid" VerticalAlignment="Stretch" Height="Auto" >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="787*"/>
+                <ColumnDefinition Width="167*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+
+            <Controls:Flyout x:Name="OptionsFlyout"   AreAnimationsEnabled="True" HorizontalAlignment="Left" IsEnabled="True" Grid.Row="1" Grid.Column="0" 
+                             VerticalAlignment="Top" MinHeight="570"  Height="Auto" Width="160" Background="#333333" Foreground="white"   IsOpen="True" Margin="0,0,0,-1" 
+                             Grid.RowSpan="2">
+                <Controls:Flyout.HeaderTemplate >
+                    <DataTemplate>
+                        <DockPanel x:Name="dpOptions"
+                            Margin="0,0,10,0"
+                           VerticalAlignment="Top"
+                           LastChildFill="True">
+                            
+                            <Button x:Name="nav"
+                            Margin="100,0,0,0"
+                            Click="Nav_OnClick"
+                            DockPanel.Dock="Left" 
+                            BorderThickness="0"
+                            Height="40"
+                            MinWidth="40"
+                            Width="Auto"
+                            FontFamily="Segoe UI Symbol"
+                            FontSize="16"
+                            VerticalAlignment="Bottom" >
+                                <Button.Style>
+                                    <Style TargetType="{x:Type Button}">
+                                        <Setter Property="Background" Value="#333333"/>
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="{x:Type Button}">
+                                                    <Border Background="{TemplateBinding Background}">
+                                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                    </Border>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                        <Style.Triggers>
+                   
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                                <Rectangle HorizontalAlignment="Center" Width="25" Height="20"
+                           Fill="{Binding RelativeSource={RelativeSource AncestorType={x:Type Controls:Flyout}}, Path=Foreground}">
+                                    <Rectangle.OpacityMask>
+                                        <VisualBrush Stretch="Fill">
+                                            <VisualBrush.Visual>
+                                                <Canvas Width="48"
+                                                    Height="48"
+                                                    Clip="F1 M 0,0L 48,0L 48,48L 0,48L 0,0"
+                                                    UseLayoutRounding="False">
+                                                    <Path Width="45"
+                                                      Height="18"
+                                                      Canvas.Left="12"
+                                                      Canvas.Top="15"
+                                                      Stretch="Fill"
+                                                      Fill="#333333"
+                                                      Data="F1 M 19,25.5833L 57,25.5833L 57,26.9167L 19,26.9167L 19,20.5833 Z M 19,35.0833L 57,35.0833L 57,36.4167L 19,36.4167L 19,30.0833 Z M 19,43.5833L 57,43.5833L 57,44.9167L 19,44.9167L 19,39.5833 Z "/>
+                                                </Canvas>
+                                            </VisualBrush.Visual>
+                                        </VisualBrush>
+                                    </Rectangle.OpacityMask>
+                                </Rectangle>
+                            </Button>
+                        </DockPanel>
+                    </DataTemplate>
+                </Controls:Flyout.HeaderTemplate>
+                <Controls:MetroTabControl  TabStripPlacement="Left" Height="500" SelectionChanged="MainTabControl_SelectionChanged" 
+                                                   x:Name="MainTabControl" VerticalAlignment="Top"  >
+                    <Controls:MetroTabControl.Resources>
+                        <Style TargetType="{x:Type Controls:MetroTabItem}">
+                            <Setter Property="Background" Value="#333333"/>
+                            <Setter Property="Foreground" Value="white"/>
+                            <Style.Triggers>
+                                <Trigger Property="Controls:MetroTabItem.IsSelected" Value="true">
+                                    <Setter Property="Background" Value="#0078D7"/>
+                                </Trigger>
+                                <Trigger Property="Controls:MetroTabItem.IsSelected" Value="false">
+                                    <Setter Property="Background" Value="#333333"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Controls:MetroTabControl.Resources>
+                    <Controls:MetroTabItem x:Name="TabStart"  Width="160" IsEnabled="True">
+                        <Controls:MetroTabItem.Header >
+                            <DockPanel Margin="10" Height="30" >
+                                <Rectangle Height="16" Width="16">
+                                    <Rectangle.Fill>
+                                        <VisualBrush   Visual="{StaticResource appbar_home_empty_white}"  >
+                                        </VisualBrush>
+                                    </Rectangle.Fill>
+                                </Rectangle>
+                                <Label FontSize="16" Foreground="white" x:Name="lblStart">Start</Label>
+                            </DockPanel>
+                        </Controls:MetroTabItem.Header>
+
+                    </Controls:MetroTabItem >
+                    <Controls:MetroTabItem x:Name="TabProducts" IsEnabled="True" IsSelected="False"  Width="160">
+                        <Controls:MetroTabItem.Header>
+                            <DockPanel Margin="10" Height="30">
+                                <Rectangle Height="16" Width="16" >
+                                    <Rectangle.Fill >
+                                        <VisualBrush  Visual="{StaticResource appbar_barcode_white}" ></VisualBrush>
+                                    </Rectangle.Fill>
+                                </Rectangle>
+                                <Label FontSize="16" Foreground="white" x:Name="lblProducts">Products</Label>
+                            </DockPanel>
+                        </Controls:MetroTabItem.Header>
+                    </Controls:MetroTabItem >
+                    <Controls:MetroTabItem x:Name="TabDownload" IsEnabled="True" Width="160" >
+                        <Controls:MetroTabItem.Header>
+                            <DockPanel Margin="10" Height="30">
+                                <Rectangle Height="16" Width="16">
+                                    <Rectangle.Fill>
+                                        <VisualBrush  Visual="{StaticResource appbar_download}" ></VisualBrush>
+                                    </Rectangle.Fill>
+                                </Rectangle>
+                                <Label FontSize="16" Foreground="white"  x:Name="lblDownload">Download</Label>
+                            </DockPanel>
+                        </Controls:MetroTabItem.Header>
+                    </Controls:MetroTabItem >
+                    <Controls:MetroTabItem x:Name="TabUpdates" IsEnabled="True" Width="160" >
+                        <Controls:MetroTabItem.Header>
+                            <DockPanel Margin="10" Height="30">
+                                <Rectangle Height="16" Width="16">
+                                    <Rectangle.Fill>
+                                        <VisualBrush  Visual="{StaticResource appbar_new_window_white}" ></VisualBrush>
+                                    </Rectangle.Fill>
+                                </Rectangle>
+                                <Label FontSize="16" Foreground="white"  x:Name="lblUpdate">Updates</Label>
+                            </DockPanel>
+                        </Controls:MetroTabItem.Header>
+                    </Controls:MetroTabItem >
+                    <Controls:MetroTabItem x:Name="TabOptions" IsEnabled="True" Width="160" >
+                        <Controls:MetroTabItem.Header>
+                            <DockPanel Margin="10" Height="30">
+                                <Rectangle Height="16" Width="16">
+                                    <Rectangle.Fill>
+                                        <VisualBrush  Visual="{StaticResource appbar_edit}" ></VisualBrush>
+                                    </Rectangle.Fill>
+                                </Rectangle>
+                                <Label FontSize="16" Foreground="white" x:Name="lblOptions">Options</Label>
+                            </DockPanel>
+                        </Controls:MetroTabItem.Header>
+                    </Controls:MetroTabItem >
+                    <Controls:MetroTabItem IsEnabled="True" Width="160" x:Name="GenerateTabName" >
+                        <Controls:MetroTabItem.Header>
+                            <DockPanel Margin="10" Height="30">
+                                <Rectangle Height="16" Width="16">
+                                    <Rectangle.Fill>
+                                        <VisualBrush  Visual="{StaticResource appbar_list_gear}" ></VisualBrush>
+                                    </Rectangle.Fill>
+                                </Rectangle>
+                                <Label FontSize="16" Foreground="white" x:Name="lblGenerate" >Generate</Label>
+                            </DockPanel>
+                        </Controls:MetroTabItem.Header>
+                    </Controls:MetroTabItem>
+                    <Controls:MetroTabItem IsEnabled="True" Width="160" x:Name="LocalTabName" Visibility="Collapsed" >
+                        <Controls:MetroTabItem.Header>
+                            <DockPanel Margin="10" Height="30">
+                                <Rectangle Height="16" Width="16">
+                                    <Rectangle.Fill>
+                                        <VisualBrush  Visual="{StaticResource appbar_monitor}" ></VisualBrush>
+                                    </Rectangle.Fill>
+                                </Rectangle>
+                                <Label FontSize="16" Foreground="white" x:Name="lblLocal">Local</Label>
+                            </DockPanel>
+                        </Controls:MetroTabItem.Header>
+                    </Controls:MetroTabItem>
+                    <Controls:MetroTabItem IsEnabled="True" Width="160" x:Name="RemoteTabName" Visibility="Collapsed" >
+                        <Controls:MetroTabItem.Header>
+                            <DockPanel Margin="10" Height="30">
+                                <Rectangle Height="16" Width="16">
+                                    <Rectangle.Fill>
+                                        <VisualBrush  Visual="{StaticResource appbar_monitor}" ></VisualBrush>
+                                    </Rectangle.Fill>
+                                </Rectangle>
+                                <Label FontSize="16" Foreground="white" x:Name="lblRemote">Remote</Label>
+                            </DockPanel>
+                        </Controls:MetroTabItem.Header>
+                    </Controls:MetroTabItem>
+                    <Controls:MetroTabItem x:Name="TabAbout"  IsEnabled="True" IsEnabledChanged="UIElement_OnIsEnabledChanged" >
+                        <Controls:MetroTabItem.Header>
+                            <DockPanel Margin="10" Height="30">
+                                <Rectangle Height="16" Width="16">
+                                    <Rectangle.Fill>
+                                        <VisualBrush  Visual="{StaticResource appbar_question_white}" ></VisualBrush>
+                                    </Rectangle.Fill>
+                                </Rectangle>
+                                <Label FontSize="16" Foreground="white" x:Name="lblAbout">About</Label>
+                            </DockPanel>
+                        </Controls:MetroTabItem.Header>
+                    </Controls:MetroTabItem>
+                </Controls:MetroTabControl>
+            </Controls:Flyout>
+
+            <Controls:MetroAnimatedSingleRowTabControl Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="150, -5 ,0, 0" x:Name="MainWindowTabs" >
+                <TabItem>
+                    <exampleViews:StartView x:Name="StartView" DataContext="{Binding}"  Tag="0"  IsEnabled="true" />
+                </TabItem>
+                <TabItem>
+                    <exampleViews:ProductView x:Name="ProductView"  DataContext="{Binding}" Tag="1"  IsEnabled="true"/>
+                </TabItem>
+                <TabItem>
+                    <exampleViews:DownloadView x:Name="DownloadView"  DataContext="{Binding}" Tag="2"  IsEnabled="true"/>
+                </TabItem>
+                <TabItem>
+                    <exampleViews:UpdateView x:Name="UpdateView" DataContext="{Binding}" Tag="3"  IsEnabled="true"/>
+                </TabItem>
+                <TabItem>
+                    <exampleViews:DisplayView x:Name="DisplayView" DataContext="{Binding}" Tag="4"  IsEnabled="true" />
+                </TabItem>
+                <TabItem>
+                    <exampleViews:GenerateView x:Name="GenerateView" DataContext="{Binding}" Tag="5"   IsEnabled="true"/>
+                </TabItem>
+                <TabItem>
+                    <exampleViews:LocalView x:Name="LocalView" DataContext="{Binding}" Tag="6"   IsEnabled="true"/>
+                </TabItem>
+                <TabItem>
+                    <exampleViews:RemoteView x:Name="RemoteView" DataContext="{Binding}" Tag="7"   IsEnabled="true"/>
+                </TabItem>
+                <TabItem>
+                    <exampleViews:AboutView x:Name="AboutView" DataContext="{Binding}" Tag="8"  IsEnabled="True" />
+                </TabItem>
+            </Controls:MetroAnimatedSingleRowTabControl>
+
+
+            <!--<StatusBar Grid.Row="1" Grid.ColumnSpan="2" Margin="0,548,-0.4,0.4" Grid.RowSpan="2">
+                <StatusBarItem></StatusBarItem>
+                <StatusBarItem></StatusBarItem>
+                <StatusBarItem Content="   " />
+            </StatusBar>-->
+            <TextBlock HorizontalAlignment="Stretch" Height="35"   TextWrapping="Wrap" Text="Office 365 ProPlus | Install Toolkit" VerticalAlignment="Top"  
+                       Foreground="#333333" Background="#f4f4f4" FontSize="14" IsEnabled="False" IsHitTestVisible="False" Margin="0,-28,-81,0" Padding="10,10,0,0"  Grid.ColumnSpan="2" FontWeight="SemiBold"/>
+
+        </Grid>
+    </ContentControl>
+</Controls:MetroWindow>
+
+
+

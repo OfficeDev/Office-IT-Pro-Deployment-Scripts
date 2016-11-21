@@ -1,0 +1,11 @@
+E:\OfficeAutomation\DEV\ManagedCode\OfficeInstallGenerator\OfficeInstallGenerator\obj\Debug\OfficeInstallGenerator.Properties.Resources.resources
+E:\OfficeAutomation\DEV\ManagedCode\OfficeInstallGenerator\OfficeInstallGenerator\obj\Debug\OfficeInstallGenerator.csproj.GenerateResource.Cache
+E:\OfficeAutomation\DEV\ManagedCode\OfficeInstallGenerator\OfficeInstallGenerator\bin\Debug\InstallOffice.cs
+E:\OfficeAutomation\DEV\ManagedCode\OfficeInstallGenerator\OfficeInstallGenerator\bin\Debug\OfficeInstallGenerator.exe.config
+E:\OfficeAutomation\DEV\ManagedCode\OfficeInstallGenerator\OfficeInstallGenerator\bin\Debug\OfficeInstallGenerator.exe
+E:\OfficeAutomation\DEV\ManagedCode\OfficeInstallGenerator\OfficeInstallGenerator\bin\Debug\OfficeInstallGenerator.pdb
+E:\OfficeAutomation\DEV\ManagedCode\OfficeInstallGenerator\OfficeInstallGenerator\obj\Debug\OfficeInstallGenerator.exe
+E:\OfficeAutomation\DEV\ManagedCode\OfficeInstallGenerator\OfficeInstallGenerator\obj\Debug\OfficeInstallGenerator.pdb
+E:\OfficeAutomation\DEV\ManagedCode\OfficeInstallGenerator\OfficeInstallGenerator\bin\Debug\Micorosft.OfficeProPlus.ConfigurationXml.dll
+E:\OfficeAutomation\DEV\ManagedCode\OfficeInstallGenerator\OfficeInstallGenerator\bin\Debug\Micorosft.OfficeProPlus.ConfigurationXml.pdb
+E:\OfficeAutomation\DEV\ManagedCode\OfficeInstallGenerator\OfficeInstallGenerator\obj\Debug\OfficeInstallGenerator.csprojResolveAssemblyReference.cache
