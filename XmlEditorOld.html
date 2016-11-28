@@ -521,6 +521,26 @@
                                             </div>
                                         </form>
 
+                                        <table>
+                                            <tr>
+                                                <td>
+                                                    <label class="ms-Label">DownloadPath</label>
+                                                </td>
+                                                <td>
+                                                    <i id="dwnpthPathInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('dwnPathInfo', this)"></i>
+                                                </td>
+                                            </tr>
+                                        </table>
+
+                                        <form data-toggle="validator" role="form">
+                                            <div class="controls form-group has-feedback">
+                                                <input id="txtDownloadPath" type="text" pattern="\\\\.*\\.*|http://.*|https://|^\w:\\.*"
+                                                       class="ms-TextField-field" placeholder="Network, local, or HTTP path"
+                                                       data-error="This must be a network, local, or HTTP path">
+                                                <span id="downloadpathSignal" class="glyphicon form-control-feedback" aria-hidden="true" style="margin-right: 20px"></span>
+                                            </div>
+                                        </form>
+
                                         <div id="pidKeyLabel" style="display: none;">
                                             <table>
                                                 <tr>
@@ -1514,32 +1534,58 @@
             </div>
         </div>
 
-        <div id="srcPathInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:98px; top:408px; display:none;">
+    <div id="srcPathInfo" class="ms-Callout ms-Callout--arrowLeft" style="position: absolute; left: 98px; top: 408px; display: none;">
+        <div class="ms-Callout-main">
+            <div class="ms-Callout-header">
+                <span style="float: right; cursor: pointer" class="ms-Icon ms-Icon--x" onclick="toggleInfo('srcPathInfo')"></span>
+                <p class="ms-Callout-title">Source Path</p>
+            </div>
+            <div class="ms-Callout-inner">
+                <div class="ms-Callout-content">
+                    <p class="ms-Callout-subText">Indicates the location to save the Click-to-Run installation source when you run the Office Deployment Tool in download mode.</p>
+                    <hr>
+                    <p class="ms-Callout-subText">Optional. </p>
+                    <p class="ms-Callout-subText">The <strong>SourcePath</strong> value can be set to a network, local, or HTTP path that contains a Click-to-Run source. Environment variables can be used for network or local paths.
+                    </p>
+                    <br/>
+                    <p class="ms-Callout-subText"> <strong>SourcePath</strong> indicates the location to save the Click-to-Run installation source when you run the Office Deployment Tool in <strong>download</strong> mode.
+                    </p>
+                    <br/>
+                    <p class="ms-Callout-subText"> <strong>SourcePath</strong> indicates the installation source path from which to install Office when you run the Office Deployment Tool in <strong>configure</strong> mode. If you don’t specify <strong>SourcePath</strong> in <strong>configure</strong> mode, Setup will look in the current folder for the Office source files. If the Office source files aren’t found in the current folder, Setup will look on Office 365 for them.
+                    </p>
+                    <br/>
+                    <p class="ms-Callout-subText"> <strong>SourcePath</strong> specifies the path of the Click-to-Run Office source from which the App-V package will be made when you run the Office Deployment Tool in <strong>packager</strong> mode.
+                    </p>
+                    <br/>
+                    <p class="ms-Callout-subText">If you do not specify <strong>SourcePath</strong>, Setup will attempt to create an <strong>\Office\Data\...</strong> folder structure in the working directory from which you are running setup.exe.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <div id="dwnPathInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:98px; top:408px; display:none;">
             <div class="ms-Callout-main">
                 <div class="ms-Callout-header">
-                    <span style="float:right; cursor:pointer" class="ms-Icon ms-Icon--x" onclick="toggleInfo('srcPathInfo')"></span>
-                    <p class="ms-Callout-title">Source Path</p>
+                    <span style="float:right; cursor:pointer" class="ms-Icon ms-Icon--x" onclick="toggleInfo('dwnPathInfo')"></span>
+                    <p class="ms-Callout-title">Download Path</p>
                 </div>
                 <div class="ms-Callout-inner">
                     <div class="ms-Callout-content">
-                        <p class="ms-Callout-subText">Indicates the location to save the Click-to-Run installation source when you run the Office Deployment Tool in download mode.</p>
+                        <p class="ms-Callout-subText">Indicates the location to that the Click-to-Run installation will download content from during installation.</p>
                         <hr>
                         <p class="ms-Callout-subText">Optional. </p>
-                        <p class="ms-Callout-subText">The <strong>SourcePath</strong> value can be set to a network, local, or HTTP path that contains a Click-to-Run source. Environment variables can be used for network or local paths.</p>
+                        <p class="ms-Callout-subText">The <strong>DownloadPath</strong> value can be set to a network, local, or HTTP path that contains a Click-to-Run source. Environment variables can be used for network or local paths.</p>
                         <br />
-                        <p class="ms-Callout-subText"> <strong>SourcePath</strong> indicates the location to save the Click-to-Run installation source when you run the Office Deployment Tool in <strong>download</strong> mode. </p>
+                        <p class="ms-Callout-subText"> <strong>DownloadPath</strong> indicates the installation source path from which to install Office when you run the Office Deployment Tool in <strong>configure</strong> mode. If you don’t specify <strong>DownloadPath</strong> in <strong>configure</strong> mode, Setup will look in the current folder for the Office source files. If the Office source files aren’t found in the current folder, Setup will look on Office 365 for them.</p>
                         <br />
-                        <p class="ms-Callout-subText"> <strong>SourcePath</strong> indicates the installation source path from which to install Office when you run the Office Deployment Tool in <strong>configure</strong> mode. If you don’t specify <strong>SourcePath</strong> in <strong>configure</strong> mode, Setup will look in the current folder for the Office source files. If the Office source files aren’t found in the current folder, Setup will look on Office 365 for them.</p>
-                        <br />
-                        <p class="ms-Callout-subText"> <strong>SourcePath</strong> specifies the path of the Click-to-Run Office source from which the App-V package will be made when you run the Office Deployment Tool in <strong>packager</strong> mode.</p>
-                        <br />
-                        <p class="ms-Callout-subText">If you do not specify <strong>SourcePath</strong>, Setup will attempt to create an <strong>\Office\Data\...</strong> folder structure in the working directory from which you are running setup.exe.</p>
+                        <p class="ms-Callout-subText">If you do not specify <strong>DownloadPath</strong>, Setup will attempt to download the files required for installation from the CDN.</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div id="removeProductInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none">
+    <div id="removeProductInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none">
             <div class="ms-Callout-main">
                 <div class="ms-Callout-header">
                     <span style="float:right; cursor:pointer" class="ms-Icon ms-Icon--x" onclick="toggleInfo('removeProductInfo')"></span>
