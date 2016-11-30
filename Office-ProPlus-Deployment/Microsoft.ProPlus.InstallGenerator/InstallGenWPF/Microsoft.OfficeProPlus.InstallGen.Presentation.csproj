@@ -100,10 +100,14 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AdminUI.WqlQueryEngine">
-      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\ConfigMgr 2012 Toolkit R2\ServerTools\AdminUI.WqlQueryEngine.dll</HintPath>
+      <HintPath>..\..\..\..\..\Source\AdminUI.WqlQueryEngine.dll</HintPath>
     </Reference>
     <Reference Include="BouncyCastle.Crypto, Version=1.7.4137.9688, Culture=neutral, PublicKeyToken=a4292a325f69b123, processorArchitecture=MSIL">
       <HintPath>..\packages\BouncyCastle.1.7.0\lib\Net40-Client\BouncyCastle.Crypto.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="BouncyCastle.CryptoExt, Version=1.7.4114.6378, Culture=neutral, PublicKeyToken=0e99375e54769942">
+      <HintPath>..\packages\BouncyCastle-Ext.1.7.0\lib\net20\BouncyCastle.CryptoExt.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Garlic, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -114,8 +118,9 @@
       <HintPath>..\packages\GrayscaleEffect.1.0.1\lib\GrayscaleEffect.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.ConfigurationManagement.ManagementProvider">
-      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\ConfigMgr 2012 Toolkit R2\ServerTools\Microsoft.ConfigurationManagement.ManagementProvider.dll</HintPath>
+    <Reference Include="Microsoft.ConfigurationManagement.ManagementProvider, Version=5.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Source\Microsoft.ConfigurationManagement.ManagementProvider.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -566,7 +571,9 @@
     <Content Include="Resources\FindVersion.ps1">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <None Include="Scripts\Download-OfficeProPlusChannels.ps1" />
+    <None Include="Scripts\Download-OfficeProPlusChannels.ps1">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Scripts\Generate-ODTConfigurationXML.ps1">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -576,8 +583,12 @@
     <None Include="Scripts\RunGenerateXML.ps1">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Scripts\Setup-CMOfficeDeployment.ps1" />
-    <None Include="Scripts\SharedFunctions.ps1" />
+    <None Include="Scripts\Setup-CMOfficeDeployment.ps1">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Scripts\SharedFunctions.ps1">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <Resource Include="Resources\Entypo-license.txt" />
     <Resource Include="Resources\WindowsIcons-license.txt" />
     <None Include="Resources\signtool.exe" />
