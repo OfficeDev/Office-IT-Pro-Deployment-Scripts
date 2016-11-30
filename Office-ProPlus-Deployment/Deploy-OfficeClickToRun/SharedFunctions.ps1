@@ -1509,7 +1509,7 @@ function Get-ChannelUrl() {
    [CmdletBinding()]
    param( 
       [Parameter(Mandatory=$true)]
-      [Channel]$Channel
+      [OfficeChannel]$Channel
    )
 
    Process {
