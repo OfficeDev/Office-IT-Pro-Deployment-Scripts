@@ -453,7 +453,8 @@ namespace MetroDemo
                 new Language { Id="sv-se", Name="Swedish" },
                 new Language { Id="th-th", Name="Thai" },
                 new Language { Id="tr-tr", Name="Turkish" },
-                new Language { Id="uk-ua", Name="Ukrainian" }
+                new Language { Id="uk-ua", Name="Ukrainian" },
+                new Language { Id="vi-vn", Name="Vietnamese" }
             };
 
             Certificates = new List<Certificate>();
