@@ -48,6 +48,11 @@ if ($officeC2R) {
 
 if ($installOffice) {
   if (Test-Path -Path $targetFilePath) {
+      $PinnedStartMenuApps = GetPinnedStartMenuApps
+      if($PinnedStartMenuApps -eq $NULL){
+          $PinnedStartMenuApps = "None"
+      }
+
       Remove-OfficeClickToRun -TargetFilePath $targetFilePath
 
       Remove-PreviousOfficeInstalls
@@ -69,7 +74,9 @@ if ($installOffice) {
 
       Set-ODTUpdates -TargetFilePath $targetFilePath -Channel $addNode.Channel -Enabled $true -UpdatePath $UpdatePath | Out-Null
 
-      Install-OfficeClickToRun -TargetFilePath $targetFilePath -PinToStartMenu AllOfficeApps
+      Restart-ExplorerExe
+
+      Install-OfficeClickToRun -TargetFilePath $targetFilePath -PinToStartMenu $PinnedStartMenuApps
       
   }
 }

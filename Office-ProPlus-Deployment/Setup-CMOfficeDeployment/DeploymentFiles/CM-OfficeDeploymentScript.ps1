@@ -6,7 +6,16 @@
     [string]$Bitness = "32",
 
     [Parameter()]
-    [string]$SourceFileFolder = "SourceFiles"
+    [string]$SourceFileFolder = "SourceFiles",
+
+    [Parameter()]
+    [string]$Languages,
+
+    [Parameter()]
+    [string]$ExcludedApps,
+
+    [Parameter()]
+    [string]$AdditionalApps
   )
 
 #  Deploy Office 365 ProPlus using ConfigMgr
@@ -22,27 +31,33 @@ Process {
    $scriptPath = (Get-Item -Path ".\").FullName
  }
 
- . "$scriptPath\SharedFunctions.ps1"
-
  if (Get-OfficeC2RVersion) { Write-Host "Office 365 ProPlus Already Installed" }
 
- $dependFiles = @("$scriptPath\Generate-ODTConfigurationXML.ps1"
-                  "$scriptPath\Edit-OfficeConfigurationFile.ps1"
-                  "$scriptPath\Install-OfficeClickToRun.ps1"
-                  "$scriptPath\SharedFunctions.ps1")
+ #Importing required functions
+ . $scriptPath\Generate-ODTConfigurationXML.ps1
+ . $scriptPath\Edit-OfficeConfigurationFile.ps1
+ . $scriptPath\Install-OfficeClickToRun.ps1
+ . $scriptPath\SharedFunctions.ps1
 
- foreach ($file in $dependFiles) {
-    $fileExists = Test-ItemPathUNC -Path $file
-    if (!($fileExists)) {
-        throw "Missing Dependency File $file"    
-    }
-    . $file
+ $SourcePath = $scriptPath
+ if((Validate-UpdateSource -UpdateSource $SourcePath -ShowMissingFiles $false) -eq $false) {
+    $SourcePath = $NULL    
+ } else {
+    $ChannelShortName = ConvertChannelNameToShortName -ChannelName $Channel
+    $SourcePath = $SourcePath + "\" + $SourceFileFolder + "\" + $ChannelShortName
  }
 
  $UpdateURLPath = Locate-UpdateSource -Channel $Channel -UpdateURLPath $scriptPath -SourceFileFolder $SourceFileFolder
- Generate-ODTConfigurationXml -Languages AllInUseLanguages -TargetFilePath $targetFilePath | Set-ODTAdd -Version $NULL -Channel $Channel | Set-ODTUpdates -Channel $Channel -UpdatePath $UpdateURLPath |Set-ODTDisplay -Level None -AcceptEULA $true  | Out-Null
+ O365 | Set-ODTAdd -Sourcepath $SourcePath -Version $NULL -Channel $Channel | Set-ODTUpdates -Channel $Channel -UpdatePath $UpdateURLPath |Set-ODTDisplay -Level None -AcceptEULA $true  | Out-Null
  Update-ConfigurationXml -TargetFilePath $targetFilePath -UpdateURLPath $UpdateURLPath -Channel $Channel
- $languages = Get-XMLLanguages -Path $TargetFilePath
+ 
+ if(!$Languages){
+    $languages = Get-XMLLanguages -Path $TargetFilePath
+ } else {
+    if($Languages -match ","){
+        $Languages = $Languages.Split(",")
+    }
+ }
 
  #------------------------------------------------------------------------------------------------------------
  #   Customize Deployment Script - Uncomment and modify the code below to customize this deployment script
@@ -80,6 +95,29 @@ Process {
   # Set-ODTUpdates -TargetFilePath $targetFilePath -Enabled $false
  
  #------------------------------------------------------------------------------------------------------------
+
+ #Add excluded apps
+ if($ExcludedApps){
+    if($ExcludedApps -match ","){
+        $ExcludedApps = $ExcludedApps.Split(",")
+    }
+    foreach($app in $ExcludedApps){
+        Exclude-Applications -TargetFilePath $targetFilePath -ExcludeApps $app
+    }
+ }
+
+ #Add additional apps
+ if($AdditionalApps){
+    if($AdditionalApps -match ","){
+        $AdditionalApps = $AdditionalApps.Split(",")
+    }
+    foreach($app in $AdditionalApps){
+        Add-ProductSku -TargetFilePath $targetFilePath -Languages $languages -ProductIDs $app
+    }
+ }
+
+ #Add languages to each product
+ Add-ProductLanguage -TargetFilePath $targetFilePath -ProductIDs All -Language $Languages
 
  # Installs Office 365 ProPlus
  Install-OfficeClickToRun -TargetFilePath $targetFilePath
