@@ -84,3 +84,4 @@ C:\Source\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.P
 C:\Source\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGenerator\obj\Release\OfficeInstallGenerator.pdb
 C:\Source\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGenerator\bin\Release\Microsoft.Deployment.WindowsInstaller.xml
 C:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGenerator\bin\Release\Microsoft.Deployment.WindowsInstaller.xml
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGenerator\bin\Release\WixSharp.xml

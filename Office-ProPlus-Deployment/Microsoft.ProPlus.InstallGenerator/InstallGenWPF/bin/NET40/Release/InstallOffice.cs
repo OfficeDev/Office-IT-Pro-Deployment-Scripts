@@ -25,7 +25,7 @@ public class InstallOffice
 {
 
     private XmlDocument _xmlDoc = null;
-
+    
     public static void Main1(string[] args)
     {
         try
@@ -48,6 +48,13 @@ public class InstallOffice
         SilentInstall = false;
         try
         {
+            //remove directory here
+            if (!Directory.GetCurrentDirectory().ToLower().Contains("~") &&
+                !Directory.GetCurrentDirectory().ToLower().Contains("tmp"))
+            {
+                if (Directory.Exists(@"C:\Windows\Temp\OfficeProPlus"))
+                    Directory.Delete(@"C:\Windows\Temp\OfficeProPlus", true);
+            }
             //MinimizeWindow();
 
             Initialize();
@@ -77,6 +84,10 @@ public class InstallOffice
             if (runInstall)
             {
                 RunInstall(OdtFilePath, XmlFilePath);
+                if (RemotePath != null && !string.IsNullOrEmpty(RemotePath))
+                {
+                    RemoteLogging();
+                }
             }
         }
         finally
@@ -352,6 +363,28 @@ public class InstallOffice
         File.WriteAllText(arg.Value, configXml);
     }
 
+    private void RemoteLogging()
+    {
+        string arg = RemotePath;
+        //if (string.IsNullOrEmpty(arg.Value)) Console.WriteLine("ERROR: Invalid File Path");
+        string[] fileList = Directory.GetFiles(@"C:\Windows\Temp", "*.log");
+        foreach (var file in fileList)
+        {
+            File.Copy(file, arg + "\\WindowsTemp" + file.Substring(file.LastIndexOf("\\")+1));
+        }
+        string[] fileList2 = Directory.GetFiles(System.IO.Path.GetTempPath(), "*.log");
+        foreach (var file in fileList2)
+        {
+            File.Copy(file, arg + "\\UsersTemp" + file.Substring(file.LastIndexOf("\\")+1));
+        }
+        string[] fileList3 = Directory.GetFiles(@"C:\Windows\Temp\OfficeProPlusLogs", "*.log");
+        foreach (var file in fileList3)
+        {
+            File.Copy(file, arg + "\\OfficeProPlusLogs" + file.Substring(file.LastIndexOf("\\")+1));
+        }
+        Console.WriteLine("finished logging");
+    }
+
     private void Initialize()
     {
         FindTempFilesPath();
@@ -380,8 +413,24 @@ public class InstallOffice
 
         Console.Write("Extracting Install Files...");
         FileNames = GetEmbeddedItems(InstallDirectory);
-        Console.WriteLine("Done");
 
+        //check if exe dir has folder w/ source files
+        var curFiles = Directory.GetDirectories(Directory.GetCurrentDirectory());
+        foreach (var filey in curFiles)
+        {
+            if (filey.Substring(filey.LastIndexOf(@"\") + 1).Contains("office"))
+            {
+                if (!Directory.Exists(InstallDirectory + @"\office"))
+                {
+                    Directory.CreateDirectory(InstallDirectory + @"\Office");
+                }
+                CopyFolder(new DirectoryInfo(Directory.GetCurrentDirectory() + @"\office"), new DirectoryInfo(InstallDirectory + @"\office"));
+            }
+        }
+        
+
+
+        Console.WriteLine("Done");
         OdtFilePath = InstallDirectory + @"\" + FileNames.FirstOrDefault(f => f.ToLower().EndsWith("setup.exe"));
         XmlFilePath = InstallDirectory + @"\" + FileNames.FirstOrDefault(f => f.ToLower().EndsWith(".xml"));
 
@@ -404,7 +453,14 @@ public class InstallOffice
                 ProductId = File.ReadAllText(productIdFile);
             }
         }
-
+        var remoteLogFile = InstallDirectory + @"\" + FileNames.FirstOrDefault(f => f.ToLower().EndsWith("remotelog.txt"));
+        if (!string.IsNullOrEmpty(remoteLogFile))
+        {
+            if (File.Exists(remoteLogFile))
+            {
+                RemotePath = File.ReadAllText(remoteLogFile);
+            }
+        }
         if (!File.Exists(OdtFilePath)) { throw (new Exception("Cannot find ODT Executable")); }
         if (!File.Exists(XmlFilePath)) { throw (new Exception("Cannot find Configuration Xml file")); }
 
@@ -435,6 +491,12 @@ public class InstallOffice
         {
             Operation = OperationType.Install;
         }
+
+        if (GetArguments().Any(a => a.Key.ToLower() == "/remotelogging"))
+        {
+            var arg = GetArguments().FirstOrDefault(a => a.Key.ToLower() == "/remotelogging");
+            RemotePath = arg.Value;
+        }
     }
 
     private void FindTempFilesPath()
@@ -455,6 +517,14 @@ public class InstallOffice
             }
         }
         TempFilesPath = Environment.ExpandEnvironmentVariables("%public%");
+    }
+
+    public static void CopyFolder(DirectoryInfo source, DirectoryInfo target)
+    {
+        foreach (DirectoryInfo dir in source.GetDirectories())
+            CopyFolder(dir, target.CreateSubdirectory(dir.Name));
+        foreach (FileInfo file in source.GetFiles())
+            file.CopyTo(Path.Combine(target.FullName, file.Name), true);
     }
 
     #endregion
@@ -704,6 +774,7 @@ public class InstallOffice
 
     public List<string> GetEmbeddedItems(string targetDirectory)
     {
+
         var returnFiles = new List<string>();
         var assemblyPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
         if (assemblyPath == null) return returnFiles;
@@ -744,10 +815,10 @@ public class InstallOffice
         if (fileNode == null) return;
 
         var folderPath = fileNode.Attributes["FolderPath"].Value;
-        var xmlfileName = fileNode.Attributes["FileName"].Value;
+        string xmlfileName = fileNode.Attributes["FileName"].Value;
 
         Directory.CreateDirectory(rootDirectory + @"\" + folderPath);
-        File.Move(rootDirectory + @"\" + fileName, rootDirectory + @"\" + folderPath + @"\" + xmlfileName);
+        File.Move(rootDirectory + @"\" + fileName, rootDirectory + @"\" + folderPath + @"\" + xmlfileName.Replace("copyof", ""));
     }
 
     private static void CopyStream(Stream input, Stream output)
@@ -1319,6 +1390,10 @@ public class InstallOffice
 
     public string LoggingPath { get; set; }
 
+    public string RemotePath { get; set; }
+
+    public bool isRemote { get; set; }
+
     public bool SilentInstall { get; set; }
 
     public static string ResourcePath
@@ -1437,6 +1512,8 @@ public class InstallOffice
         Console.WriteLine("  \t\t\t\tconfiguration xml.");
         Console.WriteLine("  /extractxml={File Path}\tExtracts the current Office 365 ProPlus");
         Console.WriteLine("  \t\t\t\tconfiguration xml to the specified file path.");
+        Console.WriteLine("  /remotelogging\t\t\tcopies log file to remote location");
+
     }
 
     private void MinimizeWindow()
@@ -1450,7 +1527,8 @@ public class InstallOffice
         return !GetArguments().Any(a => (a.Key.ToLower() != "/uninstall" &&
                                          a.Key.ToLower() != "/showxml" &&
                                          a.Key.ToLower() != "/silent" &&
-                                         a.Key.ToLower() != "/extractxml"));
+                                         a.Key.ToLower() != "/extractxml" &&
+                                         a.Key.ToLower() != "/remotelogging"));
     }
 
     private static string GenerateMD5Hash(string filePath)
@@ -1662,6 +1740,8 @@ public class InstallOffice
 
     #endregion
 
+    
+
 }
 
 public class ODTLogFile
@@ -1762,6 +1842,8 @@ public class OfficePathsReturn
 
     public List<OfficeInstall> ClickToRunList { get; set; }
 }
+
+
 
 public enum OfficeClientEdition
 {
