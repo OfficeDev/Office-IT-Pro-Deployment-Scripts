@@ -196,7 +196,6 @@ function Copy-ItemUNC() {    [CmdletBinding()]
 	    [String]$FileName    )    Process {       $drvLetter = FindAvailable       $Network = New-Object -ComObject "Wscript.Network"       try {           if (!($drvLetter.EndsWith(":"))) {               $drvLetter += ":"           }           $target = $drvLetter + "\"           $Network.MapNetworkDrive($drvLetter, $TargetPath)                                 #New-PSDrive -Name $drvLetter -PSProvider FileSystem -Root $TargetPath | Out-Null           Copy-Item -Path $SourcePath -Destination $target -Force       } finally {         #Remove-PSDrive $drvLetter         $Network.RemoveNetworkDrive($drvLetter)       }    }}
 
 function FindAvailable() {
-   #$drives = Get-PSDrive | select Name
    $drives = Get-WmiObject -Class Win32_LogicalDisk | select DeviceID
 
    for($n=90;$n -gt 68;$n--) {
@@ -1890,4 +1889,26 @@ function Remove-ProductLanguage() {
         }
     }
    }
+}
+
+function Restart-ExplorerExe() {
+    $process = Get-Process
+    foreach($obj in $process){
+        if($obj.ProcessName -like "explorer*"){
+            kill $obj.ID
+            Start-Sleep -Seconds 20
+        }
+    }
+}
+
+function GetPinnedStartMenuApps {
+    $PreOfficeAppPinnedStatus = GetOfficeAppVerbStatus
+    $PinnedStartMenuApps = $PreOfficeAppPinnedStatus | ? {$_.PinToStartMenuAvailable -eq $false}
+    return $PinnedStartMenuApps.Name
+}
+
+function GetPinnedTaskbarApps {
+    $PreOfficeAppPinnedStatus = GetOfficeAppVerbStatus
+    $PinnedTaskbarApps = $PreOfficeAppPinnedStatus | ? {$_.PinToTaskbarAvailable -eq $false}
+    return $PinnedTaskbarApps.Name
 }
