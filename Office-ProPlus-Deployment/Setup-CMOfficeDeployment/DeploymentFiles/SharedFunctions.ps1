@@ -46,6 +46,9 @@ namespace Microsoft.Office
          VisioStdXVolume = 64,
          ProjectProXVolume = 128,
          ProjectStdXVolume = 256,
+         InfoPathRetail = 512,
+         SkypeforBusinessEntryRetail = 1024,
+         LyncEntryRetail = 2048,
      }
 }
 "
@@ -234,43 +237,31 @@ Function Get-OfficeVersion {
 <#
 .Synopsis
 Gets the Office Version installed on the computer
-
 .DESCRIPTION
 This function will query the local or a remote computer and return the information about Office Products installed on the computer
-
 .NOTES   
 Name: Get-OfficeVersion
-Version: 1.0.4
+Version: 1.0.5
 DateCreated: 2015-07-01
-DateUpdated: 2015-08-28
-
+DateUpdated: 2016-07-20
 .LINK
 https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
-
 .PARAMETER ComputerName
 The computer or list of computers from which to query 
-
 .PARAMETER ShowAllInstalledProducts
 Will expand the output to include all installed Office products
-
 .EXAMPLE
 Get-OfficeVersion
-
 Description:
 Will return the locally installed Office product
-
 .EXAMPLE
 Get-OfficeVersion -ComputerName client01,client02
-
 Description:
 Will return the installed Office product on the remote computers
-
 .EXAMPLE
 Get-OfficeVersion | select *
-
 Description:
 Will return the locally installed Office product with all of the available properties
-
 #>
 [CmdletBinding(SupportsShouldProcess=$true)]
 param(
@@ -295,7 +286,7 @@ begin {
 
     $defaultDisplaySet = 'DisplayName','Version', 'ComputerName'
 
-    $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet('DefaultDisplayPropertySet',[string[]]$defaultDisplaySet)
+    $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet(‘DefaultDisplayPropertySet’,[string[]]$defaultDisplaySet)
     $PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultDisplayPropertySet)
 }
 
@@ -477,19 +468,30 @@ process {
            
            $name = $regProv.GetStringValue($HKLM, $path, "DisplayName").sValue          
 
-           if ($ConfigItemList.Contains($key.ToUpper()) -and $name.ToUpper().Contains("MICROSOFT OFFICE")) {
+           if ($ConfigItemList.Contains($key.ToUpper()) -and $name.ToUpper().Contains("MICROSOFT OFFICE") -and $name.ToUpper() -notlike "*MUI*" -and $name.ToUpper() -notlike "*VISIO*" -and $name.ToUpper() -notlike "*PROJECT*") {
               $primaryOfficeProduct = $true
            }
 
-           $version = $regProv.GetStringValue($HKLM, $path, "DisplayVersion").sValue
+           $clickToRunComponent = $regProv.GetDWORDValue($HKLM, $path, "ClickToRunComponent").uValue
+           $uninstallString = $regProv.GetStringValue($HKLM, $path, "UninstallString").sValue
+           if (!($clickToRunComponent)) {
+              if ($uninstallString) {
+                 if ($uninstallString.Contains("OfficeClickToRun")) {
+                     $clickToRunComponent = $true
+                 }
+              }
+           }
+
            $modifyPath = $regProv.GetStringValue($HKLM, $path, "ModifyPath").sValue 
+           $version = $regProv.GetStringValue($HKLM, $path, "DisplayVersion").sValue
 
            $cltrUpdatedEnabled = $NULL
            $cltrUpdateUrl = $NULL
            $clientCulture = $NULL;
 
            [string]$clickToRun = $false
-           if ($ClickToRunPathList.Contains($installPath.ToUpper())) {
+
+           if ($clickToRunComponent) {
                $clickToRun = $true
                if ($name.ToUpper().Contains("MICROSOFT OFFICE")) {
                   $primaryOfficeProduct = $true
@@ -849,10 +851,7 @@ Function Validate-UpdateSource() {
         [string] $Bitness = $NULL,
 
         [Parameter()]
-        [string[]] $OfficeLanguages = $NULL,
-
-        [Parameter()]
-        [bool]$ShowMissingFiles = $true
+        [string[]] $OfficeLanguages = $NULL
     )
 
     [bool]$validUpdateSource = $true
@@ -928,10 +927,8 @@ Function Validate-UpdateSource() {
               $fileExists = $missingFiles.Contains($fullPath)
               if (!($fileExists)) {
                  $missingFiles.Add($fullPath)
-                 if($ShowMissingFiles -eq $true){
-                    Write-Host "Source File Missing: $fullPath"
-                    Write-Log -Message "Source File Missing: $fullPath" -severity 1 -component "Office 365 Update Anywhere" 
-                 }
+                 Write-Host "Source File Missing: $fullPath"
+                 Write-Log -Message "Source File Missing: $fullPath" -severity 1 -component "Office 365 Update Anywhere" 
               }     
               $validUpdateSource = $false
            }
@@ -1099,6 +1096,7 @@ Function GetScriptRoot() {
      if ($PSScriptRoot) {
        $scriptPath = $PSScriptRoot
      } else {
+       $scriptPath = split-path -parent $MyInvocation.MyCommand.Definition
        $scriptPath = (Get-Item -Path ".\").FullName
      }
 
@@ -1496,14 +1494,9 @@ function Get-ChannelXml() {
            }
        }
 
-       if($PSVersionTable.PSVersion.Major -ge '3'){
-           $tmpName = "o365client_$Bitness" + "bit.xml"
-           expand $XMLFilePath $env:TEMP -f:$tmpName | Out-Null
-           $tmpName = $env:TEMP + "\o365client_$Bitness" + "bit.xml"
-       }else {
-           $scriptPath = GetScriptRoot
-           $tmpName = $scriptPath + "\o365client_$Bitness" + "bit.xml"         
-       }
+       $tmpName = "o365client_" + $Bitness + "bit.xml"
+       expand $XMLFilePath $env:TEMP -f:$tmpName | Out-Null
+       $tmpName = $env:TEMP + "\" + $tmpName
        
        [xml]$channelXml = Get-Content $tmpName
 
@@ -1751,10 +1744,6 @@ function Update-ConfigurationXml() {
       $scriptPath = GetScriptRoot
       $editFilePath = "$scriptPath\Edit-OfficeConfigurationFile.ps1"
 
-      if(!$Channel){
-          $Channel = 'Current'
-      }
-
       $languages = Get-XMLLanguages -Path $TargetFilePath
 
       if (Test-Path -Path $editFilePath) {
@@ -1901,4 +1890,26 @@ function Remove-ProductLanguage() {
         }
     }
    }
+}
+
+function Restart-ExplorerExe() {
+    $process = Get-Process
+    foreach($obj in $process){
+        if($obj.ProcessName -like "explorer*"){
+            kill $obj.ID
+            Start-Sleep -Seconds 20
+        }
+    }
+}
+
+function GetPinnedStartMenuApps {
+    $PreOfficeAppPinnedStatus = GetOfficeAppVerbStatus
+    $PinnedStartMenuApps = $PreOfficeAppPinnedStatus | ? {$_.PinToStartMenuAvailable -eq $false}
+    return $PinnedStartMenuApps.Name
+}
+
+function GetPinnedTaskbarApps {
+    $PreOfficeAppPinnedStatus = GetOfficeAppVerbStatus
+    $PinnedTaskbarApps = $PreOfficeAppPinnedStatus | ? {$_.PinToTaskbarAvailable -eq $false}
+    return $PinnedTaskbarApps.Name
 }
