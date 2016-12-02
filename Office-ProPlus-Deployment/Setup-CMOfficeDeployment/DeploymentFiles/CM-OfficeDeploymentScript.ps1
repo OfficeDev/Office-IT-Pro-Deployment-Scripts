@@ -48,7 +48,7 @@ Process {
  }
 
  $UpdateURLPath = Locate-UpdateSource -Channel $Channel -UpdateURLPath $scriptPath -SourceFileFolder $SourceFileFolder
- O365 | Set-ODTAdd -Sourcepath $SourcePath -Version $NULL -Channel $Channel | Set-ODTUpdates -Channel $Channel -UpdatePath $UpdateURLPath |Set-ODTDisplay -Level None -AcceptEULA $true  | Out-Null
+ Generate-ODTConfigurationXml -Languages AllInUseLanguages -TargetFilePath $targetFilePath | Set-ODTAdd -Sourcepath $SourcePath -Version $NULL -Channel $Channel | Set-ODTUpdates -Channel $Channel -UpdatePath $UpdateURLPath | Set-ODTDisplay -Level None -AcceptEULA $true  | Out-Null
  Update-ConfigurationXml -TargetFilePath $targetFilePath -UpdateURLPath $UpdateURLPath -Channel $Channel
  
  if(!$Languages){
