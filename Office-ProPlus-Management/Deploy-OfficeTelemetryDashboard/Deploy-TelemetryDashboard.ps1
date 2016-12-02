@@ -141,10 +141,18 @@ function Confirm-ConsoleBitness {
         if ($PSHOME -match "SysWOW64")
         {
             write-host $Error32BitPowerShell64BitOS
+            <# write log#>
+            $lineNum = Get-CurrentLineNumber    
+            $filName = Get-CurrentFileName 
+            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError $Error32BitPowerShell64BitOS
             exit        
         }
 
     Write-Host 'You are using a 64 bit OS.'
+    <# write log#>
+    $lineNum = Get-CurrentLineNumber    
+    $filName = Get-CurrentFileName 
+    WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "You are using a 64 bit OS."
     }
 }
 
@@ -157,6 +165,10 @@ function Enable-DOTNET3 {
     }
 
     Write-Host '.NET is enabled.'
+    <# write log#>
+    $lineNum = Get-CurrentLineNumber    
+    $filName = Get-CurrentFileName 
+    WriteToLogFile -LNumber $lineNum -FName $filName -ActionError ".NET is enbabled."
 }
 
 # Ask the user to answer the message again if
@@ -171,6 +183,10 @@ function Test-EnteredKey([string] $message) {
             break
         }
         Write-Host $UiMessage_AskForReentry
+        <# write log#>
+        $lineNum = Get-CurrentLineNumber    
+        $filName = Get-CurrentFileName 
+        WriteToLogFile -LNumber $lineNum -FName $filName -ActionError $UiMessage_AskForReentry
         
     } while ($true)
 
@@ -369,6 +385,10 @@ function Check-Elevated {
     else
     {
     Write-Host 'The script is running in an elevated prompt.'
+    <# write log#>
+        $lineNum = Get-CurrentLineNumber    
+        $filName = Get-CurrentFileName 
+        WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "The script is running in an elevated prompt."
     }
 }
 
@@ -415,12 +435,20 @@ function Check-SqlInstall {
 #Download Microsoft SQL Server 2014 Express Edition and install.
 function Run-SqlServerInstaller {
     write-host $UiMessage_StartSQLInstall
+    <# write log#>
+    $lineNum = Get-CurrentLineNumber    
+    $filName = Get-CurrentFileName 
+    WriteToLogFile -LNumber $lineNum -FName $filName -ActionError $UiMessage_StartSQLInstall
     
     [string] $installerLocalPath=$env:TEMP + "\\" + $InstallerFileName
     [System.Net.Webclient] $webClient = New-Object System.Net.WebClient
     try
     {
         write-host $UiMessage_NotifySQLServerDownload
+        <# write log#>
+        $lineNum = Get-CurrentLineNumber    
+        $filName = Get-CurrentFileName 
+        WriteToLogFile -LNumber $lineNum -FName $filName -ActionError $UiMessage_NotifySQLServerDownload
         
         $webClient.DownloadFile($InstallerUrl, $installerLocalPath)
     }
@@ -429,6 +457,10 @@ function Run-SqlServerInstaller {
         Read-UserResponse $UiMessage_SqlServerDownloadRetry
         
         write-host $UiMessage_NotifySQLServerDownload
+        <# write log#>
+        $lineNum = Get-CurrentLineNumber    
+        $filName = Get-CurrentFileName 
+        WriteToLogFile -LNumber $lineNum -FName $filName -ActionError $UiMessage_NotifySQLServerDownload
         
         $webClient.DownloadFile($InstallerUrl, $installerLocalPath)
     }
@@ -523,6 +555,10 @@ function Install-SqlwithIni {
         }
     
         write-host $UiMessage_CompleteSQLInstall
+        <# write log#>
+        $lineNum = Get-CurrentLineNumber    
+        $filName = Get-CurrentFileName 
+        WriteToLogFile -LNumber $lineNum -FName $filName -ActionError $UiMessage_CompleteSQLInstall
 
         Clear-Files
 }
@@ -548,6 +584,10 @@ function Set-TcpPort {
 # Create a shared folder and set the permissions
 function New-SharedFolder {
     write-host $UiMessage_CreateFolder
+    <# write log#>
+    $lineNum = Get-CurrentLineNumber    
+    $filName = Get-CurrentFileName 
+    WriteToLogFile -LNumber $lineNum -FName $filName -ActionError $UiMessage_CreateFolder
 
     $ShareName = "TDShared"
     $SharedFolderPath = "$env:SystemDrive"
@@ -715,6 +755,10 @@ function Get-SqlInstanceName {
     $SqlInstanceName = Get-SQLInstance | foreach { $_.SQLInstance }
     
     Write-Host $SqlInstanceName
+    <# write log#>
+    $lineNum = Get-CurrentLineNumber    
+    $filName = Get-CurrentFileName 
+    WriteToLogFile -LNumber $lineNum -FName $filName -ActionError $SqlInstanceName
 }
 
 
@@ -811,6 +855,10 @@ function Run-SqlQuery([string] $database, [string] $query) {
 # for the Office client.
 function Configure-DatabasePermissions([string] $database) {
     write-host $UiMessage_ConfigureDatabase
+    <# write log#>
+    $lineNum = Get-CurrentLineNumber    
+    $filName = Get-CurrentFileName 
+    WriteToLogFile -LNumber $lineNum -FName $filName -ActionError $UiMessage_ConfigureDatabase
     
     [string] $hostname = hostname
     [string] $query = "CREATE LOGIN [NT AUTHORITY\NETWORK SERVICE] FROM WINDOWS"
@@ -850,6 +898,10 @@ function Show-TelemetryDashboard {
                                 "C:\Program Files (x86)\Microsoft Office 15\root\Office15\msotd.exe")
 
     Write-Host $UiMessage_HowToUseDashboard
+    <# write log#>
+    $lineNum = Get-CurrentLineNumber    
+    $filName = Get-CurrentFileName 
+    WriteToLogFile -LNumber $lineNum -FName $filName -ActionError $UiMessage_HowToUseDashboard
     foreach($path in $dashboardPath)
     {
         if(Test-Path -Path $path)
@@ -998,3 +1050,50 @@ $SqlServerName = Get-SqlServerName
 
         Write-RegFile $folderName
     }
+
+
+
+function Get-CurrentLineNumber {
+    $MyInvocation.ScriptLineNumber
+}
+
+
+function Get-CurrentFileName{
+    $MyInvocation.ScriptName.Substring($MyInvocation.ScriptName.LastIndexOf("\")+1)
+}
+
+function Get-CurrentFunctionName {
+    (Get-Variable MyInvocation -Scope 1).Value.MyCommand.Name;
+}
+
+
+
+
+
+
+Function WriteToLogFile() {
+    param( 
+      [Parameter(Mandatory=$true)]
+      [string]$LNumber,
+      [Parameter(Mandatory=$true)]
+      [string]$FName,
+      [Parameter(Mandatory=$true)]
+      [string]$ActionError
+   )
+   try{
+   $headerString = "Time".PadRight(30, ' ') + "Line Number".PadRight(15,' ') + "FileName".PadRight(60,' ') + "Action"
+   $stringToWrite = $(Get-Date -Format G).PadRight(30, ' ') + $($LNumber).PadRight(15, ' ') + $($FName).PadRight(60,' ') + $ActionError
+   #check if file exists, create if it doesn't
+   $getCurrentDatePath = "C:\Windows\Temp\" + (Get-Date -Format u).Substring(0,10)+"OfficeAutoScriptLog.txt"
+   if(Test-Path $getCurrentDatePath){#if exists, append
+   
+        Add-Content $getCurrentDatePath $stringToWrite
+   }
+   else{#if not exists, create new
+        Add-Content $getCurrentDatePath $headerString
+        Add-Content $getCurrentDatePath $stringToWrite
+   }
+   } catch [Exception]{
+   Write-Host $_
+   }
+}

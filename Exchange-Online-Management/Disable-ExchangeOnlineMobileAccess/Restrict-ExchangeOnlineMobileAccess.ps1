@@ -69,10 +69,18 @@ process {
 
        Write-Host
        Write-Host "Disabling OWA for Mobile Devices: " -NoNewline
+       <# write log#>
+        $lineNum = Get-CurrentLineNumber    
+        $filName = Get-CurrentFileName 
+        WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Disabling OWA for Mobile Devices: "
        Get-Mailbox | Set-CasMailbox -OWAforDevicesEnabled $False -WarningAction SilentlyContinue
        Write-Host "Complete"
 
        Write-Host "Creating Access Rule to explicitly allow Outlook Mobile Access: " -NoNewline
+       <# write log#>
+        $lineNum = Get-CurrentLineNumber    
+        $filName = Get-CurrentFileName 
+        WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Complete, Creating Access Rule to explicitly allow Outlook Mobile Access:"
 
        $ruleExists = $false
        $existingRules = Get-ActiveSyncDeviceAccessRule | where { $_.QueryString -eq "Outlook for iOS and Android" -and $_.AccessLevel -eq "Allow" -and $_.Characteristic -eq "DeviceModel" }
@@ -83,19 +91,39 @@ process {
        if (!($ruleExists)) {
           New-ActiveSyncDeviceAccessRule -Characteristic DeviceModel -QueryString "Outlook for iOS and Android" -AccessLevel Allow | Out-Null
           Write-Host "Complete"
+          <# write log#>
+            $lineNum = Get-CurrentLineNumber    
+            $filName = Get-CurrentFileName 
+            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Complete"
        } else {
           Write-Host "Already Exists"
+          <# write log#>
+            $lineNum = Get-CurrentLineNumber    
+            $filName = Get-CurrentFileName 
+            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Already Exists"
        }
 
        Write-Host "Setting ActiveSync Mobile Device Access to 'Block': " -NoNewline
+       <# write log#>
+        $lineNum = Get-CurrentLineNumber    
+        $filName = Get-CurrentFileName 
+        WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Setting ActiveSync Mobile Device Access to 'Block': "
 
        $asOrgSettings = Get-ActiveSyncOrganizationSettings
 
        if ($asOrgSettings.DefaultAccessLevel -ne "Block") {
            Set-ActiveSyncOrganizationSettings -DefaultAccessLevel Block -WarningAction SilentlyContinue | Out-Null
            Write-Host "Complete"
+           <# write log#>
+            $lineNum = Get-CurrentLineNumber    
+            $filName = Get-CurrentFileName 
+            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Complete"
        } else {
           Write-Host "Already Set"
+          <# write log#>
+            $lineNum = Get-CurrentLineNumber    
+            $filName = Get-CurrentFileName 
+            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Already Set"
        }
 
        #Remove-PSSession $Session
@@ -103,5 +131,52 @@ process {
 }
 
 }
+
+
+function Get-CurrentLineNumber {
+    $MyInvocation.ScriptLineNumber
+}
+
+
+function Get-CurrentFileName{
+    $MyInvocation.ScriptName.Substring($MyInvocation.ScriptName.LastIndexOf("\")+1)
+}
+
+function Get-CurrentFunctionName {
+    (Get-Variable MyInvocation -Scope 1).Value.MyCommand.Name;
+}
+
+
+
+
+
+
+Function WriteToLogFile() {
+    param( 
+      [Parameter(Mandatory=$true)]
+      [string]$LNumber,
+      [Parameter(Mandatory=$true)]
+      [string]$FName,
+      [Parameter(Mandatory=$true)]
+      [string]$ActionError
+   )
+   try{
+   $headerString = "Time".PadRight(30, ' ') + "Line Number".PadRight(15,' ') + "FileName".PadRight(60,' ') + "Action"
+   $stringToWrite = $(Get-Date -Format G).PadRight(30, ' ') + $($LNumber).PadRight(15, ' ') + $($FName).PadRight(60,' ') + $ActionError
+   #check if file exists, create if it doesn't
+   $getCurrentDatePath = "C:\Windows\Temp\" + (Get-Date -Format u).Substring(0,10)+"OfficeAutoScriptLog.txt"
+   if(Test-Path $getCurrentDatePath){#if exists, append
+   
+        Add-Content $getCurrentDatePath $stringToWrite
+   }
+   else{#if not exists, create new
+        Add-Content $getCurrentDatePath $headerString
+        Add-Content $getCurrentDatePath $stringToWrite
+   }
+   } catch [Exception]{
+   Write-Host $_
+   }
+}
+
 
 Restrict-ExchangeOnlineMobileAccess -Credentials $Credentials

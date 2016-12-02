@@ -569,10 +569,18 @@ Process{
     
         Write-host
         Write-host "Connecting to Office 365..."
+        <# write log#>
+        $lineNum = Get-CurrentLineNumber    
+        $filName = Get-CurrentFileName 
+        WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Connecting to Office 365..."
 
         Connect-MsolService -Credential $Credentials
 
         Write-host "Retrieving User List..."
+        <# write log#>
+        $lineNum = Get-CurrentLineNumber    
+        $filName = Get-CurrentFileName 
+        WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Retrieving User List..."
 
         $Users = Get-MsolUser | ? IsLicensed -eq $True | Select DisplayName, Licenses, LiveId, ObjectId, SignInName, UserPrincipalName 
     
@@ -628,12 +636,20 @@ Process{
             $ImportedCSV | Export-Csv $CSVPath -NoTypeInformation
 
             Write-host "CSV File Updated: $CSVPath"
+            <# write log#>
+            $lineNum = Get-CurrentLineNumber    
+            $filName = Get-CurrentFileName 
+            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "CSV File Updated: $CSVPath"
         } #End TestPath if
         else{
             #If csv does not exist, export data
             $LicensedUsers | ? ObjectId -ne $Null | Export-Csv $CSVPath -NoTypeInformation
 
             Write-host "CSV File Created: $CSVPath"
+            <# write log#>
+            $lineNum = Get-CurrentLineNumber    
+            $filName = Get-CurrentFileName 
+            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "CSV File Created: $CSVPath"
         } #End TestPath Else
     }#end Credentials If
 }#End Process
@@ -704,6 +720,10 @@ Process{
     
     if ($filePaths.Length -eq 0) {
       Write-Host "No CSV File Exits. Please run Update-UserLicenseData to generate the CSV File."
+      <# write log#>
+        $lineNum = Get-CurrentLineNumber    
+        $filName = Get-CurrentFileName 
+        WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "No CSV File Exits. Please run Update-UserLicenseData to generate the CSV File."
     } #End if filePaths
 
     foreach ($csvFile in $filePaths) {
@@ -719,8 +739,16 @@ Process{
             Write-Host ""
             Write-Host "Retrieving New Users Since: $CutOffDate"
             Write-Host ""
+            <# write log#>
+            $lineNum = Get-CurrentLineNumber    
+            $filName = Get-CurrentFileName 
+            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Retrieving New Users Since: $CutOffDate"
             if ($domain) {
                Write-Host "Domain: $domain"
+               <# write log#>
+                $lineNum = Get-CurrentLineNumber    
+                $filName = Get-CurrentFileName 
+                WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Domain: $domain"
             }#end If domain
         }#End if pipeline
 
@@ -918,8 +946,59 @@ Process{
         }#end If TestPath
         else{
             Write-Host "Can't find file at $CSVPath"
+            <# write log#>
+            $lineNum = Get-CurrentLineNumber    
+            $filName = Get-CurrentFileName 
+            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Can't find file at $CSVPath"
         }
     }#end if Credentials
 }#End Process
 
+}
+
+
+
+function Get-CurrentLineNumber {
+    $MyInvocation.ScriptLineNumber
+}
+
+
+function Get-CurrentFileName{
+    $MyInvocation.ScriptName.Substring($MyInvocation.ScriptName.LastIndexOf("\")+1)
+}
+
+function Get-CurrentFunctionName {
+    (Get-Variable MyInvocation -Scope 1).Value.MyCommand.Name;
+}
+
+
+
+
+
+
+Function WriteToLogFile() {
+    param( 
+      [Parameter(Mandatory=$true)]
+      [string]$LNumber,
+      [Parameter(Mandatory=$true)]
+      [string]$FName,
+      [Parameter(Mandatory=$true)]
+      [string]$ActionError
+   )
+   try{
+   $headerString = "Time".PadRight(30, ' ') + "Line Number".PadRight(15,' ') + "FileName".PadRight(60,' ') + "Action"
+   $stringToWrite = $(Get-Date -Format G).PadRight(30, ' ') + $($LNumber).PadRight(15, ' ') + $($FName).PadRight(60,' ') + $ActionError
+   #check if file exists, create if it doesn't
+   $getCurrentDatePath = "C:\Windows\Temp\" + (Get-Date -Format u).Substring(0,10)+"OfficeAutoScriptLog.txt"
+   if(Test-Path $getCurrentDatePath){#if exists, append
+   
+        Add-Content $getCurrentDatePath $stringToWrite
+   }
+   else{#if not exists, create new
+        Add-Content $getCurrentDatePath $headerString
+        Add-Content $getCurrentDatePath $stringToWrite
+   }
+   } catch [Exception]{
+   Write-Host $_
+   }
 }
