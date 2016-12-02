@@ -29,7 +29,8 @@ c. In Windows 7, click the Start button and type powershell. Right click on Wind
 Note: By typing **.\** before a script name lets PowerShell know to execute a script located in the current directory. 
 PowerShell also uses IntelliSense which will allow you to start typing the name of a script, cmdlet, or function and press tab to finish the name.  
 
-##**Use PowerShell to install or upgrade to Office ProPlus**
+##**Unmanaged deployments**
+Use PowerShell to install or upgrade to Office ProPlus
 ###Scenario: Install Office ProPlus and keep all in use language
 This script generates an Office Deployment Tool (ODT) configuration.xml file and will include in use languages on the system.  
 
