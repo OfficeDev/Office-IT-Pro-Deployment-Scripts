@@ -73,10 +73,10 @@ For example, if we wanted to create a deployment program for the Deferred channe
 ###Upgrade Office 2010 using using Group Policy 
 1. Copy the Configure-GPOOfficeInstallation folder locally.  
 2. Open PowerShell with elevated privileges.  
-3. Change the directory to Configure-GPOOfficeInstallation folder. For example, type cd C:\PowerShellScripts\Configure-GPOOfficeInstallation and press Enter.  
-4. Dot source the Configure-GPOOfficeInstallation.ps1 script. Type . .\Configure-GPOOfficeInstallation.ps1 and press Enter.
+3. Change the directory to Configure-GPOOfficeInstallation folder. For example, type **cd C:\PowerShellScripts\Configure-GPOOfficeInstallation** and press **Enter**.  
+4. Dot source the Configure-GPOOfficeInstallation.ps1 script. Type **. .\Configure-GPOOfficeInstallation.ps1** and press **Enter**.
 Dot sourcing the script allows us to run functions outside of the scope of the script.  
 5. Download the required Office installation files and modify the Office Deployment Tool (ODT) xml files that will be used to deploy Office.
-For example, type Download-GPOOfficeInstallation –UncPath \\server1\OfficeChannelFiles -OfficeVersion Office2016 –Bitness 32  
-6. Configure an existing group policy. Type Configure-GPOOfficeInstallation –UncPath \\server1\OfficeChannelFiles -GpoName OfficeProPlusDeployments –OfficeVersion Office2016  
+For example, type **Download-GPOOfficeInstallation –UncPath \\server1\OfficeChannelFiles -OfficeVersion Office2016 –Bitness 32**  
+6. Configure an existing group policy. Type **Configure-GPOOfficeInstallation –UncPath \\server1\OfficeChannelFiles -GpoName OfficeProPlusDeployments –OfficeVersion Office2016**    
 7. Refresh the group policy on a client that has the configured GPO and Office ProPlus will install after the next restart.  
