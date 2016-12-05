@@ -40,15 +40,13 @@ $officeProducts = Get-OfficeVersion -ShowAllInstalledProducts | Select *
 
 $Office2016C2RExists = $officeProducts | Where {$_.ClickToRun -eq $true -and $_.Version -like '16.*' }
 
-$SourcePath = $scriptPath
-if((Validate-UpdateSource -UpdateSource $SourcePath -ShowMissingFiles $false) -eq $false) {
-   $SourcePath = $NULL    
-} else {
-   $ChannelShortName = ConvertChannelNameToShortName -ChannelName $Channel
-   $SourcePath = $SourcePath + "\" + $SourceFileFolder + "\" + $ChannelShortName
-}
+$ChannelShortName = ConvertChannelNameToShortName -ChannelName $Channel
+$SourcePath = $SourcePath + "\" + $SourceFileFolder + "\" + $ChannelShortName
+if((Validate-UpdateSource -UpdateSource $SourcePath -ShowMissingFiles $false -Bitness $Bitness) -eq $false) {
+   $SourcePath = $NULL
+} 
 
-$UpdateURLPath = Locate-UpdateSource -Channel $Channel -UpdateURLPath $scriptPath -SourceFileFolder $SourceFileFolder
+$UpdateURLPath = Locate-UpdateSource -Channel $Channel -UpdateURLPath $scriptPath -SourceFileFolder $SourceFileFolder -Bitness $Bitness
 
 if ($Office2016C2RExists) {
   Write-Host "Office 2016 Click-To-Run is already installed"

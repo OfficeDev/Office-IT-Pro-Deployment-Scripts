@@ -528,7 +528,9 @@ function Remove-PinnedOfficeAppsForWindows10() {
         }
     }
 
-    ((New-Object -Com Shell.Application).NameSpace('shell:::{4234d49b-0245-4df3-b780-3893943456e1}').Items() | ? {$_.Name -like "$officeAppName*"}).Verbs() | ? {$_.Name.replace('&','') -match $Action} | % {$_.DoIt()}
+    Try{
+        ((New-Object -Com Shell.Application).NameSpace('shell:::{4234d49b-0245-4df3-b780-3893943456e1}').Items() | ? {$_.Name -like "$officeAppName*"}).Verbs() | ? {$_.Name.replace('&','') -match $Action} | % {$_.DoIt()}
+    } Catch{}
        
 }
 

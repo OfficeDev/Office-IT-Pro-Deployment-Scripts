@@ -3195,45 +3195,95 @@ function Change-UpdatePathToChannel {
    param( 
      [Parameter()]
      [string] $UpdatePath,
-     
+
      [Parameter()]
-     [String] $Channel
+     [bool] $ValidateUpdateSourceFiles = $true,
+
+     [Parameter()]
+     [string] $Channel = $null,
+
+     [Parameter()]
+     [string] $Bitness = $null
    )
 
    $newUpdatePath = $UpdatePath
+   $newUpdateLong = $UpdatePath
+
+   if (!($Channel)) {
+      $detectedChannel = Detect-Channel 
+   }
+
+   if ($detectedChannel) {
+       $branchName = $detectedChannel.branch
+   } else {
+      if ($Channel) {
+         $branchName = $Channel
+      } else {
+         $branchName = "Deferred"
+      }
+   }
 
    $branchShortName = "DC"
-   if ($Channel.ToString().ToLower() -eq "current") {
+   if ($branchName.ToLower() -eq "current") {
       $branchShortName = "CC"
    }
-   if ($Channel.ToString().ToLower() -eq "firstreleasecurrent") {
+   if ($branchName.ToLower() -eq "firstreleasecurrent") {
       $branchShortName = "FRCC"
    }
-   if ($Channel.ToString().ToLower() -eq "firstreleasedeferred") {
+   if ($branchName.ToLower() -eq "firstreleasedeferred") {
       $branchShortName = "FRDC"
    }
-   if ($Channel.ToString().ToLower() -eq "deferred") {
+   if ($branchName.ToLower() -eq "deferred") {
       $branchShortName = "DC"
    }
 
    $channelNames = @("FRCC", "CC", "FRDC", "DC")
+   $channelLongNames = @("FirstReleaseCurrent", "Current", "FirstReleaseDeferred", "Deferred", "Business", "FirstReleaseBusiness")
 
    $madeChange = $false
    foreach ($channelName in $channelNames) {
       if ($UpdatePath.ToUpper().EndsWith("\$channelName")) {
          $newUpdatePath = $newUpdatePath -replace "\\$channelName", "\$branchShortName"
+         $newUpdateLong = $newUpdateLong -replace "\\$channelName", "\$branchName"
          $madeChange = $true
       } 
       if ($UpdatePath.ToUpper().Contains("\$channelName\")) {
          $newUpdatePath = $newUpdatePath -replace "\\$channelName\\", "\$branchShortName\"
+         $newUpdateLong = $newUpdateLong -replace "\\$channelName\\", "\$branchName\"
          $madeChange = $true
       } 
       if ($UpdatePath.ToUpper().EndsWith("/$channelName")) {
          $newUpdatePath = $newUpdatePath -replace "\/$channelName", "/$branchShortName"
+         $newUpdateLong = $newUpdateLong -replace "\\$channelName\\", "\$branchName\"
          $madeChange = $true
       }
       if ($UpdatePath.ToUpper().Contains("/$channelName/")) {
          $newUpdatePath = $newUpdatePath -replace "\/$channelName\/", "/$branchShortName/"
+         $newUpdateLong = $newUpdateLong -replace "\/$channelName\/", "/$branchName/"
+         $madeChange = $true
+      }
+   }
+
+   foreach ($channelName in $channelLongNames) {
+      $channelName = $channelName.ToString().ToUpper()
+      if ($UpdatePath.ToUpper().EndsWith("\$channelName")) {
+         $newUpdatePath = $newUpdatePath -replace "\\$channelName", "\$branchShortName"
+         $newUpdateLong = $newUpdateLong -replace "\\$channelName", "\$branchName"
+         $madeChange = $true
+      } 
+      if ($UpdatePath.ToUpper().Contains("\$channelName\")) {
+         $newUpdatePath = $newUpdatePath -replace "\\$channelName\\", "\$branchShortName\"
+         $newUpdateLong = $newUpdateLong -replace "\\$channelName\\", "\$branchName\"
+         $madeChange = $true
+      } 
+      if ($UpdatePath.ToUpper().EndsWith("/$channelName")) {
+         $newUpdatePath = $newUpdatePath -replace "\/$channelName", "/$branchShortName"
+         $newUpdateLong = $newUpdateLong -replace "\\$channelName\\", "\$branchName\"
+         $madeChange = $true
+      }
+      if ($UpdatePath.ToUpper().Contains("/$channelName/")) {
+         $newUpdatePath = $newUpdatePath -replace "\/$channelName\/", "/$branchShortName/"
+         $newUpdateLong = $newUpdateLong -replace "\/$channelName\/", "/$branchName/"
          $madeChange = $true
       }
    }
@@ -3255,11 +3305,39 @@ function Change-UpdatePathToChannel {
       }
    }
 
+   if (!($madeChange)) {
+      if ($newUpdateLong.Contains("/")) {
+         if ($newUpdateLong.EndsWith("/")) {
+           $newUpdateLong += "$branchName"
+         } else {
+           $newUpdateLong += "/$branchName"
+         }
+      }
+      if ($newUpdateLong.Contains("\")) {
+         if ($newUpdateLong.EndsWith("\")) {
+           $newUpdateLong += "$branchName"
+         } else {
+           $newUpdateLong += "\$branchName"
+         }
+      }
+   }
+
    try {
-     $pathAlive = Test-UpdateSource -UpdateSource $newUpdatePath
+     $pathAlive = Test-UpdateSource -UpdateSource $newUpdatePath -ValidateUpdateSourceFiles $ValidateUpdateSourceFiles -Bitness $Bitness
    } catch {
      $pathAlive = $false
    }
+
+     if (!($pathAlive)) {
+        try {
+           $pathAlive = Test-UpdateSource -UpdateSource $newUpdateLong -ValidateUpdateSourceFiles $ValidateUpdateSourceFiles -Bitness $Bitness
+        } catch {
+            $pathAlive = $false
+        }
+        if ($pathAlive) {
+           $newUpdatePath = $newUpdateLong
+        }
+     }
    
    if ($pathAlive) {
      return $newUpdatePath
@@ -3315,10 +3393,13 @@ Function Validate-UpdateSource() {
         [string] $UpdateSource = $NULL,
 
         [Parameter()]
-        [string] $Bitness = "x86",
+        [string] $Bitness = $NULL,
 
         [Parameter()]
-        [string[]] $OfficeLanguages = $null
+        [string[]] $OfficeLanguages = $NULL,
+
+        [Parameter()]
+        [bool]$ShowMissingFiles = $true
     )
 
     [bool]$validUpdateSource = $true
@@ -3326,20 +3407,27 @@ Function Validate-UpdateSource() {
 
     if ($UpdateSource) {
         $mainRegPath = Get-OfficeCTRRegPath
+
+        if(!$Bitness){
+            $Bitness = "32"
+        }
+
+        $currentplatform = $Bitness
+
+        if ($currentplatform -eq "x64") {
+            $mainCab = "$UpdateSource\Office\Data\v64.cab"
+            $Bitness = "64"
+        }
+        else{
+            $mainCab = "$UpdateSource\Office\Data\v32.cab"
+            $Bitness = "32"
+        }
+
         if ($mainRegPath) {
             $configRegPath = $mainRegPath + "\Configuration"
             $currentplatform = (Get-ItemProperty HKLM:\$configRegPath -Name Platform -ErrorAction SilentlyContinue).Platform
             $updateToVersion = (Get-ItemProperty HKLM:\$configRegPath -Name UpdateToVersion -ErrorAction SilentlyContinue).UpdateToVersion
             $llcc = (Get-ItemProperty HKLM:\$configRegPath -Name ClientCulture -ErrorAction SilentlyContinue).ClientCulture
-        }
-
-        $currentplatform = $Bitness
-
-        $mainCab = "$UpdateSource\Office\Data\v32.cab"
-        $bitness = "32"
-        if ($currentplatform -eq "x64") {
-            $mainCab = "$UpdateSource\Office\Data\v64.cab"
-            $bitness = "64"
         }
 
         if (!($updateToVersion)) {
@@ -3349,7 +3437,7 @@ Function Validate-UpdateSource() {
            }
         }
 
-        [xml]$xml = Get-ChannelXml -Bitness $bitness
+        [xml]$xml = Get-ChannelXml -Bitness $Bitness
         if ($OfficeLanguages) {
           $languages = $OfficeLanguages
         } else {
@@ -3387,8 +3475,10 @@ Function Validate-UpdateSource() {
               $fileExists = $missingFiles.Contains($fullPath)
               if (!($fileExists)) {
                  $missingFiles.Add($fullPath)
-                 Write-Host "Source File Missing: $fullPath"
-                 Write-Log -Message "Source File Missing: $fullPath" -severity 1 -component "Office 365 Update Anywhere" 
+                 if($ShowMissingFiles -eq $true){
+                    Write-Host "Source File Missing: $fullPath"
+                    Write-Log -Message "Source File Missing: $fullPath" -severity 1 -component "Office 365 Update Anywhere" 
+                 }
               }     
               $validUpdateSource = $false
            }
