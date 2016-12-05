@@ -9,6 +9,51 @@
     [bool]$SendExitCode = $false
   )
 
+function Get-CurrentLineNumber {
+    $MyInvocation.ScriptLineNumber
+}
+
+
+function Get-CurrentFileName{
+    $MyInvocation.ScriptName.Substring($MyInvocation.ScriptName.LastIndexOf("\")+1)
+}
+
+function Get-CurrentFunctionName {
+    (Get-Variable MyInvocation -Scope 1).Value.MyCommand.Name;
+}
+
+
+
+
+
+
+Function WriteToLogFile() {
+    param( 
+      [Parameter(Mandatory=$true)]
+      [string]$LNumber,
+      [Parameter(Mandatory=$true)]
+      [string]$FName,
+      [Parameter(Mandatory=$true)]
+      [string]$ActionError
+   )
+   try{
+   $headerString = "Time".PadRight(30, ' ') + "Line Number".PadRight(15,' ') + "FileName".PadRight(60,' ') + "Action"
+   $stringToWrite = $(Get-Date -Format G).PadRight(30, ' ') + $($LNumber).PadRight(15, ' ') + $($FName).PadRight(60,' ') + $ActionError
+   #check if file exists, create if it doesn't
+   $getCurrentDatePath = "C:\Windows\Temp\" + (Get-Date -Format u).Substring(0,10)+"OfficeAutoScriptLog.txt"
+   if(Test-Path $getCurrentDatePath){#if exists, append
+   
+        Add-Content $getCurrentDatePath $stringToWrite
+   }
+   else{#if not exists, create new
+        Add-Content $getCurrentDatePath $headerString
+        Add-Content $getCurrentDatePath $stringToWrite
+   }
+   } catch [Exception]{
+   Write-Host $_
+   }
+}
+
 Function Get-ScriptPath() {
   [CmdletBinding()]
   param(
@@ -62,6 +107,10 @@ Function Wait-ForOfficeCTRUpadate() {
 
     process {
        Write-Host "Waiting for Update process to Complete..."
+       <# write log#>
+        $lineNum = Get-CurrentLineNumber    
+        $filName = Get-CurrentFileName 
+        WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Waiting for Update process to Complete..."
 
        [datetime]$operationStart = Get-Date
        [datetime]$totalOperationStart = Get-Date
@@ -125,6 +174,10 @@ Function Wait-ForOfficeCTRUpadate() {
                                 $displayText = $statusName + "`t" + $operationTime
 
                                 Write-Host $displayText
+                                <# write log#>
+                                $lineNum = Get-CurrentLineNumber    
+                                $filName = Get-CurrentFileName 
+                                WriteToLogFile -LNumber $lineNum -FName $filName -ActionError $displayText
                             }
                         }
                     } else {
@@ -140,14 +193,26 @@ Function Wait-ForOfficeCTRUpadate() {
 
                              if ($operation.ToUpper().IndexOf("DOWNLOAD") -gt -1) {
                                 Write-Host "Downloading Update: " -NoNewline
+                                <# write log#>
+                                $lineNum = Get-CurrentLineNumber    
+                                $filName = Get-CurrentFileName 
+                                WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Downloading Update: "
                              }
 
                              if ($operation.ToUpper().IndexOf("APPLY") -gt -1) {
                                 Write-Host "Applying Update: " -NoNewline
+                                <# write log#>
+                                $lineNum = Get-CurrentLineNumber    
+                                $filName = Get-CurrentFileName 
+                                WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Applying Update: "
                              }
 
                              if ($operation.ToUpper().IndexOf("FINALIZE") -gt -1) {
                                 Write-Host "Finalizing Update: " -NoNewline
+                                <# write log#>
+                                $lineNum = Get-CurrentLineNumber    
+                                $filName = Get-CurrentFileName 
+                                WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Finalizing Update: "
                              }
 
                              #Write-Host $displayValue
@@ -183,18 +248,34 @@ Function Wait-ForOfficeCTRUpadate() {
        }
 
        Write-Host $displayValue
+       <# write log#>
+        $lineNum = Get-CurrentLineNumber    
+        $filName = Get-CurrentFileName 
+        WriteToLogFile -LNumber $lineNum -FName $filName -ActionError $displayValue
 
        $totalOperationTime = getOperationTime -OperationStart $totalOperationStart
 
        if ($updateRunning) {
           if ($failure) {
             Write-Host "Update Failed"
+            <# write log#>
+            $lineNum = Get-CurrentLineNumber    
+            $filName = Get-CurrentFileName 
+            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Update Failed"
             throw "Update Failed"
           } else {
             Write-Host "Update Completed - Total Time: $totalOperationTime"
+            <# write log#>
+            $lineNum = Get-CurrentLineNumber    
+            $filName = Get-CurrentFileName 
+            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Update Completed - Total Time: $totalOperationTime"
           }
        } else {
           Write-Host "Update Not Running"
+          <# write log#>
+            $lineNum = Get-CurrentLineNumber    
+            $filName = Get-CurrentFileName 
+            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Update Not Running"
        } 
     }
 }
@@ -791,6 +872,10 @@ try {
         }
     } else {
         Write-Host "The client already has version installed: $Version"
+        <# write log#>
+        $lineNum = Get-CurrentLineNumber    
+        $filName = Get-CurrentFileName 
+        WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "The client already has version installed: $Version"
 
         if (!($RollBack)) {
            Set-OfficeCDNUrl -Channel $Channel
@@ -803,6 +888,8 @@ try {
     }
 } catch {
   Write-Host $_ -ForegroundColor Red
+  $fileName = $_.InvocationInfo.ScriptName.Substring($_.InvocationInfo.ScriptName.LastIndexOf("\")+1)
+    WriteToLogFile -LNumber $_.InvocationInfo.ScriptLineNumber -FName $fileName -ActionError $_
   $Error = $null
   if ($SendExitCode) {
       [System.Environment]::Exit(1)

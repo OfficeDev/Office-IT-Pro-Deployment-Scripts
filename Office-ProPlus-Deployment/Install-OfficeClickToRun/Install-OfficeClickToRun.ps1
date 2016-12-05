@@ -203,6 +203,10 @@ Word, Excel, and Outlook will be pinned to the Start Menu. The PowerShell consol
     $cmdArgs = "/configure " + '"' + $TargetFilePath + '"'
 
     Write-Host "Installing Office Click-To-Run..."
+	<# write log#>
+	$lineNum = Get-CurrentLineNumber    
+	$filName = Get-CurrentFileName 
+	WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Installing Office Click-To-Run..."
 
     if ($WaitForInstallToFinish) {
         StartProcess -execFilePath $cmdLine -execParams $cmdArgs -WaitForExit $false
@@ -307,6 +311,10 @@ Word, Excel, and Outlook will be pinned to the Start Menu. The PowerShell consol
     if($InstallProofingTools -eq $true){
         Write-Host ""
         Write-Host "Installing Proofing Tools..."
+		<# write log#>
+	$lineNum = Get-CurrentLineNumber    
+	$filName = Get-CurrentFileName 
+	WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Installing Proofing Tools"
 
         if((Get-OfficeVersion).Bitness -eq "32-bit"){
             $proofingToolFileName = "proofingtools2016_en-us-x86.exe"
@@ -1028,6 +1036,10 @@ Here is what the portion of configuration file looks like when modified by this 
 
             Write-Host
             Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+			<# write log#>
+			$lineNum = Get-CurrentLineNumber    
+			$filName = Get-CurrentFileName 
+			WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "The Office XML Configuration file has been saved to: $TargetFilePath"
         } else {
             $results = new-object PSObject[] 0;
             $Result = New-Object -TypeName PSObject 
@@ -1245,6 +1257,10 @@ Here is what the portion of configuration file looks like when modified by this 
 
             Write-Host
             Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+			<# write log#>
+			$lineNum = Get-CurrentLineNumber    
+			$filName = Get-CurrentFileName 
+			WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "The Office XML Configuration file has been saved to: $TargetFilePath"
         } else {
             $results = new-object PSObject[] 0;
             $Result = New-Object -TypeName PSObject 
@@ -1276,6 +1292,10 @@ Function Wait-ForOfficeCTRInstall() {
 
     process {
         Write-Host "Waiting for Install to Begin..."
+		<# write log#>
+		$lineNum = Get-CurrentLineNumber    
+		$filName = Get-CurrentFileName 
+		WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Waiting for Install to Begin..."
  
         #Start-Sleep -Seconds 25
 
@@ -1370,13 +1390,25 @@ Function Wait-ForOfficeCTRInstall() {
         if($failure){
             Write-Host ""
             Write-Host 'Update failed'
+			<# write log#>
+			$lineNum = Get-CurrentLineNumber    
+			$filName = Get-CurrentFileName 
+			WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Update Failed"
         } else {
             if($trackProgress.Count -gt 0){
                 Write-Host ""
                 Write-Host 'Update complete'
+				<# write log#>
+				$lineNum = Get-CurrentLineNumber    
+				$filName = Get-CurrentFileName 
+				WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Update Complete"
             } else {
                 Write-Host ""
                 Write-Host 'Update not running'
+				<# write log#>
+				$lineNum = Get-CurrentLineNumber    
+				$filName = Get-CurrentFileName 
+				WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Update not running"
             }
         } 
     }
@@ -1933,4 +1965,52 @@ function GetOfficeAppVerbStatus{
 
         return $results
     }
+}
+
+
+function Get-CurrentLineNumber {
+    $MyInvocation.ScriptLineNumber
+}
+
+
+function Get-CurrentFileName{
+    $MyInvocation.ScriptName.Substring($MyInvocation.ScriptName.LastIndexOf("\")+1)
+}
+
+function Get-CurrentFunctionName {
+    (Get-Variable MyInvocation -Scope 1).Value.MyCommand.Name;
+}
+
+
+
+
+
+
+Function WriteToLogFile() {
+    param( 
+      [Parameter(Mandatory=$true)]
+      [string]$LNumber,
+      [Parameter(Mandatory=$true)]
+      [string]$FName,
+      [Parameter(Mandatory=$true)]
+      [string]$ActionError
+   )
+   try{
+   $headerString = "Time".PadRight(30, ' ') + "Line Number".PadRight(15,' ') + "FileName".PadRight(60,' ') + "Action"
+   $stringToWrite = $(Get-Date -Format G).PadRight(30, ' ') + $($LNumber).PadRight(15, ' ') + $($FName).PadRight(60,' ') + $ActionError
+   #check if file exists, create if it doesn't
+   $getCurrentDatePath = "C:\Windows\Temp\" + (Get-Date -Format u).Substring(0,10)+"OfficeAutoScriptLog.txt"
+   if(Test-Path $getCurrentDatePath){#if exists, append
+   
+        Add-Content $getCurrentDatePath $stringToWrite
+   }
+   else{#if not exists, create new
+        Add-Content $getCurrentDatePath $headerString
+        Add-Content $getCurrentDatePath $stringToWrite
+   }
+   } catch [Exception]{
+   Write-Host $_
+   $fileName = $_.InvocationInfo.ScriptName.Substring($_.InvocationInfo.ScriptName.LastIndexOf("\")+1)
+    WriteToLogFile -LNumber $_.InvocationInfo.ScriptLineNumber -FName $fileName -ActionError $_
+   }
 }

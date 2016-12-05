@@ -99,8 +99,16 @@ Policy is applied
 
     Write-Host "Configuring Group Policy to Inventory Office Clients"
     Write-Host
+    <# write log#>
+    $lineNum = Get-CurrentLineNumber    
+    $filName = Get-CurrentFileName 
+    WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Configuring Group Policy to Inventory Office Clients"
 
     Write-Host "Searching for GPO: $GpoName..." -NoNewline
+    <# write log#>
+    $lineNum = Get-CurrentLineNumber    
+    $filName = Get-CurrentFileName 
+    WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Searching for GPO: $GpoName..."
     if ($Domain) {
       $gpo = Get-GPO -Name $GpoName -Domain $Domain
     } else {
@@ -109,12 +117,20 @@ Policy is applied
 	
 	if(!$gpo -or ($gpo -eq $null))
 	{
+    <# write log#>
+        $lineNum = Get-CurrentLineNumber    
+        $filName = Get-CurrentFileName 
+        WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "The GPO $GpoName could not be found."
 		Write-Error "The GPO $GpoName could not be found."
 		Exit
 	}
 
     Write-Host "GPO Found"
     Write-Host "Modifying GPO: $GpoName..." -NoNewline
+    <# write log#>
+    $lineNum = Get-CurrentLineNumber    
+    $filName = Get-CurrentFileName 
+    WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "GPO Found, Modifying GPO: $GpoName..."
 
 	$baseSysVolPath = "\\$Domain\sysvol"
 
@@ -237,6 +253,13 @@ Policy is applied
     Write-Host "The Group Policy '$GpoName' has been modified to inventory Office via Scheduled Task." -BackgroundColor DarkBlue
     Write-Host "Once Group Policy has refreshed as scheduled task will be created to run the scheduled task." -BackgroundColor DarkBlue
 
+    <# write log#>
+    $lineNum = Get-CurrentLineNumber    
+    $filName = Get-CurrentFileName 
+    WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "GPO Modified"
+    WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "The Group Policy '$GpoName' has been modified to inventory Office via Scheduled Task."
+    WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Once Group Policy has refreshed as scheduled task will be created to run the scheduled task."
+
     }
 
     End {
@@ -349,4 +372,50 @@ created by the Configure-GPOOfficeInventory function
         $results += $cltr
     }
     $results
+}
+
+
+function Get-CurrentLineNumber {
+    $MyInvocation.ScriptLineNumber
+}
+
+
+function Get-CurrentFileName{
+    $MyInvocation.ScriptName.Substring($MyInvocation.ScriptName.LastIndexOf("\")+1)
+}
+
+function Get-CurrentFunctionName {
+    (Get-Variable MyInvocation -Scope 1).Value.MyCommand.Name;
+}
+
+
+
+
+
+
+Function WriteToLogFile() {
+    param( 
+      [Parameter(Mandatory=$true)]
+      [string]$LNumber,
+      [Parameter(Mandatory=$true)]
+      [string]$FName,
+      [Parameter(Mandatory=$true)]
+      [string]$ActionError
+   )
+   try{
+   $headerString = "Time".PadRight(30, ' ') + "Line Number".PadRight(15,' ') + "FileName".PadRight(60,' ') + "Action"
+   $stringToWrite = $(Get-Date -Format G).PadRight(30, ' ') + $($LNumber).PadRight(15, ' ') + $($FName).PadRight(60,' ') + $ActionError
+   #check if file exists, create if it doesn't
+   $getCurrentDatePath = "C:\Windows\Temp\" + (Get-Date -Format u).Substring(0,10)+"OfficeAutoScriptLog.txt"
+   if(Test-Path $getCurrentDatePath){#if exists, append
+   
+        Add-Content $getCurrentDatePath $stringToWrite
+   }
+   else{#if not exists, create new
+        Add-Content $getCurrentDatePath $headerString
+        Add-Content $getCurrentDatePath $stringToWrite
+   }
+   } catch [Exception]{
+   Write-Host $_
+   }
 }

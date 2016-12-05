@@ -6,6 +6,19 @@ Add-Type  -ErrorAction SilentlyContinue -TypeDefinition @"
    }
 "@
 
+function Get-CurrentLineNumber {
+    $MyInvocation.ScriptLineNumber
+}
+
+
+function Get-CurrentFileName{
+    $MyInvocation.ScriptName.Substring($MyInvocation.ScriptName.LastIndexOf("\")+1)
+}
+
+function Get-CurrentFunctionName {
+    (Get-Variable MyInvocation -Scope 1).Value.MyCommand.Name;
+}
+
 function Download-OfficeUpdates {
 <#
 .SYNOPSIS
@@ -93,6 +106,10 @@ If you specify a Version then the script will download that version.  You can se
 	    Set-Location $path
 
         Write-Host "Staging the Office ProPlus Update to: $path"
+        <# write log#>
+            $lineNum = Get-CurrentLineNumber    
+            $filName = Get-CurrentFileName 
+            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Staging the Office ProPlus Update to: $path"
         Write-Host
          
 	    if (($bitness.ToLower() -eq "all") -or ($bitness -eq "32")) {
@@ -100,11 +117,19 @@ If you specify a Version then the script will download that version.  You can se
 	        $arguments = "/download", "$UpdateSourceConfigFileName32"
  
             Write-Host "`tStarting Download of Office Update 32-Bit..." -NoNewline
+            <# write log#>
+            $lineNum = Get-CurrentLineNumber    
+            $filName = Get-CurrentFileName 
+            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Starting Download of Office Update 32-Bit..."
 
 	        #run the executable, this will trigger the download of bits to \\ShareName\Office\Data\
 	        & $app @arguments
 
             Write-Host "`tComplete"
+            <# write log#>
+            $lineNum = Get-CurrentLineNumber    
+            $filName = Get-CurrentFileName 
+            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Complete"
         }
 
 	    if (($bitness.ToLower() -eq "all") -or ($bitness -eq "64")) {
@@ -112,15 +137,27 @@ If you specify a Version then the script will download that version.  You can se
 	        $arguments = "/download", "$UpdateSourceConfigFileName64"
 
             Write-Host "`tStarting Download of Office Update 64-Bit..."  -NoNewline
+            <# write log#>
+            $lineNum = Get-CurrentLineNumber    
+            $filName = Get-CurrentFileName 
+            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Starting Download of Office Update 64-Bit..."
 
 	        #run the executable, this will trigger the download of bits to \\ShareName\Office\Data\
 	        & $app @arguments
 
             Write-Host "`tComplete"
+            <# write log#>
+            $lineNum = Get-CurrentLineNumber    
+            $filName = Get-CurrentFileName 
+            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Complete"
         }
 
         Write-Host
         Write-Host "The Office Update download has finished"
+        <# write log#>
+            $lineNum = Get-CurrentLineNumber    
+            $filName = Get-CurrentFileName 
+            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "The Office Update download has finished"
     }
 
 }
@@ -213,6 +250,10 @@ Process
     Write-Host
     Write-Host 'Configuring System Center Configuration Manager to Deploy Office ProPlus Updates' -BackgroundColor DarkBlue
     Write-Host
+    <# write log#>
+            $lineNum = Get-CurrentLineNumber    
+            $filName = Get-CurrentFileName 
+            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError 'Configuring System Center Configuration Manager to Deploy Office ProPlus Updates'
 
     if (!$Path) {
          $Path = CreateOfficeUpdateShare
@@ -233,6 +274,10 @@ Process
 
     Write-Host "Loading SCCM Module"
     Write-Host ""
+    <# write log#>
+            $lineNum = Get-CurrentLineNumber    
+            $filName = Get-CurrentFileName 
+            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Loading SCCM Module"
 
     #HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\SMS\Setup
 
@@ -252,6 +297,10 @@ Process
         CreateSCCMProgram -Name $programName -PackageName $PackageName -Path $path -RequiredPlatformNames $requiredPlatformNames
 
         Write-Host "Starting Content Distribution"	
+        <# write log#>
+            $lineNum = Get-CurrentLineNumber    
+            $filName = Get-CurrentFileName 
+            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Starting Content Distribution"	
 
         if ($distributionPointGroupName) {
 	        Start-CMContentDistribution -PackageName $PackageName -CollectionName $Collection -DistributionPointGroupName $distributionPointGroupName
@@ -266,7 +315,12 @@ Process
         Write-Host "      content distribution is complete." -BackgroundColor Red
 
     } else {
+    <# write log#>
+            $lineNum = Get-CurrentLineNumber    
+            $filName = Get-CurrentFileName 
+            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Could Not find file ConfigurationManager.psd1"
         throw [System.IO.FileNotFoundException] "Could Not find file ConfigurationManager.psd1"
+        
     }
 }
 End
@@ -342,7 +396,10 @@ Process
         $packageDeploy = Get-CMDeployment | where {$_.PackageId  -eq $package.PackageId }
         if ($packageDeploy.Count -eq 0) {
             Write-Host "Creating Package Deployment for: $packageName"
-
+            <# write log#>
+            $lineNum = Get-CurrentLineNumber    
+            $filName = Get-CurrentFileName 
+            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Creating Package Deployment for: $packageName"
             $dtNow = [datetime]::Now
             $dtNow = $dtNow.AddDays(-1)
             $start = Get-Date -Year $dtNow.Year -Month $dtNow.Month -Day $dtNow.Day -Hour 12 -Minute 0
@@ -355,6 +412,10 @@ Process
 
         } else {
             Write-Host "Package Deployment Already Exists for: $packageName"
+            <# write log#>
+            $lineNum = Get-CurrentLineNumber    
+            $filName = Get-CurrentFileName 
+            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Package Deployment Already Exists for: $packageName"
         }
     }
 }
@@ -381,12 +442,24 @@ function CreateSCCMPackage() {
     if($package -eq $null -or !$package)
     {
         Write-Host "`t`tCreating Package: $Name"
+        <# write log#>
+            $lineNum = Get-CurrentLineNumber    
+            $filName = Get-CurrentFileName 
+            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Creating Package: $Name"
         $package = New-CMPackage -Name $Name  -Path $path
     } else {
         Write-Host "`t`tAlready Exists"	
+        <# write log#>
+            $lineNum = Get-CurrentLineNumber    
+            $filName = Get-CurrentFileName 
+            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Already Exists"	
     }
 		
     Write-Host "`t`tSetting Package Properties"
+    <# write log#>
+            $lineNum = Get-CurrentLineNumber    
+            $filName = Get-CurrentFileName 
+            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Setting Package Properties"
 
 	Set-CMPackage -Name $packageName -Priority High -EnableBinaryDeltaReplication $UpdateOnlyChangedBits
 
@@ -419,16 +492,32 @@ function CreateSCCMProgram() {
     $commandLine = "SCO365PPTrigger.exe -EnableLogging true -C2RArgs `"updatepromptuser=false forceappshutdown=false displaylevel=false`""
 
     Write-Host "`tProgram: $Name"
+    <# write log#>
+            $lineNum = Get-CurrentLineNumber    
+            $filName = Get-CurrentFileName 
+            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Program: $Name"
 
     if($program -eq $null -or !$program)
     {
-        Write-Host "`t`tCreating Program..."	        
+        Write-Host "`t`tCreating Program..."	 
+        <# write log#>
+            $lineNum = Get-CurrentLineNumber    
+            $filName = Get-CurrentFileName 
+            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Creating Program..."	 
 	    $program = New-CMProgram -PackageName $PackageName -StandardProgramName $Name -CommandLine $commandLine -ProgramRunType WhetherOrNotUserIsLoggedOn -RunMode RunWithAdministrativeRights -UserInteraction $false -RunType Hidden
     } else {
         Write-Host "`t`tAlready Exists"
+        <# write log#>
+            $lineNum = Get-CurrentLineNumber    
+            $filName = Get-CurrentFileName 
+            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Already Exists"
     }
 	
     Write-Host "`t`tSetting Program Properties"
+    <# write log#>
+            $lineNum = Get-CurrentLineNumber    
+            $filName = Get-CurrentFileName 
+            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Setting Program Properties"
 
     $program.CommandLine = $commandLine    
 	$program.SupportedOperatingSystems = GetSupportedPlatforms -requiredPlatformNames $requiredPlatformNames
@@ -659,6 +748,26 @@ function Create-FileShare() {
           25 {Write-Host "Share:$name Path:$path Result:Network Name Not Found" -foregroundcolor red -backgroundcolor yellow;break}
           default {Write-Host "Share:$name Path:$path Result:*** Unknown Error ***" -foregroundcolor red -backgroundcolor yellow;break}
      }
+     $switchVar = ""
+     switch ($($R.ReturnValue))
+     {
+          
+          0 { break}
+          2 {$switchVar= "Share:$name Path:$path Result:Access Denied"}
+          8 {$switchVar= "Share:$name Path:$path Result:Unknown Failure"}
+          9 {$switchVar= "Share:$name Path:$path Result:Invalid Name"}
+          10 {$switchVar= "Share:$name Path:$path Result:Invalid Level"}
+          21 {$switchVar= "Share:$name Path:$path Result:Invalid Parameter"}
+          22 {$switchVar= "Share:$name Path:$path Result:Duplicate Share"}
+          23 {$switchVar= "Share:$name Path:$path Result:Reedirected Path"}
+          24 {$switchVar= "Share:$name Path:$path Result:Unknown Device or Directory"}
+          25 {$switchVar= "Share:$name Path:$path Result:Network Name Not Found"}
+          default {$switchVar= "Share:$name Path:$path Result:*** Unknown Error ***"}
+     }
+     <# write log#>
+            $lineNum = Get-CurrentLineNumber    
+            $filName = Get-CurrentFileName 
+            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError $switchVar
 }
 
 function GetSCCMPSModulePath() {
@@ -712,6 +821,10 @@ function GetSCCMPSModulePath() {
     }
 
     if (!$pathExists) {
+    <# write log#>
+            $lineNum = Get-CurrentLineNumber    
+            $filName = Get-CurrentFileName 
+            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Cannot find the ConfigurationManager.psd1 file. Please use the -SCCMPSModulePath parameter to specify the location of the PowerShell Module"
        throw "Cannot find the ConfigurationManager.psd1 file. Please use the -SCCMPSModulePath parameter to specify the location of the PowerShell Module"
     }
 
@@ -724,8 +837,41 @@ Function Get-Site([string[]]$computerName = $env:COMPUTERNAME) {
         if ($_.ProviderForLocalSite -eq $true){$SiteCode=$_.sitecode} 
     } 
     if ($SiteCode -eq "") { 
+    <# write log#>
+            $lineNum = Get-CurrentLineNumber    
+            $filName = Get-CurrentFileName 
+            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Sitecode of ConfigMgr Site at " + $ComputerName + " could not be determined."
         throw ("Sitecode of ConfigMgr Site at " + $ComputerName + " could not be determined.") 
     } else { 
         Return $SiteCode 
     } 
+}
+
+
+
+Function WriteToLogFile() {
+    param( 
+      [Parameter(Mandatory=$true)]
+      [string]$LNumber,
+      [Parameter(Mandatory=$true)]
+      [string]$FName,
+      [Parameter(Mandatory=$true)]
+      [string]$ActionError
+   )
+   try{
+   $headerString = "Time".PadRight(30, ' ') + "Line Number".PadRight(15,' ') + "FileName".PadRight(60,' ') + "Action"
+$stringToWrite = $(Get-Date -Format G).PadRight(30, ' ') + $($LNumber).PadRight(15, ' ') + $($FName).PadRight(60,' ') + $ActionError
+   #check if file exists, create if it doesn't
+   $getCurrentDatePath = "C:\Windows\Temp\" + (Get-Date -Format u).Substring(0,10)+"OfficeAutoScriptLog.txt"
+   if(Test-Path $getCurrentDatePath){#if exists, append
+   
+        Add-Content $getCurrentDatePath $stringToWrite
+   }
+   else{#if not exists, create new
+        Add-Content $getCurrentDatePath $headerString
+        Add-Content $getCurrentDatePath $stringToWrite
+   }
+   } catch [Exception]{
+   Write-Host $_
+   }
 }
