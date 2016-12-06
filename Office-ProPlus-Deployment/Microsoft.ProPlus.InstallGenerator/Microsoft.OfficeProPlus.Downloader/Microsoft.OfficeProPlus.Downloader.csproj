@@ -57,6 +57,8 @@
     <Compile Include="Model\File.cs" />
     <Compile Include="Model\OfficeEditionSelection.cs" />
     <Compile Include="Model\OfficeEdition.cs" />
+    <Compile Include="Model\Update.cs" />
+    <Compile Include="Model\UpdateChannel.cs" />
     <Compile Include="Model\UpdateFiles.cs" />
     <Compile Include="ProPlusDownloader.cs" />
     <Compile Include="FileDownloader.cs" />

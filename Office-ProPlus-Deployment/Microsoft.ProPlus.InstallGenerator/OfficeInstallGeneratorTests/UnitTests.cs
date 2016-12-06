@@ -39,6 +39,16 @@ namespace OfficeInstallGeneratorTests
         }
 
         [TestMethod]
+        public async Task TestProPlusDownloadVersionHistory()
+        {
+
+            var proPlusDownloader = new ProPlusDownloader();
+
+            await proPlusDownloader.DownloadReleaseHistoryCabAsync();
+
+        }
+
+        [TestMethod]
         public void TestGetOfficeVersions()
         {
 

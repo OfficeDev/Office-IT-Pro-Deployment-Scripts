@@ -52,20 +52,24 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WixSharp45", "WixSharp45", "{F9C55054-8605-4ED6-9A6C-8101035D65BC}"
 	ProjectSection(SolutionItems) = preProject
 		ProjectFiles\WixSharp45\WixSharp.dll = ProjectFiles\WixSharp45\WixSharp.dll
-		..\..\..\..\Downloads\wixsharp\WixSharp.dll = ..\..\..\..\Downloads\wixsharp\WixSharp.dll
-		..\..\..\..\Downloads\wixsharp\WixSharp.Lab.dll = ..\..\..\..\Downloads\wixsharp\WixSharp.Lab.dll
-		..\..\..\..\Downloads\wixsharp\WixSharp.Lab.xml = ..\..\..\..\Downloads\wixsharp\WixSharp.Lab.xml
+		..\..\..\Downloads\wixsharp\WixSharp.dll = ..\..\..\Downloads\wixsharp\WixSharp.dll
+		..\..\..\Downloads\wixsharp\WixSharp.Lab.dll = ..\..\..\Downloads\wixsharp\WixSharp.Lab.dll
+		..\..\..\Downloads\wixsharp\WixSharp.Lab.xml = ..\..\..\Downloads\wixsharp\WixSharp.Lab.xml
 		ProjectFiles\WixSharp45\WixSharp.Msi.dll = ProjectFiles\WixSharp45\WixSharp.Msi.dll
-		..\..\..\..\Downloads\wixsharp\WixSharp.Msi.dll = ..\..\..\..\Downloads\wixsharp\WixSharp.Msi.dll
-		..\..\..\..\Downloads\wixsharp\WixSharp.Msi.xml = ..\..\..\..\Downloads\wixsharp\WixSharp.Msi.xml
-		..\..\..\..\Downloads\wixsharp\WixSharp.Reference.chm = ..\..\..\..\Downloads\wixsharp\WixSharp.Reference.chm
+		..\..\..\Downloads\wixsharp\WixSharp.Msi.dll = ..\..\..\Downloads\wixsharp\WixSharp.Msi.dll
+		..\..\..\Downloads\wixsharp\WixSharp.Msi.xml = ..\..\..\Downloads\wixsharp\WixSharp.Msi.xml
+		..\..\..\Downloads\wixsharp\WixSharp.Reference.chm = ..\..\..\Downloads\wixsharp\WixSharp.Reference.chm
 		ProjectFiles\WixSharp45\WixSharp.UI.dll = ProjectFiles\WixSharp45\WixSharp.UI.dll
-		..\..\..\..\Downloads\wixsharp\WixSharp.UI.dll = ..\..\..\..\Downloads\wixsharp\WixSharp.UI.dll
-		..\..\..\..\Downloads\wixsharp\WixSharp.UI.xml = ..\..\..\..\Downloads\wixsharp\WixSharp.UI.xml
-		..\..\..\..\Downloads\wixsharp\WixSharp.xml = ..\..\..\..\Downloads\wixsharp\WixSharp.xml
+		..\..\..\Downloads\wixsharp\WixSharp.UI.dll = ..\..\..\Downloads\wixsharp\WixSharp.UI.dll
+		..\..\..\Downloads\wixsharp\WixSharp.UI.xml = ..\..\..\Downloads\wixsharp\WixSharp.UI.xml
+		..\..\..\Downloads\wixsharp\WixSharp.xml = ..\..\..\Downloads\wixsharp\WixSharp.xml
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestCode", "TestCode\TestCode.csproj", "{773B8C58-63B6-4B72-A231-1D999F5ECB9A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Web", "Web", "{2148509A-2948-4253-BC52-BE4F40EA6EC7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OfficeVersionHistory", "OfficeVersionHistory\OfficeVersionHistory.csproj", "{42FB0C9E-CBD8-4321-AFFA-E95D9FCDE423}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -117,6 +121,10 @@ Global
 		{773B8C58-63B6-4B72-A231-1D999F5ECB9A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{773B8C58-63B6-4B72-A231-1D999F5ECB9A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{773B8C58-63B6-4B72-A231-1D999F5ECB9A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{42FB0C9E-CBD8-4321-AFFA-E95D9FCDE423}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{42FB0C9E-CBD8-4321-AFFA-E95D9FCDE423}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{42FB0C9E-CBD8-4321-AFFA-E95D9FCDE423}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{42FB0C9E-CBD8-4321-AFFA-E95D9FCDE423}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -130,5 +138,6 @@ Global
 		{57E3E5C7-FF48-4538-8B90-5AB106D87C6D} = {6676105C-F83B-4B9F-B055-7056C8695E8A}
 		{56E8080F-FFEB-47CD-ADB9-92245F92565B} = {5B15E1D7-8BC7-4388-A02A-346BCEB9B089}
 		{F9C55054-8605-4ED6-9A6C-8101035D65BC} = {0DBDAE31-AE63-4704-893E-ACBF5064379F}
+		{42FB0C9E-CBD8-4321-AFFA-E95D9FCDE423} = {2148509A-2948-4253-BC52-BE4F40EA6EC7}
 	EndGlobalSection
 EndGlobal

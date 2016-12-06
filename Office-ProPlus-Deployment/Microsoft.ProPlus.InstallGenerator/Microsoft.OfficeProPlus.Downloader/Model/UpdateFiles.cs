@@ -19,8 +19,5 @@ namespace Microsoft.OfficeProPlus.Downloader.Model
         public List<File> Files { get; set; }
 
         public OfficeEdition OfficeEdition { get; set; }
-
-      
-
     }
 }

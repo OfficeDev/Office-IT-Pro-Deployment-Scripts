@@ -7,7 +7,6 @@ D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGenerator\bin\Debug\Microsoft.Deployment.WindowsInstaller.dll
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGenerator\bin\Debug\Micorosft.OfficeProPlus.ConfigurationXml.pdb
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGenerator\bin\Debug\Microsoft.OfficeProPlus.MSIGen.pdb
-D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGenerator\bin\Debug\Microsoft.Deployment.WindowsInstaller.xml
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGenerator\obj\Debug\Microsoft.OfficeProPlus.InstallGenerator.csprojResolveAssemblyReference.cache
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGenerator\obj\Debug\Microsoft.OfficeProPlus.InstallGenerator.Properties.Resources.resources
 D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGenerator\obj\Debug\Microsoft.OfficeProPlus.InstallGenerator.csproj.GenerateResource.Cache
@@ -83,3 +82,4 @@ C:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deplo
 C:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGenerator\obj\Debug\Microsoft.OfficeProPlus.InstallGenerator.csproj.GenerateResource.Cache
 C:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGenerator\obj\Debug\OfficeInstallGenerator.dll
 C:\Users\jojones\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGenerator\obj\Debug\OfficeInstallGenerator.pdb
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGenerator\bin\Debug\WixSharp.xml

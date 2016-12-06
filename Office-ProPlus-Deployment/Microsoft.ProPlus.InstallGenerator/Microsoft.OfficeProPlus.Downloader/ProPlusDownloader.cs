@@ -18,6 +18,7 @@ namespace Microsoft.OfficeProPlus.Downloader
     public class ProPlusDownloader
     {
         private const string OfficeVersionUrl = "http://officecdn.microsoft.com/pr/wsus/ofl.cab";
+        private const string OfficeVersionHistoryUrl = "http://officecdn.microsoft.com/pr/wsus/releasehistory.cab";
 
         private List<UpdateFiles> _updateFiles { get; set; }
 
@@ -290,6 +291,7 @@ namespace Microsoft.OfficeProPlus.Downloader
 
             var cabPath = Environment.ExpandEnvironmentVariables(@"%temp%\" + guid);
             Directory.CreateDirectory(cabPath);
+
             var localCabPath = Environment.ExpandEnvironmentVariables(@"%temp%\" + guid + @"\" + guid + ".cab");
             if (File.Exists(localCabPath)) File.Delete(localCabPath);
 
@@ -365,6 +367,88 @@ namespace Microsoft.OfficeProPlus.Downloader
                 updateFiles32,
                 updateFiles64
             };
+        }
+
+        public async Task<List<UpdateChannel>> DownloadReleaseHistoryCabAsync()
+        {
+            var guid = Guid.NewGuid().ToString();
+
+            var cabPath = Environment.ExpandEnvironmentVariables(@"%temp%\" + guid);
+            Directory.CreateDirectory(cabPath);
+
+            var localCabPath = Environment.ExpandEnvironmentVariables(@"%temp%\" + guid + @"\" + guid + ".cab");
+            if (File.Exists(localCabPath)) File.Delete(localCabPath);
+
+            var now = DateTime.Now;
+
+            var tmpReleaseHistory = Environment.ExpandEnvironmentVariables(@"%temp%\" + now.Year + now.Month + now.Day + now.Hour + "_ReleaseHistory.xml");
+            if (!File.Exists(tmpReleaseHistory))
+            {
+                using (var releaser = await myLock.LockAsync())
+                {
+                    var tmpFileName = now.Year + now.Month + now.Day + now.Hour + ".cab";
+                    var tmpFile =
+                        Environment.ExpandEnvironmentVariables(@"%temp%\" + tmpFileName);
+
+                    if (File.Exists(tmpFile))
+                    {
+                        Retry.Block(10, 1, () => File.Copy(tmpFile, localCabPath, true));
+                    }
+
+                    if (!File.Exists(localCabPath))
+                    {
+                        var fd = new FileDownloader();
+                        await fd.DownloadAsync(OfficeVersionHistoryUrl, localCabPath);
+                        try
+                        {
+                            File.Copy(localCabPath, tmpFile);
+                        }
+                        catch
+                        {
+                        }
+                    }
+
+                    var cabExtractor = new CabExtractor(localCabPath);
+                    cabExtractor.ExtractCabFiles();
+
+                    var dirInfo = new DirectoryInfo(Environment.ExpandEnvironmentVariables(@"%temp%"));
+                    foreach (var file in dirInfo.GetFiles("*.cab"))
+                    {
+                        try
+                        {
+                            if (!file.FullName.Equals(tmpFileName, StringComparison.InvariantCultureIgnoreCase))
+                            {
+                                File.Delete(file.FullName);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            
+                        }
+                    }
+                }
+            }
+
+            var releaseHistoryPath = Environment.ExpandEnvironmentVariables(@"%temp%\" + guid + @"\ExtractedFiles\ReleaseHistory.xml");
+            if (File.Exists(tmpReleaseHistory))
+            {
+                releaseHistoryPath = tmpReleaseHistory;
+            }
+            else
+            {
+                Retry.Block(10, 1, () => File.Copy(releaseHistoryPath, tmpReleaseHistory, true));
+            }
+
+            var releaseHistory = GenerateReleaseHistory(releaseHistoryPath);
+
+            try
+            {
+                if (File.Exists(localCabPath)) File.Delete(localCabPath);
+                if (Directory.Exists(cabPath)) Directory.Delete(cabPath, true);
+            }
+            catch { }
+
+            return releaseHistory;
         }
 
         public async Task<string> GetChannelNameFromUrlAsync(string channelUrl, OfficeEdition officeEdition)
@@ -468,6 +552,53 @@ namespace Microsoft.OfficeProPlus.Downloader
                channelVersionJson = await webClient.DownloadStringTaskAsync(AppSettings.BranchVersionUrl);
             }
             return channelVersionJson;
+        }
+
+        private List<UpdateChannel> GenerateReleaseHistory(string xmlFilePath)
+        {
+            var updateChannels = new List<UpdateChannel>();
+
+            var xmlDoc = new XmlDocument();
+            xmlDoc.Load(xmlFilePath);
+
+            var xmlUpdateChannels = xmlDoc.SelectNodes("/ReleaseHistory/UpdateChannel");
+            foreach (XmlNode xmlUpdateChannel in xmlUpdateChannels)
+            {
+                var name = xmlUpdateChannel.GetAttributeValue("Name");
+
+                var updateChannel = new UpdateChannel
+                {
+                    Name = name,
+                    Updates = new List<Update>()
+                };
+
+                var updates = xmlUpdateChannel.SelectNodes("./Update");                
+                foreach (XmlNode xmlUpdate in updates)
+                {
+                    var latest = Convert.ToBoolean(xmlUpdate.GetAttributeValue("Latest"));
+                    var version = xmlUpdate.GetAttributeValue("Version");
+                    var legacyVersion = xmlUpdate.GetAttributeValue("LegacyVersion");
+                    var build = xmlUpdate.GetAttributeValue("Build");
+                    var pubTime = xmlUpdate.GetAttributeValue("PubTime");
+
+                    var publishTime = XmlConvert.ToDateTime(pubTime, XmlDateTimeSerializationMode.Utc);
+
+                    var update = new Update()
+                    {
+                        Build = build,
+                        Latest = latest,
+                        LegacyVersion = legacyVersion,
+                        Version = version,
+                        PublishTime = publishTime
+                    };
+
+                    updateChannel.Updates.Add(update);
+                }
+
+                updateChannels.Add(updateChannel);
+            }
+
+            return updateChannels;
         }
 
         private UpdateFiles GenerateUpdateFiles(string xmlFilePath)

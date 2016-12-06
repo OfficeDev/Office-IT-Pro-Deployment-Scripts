@@ -89,3 +89,4 @@ C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deploy
 C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGeneratorTests\obj\Release\OfficeInstallGeneratorTests.csprojResolveAssemblyReference.cache
 C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGeneratorTests\obj\Release\OfficeInstallGeneratorTests.dll
 C:\Users\Abaker\Documents\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGeneratorTests\obj\Release\OfficeInstallGeneratorTests.pdb
+D:\Office-IT-Pro-Deployment-Scripts\Office-ProPlus-Deployment\Microsoft.ProPlus.InstallGenerator\OfficeInstallGeneratorTests\bin\Release\WixSharp.xml

@@ -8,6 +8,8 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("helpfiles/downloadpathinfo.html")]
+[assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("helpfiles/remotelogginginfo.html")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("helpfiles/remoteconfiguration.html")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("helpfiles/embedofficeinstall.html")]
 [assembly: System.Windows.Resources.AssemblyAssociatedContentFileAttribute("helpfiles/enablesccmsupportinfo.html")]
