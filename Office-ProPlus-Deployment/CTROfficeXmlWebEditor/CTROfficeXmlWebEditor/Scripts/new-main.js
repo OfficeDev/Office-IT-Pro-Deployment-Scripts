@@ -2,8 +2,10 @@
 var selectDate;
 var odt2016Window;
 var odt2013Window;
+var loading = false;
 var xmlHistoryLength = 0;
 var versionData;
+var officeExcludeProducts = ["Access", "Excel", "Groove", "Lync", "OneNote", "Outlook", "OneDrive", "PowerPoint", "Publisher", "Word"];
 
 $(document).ready(function () {
     var finput = document.getElementById('fileInput');
@@ -189,16 +191,15 @@ $(document).ready(function () {
     });
 
     $("#btAddProduct").on('click', function () {
-        
-
         if ($("#cbProduct").val() === "LanguagePack" && $("#btAddProduct").text() !== "Edit Product") {
             alert("If creating a language pack, please set the first language to the client computer's culture language.  If the first language set does not match the client's culture language then the chosen language will be installed as the Shell UI language.");
         }
 
         var xmlDoc = getXmlDocument();
 
-
         odtAddProduct(xmlDoc);
+
+        setExcludeAppState(xmlDoc);
 
         displayXml(xmlDoc);
 
@@ -207,10 +208,29 @@ $(document).ready(function () {
         return false;
     });
 
+    $("#btSaveExcludePrograms").on('click', function () {
+        var xmlDoc = getXmlDocument();
+
+        var selectedProduct = $("#cbExcludeProduct").val();
+        for (var p = officeExcludeProducts.length - 1; p >= 0 ; p--) {
+            var productId = "#exclude" + officeExcludeProducts[p];
+            var included = $(productId)[0].checked;
+            if (included) {
+                odtRemoveExcludeApp(xmlDoc, selectedProduct, officeExcludeProducts[p]);
+            } else {
+                odtAddExcludeApp(xmlDoc, selectedProduct, officeExcludeProducts[p]);
+            }
+        }
+
+        displayXml(xmlDoc);
+    });
+
     $("#btRemoveProduct").on('click', function () {
         var xmlDoc = getXmlDocument();
 
         odtRemoveProduct(xmlDoc);
+
+        setExcludeAppState(xmlDoc);
 
         displayXml(xmlDoc);
 
@@ -235,6 +255,13 @@ $(document).ready(function () {
         return false;
     });
 
+    $("#cbExcludeProduct").change(function () {
+        var xmlDoc = getXmlDocument();
+
+        setExcludeAppState(xmlDoc);
+
+        loadExcludedApps();
+    });
 
     $("#cbBranch").change(function () {
         if ($("#office2016Select").hasClass('is-selected')) {
@@ -901,9 +928,9 @@ function changeVersions(version) {
 
 function downloadOdt() {
     if ($("#office2016Select").hasClass('is-selected')) {
-        odt2016Window = OpenInNewTab("https://www.microsoft.com/en-us/download/details.aspx?id=49117");
+        odt2016Window = OpenInNewTab("http://aka.ms/odt2016");
     } else {
-        odt2013Window = OpenInNewTab("https://www.microsoft.com/en-us/download/details.aspx?id=36778");
+        odt2013Window = OpenInNewTab("http://aka.ms/odt2013");
     }
 }
 
@@ -1569,8 +1596,6 @@ function odtAddProduct(xmlDoc) {
         addNode.removeChild(products[0]);
     }
 
-
-
     if (selectSourcePath) {
         addNode.setAttribute("SourcePath", selectSourcePath);
     } else {
@@ -1653,8 +1678,6 @@ function odtAddProduct(xmlDoc) {
         $("#btRemoveProduct").prop("disabled", false);
         $("#btAddLanguage").prop("disabled", true);
     }
-
-
 }
 
 function odtRemoveProduct(xmlDoc) {
@@ -1943,21 +1966,23 @@ function odtDeleteRemoveApp(xmlDoc) {
 
 
 function odtAddExcludeApp(xmlDoc) {
-
-
     $("#cbExcludeApp").msdropdownval();
 
     var selectedProduct = $("#cbProduct").val();
     var selectExcludeApp = $("#cbExcludeApp").val();
 
+    odtAddExcludeApp(xmlDoc, selectedProduct, selectExcludeApp);
+
+    var exCount = getExcludeAppNodeCount(xmlDoc, selectedProduct);
+    $("#btRemoveExcludeApp").prop("disabled", !(exCount > 0));
+}
+
+function odtAddExcludeApp(xmlDoc, selectedProduct, selectExcludeApp) {
     var addNode = null;
 
     var nodes = xmlDoc.documentElement.getElementsByTagName("Add");
     if (nodes.length > 0) {
         addNode = xmlDoc.documentElement.getElementsByTagName("Add")[0];
-
-
-
 
         var productNode = getProductNode(addNode, selectedProduct);
         if (productNode) {
@@ -1986,6 +2011,13 @@ function odtRemoveExcludeApp(xmlDoc) {
     var selectedProduct = $("#cbProduct").val();
     var selectExcludeApp = $("#cbExcludeApp").val();
 
+    odtRemoveExcludeApp(xmlDoc, selectedProduct, selectExcludeApp);
+
+    var langCount = getExcludeAppNodeCount(xmlDoc, selectedProduct);
+    $("#btRemoveExcludeApp").prop("disabled", !(langCount > 0));
+}
+
+function odtRemoveExcludeApp(xmlDoc, selectedProduct, selectExcludeApp) {
     var addNode = null;
 
     var nodes = xmlDoc.documentElement.getElementsByTagName("Add");
@@ -2002,9 +2034,6 @@ function odtRemoveExcludeApp(xmlDoc) {
             }
         }
     }
-
-    var langCount = getExcludeAppNodeCount(xmlDoc, selectedProduct);
-    $("#btRemoveExcludeApp").prop("disabled", !(langCount > 0));
 }
 
 
@@ -2508,11 +2537,91 @@ function setDropDownValue(id, value) {
     });
 }
 
+function setExcludeAppState(inXmlDoc) {
+    var xmlDoc = inXmlDoc;
+    if (!(xmlDoc)) {
+        xmlDoc = getXmlDocument();
+    }
+
+    var selectedProduct = $("#cbExcludeProduct").val();
+
+    var productExists = false;
+    var nodes = xmlDoc.documentElement.getElementsByTagName("Add");
+    if (nodes.length > 0) {
+        var addNode = xmlDoc.documentElement.getElementsByTagName("Add")[0];
+        var products = addNode.getElementsByTagName("Product");
+
+        for (var p = 0; p < products.length; p++) {
+            var productNode = products[p];
+            var tmpProductName = productNode.getAttribute("ID");
+            if (selectedProduct == tmpProductName) {
+                productExists = true;
+            }
+        }
+    }
+
+    for (var p = 0; p < officeExcludeProducts.length; p++) {
+        var productName = officeExcludeProducts[p];
+        if (productExists) {
+            $("#exclude" + productName)[0].disabled = false;
+            $("#exclude" + productName)[0].checked = true;
+        } else {
+            $("#exclude" + productName)[0].checked = false;
+            $("#exclude" + productName)[0].disabled = true;
+        }
+    }
+}
+
+function loadExcludedApps(inXmlDoc) {
+    
+    var xmlDoc = inXmlDoc;
+    if (!(xmlDoc)) {
+        xmlDoc = getXmlDocument();
+    }
+
+    var selectedProduct = $("#cbExcludeProduct").val();
+
+    var addNode = null;
+    var nodes = xmlDoc.documentElement.getElementsByTagName("Add");
+    if (nodes.length > 0) {
+        addNode = xmlDoc.documentElement.getElementsByTagName("Add")[0];
+
+        var products = addNode.getElementsByTagName("Product");
+        if (products.length > 0) {
+
+            for (var r = 0; r < products.length; r++) {
+                var productNode = products[0];
+                var tmpProductName = productNode.getAttribute("ID");
+                if (tmpProductName.toLowerCase() == selectedProduct.toLowerCase()) {
+                    
+                    var exApps = productNode.getElementsByTagName("ExcludeApp");
+
+                    for (var p = 0; p < officeExcludeProducts.length; p++) {
+                        var programName = officeExcludeProducts[p];
+                        $("#exclude" + programName)[0].disabled = false;
+                        $("#exclude" + programName)[0].checked = true;
+                    }
+
+                    for (var e = 0; e < exApps.length; e++) {
+                        var excludeAppId = exApps[e].getAttribute("ID");
+                        $("#exclude" + excludeAppId)[0].checked = false;
+                    }
+
+                }
+            }
+
+
+        }
+    }
+}
+
 function loadUploadXmlFile(inXmlDoc) {
     var xmlDoc = inXmlDoc;
     if (!(xmlDoc)) {
         xmlDoc = getXmlDocument();
     }
+
+    loading = true;
 
     var addNode = null;
     var nodes = xmlDoc.documentElement.getElementsByTagName("Add");
@@ -2529,19 +2638,10 @@ function loadUploadXmlFile(inXmlDoc) {
 
             $("select#cbProduct").msdropdownval(productId);
 
+            $("#cbExcludeProduct").msdropdownval(productId);
+
             var pidKey = product.getAttribute("PIDKEY");
             $("#txtPidKey").val(pidKey);
-
-            var exApps = product.getElementsByTagName("ExcludeApp");
-            if (exApps.length > 0) {
-                var exApp = exApps[0];
-                var excludeAppId = exApp.getAttribute("ID");
-                $("#cbExcludeApp").msdropdownval(excludeAppId);
-
-                $("#btRemoveExcludeApp").prop("disabled", false);
-            } else {
-                $("#btRemoveExcludeApp").prop("disabled", true);
-            }
         }
 
         var version = addNode.getAttribute("Version");
@@ -2561,6 +2661,10 @@ function loadUploadXmlFile(inXmlDoc) {
             $("#cbBranch").msdropdownval(selectedBranch);
             // $("#office2016Select").addClass("is-selected");
         }
+
+        loadExcludedApps(xmlDoc);
+
+        loading = false;
     }
 
     var removeNode = null;
@@ -2791,6 +2895,14 @@ function clearXml() {
     odtToggleLogging();
     odtToggleRemoveApp();
     odtToggleUpdate();
+
+    for (var p = 0; p < officeExcludeProducts.length; p++) {
+        var productName = officeExcludeProducts[p];
+        $("#exclude" + productName)[0].checked = true;
+        $("#exclude" + productName)[0].disabled = false;
+    }
+
+    setExcludeAppState();
 
     $.cookie("xmlcache", "");
 

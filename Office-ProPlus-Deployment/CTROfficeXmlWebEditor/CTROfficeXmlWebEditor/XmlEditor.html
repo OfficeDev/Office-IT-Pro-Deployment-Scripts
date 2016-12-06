@@ -272,6 +272,9 @@
                                         <div id="addProductRow" class="ms-Table-row  is-selected navrow">
                                             <span class="ms-Table-cell" onclick="setPanel('AddProductPanel', 'addProductRow')">Add Product</span>
                                         </div>
+                                        <div id="excludeProductsRow" class="ms-Table-row navrow">
+                                            <span class="ms-Table-cell" onclick="setPanel('ExcludeProductsPanel', 'excludeProductsRow')">Exclude Programs</span>
+                                        </div>
                                         <div id="removeProductRow" class="ms-Table-row navrow">
                                             <span class="ms-Table-cell" onclick="setPanel('RemoveProductPanel', 'removeProductRow')">Remove Product</span>
                                         </div>
@@ -602,6 +605,138 @@
                                     </div>
                                 </div>
                                 <!-- End Add Product Panel -->
+                                <!-- Start Exclude Office Programs Panel -->
+                                <div id="ExcludeProductsPanel" class="option-panel">
+                                    <table>
+                                        <tr>
+                                            <td>
+                                                <h1 class="ms-font-xxl">Exclude Office Programs</h1>
+                                            </td>
+                                            <td>
+                                                <i id="excludeProductsIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('excludeProductsInfo', this)"></i>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                        <table>
+                                            <tr>
+                                                <td>
+                                                    <label class="ms-Label">Product</label>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        <div class="ms-Dropdown">
+                                            <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
+                                            <select id="cbExcludeProduct" class="ms-Dropdown-select">
+                                                <option value="O365ProPlusRetail">Office 365 ProPlus</option>
+                                                <option value="O365BusinessRetail">Office 365 for Business</option>
+                                            </select>
+                                        </div>
+
+                                    <table style="position: relative; left: 70px;">
+                                        <tr>
+                                            <td style="width: 100px;">
+                                                <div class="ms-Toggle">
+                                                    <span class="ms-Toggle-description" style="position: relative; left: -60px; top: 30px;">Access</span>
+                                                    <input type="checkbox" id="excludeAccess" class="ms-Toggle-input" checked />
+                                                    <label for="excludeAccess" class="ms-Toggle-field">
+                                                        <span class="ms-Label ms-Label--off">Excluded</span>
+                                                        <span class="ms-Label ms-Label--on">Included</span>
+                                                    </label>
+                                                </div>
+
+                                                <div class="ms-Toggle" style="position: relative; top: -40px;">
+                                                    <span class="ms-Toggle-description" style="position: relative; left: -60px; top: 30px;">Excel</span>
+                                                    <input type="checkbox" id="excludeExcel" class="ms-Toggle-input" checked />
+                                                    <label for="excludeExcel" class="ms-Toggle-field">
+                                                        <span class="ms-Label ms-Label--off">Excluded</span>
+                                                        <span class="ms-Label ms-Label--on">Included</span>
+                                                    </label>
+                                                </div>
+
+                                                <div class="ms-Toggle" style="position: relative; top: -80px;">
+                                                    <span class="ms-Toggle-description" style="position: relative; left: -60px; top: 30px;">OneNote</span>
+                                                    <input type="checkbox" id="excludeOneNote" class="ms-Toggle-input" checked />
+                                                    <label for="excludeOneNote" class="ms-Toggle-field">
+                                                        <span class="ms-Label ms-Label--off">Excluded</span>
+                                                        <span class="ms-Label ms-Label--on">Included</span>
+                                                    </label>
+                                                </div>
+
+                                                <div class="ms-Toggle" style="position: relative; top: -120px;">
+                                                    <span class="ms-Toggle-description" style="position: relative; left: -60px; top: 30px;">OneDrive</span>
+                                                    <input type="checkbox" id="excludeOneDrive" class="ms-Toggle-input" checked />
+                                                    <label for="excludeOneDrive" class="ms-Toggle-field">
+                                                        <span class="ms-Label ms-Label--off">Excluded</span>
+                                                        <span class="ms-Label ms-Label--on">Included</span>
+                                                    </label>
+                                                </div>
+
+                                                <div class="ms-Toggle" style="position: relative; top: -160px;">
+                                                    <span class="ms-Toggle-description" style="position: relative; left: -60px; top: 30px;">Publisher</span>
+                                                    <input type="checkbox" id="excludePublisher" class="ms-Toggle-input" checked  />
+                                                    <label for="excludePublisher" class="ms-Toggle-field">
+                                                        <span class="ms-Label ms-Label--off">Excluded</span>
+                                                        <span class="ms-Label ms-Label--on">Included</span>
+                                                    </label>
+                                                </div>
+                                            </td>
+                                            <td style="width: 140px;"></td>
+                                            <td>
+                                                <div class="ms-Toggle">
+                                                    <span class="ms-Toggle-description" style="position: relative; left: -65px; top: 30px;">Groove</span>
+                                                    <input type="checkbox" id="excludeGroove" class="ms-Toggle-input" checked  />
+                                                    <label for="excludeGroove" class="ms-Toggle-field">
+                                                        <span class="ms-Label ms-Label--off">Excluded</span>
+                                                        <span class="ms-Label ms-Label--on">Included</span>
+                                                    </label>
+                                                </div>
+
+                                                <div class="ms-Toggle" style="position: relative; top: -40px;">
+                                                    <span class="ms-Toggle-description" style="position: relative; left: -65px; top: 30px;">Lync</span>
+                                                    <input type="checkbox" id="excludeLync" class="ms-Toggle-input" checked />
+                                                    <label for="excludeLync" class="ms-Toggle-field">
+                                                        <span class="ms-Label ms-Label--off">Excluded</span>
+                                                        <span class="ms-Label ms-Label--on">Included</span>
+                                                    </label>
+                                                </div>
+
+                                                <div class="ms-Toggle" style="position: relative; top: -80px;">
+                                                    <span class="ms-Toggle-description" style="position: relative; left: -65px; top: 30px;">Outlook</span>
+                                                    <input type="checkbox" id="excludeOutlook" class="ms-Toggle-input" checked />
+                                                    <label for="excludeOutlook" class="ms-Toggle-field">
+                                                        <span class="ms-Label ms-Label--off">Excluded</span>
+                                                        <span class="ms-Label ms-Label--on">Included</span>
+                                                    </label>
+                                                </div>
+
+                                                <div class="ms-Toggle" style="position: relative; top: -120px;">
+                                                    <span class="ms-Toggle-description" style="position: relative; left: -65px; top: 30px;">PowerPoint</span>
+                                                    <input type="checkbox" id="excludePowerPoint" class="ms-Toggle-input" checked />
+                                                    <label for="excludePowerPoint" class="ms-Toggle-field">
+                                                        <span class="ms-Label ms-Label--off">Excluded</span>
+                                                        <span class="ms-Label ms-Label--on">Included</span>
+                                                    </label>
+                                                </div>
+
+                                                <div class="ms-Toggle" style="position: relative; top: -160px;">
+                                                    <span class="ms-Toggle-description" style="position: relative; left: -65px; top: 30px;">Word</span>
+                                                    <input type="checkbox" id="excludeWord" class="ms-Toggle-input" checked />
+                                                    <label for="excludeWord" class="ms-Toggle-field">
+                                                        <span class="ms-Label ms-Label--off">Excluded</span>
+                                                        <span class="ms-Label ms-Label--on">Included</span>
+                                                    </label>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+
+                                    <div style="margin-bottom:10px">
+                                        <button id="btSaveExcludePrograms" class="ms-Button">
+                                            Save
+                                        </button>
+                                    </div>
+                                </div>
+                                <!-- End Exclude Office Programs Panel -->
                                 <!-- Start Remove Product Panel -->
                                 <div id="RemoveProductPanel" class="option-panel">
                                     <table>
@@ -1587,7 +1722,7 @@
             </div>
         </div>
 
-    <div id="removeProductInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none">
+        <div id="removeProductInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none">
             <div class="ms-Callout-main">
                 <div class="ms-Callout-header">
                     <span style="float:right; cursor:pointer" class="ms-Icon ms-Icon--x" onclick="toggleInfo('removeProductInfo')"></span>

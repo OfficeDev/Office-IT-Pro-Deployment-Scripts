@@ -376,75 +376,84 @@ namespace Microsoft.OfficeProPlus.Downloader
             var cabPath = Environment.ExpandEnvironmentVariables(@"%temp%\" + guid);
             Directory.CreateDirectory(cabPath);
 
+            var savePath = Environment.ExpandEnvironmentVariables(@"%temp%\ReleaseHistory.xml");
+            var releaseHistoryPath = "";
+
             var localCabPath = Environment.ExpandEnvironmentVariables(@"%temp%\" + guid + @"\" + guid + ".cab");
-            if (File.Exists(localCabPath)) File.Delete(localCabPath);
-
-            var now = DateTime.Now;
-
-            var tmpReleaseHistory = Environment.ExpandEnvironmentVariables(@"%temp%\" + now.Year + now.Month + now.Day + now.Hour + "_ReleaseHistory.xml");
-            if (!File.Exists(tmpReleaseHistory))
+            try
             {
+                var now = DateTime.Now;
+
+                var tmpReleaseHistory =
+                    Environment.ExpandEnvironmentVariables(@"%temp%\" + now.Year + now.Month + now.Day + now.Hour +
+                                                           "_ReleaseHistory.xml");
                 using (var releaser = await myLock.LockAsync())
                 {
-                    var tmpFileName = now.Year + now.Month + now.Day + now.Hour + ".cab";
-                    var tmpFile =
-                        Environment.ExpandEnvironmentVariables(@"%temp%\" + tmpFileName);
+                    if (File.Exists(localCabPath)) File.Delete(localCabPath);
 
-                    if (File.Exists(tmpFile))
+                    if (!File.Exists(tmpReleaseHistory))
                     {
-                        Retry.Block(10, 1, () => File.Copy(tmpFile, localCabPath, true));
-                    }
-
-                    if (!File.Exists(localCabPath))
-                    {
-                        var fd = new FileDownloader();
-                        await fd.DownloadAsync(OfficeVersionHistoryUrl, localCabPath);
-                        try
+                        if (!File.Exists(localCabPath))
                         {
-                            File.Copy(localCabPath, tmpFile);
+                            var fd = new FileDownloader();
+                            await fd.DownloadAsync(OfficeVersionHistoryUrl, localCabPath);
                         }
-                        catch
-                        {
-                        }
+                        var cabExtractor = new CabExtractor(localCabPath);
+                        cabExtractor.ExtractCabFiles();
                     }
-
-                    var cabExtractor = new CabExtractor(localCabPath);
-                    cabExtractor.ExtractCabFiles();
 
                     var dirInfo = new DirectoryInfo(Environment.ExpandEnvironmentVariables(@"%temp%"));
-                    foreach (var file in dirInfo.GetFiles("*.cab"))
+                    foreach (var file in dirInfo.GetFiles("*_ReleaseHistory.xml"))
                     {
                         try
                         {
-                            if (!file.FullName.Equals(tmpFileName, StringComparison.InvariantCultureIgnoreCase))
+                            if (!file.FullName.Equals(tmpReleaseHistory, StringComparison.InvariantCultureIgnoreCase))
                             {
                                 File.Delete(file.FullName);
                             }
                         }
                         catch (Exception ex)
                         {
-                            
+
                         }
                     }
+
+                    releaseHistoryPath =
+                        Environment.ExpandEnvironmentVariables(@"%temp%\" + guid + @"\ExtractedFiles\ReleaseHistory.xml");
+                    if (File.Exists(tmpReleaseHistory))
+                    {
+                        releaseHistoryPath = tmpReleaseHistory;
+                    }
+                    else
+                    {
+                        Retry.Block(10, 1, () => File.Copy(releaseHistoryPath, tmpReleaseHistory, true));
+                    }
+
                 }
             }
-
-            var releaseHistoryPath = Environment.ExpandEnvironmentVariables(@"%temp%\" + guid + @"\ExtractedFiles\ReleaseHistory.xml");
-            if (File.Exists(tmpReleaseHistory))
+            catch (Exception ex)
             {
-                releaseHistoryPath = tmpReleaseHistory;
-            }
-            else
-            {
-                Retry.Block(10, 1, () => File.Copy(releaseHistoryPath, tmpReleaseHistory, true));
+                releaseHistoryPath = savePath;
             }
 
             var releaseHistory = GenerateReleaseHistory(releaseHistoryPath);
-
             try
             {
-                if (File.Exists(localCabPath)) File.Delete(localCabPath);
-                if (Directory.Exists(cabPath)) Directory.Delete(cabPath, true);
+                using (var releaser = await myLock.LockAsync())
+                {
+                    if (!string.IsNullOrEmpty(releaseHistoryPath))
+                    {
+                        if (File.Exists(releaseHistoryPath))
+                        {
+                            if (releaseHistoryPath != savePath)
+                            {
+                                File.Copy(releaseHistoryPath, savePath, true);
+                            }
+                        }
+                    }
+                    if (File.Exists(localCabPath)) File.Delete(localCabPath);
+                    if (Directory.Exists(cabPath)) Directory.Delete(cabPath, true);
+                }
             }
             catch { }
 
