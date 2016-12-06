@@ -847,38 +847,46 @@ Function Validate-UpdateSource() {
         [string] $UpdateSource = $NULL,
 
         [Parameter()]
-        [string] $Bitness = $NULL,
+        [string] $OfficeClientEdition,
+        
+        [Parameter()]
+        [string] $Bitness = "x86",
 
         [Parameter()]
-        [string[]] $OfficeLanguages = $NULL
+        [string[]] $OfficeLanguages = $null,
+
+        [Parameter()]
+        [bool]$ShowMissingFiles = $true
     )
+    
+    if(!$OfficeClientEdition)
+        {
+            #checking if office client edition is null, if not, set bitness to client office edition
+        }
+        else
+        {
+            $Bitness = $OfficeClientEdition
+        }
 
     [bool]$validUpdateSource = $true
     [string]$cabPath = ""
 
     if ($UpdateSource) {
         $mainRegPath = Get-OfficeCTRRegPath
-
-        if(!$Bitness){
-            $Bitness = "32"
-        }
-
-        $currentplatform = $Bitness
-
-        if ($currentplatform -eq "x64") {
-            $mainCab = "$UpdateSource\Office\Data\v64.cab"
-            $Bitness = "64"
-        }
-        else{
-            $mainCab = "$UpdateSource\Office\Data\v32.cab"
-            $Bitness = "32"
-        }
-
         if ($mainRegPath) {
             $configRegPath = $mainRegPath + "\Configuration"
             $currentplatform = (Get-ItemProperty HKLM:\$configRegPath -Name Platform -ErrorAction SilentlyContinue).Platform
             $updateToVersion = (Get-ItemProperty HKLM:\$configRegPath -Name UpdateToVersion -ErrorAction SilentlyContinue).UpdateToVersion
             $llcc = (Get-ItemProperty HKLM:\$configRegPath -Name ClientCulture -ErrorAction SilentlyContinue).ClientCulture
+        }
+
+        $currentplatform = $Bitness
+
+        $mainCab = "$UpdateSource\Office\Data\v32.cab"
+        $bitness = "32"
+        if ($currentplatform -eq "x64") {
+            $mainCab = "$UpdateSource\Office\Data\v64.cab"
+            $bitness = "64"
         }
 
         if (!($updateToVersion)) {
@@ -888,7 +896,7 @@ Function Validate-UpdateSource() {
            }
         }
 
-        [xml]$xml = Get-ChannelXml -Bitness $Bitness
+        [xml]$xml = Get-ChannelXml -Bitness $bitness
         if ($OfficeLanguages) {
           $languages = $OfficeLanguages
         } else {
@@ -926,7 +934,9 @@ Function Validate-UpdateSource() {
               $fileExists = $missingFiles.Contains($fullPath)
               if (!($fileExists)) {
                  $missingFiles.Add($fullPath)
-                 Write-Host "Source File Missing: $fullPath"
+                 if($ShowMissingFiles){
+                    Write-Host "Source File Missing: $fullPath"
+                 }
                  Write-Log -Message "Source File Missing: $fullPath" -severity 1 -component "Office 365 Update Anywhere" 
               }     
               $validUpdateSource = $false
