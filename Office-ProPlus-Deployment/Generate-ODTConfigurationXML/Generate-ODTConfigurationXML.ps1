@@ -1298,7 +1298,6 @@ function checkForLanguage() {
     }
 }
 
-
 function officeGetExcludedApps() {
     param(
        [Parameter(ValueFromPipelineByPropertyName=$true, Position=0)]
@@ -1408,7 +1407,6 @@ function officeGetExcludedApps() {
     }
 }
 
-
 function officeGetLanguages() {
    param(
        [Parameter(Mandatory=$true,ValueFromPipelineByPropertyName=$true)]
@@ -1491,7 +1489,6 @@ function odtGetExcludedApps() {
         return $appsToExclude;
     }
 }
-
 
 function odtAddProduct() {
     param(
@@ -1935,18 +1932,44 @@ function Win7Join([string]$st1, [string]$st2){
 }
 
 
-function Detect-Channel() {
-   [CmdletBinding()]
+function Detect-Channel {
    param( 
-      
+
    )
 
-   Process {
-      $currentBaseUrl = Get-OfficeCDNUrl
+   Process {      
       $channelXml = Get-ChannelXml
 
-      $currentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $currentBaseUrl -and $_.branch -notcontains 'Business' }
-      return $currentChannel
+      $CFGUpdateChannel = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration -Name UpdateChannel -ErrorAction SilentlyContinue).UpdateChannel
+      $CFGOfficeMgmtCOM = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration -Name OfficeMgmtCOM -ErrorAction SilentlyContinue).OfficeMgmtCOM      
+      $UPupdatechannel = (Get-ItemProperty HKLM:\SOFTWARE\Policies\Microsoft\office\16.0\common\officeupdate -Name UpdateChannel -ErrorAction SilentlyContinue).UpdateChannel      
+      $UPupdatepath = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration -Name updatepath -ErrorAction SilentlyContinue).updatepath
+      $officemgmtcom = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration -Name officemgmtcom -ErrorAction SilentlyContinue).officemgmtcom
+      $CFGUpdateUrl = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration -Name UpdateUrl -ErrorAction SilentlyContinue).UpdateUrl
+      $currentBaseUrl = Get-OfficeCDNUrl
+
+      $CurrentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $currentBaseUrl -and $_.branch -notcontains 'Business' }
+      
+      if($CFGUpdateUrl -ne $null -and $CFGUpdateUrl -like '*officecdn.microsoft.com*'){
+        $CurrentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $CFGUpdateUrl -and $_.branch -notcontains 'Business' }  
+      }
+      if($officemgmtcom -ne $null -and $officemgmtcom -like '*officecdn.microsoft.com*'){
+        $CurrentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $officemgmtcom -and $_.branch -notcontains 'Business' }  
+      }
+      if($UPupdatepath -ne $null -and $UPupdatepath -like '*officecdn.microsoft.com*'){
+        $CurrentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $UPupdatepath -and $_.branch -notcontains 'Business' }  
+      }
+      if($UPupdatechannel -ne $null -and $UPupdatechannel -like '*officecdn.microsoft.com*'){
+        $CurrentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $UPupdatechannel -and $_.branch -notcontains 'Business' }  
+      }
+      if($CFGOfficeMgmtCOM -ne $null -and $CFGOfficeMgmtCOM -like '*officecdn.microsoft.com*'){
+        $CurrentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $CFGOfficeMgmtCOM -and $_.branch -notcontains 'Business' }  
+      }
+      if($CFGUpdateChannel -ne $null -and $CFGUpdateChannel -like '*officecdn.microsoft.com*'){
+        $CurrentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $CFGUpdateChannel -and $_.branch -notcontains 'Business' }  
+      }
+
+      return $CurrentChannel
    }
 
 }
