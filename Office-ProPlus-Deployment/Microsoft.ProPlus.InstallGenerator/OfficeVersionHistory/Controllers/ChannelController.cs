@@ -5,11 +5,14 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
+using System.Web.Http.Cors;
 using Microsoft.OfficeProPlus.Downloader.Model;
 using OfficeVersionHistory.Business;
+using OfficeVersionHistory.CustomAttributes;
 
 namespace OfficeVersionHistory.Controllers
 {
+    [EnableCors(origins: "*", headers: "*", methods: "*")]
     public class ChannelController : ApiController
     {
         private readonly VersionDownloader _versionDownloader = null;
@@ -20,6 +23,7 @@ namespace OfficeVersionHistory.Controllers
         }
 
         // GET api/Channel
+        [HttpHeaderAttribute("Access-Control-Allow-Origin", "*")]
         public async Task<List<UpdateChannel>> Get()
         {
             var updateChannels = await _versionDownloader.GetUpdateChannelsAsync();
@@ -27,6 +31,7 @@ namespace OfficeVersionHistory.Controllers
         }
 
         // GET api/Channel/GetChannel
+        [HttpHeaderAttribute("Access-Control-Allow-Origin", "*")]
         [Route("api/Channel/GetChannel")]
         public async Task<UpdateChannel> GetChannel(string name)
         {

@@ -3,7 +3,7 @@
   <PropertyGroup>
     <UseIISExpress>true</UseIISExpress>
     <ProjectView>ProjectFiles</ProjectView>
-    <NameOfLastUsedPublishProfile>OfficeProPlusInfo%28OfficeProPlusInfo%29</NameOfLastUsedPublishProfile>
+    <NameOfLastUsedPublishProfile>OfficeProPlusInfo%28officeproplusinfo%29</NameOfLastUsedPublishProfile>
   </PropertyGroup>
   <ProjectExtensions>
     <VisualStudio>

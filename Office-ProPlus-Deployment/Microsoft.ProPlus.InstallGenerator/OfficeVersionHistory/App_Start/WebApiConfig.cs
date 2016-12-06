@@ -14,8 +14,9 @@ namespace OfficeVersionHistory
         public static void Register(HttpConfiguration config)
         {
             // Web API configuration and services
-
             ChannelCache = new ConcurrentDictionary<string, List<UpdateChannel>>();
+
+            config.EnableCors();
 
             // Web API routes
             config.MapHttpAttributeRoutes();

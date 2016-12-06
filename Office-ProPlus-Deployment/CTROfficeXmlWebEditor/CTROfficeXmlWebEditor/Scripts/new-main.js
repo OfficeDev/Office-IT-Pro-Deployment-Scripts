@@ -3,14 +3,9 @@ var selectDate;
 var odt2016Window;
 var odt2013Window;
 var xmlHistoryLength = 0;
+var versionData;
 
 $(document).ready(function () {
-
-
-
-
-
-
     var finput = document.getElementById('fileInput');
     finput.addEventListener('change', function (e) {
         var hWCheck = $.cookie("hideWelcome1");
@@ -62,6 +57,8 @@ $(document).ready(function () {
     setActiveTab();
 
     resizeWindow();
+
+    GetVersionData();
 
     $(window).resize(function () {
         resizeWindow();
@@ -239,14 +236,62 @@ $(document).ready(function () {
     });
 
 
-    //$("#cbBranch").change(function () {
-    //    //office2016Select
-    //    if ($("#office2016Select").hasClass('is-selected')) {
-    //        setVersionPanel("office2016Select");
-    //    } else {
-    //        setVersionPanel("office2013Select");
-    //    }
-    //});
+    $("#cbBranch").change(function () {
+        if ($("#office2016Select").hasClass('is-selected')) {
+            setVersionPanel("office2016Select");
+        } else {
+            setVersionPanel("office2013Select");
+        }
+
+        var selectedBranch = $("#cbBranch").val();
+        $("#cbUpdateBranch").msdropdownval(selectedBranch);
+    });
+
+    $("#cbUpdateBranch").change(function () {
+        if ($("#office2016Select").hasClass('is-selected')) {
+            setVersionPanel("office2016Select");
+
+            var selectVersions = [];
+            var selectedBranch = $("#cbUpdateBranch").val();
+
+            if (versionData) {
+                for (var i = 0; i < versionData.length; i++) {
+                    var flagMatch = false;
+
+                    var branchName = versionData[i].Name;
+
+                    if (branchName == "InsidersSlow") {
+                        branchName = "FirstReleaseCurrent";
+                    }
+
+                    if (branchName == selectedBranch.replace(" ", "")) {
+                        flagMatch = true;
+                    }
+
+                    if (flagMatch) {
+                        for (var v = 0; v < versionData[i].Updates.length; v++) {
+                            var update = versionData[i].Updates[v];
+                            selectVersions.push(update.LegacyVersion);
+                        }
+                    }
+                }
+
+                $('#updateVersionTextBox .typeahead').typeahead('destroy', 'NoCached');
+
+                $('#updateVersionTextBox .typeahead').typeahead({
+                    hint: true,
+                    highlight: true,
+                    minLength: 1
+                },
+                {
+                    name: 'versions',
+                    source: substringMatcher(selectVersions)
+                });
+
+                $("#txtTargetVersion").attr("placeholder", selectVersions[0]);
+            }
+        }
+    });
 
     $("#cbProduct").change(function () {
         var end = this.value;
@@ -428,8 +473,6 @@ $(document).ready(function () {
     $(window).scroll(function () {
         scrollXmlEditor();
     });
-
-    changeVersions("2016");
 
     $('#txtVersion').keydown(function (e) {
         restrictToVersion(e);
@@ -627,6 +670,20 @@ $(document).ready(function () {
 
 })(jQuery);
 
+function GetVersionData() {
+    $.ajax({
+        url: "https://microsoft-apiapp2f1d0adbd6b6403da68a8cd3e1888ddc.azurewebsites.net/api/Channel",
+        type: "GET",
+        crossDomain: true,
+        success: function(data) {
+            versionData = data;
+            changeVersions("2016");
+        },
+        error: function() {
+             alert('error');
+        }
+    });
+}
 
 function updateXmlHistory() {
 
@@ -646,7 +703,6 @@ function updateXmlHistory() {
 
     xmlHistoryLength += 1;
 }
-
 
 function undoXmlChange() {
 
@@ -788,19 +844,29 @@ function changeVersions(version) {
         $('#updateVersionTextBox .typeahead').typeahead('destroy', 'NoCached');
 
         var selectVersions = [];
-
         var selectedBranch = $("#cbBranch").val();
 
-        if (selectedBranch == "Current") {
-            selectVersions = versionsCurrent2016;
-        } else if (selectedBranch == "Deferred") {
-            selectVersions = versionsBusiness2016;
-        } else if (selectedBranch == "Validation" || selectedBranch == "FirstReleaseDeferred") {
-            selectVersions = versionsFRBusiness2016;
-        } else if (selectedBranch == "FirstReleaseCurrent") {
-            selectVersions = versionsFRCurrent2016;
-        } else {
-            selectVersions = versionsCurrent2016;
+        if (versionData) {
+            for (var i = 0; i < versionData.length; i++) {
+                var flagMatch = false;
+
+                var branchName = versionData[i].Name;
+
+                if (branchName == "InsidersSlow") {
+                    branchName = "FirstReleaseCurrent";
+                }
+
+                if (branchName == selectedBranch.replace(" ", "")) {
+                    flagMatch = true;
+                }
+
+                if (flagMatch) {
+                    for (var v = 0; v < versionData[i].Updates.length; v++) {
+                        var update = versionData[i].Updates[v];
+                        selectVersions.push(update.LegacyVersion);
+                    }
+                }
+            }
         }
 
         $('#versionTextBox .typeahead').typeahead({
