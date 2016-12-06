@@ -5,7 +5,6 @@ Param
     [PSCredential] $Credentials
 )
 
-
 function Get-ModernOfficeApps {
 <#
 .SYNOPSIS

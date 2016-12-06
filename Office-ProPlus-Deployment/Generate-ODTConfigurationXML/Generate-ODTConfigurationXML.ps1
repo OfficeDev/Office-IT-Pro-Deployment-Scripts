@@ -10,20 +10,6 @@ Add-Type -ErrorAction SilentlyContinue -TypeDefinition @"
 "@
 } catch {}
 
-function Get-CurrentLineNumber {
-    $MyInvocation.ScriptLineNumber
-}
-
-
-function Get-CurrentFileName{
-    $MyInvocation.ScriptName.Substring($MyInvocation.ScriptName.LastIndexOf("\")+1)
-}
-
-function Get-CurrentFunctionName {
-    (Get-Variable MyInvocation -Scope 1).Value.MyCommand.Name;
-}
-
-
 Function Generate-ODTConfigurationXml {
 <#
 .Synopsis
@@ -1312,7 +1298,6 @@ function checkForLanguage() {
     }
 }
 
-
 function officeGetExcludedApps() {
     param(
        [Parameter(ValueFromPipelineByPropertyName=$true, Position=0)]
@@ -1422,7 +1407,6 @@ function officeGetExcludedApps() {
     }
 }
 
-
 function officeGetLanguages() {
    param(
        [Parameter(Mandatory=$true,ValueFromPipelineByPropertyName=$true)]
@@ -1505,7 +1489,6 @@ function odtGetExcludedApps() {
         return $appsToExclude;
     }
 }
-
 
 function odtAddProduct() {
     param(
@@ -1949,18 +1932,44 @@ function Win7Join([string]$st1, [string]$st2){
 }
 
 
-function Detect-Channel() {
-   [CmdletBinding()]
+function Detect-Channel {
    param( 
-      
+
    )
 
-   Process {
-      $currentBaseUrl = Get-OfficeCDNUrl
+   Process {      
       $channelXml = Get-ChannelXml
 
-      $currentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $currentBaseUrl -and $_.branch -notcontains 'Business' }
-      return $currentChannel
+      $CFGUpdateChannel = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration -Name UpdateChannel -ErrorAction SilentlyContinue).UpdateChannel
+      $CFGOfficeMgmtCOM = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration -Name OfficeMgmtCOM -ErrorAction SilentlyContinue).OfficeMgmtCOM      
+      $UPupdatechannel = (Get-ItemProperty HKLM:\SOFTWARE\Policies\Microsoft\office\16.0\common\officeupdate -Name UpdateChannel -ErrorAction SilentlyContinue).UpdateChannel      
+      $UPupdatepath = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration -Name updatepath -ErrorAction SilentlyContinue).updatepath
+      $officemgmtcom = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration -Name officemgmtcom -ErrorAction SilentlyContinue).officemgmtcom
+      $CFGUpdateUrl = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration -Name UpdateUrl -ErrorAction SilentlyContinue).UpdateUrl
+      $currentBaseUrl = Get-OfficeCDNUrl
+
+      $CurrentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $currentBaseUrl -and $_.branch -notcontains 'Business' }
+      
+      if($CFGUpdateUrl -ne $null -and $CFGUpdateUrl -like '*officecdn.microsoft.com*'){
+        $CurrentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $CFGUpdateUrl -and $_.branch -notcontains 'Business' }  
+      }
+      if($officemgmtcom -ne $null -and $officemgmtcom -like '*officecdn.microsoft.com*'){
+        $CurrentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $officemgmtcom -and $_.branch -notcontains 'Business' }  
+      }
+      if($UPupdatepath -ne $null -and $UPupdatepath -like '*officecdn.microsoft.com*'){
+        $CurrentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $UPupdatepath -and $_.branch -notcontains 'Business' }  
+      }
+      if($UPupdatechannel -ne $null -and $UPupdatechannel -like '*officecdn.microsoft.com*'){
+        $CurrentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $UPupdatechannel -and $_.branch -notcontains 'Business' }  
+      }
+      if($CFGOfficeMgmtCOM -ne $null -and $CFGOfficeMgmtCOM -like '*officecdn.microsoft.com*'){
+        $CurrentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $CFGOfficeMgmtCOM -and $_.branch -notcontains 'Business' }  
+      }
+      if($CFGUpdateChannel -ne $null -and $CFGUpdateChannel -like '*officecdn.microsoft.com*'){
+        $CurrentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $CFGUpdateChannel -and $_.branch -notcontains 'Business' }  
+      }
+
+      return $CurrentChannel
    }
 
 }
@@ -2072,22 +2081,34 @@ Function WriteToLogFile() {
       [Parameter(Mandatory=$true)]
       [string]$ActionError
    )
-   try{
-   $headerString = "Time".PadRight(30, ' ') + "Line Number".PadRight(15,' ') + "FileName".PadRight(60,' ') + "Action"
-   $stringToWrite = $(Get-Date -Format G).PadRight(30, ' ') + $($LNumber).PadRight(15, ' ') + $($FName).PadRight(60,' ') + $ActionError
-   #check if file exists, create if it doesn't
-   $getCurrentDatePath = "C:\Windows\Temp\" + (Get-Date -Format u).Substring(0,10)+"OfficeAutoScriptLog.txt"
-   if(Test-Path $getCurrentDatePath){#if exists, append
-   
-        Add-Content $getCurrentDatePath $stringToWrite
-   }
-   else{#if not exists, create new
-        Add-Content $getCurrentDatePath $headerString
-        Add-Content $getCurrentDatePath $stringToWrite
-   }
-   } catch [Exception]{
-   Write-Host $_
-   }
+    try{
+        $headerString = "Time".PadRight(30, ' ') + "Line Number".PadRight(15,' ') + "FileName".PadRight(60,' ') + "Action"
+        $stringToWrite = $(Get-Date -Format G).PadRight(30, ' ') + $($LNumber).PadRight(15, ' ') + $($FName).PadRight(60,' ') + $ActionError
+
+        #check if file exists, create if it doesn't
+        $getCurrentDatePath = "C:\Windows\Temp\" + (Get-Date -Format u).Substring(0,10)+"OfficeAutoScriptLog.txt"
+        if(Test-Path $getCurrentDatePath){#if exists, append  
+             Add-Content $getCurrentDatePath $stringToWrite
+        }
+        else{#if not exists, create new
+             Add-Content $getCurrentDatePath $headerString
+             Add-Content $getCurrentDatePath $stringToWrite
+        }
+    } catch [Exception]{
+        Write-Host $_
+    }
+}
+
+function Get-CurrentLineNumber {
+    $MyInvocation.ScriptLineNumber
+}
+
+function Get-CurrentFileName{
+    $MyInvocation.ScriptName.Substring($MyInvocation.ScriptName.LastIndexOf("\")+1)
+}
+
+function Get-CurrentFunctionName {
+    (Get-Variable MyInvocation -Scope 1).Value.MyCommand.Name;
 }
 
 $availableLangs = @("en-us",

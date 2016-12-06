@@ -96,13 +96,9 @@ Will create the GPO named "SuppressMSOffice2016" no domain will be assigned
         WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "In Group Policy Management Console link the GPO titled '$gpoName' to the proper OU in your environment."
     }
 
-
-
-
 function Get-CurrentLineNumber {
     $MyInvocation.ScriptLineNumber
 }
-
 
 function Get-CurrentFileName{
     $MyInvocation.ScriptName.Substring($MyInvocation.ScriptName.LastIndexOf("\")+1)
@@ -112,11 +108,6 @@ function Get-CurrentFunctionName {
     (Get-Variable MyInvocation -Scope 1).Value.MyCommand.Name;
 }
 
-
-
-
-
-
 Function WriteToLogFile() {
     param( 
       [Parameter(Mandatory=$true)]
@@ -125,21 +116,21 @@ Function WriteToLogFile() {
       [string]$FName,
       [Parameter(Mandatory=$true)]
       [string]$ActionError
-   )
-   try{
-   $headerString = "Time".PadRight(30, ' ') + "Line Number".PadRight(15,' ') + "FileName".PadRight(60,' ') + "Action"
-   $stringToWrite = $(Get-Date -Format G).PadRight(30, ' ') + $($LNumber).PadRight(15, ' ') + $($FName).PadRight(60,' ') + $ActionError
-   #check if file exists, create if it doesn't
-   $getCurrentDatePath = "C:\Windows\Temp\" + (Get-Date -Format u).Substring(0,10)+"OfficeAutoScriptLog.txt"
-   if(Test-Path $getCurrentDatePath){#if exists, append
-   
-        Add-Content $getCurrentDatePath $stringToWrite
-   }
-   else{#if not exists, create new
-        Add-Content $getCurrentDatePath $headerString
-        Add-Content $getCurrentDatePath $stringToWrite
-   }
-   } catch [Exception]{
-   Write-Host $_
-   }
+    )
+    try{
+        $headerString = "Time".PadRight(30, ' ') + "Line Number".PadRight(15,' ') + "FileName".PadRight(60,' ') + "Action"
+        $stringToWrite = $(Get-Date -Format G).PadRight(30, ' ') + $($LNumber).PadRight(15, ' ') + $($FName).PadRight(60,' ') + $ActionError
+
+        #check if file exists, create if it doesn't
+        $getCurrentDatePath = "C:\Windows\Temp\" + (Get-Date -Format u).Substring(0,10)+"OfficeAutoScriptLog.txt"
+        if(Test-Path $getCurrentDatePath){#if exists, append
+             Add-Content $getCurrentDatePath $stringToWrite
+        }
+        else{#if not exists, create new
+             Add-Content $getCurrentDatePath $headerString
+             Add-Content $getCurrentDatePath $stringToWrite
+        }
+    } catch [Exception]{
+    Write-Host $_
+    }
 }
