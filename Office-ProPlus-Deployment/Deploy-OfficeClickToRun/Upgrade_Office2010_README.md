@@ -69,7 +69,7 @@ Dot sourcing the script allows us to run functions outside of the scope of the s
 11. If you plan to deploy different channels repeat steps 6, 8, 10, and 11. You will need to update the package before step 8. 
 For example, if we wanted to create a deployment program for the Deferred channel we would perform the following steps:  
 	a. **Download-CMOfficeChannelFiles –Channels Deferred –OfficeFilesPath E:\OfficeChannelFiles –Bitness v32**    
-	b. **Create-CMOfficeDeploymentProgram –Channels Deferred –Bitness v32 –DeploymentType DeployWithScript**    
+	b. **Create-CMOfficeDeploymentProgram –Channels Deferred –Bitness v32 –DeploymentType DeployWithScript -ScriptName CM-ExampleRemovePreviousAndUpgrade.ps1**    
 	c. **Update-CMOfficePackage –Channels Deferred –OfficeSourceFilesPath E:\OfficeChannelFiles -MoveSourceFiles $true**. Wait for the distribution to finish before deploying the program to the collection.   
 	d. **Deploy-CMOfficeProgram –Collection HR –ProgramType DeployWithScript –Channel Deferred –Bitness v32 –DeploymentPurpose Available**    
 
