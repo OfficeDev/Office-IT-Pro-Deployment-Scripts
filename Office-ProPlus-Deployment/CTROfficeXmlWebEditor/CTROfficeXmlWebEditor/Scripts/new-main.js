@@ -395,6 +395,7 @@ $(document).ready(function () {
                     var drpBuild = $('#txtBuild');
                     drpBuild.msdropdownvals(builds, builds);
                     UpdateLegacyVersion();
+                    $('#txtTargetVersion').val($('#txtLegacyVersion').val());
                 }
             }
         }
@@ -437,6 +438,7 @@ $(document).ready(function () {
 
     $("#txtBuild").change(function () {
         UpdateLegacyVersion();
+        $('#txtTargetVersion').val($('#txtLegacyVersion').val());
     });
 
     $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
@@ -616,6 +618,10 @@ $(document).ready(function () {
 
     $('#txtTargetVersion').keydown(function (e) {
         restrictToVersion(e);
+    });
+
+    $('#txtLegacyVersion').focusout(function () {
+        $('#txtTargetVersion').val($('#txtLegacyVersion').val());
     });
 
     $('txtPidKey').on('input propertychange paste focus click', function () {
@@ -938,6 +944,7 @@ function setVersionPanel(buttonId) {
 function changeVersions(version) {
     if (version == "2013") {
         $("#branchSection").hide("slow");
+        $("#newVersionSection").hide("slow");
         $("#updateBranchSection").hide("slow");
         $("#mgtToggleGroup").hide("slow");
         $('#mgtToggle').prop("checked", false);
@@ -948,8 +955,9 @@ function changeVersions(version) {
 
         $('#versionTextBox .typeahead').typeahead('destroy', 'NoCached');
         $('#updateVersionTextBox .typeahead').typeahead('destroy', 'NoCached');
+        $('#legacyVersionTextBox .typeahead').typeahead('destroy', 'NoCached');
 
-        $('#versionTextBox .typeahead').typeahead({
+        $('#legacyVersionTextBox .typeahead').typeahead({
             hint: true,
             highlight: true,
             minLength: 1
@@ -969,12 +977,18 @@ function changeVersions(version) {
             source: substringMatcher(versions)
         });
 
-        //$("#txtVersion").attr("placeholder", versions[0]);
-        //$("#txtTargetVersion").attr("placeholder", versions[0]);
+        $("#txtLegacyVersion").attr("placeholder", versions[0]);
+        $("#txtTargetVersion").attr("placeholder", versions[0]);
+        $("#txtLegacyVersion").val(versions[0]);
+        $("#txtTargetVersion").val(versions[0]);
+        //var legacyVersion = document.getElementById("txtLegacyVersion");
+        //var jqueryLegVersion = $('#legacyVersion');
+        //jqueryLegVersion.msdropdownvals(versions, versions);
     }
     if (version == "2016") {
         //$("#pidKeyLabel").hide("slow");
         $("#branchSection").show("slow");
+        $("#newVersionSection").show("slow");
         $("#updateBranchSection").show("slow");
         $("#mgtToggleGroup").show("slow");
         $("#autoUpgradeToggle").hide("slow");
@@ -985,9 +999,10 @@ function changeVersions(version) {
 
         $('#versionTextBox .typeahead').typeahead('destroy', 'NoCached');
         $('#updateVersionTextBox .typeahead').typeahead('destroy', 'NoCached');
+        $('#legacyVersionTextBox .typeahead').typeahead('destroy', 'NoCached');
 
         var selectVersions = [];
-        var versions = [];
+        var versionss = [];
         var selectedBranch = $("#cbBranch").val();
 
         if (versionData) {
@@ -1008,18 +1023,18 @@ function changeVersions(version) {
                     for (var v = 0; v < versionData[i].Updates.length; v++) {
                         var update = versionData[i].Updates[v];                        
                         selectVersions.push(update.LegacyVersion);
-                        if ($.inArray(update.Version, versions) === -1) {
-                            versions.push(update.Version);
+                        if ($.inArray(update.Version, versionss) === -1) {
+                            versionss.push(update.Version);
                         }
                     }
                     var txtVersion = $('#txtVersion');
-                    txtVersion.msdropdownvals(versions, versions);
-                    txtVersion.change();
+                    txtVersion.msdropdownvals(versionss, versionss);
+                    txtVersion.change();                    
                 }
             }
         }
 
-        $('#versionTextBox .typeahead').typeahead({
+        $('#legacyVersionTextBox .typeahead').typeahead({
             hint: true,
             highlight: true,
             minLength: 1
@@ -1041,6 +1056,8 @@ function changeVersions(version) {
 
         $("#txtVersion").attr("placeholder", selectVersions[0]);
         $("#txtTargetVersion").attr("placeholder", selectVersions[0]);
+        $("#txtLegacyVersion").attr("placeholder", selectVersions[0]);
+        $("#txtTargetVersion").val(selectVersions[0]);
     }
 
     odtToggleUpdate();
