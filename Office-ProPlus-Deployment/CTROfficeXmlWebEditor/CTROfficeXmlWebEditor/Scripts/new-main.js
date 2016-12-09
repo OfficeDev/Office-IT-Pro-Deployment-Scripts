@@ -6,6 +6,7 @@ var loading = false;
 var xmlHistoryLength = 0;
 var versionData;
 var officeExcludeProducts = ["Access", "Excel", "Groove", "Lync", "OneNote", "Outlook", "OneDrive", "PowerPoint", "Publisher", "Word"];
+var Office2016Versions;
 
 $(document).ready(function () {
     var finput = document.getElementById('fileInput');
@@ -208,6 +209,43 @@ $(document).ready(function () {
         return false;
     });
 
+    $("#btSaveVersion").on('click', function () {
+        if ($("#cbProduct").val() === "LanguagePack" && $("#btAddProduct").text() !== "Edit Product") {
+            alert("If creating a language pack, please set the first language to the client computer's culture language.  If the first language set does not match the client's culture language then the chosen language will be installed as the Shell UI language.");
+        }
+
+        var xmlDoc = getXmlDocument();
+
+        odtAddProduct(xmlDoc);
+
+        setExcludeAppState(xmlDoc);
+
+        displayXml(xmlDoc);
+
+        $("#btAddProduct").text('Edit Product');
+
+        return false;
+    });
+
+
+    $("#btSaveAdditionalOptions").on('click', function () {
+        if ($("#cbProduct").val() === "LanguagePack" && $("#btAddProduct").text() !== "Edit Product") {
+            alert("If creating a language pack, please set the first language to the client computer's culture language.  If the first language set does not match the client's culture language then the chosen language will be installed as the Shell UI language.");
+        }
+
+        var xmlDoc = getXmlDocument();
+
+        odtAddProduct(xmlDoc);
+
+        setExcludeAppState(xmlDoc);
+
+        displayXml(xmlDoc);
+
+        $("#btAddProduct").text('Edit Product');
+
+        return false;
+    });
+
     $("#btSaveExcludePrograms").on('click', function () {
         var xmlDoc = getXmlDocument();
 
@@ -327,7 +365,78 @@ $(document).ready(function () {
 
     $("#cbLanguage").change(function () {
         var end = this.value;
-        changeSelectedLanguage();
+        changeSelectedLanguage();        
+    });
+
+    function UpdateBuild(givenVersion) {
+        if (versionData) {
+            for (var i = 0; i < versionData.length; i++) {
+                var flagMatch = false;
+                var selectedBranch = $("#cbBranch").val();
+
+                var branchName = versionData[i].Name;
+
+                if (branchName == "InsidersSlow") {
+                    branchName = "FirstReleaseCurrent";
+                }
+
+                if (branchName == selectedBranch.replace(" ", "")) {
+                    flagMatch = true;
+                }
+
+                if (flagMatch) {
+                    var builds = [];
+                    for (var v = 0; v < versionData[i].Updates.length; v++) {
+                        var update = versionData[i].Updates[v];
+                        if (givenVersion === update.Version) {
+                            builds.push(update.Build)
+                        }
+                    }
+                    var drpBuild = $('#txtBuild');
+                    drpBuild.msdropdownvals(builds, builds);
+                    UpdateLegacyVersion();
+                }
+            }
+        }
+    }
+
+    function UpdateLegacyVersion() {
+        if (versionData) {
+            for (var i = 0; i < versionData.length; i++) {
+                var flagMatch = false;
+                var selectedBranch = $("#cbBranch").val();
+
+                var branchName = versionData[i].Name;
+
+                if (branchName == "InsidersSlow") {
+                    branchName = "FirstReleaseCurrent";
+                }
+
+                if (branchName == selectedBranch.replace(" ", "")) {
+                    flagMatch = true;
+                }
+
+                if (flagMatch) {
+                    for (var v = 0; v < versionData[i].Updates.length; v++) {
+                        var update = versionData[i].Updates[v];
+                        var Curvers = document.getElementById("txtVersion");
+                        var Curbuild = document.getElementById("txtBuild");
+                        if (Curvers.value === update.Version && Curbuild.value === update.Build) {
+                            $('#txtLegacyVersion').val(update.LegacyVersion);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    $("#txtVersion").change(function () {
+        var end = this.value;
+        UpdateBuild(end);
+    });
+
+    $("#txtBuild").change(function () {
+        UpdateLegacyVersion();
     });
 
     $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
@@ -598,13 +707,13 @@ $(document).ready(function () {
 
 
     if (productId.indexOf("Visio") >= 0 || productId.indexOf("Project") >= 0 || productId.indexOf("Language") >= 0) {
-        $("#cbExcludeApp").parent("div").addClass("is-disabled");
+        //$("#cbExcludeApp").parent("div").addClass("is-disabled");
         $("#btAddExcludeApp").prop('disabled', true);
         $("#btRemoveExcludeApp").prop('disabled', true);
 
     }
     else {
-        $("#cbExcludeApp").parent("div").removeClass("is-disabled");
+        //$("#cbExcludeApp").parent("div").removeClass("is-disabled");
         $("#btAddExcludeApp").prop('disabled', false);
         $("#btRemoveExcludeApp").prop('disabled', false);
     }
@@ -659,6 +768,12 @@ $(document).ready(function () {
         if (parent) {
             var selects = parent.getElementsByTagName("select");
             var uls = parent.getElementsByClassName("ms-Dropdown-items");
+            if (this.selector === "#txtVersion" || this.selector === "#txtBuild") {
+                var selectedItem = parent.getElementsByClassName("ms-Dropdown-title");
+                var jquerySelected = $(selectedItem);
+                jquerySelected.empty();
+                jquerySelected.append(values[0]);
+            }
             var mySelect = $("#" + selects[0].id);
 
             if (uls) {
@@ -854,8 +969,8 @@ function changeVersions(version) {
             source: substringMatcher(versions)
         });
 
-        $("#txtVersion").attr("placeholder", versions[0]);
-        $("#txtTargetVersion").attr("placeholder", versions[0]);
+        //$("#txtVersion").attr("placeholder", versions[0]);
+        //$("#txtTargetVersion").attr("placeholder", versions[0]);
     }
     if (version == "2016") {
         //$("#pidKeyLabel").hide("slow");
@@ -864,6 +979,7 @@ function changeVersions(version) {
         $("#mgtToggleGroup").show("slow");
         $("#autoUpgradeToggle").hide("slow");
         $("#pinIconsProperty").show("slow");
+        $("#txtLegacyVersion").enabled = "false";
 
         $("#txtPidKey").val("");
 
@@ -871,6 +987,7 @@ function changeVersions(version) {
         $('#updateVersionTextBox .typeahead').typeahead('destroy', 'NoCached');
 
         var selectVersions = [];
+        var versions = [];
         var selectedBranch = $("#cbBranch").val();
 
         if (versionData) {
@@ -889,9 +1006,15 @@ function changeVersions(version) {
 
                 if (flagMatch) {
                     for (var v = 0; v < versionData[i].Updates.length; v++) {
-                        var update = versionData[i].Updates[v];
+                        var update = versionData[i].Updates[v];                        
                         selectVersions.push(update.LegacyVersion);
+                        if ($.inArray(update.Version, versions) === -1) {
+                            versions.push(update.Version);
+                        }
                     }
+                    var txtVersion = $('#txtVersion');
+                    txtVersion.msdropdownvals(versions, versions);
+                    txtVersion.change();
                 }
             }
         }
@@ -941,17 +1064,17 @@ function OpenInNewTab(url) {
 }
 
 function changeExcludeApps(version) {
-    $("#cbExcludeApp").empty();
-    var mySelect = $('#cbExcludeApp');
+    //$("#cbExcludeApp").empty();
+    //var mySelect = $('#cbExcludeApp');
 
-    if (version == "2013") {
-        mySelect.msdropdownvals(excludeApps2013, excludeApps2013);
-    }
-    if (version == "2016") {
-        mySelect.msdropdownvals(excludeApps2016, excludeApps2016);
-    }
+    //if (version == "2013") {
+    //    mySelect.msdropdownvals(excludeApps2013, excludeApps2013);
+    //}
+    //if (version == "2016") {
+    //    mySelect.msdropdownvals(excludeApps2016, excludeApps2016);
+    //}
 
-    mySelect.trigger("chosen:updated");
+    //mySelect.trigger("chosen:updated");
 }
 
 function changeProducts(version) {
@@ -967,7 +1090,7 @@ function changeProducts(version) {
     if (version == "2016") {
         mySelectAdd.msdropdownvals(productSkus2016Names, productSkus2016Values);
         mySelectRemove.msdropdownvals(productSkus2016Names, productSkus2016Values);
-    }
+    }    
 
     mySelectAdd.trigger("chosen:updated");
     mySelectRemove.trigger("chosen:updated");
@@ -1436,13 +1559,13 @@ function changeSelectedProduct() {
     $("#txtPidKey").val("");
 
     if (productId.indexOf("Visio") >= 0 || productId.indexOf("Project") >= 0 || productId.indexOf("Language") >= 0) {
-        $("#cbExcludeApp").parent("div").addClass("is-disabled");
+        //$("#cbExcludeApp").parent("div").addClass("is-disabled");
         $("#btAddExcludeApp").prop('disabled', true);
         $("#btRemoveExcludeApp").prop('disabled', true);
 
     }
     else {
-        $("#cbExcludeApp").parent("div").removeClass("is-disabled");
+        //$("#cbExcludeApp").parent("div").removeClass("is-disabled");
         $("#btAddExcludeApp").prop('disabled', false);
         $("#btRemoveExcludeApp").prop('disabled', false);
     }
@@ -1462,13 +1585,13 @@ function changeSelectedProduct() {
             var excludeApps = productNode.getElementsByTagName("ExcludeApp");
             if (excludeApps.length == 0) {
                 $("#btRemoveExcludeApp").prop("disabled", true);
-                $("select#cbExcludeApp").prop('selectedIndex', 0);
+                //$("select#cbExcludeApp").prop('selectedIndex', 0);
             } else {
                 $("#btRemoveExcludeApp").prop("disabled", false);
 
                 var excludeApp = excludeApps[0];
                 if (excludeApp) {
-                    $("#cbExcludeApp").val(excludeApp.getAttribute("ID"));
+                    //$("#cbExcludeApp").val(excludeApp.getAttribute("ID"));
                 }
             }
 
@@ -1476,7 +1599,7 @@ function changeSelectedProduct() {
             $("#btAddProduct").text('Add Product');
             //$("#btRemoveProduct").prop("disabled", true);
             $("#btRemoveExcludeApp").prop("disabled", true);
-            $("select#cbExcludeApp").prop('selectedIndex', 0);
+            //$("select#cbExcludeApp").prop('selectedIndex', 0);
         }
     } else {
         $("#btRemoveProduct").prop("disabled", true);
@@ -1552,7 +1675,7 @@ function readdNodes(xmlDoc, nodeList) {
 function odtAddProduct(xmlDoc) {
     var selectedProduct = $("#cbProduct").val();
     var selectBitness = $("#cbEdition").val();
-    var selectVersion = $("#txtVersion").val();
+    var selectVersion = $("#txtLegacyVersion").val();
     var selectSourcePath = $("#txtSourcePath").val();
     var selectDownloadPath = $("#txtDownloadPath").val();
     var selectLanguage = $("#cbLanguage").val();
@@ -1966,10 +2089,10 @@ function odtDeleteRemoveApp(xmlDoc) {
 
 
 function odtAddExcludeApp(xmlDoc) {
-    $("#cbExcludeApp").msdropdownval();
+    //$("#cbExcludeApp").msdropdownval();
 
     var selectedProduct = $("#cbProduct").val();
-    var selectExcludeApp = $("#cbExcludeApp").val();
+    //var selectExcludeApp = $("#cbExcludeApp").val();
 
     odtAddExcludeApp(xmlDoc, selectedProduct, selectExcludeApp);
 
@@ -2009,7 +2132,7 @@ function odtAddExcludeApp(xmlDoc, selectedProduct, selectExcludeApp) {
 
 function odtRemoveExcludeApp(xmlDoc) {
     var selectedProduct = $("#cbProduct").val();
-    var selectExcludeApp = $("#cbExcludeApp").val();
+    //var selectExcludeApp = $("#cbExcludeApp").val();
 
     odtRemoveExcludeApp(xmlDoc, selectedProduct, selectExcludeApp);
 
