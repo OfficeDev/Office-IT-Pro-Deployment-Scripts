@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="components/Callout/Callout.min.css">
     <link rel="stylesheet" href="components/Dialog/Dialog.min.css">
     <link href="stylesheets/typeahead.css" rel="stylesheet">
+    <link href="stylesheets/typeahead-override.css" rel="stylesheet">
     <link href="//netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="components/Panel/Panel.min.css">
     <link rel="stylesheet" href="https://appsforoffice.microsoft.com/fabric/1.0.1/fabric.min.css">
@@ -509,13 +510,12 @@
                                             <div class="input-group" style="width:100%">
                                                 <div id="legacyVersionTextBox" style="width:100%">
                                                     <input id="txtLegacyVersion" type="text" pattern="^\d{2}\.\d\.\d{4}\.\d{4}$" maxlength="14"
-                                                           class="ms-TextField-field typeahead" placeholder="15.0.4745.1001"
-                                                           data-error="Invalid Version. ex: 15.0.4745.1001" style="width:100%">
+                                                           class="ms-TextField-field typeahead" value="" style="width:100%">
                                                 </div>
                                                 <span id="versionSignal" class="glyphicon form-control-feedback" aria-hidden="true" style="display:none;"></span>
                                             </div>
                                         </form>
-                                        <div style="margin-top:10px">
+                                        <div style="margin-top:10px; margin-bottom:10px">
                                             <button id="btSaveVersion" class="ms-Button">
                                                 Save
                                             </button>

@@ -317,6 +317,7 @@ $(document).ready(function () {
             setVersionPanel("office2016Select");
 
             var selectVersions = [];
+            selectVersions.push('');
             var selectedBranch = $("#cbUpdateBranch").val();
 
             if (versionData) {
@@ -423,6 +424,7 @@ $(document).ready(function () {
                         var Curvers = document.getElementById("txtVersion");
                         var Curbuild = document.getElementById("txtBuild");
                         if (Curvers.value === update.Version && Curbuild.value === update.Build) {
+                            console.trace('UpdateLegacyVersion', update.LegacyVersion)
                             $('#txtLegacyVersion').val(update.LegacyVersion);
                         }
                     }
@@ -949,10 +951,16 @@ function changeVersions(version) {
         $("#mgtToggleGroup").hide("slow");
         $('#mgtToggle').prop("checked", false);
         $("#pinIconsProperty").hide("slow");
+        //$("#txtLegacyVersion").removeAttr("disabled");
 
         $("#autoUpgradeToggle").show("slow");
         //16.0.4229.1024
-
+        $("#txtLegacyVersion").attr("placeholder", versions[0]);
+        $("#txtTargetVersion").attr("placeholder", versions[0]);
+        console.trace('2013 branch', versions[0]);
+        $("#txtLegacyVersion").val(versions[0]);
+        $("#txtTargetVersion").val(versions[0]);
+        //note values must be set before typeahead is called to kill the cache otherwise, you'll have issues
         $('#versionTextBox .typeahead').typeahead('destroy', 'NoCached');
         $('#updateVersionTextBox .typeahead').typeahead('destroy', 'NoCached');
         $('#legacyVersionTextBox .typeahead').typeahead('destroy', 'NoCached');
@@ -976,24 +984,16 @@ function changeVersions(version) {
             name: 'versions',
             source: substringMatcher(versions)
         });
-
-        $("#txtLegacyVersion").attr("placeholder", versions[0]);
-        $("#txtTargetVersion").attr("placeholder", versions[0]);
-        $("#txtLegacyVersion").val(versions[0]);
-        $("#txtTargetVersion").val(versions[0]);
-        //var legacyVersion = document.getElementById("txtLegacyVersion");
-        //var jqueryLegVersion = $('#legacyVersion');
-        //jqueryLegVersion.msdropdownvals(versions, versions);
     }
-    if (version == "2016") {
-        //$("#pidKeyLabel").hide("slow");
+    if (version == "2016") {        
         $("#branchSection").show("slow");
         $("#newVersionSection").show("slow");
         $("#updateBranchSection").show("slow");
         $("#mgtToggleGroup").show("slow");
         $("#autoUpgradeToggle").hide("slow");
         $("#pinIconsProperty").show("slow");
-        $("#txtLegacyVersion").enabled = "false";
+        $("#txtTargetVersion").val('');
+        //$("#txtLegacyVersion").attr('disabled', 'disabled');
 
         $("#txtPidKey").val("");
 
@@ -1002,6 +1002,7 @@ function changeVersions(version) {
         $('#legacyVersionTextBox .typeahead').typeahead('destroy', 'NoCached');
 
         var selectVersions = [];
+        selectVersions.push('');
         var versionss = [];
         var selectedBranch = $("#cbBranch").val();
 
@@ -1020,6 +1021,7 @@ function changeVersions(version) {
                 }
 
                 if (flagMatch) {
+                    versionss.push('Latest');
                     for (var v = 0; v < versionData[i].Updates.length; v++) {
                         var update = versionData[i].Updates[v];                        
                         selectVersions.push(update.LegacyVersion);
@@ -1033,7 +1035,13 @@ function changeVersions(version) {
                 }
             }
         }
-
+        $("#txtVersion").attr("placeholder", selectVersions[0]);
+        $("#txtTargetVersion").attr("placeholder", selectVersions[0]);
+        $("#txtLegacyVersion").attr("placeholder", selectVersions[0]);
+        $("#txtTargetVersion").val(selectVersions[0]);
+        console.trace('2016 version', selectVersions);
+        $("#txtLegacyVersion").val(selectVersions[0]);
+        //note values must be set before typeahead is called to kill the cache otherwise, you'll have issues
         $('#legacyVersionTextBox .typeahead').typeahead({
             hint: true,
             highlight: true,
@@ -1054,10 +1062,7 @@ function changeVersions(version) {
             source: substringMatcher(selectVersions)
         });
 
-        $("#txtVersion").attr("placeholder", selectVersions[0]);
-        $("#txtTargetVersion").attr("placeholder", selectVersions[0]);
-        $("#txtLegacyVersion").attr("placeholder", selectVersions[0]);
-        $("#txtTargetVersion").val(selectVersions[0]);
+        
     }
 
     odtToggleUpdate();
