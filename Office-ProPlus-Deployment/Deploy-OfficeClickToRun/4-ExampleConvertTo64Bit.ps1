@@ -57,22 +57,25 @@ if ($installOffice) {
 
       Remove-PreviousOfficeInstalls
 
-      Set-ODTAdd -TargetFilePath $targetFilePath -Version $NULL -Bitness 64 -SourcePath $SourcePath | Out-Null
-      Set-ODTDisplay -TargetFilePath $targetFilePath -Level None -AcceptEULA $true | Out-Null
-      Set-ODTLogging -TargetFilePath $targetFilePath -Path $env:temp -Level Standard | Out-Null 
-
       $updates = Get-ODTUpdates -TargetFilePath $targetFilePath
       $addNode = Get-ODTAdd -TargetFilePath $targetFilePath
 
       $UpdatePath = $NULL
-      if ($updates) {
+      if($updates){
          $UpdatePath = $updates.UpdatePath
-         if ($UpdatePath -like '*officecdn.microsoft.com*') {
-             $UpdatePath = $NULL
+         if($UpdatePath -like '*officecdn.microsoft.com*') {
+             $SourcePath = $UpdatePath
          }
       }
 
-      Set-ODTUpdates -TargetFilePath $targetFilePath -Channel $addNode.Channel -Enabled $true -UpdatePath $UpdatePath | Out-Null
+      if($addNode.Channel -ne $NULL){
+          Set-ODTUpdates -TargetFilePath $targetFilePath -Channel $addNode.Channel | Out-Null
+      }
+ 
+      Set-ODTAdd -TargetFilePath $targetFilePath -Version $NULL -Bitness 64 -SourcePath $SourcePath | Out-Null
+      Set-ODTDisplay -TargetFilePath $targetFilePath -Level None -AcceptEULA $true | Out-Null
+      Set-ODTLogging -TargetFilePath $targetFilePath -Path $env:temp -Level Standard | Out-Null 
+      Set-ODTUpdates -TargetFilePath $targetFilePath -Enabled $true -UpdatePath $UpdatePath | Out-Null
 
       Restart-ExplorerExe
 
