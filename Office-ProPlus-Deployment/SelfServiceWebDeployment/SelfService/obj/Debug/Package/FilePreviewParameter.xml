@@ -1,7 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<parameters>
-  <parameter name="IIS Web Application Name" description="" value="Microsoft-ApiApp6b569e4ebf6149b4a928aa70a260394e" tags="IisApp">
-    <parameterEntry kind="ProviderPath" scope="IisApp" match="^D:\\Office-IT-Pro-Deployment-Scripts\\Office-ProPlus-Deployment\\SelfServiceWebDeployment\\SelfService\\obj\\Debug\\Package\\PackageTmp$" />
-    <parameterEntry kind="ProviderPath" scope="setAcl" match="^D:\\Office-IT-Pro-Deployment-Scripts\\Office-ProPlus-Deployment\\SelfServiceWebDeployment\\SelfService\\obj\\Debug\\Package\\PackageTmp$" />
-  </parameter>
-</parameters>
