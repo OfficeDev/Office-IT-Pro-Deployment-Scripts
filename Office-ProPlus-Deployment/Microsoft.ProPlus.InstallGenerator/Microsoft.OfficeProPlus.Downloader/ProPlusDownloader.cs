@@ -11,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using Microsoft.OfficeProPlus.Downloader.Model;
+using Microsoft.OfficeProPlus.Downloader.Model.Enums;
 using File = System.IO.File;
 
 namespace Microsoft.OfficeProPlus.Downloader
@@ -288,79 +289,125 @@ namespace Microsoft.OfficeProPlus.Downloader
         public async Task<List<UpdateFiles>> DownloadCabAsync()
         {
             var guid = Guid.NewGuid().ToString();
-
-            var cabPath = Environment.ExpandEnvironmentVariables(@"%temp%\" + guid);
-            Directory.CreateDirectory(cabPath);
-
-            var localCabPath = Environment.ExpandEnvironmentVariables(@"%temp%\" + guid + @"\" + guid + ".cab");
+            var cabPath = Environment.ExpandEnvironmentVariables(@"%temp%\OfficeFiles\ofl\" + guid);
+   
+            var localCabPath = Environment.ExpandEnvironmentVariables(@"%temp%\OfficeFiles\ofl\" + guid + @"\" + guid + ".cab");
             if (File.Exists(localCabPath)) File.Delete(localCabPath);
 
             var now = DateTime.Now;
 
-            var tmpFile32 = Environment.ExpandEnvironmentVariables(@"%temp%\" + now.Year + now.Month + now.Day + now.Hour + "_32.xml");
-            var tmpFile64 = Environment.ExpandEnvironmentVariables(@"%temp%\" + now.Year + now.Month + now.Day + now.Hour + "_64.xml");
+            var xml32Path = Environment.ExpandEnvironmentVariables(@"%temp%\OfficeFiles\ofl\" + guid +
+                            @"\ExtractedFiles\o365client_32bit.xml");
+            var xml64Path = Environment.ExpandEnvironmentVariables(@"%temp%\OfficeFiles\ofl\" + guid +
+                            @"\ExtractedFiles\o365client_64bit.xml");
 
-            if (!File.Exists(tmpFile32) || !File.Exists(tmpFile64))
-            {
-                using (var releaser = await myLock.LockAsync())
-                {
-                    var tmpFile =
-                        Environment.ExpandEnvironmentVariables(@"%temp%\" + now.Year + now.Month + now.Day + now.Hour +
-                                                               ".cab");
+            var savePath32 = Environment.ExpandEnvironmentVariables(@"%temp%\OfficeFiles\ofl\OfficeFiles32.xml");
+            var savePath64 = Environment.ExpandEnvironmentVariables(@"%temp%\OfficeFiles\ofl\OfficeFiles64.xml");
 
-                    if (File.Exists(tmpFile))
-                    {
-                        Retry.Block(10, 1, () => File.Copy(tmpFile, localCabPath, true));
-                    }
-
-                    if (!File.Exists(localCabPath))
-                    {
-                        var fd = new FileDownloader();
-                        await fd.DownloadAsync(OfficeVersionUrl, localCabPath);
-                        try
-                        {
-                            File.Copy(localCabPath, tmpFile);
-                        }
-                        catch
-                        {
-                        }
-                    }
-
-                    var cabExtractor = new CabExtractor(localCabPath);
-                    cabExtractor.ExtractCabFiles();
-                }
-            }
-
-            var xml32Path = Environment.ExpandEnvironmentVariables(@"%temp%\" + guid + @"\ExtractedFiles\o365client_32bit.xml");
-            var xml64Path = Environment.ExpandEnvironmentVariables(@"%temp%\" + guid + @"\ExtractedFiles\o365client_64bit.xml");
-
-            if (File.Exists(tmpFile32))
-            {
-                xml32Path = tmpFile32;
-            }
-            else
-            {
-                Retry.Block(10, 1, () => File.Copy(xml32Path, tmpFile32, true));
-            }
-
-            if (File.Exists(tmpFile64))
-            {
-                xml64Path = tmpFile64;
-            }
-            else
-            {
-                Retry.Block(10, 1, () => File.Copy(xml64Path, tmpFile64, true));
-            }
-
-            var updateFiles32 = GenerateUpdateFiles(xml32Path);
-            var updateFiles64 = GenerateUpdateFiles(xml64Path);
+            var tmpFile32 = Environment.ExpandEnvironmentVariables(@"%temp%\OfficeFiles\ofl\" + now.Year + now.Month + now.Day + now.Hour + "_32.xml");
+            var tmpFile64 = Environment.ExpandEnvironmentVariables(@"%temp%\OfficeFiles\ofl\" + now.Year + now.Month + now.Day + now.Hour + "_64.xml");
 
             try
             {
-                if (File.Exists(localCabPath)) File.Delete(localCabPath);
-                if (Directory.Exists(cabPath)) Directory.Delete(cabPath, true);
+                if (!File.Exists(tmpFile32) || !File.Exists(tmpFile64))
+                {
+                    using (var releaser = await myLock.LockAsync())
+                    {
+                        Directory.CreateDirectory(cabPath);
+                        var dirInfo2 = new DirectoryInfo(Environment.ExpandEnvironmentVariables(@"%temp%\OfficeFiles\ofl"));
+                        foreach (var directory in dirInfo2.GetDirectories())
+                        {
+                            Directory.Delete(directory.FullName);
+                        }
+
+                        if (!File.Exists(localCabPath))
+                        {
+                            var fd = new FileDownloader();
+                            await fd.DownloadAsync(OfficeVersionUrl, localCabPath);
+                        }
+
+                        var cabExtractor = new CabExtractor(localCabPath);
+                        cabExtractor.ExtractCabFiles();
+
+                        foreach (var file in dirInfo2.GetFiles("*.xml"))
+                        {
+                            if (!file.Name.Contains("_32") && !file.Name.Contains("_64")) continue;
+                            try
+                            {
+                                if (!file.FullName.Equals(tmpFile32, StringComparison.InvariantCultureIgnoreCase) &&
+                                    !file.FullName.Equals(tmpFile64, StringComparison.InvariantCultureIgnoreCase))
+                                {
+                                    File.Delete(file.FullName);
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+
+                            }
+                        }
+                    }
+
+                    try
+                    {
+                        using (var releaser = await myLock.LockAsync())
+                        {
+                            if (File.Exists(xml32Path))
+                            {
+                                if (!File.Exists(tmpFile32)) Retry.Block(10, 1, () => File.Copy(xml32Path, tmpFile32, true));
+                            }
+
+                            if (File.Exists(xml64Path))
+                            {
+                                if (!File.Exists(tmpFile64)) Retry.Block(10, 1, () => File.Copy(xml64Path, tmpFile64, true));
+                            }
+
+                            if (!string.IsNullOrEmpty(tmpFile32))
+                            {
+                                if (File.Exists(tmpFile32))
+                                {
+                                    if (tmpFile32 != savePath32)
+                                    {
+                                        File.Copy(tmpFile32, savePath32, true);
+                                    }
+                                }
+                            }
+
+                            if (!string.IsNullOrEmpty(tmpFile64))
+                            {
+                                if (File.Exists(tmpFile64))
+                                {
+                                    if (tmpFile64 != savePath64)
+                                    {
+                                        File.Copy(tmpFile64, savePath64, true);
+                                    }
+                                }
+                            }
+
+                            if (File.Exists(localCabPath)) File.Delete(localCabPath);
+                            if (Directory.Exists(cabPath)) Directory.Delete(cabPath, true);
+                        }
+                    }
+                    catch { }
+                }
             }
-            catch { }
+            catch (Exception)
+            {
+                try
+                {
+                    if (File.Exists(tmpFile32)) File.Delete(tmpFile32);
+                    if (File.Exists(tmpFile64)) File.Delete(tmpFile64);
+                }
+                catch (Exception)
+                {
+                    
+                }
+
+                tmpFile32 = savePath32;
+                tmpFile64 = savePath64;
+            }
+
+            var updateFiles32 = GenerateUpdateFiles(tmpFile32);
+            var updateFiles64 = GenerateUpdateFiles(tmpFile64);
 
             return new List<UpdateFiles>()
             {
@@ -373,23 +420,29 @@ namespace Microsoft.OfficeProPlus.Downloader
         {
             var guid = Guid.NewGuid().ToString();
 
-            var cabPath = Environment.ExpandEnvironmentVariables(@"%temp%\" + guid);
+            var cabPath = Environment.ExpandEnvironmentVariables(@"%temp%\OfficeFiles\ReleaseHistory\" + guid);
             Directory.CreateDirectory(cabPath);
 
-            var savePath = Environment.ExpandEnvironmentVariables(@"%temp%\ReleaseHistory.xml");
+            var savePath = Environment.ExpandEnvironmentVariables(@"%temp%\OfficeFiles\ReleaseHistory\ReleaseHistory.xml");
             var releaseHistoryPath = "";
 
-            var localCabPath = Environment.ExpandEnvironmentVariables(@"%temp%\" + guid + @"\" + guid + ".cab");
+            var localCabPath = Environment.ExpandEnvironmentVariables(@"%temp%\OfficeFiles\ReleaseHistory\" + guid + @"\" + guid + ".cab");
             try
             {
                 var now = DateTime.Now;
 
                 var tmpReleaseHistory =
-                    Environment.ExpandEnvironmentVariables(@"%temp%\" + now.Year + now.Month + now.Day + now.Hour +
+                    Environment.ExpandEnvironmentVariables(@"%temp%\OfficeFiles\ReleaseHistory\" + now.Year + now.Month + now.Day + now.Hour +
                                                            "_ReleaseHistory.xml");
                 using (var releaser = await myLock.LockAsync())
                 {
                     if (File.Exists(localCabPath)) File.Delete(localCabPath);
+
+                    var dirInfo = new DirectoryInfo(Environment.ExpandEnvironmentVariables(@"%temp%\OfficeFiles\ReleaseHistory"));
+                    foreach (var directory in dirInfo.GetDirectories())
+                    {
+                        Directory.Delete(directory.FullName);
+                    }
 
                     if (!File.Exists(tmpReleaseHistory))
                     {
@@ -402,7 +455,6 @@ namespace Microsoft.OfficeProPlus.Downloader
                         cabExtractor.ExtractCabFiles();
                     }
 
-                    var dirInfo = new DirectoryInfo(Environment.ExpandEnvironmentVariables(@"%temp%"));
                     foreach (var file in dirInfo.GetFiles("*_ReleaseHistory.xml"))
                     {
                         try
@@ -419,7 +471,7 @@ namespace Microsoft.OfficeProPlus.Downloader
                     }
 
                     releaseHistoryPath =
-                        Environment.ExpandEnvironmentVariables(@"%temp%\" + guid + @"\ExtractedFiles\ReleaseHistory.xml");
+                        Environment.ExpandEnvironmentVariables(@"%temp%\OfficeFiles\ReleaseHistory\" + guid + @"\ExtractedFiles\ReleaseHistory.xml");
                     if (File.Exists(tmpReleaseHistory))
                     {
                         releaseHistoryPath = tmpReleaseHistory;
@@ -644,12 +696,21 @@ namespace Microsoft.OfficeProPlus.Downloader
                 var rename = fileNode.GetAttributeValue("rename");
                 var relativePath = fileNode.GetAttributeValue("relativePath");
                 var language = Convert.ToInt32(fileNode.GetAttributeValue("language"));
+                var languageTypeString = fileNode.GetAttributeValue("languageType");
+
+                var languageType = LanguageType.None;
+                if (!string.IsNullOrEmpty(languageTypeString))
+                {
+                    languageType = (LanguageType) Enum.Parse(typeof (LanguageType), languageTypeString, true);
+                }
+
                 updateFiles.Files.Add(new Model.File()
                 {
                     Name = name,
                     Rename = rename,
                     RelativePath = relativePath,
-                    Language = language
+                    Language = language,
+                    LanguageType = languageType
                 });
             }
             return updateFiles;

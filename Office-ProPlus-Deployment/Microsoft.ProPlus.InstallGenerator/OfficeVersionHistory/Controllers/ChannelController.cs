@@ -15,18 +15,18 @@ namespace OfficeVersionHistory.Controllers
     [EnableCors(origins: "*", headers: "*", methods: "*")]
     public class ChannelController : ApiController
     {
-        private readonly VersionDownloader _versionDownloader = null;
+        private readonly OfficeInfoDownloader _officeInfoDownloader = null;
 
         public ChannelController()
         {
-            _versionDownloader = new VersionDownloader();
+            _officeInfoDownloader = new OfficeInfoDownloader();
         }
 
         // GET api/Channel
         [HttpHeaderAttribute("Access-Control-Allow-Origin", "*")]
         public async Task<List<UpdateChannel>> Get()
         {
-            var updateChannels = await _versionDownloader.GetUpdateChannelsAsync();
+            var updateChannels = await _officeInfoDownloader.GetUpdateChannelsAsync();
             return updateChannels;
         }
 
@@ -35,10 +35,12 @@ namespace OfficeVersionHistory.Controllers
         [Route("api/Channel/GetChannel")]
         public async Task<UpdateChannel> GetChannel(string name)
         {
-            var updateChannels = await _versionDownloader.GetUpdateChannelsAsync();
+            var updateChannels = await _officeInfoDownloader.GetUpdateChannelsAsync();
             var selectChannel = updateChannels.FirstOrDefault(c => c.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
             return selectChannel;
         }
+
+
 
     }
 }

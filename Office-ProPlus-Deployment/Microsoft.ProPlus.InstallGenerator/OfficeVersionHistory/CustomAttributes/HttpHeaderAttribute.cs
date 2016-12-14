@@ -31,7 +31,7 @@ namespace OfficeVersionHistory.CustomAttributes
 
         public override void OnActionExecuted(HttpActionExecutedContext actionExecutedContext)
         {
-            actionExecutedContext.Response.Headers.Add(Name, Value);
+            actionExecutedContext.Response?.Headers.Add(Name, Value);
             base.OnActionExecuted(actionExecutedContext);
         }
     }

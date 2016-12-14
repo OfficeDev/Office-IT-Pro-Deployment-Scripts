@@ -54,9 +54,11 @@
     <Compile Include="Events.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Model\baseURL.cs" />
+    <Compile Include="Model\Enums\LanguageType.cs" />
     <Compile Include="Model\File.cs" />
     <Compile Include="Model\OfficeEditionSelection.cs" />
     <Compile Include="Model\OfficeEdition.cs" />
+    <Compile Include="Model\Language.cs" />
     <Compile Include="Model\Update.cs" />
     <Compile Include="Model\UpdateChannel.cs" />
     <Compile Include="Model\UpdateFiles.cs" />

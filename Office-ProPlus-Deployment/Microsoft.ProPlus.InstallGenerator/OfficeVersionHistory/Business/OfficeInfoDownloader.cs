@@ -9,11 +9,11 @@ using Microsoft.OfficeProPlus.Downloader.Model;
 
 namespace OfficeVersionHistory.Business
 {
-    public class VersionDownloader
+    public class OfficeInfoDownloader
     {
         private readonly ProPlusDownloader _proPlusDownloader = null;
 
-        public VersionDownloader()
+        public OfficeInfoDownloader()
         {
             _proPlusDownloader = new ProPlusDownloader();
         }
@@ -38,7 +38,25 @@ namespace OfficeVersionHistory.Business
             return updateChannels;
         }
 
+        public async Task<List<UpdateFiles>> GetUpdateFilesAsync()
+        {
+            List<UpdateFiles> updateFiles = null;
 
+            var now = DateTime.Now;
+            var dateKey = "Files-" + now.Year + now.Month + now.Day + now.Hour;
+
+            if (WebApiConfig.FileCache.ContainsKey(dateKey))
+            {
+                updateFiles = WebApiConfig.FileCache[dateKey];
+            }
+            else
+            {
+                updateFiles = await _proPlusDownloader.DownloadCabAsync();
+                WebApiConfig.FileCache[dateKey] = updateFiles;
+            }
+
+            return updateFiles;
+        }
 
 
     }

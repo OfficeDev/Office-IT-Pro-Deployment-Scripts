@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.OfficeProPlus.Downloader.Model.Enums;
 
 namespace Microsoft.OfficeProPlus.Downloader.Model
 {
@@ -15,6 +16,8 @@ namespace Microsoft.OfficeProPlus.Downloader.Model
         public string RelativePath { get; set; }
 
         public int Language { get; set; }
+
+        public LanguageType LanguageType { get; set; }
 
         public string RemoteUrl { get; set; }
 

@@ -143,8 +143,10 @@
   <ItemGroup>
     <Compile Include="App_Start\SwaggerConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
-    <Compile Include="Business\VersionDownloader.cs" />
+    <Compile Include="Business\OfficeInfoDownloader.cs" />
     <Compile Include="Controllers\ChannelController.cs" />
+    <Compile Include="Controllers\FileController.cs" />
+    <Compile Include="Controllers\LanguageController.cs" />
     <Compile Include="CustomAttributes\HttpHeaderAttribute.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
