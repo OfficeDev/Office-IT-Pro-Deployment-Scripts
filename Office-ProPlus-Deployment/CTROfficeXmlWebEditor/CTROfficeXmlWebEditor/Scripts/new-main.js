@@ -387,6 +387,9 @@ $(document).ready(function () {
 
                 if (flagMatch) {
                     var builds = [];
+                    if ($('#txtVersion').val() === 'Latest') {
+                        builds.push('Latest');
+                    }
                     for (var v = 0; v < versionData[i].Updates.length; v++) {
                         var update = versionData[i].Updates[v];
                         if (givenVersion === update.Version) {
@@ -426,6 +429,10 @@ $(document).ready(function () {
                         if (Curvers.value === update.Version && Curbuild.value === update.Build) {
                             console.trace('UpdateLegacyVersion', update.LegacyVersion)
                             $('#txtLegacyVersion').val(update.LegacyVersion);
+                            break;
+                        }
+                        else {
+                            $('#txtLegacyVersion').val('');
                         }
                     }
                 }
@@ -966,7 +973,7 @@ function changeVersions(version) {
         $('#legacyVersionTextBox .typeahead').typeahead('destroy', 'NoCached');
 
         $('#legacyVersionTextBox .typeahead').typeahead({
-            hint: true,
+            hint: false,
             highlight: true,
             minLength: 1
         },
@@ -976,7 +983,7 @@ function changeVersions(version) {
         });
 
         $('#updateVersionTextBox .typeahead').typeahead({
-            hint: true,
+            hint: false,
             highlight: true,
             minLength: 1
         },
@@ -1043,7 +1050,7 @@ function changeVersions(version) {
         $("#txtLegacyVersion").val(selectVersions[0]);
         //note values must be set before typeahead is called to kill the cache otherwise, you'll have issues
         $('#legacyVersionTextBox .typeahead').typeahead({
-            hint: true,
+            hint: false,
             highlight: true,
             minLength: 1
         },
@@ -1053,7 +1060,7 @@ function changeVersions(version) {
         });
 
         $('#updateVersionTextBox .typeahead').typeahead({
-            hint: true,
+            hint: false,
             highlight: true,
             minLength: 1
         },
@@ -3272,6 +3279,7 @@ function dialogBack() {
 }
 
 var versions = [
+'',
 '15.0.4745.1001',
 '15.0.4727.1003',
 '15.0.4719.1002',
