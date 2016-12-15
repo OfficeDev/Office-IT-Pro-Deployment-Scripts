@@ -2089,31 +2089,25 @@ function odtAddRemoveApp(xmlDoc) {
 
 function odtDeleteRemoveApp(xmlDoc) {
     var selectedProduct = $("#cbRemoveProduct").val();
-    var selectLanguage = $("#cbRemoveLanguage").val();
 
-    var removeNode = xmlDoc.createElement("Remove");
+    var removeNode = null;
+
     var nodes = xmlDoc.documentElement.getElementsByTagName("Remove");
     if (nodes.length > 0) {
         removeNode = xmlDoc.documentElement.getElementsByTagName("Remove")[0];
-    } else {
-        xmlDoc.documentElement.appendChild(removeNode);
-    }
-
-    var $removeSelect = $("#removeSelectProducts");
-    if ($removeSelect.hasClass('btn-primary')) {
-        removeNode.removeAttribute("All");
 
         var productNode = getProductNode(removeNode, selectedProduct);
         if (productNode) {
-
             removeNode.removeChild(productNode);
+        }
+
+        var products = removeNode.getElementsByTagName("Product");
+        if (products.length == 0) {
+            removeNode.parentNode.removeChild(removeNode);
         }
     }
 
-    var products = removeNode.getElementsByTagName("Product");
-    if (products.length == 0) {
-        removeNode.parentNode.removeChild(removeNode);
-    }
+    
 }
 
 
