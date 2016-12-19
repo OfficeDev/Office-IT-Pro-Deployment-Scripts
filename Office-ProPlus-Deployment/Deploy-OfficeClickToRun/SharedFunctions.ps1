@@ -1955,7 +1955,7 @@ Param(
     [string]$OfficeCDNBaseUrl = $null
 )
 
-    $path16 = 'HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configurations'
+    $path16 = 'HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration'
     $CDNBaseUrl = (Get-ItemProperty -Path $path16 -Name CDNBaseUrl).CDNBaseUrl
 
     if($CDNBaseUrl){

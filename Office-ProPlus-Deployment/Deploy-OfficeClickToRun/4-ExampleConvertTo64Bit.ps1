@@ -53,6 +53,8 @@ if ($installOffice) {
           $PinnedStartMenuApps = "None"
       }
 
+      $OfficeCDNUrl = Get-OfficeCDNUrl
+
       Remove-OfficeClickToRun -TargetFilePath $targetFilePath
 
       Remove-PreviousOfficeInstalls
@@ -65,7 +67,6 @@ if ($installOffice) {
          $UpdatePath = $updates.UpdatePath
          if($UpdatePath -like '*officecdn.microsoft.com*') {
              $SourcePath = $UpdatePath
-             $OfficeCDNUrl = Get-OfficeCDNUrl
          }
       }
 
