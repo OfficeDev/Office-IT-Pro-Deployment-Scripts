@@ -1962,3 +1962,11 @@ Param(
         Set-ItemProperty -Path $path16 -Name CDNBaseUrl -Value $OfficeCDNBaseUrl | Out-Null
     }
 }
+
+function Get-UpdateChannelUrl {
+    $UpdateChannelUrl = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration -Name UpdateChannel -ErrorAction SilentlyContinue).UpdateChannel
+
+    if($UpdateChannelUrl){
+        return $UpdateChannelUrl
+    }
+}
