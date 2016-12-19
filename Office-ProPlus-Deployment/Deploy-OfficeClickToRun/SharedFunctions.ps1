@@ -1949,3 +1949,16 @@ function GetPinnedTaskbarApps {
     $PinnedTaskbarApps = $PreOfficeAppPinnedStatus | ? {$_.PinToTaskbarAvailable -eq $false}
     return $PinnedTaskbarApps.Name
 }
+
+function Set-OfficeCDNBaseUrl {
+Param(
+    [string]$OfficeCDNBaseUrl = $null
+)
+
+    $path16 = 'HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configurations'
+    $CDNBaseUrl = (Get-ItemProperty -Path $path16 -Name CDNBaseUrl).CDNBaseUrl
+
+    if($CDNBaseUrl){
+        Set-ItemProperty -Path $path16 -Name CDNBaseUrl -Value $OfficeCDNBaseUrl | Out-Null
+    }
+}

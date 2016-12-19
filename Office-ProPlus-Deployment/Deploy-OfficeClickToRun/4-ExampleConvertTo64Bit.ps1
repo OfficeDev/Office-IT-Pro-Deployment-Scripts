@@ -65,6 +65,7 @@ if ($installOffice) {
          $UpdatePath = $updates.UpdatePath
          if($UpdatePath -like '*officecdn.microsoft.com*') {
              $SourcePath = $UpdatePath
+             $OfficeCDNUrl = Get-OfficeCDNUrl
          }
       }
 
@@ -80,6 +81,8 @@ if ($installOffice) {
       Restart-ExplorerExe
 
       Install-OfficeClickToRun -TargetFilePath $targetFilePath -PinToStartMenu $PinnedStartMenuApps
+
+      Set-OfficeCDNBaseUrl -OfficeCDNBaseUrl $OfficeCDNUrl | Out-Null
       
   }
 }
