@@ -12,9 +12,9 @@ More related videos from Microsoft Ignite 2016
 The software is licensed “as-is.” under the [MIT License](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/master/LICENSE).
 
 ##Upgrade to Office 365 ProPlus
-Click [here](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/Feature-UpgradeDocumentation/Office-ProPlus-Deployment/Deploy-OfficeClickToRun/Upgrade_Office2007_README.md) to upgrade from Office 2007  
-Click [here](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/Feature-UpgradeDocumentation/Office-ProPlus-Deployment/Deploy-OfficeClickToRun/Upgrade_Office2010_README.md) to upgrade from Office 2010  
-Click [here](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/Feature-UpgradeDocumentation/Office-ProPlus-Deployment/Deploy-OfficeClickToRun/Upgrade_Office2013_README.md) to upgrade from Office 2013  
+Click [here](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/Development/Office-ProPlus-Deployment/Deploy-OfficeClickToRun/Upgrade_Office2007_README.md) to upgrade from Office 2007  
+Click [here](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/Development/Office-ProPlus-Deployment/Deploy-OfficeClickToRun/Upgrade_Office2010_README.md) to upgrade from Office 2010  
+Click [here](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/Development/Office-ProPlus-Deployment/Deploy-OfficeClickToRun/Upgrade_Office2013_README.md) to upgrade from Office 2013  
 
 ## Do you have Systems Center Configuration Manager?
 [Deploying Office ProPlus with Configuration Manager](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/master/Office-ProPlus-Deployment/Setup-CMOfficeDeployment)
