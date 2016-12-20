@@ -1970,3 +1970,54 @@ function Get-UpdateChannelUrl {
         return $UpdateChannelUrl
     }
 }
+
+function Get-UpdateSource {
+Param(
+
+)
+      
+    $UpdateChannel = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration -Name UpdateChannel -ErrorAction SilentlyContinue).UpdateChannel
+    $GPOUpdatePath = (Get-ItemProperty HKLM:\SOFTWARE\Policies\Microsoft\office\16.0\common\officeupdate -Name updatepath -ErrorAction SilentlyContinue).updatepath
+    $GPOUpdateBranch = (Get-ItemProperty HKLM:\SOFTWARE\Policies\Microsoft\office\16.0\common\officeupdate -Name UpdateBranch -ErrorAction SilentlyContinue).UpdateBranch
+    $GPOUpdateChannel = (Get-ItemProperty HKLM:\SOFTWARE\Policies\Microsoft\office\16.0\common\officeupdate -Name UpdateChannel -ErrorAction SilentlyContinue).UpdateChannel                      
+    $UpdateUrl = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration -Name UpdateUrl -ErrorAction SilentlyContinue).UpdateUrl
+    $currentBaseUrl = Get-OfficeCDNUrl
+
+    $currentBaseUrl = $SourcePath
+
+    if($UpdateUrl -ne $null -and $UpdateUrl -like '*officecdn.microsoft.com*'){
+        $SourcePath = $UpdateUrl
+    }
+
+    if($GPOUpdateChannel -ne $null){
+        $channelXml = Get-ChannelXml
+        $channels = $channelXml.UpdateFiles.baseUrl.branch
+        foreach($channel in $channels){
+            if($channel.ToLower() -eq $GPOUpdateChannel.ToLower()){
+                $channelUrl = ($channelXml.UpdateFiles.baseUrl | ? {$_.branch -eq $channel}).URL
+                $SourcePath = $channelUrl
+            }
+        }
+    }
+
+    if($GPOUpdateBranch -ne $null){
+        $channelXml = Get-ChannelXml
+        $channels = $channelXml.UpdateFiles.baseUrl.branch
+        foreach($channel in $channels){
+            if($channel.ToLower() -eq $GPOUpdateBranch.ToLower()){
+                $channelUrl = ($channelXml.UpdateFiles.baseUrl | ? {$_.branch -eq $channel}).URL
+                $SourcePath = $channelUrl
+            }
+        }
+    }
+
+    if($GPOUpdatePath -ne $null -and $GPOUpdatePath -like '*officecdn.microsoft.com*'){
+        $SourcePath = $GPOUpdatePath 
+    }
+
+    if($UpdateChannel -ne $null -and $UpdateChannel -like '*officecdn.microsoft.com*'){
+        $SourcePath = $UpdateChannel  
+    }
+
+    return $SourcePath
+}

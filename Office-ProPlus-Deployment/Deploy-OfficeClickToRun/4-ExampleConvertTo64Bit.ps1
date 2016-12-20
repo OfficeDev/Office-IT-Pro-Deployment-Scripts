@@ -53,8 +53,9 @@ if ($installOffice) {
           $PinnedStartMenuApps = "None"
       }
 
+      $UpdateChannelUrl = $NULL
       $OfficeCDNUrl = Get-OfficeCDNUrl
-      $UpdateChannelUrl = Get-UpdateChannelUrl
+      $SourcePath = Get-UpdateSource
 
       Remove-OfficeClickToRun -TargetFilePath $targetFilePath
 
@@ -64,19 +65,8 @@ if ($installOffice) {
       $addNode = Get-ODTAdd -TargetFilePath $targetFilePath
 
       $UpdatePath = $NULL
-      [bool]$UpdateCDNBaseUrl = $false
       if($updates){
-         $UpdatePath = $updates.UpdatePath
-         if($UpdatePath -like '*officecdn.microsoft.com*') {
-             $SourcePath = $UpdatePath
-             $UpdateCDNBaseUrl = $true
-         }
-      }
-
-      if($UpdatePath -notlike '*officecdn.microsoft.com*') {
-         if($UpdateChannelUrl) {
-             $SourcePath = $UpdateChannelUrl
-         }
+          $UpdatePath = $updates.UpdatePath
       }
 
       if($addNode.Channel -ne $NULL){
@@ -91,10 +81,8 @@ if ($installOffice) {
       Restart-ExplorerExe
 
       Install-OfficeClickToRun -TargetFilePath $targetFilePath -PinToStartMenu $PinnedStartMenuApps
-
-      if($UpdateCDNBaseUrl -eq $true){
-          Set-OfficeCDNBaseUrl -OfficeCDNBaseUrl $OfficeCDNUrl | Out-Null
-      }     
+      
+      Set-OfficeCDNBaseUrl -OfficeCDNBaseUrl $OfficeCDNUrl | Out-Null    
   }
 }
 
