@@ -1963,14 +1963,6 @@ Param(
     }
 }
 
-function Get-UpdateChannelUrl {
-    $UpdateChannelUrl = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration -Name UpdateChannel -ErrorAction SilentlyContinue).UpdateChannel
-
-    if($UpdateChannelUrl){
-        return $UpdateChannelUrl
-    }
-}
-
 function Get-UpdateSource {
 Param(
 
