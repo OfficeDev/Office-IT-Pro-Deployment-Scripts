@@ -53,7 +53,6 @@ if ($installOffice) {
           $PinnedStartMenuApps = "None"
       }
 
-      $UpdateChannelUrl = $NULL
       $OfficeCDNUrl = Get-OfficeCDNUrl
       $SourcePath = Get-UpdateSource
 
