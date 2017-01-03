@@ -116,7 +116,10 @@ Param(
     [int] $NumOfRetries = 5,
 
     [Parameter()]
-    [bool] $IncludeChannelInfo = $false
+    [bool] $IncludeChannelInfo = $false,
+
+    [Parameter()]
+    [bool] $GrabNextVersionIfThrottled = $false
 )
 
 $BranchesOrChannels = @()
@@ -215,6 +218,14 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
                 }
                 if(!(Test-Path "$TargetDirectory\$FolderName\Office\Data")){
                     New-Item -Path "$TargetDirectory\$FolderName\Office\Data" -ItemType directory -Force | Out-Null
+                }
+
+                if($GrabNextVersionIfThrottled -and [String]::IsNullOrWhiteSpace($Version)){
+                    [string]$CheckVersion = GetVersionBasedOnThrottle -Channel $currentBranch -Version $Version -currentVerXML $CurrentVersionXML
+                    #due to output of "expand" function, need to clean the string to get the version that it returns
+                    $CheckVersion = $CheckVersion.Substring($CheckVersion.LastIndexOf(" "))
+                    $CheckVersion = $CheckVersion.Trim()
+                    $Version = $CheckVersion
                 }
 
                 if([String]::IsNullOrWhiteSpace($Version)){
@@ -445,6 +456,66 @@ function DownloadFile($url, $targetFile) {
    }
    Start-Sleep -Milliseconds 500
   }
+}
+
+function GetVersionBasedOnThrottle {
+    Param(
+       [Parameter()]
+       [string] $Channel,
+
+       [Parameter()]
+       [string] $Version,
+
+       [Parameter()]
+       [xml]$currentVerXML
+    )
+    $versionToReturn
+    $checkChannel = $Channel
+    if($checkChannel -like "FirstReleaseCurrent"){$checkChannel = "InsidersSlow"}
+
+    $historyOfVersionsLink = "http://officecdn.microsoft.com/pr/wsus/releasehistory.cab"
+
+    $destination2 = "$env:TEMP\ReleaseHistory.cab"
+
+    DownloadFile -url $historyOfVersionsLink -targetFile $destination2
+    
+    expand $destination2 "$env:TEMP\ReleaseHistory.xml" -f:"ReleaseHistory.xml" 
+    
+
+    $baseCabFileName2 = "$env:Temp\ReleaseHistory.xml"
+    [xml]$vdxml = Get-Content $baseCabFileName2
+    $UpdateChannels = $vdxml.ReleaseHistory.UpdateChannel;
+    $updates = $UpdateChannels | Where {$_.Name -like $checkChannel}
+    #foreach($update in $updates.Update){
+    #
+
+                #Write-Host $update.LegacyVersion $update.Latest
+                    #get base .cab to get current version
+                    $baseCabFile = $CurrentVersionXML.UpdateFiles.File | ? rename -ne $null
+                    $url = "$baseURL$($baseCabFile.relativePath)$($baseCabFile.rename)"
+                    $destination = "$TargetDirectory\$FolderName\Office\Data\$($baseCabFile.rename)"
+
+                    DownloadFile -url $url -targetFile $destination
+
+                    expand $destination $env:TEMP -f:"VersionDescriptor.xml" | Out-Null
+                    $baseCabFileName = $env:TEMP + "\VersionDescriptor.xml"
+                    [xml]$vdxml = Get-Content $baseCabFileName
+                    $throttle = $vdxml.Version.Throttle;
+                    Remove-Item -Path $baseCabFileName
+                    if([int]$throttle.Value -ge 1000){
+                        $versionToReturn = $updates.Update[0].LegacyVersion
+                    }
+                    else{
+                        $versionToReturn = $updates.Update[1].LegacyVersion
+                    }
+
+    
+    
+    Remove-Item -Path $baseCabFileName2
+    
+
+    return $versionToReturn
+
 }
 
 function PurgeOlderVersions([string]$targetDirectory, [int]$numVersionsToKeep, [array]$channels){
