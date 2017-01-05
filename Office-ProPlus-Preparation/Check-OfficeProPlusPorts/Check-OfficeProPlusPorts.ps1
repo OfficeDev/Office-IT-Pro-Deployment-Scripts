@@ -252,8 +252,6 @@ process {
     $results += New-Object PSObject -Property @{Name = "Microsoft Teams"; Host = "b.config.skype.com"; Port = 443; Status = "Fail"; }
 
 
-
-
     $results += New-Object PSObject -Property @{Name = "Office 365 remote analyzer tools"; Host = "testconnectivity.microsoft.com"; Port = 443; Status = "Fail"; }
     $results += New-Object PSObject -Property @{Name = "Office 365 remote analyzer tools"; Host = "client.hip.live.com"; Port = 443; Status = "Fail"; }
     $results += New-Object PSObject -Property @{Name = "Office 365 remote analyzer tools"; Host = "wu.client.hip.live.com"; Port = 443; Status = "Fail"; }
@@ -267,26 +265,13 @@ process {
     $results += New-Object PSObject -Property @{Name = "OneNote notebooks"; Host = "apis.live.net"; Port = 443; Status = "Fail"; }
     $results += New-Object PSObject -Property @{Name = "OneNote notebooks"; Host = "www.onedrive.com"; Port = 443; Status = "Fail"; }
 
-
-
-
-
-
-
-
-
-
     foreach ($result in $results) {
         $result | Add-Member MemberSet PSStandardMembers $PSStandardMembers
     }
 
-   
-      
     foreach ($result in $results) {
-    
         $url = $result | select -ExpandProperty Host
         $port = $result | select -ExpandProperty Port
-
 
         $status = Test-NetConnection -ComputerName $url -Port $port -WarningAction SilentlyContinue | select -ExpandProperty TCPTestSucceeded
 
@@ -294,11 +279,7 @@ process {
         {
             $result.Status = 'Pass'
         }
-    
-    
-
     }
-
 
     return $results;
 }
