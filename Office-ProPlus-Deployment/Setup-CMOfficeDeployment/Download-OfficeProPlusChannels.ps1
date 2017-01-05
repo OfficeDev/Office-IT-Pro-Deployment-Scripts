@@ -97,6 +97,16 @@ Param(
     [string[]] $Languages = ("en-us"),
 
     [Parameter()]
+    [ValidateSet("af-za","sq-al","am-et","hy-am","as-in","az-latn-az","eu-es","be-by","bn-bd","bn-in","bs-latn-ba","ca-es","prs-af","fil-ph","gl-es","ka-ge","gu-in","is-is","ga-ie","kn-in",
+                "km-kh","sw-ke","kok-in","ky-kg","lb-lu","mk-mk","ml-in","mt-mt","mi-nz","mr-in","mn-mn","ne-np","nn-no","or-in","fa-ir","pa-in","quz-pe","gd-gb","sr-cyrl-rs","sr-cyrl-ba",
+                "sd-arab-pk","si-lk","ta-in","tt-ru","te-in","tk-tm","ur-pk","ug-cn","uz-latn-uz","ca-es-valencia","cy-gb")]
+    [string[]] $PartialLanguages,
+
+    [Parameter()]
+    [ValidateSet("ha-latn-ng","ig-ng","xh-za","zu-za","rw-rw","ps-af","rm-ch","nso-za","tn-za","wo-sn","yo-ng")]
+    [string[]] $ProofingLanguages,
+
+    [Parameter()]
     [Bitness] $Bitness = 0,
 
     [Parameter()]
@@ -124,6 +134,13 @@ Param(
     [bool] $DownloadPreviousVersionIfThrottled = $false
 )
 
+#create array for all languages including core, partial, and proofing
+$allLanguages = @();
+$allLanguages += , $Languages
+$allLanguages += , $PartialLanguages
+$allLanguages += , $ProofingLanguages
+
+
 $BranchesOrChannels = @()
 
 if($Branches.Count -gt 0)
@@ -137,7 +154,7 @@ else{
     $BranchesOrChannels = $Channels
 }
       
-$numberOfFiles = (($BranchesOrChannels.Count) * ((($Languages.Count + 1)*3) + 5))
+$numberOfFiles = (($BranchesOrChannels.Count) * ((($allLanguages.Count + 1)*3) + 5))
 
 [bool]$downloadSuccess = $TRUE;
 For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the event of a failure in order to retry
@@ -305,7 +322,7 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
                    $numberOfFiles ++
                 }
 
-                $Languages | 
+                $allLanguages | 
                 %{
                     #LANGUAGE LOGIC HERE
                     $languageId  = [globalization.cultureinfo]::GetCultures("allCultures") | ? Name -eq $_ | %{$_.LCID}
@@ -385,7 +402,7 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
                 }
 
                 #language files
-                $Languages | 
+                $allLanguages | 
                 %{
                     #LANGUAGE LOGIC HERE
                     $languageId  = [globalization.cultureinfo]::GetCultures("allCultures") | ? Name -eq $_ | %{$_.LCID}
