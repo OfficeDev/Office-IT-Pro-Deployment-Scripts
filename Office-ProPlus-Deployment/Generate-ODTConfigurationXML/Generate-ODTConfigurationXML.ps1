@@ -1312,8 +1312,7 @@ function officeGetExcludedApps() {
         $HKLM = [UInt32] "0x80000002"
         $HKCR = [UInt32] "0x80000000"
 
-        $allExcludeApps = 'Access','Excel','Groove','InfoPath','OneNote','Outlook',
-                       'PowerPoint','Publisher','Word'
+        $allExcludeApps = 'Access','Excel','InfoPath','Outlook','PowerPoint','Publisher','Word'
 
         if ($Credentials) {
             $regProv = Get-Wmiobject -list "StdRegProv" -namespace root\default -computername $computer -Credential $Credentials  -ErrorAction Stop
@@ -1374,27 +1373,9 @@ function officeGetExcludedApps() {
             [bool]$appInstalled = $false
 
             foreach ($OfficeProduct in $appList){
-                if($OfficeProduct.ToLower() -like $appName.ToLower()){
-                    if($OfficeProduct -eq "OneNote"){
-                        $onRegPath = Join-Path $appKeyPath $OfficeProduct
-                        $onInstallKey = $regProv.EnumKey($HKLM, $onRegPath)
-                        $onRegKeys = $onInstallKey.sNames
-                        foreach($key in $onRegKeys){
-                            if($key -like "InstallRoot"){
-                                $onInstallRegKey = Join-Path $onRegPath "InstallRoot"
-                                $installRoot = $regProv.GetStringValue($HKLM, $onInstallRegKey, "Path").sValue
-                                $pathChk = Test-Path -Path $installRoot
-                                if($pathChk){
-                                    $appInstalled = $true
-                                    break;
-                                }
-                            }
-                        }              
-                    }
-                    else{
-                        $appInstalled = $true
-                        break;
-                    }
+                if($OfficeProduct.ToLower() -like $appName.ToLower()){                  
+                    $appInstalled = $true
+                    break;           
                 }
             }
 
