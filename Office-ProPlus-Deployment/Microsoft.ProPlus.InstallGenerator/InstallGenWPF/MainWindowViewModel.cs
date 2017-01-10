@@ -477,7 +477,57 @@ namespace MetroDemo
 
         public List<OfficeBranch> JsonToBranches(string json)
         {
-            var branches = JsonConvert.DeserializeObject<List<OfficeBranch>>(json);
+            var updatedBranches = JsonConvert.DeserializeObject<List<UpdatedOfficeBranch>>(json);
+            var branches = new List<OfficeBranch>();
+            foreach (var updatedBranch in updatedBranches)
+            {
+                if (updatedBranch.Name.ToLower() != "extendeddeferred") {
+                    var branch = new OfficeBranch();
+                    if (updatedBranch.Name.ToLower() == "current")
+                    {
+                        branch.Branch = Branch.Current;
+                        branch.Name = updatedBranch.Name;
+                        branch.NewName = updatedBranch.Name;
+                        branch.Id = updatedBranch.Name;
+                    }
+                    if (updatedBranch.Name.ToLower() == "deferred")
+                    {
+                        branch.Branch = Branch.Business;
+                        branch.Name = updatedBranch.Name;
+                        branch.NewName = updatedBranch.Name;
+                        branch.Id = "Business";
+                    }
+                    if (updatedBranch.Name.ToLower() == "firstreleasedeferred")
+                    {
+                        branch.Branch = Branch.FirstReleaseBusiness;
+                        branch.Name = "First Release Deferred";
+                        branch.NewName = updatedBranch.Name;
+                        branch.Id = "FirstReleaseBusiness";
+                    }
+                    if (updatedBranch.Name.ToLower() == "insidersslow")
+                    {
+                        branch.Branch = Branch.FirstReleaseCurrent;
+                        branch.Name = "First Release Current";
+                        branch.NewName = "FirstReleaseCurrent";
+                        branch.Id = "FirstReleaseCurrent";
+                    }
+                    branch.Updated = false;
+                    foreach (var update in updatedBranch.Updates)
+                    {
+                        if (update.Latest == true) { branch.CurrentVersion = update.LegacyVersion; }
+                        var build = new Build();
+                        build.NewBuild = update.Build;
+                        build.NewVersion = update.Version;
+                        build.Version = update.LegacyVersion;
+                        if (branch.Versions == null)
+                        {
+                            branch.Versions = new List<Build>();
+                        }
+                        branch.Versions.Add(build);
+                    }
+                    branches.Add(branch);
+                }
+            }
             return branches;
         }
 

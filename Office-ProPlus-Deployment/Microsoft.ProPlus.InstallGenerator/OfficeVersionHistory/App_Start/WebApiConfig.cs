@@ -11,13 +11,10 @@ namespace OfficeVersionHistory
     {
         public static ConcurrentDictionary<string, List<UpdateChannel>> ChannelCache = null;
 
-        public static ConcurrentDictionary<string, List<UpdateFiles>> FileCache = null;
-
         public static void Register(HttpConfiguration config)
         {
             // Web API configuration and services
             ChannelCache = new ConcurrentDictionary<string, List<UpdateChannel>>();
-            FileCache = new ConcurrentDictionary<string, List<UpdateFiles>>();
 
             config.EnableCors();
 
@@ -30,7 +27,5 @@ namespace OfficeVersionHistory
                 defaults: new { id = RouteParameter.Optional }
             );
         }
-
-
     }
 }
