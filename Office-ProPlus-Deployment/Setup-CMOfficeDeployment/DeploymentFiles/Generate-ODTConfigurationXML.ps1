@@ -80,9 +80,6 @@ param(
     [bool]$IncludeUpdatePathAsSourcePath = $false,
 
     [Parameter(ValueFromPipelineByPropertyName=$true)]
-    [String]$DownloadPath = $NULL,
-
-    [Parameter(ValueFromPipelineByPropertyName=$true)]
     [string]$DefaultConfigurationXml = $NULL
 )
 
@@ -109,12 +106,11 @@ begin {
 }
 
 process {
-    try{
     # write log
     $lineNum = Get-CurrentLineNumber    
     $filName = Get-CurrentFileName 
     WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "begin function"
-#Throw "this is a generic error"
+
  if ($TargetFilePath) {
      $folderPath = Split-Path -Path $TargetFilePath -Parent
      $fileName = Split-Path -Path $TargetFilePath -Leaf
@@ -124,7 +120,7 @@ process {
  }
  
  $results = new-object PSObject[] 0;
- 
+
  foreach ($computer in $ComputerName) {
    try {
     if ($Credentials) {
@@ -185,7 +181,6 @@ process {
     [bool]$officeExists = $true
 
     if (!($officeProducts)) {
-    
       $officeExists = $false
       if ($DefaultConfigurationXml) {
           if (Test-Path -Path $DefaultConfigurationXml) {
@@ -278,7 +273,7 @@ process {
     if ($primaryLanguage) {
         $allLanguages += $primaryLanguage.ToLower()
     }
-    
+
     foreach ($lang in $additionalLanguages) {
       if ($lang.GetType().Name.ToLower().Contains("string")) {
         if ($lang.Contains("-")) {
@@ -298,13 +293,13 @@ process {
     }
 
     if (!($primaryLanguage)) {
-        <# write log#>
+            <# write log#>
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Cannot find matching Office language for: $primaryLanguage"
         throw "Cannot find matching Office language for: $primaryLanguage"
     }
-    
+
     foreach ($productId in $splitProducts) { 
        $excludeApps = $NULL
 
@@ -332,9 +327,8 @@ process {
             $additionalLanguages += $msiLanguage
          }
          
-         
+         if (!($additionalLanguages)) {
              foreach ($officeLang in $officeLangs) {
-             if(!($additionalLanguages -contains $officeLang)){
                 $additionalLanguages += $officeLang
              }
          }
@@ -432,10 +426,6 @@ process {
       }
     }
 
-    if ($DownloadPath) {      
-          odtSetAdd -ConfigDoc $ConfigFile -DownloadPath $DownloadPath   
-    }
-
     $formattedXml = Format-XML ([xml]($ConfigFile)) -indent 4
     # write log
     $lineNum = Get-CurrentLineNumber    
@@ -445,7 +435,7 @@ process {
         ($PSCmdlet.MyInvocation.PipelineLength -eq $PSCmdlet.MyInvocation.PipelinePosition)) {
 
         $results = new-object PSObject[] 0;
-        $Result = New-Object -TypeName PSObject
+        $Result = New-Object -TypeName PSObject 
         Add-Member -InputObject $Result -MemberType NoteProperty -Name "ConfigurationXML" -Value $formattedXml
 
         if ($ComputerName.Length -gt 1) {
@@ -455,7 +445,6 @@ process {
 
         if ($TargetFilePath) {
            $formattedXml | Out-File -FilePath $TargetFilePath
-           $formattedXml | Out-File -FilePath C:\Windows\Temp\OfficeAutoScriptConfigFile.xml
            if ($ComputerName.Length -eq 1) {
                $Result = $formattedXml
            }
@@ -466,7 +455,6 @@ process {
     } else {
         if ($TargetFilePath) {
            $formattedXml | Out-File -FilePath $TargetFilePath
-           $formattedXml | Out-File -FilePath C:\Windows\Temp\OfficeAutoScriptConfigFile.xml
         }
 
         $allLanguages = Get-Unique -InputObject $allLanguages
@@ -488,10 +476,6 @@ process {
     throw;
   }
 
-  }
-  } catch [Exception] {
-    $fileName = $_.InvocationInfo.ScriptName.Substring($_.InvocationInfo.ScriptName.LastIndexOf("\")+1)
-    WriteToLogFile -LNumber $_.InvocationInfo.ScriptLineNumber -FName $fileName -ActionError $_
   }
 }
 
@@ -729,14 +713,10 @@ process {
            }
 
            if (!$officeProduct) { continue };
+           
            $name = $regProv.GetStringValue($HKLM, $path, "DisplayName").sValue          
-		   
-           if ($ConfigItemList.Contains($key.ToUpper()) -and $name.ToUpper().Contains("MICROSOFT OFFICE") `
-                                                        -and $name.ToUpper() -notlike "*MUI*" `
-                                                        -and $name.ToUpper() -notlike "*VISIO*" `
-                                                        -and $name.ToUpper() -notlike "*PROJECT*" `
-                                                        -and $name.ToUpper() -notlike "*PROOFING*") {
 
+           if ($ConfigItemList.Contains($key.ToUpper()) -and $name.ToUpper().Contains("MICROSOFT OFFICE") -and $name.ToUpper() -notlike "*MUI*" -and $name.ToUpper() -notlike "*VISIO*" -and $name.ToUpper() -notlike "*PROJECT*") {
               $primaryOfficeProduct = $true
            }
 
@@ -1317,7 +1297,8 @@ function officeGetExcludedApps() {
         $HKLM = [UInt32] "0x80000002"
         $HKCR = [UInt32] "0x80000000"
 
-        $allExcludeApps = 'Access','Excel','InfoPath','Outlook','PowerPoint','Publisher','Word'
+        $allExcludeApps = 'Access','Excel','Groove','InfoPath','OneNote','Outlook',
+                       'PowerPoint','Publisher','Word'
 
         if ($Credentials) {
             $regProv = Get-Wmiobject -list "StdRegProv" -namespace root\default -computername $computer -Credential $Credentials  -ErrorAction Stop
@@ -1378,9 +1359,27 @@ function officeGetExcludedApps() {
             [bool]$appInstalled = $false
 
             foreach ($OfficeProduct in $appList){
-                if($OfficeProduct.ToLower() -like $appName.ToLower()){    
-                    $appInstalled = $true
-                    break;
+                if($OfficeProduct.ToLower() -like $appName.ToLower()){
+                    if($OfficeProduct -eq "OneNote"){
+                        $onRegPath = Join-Path $appKeyPath $OfficeProduct
+                        $onInstallKey = $regProv.EnumKey($HKLM, $onRegPath)
+                        $onRegKeys = $onInstallKey.sNames
+                        foreach($key in $onRegKeys){
+                            if($key -like "InstallRoot"){
+                                $onInstallRegKey = Join-Path $onRegPath "InstallRoot"
+                                $installRoot = $regProv.GetStringValue($HKLM, $onInstallRegKey, "Path").sValue
+                                $pathChk = Test-Path -Path $installRoot
+                                if($pathChk){
+                                    $appInstalled = $true
+                                    break;
+                                }
+                            }
+                        }              
+                    }
+                    else{
+                        $appInstalled = $true
+                        break;
+                    }
                 }
             }
 
@@ -1678,9 +1677,6 @@ Function odtSetAdd{
         [string] $SourcePath = $NULL,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [string] $DownloadPath = $NULL,
-
-        [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $Version,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
@@ -1710,14 +1706,6 @@ Function odtSetAdd{
         } else {
             if ($PSBoundParameters.ContainsKey('SourcePath')) {
                 $ConfigDoc.Configuration.Add.RemoveAttribute("SourcePath")
-            }
-        }
-
-        if($DownloadPath){
-            $ConfigFile.Configuration.Add.SetAttribute("DownloadPath", $DownloadPath) | Out-Null
-        } else {
-            if ($PSBoundParameters.ContainsKey('DownloadPath')) {
-                $ConfigDoc.Configuration.Add.RemoveAttribute("DownloadPath")
             }
         }
 
@@ -1978,11 +1966,13 @@ function Get-ChannelUrl() {
 function Get-ChannelXml() {
    [CmdletBinding()]
    param( 
-      
+    [Parameter()]
+    [string]$LogFilePath = "$env:temp\RollBackLogFile.log"  
    )
 
    process {
        $XMLFilePath = "$PSScriptRoot\ofl.cab"
+       Write-Logfile "Line 520: XMLFilePath set to $XMLFilePath"
 
        if (!(Test-Path -Path $XMLFilePath)) {
            $webclient = New-Object System.Net.WebClient
@@ -1991,9 +1981,15 @@ function Get-ChannelXml() {
            $webclient.DownloadFile($XMLDownloadURL,$XMLFilePath)
        }
 
-       $tmpName = "o365client_64bit.xml"
-       expand $XMLFilePath $env:TEMP -f:$tmpName | Out-Null
-       $tmpName = $env:TEMP + "\o365client_64bit.xml"
+       if($PSVersionTable.PSVersion.Major -ge '3'){
+           $tmpName = "o365client_64bit.xml"
+           expand $XMLFilePath $env:TEMP -f:$tmpName | Out-Null
+           $tmpName = $env:TEMP + "\o365client_64bit.xml"
+       }else {
+           $scriptPath = GetScriptPath
+           $tmpName = $scriptPath + "\o365client_64bit.xml"           
+       }
+
        [xml]$channelXml = Get-Content $tmpName
 
        return $channelXml
@@ -2058,7 +2054,6 @@ Function Get-OfficeCDNUrl() {
     return $CDNBaseUrl
 }
 
-
 Function WriteToLogFile() {
     param( 
       [Parameter(Mandatory=$true)]
@@ -2098,9 +2093,13 @@ function Get-CurrentFunctionName {
     (Get-Variable MyInvocation -Scope 1).Value.MyCommand.Name;
 }
 
+
 $availableLangs = @("en-us",
 "ar-sa","bg-bg","zh-cn","zh-tw","hr-hr","cs-cz","da-dk","nl-nl","et-ee",
 "fi-fi","fr-fr","de-de","el-gr","he-il","hi-in","hu-hu","id-id","it-it",
 "ja-jp","kk-kz","ko-kr","lv-lv","lt-lt","ms-my","nb-no","pl-pl","pt-br",
 "pt-pt","ro-ro","ru-ru","sr-latn-rs","sk-sk","sl-si","es-es","sv-se","th-th",
-"tr-tr","uk-ua","vi-vn");
+"tr-tr","uk-ua","vi-vn",#end of core languages
+"af-za","sq-al","am-et","hy-am","as-in","az-latn-az","eu-es","be-by","bn-bd","bn-in","bs-latn-ba","ca-es","prs-af","fil-ph","gl-es","ka-ge","gu-in","is-is","ga-ie","kn-in", #beginning of partial languages
+"km-kh","sw-ke","kok-in","ky-kg","lb-lu","mk-mk","ml-in","mt-mt","mi-nz","mr-in","mn-mn","ne-np","nn-no","or-in","fa-ir","pa-in","quz-pe","gd-gb","sr-cyrl-rs","sr-cyrl-ba",#end of partial langauges
+"ha-latn-ng","ig-ng","xh-za","zu-za","rw-rw","ps-af","rm-ch","nso-za","tn-za","wo-sn","yo-ng");#proofing languages
