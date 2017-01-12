@@ -2872,7 +2872,7 @@ Param(
     [string]$PkgID
 )
 
-    $query = Get-WmiObject �NameSpace Root\SMS\Site_$SiteCode �Class SMS_DistributionDPStatus �Filter "PackageID='$PkgID'" | Select Name, MessageID, MessageState, LastUpdateDate
+    $query = Get-WmiObject -NameSpace Root\SMS\Site_$SiteCode -Class SMS_DistributionDPStatus -Filter "PackageID='$PkgID'" | Select Name, MessageID, MessageState, LastUpdateDate
 
     if ($query -eq $null)
     {  
@@ -2947,7 +2947,7 @@ function showTaskStatus() {
         [string] $DateTime = ""
     )
 
-    $Result = New-Object �TypeName PSObject 
+    $Result = New-Object -TypeName PSObject 
     Add-Member -InputObject $Result -MemberType NoteProperty -Name "Operation" -Value $Operation
     Add-Member -InputObject $Result -MemberType NoteProperty -Name "Status" -Value $Status
     Add-Member -InputObject $Result -MemberType NoteProperty -Name "DateTime" -Value $DateTime

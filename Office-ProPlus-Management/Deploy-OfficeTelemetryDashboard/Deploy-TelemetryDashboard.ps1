@@ -204,9 +204,9 @@ function Read-UserResponse([string] $message) {
 }
 
 #Get existing SQL information
-function Get-SqlInstance { �
+function Get-SqlInstance { 
 
-    [cmdletbinding()]�
+    [cmdletbinding()]
     Param (
         [parameter(ValueFromPipeline=$True,ValueFromPipelineByPropertyName=$True)]
         [Alias('__Server','DNSHostName','IPAddress')]

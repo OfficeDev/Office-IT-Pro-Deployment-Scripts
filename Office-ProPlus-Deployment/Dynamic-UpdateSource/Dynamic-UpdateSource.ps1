@@ -139,7 +139,7 @@ Will Dynamically set the Update Source based a list Provided
      } else {
         if ($isInPipe) {
             $results = new-object PSObject[] 0;
-            $Result = New-Object �TypeName PSObject 
+            $Result = New-Object -TypeName PSObject 
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
             $Result
         } 
@@ -291,9 +291,9 @@ Click-to-Run source. Environment variables can be used for network or local path
 SourcePath indicates the location to save the Click-to-Run installation source 
 when you run the Office Deployment Tool in download mode.
 SourcePath indicates the installation source path from which to install Office 
-when you run the Office Deployment Tool in configure mode. If you don�t specify 
+when you run the Office Deployment Tool in configure mode. If you don't specify 
 SourcePath in configure mode, Setup will look in the current folder for the Office 
-source files. If the Office source files aren�t found in the current folder, Setup 
+source files. If the Office source files aren't found in the current folder, Setup 
 will look on Office 365 for them.
 SourcePath specifies the path of the Click-to-Run Office source from which the 
 App-V package will be made when you run the Office Deployment Tool in packager mode.
