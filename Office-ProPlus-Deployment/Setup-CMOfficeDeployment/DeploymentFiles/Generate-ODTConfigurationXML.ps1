@@ -1,4 +1,4 @@
-try {
+﻿try {
 Add-Type -ErrorAction SilentlyContinue -TypeDefinition @"
    public enum OfficeLanguages
    {

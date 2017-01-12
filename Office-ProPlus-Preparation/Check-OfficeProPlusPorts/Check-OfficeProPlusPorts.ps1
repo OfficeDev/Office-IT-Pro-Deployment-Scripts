@@ -1,4 +1,4 @@
-Function Check-OfficeProPlusPorts {
+ï»¿Function Check-OfficeProPlusPorts {
 <#
 .Synopsis
 Checks the availability of the various remote resources needed to install Office 365
@@ -29,7 +29,7 @@ param(
 begin {
     $defaultDisplaySet = 'Name', 'Host', 'Port', 'Status'
 
-    $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet(‘DefaultDisplayPropertySet’,[string[]]$defaultDisplaySet)
+    $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet(ï¿½DefaultDisplayPropertySetï¿½,[string[]]$defaultDisplaySet)
     $PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultDisplayPropertySet)
 }
 

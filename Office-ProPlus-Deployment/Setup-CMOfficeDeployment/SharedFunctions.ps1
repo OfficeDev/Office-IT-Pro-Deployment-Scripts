@@ -1,4 +1,4 @@
-try {
+﻿try {
 $enumDef = "
 using System;
        [FlagsAttribute]

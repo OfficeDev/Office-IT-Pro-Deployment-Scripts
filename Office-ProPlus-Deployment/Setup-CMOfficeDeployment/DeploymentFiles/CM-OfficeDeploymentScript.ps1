@@ -1,4 +1,4 @@
-  param(
+﻿  param(
     [Parameter()]
     [string]$Channel = $null,
 
@@ -124,4 +124,5 @@ Process {
  
  # Configuration.xml file for Click-to-Run for Office 365 products reference. https://technet.microsoft.com/en-us/library/JJ219426.aspx
 }
+
 

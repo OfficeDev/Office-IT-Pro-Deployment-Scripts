@@ -1,4 +1,4 @@
-param($installPath, $toolsPath, $package, $project)
+﻿param($installPath, $toolsPath, $package, $project)
 
 if ($project.Type -eq 'Web Site') {
     Import-Module (Join-Path $toolsPath VS.psd1)
@@ -172,3 +172,4 @@ if ($project.Type -eq 'Web Site') {
 # tzVwFQrbFjXUuIlkjw/2y9D1YpgzzA8p4rdjm6gXXlqeNc7TL0jpfrH0HU77AwPs
 # AS/AhHbXuf3wh/1mABJpArpIKV4wTMx2dPer1BNeQy/OCUMOOaaJ6ig=
 # SIG # End signature block
+

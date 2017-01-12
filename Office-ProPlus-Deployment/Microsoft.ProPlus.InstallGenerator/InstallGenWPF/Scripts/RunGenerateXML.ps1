@@ -1,4 +1,4 @@
-. .\Generate-ODTConfigurationXML.ps1
+﻿. .\Generate-ODTConfigurationXML.ps1
 
 $tempPath = "$env:TEMP\localConfig.xml"
 

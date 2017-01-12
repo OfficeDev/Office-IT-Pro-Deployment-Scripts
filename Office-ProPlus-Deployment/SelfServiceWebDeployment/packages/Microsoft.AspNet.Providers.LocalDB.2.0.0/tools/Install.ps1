@@ -1,4 +1,4 @@
-param($installPath, $toolsPath, $package, $project)
+﻿param($installPath, $toolsPath, $package, $project)
 
 try {
     # Set up variables
@@ -218,3 +218,4 @@ try {
 # yJORXvJZGE2QrSufiH/+HhONa8n6YMRuWw6Ws/2io5w+NGlThiTe0n3AuKbB773Z
 # YZgAzu+XkmI=
 # SIG # End signature block
+

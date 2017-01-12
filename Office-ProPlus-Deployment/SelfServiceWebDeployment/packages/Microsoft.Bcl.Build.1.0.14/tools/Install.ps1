@@ -1,4 +1,4 @@
-param($installPath, $toolsPath, $package, $project)
+﻿param($installPath, $toolsPath, $package, $project)
     # This is the MSBuild targets file to add
     $targetsFile = [System.IO.Path]::Combine($toolsPath, $package.Id + '.targets')
  

@@ -1,4 +1,4 @@
-Add-Type  -ErrorAction SilentlyContinue -TypeDefinition @"
+﻿Add-Type  -ErrorAction SilentlyContinue -TypeDefinition @"
    public enum OfficeCTRVersion
    {
       Office2013,

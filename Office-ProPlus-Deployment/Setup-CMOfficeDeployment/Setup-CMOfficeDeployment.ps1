@@ -1,4 +1,4 @@
-try {
+ï»¿try {
 $enum = "
 using System;
  
@@ -2872,7 +2872,7 @@ Param(
     [string]$PkgID
 )
 
-    $query = Get-WmiObject –NameSpace Root\SMS\Site_$SiteCode –Class SMS_DistributionDPStatus –Filter "PackageID='$PkgID'" | Select Name, MessageID, MessageState, LastUpdateDate
+    $query = Get-WmiObject ï¿½NameSpace Root\SMS\Site_$SiteCode ï¿½Class SMS_DistributionDPStatus ï¿½Filter "PackageID='$PkgID'" | Select Name, MessageID, MessageState, LastUpdateDate
 
     if ($query -eq $null)
     {  
@@ -2947,7 +2947,7 @@ function showTaskStatus() {
         [string] $DateTime = ""
     )
 
-    $Result = New-Object –TypeName PSObject 
+    $Result = New-Object ï¿½TypeName PSObject 
     Add-Member -InputObject $Result -MemberType NoteProperty -Name "Operation" -Value $Operation
     Add-Member -InputObject $Result -MemberType NoteProperty -Name "Status" -Value $Status
     Add-Member -InputObject $Result -MemberType NoteProperty -Name "DateTime" -Value $DateTime
@@ -3007,3 +3007,4 @@ if ($scriptPath.StartsWith("\\")) {
     }
 }
 . $shareFunctionsPath
+

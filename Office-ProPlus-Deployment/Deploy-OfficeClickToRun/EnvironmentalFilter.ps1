@@ -1,4 +1,4 @@
-Function Check-UserInOUPath() {
+﻿Function Check-UserInOUPath() {
    param (
       [parameter(Mandatory=$true)]
       [string]$ContainerPath,

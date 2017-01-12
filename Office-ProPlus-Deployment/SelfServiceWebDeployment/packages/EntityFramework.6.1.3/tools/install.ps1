@@ -1,4 +1,4 @@
-param($installPath, $toolsPath, $package, $project)
+﻿param($installPath, $toolsPath, $package, $project)
 
 Initialize-EFConfiguration $project
 Add-EFProvider $project 'System.Data.SqlClient' 'System.Data.Entity.SqlServer.SqlProviderServices, EntityFramework.SqlServer'
@@ -152,3 +152,4 @@ Write-Host "Type 'get-help EntityFramework' to see all available Entity Framewor
 # go2qsBgLcALFpVHrSX6yKuH8XVwR+lHofY7nZHs0TLi55SFbpJK+53BCWeH4OK85
 # wQ6quf2TAX7dc3ct2zrY3TWhf7Q=
 # SIG # End signature block
+

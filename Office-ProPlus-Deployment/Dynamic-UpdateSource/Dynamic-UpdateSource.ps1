@@ -1,4 +1,4 @@
-$enum3 = "
+ï»¿$enum3 = "
 using System;
 
 namespace Microsoft.Office
@@ -139,7 +139,7 @@ Will Dynamically set the Update Source based a list Provided
      } else {
         if ($isInPipe) {
             $results = new-object PSObject[] 0;
-            $Result = New-Object –TypeName PSObject 
+            $Result = New-Object ï¿½TypeName PSObject 
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
             $Result
         } 
@@ -269,7 +269,7 @@ Function SetODTAdd{
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "The Office XML Configuration file has been saved to: $TargetFilePath"
         } else {
             $results = new-object PSObject[] 0;
-            $Result = New-Object –TypeName PSObject 
+            $Result = New-Object ï¿½TypeName PSObject 
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "SourcePath" -Value $SourcePath
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "Version" -Value $Version
@@ -291,9 +291,9 @@ Click-to-Run source. Environment variables can be used for network or local path
 SourcePath indicates the location to save the Click-to-Run installation source 
 when you run the Office Deployment Tool in download mode.
 SourcePath indicates the installation source path from which to install Office 
-when you run the Office Deployment Tool in configure mode. If you don’t specify 
+when you run the Office Deployment Tool in configure mode. If you donï¿½t specify 
 SourcePath in configure mode, Setup will look in the current folder for the Office 
-source files. If the Office source files aren’t found in the current folder, Setup 
+source files. If the Office source files arenï¿½t found in the current folder, Setup 
 will look on Office 365 for them.
 SourcePath specifies the path of the Click-to-Run Office source from which the 
 App-V package will be made when you run the Office Deployment Tool in packager mode.
@@ -457,7 +457,7 @@ Here is what the portion of configuration file looks like when modified by this 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "The Office XML Configuration file has been saved to: $TargetFilePath"
         } else {
             $results = new-object PSObject[] 0;
-            $Result = New-Object –TypeName PSObject 
+            $Result = New-Object ï¿½TypeName PSObject 
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "Enabled" -Value $Enabled
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "UpdatePath" -Value $UpdatePath
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetVersion" -Value $TargetVersion

@@ -1,4 +1,4 @@
-Function Remove-OfficeClickToRun {
+ï»¿Function Remove-OfficeClickToRun {
 <#
 .Synopsis
 Removes the Click to Run version of Office installed.
@@ -90,7 +90,7 @@ Will uninstall Office Click-to-Run.
                                                                                
         if ($isInPipe) {
             $results = new-object PSObject[] 0;
-            $Result = New-Object –TypeName PSObject 
+            $Result = New-Object ï¿½TypeName PSObject 
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
             $Result
         }
@@ -150,7 +150,7 @@ begin {
 
     $defaultDisplaySet = 'DisplayName','Version', 'ComputerName'
 
-    $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet(‘DefaultDisplayPropertySet’,[string[]]$defaultDisplaySet)
+    $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet(ï¿½DefaultDisplayPropertySetï¿½,[string[]]$defaultDisplaySet)
     $PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultDisplayPropertySet)
 }
 
