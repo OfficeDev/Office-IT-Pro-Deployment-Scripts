@@ -3073,7 +3073,7 @@ var excludeApps2016 = [
 var productSkus2016Names = [
     'Office 365 ProPlus',
     'Office 365 for Business',
-    'Language Pack (Preview)',
+    'Language Pack',
     'Visio for Office 365',
     'Project for Office 365',
     'Visio Professional 2016 (Volume License)',
