@@ -289,6 +289,8 @@
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="50"></RowDefinition>
                                         <RowDefinition Height="50"></RowDefinition>
+                                        <RowDefinition Height="50"></RowDefinition>
+                                        <RowDefinition Height="50"></RowDefinition>
                                     </Grid.RowDefinitions>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="30" />
@@ -297,16 +299,44 @@
                                         <ColumnDefinition Width="70" />
                                         <ColumnDefinition Width="60" />
                                     </Grid.ColumnDefinitions>
-                                    <Button x:Name="VersionInfo" Width="30" Height="32" HorizontalAlignment="Center"  
+                                    <Label Content="Version" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" FontFamily="Segoe UI Semibold" />
+
+
+                                    <ComboBox Width="360" x:Name="NewVersion" Grid.Column="2"  Grid.Row="0"
+                                              Height="35" HorizontalAlignment="Left" IsTextSearchEnabled="True"
+                                              Style="{StaticResource MetroComboBoxStyle}" 
+                                              Controls:TextBoxHelper.Watermark=""
+                                              DisplayMemberPath="NewVersion"
+                                              IsEditable="True"
+                                              ItemsSource="{Binding Builds}"
+                                              SelectionChanged="NewVersion_SelectionChanged"
+                                              MaxDropDownHeight="125"
+                                              FontSize="20"
+                                              Text="{Binding Path=NewVersion}" FontFamily="Segoe UI Semilight"  />
+                                    <Label Content="Build" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" FontFamily="Segoe UI Semibold" />
+
+
+                                    <ComboBox Width="360" x:Name="ProductBuild" Grid.Column="2"  Grid.Row="1"
+                                              Height="35" HorizontalAlignment="Left" IsTextSearchEnabled="True"
+                                              Style="{StaticResource MetroComboBoxStyle}" 
+                                              Controls:TextBoxHelper.Watermark=""
+                                              DisplayMemberPath="NewBuild"
+                                              IsEditable="True"
+                                              ItemsSource="{Binding Builds}"
+                                              SelectionChanged="ProductBuild_SelectionChanged"
+                                              MaxDropDownHeight="125"
+                                              FontSize="20"
+                                              Text="{Binding Path=NewBuild}" FontFamily="Segoe UI Semilight"  />
+                                    <Button x:Name="VersionInfo" Width="30" Height="32" HorizontalAlignment="Center"  Grid.Row="2"
                                                 Focusable="False"  Style="{StaticResource MetroInfoButton}" Click="ProductInfo_OnClick"  >
                                         <StackPanel Orientation="Horizontal">
                                             <Image Source="../images/info.png" Width="20" Height="20"/>
                                         </StackPanel>
                                     </Button>
-                                    <Label Content="Version" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="1" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" FontFamily="Segoe UI Semibold" />
+                                    <Label Content="Legacy Version" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="1" Grid.Row="2" HorizontalAlignment="Left" VerticalAlignment="Center" FontFamily="Segoe UI Semibold" />
 
 
-                                    <ComboBox Width="360" x:Name="ProductVersion" Grid.Column="2"  Grid.Row="0"
+                                    <ComboBox Width="360" x:Name="ProductVersion" Grid.Column="2"  Grid.Row="2"
                                               Height="35" HorizontalAlignment="Left" IsTextSearchEnabled="True"
                                               Style="{StaticResource MetroComboBoxStyle}" 
                                               Controls:TextBoxHelper.Watermark="16.0.4949.1003"
@@ -318,25 +348,25 @@
                                               Text="{Binding Path=Version}" FontFamily="Segoe UI Semilight"  />
 
 
-                                    <Button x:Name="RemoteLoggingInfo" Width="30" Height="32" HorizontalAlignment="Center"   Grid.Row="1"
+                                    <Button x:Name="RemoteLoggingInfo" Width="30" Height="32" HorizontalAlignment="Center"   Grid.Row="3"
                                                 Focusable="False"  Style="{StaticResource MetroInfoButton}" Click="ProductInfo_OnClick"  >
                                         <StackPanel Orientation="Horizontal">
                                             <Image Source="../images/info.png" Width="20" Height="20"/>
                                         </StackPanel>
                                     </Button>
 
-                                    <Label Content="Remote Path" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="1" Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Center" FontFamily="Segoe UI Semibold" />
+                                    <Label Content="Remote Path" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="1" Grid.Row="3" HorizontalAlignment="Left" VerticalAlignment="Center" FontFamily="Segoe UI Semibold" />
 
-                                    <TextBox Width="360" x:Name="RemoteLoggingPath" FontSize="20" Grid.Column="2" Grid.Row="1" Background="White"
+                                    <TextBox Width="360" x:Name="RemoteLoggingPath" FontSize="20" Grid.Column="2" Grid.Row="3" Background="White"
                                              Height="35" HorizontalAlignment="Left"
                                              Controls:TextBoxHelper.Watermark="Remote Logging Path"
                                              Controls:TextBoxHelper.ClearTextButton="True" TextChanged="RemoteLoggingPath_OnTextChanged"
                                               Text="" FontFamily="Segoe UI Semilight" 
                                             />
-                                    <Button Width="55" Grid.Column="3" Grid.Row="1"
+                                    <Button Width="55" Grid.Column="3" Grid.Row="3"
                                             Height="40"  Style="{StaticResource MetroFlatButtonStyle1}"
                                             Content="Browse" x:Name="RemotePath" Click="RemoteLoggingPath_OnClick" Margin="0" FontFamily="Segoe UI Semibold" />
-                                    <Button Width="50" Height="40" Grid.Column="4" Grid.Row="1"  Style="{StaticResource MetroFlatButtonStyle1}"
+                                    <Button Width="50" Height="40" Grid.Column="4" Grid.Row="3"  Style="{StaticResource MetroFlatButtonStyle1}"
                                             Content="Open" x:Name="OpenLoggingFolderButton" IsEnabled="False" Click="OpenLoggingFolderButton_OnClick" Margin="0" FontFamily="Segoe UI Semibold"   />
 
                                     <!--<Button Width="55" Grid.Column="3" Grid.Row="1"

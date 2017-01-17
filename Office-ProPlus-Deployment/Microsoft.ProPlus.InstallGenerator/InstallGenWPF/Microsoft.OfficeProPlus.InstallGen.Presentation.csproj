@@ -159,6 +159,8 @@
     <Compile Include="Models\RemoteComputer.cs" />
     <Compile Include="Models\RemoteMachine.cs" />
     <Compile Include="Models\officeVersion.cs" />
+    <Compile Include="Models\UpdatedOfficeBranch.cs" />
+    <Compile Include="Models\VersionUpdates.cs" />
     <Compile Include="Views\AboutView.xaml.cs">
       <DependentUpon>AboutView.xaml</DependentUpon>
     </Compile>

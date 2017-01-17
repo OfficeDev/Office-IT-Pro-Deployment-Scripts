@@ -1,4 +1,4 @@
-Param(
+﻿Param(
     [string]$Channel,
     [string]$SourceFileFolder,
     [string]$Bitness

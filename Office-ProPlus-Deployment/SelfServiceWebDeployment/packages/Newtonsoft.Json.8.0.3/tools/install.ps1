@@ -1,4 +1,4 @@
-param($installPath, $toolsPath, $package, $project)
+﻿param($installPath, $toolsPath, $package, $project)
 
 # open json.net splash page on package install
 # don't open if json.net is installed as a dependency

@@ -1,4 +1,4 @@
-function AddOrUpdate-Reference($scriptsFolderProjectItem, $fileNamePattern, $newFileName) {
+﻿function AddOrUpdate-Reference($scriptsFolderProjectItem, $fileNamePattern, $newFileName) {
     try {
         $referencesFileProjectItem = $scriptsFolderProjectItem.ProjectItems.Item("_references.js")
     }

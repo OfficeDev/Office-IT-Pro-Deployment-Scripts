@@ -1,4 +1,4 @@
-try {
+﻿try {
 Add-Type -ErrorAction SilentlyContinue -TypeDefinition @"
    public enum OfficeLanguages
    {
@@ -1911,40 +1911,40 @@ function Detect-Channel {
 
    )
 
-   Process {      
-      $channelXml = Get-ChannelXml
+Process {      
+   $channelXml = Get-ChannelXml
 
-      $CFGUpdateChannel = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration -Name UpdateChannel -ErrorAction SilentlyContinue).UpdateChannel
-      $CFGOfficeMgmtCOM = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration -Name OfficeMgmtCOM -ErrorAction SilentlyContinue).OfficeMgmtCOM      
-      $UPupdatechannel = (Get-ItemProperty HKLM:\SOFTWARE\Policies\Microsoft\office\16.0\common\officeupdate -Name UpdateChannel -ErrorAction SilentlyContinue).UpdateChannel      
-      $UPupdatepath = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration -Name updatepath -ErrorAction SilentlyContinue).updatepath
-      $officemgmtcom = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration -Name officemgmtcom -ErrorAction SilentlyContinue).officemgmtcom
-      $CFGUpdateUrl = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration -Name UpdateUrl -ErrorAction SilentlyContinue).UpdateUrl
-      $currentBaseUrl = Get-OfficeCDNUrl
+   $UpdateChannel = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration -Name UpdateChannel -ErrorAction SilentlyContinue).UpdateChannel      
+   $GPOUpdatePath = (Get-ItemProperty HKLM:\SOFTWARE\Policies\Microsoft\office\16.0\common\officeupdate -Name updatepath -ErrorAction SilentlyContinue).updatepath
+   $GPOUpdateBranch = (Get-ItemProperty HKLM:\SOFTWARE\Policies\Microsoft\office\16.0\common\officeupdate -Name UpdateBranch -ErrorAction SilentlyContinue).UpdateBranch
+   $GPOUpdateChannel = (Get-ItemProperty HKLM:\SOFTWARE\Policies\Microsoft\office\16.0\common\officeupdate -Name UpdateChannel -ErrorAction SilentlyContinue).UpdateChannel      
+   $UpdateUrl = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration -Name UpdateUrl -ErrorAction SilentlyContinue).UpdateUrl
+   $currentBaseUrl = Get-OfficeCDNUrl
 
-      $CurrentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $currentBaseUrl -and $_.branch -notcontains 'Business' }
+   $CurrentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $currentBaseUrl -and $_.branch -notmatch 'Business' }
       
-      if($CFGUpdateUrl -ne $null -and $CFGUpdateUrl -like '*officecdn.microsoft.com*'){
-        $CurrentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $CFGUpdateUrl -and $_.branch -notcontains 'Business' }  
-      }
-      if($officemgmtcom -ne $null -and $officemgmtcom -like '*officecdn.microsoft.com*'){
-        $CurrentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $officemgmtcom -and $_.branch -notcontains 'Business' }  
-      }
-      if($UPupdatepath -ne $null -and $UPupdatepath -like '*officecdn.microsoft.com*'){
-        $CurrentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $UPupdatepath -and $_.branch -notcontains 'Business' }  
-      }
-      if($UPupdatechannel -ne $null -and $UPupdatechannel -like '*officecdn.microsoft.com*'){
-        $CurrentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $UPupdatechannel -and $_.branch -notcontains 'Business' }  
-      }
-      if($CFGOfficeMgmtCOM -ne $null -and $CFGOfficeMgmtCOM -like '*officecdn.microsoft.com*'){
-        $CurrentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $CFGOfficeMgmtCOM -and $_.branch -notcontains 'Business' }  
-      }
-      if($CFGUpdateChannel -ne $null -and $CFGUpdateChannel -like '*officecdn.microsoft.com*'){
-        $CurrentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $CFGUpdateChannel -and $_.branch -notcontains 'Business' }  
-      }
-
-      return $CurrentChannel
+   if($UpdateUrl -ne $null -and $UpdateUrl -like '*officecdn.microsoft.com*'){
+       $CurrentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $UpdateUrl -and $_.branch -notmatch 'Business' }  
    }
+
+   if($GPOUpdateChannel -ne $null){
+     $CurrentChannel = $channelXml.UpdateFiles.baseURL | ? {$_.branch.ToLower() -eq $GPOUpdateChannel.ToLower()}         
+   }
+
+   if($GPOUpdateBranch -ne $null){
+     $CurrentChannel = $channelXml.UpdateFiles.baseURL | ? {$_.branch.ToLower() -eq $GPOUpdateBranch.ToLower()}  
+   }
+
+   if($GPOUpdatePath -ne $null -and $GPOUpdatePath -like '*officecdn.microsoft.com*'){
+     $CurrentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $GPOUpdatePath -and $_.branch -notmatch 'Business' }  
+   }
+
+   if($UpdateChannel -ne $null -and $UpdateChannel -like '*officecdn.microsoft.com*'){
+     $CurrentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $UpdateChannel -and $_.branch -notmatch 'Business' }  
+   }
+
+   return $CurrentChannel
+}
 
 }
 
@@ -2099,4 +2099,7 @@ $availableLangs = @("en-us",
 "fi-fi","fr-fr","de-de","el-gr","he-il","hi-in","hu-hu","id-id","it-it",
 "ja-jp","kk-kz","ko-kr","lv-lv","lt-lt","ms-my","nb-no","pl-pl","pt-br",
 "pt-pt","ro-ro","ru-ru","sr-latn-rs","sk-sk","sl-si","es-es","sv-se","th-th",
-"tr-tr","uk-ua","vi-vn");
+"tr-tr","uk-ua","vi-vn",#end of core languages
+"af-za","sq-al","am-et","hy-am","as-in","az-latn-az","eu-es","be-by","bn-bd","bn-in","bs-latn-ba","ca-es","prs-af","fil-ph","gl-es","ka-ge","gu-in","is-is","ga-ie","kn-in", #beginning of partial languages
+"km-kh","sw-ke","kok-in","ky-kg","lb-lu","mk-mk","ml-in","mt-mt","mi-nz","mr-in","mn-mn","ne-np","nn-no","or-in","fa-ir","pa-in","quz-pe","gd-gb","sr-cyrl-rs","sr-cyrl-ba",#end of partial langauges
+"ha-latn-ng","ig-ng","xh-za","zu-za","rw-rw","ps-af","rm-ch","nso-za","tn-za","wo-sn","yo-ng");#proofing languages

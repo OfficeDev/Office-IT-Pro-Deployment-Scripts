@@ -1,4 +1,4 @@
-try {
+ï»¿try {
 $enum = "
 using System;
  
@@ -136,6 +136,16 @@ Download-CMOfficeChannelFiles -OfficeFilesPath D:\OfficeChannelFiles -Bitness v3
         [string[]] $Languages = ("en-us"),
 
         [Parameter()]
+        [ValidateSet("af-za","sq-al","am-et","hy-am","as-in","az-latn-az","eu-es","be-by","bn-bd","bn-in","bs-latn-ba","ca-es","prs-af","fil-ph","gl-es","ka-ge","gu-in","is-is","ga-ie","kn-in",
+                "km-kh","sw-ke","kok-in","ky-kg","lb-lu","mk-mk","ml-in","mt-mt","mi-nz","mr-in","mn-mn","ne-np","nn-no","or-in","fa-ir","pa-in","quz-pe","gd-gb","sr-cyrl-rs","sr-cyrl-ba",
+                "sd-arab-pk","si-lk","ta-in","tt-ru","te-in","tk-tm","ur-pk","ug-cn","uz-latn-uz","ca-es-valencia","cy-gb")]
+        [string[]] $PartialLanguages,
+
+        [Parameter()]
+        [ValidateSet("ha-latn-ng","ig-ng","xh-za","zu-za","rw-rw","ps-af","rm-ch","nso-za","tn-za","wo-sn","yo-ng")]
+        [string[]] $ProofingLanguages,
+
+        [Parameter()]
         [Bitness] $Bitness = 0,
 
         [Parameter()]
@@ -168,7 +178,7 @@ Download-CMOfficeChannelFiles -OfficeFilesPath D:\OfficeChannelFiles -Bitness v3
                $latestVersion = $Version
             }
 
-            Download-OfficeProPlusChannels -TargetDirectory $OfficeFilesPath  -Channels $Channel -Version $latestVersion -UseChannelFolderShortName $true -Languages $Languages -Bitness $Bitness
+            Download-OfficeProPlusChannels -TargetDirectory $OfficeFilesPath  -Channels $Channel -Version $latestVersion -UseChannelFolderShortName $true -Languages $Languages -Bitness $Bitness -PartialLanguages $PartialLanguages -ProofingLanguages $ProofingLanguages
 
             $cabFilePath = "$env:TEMP/ofl.cab"
             Copy-Item -Path $cabFilePath -Destination "$OfficeFilesPath\ofl.cab" -Force
@@ -1439,6 +1449,16 @@ to install additional languages on a client
         [string[]]$Languages = ("en-us"),
 
         [Parameter()]
+        [ValidateSet("af-za","sq-al","am-et","hy-am","as-in","az-latn-az","eu-es","be-by","bn-bd","bn-in","bs-latn-ba","ca-es","prs-af","fil-ph","gl-es","ka-ge","gu-in","is-is","ga-ie","kn-in",
+                "km-kh","sw-ke","kok-in","ky-kg","lb-lu","mk-mk","ml-in","mt-mt","mi-nz","mr-in","mn-mn","ne-np","nn-no","or-in","fa-ir","pa-in","quz-pe","gd-gb","sr-cyrl-rs","sr-cyrl-ba",
+                "sd-arab-pk","si-lk","ta-in","tt-ru","te-in","tk-tm","ur-pk","ug-cn","uz-latn-uz","ca-es-valencia","cy-gb")]
+        [string[]] $PartialLanguages,
+
+        [Parameter()]
+        [ValidateSet("ha-latn-ng","ig-ng","xh-za","zu-za","rw-rw","ps-af","rm-ch","nso-za","tn-za","wo-sn","yo-ng")]
+        [string[]] $ProofingLanguages,
+
+        [Parameter()]
         [Bitness]$Bitness = "v32",
 
         [Parameter()]
@@ -1452,6 +1472,11 @@ to install additional languages on a client
     )
     
     Begin {
+        #create array for all languages including core, partial, and proofing
+        $allLanguages = @();
+        $allLanguages += , $Languages
+        $allLanguages += , $PartialLanguages
+        $allLanguages += , $ProofingLanguages
         $currentExecutionPolicy = Get-ExecutionPolicy
 	    Set-ExecutionPolicy Unrestricted -Scope Process -Force  
         $startLocation = Get-Location
@@ -1526,7 +1551,7 @@ to install additional languages on a client
                     }
                 }
                 
-                if($Languages.Count -gt "1"){
+                if($allLanguages.Count -gt "1"){
                     Set-Location $siteDrive
 
                     $languagePrograms = Get-CMProgram | ? {$_.ProgramName -like "DeployLanguagePack*" -and $_.ProgramName -like "*Multi*"}
@@ -1552,7 +1577,7 @@ to install additional languages on a client
                         $ProgramName = "DeployLanguagePack-$Channel-" + $Bit + "bit-Multi-1"    
                     }
                 } else {
-                    $ProgramName = "DeployLanguagePack-$Channel-" + "$Bit" + "bit-$Languages"
+                    $ProgramName = "DeployLanguagePack-$Channel-" + "$Bit" + "bit-$allLanguages"
                 }
 
                 $configFileName = $ProgramName + ".xml"
@@ -1580,7 +1605,7 @@ to install additional languages on a client
                     $ConfigFile.Save($configFilePath)
                 }
                 
-                foreach ($language in $Languages){
+                foreach ($language in $allLanguages){
                     if(!(Get-ChildItem -Path $SharePath\SourceFiles\$channelShortName\Office\Data\$latestVersion | Where-Object {$_ -like "*$language*"})){
                         Remove-Item -Path $configFilePath
                         <# write log#>
@@ -1601,7 +1626,7 @@ to install additional languages on a client
                 $packageId = $existingPackage.PackageId
                 if ($packageId) {
                     $comment = $NULL
-                    foreach($language in $Languages){
+                    foreach($language in $allLanguages){
                         if($comment -eq $NULL){
                             $comment += $language
                         } else {
@@ -1876,6 +1901,16 @@ clients in the target collection 'Office Update'.
                     "ja-jp","kk-kz","ko-kr","lv-lv","lt-lt","ms-my","nb-no","pl-pl","pt-br","pt-pt","ro-ro","ru-ru","sr-latn-rs","sk-sk","sl-si","es-es","sv-se","th-th",
                     "tr-tr","uk-ua","vi-vn")]
         [string[]]$Languages = ("en-us"),
+
+        [Parameter()]
+        [ValidateSet("af-za","sq-al","am-et","hy-am","as-in","az-latn-az","eu-es","be-by","bn-bd","bn-in","bs-latn-ba","ca-es","prs-af","fil-ph","gl-es","ka-ge","gu-in","is-is","ga-ie","kn-in",
+                "km-kh","sw-ke","kok-in","ky-kg","lb-lu","mk-mk","ml-in","mt-mt","mi-nz","mr-in","mn-mn","ne-np","nn-no","or-in","fa-ir","pa-in","quz-pe","gd-gb","sr-cyrl-rs","sr-cyrl-ba",
+                "sd-arab-pk","si-lk","ta-in","tt-ru","te-in","tk-tm","ur-pk","ug-cn","uz-latn-uz","ca-es-valencia","cy-gb")]
+        [string[]] $PartialLanguages,
+
+        [Parameter()]
+        [ValidateSet("ha-latn-ng","ig-ng","xh-za","zu-za","rw-rw","ps-af","rm-ch","nso-za","tn-za","wo-sn","yo-ng")]
+        [string[]] $ProofingLanguages,
     
 	    [Parameter()]
 	    [String]$SiteCode = $NULL,
@@ -1891,6 +1926,10 @@ clients in the target collection 'Office Update'.
 	) 
     Begin
     {
+        $allLanguages = @();
+        $allLanguages += , $Languages
+        $allLanguages += , $PartialLanguages
+        $allLanguages += , $ProofingLanguages
         $currentExecutionPolicy = Get-ExecutionPolicy
 	    Set-ExecutionPolicy Unrestricted -Scope Process -Force  
         $startLocation = Get-Location
@@ -1984,7 +2023,7 @@ clients in the target collection 'Office Update'.
                          $CustomName = $NULL
                     }
                     "LanguagePack" {
-                         $pType = "DeployLanguagePack-$Channel-$Languages";
+                         $pType = "DeployLanguagePack-$Channel-$allLanguages";
                          if ($DeploymentPurpose -eq "Default") {
                             $DeploymentPurpose = "Available"  
                          }
@@ -2007,7 +2046,7 @@ clients in the target collection 'Office Update'.
                 else{
                     $languagePrograms = Get-CMProgram | ? {$_.ProgramName -like "DeployLanguage*"}
                     $tempLanguages = @()
-                    foreach($lang in $Languages){
+                    foreach($lang in $allLanguages){
                         $tempLanguages += $lang
                     }
                     $tempLanguages = $tempLanguages | Sort-Object -Descending
@@ -2833,7 +2872,7 @@ Param(
     [string]$PkgID
 )
 
-    $query = Get-WmiObject –NameSpace Root\SMS\Site_$SiteCode –Class SMS_DistributionDPStatus –Filter "PackageID='$PkgID'" | Select Name, MessageID, MessageState, LastUpdateDate
+    $query = Get-WmiObject -NameSpace Root\SMS\Site_$SiteCode -Class SMS_DistributionDPStatus -Filter "PackageID='$PkgID'" | Select Name, MessageID, MessageState, LastUpdateDate
 
     if ($query -eq $null)
     {  
@@ -2908,7 +2947,7 @@ function showTaskStatus() {
         [string] $DateTime = ""
     )
 
-    $Result = New-Object –TypeName PSObject 
+    $Result = New-Object -TypeName PSObject 
     Add-Member -InputObject $Result -MemberType NoteProperty -Name "Operation" -Value $Operation
     Add-Member -InputObject $Result -MemberType NoteProperty -Name "Status" -Value $Status
     Add-Member -InputObject $Result -MemberType NoteProperty -Name "DateTime" -Value $DateTime
@@ -2968,3 +3007,4 @@ if ($scriptPath.StartsWith("\\")) {
     }
 }
 . $shareFunctionsPath
+

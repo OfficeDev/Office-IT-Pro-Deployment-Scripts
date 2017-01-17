@@ -1,4 +1,4 @@
-function Get-Checksum($file) {
+﻿function Get-Checksum($file) {
     $cryptoProvider = New-Object "System.Security.Cryptography.MD5CryptoServiceProvider"
 	
     $fileInfo = Get-Item $file

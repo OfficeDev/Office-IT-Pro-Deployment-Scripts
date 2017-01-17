@@ -1,4 +1,4 @@
-function New-GPWmiFilter {
+﻿function New-GPWmiFilter {
 <#
 .SYNOPSIS
 Create a new WMI filter for Group Policy with given name, WQL query and description.

@@ -1,4 +1,4 @@
-Add-Type -TypeDefinition @"
+﻿Add-Type -TypeDefinition @"
    public enum OfficeVersion
    {
       Office2013,
@@ -446,3 +446,4 @@ Function WriteToLogFile() {
         WriteToLogFile -LNumber $_.InvocationInfo.ScriptLineNumber -FName $fileName -ActionError $_
     }
 }
+

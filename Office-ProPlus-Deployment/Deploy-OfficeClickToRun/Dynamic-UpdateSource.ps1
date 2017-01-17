@@ -1,4 +1,4 @@
-$enum3 = "
+ï»¿$enum3 = "
 using System;
 
 namespace Microsoft.Office
@@ -139,7 +139,7 @@ Will Dynamically set the Update Source based a list Provided
      } else {
         if ($isInPipe) {
             $results = new-object PSObject[] 0;
-            $Result = New-Object –TypeName PSObject 
+            $Result = New-Object -TypeName PSObject 
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
             $Result
         } 
@@ -269,7 +269,7 @@ Function SetODTAdd{
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "The Office XML Configuration file has been saved to: $TargetFilePath"
         } else {
             $results = new-object PSObject[] 0;
-            $Result = New-Object –TypeName PSObject 
+            $Result = New-Object ï¿½TypeName PSObject 
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "SourcePath" -Value $SourcePath
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "Version" -Value $Version
@@ -360,7 +360,7 @@ Function SetODTUpdates{
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "The Office XML Configuration file has been saved to: $TargetFilePath"
         } else {
             $results = new-object PSObject[] 0;
-            $Result = New-Object –TypeName PSObject 
+            $Result = New-Object ï¿½TypeName PSObject 
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "Enabled" -Value $Enabled
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "UpdatePath" -Value $UpdatePath
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetVersion" -Value $TargetVersion

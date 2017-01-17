@@ -1,4 +1,4 @@
-#  Office ProPlus Click-To-Run Deployment Script example
+﻿#  Office ProPlus Click-To-Run Deployment Script example
 #
 #  This script demonstrates how utilize the scripts in OfficeDev/Office-IT-Pro-Deployment-Scripts repository together to create
 #  Office ProPlus Click-To-Run deployment script that will Convert existing 32-Bit Click-To-Run installs to 64-bit with the same 

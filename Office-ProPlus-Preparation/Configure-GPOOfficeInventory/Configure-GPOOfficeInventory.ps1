@@ -1,4 +1,4 @@
-Function Configure-GPOOfficeInventory {
+﻿Function Configure-GPOOfficeInventory {
 <#
 .Synopsis
 Configures an existing Group Policy Object (GPO) to schedule a task on workstations to query the version of Office that is installed

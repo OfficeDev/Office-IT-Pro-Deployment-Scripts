@@ -1,4 +1,4 @@
-  param(
+﻿  param(
 	[Parameter(Mandatory=$true)]
 	[String]$ConfigFileName = $NULL,
 

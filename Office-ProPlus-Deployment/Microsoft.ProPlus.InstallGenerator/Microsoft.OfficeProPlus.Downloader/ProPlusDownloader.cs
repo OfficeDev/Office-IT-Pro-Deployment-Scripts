@@ -18,7 +18,7 @@ namespace Microsoft.OfficeProPlus.Downloader
     public class ProPlusDownloader
     {
         private const string OfficeVersionUrl = "http://officecdn.microsoft.com/pr/wsus/ofl.cab";
-        private const string OfficeVersionHistoryUrl = "http://officecdn.microsoft.com/pr/wsus/releasehistory.cab";
+        private const string OfficeVersionHistoryUrl = "http://officecdn.microsoft.com/pr/wsus/releasehistory.cab"; 
 
         private List<UpdateFiles> _updateFiles { get; set; }
 
@@ -558,7 +558,8 @@ namespace Microsoft.OfficeProPlus.Downloader
             var channelVersionJson = "";
             using (var webClient = new WebClient())
             {
-               channelVersionJson = await webClient.DownloadStringTaskAsync(AppSettings.BranchVersionUrl);
+                channelVersionJson = await webClient.DownloadStringTaskAsync("https://microsoft-apiapp2f1d0adbd6b6403da68a8cd3e1888ddc.azurewebsites.net/api/Channel");
+                //channelVersionJson = await webClient.DownloadStringTaskAsync(AppSettings.BranchVersionUrl);
             }
             return channelVersionJson;
         }

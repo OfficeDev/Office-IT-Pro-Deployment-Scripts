@@ -217,6 +217,7 @@
     <Content Include="images\Warning.png" />
     <Content Include="images\Warning64.png" />
     <Content Include="index.html" />
+    <Content Include="stylesheets\typeahead-override.css" />
     <Content Include="XmlEditor.html" />
     <Content Include="Scripts\FileSaver.js" />
     <Content Include="Scripts\FileSaver.min.js" />
