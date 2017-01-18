@@ -1,10 +1,10 @@
-﻿  param(
+﻿param(
     [Parameter()]
     [string]$Channel = $null,
-
+    
     [Parameter()]
     [switch]$RollBack
-  )
+)
 
 Function Get-ScriptPath() {
   [CmdletBinding()]
@@ -59,6 +59,10 @@ Function Wait-ForOfficeCTRUpadate() {
 
     process {
        Write-Host "Waiting for Update process to Complete..."
+        #write log
+        $lineNum = Get-CurrentLineNumber    
+        $filName = Get-CurrentFileName 
+        WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Waiting for Update process to Complete..."
 
        [datetime]$operationStart = Get-Date
        [datetime]$totalOperationStart = Get-Date
@@ -122,6 +126,10 @@ Function Wait-ForOfficeCTRUpadate() {
                                 $displayText = $statusName + "`t" + $operationTime
 
                                 Write-Host $displayText
+                                #write log
+                                $lineNum = Get-CurrentLineNumber    
+                                $filName = Get-CurrentFileName 
+                                WriteToLogFile -LNumber $lineNum -FName $filName -ActionError $displayText
                             }
                         }
                     } else {
@@ -137,14 +145,26 @@ Function Wait-ForOfficeCTRUpadate() {
 
                              if ($operation.ToUpper().IndexOf("DOWNLOAD") -gt -1) {
                                 Write-Host "Downloading Update: " -NoNewline
+                                #write log
+                                $lineNum = Get-CurrentLineNumber    
+                                $filName = Get-CurrentFileName 
+                                WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Downloading Update: "
                              }
 
                              if ($operation.ToUpper().IndexOf("APPLY") -gt -1) {
                                 Write-Host "Applying Update: " -NoNewline
+                                #write log
+                                $lineNum = Get-CurrentLineNumber    
+                                $filName = Get-CurrentFileName 
+                                WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Applying Update: "
                              }
 
                              if ($operation.ToUpper().IndexOf("FINALIZE") -gt -1) {
                                 Write-Host "Finalizing Update: " -NoNewline
+                                #write log
+                                $lineNum = Get-CurrentLineNumber    
+                                $filName = Get-CurrentFileName 
+                                WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Finalizing Update: "
                              }
 
                              #Write-Host $displayValue
@@ -180,18 +200,34 @@ Function Wait-ForOfficeCTRUpadate() {
        }
 
        Write-Host $displayValue
+        #write log
+        $lineNum = Get-CurrentLineNumber    
+        $filName = Get-CurrentFileName 
+        WriteToLogFile -LNumber $lineNum -FName $filName -ActionError $displayValue
 
        $totalOperationTime = getOperationTime -OperationStart $totalOperationStart
 
        if ($updateRunning) {
           if ($failure) {
             Write-Host "Update Failed"
+            #write log
+            $lineNum = Get-CurrentLineNumber    
+            $filName = Get-CurrentFileName 
+            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Update Failed"
             throw "Update Failed"
           } else {
             Write-Host "Update Completed - Total Time: $totalOperationTime"
+            #write log
+            $lineNum = Get-CurrentLineNumber    
+            $filName = Get-CurrentFileName 
+            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Update Completed - Total Time: $totalOperationTime"
           }
        } else {
           Write-Host "Update Not Running"
+            #write log
+            $lineNum = Get-CurrentLineNumber    
+            $filName = Get-CurrentFileName 
+            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Update Not Running"
        } 
     }
 }
@@ -475,19 +511,45 @@ function Change-UpdatePathToChannel {
    }
 }
 
-function Detect-Channel() {
-   [CmdletBinding()]
+function Detect-Channel {
    param( 
-      
+
    )
 
-   Process {
-      $currentBaseUrl = Get-OfficeCDNUrl
-      $channelXml = Get-ChannelXml
+Process {      
+   $channelXml = Get-ChannelXml
 
-      $currentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $currentBaseUrl -and $_.branch -notcontains 'Business' }
-      return $currentChannel
+   $UpdateChannel = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration -Name UpdateChannel -ErrorAction SilentlyContinue).UpdateChannel      
+   $GPOUpdatePath = (Get-ItemProperty HKLM:\SOFTWARE\Policies\Microsoft\office\16.0\common\officeupdate -Name updatepath -ErrorAction SilentlyContinue).updatepath
+   $GPOUpdateBranch = (Get-ItemProperty HKLM:\SOFTWARE\Policies\Microsoft\office\16.0\common\officeupdate -Name UpdateBranch -ErrorAction SilentlyContinue).UpdateBranch
+   $GPOUpdateChannel = (Get-ItemProperty HKLM:\SOFTWARE\Policies\Microsoft\office\16.0\common\officeupdate -Name UpdateChannel -ErrorAction SilentlyContinue).UpdateChannel      
+   $UpdateUrl = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration -Name UpdateUrl -ErrorAction SilentlyContinue).UpdateUrl
+   $currentBaseUrl = Get-OfficeCDNUrl
+
+   $CurrentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $currentBaseUrl -and $_.branch -notmatch 'Business' }
+      
+   if($UpdateUrl -ne $null -and $UpdateUrl -like '*officecdn.microsoft.com*'){
+       $CurrentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $UpdateUrl -and $_.branch -notmatch 'Business' }  
    }
+
+   if($GPOUpdateChannel -ne $null){
+     $CurrentChannel = $channelXml.UpdateFiles.baseURL | ? {$_.branch.ToLower() -eq $GPOUpdateChannel.ToLower()}         
+   }
+
+   if($GPOUpdateBranch -ne $null){
+     $CurrentChannel = $channelXml.UpdateFiles.baseURL | ? {$_.branch.ToLower() -eq $GPOUpdateBranch.ToLower()}  
+   }
+
+   if($GPOUpdatePath -ne $null -and $GPOUpdatePath -like '*officecdn.microsoft.com*'){
+     $CurrentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $GPOUpdatePath -and $_.branch -notmatch 'Business' }  
+   }
+
+   if($UpdateChannel -ne $null -and $UpdateChannel -like '*officecdn.microsoft.com*'){
+     $CurrentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $UpdateChannel -and $_.branch -notmatch 'Business' }  
+   }
+
+   return $CurrentChannel
+}
 
 }
 
@@ -589,6 +651,46 @@ Function Get-OfficeCDNUrl() {
         Pop-Location
     }
     return $CDNBaseUrl
+}
+
+function Get-CurrentLineNumber {
+    $MyInvocation.ScriptLineNumber
+}
+
+function Get-CurrentFileName{
+    $MyInvocation.ScriptName.Substring($MyInvocation.ScriptName.LastIndexOf("\")+1)
+}
+
+function Get-CurrentFunctionName {
+    (Get-Variable MyInvocation -Scope 1).Value.MyCommand.Name;
+}
+
+Function WriteToLogFile() {
+    param( 
+      [Parameter(Mandatory=$true)]
+      [string]$LNumber,
+      [Parameter(Mandatory=$true)]
+      [string]$FName,
+      [Parameter(Mandatory=$true)]
+      [string]$ActionError
+    )
+    try{
+        $headerString = "Time".PadRight(30, ' ') + "Line Number".PadRight(15,' ') + "FileName".PadRight(60,' ') + "Action"
+        $stringToWrite = $(Get-Date -Format G).PadRight(30, ' ') + $($LNumber).PadRight(15, ' ') + $($FName).PadRight(60,' ') + $ActionError
+
+        #check if file exists, create if it doesn't
+        $getCurrentDatePath = "C:\Windows\Temp\" + (Get-Date -Format u).Substring(0,10)+"OfficeAutoScriptLog.txt"
+        if(Test-Path $getCurrentDatePath){#if exists, append
+    
+             Add-Content $getCurrentDatePath $stringToWrite
+        }
+        else{#if not exists, create new
+             Add-Content $getCurrentDatePath $headerString
+             Add-Content $getCurrentDatePath $stringToWrite
+        }
+    } catch [Exception]{
+        Write-Host $_
+    }
 }
 
 Add-Type -ErrorAction SilentlyContinue -TypeDefinition @"
@@ -706,6 +808,10 @@ try {
         }
     } else {
         Write-Host "The client already has version installed: $Version"
+        #write log
+        $lineNum = Get-CurrentLineNumber    
+        $filName = Get-CurrentFileName 
+        WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "The client already has version installed: $Version"
 
         if (!($RollBack)) {
            Set-OfficeCDNUrl -Channel $Channel
@@ -714,6 +820,8 @@ try {
     [System.Environment]::Exit(0)
 } catch {
   Write-Host $_ -ForegroundColor Red
+  $fileName = $_.InvocationInfo.ScriptName.Substring($_.InvocationInfo.ScriptName.LastIndexOf("\")+1)
+    WriteToLogFile -LNumber $_.InvocationInfo.ScriptLineNumber -FName $fileName -ActionError $_
   $Error = $null
   [System.Environment]::Exit(1)
 }

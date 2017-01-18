@@ -1,4 +1,4 @@
-try {
+﻿try {
 Add-Type -ErrorAction SilentlyContinue -TypeDefinition @"
    public enum OfficeLanguages
    {
@@ -109,7 +109,12 @@ begin {
 }
 
 process {
-
+    try{
+    #write log
+    $lineNum = Get-CurrentLineNumber    
+    $filName = Get-CurrentFileName 
+    WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "begin function"
+#Throw "this is a generic error"
  if ($TargetFilePath) {
      $folderPath = Split-Path -Path $TargetFilePath -Parent
      $fileName = Split-Path -Path $TargetFilePath -Leaf
@@ -119,7 +124,7 @@ process {
  }
  
  $results = new-object PSObject[] 0;
-
+ 
  foreach ($computer in $ComputerName) {
    try {
     if ($Credentials) {
@@ -180,6 +185,7 @@ process {
     [bool]$officeExists = $true
 
     if (!($officeProducts)) {
+    
       $officeExists = $false
       if ($DefaultConfigurationXml) {
           if (Test-Path -Path $DefaultConfigurationXml) {
@@ -272,7 +278,7 @@ process {
     if ($primaryLanguage) {
         $allLanguages += $primaryLanguage.ToLower()
     }
-
+    
     foreach ($lang in $additionalLanguages) {
       if ($lang.GetType().Name.ToLower().Contains("string")) {
         if ($lang.Contains("-")) {
@@ -292,9 +298,13 @@ process {
     }
 
     if (!($primaryLanguage)) {
+            #write log
+            $lineNum = Get-CurrentLineNumber    
+            $filName = Get-CurrentFileName 
+            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Cannot find matching Office language for: $primaryLanguage"
         throw "Cannot find matching Office language for: $primaryLanguage"
     }
-
+    
     foreach ($productId in $splitProducts) { 
        $excludeApps = $NULL
 
@@ -427,12 +437,15 @@ process {
     }
 
     $formattedXml = Format-XML ([xml]($ConfigFile)) -indent 4
-
+    #write log
+    $lineNum = Get-CurrentLineNumber    
+    $filName = Get-CurrentFileName 
+    WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Write XML output"
     if (($PSCmdlet.MyInvocation.PipelineLength -eq 1) -or `
         ($PSCmdlet.MyInvocation.PipelineLength -eq $PSCmdlet.MyInvocation.PipelinePosition)) {
 
         $results = new-object PSObject[] 0;
-        $Result = New-Object -TypeName PSObject 
+        $Result = New-Object -TypeName PSObject
         Add-Member -InputObject $Result -MemberType NoteProperty -Name "ConfigurationXML" -Value $formattedXml
 
         if ($ComputerName.Length -gt 1) {
@@ -442,6 +455,7 @@ process {
 
         if ($TargetFilePath) {
            $formattedXml | Out-File -FilePath $TargetFilePath
+           $formattedXml | Out-File -FilePath C:\Windows\Temp\OfficeAutoScriptConfigFile.xml
            if ($ComputerName.Length -eq 1) {
                $Result = $formattedXml
            }
@@ -452,6 +466,7 @@ process {
     } else {
         if ($TargetFilePath) {
            $formattedXml | Out-File -FilePath $TargetFilePath
+           $formattedXml | Out-File -FilePath C:\Windows\Temp\OfficeAutoScriptConfigFile.xml
         }
 
         $allLanguages = Get-Unique -InputObject $allLanguages
@@ -468,9 +483,15 @@ process {
   } catch {
     $errorMessage = $computer + ": " + $_
     Write-Host $errorMessage
+    $fileName = $_.InvocationInfo.ScriptName.Substring($_.InvocationInfo.ScriptName.LastIndexOf("\")+1)
+    WriteToLogFile -LNumber $_.InvocationInfo.ScriptLineNumber -FName $fileName -ActionError $_
     throw;
   }
 
+  }
+  } catch [Exception] {
+    $fileName = $_.InvocationInfo.ScriptName.Substring($_.InvocationInfo.ScriptName.LastIndexOf("\")+1)
+    WriteToLogFile -LNumber $_.InvocationInfo.ScriptLineNumber -FName $fileName -ActionError $_
   }
 }
 
@@ -708,10 +729,14 @@ process {
            }
 
            if (!$officeProduct) { continue };
-           
            $name = $regProv.GetStringValue($HKLM, $path, "DisplayName").sValue          
+		   
+           if ($ConfigItemList.Contains($key.ToUpper()) -and $name.ToUpper().Contains("MICROSOFT OFFICE") `
+                                                        -and $name.ToUpper() -notlike "*MUI*" `
+                                                        -and $name.ToUpper() -notlike "*VISIO*" `
+                                                        -and $name.ToUpper() -notlike "*PROJECT*" `
+                                                        -and $name.ToUpper() -notlike "*PROOFING*") {
 
-           if ($ConfigItemList.Contains($key.ToUpper()) -and $name.ToUpper().Contains("MICROSOFT OFFICE") -and $name.ToUpper() -notlike "*MUI*" -and $name.ToUpper() -notlike "*VISIO*" -and $name.ToUpper() -notlike "*PROJECT*") {
               $primaryOfficeProduct = $true
            }
 
@@ -1278,7 +1303,6 @@ function checkForLanguage() {
     }
 }
 
-
 function officeGetExcludedApps() {
     param(
        [Parameter(ValueFromPipelineByPropertyName=$true, Position=0)]
@@ -1388,7 +1412,6 @@ function officeGetExcludedApps() {
     }
 }
 
-
 function officeGetLanguages() {
    param(
        [Parameter(Mandatory=$true,ValueFromPipelineByPropertyName=$true)]
@@ -1471,7 +1494,6 @@ function odtGetExcludedApps() {
         return $appsToExclude;
     }
 }
-
 
 function odtAddProduct() {
     param(
@@ -1594,6 +1616,10 @@ function odtAddUpdates{
     Process{
         #Check to make sure the correct root element exists
         if($ConfigDoc.Configuration -eq $null){
+            #write log
+            $lineNum = Get-CurrentLineNumber    
+            $filName = Get-CurrentFileName 
+            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "no configuration element"
             throw $NoConfigurationElement
         }
         [bool]$addUpdates = $false
@@ -1684,6 +1710,10 @@ Function odtSetAdd{
     Process{
         #Check for proper root element
         if($ConfigDoc.Configuration -eq $null){
+            #write log
+            $lineNum = Get-CurrentLineNumber    
+            $filName = Get-CurrentFileName 
+            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "no configuration element"
             throw $NoConfigurationElement
         }
 
@@ -1801,6 +1831,10 @@ Here is what the portion of configuration file looks like when modified by this 
 
         #Check for proper root element
         if($ConfigFile.Configuration -eq $null){
+            #write log
+            $lineNum = Get-CurrentLineNumber    
+            $filName = Get-CurrentFileName 
+            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "no configuration element"
             throw $NoConfigurationElement
         }
 
@@ -1903,19 +1937,45 @@ function Win7Join([string]$st1, [string]$st2){
 }
 
 
-function Detect-Channel() {
-   [CmdletBinding()]
+function Detect-Channel {
    param( 
-      
+
    )
 
-   Process {
-      $currentBaseUrl = Get-OfficeCDNUrl
-      $channelXml = Get-ChannelXml
+Process {      
+   $channelXml = Get-ChannelXml
 
-      $currentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $currentBaseUrl -and $_.branch -notcontains 'Business' }
-      return $currentChannel
+   $UpdateChannel = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration -Name UpdateChannel -ErrorAction SilentlyContinue).UpdateChannel      
+   $GPOUpdatePath = (Get-ItemProperty HKLM:\SOFTWARE\Policies\Microsoft\office\16.0\common\officeupdate -Name updatepath -ErrorAction SilentlyContinue).updatepath
+   $GPOUpdateBranch = (Get-ItemProperty HKLM:\SOFTWARE\Policies\Microsoft\office\16.0\common\officeupdate -Name UpdateBranch -ErrorAction SilentlyContinue).UpdateBranch
+   $GPOUpdateChannel = (Get-ItemProperty HKLM:\SOFTWARE\Policies\Microsoft\office\16.0\common\officeupdate -Name UpdateChannel -ErrorAction SilentlyContinue).UpdateChannel      
+   $UpdateUrl = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration -Name UpdateUrl -ErrorAction SilentlyContinue).UpdateUrl
+   $currentBaseUrl = Get-OfficeCDNUrl
+
+   $CurrentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $currentBaseUrl -and $_.branch -notmatch 'Business' }
+      
+   if($UpdateUrl -ne $null -and $UpdateUrl -like '*officecdn.microsoft.com*'){
+       $CurrentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $UpdateUrl -and $_.branch -notmatch 'Business' }  
    }
+
+   if($GPOUpdateChannel -ne $null){
+     $CurrentChannel = $channelXml.UpdateFiles.baseURL | ? {$_.branch.ToLower() -eq $GPOUpdateChannel.ToLower()}         
+   }
+
+   if($GPOUpdateBranch -ne $null){
+     $CurrentChannel = $channelXml.UpdateFiles.baseURL | ? {$_.branch.ToLower() -eq $GPOUpdateBranch.ToLower()}  
+   }
+
+   if($GPOUpdatePath -ne $null -and $GPOUpdatePath -like '*officecdn.microsoft.com*'){
+     $CurrentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $GPOUpdatePath -and $_.branch -notmatch 'Business' }  
+   }
+
+   if($UpdateChannel -ne $null -and $UpdateChannel -like '*officecdn.microsoft.com*'){
+     $CurrentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $UpdateChannel -and $_.branch -notmatch 'Business' }  
+   }
+
+   return $CurrentChannel
+}
 
 }
 
@@ -2018,9 +2078,54 @@ Function Get-OfficeCDNUrl() {
 }
 
 
+Function WriteToLogFile() {
+    param( 
+      [Parameter(Mandatory=$true)]
+      [string]$LNumber,
+      [Parameter(Mandatory=$true)]
+      [string]$FName,
+      [Parameter(Mandatory=$true)]
+      [string]$ActionError
+    )
+    try{
+        $headerString = "Time".PadRight(30, ' ') + "Line Number".PadRight(15,' ') + "FileName".PadRight(60,' ') + "Action"
+        $stringToWrite = $(Get-Date -Format G).PadRight(30, ' ') + $($LNumber).PadRight(15, ' ') + $($FName).PadRight(60,' ') + $ActionError
+
+        #check if file exists, create if it doesn't
+        $getCurrentDatePath = "C:\Windows\Temp\" + (Get-Date -Format u).Substring(0,10)+"OfficeAutoScriptLog.txt"
+        if(Test-Path $getCurrentDatePath){#if exists, append  
+             Add-Content $getCurrentDatePath $stringToWrite
+        }
+        else{#if not exists, create new
+             Add-Content $getCurrentDatePath $headerString
+             Add-Content $getCurrentDatePath $stringToWrite
+        }
+    } catch [Exception]{
+        Write-Host $_
+    }
+}
+
+function Get-CurrentLineNumber {
+    $MyInvocation.ScriptLineNumber
+}
+
+function Get-CurrentFileName{
+    $MyInvocation.ScriptName.Substring($MyInvocation.ScriptName.LastIndexOf("\")+1)
+}
+
+function Get-CurrentFunctionName {
+    (Get-Variable MyInvocation -Scope 1).Value.MyCommand.Name;
+}
+
 $availableLangs = @("en-us",
 "ar-sa","bg-bg","zh-cn","zh-tw","hr-hr","cs-cz","da-dk","nl-nl","et-ee",
 "fi-fi","fr-fr","de-de","el-gr","he-il","hi-in","hu-hu","id-id","it-it",
 "ja-jp","kk-kz","ko-kr","lv-lv","lt-lt","ms-my","nb-no","pl-pl","pt-br",
 "pt-pt","ro-ro","ru-ru","sr-latn-rs","sk-sk","sl-si","es-es","sv-se","th-th",
-"tr-tr","uk-ua");
+"tr-tr","uk-ua","vi-vn",#end of core languages
+"af-za","sq-al","am-et","hy-am","as-in","az-latn-az","eu-es","be-by","bn-bd","bn-in","bs-latn-ba","ca-es","prs-af","fil-ph","gl-es","ka-ge","gu-in","is-is","ga-ie","kn-in", #beginning of partial languages
+"km-kh","sw-ke","kok-in","ky-kg","lb-lu","mk-mk","ml-in","mt-mt","mi-nz","mr-in","mn-mn","ne-np","nn-no","or-in","fa-ir","pa-in","quz-pe","gd-gb","sr-cyrl-rs","sr-cyrl-ba",#end of partial langauges
+"ha-latn-ng","ig-ng","xh-za","zu-za","rw-rw","ps-af","rm-ch","nso-za","tn-za","wo-sn","yo-ng");#proofing languages
+
+
+
