@@ -51,7 +51,7 @@ Will uninstall Office Click-to-Run.
         if($c2rVersion) {
             if(!($isInPipe)) {
                 Write-Host "Please wait while $c2rName is being uninstalled..."
-                <# write log#>
+                #write log
                 $lineNum = Get-CurrentLineNumber    
                 $filName = Get-CurrentFileName 
                 WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Please wait while $c2rName is being uninstalled..."
@@ -85,7 +85,7 @@ Will uninstall Office Click-to-Run.
             if(!($c2rTest)){                           
                 if (!($isInPipe)) {                        
                     Write-Host "Office Click-to-Run has been successfully uninstalled." 
-                    <# write log#>
+                    #write log
                     $lineNum = Get-CurrentLineNumber    
                     $filName = Get-CurrentFileName 
                     WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Office Click-to-Run has been successfully uninstalled." 
