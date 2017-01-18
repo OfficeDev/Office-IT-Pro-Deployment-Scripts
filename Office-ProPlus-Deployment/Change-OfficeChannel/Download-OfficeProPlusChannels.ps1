@@ -199,7 +199,7 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
 
             Write-Host
             Write-Host "Downloading Bitness : $currentBitness"
-            <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Downloading Bitness : $currentBitness"
@@ -211,7 +211,7 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
 
                 Write-Progress -id 1 -Activity "Downloading Channel" -status "Channel: $($currentBranch.ToString()) : $currentBitness" -percentComplete ($b / $BranchCount *100) 
                 Write-Host "`tDownloading Channel: $currentBranch"
-                <# write log#>
+                #write log
                 $lineNum = Get-CurrentLineNumber    
                 $filName = Get-CurrentFileName 
                 WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Downloading Channel: $currentBranch"
@@ -257,7 +257,7 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
                         Invoke-WebRequest -Uri $url -ErrorAction Stop | Out-Null
                     } catch {
                       Write-Host "`t`tVersion Not Found: $currentVersion"
-                      <# write log#>
+                    #write log
                     $lineNum = Get-CurrentLineNumber    
                     $filName = Get-CurrentFileName 
                     WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Version Not Found: $currentVersion"
@@ -398,7 +398,7 @@ function DownloadFile($url, $targetFile) {
 
 function PurgeOlderVersions([string]$targetDirectory, [int]$numVersionsToKeep, [array]$channels){
     Write-Host "Checking for Older Versions"
-    <# write log#>
+    #write log
     $lineNum = Get-CurrentLineNumber    
     $filName = Get-CurrentFileName 
     WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Checking for Older Versions"
@@ -447,7 +447,7 @@ function PurgeOlderVersions([string]$targetDirectory, [int]$numVersionsToKeep, [
                      $versionsToRemove = $true
                      $removeVersion = $totalVersions[($i-1)]
                      Write-Host "`t`tRemoving Version: $removeVersion"
-                     <# write log#>
+                    #write log
                     $lineNum = Get-CurrentLineNumber    
                     $filName = Get-CurrentFileName 
                     WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Removing Version: $removeVersion"
@@ -477,7 +477,7 @@ function PurgeOlderVersions([string]$targetDirectory, [int]$numVersionsToKeep, [
 
             if (!($versionsToRemove)) {
                 Write-Host "`t`tNo Versions to Remove"
-                 <# write log#>
+                #write log
                 $lineNum = Get-CurrentLineNumber    
                 $filName = Get-CurrentFileName 
                 WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "No Versions to Remove"
