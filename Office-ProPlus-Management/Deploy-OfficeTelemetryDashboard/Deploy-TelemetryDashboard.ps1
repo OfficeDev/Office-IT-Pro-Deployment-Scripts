@@ -141,7 +141,7 @@ function Confirm-ConsoleBitness {
         if ($PSHOME -match "SysWOW64")
         {
             write-host $Error32BitPowerShell64BitOS
-            <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError $Error32BitPowerShell64BitOS
@@ -149,7 +149,7 @@ function Confirm-ConsoleBitness {
         }
 
     Write-Host 'You are using a 64 bit OS.'
-    <# write log#>
+    #write log
     $lineNum = Get-CurrentLineNumber    
     $filName = Get-CurrentFileName 
     WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "You are using a 64 bit OS."
@@ -165,7 +165,7 @@ function Enable-DOTNET3 {
     }
 
     Write-Host '.NET is enabled.'
-    <# write log#>
+    #write log
     $lineNum = Get-CurrentLineNumber    
     $filName = Get-CurrentFileName 
     WriteToLogFile -LNumber $lineNum -FName $filName -ActionError ".NET is enbabled."
@@ -183,7 +183,7 @@ function Test-EnteredKey([string] $message) {
             break
         }
         Write-Host $UiMessage_AskForReentry
-        <# write log#>
+        #write log
         $lineNum = Get-CurrentLineNumber    
         $filName = Get-CurrentFileName 
         WriteToLogFile -LNumber $lineNum -FName $filName -ActionError $UiMessage_AskForReentry
@@ -385,7 +385,7 @@ function Check-Elevated {
     else
     {
     Write-Host 'The script is running in an elevated prompt.'
-    <# write log#>
+        #write log
         $lineNum = Get-CurrentLineNumber    
         $filName = Get-CurrentFileName 
         WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "The script is running in an elevated prompt."
@@ -435,7 +435,7 @@ function Check-SqlInstall {
 #Download Microsoft SQL Server 2014 Express Edition and install.
 function Run-SqlServerInstaller {
     write-host $UiMessage_StartSQLInstall
-    <# write log#>
+    #write log
     $lineNum = Get-CurrentLineNumber    
     $filName = Get-CurrentFileName 
     WriteToLogFile -LNumber $lineNum -FName $filName -ActionError $UiMessage_StartSQLInstall
@@ -445,7 +445,7 @@ function Run-SqlServerInstaller {
     try
     {
         write-host $UiMessage_NotifySQLServerDownload
-        <# write log#>
+        #write log
         $lineNum = Get-CurrentLineNumber    
         $filName = Get-CurrentFileName 
         WriteToLogFile -LNumber $lineNum -FName $filName -ActionError $UiMessage_NotifySQLServerDownload
@@ -457,7 +457,7 @@ function Run-SqlServerInstaller {
         Read-UserResponse $UiMessage_SqlServerDownloadRetry
         
         write-host $UiMessage_NotifySQLServerDownload
-        <# write log#>
+        #write log
         $lineNum = Get-CurrentLineNumber    
         $filName = Get-CurrentFileName 
         WriteToLogFile -LNumber $lineNum -FName $filName -ActionError $UiMessage_NotifySQLServerDownload
@@ -555,7 +555,7 @@ function Install-SqlwithIni {
         }
     
         write-host $UiMessage_CompleteSQLInstall
-        <# write log#>
+        #write log
         $lineNum = Get-CurrentLineNumber    
         $filName = Get-CurrentFileName 
         WriteToLogFile -LNumber $lineNum -FName $filName -ActionError $UiMessage_CompleteSQLInstall
@@ -584,7 +584,7 @@ function Set-TcpPort {
 # Create a shared folder and set the permissions
 function New-SharedFolder {
     write-host $UiMessage_CreateFolder
-    <# write log#>
+    #write log
     $lineNum = Get-CurrentLineNumber    
     $filName = Get-CurrentFileName 
     WriteToLogFile -LNumber $lineNum -FName $filName -ActionError $UiMessage_CreateFolder
@@ -755,7 +755,7 @@ function Get-SqlInstanceName {
     $SqlInstanceName = Get-SQLInstance | foreach { $_.SQLInstance }
     
     Write-Host $SqlInstanceName
-    <# write log#>
+    #write log
     $lineNum = Get-CurrentLineNumber    
     $filName = Get-CurrentFileName 
     WriteToLogFile -LNumber $lineNum -FName $filName -ActionError $SqlInstanceName
@@ -855,7 +855,7 @@ function Run-SqlQuery([string] $database, [string] $query) {
 # for the Office client.
 function Configure-DatabasePermissions([string] $database) {
     write-host $UiMessage_ConfigureDatabase
-    <# write log#>
+    #write log
     $lineNum = Get-CurrentLineNumber    
     $filName = Get-CurrentFileName 
     WriteToLogFile -LNumber $lineNum -FName $filName -ActionError $UiMessage_ConfigureDatabase
@@ -898,7 +898,7 @@ function Show-TelemetryDashboard {
                                 "C:\Program Files (x86)\Microsoft Office 15\root\Office15\msotd.exe")
 
     Write-Host $UiMessage_HowToUseDashboard
-    <# write log#>
+    #write log
     $lineNum = Get-CurrentLineNumber    
     $filName = Get-CurrentFileName 
     WriteToLogFile -LNumber $lineNum -FName $filName -ActionError $UiMessage_HowToUseDashboard

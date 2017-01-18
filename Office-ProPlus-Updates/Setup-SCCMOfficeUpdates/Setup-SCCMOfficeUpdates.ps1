@@ -93,7 +93,7 @@ If you specify a Version then the script will download that version.  You can se
 	    Set-Location $path
 
         Write-Host "Staging the Office ProPlus Update to: $path"
-        <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Staging the Office ProPlus Update to: $path"
@@ -104,7 +104,7 @@ If you specify a Version then the script will download that version.  You can se
 	        $arguments = "/download", "$UpdateSourceConfigFileName32"
  
             Write-Host "`tStarting Download of Office Update 32-Bit..." -NoNewline
-            <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Starting Download of Office Update 32-Bit..."
@@ -113,7 +113,7 @@ If you specify a Version then the script will download that version.  You can se
 	        & $app @arguments
 
             Write-Host "`tComplete"
-            <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Complete"
@@ -124,7 +124,7 @@ If you specify a Version then the script will download that version.  You can se
 	        $arguments = "/download", "$UpdateSourceConfigFileName64"
 
             Write-Host "`tStarting Download of Office Update 64-Bit..."  -NoNewline
-            <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Starting Download of Office Update 64-Bit..."
@@ -133,7 +133,7 @@ If you specify a Version then the script will download that version.  You can se
 	        & $app @arguments
 
             Write-Host "`tComplete"
-            <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Complete"
@@ -141,7 +141,7 @@ If you specify a Version then the script will download that version.  You can se
 
         Write-Host
         Write-Host "The Office Update download has finished"
-        <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "The Office Update download has finished"
@@ -237,7 +237,7 @@ Process
     Write-Host
     Write-Host 'Configuring System Center Configuration Manager to Deploy Office ProPlus Updates' -BackgroundColor DarkBlue
     Write-Host
-    <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError 'Configuring System Center Configuration Manager to Deploy Office ProPlus Updates'
@@ -261,7 +261,7 @@ Process
 
     Write-Host "Loading SCCM Module"
     Write-Host ""
-    <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Loading SCCM Module"
@@ -284,7 +284,7 @@ Process
         CreateSCCMProgram -Name $programName -PackageName $PackageName -Path $path -RequiredPlatformNames $requiredPlatformNames
 
         Write-Host "Starting Content Distribution"	
-        <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Starting Content Distribution"	
@@ -302,7 +302,7 @@ Process
         Write-Host "      content distribution is complete." -BackgroundColor Red
 
     } else {
-    <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Could Not find file ConfigurationManager.psd1"
@@ -383,7 +383,7 @@ Process
         $packageDeploy = Get-CMDeployment | where {$_.PackageId  -eq $package.PackageId }
         if ($packageDeploy.Count -eq 0) {
             Write-Host "Creating Package Deployment for: $packageName"
-            <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Creating Package Deployment for: $packageName"
@@ -399,7 +399,7 @@ Process
 
         } else {
             Write-Host "Package Deployment Already Exists for: $packageName"
-            <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Package Deployment Already Exists for: $packageName"
@@ -429,21 +429,21 @@ function CreateSCCMPackage() {
     if($package -eq $null -or !$package)
     {
         Write-Host "`t`tCreating Package: $Name"
-        <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Creating Package: $Name"
         $package = New-CMPackage -Name $Name  -Path $path
     } else {
         Write-Host "`t`tAlready Exists"	
-        <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Already Exists"	
     }
 		
     Write-Host "`t`tSetting Package Properties"
-    <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Setting Package Properties"
@@ -479,7 +479,7 @@ function CreateSCCMProgram() {
     $commandLine = "SCO365PPTrigger.exe -EnableLogging true -C2RArgs `"updatepromptuser=false forceappshutdown=false displaylevel=false`""
 
     Write-Host "`tProgram: $Name"
-    <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Program: $Name"
@@ -487,21 +487,21 @@ function CreateSCCMProgram() {
     if($program -eq $null -or !$program)
     {
         Write-Host "`t`tCreating Program..."	 
-        <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Creating Program..."	 
 	    $program = New-CMProgram -PackageName $PackageName -StandardProgramName $Name -CommandLine $commandLine -ProgramRunType WhetherOrNotUserIsLoggedOn -RunMode RunWithAdministrativeRights -UserInteraction $false -RunType Hidden
     } else {
         Write-Host "`t`tAlready Exists"
-        <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Already Exists"
     }
 	
     Write-Host "`t`tSetting Program Properties"
-    <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Setting Program Properties"
@@ -751,7 +751,7 @@ function Create-FileShare() {
           25 {$switchVar= "Share:$name Path:$path Result:Network Name Not Found"}
           default {$switchVar= "Share:$name Path:$path Result:*** Unknown Error ***"}
      }
-     <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError $switchVar
@@ -808,7 +808,7 @@ function GetSCCMPSModulePath() {
     }
 
     if (!$pathExists) {
-    <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Cannot find the ConfigurationManager.psd1 file. Please use the -SCCMPSModulePath parameter to specify the location of the PowerShell Module"
@@ -824,7 +824,7 @@ Function Get-Site([string[]]$computerName = $env:COMPUTERNAME) {
         if ($_.ProviderForLocalSite -eq $true){$SiteCode=$_.sitecode} 
     } 
     if ($SiteCode -eq "") { 
-    <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Sitecode of ConfigMgr Site at " + $ComputerName + " could not be determined."

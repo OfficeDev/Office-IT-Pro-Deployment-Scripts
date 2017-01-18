@@ -555,7 +555,7 @@ Function Validate-UpdateSource() {
                  $missingFiles.Add($fullPath)
                  Write-Host "Source File Missing: $fullPath"
                  Write-Log -Message "Source File Missing: $fullPath" -severity 1 -component "Office 365 Update Anywhere" 
-                 <# write log#>
+                #write log
                 $lineNum = Get-CurrentLineNumber    
                 $filName = Get-CurrentFileName 
                 WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Source File Missing: $fullPath"
@@ -659,7 +659,7 @@ Function Wait-ForOfficeCTRUpadate() {
 
     process {
        Write-Host "Waiting for Update process to Complete..."
-       <# write log#>
+       #write log
        $lineNum = Get-CurrentLineNumber    
        $filName = Get-CurrentFileName 
        WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Waiting for Update process to Complete..."
@@ -726,7 +726,7 @@ Function Wait-ForOfficeCTRUpadate() {
                                 $displayText = $statusName + "`t" + $operationTime
 
                                 Write-Host $displayText
-                                <# write log#>
+                                #write log
                                 $lineNum = Get-CurrentLineNumber    
                                 $filName = Get-CurrentFileName 
                                 WriteToLogFile -LNumber $lineNum -FName $filName -ActionError $displayText
@@ -745,7 +745,7 @@ Function Wait-ForOfficeCTRUpadate() {
 
                              if ($operation.ToUpper().IndexOf("DOWNLOAD") -gt -1) {
                                 Write-Host "Downloading Update: " -NoNewline
-                                <# write log#>
+                                #write log
                                 $lineNum = Get-CurrentLineNumber    
                                 $filName = Get-CurrentFileName 
                                 WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Downloading Update: "
@@ -753,7 +753,7 @@ Function Wait-ForOfficeCTRUpadate() {
 
                              if ($operation.ToUpper().IndexOf("APPLY") -gt -1) {
                                 Write-Host "Applying Update: " -NoNewline
-                                <# write log#>
+                                #write log
                                 $lineNum = Get-CurrentLineNumber    
                                 $filName = Get-CurrentFileName 
                                 WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Applying Update: "
@@ -761,7 +761,7 @@ Function Wait-ForOfficeCTRUpadate() {
 
                              if ($operation.ToUpper().IndexOf("FINALIZE") -gt -1) {
                                 Write-Host "Finalizing Update: " -NoNewline
-                                <# write log#>
+                                #write log
                                 $lineNum = Get-CurrentLineNumber    
                                 $filName = Get-CurrentFileName 
                                 WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Finalizing Update: "
@@ -780,7 +780,7 @@ Function Wait-ForOfficeCTRUpadate() {
 
            if ($startTime -lt (Get-Date).AddHours(-$TimeOutInMinutes)) {
               throw "Waiting for Update Timed-Out"
-              <# write log#>
+              #write log
               $lineNum = Get-CurrentLineNumber    
               $filName = Get-CurrentFileName 
               WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Waiting for Update Timed-Out"
@@ -804,7 +804,7 @@ Function Wait-ForOfficeCTRUpadate() {
        }
 
        Write-Host $displayValue
-       <# write log#>
+       #write log
        $lineNum = Get-CurrentLineNumber    
        $filName = Get-CurrentFileName 
        WriteToLogFile -LNumber $lineNum -FName $filName -ActionError $displayValue
@@ -814,20 +814,20 @@ Function Wait-ForOfficeCTRUpadate() {
        if ($updateRunning) {
           if ($failure) {
             Write-Host "Update Failed"
-            <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Update Failed"
           } else {
             Write-Host "Update Completed - Total Time: $totalOperationTime"
-            <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Update Completed - Total Time: $totalOperationTime"
           }
        } else {
           Write-Host "Update Not Running"
-          <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Update Not Running"
@@ -852,7 +852,7 @@ function Test-URL {
    } catch {
       Write-Host "Invalid UpdateSource. File Not Found: $url" -ForegroundColor Red
       $validUrl = $false
-      <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Invalid UpdateSource. File Not Found: $url"
@@ -1254,7 +1254,7 @@ Will generate the Office Deployment Tool (ODT) configuration XML based on the lo
 	                        $isAlive = Test-UpdateSource -UpdateSource $saveUpdateSource -ValidateUpdateSourceFiles $ValidateUpdateSourceFiles
                             if ($isAlive) {
                                Write-Log -Message "Restoring Saved Update Source $saveUpdateSource" -severity 1 -component "Office 365 Update Anywhere"
-                               <# write log#>
+                                #write log
                                 $lineNum = Get-CurrentLineNumber    
                                 $filName = Get-CurrentFileName 
                                 WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Restoring Saved Update Source $saveUpdateSource"
@@ -1272,7 +1272,7 @@ Will generate the Office Deployment Tool (ODT) configuration XML based on the lo
                 if (!($currentUpdateSource)) {
                    if ($officeUpdateCDN) {
                        Write-Log -Message "No Update source is set so defaulting to Office CDN" -severity 1 -component "Office 365 Update Anywhere"
-                       <# write log#>
+                        #write log
                         $lineNum = Get-CurrentLineNumber    
                         $filName = Get-CurrentFileName 
                         WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "No Update source is set so defaulting to Office CDN"
@@ -1302,7 +1302,7 @@ Will generate the Office Deployment Tool (ODT) configuration XML based on the lo
 
                         Write-Host "Unable to use $currentUpdateSource. Will now use $officeUpdateCDN"
                         Write-Log -Message "Unable to use $currentUpdateSource. Will now use $officeUpdateCDN" -severity 1 -component "Office 365 Update Anywhere"
-                        <# write log#>
+                        #write log
                         $lineNum = Get-CurrentLineNumber    
                         $filName = Get-CurrentFileName 
                         WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Unable to use $currentUpdateSource. Will now use $officeUpdateCDN"
@@ -1360,7 +1360,7 @@ Will generate the Office Deployment Tool (ODT) configuration XML based on the lo
                Write-Host "Starting Update process"
                Write-Host "Update Source: $channelUpdateSource" 
                Write-Log -Message "Will now execute $oc2rcFilePath $oc2rcParams with UpdateSource:$channelUpdateSource" -severity 1 -component "Office 365 Update Anywhere"
-               <# write log#>
+               #write log
                $lineNum = Get-CurrentLineNumber    
                $filName = Get-CurrentFileName 
                WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Starting Update process"
@@ -1387,7 +1387,7 @@ Will generate the Office Deployment Tool (ODT) configuration XML based on the lo
                $currentUpdateSource = (Get-ItemProperty HKLM:\$configRegPath -Name UpdateUrl -ErrorAction SilentlyContinue).UpdateUrl
                Write-Host "Update Source '$currentUpdateSource' Unavailable"
                Write-Log -Message "Update Source '$currentUpdateSource' Unavailable" -severity 1 -component "Office 365 Update Anywhere"
-               <# write log#>
+               #write log
                $lineNum = Get-CurrentLineNumber    
                $filName = Get-CurrentFileName 
                WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Update Source '$currentUpdateSource' Unavailable"

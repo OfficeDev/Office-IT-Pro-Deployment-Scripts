@@ -923,14 +923,14 @@ Process
 
     if ($sourceCount -eq 0 -and $targetCount -eq 0) {
         Write-Host "No Office settings are configured in the source Group Policy Object"
-        <# write log#>
+        #write log
         $lineNum = Get-CurrentLineNumber    
         $filName = Get-CurrentFileName 
         WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "No Office settings are configured in the source Group Policy Object"
     } else {
         if ($Results.Count -eq 0) {
             Write-Host "All Office settings have already been copied"
-            <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "All Office settings have already been copied"

@@ -567,7 +567,7 @@ Process{
     
         Write-host
         Write-host "Connecting to Office 365..."
-        <# write log#>
+        #write log
         $lineNum = Get-CurrentLineNumber    
         $filName = Get-CurrentFileName 
         WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Connecting to Office 365..."
@@ -575,7 +575,7 @@ Process{
         Connect-MsolService -Credential $Credentials
 
         Write-host "Retrieving User List..."
-        <# write log#>
+        #write log
         $lineNum = Get-CurrentLineNumber    
         $filName = Get-CurrentFileName 
         WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Retrieving User List..."
@@ -634,7 +634,7 @@ Process{
             $ImportedCSV | Export-Csv $CSVPath -NoTypeInformation
 
             Write-host "CSV File Updated: $CSVPath"
-            <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "CSV File Updated: $CSVPath"
@@ -644,7 +644,7 @@ Process{
             $LicensedUsers | ? ObjectId -ne $Null | Export-Csv $CSVPath -NoTypeInformation
 
             Write-host "CSV File Created: $CSVPath"
-            <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "CSV File Created: $CSVPath"
@@ -718,7 +718,7 @@ Process{
     
     if ($filePaths.Length -eq 0) {
       Write-Host "No CSV File Exits. Please run Update-UserLicenseData to generate the CSV File."
-      <# write log#>
+        #write log
         $lineNum = Get-CurrentLineNumber    
         $filName = Get-CurrentFileName 
         WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "No CSV File Exits. Please run Update-UserLicenseData to generate the CSV File."
@@ -737,13 +737,13 @@ Process{
             Write-Host ""
             Write-Host "Retrieving New Users Since: $CutOffDate"
             Write-Host ""
-            <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Retrieving New Users Since: $CutOffDate"
             if ($domain) {
                Write-Host "Domain: $domain"
-               <# write log#>
+                #write log
                 $lineNum = Get-CurrentLineNumber    
                 $filName = Get-CurrentFileName 
                 WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Domain: $domain"
@@ -944,7 +944,7 @@ Process{
         }#end If TestPath
         else{
             Write-Host "Can't find file at $CSVPath"
-            <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Can't find file at $CSVPath"

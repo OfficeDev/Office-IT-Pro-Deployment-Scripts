@@ -99,7 +99,7 @@ Configure-UpdateAnywhere -GpoName UpdateGPO
 	if(!$gpo -or ($gpo -eq $null))
 	{
 		Write-Error "The GPO $GpoName could not be found."
-        <# write log#>
+        #write log
         $lineNum = Get-CurrentLineNumber    
         $filName = Get-CurrentFileName 
         WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "The GPO $GpoName could not be found."
@@ -227,7 +227,7 @@ Configure-UpdateAnywhere -GpoName UpdateGPO
     Write-Host ""
     Write-Host "The Group Policy '$GpoName' has been modified to update Office anywhere via Scheduled Task." -BackgroundColor DarkBlue
     Write-Host "Once Group Policy has refreshed as scheduled task will be created to run the scheduled task." -BackgroundColor DarkBlue
-    <# write log#>
+    #write log
     $lineNum = Get-CurrentLineNumber    
     $filName = Get-CurrentFileName 
     WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "GPO Modified"
