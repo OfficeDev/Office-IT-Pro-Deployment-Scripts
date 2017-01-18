@@ -110,7 +110,7 @@ begin {
 
 process {
     try{
-    # write log
+    #write log
     $lineNum = Get-CurrentLineNumber    
     $filName = Get-CurrentFileName 
     WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "begin function"
@@ -298,7 +298,7 @@ process {
     }
 
     if (!($primaryLanguage)) {
-        <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Cannot find matching Office language for: $primaryLanguage"
@@ -437,7 +437,7 @@ process {
     }
 
     $formattedXml = Format-XML ([xml]($ConfigFile)) -indent 4
-    # write log
+    #write log
     $lineNum = Get-CurrentLineNumber    
     $filName = Get-CurrentFileName 
     WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Write XML output"
@@ -1616,7 +1616,7 @@ function odtAddUpdates{
     Process{
         #Check to make sure the correct root element exists
         if($ConfigDoc.Configuration -eq $null){
-        <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "no configuration element"
@@ -1710,7 +1710,7 @@ Function odtSetAdd{
     Process{
         #Check for proper root element
         if($ConfigDoc.Configuration -eq $null){
-        <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "no configuration element"
@@ -1831,7 +1831,7 @@ Here is what the portion of configuration file looks like when modified by this 
 
         #Check for proper root element
         if($ConfigFile.Configuration -eq $null){
-        <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "no configuration element"

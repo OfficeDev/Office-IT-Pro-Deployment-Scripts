@@ -200,7 +200,7 @@ Function SetODTAdd{
 
         #Check for proper root element
         if($ConfigFile.Configuration -eq $null){
-            <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "No configuration element"
@@ -263,7 +263,7 @@ Function SetODTAdd{
 
             Write-Host
             Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
-            <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "The Office XML Configuration file has been saved to: $TargetFilePath"
@@ -315,7 +315,7 @@ Function SetODTUpdates{
 
         #Check for proper root element
         if($ConfigFile.Configuration -eq $null){
-            <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "No configuration element"
@@ -354,7 +354,7 @@ Function SetODTUpdates{
 
             Write-Host
             Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
-            <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "The Office XML Configuration file has been saved to: $TargetFilePath"
@@ -412,7 +412,7 @@ file.
 
         #Check that the file is properly formatted
         if($ConfigFile.Configuration -eq $null){
-            <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "No configuration element"
@@ -436,7 +436,7 @@ Function GetFilePath() {
 
     if (!($TargetFilePath)) {
        Write-Host "Enter the path to the XML Configuration File: " -NoNewline
-       <# write log#>
+        #write log
         $lineNum = Get-CurrentLineNumber    
         $filName = Get-CurrentFileName 
         WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Enter the path to the XML Configuration File: "

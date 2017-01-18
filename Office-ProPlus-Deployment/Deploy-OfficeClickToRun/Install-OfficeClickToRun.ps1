@@ -135,7 +135,7 @@ Word, Excel, and Outlook will be pinned to the Start Menu. The PowerShell consol
     )
 
     $scriptRoot = GetScriptRoot
-	# write log
+	#write log
     $lineNum = Get-CurrentLineNumber    
     $filName = Get-CurrentFileName 
     WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "install office function, loading config file"
