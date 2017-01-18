@@ -207,7 +207,7 @@ Word, Excel, and Outlook will be pinned to the Start Menu. The PowerShell consol
     $cmdArgs = "/configure " + '"' + $TargetFilePath + '"'
 
     Write-Host "Installing Office Click-To-Run..."
-	# write log
+	#write log
     $lineNum = Get-CurrentLineNumber    
     $filName = Get-CurrentFileName 
     WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Installing Office Click-To-Run..."

@@ -311,10 +311,10 @@ Word, Excel, and Outlook will be pinned to the Start Menu. The PowerShell consol
     if($InstallProofingTools -eq $true){
         Write-Host ""
         Write-Host "Installing Proofing Tools..."
-		<# write log#>
-	$lineNum = Get-CurrentLineNumber    
-	$filName = Get-CurrentFileName 
-	WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Installing Proofing Tools"
+        #Write log
+	    $lineNum = Get-CurrentLineNumber    
+	    $filName = Get-CurrentFileName 
+	    WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Installing Proofing Tools"
 
         if((Get-OfficeVersion).Bitness -eq "32-bit"){
             $proofingToolFileName = "proofingtools2016_en-us-x86.exe"
