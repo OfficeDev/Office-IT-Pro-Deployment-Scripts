@@ -7,7 +7,7 @@ param(
 [bool]$Remove2016Installs = $false,
 
 [Parameter(ValueFromPipelineByPropertyName=$true)]
-[bool]$Force = $true,
+[bool]$Force = $false,
 
 [Parameter(ValueFromPipelineByPropertyName=$true)]
 [bool]$KeepUserSettings = $true,
@@ -361,7 +361,7 @@ Function Remove-PreviousOfficeInstalls{
     [bool]$Remove2016Installs = $false,
 
     [Parameter(ValueFromPipelineByPropertyName=$true)]
-    [bool]$Force = $true,
+    [bool]$Force = $false,
 
     [Parameter(ValueFromPipelineByPropertyName=$true)]
     [bool]$KeepUserSettings = $true,
