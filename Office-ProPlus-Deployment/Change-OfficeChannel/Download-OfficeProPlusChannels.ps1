@@ -56,7 +56,7 @@ Required. Where all the channels will be downloaded. Each channel then goes into
 .PARAMETER Languages
 Array of Microsoft language codes. Will throw error if provided values don't match the validation set. Defaults to "en-us"
 ("en-us","ar-sa","bg-bg","zh-cn","zh-tw","hr-hr","cs-cz","da-dk","nl-nl","et-ee","fi-fi","fr-fr","de-de","el-gr","he-il","hi-in","hu-hu","id-id","it-it",
-"ja-jp","kk-kh","ko-kr","lv-lv","lt-lt","ms-my","nb-no","pl-pl","pt-br","pt-pt","ro-ro","ru-ru","sr-latn-rs","sk-sk","sl-si","es-es","sv-se","th-th",
+"ja-jp","kk-kz","ko-kr","lv-lv","lt-lt","ms-my","nb-no","pl-pl","pt-br","pt-pt","ro-ro","ru-ru","sr-latn-rs","sk-sk","sl-si","es-es","sv-se","th-th",
 "tr-tr","uk-ua")
 .PARAMETER Bitness
 v32, v64, or Both. What bitness of office you wish to download. Defaults to Both.
@@ -74,6 +74,8 @@ This parameter change the folder name that the scripts creates for each Channel 
 This parameter Controls the number of times the script will retry if a failure happens
 .PARAMETER IncludeChannelInfo
 This parameter Controls whether the ofl.cab file is downloaded and cached in the root of the TargetDirectory folder
+.PARAMETER DownloadPreviousVersionIfThrottled
+This parameter will force the function to download the previous version if the current version is still being throttled
 .Example
 Download-OfficeProPlusChannels -TargetDirectory "\\server\updateshare"
 Default downloads all available channels of the most recent version for both bitnesses into an update source. Downloads the English language pack by default if language is not specified.
@@ -90,7 +92,7 @@ Param(
 
     [Parameter()]
     [ValidateSet("en-us","ar-sa","bg-bg","zh-cn","zh-tw","hr-hr","cs-cz","da-dk","nl-nl","et-ee","fi-fi","fr-fr","de-de","el-gr","he-il","hi-in","hu-hu","id-id","it-it",
-                "ja-jp","kk-kh","ko-kr","lv-lv","lt-lt","ms-my","nb-no","pl-pl","pt-br","pt-pt","ro-ro","ru-ru","sr-latn-rs","sk-sk","sl-si","es-es","sv-se","th-th",
+                "ja-jp","kk-kz","ko-kr","lv-lv","lt-lt","ms-my","nb-no","pl-pl","pt-br","pt-pt","ro-ro","ru-ru","sr-latn-rs","sk-sk","sl-si","es-es","sv-se","th-th",
                 "tr-tr","uk-ua","vi-vn")]
     [string[]] $Languages = ("en-us"),
 
@@ -126,7 +128,10 @@ Param(
     [int] $NumOfRetries = 5,
 
     [Parameter()]
-    [bool] $IncludeChannelInfo = $false
+    [bool] $IncludeChannelInfo = $false,
+
+    [Parameter()]
+    [bool] $DownloadThrottledVersions = $false
 )
 
 #create array for all languages including core, partial, and proofing
@@ -134,6 +139,7 @@ $allLanguages = @();
 $allLanguages += , $Languages
 $allLanguages += , $PartialLanguages
 $allLanguages += , $ProofingLanguages
+
 
 $BranchesOrChannels = @()
 
@@ -209,8 +215,14 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
                 $currentBranch = $_
                 $b++
 
+                $Version = ""
+                $PreviousVersion = ""
+                $NewestVersion = ""
+                $Throttle = ""
+                $VersionFile = ""
+
                 Write-Progress -id 1 -Activity "Downloading Channel" -status "Channel: $($currentBranch.ToString()) : $currentBitness" -percentComplete ($b / $BranchCount *100) 
-                Write-Host "`tDownloading Channel: $currentBranch"
+
                 #write log
                 $lineNum = Get-CurrentLineNumber    
                 $filName = Get-CurrentFileName 
@@ -232,6 +244,22 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
                 if(!(Test-Path "$TargetDirectory\$FolderName\Office\Data")){
                     New-Item -Path "$TargetDirectory\$FolderName\Office\Data" -ItemType directory -Force | Out-Null
                 }
+
+                if([String]::IsNullOrWhiteSpace($Version) -or [String]::IsNullOrWhiteSpace($Throttle)){
+                    $versionReturn = GetVersionBasedOnThrottle -Channel $currentBranch -Version $Version -currentVerXML $CurrentVersionXML
+                    if ($DownloadThrottledVersions) {
+                        $Version = $versionReturn.NewestVersion
+                    } else {
+                        if ([int]$versionReturn.Throttle -ge 1000) {
+                            $Version = $versionReturn.NewestVersion
+                        } else {
+                            $Version = $versionReturn.PreviousVersion
+                        }
+                    }
+                    $NewestVersion = $versionReturn.NewestVersion
+                    $PreviousVersion = $versionReturn.PreviousVesion
+                    $Throttle = $versionReturn.Throttle
+                }          
 
                 if([String]::IsNullOrWhiteSpace($Version)){
                     #get base .cab to get current version
@@ -257,12 +285,24 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
                         Invoke-WebRequest -Uri $url -ErrorAction Stop | Out-Null
                     } catch {
                       Write-Host "`t`tVersion Not Found: $currentVersion"
-                    #write log
-                    $lineNum = Get-CurrentLineNumber    
-                    $filName = Get-CurrentFileName 
-                    WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Version Not Found: $currentVersion"
+                        #write log
+                        $lineNum = Get-CurrentLineNumber    
+                        $filName = Get-CurrentFileName 
+                        WriteToLogFile -LNumber $lineNum -FName $fileName -ActionError "Version Not Found: $currentVersion"
                       return 
                     }
+                }
+
+                if ($currentBitness.Contains("32")) {
+                   $VersionFile = "$TargetDirectory\$FolderName\Office\Data\v32_$currentVersion.cab"
+                } else {
+                   $VersionFile = "$TargetDirectory\$FolderName\Office\Data\v64_$currentVersion.cab"
+                }
+                
+                if (([int]$Throttle -lt 1000) -and (!$DownloadThrottledVersions)) {
+                   Write-Host "`tDownloading Channel: $currentBranch - Version: $currentVersion (Using previous version instead of Throttled Version: $NewestVersion - Throttle: $Throttle)"
+                } else {
+                   Write-Host "`tDownloading Channel: $currentBranch - Version: $currentVersion"
                 }
 
                 if(!(Test-Path "$TargetDirectory\$FolderName\Office\Data\$currentVersion")){
@@ -270,7 +310,11 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
                 }
 				if(!(Test-Path "$TargetDirectory\$FolderName\Office\Data\$currentVersion\Experiment")){
                     New-Item -Path "$TargetDirectory\$FolderName\Office\Data\$currentVersion\Experiment" -ItemType directory -Force | Out-Null
-				}
+ 				}
+                if(!(Test-Path "$TargetDirectory\$FolderName\Office\Data\$currentVersion\Experiment")){
+                    New-Item -Path "$TargetDirectory\$FolderName\Office\Data\$currentVersion\Experiment" -ItemType directory -Force | Out-Null
+                }
+
                 $numberOfFiles = 0
                 $j = 0
 
@@ -289,21 +333,72 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
                 }
                 }
 
-
                 #basic files
                 $CurrentVersionXML.UpdateFiles.File | ? language -eq "0" | 
                 %{
                     $name = $_.name -replace "`%version`%", $currentVersion
                     $relativePath = $_.relativePath -replace "`%version`%", $currentVersion
                     $url = "$baseURL$relativePath$name"
+                    $fileType = $name.split('.')[$name.split['.'].Count - 1]
+                    $bitnessValue = $currentBitness.split('-')[0].ToString()
                     $destination = "$TargetDirectory\$FolderName$relativePath$name"
+                               
+                    for( $retryCount = 0; $retryCount -lt 3;  $retryCount++) {
+                        try {
+                            $hashFileName = $name.replace("dat","hash")
+                            $cabFile = "$TargetDirectory\$FolderName"+$relativePath.Replace('/','\')+"s"+$bitnessValue+"0.cab"
+                            $noneHashLocation = $CurrentVersionXML.UpdateFiles.File | ? name -eq $name |%{$_.hashLocation}  
 
-                    if (!(Test-Path -Path $destination) -or $OverWrite) {
-                       DownloadFile -url $url -targetFile $destination
+                            $downloadfile = $true
+                            $pathTest = Test-Path -Path $destination
+
+                            if ($OverWrite) {
+                              $pathTest = $false
+                            }
+
+                            if ($pathTest) {
+                               if($fileType -eq 'dat')
+                               {                                   
+                                   $hashMatch = Check-FileHash -FilePath $destination -CabFile $cabFile
+                                   if($hashMatch)
+                                   {
+                                      $downloadfile = $false
+                                   }           
+                               } else {
+                                 $downloadfile = $false
+                               }
+                            }
+
+                            if ($downloadfile) { 
+                               DownloadFile -url $url -targetFile $destination
+                     
+                               if($fileType -eq 'dat')
+                               {                                   
+                                   $hashMatch = Check-FileHash -FilePath $destination -CabFile $cabFile
+                                   if(!($hashMatch))
+                                   {
+                                      throw "$name file hash is not correct";
+                                   }           
+                               }
+                           }
+
+                           break;
+                        }
+                        catch{
+                            $OverWrite = $true 
+                            if ($retryCount -eq 2) {
+                                throw 
+                            }        
+                        }
                     }
 
                     $j = $j + 1
-                    Write-Progress -id 2 -ParentId 1 -Activity "Downloading Channel Files" -status "Channel: $($currentBranch.ToString())" -percentComplete ($j / $numberOfFiles *100)
+
+                    if (([int]$Throttle -lt 1000) -and (!$DownloadThrottledVersions)) {
+                       Write-Progress -id 2 -ParentId 1 -Activity "Downloading Channel Files" -status "Channel: $($currentBranch.ToString()) - Version: $currentVersion (Using previous version instead of Throttled Version: $NewestVersion - Throttle: $Throttle)" -percentComplete ($j / $numberOfFiles *100)
+                    } else {
+                       Write-Progress -id 2 -ParentId 1 -Activity "Downloading Channel Files" -status "Channel: $($currentBranch.ToString()) - Version: $currentVersion" -percentComplete ($j / $numberOfFiles *100)
+                    }
                 }
 
                 #language files
@@ -311,15 +406,62 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
                 %{
                     #LANGUAGE LOGIC HERE
                     $languageId  = [globalization.cultureinfo]::GetCultures("allCultures") | ? Name -eq $_ | %{$_.LCID}
+					$bitnessValue = $currentBitness.split('-')[0].ToString()
                     $CurrentVersionXML.UpdateFiles.File | ? language -eq $languageId | 
-                    %{
-                        $name = $_.name -replace "`%version`%", $currentVersion
-                        $relativePath = $_.relativePath -replace "`%version`%", $currentVersion
-                        $url = "$baseURL$relativePath$name"
-                        $destination = "$TargetDirectory\$FolderName$relativePath$name"
 
-                        if (!(Test-Path -Path $destination) -or $OverWrite) {
-                           DownloadFile -url $url -targetFile $destination
+                    %{
+                    
+                    $name = $_.name -replace "`%version`%", $currentVersion                    
+                    for( $retryCount = 0; $retryCount -lt 3;  $retryCount++) {
+                            try {
+                        
+                                $fileType = $name.split('.')[$name.split['.'].Count - 1]
+                                $relativePath = $_.relativePath -replace "`%version`%", $currentVersion
+                                $url = "$baseURL$relativePath$name"
+                                $destination = "$TargetDirectory\$FolderName"+$relativePath.replace('/','\')+"$name"
+
+                                $cabFile = "$TargetDirectory\$FolderName"+$relativePath.Replace('/','\')+"s"+$bitnessValue+$languageId+".cab"
+                     
+                                $downloadfile = $true
+                                $pathTest = Test-Path -Path $destination
+
+                                if ($OverWrite) {
+                                  $pathTest = $false
+                                }
+
+                                if ($pathTest) {
+                                   if($fileType -eq 'dat')
+                                   {                                   
+                                       $hashMatch = Check-FileHash -FilePath $destination -CabFile $cabFile
+                                       if($hashMatch)
+                                       {
+                                          $downloadfile = $false
+                                       }           
+                                   } else {
+                                     $downloadfile = $false
+                                   }
+                                }
+
+                                if ($downloadfile) {
+                                   DownloadFile -url $url -targetFile $destination
+
+                                   if($fileType -eq 'dat')
+                                   {                                   
+                                       $hashMatch = Check-FileHash -FilePath $destination -CabFile $cabFile
+                                       if(!($hashMatch))
+                                       {
+                                          throw "$name file hash is not correct"
+                                       }           
+                                   }
+                                }
+                                    
+                                break;
+                            } catch {
+                                $OverWrite = $true 
+                                if ($retryCount -eq 2) {
+                                   throw 
+                                }
+                            }
                         }
 
                         $j = $j + 1
@@ -327,7 +469,16 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
                     }
                 }
 
+                #Copy Version file and overwrite the v32.cab or v64.cab file
+                if (Test-Path -Path $VersionFile) {
+                   $parentPath = Split-Path -parent $VersionFile
 
+                   if ($currentBitness.Contains("32")) {
+                     Copy-Item -Path $VersionFile -Destination "v32.cab" -Force | Out-Null
+                   } else {
+                     Copy-Item -Path $VersionFile -Destination "v64.cab" -Force | Out-Null
+                   }
+                }
             }
 
         }
@@ -335,12 +486,12 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
     }
     catch 
     {
-        $fileName = $_.InvocationInfo.ScriptName.Substring($_.InvocationInfo.ScriptName.LastIndexOf("\")+1)
-        WriteToLogFile -LNumber $_.InvocationInfo.ScriptLineNumber -FName $fileName -ActionError $_
         #if download fails, displays error, continues loop
         $errorMessage = $computer + ": " + $_
         Write-Host $errorMessage -ForegroundColor White -BackgroundColor Red
         $downloadSuccess = $FALSE;
+        $fileName = $_.InvocationInfo.ScriptName.Substring($_.InvocationInfo.ScriptName.LastIndexOf("\")+1)
+        WriteToLogFile -LNumber $_.InvocationInfo.ScriptLineNumber -FName $fileName -ActionError $_
     }
 
     if($downloadSuccess){#if download succeeds, breaks out of loop
@@ -349,8 +500,140 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
 
 }#end of for loop
 
+Write-Host
 PurgeOlderVersions $TargetDirectory $NumVersionsToKeep $BranchesOrChannels
 
+}
+
+function Get-OfficeProPlusChannelInfo {
+<#
+.SYNOPSIS
+Downloads each Office ProPlus Channel with installation files
+.DESCRIPTION
+This script will display the latest version from each Channel with the throttle value of the latest version and the previous version from the latest
+.PARAMETER Channels
+An array of the Channels you wish to display information
+.Example
+Get-OfficeProPlusChannelInfo -Channels Current
+This will only display the information for the Current Channel
+.Link
+https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
+#>
+
+Param(
+    [Parameter()]
+    [OfficeChannel[]] $Channels = (0, 1, 2, 3)
+)
+
+begin {
+    $defaultDisplaySet = 'Channel', 'LatestVersion', 'Throttle', 'PreviousVersion'
+
+    $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet(‘DefaultDisplayPropertySet’,[string[]]$defaultDisplaySet)
+    $PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultDisplayPropertySet)
+}
+
+Process {
+    $results = new-object PSObject[] 0;
+
+    $BranchesOrChannels = $Channels
+      
+    try{
+        $XMLFilePath = "$env:TEMP/ofl.cab"
+        $XMLDownloadURL = "http://officecdn.microsoft.com/pr/wsus/ofl.cab"
+
+        DownloadFile -url $XMLDownloadURL -targetFile $XMLFilePath
+
+        if ($IncludeChannelInfo) {
+            Copy-Item -Path $XMLFilePath -Destination "$TargetDirectory\ofl.cab"
+        }
+
+        $Bitness = [Bitness]::v32
+
+        if($Bitness -eq [Bitness]::Both -or $Bitness -eq [Bitness]::v32){
+            $32XMLFileName = "o365client_32bit.xml"
+            expand $XMLFilePath $env:TEMP -f:$32XMLFileName | Out-Null
+            $32XMLFilePath = $env:TEMP + "\o365client_32bit.xml"
+            [xml]$32XML = Get-Content $32XMLFilePath
+            $xmlArray = ($32XML)
+        }
+
+        if($Bitness -eq [Bitness]::Both -or $Bitness -eq [Bitness]::v64){
+            $64XMLFileName = "o365client_64bit.xml"
+            expand $XMLFilePath $env:TEMP -f:$64XMLFileName | Out-Null
+            $64XMLFilePath = $env:TEMP + "\o365client_64bit.xml"
+            [xml]$64XML = Get-Content $64XMLFilePath
+            if($xmlArray -ne $null){
+                $xmlArray = ($32XML,$64XML)
+                $numberOfFiles = $numberOfFiles * 2
+            }else{
+                $xmlArray = ($64XML)
+            }
+        }
+
+        $xmlArray | %{
+            $CurrentVersionXML = $_
+    
+            $currentBitness = "32-Bit"
+            if ($CurrentVersionXML.OuterXml.Contains("Architecture: 64 Bit")) {
+                $currentBitness = "64-Bit"
+            }
+
+            #loop for each branch
+            $BranchesOrChannels | %{
+                $currentBranch = $_
+
+                $Version = ""
+                $PreviousVersion = ""
+                $NewestVersion = ""
+                $Throttle = ""
+                $VersionFile = ""
+
+                $FolderName = $($_.ToString())
+       
+                $baseURL = $CurrentVersionXML.UpdateFiles.baseURL | ? branch -eq $_.ToString() | %{$_.URL};
+
+                $versionReturn = GetVersionBasedOnThrottle -Channel $currentBranch -Version $Version -currentVerXML $CurrentVersionXML
+                if ($DownloadThrottledVersions) {
+                        $Version = $versionReturn.NewestVersion
+                } else {
+                    if ([int]$versionReturn.Throttle -ge 1000) {
+                        $Version = $versionReturn.NewestVersion
+                    } else {
+                        $Version = $versionReturn.PreviousVersion
+                    }
+                }
+                $NewestVersion = $versionReturn.NewestVersion
+                $PreviousVersion = $versionReturn.PreviousVersion
+                $Throttle = $versionReturn.Throttle       
+
+                $TargetDirectory = $env:TEMP
+                $destFolderPath = "$TargetDirectory\$FolderName\Office\Data"
+                [system.io.directory]::CreateDirectory($destFolderPath) | Out-Null
+
+                $object = New-Object PSObject -Property @{Channel = $currentBranch; 
+                                                          LatestVersion = $NewestVersion; 
+                                                          Throttle = $Throttle;
+                                                          PreviousVersion = $PreviousVersion }
+                $object | Add-Member MemberSet PSStandardMembers $PSStandardMembers
+                $results += $object
+            }
+
+        }
+
+    }
+    catch 
+    {
+        $errorMessage = $computer + ": " + $_
+        Write-Host $errorMessage -ForegroundColor White -BackgroundColor Red
+    }
+
+    if($downloadSuccess){
+        #if download succeeds, breaks out of loop
+        break
+    }
+
+    return $results
+}
 }
 
 function DownloadFile($url, $targetFile) {
@@ -359,12 +642,12 @@ function DownloadFile($url, $targetFile) {
    try {
        $uri = New-Object "System.Uri" "$url"
        $request = [System.Net.HttpWebRequest]::Create($uri)
-       $request.set_Timeout(3000) #15 second timeout
+       $request.set_Timeout(15000) #15 second timeout
 
        $response = $request.GetResponse()
        $totalLength = [System.Math]::Floor($response.get_ContentLength()/1024)
        $responseStream = $response.GetResponseStream()
-       $targetStream = New-Object -TypeName System.IO.FileStream -ArgumentList $targetFile, Create
+       $targetStream = New-Object -TypeName System.IO.FileStream -ArgumentList $targetFile.replace('/','\'), Create
        $buffer = new-object byte[] 8192KB
        $count = $responseStream.Read($buffer,0,$buffer.length)
        $downloadedBytes = $count
@@ -385,8 +668,6 @@ function DownloadFile($url, $targetFile) {
        $responseStream.Dispose()
        break;
    } catch {
-    $fileName = $_.InvocationInfo.ScriptName.Substring($_.InvocationInfo.ScriptName.LastIndexOf("\")+1)
-    WriteToLogFile -LNumber $_.InvocationInfo.ScriptLineNumber -FName $fileName -ActionError $_
      $strError = $_.Message
      if ($t -ge 9) {
         throw
@@ -394,6 +675,85 @@ function DownloadFile($url, $targetFile) {
    }
    Start-Sleep -Milliseconds 500
   }
+}
+
+function GetVersionBasedOnThrottle {
+    Param(
+       [Parameter()]
+       [string] $Channel,
+
+       [Parameter()]
+       [string] $Version,
+
+       [Parameter()]
+       [xml]$currentVerXML
+    )
+
+    begin {
+        $defaultDisplaySet = 'Throttle','NewestVersion', 'PreviousVersion'
+
+        $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet(‘DefaultDisplayPropertySet’,[string[]]$defaultDisplaySet)
+        $PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultDisplayPropertySet)
+    }
+
+    Process {
+        $results = new-object PSObject[] 0;
+
+        $versionToReturn
+        $checkChannel = $Channel
+        if($checkChannel -like "FirstReleaseCurrent"){$checkChannel = "InsidersSlow"}
+
+        $historyOfVersionsLink = "http://officecdn.microsoft.com/pr/wsus/releasehistory.cab"
+
+        $destination2 = "$env:TEMP\ReleaseHistory.cab"
+
+        DownloadFile -url $historyOfVersionsLink -targetFile $destination2 | Out-Null
+    
+        expand $destination2 "$env:TEMP\ReleaseHistory.xml" -f:"ReleaseHistory.xml" | Out-Null
+    
+        $baseCabFileName2 = "$env:Temp\ReleaseHistory.xml"
+        [xml]$vdxml = Get-Content $baseCabFileName2
+
+        $UpdateChannels = $vdxml.ReleaseHistory.UpdateChannel;
+        $updates = $UpdateChannels | Where {$_.Name -like $checkChannel}
+
+        #foreach($update in $updates.Update){
+        #
+
+            #Write-Host $update.LegacyVersion $update.Latest
+                #get base .cab to get current version
+                $baseCabFile = $CurrentVersionXML.UpdateFiles.File | ? rename -ne $null
+                $url = "$baseURL$($baseCabFile.relativePath)$($baseCabFile.rename)"
+
+                if (!($TargetDirectory)) {
+                   $TargetDirectory = $env:TEMP
+                }
+
+                $destFolderPath = "$TargetDirectory\$FolderName\Office\Data"
+                [system.io.directory]::CreateDirectory($destFolderPath) | Out-Null
+
+                $destination = "$destFolderPath\$($baseCabFile.rename)"
+
+                DownloadFile -url $url -targetFile $destination | Out-Null
+
+                expand $destination $env:TEMP -f:"VersionDescriptor.xml" | Out-Null
+                $baseCabFileName = $env:TEMP + "\VersionDescriptor.xml"
+                [xml]$vdxml = Get-Content $baseCabFileName
+                $throttle = $vdxml.Version.Throttle;
+
+                Remove-Item -Path $baseCabFileName | Out-Null
+
+           $object = New-Object PSObject -Property @{Throttle = $throttle.Value; 
+                                                     NewestVersion = $updates.Update[0].LegacyVersion ;
+                                                     PreviousVersion = $updates.Update[1].LegacyVersion ;
+                                                    }
+           $object | Add-Member MemberSet PSStandardMembers $PSStandardMembers
+           $results += $object
+    
+        Remove-Item -Path $baseCabFileName2 | Out-Null
+    
+        return $results
+    }
 }
 
 function PurgeOlderVersions([string]$targetDirectory, [int]$numVersionsToKeep, [array]$channels){
@@ -423,6 +783,10 @@ function PurgeOlderVersions([string]$targetDirectory, [int]$numVersionsToKeep, [
 
         if (Test-Path -Path $directoryPath) {
             Write-Host "`tChannel: $channelName2"
+            #write log
+            $lineNum = Get-CurrentLineNumber    
+            $filName = Get-CurrentFileName 
+            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Channel: $channelName2"
              [bool]$versionsToRemove = $false
 
             $files = Get-ChildItem $directoryPath  
@@ -582,14 +946,50 @@ function Get-CurrentFunctionName {
     (Get-Variable MyInvocation -Scope 1).Value.MyCommand.Name;
 }
 
+function Check-FileHash {
+    Param(
+       [Parameter()]
+       [string] $FilePath,
+
+       [Parameter()]
+       [string] $CabFile
+    )
+    Process {          
+         
+        $FileName = Split-Path -Path $FilePath -Leaf -Resolve
+        $hashFileName = $FileName.replace("dat","hash")
+
+        Write-Progress -id 3 -ParentId 2 -activity "Checking file hash: $FileName"
+
+        $folderName = [guid]::NewGuid()
+        $targetDir = "$env:Temp\$folderName"
+        [system.io.directory]::CreateDirectory($targetDir) | Out-Null
+                  
+        expand $CabFile -f:* $targetDir\ | Out-Null
+                                   
+        $fileHash = Get-FileHash $FilePath.replace('/','\')
+        $providedHash = Get-Content $targetDir\$hashFileName
+
+        if($fileHash.hash -ne $providedHash)
+        {
+           Write-Progress -id 3 -ParentId 2 -activity "File hashes do not match: $FileName"
+           return $false
+        }
+        else{
+           Write-Progress -id 3 -ParentId 2 -activity "File hash check successful: $FileName"
+           return $true
+        }           
+    }
+}
+
 Function WriteToLogFile() {
     param( 
-        [Parameter(Mandatory=$true)]
-        [string]$LNumber,
-        [Parameter(Mandatory=$true)]
-        [string]$FName,
-        [Parameter(Mandatory=$true)]
-        [string]$ActionError
+      [Parameter(Mandatory=$true)]
+      [string]$LNumber,
+      [Parameter(Mandatory=$true)]
+      [string]$FName,
+      [Parameter(Mandatory=$true)]
+      [string]$ActionError
     )
     try{
         $headerString = "Time".PadRight(30, ' ') + "Line Number".PadRight(15,' ') + "FileName".PadRight(60,' ') + "Action"
@@ -597,14 +997,16 @@ Function WriteToLogFile() {
 
         #check if file exists, create if it doesn't
         $getCurrentDatePath = "C:\Windows\Temp\" + (Get-Date -Format u).Substring(0,10)+"OfficeAutoScriptLog.txt"
-        if(Test-Path $getCurrentDatePath){#if exists, append  
-            Add-Content $getCurrentDatePath $stringToWrite
+        if(Test-Path $getCurrentDatePath){#if exists, append
+             Add-Content $getCurrentDatePath $stringToWrite
         }
         else{#if not exists, create new
-            Add-Content $getCurrentDatePath $headerString
-            Add-Content $getCurrentDatePath $stringToWrite
+             Add-Content $getCurrentDatePath $headerString
+             Add-Content $getCurrentDatePath $stringToWrite
         }
     } catch [Exception]{
         Write-Host $_
+        $fileName = $_.InvocationInfo.ScriptName.Substring($_.InvocationInfo.ScriptName.LastIndexOf("\")+1)
+        WriteToLogFile -LNumber $_.InvocationInfo.ScriptLineNumber -FName $fileName -ActionError $_
     }
 }

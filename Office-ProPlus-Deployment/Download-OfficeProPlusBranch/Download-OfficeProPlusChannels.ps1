@@ -259,7 +259,7 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
                     $NewestVersion = $versionReturn.NewestVersion
                     $PreviousVersion = $versionReturn.PreviousVesion
                     $Throttle = $versionReturn.Throttle
-                }             
+                }          
 
                 if([String]::IsNullOrWhiteSpace($Version)){
                     #get base .cab to get current version
@@ -305,7 +305,6 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
                    Write-Host "`tDownloading Channel: $currentBranch - Version: $currentVersion"
                 }
 
-
                 if(!(Test-Path "$TargetDirectory\$FolderName\Office\Data\$currentVersion")){
                     New-Item -Path "$TargetDirectory\$FolderName\Office\Data\$currentVersion" -ItemType directory -Force | Out-Null
                 }
@@ -333,7 +332,6 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
                    $numberOfFiles ++
                 }
                 }
-
 
                 #basic files
                 $CurrentVersionXML.UpdateFiles.File | ? language -eq "0" | 
