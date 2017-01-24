@@ -7,7 +7,7 @@ param(
 [bool]$Remove2016Installs = $false,
 
 [Parameter(ValueFromPipelineByPropertyName=$true)]
-[bool]$Force = $true,
+[bool]$Force = $false,
 
 [Parameter(ValueFromPipelineByPropertyName=$true)]
 [bool]$KeepUserSettings = $true,
@@ -16,28 +16,484 @@ param(
 [bool]$KeepLync = $false,
 
 [Parameter(ValueFromPipelineByPropertyName=$true)]
-[bool]$NoReboot = $false
+[bool]$NoReboot = $false,
+
+[Parameter()]
+[ValidateSet("AllOfficeProducts","MainOfficeProduct","Visio","Project")]
+[string[]]$ProductsToRemove
 )
 
-Function IsDotSourced() {
+Function Remove-PreviousOfficeInstalls{
   [CmdletBinding(SupportsShouldProcess=$true)]
   param(
     [Parameter(ValueFromPipelineByPropertyName=$true)]
-    [string]$InvocationLine = ""
+    [bool]$RemoveClickToRunVersions = $true,
+
+    [Parameter(ValueFromPipelineByPropertyName=$true)]
+    [bool]$Remove2016Installs = $false,
+
+    [Parameter(ValueFromPipelineByPropertyName=$true)]
+    [bool]$Force = $false,
+
+    [Parameter(ValueFromPipelineByPropertyName=$true)]
+    [bool]$KeepUserSettings = $true,
+
+    [Parameter(ValueFromPipelineByPropertyName=$true)]
+    [bool]$KeepLync = $false,
+
+    [Parameter(ValueFromPipelineByPropertyName=$true)]
+    [bool]$NoReboot = $false,
+
+    [Parameter(ValueFromPipelineByPropertyName=$true)]
+    [bool]$Quiet = $true,
+
+    [Parameter(ValueFromPipelineByPropertyName=$true)]
+    [ValidateSet("AllOfficeProducts","MainOfficeProduct","Visio","Project")]
+    [string[]]$ProductsToRemove
   )
-  $cmdLine = $InvocationLine.Trim()
-  Do {
-    $cmdLine = $cmdLine.Replace(" ", "")
-  } while($cmdLine.Contains(" "))
 
-  $dotSourced = $false
-  if ($cmdLine -match '^\.\\') {
-     $dotSourced = $false
-  } else {
-     $dotSourced = ($cmdLine -match '^\.')
+  Process {
+    $c2rVBS = "OffScrubc2r.vbs"
+    $03VBS = "OffScrub03.vbs"
+    $07VBS = "OffScrub07.vbs"
+    $10VBS = "OffScrub10.vbs"
+    $15MSIVBS = "OffScrub_O15msi.vbs"
+    $16MSIVBS = "OffScrub_O16msi.vbs"
+
+    $argList = ""
+    $argListProducts = @()
+
+    if(!$ProductsToRemove){
+        $ProductsToRemove = 'AllOfficeProducts'
+    }
+    
+    if($ProductsToRemove -eq 'AllOfficeProducts'){
+        $argListProducts += "CLIENTALL"
+    } else {       
+        foreach($product in $ProductsToRemove){
+            switch($product){
+                "MainOfficeProduct"{
+                    $MainOfficeProduct = GetProductName -ProductName MainOfficeProduct
+                    $argListProducts += $MainOfficeProduct.Name
+                }
+                "Visio" {
+                    $VisioProduct = GetProductName -ProductName Visio
+                    $argListProducts += $VisioProduct.Name
+                }
+                "Project" {
+                    $ProjectProduct = GetProductName -ProductName Project
+                    $argListProducts += $ProjectProduct.Name
+                }
+            }
+        }
+    }
+
+    if($Quiet){
+        $argList += " /QUIET"
+    }
+       
+    if ($Force) {
+        $argList += " /FORCE"
+    }
+
+    if ($KeepUserSettings) {
+       $argList += " /KEEPUSERSETTINGS"
+    } else {
+       $argList += " /DELETEUSERSETTINGS"
+    }
+
+    if ($KeepLync) {
+       $argList += " /KEEPLYNC"
+    } else {
+       $argList += " /REMOVELYNC"
+    }
+
+    if ($NoReboot) {
+        $argList += " /NOREBOOT"
+    }
+
+    $scriptPath = GetScriptRoot
+
+    Write-Host "Detecting Office installs..."
+
+    $officeVersions = Get-OfficeVersion -ShowAllInstalledProducts | select *
+    $ActionFiles = @()
+    
+    $removeOffice = $true
+    if (!( $officeVersions)) {
+       Write-Host "Microsoft Office is not installed"
+       $removeOffice = $false
+    }
+
+    if ($removeOffice) {
+        [bool]$office03Removed = $false
+        [bool]$office07Removed = $false
+        [bool]$office10Removed = $false
+        [bool]$office15Removed = $false
+        [bool]$office16Removed = $false
+        [bool]$officeC2RRemoved = $false
+
+        [bool]$c2r2013Installed = $false
+        [bool]$c2r2016Installed = $false
+
+        foreach ($officeVersion in $officeVersions) {
+           if($officeVersion.ClicktoRun.ToLower() -eq "true"){
+              if ($officeVersion.Version -like '15.*') {
+                  $c2r2013Installed = $true
+              }
+              if ($officeVersion.Version -like '16.*') {
+                  $c2r2016Installed = $true
+              }
+           }
+        }
+
+        foreach ($officeVersion in $officeVersions) {
+            if($officeVersion.ClicktoRun.ToLower() -eq "true"){
+              $removeC2R = $false
+
+              if (!($officeC2RRemoved)) {
+                  if ($RemoveClickToRunVersions -and (!($c2r2016Installed))) {
+                     $removeC2R = $true
+                  }
+                  if ($Remove2016Installs -and $RemoveClickToRunVersions) {
+                     $removeC2R = $true
+                  }
+              }
+
+              if ($removeC2R) {
+                  Write-Host "`tRemoving Office Click-To-Run..."
+                  $ActionFile = "$scriptPath\$c2rVBS"
+                  $cmdLine = """$ActionFile"" $argList"
+                 
+                  if (Test-Path -Path $ActionFile) {
+                    $cmd = "cmd /c cscript //Nologo $cmdLine"
+                    Invoke-Expression $cmd
+                    $officeC2RRemoved = $true
+                    $c2r2013Installed = $false
+                  } else {
+                    throw "Required file missing: $ActionFile"
+                  }
+                  Write-Host ""
+              }
+
+            }
+        }
+
+        foreach ($officeVersion in $officeVersions) {
+            if($officeVersion.ClicktoRun.ToLower() -ne "true"){
+                #Set script file based on office version, if no office detected continue to next computer skipping this one.
+                switch -wildcard ($officeVersion.Version)
+                {
+                    "11.*"
+                    {
+                        if (!($office03Removed)) {
+                            $ActionFile = "$scriptPath\$03VBS"
+                            if (Test-Path -Path $ActionFile) {
+                                if($ProductsToRemove -ne 'AllOfficeProducts'){
+                                    foreach($product in $ProductsToRemove){
+                                        switch($product){
+                                            "MainOfficeProduct" {
+                                                $ProductName = (Get-OfficeVersion).DisplayName | select -Unique
+                                                if($ProductName -eq $MainOfficeProduct.DisplayName -and $MainOfficeProduct.DisplayName -match '2003'){
+                                                    Write-Host "`n`tRemoving "$MainOfficeProduct.DisplayName"..."
+                                                    $MainOfficeProductName = $MainOfficeProduct.Name
+                                                    $cmdLine = """$ActionFile"" $MainOfficeProductName $argList"
+                                                    $cmd = "cmd /c cscript //Nologo $cmdLine"
+                                                    Invoke-Expression $cmd
+                                                }
+                                            }
+                                            "Visio" {
+                                                $ProductName = Get-OfficeVersion -ShowAllInstalledProducts | ? {$_.DisplayName -match $product}
+                                                foreach($prod in $ProductName){
+                                                    if($VisioProduct.DisplayName -eq $prod.DisplayName -and $prod.DisplayName -match '2003'){
+                                                        Write-Host "`n`tRemoving "$VisioProduct.DisplayName"..."
+                                                        $VisioProductName = $VisioProduct.Name
+                                                        $cmdLine = """$ActionFile"" $VisioProductName $argList"
+                                                        $cmd = "cmd /c cscript //Nologo $cmdLine"
+                                                        Invoke-Expression $cmd
+                                                    }
+                                                }
+                                            }
+                                            "Project" {
+                                                $ProductName = Get-OfficeVersion -ShowAllInstalledProducts | ? {$_.DisplayName -match $product}
+                                                foreach($prod in $ProductName){
+                                                    if($ProjectProduct.DisplayName -eq $prod.DisplayName -and $prod.DisplayName -match '2003'){
+                                                        Write-Host "`n`tRemoving "$ProjectProduct.DisplayName"..."
+                                                        $ProjectProductName = $ProjectProduct.Name
+                                                        $cmdLine = """$ActionFile"" $ProjectProductName $argList"
+                                                        $cmd = "cmd /c cscript //Nologo $cmdLine"
+                                                        Invoke-Expression $cmd
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                    Write-Host "`n"
+                                    $office03Removed = $true
+                                } else {
+                                    Write-Host "`n`tRemoving all Office 2003 products..."
+                                    $cmdLine = """$ActionFile"" CLIENTALL $argList"
+                                    $cmd = "cmd /c cscript //Nologo $cmdLine"
+                                    Invoke-Expression $cmd
+                                    $office03Removed = $true
+                                }
+                            } else {
+                               throw "Required file missing: $ActionFile"
+                            }
+                        }
+                    }
+                    "12.*"
+                    {
+                        if (!($office07Removed)) {
+                            $ActionFile = "$scriptPath\$07VBS"
+                            if (Test-Path -Path $ActionFile) {
+                                if($ProductsToRemove -ne 'AllOfficeProducts'){
+                                    foreach($product in $ProductsToRemove){
+                                        switch($product){
+                                            "MainOfficeProduct" {
+                                                $ProductName = (Get-OfficeVersion).DisplayName | select -Unique
+                                                if($ProductName -eq $MainOfficeProduct.DisplayName -and $MainOfficeProduct.DisplayName -match '2007'){
+                                                    Write-Host "`n`tRemoving "$MainOfficeProduct.DisplayName"..."
+                                                    $MainOfficeProductName = $MainOfficeProduct.Name
+                                                    $cmdLine = """$ActionFile"" $MainOfficeProductName $argList"
+                                                    $cmd = "cmd /c cscript //Nologo $cmdLine"
+                                                    Invoke-Expression $cmd
+                                                }
+                                            }
+                                            "Visio" {
+                                                $ProductName = Get-OfficeVersion -ShowAllInstalledProducts | ? {$_.DisplayName -match $product}
+                                                foreach($prod in $ProductName){
+                                                    if($VisioProduct.DisplayName -eq $prod.DisplayName -and $prod.DisplayName -match '2007'){
+                                                        Write-Host "`n`tRemoving "$VisioProduct.DisplayName"..."
+                                                        $VisioProductName = $VisioProduct.Name
+                                                        $cmdLine = """$ActionFile"" $VisioProductName $argList"
+                                                        $cmd = "cmd /c cscript //Nologo $cmdLine"
+                                                        Invoke-Expression $cmd
+                                                    }
+                                                }       
+                                            }
+                                            "Project" {
+                                                $ProductName = Get-OfficeVersion -ShowAllInstalledProducts | ? {$_.DisplayName -match $product}
+                                                foreach($prod in $ProductName){
+                                                    if($ProjectProduct.DisplayName -eq $prod.DisplayName -and $prod.DisplayName -match '2007'){
+                                                        Write-Host "`n`tRemoving "$ProjectProduct.DisplayName"..."
+                                                        $ProjectProductName = $ProjectProduct.Name
+                                                        $cmdLine = """$ActionFile"" $ProjectProductName $argList"
+                                                        $cmd = "cmd /c cscript //Nologo $cmdLine"
+                                                        Invoke-Expression $cmd
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                    Write-Host "`n"
+                                    $office07Removed = $true
+                                } else {
+                                    Write-Host "`n`tRemoving all Office 2007 products..."
+                                    $cmdLine = """$ActionFile"" CLIENTALL $argList"
+                                    $cmd = "cmd /c cscript //Nologo $cmdLine"
+                                    Invoke-Expression $cmd
+                                    $office07Removed = $true
+                                }
+                            } else {
+                               throw "Required file missing: $ActionFile"
+                            }                      
+                        } 
+                    }
+                    "14.*"
+                    {
+                        if (!($office10Removed)) {
+                            $ActionFile = "$scriptPath\$10VBS"
+                            if (Test-Path -Path $ActionFile) {
+                                if($ProductsToRemove -ne 'AllOfficeProducts'){
+                                    foreach($product in $ProductsToRemove){
+                                        switch($product){
+                                            "MainOfficeProduct" {
+                                                $ProductName = (Get-OfficeVersion).DisplayName | select -Unique
+                                                if($ProductName -eq $MainOfficeProduct.DisplayName -and $MainOfficeProduct.DisplayName -match '2010'){
+                                                    Write-Host "`n`tRemoving "$MainOfficeProduct.DisplayName"..."
+                                                    $MainOfficeProductName = $MainOfficeProduct.Name
+                                                    $cmdLine = """$ActionFile"" $MainOfficeProductName $argList"
+                                                    $cmd = "cmd /c cscript //Nologo $cmdLine"
+                                                    Invoke-Expression $cmd
+                                                }
+                                            }
+                                            "Visio" {
+                                                $ProductName = Get-OfficeVersion -ShowAllInstalledProducts | ? {$_.DisplayName -match $product}
+                                                foreach($prod in $ProductName){
+                                                    if($VisioProduct.DisplayName -eq $prod.DisplayName -and $prod.DisplayName -match '2010'){
+                                                        Write-Host "`n`tRemoving "$VisioProduct.DisplayName"..."
+                                                        $VisioProductName = $VisioProduct.Name
+                                                        $cmdLine = """$ActionFile"" $VisioProductName $argList"
+                                                        $cmd = "cmd /c cscript //Nologo $cmdLine"
+                                                        Invoke-Expression $cmd
+                                                    }
+                                                }
+                                            }
+                                            "Project" {
+                                                $ProductName = Get-OfficeVersion -ShowAllInstalledProducts | ? {$_.DisplayName -match $product}
+                                                foreach($prod in $ProductName){
+                                                    if($ProjectProduct.DisplayName -eq $prod.DisplayName -and $prod.DisplayName -match '2010'){
+                                                        Write-Host "`n`tRemoving "$ProjectProduct.DisplayName"..."
+                                                        $ProjectProductName = $ProjectProduct.Name
+                                                        $cmdLine = """$ActionFile"" $ProjectProductName $argList"
+                                                        $cmd = "cmd /c cscript //Nologo $cmdLine"
+                                                        Invoke-Expression $cmd
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                    Write-Host "`n"
+                                    $office10Removed = $true
+                                } else {
+                                    Write-Host "`n`tRemoving all Office 2010 products..."
+                                    $cmdLine = """$ActionFile"" CLIENTALL $argList"
+                                    $cmd = "cmd /c cscript //Nologo $cmdLine"
+                                    Invoke-Expression $cmd
+                                    $office10Removed = $true
+                                }
+                            } else {
+                               throw "Required file missing: $ActionFile"
+                            }                                                     
+                        }
+                    }
+                    "15.*"
+                    {
+                        if (!($office15Removed)) {
+                            if (!($c2r2013Installed)) {
+                                $ActionFile = "$scriptPath\$15MSIVBS"
+                                if (Test-Path -Path $ActionFile) {
+                                    if($ProductsToRemove -ne 'AllOfficeProducts'){
+                                        foreach($product in $ProductsToRemove){
+                                            switch($product){
+                                                "MainOfficeProduct" {
+                                                    $ProductName = (Get-OfficeVersion).DisplayName | select -Unique
+                                                    if($ProductName -eq $MainOfficeProduct.DisplayName -and $MainOfficeProduct.DisplayName -match '2013'){
+                                                        Write-Host "`n`tRemoving "$MainOfficeProduct.DisplayName"..."
+                                                        $MainOfficeProductName = $MainOfficeProduct.Name
+                                                        $cmdLine = """$ActionFile"" $MainOfficeProductName $argList"
+                                                        $cmd = "cmd /c cscript //Nologo $cmdLine"
+                                                        Invoke-Expression $cmd
+                                                    }
+                                                }
+                                                "Visio" {
+                                                    $ProductName = Get-OfficeVersion -ShowAllInstalledProducts | ? {$_.DisplayName -match $product}
+                                                    foreach($prod in $ProductName){
+                                                        if($VisioProduct.DisplayName -eq $prod.DisplayName -and $prod.DisplayName -match '2013'){
+                                                            Write-Host "`n`tRemoving "$VisioProduct.DisplayName"..."
+                                                            $VisioProductName = $VisioProduct.Name
+                                                            $cmdLine = """$ActionFile"" $VisioProductName $argList"
+                                                            $cmd = "cmd /c cscript //Nologo $cmdLine"
+                                                            Invoke-Expression $cmd
+                                                        }
+                                                    }
+                                                }
+                                                "Project" {
+                                                    $ProductName = Get-OfficeVersion -ShowAllInstalledProducts | ? {$_.DisplayName -match $product}
+                                                    foreach($prod in $ProductName){
+                                                        if($ProjectProduct.DisplayName -eq $prod.DisplayName -and $prod.DisplayName -match '2013'){
+                                                            Write-Host "`n`tRemoving "$ProjectProduct.DisplayName"..."
+                                                            $ProjectProductName = $ProjectProduct.Name
+                                                            $cmdLine = """$ActionFile"" $ProjectProductName $argList"
+                                                            $cmd = "cmd /c cscript //Nologo $cmdLine"
+                                                            Invoke-Expression $cmd
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        Write-Host "`n"
+                                        $office15Removed = $true
+                                    } else {
+                                        Write-Host "`n`tRemoving all Office 2013 products..."
+                                        $cmdLine = """$ActionFile"" CLIENTALL $argList"
+                                        $cmd = "cmd /c cscript //Nologo $cmdLine"
+                                        Invoke-Expression $cmd
+                                        $office15Removed = $true
+                                    }
+                                } else {
+                                   throw "Required file missing: $ActionFile"
+                                }             
+                            } else {
+                              throw "Office 2013 cannot be removed if 2013 Click-To-Run is installed. Use the -RemoveClickToRunVersions parameter to remove Click-To-Run installs."
+                            }
+                        }
+                    }
+                    "16.*"
+                    {
+                       if (!($office16Removed)) {
+                           if ($Remove2016Installs) {
+                                if (!($c2r2016Installed)) {
+                                    $ActionFile = "$scriptPath\$16MSIVBS"
+                                    if (Test-Path -Path $ActionFile) {
+                                        if($ProductsToRemove -ne 'AllOfficeProducts'){
+                                            foreach($product in $ProductsToRemove){
+                                                switch($product){
+                                                    "MainOfficeProduct" {
+                                                        $ProductName = (Get-OfficeVersion).DisplayName | select -Unique
+                                                        if($ProductName -eq $MainOfficeProduct.DisplayName -and $MainOfficeProduct.DisplayName -match '2016'){
+                                                            Write-Host "`n`tRemoving "$MainOfficeProduct.DisplayName"..."
+                                                            $MainOfficeProductName = $MainOfficeProduct.Name
+                                                            $cmdLine = """$ActionFile"" $MainOfficeProductName $argList"
+                                                            $cmd = "cmd /c cscript //Nologo $cmdLine"
+                                                            Invoke-Expression $cmd
+                                                        }
+                                                    }
+                                                    "Visio" {
+                                                        $ProductName = Get-OfficeVersion -ShowAllInstalledProducts | ? {$_.DisplayName -match $product}
+                                                        foreach($prod in $ProductName){
+                                                            if($VisioProduct.DisplayName -eq $prod.DisplayName -and $prod.DisplayName -match '2016'){
+                                                                Write-Host "`n`tRemoving "$VisioProduct.DisplayName"..."
+                                                                $VisioProductName = $VisioProduct.Name
+                                                                $cmdLine = """$ActionFile"" $VisioProductName $argList"
+                                                                $cmd = "cmd /c cscript //Nologo $cmdLine"
+                                                                Invoke-Expression $cmd
+                                                            }
+                                                        }
+                                                    }
+                                                    "Project" {
+                                                        $ProductName = Get-OfficeVersion -ShowAllInstalledProducts | ? {$_.DisplayName -match $product}
+                                                        foreach($prod in $ProductName){
+                                                            if($ProjectProduct.DisplayName -eq $prod.DisplayName -and $prod.DisplayName -match '2016'){
+                                                                Write-Host "`n`tRemoving "$ProjectProduct.DisplayName"..."
+                                                                $ProjectProductName = $ProjectProduct.Name
+                                                                $cmdLine = """$ActionFile"" $ProjectProductName $argList"
+                                                                $cmd = "cmd /c cscript //Nologo $cmdLine"
+                                                                Invoke-Expression $cmd
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            Write-Host "`n"
+                                            $office16Removed = $true
+                                        } else {
+                                            Write-Host "`n`tRemoving all Office 2010 products..."
+                                            $cmdLine = """$ActionFile"" CLIENTALL $argList"
+                                            $cmd = "cmd /c cscript //Nologo $cmdLine"
+                                            Invoke-Expression $cmd
+                                            $office16Removed = $true
+                                        }
+                                    } else {
+                                       throw "Required file missing: $ActionFile"
+                                    }
+                                } else {
+                                  throw "Office 2016 cannot be removed if 2016 Click-To-Run is installed. Use the -RemoveClickToRunVersions parameter to remove Click-To-Run installs."
+                                }
+                           }
+                       }
+                    }
+                    default 
+                    {
+                        continue
+                    }
+                }
+            }
+        }
+
+    }
   }
-
-  return $dotSourced
 }
 
 Function Get-OfficeVersion {
@@ -264,10 +720,12 @@ process {
            $officeProduct = $false
            foreach ($officeInstallPath in $PathList) {
              if ($officeInstallPath) {
+                try{
                 $installReg = "^" + $installPath.Replace('\', '\\')
                 $installReg = $installReg.Replace('(', '\(')
                 $installReg = $installReg.Replace(')', '\)')
                 if ($officeInstallPath -match $installReg) { $officeProduct = $true }
+                } catch {}
              }
            }
 
@@ -275,7 +733,11 @@ process {
            
            $name = $regProv.GetStringValue($HKLM, $path, "DisplayName").sValue          
 
-           if ($ConfigItemList.Contains($key.ToUpper()) -and $name.ToUpper().Contains("MICROSOFT OFFICE") -and $name.ToUpper() -notlike "*MUI*" -and $name.ToUpper() -notlike "*VISIO*" -and $name.ToUpper() -notlike "*PROJECT*") {
+           if ($ConfigItemList.Contains($key.ToUpper()) -and $name.ToUpper().Contains("MICROSOFT OFFICE") `
+                                                        -and $name.ToUpper() -notlike "*MUI*" `
+                                                        -and $name.ToUpper() -notlike "*VISIO*" `
+                                                        -and $name.ToUpper() -notlike "*PROJECT*" `
+                                                        -and $name.ToUpper() -notlike "*PROOFING*") {
               $primaryOfficeProduct = $true
            }
 
@@ -345,245 +807,6 @@ process {
 
 }
 
-Function Remove-PreviousOfficeInstalls{
-  [CmdletBinding(SupportsShouldProcess=$true)]
-  param(
-    [Parameter(ValueFromPipelineByPropertyName=$true)]
-    [bool]$RemoveClickToRunVersions = $true,
-
-    [Parameter(ValueFromPipelineByPropertyName=$true)]
-    [bool]$Remove2016Installs = $false,
-
-    [Parameter(ValueFromPipelineByPropertyName=$true)]
-    [bool]$Force = $true,
-
-    [Parameter(ValueFromPipelineByPropertyName=$true)]
-    [bool]$KeepUserSettings = $true,
-
-    [Parameter(ValueFromPipelineByPropertyName=$true)]
-    [bool]$KeepLync = $false,
-
-    [Parameter(ValueFromPipelineByPropertyName=$true)]
-    [bool]$NoReboot = $false,
-
-    [Parameter(ValueFromPipelineByPropertyName=$true)]
-    [bool]$Quiet = $true
-  )
-
-  Process {
-    $c2rVBS = "OffScrubc2r.vbs"
-    $03VBS = "OffScrub03.vbs"
-    $07VBS = "OffScrub07.vbs"
-    $10VBS = "OffScrub10.vbs"
-    $15MSIVBS = "OffScrub_O15msi.vbs"
-    $16MSIVBS = "OffScrub_O16msi.vbs"
-
-    if ($Quiet) {
-      $argList = "CLIENTALL /QUIET"
-    } else {
-      $argList = "CLIENTALL"
-    }
-    
-    if ($Force) {
-        $argList += " /FORCE"
-    }
-
-    if ($KeepUserSettings) {
-       $argList += " /KEEPUSERSETTINGS"
-    } else {
-       $argList += " /DELETEUSERSETTINGS"
-    }
-
-    if ($KeepLync) {
-       $argList += " /KEEPLYNC"
-    } else {
-       $argList += " /REMOVELYNC"
-    }
-
-    if ($NoReboot) {
-        $argList += " /NOREBOOT"
-    }
-
-    $scriptPath = GetScriptRoot
-
-    Write-Host "Detecting Office installs..."
-
-    $officeVersions = Get-OfficeVersion -ShowAllInstalledProducts | select *
-    $ActionFiles = @()
-    
-    $removeOffice = $true
-    if (!( $officeVersions)) {
-       Write-Host "Microsoft Office is not installed"
-       $removeOffice = $false
-    }
-
-    if ($removeOffice) {
-        [bool]$office03Removed = $false
-        [bool]$office07Removed = $false
-        [bool]$office10Removed = $false
-        [bool]$office15Removed = $false
-        [bool]$office16Removed = $false
-        [bool]$officeC2RRemoved = $false
-
-        [bool]$c2r2013Installed = $false
-        [bool]$c2r2016Installed = $false
-
-        foreach ($officeVersion in $officeVersions) {
-           if($officeVersion.ClicktoRun.ToLower() -eq "true"){
-              if ($officeVersion.Version -like '15.*') {
-                  $c2r2013Installed = $true
-              }
-              if ($officeVersion.Version -like '16.*') {
-                  $c2r2016Installed = $true
-              }
-           }
-        }
-
-        foreach ($officeVersion in $officeVersions) {
-            if($officeVersion.ClicktoRun.ToLower() -eq "true"){
-              $removeC2R = $false
-
-              if (!($officeC2RRemoved)) {
-                  if ($RemoveClickToRunVersions -and (!($c2r2016Installed))) {
-                     $removeC2R = $true
-                  }
-                  if ($Remove2016Installs -and $RemoveClickToRunVersions) {
-                     $removeC2R = $true
-                  }
-              }
-
-              if ($removeC2R) {
-                  Write-Host "`tRemoving Office Click-To-Run..."
-                  $ActionFile = "$scriptPath\$c2rVBS"
-                  $cmdLine = """$ActionFile"" $argList"
-                 
-                  if (Test-Path -Path $ActionFile) {
-                    $cmd = "cmd /c cscript //Nologo $cmdLine"
-                    Invoke-Expression $cmd
-                    $officeC2RRemoved = $true
-                    $c2r2013Installed = $false
-                  } else {
-                    throw "Required file missing: $ActionFile"
-                  }
-                  Write-Host ""
-              }
-
-            }
-        }
-
-        foreach ($officeVersion in $officeVersions) {
-            if($officeVersion.ClicktoRun.ToLower() -ne "true"){
-                #Set script file based on office version, if no office detected continue to next computer skipping this one.
-                switch -wildcard ($officeVersion.Version)
-                {
-                    "11.*"
-                    {
-                        if (!($office03Removed)) {
-                            Write-Host "`tRemoving Office 2003..."
-                            $ActionFile = "$scriptPath\$03VBS"
-                            $cmdLine = """$ActionFile"" $argList"
-                        
-                            if (Test-Path -Path $ActionFile) {
-                                $cmd = "cmd /c cscript //Nologo $cmdLine"
-                                Invoke-Expression $cmd
-                                $office03Removed = $true
-                            } else {
-                               throw "Required file missing: $ActionFile"
-                            }
-                            Write-Host ""
-                        }
-                    }
-                    "12.*"
-                    {
-                        if (!($office07Removed)) {
-                            Write-Host "`tRemoving Office 2007..."
-                            $ActionFile = "$scriptPath\$07VBS"
-                            $cmdLine = """$ActionFile"" $argList"
-                        
-                            if (Test-Path -Path $ActionFile) {
-                                $cmd = "cmd /c cscript //Nologo $cmdLine"
-                                Invoke-Expression $cmd
-                                $office07Removed = $true
-                            } else {
-                               throw "Required file missing: $ActionFile"
-                            }
-                            Write-Host ""
-                        }
-                    }
-                    "14.*"
-                    {
-                        if (!($office10Removed)) {
-                            Write-Host "`tRemoving Office 2010..."
-                            $ActionFile = "$scriptPath\$10VBS"
-                            $cmdLine = """$ActionFile"" $argList"
-                        
-                            if (Test-Path -Path $ActionFile) {
-                                $cmd = "cmd /c cscript //Nologo $cmdLine"
-                                Invoke-Expression $cmd
-                                $office10Removed = $true
-                            } else {
-                               throw "Required file missing: $ActionFile"
-                            }
-                            Write-Host ""
-                        }
-                    }
-                    "15.*"
-                    {
-                        if (!($office15Removed)) {
-                            if (!($c2r2013Installed)) {
-                                Write-Host "`tRemoving Office 2013..."
-                                $ActionFile = "$scriptPath\$15MSIVBS"
-                                $cmdLine = """$ActionFile"" $argList"
-                        
-                                if (Test-Path -Path $ActionFile) {
-                                   $cmd = "cmd /c cscript //Nologo $cmdLine"
-                                   Invoke-Expression $cmd 
-                                   $office15Removed = $true
-                                } else {
-                                   throw "Required file missing: $ActionFile"
-                                }
-                                Write-Host ""
-                            } else {
-                              throw "Office 2013 cannot be removed if 2013 Click-To-Run is installed. Use the -RemoveClickToRunVersions parameter to remove Click-To-Run installs."
-                            }
-                        }
-                    }
-                    "16.*"
-                    {
-                       if (!($office16Removed)) {
-                           if ($Remove2016Installs) {
-
-                                if (!($c2r2016Installed)) {
-                                      Write-Host "`tRemoving Office 2016..."
-                                      $ActionFile = "$scriptPath\$16MSIVBS"
-                                      $cmdLine = """$ActionFile"" $argList"
-                          
-                                      if (Test-Path -Path $ActionFile) {
-                                        $cmd = "cmd /c cscript //Nologo $cmdLine"
-                                        Invoke-Expression $cmd
-                                        $office16Removed = $true
-                                      } else {
-                                        throw "Required file missing: $ActionFile"
-                                      }
-                                      Write-Host ""
-                                } else {
-                                  throw "Office 2016 cannot be removed if 2016 Click-To-Run is installed. Use the -RemoveClickToRunVersions parameter to remove Click-To-Run installs."
-                                }
-
-                           }
-                       }
-                    }
-                    default 
-                    {
-                        continue
-                    }
-                }
-            }
-        }
-    }
-  }
-}
-
 Function GetScriptRoot() {
  process {
      [string]$scriptPath = "."
@@ -597,6 +820,83 @@ Function GetScriptRoot() {
 
      return $scriptPath
  }
+}
+
+function GetProductName {
+param(
+    [Parameter()]
+    [string]$ProductName
+)
+    if($ProductName -eq 'MainOfficeProduct'){
+        $ProductName = (Get-OfficeVersion).DisplayName | select -Unique
+    } 
+        
+    $HKLM = [UInt32] "0x80000002"
+    $HKCR = [UInt32] "0x80000000"
+ 
+    $installKeys = 'SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall',
+                   'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall'
+                   
+
+    $regProv = Get-WmiObject -list "StdRegProv" -namespace root\default -ComputerName $env:COMPUTERNAME
+
+    if($ProductName.ToLower() -match "visio" -or $ProductName.ToLower() -match "project"){
+        $ProductName = " " + $ProductName + " "
+    }
+
+    foreach ($regKey in $installKeys) {
+        $keyList = new-object System.Collections.ArrayList
+        $keys = $regProv.EnumKey($HKLM, $regKey)
+
+        foreach ($key in $keys.sNames) {
+            $path = Join-Path $regKey $key
+            $name = $regProv.GetStringValue($HKLM, $path, "DisplayName").sValue
+            $version = $regProv.GetStringValue($HKLM, $path, "DisplayVersion").sValue
+            
+            if($name){
+                if($name.ToLower() -match $ProductName.ToLower()){
+                    if($path -notmatch "{.{8}-.{4}-.{4}-.{4}-0000000FF1CE}"){
+                        if($key.Split(".")[1] -ne $null){
+                            $prodName = $key.Split(".")[1]
+                        } else {
+                            $prodName = $key
+                        }
+                        $prodVersion = $version.Split(".")[0]
+                        $DisplayName = $name
+                    }
+                }
+            }
+
+            $Result = New-Object -TypeName PSObject
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "DisplayName" -Value $DisplayName 
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "Name" -Value $prodName
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "Version" -Value $prodVersion
+        }
+    }
+
+    return $Result
+
+}
+
+Function IsDotSourced() {
+  [CmdletBinding(SupportsShouldProcess=$true)]
+  param(
+    [Parameter(ValueFromPipelineByPropertyName=$true)]
+    [string]$InvocationLine = ""
+  )
+  $cmdLine = $InvocationLine.Trim()
+  Do {
+    $cmdLine = $cmdLine.Replace(" ", "")
+  } while($cmdLine.Contains(" "))
+
+  $dotSourced = $false
+  if ($cmdLine -match '^\.\\') {
+     $dotSourced = $false
+  } else {
+     $dotSourced = ($cmdLine -match '^\.')
+  }
+
+  return $dotSourced
 }
 
 $dotSourced = IsDotSourced -InvocationLine $MyInvocation.Line
