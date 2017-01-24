@@ -6,7 +6,7 @@ For more information on Office ProPlus Branches go to https://technet.microsoft.
 
 ###Branch Management
 
-Office 365 ProPlus (2016) introduced the concept of Channels with allows for greater control over the update process.  Most companies will likely have a mix of Branches that they will use.  Managing updates sources for each branch can be administrative burden.  This script will allow you to easily download the latest build for each branch with a single operation.
+Office 365 ProPlus (2016) introduced the concept of Branches with allows for greater control over the update process.  Most companies will likely have a mix of Branches that they will use.  Managing updates sources for each branch can be administrative burden.  This script will allow you to easily download the latest build for each branch with a single operation.
 
 ###Example
 
