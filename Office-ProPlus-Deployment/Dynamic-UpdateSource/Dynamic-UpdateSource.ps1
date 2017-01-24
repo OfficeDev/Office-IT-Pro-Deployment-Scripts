@@ -1,4 +1,4 @@
-$enum3 = "
+ï»¿$enum3 = "
 using System;
 
 namespace Microsoft.Office
@@ -37,7 +37,6 @@ namespace Microsoft.Office
 try {
 Add-Type -TypeDefinition $enum4 -ErrorAction SilentlyContinue
 } catch {}
-
 
 Function Dynamic-UpdateSource {
 <#
@@ -140,7 +139,7 @@ Will Dynamically set the Update Source based a list Provided
      } else {
         if ($isInPipe) {
             $results = new-object PSObject[] 0;
-            $Result = New-Object –TypeName PSObject 
+            $Result = New-Object -TypeName PSObject 
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
             $Result
         } 
@@ -201,6 +200,10 @@ Function SetODTAdd{
 
         #Check for proper root element
         if($ConfigFile.Configuration -eq $null){
+            #write log
+            $lineNum = Get-CurrentLineNumber    
+            $filName = Get-CurrentFileName 
+            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "No configuration element"
             throw $NoConfigurationElement
         }
 
@@ -260,9 +263,13 @@ Function SetODTAdd{
 
             Write-Host
             Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+            #write log
+            $lineNum = Get-CurrentLineNumber    
+            $filName = Get-CurrentFileName 
+            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "The Office XML Configuration file has been saved to: $TargetFilePath"
         } else {
             $results = new-object PSObject[] 0;
-            $Result = New-Object –TypeName PSObject 
+            $Result = New-Object ï¿½TypeName PSObject 
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "SourcePath" -Value $SourcePath
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "Version" -Value $Version
@@ -284,9 +291,9 @@ Click-to-Run source. Environment variables can be used for network or local path
 SourcePath indicates the location to save the Click-to-Run installation source 
 when you run the Office Deployment Tool in download mode.
 SourcePath indicates the installation source path from which to install Office 
-when you run the Office Deployment Tool in configure mode. If you don’t specify 
+when you run the Office Deployment Tool in configure mode. If you don't specify 
 SourcePath in configure mode, Setup will look in the current folder for the Office 
-source files. If the Office source files aren’t found in the current folder, Setup 
+source files. If the Office source files aren't found in the current folder, Setup 
 will look on Office 365 for them.
 SourcePath specifies the path of the Click-to-Run Office source from which the 
 App-V package will be made when you run the Office Deployment Tool in packager mode.
@@ -367,6 +374,10 @@ Here is what the portion of configuration file looks like when modified by this 
 
         #Check for proper root element
         if($ConfigFile.Configuration -eq $null){
+            #write log
+            $lineNum = Get-CurrentLineNumber    
+            $filName = Get-CurrentFileName 
+            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "No configuration element"
             throw $NoConfigurationElement
         }
 
@@ -440,9 +451,13 @@ Here is what the portion of configuration file looks like when modified by this 
 
             Write-Host
             Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+            #write log
+            $lineNum = Get-CurrentLineNumber    
+            $filName = Get-CurrentFileName 
+            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "The Office XML Configuration file has been saved to: $TargetFilePath"
         } else {
             $results = new-object PSObject[] 0;
-            $Result = New-Object –TypeName PSObject 
+            $Result = New-Object ï¿½TypeName PSObject 
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "Enabled" -Value $Enabled
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "UpdatePath" -Value $UpdatePath
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetVersion" -Value $TargetVersion
@@ -494,7 +509,11 @@ file.
 
         #Check that the file is properly formatted
         if($ConfigFile.Configuration -eq $null){
-            throw $NoConfigurationElement
+            #write log
+            $lineNum = Get-CurrentLineNumber    
+            $filName = Get-CurrentFileName 
+            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "No configuration element"
+            throw $NoConfigurationElement 
         }
         
         $ConfigFile.Configuration.GetElementsByTagName("Add") | Select OfficeClientEdition, SourcePath, Version, Branch
@@ -514,6 +533,10 @@ Function GetFilePath() {
 
     if (!($TargetFilePath)) {
        Write-Host "Enter the path to the XML Configuration File: " -NoNewline
+        #write log
+        $lineNum = Get-CurrentLineNumber    
+        $filName = Get-CurrentFileName 
+        WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Enter the path to the XML Configuration File: "
        $TargetFilePath = Read-Host
     } else {
        #Write-Host "Target XML Configuration File: $TargetFilePath"
@@ -735,3 +758,42 @@ Function GetScriptPath() {
     }
     return $SubnetMask
  }
+
+ function Get-CurrentLineNumber {
+    $MyInvocation.ScriptLineNumber
+}
+
+function Get-CurrentFileName{
+    $MyInvocation.ScriptName.Substring($MyInvocation.ScriptName.LastIndexOf("\")+1)
+}
+
+function Get-CurrentFunctionName {
+    (Get-Variable MyInvocation -Scope 1).Value.MyCommand.Name;
+}
+
+Function WriteToLogFile() {
+    param( 
+      [Parameter(Mandatory=$true)]
+      [string]$LNumber,
+      [Parameter(Mandatory=$true)]
+      [string]$FName,
+      [Parameter(Mandatory=$true)]
+      [string]$ActionError
+    )
+    try{
+        $headerString = "Time".PadRight(30, ' ') + "Line Number".PadRight(15,' ') + "FileName".PadRight(60,' ') + "Action"
+        stringToWrite = $(Get-Date -Format G).PadRight(30, ' ') + $($LNumber).PadRight(15, ' ') + $($FName).PadRight(60,' ') + $ActionError
+
+        #check if file exists, create if it doesn't   
+        $getCurrentDatePath = "C:\Windows\Temp\" + (Get-Date -Format u).Substring(0,10)+"OfficeAutoScriptLog.txt"
+        if(Test-Path $getCurrentDatePath){#if exists, append   
+             Add-Content $getCurrentDatePath $stringToWrite
+        }
+        else{#if not exists, create new
+             Add-Content $getCurrentDatePath $headerString
+             Add-Content $getCurrentDatePath $stringToWrite
+        }
+    } catch [Exception]{
+        Write-Host $_
+    }
+}
