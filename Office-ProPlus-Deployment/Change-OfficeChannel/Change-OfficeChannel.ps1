@@ -914,12 +914,12 @@ try {
        [System.Environment]::Exit(0)
     }
 } catch {
-  Write-Host $_ -ForegroundColor Red
-  $fileName = $_.InvocationInfo.ScriptName.Substring($_.InvocationInfo.ScriptName.LastIndexOf("\")+1)
+    Write-Host $_ -ForegroundColor Red
+    $fileName = $_.InvocationInfo.ScriptName.Substring($_.InvocationInfo.ScriptName.LastIndexOf("\")+1)
     WriteToLogFile -LNumber $_.InvocationInfo.ScriptLineNumber -FName $fileName -ActionError $_
-  $Error = $null
-  if ($SendExitCode) {
-      [System.Environment]::Exit(1)
-  }
+    $Error = $null
+    if ($SendExitCode) {
+        [System.Environment]::Exit(1)
+    }
 }
 
