@@ -1,13 +1,14 @@
-﻿  param(
+﻿param(
     [Parameter()]
-    [string]$Channel = $NULL,
+    [ValidateSet("FirstReleaseCurrent","Current","FirstReleaseDeferred","Deferred")]
+    [string]$Channel,
 
     [Parameter()]
     [switch]$RollBack,
 
     [Parameter()]
     [bool]$SendExitCode = $false
-  )
+)
 
 Function Get-ScriptPath() {
   [CmdletBinding()]
@@ -22,7 +23,6 @@ Function Get-ScriptPath() {
     if ($PSScriptRoot) {
         $scriptPath = $PSScriptRoot
     } else {
-        $scriptPath = split-path -parent $MyInvocation.MyCommand.Definition
         $scriptPath = (Get-Item -Path ".\").FullName
     }
     return $scriptPath
@@ -485,7 +485,7 @@ function Change-UpdatePathToChannel {
      [string] $UpdatePath,
      
      [Parameter()]
-     [Channel] $Channel
+     [string] $Channel
    )
 
    $newUpdatePath = $UpdatePath
@@ -561,40 +561,40 @@ function Detect-Channel {
 
    )
 
-   Process {      
-      $channelXml = Get-ChannelXml
+Process {      
+   $channelXml = Get-ChannelXml
 
-      $CFGUpdateChannel = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration -Name UpdateChannel -ErrorAction SilentlyContinue).UpdateChannel
-      $CFGOfficeMgmtCOM = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration -Name OfficeMgmtCOM -ErrorAction SilentlyContinue).OfficeMgmtCOM      
-      $UPupdatechannel = (Get-ItemProperty HKLM:\SOFTWARE\Policies\Microsoft\office\16.0\common\officeupdate -Name UpdateChannel -ErrorAction SilentlyContinue).UpdateChannel      
-      $UPupdatepath = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration -Name updatepath -ErrorAction SilentlyContinue).updatepath
-      $officemgmtcom = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration -Name officemgmtcom -ErrorAction SilentlyContinue).officemgmtcom
-      $CFGUpdateUrl = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration -Name UpdateUrl -ErrorAction SilentlyContinue).UpdateUrl
-      $currentBaseUrl = Get-OfficeCDNUrl
+   $UpdateChannel = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration -Name UpdateChannel -ErrorAction SilentlyContinue).UpdateChannel      
+   $GPOUpdatePath = (Get-ItemProperty HKLM:\SOFTWARE\Policies\Microsoft\office\16.0\common\officeupdate -Name updatepath -ErrorAction SilentlyContinue).updatepath
+   $GPOUpdateBranch = (Get-ItemProperty HKLM:\SOFTWARE\Policies\Microsoft\office\16.0\common\officeupdate -Name UpdateBranch -ErrorAction SilentlyContinue).UpdateBranch
+   $GPOUpdateChannel = (Get-ItemProperty HKLM:\SOFTWARE\Policies\Microsoft\office\16.0\common\officeupdate -Name UpdateChannel -ErrorAction SilentlyContinue).UpdateChannel      
+   $UpdateUrl = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration -Name UpdateUrl -ErrorAction SilentlyContinue).UpdateUrl
+   $currentBaseUrl = Get-OfficeCDNUrl
 
-      $CurrentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $currentBaseUrl -and $_.branch -notmatch 'Business' }
+   $CurrentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $currentBaseUrl -and $_.branch -notmatch 'Business' }
       
-      if($CFGUpdateUrl -ne $null -and $CFGUpdateUrl -like '*officecdn.microsoft.com*'){
-        $CurrentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $CFGUpdateUrl -and $_.branch -notmatch 'Business' }  
-      }
-      if($officemgmtcom -ne $null -and $officemgmtcom -like '*officecdn.microsoft.com*'){
-        $CurrentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $officemgmtcom -and $_.branch -notmatch 'Business' }  
-      }
-      if($UPupdatepath -ne $null -and $UPupdatepath -like '*officecdn.microsoft.com*'){
-        $CurrentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $UPupdatepath -and $_.branch -notmatch 'Business' }  
-      }
-      if($UPupdatechannel -ne $null -and $UPupdatechannel -like '*officecdn.microsoft.com*'){
-        $CurrentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $UPupdatechannel -and $_.branch -notmatch 'Business' }  
-      }
-      if($CFGOfficeMgmtCOM -ne $null -and $CFGOfficeMgmtCOM -like '*officecdn.microsoft.com*'){
-        $CurrentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $CFGOfficeMgmtCOM -and $_.branch -notmatch 'Business' }  
-      }
-      if($CFGUpdateChannel -ne $null -and $CFGUpdateChannel -like '*officecdn.microsoft.com*'){
-        $CurrentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $CFGUpdateChannel -and $_.branch -notmatch 'Business' }  
-      }
-
-      return $CurrentChannel
+   if($UpdateUrl -ne $null -and $UpdateUrl -like '*officecdn.microsoft.com*'){
+       $CurrentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $UpdateUrl -and $_.branch -notmatch 'Business' }  
    }
+
+   if($GPOUpdateChannel -ne $null){
+     $CurrentChannel = $channelXml.UpdateFiles.baseURL | ? {$_.branch.ToLower() -eq $GPOUpdateChannel.ToLower()}         
+   }
+
+   if($GPOUpdateBranch -ne $null){
+     $CurrentChannel = $channelXml.UpdateFiles.baseURL | ? {$_.branch.ToLower() -eq $GPOUpdateBranch.ToLower()}  
+   }
+
+   if($GPOUpdatePath -ne $null -and $GPOUpdatePath -like '*officecdn.microsoft.com*'){
+     $CurrentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $GPOUpdatePath -and $_.branch -notmatch 'Business' }  
+   }
+
+   if($UpdateChannel -ne $null -and $UpdateChannel -like '*officecdn.microsoft.com*'){
+     $CurrentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $UpdateChannel -and $_.branch -notmatch 'Business' }  
+   }
+
+   return $CurrentChannel
+}
 
 }
 
@@ -602,7 +602,7 @@ function Get-ChannelUrl() {
    [CmdletBinding()]
    param( 
       [Parameter(Mandatory=$true)]
-      [Channel]$Channel
+      [string]$Channel
    )
 
    Process {
@@ -666,7 +666,7 @@ Function Set-OfficeCDNUrl() {
    [CmdletBinding()]
    param( 
       [Parameter(Mandatory=$true)]
-      [Channel]$Channel
+      [string]$Channel
    )
 
    Process {
@@ -754,37 +754,42 @@ Function WriteToLogFile() {
     }
 }
 
-Add-Type -ErrorAction SilentlyContinue -TypeDefinition @"
-   public enum Channel
-   {
-      Current,
-      Deferred,
-      FirstReleaseCurrent,
-      FirstReleaseDeferred
-   }
-"@
-
 try {
 
     if (!($RollBack)) {
       if (!($Channel)) {
-         throw "Channel Parameter is required"
+         throw "Channel Parameter is required. Use the -Channel parameter and enter either Current, FirstReleaseCurrent, Deferred, or FirstReleaseDeferred."
       }
     }
 
     [bool]$PolicyPath = $true
     [bool]$SetBack = $false
 
-    $UpdateURLKey = 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Office\ClickToRun\Configuration'  #UpdateURL
     $Office2RClientKey = 'Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Office\ClickToRun\Configuration' #ClientFolder
     $OfficePolicyPath = 'HKLM:\Software\Policies\Microsoft\Office\16.0\common\officeupdate'
 
-    $UpdateURLPath = (Get-ItemProperty $OfficePolicyPath).updatepath
-    if (!($UpdateURLPath)) {
-        $UpdateURLPath  = (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration").UpdateUrl
+    $UpdateUrl = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration -Name UpdateUrl -ErrorAction SilentlyContinue).UpdateUrl 
+    $GPOUpdatePath = (Get-ItemProperty HKLM:\SOFTWARE\Policies\Microsoft\office\16.0\common\officeupdate -Name updatepath -ErrorAction SilentlyContinue).updatepath
+    $UpdateChannel = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration -Name UpdateChannel -ErrorAction SilentlyContinue).UpdateChannel
+    
+    if($UpdateUrl -ne $NULL){
+        $UpdateURLPath = $UpdateUrl
         $PolicyPath = $false
     }
+    
+    if($GPOUpdatePath -ne $NULL){
+        $UpdateURLPath = $GPOUpdatePath
+    } 
 
+    if($UpdateUrl -eq $null -and $UpdateChannel -ne $NULL){
+        if($GPOUpdatePath -eq $NULL){
+            $UpdateURLPath = $UpdateChannel
+            $PolicyPath = $false
+        } else {
+            $UpdateURLPath = $UpdateChannel    
+        }
+    }
+   
     if (!($UpdateURLPath)) {
         $UpdateURLPath = Get-ScriptPath
         $SetBack = $true
@@ -792,18 +797,20 @@ try {
         $TmpUpdateUrlPath = "$UpdateURLPath\SourceFiles"
         if (Test-Path -Path $TmpUpdateUrlPath) {
            $UpdateURLPath = $TmpUpdateUrlPath
+        } else {
+            $UpdateURLPath = (Detect-Channel).URL
         }
-    }
-    else
-    {
-        $urlPathChk = Test-Path $UpdateURLPath
-        if(!($urlPathChk)){
-            $UpdateURLPath = Get-ScriptPath
-            $SetBack = $true
+    } else {
+        if($UpdateURLPath -notlike '*officecdn.microsoft.com*'){
+            $urlPathChk = Test-Path $UpdateURLPath
+            if(!($urlPathChk)){
+                $UpdateURLPath = Get-ScriptPath
+                $SetBack = $true
 
-            $TmpUpdateUrlPath = "$UpdateURLPath\SourceFiles"
-            if (Test-Path -Path $TmpUpdateUrlPath) {
-               $UpdateURLPath = $TmpUpdateUrlPath
+                $TmpUpdateUrlPath = "$UpdateURLPath\SourceFiles"
+                if (Test-Path -Path $TmpUpdateUrlPath) {
+                   $UpdateURLPath = $TmpUpdateUrlPath
+                }
             }
         }
     }
@@ -822,8 +829,8 @@ try {
     }
 
     [bool]$updateUrlIsCdn = $false
-    if ($detectChannelUrl) {
-      if ($detectChannelUrl -like '*officecdn.microsoft.com*') {
+    if ($OldUpdatePath) {
+      if ($OldUpdatePath -like '*officecdn.microsoft.com*') {
           $updateUrlIsCdn = $true
       }
     }
