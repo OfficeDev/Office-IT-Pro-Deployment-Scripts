@@ -85,7 +85,7 @@ $enum4 = "
 } catch {}
 
 $validLanguages = @(
-"English|en-us",
+"English|en-us",          #beginning of core languages
 "Arabic|ar-sa",
 "Bulgarian|bg-bg",
 "Chinese (Simplified)|zh-cn",
@@ -123,7 +123,70 @@ $validLanguages = @(
 "Swedish|sv-se",
 "Thai|th-th",
 "Turkish|tr-tr",
-"Ukrainian|uk-ua")
+"Ukrainian|uk-ua",
+"Vietnamese|vi-vn",       #end of core languages
+"Afrikaans (South Africa)|af-za",                #beginning of partial languages
+"Albanian (Albania)|sq-al",
+"Amharic (Ethiopia)|am-et",
+"Armenian (Armenia)|hy-am",
+"Assamese (India)|as-in",
+"Azerbaijani (Latin, Azerbaijan)|az-latn-az",
+"Basque (Basque)|eu-es",
+"Belarusian (Belarus)|be-by",
+"Bangla (Bangladesh)|bn-bd",
+"Bangla (India)|bn-in",
+"Bosnian (Latin, Bosnia and Herzegovina)|bs-latn-ba",
+"Catalan (Catalan)|ca-es",
+"Dari (Afghanistan)|prs-af",
+"Filipino (Philippines)|fil-ph",
+"Galician (Galician)|gl-es",
+"Georgian (Georgia)|ka-ge",
+"Gujarati (India)|gu-in",
+"Icelandic (Iceland)|is-is",
+"Irish (Ireland)|ga-ie",
+"Kannada (India)|kn-in",
+"Khmer (Cambodia)|km-kh",
+"Kiswahili (Kenya)|sw-ke",
+"Konkani (India)|kok-in",
+"Kyrgyz (Kyrgyzstan)|ky-kg",
+"Luxembourgish (Luxembourg)|lb-lu",
+"Macedonian (Former Yugoslav Republic of Macedonia)|mk-mk",
+"Malayalam (India)|ml-in",
+"Maltese (Malta)|mt-mt",
+"Maori (New Zealand)|mi-nz",
+"Marathi (India)|mr-in",
+"Mongolian (Cyrillic, Mongolia)|mn-mn",
+"Nepali (Nepal)|ne-np",
+"Norwegian, Nynorsk (Norway)|nn-no",
+"Odia (India)|or-in",
+"Persian (Iran)|fa-ir",
+"Punjabi (India)|pa-in",
+"Quechua (Peru)|quz-pe",
+"Scottish Gaelic (United Kingdom)|gd-gb",
+"Serbian (Cyrillic, Serbia)|sr-cyrl-rs",
+"Serbian (Cyrillic, Bosnia and Herzegovina)|sr-cyrl-ba",
+"Sindhi (Islamic Republic of Pakistan)|sd-arab-pk",
+"Sinhala (Sri Lanka)|si-lk",
+"Tamil (India)|ta-in",
+"Tatar (Russia)|tt-ru",
+"Telugu (India)|te-in",
+"Turkmen (Turkmenistan)|tk-tm",
+"Urdu (Islamic Republic of Pakistan)|ur-pk",
+"Uyghur (PRC)|ug-cn",
+"Uzbek (Latin, Uzbekistan)|uz-latn-uz",
+"Valencian (Spain)|ca-es-valencia",
+"Welsh (United Kingdom)|cy-gb",         #end of partial languages
+"Hausa (Latin, Nigeria)|ha-latn-ng",    #beginning of proofing languages
+"Igbo (Nigeria)|ig-ng",
+"isiXhosa (South Africa)|xh-za",
+"isiZulu (South Africa)|zu-za",
+"Kinyarwanda (Rwanda)|rw-rw",
+"Pashto (Afghanistan)|ps-af",
+"Romansh (Switzerland)|rm-ch",
+"Sesotho sa Leboa (South Africa)|nso-za",
+"Setswana (South Africa)|tn-za",
+"Wolof (Senegal)|wo-sn",
+"Yoruba (Nigeria)|yo-ng")   #end of proofing languages
 
 $validExcludeAppIds = @(
 "Access",
@@ -3315,11 +3378,26 @@ Function Validate-UpdateSource() {
         [string] $UpdateSource = $NULL,
 
         [Parameter()]
+        [string] $OfficeClientEdition,
+        
+        [Parameter()]
         [string] $Bitness = "x86",
 
         [Parameter()]
-        [string[]] $OfficeLanguages = $null
+        [string[]] $OfficeLanguages = $null,
+
+        [Parameter()]
+        [bool]$ShowMissingFiles = $true
     )
+    
+    if(!$OfficeClientEdition)
+        {
+            #checking if office client edition is null, if not, set bitness to client office edition
+        }
+        else
+        {
+            $Bitness = $OfficeClientEdition
+        }
 
     [bool]$validUpdateSource = $true
     [string]$cabPath = ""
@@ -3387,7 +3465,9 @@ Function Validate-UpdateSource() {
               $fileExists = $missingFiles.Contains($fullPath)
               if (!($fileExists)) {
                  $missingFiles.Add($fullPath)
-                 Write-Host "Source File Missing: $fullPath"
+                 if($ShowMissingFiles){
+                    Write-Host "Source File Missing: $fullPath"
+                 }
                  Write-Log -Message "Source File Missing: $fullPath" -severity 1 -component "Office 365 Update Anywhere" 
               }     
               $validUpdateSource = $false
@@ -3455,4 +3535,43 @@ function Get-ChannelXml() {
        return $channelXml
    }
 
+}
+
+Function WriteToLogFile() {
+    param( 
+      [Parameter(Mandatory=$true)]
+      [string]$LNumber,
+      [Parameter(Mandatory=$true)]
+      [string]$FName,
+      [Parameter(Mandatory=$true)]
+      [string]$ActionError
+    )
+    try{
+        $headerString = "Time".PadRight(30, ' ') + "Line Number".PadRight(15,' ') + "FileName".PadRight(60,' ') + "Action"
+        $stringToWrite = $(Get-Date -Format G).PadRight(30, ' ') + $($LNumber).PadRight(15, ' ') + $($FName).PadRight(60,' ') + $ActionError
+
+        #check if file exists, create if it doesn't
+        $getCurrentDatePath = "C:\Windows\Temp\" + (Get-Date -Format u).Substring(0,10)+"OfficeAutoScriptLog.txt"
+        if(Test-Path $getCurrentDatePath){#if exists, append
+             Add-Content $getCurrentDatePath $stringToWrite
+        }
+        else{#if not exists, create new
+             Add-Content $getCurrentDatePath $headerString
+             Add-Content $getCurrentDatePath $stringToWrite
+        }
+    } catch [Exception]{
+        Write-Host $_
+    }
+}
+
+function Get-CurrentLineNumber {
+    $MyInvocation.ScriptLineNumber
+}
+
+function Get-CurrentFileName{
+    $MyInvocation.ScriptName.Substring($MyInvocation.ScriptName.LastIndexOf("\")+1)
+}
+
+function Get-CurrentFunctionName {
+    (Get-Variable MyInvocation -Scope 1).Value.MyCommand.Name;
 }
