@@ -1,4 +1,4 @@
-Function Remove-OfficeClickToRun {
+ï»¿Function Remove-OfficeClickToRun {
 <#
 .Synopsis
 Removes the Click to Run version of Office installed.
@@ -51,7 +51,11 @@ Will uninstall Office Click-to-Run.
         if($c2rVersion) {
             if(!($isInPipe)) {
                 Write-Host "Please wait while $c2rName is being uninstalled..."
-            }
+                #write log
+                $lineNum = Get-CurrentLineNumber    
+                $filName = Get-CurrentFileName 
+                WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Please wait while $c2rName is being uninstalled..."
+            }            
         }
    
         if($c2rVersion.Version -like "15*"){
@@ -61,6 +65,7 @@ Will uninstall Office Click-to-Run.
             $OdtExe = "$scriptRoot\Office2016Setup.exe"
         } 
 
+        
         $cmdLine = '"' + $OdtExe + '"'
         $cmdArgs = "/configure " + '"' + $RemoveCTRXmlPath + '"'
 
@@ -75,13 +80,17 @@ Will uninstall Office Click-to-Run.
             if(!($c2rTest)){                           
                 if (!($isInPipe)) {                        
                     Write-Host "Office Click-to-Run has been successfully uninstalled." 
+                    #write log
+                    $lineNum = Get-CurrentLineNumber    
+                    $filName = Get-CurrentFileName 
+                    WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Office Click-to-Run has been successfully uninstalled." 
                 }
             }
         }                                      
                                                                                
         if ($isInPipe) {
             $results = new-object PSObject[] 0;
-            $Result = New-Object –TypeName PSObject 
+            $Result = New-Object -TypeName PSObject 
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
             $Result
         }
@@ -98,7 +107,7 @@ This function will query the local or a remote computer and return the informati
 Name: Get-OfficeVersion
 Version: 1.0.5
 DateCreated: 2015-07-01
-DateUpdated: 2016-10-14
+DateUpdated: 2016-07-20
 .LINK
 https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
 .PARAMETER ComputerName
@@ -141,7 +150,7 @@ begin {
 
     $defaultDisplaySet = 'DisplayName','Version', 'ComputerName'
 
-    $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet(‘DefaultDisplayPropertySet’,[string[]]$defaultDisplaySet)
+    $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet('DefaultDisplayPropertySet',[string[]]$defaultDisplaySet)
     $PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultDisplayPropertySet)
 }
 
@@ -312,10 +321,12 @@ process {
            $officeProduct = $false
            foreach ($officeInstallPath in $PathList) {
              if ($officeInstallPath) {
+                try{
                 $installReg = "^" + $installPath.Replace('\', '\\')
                 $installReg = $installReg.Replace('(', '\(')
                 $installReg = $installReg.Replace(')', '\)')
                 if ($officeInstallPath -match $installReg) { $officeProduct = $true }
+                } catch {}
              }
            }
 
@@ -323,7 +334,11 @@ process {
            
            $name = $regProv.GetStringValue($HKLM, $path, "DisplayName").sValue          
 
-           if ($ConfigItemList.Contains($key.ToUpper()) -and $name.ToUpper().Contains("MICROSOFT OFFICE") -and $name.ToUpper() -notlike "*MUI*" -and $name.ToUpper() -notlike "*VISIO*" -and $name.ToUpper() -notlike "*PROJECT*") {
+           if ($ConfigItemList.Contains($key.ToUpper()) -and $name.ToUpper().Contains("MICROSOFT OFFICE") `
+                                                        -and $name.ToUpper() -notlike "*MUI*" `
+                                                        -and $name.ToUpper() -notlike "*VISIO*" `
+                                                        -and $name.ToUpper() -notlike "*PROJECT*" `
+                                                        -and $name.ToUpper() -notlike "*PROOFING*") {
               $primaryOfficeProduct = $true
            }
 
@@ -393,7 +408,6 @@ process {
 
 }
 
-
 Function newCTRRemoveXml {
 #Create a xml configuration file to remove all Office CTR products.
 @"
@@ -451,5 +465,46 @@ Function StartProcess {
     Catch
     {
         Write-Log -Message $_.Exception.Message -severity 1 -component "Office 365 Update Anywhere"
+        $fileName = $_.InvocationInfo.ScriptName.Substring($_.InvocationInfo.ScriptName.LastIndexOf("\")+1)
+        WriteToLogFile -LNumber $_.InvocationInfo.ScriptLineNumber -FName $fileName -ActionError $_
+    }
+}
+
+function Get-CurrentLineNumber {
+    $MyInvocation.ScriptLineNumber
+}
+
+function Get-CurrentFileName{
+    $MyInvocation.ScriptName.Substring($MyInvocation.ScriptName.LastIndexOf("\")+1)
+}
+
+function Get-CurrentFunctionName {
+    (Get-Variable MyInvocation -Scope 1).Value.MyCommand.Name;
+}
+
+Function WriteToLogFile() {
+    param( 
+      [Parameter(Mandatory=$true)]
+      [string]$LNumber,
+      [Parameter(Mandatory=$true)]
+      [string]$FName,
+      [Parameter(Mandatory=$true)]
+      [string]$ActionError
+    )
+    try{
+        $headerString = "Time".PadRight(30, ' ') + "Line Number".PadRight(15,' ') + "FileName".PadRight(60,' ') + "Action"
+        $stringToWrite = $(Get-Date -Format G).PadRight(30, ' ') + $($LNumber).PadRight(15, ' ') + $($FName).PadRight(60,' ') + $ActionError
+
+        #check if file exists, create if it doesn't
+        $getCurrentDatePath = "C:\Windows\Temp\" + (Get-Date -Format u).Substring(0,10)+"OfficeAutoScriptLog.txt"
+        if(Test-Path $getCurrentDatePath){#if exists, append 
+             Add-Content $getCurrentDatePath $stringToWrite
+        }
+        else{#if not exists, create new
+             Add-Content $getCurrentDatePath $headerString
+             Add-Content $getCurrentDatePath $stringToWrite
+        }
+    } catch [Exception]{
+        Write-Host $_
     }
 }
