@@ -203,15 +203,17 @@ Function Wait-ForOfficeCTRUpdate() {
        }
 
        Write-Host $displayValue
-        #write log
-        $lineNum = Get-CurrentLineNumber    
-        $filName = Get-CurrentFileName 
-        WriteToLogFile -LNumber $lineNum -FName $filName -ActionError $displayValue
+       #write log
+       $lineNum = Get-CurrentLineNumber    
+       $filName = Get-CurrentFileName 
+       WriteToLogFile -LNumber $lineNum -FName $filName -ActionError $displayValue
 
        $totalOperationTime = getOperationTime -OperationStart $totalOperationStart
+       [bool]$UpdateCompleted = $true
 
        if ($updateRunning) {
           if ($failure) {
+            $UpdateCompleted = $false
             Write-Host "Update Failed"
             #write log
             $lineNum = Get-CurrentLineNumber    
@@ -226,12 +228,16 @@ Function Wait-ForOfficeCTRUpdate() {
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Update Completed - Total Time: $totalOperationTime"
           }
        } else {
-          Write-Host "Update Not Running"
+            $UpdateCompleted = $false
+            Write-Host "Update Not Running"
             #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Update Not Running"
-       } 
+       }
+
+       return $UpdateCompleted
+    
     }
 }
 
@@ -933,13 +939,31 @@ try {
     if (($Version) -and ($oldChannel -ne $Channel)) {
         $arguments = "/update user displaylevel=false forceappshutdown=true updatepromptuser=false updatetoversion=$Version"
        
-        #run update exe file
-        Start-Process -FilePath $OfficeUpdatePath -ArgumentList $arguments
+        if($Version -ne $currentVersion){         
+            #run update exe file
+            Start-Process -FilePath $OfficeUpdatePath -ArgumentList $arguments
      
-        Wait-ForOfficeCTRUpdate
+            $UpdateStatus = Wait-ForOfficeCTRUpdate
+
+            if ($UpdateStatus -eq $false){
+                Set-OfficeCDNUrl -Channel $oldChannel
+
+                if ($PolicyPath) {
+                    New-ItemProperty $OfficePolicyPath -Name updatepath -PropertyType String -Value $OldUpdatePath -Force | Out-Null
+                } elseif($oldUpdatePath) {
+                    New-ItemProperty $Office2RClientKey -Name UpdateUrl -PropertyType String -Value $OldUpdatePath -Force | Out-Null
+                }
+            }
+        } else {
+            Write-Host "The channel has been changed to $Channel"
+        }
 
         if (!($RollBack)) {
            Set-OfficeCDNUrl -Channel $Channel
+
+           if($UpdateChannel){
+               New-ItemProperty $Office2RClientKey -Name UpdateChannel -PropertyType String -Value $UpdateURLPath -Force | Out-Null
+           }
         }
 
         if ($SetBack) {
