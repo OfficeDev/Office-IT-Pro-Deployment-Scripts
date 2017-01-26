@@ -1474,9 +1474,20 @@ to install additional languages on a client
     Begin {
         #create array for all languages including core, partial, and proofing
         $allLanguages = @();
-        $allLanguages += , $Languages
-        $allLanguages += , $PartialLanguages
-        $allLanguages += , $ProofingLanguages
+        $Languages | 
+        %{
+          $allLanguages += $_
+        }
+	
+        $PartialLanguages | 
+        %{
+          $allLanguages += $_
+        }
+	
+        $ProofingLanguages | 
+        %{
+          $allLanguages += $_
+        }
         $currentExecutionPolicy = Get-ExecutionPolicy
 	    Set-ExecutionPolicy Unrestricted -Scope Process -Force  
         $startLocation = Get-Location

@@ -136,9 +136,20 @@ Param(
 
 #create array for all languages including core, partial, and proofing
 $allLanguages = @();
-$allLanguages += , $Languages
-$allLanguages += , $PartialLanguages
-$allLanguages += , $ProofingLanguages
+$Languages | 
+%{
+  $allLanguages += $_
+}
+	
+$PartialLanguages | 
+%{
+  $allLanguages += $_
+}
+	
+$ProofingLanguages | 
+%{
+  $allLanguages += $_
+}
 
 
 $BranchesOrChannels = @()
