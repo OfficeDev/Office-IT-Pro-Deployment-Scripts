@@ -136,10 +136,21 @@ Param(
 
 #create array for all languages including core, partial, and proofing
 $allLanguages = @();
-$allLanguages += , $Languages
-$allLanguages += , $PartialLanguages
-$allLanguages += , $ProofingLanguages
 
+$Languages | 
+%{
+  $allLanguages += $_
+}
+
+$PartialLanguages | 
+%{
+  $allLanguages += $_
+}
+
+$ProofingLanguages | 
+%{
+  $allLanguages += $_
+}
 
 $BranchesOrChannels = @()
 
@@ -328,9 +339,9 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
                     #LANGUAGE LOGIC HERE
                     $languageId  = [globalization.cultureinfo]::GetCultures("allCultures") | ? Name -eq $_ | %{$_.LCID}
                     $CurrentVersionXML.UpdateFiles.File | ? language -eq $languageId | 
-                            %{
-                   $numberOfFiles ++
-                }
+                    %{
+                      $numberOfFiles ++
+                    }
                 }
 
                 #basic files
