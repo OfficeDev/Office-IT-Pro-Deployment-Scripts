@@ -48,7 +48,7 @@ Function Get-OfficeC2Rexe() {
     }
 }
 
-Function Wait-ForOfficeCTRUpadate() {
+Function Wait-ForOfficeCTRUpdate() {
     [CmdletBinding()]
     Param(
         [Parameter()]
@@ -556,6 +556,48 @@ function Change-UpdatePathToChannel {
    }
 }
 
+function Test-UpdateSourceTcpPort {
+    Param(
+        [parameter(ParameterSetName='URL', Position=0)]
+        [string]
+        $URL,
+
+        [parameter(ParameterSetName='IP', Position=0)]
+        [System.Net.IPAddress]
+        $IPAddress,
+
+        [parameter(Mandatory=$true , Position=1)]
+        [int]
+        $Port,
+
+        [parameter()]
+        [string]$UpdateSource = $null
+    )
+
+    $sourceIsAlive = $false
+
+    $RemoteServer = If ([string]::IsNullOrEmpty($URL)) {$IPAddress} Else {$URL};
+
+    $test = New-Object System.Net.Sockets.TcpClient;
+
+    Try
+    {
+        $test.Connect($RemoteServer, $Port);
+        $sourceIsAlive = $true
+    } Catch {}
+
+    Finally
+    {
+        $test.Dispose();
+    }
+
+    if ($sourceIsAlive) {
+        $sourceIsAlive = Validate-UpdateSource -UpdateSource $UpdateSource
+    }
+
+    return $sourceIsAlive
+}
+
 function Detect-Channel {
    param( 
 
@@ -799,6 +841,8 @@ try {
            $UpdateURLPath = $TmpUpdateUrlPath
         } else {
             $UpdateURLPath = (Detect-Channel).URL
+            $PolicyPath = $false
+            $SetBack = $false
         }
     } else {
         if($UpdateURLPath -notlike '*officecdn.microsoft.com*'){
@@ -822,6 +866,7 @@ try {
     if ($detectChannel) {
         $detectChannelBranch = $detectChannel.Branch
         $detectChannelUrl = $detectChannel.Url
+        $oldChannel = $detectChannelBranch
     }
 
     if ($RollBack) {
@@ -844,7 +889,12 @@ try {
       $UpdateURLPath = Change-UpdatePathToChannel -Channel $Channel -UpdatePath $UpdateURLPath
     }
   
-    $validSource = Test-UpdateSource -UpdateSource $UpdateURLPath
+    if($UpdateURLPath -like '*officecdn.microsoft.com*'){
+        $validSource = Test-UpdateSourceTcpPort -URL "officecdn.microsoft.com" -Port 80 -UpdateSource $UpdateURLPath
+    } else {
+        $validSource = Test-UpdateSource -UpdateSource $UpdateURLPath
+    }
+
     if (!($validSource)) {
         throw "UpdateSource not Valid $UpdateURLPath"
     }
@@ -880,13 +930,13 @@ try {
       $Version = Get-LatestVersion -UpdateURLPath $UpdateURLPath
     }
 
-    if (($Version) -and ($currentVersion -ne $Version)) {
+    if (($Version) -and ($oldChannel -ne $Channel)) {
         $arguments = "/update user displaylevel=false forceappshutdown=true updatepromptuser=false updatetoversion=$Version"
        
         #run update exe file
         Start-Process -FilePath $OfficeUpdatePath -ArgumentList $arguments
      
-        Wait-ForOfficeCTRUpadate
+        Wait-ForOfficeCTRUpdate
 
         if (!($RollBack)) {
            Set-OfficeCDNUrl -Channel $Channel
