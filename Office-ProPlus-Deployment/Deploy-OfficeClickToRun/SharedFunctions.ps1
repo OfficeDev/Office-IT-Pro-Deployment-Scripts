@@ -1955,3 +1955,167 @@ function GetPinnedTaskbarApps {
     $PinnedTaskbarApps = $PreOfficeAppPinnedStatus | ? {$_.PinToTaskbarAvailable -eq $false}
     return $PinnedTaskbarApps.Name
 }
+
+
+function SaveOfficeSettings{
+    ## Find the source files
+
+    Get-ChildItem C:\Users\$($env:USERNAME)\AppData\Roaming\Microsoft\Office -Recurse |  foreach {
+
+    ## Remove the original  root folder
+
+    $split = $_.Fullname  #-split '\\'
+
+    $DestFile =  $split.Substring($split.IndexOf("\Office")+8) #$split[1..($split.Length - 1)] -join '\' 
+
+    ## Build the new  destination file path
+
+    $DestFile =  "C:\Users\$($env:USERNAME)\AppData\Roaming\TempRoamingOffice\$DestFile"
+
+    ## Copy-Item won't  create the folder structure so we have to 
+
+    ## create a blank file  and then overwrite it
+
+    $typ = if($_.GetType().Name.ToLower().Contains("file")){"file"}elseif($_.GetType().Name.ToLower().Contains("directory")){"directory"}else{"symboliclink"}
+
+    $null = New-Item -Path  $DestFile -Type $typ -Force
+    if($typ -eq "file"){
+        Copy-Item -Path  $_.FullName -Destination $DestFile -Force
+    }
+}
+
+
+    Get-ChildItem C:\Users\$($env:USERNAME)\AppData\Roaming\Microsoft\Signatures -Recurse |  foreach {
+
+    ## Remove the original  root folder
+
+    $split = $_.Fullname  #-split '\\'
+
+    $DestFile =  $split.Substring($split.IndexOf("\Signatures")+12) #$split[1..($split.Length - 1)] -join '\' 
+
+    ## Build the new  destination file path
+
+    $DestFile =  "C:\Users\$($env:USERNAME)\AppData\Roaming\TempOffice\$DestFile"
+
+    ## Copy-Item won't  create the folder structure so we have to 
+
+    ## create a blank file  and then overwrite it
+
+    $typ = if($_.GetType().Name.ToLower().Contains("file")){"file"}elseif($_.GetType().Name.ToLower().Contains("directory")){"directory"}else{"symboliclink"}
+
+    $null = New-Item -Path  $DestFile -Type $typ -Force
+    if($typ -eq "file"){
+        Copy-Item -Path  $_.FullName -Destination $DestFile -Force
+    }
+
+}
+
+
+Get-ChildItem C:\Users\$($env:USERNAME)\AppData\Local\Microsoft\Office -Recurse |  foreach {
+
+    ## Remove the original  root folder
+
+    $split = $_.Fullname  #-split '\\'
+
+    $DestFile =  $split.Substring($split.IndexOf("\Office")+8) #$split[1..($split.Length - 1)] -join '\' 
+
+    ## Build the new  destination file path
+
+    $DestFile =  "C:\Users\$($env:USERNAME)\AppData\Roaming\TempLocalOffice\$DestFile"
+
+    ## Copy-Item won't  create the folder structure so we have to 
+
+    ## create a blank file  and then overwrite it
+
+    $typ = if($_.GetType().Name.ToLower().Contains("file")){"file"}elseif($_.GetType().Name.ToLower().Contains("directory")){"directory"}else{"symboliclink"}
+
+    $null = New-Item -Path  $DestFile -Type $typ -Force
+    if($typ -eq "file"){
+        Copy-Item -Path  $_.FullName -Destination $DestFile -Force
+    }
+
+}    
+    
+}
+
+
+
+function GetOfficeSettings{
+    ## Find the source files
+
+    Get-ChildItem C:\Users\$($env:USERNAME)\AppData\Roaming\TempRoamingOffice -Recurse |  foreach {
+
+    ## Remove the original  root folder
+
+    $split = $_.Fullname  #-split '\\'
+
+    $DestFile =  $split.Substring($split.IndexOf("\TempRoamingOffice")+19) #$split[1..($split.Length - 1)] -join '\' 
+
+    ## Build the new  destination file path
+
+    $DestFile =  "C:\Users\$($env:USERNAME)\AppData\Roaming\Microsoft\Office\$DestFile"
+
+    ## Copy-Item won't  create the folder structure so we have to 
+
+    ## create a blank file  and then overwrite it
+
+    $typ = if($_.GetType().Name.ToLower().Contains("file")){"file"}elseif($_.GetType().Name.ToLower().Contains("directory")){"directory"}else{"symboliclink"}
+
+    $null = New-Item -Path  $DestFile -Type $typ -Force
+    if($typ -eq "file"){
+        Copy-Item -Path  $_.FullName -Destination $DestFile -Force
+    }
+}
+
+
+    Get-ChildItem C:\Users\$($env:USERNAME)\AppData\Roaming\TempOffice -Recurse |  foreach {
+
+    ## Remove the original  root folder
+
+    $split = $_.Fullname  #-split '\\'
+
+    $DestFile =  $split.Substring($split.IndexOf("\TempOffice")+12) #$split[1..($split.Length - 1)] -join '\' 
+
+    ## Build the new  destination file path
+
+    $DestFile =  "C:\Users\$($env:USERNAME)\AppData\Roaming\Microsoft\Signatures\$DestFile"
+
+    ## Copy-Item won't  create the folder structure so we have to 
+
+    ## create a blank file  and then overwrite it
+
+    $typ = if($_.GetType().Name.ToLower().Contains("file")){"file"}elseif($_.GetType().Name.ToLower().Contains("directory")){"directory"}else{"symboliclink"}
+
+    $null = New-Item -Path  $DestFile -Type $typ -Force
+    if($typ -eq "file"){
+        Copy-Item -Path  $_.FullName -Destination $DestFile -Force
+    }
+
+}
+
+
+Get-ChildItem C:\Users\$($env:USERNAME)\AppData\Roaming\TempLocalOffice -Recurse |  foreach {
+
+    ## Remove the original  root folder
+
+    $split = $_.Fullname  #-split '\\'
+
+    $DestFile =  $split.Substring($split.IndexOf("\TempLocalOffice")+17) #$split[1..($split.Length - 1)] -join '\' 
+
+    ## Build the new  destination file path
+
+    $DestFile =  " C:\Users\$($env:USERNAME)\AppData\Local\Microsoft\Office\$DestFile"
+
+    ## Copy-Item won't  create the folder structure so we have to 
+
+    ## create a blank file  and then overwrite it
+
+    $typ = if($_.GetType().Name.ToLower().Contains("file")){"file"}elseif($_.GetType().Name.ToLower().Contains("directory")){"directory"}else{"symboliclink"}
+
+    $null = New-Item -Path  $DestFile -Type $typ -Force
+    if($typ -eq "file"){
+        Copy-Item -Path  $_.FullName -Destination $DestFile -Force
+    }
+
+}
+}
