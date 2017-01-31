@@ -18,7 +18,8 @@ namespace Microsoft.OfficeProPlus.Downloader
     public class ProPlusDownloader
     {
         private const string OfficeVersionUrl = "http://officecdn.microsoft.com/pr/wsus/ofl.cab";
-        private const string OfficeVersionHistoryUrl = "http://officecdn.microsoft.com/pr/wsus/releasehistory.cab"; 
+        private const string OfficeVersionHistoryUrl = "http://officecdn.microsoft.com/pr/wsus/releasehistory.cab";
+        private const string OfficeVersionWebSite = "https://technet.microsoft.com/en-us/library/mt592918.aspx";
 
         private List<UpdateFiles> _updateFiles { get; set; }
 
@@ -459,6 +460,130 @@ namespace Microsoft.OfficeProPlus.Downloader
 
             return releaseHistory;
         }
+
+        public async Task<List<UpdateChannel>> DownloadVersionsFromWebSite()
+        {
+            var lstReturn = new List<UpdateChannel>();
+            var ccUpdateChannel = new UpdateChannel()
+            {
+                Name = "Current",
+                Updates = new List<Update>()
+            };
+            var dcUpdateChannel = new UpdateChannel()
+            {
+                Name = "Deferred",
+                Updates = new List<Update>()
+            };
+            var frdcUpdateChannel = new UpdateChannel()
+            {
+                Name = "FirstReleaseDeferred",
+                Updates = new List<Update>()
+            };
+            lstReturn.Add(ccUpdateChannel);
+            lstReturn.Add(dcUpdateChannel);
+            lstReturn.Add(frdcUpdateChannel);
+
+            var webClient = new WebClient();
+            var page = await webClient.DownloadStringTaskAsync(OfficeVersionWebSite);
+
+            var doc = new HtmlAgilityPack.HtmlDocument();
+            doc.LoadHtml(page);
+
+            var tables = doc.DocumentNode.SelectNodes("//table").ToList();
+
+            foreach (var table in tables)
+            {
+                var headerRow = table
+                    .Descendants("tr")
+                    .Where(tr => tr.Elements("th").Count() > 1)
+                    .Select(tr => tr.Elements("th").Select(td => td.InnerText.Trim()).ToList())
+                    .FirstOrDefault();
+                if (headerRow == null) continue;
+                if (headerRow[0].ToLower() != "version") continue;
+             
+                var rows = table
+                    .Descendants("tr")
+                    .Where(tr => tr.Elements("td").Count() > 1)
+                    .Select(tr => tr.Elements("td").Select(td => td.InnerText.Trim()).ToList())
+                    .ToList();
+                if (rows.Count == 0) continue;
+
+                var ccIndex = 1;
+                var frdcIndex = 2;
+                var dcIndex = 3;
+                for (var i = 1; i <= 3; i++)
+                {
+                    var rowHeader = headerRow[i];
+                    if (rowHeader.ToLower().Contains("current"))
+                    {
+                        ccIndex = i;
+                    }
+                    if (rowHeader.ToLower().Contains("deferred") &&
+                        rowHeader.ToLower().Contains("first release"))
+                    {
+                        frdcIndex = i;
+                    }
+                    if (rowHeader.ToLower().Contains("deferred") &&
+                        !rowHeader.ToLower().Contains("first release"))
+                    {
+                        dcIndex = i;
+                    }
+                }
+
+                foreach (var row in rows)
+                {
+                    var version = row[0];
+                    if (!Regex.Match(version, @"\d{4}").Success) continue;
+
+                    var currentChannel = row[ccIndex];
+                    var ccVersions = Regex.Matches(currentChannel, @"\d{4}\.\d{4}\s");
+                    if (ccVersions.Count == 0) continue;
+
+                    var frdc = row[frdcIndex];
+                    var frdcVersions = Regex.Matches(frdc, @"\d{4}\.\d{4}");
+                    if (frdcVersions.Count == 0) continue;
+
+                    var dc = row[dcIndex];
+                    var dcVersions = Regex.Matches(dc, @"\d{4}\.\d{4}");
+                    if (dcVersions.Count == 0) continue;
+                    
+                    foreach (Match build in ccVersions)
+                    {
+                        ccUpdateChannel?.Updates.Add(new Update()
+                        {
+                            Build = build.Value,
+                            LegacyVersion = "16.0." + build.Value,
+                            Version = version
+                        });
+                    }
+
+                    foreach (Match build in dcVersions)
+                    {
+                        dcUpdateChannel?.Updates.Add(new Update()
+                        {
+                            Build = build.Value,
+                            LegacyVersion = "16.0." + build.Value,
+                            Version = version
+                        });
+                    }
+
+                    foreach (Match build in dcVersions)
+                    {
+                        frdcUpdateChannel?.Updates.Add(new Update()
+                        {
+                            Build = build.Value,
+                            LegacyVersion = "16.0." + build.Value,
+                            Version = version
+                        });
+                    }
+
+                }
+            }
+
+            return lstReturn;
+        }
+
+
 
         public async Task<string> GetChannelNameFromUrlAsync(string channelUrl, OfficeEdition officeEdition)
         {

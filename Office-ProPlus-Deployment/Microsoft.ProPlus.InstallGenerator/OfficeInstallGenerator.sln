@@ -71,6 +71,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Web", "Web", "{2148509A-294
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OfficeVersionHistory", "OfficeVersionHistory\OfficeVersionHistory.csproj", "{42FB0C9E-CBD8-4321-AFFA-E95D9FCDE423}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GetWebsiteProPlusVersions", "GetWebsiteProPlusVersions\GetWebsiteProPlusVersions.csproj", "{2BE679E4-D4C2-475F-846A-565E5D9D6527}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -125,6 +127,10 @@ Global
 		{42FB0C9E-CBD8-4321-AFFA-E95D9FCDE423}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{42FB0C9E-CBD8-4321-AFFA-E95D9FCDE423}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{42FB0C9E-CBD8-4321-AFFA-E95D9FCDE423}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2BE679E4-D4C2-475F-846A-565E5D9D6527}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2BE679E4-D4C2-475F-846A-565E5D9D6527}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2BE679E4-D4C2-475F-846A-565E5D9D6527}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2BE679E4-D4C2-475F-846A-565E5D9D6527}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -139,5 +145,6 @@ Global
 		{56E8080F-FFEB-47CD-ADB9-92245F92565B} = {5B15E1D7-8BC7-4388-A02A-346BCEB9B089}
 		{F9C55054-8605-4ED6-9A6C-8101035D65BC} = {0DBDAE31-AE63-4704-893E-ACBF5064379F}
 		{42FB0C9E-CBD8-4321-AFFA-E95D9FCDE423} = {2148509A-2948-4253-BC52-BE4F40EA6EC7}
+		{2BE679E4-D4C2-475F-846A-565E5D9D6527} = {FFAC36EF-E398-487F-BD4A-6BCE7F77D319}
 	EndGlobalSection
 EndGlobal
