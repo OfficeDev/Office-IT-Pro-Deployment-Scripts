@@ -660,6 +660,60 @@ process {
 
 }
 
+function Remove-PinnedOfficeApplications { 
+    [CmdletBinding()] 
+    Param( 
+        [Parameter()]
+        [string]$Action = "Unpin from taskbar"
+    ) 
+
+    $ctr = (Get-OfficeVersion).ClickToRun
+    $InstallPath = (Get-OfficeVersion).InstallPath
+    $officeVersion = (Get-OfficeVersion).Version.Split('.')[0]
+
+    if($ctr -eq $true) {
+        $officeAppPath = $InstallPath + "\root\Office" + $officeVersion
+    } else {
+        $officeAppPath = $InstallPath + "Office" + $officeVersion
+    }
+
+    $officeAppList = @("WINWORD.EXE", "EXCEL.EXE", "POWERPNT.EXE", "ONENOTE.EXE", "MSACCESS.EXE", "MSPUB.EXE", "OUTLOOK.EXE",
+                       "lync.exe", "GROOVE.EXE", "WINPROJ.EXE", "VISIO.EXE")
+
+    $osVersion = (Get-WmiObject -Class Win32_OperatingSystem).Version
+    [int]$osVersion = $osVersion.Split('.')[0]
+    
+    foreach($app in $officeAppList){
+        if(Test-Path ($officeAppPath + "\$app")){
+            switch($Action) {
+                "Pin to Start" {
+                    if($osVersion -ge '10'){
+                        $actionId = '51201'
+                    } else { 
+                        $actionId = '5381'
+                    }
+                }
+                "Unpin from Start" {
+                    if($osVersion -ge '10'){
+                        $actionId = '51394'
+                    } else { 
+                        $actionId = '5382'
+                    } 
+                }
+                "Pin to taskbar" {
+                    $actionId = '5386'
+                }
+                "Unpin from taskbar" {
+                    $actionId = '5387'
+                }   
+            }
+
+            InvokeVerb -FilePath ($officeAppPath + "\$app") -Verb $(GetVerb -VerbId $actionId)
+            
+        }
+    }
+}
+
 Function GetScriptRoot() {
  process {
      [string]$scriptPath = "."
