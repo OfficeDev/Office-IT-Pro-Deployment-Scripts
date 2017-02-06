@@ -106,7 +106,7 @@ begin {
 }
 
 process {
-    # write log
+    #write log
     $lineNum = Get-CurrentLineNumber    
     $filName = Get-CurrentFileName 
     WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "begin function"
@@ -293,7 +293,7 @@ process {
     }
 
     if (!($primaryLanguage)) {
-            <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Cannot find matching Office language for: $primaryLanguage"
@@ -427,7 +427,7 @@ process {
     }
 
     $formattedXml = Format-XML ([xml]($ConfigFile)) -indent 4
-    # write log
+    #write log
     $lineNum = Get-CurrentLineNumber    
     $filName = Get-CurrentFileName 
     WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Write XML output"
@@ -705,10 +705,12 @@ process {
            $officeProduct = $false
            foreach ($officeInstallPath in $PathList) {
              if ($officeInstallPath) {
+                try{
                 $installReg = "^" + $installPath.Replace('\', '\\')
                 $installReg = $installReg.Replace('(', '\(')
                 $installReg = $installReg.Replace(')', '\)')
                 if ($officeInstallPath -match $installReg) { $officeProduct = $true }
+                } catch {}
              }
            }
 
@@ -716,7 +718,11 @@ process {
            
            $name = $regProv.GetStringValue($HKLM, $path, "DisplayName").sValue          
 
-           if ($ConfigItemList.Contains($key.ToUpper()) -and $name.ToUpper().Contains("MICROSOFT OFFICE") -and $name.ToUpper() -notlike "*MUI*" -and $name.ToUpper() -notlike "*VISIO*" -and $name.ToUpper() -notlike "*PROJECT*") {
+           if ($ConfigItemList.Contains($key.ToUpper()) -and $name.ToUpper().Contains("MICROSOFT OFFICE") `
+                                                        -and $name.ToUpper() -notlike "*MUI*" `
+                                                        -and $name.ToUpper() -notlike "*VISIO*" `
+                                                        -and $name.ToUpper() -notlike "*PROJECT*" `
+                                                        -and $name.ToUpper() -notlike "*PROOFING*") {
               $primaryOfficeProduct = $true
            }
 
@@ -1596,7 +1602,7 @@ function odtAddUpdates{
     Process{
         #Check to make sure the correct root element exists
         if($ConfigDoc.Configuration -eq $null){
-        <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "no configuration element"
@@ -1687,7 +1693,7 @@ Function odtSetAdd{
     Process{
         #Check for proper root element
         if($ConfigDoc.Configuration -eq $null){
-        <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "no configuration element"
@@ -1800,7 +1806,7 @@ Here is what the portion of configuration file looks like when modified by this 
 
         #Check for proper root element
         if($ConfigFile.Configuration -eq $null){
-        <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "no configuration element"

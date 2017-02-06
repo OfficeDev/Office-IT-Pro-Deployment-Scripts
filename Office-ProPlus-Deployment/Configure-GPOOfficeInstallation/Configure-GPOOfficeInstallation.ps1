@@ -28,7 +28,7 @@ Function Download-GPOOfficeInstallation {
     Process
     {
 	Write-Host 'Updating Config Files'
-<# write log#>
+    #write log
     $lineNum = Get-CurrentLineNumber    
     $filName = Get-CurrentFileName 
     WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Updating Config Files"
@@ -59,7 +59,7 @@ Function Download-GPOOfficeInstallation {
 	$addNode.OfficeClientEdition = $Bitness
     $addNode.SourcePath = $UncPath
 	Write-Host 'Saving Download Configuration XML'	
-<# write log#>
+    #write log
     $lineNum = Get-CurrentLineNumber    
     $filName = Get-CurrentFileName 
     WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Saving Download Configuration XML"
@@ -72,14 +72,14 @@ Function Download-GPOOfficeInstallation {
 	$updatesNode = $content.Configuration.Updates
 	$updatesNode.UpdatePath = $UncPath
 	Write-Host 'Saving Install Configuration XML'
-    <# write log#>
+    #write log
     $lineNum = Get-CurrentLineNumber    
     $filName = Get-CurrentFileName 
     WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Saving Install Configuration XML"
 	$content.Save($installConfigFilePath)
 	
 	Write-Host 'Setting up Click2Run to download Office to UNC Path'
-<# write log#>
+    #write log
     $lineNum = Get-CurrentLineNumber    
     $filName = Get-CurrentFileName 
     WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Setting up Click2Run to download Office to UNC Path"
@@ -90,14 +90,14 @@ Function Download-GPOOfficeInstallation {
 	$arguments = "/download", "$downloadConfigFileName"
 	
 	Write-Host 'Starting Download'
-<# write log#>
+    #write log
     $lineNum = Get-CurrentLineNumber    
     $filName = Get-CurrentFileName 
     WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Starting Download"
 	& $app @arguments
 	
 	Write-Host 'Download Complete'	
-<# write log#>
+    #write log
     $lineNum = Get-CurrentLineNumber    
     $filName = Get-CurrentFileName 
     WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Download Complete"
@@ -149,13 +149,13 @@ Function Configure-GPOOfficeInstallation {
 
     Write-Host "Configuring Group Policy to Install Office Click-To-Run"
     Write-Host
-    <# write log#>
+    #write log
     $lineNum = Get-CurrentLineNumber    
     $filName = Get-CurrentFileName 
     WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Configuring Group Policy to Install Office Click-To-Run"
 
     Write-Host "Searching for GPO: $GpoName..." -NoNewline
-    <# write log#>
+    #write log
     $lineNum = Get-CurrentLineNumber    
     $filName = Get-CurrentFileName 
     WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Searching for GPO: $GpoName..."
@@ -163,7 +163,7 @@ Function Configure-GPOOfficeInstallation {
 	
 	if(!$gpo -or ($gpo -eq $null))
 	{
-        <# write log#>
+        #write log
         $lineNum = Get-CurrentLineNumber    
         $filName = Get-CurrentFileName 
         WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "The GPO $GpoName could not be found."
@@ -172,13 +172,13 @@ Function Configure-GPOOfficeInstallation {
 	}
 
     Write-Host "GPO Found"
-    <# write log#>
+    #write log
     $lineNum = Get-CurrentLineNumber    
     $filName = Get-CurrentFileName 
     WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "GPO Found"
 
     Write-Host "Modifying GPO: $GpoName..." -NoNewline
-    <# write log#>
+    #write log
     $lineNum = Get-CurrentLineNumber    
     $filName = Get-CurrentFileName 
     WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Modifying GPO: $GpoName..."
@@ -387,7 +387,7 @@ Function Configure-GPOOfficeInstallation {
     Write-Host ""
     Write-Host "The Group Policy '$GpoName' has been modified to install Office at Workstation Startup." -BackgroundColor DarkBlue
     Write-Host "Once Group Policy has refreshed on the Workstations then Office will install on next startup if the computer has access to the Network Share." -BackgroundColor DarkBlue
-    <# write log#>
+    #write log
     $lineNum = Get-CurrentLineNumber    
     $filName = Get-CurrentFileName 
     WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "GPO Modified"

@@ -7,7 +7,7 @@ param(
 [bool]$Remove2016Installs = $false,
 
 [Parameter(ValueFromPipelineByPropertyName=$true)]
-[bool]$Force = $true,
+[bool]$Force = $false,
 
 [Parameter(ValueFromPipelineByPropertyName=$true)]
 [bool]$KeepUserSettings = $true,
@@ -23,27 +23,6 @@ param(
 [string[]]$ProductsToRemove
 )
 
-Function IsDotSourced() {
-  [CmdletBinding(SupportsShouldProcess=$true)]
-  param(
-    [Parameter(ValueFromPipelineByPropertyName=$true)]
-    [string]$InvocationLine = ""
-  )
-  $cmdLine = $InvocationLine.Trim()
-  Do {
-    $cmdLine = $cmdLine.Replace(" ", "")
-  } while($cmdLine.Contains(" "))
-
-  $dotSourced = $false
-  if ($cmdLine -match '^\.\\') {
-     $dotSourced = $false
-  } else {
-     $dotSourced = ($cmdLine -match '^\.')
-  }
-
-  return $dotSourced
-}
-
 Function Remove-PreviousOfficeInstalls{
   [CmdletBinding(SupportsShouldProcess=$true)]
   param(
@@ -54,7 +33,7 @@ Function Remove-PreviousOfficeInstalls{
     [bool]$Remove2016Installs = $false,
 
     [Parameter(ValueFromPipelineByPropertyName=$true)]
-    [bool]$Force = $true,
+    [bool]$Force = $false,
 
     [Parameter(ValueFromPipelineByPropertyName=$true)]
     [bool]$KeepUserSettings = $true,
@@ -741,10 +720,12 @@ process {
            $officeProduct = $false
            foreach ($officeInstallPath in $PathList) {
              if ($officeInstallPath) {
+                try{
                 $installReg = "^" + $installPath.Replace('\', '\\')
                 $installReg = $installReg.Replace('(', '\(')
                 $installReg = $installReg.Replace(')', '\)')
                 if ($officeInstallPath -match $installReg) { $officeProduct = $true }
+                } catch {}
              }
            }
 
@@ -752,7 +733,11 @@ process {
            
            $name = $regProv.GetStringValue($HKLM, $path, "DisplayName").sValue          
 
-           if ($ConfigItemList.Contains($key.ToUpper()) -and $name.ToUpper().Contains("MICROSOFT OFFICE") -and $name.ToUpper() -notlike "*MUI*" -and $name.ToUpper() -notlike "*VISIO*" -and $name.ToUpper() -notlike "*PROJECT*") {
+           if ($ConfigItemList.Contains($key.ToUpper()) -and $name.ToUpper().Contains("MICROSOFT OFFICE") `
+                                                        -and $name.ToUpper() -notlike "*MUI*" `
+                                                        -and $name.ToUpper() -notlike "*VISIO*" `
+                                                        -and $name.ToUpper() -notlike "*PROJECT*" `
+                                                        -and $name.ToUpper() -notlike "*PROOFING*") {
               $primaryOfficeProduct = $true
            }
 
@@ -891,6 +876,27 @@ param(
 
     return $Result
 
+}
+
+Function IsDotSourced() {
+  [CmdletBinding(SupportsShouldProcess=$true)]
+  param(
+    [Parameter(ValueFromPipelineByPropertyName=$true)]
+    [string]$InvocationLine = ""
+  )
+  $cmdLine = $InvocationLine.Trim()
+  Do {
+    $cmdLine = $cmdLine.Replace(" ", "")
+  } while($cmdLine.Contains(" "))
+
+  $dotSourced = $false
+  if ($cmdLine -match '^\.\\') {
+     $dotSourced = $false
+  } else {
+     $dotSourced = ($cmdLine -match '^\.')
+  }
+
+  return $dotSourced
 }
 
 $dotSourced = IsDotSourced -InvocationLine $MyInvocation.Line

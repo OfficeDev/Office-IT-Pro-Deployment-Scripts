@@ -45,7 +45,7 @@ Will create the GPO named "SuppressMSOffice2016" no domain will be assigned
     if (!($existingGPO)) 
     {
         Write-Host "Creating a new Group Policy..."
-        <# write log#>
+        #write log
         $lineNum = Get-CurrentLineNumber    
         $filName = Get-CurrentFileName 
         WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Creating a new Group Policy..."
@@ -57,7 +57,7 @@ Will create the GPO named "SuppressMSOffice2016" no domain will be assigned
         }
     } else {
        Write-Host "Group Policy Already Exists..."
-       <# write log#>
+        #write log
         $lineNum = Get-CurrentLineNumber    
         $filName = Get-CurrentFileName 
         WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Group Policy Already Exists..."
@@ -67,7 +67,7 @@ Will create the GPO named "SuppressMSOffice2016" no domain will be assigned
 
     
     Write-Host "Configuring Group Policy '$gpoName': " -NoNewline
-    <# write log#>
+        #write log
         $lineNum = Get-CurrentLineNumber    
         $filName = Get-CurrentFileName 
         WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Configuring Group Policy '$gpoName':"
@@ -77,7 +77,7 @@ Will create the GPO named "SuppressMSOffice2016" no domain will be assigned
     Set-GPRegistryValue -Name $GpoName -Key "HKLM\Software\Policies\Microsoft\office\15.0\common\officeupdate" -ValueName enableautomaticupgrade -Type DWord -Value 0 | Out-Null
 
     Write-Host "Done"
-    <# write log#>
+        #write log
         $lineNum = Get-CurrentLineNumber    
         $filName = Get-CurrentFileName 
         WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Done"
@@ -89,7 +89,7 @@ Will create the GPO named "SuppressMSOffice2016" no domain will be assigned
         Write-Host "The Group Policy will not become Active until it linked to an Active Directory Organizational Unit (OU)." `
                    "In Group Policy Management Console link the GPO titled '$gpoName' to the proper OU in your environment." -BackgroundColor Red -ForegroundColor White
 
-        <# write log#>
+        #write log
         $lineNum = Get-CurrentLineNumber    
         $filName = Get-CurrentFileName 
         WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "The Group Policy will not become Active until it linked to an Active Directory Organizational Unit (OU)."

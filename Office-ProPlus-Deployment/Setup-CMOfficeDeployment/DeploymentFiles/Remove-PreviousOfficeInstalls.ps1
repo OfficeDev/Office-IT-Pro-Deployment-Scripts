@@ -7,7 +7,7 @@ param(
 [bool]$Remove2016Installs = $false,
 
 [Parameter(ValueFromPipelineByPropertyName=$true)]
-[bool]$Force = $true,
+[bool]$Force = $false,
 
 [Parameter(ValueFromPipelineByPropertyName=$true)]
 [bool]$KeepUserSettings = $true,
@@ -264,10 +264,12 @@ process {
            $officeProduct = $false
            foreach ($officeInstallPath in $PathList) {
              if ($officeInstallPath) {
+                try{
                 $installReg = "^" + $installPath.Replace('\', '\\')
                 $installReg = $installReg.Replace('(', '\(')
                 $installReg = $installReg.Replace(')', '\)')
                 if ($officeInstallPath -match $installReg) { $officeProduct = $true }
+                } catch {}
              }
            }
 
@@ -275,7 +277,11 @@ process {
            
            $name = $regProv.GetStringValue($HKLM, $path, "DisplayName").sValue          
 
-           if ($ConfigItemList.Contains($key.ToUpper()) -and $name.ToUpper().Contains("MICROSOFT OFFICE") -and $name.ToUpper() -notlike "*MUI*" -and $name.ToUpper() -notlike "*VISIO*" -and $name.ToUpper() -notlike "*PROJECT*") {
+           if ($ConfigItemList.Contains($key.ToUpper()) -and $name.ToUpper().Contains("MICROSOFT OFFICE") `
+                                                        -and $name.ToUpper() -notlike "*MUI*" `
+                                                        -and $name.ToUpper() -notlike "*VISIO*" `
+                                                        -and $name.ToUpper() -notlike "*PROJECT*" `
+                                                        -and $name.ToUpper() -notlike "*PROOFING*") {
               $primaryOfficeProduct = $true
            }
 
@@ -355,7 +361,7 @@ Function Remove-PreviousOfficeInstalls{
     [bool]$Remove2016Installs = $false,
 
     [Parameter(ValueFromPipelineByPropertyName=$true)]
-    [bool]$Force = $true,
+    [bool]$Force = $false,
 
     [Parameter(ValueFromPipelineByPropertyName=$true)]
     [bool]$KeepUserSettings = $true,
@@ -407,7 +413,7 @@ Function Remove-PreviousOfficeInstalls{
     $scriptPath = GetScriptRoot
 
     Write-Host "Detecting Office installs..."
-    <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Detecting Office installs..."
@@ -418,7 +424,7 @@ Function Remove-PreviousOfficeInstalls{
     $removeOffice = $true
     if (!( $officeVersions)) {
        Write-Host "Microsoft Office is not installed"
-       <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Microsoft Office is not installed"
@@ -468,7 +474,7 @@ Function Remove-PreviousOfficeInstalls{
 
               if ($removeC2R) {
                   Write-Host "`tRemoving Office Click-To-Run..."
-                  <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Removing Office Click-To-Run..."
@@ -481,7 +487,7 @@ Function Remove-PreviousOfficeInstalls{
                     $officeC2RRemoved = $true
                     $c2r2013Installed = $false
                   } else {
-                  <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Required file missing: $ActionFile"
@@ -502,7 +508,7 @@ Function Remove-PreviousOfficeInstalls{
                     {
                         if (!($office03Removed)) {
                             Write-Host "`tRemoving Office 2003..."
-                            <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Removing Office 2003..."
@@ -514,7 +520,7 @@ Function Remove-PreviousOfficeInstalls{
                                 Invoke-Expression $cmd
                                 $office03Removed = $true
                             } else {
-                            <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Required file missing: $ActionFile"
@@ -527,7 +533,7 @@ Function Remove-PreviousOfficeInstalls{
                     {
                         if (!($office07Removed)) {
                             Write-Host "`tRemoving Office 2007..."
-                            <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Removing Office 2007..."
@@ -539,7 +545,7 @@ Function Remove-PreviousOfficeInstalls{
                                 Invoke-Expression $cmd
                                 $office07Removed = $true
                             } else {
-                            <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Required file missing $ActionFile"
@@ -552,7 +558,7 @@ Function Remove-PreviousOfficeInstalls{
                     {
                         if (!($office10Removed)) {
                             Write-Host "`tRemoving Office 2010..."
-                            <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Removing Office 2010..."
@@ -564,7 +570,7 @@ Function Remove-PreviousOfficeInstalls{
                                 Invoke-Expression $cmd
                                 $office10Removed = $true
                             } else {
-                                            <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Required file missing: $ActionFile"
@@ -578,7 +584,7 @@ Function Remove-PreviousOfficeInstalls{
                         if (!($office15Removed)) {
                             if (!($c2r2013Installed)) {
                                 Write-Host "`tRemoving Office 2013..."
-                                <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Removing Office 2013..."
@@ -590,7 +596,7 @@ Function Remove-PreviousOfficeInstalls{
                                    Invoke-Expression $cmd 
                                    $office15Removed = $true
                                 } else {
-                                                    <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Required file missing: $ActionFile"
@@ -610,7 +616,7 @@ Function Remove-PreviousOfficeInstalls{
                                 if (!($c2r2016Installed)) {
                                       Write-Host "`tRemoving Office 2016..."
                                       Write-Host "`tRemoving Office 2016..."
-                                      <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
                                       $ActionFile = "$scriptPath\$16MSIVBS"
@@ -621,7 +627,7 @@ Function Remove-PreviousOfficeInstalls{
                                         Invoke-Expression $cmd
                                         $office16Removed = $true
                                       } else {
-                                                                <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Required file missing: $ActionFile"

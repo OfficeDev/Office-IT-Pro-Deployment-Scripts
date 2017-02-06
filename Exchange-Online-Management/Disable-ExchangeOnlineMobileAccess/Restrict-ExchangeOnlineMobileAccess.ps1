@@ -69,7 +69,7 @@ process {
 
        Write-Host
        Write-Host "Disabling OWA for Mobile Devices: " -NoNewline
-       <# write log#>
+        #write log
         $lineNum = Get-CurrentLineNumber    
         $filName = Get-CurrentFileName 
         WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Disabling OWA for Mobile Devices: "
@@ -77,7 +77,7 @@ process {
        Write-Host "Complete"
 
        Write-Host "Creating Access Rule to explicitly allow Outlook Mobile Access: " -NoNewline
-       <# write log#>
+        #write log
         $lineNum = Get-CurrentLineNumber    
         $filName = Get-CurrentFileName 
         WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Complete, Creating Access Rule to explicitly allow Outlook Mobile Access:"
@@ -91,20 +91,20 @@ process {
        if (!($ruleExists)) {
           New-ActiveSyncDeviceAccessRule -Characteristic DeviceModel -QueryString "Outlook for iOS and Android" -AccessLevel Allow | Out-Null
           Write-Host "Complete"
-          <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Complete"
        } else {
           Write-Host "Already Exists"
-          <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Already Exists"
        }
 
        Write-Host "Setting ActiveSync Mobile Device Access to 'Block': " -NoNewline
-       <# write log#>
+        #write log
         $lineNum = Get-CurrentLineNumber    
         $filName = Get-CurrentFileName 
         WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Setting ActiveSync Mobile Device Access to 'Block': "
@@ -114,13 +114,13 @@ process {
        if ($asOrgSettings.DefaultAccessLevel -ne "Block") {
            Set-ActiveSyncOrganizationSettings -DefaultAccessLevel Block -WarningAction SilentlyContinue | Out-Null
            Write-Host "Complete"
-           <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Complete"
        } else {
           Write-Host "Already Set"
-          <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Already Set"

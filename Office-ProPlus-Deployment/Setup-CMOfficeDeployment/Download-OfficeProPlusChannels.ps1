@@ -131,14 +131,25 @@ Param(
     [bool] $IncludeChannelInfo = $false,
 
     [Parameter()]
-    [bool] $DownloadPreviousVersionIfThrottled = $false
+    [bool] $DownloadThrottledVersions = $false
 )
 
 #create array for all languages including core, partial, and proofing
 $allLanguages = @();
-$allLanguages += , $Languages
-$allLanguages += , $PartialLanguages
-$allLanguages += , $ProofingLanguages
+$Languages | 
+%{
+  $allLanguages += $_
+}
+	
+$PartialLanguages | 
+%{
+  $allLanguages += $_
+}
+	
+$ProofingLanguages | 
+%{
+  $allLanguages += $_
+}
 
 
 $BranchesOrChannels = @()
@@ -205,7 +216,7 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
 
             Write-Host
             Write-Host "Downloading Bitness : $currentBitness"
-            <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Downloading Bitness : $currentBitness"
@@ -223,7 +234,7 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
 
                 Write-Progress -id 1 -Activity "Downloading Channel" -status "Channel: $($currentBranch.ToString()) : $currentBitness" -percentComplete ($b / $BranchCount *100) 
 
-                <# write log#>
+                #write log
                 $lineNum = Get-CurrentLineNumber    
                 $filName = Get-CurrentFileName 
                 WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Downloading Channel: $currentBranch"
@@ -247,17 +258,19 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
 
                 if([String]::IsNullOrWhiteSpace($Version) -or [String]::IsNullOrWhiteSpace($Throttle)){
                     $versionReturn = GetVersionBasedOnThrottle -Channel $currentBranch -Version $Version -currentVerXML $CurrentVersionXML
-                    if ($DownloadPreviousVersionIfThrottled) {
-                        if ($versionReturn.Throttle -ge 1000) {
-                          $Version = $versionReturn.NewestVersion
+                    if ($DownloadThrottledVersions) {
+                        $Version = $versionReturn.NewestVersion
+                    } else {
+                        if ([int]$versionReturn.Throttle -ge 1000) {
+                            $Version = $versionReturn.NewestVersion
                         } else {
-                          $Version = $versionReturn.PreviousVesion
+                            $Version = $versionReturn.PreviousVersion
                         }
                     }
                     $NewestVersion = $versionReturn.NewestVersion
                     $PreviousVersion = $versionReturn.PreviousVesion
                     $Throttle = $versionReturn.Throttle
-                }             
+                }          
 
                 if([String]::IsNullOrWhiteSpace($Version)){
                     #get base .cab to get current version
@@ -283,7 +296,7 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
                         Invoke-WebRequest -Uri $url -ErrorAction Stop | Out-Null
                     } catch {
                       Write-Host "`t`tVersion Not Found: $currentVersion"
-                      <# write log#>
+                        #write log
                         $lineNum = Get-CurrentLineNumber    
                         $filName = Get-CurrentFileName 
                         WriteToLogFile -LNumber $lineNum -FName $fileName -ActionError "Version Not Found: $currentVersion"
@@ -297,12 +310,11 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
                    $VersionFile = "$TargetDirectory\$FolderName\Office\Data\v64_$currentVersion.cab"
                 }
                 
-                if (($Throttle -lt 1000) -and ($DownloadPreviousVersionIfThrottled)) {
-                   Write-Host "`tDownloading Channel: $currentBranch - Version: $currentVersion (Using previous version instead of Thottled Version: $NewestVersion - Thottle: $Throttle)"
+                if (([int]$Throttle -lt 1000) -and (!$DownloadThrottledVersions)) {
+                   Write-Host "`tDownloading Channel: $currentBranch - Version: $currentVersion (Using previous version instead of Throttled Version: $NewestVersion - Throttle: $Throttle)"
                 } else {
                    Write-Host "`tDownloading Channel: $currentBranch - Version: $currentVersion"
                 }
-
 
                 if(!(Test-Path "$TargetDirectory\$FolderName\Office\Data\$currentVersion")){
                     New-Item -Path "$TargetDirectory\$FolderName\Office\Data\$currentVersion" -ItemType directory -Force | Out-Null
@@ -331,7 +343,6 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
                    $numberOfFiles ++
                 }
                 }
-
 
                 #basic files
                 $CurrentVersionXML.UpdateFiles.File | ? language -eq "0" | 
@@ -394,8 +405,8 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
 
                     $j = $j + 1
 
-                    if (($Throttle -lt 1000) -and ($DownloadPreviousVersionIfThrottled)) {
-                       Write-Progress -id 2 -ParentId 1 -Activity "Downloading Channel Files" -status "Channel: $($currentBranch.ToString()) - Version: $currentVersion (Using previous version instead of Thottled Version: $NewestVersion - Thottle: $Throttle)" -percentComplete ($j / $numberOfFiles *100)
+                    if (([int]$Throttle -lt 1000) -and (!$DownloadThrottledVersions)) {
+                       Write-Progress -id 2 -ParentId 1 -Activity "Downloading Channel Files" -status "Channel: $($currentBranch.ToString()) - Version: $currentVersion (Using previous version instead of Throttled Version: $NewestVersion - Throttle: $Throttle)" -percentComplete ($j / $numberOfFiles *100)
                     } else {
                        Write-Progress -id 2 -ParentId 1 -Activity "Downloading Channel Files" -status "Channel: $($currentBranch.ToString()) - Version: $currentVersion" -percentComplete ($j / $numberOfFiles *100)
                     }
@@ -593,11 +604,13 @@ Process {
                 $baseURL = $CurrentVersionXML.UpdateFiles.baseURL | ? branch -eq $_.ToString() | %{$_.URL};
 
                 $versionReturn = GetVersionBasedOnThrottle -Channel $currentBranch -Version $Version -currentVerXML $CurrentVersionXML
-                if ($DownloadPreviousVersionIfThrottled) {
-                    if ($versionReturn.Throttle -ge 1000) {
+                if ($DownloadThrottledVersions) {
+                        $Version = $versionReturn.NewestVersion
+                } else {
+                    if ([int]$versionReturn.Throttle -ge 1000) {
                         $Version = $versionReturn.NewestVersion
                     } else {
-                        $Version = $versionReturn.PreviousVesion
+                        $Version = $versionReturn.PreviousVersion
                     }
                 }
                 $NewestVersion = $versionReturn.NewestVersion
@@ -756,7 +769,7 @@ function GetVersionBasedOnThrottle {
 
 function PurgeOlderVersions([string]$targetDirectory, [int]$numVersionsToKeep, [array]$channels){
     Write-Host "Checking for Older Versions"
-    <# write log#>
+    #write log
     $lineNum = Get-CurrentLineNumber    
     $filName = Get-CurrentFileName 
     WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Checking for Older Versions"
@@ -781,7 +794,7 @@ function PurgeOlderVersions([string]$targetDirectory, [int]$numVersionsToKeep, [
 
         if (Test-Path -Path $directoryPath) {
             Write-Host "`tChannel: $channelName2"
-            <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Channel: $channelName2"
@@ -809,7 +822,7 @@ function PurgeOlderVersions([string]$targetDirectory, [int]$numVersionsToKeep, [
                      $versionsToRemove = $true
                      $removeVersion = $totalVersions[($i-1)]
                      Write-Host "`t`tRemoving Version: $removeVersion"
-                     <# write log#>
+                    #write log
                     $lineNum = Get-CurrentLineNumber    
                     $filName = Get-CurrentFileName 
                     WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Removing Version: $removeVersion"
@@ -839,7 +852,7 @@ function PurgeOlderVersions([string]$targetDirectory, [int]$numVersionsToKeep, [
 
             if (!($versionsToRemove)) {
                 Write-Host "`t`tNo Versions to Remove"
-                 <# write log#>
+                #write log
                 $lineNum = Get-CurrentLineNumber    
                 $filName = Get-CurrentFileName 
                 WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "No Versions to Remove"

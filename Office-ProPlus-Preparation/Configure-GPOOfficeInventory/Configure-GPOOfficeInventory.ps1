@@ -99,13 +99,13 @@ Policy is applied
 
     Write-Host "Configuring Group Policy to Inventory Office Clients"
     Write-Host
-    <# write log#>
+    #write log
     $lineNum = Get-CurrentLineNumber    
     $filName = Get-CurrentFileName 
     WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Configuring Group Policy to Inventory Office Clients"
 
     Write-Host "Searching for GPO: $GpoName..." -NoNewline
-    <# write log#>
+    #write log
     $lineNum = Get-CurrentLineNumber    
     $filName = Get-CurrentFileName 
     WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Searching for GPO: $GpoName..."
@@ -117,7 +117,7 @@ Policy is applied
 	
 	if(!$gpo -or ($gpo -eq $null))
 	{
-    <# write log#>
+        #write log
         $lineNum = Get-CurrentLineNumber    
         $filName = Get-CurrentFileName 
         WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "The GPO $GpoName could not be found."
@@ -127,7 +127,7 @@ Policy is applied
 
     Write-Host "GPO Found"
     Write-Host "Modifying GPO: $GpoName..." -NoNewline
-    <# write log#>
+    #write log
     $lineNum = Get-CurrentLineNumber    
     $filName = Get-CurrentFileName 
     WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "GPO Found, Modifying GPO: $GpoName..."
@@ -253,7 +253,7 @@ Policy is applied
     Write-Host "The Group Policy '$GpoName' has been modified to inventory Office via Scheduled Task." -BackgroundColor DarkBlue
     Write-Host "Once Group Policy has refreshed as scheduled task will be created to run the scheduled task." -BackgroundColor DarkBlue
 
-    <# write log#>
+    #write log
     $lineNum = Get-CurrentLineNumber    
     $filName = Get-CurrentFileName 
     WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "GPO Modified"

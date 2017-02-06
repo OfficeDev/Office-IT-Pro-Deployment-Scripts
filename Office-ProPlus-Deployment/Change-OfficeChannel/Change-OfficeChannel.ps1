@@ -62,7 +62,7 @@ Function Wait-ForOfficeCTRUpadate() {
 
     process {
        Write-Host "Waiting for Update process to Complete..."
-       <# write log#>
+        #write log
         $lineNum = Get-CurrentLineNumber    
         $filName = Get-CurrentFileName 
         WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Waiting for Update process to Complete..."
@@ -129,7 +129,7 @@ Function Wait-ForOfficeCTRUpadate() {
                                 $displayText = $statusName + "`t" + $operationTime
 
                                 Write-Host $displayText
-                                <# write log#>
+                                #write log
                                 $lineNum = Get-CurrentLineNumber    
                                 $filName = Get-CurrentFileName 
                                 WriteToLogFile -LNumber $lineNum -FName $filName -ActionError $displayText
@@ -148,7 +148,7 @@ Function Wait-ForOfficeCTRUpadate() {
 
                              if ($operation.ToUpper().IndexOf("DOWNLOAD") -gt -1) {
                                 Write-Host "Downloading Update: " -NoNewline
-                                <# write log#>
+                                #write log
                                 $lineNum = Get-CurrentLineNumber    
                                 $filName = Get-CurrentFileName 
                                 WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Downloading Update: "
@@ -156,7 +156,7 @@ Function Wait-ForOfficeCTRUpadate() {
 
                              if ($operation.ToUpper().IndexOf("APPLY") -gt -1) {
                                 Write-Host "Applying Update: " -NoNewline
-                                <# write log#>
+                                #write log
                                 $lineNum = Get-CurrentLineNumber    
                                 $filName = Get-CurrentFileName 
                                 WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Applying Update: "
@@ -164,7 +164,7 @@ Function Wait-ForOfficeCTRUpadate() {
 
                              if ($operation.ToUpper().IndexOf("FINALIZE") -gt -1) {
                                 Write-Host "Finalizing Update: " -NoNewline
-                                <# write log#>
+                                #write log
                                 $lineNum = Get-CurrentLineNumber    
                                 $filName = Get-CurrentFileName 
                                 WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Finalizing Update: "
@@ -203,7 +203,7 @@ Function Wait-ForOfficeCTRUpadate() {
        }
 
        Write-Host $displayValue
-       <# write log#>
+        #write log
         $lineNum = Get-CurrentLineNumber    
         $filName = Get-CurrentFileName 
         WriteToLogFile -LNumber $lineNum -FName $filName -ActionError $displayValue
@@ -213,21 +213,21 @@ Function Wait-ForOfficeCTRUpadate() {
        if ($updateRunning) {
           if ($failure) {
             Write-Host "Update Failed"
-            <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Update Failed"
             throw "Update Failed"
           } else {
             Write-Host "Update Completed - Total Time: $totalOperationTime"
-            <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Update Completed - Total Time: $totalOperationTime"
           }
        } else {
           Write-Host "Update Not Running"
-          <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Update Not Running"
@@ -892,7 +892,7 @@ try {
         }
     } else {
         Write-Host "The client already has version installed: $Version"
-        <# write log#>
+        #write log
         $lineNum = Get-CurrentLineNumber    
         $filName = Get-CurrentFileName 
         WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "The client already has version installed: $Version"

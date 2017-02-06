@@ -105,7 +105,7 @@ function Set-TelemetryStartup() {
             $DomainPath = $Root.Get("DefaultNamingContext")
 
             Write-Host "Configuring Group Policy to Install Telemetry Agent"
-            <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Configuring Group Policy to Install Telemetry Agent"
@@ -114,7 +114,7 @@ function Set-TelemetryStartup() {
 	
 	        if(!$gpo -or ($gpo -eq $null))
 	        {
-                <# write log#>
+            #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "The GPO $GpoName could not be found."
@@ -378,7 +378,7 @@ A GPO named "Office Telemetry" will be created.
     if (!($existingGPO)) 
     {
         Write-Host "Creating a new Group Policy..."
-        <# write log#>
+        #write log
         $lineNum = Get-CurrentLineNumber    
         $filName = Get-CurrentFileName 
         WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Creating a new Group Policy..."
@@ -390,7 +390,7 @@ A GPO named "Office Telemetry" will be created.
         }
     } else {
        Write-Host "Group Policy Already Exists..."
-        <# write log#>
+        #write log
         $lineNum = Get-CurrentLineNumber    
         $filName = Get-CurrentFileName 
         WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Group Policy Already Exists..."
@@ -400,7 +400,7 @@ A GPO named "Office Telemetry" will be created.
     $shareName = "TDShared"
     
     Write-Host "Configuring Group Policy '$gpoName': " -NoNewline
-<# write log#>
+    #write log
     $lineNum = Get-CurrentLineNumber    
     $filName = Get-CurrentFileName 
     WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Configuring Group Policy '$gpoName': "
@@ -419,7 +419,7 @@ A GPO named "Office Telemetry" will be created.
     Set-TelemetryStartup -GpoName $GpoName -CommonFileShare $CommonFileShare -agentShare $agentShare -ScriptName $ScriptName -TelemetryServer $TelemetryServer
 
     Write-Host "Done"
-    <# write log#>
+    #write log
     $lineNum = Get-CurrentLineNumber    
     $filName = Get-CurrentFileName 
     WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Done"
@@ -427,7 +427,7 @@ A GPO named "Office Telemetry" will be created.
     Write-Host
     Write-Host "The Group Policy '$gpoName' has been set to configure client to submit telemetry"
     Write-Host
-    <# write log#>
+    #write log
     $lineNum = Get-CurrentLineNumber    
     $filName = Get-CurrentFileName 
     WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "The Group Policy '$gpoName' has been set to configure client to submit telemetry"
@@ -436,7 +436,7 @@ A GPO named "Office Telemetry" will be created.
     {
         Write-Host "The Group Policy will not become Active until it linked to an Active Directory Organizational Unit (OU)." `
                    "In Group Policy Management Console link the GPO titled '$gpoName' to the proper OU in your environment." -BackgroundColor Red -ForegroundColor White
-                   <# write log#>
+    #write log
     $lineNum = Get-CurrentLineNumber    
     $filName = Get-CurrentFileName 
     WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "The Group Policy will not become Active until it linked to an Active Directory Organizational Unit (OU)."

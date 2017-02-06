@@ -203,7 +203,7 @@ Word, Excel, and Outlook will be pinned to the Start Menu. The PowerShell consol
     $cmdArgs = "/configure " + '"' + $TargetFilePath + '"'
 
     Write-Host "Installing Office Click-To-Run..."
-	<# write log#>
+	#write log
 	$lineNum = Get-CurrentLineNumber    
 	$filName = Get-CurrentFileName 
 	WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Installing Office Click-To-Run..."
@@ -311,10 +311,10 @@ Word, Excel, and Outlook will be pinned to the Start Menu. The PowerShell consol
     if($InstallProofingTools -eq $true){
         Write-Host ""
         Write-Host "Installing Proofing Tools..."
-		<# write log#>
-	$lineNum = Get-CurrentLineNumber    
-	$filName = Get-CurrentFileName 
-	WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Installing Proofing Tools"
+        #write log
+	    $lineNum = Get-CurrentLineNumber    
+	    $filName = Get-CurrentFileName 
+	    WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Installing Proofing Tools"
 
         if((Get-OfficeVersion).Bitness -eq "32-bit"){
             $proofingToolFileName = "proofingtools2016_en-us-x86.exe"
@@ -556,10 +556,12 @@ process {
            $officeProduct = $false
            foreach ($officeInstallPath in $PathList) {
              if ($officeInstallPath) {
+                try{
                 $installReg = "^" + $installPath.Replace('\', '\\')
                 $installReg = $installReg.Replace('(', '\(')
                 $installReg = $installReg.Replace(')', '\)')
                 if ($officeInstallPath -match $installReg) { $officeProduct = $true }
+                } catch {}
              }
            }
 
@@ -567,7 +569,11 @@ process {
            
            $name = $regProv.GetStringValue($HKLM, $path, "DisplayName").sValue          
 
-           if ($ConfigItemList.Contains($key.ToUpper()) -and $name.ToUpper().Contains("MICROSOFT OFFICE") -and $name.ToUpper() -notlike "*MUI*" -and $name.ToUpper() -notlike "*VISIO*" -and $name.ToUpper() -notlike "*PROJECT*") {
+           if ($ConfigItemList.Contains($key.ToUpper()) -and $name.ToUpper().Contains("MICROSOFT OFFICE") `
+                                                        -and $name.ToUpper() -notlike "*MUI*" `
+                                                        -and $name.ToUpper() -notlike "*VISIO*" `
+                                                        -and $name.ToUpper() -notlike "*PROJECT*" `
+                                                        -and $name.ToUpper() -notlike "*PROOFING*") {
               $primaryOfficeProduct = $true
            }
 
@@ -1036,7 +1042,7 @@ Here is what the portion of configuration file looks like when modified by this 
 
             Write-Host
             Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
-			<# write log#>
+			#write log
 			$lineNum = Get-CurrentLineNumber    
 			$filName = Get-CurrentFileName 
 			WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "The Office XML Configuration file has been saved to: $TargetFilePath"
@@ -1257,7 +1263,7 @@ Here is what the portion of configuration file looks like when modified by this 
 
             Write-Host
             Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
-			<# write log#>
+			#write log
 			$lineNum = Get-CurrentLineNumber    
 			$filName = Get-CurrentFileName 
 			WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "The Office XML Configuration file has been saved to: $TargetFilePath"
@@ -1292,7 +1298,7 @@ Function Wait-ForOfficeCTRInstall() {
 
     process {
         Write-Host "Waiting for Install to Begin..."
-		<# write log#>
+		#write log
 		$lineNum = Get-CurrentLineNumber    
 		$filName = Get-CurrentFileName 
 		WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Waiting for Install to Begin..."
@@ -1390,7 +1396,7 @@ Function Wait-ForOfficeCTRInstall() {
         if($failure){
             Write-Host ""
             Write-Host 'Update failed'
-			<# write log#>
+			#write log
 			$lineNum = Get-CurrentLineNumber    
 			$filName = Get-CurrentFileName 
 			WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Update Failed"
@@ -1398,14 +1404,14 @@ Function Wait-ForOfficeCTRInstall() {
             if($trackProgress.Count -gt 0){
                 Write-Host ""
                 Write-Host 'Update complete'
-				<# write log#>
+				#write log
 				$lineNum = Get-CurrentLineNumber    
 				$filName = Get-CurrentFileName 
 				WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Update Complete"
             } else {
                 Write-Host ""
                 Write-Host 'Update not running'
-				<# write log#>
+				#write log
 				$lineNum = Get-CurrentLineNumber    
 				$filName = Get-CurrentFileName 
 				WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Update not running"

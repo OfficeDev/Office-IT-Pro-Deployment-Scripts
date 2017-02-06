@@ -51,7 +51,7 @@ Will uninstall Office Click-to-Run.
         if($c2rVersion) {
             if(!($isInPipe)) {
                 Write-Host "Please wait while $c2rName is being uninstalled..."
-                <# write log#>
+                #write log
                 $lineNum = Get-CurrentLineNumber    
                 $filName = Get-CurrentFileName 
                 WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Please wait while $c2rName is being uninstalled..."
@@ -80,7 +80,7 @@ Will uninstall Office Click-to-Run.
             if(!($c2rTest)){                           
                 if (!($isInPipe)) {                        
                     Write-Host "Office Click-to-Run has been successfully uninstalled." 
-                    <# write log#>
+                    #write log
                     $lineNum = Get-CurrentLineNumber    
                     $filName = Get-CurrentFileName 
                     WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Office Click-to-Run has been successfully uninstalled." 
@@ -321,10 +321,12 @@ process {
            $officeProduct = $false
            foreach ($officeInstallPath in $PathList) {
              if ($officeInstallPath) {
+                try{
                 $installReg = "^" + $installPath.Replace('\', '\\')
                 $installReg = $installReg.Replace('(', '\(')
                 $installReg = $installReg.Replace(')', '\)')
                 if ($officeInstallPath -match $installReg) { $officeProduct = $true }
+                } catch {}
              }
            }
 
@@ -332,7 +334,11 @@ process {
            
            $name = $regProv.GetStringValue($HKLM, $path, "DisplayName").sValue          
 
-           if ($ConfigItemList.Contains($key.ToUpper()) -and $name.ToUpper().Contains("MICROSOFT OFFICE") -and $name.ToUpper() -notlike "*MUI*" -and $name.ToUpper() -notlike "*VISIO*" -and $name.ToUpper() -notlike "*PROJECT*") {
+           if ($ConfigItemList.Contains($key.ToUpper()) -and $name.ToUpper().Contains("MICROSOFT OFFICE") `
+                                                        -and $name.ToUpper() -notlike "*MUI*" `
+                                                        -and $name.ToUpper() -notlike "*VISIO*" `
+                                                        -and $name.ToUpper() -notlike "*PROJECT*" `
+                                                        -and $name.ToUpper() -notlike "*PROOFING*") {
               $primaryOfficeProduct = $true
            }
 

@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using System.Web;
 using Microsoft.OfficeProPlus.Downloader;
@@ -23,7 +24,7 @@ namespace OfficeVersionHistory.Business
             List<UpdateChannel> updateChannels = null;
 
             var now = DateTime.Now;
-            var dateKey = "Channels-" + now.Year + now.Month + now.Day + now.Hour;
+            var dateKey = "ChannelsInfo-" + now.Year + now.Month + now.Day + now.Hour;
 
             if (WebApiConfig.ChannelCache.ContainsKey(dateKey))
             {
@@ -31,7 +32,11 @@ namespace OfficeVersionHistory.Business
             }
             else
             {
-                updateChannels = await _proPlusDownloader.DownloadReleaseHistoryCabAsync();
+                updateChannels = await _proPlusDownloader.DownloadVersionsFromWebSite();
+                if (!(updateChannels != null && updateChannels.Count > 0))
+                {
+                    updateChannels = await _proPlusDownloader.DownloadReleaseHistoryCabAsync();
+                }
                 WebApiConfig.ChannelCache[dateKey] = updateChannels;
             }
 
