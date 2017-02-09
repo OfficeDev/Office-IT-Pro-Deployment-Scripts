@@ -1956,8 +1956,7 @@ function GetPinnedTaskbarApps {
     return $PinnedTaskbarApps.Name
 }
 
-
-function SaveOfficeSettings{
+function Save-OfficeSettings{
     ## Find the source files
 
     Get-ChildItem C:\Users\$($env:USERNAME)\AppData\Roaming\Microsoft\Office -Recurse |  foreach {
@@ -2038,9 +2037,7 @@ Get-ChildItem C:\Users\$($env:USERNAME)\AppData\Local\Microsoft\Office -Recurse 
     
 }
 
-
-
-function GetOfficeSettings{
+function Set-OfficeSettings{
     ## Find the source files
 
     Get-ChildItem C:\Users\$($env:USERNAME)\AppData\Roaming\TempRoamingOffice -Recurse |  foreach {
