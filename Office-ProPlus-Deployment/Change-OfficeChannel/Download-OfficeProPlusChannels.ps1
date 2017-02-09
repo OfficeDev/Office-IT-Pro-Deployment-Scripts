@@ -131,26 +131,26 @@ Param(
     [bool] $IncludeChannelInfo = $false,
 
     [Parameter()]
-    [bool] $DownloadThrottledVersions = $false
+    [bool] $DownloadThrottledVersions = $true
 )
 
 #create array for all languages including core, partial, and proofing
 $allLanguages = @();
+
 $Languages | 
 %{
   $allLanguages += $_
 }
-	
+
 $PartialLanguages | 
 %{
   $allLanguages += $_
 }
-	
+
 $ProofingLanguages | 
 %{
   $allLanguages += $_
 }
-
 
 $BranchesOrChannels = @()
 
@@ -226,7 +226,7 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
                 $currentBranch = $_
                 $b++
 
-                $Version = ""
+                #$Version = ""
                 $PreviousVersion = ""
                 $NewestVersion = ""
                 $Throttle = ""
@@ -263,7 +263,7 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
                     } else {
                         if ([int]$versionReturn.Throttle -ge 1000) {
                             $Version = $versionReturn.NewestVersion
-                        } else {
+                        } elseif([String]::IsNullOrWhiteSpace($Version)) {
                             $Version = $versionReturn.PreviousVersion
                         }
                     }
@@ -339,9 +339,9 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
                     #LANGUAGE LOGIC HERE
                     $languageId  = [globalization.cultureinfo]::GetCultures("allCultures") | ? Name -eq $_ | %{$_.LCID}
                     $CurrentVersionXML.UpdateFiles.File | ? language -eq $languageId | 
-                            %{
-                   $numberOfFiles ++
-                }
+                    %{
+                      $numberOfFiles ++
+                    }
                 }
 
                 #basic files
@@ -481,13 +481,13 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
                 }
 
                 #Copy Version file and overwrite the v32.cab or v64.cab file
-                if (Test-Path -Path $VersionFile) {
+                if ((Test-Path -Path $VersionFile) -and $VersionFile.Contains($NewestVersion)) {
                    $parentPath = Split-Path -parent $VersionFile
 
                    if ($currentBitness.Contains("32")) {
-                     Copy-Item -Path $VersionFile -Destination "v32.cab" -Force | Out-Null
+                     Copy-Item -Path $VersionFile -Destination $parentPath"\v32.cab" -Force | Out-Null
                    } else {
-                     Copy-Item -Path $VersionFile -Destination "v64.cab" -Force | Out-Null
+                     Copy-Item -Path $VersionFile -Destination $parentPath"\v64.cab" -Force | Out-Null
                    }
                 }
             }
@@ -726,7 +726,10 @@ function GetVersionBasedOnThrottle {
         [xml]$vdxml = Get-Content $baseCabFileName2
 
         $UpdateChannels = $vdxml.ReleaseHistory.UpdateChannel;
-        $updates = $UpdateChannels | Where {$_.Name -like $checkChannel}
+        $APIUpdates = GetAPIVersions
+        $APupdates = $APIUpdates | Where {$_.Name -like $checkChannel}#pulled from API
+
+        $updates = $UpdateChannels | Where {$_.Name -like $checkChannel}#pulled from release history
 
         #foreach($update in $updates.Update){
         #
@@ -753,12 +756,29 @@ function GetVersionBasedOnThrottle {
                 $throttle = $vdxml.Version.Throttle;
 
                 Remove-Item -Path $baseCabFileName | Out-Null
-
+                try{
+                #api first
+           $object = New-Object PSObject -Property @{Throttle = $throttle.Value; 
+                                                     NewestVersion = $APupdates.Updates[0].LegacyVersion ;
+                                                     PreviousVersion = $APupdates.Updates[1].LegacyVersion ;
+                                                    }
+           $object | Add-Member MemberSet PSStandardMembers $PSStandardMembers
+           #api fails go to release history
+           }catch{
+           $object = New-Object PSObject -Property @{Throttle = $throttle.Value; 
+                                                     NewestVersion = $updates.Update[0].LegacyVersion ;
+                                                     PreviousVersion = $updates.Update[1].LegacyVersion ;
+                                                    }
+           $object | Add-Member MemberSet PSStandardMembers $PSStandardMembers           
+           }
+           #api nodes empty go to release history
+           if([string]$object.NewestVersion -eq ""){
            $object = New-Object PSObject -Property @{Throttle = $throttle.Value; 
                                                      NewestVersion = $updates.Update[0].LegacyVersion ;
                                                      PreviousVersion = $updates.Update[1].LegacyVersion ;
                                                     }
            $object | Add-Member MemberSet PSStandardMembers $PSStandardMembers
+           }
            $results += $object
     
         Remove-Item -Path $baseCabFileName2 | Out-Null
@@ -944,6 +964,33 @@ function ConvertBranchNameToChannelName {
        }
     }
 }
+
+
+function GetAPIVersions {
+try{
+    $request = [System.Net.WebRequest]::Create("https://microsoft-apiapp2f1d0adbd6b6403da68a8cd3e1888ddc.azurewebsites.net/api/Channel")
+    $request.Method = "GET"
+    $request.Timeout = 5000
+    $request.ContentType = "application/json";
+    $request.ImpersonationLevel = "Impersonation"
+
+    [Net.HttpWebResponse] $result = $request.GetResponse()
+    [IO.Stream] $stream = $result.GetResponseStream()
+    [IO.StreamReader] $reader = New-Object IO.StreamReader($stream)
+    [string] $output = $reader.readToEnd()
+
+    $items = ConvertFrom-Json -InputObject $output
+
+    #Write-Host $items[0].Name
+
+    #$items[0].Updates[0]
+
+    $stream.flush()
+    $stream.close()
+    return $items
+    }catch{}
+}
+
 
 function Get-CurrentLineNumber {
     $MyInvocation.ScriptLineNumber
