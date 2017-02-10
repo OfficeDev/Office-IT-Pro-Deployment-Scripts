@@ -47,43 +47,68 @@ function Download-OfficeProPlusChannels{
 <#
 .SYNOPSIS
 Downloads each Office ProPlus Channel with installation files
+
 .DESCRIPTION
 This script will dynamically downloaded the most current Office ProPlus version for each deployment Channel
-.PARAMETER Version
-The version number you wish to download. For example: 16.0.6228.1010
-.PARAMETER TargetDirectory
-Required. Where all the channels will be downloaded. Each channel then goes into a folder of the same name as the channel.
-.PARAMETER Languages
-Array of Microsoft language codes. Will throw error if provided values don't match the validation set. Defaults to "en-us"
-("en-us","ar-sa","bg-bg","zh-cn","zh-tw","hr-hr","cs-cz","da-dk","nl-nl","et-ee","fi-fi","fr-fr","de-de","el-gr","he-il","hi-in","hu-hu","id-id","it-it",
-"ja-jp","kk-kz","ko-kr","lv-lv","lt-lt","ms-my","nb-no","pl-pl","pt-br","pt-pt","ro-ro","ru-ru","sr-latn-rs","sk-sk","sl-si","es-es","sv-se","th-th",
-"tr-tr","uk-ua")
-.PARAMETER Bitness
-v32, v64, or Both. What bitness of office you wish to download. Defaults to Both.
-.PARAMETER OverWrite
-If this parameter is specified then existing files will be overwritten.
-.PARAMETER Branches
-An array of the Branches you wish to download (This parameter is left for legacy usage)
+
 .PARAMETER Channels
 An array of the Channels you wish to download. Defaults to all available channels except First Release Current
+
+.PARAMETER Version
+The version number you wish to download. For example: 16.0.6228.1010
+
+.PARAMETER TargetDirectory
+Required. Where all the channels will be downloaded. Each channel then goes into a folder of the same name as the channel.
+
+.PARAMETER Languages
+Array of Microsoft language codes. Will throw error if provided values don't match the validation set. Defaults to "en-us"
+
+.PARAMETER PartialLanguages
+Array of Microsoft partial language codes. Will throw error if provided values don't match the validation set.
+
+.PARAMETER ProofingLanguages
+Array of Microsoft proofing language codes. Will throw error if provided values don't match the validation set.
+
+.PARAMETER Bitness
+v32, v64, or Both. What bitness of office you wish to download. Defaults to Both.
+
+.PARAMETER OverWrite
+If this parameter is specified then existing files will be overwritten.
+
+.PARAMETER Branches
+An array of the Branches you wish to download (This parameter is left for legacy usage)
+
 .PARAMETER NumVersionsToKeep
 This parameter controls the number of versions to retain. Any older versions will be deleted.
+
 .PARAMETER UseChannelFolderShortName
 This parameter change the folder name that the scripts creates for each Channel folder. For example if this paramter is set to $true then the Current Channel folder will be named "CC"
+
 .PARAMETER NumOfRetries
 This parameter Controls the number of times the script will retry if a failure happens
+
 .PARAMETER IncludeChannelInfo
 This parameter Controls whether the ofl.cab file is downloaded and cached in the root of the TargetDirectory folder
+
 .PARAMETER DownloadPreviousVersionIfThrottled
 This parameter will force the function to download the previous version if the current version is still being throttled
+
 .Example
 Download-OfficeProPlusChannels -TargetDirectory "\\server\updateshare"
 Default downloads all available channels of the most recent version for both bitnesses into an update source. Downloads the English language pack by default if language is not specified.
+
+.Example
+Download-OfficeProPlusChannels -Channels Current,Deferred -TargetDirectory "\\server\updateshare" -Languages en-us,de-de -Bitness v32
+Downloads 32-bit Current and Deferred channels most recent versions into an update source. The English and German language packs will be included.
+
 .Link
 https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
 #>
 
 Param(
+    [Parameter()]
+    [OfficeChannel[]] $Channels = (0, 1, 2, 3),
+
     [Parameter()]
     [string] $Version,
 
@@ -122,35 +147,32 @@ Param(
     [OfficeBranch[]] $Branches,
 
     [Parameter()]
-    [OfficeChannel[]] $Channels = (0, 1, 2, 3),
-
-    [Parameter()]
     [int] $NumOfRetries = 5,
 
     [Parameter()]
     [bool] $IncludeChannelInfo = $false,
 
     [Parameter()]
-    [bool] $DownloadThrottledVersions = $false
+    [bool] $DownloadThrottledVersions = $true
 )
 
 #create array for all languages including core, partial, and proofing
 $allLanguages = @();
+
 $Languages | 
 %{
   $allLanguages += $_
 }
-	
+
 $PartialLanguages | 
 %{
   $allLanguages += $_
 }
-	
+
 $ProofingLanguages | 
 %{
   $allLanguages += $_
 }
-
 
 $BranchesOrChannels = @()
 
@@ -226,7 +248,7 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
                 $currentBranch = $_
                 $b++
 
-                $Version = ""
+                #$Version = ""
                 $PreviousVersion = ""
                 $NewestVersion = ""
                 $Throttle = ""
@@ -263,7 +285,7 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
                     } else {
                         if ([int]$versionReturn.Throttle -ge 1000) {
                             $Version = $versionReturn.NewestVersion
-                        } else {
+                        } elseif([String]::IsNullOrWhiteSpace($Version)) {
                             $Version = $versionReturn.PreviousVersion
                         }
                     }
@@ -339,9 +361,9 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
                     #LANGUAGE LOGIC HERE
                     $languageId  = [globalization.cultureinfo]::GetCultures("allCultures") | ? Name -eq $_ | %{$_.LCID}
                     $CurrentVersionXML.UpdateFiles.File | ? language -eq $languageId | 
-                            %{
-                   $numberOfFiles ++
-                }
+                    %{
+                      $numberOfFiles ++
+                    }
                 }
 
                 #basic files
@@ -481,13 +503,13 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
                 }
 
                 #Copy Version file and overwrite the v32.cab or v64.cab file
-                if (Test-Path -Path $VersionFile) {
+                if ((Test-Path -Path $VersionFile) -and $VersionFile.Contains($NewestVersion)) {
                    $parentPath = Split-Path -parent $VersionFile
 
                    if ($currentBitness.Contains("32")) {
-                     Copy-Item -Path $VersionFile -Destination "v32.cab" -Force | Out-Null
+                     Copy-Item -Path $VersionFile -Destination $parentPath"\v32.cab" -Force | Out-Null
                    } else {
-                     Copy-Item -Path $VersionFile -Destination "v64.cab" -Force | Out-Null
+                     Copy-Item -Path $VersionFile -Destination $parentPath"\v64.cab" -Force | Out-Null
                    }
                 }
             }
@@ -726,7 +748,10 @@ function GetVersionBasedOnThrottle {
         [xml]$vdxml = Get-Content $baseCabFileName2
 
         $UpdateChannels = $vdxml.ReleaseHistory.UpdateChannel;
-        $updates = $UpdateChannels | Where {$_.Name -like $checkChannel}
+        $APIUpdates = GetAPIVersions
+        $APupdates = $APIUpdates | Where {$_.Name -like $checkChannel}#pulled from API
+
+        $updates = $UpdateChannels | Where {$_.Name -like $checkChannel}#pulled from release history
 
         #foreach($update in $updates.Update){
         #
@@ -753,12 +778,29 @@ function GetVersionBasedOnThrottle {
                 $throttle = $vdxml.Version.Throttle;
 
                 Remove-Item -Path $baseCabFileName | Out-Null
-
+                try{
+                #api first
+           $object = New-Object PSObject -Property @{Throttle = $throttle.Value; 
+                                                     NewestVersion = $APupdates.Updates[0].LegacyVersion ;
+                                                     PreviousVersion = $APupdates.Updates[1].LegacyVersion ;
+                                                    }
+           $object | Add-Member MemberSet PSStandardMembers $PSStandardMembers
+           #api fails go to release history
+           }catch{
+           $object = New-Object PSObject -Property @{Throttle = $throttle.Value; 
+                                                     NewestVersion = $updates.Update[0].LegacyVersion ;
+                                                     PreviousVersion = $updates.Update[1].LegacyVersion ;
+                                                    }
+           $object | Add-Member MemberSet PSStandardMembers $PSStandardMembers           
+           }
+           #api nodes empty go to release history
+           if([string]$object.NewestVersion -eq ""){
            $object = New-Object PSObject -Property @{Throttle = $throttle.Value; 
                                                      NewestVersion = $updates.Update[0].LegacyVersion ;
                                                      PreviousVersion = $updates.Update[1].LegacyVersion ;
                                                     }
            $object | Add-Member MemberSet PSStandardMembers $PSStandardMembers
+           }
            $results += $object
     
         Remove-Item -Path $baseCabFileName2 | Out-Null
@@ -943,6 +985,31 @@ function ConvertBranchNameToChannelName {
          return "FirstReleaseDeferred"
        }
     }
+}
+
+function GetAPIVersions {
+try{
+    $request = [System.Net.WebRequest]::Create("https://microsoft-apiapp2f1d0adbd6b6403da68a8cd3e1888ddc.azurewebsites.net/api/Channel")
+    $request.Method = "GET"
+    $request.Timeout = 5000
+    $request.ContentType = "application/json";
+    $request.ImpersonationLevel = "Impersonation"
+
+    [Net.HttpWebResponse] $result = $request.GetResponse()
+    [IO.Stream] $stream = $result.GetResponseStream()
+    [IO.StreamReader] $reader = New-Object IO.StreamReader($stream)
+    [string] $output = $reader.readToEnd()
+
+    $items = ConvertFrom-Json -InputObject $output
+
+    #Write-Host $items[0].Name
+
+    #$items[0].Updates[0]
+
+    $stream.flush()
+    $stream.close()
+    return $items
+    }catch{}
 }
 
 function Get-CurrentLineNumber {
