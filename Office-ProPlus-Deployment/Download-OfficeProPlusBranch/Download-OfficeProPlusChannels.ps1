@@ -47,38 +47,56 @@ function Download-OfficeProPlusChannels{
 <#
 .SYNOPSIS
 Downloads each Office ProPlus Channel with installation files
+
 .DESCRIPTION
 This script will dynamically downloaded the most current Office ProPlus version for each deployment Channel
-.PARAMETER Version
-The version number you wish to download. For example: 16.0.6228.1010
-.PARAMETER TargetDirectory
-Required. Where all the channels will be downloaded. Each channel then goes into a folder of the same name as the channel.
-.PARAMETER Languages
-Array of Microsoft language codes. Will throw error if provided values don't match the validation set. Defaults to "en-us"
-("en-us","ar-sa","bg-bg","zh-cn","zh-tw","hr-hr","cs-cz","da-dk","nl-nl","et-ee","fi-fi","fr-fr","de-de","el-gr","he-il","hi-in","hu-hu","id-id","it-it",
-"ja-jp","kk-kz","ko-kr","lv-lv","lt-lt","ms-my","nb-no","pl-pl","pt-br","pt-pt","ro-ro","ru-ru","sr-latn-rs","sk-sk","sl-si","es-es","sv-se","th-th",
-"tr-tr","uk-ua")
-.PARAMETER Bitness
-v32, v64, or Both. What bitness of office you wish to download. Defaults to Both.
-.PARAMETER OverWrite
-If this parameter is specified then existing files will be overwritten.
-.PARAMETER Branches
-An array of the Branches you wish to download (This parameter is left for legacy usage)
+
 .PARAMETER Channels
 An array of the Channels you wish to download. Defaults to all available channels except First Release Current
+
+.PARAMETER Version
+The version number you wish to download. For example: 16.0.6228.1010
+
+.PARAMETER TargetDirectory
+Required. Where all the channels will be downloaded. Each channel then goes into a folder of the same name as the channel.
+
+.PARAMETER Languages
+Array of Microsoft language codes. Will throw error if provided values don't match the validation set. Defaults to "en-us"
+
+.PARAMETER PartialLanguages
+Array of Microsoft partial language codes. Will throw error if provided values don't match the validation set.
+
+.PARAMETER ProofingLanguages
+Array of Microsoft proofing language codes. Will throw error if provided values don't match the validation set.
+
+.PARAMETER Bitness
+v32, v64, or Both. What bitness of office you wish to download. Defaults to Both.
+
+.PARAMETER OverWrite
+If this parameter is specified then existing files will be overwritten.
+
+.PARAMETER Branches
+An array of the Branches you wish to download (This parameter is left for legacy usage)
+
 .PARAMETER NumVersionsToKeep
 This parameter controls the number of versions to retain. Any older versions will be deleted.
+
 .PARAMETER UseChannelFolderShortName
 This parameter change the folder name that the scripts creates for each Channel folder. For example if this paramter is set to $true then the Current Channel folder will be named "CC"
+
 .PARAMETER NumOfRetries
 This parameter Controls the number of times the script will retry if a failure happens
+
 .PARAMETER IncludeChannelInfo
 This parameter Controls whether the ofl.cab file is downloaded and cached in the root of the TargetDirectory folder
+
 .PARAMETER DownloadPreviousVersionIfThrottled
 This parameter will force the function to download the previous version if the current version is still being throttled
+
 .Example
 Download-OfficeProPlusChannels -TargetDirectory "\\server\updateshare"
 Default downloads all available channels of the most recent version for both bitnesses into an update source. Downloads the English language pack by default if language is not specified.
+
 .Link
 https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
 #>
