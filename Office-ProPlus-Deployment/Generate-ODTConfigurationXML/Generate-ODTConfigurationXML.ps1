@@ -309,22 +309,31 @@ process {
     
     foreach ($productId in $splitProducts) {
        if(!($officeConfig.ClickToRunInstalled)){
-          if($productId -match "Visio" -or $productId -match "Project"){
-              $officeLangs = $NULL
-          }
+          if ($Languages -eq "CurrentOfficeLanguages") {
+            $officeLangs = $null
 
-          if($productId -match "Visio"){
+            if($productId -match "Visio" -or $productId -match "Project"){
+              $languageIDs = @()
+            }
+          
+            if($productId -match "O365"){
+              $product = "Office"
+            }
+          
+            if($productId -match "Visio"){
               $product = "Visio"
-          }
+            }
 
-          if($productId -match "Project"){
+            if($productId -match "Project"){
               $product = "Project"
-          }
-
-          $productLangs = @()
-          $languagePacks = GetLanguagePacks | ? {$_.DisplayName -match $product}
-          foreach($lang in $languagePacks){
-              $languageIDs += $lang.LanguageID
+            }
+            
+            if($product){
+                $languagePacks = GetLanguagePacks | ? {$_.DisplayName -match $product}
+                foreach($lang in $languagePacks){
+                    $languageIDs += $lang.LanguageID
+                }
+            }
           }
           #$languageIDs = $languagePacks.LanguageID
        }
