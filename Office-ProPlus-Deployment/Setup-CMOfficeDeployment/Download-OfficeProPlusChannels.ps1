@@ -97,6 +97,10 @@ This parameter will force the function to download the previous version if the c
 Download-OfficeProPlusChannels -TargetDirectory "\\server\updateshare"
 Default downloads all available channels of the most recent version for both bitnesses into an update source. Downloads the English language pack by default if language is not specified.
 
+.Example
+Download-OfficeProPlusChannels -Channels Current,Deferred -TargetDirectory "\\server\updateshare" -Languages en-us,de-de -Bitness v32
+Downloads 32-bit Current and Deferred channels most recent versions into an update source. The English and German language packs will be included.
+
 .Link
 https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
 #>
