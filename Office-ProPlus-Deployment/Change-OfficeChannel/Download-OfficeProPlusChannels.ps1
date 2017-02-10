@@ -85,6 +85,9 @@ https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
 
 Param(
     [Parameter()]
+    [OfficeChannel[]] $Channels = (0, 1, 2, 3),
+
+    [Parameter()]
     [string] $Version,
 
     [Parameter(Mandatory=$true)]
@@ -120,9 +123,6 @@ Param(
 
     [Parameter()]
     [OfficeBranch[]] $Branches,
-
-    [Parameter()]
-    [OfficeChannel[]] $Channels = (0, 1, 2, 3),
 
     [Parameter()]
     [int] $NumOfRetries = 5,
@@ -965,7 +965,6 @@ function ConvertBranchNameToChannelName {
     }
 }
 
-
 function GetAPIVersions {
 try{
     $request = [System.Net.WebRequest]::Create("https://microsoft-apiapp2f1d0adbd6b6403da68a8cd3e1888ddc.azurewebsites.net/api/Channel")
@@ -990,7 +989,6 @@ try{
     return $items
     }catch{}
 }
-
 
 function Get-CurrentLineNumber {
     $MyInvocation.ScriptLineNumber
