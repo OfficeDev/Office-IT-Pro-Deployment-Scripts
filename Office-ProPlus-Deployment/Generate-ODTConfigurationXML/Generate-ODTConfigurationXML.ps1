@@ -306,10 +306,11 @@ process {
     }
     
     $languageIDs = @()
+    $msiLangPacks = GetLanguagePacks
     
     foreach ($productId in $splitProducts) {
-       if(!($officeConfig.ClickToRunInstalled)){
-          if ($Languages -eq "CurrentOfficeLanguages") {
+       if($msiLangPacks){
+          if($Languages -eq "CurrentOfficeLanguages") {
             $officeLangs = $null
 
             if($productId -match "Visio" -or $productId -match "Project"){
@@ -317,7 +318,15 @@ process {
             }
           
             if($productId -match "O365"){
-              $product = "Office"
+                if($mainOfficeProduct.GetType().Name -eq "Object[]"){
+                    $OfficeProduct = $mainOfficeProduct[0].DisplayName
+                } else {
+                    $OfficeProduct = $mainOfficeProduct.DisplayName
+                }
+
+                if($OfficeProduct -notmatch "ProPlus"){
+                    $product = "Office"
+                }          
             }
           
             if($productId -match "Visio"){
