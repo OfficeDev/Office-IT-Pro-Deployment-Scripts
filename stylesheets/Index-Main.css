@@ -1,6 +1,16 @@
-﻿.Header{
+﻿@media screen and (min-width: 0px) and (max-width: 400px){
+	#siteNav{display:none;}
+}
+
+@media screen and (min-width: 401px){
+	#siteNav{display:block;}
+}
+
+
+.Header{
 	margin:-8px -16px 0px -16px;
 	min-height:180px;
+	border-bottom:1px solid #106ebe;
 }
 
 .Header-buttonRow{
@@ -17,4 +27,51 @@
 
 .Header-button:hover{
 	background-color:#0078d7;
+}
+
+.Vertical-Nav{
+	background-color:#f4f4f4;
+	margin-left:-15px;
+	margin-top:10px;
+	max-width: 250px; 
+}
+
+.Nav-Option{
+	background-color: #f4f4f4;
+	width: auto;
+	min-height:32px;
+	max-height:50px;
+	white-space: nowrap;
+  	overflow: hidden;
+  	text-overflow: ellipsis;
+	cursor:pointer;
+	padding-left: 5px;
+	border-bottom: 1px solid #eaeaea;
+}
+
+.selected{
+	color: #2488d8;
+}
+
+.Nav-Option:hover{
+	color:#2488d8;
+}
+
+.Section-Header{
+	border-bottom: 1px solid #a6a6a6;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    position: relative;
+
+	margin-left:10px;
+	margin-top: 10px;
+	cursor: pointer;
+}
+
+.Section-Body{
+	background-color:  #f4f4f4;
+	min-height: 100px;
+	margin-left:10px;
+	margin-top:10px;
 }
