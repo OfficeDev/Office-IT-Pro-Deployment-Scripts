@@ -1,1 +1,20 @@
-﻿
+﻿.Header{
+	margin:-8px -16px 0px -16px;
+	min-height:180px;
+}
+
+.Header-buttonRow{
+	text-align: center;
+}
+
+.Header-button{
+	color:white;
+	border-color: white;
+	border-width: 1px;
+	background-color: #2488d8;
+	margin-bottom:5px;
+}
+
+.Header-button:hover{
+	background-color:#0078d7;
+}

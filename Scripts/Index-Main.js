@@ -2,16 +2,6 @@
 
     var gitHubReadme = null;
 
-    $("#btViewOnGitHub").click(function () {
-        window.open("https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts");
-        return false;
-    });
-
-    $("#btDownloadZip").click(function () {
-        window.open("https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/zipball/master");
-        return false;
-    });
-
     $("#gitHubImg").click(function () {
         window.open("https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/master/README.md");
         return false;
@@ -26,10 +16,19 @@
         resizeWindow();
     });
 
-    resizeWindow();
+   // resizeWindow();
 });
 
-function resizeWindow() {
+function openInNewTab(url) {
+      var win = window.open(url, '_blank');
+      win.focus();
+    }
+
+function downloadZip(){
+      window.open("https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/zipball/master");
+        return false;
+}
+//function resizeWindow() {
     var bodyHeight = window.innerHeight;
     var bodyWidth = window.innerWidth;
 
@@ -69,4 +68,4 @@ function resizeWindow() {
     imgDiv.style.left = (imageLeft) + "px";
 
     textDiv.style.width = (textWidth - 20) + "px";
-}
+//}
