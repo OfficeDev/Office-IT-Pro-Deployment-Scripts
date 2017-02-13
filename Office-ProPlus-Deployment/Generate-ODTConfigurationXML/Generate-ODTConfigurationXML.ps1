@@ -329,7 +329,13 @@ process {
             }
             
             if($product){
-                $languagePacks = GetLanguagePacks | ? {$_.DisplayName -match $product}
+                if($product -eq "Office"){
+                    $languagePacks = GetLanguagePacks | ? {$_.DisplayName -match $product `
+                                                      -and $_.DisplayName -notmatch "Visio" `
+                                                      -and $_.DisplayName -notmatch "Project"}
+                } else {
+                    $languagePacks = GetLanguagePacks | ? {$_.DisplayName -match $product}
+                }
                 foreach($lang in $languagePacks){
                     $languageIDs += $lang.LanguageID
                 }
