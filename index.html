@@ -14,7 +14,7 @@
     <body>
         <main class="container">
           <div class="ms-Grid">
-            <div class="Header ms-bgColor-themeSecondary">
+            <div id="Header" class="Header ms-bgColor-themeSecondary">
               <div class="ms-Grid-row">&nbsp</div>
               <div class="ms-fontColor-white">
                 <div class="ms-Grid-row">
@@ -37,37 +37,73 @@
                 </div>
               </div>
               <div class="ms-Grid-row">
-                <div class="ms-Grid-col ms-u-sm2">
+                <div class="ms-Grid-col ms-u-sm3">
                     <div id="siteNav" class="ms-Grid Vertical-Nav">
                     <div >
                        <div class="ms-Grid-row">
                           <div class="ms-Grid-col ms-u-sm12">
-                              <div class="Nav-Option selected ms-font-l ms-fontWeight-regular ms-u-textAlignLeft" onclick="">
-                                  Overview
+                              <div class="Nav-Option selected ms-font-l ms-fontWeight-regular ms-u-textAlignLeft" onclick="focusSection('Overview',this)">
+                                 Why was this repository created?
                               </div>
                           </div>
                        </div> 
                         <div class="ms-Grid-row">
                           <div class="ms-Grid-col ms-u-sm12">
-                              <div class="Nav-Option ms-font-l ms-fontWeight-regular ms-u- ms-u-textAlignLeft">
-                                  Section 1
+                              <div class="Nav-Option ms-font-l ms-fontWeight-regular ms-u- ms-u-textAlignLeft" onclick="focusSection('system-center-config-manager',this)">
+                                  System Center Config Manager
                               </div>
                           </div>
                        </div> 
                        <div class="ms-Grid-row">
                           <div class="ms-Grid-col ms-u-sm12">
-                              <div class="Nav-Option ms-font-l ms-fontWeight-regular ms-u-textAlignLeft">
-                                  Section 2
+                              <div class="Nav-Option ms-font-l ms-fontWeight-regular ms-u-textAlignLeft" onclick="focusSection('xml-editor',this)">
+                                  Xml Editor
                               </div>
                           </div>
                        </div> 
                        <div class="ms-Grid-row">
                           <div class="ms-Grid-col ms-u-sm12">
-                              <div class="Nav-Option ms-font-l ms-fontWeight-regular ms-u-textAlignLeft">
-                                  Section 3
+                              <div class="Nav-Option ms-font-l ms-fontWeight-regular ms-u-textAlignLeft" onclick="focusSection('download-faster',this)">
+                                Faster way to download Office ProPlus
                               </div>
                           </div>
-                       </div>            
+                       </div>   
+                        <div class="ms-Grid-row">
+                          <div class="ms-Grid-col ms-u-sm12">
+                              <div class="Nav-Option ms-font-l ms-fontWeight-regular ms-u-textAlignLeft" onclick="focusSection('use-group-policy',this)">
+                                  Do you use Group Policy to configure Office Clients?
+
+                              </div>
+                          </div>
+                       </div> 
+                       <div class="ms-Grid-row">
+                          <div class="ms-Grid-col ms-u-sm12">
+                              <div class="Nav-Option ms-font-l ms-fontWeight-regular ms-u-textAlignLeft" onclick="focusSection('deployment-examples',this)">
+                                  Deployment Examples
+                              </div>
+                          </div>
+                       </div>      
+                       <div class="ms-Grid-row">
+                          <div class="ms-Grid-col ms-u-sm12">
+                              <div class="Nav-Option ms-font-l ms-fontWeight-regular ms-u-textAlignLeft" onclick="focusSection('new-to-powershell',this)">
+                                 New to PowerShell and Office 365?
+                              </div>
+                          </div>
+                       </div>      
+                       <div class="ms-Grid-row">
+                          <div class="ms-Grid-col ms-u-sm12">
+                              <div class="Nav-Option ms-font-l ms-fontWeight-regular ms-u-textAlignLeft" onclick="focusSection('log-issue',this)">
+                                  Find an issue with a script?
+                              </div>
+                          </div>
+                       </div> 
+                       <div class="ms-Grid-row">
+                          <div class="ms-Grid-col ms-u-sm12">
+                              <div class="Nav-Option ms-font-l ms-fontWeight-regular ms-u-textAlignLeft" onclick="focusSection('contribute',this)">
+                                How to can I contribute to this project?
+                              </div>
+                          </div>
+                       </div>                        
                     </div>
                  </div>
                 </div>
@@ -75,16 +111,94 @@
                   <div class="ms-Grid">
                     <div class="ms-Grid-row ">
                       <div class="ms-Grid-col ms-u-sm12">
-                        <div class="ms-font-xxl ms-fontWeight-semiLight Section-Header" onclick="toggleSection(this)"><i class="ms-Icon ms-Icon--ChevronRightSmall ms-fontWeight-semiLight section-Header-Chevron"></i> Overview</div>
-                        <div class="Section-Body ms-font-l ms-fontWeight-regular">
-                          Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-                          tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-                          quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-                          consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-                          cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-                          proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                        <div id="Overview" class="ms-font-xxl ms-fontWeight-semiLight Section-Header" onclick="toggleSection(this)"><i class="ms-Icon ms-Icon--ChevronRightSmall ms-fontWeight-semiLight section-Header-Chevron"></i> Why was this repository created?</div>
+                        <div class="Section-Body ms-font-l ms-fontWeight-regular hidden">
+                          <div class="ms-font-l ms-fontWeight-regular">In an effort to streamline the deployment process for Office 2016 and Office 365 ProPlus, a GitHub repository has been created with a collection of scripts and other projects. The repository is meant to be a place for IT Pros to come and find solutions that will make tasks related to deploying and maintaining Office easier.
+                          </div><br>
+                          <div class="ms-font-l ms-fontWeight-regular">
+                          All items in the master branch of the repository are tested and ready to use. Each script has a ReadMe file that explains how to use it. The main ReadMe has a list of the name and descriptions for all of the scripts in the repository.  Read more about it here: <a href="https://blogs.office.com/2015/08/19/introducing-the-office-it-pro-deployment-script-project/">Office Blogs</a></div>
                         </div>
                       </div>
+                      </div>
+                      <div class="ms-Grid-row ">
+                        <div class="ms-Grid-col ms-u-sm12">
+                          <div id="system-center-config-manager" class="ms-font-xxl ms-fontWeight-semiLight Section-Header" onclick="toggleSection(this)"><i class="ms-Icon ms-Icon--ChevronRightSmall ms-fontWeight-semiLight section-Header-Chevron"></i> Do you have System Center Configuration Manager?</div>
+                          <div class="Section-Body ms-font-l ms-fontWeight-regular hidden">
+                           <div class="ms-font-l ms-fontWeight-regular">You can automate the configuration of ConfigMgr to deploy and manage your Office ProPlus environment using <a href="https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/master/Office-ProPlus-Deployment/Setup-CMOfficeDeployment">Deploying Office ProPlus with Configuration Manager</a></div><br>
+                            <div class="ms-font-l ms-fontWeight-regular">
+                            We also provide Office ProPlus specific reports. <a href="https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/master/Office-ProPlus-Management/Setup-CMOffice365ClientReports">Office ProPlus ConfigMgr Reports</a></div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="ms-Grid-row ">
+                        <div class="ms-Grid-col ms-u-sm12">
+                          <div id="xml-editor" class="ms-font-xxl ms-fontWeight-semiLight Section-Header" onclick="toggleSection(this)"><i class="ms-Icon ms-Icon--ChevronRightSmall ms-fontWeight-semiLight section-Header-Chevron"></i> Are you manually editing your configuration XML files?</div>
+                          <div class="Section-Body ms-font-l ms-fontWeight-regular hidden">
+                            <div class="ms-font-l ms-fontWeight-regular">Tired of manually editing the Office ProPlus Configuration XML File?</div><br>
+
+                            <div class="ms-font-l ms-fontWeight-regular">Try our online <a href="http://officedev.github.io/Office-IT-Pro-Deployment-Scripts/XmlEditor.html">XML Editor Office Click-To-Run Configuration XML Editor</a></div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="ms-Grid-row ">
+                        <div class="ms-Grid-col ms-u-sm12">
+                          <div id="download-faster" class="ms-font-xxl ms-fontWeight-semiLight Section-Header" onclick="toggleSection(this)"><i class="ms-Icon ms-Icon--ChevronRightSmall ms-fontWeight-semiLight section-Header-Chevron"></i>Would you like a faster and easier way to download your Office ProPlus files</div>
+                          <div class="Section-Body ms-font-l ms-fontWeight-regular hidden">
+                           Try using <a href="https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/master/Office-ProPlus-Deployment/Download-OfficeProPlusBranch">Download-OfficeProPlusChannels</a> to quickly and easily download from multiple Channels and languages with one operation.
+                          </div>
+                        </div>
+                      </div>
+                      <div class="ms-Grid-row ">
+                        <div class="ms-Grid-col ms-u-sm12">
+                          <div id="use-group-policy" class="ms-font-xxl ms-fontWeight-semiLight Section-Header" onclick="toggleSection(this)"><i class="ms-Icon ms-Icon--ChevronRightSmall ms-fontWeight-semiLight section-Header-Chevron"></i> Do you use Group Policy to configure your Office Clients?</div>
+                          <div class="Section-Body ms-font-l ms-fontWeight-regular hidden">
+                           If you have Group Policy setting from previous versions of Office use our Copy-OfficeGPOSettings to migrate your settings to Office 2016.
+                          </div>
+                        </div>
+                      </div>
+                      <div class="ms-Grid-row ">
+                        <div class="ms-Grid-col ms-u-sm12">
+                          <div id="deployment-examples" class="ms-font-xxl ms-fontWeight-semiLight Section-Header" onclick="toggleSection(this)"><i class="ms-Icon ms-Icon--ChevronRightSmall ms-fontWeight-semiLight section-Header-Chevron"></i> Would you like to see examples of how to use our scripts to create deployment solutions?</div>
+                          <div class="Section-Body ms-font-l ms-fontWeight-regular hidden">
+                          <a href="https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/master/Office-ProPlus-Deployment/Deploy-OfficeClickToRun">Deployment Examples</a>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="ms-Grid-row ">
+                        <div class="ms-Grid-col ms-u-sm12">
+                          <div id="new-to-powershell" class="ms-font-xxl ms-fontWeight-semiLight Section-Header" onclick="toggleSection(this)"><i class="ms-Icon ms-Icon--ChevronRightSmall ms-fontWeight-semiLight section-Header-Chevron"></i>New to PowerShell and Office 365?</div>
+                          <div class="Section-Body ms-font-l ms-fontWeight-regular hidden">
+                            Check out <a href="http://powershell.office.com/">PowerShell for Office 365</a> for advice on getting started, key scenarios and script samples.
+                          </div>
+                        </div>
+                      </div>
+                      <div class="ms-Grid-row ">
+                        <div class="ms-Grid-col ms-u-sm12">
+                          <div id="log-issue" class="ms-font-xxl ms-fontWeight-semiLight Section-Header" onclick="toggleSection(this)"><i class="ms-Icon ms-Icon--ChevronRightSmall ms-fontWeight-semiLight section-Header-Chevron"></i>Questions and comments?</div>
+                          <div class="Section-Body ms-font-l ms-fontWeight-regular hidden">
+                           If you have any trouble running this sample, please log an issue <a href="https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/issues">here</a>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="ms-Grid-row ">
+                        <div class="ms-Grid-col ms-u-sm12">
+                          <div id="contribute" class="ms-font-xxl ms-fontWeight-semiLight Section-Header" onclick="toggleSection(this)"><i class="ms-Icon ms-Icon--ChevronRightSmall ms-fontWeight-semiLight section-Header-Chevron"></i>How to can I contribute to this project?</div>
+                          <div class="Section-Body ms-font-l ms-fontWeight-regular hidden">
+                           This is high level plan for contributing and the structure that we have in place for pulling changes.
+                          <UL>
+                          <LI>There will be 3 main levels of branches: 1 master branch, 1 development branch, feature and bug branches
+                          <LI>Each powershell script will have its own branch and changes will be made at that level
+                          <UL>
+                          <LI>Pull requests should only be made from the Development branch after the script is tested and useable
+                          <LI>After the code review is complete a pull request will be made from the Development branch into the master branch
+                          <LI>Requests for changes to scripts can be made by submitting an issue and using the appropriate tag
+                          <UL>
+                          <LI>For additional features to an existing script, use the label "enhancement"
+                          <LI>For bugs, use the label "bug"
+                          <LI>All issues will be reviewed and prioritized each day as we work to add new scripts and improve existing ones</UL>
+                          </UL>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>

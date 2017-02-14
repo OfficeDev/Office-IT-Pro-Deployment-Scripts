@@ -6,6 +6,9 @@
 	#siteNav{display:block;}
 }
 
+.hidden{
+	display: none;
+}
 
 .Header{
 	margin:-8px -16px 0px -16px;
@@ -32,12 +35,12 @@
 .Vertical-Nav{
 	background-color:#f4f4f4;
 	margin-left:-15px;
-	margin-top:10px;
-	max-width: 250px; 
+	max-width: 400px; 
 }
 
 .Nav-Option{
 	background-color: #f4f4f4;
+	color:#3c3c3c;
 	width: auto;
 	min-height:32px;
 	max-height:50px;
@@ -45,7 +48,8 @@
   	overflow: hidden;
   	text-overflow: ellipsis;
 	cursor:pointer;
-	padding-left: 5px;
+	padding-left: 10px;
+	margin-top:5px;
 	border-bottom: 1px solid #eaeaea;
 }
 
@@ -59,19 +63,33 @@
 
 .Section-Header{
 	border-bottom: 1px solid #a6a6a6;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    position: relative;
-
+	color:#3c3c3c;
 	margin-left:10px;
-	margin-top: 10px;
+	margin-top: 50px;
 	cursor: pointer;
 }
 
 .Section-Body{
 	background-color:  #f4f4f4;
-	min-height: 100px;
+	min-height: 75px;
+	margin:10px 0px 0px 10px;
 	margin-left:10px;
 	margin-top:10px;
+
+}
+
+.section-Header-Chevron{
+	color:#3c3c3c
+}
+
+.open-Chevron{
+    -ms-transform: rotate(90deg); /* IE 9 */
+    -webkit-transform: rotate(90deg); /* Chrome, Safari, Opera */
+    transform: rotate(90deg);
+}
+
+.close-Chevron{
+    -ms-transform: rotate(0deg); /* IE 9 */
+    -webkit-transform: rotate(0deg); /* Chrome, Safari, Opera */
+    transform: rotate(0deg);
 }
