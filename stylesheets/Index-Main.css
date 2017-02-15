@@ -34,8 +34,9 @@
 
 .Vertical-Nav{
 	background-color:#f4f4f4;
+	border-right: 1px solid #eaeaea;
 	margin-left:-15px;
-	max-width: 400px; 
+	max-width: 250px; 
 }
 
 .Nav-Option{
@@ -43,12 +44,12 @@
 	color:#3c3c3c;
 	width: auto;
 	min-height:32px;
-	max-height:50px;
+	/*max-height:50px;
 	white-space: nowrap;
-  	overflow: hidden;
+  	overflow: hidden;*/
   	text-overflow: ellipsis;
 	cursor:pointer;
-	padding-left: 10px;
+	padding: 5px 5px 5px 10px;
 	margin-top:5px;
 	border-bottom: 1px solid #eaeaea;
 }
@@ -71,11 +72,11 @@
 
 .Section-Body{
 	background-color:  #f4f4f4;
-	min-height: 75px;
+	min-height: 50px;
 	margin:10px 0px 0px 10px;
 	margin-left:10px;
 	margin-top:10px;
-
+	padding:10px;
 }
 
 .section-Header-Chevron{

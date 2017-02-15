@@ -60,6 +60,22 @@ function focusSection(sectionId,item){
     sideBarHeight();
 }
 
+function loadSection(sectionId,item){
+
+    location.hash = '';
+    location.hash = '#'+sectionId;   
+
+    $('.Nav-Option').each(function(i,obj){
+        $(obj).removeClass('selected');
+    });
+
+    $('#partial-views').empty();
+    $('#partial-views').load('./Partials/'+sectionId+'.html')
+
+    $(item).addClass('selected');
+    sideBarHeight();
+}
+
 function sideBarHeight(){
      $('#siteNav').parents().each(function(i,obj){ 
         $(obj).height('100%');
