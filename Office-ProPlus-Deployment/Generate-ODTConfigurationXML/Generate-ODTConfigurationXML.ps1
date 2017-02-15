@@ -307,6 +307,10 @@ process {
     
     $languageIDs = @()
     $msiLangPacks = GetLanguagePacks
+
+    if($splitProducts.GetType().Name -eq "Object[]"){
+        $splitProducts = $splitProducts | Sort-Object
+    }
     
     foreach ($productId in $splitProducts) {
        if($msiLangPacks){
@@ -365,8 +369,24 @@ process {
            if ($productId.ToLower().StartsWith("o365")) {
                $excludeApps = odtGetExcludedApps -ConfigDoc $ConfigFile -OfficeKeyPath $officeConfig.OfficeKeyPath -ProductId $productId
            }
+           
+           if($Languages -eq 'AllInUseLanguages'){
+               foreach($product in $splitProducts){
+                   $languagePacks = GetLanguagePacks 
 
-           $officeAddLangs = odtGetOfficeLanguages -ConfigDoc $ConfigFile -OfficeKeyPath $officeConfig.OfficeKeyPath -ProductId $productId
+                   foreach($pack in $languagePacks){
+                       $additionalLanguages += $pack.LanguageID
+                   }
+                   
+                   foreach($product in $splitProducts){               
+                       $officeAddLangs = odtGetOfficeLanguages -ConfigDoc $ConfigFile -OfficeKeyPath $officeConfig.OfficeKeyPath -ProductId $product
+                       $additionalLanguages += $officeAddLangs
+                   }     
+               }
+           } else {
+               $officeAddLangs = odtGetOfficeLanguages -ConfigDoc $ConfigFile -OfficeKeyPath $officeConfig.OfficeKeyPath -ProductId $productId
+           }
+              
        } else {
          if ($officeExists) {
              if($productId.ToLower().StartsWith("o365")) {
@@ -375,12 +395,13 @@ process {
          }
   
          $msiLanguages = msiGetOfficeLanguages -regProv $regProv
+
          foreach ($msiLanguage in $msiLanguages) {
             $additionalLanguages += $msiLanguage
          }
          
-         
-             foreach ($officeLang in $officeLangs) {
+    
+         foreach ($officeLang in $officeLangs) {
              if(!($additionalLanguages -contains $officeLang)){
                 $additionalLanguages += $officeLang
              }
@@ -426,22 +447,16 @@ process {
        }
        
        if ($officeConfig.ClickToRunInstalled) {
-          if ($Languages -eq "CurrentOfficeLanguages") {
-            
+          if ($Languages -eq "CurrentOfficeLanguages") {          
             $officeAddLangs = odtGetOfficeLanguages -ConfigDoc $ConfigFile -OfficeKeyPath $officeConfig.OfficeKeyPath -ProductId $productId
             if ($officeAddLangs) {
                $additionalLanguages = New-Object System.Collections.ArrayList
-               $n = 0
-               foreach ($language in $officeAddLangs) {
-                  if ($n -eq 0) {
-                    $primaryLanguage = $language
-                  } else {
-                    $additionalLanguages += $language
-                  }
-                  $n++
+               foreach($language in $officeAddLangs){
+                   if(!($language.ToLower() -eq $primaryLanguage)){
+                       $additionalLanguages += $language
+                   }
                }
-            }
-           
+            }       
           }
        }
 
