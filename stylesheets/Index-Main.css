@@ -1,9 +1,9 @@
-﻿@media screen and (min-width: 0px) and (max-width: 400px){
-	#siteNav{display:none;}
+﻿@media screen and (min-width: 0px) and (max-width: 450px){
+	#siteNav {margin-right: -15px;}
 }
 
-@media screen and (min-width: 401px){
-	#siteNav{display:block;}
+@media screen and (min-width: 451px){
+	#siteNav{margin-right:0px;}
 }
 
 .hidden{
@@ -11,7 +11,7 @@
 }
 
 .Header{
-	margin:-8px -16px 0px -16px;
+	margin:-8px -16px -20px -16px;
 	min-height:180px;
 	border-bottom:1px solid #106ebe;
 }
@@ -31,12 +31,17 @@
 .Header-button:hover{
 	background-color:#0078d7;
 }
+.Home,.Tutorials, .Section-Header{
+	margin-top:10px;
+}
+
 
 .Vertical-Nav{
 	background-color:#f4f4f4;
 	border-right: 1px solid #eaeaea;
 	margin-left:-15px;
-	max-width: 250px; 
+	margin-top:20px;
+	/*max-width: 200px; */
 }
 
 .Nav-Option{
@@ -44,9 +49,6 @@
 	color:#3c3c3c;
 	width: auto;
 	min-height:32px;
-	/*max-height:50px;
-	white-space: nowrap;
-  	overflow: hidden;*/
   	text-overflow: ellipsis;
 	cursor:pointer;
 	padding: 5px 5px 5px 10px;
@@ -66,7 +68,7 @@
 	border-bottom: 1px solid #a6a6a6;
 	color:#3c3c3c;
 	margin-left:10px;
-	margin-top: 50px;
+	margin-top: 30px;
 	cursor: pointer;
 }
 
@@ -75,7 +77,6 @@
 	min-height: 50px;
 	margin:10px 0px 0px 10px;
 	margin-left:10px;
-	margin-top:10px;
 	padding:10px;
 }
 

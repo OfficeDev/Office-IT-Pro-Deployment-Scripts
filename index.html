@@ -12,7 +12,7 @@
     <script type="text/javascript" src="./Scripts/Index-Main.js"></script>
   </head>
     <body>
-        <main class="container">
+        <main class="container" onresize="sidebarHeight()">
           <div class="ms-Grid">
             <div id="Header" class="Header ms-bgColor-themeSecondary">
               <div class="ms-Grid-row">&nbsp</div>
@@ -36,26 +36,26 @@
                   </div>
                 </div>
               </div>
-              <div class="ms-Grid-row">
-                <div class="ms-Grid-col ms-u-sm2">
+              <div  class="ms-Grid-row">
+                <div class="ms-Grid-col ms-u-sm12  ms-u-md2 ms-u-lg2 ms-u-xl1 ms-u-xxl1 ms-u-xxxl1">
                     <div id="siteNav" class="ms-Grid Vertical-Nav">
                     <div >
                        <div class="ms-Grid-row">
-                          <div class="ms-Grid-col ms-u-sm12">
+                          <div class="ms-Grid-col ms-u-sm12 ms-u-xxxl2">
                               <div class="Nav-Option selected ms-font-l ms-fontWeight-regular ms-u-textAlignLeft" onclick="loadSection('Home',this)">
                                  Home
                               </div>
                           </div>
                        </div> 
                         <div class="ms-Grid-row">
-                          <div class="ms-Grid-col ms-u-sm12">
+                          <div class="ms-Grid-col ms-u-sm12 ms-u-xxxl2">
                               <div class="Nav-Option ms-font-l ms-fontWeight-regular ms-u- ms-u-textAlignLeft" onclick="loadSection('Tutorials',this)">
                                  Tutorials
                               </div>
                           </div>
                        </div> 
                        <div class="ms-Grid-row">
-                          <div class="ms-Grid-col ms-u-sm12">
+                          <div class="ms-Grid-col ms-u-sm12 ms-u-xxxl2">
                               <div class="Nav-Option ms-font-l ms-fontWeight-regular ms-u-textAlignLeft" onclick="loadSection('Faq',this)">
                                   Faq
                               </div>
