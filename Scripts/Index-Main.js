@@ -1,19 +1,17 @@
 ﻿$(document).ready(function() {
-         $('#Hamburger').remove();
-
-     checkAddress();
-    sideBarHeight();
-
+    $('#Hamburger').remove();
+    checkAddress();
+    resizePage();
 });
 
 window.onresize = function(){
-    sideBarHeight();
+    resizePage();
 }
 
 function openInNewTab(url) {
       var win = window.open(url, '_blank');
       win.focus();
-    }
+}
 
 function downloadZip(){
       window.open("https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/zipball/master");
@@ -42,27 +40,47 @@ function toggleSection(item){
 
         chevron.removeClass('close-Chevron');
         chevron.addClass('open-Chevron');
+
+        var pageId = location.hash.split('#')[1];
+        location ='#'+ pageId + '#' + $(item).attr('Id'); 
     }
-    sideBarHeight();
+    resizePage();
 }
 
-function loadSection(sectionId,item){
+function loadPartial(sectionId,item){
 
-    location.hash = '';
-    location.hash = '#'+sectionId;   
+    var oldSectionId = location.hash.split('#')[1]
+    if(oldSectionId !== sectionId){
+        location.hash = '';
+        location.hash = '#'+sectionId;   
+    }
 
     $('.Nav-Option').each(function(i,obj){
         $(obj).removeClass('selected');
     });
 
     $('#partial-views').empty();
-    $('#partial-views').load('./Partials/'+sectionId+'.html')
+    // $('#partial-views').load('./Partials/'+sectionId+'.html',open)
+     $.ajax({
+            type: 'GET',
+            url: './Partials/'+sectionId+'.html',    
+            dataType: 'html', //dataType - html
+            success:function(result)
+            {
+               //Create a Div around the Partial View and fill the result
+               $('#partial-views').html(result);   
+               openSection();              
+            }
+         });           
 
     $(item).addClass('selected');
-    //sideBarHeight();
+
+    if($(window).width() < 450){
+      toggleHamburger();
+    }
 }
 
-function sideBarHeight(){
+function resizePage(){
     var windowWidth = $(window).outerWidth(); 
 
     if(windowWidth > 450){
@@ -108,6 +126,27 @@ function sideBarHeight(){
     }
 }
 
+function openSection(){
+    var pageId = location.hash.split('#')[1];
+    var sectionId = location.hash.split('#')[2];
+
+     if(sectionId && pageId === "Faq"){
+            var section_body = $('#'+sectionId).parent().children('.Section-Body') 
+            var chevron = $('#sectionId').parent().children('.Section-Header').children('.section-Header-Chevron'); 
+
+            if(section_body.hasClass('hidden') || section_body.hasClass('ms-u-slideUpOut10')){
+            section_body.removeClass('hidden');
+            section_body.addClass('ms-u-slideDownIn10');
+            section_body.removeClass('ms-u-slideUpOut10');
+
+            chevron.removeClass('close-Chevron');
+            chevron.addClass('open-Chevron');
+            $("html, body").animate({ scrollTop: $('#'+sectionId).offset().top }, 500);
+
+        }
+    }   
+}
+
 function toggleHamburger(){
      $('#siteNav').children().children().children().children('.Nav-Option').each(function(i,obj){
         if($(obj).hasClass('hidden') || $(obj).hasClass('ms-u-slideUpOut10')){
@@ -119,20 +158,21 @@ function toggleHamburger(){
             $(obj).removeClass('ms-u-slideDownIn10');
             $(obj).addClass('ms-u-slideUpOut10');           
             $(obj).addClass('hidden');
-        }     
-   });
+        }});
 }
 
 function checkAddress(){
-    var sectionId = location.hash.replace('#','');
-    if(!sectionId){
-        sectionId = 'Home' 
+    var pageId = location.hash.split('#')[1];
+    var sectionId = location.hash.split('#')[2];
+
+    if(!pageId){
+        pageId = 'Home' 
     }  
     
     $('.Nav-Option').each(function(i,obj){
          var onclickvalue = ($(obj).attr('onClick'))
         
-        if(onclickvalue.indexOf(sectionId) > -1){
+        if(onclickvalue.indexOf(pageId) > -1){
             $(obj).click();
         }
     });
