@@ -914,7 +914,7 @@ try {
         }
     }
 
-    if ($UpdateURLPath) {
+    if ($UpdateURLPath -and $UpdateUrl -ne $NULL) {
         if ($PolicyPath) {
             New-ItemProperty $OfficePolicyPath -Name updatepath -PropertyType String -Value $UpdateURLPath -Force | Out-Null
         } elseif($oldUpdatePath) {
@@ -936,6 +936,14 @@ try {
       $Version = Get-LatestVersion -UpdateURLPath $UpdateURLPath
     }
 
+    if (!($RollBack)) {
+           Set-OfficeCDNUrl -Channel $Channel
+
+           if($UpdateChannel -ne $NULL){
+               New-ItemProperty $Office2RClientKey -Name UpdateChannel -PropertyType String -Value $UpdateURLPath -Force | Out-Null
+           }
+        }
+
     if (($Version) -and ($oldChannel -ne $Channel)) {
         $arguments = "/update user displaylevel=false forceappshutdown=true updatepromptuser=false updatetoversion=$Version"
        
@@ -951,20 +959,16 @@ try {
                 if ($PolicyPath) {
                     New-ItemProperty $OfficePolicyPath -Name updatepath -PropertyType String -Value $OldUpdatePath -Force | Out-Null
                 } elseif($oldUpdatePath) {
+                if($UpdateUrl -ne $NULL){
                     New-ItemProperty $Office2RClientKey -Name UpdateUrl -PropertyType String -Value $OldUpdatePath -Force | Out-Null
+                    }
                 }
             }
         } else {
             Write-Host "The channel has been changed to $Channel"
         }
 
-        if (!($RollBack)) {
-           Set-OfficeCDNUrl -Channel $Channel
-
-           if($UpdateChannel){
-               New-ItemProperty $Office2RClientKey -Name UpdateChannel -PropertyType String -Value $UpdateURLPath -Force | Out-Null
-           }
-        }
+        
 
         if ($SetBack) {
             if ($oldUpdatePath) {

@@ -1,9 +1,13 @@
 ﻿param(
     [Parameter()]
-    [string]$Channel = $null,
-    
+    [ValidateSet("FirstReleaseCurrent","Current","FirstReleaseDeferred","Deferred")]
+    [string]$Channel,
+
     [Parameter()]
-    [switch]$RollBack
+    [switch]$RollBack,
+
+    [Parameter()]
+    [bool]$SendExitCode = $false
 )
 
 Function Get-ScriptPath() {
@@ -19,7 +23,6 @@ Function Get-ScriptPath() {
     if ($PSScriptRoot) {
         $scriptPath = $PSScriptRoot
     } else {
-        $scriptPath = split-path -parent $MyInvocation.MyCommand.Definition
         $scriptPath = (Get-Item -Path ".\").FullName
     }
     return $scriptPath
@@ -45,7 +48,7 @@ Function Get-OfficeC2Rexe() {
     }
 }
 
-Function Wait-ForOfficeCTRUpadate() {
+Function Wait-ForOfficeCTRUpdate() {
     [CmdletBinding()]
     Param(
         [Parameter()]
@@ -200,15 +203,17 @@ Function Wait-ForOfficeCTRUpadate() {
        }
 
        Write-Host $displayValue
-        #write log
-        $lineNum = Get-CurrentLineNumber    
-        $filName = Get-CurrentFileName 
-        WriteToLogFile -LNumber $lineNum -FName $filName -ActionError $displayValue
+       #write log
+       $lineNum = Get-CurrentLineNumber    
+       $filName = Get-CurrentFileName 
+       WriteToLogFile -LNumber $lineNum -FName $filName -ActionError $displayValue
 
        $totalOperationTime = getOperationTime -OperationStart $totalOperationStart
+       [bool]$UpdateCompleted = $true
 
        if ($updateRunning) {
           if ($failure) {
+            $UpdateCompleted = $false
             Write-Host "Update Failed"
             #write log
             $lineNum = Get-CurrentLineNumber    
@@ -223,12 +228,16 @@ Function Wait-ForOfficeCTRUpadate() {
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Update Completed - Total Time: $totalOperationTime"
           }
        } else {
-          Write-Host "Update Not Running"
+            $UpdateCompleted = $false
+            Write-Host "Update Not Running"
             #write log
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
             WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Update Not Running"
-       } 
+       }
+
+       return $UpdateCompleted
+    
     }
 }
 
@@ -316,6 +325,33 @@ Function Test-UpdateSource() {
     return $sourceIsAlive
 }
 
+Function Test-Url() {
+    [CmdletBinding()]
+    Param(
+        [Parameter(Mandatory=$true)]
+        [string] $Url = $NULL
+    )
+
+# First we create the request.
+$HTTP_Request = [System.Net.WebRequest]::Create($Url)
+
+# We then get a response from the site.
+$HTTP_Response = $HTTP_Request.GetResponse()
+
+# We then get the HTTP code as an integer.
+$HTTP_Status = [int]$HTTP_Response.StatusCode
+
+# Finally, we clean up the http request by closing it.
+$HTTP_Response.Close()
+
+If ($HTTP_Status -eq 200) { 
+    return $true
+}
+Else {
+    return $false
+}
+}
+
 Function Validate-UpdateSource() {
     [CmdletBinding()]
     Param(
@@ -376,21 +412,36 @@ Function Get-LatestVersion() {
     [array]$totalVersion = @()
     $Version = $null
 
-    $LatestBranchVersionPath = $UpdateURLPath + '\Office\Data'
-    if(Test-Path $LatestBranchVersionPath){
-        $DirectoryList = Get-ChildItem $LatestBranchVersionPath
-        Foreach($listItem in $DirectoryList){
-            if($listItem.GetType().Name -eq 'DirectoryInfo'){
-                $totalVersion+=$listItem.Name
+    $isUrl = $UpdateURLPath -like 'http*'
+
+    $tempUpdateURLPath = "$UpdateURLPath/Office/Data/v32.cab"
+
+    if ($isUrl) {
+        $cabXml = Get-UrlCabXml -UpdateURLPath $tempUpdateURLPath
+        if ($cabXml) {
+            $availNode = $cabXml.Version.Available
+            $currentVersion = $availNode.Build
+            if ($currentVersion) {
+               $Version = $currentVersion
             }
         }
-    }
+    } else {
+        $LatestBranchVersionPath = $UpdateURLPath + '\Office\Data'
+        if(Test-Path $LatestBranchVersionPath){
+            $DirectoryList = Get-ChildItem $LatestBranchVersionPath
+            Foreach($listItem in $DirectoryList){
+                if($listItem.GetType().Name -eq 'DirectoryInfo'){
+                    $totalVersion+=$listItem.Name
+                }
+            }
+        }
 
-    $totalVersion = $totalVersion | Sort-Object -Descending
+        $totalVersion = $totalVersion | Sort-Object -Descending
     
-    #sets version number to the newest version in directory for channel if version is not set by user in argument  
-    if($totalVersion.Count -gt 0){
-        $Version = $totalVersion[0]
+        #sets version number to the newest version in directory for channel if version is not set by user in argument  
+        if($totalVersion.Count -gt 0){
+            $Version = $totalVersion[0]
+        }
     }
 
     return $Version
@@ -440,7 +491,7 @@ function Change-UpdatePathToChannel {
      [string] $UpdatePath,
      
      [Parameter()]
-     [Channel] $Channel
+     [string] $Channel
    )
 
    $newUpdatePath = $UpdatePath
@@ -511,6 +562,48 @@ function Change-UpdatePathToChannel {
    }
 }
 
+function Test-UpdateSourceTcpPort {
+    Param(
+        [parameter(ParameterSetName='URL', Position=0)]
+        [string]
+        $URL,
+
+        [parameter(ParameterSetName='IP', Position=0)]
+        [System.Net.IPAddress]
+        $IPAddress,
+
+        [parameter(Mandatory=$true , Position=1)]
+        [int]
+        $Port,
+
+        [parameter()]
+        [string]$UpdateSource = $null
+    )
+
+    $sourceIsAlive = $false
+
+    $RemoteServer = If ([string]::IsNullOrEmpty($URL)) {$IPAddress} Else {$URL};
+
+    $test = New-Object System.Net.Sockets.TcpClient;
+
+    Try
+    {
+        $test.Connect($RemoteServer, $Port);
+        $sourceIsAlive = $true
+    } Catch {}
+
+    Finally
+    {
+        $test.Dispose();
+    }
+
+    if ($sourceIsAlive) {
+        $sourceIsAlive = Validate-UpdateSource -UpdateSource $UpdateSource
+    }
+
+    return $sourceIsAlive
+}
+
 function Detect-Channel {
    param( 
 
@@ -557,7 +650,7 @@ function Get-ChannelUrl() {
    [CmdletBinding()]
    param( 
       [Parameter(Mandatory=$true)]
-      [Channel]$Channel
+      [string]$Channel
    )
 
    Process {
@@ -566,6 +659,29 @@ function Get-ChannelUrl() {
       $currentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.branch -eq $Channel.ToString() }
       return $currentChannel
    }
+}
+
+function Get-UrlCabXml() {
+   [CmdletBinding()]
+   Param(
+     [Parameter(Mandatory=$true)]
+     [string] $UpdateURLPath
+   )
+
+   process {
+       $webclient = New-Object System.Net.WebClient
+       $XMLFilePath = "$env:TEMP/v32.cab"
+       $XMLDownloadURL = $UpdateURLPath
+       $webclient.DownloadFile($XMLDownloadURL,$XMLFilePath)
+
+       $tmpName = "VersionDescriptor.xml"
+       expand $XMLFilePath $env:TEMP -f:$tmpName | Out-Null
+       $tmpName = $env:TEMP + "\VersionDescriptor.xml"
+       [xml]$channelXml = Get-Content $tmpName
+
+       return $channelXml
+   }
+
 }
 
 function Get-ChannelXml() {
@@ -584,15 +700,9 @@ function Get-ChannelXml() {
            $webclient.DownloadFile($XMLDownloadURL,$XMLFilePath)
        }
 
-       if($PSVersionTable.PSVersion.Major -ge '3'){
-           $tmpName = "o365client_64bit.xml"
-           expand $XMLFilePath $env:TEMP -f:$tmpName | Out-Null
-           $tmpName = $env:TEMP + "\o365client_64bit.xml"
-       }else {
-           $scriptPath = Get-ScriptPath
-           $tmpName = $scriptPath + "\o365client_64bit.xml"           
-       }
-
+       $tmpName = "o365client_64bit.xml"
+       expand $XMLFilePath $env:TEMP -f:$tmpName | Out-Null
+       $tmpName = $env:TEMP + "\o365client_64bit.xml"
        [xml]$channelXml = Get-Content $tmpName
 
        return $channelXml
@@ -604,7 +714,7 @@ Function Set-OfficeCDNUrl() {
    [CmdletBinding()]
    param( 
       [Parameter(Mandatory=$true)]
-      [Channel]$Channel
+      [string]$Channel
    )
 
    Process {
@@ -667,12 +777,12 @@ function Get-CurrentFunctionName {
 
 Function WriteToLogFile() {
     param( 
-      [Parameter(Mandatory=$true)]
-      [string]$LNumber,
-      [Parameter(Mandatory=$true)]
-      [string]$FName,
-      [Parameter(Mandatory=$true)]
-      [string]$ActionError
+        [Parameter(Mandatory=$true)]
+        [string]$LNumber,
+        [Parameter(Mandatory=$true)]
+        [string]$FName,
+        [Parameter(Mandatory=$true)]
+        [string]$ActionError
     )
     try{
         $headerString = "Time".PadRight(30, ' ') + "Line Number".PadRight(15,' ') + "FileName".PadRight(60,' ') + "Action"
@@ -681,48 +791,53 @@ Function WriteToLogFile() {
         #check if file exists, create if it doesn't
         $getCurrentDatePath = "C:\Windows\Temp\" + (Get-Date -Format u).Substring(0,10)+"OfficeAutoScriptLog.txt"
         if(Test-Path $getCurrentDatePath){#if exists, append
-    
-             Add-Content $getCurrentDatePath $stringToWrite
+            Add-Content $getCurrentDatePath $stringToWrite
         }
         else{#if not exists, create new
-             Add-Content $getCurrentDatePath $headerString
-             Add-Content $getCurrentDatePath $stringToWrite
+            Add-Content $getCurrentDatePath $headerString
+            Add-Content $getCurrentDatePath $stringToWrite
         }
     } catch [Exception]{
-        Write-Host $_
+    Write-Host $_
     }
 }
-
-Add-Type -ErrorAction SilentlyContinue -TypeDefinition @"
-   public enum Channel
-   {
-      Current,
-      Deferred,
-      FirstReleaseCurrent,
-      FirstReleaseDeferred
-   }
-"@
 
 try {
 
     if (!($RollBack)) {
       if (!($Channel)) {
-         throw "Channel Parameter is required"
+         throw "Channel Parameter is required. Use the -Channel parameter and enter either Current, FirstReleaseCurrent, Deferred, or FirstReleaseDeferred."
       }
     }
 
     [bool]$PolicyPath = $true
     [bool]$SetBack = $false
 
-    $UpdateURLKey = 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Office\ClickToRun\Configuration'  #UpdateURL
     $Office2RClientKey = 'Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Office\ClickToRun\Configuration' #ClientFolder
     $OfficePolicyPath = 'HKLM:\Software\Policies\Microsoft\Office\16.0\common\officeupdate'
 
-    $UpdateURLPath = (Get-ItemProperty $OfficePolicyPath).updatepath
-    if (!($UpdateURLPath)) {
-        $UpdateURLPath  = (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration").UpdateUrl
+    $UpdateUrl = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration -Name UpdateUrl -ErrorAction SilentlyContinue).UpdateUrl 
+    $GPOUpdatePath = (Get-ItemProperty HKLM:\SOFTWARE\Policies\Microsoft\office\16.0\common\officeupdate -Name updatepath -ErrorAction SilentlyContinue).updatepath
+    $UpdateChannel = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration -Name UpdateChannel -ErrorAction SilentlyContinue).UpdateChannel
+    
+    if($UpdateUrl -ne $NULL){
+        $UpdateURLPath = $UpdateUrl
         $PolicyPath = $false
     }
+    
+    if($GPOUpdatePath -ne $NULL){
+        $UpdateURLPath = $GPOUpdatePath
+    } 
+
+    if($UpdateUrl -eq $null -and $UpdateChannel -ne $NULL){
+        if($GPOUpdatePath -eq $NULL){
+            $UpdateURLPath = $UpdateChannel
+            $PolicyPath = $false
+        } else {
+            $UpdateURLPath = $UpdateChannel    
+        }
+    }
+   
     if (!($UpdateURLPath)) {
         $UpdateURLPath = Get-ScriptPath
         $SetBack = $true
@@ -730,30 +845,62 @@ try {
         $TmpUpdateUrlPath = "$UpdateURLPath\SourceFiles"
         if (Test-Path -Path $TmpUpdateUrlPath) {
            $UpdateURLPath = $TmpUpdateUrlPath
+        } else {
+            $UpdateURLPath = (Detect-Channel).URL
+            $PolicyPath = $false
+            $SetBack = $false
         }
-    }
-    else{
-        $urlPathChk = Test-Path $UpdateURLPath
-        if(!$urlPathChk){
-            $UpdateURLPath = Get-ScriptPath
-            $SetBack = $true
+    } else {
+        if($UpdateURLPath -notlike '*officecdn.microsoft.com*'){
+            $urlPathChk = Test-Path $UpdateURLPath
+            if(!($urlPathChk)){
+                $UpdateURLPath = Get-ScriptPath
+                $SetBack = $true
 
-            $TmpUpdateUrlPath = "$UpdateURLPath\SourceFiles"
-            if (Test-Path -Path $TmpUpdateUrlPath) {
-               $UpdateURLPath = $TmpUpdateUrlPath
+                $TmpUpdateUrlPath = "$UpdateURLPath\SourceFiles"
+                if (Test-Path -Path $TmpUpdateUrlPath) {
+                   $UpdateURLPath = $TmpUpdateUrlPath
+                }
             }
         }
     }
 
     $OldUpdatePath = $UpdateURLPath
 
-    if ($RollBack) {
-       $Channel = (Detect-Channel).branch
+    $detectChannelUrl = $NULL
+    $detectChannel = (Detect-Channel)
+    if ($detectChannel) {
+        $detectChannelBranch = $detectChannel.Branch
+        $detectChannelUrl = $detectChannel.Url
+        $oldChannel = $detectChannelBranch
     }
 
-    $UpdateURLPath = Change-UpdatePathToChannel -Channel $Channel -UpdatePath $UpdateURLPath
-   
-    $validSource = Test-UpdateSource -UpdateSource $UpdateURLPath
+    if ($RollBack) {
+       $Channel = $detectChannelBranch
+    }
+
+    [bool]$updateUrlIsCdn = $false
+    if ($OldUpdatePath) {
+      if ($OldUpdatePath -like '*officecdn.microsoft.com*') {
+          $updateUrlIsCdn = $true
+      }
+    }
+
+    if ($updateUrlIsCdn) {
+      $newChannelUrl = Get-ChannelUrl -Channel $Channel
+      if ($newChannelUrl) {
+         $UpdateURLPath = $newChannelUrl.Url
+      }
+    } else {
+      $UpdateURLPath = Change-UpdatePathToChannel -Channel $Channel -UpdatePath $UpdateURLPath
+    }
+  
+    if($UpdateURLPath -like '*officecdn.microsoft.com*'){
+        $validSource = Test-UpdateSourceTcpPort -URL "officecdn.microsoft.com" -Port 80 -UpdateSource $UpdateURLPath
+    } else {
+        $validSource = Test-UpdateSource -UpdateSource $UpdateURLPath
+    }
+
     if (!($validSource)) {
         throw "UpdateSource not Valid $UpdateURLPath"
     }
@@ -767,10 +914,10 @@ try {
         }
     }
 
-    if ($UpdateURLPath) {
+    if ($UpdateURLPath -and $UpdateUrl -ne $NULL) {
         if ($PolicyPath) {
             New-ItemProperty $OfficePolicyPath -Name updatepath -PropertyType String -Value $UpdateURLPath -Force | Out-Null
-        } else {
+        } elseif($oldUpdatePath) {
             New-ItemProperty $Office2RClientKey -Name UpdateUrl -PropertyType String -Value $UpdateURLPath -Force | Out-Null
         }
     }
@@ -789,17 +936,39 @@ try {
       $Version = Get-LatestVersion -UpdateURLPath $UpdateURLPath
     }
 
-    if (($Version) -and ($currentVersion -ne $Version)) {
+    if (!($RollBack)) {
+           Set-OfficeCDNUrl -Channel $Channel
+
+           if($UpdateChannel -ne $NULL){
+               New-ItemProperty $Office2RClientKey -Name UpdateChannel -PropertyType String -Value $UpdateURLPath -Force | Out-Null
+           }
+        }
+
+    if (($Version) -and ($oldChannel -ne $Channel)) {
         $arguments = "/update user displaylevel=false forceappshutdown=true updatepromptuser=false updatetoversion=$Version"
        
-        #run update exe file
-        Start-Process -FilePath $OfficeUpdatePath -ArgumentList $arguments
+        if($Version -ne $currentVersion){         
+            #run update exe file
+            Start-Process -FilePath $OfficeUpdatePath -ArgumentList $arguments
      
-        Wait-ForOfficeCTRUpadate
+            $UpdateStatus = Wait-ForOfficeCTRUpdate
 
-        if (!($RollBack)) {
-           Set-OfficeCDNUrl -Channel $Channel
+            if ($UpdateStatus -eq $false){
+                Set-OfficeCDNUrl -Channel $oldChannel
+
+                if ($PolicyPath) {
+                    New-ItemProperty $OfficePolicyPath -Name updatepath -PropertyType String -Value $OldUpdatePath -Force | Out-Null
+                } elseif($oldUpdatePath) {
+                if($UpdateUrl -ne $NULL){
+                    New-ItemProperty $Office2RClientKey -Name UpdateUrl -PropertyType String -Value $OldUpdatePath -Force | Out-Null
+                    }
+                }
+            }
+        } else {
+            Write-Host "The channel has been changed to $Channel"
         }
+
+        
 
         if ($SetBack) {
             if ($oldUpdatePath) {
@@ -816,13 +985,19 @@ try {
         if (!($RollBack)) {
            Set-OfficeCDNUrl -Channel $Channel
         }
+
+        Remove-ItemProperty $Office2RClientKey -Name BackupUpdateUrl -Force -ErrorAction SilentlyContinue | Out-Null
     }
-    [System.Environment]::Exit(0)
+    if ($SendExitCode) {
+       [System.Environment]::Exit(0)
+    }
 } catch {
-  Write-Host $_ -ForegroundColor Red
-  $fileName = $_.InvocationInfo.ScriptName.Substring($_.InvocationInfo.ScriptName.LastIndexOf("\")+1)
+    Write-Host $_ -ForegroundColor Red
+    $fileName = $_.InvocationInfo.ScriptName.Substring($_.InvocationInfo.ScriptName.LastIndexOf("\")+1)
     WriteToLogFile -LNumber $_.InvocationInfo.ScriptLineNumber -FName $fileName -ActionError $_
-  $Error = $null
-  [System.Environment]::Exit(1)
+    $Error = $null
+    if ($SendExitCode) {
+        [System.Environment]::Exit(1)
+    }
 }
 
