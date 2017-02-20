@@ -1,0 +1,7 @@
+<Configuration>
+    <Add OfficeClientEdition="32">
+        <Product ID="O365ProPlusRetail">
+            <Language ID="en-us"/>
+        </Product>
+    </Add>
+</Configuration>
