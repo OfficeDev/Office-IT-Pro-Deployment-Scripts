@@ -27,7 +27,12 @@ Will uninstall Office Click-to-Run.
         [bool] $WaitForInstallToFinish = $true,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [string] $TargetFilePath = $NULL
+        [string] $TargetFilePath = $NULL,
+
+        [Parameter()]
+        [ValidateSet("All","O365ProPlusRetail","O365BusinessRetail","VisioProRetail","ProjectProRetail", "SPDRetail", "VisioProXVolume", "VisioStdXVolume", 
+                     "ProjectProXVolume", "ProjectStdXVolume", "InfoPathRetail", "SkypeforBusinessEntryRetail", "LyncEntryRetail")]
+        [string[]]$C2RProductsToRemove = "All"
     )
 
      Process{
@@ -35,7 +40,54 @@ Will uninstall Office Click-to-Run.
         $scriptRoot = GetScriptRoot
 
         newCTRRemoveXml | Out-File $RemoveCTRXmlPath
-    
+       
+        if($C2RProductsToRemove -ne "All"){
+            foreach($product in $C2RProductsToRemove){
+                #Load the xml
+                [System.Xml.XmlDocument]$ConfigFile = New-Object System.Xml.XmlDocument
+                $content = Get-Content $RemoveCTRXmlPath
+                $ConfigFile.LoadXml($content) | Out-Null
+
+                #Set the values
+                $RemoveElement = $ConfigFile.Configuration.Remove
+
+                $isValidProduct = (Get-ODTOfficeProductLanguages | ? {$_.DisplayName -eq $product}).DisplayName
+
+                if($isValidProduct  -ne $NULL){
+                    [System.Xml.XmlElement]$ProductElement = $ConfigFile.Configuration.Remove.Product | where {$_.ID -eq $product}
+                    if($ProductElement -eq $NULL){
+                        [System.Xml.XmlElement]$ProductElement = $ConfigFile.CreateElement("Product")
+                        $RemoveElement.appendChild($ProductElement) | Out-Null
+                        $ProductElement.SetAttribute("ID", $product) | Out-Null
+                    }
+
+                    #Add the languages
+                    $LanguageIds = (Get-ODTOfficeProductLanguages -ProductId $product).Languages
+                    foreach($LanguageId in $LanguageIds){
+                        [System.Xml.XmlElement]$LanguageElement = $ProductElement.Language | Where {$_.ID -eq $LanguageId}
+                        if($LanguageElement -eq $NULL){
+                            [System.Xml.XmlElement]$LanguageElement = $ConfigFile.CreateElement("Language")
+                            $ProductElement.AppendChild($LanguageElement) | Out-Null
+                            $LanguageElement.SetAttribute("ID", $LanguageId) | Out-Null
+                        }
+                    }
+
+                    #Save the XML file
+                    $ConfigFile.Save($RemoveCTRXmlPath) | Out-Null
+                    $global:saveLastFilePath = $RemoveCTRXmlPath
+                }
+            }
+
+            $RemoveAllElement = $ConfigFile.Configuration.Remove.All
+            if($RemoveAllElement -ne $NULL){
+                $ConfigFile.Configuration.Remove.RemoveAttribute("All") | Out-Null
+            }
+
+            #Save the XML file
+            $ConfigFile.Save($RemoveCTRXmlPath) | Out-Null
+            $global:saveLastFilePath = $RemoveCTRXmlPath
+        }
+
         [bool] $isInPipe = $true
         if (($PSCmdlet.MyInvocation.PipelineLength -eq 1) -or ($PSCmdlet.MyInvocation.PipelineLength -eq $PSCmdlet.MyInvocation.PipelinePosition)) {
             $isInPipe = $false
@@ -55,13 +107,7 @@ Will uninstall Office Click-to-Run.
                 $lineNum = Get-CurrentLineNumber    
                 $filName = Get-CurrentFileName 
                 WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Please wait while $c2rName is being uninstalled..."
-            }
-
-            $osVersion = (Get-WmiObject -Class Win32_OperatingSystem).Version
-            [int]$osVersion = $osVersion.Split('.')[0]
-            if($osVersion -ge '10') {
-                Remove-PinnedOfficeApplications
-            }
+            }            
         }
    
         if($c2rVersion.Version -like "15*"){
@@ -71,10 +117,11 @@ Will uninstall Office Click-to-Run.
             $OdtExe = "$scriptRoot\Office2016Setup.exe"
         } 
 
+        
         $cmdLine = '"' + $OdtExe + '"'
         $cmdArgs = "/configure " + '"' + $RemoveCTRXmlPath + '"'
 
-        StartProcess -execFilePath $cmdLine -execParams $cmdArgs -WaitForExit $true  
+        StartProcess -execFilePath $cmdLine -execParams $cmdArgs -WaitForExit $true 
                         
         [bool] $c2rTest = $false 
         if( Get-OfficeVersion | Where-Object {$_.ClickToRun -eq "True"} ){
@@ -85,7 +132,7 @@ Will uninstall Office Click-to-Run.
             if(!($c2rTest)){                           
                 if (!($isInPipe)) {                        
                     Write-Host "Office Click-to-Run has been successfully uninstalled." 
-                    #write log
+                    <# write log#>
                     $lineNum = Get-CurrentLineNumber    
                     $filName = Get-CurrentFileName 
                     WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Office Click-to-Run has been successfully uninstalled." 
@@ -419,7 +466,8 @@ Function newCTRRemoveXml {
 <Configuration>
   <Remove All="True">
   </Remove>
-  <Display Level="None" AcceptEULA="TRUE" />
+  <Display Level="None" AcceptEULA="TRUE" 
+  <Property Name="FORCEAPPSHUTDOWN" Value="TRUE" />
 </Configuration>
 "@
 }
@@ -439,161 +487,6 @@ Function GetScriptRoot() {
 
      return $scriptPath
  }
-}
-
-function Remove-PinnedOfficeApplications { 
-    [CmdletBinding()] 
-    Param( 
-        [Parameter()]
-        [string]$Action = "Unpin from taskbar"
-    ) 
-
-    $ctr = (Get-OfficeVersion).ClickToRun
-    $InstallPath = (Get-OfficeVersion).InstallPath
-    $officeVersion = (Get-OfficeVersion).Version.Split('.')[0]
-
-    if($ctr -eq $true) {
-        $officeAppPath = $InstallPath + "\root\Office" + $officeVersion
-    } else {
-        $officeAppPath = $InstallPath + "Office" + $officeVersion
-    }
-
-    $officeAppList = @("WINWORD.EXE", "EXCEL.EXE", "POWERPNT.EXE", "ONENOTE.EXE", "MSACCESS.EXE", "MSPUB.EXE", "OUTLOOK.EXE",
-                       "lync.exe", "GROOVE.EXE", "WINPROJ.EXE", "VISIO.EXE")
-
-    $osVersion = (Get-WmiObject -Class Win32_OperatingSystem).Version
-    [int]$osVersion = $osVersion.Split('.')[0]
-    
-    foreach($app in $officeAppList){
-        if(Test-Path ($officeAppPath + "\$app")){
-            switch($Action) {
-                "Pin to Start" {
-                    if($osVersion -ge '10'){
-                        $actionId = '51201'
-                    } else { 
-                        $actionId = '5381'
-                    }
-                }
-                "Unpin from Start" {
-                    if($osVersion -ge '10'){
-                        $actionId = '51394'
-                    } else { 
-                        $actionId = '5382'
-                    } 
-                }
-                "Pin to taskbar" {
-                    $actionId = '5386'
-                }
-                "Unpin from taskbar" {
-                    $actionId = '5387'
-                }   
-            }
-
-            InvokeVerb -FilePath ($officeAppPath + "\$app") -Verb $(GetVerb -VerbId $actionId)
-            
-        }
-    }
-}
-
-function Remove-PinnedOfficeAppsForWindows10() {
-    [CmdletBinding()]
-    param(
-        [Parameter()]
-        [string]$OfficeApp,
-
-        [Parameter()]
-        [string]$Action = 'Unpin from taskbar'
-    )
-
-    switch($OfficeApp){
-        "WINWORD" {
-            $officeAppName = "Word"  
-        }
-        "EXCEL" {
-            $officeAppName = "Excel"
-        }
-        "POWERPNT" {
-            $officeAppName = "PowerPoint"
-        }
-        "ONENOTE" {
-            $officeAppName = "OneNote"
-        }
-        "MSACCESS" {
-            $officeAppName = "Access"
-        }
-        "MSPUB" { 
-            $officeAppName = "Publisher"
-        }
-        "OUTLOOK" {
-            $officeAppName = "Outlook"
-        }
-        "lync" {
-            $officeAppName = "Skype For Business"
-        }
-        "GROOVE" {
-            $officeAppName = "OneDrive For Business"
-        }
-        "WINPROJ" {
-            $officeAppName = "Project"
-        }
-        "VISIO" {
-            $officeAppName = "Visio"
-        }
-    }
-
-    ((New-Object -Com Shell.Application).NameSpace('shell:::{4234d49b-0245-4df3-b780-3893943456e1}').Items() | ? {$_.Name -like "$officeAppName*"}).Verbs() | ? {$_.Name.replace('&','') -match $Action} | % {$_.DoIt()}
-       
-}
-
-function InvokeVerb {
-    Param(
-    [string]$FilePath,
-    [string]$verb
-    )
-
-    $verb = $verb.Replace("&","") 
-    $path = Split-Path $FilePath 
-    $shell = New-Object -ComObject "Shell.Application"  
-    $folder = $shell.Namespace($path)    
-    $item = $folder.Parsename((Split-Path $FilePath -leaf)) 
-    $itemVerb = $item.Verbs() | ? {$_.Name.Replace("&","") -eq $verb} 
-    
-    $osVersion = (Get-WmiObject -Class Win32_OperatingSystem).Version
-    [int]$osVersion = $osVersion.Split('.')[0]
-    
-    if(($itemVerb -eq $null) -and ($osVersion -ge '10')){ 
-        Remove-PinnedOfficeAppsForWindows10 -OfficeApp $item.Name -Action $verb             
-    } else { 
-        if($itemVerb){
-            $itemVerb.DoIt() 
-        }
-    } 
-}
-
-function GetVerb { 
-    Param(
-        [int]$verbId
-    ) 
-    
-    try { 
-        $t = [type]"CosmosKey.Util.MuiHelper" 
-    } catch { 
-        $def = [Text.StringBuilder]"" 
-        [void]$def.AppendLine('[DllImport("user32.dll")]') 
-        [void]$def.AppendLine('public static extern int LoadString(IntPtr h,uint id, System.Text.StringBuilder sb,int maxBuffer);') 
-        [void]$def.AppendLine('[DllImport("kernel32.dll")]') 
-        [void]$def.AppendLine('public static extern IntPtr LoadLibrary(string s);') 
-        Add-Type -MemberDefinition $def.ToString() -Name MuiHelper -Namespace CosmosKey.Util             
-    } 
-    if($global:CosmosKey_Utils_MuiHelper_Shell32 -eq $null){         
-        $global:CosmosKey_Utils_MuiHelper_Shell32 = [CosmosKey.Util.MuiHelper]::LoadLibrary("shell32.dll") 
-    } 
-
-    $maxVerbLength=255 
-    $verbBuilder = New-Object Text.StringBuilder "",$maxVerbLength 
-    [void][CosmosKey.Util.MuiHelper]::LoadString($CosmosKey_Utils_MuiHelper_Shell32,$verbId,$verbBuilder,$maxVerbLength) 
-    
-    return $verbBuilder.ToString() 
 }
 
 Function StartProcess {
@@ -657,7 +550,7 @@ Function WriteToLogFile() {
 
         #check if file exists, create if it doesn't
         $getCurrentDatePath = "C:\Windows\Temp\" + (Get-Date -Format u).Substring(0,10)+"OfficeAutoScriptLog.txt"
-        if(Test-Path $getCurrentDatePath){#if exists, append
+        if(Test-Path $getCurrentDatePath){#if exists, append 
              Add-Content $getCurrentDatePath $stringToWrite
         }
         else{#if not exists, create new

@@ -27,7 +27,12 @@ Will uninstall Office Click-to-Run.
         [bool] $WaitForInstallToFinish = $true,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [string] $TargetFilePath = $NULL
+        [string] $TargetFilePath = $NULL,
+
+        [Parameter()]
+        [ValidateSet("All","O365ProPlusRetail","O365BusinessRetail","VisioProRetail","ProjectProRetail", "SPDRetail", "VisioProXVolume", "VisioStdXVolume", 
+                     "ProjectProXVolume", "ProjectStdXVolume", "InfoPathRetail", "SkypeforBusinessEntryRetail", "LyncEntryRetail")]
+        [string[]]$C2RProductsToRemove = "All"
     )
 
      Process{
@@ -35,7 +40,54 @@ Will uninstall Office Click-to-Run.
         $scriptRoot = GetScriptRoot
 
         newCTRRemoveXml | Out-File $RemoveCTRXmlPath
-    
+       
+        if($C2RProductsToRemove -ne "All"){
+            foreach($product in $C2RProductsToRemove){
+                #Load the xml
+                [System.Xml.XmlDocument]$ConfigFile = New-Object System.Xml.XmlDocument
+                $content = Get-Content $RemoveCTRXmlPath
+                $ConfigFile.LoadXml($content) | Out-Null
+
+                #Set the values
+                $RemoveElement = $ConfigFile.Configuration.Remove
+
+                $isValidProduct = (Get-ODTOfficeProductLanguages | ? {$_.DisplayName -eq $product}).DisplayName
+
+                if($isValidProduct  -ne $NULL){
+                    [System.Xml.XmlElement]$ProductElement = $ConfigFile.Configuration.Remove.Product | where {$_.ID -eq $product}
+                    if($ProductElement -eq $NULL){
+                        [System.Xml.XmlElement]$ProductElement = $ConfigFile.CreateElement("Product")
+                        $RemoveElement.appendChild($ProductElement) | Out-Null
+                        $ProductElement.SetAttribute("ID", $product) | Out-Null
+                    }
+
+                    #Add the languages
+                    $LanguageIds = (Get-ODTOfficeProductLanguages -ProductId $product).Languages
+                    foreach($LanguageId in $LanguageIds){
+                        [System.Xml.XmlElement]$LanguageElement = $ProductElement.Language | Where {$_.ID -eq $LanguageId}
+                        if($LanguageElement -eq $NULL){
+                            [System.Xml.XmlElement]$LanguageElement = $ConfigFile.CreateElement("Language")
+                            $ProductElement.AppendChild($LanguageElement) | Out-Null
+                            $LanguageElement.SetAttribute("ID", $LanguageId) | Out-Null
+                        }
+                    }
+
+                    #Save the XML file
+                    $ConfigFile.Save($RemoveCTRXmlPath) | Out-Null
+                    $global:saveLastFilePath = $RemoveCTRXmlPath
+                }
+            }
+
+            $RemoveAllElement = $ConfigFile.Configuration.Remove.All
+            if($RemoveAllElement -ne $NULL){
+                $ConfigFile.Configuration.Remove.RemoveAttribute("All") | Out-Null
+            }
+
+            #Save the XML file
+            $ConfigFile.Save($RemoveCTRXmlPath) | Out-Null
+            $global:saveLastFilePath = $RemoveCTRXmlPath
+        }
+
         [bool] $isInPipe = $true
         if (($PSCmdlet.MyInvocation.PipelineLength -eq 1) -or ($PSCmdlet.MyInvocation.PipelineLength -eq $PSCmdlet.MyInvocation.PipelinePosition)) {
             $isInPipe = $false
@@ -80,7 +132,7 @@ Will uninstall Office Click-to-Run.
             if(!($c2rTest)){                           
                 if (!($isInPipe)) {                        
                     Write-Host "Office Click-to-Run has been successfully uninstalled." 
-                    #write log
+                    <# write log#>
                     $lineNum = Get-CurrentLineNumber    
                     $filName = Get-CurrentFileName 
                     WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Office Click-to-Run has been successfully uninstalled." 
@@ -107,7 +159,7 @@ This function will query the local or a remote computer and return the informati
 Name: Get-OfficeVersion
 Version: 1.0.5
 DateCreated: 2015-07-01
-DateUpdated: 2016-07-20
+DateUpdated: 2016-10-14
 .LINK
 https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
 .PARAMETER ComputerName
@@ -498,12 +550,12 @@ Function WriteToLogFile() {
 
         #check if file exists, create if it doesn't
         $getCurrentDatePath = "C:\Windows\Temp\" + (Get-Date -Format u).Substring(0,10)+"OfficeAutoScriptLog.txt"
-        if(Test-Path $getCurrentDatePath){#if exists, append  
-            Add-Content $getCurrentDatePath $stringToWrite
+        if(Test-Path $getCurrentDatePath){#if exists, append 
+             Add-Content $getCurrentDatePath $stringToWrite
         }
         else{#if not exists, create new
-            Add-Content $getCurrentDatePath $headerString
-            Add-Content $getCurrentDatePath $stringToWrite
+             Add-Content $getCurrentDatePath $headerString
+             Add-Content $getCurrentDatePath $stringToWrite
         }
     } catch [Exception]{
         Write-Host $_
