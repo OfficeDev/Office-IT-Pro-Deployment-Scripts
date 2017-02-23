@@ -223,7 +223,9 @@ In this example the primary Office product will be removed even if it is Click-T
     $16MSIVBS = "OffScrub_O16msi.vbs"
 
     $argList = ""
-    $argListProducts = @()
+    $MainArgListProducts = @()
+    $VisioArgListProducts = @()
+    $ProjectArgListProducts = @()
 
     $officeProducts = Get-OfficeVersion -ShowAllInstalledProducts | select *
 
@@ -236,12 +238,28 @@ In this example the primary Office product will be removed even if it is Click-T
         foreach($product in $ProductsToRemove){
             switch($product){
                 "MainOfficeProduct"{
-                    $MainOfficeProduct = GetProductName -ProductName MainOfficeProduct
-                    $argListProducts += $MainOfficeProduct.Name
+                    $OfficeProduct = GetProductName -ProductName MainOfficeProduct
+                    $MainOfficeProduct = $OfficeProduct | ? {$_.DisplayName -notmatch "Language Pack"}
+                    $OfficeLanguagePacks = $officeProduct | ? {$_.DisplayName -match "Language Pack"}
+                    if($OfficeLanguagePacks){
+                        foreach($OffLang in $OfficeLanguagePacks){
+                            $OfficeLanguagePacks += $OffLang.Name
+                        }
+                    }
+                    $OfficeArgListProducts += $MainOfficeProduct.Name
+                    $OfficeArgListProducts = $OfficeArgListProducts -join ","
                 }
                 "Visio" {
                     $VisioProduct = GetProductName -ProductName Visio
-                    $argListProducts += $VisioProduct.Name
+                    $MainVisioProduct = $VisioProduct | ? {$_.DisplayName -notmatch "Language Pack"}
+                    $VisioLanguagePacks = $VisioProduct | ? {$_.DisplayName -match "Language Pack"}
+                    if($VisioLanguagePacks){
+                        foreach($VisLang in $VisioLanguagePacks){
+                            $VisioArgListProducts += $VisLang.Name
+                        }
+                    }
+                    $VisioArgListProducts += $MainVisioProduct.Name
+                    $VisioArgListProducts = $VisioArgListProducts -join ","
 
                     foreach($product in $officeProducts){
                         if($product.DisplayName.ToLower() -eq $VisioProduct.DisplayName.ToLower()){
@@ -255,7 +273,15 @@ In this example the primary Office product will be removed even if it is Click-T
                 }
                 "Project" {
                     $ProjectProduct = GetProductName -ProductName Project
-                    $argListProducts += $ProjectProduct.Name
+                    $MainProjectProduct = $ProjectProduct | ? {$_.DisplayName -notmatch "Language Pack"}
+                    $ProjectLanguagePacks = $ProjectProduct | ? {$_.DisplayName -match "Language Pack"}
+                    if($ProjectLanguagePacks){
+                        foreach($ProjLang in $ProjectLanguagePacks){
+                            $ProjectArgListProducts += $ProjLang.Name
+                        }
+                    }
+                    $ProjectArgListProducts += $MainProjectProduct.Name
+                    $ProjectArgListProducts = $ProjectArgListProducts -join ","
 
                     foreach($product in $officeProducts){
                         if($product.DisplayName.ToLower() -eq $ProjectProduct.DisplayName.ToLower()){
@@ -323,7 +349,6 @@ In this example the primary Office product will be removed even if it is Click-T
             foreach($product in $ProductsToRemove){
                 switch($product){
                     "MainOfficeProduct" {
-                        Write-Host "`tRemoving "$MainOfficeProduct.DisplayName"..."
                         $MainOfficeProductName = $MainOfficeProduct.Name
                         
                         if((Get-OfficeVersion | select *).ClickToRun -eq $true){
@@ -370,6 +395,7 @@ In this example the primary Office product will be removed even if it is Click-T
 
                         try{
                              if($ActionFile -And (Test-Path -Path $ActionFile)){
+                                Write-Host "`tRemoving "$MainOfficeProduct.DisplayName"..."
                                 $cmdLine = """$ActionFile"" $MainOfficeProductName $argList"
                                 $cmd = "cmd /c cscript //Nologo $cmdLine"
                                 Invoke-Expression $cmd
@@ -379,7 +405,7 @@ In this example the primary Office product will be removed even if it is Click-T
                         } catch {}                                  
                     }
                     "Visio" {
-                        Write-Host "`tRemoving "$VisioProduct.DisplayName"..."
+                        Write-Host "`tRemoving Visio products..."
                         $VisioProductName = $VisioProduct.Name
 
                         switch($VisioProduct.Version){
@@ -421,14 +447,14 @@ In this example the primary Office product will be removed even if it is Click-T
                         }
 
                         if($ActionFile -And (Test-Path -Path $ActionFile)){
-                            $cmdLine = """$ActionFile"" $VisioProductName $argList"
+                            $cmdLine = """$ActionFile"" $VisioArgListProducts $argList"
                             $cmd = "cmd /c cscript //Nologo $cmdLine"
                             Invoke-Expression $cmd
                         }
 
                     }
                     "Project" {
-                        Write-Host "`tRemoving "$ProjectProduct.DisplayName"..."
+                        Write-Host "`tRemoving Project products..."
                         $ProjectProductName = $ProjectProduct.Name
 
                         switch($ProjectProduct.Version){
@@ -1202,8 +1228,20 @@ param(
     [Parameter()]
     [string]$ProductName
 )
+    $defaultDisplaySet = 'DisplayName','Name','Version'
+    $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet('DefaultDisplayPropertySet',[string[]]$defaultDisplaySet)
+    $PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultDisplayPropertySet)
+    $results = New-Object PSObject[] 0;
+    
     if($ProductName -eq 'MainOfficeProduct'){
-        $ProductName = (Get-OfficeVersion).DisplayName | select -Unique
+        $MainOfficeProducts = @()
+        #$Products = (Get-OfficeVersion).DisplayName | select -Unique
+        $MainOfficeProducts = (Get-OfficeVersion)
+        if($MainOfficeProducts.GetType().Name -eq "Object[]"){
+            $primaryOfficeLanguage = GetClientCulture
+            $MainOfficeProduct = (Get-OfficeVersion) | ? {$_.DisplayName -match $primaryOfficeLanguage}
+            $ProductName = $MainOfficeProduct.DisplayName
+        }
     } 
         
     $HKLM = [UInt32] "0x80000002"
@@ -1220,7 +1258,7 @@ param(
     }
 
     foreach ($regKey in $installKeys) {
-        $keyList = new-object System.Collections.ArrayList
+        $keyList = New-Object System.Collections.ArrayList
         $keys = $regProv.EnumKey($HKLM, $regKey)
 
         foreach ($key in $keys.sNames) {
@@ -1231,25 +1269,32 @@ param(
             if($name){
                 if($name.ToLower() -match $ProductName.ToLower()){
                     if($path -notmatch "{.{8}-.{4}-.{4}-.{4}-0000000FF1CE}"){
-                        if($key.Split(".")[1] -ne $null){
-                            $prodName = $key.Split(".")[1]
+                        if($name -match "Language Pack"){
+                            if($key.Split(".")[1] -ne $null){
+                                $regex = "^[^.]*"
+                                $string = $key -replace $regex, ""
+                                $prodName = $string.trim(".")
+                            }
                         } else {
-                            $prodName = $key
+                            if($key.Split(".")[1] -ne $null){
+                                $prodName = $key.Split(".")[1]
+                            } else {
+                                $prodName = $key
+                            }
                         }
                         $prodVersion = $version.Split(".")[0]
                         $DisplayName = $name
+
+                        $object = New-Object PSObject -Property @{DisplayName = $DisplayName; Name = $prodName; Version = $prodVersion }
+                        $object | Add-Member MemberSet PSStandardMembers $PSStandardMembers
+                        $results += $object
                     }
                 }
             }
-
-            $Result = New-Object -TypeName PSObject
-            Add-Member -InputObject $Result -MemberType NoteProperty -Name "DisplayName" -Value $DisplayName 
-            Add-Member -InputObject $Result -MemberType NoteProperty -Name "Name" -Value $prodName
-            Add-Member -InputObject $Result -MemberType NoteProperty -Name "Version" -Value $prodVersion
         }
     }
 
-    return $Result
+    return $Results
 
 }
 
@@ -1435,6 +1480,34 @@ function odtGetOfficeLanguages() {
 
         return $appLanguages1;
     }
+}
+
+function GetClientCulture{
+    Param(
+        [string]$computer = $env:COMPUTERNAME
+    )
+    
+    $HKLM = [UInt32] "0x80000002"
+
+    $officeKeys = 'SOFTWARE\Microsoft\Office',
+                  'SOFTWARE\Wow6432Node\Microsoft\Office'
+
+    $regProv = Get-WmiObject -List "StdRegProv" -Namespace root\default -ComputerName $computer
+
+    foreach ($regKey in $officeKeys) {
+        $officeVersion = $regProv.EnumKey($HKLM, $regKey)
+        foreach ($key in $officeVersion.sNames) {
+            if($key -match "\d{2}\.\d") {
+                $path = join-path $regKey $key
+                $clickToRunPath = join-path $path "ClickToRun\Configuration"
+                if(Test-Path "HKLM:\$clickToRunPath"){           
+                    $clientCulture = $regProv.GetStringValue($HKLM, $clickToRunPath, "ClientCulture").sValue
+                }               
+            }
+        }
+    }
+
+    return $clientCulture
 }
 
 function Get-CurrentLineNumber {
