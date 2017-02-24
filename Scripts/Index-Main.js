@@ -2,6 +2,8 @@
     $('#Hamburger').remove();
     checkAddress();
     resizePage();
+
+    sendMessage('');
 });
 
 window.onresize = function(){
@@ -75,7 +77,7 @@ function loadPartial(sectionId,item){
 
     $(item).addClass('selected');
 
-    if($(window).width() < 450){
+    if($(window).width() < 480){
       toggleHamburger();
     }
 }
@@ -83,7 +85,7 @@ function loadPartial(sectionId,item){
 function resizePage(){
     var windowWidth = $(window).outerWidth(); 
 
-    if(windowWidth > 450){
+    if(windowWidth > 480){
          $('#Hamburger').remove();
          $('#siteNav').parents().each(function(i,obj){ 
             $(obj).height('100%');

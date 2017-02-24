@@ -1,8 +1,8 @@
-﻿@media screen and (min-width: 0px) and (max-width: 450px){
+﻿@media screen and (min-width: 0px) and (max-width: 480px){
 	#siteNav {margin-right: -15px;}
 }
 
-@media screen and (min-width: 451px){
+@media screen and (min-width: 481px){
 	#siteNav{margin-right:0px;}
 }
 
@@ -99,4 +99,41 @@
     -ms-transform: rotate(0deg); /* IE 9 */
     -webkit-transform: rotate(0deg); /* Chrome, Safari, Opera */
     transform: rotate(0deg);
+}
+
+.ChatResponse{
+	background-color: #69afe5; 
+	float:left;
+	color: white; 
+}
+
+.ChatPrompt{
+	background-color:#eaeaea; 
+	float:right;
+	color: black; 
+}
+
+.ChatPrompt, .ChatResponse{
+	min-height: 100px;
+	padding: 10px;
+	border:1px solid #3c3c3c;
+	margin: 10px; 
+	width:60%;
+}
+
+.ChatArea{
+	height:500px;
+	overflow-y: scroll;
+	background-color: #a6a6a6;
+	border:1px solid #3c3c3c;
+}
+
+#ChatControls{
+	margin-top:5px;
+	padding-left: 0px;
+}
+
+.CardButton{
+	margin: 2px;
+		border:1px solid #3c3c3c;
 }

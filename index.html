@@ -9,7 +9,26 @@
     <link href="stylesheets/Index-Main.css" rel="stylesheet">  
     <script src="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-js/1.4.0/js/fabric.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="crossorigin="anonymous"></script>
+    <script src="http://unpkg.com/botframework-directlinejs/directLine.js"/></script>
+    <script type="text/javascript" src="./Scripts/Chatbot.js"/></script>
     <script type="text/javascript" src="./Scripts/Index-Main.js"></script>
+
+    <script type="text/javascript">
+              var TextFieldElements = document.querySelectorAll(".ms-TextField");
+              for (var i = 0; i < TextFieldElements.length; i++) {
+                new fabric['TextField'](TextFieldElements[i]);
+              }
+            </script>
+
+    <script type="text/javascript">
+      var ButtonElements = document.querySelectorAll(".ms-Button");
+      for (var i = 0; i < ButtonElements.length; i++) {
+        new fabric['Button'](ButtonElements[i], function() {
+          // Insert Event Here
+        });
+      }
+    </script>
+            
   </head>
     <body>
         <main class="container" onresize="sidebarHeight()">
@@ -68,7 +87,6 @@
               <!-- Load partial views here -->
                 </div>
               </div>
-             
             </div>
         </main>
     </body>
