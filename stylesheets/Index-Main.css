@@ -126,6 +126,7 @@
 	overflow-y: scroll;
 	background-color: #a6a6a6;
 	border:1px solid #3c3c3c;
+	font-family: Segoe UI WestEuropean,Segoe UI,-apple-system,BlinkMacSystemFont,Roboto,Helvetica Neue,sans-serif;
 }
 
 #ChatControls{
