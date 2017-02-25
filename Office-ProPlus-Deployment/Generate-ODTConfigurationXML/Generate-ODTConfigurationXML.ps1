@@ -114,7 +114,7 @@ process {
     $lineNum = Get-CurrentLineNumber    
     $filName = Get-CurrentFileName 
     WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "begin function"
-#Throw "this is a generic error"
+    #Throw "this is a generic error"
  if ($TargetFilePath) {
      $folderPath = Split-Path -Path $TargetFilePath -Parent
      $fileName = Split-Path -Path $TargetFilePath -Leaf
@@ -298,18 +298,69 @@ process {
     }
 
     if (!($primaryLanguage)) {
-            #write log
-            $lineNum = Get-CurrentLineNumber    
-            $filName = Get-CurrentFileName 
-            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Cannot find matching Office language for: $primaryLanguage"
+        #write log
+        $lineNum = Get-CurrentLineNumber    
+        $filName = Get-CurrentFileName 
+        WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Cannot find matching Office language for: $primaryLanguage"
         throw "Cannot find matching Office language for: $primaryLanguage"
     }
     
-    foreach ($productId in $splitProducts) { 
+    $languageIDs = @()
+    $msiLangPacks = GetLanguagePacks
+
+    if($splitProducts.GetType().Name -eq "Object[]"){
+        $splitProducts = $splitProducts | Sort-Object
+    }
+    
+    foreach ($productId in $splitProducts) {
+       if($msiLangPacks){
+          if($Languages -eq "CurrentOfficeLanguages") {
+            $officeLangs = $null
+
+            if($productId -match "Visio" -or $productId -match "Project"){
+              $languageIDs = @()
+            }
+          
+            if($productId -match "O365"){
+                if($mainOfficeProduct.GetType().Name -eq "Object[]"){
+                    $OfficeProduct = $mainOfficeProduct[0].DisplayName
+                } else {
+                    $OfficeProduct = $mainOfficeProduct.DisplayName
+                }
+
+                if($OfficeProduct -notmatch "ProPlus"){
+                    $product = "Office"
+                }          
+            }
+          
+            if($productId -match "Visio"){
+              $product = "Visio"
+            }
+
+            if($productId -match "Project"){
+              $product = "Project"
+            }
+            
+            if($product){
+                if($product -eq "Office"){
+                    $languagePacks = GetLanguagePacks | ? {$_.DisplayName -match $product `
+                                                      -and $_.DisplayName -notmatch "Visio" `
+                                                      -and $_.DisplayName -notmatch "Project"}
+                } else {
+                    $languagePacks = GetLanguagePacks | ? {$_.DisplayName -match $product}
+                }
+                foreach($lang in $languagePacks){
+                    $languageIDs += $lang.LanguageID
+                }
+            }
+          }
+       }
+
        $excludeApps = $NULL
 
        if ($Languages -eq "CurrentOfficeLanguages") {
            $additionalLanguages = New-Object System.Collections.ArrayList
+           $additionalLanguages += $languageIDs
        }
 
        if ($officeConfig.ClickToRunInstalled) {
@@ -318,8 +369,24 @@ process {
            if ($productId.ToLower().StartsWith("o365")) {
                $excludeApps = odtGetExcludedApps -ConfigDoc $ConfigFile -OfficeKeyPath $officeConfig.OfficeKeyPath -ProductId $productId
            }
+           
+           if($Languages -eq 'AllInUseLanguages'){
+               foreach($product in $splitProducts){
+                   $languagePacks = GetLanguagePacks 
 
-           $officeAddLangs = odtGetOfficeLanguages -ConfigDoc $ConfigFile -OfficeKeyPath $officeConfig.OfficeKeyPath -ProductId $productId
+                   foreach($pack in $languagePacks){
+                       $additionalLanguages += $pack.LanguageID
+                   }
+                   
+                   foreach($product in $splitProducts){               
+                       $officeAddLangs = odtGetOfficeLanguages -ConfigDoc $ConfigFile -OfficeKeyPath $officeConfig.OfficeKeyPath -ProductId $product
+                       $additionalLanguages += $officeAddLangs
+                   }     
+               }
+           } else {
+               $officeAddLangs = odtGetOfficeLanguages -ConfigDoc $ConfigFile -OfficeKeyPath $officeConfig.OfficeKeyPath -ProductId $productId
+           }
+              
        } else {
          if ($officeExists) {
              if($productId.ToLower().StartsWith("o365")) {
@@ -328,12 +395,14 @@ process {
          }
   
          $msiLanguages = msiGetOfficeLanguages -regProv $regProv
+
          foreach ($msiLanguage in $msiLanguages) {
             $additionalLanguages += $msiLanguage
          }
          
-         if (!($additionalLanguages)) {
-             foreach ($officeLang in $officeLangs) {
+    
+         foreach ($officeLang in $officeLangs) {
+             if(!($additionalLanguages -contains $officeLang)){
                 $additionalLanguages += $officeLang
              }
          }
@@ -378,22 +447,16 @@ process {
        }
        
        if ($officeConfig.ClickToRunInstalled) {
-          if ($Languages -eq "CurrentOfficeLanguages") {
-            
+          if ($Languages -eq "CurrentOfficeLanguages") {          
             $officeAddLangs = odtGetOfficeLanguages -ConfigDoc $ConfigFile -OfficeKeyPath $officeConfig.OfficeKeyPath -ProductId $productId
             if ($officeAddLangs) {
                $additionalLanguages = New-Object System.Collections.ArrayList
-               $n = 0
-               foreach ($language in $officeAddLangs) {
-                  if ($n -eq 0) {
-                    $primaryLanguage = $language
-                  } else {
-                    $additionalLanguages += $language
-                  }
-                  $n++
+               foreach($language in $officeAddLangs){
+                   if(!($language.ToLower() -eq $primaryLanguage)){
+                       $additionalLanguages += $language
+                   }
                }
-            }
-           
+            }       
           }
        }
 
@@ -444,7 +507,7 @@ process {
         ($PSCmdlet.MyInvocation.PipelineLength -eq $PSCmdlet.MyInvocation.PipelinePosition)) {
 
         $results = new-object PSObject[] 0;
-        $Result = New-Object -TypeName PSObject 
+        $Result = New-Object -TypeName PSObject
         Add-Member -InputObject $Result -MemberType NoteProperty -Name "ConfigurationXML" -Value $formattedXml
 
         if ($ComputerName.Length -gt 1) {
@@ -506,7 +569,7 @@ This function will query the local or a remote computer and return the informati
 Name: Get-OfficeVersion
 Version: 1.0.5
 DateCreated: 2015-07-01
-DateUpdated: 2016-07-20
+DateUpdated: 2016-10-14
 .LINK
 https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
 .PARAMETER ComputerName
@@ -730,14 +793,14 @@ process {
            }
 
            if (!$officeProduct) { continue };
-           
            $name = $regProv.GetStringValue($HKLM, $path, "DisplayName").sValue          
-
+		   
            if ($ConfigItemList.Contains($key.ToUpper()) -and $name.ToUpper().Contains("MICROSOFT OFFICE") `
                                                         -and $name.ToUpper() -notlike "*MUI*" `
                                                         -and $name.ToUpper() -notlike "*VISIO*" `
                                                         -and $name.ToUpper() -notlike "*PROJECT*" `
                                                         -and $name.ToUpper() -notlike "*PROOFING*") {
+
               $primaryOfficeProduct = $true
            }
 
@@ -1318,8 +1381,7 @@ function officeGetExcludedApps() {
         $HKLM = [UInt32] "0x80000002"
         $HKCR = [UInt32] "0x80000000"
 
-        $allExcludeApps = 'Access','Excel','Groove','InfoPath','OneNote','Outlook',
-                       'PowerPoint','Publisher','Word'
+        $allExcludeApps = 'Access','Excel','InfoPath','Outlook','PowerPoint','Publisher','Word'
 
         if ($Credentials) {
             $regProv = Get-Wmiobject -list "StdRegProv" -namespace root\default -computername $computer -Credential $Credentials  -ErrorAction Stop
@@ -1333,79 +1395,65 @@ function officeGetExcludedApps() {
 
     process{
         $OfficeVersion = Get-OfficeVersion -ComputerName $computer
-        $OfficeVersion = $OfficeVersion.Version.Split(".")[0]
-
-        switch($os.OSArchitecture){
-            "32-bit"
-            {
-                $osBitness = '32'
-                $appKeyPath = 'SOFTWARE\Microsoft\Office'
-            }
-            "64-bit"
-            {
-                $osBitness = '64'
-                $appKeyPath = 'SOFTWARE\WOW6432Node\Microsoft\Office'
-
-            }
-        }
         
-        switch($OfficeVersion){
-            "11"
-            {
-                $bitPath = '11.0'
+        if($OfficeVersion -ne $null){
+            $OfficeVersion = $OfficeVersion.Version.Split(".")[0]
+        
+
+            switch($os.OSArchitecture){
+                "32-bit"
+                {
+                    $osBitness = '32'
+                    $appKeyPath = 'SOFTWARE\Microsoft\Office'
+                }
+                "64-bit"
+                {
+                    $osBitness = '64'
+                    $appKeyPath = 'SOFTWARE\WOW6432Node\Microsoft\Office'
+
+                }
             }
-            "12"
-            {
-                $bitPath = '12.0'
-                
+            
+            switch($OfficeVersion){
+                "11"
+                {
+                    $bitPath = '11.0'
+                }
+                "12"
+                {
+                    $bitPath = '12.0'
+                    
+                }
+                "14"
+                {
+                    $bitPath = '14.0'
+                }
+                "15"
+                {
+                    $bitPath = '15.0'
+                } 
             }
-            "14"
-            {
-                $bitPath = '14.0'
-            }
-            "15"
-            {
-                $bitPath = '15.0'
-            } 
-        }
 
-        $appKeyPath = Join-Path $appKeyPath $bitPath
-         
-        $appKeys = $regProv.EnumKey($HKLM, $appKeyPath)
-        $appList = $appKeys.sNames
+            $appKeyPath = Join-Path $appKeyPath $bitPath
+             
+            $appKeys = $regProv.EnumKey($HKLM, $appKeyPath)
+            $appList = $appKeys.sNames
 
-        $appsToExclude = @()
+            $appsToExclude = @()
 
-        foreach($appName in $allExcludeApps){
-            [bool]$appInstalled = $false
+            foreach($appName in $allExcludeApps){
+                [bool]$appInstalled = $false
 
-            foreach ($OfficeProduct in $appList){
-                if($OfficeProduct.ToLower() -like $appName.ToLower()){
-                    if($OfficeProduct -eq "OneNote"){
-                        $onRegPath = Join-Path $appKeyPath $OfficeProduct
-                        $onInstallKey = $regProv.EnumKey($HKLM, $onRegPath)
-                        $onRegKeys = $onInstallKey.sNames
-                        foreach($key in $onRegKeys){
-                            if($key -like "InstallRoot"){
-                                $onInstallRegKey = Join-Path $onRegPath "InstallRoot"
-                                $installRoot = $regProv.GetStringValue($HKLM, $onInstallRegKey, "Path").sValue
-                                $pathChk = Test-Path -Path $installRoot
-                                if($pathChk){
-                                    $appInstalled = $true
-                                    break;
-                                }
-                            }
-                        }              
-                    }
-                    else{
+                foreach ($OfficeProduct in $appList){
+                    if($OfficeProduct.ToLower() -like $appName.ToLower()){
                         $appInstalled = $true
                         break;
                     }
                 }
-            }
 
-            if(!($appInstalled)){
-                $appsToExclude += $appName
+                if(!($appInstalled)){
+                    $appsToExclude += $appName
+                }
             }
         }
             
@@ -1444,6 +1492,51 @@ function officeGetLanguages() {
 
    return $returnLangs
 
+}
+
+function GetLanguagePacks {
+    Param(
+       [Parameter(ValueFromPipelineByPropertyName=$true)]
+       $regProv = $NULL
+    )
+
+    $HKLM = [UInt32] "0x80000002"
+    $ComputerName = $env:COMPUTERNAME
+   
+    $installKeys = 'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall',
+                   'SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall'
+
+    $defaultDisplaySet = 'DisplayName','LanguageID'
+    $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet('DefaultDisplayPropertySet',[string[]]$defaultDisplaySet)
+    $PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultDisplayPropertySet)
+
+    $results = New-Object PSObject[] 0;
+
+    if (!($regProv)) {
+        $regProv = Get-Wmiobject -List "StdRegProv" -Namespace root\default -ComputerName $ComputerName -ErrorAction Stop
+    }
+
+    $LanguagePackProducts = @()
+    $LanguageIDs = @()
+
+    foreach($installKey in $installKeys){
+        $uninstallKeys = $regProv.EnumKey($HKLM, $installKey).sNames
+        
+        foreach($uninstallKey in $uninstallKeys){
+            $path = Join-Path $installKey $uninstallKey
+            $DisplayName = $regProv.GetStringValue($HKLM, $path, "DisplayName").sValue
+
+            if($DisplayName -match "Language Pack" -and $DisplayName -notmatch "Service Pack"){
+                $languageId = $regProv.GetStringValue($HKLM, $path, "ShellUITransformLanguage").sValue
+
+                $object = New-Object PSObject -Property @{DisplayName = $DisplayName; LanguageID = $languageId.ToLower()}
+                $object | Add-Member MemberSet PSStandardMembers $PSStandardMembers
+                $results += $object
+            }
+        }
+    }
+
+    return $results
 }
 
 function odtGetExcludedApps() {
@@ -2078,6 +2171,7 @@ Function Get-OfficeCDNUrl() {
     return $CDNBaseUrl
 }
 
+
 Function WriteToLogFile() {
     param( 
       [Parameter(Mandatory=$true)]
@@ -2086,7 +2180,7 @@ Function WriteToLogFile() {
       [string]$FName,
       [Parameter(Mandatory=$true)]
       [string]$ActionError
-   )
+    )
     try{
         $headerString = "Time".PadRight(30, ' ') + "Line Number".PadRight(15,' ') + "FileName".PadRight(60,' ') + "Action"
         $stringToWrite = $(Get-Date -Format G).PadRight(30, ' ') + $($LNumber).PadRight(15, ' ') + $($FName).PadRight(60,' ') + $ActionError

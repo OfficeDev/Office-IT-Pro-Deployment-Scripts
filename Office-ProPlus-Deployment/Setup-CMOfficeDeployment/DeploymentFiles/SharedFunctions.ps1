@@ -544,6 +544,7 @@ process {
 Function Get-InstalledLanguages() {
     [CmdletBinding()]
     Param(
+        [string]$computer = $env:COMPUTERNAME
     )
     process {
        $returnLangs = @()
@@ -552,19 +553,52 @@ Function Get-InstalledLanguages() {
        if ($mainRegPath) {
           if (Test-Path -Path "hklm:\$mainRegPath\ProductReleaseIDs") {
                $activeConfig = Get-ItemProperty -Path "hklm:\$mainRegPath\ProductReleaseIDs"
-               $activeId = $activeConfig.ActiveConfiguration
-               $languages = Get-ChildItem -Path "hklm:\$mainRegPath\ProductReleaseIDs\$activeId\culture"
+               if($activeConfig.ActiveConfiguration){
+                  $activeId = $activeConfig.ActiveConfiguration
+                  $languages = Get-ChildItem -Path "hklm:\$mainRegPath\ProductReleaseIDs\$activeId\culture"
+                  foreach ($language in $languages) {
+                      $lang = Get-ItemProperty -Path  $language.pspath
+                      $keyName = $lang.PSChildName
+                      if ($keyName.Contains(".")) {
+                          $keyName = $keyName.Split(".")[0]
+                      }
+                      
+                      if ($keyName.ToLower() -ne "x-none") {
+                         $culture = New-Object system.globalization.cultureinfo($keyName)
+                         $returnLangs += $culture
+                      }
+                  }
+               } else {
+                  $HKLM = [UInt32] "0x80000002"
+                  $regProv = Get-Wmiobject -list "StdRegProv" -Namespace root\default -ComputerName $computer
 
-               foreach ($language in $languages) {
-                  $lang = Get-ItemProperty -Path  $language.pspath
-                  $keyName = $lang.PSChildName
-                  if ($keyName.Contains(".")) {
-                      $keyName = $keyName.Split(".")[0]
+                  $activeConfig = "hklm:\$mainRegPath\ProductReleaseIDs"
+                  $activeItems = Get-ChildItem -Path $activeConfig
+    
+                  foreach($config in $activeItems){
+                      $item = $config.Name | Split-Path -Leaf
+                      $path = Join-Path $activeConfig $item
+                  
+                      $pathItems = Get-ChildItem -Path $path
+                  
+                      foreach($pathItem in $pathItems){
+                          if($pathItem.Name -match "Culture"){
+                              $activeID = $item
+                          }
+                      }
                   }
 
-                  if ($keyName.ToLower() -ne "x-none") {
-                     $culture = New-Object system.globalization.cultureinfo($keyName)
-                     $returnLangs += $culture
+                  $languages = (Get-Item -Path "hklm:\$mainRegPath\ProductReleaseIDs\$activeId\culture").Property
+
+                  foreach ($language in $languages) {
+                      if ($language.Contains(".")) {
+                          $language = $keyName.Split(".")[0]
+                      }
+                      
+                      if ($language.ToLower() -ne "x-none") {
+                         $culture = New-Object system.globalization.cultureinfo($language)
+                         $returnLangs += $culture
+                      }
                   }
                }
           }
@@ -1935,3 +1969,132 @@ function Remove-ProductLanguage() {
    }
 }
 
+function Restart-ExplorerExe() {
+    $process = Get-Process
+    foreach($obj in $process){
+        if($obj.ProcessName -like "explorer*"){
+            kill $obj.ID
+            Start-Sleep -Seconds 20
+        }
+    }
+}
+
+function GetPinnedStartMenuApps {
+    $PreOfficeAppPinnedStatus = GetOfficeAppVerbStatus
+    $PinnedStartMenuApps = $PreOfficeAppPinnedStatus | ? {$_.PinToStartMenuAvailable -eq $false}
+    return $PinnedStartMenuApps.Name
+}
+
+function GetPinnedTaskbarApps {
+    $PreOfficeAppPinnedStatus = GetOfficeAppVerbStatus
+    $PinnedTaskbarApps = $PreOfficeAppPinnedStatus | ? {$_.PinToTaskbarAvailable -eq $false}
+    return $PinnedTaskbarApps.Name
+}
+
+function Save-OfficeSettings{
+    #Find the source files
+    Get-ChildItem C:\Users\$($env:USERNAME)\AppData\Roaming\Microsoft\Office -Recurse |  foreach {    
+        #Remove the original  root folder
+        $split = $_.Fullname  #-split '\\'
+        $DestFile =  $split.Substring($split.IndexOf("\Office")+8) #$split[1..($split.Length - 1)] -join '\' 
+
+        #Build the new  destination file path
+        $DestFile =  "C:\Users\$($env:USERNAME)\AppData\Roaming\TempRoamingOffice\$DestFile"
+
+        #Create a blank file and then overwrite it
+        $typ = if($_.GetType().Name.ToLower().Contains("file")){"file"}elseif($_.GetType().Name.ToLower().Contains("directory")){"directory"}else{"symboliclink"}
+
+        $null = New-Item -Path  $DestFile -Type $typ -Force
+        if($typ -eq "file"){
+            Copy-Item -Path  $_.FullName -Destination $DestFile -Force
+        }
+    }
+
+    Get-ChildItem C:\Users\$($env:USERNAME)\AppData\Roaming\Microsoft\Signatures -Recurse |  foreach {
+        #Remove the original  root folder
+        $split = $_.Fullname  #-split '\\'
+        $DestFile =  $split.Substring($split.IndexOf("\Signatures")+12) #$split[1..($split.Length - 1)] -join '\' 
+
+        #Build the new  destination file path
+        $DestFile =  "C:\Users\$($env:USERNAME)\AppData\Roaming\TempOffice\$DestFile"
+
+        #Create a blank file  and then overwrite it
+        $typ = if($_.GetType().Name.ToLower().Contains("file")){"file"}elseif($_.GetType().Name.ToLower().Contains("directory")){"directory"}else{"symboliclink"}
+
+        $null = New-Item -Path  $DestFile -Type $typ -Force
+        if($typ -eq "file"){
+            Copy-Item -Path  $_.FullName -Destination $DestFile -Force
+        }
+    }
+
+
+    Get-ChildItem C:\Users\$($env:USERNAME)\AppData\Local\Microsoft\Office -Recurse |  foreach {   
+        #Remove the original  root folder    
+        $split = $_.Fullname  #-split '\\'    
+        $DestFile =  $split.Substring($split.IndexOf("\Office")+8) #$split[1..($split.Length - 1)] -join '\' 
+    
+        #Build the new  destination file path    
+        $DestFile =  "C:\Users\$($env:USERNAME)\AppData\Roaming\TempLocalOffice\$DestFile"
+    
+        #Create a blank file and then overwrite it    
+        $typ = if($_.GetType().Name.ToLower().Contains("file")){"file"}elseif($_.GetType().Name.ToLower().Contains("directory")){"directory"}else{"symboliclink"}    
+        $null = New-Item -Path  $DestFile -Type $typ -Force
+        if($typ -eq "file"){
+            Copy-Item -Path  $_.FullName -Destination $DestFile -Force
+        }   
+    }       
+}
+
+function Set-OfficeSettings{
+
+    #Find the source files
+    Get-ChildItem C:\Users\$($env:USERNAME)\AppData\Roaming\TempRoamingOffice -Recurse |  foreach {
+        #Remove the original  root folder
+        $split = $_.Fullname  #-split '\\'
+        $DestFile =  $split.Substring($split.IndexOf("\TempRoamingOffice")+19) #$split[1..($split.Length - 1)] -join '\' 
+
+        #Build the new  destination file path
+        $DestFile =  "C:\Users\$($env:USERNAME)\AppData\Roaming\Microsoft\Office\$DestFile" 
+
+        #Create a blank file and then overwrite it
+
+        $typ = if($_.GetType().Name.ToLower().Contains("file")){"file"}elseif($_.GetType().Name.ToLower().Contains("directory")){"directory"}else{"symboliclink"}
+
+        $null = New-Item -Path  $DestFile -Type $typ -Force
+        if($typ -eq "file"){
+            Copy-Item -Path  $_.FullName -Destination $DestFile -Force
+        }
+    }
+
+    Get-ChildItem C:\Users\$($env:USERNAME)\AppData\Roaming\TempOffice -Recurse |  foreach {
+        #Remove the original  root folder
+        $split = $_.Fullname  #-split '\\'
+        $DestFile =  $split.Substring($split.IndexOf("\TempOffice")+12) #$split[1..($split.Length - 1)] -join '\' 
+
+        #Build the new  destination file path
+        $DestFile =  "C:\Users\$($env:USERNAME)\AppData\Roaming\Microsoft\Signatures\$DestFile"
+
+        #Create a blank file  and then overwrite it
+        $typ = if($_.GetType().Name.ToLower().Contains("file")){"file"}elseif($_.GetType().Name.ToLower().Contains("directory")){"directory"}else{"symboliclink"}
+        $null = New-Item -Path  $DestFile -Type $typ -Force
+        if($typ -eq "file"){
+            Copy-Item -Path  $_.FullName -Destination $DestFile -Force
+        }
+    }
+
+    Get-ChildItem C:\Users\$($env:USERNAME)\AppData\Roaming\TempLocalOffice -Recurse |  foreach {
+        #Remove the original  root folder
+        $split = $_.Fullname  #-split '\\'
+        $DestFile =  $split.Substring($split.IndexOf("\TempLocalOffice")+17) #$split[1..($split.Length - 1)] -join '\' 
+
+        #Build the new  destination file path
+        $DestFile =  " C:\Users\$($env:USERNAME)\AppData\Local\Microsoft\Office\$DestFile"
+
+        #Create a blank file  and then overwrite it
+        $typ = if($_.GetType().Name.ToLower().Contains("file")){"file"}elseif($_.GetType().Name.ToLower().Contains("directory")){"directory"}else{"symboliclink"}
+        $null = New-Item -Path  $DestFile -Type $typ -Force
+        if($typ -eq "file"){
+            Copy-Item -Path  $_.FullName -Destination $DestFile -Force
+        }
+    }
+}

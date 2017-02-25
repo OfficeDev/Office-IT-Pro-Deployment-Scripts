@@ -842,8 +842,14 @@ Language and Exclude values
 
                 Add-Member -InputObject $Result -MemberType NoteProperty -Name "ProductId" -Value ($ProductElement.GetAttribute("ID"))
 
+                $productLanguages = @()
+
                 if($ProductElement.Language -ne $null){
-                    Add-Member -InputObject $Result -MemberType NoteProperty -Name "Languages" -Value ($ProductElement.Language.GetAttribute("ID"))
+                    foreach($lang in $ProductElement.Language){
+                        $productLanguages += $lang.ID
+                    }
+                    #Add-Member -InputObject $Result -MemberType NoteProperty -Name "Languages" -Value ($ProductElement.Language.GetAttribute("ID"))
+                    Add-Member -InputObject $Result -MemberType NoteProperty -Name "Languages" -Value $productLanguages
                 }
 
                 if($ProductElement.ExcludeApp -ne $null){
