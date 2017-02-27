@@ -10,7 +10,7 @@ directLine.activity$
 
 function sendMessage(messageText){
 	directLine.postActivity({
-    from: { id: 'user1' }, // required (from.name is optional)
+    from: { id: 'github' }, 
     type: 'message',
     text: messageText
 }).subscribe(
@@ -43,24 +43,29 @@ function processResponse(activity){
 		var response = "<div class='ms-Grid-row ChatResponse'><div class='ms-Grid-col col-u-sm8'>"+activity.text+"</div></div>"; 
 		$('.ChatArea').append(response); 
 	}
+	updateScroll();
 }
 
 function messageKeyDown(event){
 	if(event.keyCode == 13){
 		var text = $('#Message-txtbx').val(); 
-		processPrompt(text);
-		$('#Message-txtbx').val(''); 
+		if(text.trim() !== ''){
+			processPrompt(text);
+			$('#Message-txtbx').val(''); 
+		}
 	}
 }
 
-function processPrompt(messageText){
-		var response = "<div class='ms-Grid-row ChatPrompt'><div class='ms-Grid-col col-u-sm8'>"+messageText+"</div></div>"; 
-		var html = $('.ChatArea').html(); 
-	    $('#Message-txtbx').val(''); 
-		$('.ChatArea').append(response); 
-		sendMessage(messageText);
+function processPrompt(messageText){		
+		if(messageText.trim() != ''){
+			sendMessage(messageText);
+			var response = "<div class='ms-Grid-row ChatPrompt'><div class='ms-Grid-col col-u-sm8'>"+messageText+"</div></div>"; 
+			var html = $('.ChatArea').html(); 
+		    $('#Message-txtbx').val(''); 
+			$('.ChatArea').append(response); 
+			updateScroll();
+		}
 }
-
 
 function buildThumbNailCard(activity){
 	var card = activity.attachments[0];
@@ -83,4 +88,9 @@ function buildHeroCard(activity)
 	});
 	response += "</div></div></div>"; 
 	$('.ChatArea').append(response); 
+}
+
+function updateScroll(){
+   $(".ChatArea").animate({ scrollTop: $('.ChatArea').prop("scrollHeight")}, 1000);
+
 }
