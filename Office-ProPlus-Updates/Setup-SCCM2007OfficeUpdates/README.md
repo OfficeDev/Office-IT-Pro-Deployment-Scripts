@@ -24,7 +24,7 @@ Before running this script, the following conditions must be met
 
 4. Type the following in the elevated PowerShell Session
 
-		 . .\Setup-SCCMOfficeUpdates.ps1
+		 . .\Setup-OfficeUpdatesSCCM2007.ps1
          
          By including the additional period before the relative script path you are 'Dot-Sourcing' 
 		 the PowerShell functions in the script into your PowerShell session which will allow you to 
@@ -39,7 +39,7 @@ Before running this script, the following conditions must be met
 
 6. The first thing you must do is download the Office update files to a staging location to make them available for SCCM. From the existing PowerShell session type the command below.
 
-		Download-OfficeUpdates -Path (Optional) -Version (Optional)
+		Download-OfficeUpdatesSCCM2007 -Path (Optional) -Version (Optional)
         
 	If you specify the *-Path* parameter then the script will download the Office updates to that path. The path must be a valid UNC path. Specifying the *-Version* parameter will cause the script to download a specific version of the Office updates.
     
@@ -47,11 +47,6 @@ Before running this script, the following conditions must be met
     
 7. Now that the Office update files have been downloaded to a share on the network you can run the setup function to configure SCCM. A SCCM collection must be specified to use this function. The collection specified should contain the workstations that you want configured.  If there are no Distribution Point Groups added to the collection then you will also have to use the parameter *-DistributionPointGroupName*
 
-		Setup-SCCMOfficeUpdates -Collection CollectionName -DistributionPointGroupName DPGroupName
+		Setup-SCCM2007UpdatePackage
 
-8. The function *Setup-SCCMOfficeUpdates* will create a SCCM Package that is configured to run the *SCO365PPTrigger.exe* executable on the client machines.  After the package is created the cmdlet *Start-CMContentDistribution* is run in order to start the process to distribute the Package contents to the Distribution Points. Before proceeding to the next step you should monitor and wait until the content distribution process is complete.  Clients deployments will fail until the content is distributed to their Distribution Point.
-
-9. Once the content distribution is complete you can run the final function.  The *Deploy-SCCMOfficeUpdates* function will deploy the package.  You must provide the name of the collection.  This should be the same collection you used with the previous function.
-
-		Deploy-SCCMOfficeUpdates -Collection CollectionName
-
+8. The function *Setup-SCCM2007UpdatePackage* will create a SCCM Package that is configured to run the *SCO365PPTrigger.exe* executable on the client machines.  This function also creates the program to be hosted by the package, and creates the advertisement necessary.
