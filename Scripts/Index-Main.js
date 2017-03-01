@@ -84,6 +84,7 @@ function loadPartial(sectionId,item){
 
 function resizePage(){
     var windowWidth = $(window).outerWidth(); 
+    var orientation = window.screen.orientation.type.split('-')[0]; 
 
     if(windowWidth > 480){
          $('#Hamburger').remove();
