@@ -30,7 +30,7 @@ For more information on the specifics of deploying Office 365 ProPlus language p
 
 		Generate-ODTLanguagePackXml -Languages es-es,de-de,fr-fr -TargetFilePath LanguagePacks.xml 
 
-5. An example output is below.  The first language in the list is the Shell UI culture.  
+5. An example output is below.  
 
           <Configuration>
              <Add OfficeClientEdition="32">
