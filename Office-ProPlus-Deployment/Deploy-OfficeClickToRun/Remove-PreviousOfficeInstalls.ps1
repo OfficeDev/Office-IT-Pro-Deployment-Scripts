@@ -936,6 +936,7 @@ begin {
 process {
 
  $results = new-object PSObject[] 0;
+ $MSexceptionList = "*mui*","*visio*","*project*","*proofing*"
 
  foreach ($computer in $ComputerName) {
     if ($Credentials) {
@@ -1113,11 +1114,7 @@ process {
            
            $name = $regProv.GetStringValue($HKLM, $path, "DisplayName").sValue          
 
-           if ($ConfigItemList.Contains($key.ToUpper()) -and $name.ToUpper().Contains("MICROSOFT OFFICE") `
-                                                        -and $name.ToUpper() -notlike "*MUI*" `
-                                                        -and $name.ToUpper() -notlike "*VISIO*" `
-                                                        -and $name.ToUpper() -notlike "*PROJECT*" `
-                                                        -and $name.ToUpper() -notlike "*PROOFING*") {
+           if ($ConfigItemList.Contains($key.ToUpper()) -and $name.ToUpper().Contains("MICROSOFT OFFICE") -and $MSexceptionList -notcontains $name.ToLower()) {
               $primaryOfficeProduct = $true
            }
 

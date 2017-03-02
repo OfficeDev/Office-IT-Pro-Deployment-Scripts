@@ -31,6 +31,7 @@
     process {
 
      $results = new-object PSObject[] 0;
+     $MSexceptionList = "*mui*","*visio*","*project*","*proofing*"
 
 
 
@@ -198,7 +199,7 @@
                [string]$clickToRun = $false
                if ($ClickToRunPathList.Contains($installPath.ToUpper())) {
                    $clickToRun = $true
-                   if ($name.ToUpper().Contains("MICROSOFT OFFICE")) {
+                   if ($ConfigItemList.Contains($key.ToUpper()) -and $name.ToUpper().Contains("MICROSOFT OFFICE") -and $MSexceptionList -notcontains $name.ToLower()) {
                       $primaryOfficeProduct = $true
                    }
 
