@@ -254,10 +254,6 @@ process {
               $primaryOfficeProduct = $false
            }
 
-           #if ($ConfigItemList.Contains($key.ToUpper()) -and $name.ToUpper().Contains("MICROSOFT OFFICE") -and $MSexceptionList -notcontains $name.ToLower()) {
-           #   $primaryOfficeProduct = $true
-           #}
-
            $clickToRunComponent = $regProv.GetDWORDValue($HKLM, $path, "ClickToRunComponent").uValue
            $uninstallString = $regProv.GetStringValue($HKLM, $path, "UninstallString").sValue
            if (!($clickToRunComponent)) {
