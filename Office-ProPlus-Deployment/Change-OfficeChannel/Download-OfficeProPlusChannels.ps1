@@ -189,6 +189,8 @@ else{
       
 $numberOfFiles = (($BranchesOrChannels.Count) * ((($allLanguages.Count + 1)*3) + 5))
 
+if([String]::IsNullOrWhiteSpace($Version) -eq $false){$DownloadThrottledVersions = $false}
+
 [bool]$downloadSuccess = $TRUE;
 For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the event of a failure in order to retry
 
