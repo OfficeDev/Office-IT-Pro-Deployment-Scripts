@@ -22,7 +22,7 @@ specified in the
 Name: Generate-ODTConfigurationXml
 Version: 1.0.3
 DateCreated: 2015-08-24
-DateUpdated: 2016-06-13
+DateUpdated: 2017-03-02
 .LINK
 https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
 .PARAMETER ComputerName
@@ -619,6 +619,7 @@ begin {
 process {
 
  $results = new-object PSObject[] 0;
+ $MSexceptionList = "mui","visio","project","proofing","visual"
 
  foreach ($computer in $ComputerName) {
     if ($Credentials) {
@@ -793,15 +794,18 @@ process {
            }
 
            if (!$officeProduct) { continue };
+           
            $name = $regProv.GetStringValue($HKLM, $path, "DisplayName").sValue          
-		   
-           if ($ConfigItemList.Contains($key.ToUpper()) -and $name.ToUpper().Contains("MICROSOFT OFFICE") `
-                                                        -and $name.ToUpper() -notlike "*MUI*" `
-                                                        -and $name.ToUpper() -notlike "*VISIO*" `
-                                                        -and $name.ToUpper() -notlike "*PROJECT*" `
-                                                        -and $name.ToUpper() -notlike "*PROOFING*") {
 
-              $primaryOfficeProduct = $true
+           $primaryOfficeProduct = $true
+           if ($ConfigItemList.Contains($key.ToUpper()) -and $name.ToUpper().Contains("MICROSOFT OFFICE")) {
+              foreach($exception in $MSexceptionList){
+                 if($name.ToLower() -match $exception.ToLower()){
+                    $primaryOfficeProduct = $false
+                 }
+              }
+           } else {
+              $primaryOfficeProduct = $false
            }
 
            $clickToRunComponent = $regProv.GetDWORDValue($HKLM, $path, "ClickToRunComponent").uValue
