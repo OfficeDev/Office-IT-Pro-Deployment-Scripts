@@ -1435,6 +1435,10 @@ function officeGetExcludedApps() {
                 "15"
                 {
                     $bitPath = '15.0'
+                }
+                "16"
+                {
+                    $bitPath = '16.0'
                 } 
             }
 
@@ -1532,7 +1536,8 @@ function GetLanguagePacks {
 
             if($DisplayName -match "Language Pack" -and $DisplayName -notmatch "Service Pack" `
                                                    -and $DisplayName -notmatch "Portable Library" `
-                                                   -and $DisplayName -notmatch "Visual Studio" ){
+                                                   -and $DisplayName -notmatch "Visual Studio" `
+                                                   -and $DisplayName -notmatch "Foundation Server" ){
                 $languageId = $regProv.GetStringValue($HKLM, $path, "ShellUITransformLanguage").sValue
 
                 $object = New-Object PSObject -Property @{DisplayName = $DisplayName; LanguageID = $languageId.ToLower()}
