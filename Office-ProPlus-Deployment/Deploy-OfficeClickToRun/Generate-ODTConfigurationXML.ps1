@@ -22,7 +22,7 @@ specified in the
 Name: Generate-ODTConfigurationXml
 Version: 1.0.3
 DateCreated: 2015-08-24
-DateUpdated: 2017-03-02
+DateUpdated: 2017-03-03
 .LINK
 https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
 .PARAMETER ComputerName
@@ -1530,7 +1530,9 @@ function GetLanguagePacks {
             $path = Join-Path $installKey $uninstallKey
             $DisplayName = $regProv.GetStringValue($HKLM, $path, "DisplayName").sValue
 
-            if($DisplayName -match "Language Pack" -and $DisplayName -notmatch "Service Pack"){
+            if($DisplayName -match "Language Pack" -and $DisplayName -notmatch "Service Pack" `
+                                                   -and $DisplayName -notmatch "Portable Library" `
+                                                   -and $DisplayName -notmatch "Visual Studio" ){
                 $languageId = $regProv.GetStringValue($HKLM, $path, "ShellUITransformLanguage").sValue
 
                 $object = New-Object PSObject -Property @{DisplayName = $DisplayName; LanguageID = $languageId.ToLower()}
