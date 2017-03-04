@@ -83,7 +83,10 @@ param(
     [String]$DownloadPath = $NULL,
 
     [Parameter(ValueFromPipelineByPropertyName=$true)]
-    [string]$DefaultConfigurationXml = $NULL
+    [string]$DefaultConfigurationXml = $NULL,
+
+    [Parameter(ValueFromPipelineByPropertyName=$true)]
+    [System.Boolean]$KeepExcludedApps = $true
 )
 
 begin {
@@ -366,8 +369,10 @@ process {
        if ($officeConfig.ClickToRunInstalled) {
              $officeKeyPath = $officeConfig.OfficeKeyPath
            
-           if ($productId.ToLower().StartsWith("o365")) {
-               $excludeApps = odtGetExcludedApps -ConfigDoc $ConfigFile -OfficeKeyPath $officeConfig.OfficeKeyPath -ProductId $productId
+           if($KeepExcludedApps){
+               if ($productId.ToLower().StartsWith("o365")) {
+                   $excludeApps = odtGetExcludedApps -ConfigDoc $ConfigFile -OfficeKeyPath $officeConfig.OfficeKeyPath -ProductId $productId
+               }
            }
            
            if($Languages -eq 'AllInUseLanguages'){
@@ -389,8 +394,10 @@ process {
               
        } else {
          if ($officeExists) {
-             if($productId.ToLower().StartsWith("o365")) {
-                $excludeApps = officeGetExcludedApps -OfficeProducts $officeProducts -computer $computer -Credentials $Credentials
+             if($KeepExcludedApps){
+                 if($productId.ToLower().StartsWith("o365")) {
+                    $excludeApps = officeGetExcludedApps -OfficeProducts $officeProducts -computer $computer -Credentials $Credentials
+                 }
              }
          }
   
