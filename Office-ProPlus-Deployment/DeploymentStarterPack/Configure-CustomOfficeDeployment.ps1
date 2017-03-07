@@ -15,7 +15,7 @@ $TargetFilePath = "$scriptPath\O365"
 $DefaultConfigurationFile = "$scriptPath\DefaultConfiguration.xml"
 
 # Set the channels, bit, and languages to download
-$Channels = @("Current","Deferred")
+$Channels = @("Current","Deferred","FirstReleaseDeferred")
 $Bitness = @("v32")
 $Languages = @("en-us","de-de")
 
