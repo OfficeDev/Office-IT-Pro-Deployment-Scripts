@@ -354,7 +354,7 @@ Here is what the configuration file looks like when created from this function:
             Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
         } else {
             $results = new-object PSObject[] 0;
-            $Result = New-Object –TypeName PSObject 
+            $Result = New-Object -TypeName PSObject 
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "ProductId" -Value $ProductId
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "LanguageId" -Value $LanguageId
@@ -569,7 +569,7 @@ Here is what the portion of configuration file looks like when modified by this 
             Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
         } else {
             $results = new-object PSObject[] 0;
-            $Result = New-Object –TypeName PSObject 
+            $Result = New-Object -TypeName PSObject 
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "ProductId" -Value $ProductId
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "LanguageIds" -Value $LanguageIds
@@ -757,7 +757,7 @@ Here is what the portion of configuration file looks like when modified by this 
             Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
         } else {
             $results = new-object PSObject[] 0;
-            $Result = New-Object –TypeName PSObject 
+            $Result = New-Object -TypeName PSObject 
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "ProductId" -Value $ProductId
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "LanguageIds" -Value $LanguageIds
@@ -838,7 +838,7 @@ Language and Exclude values
 
         if($PSCmdlet.ParameterSetName -eq "All"){
             foreach($ProductElement in $ConfigFile.Configuration.Add.Product){
-                $Result = New-Object –TypeName PSObject 
+                $Result = New-Object -TypeName PSObject 
 
                 Add-Member -InputObject $Result -MemberType NoteProperty -Name "ProductId" -Value ($ProductElement.GetAttribute("ID"))
 
@@ -860,7 +860,7 @@ Language and Exclude values
         }else{
             [System.XML.XMLElement]$ProductElement = $ConfigFile.Configuration.Add.Product | Where { $_.ID -eq $ProductId }
             if ($ProductElement) {
-                $Result = New-Object –TypeName PSObject 
+                $Result = New-Object -TypeName PSObject 
                 Add-Member -InputObject $Result -MemberType NoteProperty -Name "ProductId" -Value ($ProductElement.GetAttribute("ID"))
                 if($ProductElement.Language -ne $null){
                     Add-Member -InputObject $Result -MemberType NoteProperty -Name "Languages" -Value ($ProductElement.Language.GetAttribute("ID"))
@@ -977,7 +977,7 @@ Removes the ProductToAdd with the ProductId 'O365ProPlusRetail' from the XML Con
                 Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
             } else {
                 $results = new-object PSObject[] 0;
-                $Result = New-Object –TypeName PSObject 
+                $Result = New-Object -TypeName PSObject 
                 Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
                 $Result
             }
@@ -1117,7 +1117,7 @@ Removes the ExcludeApp with the Id 'Lync' (which is Skype for Business) from the
             Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
         } else {
             $results = new-object PSObject[] 0;
-            $Result = New-Object –TypeName PSObject 
+            $Result = New-Object -TypeName PSObject 
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
             $Result
         }
@@ -1268,7 +1268,7 @@ Here is what the portion of configuration file looks like when modified by this 
             Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
         } else {
             $results = new-object PSObject[] 0;
-            $Result = New-Object –TypeName PSObject 
+            $Result = New-Object -TypeName PSObject 
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "ProductId" -Value $ProductId
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "LanguageIds" -Value $LanguageIds
@@ -1360,7 +1360,7 @@ Language and Exclude values
         $results = new-object PSObject[] 0;
 
         foreach($ProductElement in $ProductElements){
-            $Result = New-Object –TypeName PSObject 
+            $Result = New-Object -TypeName PSObject 
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "ProductId" -Value ($ProductElement.GetAttribute("ID"))
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath 
             if($ProductElement.Language -ne $null){
@@ -1472,7 +1472,7 @@ Removes the ProductToRemove with the ProductId 'O365ProPlusRetail' from the XML 
             Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
         } else {
             $results = new-object PSObject[] 0;
-            $Result = New-Object –TypeName PSObject 
+            $Result = New-Object -TypeName PSObject 
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
             $Result
         }
@@ -1662,7 +1662,7 @@ Here is what the portion of configuration file looks like when modified by this 
             Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
         } else {
             $results = new-object PSObject[] 0;
-            $Result = New-Object –TypeName PSObject 
+            $Result = New-Object -TypeName PSObject 
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "ProductId" -Value $ProductId
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "Enabled" -Value $Enabled
@@ -1803,7 +1803,7 @@ This is the section that would be removed when running this function
             Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
         } else {
             $results = new-object PSObject[] 0;
-            $Result = New-Object –TypeName PSObject 
+            $Result = New-Object -TypeName PSObject 
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
             $Result
         }
@@ -2024,7 +2024,7 @@ Here is what the portion of configuration file looks like when modified by this 
             Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
         } else {
             $results = new-object PSObject[] 0;
-            $Result = New-Object –TypeName PSObject 
+            $Result = New-Object -TypeName PSObject 
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "SharedComputerLicensing" -Value $SharedComputerLicensing
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "PackageGUID" -Value $PackageGUID
@@ -2179,7 +2179,7 @@ Here is what the portion of configuration file that would be removed by this fun
             Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
         } else {
             $results = new-object PSObject[] 0;
-            $Result = New-Object –TypeName PSObject 
+            $Result = New-Object -TypeName PSObject 
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
             $Result
         }
@@ -2396,7 +2396,7 @@ Here is what the portion of configuration file looks like when modified by this 
             Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
         } else {
             $results = new-object PSObject[] 0;
-            $Result = New-Object –TypeName PSObject 
+            $Result = New-Object -TypeName PSObject 
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "SourcePath" -Value $SourcePath
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "DownloadPath" -Value $DownloadPath
@@ -2532,7 +2532,7 @@ Removes the Add node from the xml congfiguration file
             Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
         } else {
             $results = new-object PSObject[] 0;
-            $Result = New-Object –TypeName PSObject 
+            $Result = New-Object -TypeName PSObject 
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
             $Result
         }
@@ -2654,7 +2654,7 @@ Here is what the portion of configuration file looks like when modified by this 
             Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
         } else {
             $results = new-object PSObject[] 0;
-            $Result = New-Object –TypeName PSObject 
+            $Result = New-Object -TypeName PSObject 
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "Path" -Value $Path
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "Level" -Value $Level
@@ -2794,7 +2794,7 @@ Here is what the portion of configuration file that will be removed by this func
             Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
         } else {
             $results = new-object PSObject[] 0;
-            $Result = New-Object –TypeName PSObject 
+            $Result = New-Object -TypeName PSObject 
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
             $Result
         }
@@ -2921,7 +2921,7 @@ Here is what the portion of configuration file looks like when modified by this 
             Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
         } else {
             $results = new-object PSObject[] 0;
-            $Result = New-Object –TypeName PSObject 
+            $Result = New-Object -TypeName PSObject 
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "Level" -Value $Level
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "AcceptEULA" -Value $AcceptEULA
@@ -3063,7 +3063,7 @@ Here is what the removed portion of configuration file looks like:
             Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
         } else {
             $results = new-object PSObject[] 0;
-            $Result = New-Object –TypeName PSObject 
+            $Result = New-Object -TypeName PSObject 
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
             $Result
         }
