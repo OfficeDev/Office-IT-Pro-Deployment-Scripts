@@ -416,6 +416,7 @@ namespace MetroDemo
             Languages = new List<Language>()
             {
                 new Language { Id="en-us", Name="English" },
+                new Language { Id="MatchOS", Name="MatchOS" },
                 new Language { Id="ar-sa", Name="Arabic" },
                 new Language { Id="bg-bg", Name="Bulgarian" },
                 new Language { Id="zh-cn", Name="Chinese - Simplified" },

@@ -305,20 +305,22 @@ namespace MetroDemo.ExampleViews
                     ProductDownloadSource.Text = configXml.Add.DownloadPath?.ToString() ?? "";
 
                     var branchIndex = 0;
-                    foreach (OfficeBranch branchItem in ProductBranch.Items)
-                    {
-                        if (branchItem.Id.ToUpper() == configXml.Add.Branch.ToString().ToUpper())
+                                           
+                        foreach (OfficeBranch branchItem in ProductBranch.Items)
                         {
-                            ProductBranch.SelectedIndex = branchIndex;
-                            break;
+                            if (branchItem.Id?.ToUpper() == configXml.Add.Branch.ToString().ToUpper())
+                            {
+                                ProductBranch.SelectedIndex = branchIndex;
+                                break;
+                            }
+                            branchIndex++;
                         }
-                        branchIndex++;
-                    }
+                    
 
                     branchIndex = 0;
                     foreach (OfficeBranch branchItem in ProductBranch.Items)
                     {
-                        if (branchItem.NewName.ToUpper() == configXml.Add.ODTChannel.ToString().ToUpper())
+                        if (branchItem.NewName?.ToUpper() == configXml.Add.ODTChannel.ToString().ToUpper())
                         {
                             ProductBranch.SelectedIndex = branchIndex;
                             break;
@@ -342,7 +344,7 @@ namespace MetroDemo.ExampleViews
                                 {
                                     break;
                                 }
-                                index ++;
+                                index++;
                             }
 
                             MainProducts.SelectedIndex = index;
