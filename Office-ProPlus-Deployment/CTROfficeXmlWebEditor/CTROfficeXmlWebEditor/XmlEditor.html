@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="components/Callout/Callout.min.css">
     <link rel="stylesheet" href="components/Dialog/Dialog.min.css">
     <link href="stylesheets/typeahead.css" rel="stylesheet">
+    <link href="stylesheets/typeahead-override.css" rel="stylesheet">
     <link href="//netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="components/Panel/Panel.min.css">
     <link rel="stylesheet" href="https://appsforoffice.microsoft.com/fabric/1.0.1/fabric.min.css">
@@ -272,8 +273,14 @@
                                         <div id="addProductRow" class="ms-Table-row  is-selected navrow">
                                             <span class="ms-Table-cell" onclick="setPanel('AddProductPanel', 'addProductRow')">Add Product</span>
                                         </div>
+                                        <div id="excludeProductsRow" class="ms-Table-row navrow">
+                                            <span class="ms-Table-cell" onclick="setPanel('ExcludeProductsPanel', 'excludeProductsRow')">Exclude Programs</span>
+                                        </div>
                                         <div id="removeProductRow" class="ms-Table-row navrow">
                                             <span class="ms-Table-cell" onclick="setPanel('RemoveProductPanel', 'removeProductRow')">Remove Product</span>
+                                        </div>
+                                        <div id="optionsRow" class="ms-Table-row navrow">
+                                            <span class="ms-Table-cell" onclick="setPanel('AdditionalOptionsPanel', 'optionsRow')">Additional Options</span>
                                         </div>
                                         <div id="updatesRow" class="ms-Table-row navrow">
                                             <span class="ms-Table-cell" onclick="setPanel('UpdatesPanel', 'updatesRow')">Updates</span>
@@ -401,8 +408,9 @@
                                                 <td style="width: 100%; padding-right: 10px">
                                                     <div class="ms-Dropdown">
                                                         <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
-                                                        <select id="cbLanguage" class="ms-Dropdown-select">
+                                                        <select id="cbLanguage" class="ms-Dropdown-select">                                                            
                                                             <option value="en-us">English (en-us)</option>
+                                                            <option value="MatchOS">MatchOS</option>
                                                             <option value="ar-sa">Arabic (ar-sa)</option>
                                                             <option value="bg-bg">Bulgarian (bg-bg)</option>
                                                             <option value="zh-cn">Chinese (Simplified) (zh-cn)</option>
@@ -441,6 +449,7 @@
                                                             <option value="th-th">Thai (th-th)</option>
                                                             <option value="tr-tr">Turkish (tr-tr)</option>
                                                             <option value="uk-ua">Ukrainian (uk-ua)</option>
+                                                            <option value="vi-vn">Vietnamese (vi-vn)</option>                                                            
                                                         </select>
                                                     </div>
                                                 </td>
@@ -465,122 +474,187 @@
                                                 Delete Product
                                             </button>
                                         </div>
-                                    </div>
-                                    <div>
-                                        <h2 class="ms-font-xl">Optional Fields</h2>
-
-                                        <div id="mgtToggleGroup" class="ms-Toggle">
-                                            <br />
-
-                                            <span class="ms-Toggle-description">Enable Configuration Manager support</span>
-                                            <input type="checkbox" id="mgtToggle" class="ms-Toggle-input">
-                                            <label for="mgtToggle" class="ms-Toggle-field">
-                                                <span class="ms-Label ms-Label--off">Disabled</span>
-                                                <span class="ms-Label ms-Label--on">Enabled</span>
-                                            </label>
-                                        </div>
-
+                                    </div>     
+                                    <h2 class="ms-font-xl">Version</h2>   
+                                    <div id="newVersionSection">
                                         <table>
                                             <tr>
                                                 <td>
                                                     <label class="ms-Label">Version</label>
                                                 </td>
+                                            </tr>
+                                        </table>
+                                        <div class="ms-Dropdown">
+                                            <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
+                                            <select id="txtVersion" class="ms-Dropdown-select"></select>
+                                        </div>
+                                        <table>
+                                            <tr>
                                                 <td>
-                                                    <i id="versionInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px; text-align: center; cursor: pointer;" onclick="toggleInfo('versionInfo', this)"></i>
+                                                    <label class="ms-Label">Build</label>
                                                 </td>
                                             </tr>
                                         </table>
+                                        <div class="ms-Dropdown" style="width:100%">
+                                            <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
+                                            <select id="txtBuild" class="ms-Dropdown-select"></select>
+                                        </div>
+                                    </div>
+                                    <table>
+                                        <tr>
+                                            <td>
+                                                <label class="ms-Label">Legacy Version</label>
+                                            </td>
+                                        </tr>
+                                    </table>
                                         <form data-toggle="validator" role="form">
                                             <div class="input-group" style="width:100%">
-                                                <div id="versionTextBox" style="width:100%">
-                                                    <input id="txtVersion" type="text" pattern="^\d{2}\.\d\.\d{4}\.\d{4}$" maxlength="14"
-                                                           class="ms-TextField-field typeahead" placeholder="15.0.4745.1001"
-                                                           data-error="Invalid Version. ex: 15.0.4745.1001" style="width:100%">
+                                                <div id="legacyVersionTextBox">
+                                                    <input id="txtLegacyVersion" type="text" pattern="^\d{2}\.\d\.\d{4}\.\d{4}$" maxlength="14"
+                                                           class="ms-TextField-field typeahead">
                                                 </div>
                                                 <span id="versionSignal" class="glyphicon form-control-feedback" aria-hidden="true" style="display:none;"></span>
                                             </div>
                                         </form>
-
+                                        <div style="margin-top:10px; margin-bottom:10px">
+                                            <button id="btSaveVersion" class="ms-Button">
+                                                Save
+                                            </button>
+                                        </div>
+                                    </div>
+                                <!-- End Add Product Panel -->
+                                <!-- Start Exclude Office Programs Panel -->
+                                <div id="ExcludeProductsPanel" class="option-panel">
+                                    <table>
+                                        <tr>
+                                            <td>
+                                                <h1 class="ms-font-xxl">Exclude Office Programs</h1>
+                                            </td>
+                                            <td>
+                                                <i id="excludeProductsIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('excludeProductsInfo', this)"></i>
+                                            </td>
+                                        </tr>
+                                    </table>
                                         <table>
                                             <tr>
                                                 <td>
-                                                    <label class="ms-Label">SourcePath</label>
-                                                </td>
-                                                <td>
-                                                    <i id="srcPathInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('srcPathInfo', this)"></i>
+                                                    <label class="ms-Label">Product</label>
                                                 </td>
                                             </tr>
                                         </table>
-
-                                        <form data-toggle="validator" role="form">
-                                            <div class="controls form-group has-feedback">
-                                                <input id="txtSourcePath" type="text" pattern="\\\\.*\\.*|http://.*|https://|^\w:\\.*"
-                                                       class="ms-TextField-field" placeholder="Network, local, or HTTP path"
-                                                       data-error="This must be a network, local, or HTTP path">
-                                                <span id="sourcepathSignal" class="glyphicon form-control-feedback" aria-hidden="true" style="margin-right: 20px"></span>
-                                            </div>
-                                        </form>
-
-                                        <div id="pidKeyLabel" style="display: none;">
-                                            <table>
-                                                <tr>
-                                                    <td>
-                                                        <label class="ms-Label">PIDKEY</label>
-                                                    </td>
-                                                    <td>
-                                                        <i id="pidkeyInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('pidkeyInfo', this)"></i>
-                                                    </td>
-                                                </tr>
-                                            </table>
-
-                                            <div>
-                                                <input id="txtPidKey" type="text" pattern="^.{5}-.{5}-.{5}-.{5}-.{5}$"
-                                                       class="ms-TextField-field" placeholder="XXXXX-XXXXX-XXXXX-XXXXX-XXXXX"
-                                                       data-error="This must be a 25-character volume license key">
-                                                <span id="pidkeySignal" class="glyphicon form-control-feedback" aria-hidden="true"></span>
-                                            </div>
+                                        <div class="ms-Dropdown">
+                                            <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
+                                            <select id="cbExcludeProduct" class="ms-Dropdown-select">
+                                                <option value="O365ProPlusRetail">Office 365 ProPlus</option>
+                                                <option value="O365BusinessRetail">Office 365 for Business</option>
+                                            </select>
                                         </div>
 
-                                        <table>
-                                            <tr>
-                                                <td>
-                                                    <label class="ms-Label">Exclude Office Programs</label>
-                                                </td>
-                                                <td>
-                                                    <i id="exclAppInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('exclAppInfo', this)"></i>
-                                                </td>
-                                            </tr>
-                                        </table>
+                                    <table style="position: relative; left: 70px;">
+                                        <tr>
+                                            <td style="width: 100px;">
+                                                <div class="ms-Toggle">
+                                                    <span class="ms-Toggle-description" style="position: relative; left: -60px; top: 30px;">Access</span>
+                                                    <input type="checkbox" id="excludeAccess" class="ms-Toggle-input" checked />
+                                                    <label for="excludeAccess" class="ms-Toggle-field">
+                                                        <span class="ms-Label ms-Label--off">Excluded</span>
+                                                        <span class="ms-Label ms-Label--on">Included</span>
+                                                    </label>
+                                                </div>
 
-                                        <div style="position: relative;">
-                                            <div>
-                                                <table>
-                                                    <tr>
-                                                        <td style="width: 100%; padding-right: 10px">
-                                                            <div class="ms-Dropdown">
-                                                                <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
-                                                                <select id="cbExcludeApp" class="ms-Dropdown-select"></select>
-                                                            </div>
-                                                        </td>
-                                                        <td style="width: 150px;text-align: right; padding-right: 10px; padding-bottom:10px">
-                                                            <button id="btAddExcludeApp" class="ms-Button">
-                                                                Add
-                                                            </button>
-                                                        </td>
-                                                        <td style="width:80px;text-align: right; padding-bottom:10px">
-                                                            <button id="btRemoveExcludeApp" class="ms-Button" disabled="true">
-                                                                Remove
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                </table>
-                                            </div>
+                                                <div class="ms-Toggle" style="position: relative; top: -40px;">
+                                                    <span class="ms-Toggle-description" style="position: relative; left: -60px; top: 30px;">Excel</span>
+                                                    <input type="checkbox" id="excludeExcel" class="ms-Toggle-input" checked />
+                                                    <label for="excludeExcel" class="ms-Toggle-field">
+                                                        <span class="ms-Label ms-Label--off">Excluded</span>
+                                                        <span class="ms-Label ms-Label--on">Included</span>
+                                                    </label>
+                                                </div>
 
-                                        </div>
+                                                <div class="ms-Toggle" style="position: relative; top: -80px;">
+                                                    <span class="ms-Toggle-description" style="position: relative; left: -60px; top: 30px;">OneNote</span>
+                                                    <input type="checkbox" id="excludeOneNote" class="ms-Toggle-input" checked />
+                                                    <label for="excludeOneNote" class="ms-Toggle-field">
+                                                        <span class="ms-Label ms-Label--off">Excluded</span>
+                                                        <span class="ms-Label ms-Label--on">Included</span>
+                                                    </label>
+                                                </div>
 
+                                                <div class="ms-Toggle" style="position: relative; top: -120px;">
+                                                    <span class="ms-Toggle-description" style="position: relative; left: -60px; top: 30px;">OneDrive</span>
+                                                    <input type="checkbox" id="excludeOneDrive" class="ms-Toggle-input" checked />
+                                                    <label for="excludeOneDrive" class="ms-Toggle-field">
+                                                        <span class="ms-Label ms-Label--off">Excluded</span>
+                                                        <span class="ms-Label ms-Label--on">Included</span>
+                                                    </label>
+                                                </div>
+
+                                                <div class="ms-Toggle" style="position: relative; top: -160px;">
+                                                    <span class="ms-Toggle-description" style="position: relative; left: -60px; top: 30px;">Publisher</span>
+                                                    <input type="checkbox" id="excludePublisher" class="ms-Toggle-input" checked  />
+                                                    <label for="excludePublisher" class="ms-Toggle-field">
+                                                        <span class="ms-Label ms-Label--off">Excluded</span>
+                                                        <span class="ms-Label ms-Label--on">Included</span>
+                                                    </label>
+                                                </div>
+                                            </td>
+                                            <td style="width: 140px;"></td>
+                                            <td>
+                                                <div class="ms-Toggle">
+                                                    <span class="ms-Toggle-description" style="position: relative; left: -65px; top: 30px;">Groove</span>
+                                                    <input type="checkbox" id="excludeGroove" class="ms-Toggle-input" checked  />
+                                                    <label for="excludeGroove" class="ms-Toggle-field">
+                                                        <span class="ms-Label ms-Label--off">Excluded</span>
+                                                        <span class="ms-Label ms-Label--on">Included</span>
+                                                    </label>
+                                                </div>
+
+                                                <div class="ms-Toggle" style="position: relative; top: -40px;">
+                                                    <span class="ms-Toggle-description" style="position: relative; left: -65px; top: 30px;">Lync</span>
+                                                    <input type="checkbox" id="excludeLync" class="ms-Toggle-input" checked />
+                                                    <label for="excludeLync" class="ms-Toggle-field">
+                                                        <span class="ms-Label ms-Label--off">Excluded</span>
+                                                        <span class="ms-Label ms-Label--on">Included</span>
+                                                    </label>
+                                                </div>
+
+                                                <div class="ms-Toggle" style="position: relative; top: -80px;">
+                                                    <span class="ms-Toggle-description" style="position: relative; left: -65px; top: 30px;">Outlook</span>
+                                                    <input type="checkbox" id="excludeOutlook" class="ms-Toggle-input" checked />
+                                                    <label for="excludeOutlook" class="ms-Toggle-field">
+                                                        <span class="ms-Label ms-Label--off">Excluded</span>
+                                                        <span class="ms-Label ms-Label--on">Included</span>
+                                                    </label>
+                                                </div>
+
+                                                <div class="ms-Toggle" style="position: relative; top: -120px;">
+                                                    <span class="ms-Toggle-description" style="position: relative; left: -65px; top: 30px;">PowerPoint</span>
+                                                    <input type="checkbox" id="excludePowerPoint" class="ms-Toggle-input" checked />
+                                                    <label for="excludePowerPoint" class="ms-Toggle-field">
+                                                        <span class="ms-Label ms-Label--off">Excluded</span>
+                                                        <span class="ms-Label ms-Label--on">Included</span>
+                                                    </label>
+                                                </div>
+
+                                                <div class="ms-Toggle" style="position: relative; top: -160px;">
+                                                    <span class="ms-Toggle-description" style="position: relative; left: -65px; top: 30px;">Word</span>
+                                                    <input type="checkbox" id="excludeWord" class="ms-Toggle-input" checked />
+                                                    <label for="excludeWord" class="ms-Toggle-field">
+                                                        <span class="ms-Label ms-Label--off">Excluded</span>
+                                                        <span class="ms-Label ms-Label--on">Included</span>
+                                                    </label>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+
+                                    <div style="margin-bottom:10px">
+                                        <button id="btSaveExcludePrograms" class="ms-Button">
+                                            Save
+                                        </button>
                                     </div>
                                 </div>
-                                <!-- End Add Product Panel -->
+                                <!-- End Exclude Office Programs Panel -->
                                 <!-- Start Remove Product Panel -->
                                 <div id="RemoveProductPanel" class="option-panel">
                                     <table>
@@ -638,6 +712,7 @@
                                                     <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
                                                     <select id="cbRemoveLanguage" class="ms-Dropdown-select">
                                                         <option value="en-us">English (en-us)</option>
+                                                        <option value="MatchOS">MatchOS</option>
                                                         <option value="ar-sa">Arabic (ar-sa)</option>
                                                         <option value="bg-bg">Bulgarian (bg-bg)</option>
                                                         <option value="zh-cn">Chinese (Simplified) (zh-cn)</option>
@@ -676,6 +751,7 @@
                                                         <option value="th-th">Thai (th-th)</option>
                                                         <option value="tr-tr">Turkish (tr-tr)</option>
                                                         <option value="uk-ua">Ukrainian (uk-ua)</option>
+                                                        <option value="vi-vn">Vietnamese (vi-vn)</option>
                                                     </select>
                                                 </div>
                                             </td>
@@ -702,358 +778,487 @@
                                     </div>
                                 </div>
                                 <!-- End Remove Product Panel -->
-                                <!-- Start Updates Panel -->
-                                <div id="UpdatesPanel" class="option-panel">
-                                    <h1 class="ms-font-xxl">Updates</h1>
-                                    <div id="updateToggleContainer" class="ms-Toggle">
-                                        <span class="ms-Toggle-description">Enable Updates</span>
-                                        <input type="checkbox" id="updatesEnabled" class="ms-Toggle-input" />
-                                        <label for="updatesEnabled" class="ms-Toggle-field">
-                                            <span class="ms-Label ms-Label--off">Disabled</span>
-                                            <span class="ms-Label ms-Label--on">Enabled</span>
-                                        </label>
-                                    </div>
-
-                                    <div id="updateBranchSection">
-                                        <table>
-                                            <tr>
-                                                <td>
-                                                    <label class="ms-Label">Channel</label>
-                                                </td>
-                                                <td>
-                                                    <i id="updatesBranchInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('updatesBranchInfo', this)"></i>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                        <div class="ms-Dropdown">
-                                            <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
-                                            <select id="cbUpdateBranch" class="ms-Dropdown-select">
-                                                <option oldvalue="Business" value="Deferred">Deferred</option>
-                                                <option oldvalue="FirstReleaseBusiness" value="FirstReleaseDeferred">First Release Deferred</option>
-                                                <option oldvalue="Current" value="Current">Current</option>
-                                                <option oldvalue="FirstReleaseCurrent" value="FirstReleaseCurrent">First Release Current</option>
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <table>
-                                        <tr>
-                                            <td>
-                                                <label class="ms-Label">UpdatePath</label>
-                                            </td>
-                                            <td>
-                                                <i id="updatePathInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('updatePathInfo', this)"></i>
-                                            </td>
-                                        </tr>
-                                    </table>
-
+                                <!-- Start Additional Options Panel -->
+                                <div id="AdditionalOptionsPanel" class="option-panel">
                                     <div>
-                                        <input id="txtUpdatePath" type="text" pattern="\\\\.*\\.*|http://.*|https://|^\w:\\.*"
-                                               class="ms-TextField-field" placeholder="Network, local, or HTTP path"
-                                               data-error="This must be a network, local, or HTTP path">
-                                        <span id="updatepathSignal" class="glyphicon form-control-feedback" aria-hidden="true"></span>
-                                    </div>
+                                        <table>
+                                            <tr>
+                                                <td>
+                                                    <h1 class="ms-font-xxl">Additional Options</h1>
+                                                </td>
+                                            </tr>
+                                        </table>
 
-                                    <table>
-                                        <tr>
-                                            <td>
-                                                <label class="ms-Label">TargetVersion</label>
-                                            </td>
-                                            <td>
-                                                <i id="targetVersionInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('targetVersionInfo', this)"></i>
-                                            </td>
-                                        </tr>
-                                    </table>
+                                        <div id="mgtToggleGroup" class="ms-Toggle">
+                                            <br />
 
-                                    <div>
-                                        <div id="updateVersionTextBox">
-                                            <input id="txtTargetVersion" type="text" pattern="^\d{2}\.\d\.\d{4}\.\d{4}$" maxlength="14"
-                                                   class="ms-TextField-field typeahead" placeholder="15.0.4745.1001"
-                                                   data-error="Invalid Version. ex: 15.0.4745.1001">
+                                            <span class="ms-Toggle-description">Enable Configuration Manager support</span>
+                                            <input type="checkbox" id="mgtToggle" class="ms-Toggle-input">
+                                            <label for="mgtToggle" class="ms-Toggle-field">
+                                                <span class="ms-Label ms-Label--off">Disabled</span>
+                                                <span class="ms-Label ms-Label--on">Enabled</span>
+                                            </label>
                                         </div>
-                                        <span id="targetversionSignal" class="glyphicon form-control-feedback" aria-hidden="true"></span>
-                                    </div>
 
-                                    <div class="ms-DatePicker">
-                                    </div>
+                                        
 
-                                    <div id="autoUpgradeToggle" class="ms-Toggle">
-                                        <span class="ms-Toggle-description">Enable Auto Update</span>
-                                        <input type="checkbox" id="autoUpgradeEnable" class="ms-Toggle-input" />
-                                        <label for="autoUpgradeEnable" class="ms-Toggle-field">
-                                            <span class="ms-Label ms-Label--off">Disabled</span>
-                                            <span class="ms-Label ms-Label--on">Enabled</span>
-                                        </label>
-                                        <p class="ms-font-m">
-                                            For Enterprise Customers using Office 365 ProPlus, users will be migrated to the latest version in February of 2016.
-                                            If you want your users to stay on Office 2013 and continue to receive 2013 security updates, you can delay their migration to
-                                            Office 2016 ProPlus.  For more information please visit <a href="http://blogs.technet.com/b/odsupport/archive/2015/09/23/how-can-i-delay-the-migration-from-office-365-proplus-2013-to-office-365-proplus-2016.aspx">this page.</a>
-                                        </p>
-                                    </div>
-
-                                    <div class="controls">
-                                        <button id="btSaveUpdates" class="ms-Button">
-                                            Save
-                                        </button>
-                                        <button id="btRemovesUpdates" class="ms-Button">
-                                            Remove
-                                        </button>
-                                    </div>
-
-                                </div>
-                                <!-- End Updates Panel -->
-                                <!-- Start Display Panel -->
-                                <div id="DisplayPanel" class="option-panel">
-                                    <h1 class="ms-font-xxl">Display</h1>
-                                    <div class="ms-Toggle">
                                         <table>
                                             <tr>
                                                 <td>
-                                                    <label class="ms-Toggle-description">Display Level</label>
+                                                    <label class="ms-Label">SourcePath</label>
                                                 </td>
                                                 <td>
-                                                    <i id="displayLevelInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('displayLevelInfo', this)"></i>
+                                                    <i id="srcPathInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('srcPathInfo', this)"></i>
                                                 </td>
                                             </tr>
                                         </table>
-                                        <input type="checkbox" id="displayLevel" class="ms-Toggle-input" />
-                                        <label for="displayLevel" class="ms-Toggle-field">
-                                            <span class="ms-Label ms-Label--off">None</span>
-                                            <span class="ms-Label ms-Label--on">Full</span>
-                                        </label>
-                                    </div>
-                                    <div class="ms-Toggle">
+
+                                        <form data-toggle="validator" role="form">
+                                            <div class="controls form-group has-feedback">
+                                                <input id="txtSourcePath" type="text" pattern="\\\\.*\\.*|http://.*|https://|^\w:\\.*"
+                                                       class="ms-TextField-field" placeholder="Network, local, or HTTP path"
+                                                       data-error="This must be a network, local, or HTTP path">
+                                                <span id="sourcepathSignal" class="glyphicon form-control-feedback" aria-hidden="true" style="margin-right: 20px"></span>
+                                            </div>
+                                        </form>
+
                                         <table>
                                             <tr>
                                                 <td>
-                                                    <label class="ms-Toggle-description">Accept EULA</label>
+                                                    <label class="ms-Label">DownloadPath</label>
                                                 </td>
                                                 <td>
-                                                    <i id="acceptEULAInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('acceptEULAInfo', this)"></i>
+                                                    <i id="dwnpthPathInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('dwnPathInfo', this)"></i>
                                                 </td>
                                             </tr>
                                         </table>
-                                        <input type="checkbox" id="acceptEULA" class="ms-Toggle-input" />
-                                        <label for="acceptEULA" class="ms-Toggle-field">
-                                            <span class="ms-Label ms-Label--off">False</span>
-                                            <span class="ms-Label ms-Label--on">True</span>
-                                        </label>
-                                    </div>
 
-                                    <div class="controls">
-                                        <button id="btSaveDisplay" class="ms-Button">
+                                        <form data-toggle="validator" role="form">
+                                            <div class="controls form-group has-feedback">
+                                                <input id="txtDownloadPath" type="text" pattern="\\\\.*\\.*|http://.*|https://|^\w:\\.*"
+                                                       class="ms-TextField-field" placeholder="Network, local, or HTTP path"
+                                                       data-error="This must be a network, local, or HTTP path">
+                                                <span id="downloadpathSignal" class="glyphicon form-control-feedback" aria-hidden="true" style="margin-right: 20px"></span>
+                                            </div>
+                                        </form>
+
+                                        <div id="pidKeyLabel" style="display: none;">
+                                            <table>
+                                                <tr>
+                                                    <td>
+                                                        <label class="ms-Label">PIDKEY</label>
+                                                    </td>
+                                                    <td>
+                                                        <i id="pidkeyInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('pidkeyInfo', this)"></i>
+                                                    </td>
+                                                </tr>
+                                            </table>
+
+                                            <div>
+                                                <input id="txtPidKey" type="text" pattern="^.{5}-.{5}-.{5}-.{5}-.{5}$"
+                                                       class="ms-TextField-field" placeholder="XXXXX-XXXXX-XXXXX-XXXXX-XXXXX"
+                                                       data-error="This must be a 25-character volume license key">
+                                                <span id="pidkeySignal" class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                                            </div>
+                                        </div>
+
+                                        <!--<table>
+            <tr>
+                <td>
+                    <label class="ms-Label">Exclude Office Programs</label>
+                </td>
+                <td>
+                    <i id="exclAppInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('exclAppInfo', this)"></i>
+                </td>
+            </tr>
+        </table>-->
+                                        <!--<div style="position: relative;">
+            <div>
+                <table>
+                    <tr>
+                        <td style="width: 100%; padding-right: 10px">
+                            <div class="ms-Dropdown">
+                                <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
+                                <select id="cbExcludeApp" class="ms-Dropdown-select"></select>
+                            </div>
+                        </td>
+                        <td style="width: 150px;text-align: right; padding-right: 10px; padding-bottom:10px">
+                            <button id="btAddExcludeApp" class="ms-Button">
+                                Add
+                            </button>
+                        </td>
+                        <td style="width:80px;text-align: right; padding-bottom:10px">
+                            <button id="btRemoveExcludeApp" class="ms-Button" disabled="true">
+                                Remove
+                            </button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+        </div>-->
+
+                                    </div>
+                                    <div style="margin-top:10px">
+                                        <button id="btSaveAdditionalOptions" class="ms-Button">
                                             Save
-                                        </button>
-                                        <button id="btRemoveDisplay" class="ms-Button">
-                                            Remove
                                         </button>
                                     </div>
                                 </div>
-                                <!-- End Display Panel -->
-                                <!-- Start Logging Panel -->
-                                <div id="LoggingPanel" class="option-panel">
-                                    <h1 class="ms-font-xxl">Logging</h1>
-                                    <div class="ms-Toggle">
+                                <!-- End Additional Options Panel -->    
+                                    <!-- Start Updates Panel -->
+                                    <div id="UpdatesPanel" class="option-panel">
+                                        <h1 class="ms-font-xxl">Updates</h1>
+                                        <div id="updateToggleContainer" class="ms-Toggle">
+                                            <span class="ms-Toggle-description">Enable Updates</span>
+                                            <input type="checkbox" id="updatesEnabled" class="ms-Toggle-input" />
+                                            <label for="updatesEnabled" class="ms-Toggle-field">
+                                                <span class="ms-Label ms-Label--off">Disabled</span>
+                                                <span class="ms-Label ms-Label--on">Enabled</span>
+                                            </label>
+                                        </div>
+
+                                        <div id="updateBranchSection">
+                                            <table>
+                                                <tr>
+                                                    <td>
+                                                        <label class="ms-Label">Channel</label>
+                                                    </td>
+                                                    <td>
+                                                        <i id="updatesBranchInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('updatesBranchInfo', this)"></i>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                            <div class="ms-Dropdown">
+                                                <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
+                                                <select id="cbUpdateBranch" class="ms-Dropdown-select">
+                                                    <option oldvalue="Business" value="Deferred">Deferred</option>
+                                                    <option oldvalue="FirstReleaseBusiness" value="FirstReleaseDeferred">First Release Deferred</option>
+                                                    <option oldvalue="Current" value="Current">Current</option>
+                                                    <option oldvalue="FirstReleaseCurrent" value="FirstReleaseCurrent">First Release Current</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <table>
+                                            <tr>
+                                                <td>
+                                                    <label class="ms-Label">UpdatePath</label>
+                                                </td>
+                                                <td>
+                                                    <i id="updatePathInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('updatePathInfo', this)"></i>
+                                                </td>
+                                            </tr>
+                                        </table>
+
+                                        <div>
+                                            <input id="txtUpdatePath" type="text" pattern="\\\\.*\\.*|http://.*|https://|^\w:\\.*"
+                                                   class="ms-TextField-field" placeholder="Network, local, or HTTP path"
+                                                   data-error="This must be a network, local, or HTTP path">
+                                            <span id="updatepathSignal" class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                                        </div>
+
+                                        <table>
+                                            <tr>
+                                                <td>
+                                                    <label class="ms-Label">TargetVersion</label>
+                                                </td>
+                                                <td>
+                                                    <i id="targetVersionInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('targetVersionInfo', this)"></i>
+                                                </td>
+                                            </tr>
+                                        </table>
+
+                                        <div>
+                                            <div id="updateVersionTextBox">
+                                                <input id="txtTargetVersion" type="text" pattern="^\d{2}\.\d\.\d{4}\.\d{4}$" maxlength="14"
+                                                       class="ms-TextField-field typeahead" placeholder="15.0.4745.1001"
+                                                       data-error="Invalid Version. ex: 15.0.4745.1001">
+                                            </div>
+                                            <span id="targetversionSignal" class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                                        </div>
+
+                                        <div class="ms-DatePicker">
+                                        </div>
+
+                                        <div id="autoUpgradeToggle" class="ms-Toggle">
+                                            <span class="ms-Toggle-description">Enable Auto Update</span>
+                                            <input type="checkbox" id="autoUpgradeEnable" class="ms-Toggle-input" />
+                                            <label for="autoUpgradeEnable" class="ms-Toggle-field">
+                                                <span class="ms-Label ms-Label--off">Disabled</span>
+                                                <span class="ms-Label ms-Label--on">Enabled</span>
+                                            </label>
+                                            <p class="ms-font-m">
+                                                For Enterprise Customers using Office 365 ProPlus, users will be migrated to the latest version in February of 2016.
+                                                If you want your users to stay on Office 2013 and continue to receive 2013 security updates, you can delay their migration to
+                                                Office 2016 ProPlus.  For more information please visit <a href="http://blogs.technet.com/b/odsupport/archive/2015/09/23/how-can-i-delay-the-migration-from-office-365-proplus-2013-to-office-365-proplus-2016.aspx">this page.</a>
+                                            </p>
+                                        </div>
+
+                                        <div class="controls">
+                                            <button id="btSaveUpdates" class="ms-Button">
+                                                Save
+                                            </button>
+                                            <button id="btRemovesUpdates" class="ms-Button">
+                                                Remove
+                                            </button>
+                                        </div>
+
+                                    </div>
+                                    <!-- End Updates Panel -->
+                                    <!-- Start Display Panel -->
+                                    <div id="DisplayPanel" class="option-panel">
+                                        <h1 class="ms-font-xxl">Display</h1>
                                         <div class="ms-Toggle">
                                             <table>
                                                 <tr>
                                                     <td>
-                                                        <label class="ms-Toggle-description">Logging Level</label>
+                                                        <label class="ms-Toggle-description">Display Level</label>
                                                     </td>
                                                     <td>
-                                                        <i id="logLevelInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('logLevelInfo', this)"></i>
+                                                        <i id="displayLevelInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('displayLevelInfo', this)"></i>
                                                     </td>
                                                 </tr>
                                             </table>
-                                            <input type="checkbox" id="loggingLevel" class="ms-Toggle-input" />
-                                            <label for="loggingLevel" class="ms-Toggle-field">
-                                                <span class="ms-Label ms-Label--off">Off</span>
-                                                <span class="ms-Label ms-Label--on">Standard</span>
+                                            <input type="checkbox" id="displayLevel" class="ms-Toggle-input" />
+                                            <label for="displayLevel" class="ms-Toggle-field">
+                                                <span class="ms-Label ms-Label--off">None</span>
+                                                <span class="ms-Label ms-Label--on">Full</span>
                                             </label>
                                         </div>
-                                    </div>
-                                    <table>
-                                        <tr>
-                                            <td>
-                                                <label class="ms-Label">Path</label>
-                                            </td>
-                                            <td>
-                                                <i id="logPathInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('logPathInfo', this)"></i>
-                                            </td>
-                                        </tr>
-                                    </table>
-
-                                    <div>
-                                        <input id="txtLoggingUpdatePath" type="text" pattern="^\w:\\.*"
-                                               class="ms-TextField-field" placeholder="Local Path"
-                                               data-error="Local Path">
-                                        <span id="logupdatepathSignal" class="glyphicon form-control-feedback" aria-hidden="true"></span>
-                                    </div>
-
-                                    <div style="margin-top:10px">
-                                        <button id="btSaveLogging" class="ms-Button">
-                                            Save
-                                        </button>
-                                        <button id="btRemoveLogging" class="ms-Button">
-                                            Remove
-                                        </button>
-                                    </div>
-                                </div>
-                                <!-- End Logging Panel -->
-                                <!-- Start Properties Panel -->
-                                <div id="PropertiesPanel" class="option-panel">
-                                    <h1 class="ms-font-xxl">Properties</h1>
-                                    <div class="ms-Toggle">
-                                        <table>
-                                            <tr>
-                                                <td>
-                                                    <label class="ms-Toggle-description">AutoActivate</label>
-                                                </td>
-                                                <td>
-                                                    <i id="aaInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('aaInfo', this)"></i>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                        <input type="checkbox" id="autoActivate" class="ms-Toggle-input" />
-                                        <label for="autoActivate" class="ms-Toggle-field">
-                                            <span class="ms-Label ms-Label--off">No</span>
-                                            <span class="ms-Label ms-Label--on">Yes</span>
-                                        </label>
-                                    </div>
-                                    <div class="ms-Toggle">
-                                        <table>
-                                            <tr>
-                                                <td>
-                                                    <label class="ms-Toggle-description">ForceAppShutdown</label>
-                                                </td>
-                                                <td>
-                                                    <i id="fasInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('fasInfo', this)"></i>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                        <input type="checkbox" id="forceAppShutdown" class="ms-Toggle-input" />
-                                        <label for="forceAppShutdown" class="ms-Toggle-field">
-                                            <span class="ms-Label ms-Label--off">False</span>
-                                            <span class="ms-Label ms-Label--on">True</span>
-                                        </label>
-                                    </div>
-                                    <div class="ms-Toggle">
-                                        <table>
-                                            <tr>
-                                                <td>
-                                                    <label class="ms-Toggle-description">SharedComputerLicensing</label>
-                                                </td>
-                                                <td>
-                                                    <i id="sclInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px; text-align: center; cursor: pointer;" onclick="toggleInfo('sclInfo', this)"></i>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                        <input type="checkbox" id="sharedComputerLicensing" class="ms-Toggle-input" />
-                                        <label for="sharedComputerLicensing" class="ms-Toggle-field">
-                                            <span class="ms-Label ms-Label--off">False</span>
-                                            <span class="ms-Label ms-Label--on">True</span>
-                                        </label>
-                                    </div>
-
-                                    <div id="pinIconsProperty" class="ms-Toggle">
-                                        <table>
-                                            <tr>
-                                                <td>
-                                                    <label class="ms-Toggle-description">PinIconsToTaskbar</label>
-                                                </td>
-                                                <td>
-                                                    <i id="pinIconsIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('pinIconInfo', this)"></i>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                        <input type="checkbox" id="pinIcons" class="ms-Toggle-input" />
-                                        <label for="pinIcons" class="ms-Toggle-field">
-                                            <span class="ms-Label ms-Label--off">False</span>
-                                            <span class="ms-Label ms-Label--on">True</span>
-                                        </label>
-                                    </div>
-
-                                    <table>
-                                        <tr>
-                                            <td>
-                                                <label class="ms-Label">PACKAGEGUID</label>
-                                            </td>
-                                            <td>
-                                                <i id="PACKAGEGUIDInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('PACKAGEGUIDInfo', this)"></i>
-                                            </td>
-                                        </tr>
-                                    </table>
-                                    <div>
-                                        <input id="txtPACKAGEGUID" type="text" pattern="^.{8}-.{4}-.{4}-.{4}-.{12}$"
-                                               class="ms-TextField-field" placeholder="XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
-                                               data-error="This must be a valid APP-V Package Guid" maxlength="36">
-                                        <span id="PACKAGEGUIDSignal" class="glyphicon form-control-feedback" aria-hidden="true"></span>
-                                    </div>
-                                    <div style="margin-top:10px">
-                                        <button id="btSaveProperties" class="ms-Button">
-                                            Save
-                                        </button>
-                                        <button id="btRemoveProperties" class="ms-Button">
-                                            Remove
-                                        </button>
-                                    </div>
-                                </div>
-                                <!-- End Properties Panel -->
-                                <!-- Start Templates Panel -->
-                                <div id="TemplatesPanel" class="option-panel">
-                                    <h1 class="ms-font-xxl">Templates</h1>
-                                    <ul class="ms-List">
-                                        <div id="proPlusRetail" class="ms-ListItem is-unread is-selectable" href="./templates/0365ProPlusRetail.xml" onclick="setTemplate(this)">
-                                            <span class="ms-ListItem-primaryText">Office 365 ProPlus</span>
-                                            <span class="ms-ListItem-tertiaryText" style="word-wrap:break-word;">Silent install of 32-Bit Office 365 ProPlus with Updates and Logging enabled</span>
-                                            <div class="ms-ListItem-selectionTarget js-toggleSelection"></div>
+                                        <div class="ms-Toggle">
+                                            <table>
+                                                <tr>
+                                                    <td>
+                                                        <label class="ms-Toggle-description">Accept EULA</label>
+                                                    </td>
+                                                    <td>
+                                                        <i id="acceptEULAInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('acceptEULAInfo', this)"></i>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                            <input type="checkbox" id="acceptEULA" class="ms-Toggle-input" />
+                                            <label for="acceptEULA" class="ms-Toggle-field">
+                                                <span class="ms-Label ms-Label--off">False</span>
+                                                <span class="ms-Label ms-Label--on">True</span>
+                                            </label>
                                         </div>
-                                        <div id="proPlusBusiness" class="ms-ListItem is-unread is-selectable" href="./templates/0365ProPlusBusiness.xml" onclick="setTemplate(this)">
-                                            <span class="ms-ListItem-primaryText">Office 365 for Business</span>
-                                            <span class="ms-ListItem-tertiaryText">Silent install of 32-Bit Office 365 for Business with Updates and Logging enabled</span>
-                                            <div class="ms-ListItem-selectionTarget js-toggleSelection"></div>
+
+                                        <div class="controls">
+                                            <button id="btSaveDisplay" class="ms-Button">
+                                                Save
+                                            </button>
+                                            <button id="btRemoveDisplay" class="ms-Button">
+                                                Remove
+                                            </button>
                                         </div>
-                                        <div id="proPlusRetailVisio" class="ms-ListItem is-unread is-selectable" href="./templates/O365ProPlusRetailwVisio.xml" onclick="setTemplate(this)">
-                                            <span class="ms-ListItem-primaryText">Office 365 ProPlus with Visio</span>
-                                            <span class="ms-ListItem-tertiaryText">Silent install of 32-Bit Office 365 ProPlus with Visio with Updates and Logging enabled</span>
-                                            <div class="ms-ListItem-selectionTarget js-toggleSelection"></div>
+                                    </div>
+                                    <!-- End Display Panel -->
+                                    <!-- Start Logging Panel -->
+                                    <div id="LoggingPanel" class="option-panel">
+                                        <h1 class="ms-font-xxl">Logging</h1>
+                                        <div class="ms-Toggle">
+                                            <div class="ms-Toggle">
+                                                <table>
+                                                    <tr>
+                                                        <td>
+                                                            <label class="ms-Toggle-description">Logging Level</label>
+                                                        </td>
+                                                        <td>
+                                                            <i id="logLevelInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('logLevelInfo', this)"></i>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                                <input type="checkbox" id="loggingLevel" class="ms-Toggle-input" />
+                                                <label for="loggingLevel" class="ms-Toggle-field">
+                                                    <span class="ms-Label ms-Label--off">Off</span>
+                                                    <span class="ms-Label ms-Label--on">Standard</span>
+                                                </label>
+                                            </div>
                                         </div>
-                                    </ul>
+                                        <table>
+                                            <tr>
+                                                <td>
+                                                    <label class="ms-Label">Path</label>
+                                                </td>
+                                                <td>
+                                                    <i id="logPathInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('logPathInfo', this)"></i>
+                                                </td>
+                                            </tr>
+                                        </table>
+
+                                        <div>
+                                            <input id="txtLoggingUpdatePath" type="text" pattern="^\w:\\.*"
+                                                   class="ms-TextField-field" placeholder="Local Path"
+                                                   data-error="Local Path">
+                                            <span id="logupdatepathSignal" class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                                        </div>
+
+                                        <div style="margin-top:10px">
+                                            <button id="btSaveLogging" class="ms-Button">
+                                                Save
+                                            </button>
+                                            <button id="btRemoveLogging" class="ms-Button">
+                                                Remove
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <!-- End Logging Panel -->
+                                    <!-- Start Properties Panel -->
+                                    <div id="PropertiesPanel" class="option-panel">
+                                        <h1 class="ms-font-xxl">Properties</h1>
+                                        <div class="ms-Toggle">
+                                            <table>
+                                                <tr>
+                                                    <td>
+                                                        <label class="ms-Toggle-description">AutoActivate</label>
+                                                    </td>
+                                                    <td>
+                                                        <i id="aaInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('aaInfo', this)"></i>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                            <input type="checkbox" id="autoActivate" class="ms-Toggle-input" />
+                                            <label for="autoActivate" class="ms-Toggle-field">
+                                                <span class="ms-Label ms-Label--off">No</span>
+                                                <span class="ms-Label ms-Label--on">Yes</span>
+                                            </label>
+                                        </div>
+                                        <div class="ms-Toggle">
+                                            <table>
+                                                <tr>
+                                                    <td>
+                                                        <label class="ms-Toggle-description">ForceAppShutdown</label>
+                                                    </td>
+                                                    <td>
+                                                        <i id="fasInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('fasInfo', this)"></i>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                            <input type="checkbox" id="forceAppShutdown" class="ms-Toggle-input" />
+                                            <label for="forceAppShutdown" class="ms-Toggle-field">
+                                                <span class="ms-Label ms-Label--off">False</span>
+                                                <span class="ms-Label ms-Label--on">True</span>
+                                            </label>
+                                        </div>
+                                        <div class="ms-Toggle">
+                                            <table>
+                                                <tr>
+                                                    <td>
+                                                        <label class="ms-Toggle-description">SharedComputerLicensing</label>
+                                                    </td>
+                                                    <td>
+                                                        <i id="sclInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px; text-align: center; cursor: pointer;" onclick="toggleInfo('sclInfo', this)"></i>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                            <input type="checkbox" id="sharedComputerLicensing" class="ms-Toggle-input" />
+                                            <label for="sharedComputerLicensing" class="ms-Toggle-field">
+                                                <span class="ms-Label ms-Label--off">False</span>
+                                                <span class="ms-Label ms-Label--on">True</span>
+                                            </label>
+                                        </div>
+
+                                        <div id="pinIconsProperty" class="ms-Toggle">
+                                            <table>
+                                                <tr>
+                                                    <td>
+                                                        <label class="ms-Toggle-description">PinIconsToTaskbar</label>
+                                                    </td>
+                                                    <td>
+                                                        <i id="pinIconsIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('pinIconInfo', this)"></i>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                            <input type="checkbox" id="pinIcons" class="ms-Toggle-input" />
+                                            <label for="pinIcons" class="ms-Toggle-field">
+                                                <span class="ms-Label ms-Label--off">False</span>
+                                                <span class="ms-Label ms-Label--on">True</span>
+                                            </label>
+                                        </div>
+
+                                        <table>
+                                            <tr>
+                                                <td>
+                                                    <label class="ms-Label">PACKAGEGUID</label>
+                                                </td>
+                                                <td>
+                                                    <i id="PACKAGEGUIDInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('PACKAGEGUIDInfo', this)"></i>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        <div>
+                                            <input id="txtPACKAGEGUID" type="text" pattern="^.{8}-.{4}-.{4}-.{4}-.{12}$"
+                                                   class="ms-TextField-field" placeholder="XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
+                                                   data-error="This must be a valid APP-V Package Guid" maxlength="36">
+                                            <span id="PACKAGEGUIDSignal" class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                                        </div>
+                                        <div style="margin-top:10px">
+                                            <button id="btSaveProperties" class="ms-Button">
+                                                Save
+                                            </button>
+                                            <button id="btRemoveProperties" class="ms-Button">
+                                                Remove
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <!-- End Properties Panel -->
+                                    <!-- Start Templates Panel -->
+                                    <div id="TemplatesPanel" class="option-panel">
+                                        <h1 class="ms-font-xxl">Templates</h1>
+                                        <ul class="ms-List">
+                                            <div id="proPlusRetail" class="ms-ListItem is-unread is-selectable" href="./templates/0365ProPlusRetail.xml" onclick="setTemplate(this)">
+                                                <span class="ms-ListItem-primaryText">Office 365 ProPlus</span>
+                                                <span class="ms-ListItem-tertiaryText" style="word-wrap:break-word;">Silent install of 32-Bit Office 365 ProPlus with Updates and Logging enabled</span>
+                                                <div class="ms-ListItem-selectionTarget js-toggleSelection"></div>
+                                            </div>
+                                            <div id="proPlusBusiness" class="ms-ListItem is-unread is-selectable" href="./templates/0365ProPlusBusiness.xml" onclick="setTemplate(this)">
+                                                <span class="ms-ListItem-primaryText">Office 365 for Business</span>
+                                                <span class="ms-ListItem-tertiaryText">Silent install of 32-Bit Office 365 for Business with Updates and Logging enabled</span>
+                                                <div class="ms-ListItem-selectionTarget js-toggleSelection"></div>
+                                            </div>
+                                            <div id="proPlusRetailVisio" class="ms-ListItem is-unread is-selectable" href="./templates/O365ProPlusRetailwVisio.xml" onclick="setTemplate(this)">
+                                                <span class="ms-ListItem-primaryText">Office 365 ProPlus with Visio</span>
+                                                <span class="ms-ListItem-tertiaryText">Silent install of 32-Bit Office 365 ProPlus with Visio with Updates and Logging enabled</span>
+                                                <div class="ms-ListItem-selectionTarget js-toggleSelection"></div>
+                                            </div>
+                                        </ul>
+                                    </div>
+                                    <!-- End Templates Panel -->
+                                    <!--Start Generate Install Panel-->
+                                    <div id="GenerateInstallPanel" class="option-panel">
+                                        <h1 class="ms-font-xxl">Installation Toolkit</h1>
+                                        <div class="ms-font-m" style="margin: 0px 10px 0px 10px">
+                                            The Install Toolkit is an application that will package an Office 365 ProPlus installation into a single
+                                            Executable or Windows Installer Package (MSI) file. The XML configuration file is embedded in the file which allows
+                                            you to easily distribute Office 365 ProPlus with a custom configuration.
+                                        </div>
+
+                                        <br />
+
+                                        <div class="ms-font-m" style="margin: 0px 10px 0px 10px">
+                                            <span style="font-weight: bold;">(New)</span> The Install Toolkit now includes the ability to manage a local workstations Office 365 ProPlus installation. It allows you to install or uninstall Office 365 ProPlus, update your existing installation to the newest version or change the update channel.
+                                        </div>
+
+                                        <br />
+
+                                        <div class="ms-font-m" style="margin: 0px 10px 0px 10px">
+                                            The Install Toolkit allows you to select installation options. If you would like to use the configuration xml generated by this
+                                            website you can export it as an xml file and import it into the application.
+                                        </div>
+
+                                        <br />
+                                        <div class="ms-font-m" style="margin: 0px 10px 0px 10px">
+                                            The Install Tookkit is a desktop application that is installed via Microsoft ClickOnce.  To install the application click the
+                                            button below or compile the application yourself using the source code <a href="https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/Development/Office-ProPlus-Deployment/Microsoft.ProPlus.InstallGenerator">here.</a>
+                                            <br /><br /><b>Please note that the Install Toolkit requires .Net 4.5 in order to run properly.</b>
+                                        </div>
+
+
+                                        <button type="button" id="btrClickToRun" class="ms-Button ctr-button">Launch Installation</button>
+                                    </div>
+                                    <!-- End Generate Install Panel -->
                                 </div>
-                                <!-- End Templates Panel -->
-                                <!--Start Generate Install Panel-->
-                                <div id="GenerateInstallPanel" class="option-panel">
-                                    <h1 class="ms-font-xxl">Installation Toolkit</h1>
-                                    <div class="ms-font-m" style="margin: 0px 10px 0px 10px">
-                                        The Install Toolkit is an application that will package an Office 365 ProPlus installation into a single
-                                        Executable or Windows Installer Package (MSI) file. The XML configuration file is embedded in the file which allows
-                                        you to easily distribute Office 365 ProPlus with a custom configuration.
-                                    </div>
-
-                                    <br />
-
-                                    <div class="ms-font-m" style="margin: 0px 10px 0px 10px">
-                                        <span style="font-weight: bold;">(New)</span> The Install Toolkit now includes the ability to manage a local workstations Office 365 ProPlus installation. It allows you to install or uninstall Office 365 ProPlus, update your existing installation to the newest version or change the update channel.
-                                    </div>
-
-                                    <br />
-
-                                    <div class="ms-font-m" style="margin: 0px 10px 0px 10px">
-                                        The Install Toolkit allows you to select installation options. If you would like to use the configuration xml generated by this
-                                        website you can export it as an xml file and import it into the application.
-                                    </div>
-
-                                    <br />
-                                    <div class="ms-font-m" style="margin: 0px 10px 0px 10px">
-                                        The Install Tookkit is a desktop application that is installed via Microsoft ClickOnce.  To install the application click the
-                                        button below or compile the application yourself using the source code <a href="https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/Development/Office-ProPlus-Deployment/Microsoft.ProPlus.InstallGenerator">here.</a>
-                                    </div>
-
-
-                                    <button type="button" id="btrClickToRun" class="ms-Button ctr-button">Launch Installation</button>
-                                </div>
-                                <!-- End Generate Install Panel -->
-                            </div>
                         </td>
                         <td style="vertical-align: top;">
                             <div id="xmlSection" class="Editor-Column" style="width: 500px;">
@@ -1513,26 +1718,52 @@
             </div>
         </div>
 
-        <div id="srcPathInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:98px; top:408px; display:none;">
+    <div id="srcPathInfo" class="ms-Callout ms-Callout--arrowLeft" style="position: absolute; left: 98px; top: 408px; display: none;">
+        <div class="ms-Callout-main">
+            <div class="ms-Callout-header">
+                <span style="float: right; cursor: pointer" class="ms-Icon ms-Icon--x" onclick="toggleInfo('srcPathInfo')"></span>
+                <p class="ms-Callout-title">Source Path</p>
+            </div>
+            <div class="ms-Callout-inner">
+                <div class="ms-Callout-content">
+                    <p class="ms-Callout-subText">Indicates the location to save the Click-to-Run installation source when you run the Office Deployment Tool in download mode.</p>
+                    <hr>
+                    <p class="ms-Callout-subText">Optional. </p>
+                    <p class="ms-Callout-subText">The <strong>SourcePath</strong> value can be set to a network, local, or HTTP path that contains a Click-to-Run source. Environment variables can be used for network or local paths.
+                    </p>
+                    <br/>
+                    <p class="ms-Callout-subText"> <strong>SourcePath</strong> indicates the location to save the Click-to-Run installation source when you run the Office Deployment Tool in <strong>download</strong> mode.
+                    </p>
+                    <br/>
+                    <p class="ms-Callout-subText"> <strong>SourcePath</strong> indicates the installation source path from which to install Office when you run the Office Deployment Tool in <strong>configure</strong> mode. If you don’t specify <strong>SourcePath</strong> in <strong>configure</strong> mode, Setup will look in the current folder for the Office source files. If the Office source files aren’t found in the current folder, Setup will look on Office 365 for them.
+                    </p>
+                    <br/>
+                    <p class="ms-Callout-subText"> <strong>SourcePath</strong> specifies the path of the Click-to-Run Office source from which the App-V package will be made when you run the Office Deployment Tool in <strong>packager</strong> mode.
+                    </p>
+                    <br/>
+                    <p class="ms-Callout-subText">If you do not specify <strong>SourcePath</strong>, Setup will attempt to create an <strong>\Office\Data\...</strong> folder structure in the working directory from which you are running setup.exe.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <div id="dwnPathInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:98px; top:408px; display:none;">
             <div class="ms-Callout-main">
                 <div class="ms-Callout-header">
-                    <span style="float:right; cursor:pointer" class="ms-Icon ms-Icon--x" onclick="toggleInfo('srcPathInfo')"></span>
-                    <p class="ms-Callout-title">Source Path</p>
+                    <span style="float:right; cursor:pointer" class="ms-Icon ms-Icon--x" onclick="toggleInfo('dwnPathInfo')"></span>
+                    <p class="ms-Callout-title">Download Path</p>
                 </div>
                 <div class="ms-Callout-inner">
                     <div class="ms-Callout-content">
-                        <p class="ms-Callout-subText">Indicates the location to save the Click-to-Run installation source when you run the Office Deployment Tool in download mode.</p>
+                        <p class="ms-Callout-subText">Indicates the location to that the Click-to-Run installation will download content from during installation.</p>
                         <hr>
                         <p class="ms-Callout-subText">Optional. </p>
-                        <p class="ms-Callout-subText">The <strong>SourcePath</strong> value can be set to a network, local, or HTTP path that contains a Click-to-Run source. Environment variables can be used for network or local paths.</p>
+                        <p class="ms-Callout-subText">The <strong>DownloadPath</strong> value can be set to a network, local, or HTTP path that contains a Click-to-Run source. Environment variables can be used for network or local paths.</p>
                         <br />
-                        <p class="ms-Callout-subText"> <strong>SourcePath</strong> indicates the location to save the Click-to-Run installation source when you run the Office Deployment Tool in <strong>download</strong> mode. </p>
+                        <p class="ms-Callout-subText"> <strong>DownloadPath</strong> indicates the installation source path from which to install Office when you run the Office Deployment Tool in <strong>configure</strong> mode. If you don’t specify <strong>DownloadPath</strong> in <strong>configure</strong> mode, Setup will look in the current folder for the Office source files. If the Office source files aren’t found in the current folder, Setup will look on Office 365 for them.</p>
                         <br />
-                        <p class="ms-Callout-subText"> <strong>SourcePath</strong> indicates the installation source path from which to install Office when you run the Office Deployment Tool in <strong>configure</strong> mode. If you don’t specify <strong>SourcePath</strong> in <strong>configure</strong> mode, Setup will look in the current folder for the Office source files. If the Office source files aren’t found in the current folder, Setup will look on Office 365 for them.</p>
-                        <br />
-                        <p class="ms-Callout-subText"> <strong>SourcePath</strong> specifies the path of the Click-to-Run Office source from which the App-V package will be made when you run the Office Deployment Tool in <strong>packager</strong> mode.</p>
-                        <br />
-                        <p class="ms-Callout-subText">If you do not specify <strong>SourcePath</strong>, Setup will attempt to create an <strong>\Office\Data\...</strong> folder structure in the working directory from which you are running setup.exe.</p>
+                        <p class="ms-Callout-subText">If you do not specify <strong>DownloadPath</strong>, Setup will attempt to download the files required for installation from the CDN.</p>
                     </div>
                 </div>
             </div>
