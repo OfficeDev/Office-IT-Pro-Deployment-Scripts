@@ -58,11 +58,25 @@ public class InstallOffice
             //MinimizeWindow();
 
             Initialize();
+            var showHelp = false;
+            var argss = GetArguments();
+            if (argss.Any() && Environment.UserName != "SYSTEM")
+            {
+                if (!HasValidArguments())
+                {
+                    showHelp = true;
+                }
+            }
 
-            SetLoggingPath(XmlFilePath);
-            SetSourcePath(XmlFilePath);
+            if (!showHelp)
+            {
+                SetLoggingPath(XmlFilePath);
+                SetSourcePath(XmlFilePath);
+            }
+            
 
             var runInstall = false;
+            
             switch (Operation)
             {
                 case OperationType.ShowXml:
@@ -78,10 +92,10 @@ public class InstallOffice
                 case OperationType.Install:
                     runInstall = true;
                     UpdateLanguagePackInstall(XmlFilePath);
-                    break;
+                    break;                    
             }
-
-            if (runInstall)
+            
+            if (runInstall && !showHelp)
             {
                 RunInstall(OdtFilePath, XmlFilePath);
                 if (RemotePath != null && !string.IsNullOrEmpty(RemotePath))
@@ -89,9 +103,10 @@ public class InstallOffice
                     RemoteLogging();
                 }
             }
-        }
+        }        
         finally
         {
+            
             //CleanUp(InstallDirectory);
         }
 
@@ -402,8 +417,7 @@ public class InstallOffice
                 ShowHelp();
                 return;
             }
-        }
-
+        }        
         var filesXml = GetTextFileContents("files.xml");
         if (!string.IsNullOrEmpty(filesXml))
         {
@@ -497,6 +511,7 @@ public class InstallOffice
             var arg = GetArguments().FirstOrDefault(a => a.Key.ToLower() == "/remotelogging");
             RemotePath = arg.Value;
         }
+        
     }
 
     private void FindTempFilesPath()
@@ -584,7 +599,7 @@ public class InstallOffice
     }
 
     private void SetLoggingPath(string xmlFilePath)
-    {
+    {        
         const string logFolderName = "OfficeProPlusLogs";
         LoggingPath = TempFilesPath + @"\" + logFolderName;
         if (Directory.Exists(LoggingPath))
@@ -1221,9 +1236,7 @@ public class InstallOffice
         if (showStatus) { Console.WriteLine("Waiting for Install to Complete..."); }
 
         var operationStart = DateTime.Now;
-        var totalOperationStart = DateTime.Now;
-
-        //Thread.Sleep(new TimeSpan(0,0,10));
+        var totalOperationStart = DateTime.Now;        
 
         var startTime = DateTime.Now;
         var installRunning = false;
@@ -1507,13 +1520,12 @@ public class InstallOffice
         Console.WriteLine();
         Console.WriteLine("  /uninstall\t\t\tRemoves all installed Office 365 ProPlus");
         Console.WriteLine("  \t\t\t\tproducts.");
-        Console.WriteLine("  /silent\t\t\tInstalls with prompts");
-        Console.WriteLine("  /showxml\t\t\tDisplays the current Office 365 ProPlus");
+        Console.WriteLine("\n  /silent\t\t\tInstalls without prompts");
+        Console.WriteLine("\n  /showxml\t\t\tDisplays the current Office 365 ProPlus");
         Console.WriteLine("  \t\t\t\tconfiguration xml.");
-        Console.WriteLine("  /extractxml={File Path}\tExtracts the current Office 365 ProPlus");
+        Console.WriteLine("\n  /extractxml={File Path}\tExtracts the current Office 365 ProPlus");
         Console.WriteLine("  \t\t\t\tconfiguration xml to the specified file path.");
-        Console.WriteLine("  /remotelogging\t\t\tcopies log file to remote location");
-
+        Console.WriteLine("\n  /remotelogging\t\tcopies log file to remote location");        
     }
 
     private void MinimizeWindow()
