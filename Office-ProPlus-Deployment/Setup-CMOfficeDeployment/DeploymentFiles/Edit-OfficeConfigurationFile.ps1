@@ -87,6 +87,7 @@ $enum4 = "
 
 $validLanguages = @(
 "English|en-us",          #beginning of core languages
+"MatchOS|MatchOS",
 "Arabic|ar-sa",
 "Bulgarian|bg-bg",
 "Chinese (Simplified)|zh-cn",
