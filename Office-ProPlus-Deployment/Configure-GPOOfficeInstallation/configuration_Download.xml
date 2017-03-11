@@ -1,7 +1,0 @@
-<Configuration>
-   <Add SourcePath="" OfficeClientEdition="*BITNESS*">
-    <Product ID="O365ProPlusRetail">
-      <Language ID="en-us" />
-    </Product>    
-  </Add>   
-</Configuration>
