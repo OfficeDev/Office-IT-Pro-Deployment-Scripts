@@ -98,7 +98,8 @@ process {
     # Part 1: Remove Office 365 license for Subscription based installs 
 
     # Write results of ospp.vbs to a temp file
-    $OSPPContentPath = "$env:TEMP\OSPPContent.txt"
+    $OSPPContentPath = $env:TEMP + "\" + (Get-Date -Format hh:mm:ss) + "_OSPPContent.txt"
+    
     cmd /C cscript $legacyOSPPvbsFilePath /dstatus > $OSPPContentPath
 
     $ProductID = "PRODUCT ID"
