@@ -45,7 +45,7 @@ param(
     [string] $UserName,
 
     [Parameter()]
-    [string] $LogPath = "$env:windir\Temp\OfficeActivationCleanup.log"
+    [string] $LogPath = "$env:windir\Temp\OfficeLicenseCleanup.log"
 )
 
 begin {
@@ -98,7 +98,7 @@ process {
     # Part 1: Remove Office 365 license for Subscription based installs 
 
     # Write results of ospp.vbs to a temp file
-    $OSPPContentPath = $env:TEMP + "\" + (Get-Date -Format hh:mm:ss) + "_OSPPContent.txt"
+    $OSPPContentPath = $env:windir + "\Temp\" + $UserName + "_OSPPCleanupContent.txt"
     
     cmd /C cscript $legacyOSPPvbsFilePath /dstatus > $OSPPContentPath
 
