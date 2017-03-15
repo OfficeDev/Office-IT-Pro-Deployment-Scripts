@@ -4,7 +4,7 @@ param(
     [string] $UserName,
 
     [Parameter()]
-    [string] $LogPath = "$env:windir\Temp\OfficeActivationCleanup.log"
+    [string] $LogPath = "$env:windir\Temp\OfficeLicenseCleanup.log"
 )
 
 Function Reset-OfficeProPlusActivationState {
