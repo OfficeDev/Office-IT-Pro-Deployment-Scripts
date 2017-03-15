@@ -1,10 +1,10 @@
 [CmdletBinding(SupportsShouldProcess=$true)]
 param(
-	[Parameter(Mandatory=$True)]
+	[Parameter()]
     [string] $UserName
 )
 
-Function Reset-OfficeProPlus-ActivationState {
+Function Reset-OfficeProPlusActivationState {
 <#
 .Synopsis
 Script to reset an Office 365 ProPlus 2013/2016  activation/installation to a clean state
@@ -27,9 +27,6 @@ Name: Reset-OfficeProPlus-ActivationState
 Version: 1.0.0
 DateCreated: 2017-03-06
 DateUpdated: 2017-03-13
-
-
-
 #>
 [CmdletBinding(SupportsShouldProcess=$true)]
 param(
@@ -85,7 +82,6 @@ begin {
 						-join('HKEY_USERS\',$SID,'\Software\Microsoft\Office\15.0\Common\Identity'),
 						-join('HKEY_USERS\',$SID,'\Software\Microsoft\Office\16.0\Common\Identity')
 }
-
 
 process {	
 
@@ -178,4 +174,29 @@ process {
 
 }
 
-Reset-OfficeProPlus-ActivationState -UserName $UserName
+Function IsDotSourced() {
+  [CmdletBinding(SupportsShouldProcess=$true)]
+  param(
+    [Parameter(ValueFromPipelineByPropertyName=$true)]
+    [string]$InvocationLine = ""
+  )
+  $cmdLine = $InvocationLine.Trim()
+  Do {
+    $cmdLine = $cmdLine.Replace(" ", "")
+  } while($cmdLine.Contains(" "))
+
+  $dotSourced = $false
+  if ($cmdLine -match '^\.\\') {
+     $dotSourced = $false
+  } else {
+     $dotSourced = ($cmdLine -match '^\.')
+  }
+
+  return $dotSourced
+}
+
+$dotSourced = IsDotSourced -InvocationLine $MyInvocation.Line
+
+if (!($dotSourced)) {
+    Reset-OfficeProPlus-ActivationState -UserName $UserName
+}
