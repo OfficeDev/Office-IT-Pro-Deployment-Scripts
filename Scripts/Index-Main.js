@@ -59,10 +59,11 @@ function loadPartial(sectionId,item){
 
     $('.Nav-Option').each(function(i,obj){
         $(obj).removeClass('selected');
+        $(obj).parent().removeClass('selected');
+
     });
 
     $('#partial-views').empty();
-    // $('#partial-views').load('./Partials/'+sectionId+'.html',open)
      $.ajax({
             type: 'GET',
             url: './Partials/'+sectionId+'.html',    
@@ -76,6 +77,7 @@ function loadPartial(sectionId,item){
          });           
 
     $(item).addClass('selected');
+    $(item).parent().addClass('selected');
 
     if($(window).width() < 480){
       toggleHamburger();
@@ -94,6 +96,9 @@ function resizePage(){
 
         $('#siteNav').height($('body').height());
         $('#siteNav').height($(document).height());
+
+        $('#Trending').height($('body').height());
+        $('#Trending').height($(document).height());
 
         $('#siteNav').children().children().children().children('.Nav-Option').each(function(i,obj){
         $(obj).removeClass('hidden')

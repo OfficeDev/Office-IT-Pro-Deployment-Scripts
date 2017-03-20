@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en-us">
+<html lang="en-us" style="width:100%;height:100%">
   <head>
     <meta charset="UTF-8">
     <title>Office Deployment Scripts for IT Pros by OfficeDev</title>
@@ -60,31 +60,55 @@
                     <div id="siteNav" class="ms-Grid Vertical-Nav">
                     <div >
                        <div class="ms-Grid-row">
-                          <div class="ms-Grid-col ms-u-sm12 ms-u-xxxl2">
-                              <div class="Nav-Option selected ms-font-l ms-fontWeight-regular ms-u-textAlignLeft" onclick="loadPartial('Home',this)">
-                                 Home
-                              </div>
-                          </div>
-                       </div> 
+                          <div class="ms-Grid-col ms-u-sm12 ms-u-xxxl2 Nav-Option ms-font-l ms-fontWeight-regular" onclick="loadPartial('Home',this)">
+                               Home
+                          </div> 
+                        </div>
                         <div class="ms-Grid-row">
-                          <div class="ms-Grid-col ms-u-sm12 ms-u-xxxl2">
-                              <div class="Nav-Option ms-font-l ms-fontWeight-regular ms-u- ms-u-textAlignLeft" onclick="loadPartial('Tutorials',this)">
-                                 Tutorials
-                              </div>
+                          <div class="ms-Grid-col ms-u-sm12 ms-u-xxxl2 Nav-Option ms-font-l ms-fontWeight-regular"  onclick="loadPartial('Tutorials',this)">              
+                            Tutorials
                           </div>
                        </div> 
                        <div class="ms-Grid-row">
-                          <div class="ms-Grid-col ms-u-sm12 ms-u-xxxl2">
-                              <div class="Nav-Option ms-font-l ms-fontWeight-regular ms-u-textAlignLeft" onclick="loadPartial('Faq',this)">
-                                  Faq
-                              </div>
+                          <div class="ms-Grid-col ms-u-sm12 ms-u-xxxl2 Nav-Option ms-font-l ms-fontWeight-regular" onclick="loadPartial('Faq',this)">
+                              Faq
                           </div>
                        </div>                        
                     </div>
                  </div>
                 </div>
-                 <div id="partial-views">
+                 <div id="partial-views" >
               <!-- Load partial views here -->
+                </div>
+                <div id="Trending" class="ms-Grid-col ms-u-sm2  ms-u-md2 ms-u-lg2 ms-u-xl2 ms-u-xlPush1 ms-u-xxl2 ms-u-xxlPush1 ms-u-xxxl2">
+                  <div class="ms-Grid">
+                      <div class="ms-Grid-row">
+                        <div class="ms-Grid-col ms-u-sm12 ms-font-xl ms-fontWeight-regular">
+                          Trending Topics
+                        </div>
+                      </div>  
+                      <div class="ms-Grid-row Topic">
+                            <div class="ms-Grid-col ms-u-sm12 ms-u-sm12 ms-u-md12 ms-u-lg12 ms-u-lgPush2 ms-u-xl1  ms-u-xlPush0 ms-u-xlPull1">
+                              <img class="TopicScreenShot-small" src="./Images/placeholder.png">
+                            </div>
+                            <div class="ms-Grid-col ms-u-sm12 ms-u-sm12 ms-u-md12 ms-u-lg12 ms-u-xl10  ms-u-xlPush3 ms-font-s ms-fontWeight-regular TopicDescription ">
+                              Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+                              tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+                              quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+                              consequat. 
+                            </div>
+                      </div>                    
+                      <div class="ms-Grid-row Topic">
+                          <div class="ms-Grid-col ms-u-sm12 ms-u-sm12 ms-u-md12 ms-u-lg12 ms-u-lgPush2 ms-u-xl1  ms-u-xlPush0 ms-u-xlPull1">
+                              <img class="TopicScreenShot-small" src="./Images/placeholder.png">
+                            </div>
+                            <div class="ms-Grid-col ms-u-sm12 ms-u-sm12 ms-u-md12 ms-u-lg12 ms-u-xl10  ms-u-xlPush3 ms-font-s ms-fontWeight-regular TopicDescription">
+                              Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+                              tempor incididunt ut labore et dolore magna aliqua. 
+                            </div>
+                      </div> 
+                    </div>  
+                  </div>
                 </div>
               </div>
             </div>
