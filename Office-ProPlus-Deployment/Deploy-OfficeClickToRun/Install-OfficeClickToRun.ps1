@@ -133,14 +133,14 @@ Word, Excel, and Outlook will be pinned to the Start Menu. The PowerShell consol
         [bool]$InstallProofingTools = $false
 
     )
+   
+    Set-Alias -name LINENUM -value Get-CurrentLineNumber
+    $currentFileName = Get-CurrentFileName
 
     $scriptRoot = GetScriptRoot
-	#write log
-    $lineNum = Get-CurrentLineNumber    
-    $filName = Get-CurrentFileName 
-    WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "install office function, loading config file"
 
     #Load the file
+    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Loading the configuration xml file..."
     [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
         
     if ($TargetFilePath) {
@@ -159,6 +159,7 @@ Word, Excel, and Outlook will be pinned to the Start Menu. The PowerShell consol
     if ($OfficeVersion -eq "Office2013") {
         $officeCtrPath = Join-Path $scriptRoot "Office2013Setup.exe"
         if (!(Test-Path -Path $officeCtrPath)) {
+           WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Cannot find the Office 2013 Setup executable"
            throw "Cannot find the Office 2013 Setup executable"
         }
     }
@@ -166,6 +167,7 @@ Word, Excel, and Outlook will be pinned to the Start Menu. The PowerShell consol
     if ($OfficeVersion -eq "Office2016") {
         $officeCtrPath = $scriptRoot + "\Office2016Setup.exe"
         if (!(Test-Path -Path $officeCtrPath)) {
+           WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Cannot find the Office 2016 Setup executable"
            throw "Cannot find the Office 2016 Setup executable"
         }
     }
@@ -207,16 +209,14 @@ Word, Excel, and Outlook will be pinned to the Start Menu. The PowerShell consol
     $cmdArgs = "/configure " + '"' + $TargetFilePath + '"'
 
     Write-Host "Installing Office Click-To-Run..."
-	#write log
-    $lineNum = Get-CurrentLineNumber    
-    $filName = Get-CurrentFileName 
-    WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Installing Office Click-To-Run..."
-	
+    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Installing Office 365 ProPlus..."
+
     if ($WaitForInstallToFinish) {
         StartProcess -execFilePath $cmdLine -execParams $cmdArgs -WaitForExit $false
 
         Start-Sleep -Seconds 5
 
+        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Waiting for Office to finish installing..."
         Wait-ForOfficeCTRInstall -OfficeVersion $OfficeVersion
     }else {
         StartProcess -execFilePath $cmdLine -execParams $cmdArgs -WaitForExit $true
@@ -248,6 +248,7 @@ Word, Excel, and Outlook will be pinned to the Start Menu. The PowerShell consol
             if($OfficeAppPinnedStatus -ne $NULL){
                 foreach($app in $OfficeAppPinnedStatus){
                     if($app.PinToStartMenuAvailable -eq $true){
+                        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Pinning $app.name to the Start Menu"
                         Set-OfficePinnedApplication -Action PinToStartMenu -OfficeApps $app.Name -ClickToRun $ClickToRun -InstallPath $InstallPath -OfficeVersion $officeVersionInt
                     }   
                 }
@@ -259,6 +260,7 @@ Word, Excel, and Outlook will be pinned to the Start Menu. The PowerShell consol
                 foreach($app in $allPinnedApps){
                     if($PinToStartMenu -notcontains $app.Name){
                         if($app.PinToStartMenuAvailable -eq $false){
+                            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Removing $app.name from the Start Menu"
                             Set-OfficePinnedApplication -Action UnpinFromStartMenu -OfficeApps $app.Name -ClickToRun $ClickToRun -InstallPath $InstallPath -OfficeVersion $officeVersionInt
                         }  
                     }
@@ -269,6 +271,7 @@ Word, Excel, and Outlook will be pinned to the Start Menu. The PowerShell consol
                 $OfficeAppPinnedStatus = GetOfficeAppVerbStatus | ? {$_.PinToStartMenuAvailable -eq $true}
                 foreach($app in $PinnedStartMenuApps){
                     if($OfficeAppPinnedStatus.Name -contains $app.Name){
+                        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Pinning $app.name to the Start Menu"
                         Set-OfficePinnedApplication -Action PinToStartMenu -OfficeApps $app.Name -ClickToRun $ClickToRun -InstallPath $InstallPath -OfficeVersion $officeVersionInt
                     }
                 }   
@@ -284,6 +287,7 @@ Word, Excel, and Outlook will be pinned to the Start Menu. The PowerShell consol
             
             foreach($app in $OfficeAppPinnedStatus){
                 if($app.PinToTaskbarAvailable -eq $true){
+                    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Pinning $app.name to the Taskbar"
                     Set-OfficePinnedApplication -Action PinToTaskbar -OfficeApps $app.Name -ClickToRun $ClickToRun -InstallPath $InstallPath -OfficeVersion $officeVersionInt
                     $pinnedApp += $app.Name
                 }     
@@ -295,6 +299,7 @@ Word, Excel, and Outlook will be pinned to the Start Menu. The PowerShell consol
                 foreach($app in $allPinnedApps){
                     if($PinToTaskbar -notcontains $app.Name){
                         if($app.PinToTaskbarAvailable -eq $false){
+                            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Removing $app.name from the Taskbar"
                             Set-OfficePinnedApplication -Action UnpinFromTaskbar -OfficeApps $app.Name -ClickToRun $ClickToRun -InstallPath $InstallPath -OfficeVersion $officeVersionInt
                         }  
                     }
@@ -305,6 +310,7 @@ Word, Excel, and Outlook will be pinned to the Start Menu. The PowerShell consol
                 $OfficeAppPinnedStatus = GetOfficeAppVerbStatus | ? {$_.PinToTaskbarAvailable -eq $true}
                 foreach($app in $PinnedTaskbarApps){
                     if($OfficeAppPinnedStatus.Name -contains $app.Name){
+                        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Pinning $app.name to the Taskbar"
                         Set-OfficePinnedApplication -Action PinToTaskbar -OfficeApps $app.Name -ClickToRun $ClickToRun -InstallPath $InstallPath -OfficeVersion $officeVersionInt
                     }
                 }
@@ -315,6 +321,7 @@ Word, Excel, and Outlook will be pinned to the Start Menu. The PowerShell consol
     if($InstallProofingTools -eq $true){
         Write-Host ""
         Write-Host "Installing Proofing Tools..."
+        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Installing Proofing Tools..."
 
         if((Get-OfficeVersion).Bitness -eq "32-bit"){
             $proofingToolFileName = "proofingtools2016_en-us-x86.exe"
