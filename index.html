@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en-us" style="width:100%;height:100%">
+<html lang="en-us" style="height:100%">
   <head>
     <meta charset="UTF-8">
     <title>Office Deployment Scripts for IT Pros by OfficeDev</title>
@@ -10,7 +10,6 @@
     <script src="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-js/1.4.0/js/fabric.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="crossorigin="anonymous"></script>
     <script src="http://unpkg.com/botframework-directlinejs/directLine.js"/></script>
-    <script type="text/javascript" src="./Scripts/Chatbot.js"/></script>
     <script type="text/javascript" src="./Scripts/Index-Main.js"></script>
 
     <script type="text/javascript">
@@ -56,21 +55,36 @@
                 </div>
               </div>
               <div  class="ms-Grid-row">
-                <div class="ms-Grid-col ms-u-sm12  ms-u-md2 ms-u-lg2 ms-u-xl1 ms-u-xxl1 ms-u-xxxl1">
+                <div class="ms-Grid-col ms-u-sm12  ms-u-md12 ms-u-lg2 ms-u-xl1 ms-u-xxl1 ms-u-xxxl1">
                     <div id="siteNav" class="ms-Grid Vertical-Nav">
                     <div >
                        <div class="ms-Grid-row">
-                          <div class="ms-Grid-col ms-u-sm12 ms-u-xxxl2 Nav-Option ms-font-l ms-fontWeight-regular" onclick="loadPartial('Home',this)">
+                          <div class="ms-Grid-col ms-u-sm12 ms-u-md12 ms-u-xxxl2 Nav-Option ms-font-l ms-fontWeight-regular" onclick="loadPartial('Home',this)">
                                Home
                           </div> 
                         </div>
                         <div class="ms-Grid-row">
-                          <div class="ms-Grid-col ms-u-sm12 ms-u-xxxl2 Nav-Option ms-font-l ms-fontWeight-regular"  onclick="loadPartial('Tutorials',this)">              
-                            Tutorials
+                          <div class="ms-Grid-col ms-u-sm12 ms-u-md12 ms-u-xxxl2 Nav-Option ms-font-l ms-fontWeight-regular"  onclick="loadPartial('Scripts',this)">              
+                            Scripts
                           </div>
                        </div> 
                        <div class="ms-Grid-row">
-                          <div class="ms-Grid-col ms-u-sm12 ms-u-xxxl2 Nav-Option ms-font-l ms-fontWeight-regular" onclick="loadPartial('Faq',this)">
+                          <div class="ms-Grid-col ms-u-sm12 ms-u-md12 ms-u-xxxl2 Nav-Option ms-font-l ms-fontWeight-regular"  onclick="loadPartial('Videos',this)">              
+                            Videos
+                          </div>
+                       </div> 
+                       <div class="ms-Grid-row">
+                          <div class="ms-Grid-col ms-u-sm12 ms-u-md12 ms-u-xxxl2 Nav-Option ms-font-l ms-fontWeight-regular"  onclick="loadPartial('Toolkit',this)">              
+                            Toolkit
+                          </div>
+                       </div> 
+                       <div class="ms-Grid-row">
+                          <div class="ms-Grid-col ms-u-sm12 ms-u-md12 ms-u-xxxl2 Nav-Option ms-font-l ms-fontWeight-regular"  onclick="loadPartial('XmlEditor',this)">              
+                            Xml Editor
+                          </div>
+                       </div> 
+                       <div class="ms-Grid-row">
+                          <div class="ms-Grid-col ms-u-sm12 ms-u-md12 ms-u-xxxl2 Nav-Option ms-font-l ms-fontWeight-regular" onclick="loadPartial('Faq',this)">
                               Faq
                           </div>
                        </div>                        
@@ -80,38 +94,8 @@
                  <div id="partial-views" >
               <!-- Load partial views here -->
                 </div>
-                <div id="Trending" class="ms-Grid-col ms-u-sm2  ms-u-md2 ms-u-lg2 ms-u-xl2 ms-u-xlPush1 ms-u-xxl2 ms-u-xxlPush1 ms-u-xxxl2">
-                  <div class="ms-Grid">
-                      <div class="ms-Grid-row">
-                        <div class="ms-Grid-col ms-u-sm12 ms-font-xl ms-fontWeight-regular">
-                          Trending Topics
-                        </div>
-                      </div>  
-                      <div class="ms-Grid-row Topic">
-                            <div class="ms-Grid-col ms-u-sm12 ms-u-sm12 ms-u-md12 ms-u-lg12 ms-u-lgPush2 ms-u-xl1  ms-u-xlPush0 ms-u-xlPull1">
-                              <img class="TopicScreenShot-small" src="./Images/placeholder.png">
-                            </div>
-                            <div class="ms-Grid-col ms-u-sm12 ms-u-sm12 ms-u-md12 ms-u-lg12 ms-u-xl10  ms-u-xlPush3 ms-font-s ms-fontWeight-regular TopicDescription ">
-                              Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-                              tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-                              quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-                              consequat. 
-                            </div>
-                      </div>                    
-                      <div class="ms-Grid-row Topic">
-                          <div class="ms-Grid-col ms-u-sm12 ms-u-sm12 ms-u-md12 ms-u-lg12 ms-u-lgPush2 ms-u-xl1  ms-u-xlPush0 ms-u-xlPull1">
-                              <img class="TopicScreenShot-small" src="./Images/placeholder.png">
-                            </div>
-                            <div class="ms-Grid-col ms-u-sm12 ms-u-sm12 ms-u-md12 ms-u-lg12 ms-u-xl10  ms-u-xlPush3 ms-font-s ms-fontWeight-regular TopicDescription">
-                              Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-                              tempor incididunt ut labore et dolore magna aliqua. 
-                            </div>
-                      </div> 
-                    </div>  
-                  </div>
                 </div>
               </div>
-            </div>
         </main>
     </body>
 </html>
