@@ -1052,7 +1052,6 @@ try {
     }
 } catch {
     Write-Host $_ -ForegroundColor Red
-    $fileName = $_.InvocationInfo.ScriptName.Substring($_.InvocationInfo.ScriptName.LastIndexOf("\")+1)
     WriteToLogFile -LNumber $_.InvocationInfo.ScriptLineNumber -FName $currentFileName -ActionError $_
     $Error = $null
     if ($SendExitCode) {
