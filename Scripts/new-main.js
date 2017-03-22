@@ -829,7 +829,7 @@ $(document).ready(function () {
 
 function GetVersionData() {
     $.ajax({
-        url: "https://microsoft-apiapp2f1d0adbd6b6403da68a8cd3e1888ddc.azurewebsites.net/api/Channel",
+        url: "https://officeproplusinfo2.azurewebsites.net/api/Channel",
         type: "GET",
         crossDomain: true,
         success: function(data) {
