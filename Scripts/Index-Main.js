@@ -88,7 +88,7 @@ function resizePage(){
     var windowWidth = $(window).outerWidth(); 
     var orientation = window.screen.orientation.type.split('-')[0]; 
 
-    if(windowWidth > 480){
+    if(windowWidth > 639){
          $('#Hamburger').remove();
          $('#siteNav').parents().each(function(i,obj){ 
             $(obj).height('100%');
@@ -97,6 +97,11 @@ function resizePage(){
           $('#Trending').parents().each(function(i,obj){ 
             $(obj).height('100%');
         });
+
+        $('#Trending').removeClass('ms-u-slideLeftIn40');
+        $('#Trending').removeClass('ms-u-slideRightOut40')
+        $('#Trending').addClass('ms-u-slideLeftIn40');
+
 
         $('#siteNav').children().children().children().children('.Nav-Option').each(function(i,obj){
         $(obj).removeClass('hidden')
@@ -130,6 +135,10 @@ function resizePage(){
            $('#Trending').parents().each(function(i,obj){ 
             $(obj).height('auto');
         });
+
+        $('#Trending').removeClass('ms-u-slideLeftIn40');
+        $('#Trending').removeClass('ms-u-slideRightOut40')
+        $('#Trending').addClass('ms-u-slideRightOut40');
 
         // $('#Trending').height('auto');
         // $('#siteNav').height('auto');

@@ -1,10 +1,10 @@
-﻿@media screen and (min-width: 0px) and (max-width: 480px){
+﻿@media screen and (min-width: 0px) and (max-width: 639px){
 	#Trending,#siteNav {margin-right: -15px;}
 	#Trending{display:none;}
 
 }
 
-@media screen and (min-width: 481px){
+@media screen and (min-width: 640px){
 	#siteNav{margin-right:0px;}
 		#Trending{display:initial;}
 }
@@ -70,11 +70,13 @@
 	background-color: #f4f4f4;
 	color:#3c3c3c;
 	width: auto;
-	min-height:32px;
+	min-height:40px;
   	text-overflow: ellipsis;
 	cursor:pointer;
-	padding: 5px 5px 5px 20px;
+	padding: 5px 5px 5px 25px;
 	margin-top:5px;
+	line-height: 40px;
+	/*text-align: center;*/
 }
 
 .selected{
