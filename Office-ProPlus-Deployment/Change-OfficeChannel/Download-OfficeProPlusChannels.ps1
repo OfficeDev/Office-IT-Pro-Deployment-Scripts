@@ -124,12 +124,12 @@ Param(
     [Parameter()]
     [ValidateSet("af-za","sq-al","am-et","hy-am","as-in","az-latn-az","eu-es","be-by","bn-bd","bn-in","bs-latn-ba","ca-es","prs-af","fil-ph","gl-es","ka-ge","gu-in","is-is","ga-ie","kn-in",
                 "km-kh","sw-ke","kok-in","ky-kg","lb-lu","mk-mk","ml-in","mt-mt","mi-nz","mr-in","mn-mn","ne-np","nn-no","or-in","fa-ir","pa-in","quz-pe","gd-gb","sr-cyrl-rs","sr-cyrl-ba",
-                "sd-arab-pk","si-lk","ta-in","tt-ru","te-in","tk-tm","ur-pk","ug-cn","uz-latn-uz","ca-es-valencia","cy-gb")]
-    [string[]] $PartialLanguages,
+                "sd-arab-pk","si-lk","ta-in","tt-ru","te-in","tk-tm","ur-pk","ug-cn","uz-latn-uz","ca-es-valencia","cy-gb","none")]
+    [string[]] $PartialLanguages = ("none"),
 
     [Parameter()]
-    [ValidateSet("ha-latn-ng","ig-ng","xh-za","zu-za","rw-rw","ps-af","rm-ch","nso-za","tn-za","wo-sn","yo-ng")]
-    [string[]] $ProofingLanguages,
+    [ValidateSet("ha-latn-ng","ig-ng","xh-za","zu-za","rw-rw","ps-af","rm-ch","nso-za","tn-za","wo-sn","yo-ng","none")]
+    [string[]] $ProofingLanguages = ("none"),
 
     [Parameter()]
     [Bitness] $Bitness = 0,
@@ -157,6 +157,16 @@ Param(
 )
 
 #create array for all languages including core, partial, and proofing
+$AllPartialLanguages = ""
+
+if($PartialLanguages -ne "none"){
+    $AllPartialLanguages = $PartialLanguages
+}
+
+if($ProofingLanguages -ne "none"){
+    $AllProofingLanguages = $ProofingLanguages
+}
+
 $allLanguages = @();
 
 $Languages | 
@@ -164,12 +174,12 @@ $Languages |
   $allLanguages += $_
 }
 
-$PartialLanguages | 
+$AllPartialLanguages | 
 %{
   $allLanguages += $_
 }
 
-$ProofingLanguages | 
+$AllProofingLanguages | 
 %{
   $allLanguages += $_
 }
@@ -991,7 +1001,7 @@ function ConvertBranchNameToChannelName {
 
 function GetAPIVersions {
 try{
-    $request = [System.Net.WebRequest]::Create("https://microsoft-apiapp2f1d0adbd6b6403da68a8cd3e1888ddc.azurewebsites.net/api/Channel")
+    $request = [System.Net.WebRequest]::Create("https://officeproplusinfo2.azurewebsites.net/api/Channel")
     $request.Method = "GET"
     $request.Timeout = 5000
     $request.ContentType = "application/json";

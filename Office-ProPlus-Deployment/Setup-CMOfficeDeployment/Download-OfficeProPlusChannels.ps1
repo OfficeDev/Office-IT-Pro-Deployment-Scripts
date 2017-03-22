@@ -1001,7 +1001,7 @@ function ConvertBranchNameToChannelName {
 
 function GetAPIVersions {
 try{
-    $request = [System.Net.WebRequest]::Create("https://microsoft-apiapp2f1d0adbd6b6403da68a8cd3e1888ddc.azurewebsites.net/api/Channel")
+    $request = [System.Net.WebRequest]::Create("https://officeproplusinfo2.azurewebsites.net/api/Channel")
     $request.Method = "GET"
     $request.Timeout = 5000
     $request.ContentType = "application/json";
