@@ -1929,7 +1929,7 @@ function Remove-ProductLanguage() {
 }
 
 function Restart-ExplorerExe() {
-    Stop-Process -Name explorer -Confirm:$false
+    Stop-Process -Name explorer -Force
     Start-Sleep -Seconds 20
 }
 
