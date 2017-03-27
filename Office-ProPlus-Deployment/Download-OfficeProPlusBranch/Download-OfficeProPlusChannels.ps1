@@ -788,6 +788,11 @@ function GetVersionBasedOnThrottle {
                 $baseCabFileName = $env:TEMP + "\VersionDescriptor.xml"
                 [xml]$vdxml = Get-Content $baseCabFileName
                 $throttle = $vdxml.Version.Throttle;
+                $newestVerForChannel = $vdxml.Version.Available.Build
+                if($newestVerForChannel -ne $updates.Update[0].LegacyVersion){
+                    $updates.Update[1].LegacyVersion = $updates.Update[0].LegacyVersion
+                    $updates.Update[0].LegacyVersion = $newestVerForChannel
+                }
 
                 Remove-Item -Path $baseCabFileName | Out-Null
                 try{
