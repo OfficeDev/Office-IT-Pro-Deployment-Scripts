@@ -537,15 +537,15 @@ namespace Microsoft.OfficeProPlus.Downloader
 
                     var currentChannel = row[ccIndex];
                     var ccVersions = Regex.Matches(currentChannel, @"\d{4}\.\d{4}\s");
-                    if (ccVersions.Count == 0) continue;
+                    //if (ccVersions.Count == 0) continue;
 
                     var frdc = row[frdcIndex];
                     var frdcVersions = Regex.Matches(frdc, @"\d{4}\.\d{4}");
-                    if (frdcVersions.Count == 0) continue;
+                   // if (frdcVersions.Count == 0) continue;
 
                     var dc = row[dcIndex];
                     var dcVersions = Regex.Matches(dc, @"\d{4}\.\d{4}");
-                    if (dcVersions.Count == 0) continue;
+                    //if (dcVersions.Count == 0) continue;
                     
                     foreach (Match build in ccVersions)
                     {
@@ -567,7 +567,7 @@ namespace Microsoft.OfficeProPlus.Downloader
                         });
                     }
 
-                    foreach (Match build in dcVersions)
+                    foreach (Match build in frdcVersions)
                     {
                         frdcUpdateChannel?.Updates.Add(new Update()
                         {
