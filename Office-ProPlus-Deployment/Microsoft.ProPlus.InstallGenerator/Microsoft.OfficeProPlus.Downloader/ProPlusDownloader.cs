@@ -537,15 +537,15 @@ namespace Microsoft.OfficeProPlus.Downloader
 
                     var currentChannel = row[ccIndex];
                     var ccVersions = Regex.Matches(currentChannel, @"\d{4}\.\d{4}\s");
-                    if (ccVersions.Count == 0) continue;
+                    
 
                     var frdc = row[frdcIndex];
                     var frdcVersions = Regex.Matches(frdc, @"\d{4}\.\d{4}");
-                    if (frdcVersions.Count == 0) continue;
+                    
 
                     var dc = row[dcIndex];
                     var dcVersions = Regex.Matches(dc, @"\d{4}\.\d{4}");
-                    if (dcVersions.Count == 0) continue;
+                    
                     
                     foreach (Match build in ccVersions)
                     {
@@ -567,7 +567,7 @@ namespace Microsoft.OfficeProPlus.Downloader
                         });
                     }
 
-                    foreach (Match build in dcVersions)
+                    foreach (Match build in frdcVersions)
                     {
                         frdcUpdateChannel?.Updates.Add(new Update()
                         {
@@ -683,7 +683,7 @@ namespace Microsoft.OfficeProPlus.Downloader
             var channelVersionJson = "";
             using (var webClient = new WebClient())
             {
-                channelVersionJson = await webClient.DownloadStringTaskAsync("https://microsoft-apiapp2f1d0adbd6b6403da68a8cd3e1888ddc.azurewebsites.net/api/Channel");
+                channelVersionJson = await webClient.DownloadStringTaskAsync("https://officeproplusinfo2.azurewebsites.net/api/Channel");
                 //channelVersionJson = await webClient.DownloadStringTaskAsync(AppSettings.BranchVersionUrl);
             }
             return channelVersionJson;
@@ -743,7 +743,7 @@ namespace Microsoft.OfficeProPlus.Downloader
                 OfficeEdition = OfficeEdition.Office64Bit
             };
 
-            if (xmlFilePath.Contains("32"))
+            if (xmlFilePath.Contains("_32"))
             {
                 updateFiles.OfficeEdition = OfficeEdition.Office32Bit;
             }
