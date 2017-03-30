@@ -743,7 +743,7 @@ namespace Microsoft.OfficeProPlus.Downloader
                 OfficeEdition = OfficeEdition.Office64Bit
             };
 
-            if (xmlFilePath.Contains("32"))
+            if (xmlFilePath.Contains("_32"))
             {
                 updateFiles.OfficeEdition = OfficeEdition.Office32Bit;
             }
