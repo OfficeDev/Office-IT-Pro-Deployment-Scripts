@@ -290,7 +290,7 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
                     New-Item -Path "$TargetDirectory\$FolderName\Office\Data" -ItemType directory -Force | Out-Null
                 }
 
-                if([String]::IsNullOrWhiteSpace($Version) -or [String]::IsNullOrWhiteSpace($Throttle)){
+                if([String]::IsNullOrWhiteSpace($Version)){
                     $versionReturn = GetVersionBasedOnThrottle -Channel $currentBranch -Version $Version -currentVerXML $CurrentVersionXML
                     if ($DownloadThrottledVersions) {
                         $Version = $versionReturn.NewestVersion
@@ -320,7 +320,7 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
                     $currentVersion = $vdxml.Version.Available.Build;
                     Remove-Item -Path $baseCabFileName
                 }else{
-                    $currentVersion = $Version
+                    $currentVersion = $Version.Trim()
 
                     $relativePath = $_.relativePath -replace "`%version`%", $currentVersion
                     $fileName = "/Office/Data/v32_$currentVersion.cab"
