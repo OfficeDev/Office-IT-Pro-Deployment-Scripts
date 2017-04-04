@@ -184,6 +184,8 @@ $AllProofingLanguages |
   $allLanguages += $_
 }
 
+$UserSpecifiedVersion = $Version
+
 $BranchesOrChannels = @()
 
 if($Branches.Count -gt 0)
@@ -260,7 +262,7 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
                 $currentBranch = $_
                 $b++
 
-                #$Version = ""
+                $Version = $UserSpecifiedVersion
                 $PreviousVersion = ""
                 $NewestVersion = ""
                 $Throttle = ""
@@ -290,7 +292,7 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
                     New-Item -Path "$TargetDirectory\$FolderName\Office\Data" -ItemType directory -Force | Out-Null
                 }
 
-                if([String]::IsNullOrWhiteSpace($Version) -or [String]::IsNullOrWhiteSpace($Throttle)){
+                if([String]::IsNullOrWhiteSpace($Version)){
                     $versionReturn = GetVersionBasedOnThrottle -Channel $currentBranch -Version $Version -currentVerXML $CurrentVersionXML
                     if ($DownloadThrottledVersions) {
                         $Version = $versionReturn.NewestVersion
@@ -320,7 +322,7 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
                     $currentVersion = $vdxml.Version.Available.Build;
                     Remove-Item -Path $baseCabFileName
                 }else{
-                    $currentVersion = $Version
+                    $currentVersion = $Version.Trim()
 
                     $relativePath = $_.relativePath -replace "`%version`%", $currentVersion
                     $fileName = "/Office/Data/v32_$currentVersion.cab"
@@ -344,7 +346,7 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
                    $VersionFile = "$TargetDirectory\$FolderName\Office\Data\v64_$currentVersion.cab"
                 }
                 
-                if (([int]$Throttle -lt 1000) -and (!$DownloadThrottledVersions)) {
+                if (([int]$Throttle -lt 1000) -and (!$DownloadThrottledVersions) -and (![String]::IsNullOrWhiteSpace($Throttle))) {
                    Write-Host "`tDownloading Channel: $currentBranch - Version: $currentVersion (Using previous version instead of Throttled Version: $NewestVersion - Throttle: $Throttle)"
                 } else {
                    Write-Host "`tDownloading Channel: $currentBranch - Version: $currentVersion"
@@ -439,7 +441,7 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
 
                     $j = $j + 1
 
-                    if (([int]$Throttle -lt 1000) -and (!$DownloadThrottledVersions)) {
+                    if (([int]$Throttle -lt 1000) -and (!$DownloadThrottledVersions) -and (![string]::IsNullOrWhiteSpace($Throttle))) {
                        Write-Progress -id 2 -ParentId 1 -Activity "Downloading Channel Files" -status "Channel: $($currentBranch.ToString()) - Version: $currentVersion (Using previous version instead of Throttled Version: $NewestVersion - Throttle: $Throttle)" -percentComplete ($j / $numberOfFiles *100)
                     } else {
                        Write-Progress -id 2 -ParentId 1 -Activity "Downloading Channel Files" -status "Channel: $($currentBranch.ToString()) - Version: $currentVersion" -percentComplete ($j / $numberOfFiles *100)
