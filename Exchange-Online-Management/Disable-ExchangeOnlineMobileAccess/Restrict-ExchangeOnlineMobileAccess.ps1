@@ -27,6 +27,10 @@ This parameter is for the Office 365 Admin credentials that have Exchange Online
 to the Office 365 Tenant.  The account must be in the 'Recipient Management' or 'Organization Managment' role.
 The username must be your Office 365 username.
 
+.PARAMETER LogFilePath
+This is an optional parameter to provide a full file path for the file to log output to.
+If the parameter is not provided log file will be output to C:\Windows\Temp\UTCDATE_OfficeDeploymentLog.txt
+
 .EXAMPLE
 .\Restrict-ExchangeOnlineMobileAccess
 
@@ -49,7 +53,10 @@ In this example you can create provide the username and password with a prompt
 [CmdletBinding(SupportsShouldProcess=$true)]
 param(
     [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
-    [System.Management.Automation.PSCredential]$Credentials=$NULL
+    [System.Management.Automation.PSCredential]$Credentials=$NULL,
+	
+	[Parameter()]
+	[string]$LogFilePath
 )
 
 begin {
@@ -57,6 +64,9 @@ begin {
 }
 
 process {
+
+	$currentFileName = Get-CurrentFileName
+    Set-Alias -name LINENUM -value Get-CurrentLineNumber 
 
    if (!($Credentials)) {
       $Credentials = Get-Credential
@@ -70,17 +80,13 @@ process {
        Write-Host
        Write-Host "Disabling OWA for Mobile Devices: " -NoNewline
         #write log
-        $lineNum = Get-CurrentLineNumber    
-        $filName = Get-CurrentFileName 
-        WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Disabling OWA for Mobile Devices: "
+		WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Disabling OWA for Mobile Devices:" -LogFilePath $LogFilePath
        Get-Mailbox | Set-CasMailbox -OWAforDevicesEnabled $False -WarningAction SilentlyContinue
        Write-Host "Complete"
 
        Write-Host "Creating Access Rule to explicitly allow Outlook Mobile Access: " -NoNewline
         #write log
-        $lineNum = Get-CurrentLineNumber    
-        $filName = Get-CurrentFileName 
-        WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Complete, Creating Access Rule to explicitly allow Outlook Mobile Access:"
+		WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Complete, Creating Access Rule to explicitly allow Outlook Mobile Access:" -LogFilePath $LogFilePath
 
        $ruleExists = $false
        $existingRules = Get-ActiveSyncDeviceAccessRule | where { $_.QueryString -eq "Outlook for iOS and Android" -and $_.AccessLevel -eq "Allow" -and $_.Characteristic -eq "DeviceModel" }
@@ -92,22 +98,16 @@ process {
           New-ActiveSyncDeviceAccessRule -Characteristic DeviceModel -QueryString "Outlook for iOS and Android" -AccessLevel Allow | Out-Null
           Write-Host "Complete"
             #write log
-            $lineNum = Get-CurrentLineNumber    
-            $filName = Get-CurrentFileName 
-            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Complete"
+			WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Complete" -LogFilePath $LogFilePath
        } else {
           Write-Host "Already Exists"
             #write log
-            $lineNum = Get-CurrentLineNumber    
-            $filName = Get-CurrentFileName 
-            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Already Exists"
+			WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Already Exists" -LogFilePath $LogFilePath
        }
 
        Write-Host "Setting ActiveSync Mobile Device Access to 'Block': " -NoNewline
         #write log
-        $lineNum = Get-CurrentLineNumber    
-        $filName = Get-CurrentFileName 
-        WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Setting ActiveSync Mobile Device Access to 'Block': "
+		WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Setting ActiveSync Mobile Device Access to 'Block': " -LogFilePath $LogFilePath
 
        $asOrgSettings = Get-ActiveSyncOrganizationSettings
 
@@ -115,15 +115,11 @@ process {
            Set-ActiveSyncOrganizationSettings -DefaultAccessLevel Block -WarningAction SilentlyContinue | Out-Null
            Write-Host "Complete"
             #write log
-            $lineNum = Get-CurrentLineNumber    
-            $filName = Get-CurrentFileName 
-            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Complete"
+			WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Complete" -LogFilePath $LogFilePath
        } else {
           Write-Host "Already Set"
             #write log
-            $lineNum = Get-CurrentLineNumber    
-            $filName = Get-CurrentFileName 
-            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Already Set"
+			WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Already Set" -LogFilePath $LogFilePath
        }
 
        #Remove-PSSession $Session
@@ -136,7 +132,6 @@ process {
 function Get-CurrentLineNumber {
     $MyInvocation.ScriptLineNumber
 }
-
 
 function Get-CurrentFileName{
     $MyInvocation.ScriptName.Substring($MyInvocation.ScriptName.LastIndexOf("\")+1)
@@ -153,29 +148,40 @@ function Get-CurrentFunctionName {
 
 Function WriteToLogFile() {
     param( 
-      [Parameter(Mandatory=$true)]
-      [string]$LNumber,
-      [Parameter(Mandatory=$true)]
-      [string]$FName,
-      [Parameter(Mandatory=$true)]
-      [string]$ActionError
-   )
-   try{
-   $headerString = "Time".PadRight(30, ' ') + "Line Number".PadRight(15,' ') + "FileName".PadRight(60,' ') + "Action"
-   $stringToWrite = $(Get-Date -Format G).PadRight(30, ' ') + $($LNumber).PadRight(15, ' ') + $($FName).PadRight(60,' ') + $ActionError
-   #check if file exists, create if it doesn't
-   $getCurrentDatePath = "C:\Windows\Temp\" + (Get-Date -Format u).Substring(0,10)+"OfficeAutoScriptLog.txt"
-   if(Test-Path $getCurrentDatePath){#if exists, append
-   
-        Add-Content $getCurrentDatePath $stringToWrite
-   }
-   else{#if not exists, create new
-        Add-Content $getCurrentDatePath $headerString
-        Add-Content $getCurrentDatePath $stringToWrite
-   }
-   } catch [Exception]{
-   Write-Host $_
-   }
+        [Parameter(Mandatory=$true)]
+        [string]$LNumber,
+
+        [Parameter(Mandatory=$true)]
+        [string]$FName,
+
+        [Parameter(Mandatory=$true)]
+        [string]$ActionError,
+
+        [Parameter()]
+        [string]$LogFilePath
+    )
+
+    try{
+        $headerString = "Time".PadRight(30, ' ') + "Line Number".PadRight(15,' ') + "FileName".PadRight(60,' ') + "Action"
+        $stringToWrite = $(Get-Date -Format G).PadRight(30, ' ') + $($LNumber).PadRight(15, ' ') + $($FName).PadRight(60,' ') + $ActionError
+
+        if(!$LogFilePath){
+            $getCurrentDatePath = "C:\Windows\Temp\" + (Get-Date -Format u).Substring(0,10)+"_OfficeDeploymentLog.txt"
+        }
+        else
+        {
+            $getCurrentDatePath = $LogFilePath
+        }
+        if(Test-Path $getCurrentDatePath){
+             Add-Content $getCurrentDatePath $stringToWrite
+        }
+        else{#if not exists, create new
+             Add-Content $getCurrentDatePath $headerString
+             Add-Content $getCurrentDatePath $stringToWrite
+        }
+    } catch [Exception]{
+        Write-Host $_
+    }
 }
 
 
