@@ -184,6 +184,8 @@ $AllProofingLanguages |
   $allLanguages += $_
 }
 
+$UserSpecifiedVersion = $Version
+
 $BranchesOrChannels = @()
 
 if($Branches.Count -gt 0)
@@ -260,7 +262,7 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
                 $currentBranch = $_
                 $b++
 
-                #$Version = ""
+                $Version = $UserSpecifiedVersion
                 $PreviousVersion = ""
                 $NewestVersion = ""
                 $Throttle = ""
