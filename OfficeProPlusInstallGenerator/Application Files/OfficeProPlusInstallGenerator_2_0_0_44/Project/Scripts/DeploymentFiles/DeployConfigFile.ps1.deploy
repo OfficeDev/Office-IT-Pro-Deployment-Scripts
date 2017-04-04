@@ -1,0 +1,93 @@
+﻿  param(
+	+AFs-Parameter(Mandatory+AD0AJA-true)+AF0-
+	+AFs-String+AF0AJA-ConfigFileName +AD0- +ACQ-NULL,
+
+    +AFs-Parameter()+AF0-
+    +AFs-bool+AF0AJA-InstallLanguagePack +AD0- +ACQ-false
+  )
+
+Process +AHs-
+ +ACQ-scriptPath +AD0- +ACI-.+ACI-
+
+ if (+ACQ-PSScriptRoot) +AHs-
+   +ACQ-scriptPath +AD0- +ACQ-PSScriptRoot
+ +AH0- else +AHs-
+   +ACQ-scriptPath +AD0- split-path -parent +ACQ-MyInvocation.MyCommand.Definition
+ +AH0-
+
+ +ACQ-shareFunctionsPath +AD0- +ACIAJA-scriptPath+AFw-SharedFunctions.ps1+ACI-
+ if (+ACQ-scriptPath.StartsWith(+ACIAXABcACI-)) +AHs-
+ +AH0- else +AHs-
+    if (+ACE-(Test-Path -Path +ACQ-shareFunctionsPath)) +AHs-
+        throw +ACI-Missing Dependency File SharedFunctions.ps1+ACI-    
+    +AH0-
+ +AH0-
+ . +ACQ-shareFunctionsPath
+
+  +ACM-Importing all required functions
+. +ACQ-scriptPath+AFw-Edit-OfficeConfigurationFile.ps1
+. +ACQ-scriptPath+AFw-Install-OfficeClickToRun.ps1
+. +ACQ-scriptPath+AFw-SharedFunctions.ps1
+
+ +AFs-string+AF0AJA-configFilePath +AD0- +ACIAJA-scriptPath+AFwAJA-ConfigFileName+ACI-
+ +AFs-string+AF0AJA-targetFilePath +AD0- +ACIAJA-env:temp+AFw-configuration.xml+ACI-
+
+ if (+ACE-(Test-Path -Path +ACQ-configFilePath)) +AHs-
+     throw +ACI-Cannot find Configuration Xml File: +ACQ-ConfigFileName+ACI-
+ +AH0-
+
+ Copy-Item -Path +ACQ-configFilePath -Destination +ACQ-targetFilePath -Force
+
+ +AFs-string+AF0AJA-UpdateSource +AD0- (Get-ODTAdd -TargetFilePath +ACQ-targetFilePath +AHw- select SourcePath).SourcePath
+ +AFs-string+AF0AJA-Bitness +AD0- (Get-ODTAdd -TargetFilePath +ACQ-targetFilePath +AHw- select OfficeClientEdition).OfficeClientEdition
+ +AFs-string+AF0AJA-Channel +AD0- (Get-ODTAdd -TargetFilePath +ACQ-targetFilePath +AHw- select Channel).Channel
+ if(+ACQ-Bitness -eq '64')+AHs-
+    +ACQ-Bitness +AD0- +ACI-x64+ACI-
+ +AH0- else +AHs-
+    +ACQ-Bitness +AD0- +ACI-x32+ACI-
+ +AH0-
+
+ if (+ACQ-UpdateSource) +AHs-
+     if (+ACQ-UpdateSource.StartsWith(+ACI-.+AFwAIg-)) +AHs-
+        +ACQ-UpdateSource +AD0- +ACQ-UpdateSource -replace +ACIAXgBc-.+ACI-, +ACIAJA-scriptPath+ACI-
+     +AH0-
+ +AH0-
+
+ +ACQ-UpdateURLPath +AD0- +ACQ-NULL
+ if (+ACQ-UpdateSource) +AHs-
+   if (Test-ItemPathUNC -Path +ACIAJA-UpdateSource+ACI-) +AHs-
+      +ACQ-UpdateURLPath +AD0- +ACIAJA-UpdateURLPath+AFwAJA-SourceFileFolder+ACI-
+   +AH0-
+ +AH0-
+
+ if(+ACEAJA-Channel)+AHs-
+    +ACQ-Channel +AD0- 'Current'
+ +AH0-
+
+ +ACQ-languages +AD0- Get-XMLLanguages -Path +ACQ-targetFilePath
+
+ if (+ACQ-UpdateSource) +AHs-
+     +ACQ-ValidUpdateSource +AD0- Test-UpdateSource -UpdateSource +ACQ-UpdateSource -OfficeLanguages +ACQ-languages -Bitness +ACQ-Bitness
+     if (+ACQ-ValidUpdateSource) +AHs-
+        if (+ACQ-InstallLanguagePack) +AHs-
+            Set-ODTAdd -TargetFilePath +ACQ-targetFilePath -SourcePath +ACQ-UpdateSource -Channel +ACQ-Channel +AHw- Out-Null
+        +AH0- else +AHs-
+            Set-ODTAdd -TargetFilePath +ACQ-targetFilePath -SourcePath +ACQ-UpdateSource -Channel +ACQ-Channel +AHw- Set-ODTUpdates -Channel +ACQ-Channel -UpdatePath +ACQ-UpdateURLPath +AHw- Out-Null
+        +AH0-
+     +AH0- else +AHs-
+        throw +ACI-Invalid Update Source: +ACQ-UpdateSource+ACI-
+     +AH0-
+ +AH0-
+
+ if(+ACQ-InstallLanguagePack)+AHs-
+     Install-OfficeClickToRun -TargetFilePath +ACQ-targetFilePath -ConfigurationXML +ACQ-configFilePath
+ +AH0- else +AHs-
+     Install-OfficeClickToRun -TargetFilePath +ACQ-targetFilePath
+ +AH0-
++AH0-
+
+
+
+
+
+

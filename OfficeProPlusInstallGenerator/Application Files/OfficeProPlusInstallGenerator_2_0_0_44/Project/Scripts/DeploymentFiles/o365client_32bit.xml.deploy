@@ -1,0 +1,639 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<!-- The following test files is for 32bit Office 365 ProPlus updates in the following languages:
+
+      Copyrights: 2015 Microsoft Corporation.  All rights reserved. 
+      Products: Office 365 ProPlus, Office 365 Business, Visio Pro, Project Pro
+      Architecture: 32 Bit
+      Languages: Supported languages specified on https://support.office.com/article/Language-Accessory-Pack-for-Office-2016-for-Windows-82ee1236-0f9a-45ee-9c72-05b026ee809f
+
+-->
+ 
+<UpdateFiles version="1.2">
+
+  <!-- Branch Information -->
+    <baseURL branch="FirstReleaseCurrent" URL="http://officecdn.microsoft.com/pr/64256afe-f5d9-4f86-8936-8840a6a4f5be" />    
+    <baseURL branch="Current" URL="http://officecdn.microsoft.com/pr/492350f6-3a01-4f97-b9c0-c7c6ddf67d60" />
+    <baseURL branch="FirstReleaseBusiness" URL="http://officecdn.microsoft.com/pr/b8f9b850-328d-4355-9145-c59439a0c4cf" />
+    <baseURL branch="Business" URL="http://officecdn.microsoft.com/pr/7ffbc6bf-bc32-4f92-8982-f9dd17fd3114" />
+    <baseURL branch="CMValidation" URL="http://officecdn.microsoft.com/pr/55C44C35-878E-4C43-83EE-B666BF4261A4" />
+    <!-- DELETE FirstReleaseBusiness and Business later-->
+    <baseURL branch="FirstReleaseDeferred" URL="http://officecdn.microsoft.com/pr/b8f9b850-328d-4355-9145-c59439a0c4cf" />
+    <baseURL branch="Deferred" URL="http://officecdn.microsoft.com/pr/7ffbc6bf-bc32-4f92-8982-f9dd17fd3114" />
+  <!-- End Branch Information -->
+
+
+  <!-- Language neutral files-->
+    <File name="v32_%version%.cab" rename="v32.cab" relativePath="/office/data/" language="0"/>
+    <File name="v32_%version%.cab" relativePath="/office/data/" language="0"/>
+    <File name="s320.cab" relativePath="/office/data/%version%/" language="0"/>
+    <File name="i320.cab" relativePath="/office/data/%version%/" language="0"/>
+    <File name="i640.cab" relativePath="/office/data/%version%/" language="0"/>
+    <File name="stream.x86.x-none.dat" hashLocation="s320.cab/stream.x86.x-none.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="0"/>
+  <!-- end language neutral files-->
+  
+  
+  <!-- Language Specific Files-->
+
+    <!-- Core Languages -->
+      <!--  Arabic -->
+        <File name="i321025.cab" relativePath="/office/data/%version%/" language="1025" />
+        <File name="i641025.cab" relativePath="/office/data/%version%/" language="1025" />
+        <File name="s321025.cab" relativePath="/office/data/%version%/" language="1025" />
+        <File name="stream.x86.ar-sa.dat" hashLocation="s321025.cab/stream.x86.ar-sa.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1025"/>
+      <!-- End Arabic -->
+
+      <!--  Bulgarian -->
+        <File name="i321026.cab" relativePath="/office/data/%version%/" language="1026" />
+        <File name="i641026.cab" relativePath="/office/data/%version%/" language="1026" />
+        <File name="s321026.cab" relativePath="/office/data/%version%/" language="1026" />
+        <File name="stream.x86.bg-bg.dat" hashLocation="s321026.cab/stream.x86.bg-bg.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1026"/>
+      <!-- End Bulgarian -->
+
+      <!--  Chinese (Simplified) -->
+        <File name="i322052.cab" relativePath="/office/data/%version%/" language="2052" />
+        <File name="i642052.cab" relativePath="/office/data/%version%/" language="2052" />
+        <File name="s322052.cab" relativePath="/office/data/%version%/" language="2052" />
+        <File name="stream.x86.zh-cn.dat" hashLocation="s322052.cab/stream.x86.zh-cn.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="2052"/>
+      <!-- End Chinese (Simplified) -->
+
+      <!--  Chinese -->
+        <File name="i321028.cab" relativePath="/office/data/%version%/" language="1028" />
+        <File name="i641028.cab" relativePath="/office/data/%version%/" language="1028" />
+        <File name="s321028.cab" relativePath="/office/data/%version%/" language="1028" />
+        <File name="stream.x86.zh-tw.dat" hashLocation="s321028.cab/stream.x86.zh-tw.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1028"/>
+      <!-- End Chinese -->
+
+      <!--  Croatian -->
+        <File name="i321050.cab" relativePath="/office/data/%version%/" language="1050" />
+        <File name="i641050.cab" relativePath="/office/data/%version%/" language="1050" />
+        <File name="s321050.cab" relativePath="/office/data/%version%/" language="1050" />
+        <File name="stream.x86.hr-hr.dat" hashLocation="s321050.cab/stream.x86.hr-hr.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1050"/>
+      <!-- End Croatian -->
+
+      <!--  Czech -->
+        <File name="i321029.cab" relativePath="/office/data/%version%/" language="1029" />
+        <File name="i641029.cab" relativePath="/office/data/%version%/" language="1029" />
+        <File name="s321029.cab" relativePath="/office/data/%version%/" language="1029" />
+        <File name="stream.x86.cs-cz.dat" hashLocation="s321029.cab/stream.x86.cs-cz.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1029"/>
+      <!-- End Czech -->
+
+      <!--  Danish -->
+        <File name="i321030.cab" relativePath="/office/data/%version%/" language="1030" />
+        <File name="i641030.cab" relativePath="/office/data/%version%/" language="1030" />
+        <File name="s321030.cab" relativePath="/office/data/%version%/" language="1030" />
+        <File name="stream.x86.da-dk.dat" hashLocation="s321030.cab/stream.x86.da-dk.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1030"/>
+      <!-- End Danish -->
+
+      <!--  Dutch -->
+        <File name="i321043.cab" relativePath="/office/data/%version%/" language="1043" />
+        <File name="i641043.cab" relativePath="/office/data/%version%/" language="1043" />
+        <File name="s321043.cab" relativePath="/office/data/%version%/" language="1043" />
+        <File name="stream.x86.nl-nl.dat" hashLocation="s321043.cab/stream.x86.nl-nl.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1043"/>
+      <!-- End Dutch -->
+
+      <!--  English -->
+        <File name="i321033.cab" relativePath="/office/data/%version%/" language="1033" />
+        <File name="i641033.cab" relativePath="/office/data/%version%/" language="1033" />
+        <File name="s321033.cab" relativePath="/office/data/%version%/" language="1033" />
+        <File name="stream.x86.en-us.dat" hashLocation="s321033.cab/stream.x86.en-us.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1033"/>
+      <!-- End English -->
+
+      <!--  Estonian -->
+        <File name="i321061.cab" relativePath="/office/data/%version%/" language="1061" />
+        <File name="i641061.cab" relativePath="/office/data/%version%/" language="1061" />
+        <File name="s321061.cab" relativePath="/office/data/%version%/" language="1061" />
+        <File name="stream.x86.et-ee.dat" hashLocation="s321061.cab/stream.x86.et-ee.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1061"/>
+      <!-- End Estonian -->
+
+      <!--  Finnish -->
+        <File name="i321035.cab" relativePath="/office/data/%version%/" language="1035" />
+        <File name="i641035.cab" relativePath="/office/data/%version%/" language="1035" />
+        <File name="s321035.cab" relativePath="/office/data/%version%/" language="1035" />
+        <File name="stream.x86.fi-fi.dat" hashLocation="s321035.cab/stream.x86.fi-fi.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1035"/>
+      <!-- End Finnish -->
+
+      <!--  French -->
+        <File name="i321036.cab" relativePath="/office/data/%version%/" language="1036" />
+        <File name="i641036.cab" relativePath="/office/data/%version%/" language="1036" />
+        <File name="s321036.cab" relativePath="/office/data/%version%/" language="1036" />
+        <File name="stream.x86.fr-fr.dat" hashLocation="s321036.cab/stream.x86.fr-fr.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1036"/>
+      <!-- End French -->
+
+      <!--  German -->
+        <File name="i321031.cab" relativePath="/office/data/%version%/" language="1031" />
+        <File name="i641031.cab" relativePath="/office/data/%version%/" language="1031" />
+        <File name="s321031.cab" relativePath="/office/data/%version%/" language="1031" />
+        <File name="stream.x86.de-de.dat" hashLocation="s321031.cab/stream.x86.de-de.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1031"/>
+      <!-- End German -->
+
+      <!--  Greek -->
+        <File name="i321032.cab" relativePath="/office/data/%version%/" language="1032" />
+        <File name="i641032.cab" relativePath="/office/data/%version%/" language="1032" />
+        <File name="s321032.cab" relativePath="/office/data/%version%/" language="1032" />
+        <File name="stream.x86.el-gr.dat" hashLocation="s321032.cab/stream.x86.el-gr.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1032"/>
+      <!-- End Greek -->
+
+      <!--  Hebrew -->
+        <File name="i321037.cab" relativePath="/office/data/%version%/" language="1037" />
+        <File name="i641037.cab" relativePath="/office/data/%version%/" language="1037" />
+        <File name="s321037.cab" relativePath="/office/data/%version%/" language="1037" />
+        <File name="stream.x86.he-il.dat" hashLocation="s321037.cab/stream.x86.he-il.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1037"/>
+      <!-- End Hebrew -->
+
+      <!--  Hindi -->
+        <File name="i321081.cab" relativePath="/office/data/%version%/" language="1081" />
+        <File name="i641081.cab" relativePath="/office/data/%version%/" language="1081" />
+        <File name="s321081.cab" relativePath="/office/data/%version%/" language="1081" />
+        <File name="stream.x86.hi-in.dat" hashLocation="s321081.cab/stream.x86.hi-in.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1081"/>
+      <!-- End Hindi -->
+
+      <!--  Hungarian -->
+        <File name="i321038.cab" relativePath="/office/data/%version%/" language="1038" />
+        <File name="i641038.cab" relativePath="/office/data/%version%/" language="1038" />
+        <File name="s321038.cab" relativePath="/office/data/%version%/" language="1038" />
+        <File name="stream.x86.hu-hu.dat" hashLocation="s321038.cab/stream.x86.hu-hu.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1038"/>
+      <!-- End Hungarian -->
+
+      <!--  Indonesian -->
+        <File name="i321057.cab" relativePath="/office/data/%version%/" language="1057" />
+        <File name="i641057.cab" relativePath="/office/data/%version%/" language="1057" />
+        <File name="s321057.cab" relativePath="/office/data/%version%/" language="1057" />
+        <File name="stream.x86.id-id.dat" hashLocation="s321057.cab/stream.x86.id-id.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1057"/>
+      <!-- End Indonesian -->
+
+      <!--  Italian -->
+        <File name="i321040.cab" relativePath="/office/data/%version%/" language="1040" />
+        <File name="i641040.cab" relativePath="/office/data/%version%/" language="1040" />
+        <File name="s321040.cab" relativePath="/office/data/%version%/" language="1040" />
+        <File name="stream.x86.it-it.dat" hashLocation="s321040.cab/stream.x86.it-it.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1040"/>
+      <!-- End Italian -->
+
+      <!--  Japanese -->
+        <File name="i321041.cab" relativePath="/office/data/%version%/" language="1041" />
+        <File name="i641041.cab" relativePath="/office/data/%version%/" language="1041" />
+        <File name="s321041.cab" relativePath="/office/data/%version%/" language="1041" />
+        <File name="stream.x86.ja-jp.dat" hashLocation="s321041.cab/stream.x86.ja-jp.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1041"/>
+      <!-- End Japanese -->
+
+      <!--  Kazakh -->
+        <File name="i321087.cab" relativePath="/office/data/%version%/" language="1087" />
+        <File name="i641087.cab" relativePath="/office/data/%version%/" language="1087" />
+        <File name="s321087.cab" relativePath="/office/data/%version%/" language="1087" />
+        <File name="stream.x86.kk-kz.dat" hashLocation="s321087.cab/stream.x86.kk-kz.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1087"/>
+      <!-- End Kazakh -->
+
+      <!--  Korean -->
+        <File name="i321042.cab" relativePath="/office/data/%version%/" language="1042" />
+        <File name="i641042.cab" relativePath="/office/data/%version%/" language="1042" />
+        <File name="s321042.cab" relativePath="/office/data/%version%/" language="1042" />
+        <File name="stream.x86.ko-kr.dat" hashLocation="s321042.cab/stream.x86.ko-kr.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1042"/>
+      <!-- End Korean -->
+
+      <!--  Latvian -->
+        <File name="i321062.cab" relativePath="/office/data/%version%/" language="1062" />
+        <File name="i641062.cab" relativePath="/office/data/%version%/" language="1062" />
+        <File name="s321062.cab" relativePath="/office/data/%version%/" language="1062" />
+        <File name="stream.x86.lv-lv.dat" hashLocation="s321062.cab/stream.x86.lv-lv.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1062"/>
+      <!-- End Latvian -->
+
+      <!--  Lithuanian -->
+        <File name="i321063.cab" relativePath="/office/data/%version%/" language="1063" />
+        <File name="i641063.cab" relativePath="/office/data/%version%/" language="1063" />
+        <File name="s321063.cab" relativePath="/office/data/%version%/" language="1063" />
+        <File name="stream.x86.lt-lt.dat" hashLocation="s321063.cab/stream.x86.lt-lt.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1063"/>
+      <!-- End Lithuanian -->
+
+      <!--  Malay -->
+        <File name="i321086.cab" relativePath="/office/data/%version%/" language="1086" />
+        <File name="i641086.cab" relativePath="/office/data/%version%/" language="1086" />
+        <File name="s321086.cab" relativePath="/office/data/%version%/" language="1086" />
+        <File name="stream.x86.ms-my.dat" hashLocation="s321086.cab/stream.x86.ms-my.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1086"/>
+      <!-- End Malay -->
+
+      <!--  Norwegian (Bokmål) -->
+        <File name="i321044.cab" relativePath="/office/data/%version%/" language="1044" />
+        <File name="i641044.cab" relativePath="/office/data/%version%/" language="1044" />
+        <File name="s321044.cab" relativePath="/office/data/%version%/" language="1044" />
+        <File name="stream.x86.nb-no.dat" hashLocation="s321044.cab/stream.x86.nb-no.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1044"/>
+      <!-- End Norwegian (Bokmål) -->
+
+      <!--  Polish -->
+        <File name="i321045.cab" relativePath="/office/data/%version%/" language="1045" />
+        <File name="i641045.cab" relativePath="/office/data/%version%/" language="1045" />
+        <File name="s321045.cab" relativePath="/office/data/%version%/" language="1045" />
+        <File name="stream.x86.pl-pl.dat" hashLocation="s321045.cab/stream.x86.pl-pl.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1045"/>
+      <!-- End Polish -->
+
+      <!--  Portuguese (Brazil) -->
+        <File name="i321046.cab" relativePath="/office/data/%version%/" language="1046" />
+        <File name="i641046.cab" relativePath="/office/data/%version%/" language="1046" />
+        <File name="s321046.cab" relativePath="/office/data/%version%/" language="1046" />
+        <File name="stream.x86.pt-br.dat" hashLocation="s321046.cab/stream.x86.pt-br.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1046"/>
+      <!-- End Portuguese -->
+
+      <!--  Portuguese -->
+        <File name="i322070.cab" relativePath="/office/data/%version%/" language="2070" />
+        <File name="i642070.cab" relativePath="/office/data/%version%/" language="2070" />
+        <File name="s322070.cab" relativePath="/office/data/%version%/" language="2070" />
+        <File name="stream.x86.pt-pt.dat" hashLocation="s322070.cab/stream.x86.pt-pt.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="2070"/>
+      <!-- End Portuguese -->
+
+      <!--  Romanian -->
+        <File name="i321048.cab" relativePath="/office/data/%version%/" language="1048" />
+        <File name="i641048.cab" relativePath="/office/data/%version%/" language="1048" />
+        <File name="s321048.cab" relativePath="/office/data/%version%/" language="1048" />
+        <File name="stream.x86.ro-ro.dat" hashLocation="s321048.cab/stream.x86.ro-ro.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1048"/>
+      <!-- End Romanian -->
+
+      <!--  Russian -->
+        <File name="i321049.cab" relativePath="/office/data/%version%/" language="1049" />
+        <File name="i641049.cab" relativePath="/office/data/%version%/" language="1049" />
+        <File name="s321049.cab" relativePath="/office/data/%version%/" language="1049" />
+        <File name="stream.x86.ru-ru.dat" hashLocation="s321049.cab/stream.x86.ru-ru.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1049"/>
+      <!-- End Russian -->
+
+      <!--  Serbian (Latin) -->
+        <File name="i329242.cab" relativePath="/office/data/%version%/" language="9242" />
+        <File name="i649242.cab" relativePath="/office/data/%version%/" language="9242" />
+        <File name="s329242.cab" relativePath="/office/data/%version%/" language="9242" />
+        <File name="stream.x86.sr-latn-rs.dat" hashLocation="s329242.cab/stream.x86.sr-latn-rs.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="9242"/>
+      <!-- End Serbian (Latin) -->
+
+      <!--  Slovak -->
+        <File name="i321051.cab" relativePath="/office/data/%version%/" language="1051" />
+        <File name="i641051.cab" relativePath="/office/data/%version%/" language="1051" />
+        <File name="s321051.cab" relativePath="/office/data/%version%/" language="1051" />
+        <File name="stream.x86.sk-sk.dat" hashLocation="s321051.cab/stream.x86.sk-sk.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1051"/>
+      <!-- End Slovak -->
+
+      <!--  Slovenian -->
+        <File name="i321060.cab" relativePath="/office/data/%version%/" language="1060" />
+        <File name="i641060.cab" relativePath="/office/data/%version%/" language="1060" />
+        <File name="s321060.cab" relativePath="/office/data/%version%/" language="1060" />
+        <File name="stream.x86.sl-si.dat" hashLocation="s321060.cab/stream.x86.sl-si.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1060"/>
+      <!-- End Slovenian -->
+
+      <!--  Spanish -->
+        <File name="i323082.cab" relativePath="/office/data/%version%/" language="3082" />
+        <File name="i643082.cab" relativePath="/office/data/%version%/" language="3082" />
+        <File name="s323082.cab" relativePath="/office/data/%version%/" language="3082" />
+        <File name="stream.x86.es-es.dat" hashLocation="s323082.cab/stream.x86.es-es.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="3082"/>
+      <!-- End Spanish -->
+
+      <!--  Swedish -->
+        <File name="i321053.cab" relativePath="/office/data/%version%/" language="1053" />
+        <File name="i641053.cab" relativePath="/office/data/%version%/" language="1053" />
+        <File name="s321053.cab" relativePath="/office/data/%version%/" language="1053" />
+        <File name="stream.x86.sv-se.dat" hashLocation="s321053.cab/stream.x86.sv-se.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1053"/>
+      <!-- End Swedish -->
+
+      <!--  Thai -->
+        <File name="i321054.cab" relativePath="/office/data/%version%/" language="1054" />
+        <File name="i641054.cab" relativePath="/office/data/%version%/" language="1054" />
+        <File name="s321054.cab" relativePath="/office/data/%version%/" language="1054" />
+        <File name="stream.x86.th-th.dat" hashLocation="s321054.cab/stream.x86.th-th.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1054"/>
+      <!-- End Thai -->
+
+      <!--  Turkish -->
+        <File name="i321055.cab" relativePath="/office/data/%version%/" language="1055" />
+        <File name="i641055.cab" relativePath="/office/data/%version%/" language="1055" />
+        <File name="s321055.cab" relativePath="/office/data/%version%/" language="1055" />
+        <File name="stream.x86.tr-tr.dat" hashLocation="s321055.cab/stream.x86.tr-tr.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1055"/>
+      <!-- End Turkish -->
+
+      <!--  Ukrainian -->
+        <File name="i321058.cab" relativePath="/office/data/%version%/" language="1058" />
+        <File name="i641058.cab" relativePath="/office/data/%version%/" language="1058" />
+        <File name="s321058.cab" relativePath="/office/data/%version%/" language="1058" />
+        <File name="stream.x86.uk-ua.dat" hashLocation="s321058.cab/stream.x86.uk-ua.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1058"/>
+      <!-- End Ukrainian -->
+
+      <!--  Vietnamese -->
+        <File name="i321066.cab" relativePath="/office/data/%version%/" language="1066" />
+        <File name="i641066.cab" relativePath="/office/data/%version%/" language="1066" />
+        <File name="s321066.cab" relativePath="/office/data/%version%/" language="1066" />
+        <File name="stream.x86.vi-vn.dat" hashLocation="s321066.cab/stream.x86.vi-vn.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1066"/>
+      <!-- End Vietnamese -->
+    <!--End Core Languages -->
+  
+    <!--Partial Langauges -->
+      <!--  Afrikaans -->
+        <File name="s321078.cab" relativePath="/office/data/%version%/" language="1078" />
+        <File name="stream.x86.af-za.dat" hashLocation="s321078.cab/stream.x86.af-za.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1078"/>
+      <!-- End Afrikaans -->
+
+      <!--  Albanian -->
+        <File name="s321052.cab" relativePath="/office/data/%version%/" language="1052" />
+        <File name="stream.x86.sq-al.dat" hashLocation="s321052.cab/stream.x86.sq-al.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1052"/>
+      <!-- End Albanian -->
+
+      <!--  Amharic -->
+        <File name="s321118.cab" relativePath="/office/data/%version%/" language="1118" />
+        <File name="stream.x86.am-et.dat" hashLocation="s321118.cab/stream.x86.am-et.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1118"/>
+      <!-- End Amharic -->
+
+      <!--  Armenian -->
+        <File name="s321067.cab" relativePath="/office/data/%version%/" language="1067" />
+        <File name="stream.x86.hy-am.dat" hashLocation="s321067.cab/stream.x86.hy-am.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1067"/>
+      <!-- End Armenian -->
+
+      <!--  Assamese -->
+        <File name="s321101.cab" relativePath="/office/data/%version%/" language="1101" />
+        <File name="stream.x86.as-in.dat" hashLocation="s321101.cab/stream.x86.as-in.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1101"/>
+      <!-- End Assamese -->
+
+      <!--  Azerbaijani (Latin) -->
+        <File name="s321068.cab" relativePath="/office/data/%version%/" language="1068" />
+        <File name="stream.x86.az-latn-az.dat" hashLocation="s321068.cab/stream.x86.az-latn-az.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1068"/>
+      <!-- End Azerbaijani (Latin) -->
+
+      <!--  Basque (Basque) -->
+        <File name="s321069.cab" relativePath="/office/data/%version%/" language="1069" />
+        <File name="stream.x86.eu-es.dat" hashLocation="s321069.cab/stream.x86.eu-es.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1069"/>
+      <!-- End Basque (Basque) -->
+
+      <!--  Belarusian -->
+        <File name="s321059.cab" relativePath="/office/data/%version%/" language="1059" />
+        <File name="stream.x86.be-by.dat" hashLocation="s321059.cab/stream.x86.be-by.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1059"/>
+      <!-- End Belarusian -->
+
+      <!--  Bangla (Bangladesh) -->
+        <File name="s322117.cab" relativePath="/office/data/%version%/" language="2117" />
+        <File name="stream.x86.bn-bd.dat" hashLocation="s322117.cab/stream.x86.bn-bd.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="2117"/>
+      <!-- End Bangla (Bangladesh) -->
+
+      <!--  Bangla (Bengali India) -->
+        <File name="s321093.cab" relativePath="/office/data/%version%/" language="1093" />
+        <File name="stream.x86.bn-in.dat" hashLocation="s321093.cab/stream.x86.bn-in.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1093"/>
+      <!-- End Bangla (Bengali India) -->
+
+      <!--  Bosnian (Latin) -->
+        <File name="s325146.cab" relativePath="/office/data/%version%/" language="5146" />
+        <File name="stream.x86.bs-latn-ba.dat" hashLocation="s325146.cab/stream.x86.bs-latn-ba.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="5146"/>
+      <!-- End Bosnian (Latin) -->
+
+      <!--  Catalan -->
+        <File name="s321027.cab" relativePath="/office/data/%version%/" language="1027" />
+        <File name="stream.x86.ca-es.dat" hashLocation="s321027.cab/stream.x86.ca-es.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1027"/>
+      <!-- End Catalan -->
+
+      <!--  Dari -->
+        <File name="s321164.cab" relativePath="/office/data/%version%/" language="1164" />
+        <File name="stream.x86.prs-af.dat" hashLocation="s321164.cab/stream.x86.prs-af.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1164"/>
+      <!-- End Dari -->
+
+      <!--  Filipino -->
+        <File name="s321124.cab" relativePath="/office/data/%version%/" language="1124" />
+        <File name="stream.x86.fil-ph.dat" hashLocation="s321124.cab/stream.x86.fil-ph.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1124"/>
+      <!-- End Filipino -->
+
+      <!--  Galician -->
+        <File name="s321110.cab" relativePath="/office/data/%version%/" language="1110" />
+        <File name="stream.x86.gl-es.dat" hashLocation="s321110.cab/stream.x86.gl-es.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1110"/>
+      <!-- End Galician -->
+
+      <!--  Georgian -->
+        <File name="s321079.cab" relativePath="/office/data/%version%/" language="1079" />
+        <File name="stream.x86.ka-ge.dat" hashLocation="s321079.cab/stream.x86.ka-ge.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1079"/>
+      <!-- End Georgian -->
+
+      <!--  Gujarati -->
+        <File name="s321095.cab" relativePath="/office/data/%version%/" language="1095" />
+        <File name="stream.x86.gu-in.dat" hashLocation="s321095.cab/stream.x86.gu-in.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1095"/>
+      <!-- End Gujarati -->
+
+      <!--  Icelandic -->
+        <File name="s321039.cab" relativePath="/office/data/%version%/" language="1039" />
+        <File name="stream.x86.is-is.dat" hashLocation="s321039.cab/stream.x86.is-is.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1039"/>
+      <!-- End Icelandic -->
+
+      <!--  Irish -->
+        <File name="s322108.cab" relativePath="/office/data/%version%/" language="2108" />
+        <File name="stream.x86.ga-ie.dat" hashLocation="s322108.cab/stream.x86.ga-ie.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="2108"/>
+      <!-- End Irish -->
+
+      <!--  Kannada -->
+        <File name="s321099.cab" relativePath="/office/data/%version%/" language="1099" />
+        <File name="stream.x86.kn-in.dat" hashLocation="s321099.cab/stream.x86.kn-in.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1099"/>
+      <!-- End Kannada -->
+
+      <!--  Khmer -->
+        <File name="s321107.cab" relativePath="/office/data/%version%/" language="1107" />
+        <File name="stream.x86.km-kh.dat" hashLocation="s321107.cab/stream.x86.km-kh.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1107"/>
+      <!-- End Khmer -->
+
+      <!--  KiSwahili -->
+        <File name="s321089.cab" relativePath="/office/data/%version%/" language="1089" />
+        <File name="stream.x86.sw-ke.dat" hashLocation="s321089.cab/stream.x86.sw-ke.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1089"/>
+      <!-- End KiSwahili -->
+
+      <!--  Konkani -->
+        <File name="s321111.cab" relativePath="/office/data/%version%/" language="1111" />
+        <File name="stream.x86.kok-in.dat" hashLocation="s321111.cab/stream.x86.kok-in.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1111"/>
+      <!-- End Konkani -->
+
+      <!--  Kyrgyz -->
+        <File name="s321088.cab" relativePath="/office/data/%version%/" language="1088" />
+        <File name="stream.x86.ky-kg.dat" hashLocation="s321088.cab/stream.x86.ky-kg.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1088"/>
+      <!-- End Kyrgyz -->
+
+      <!--  Luxembourgish -->
+        <File name="s321134.cab" relativePath="/office/data/%version%/" language="1134" />
+        <File name="stream.x86.lb-lu.dat" hashLocation="s321134.cab/stream.x86.lb-lu.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1134"/>
+      <!-- End Luxembourgish -->
+
+      <!--  Macedonian (FYRO Macedonia ) -->
+        <File name="s321071.cab" relativePath="/office/data/%version%/" language="1071" />
+        <File name="stream.x86.mk-mk.dat" hashLocation="s321071.cab/stream.x86.mk-mk.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1071"/>
+      <!-- End Macedonian (FYRO Macedonia ) -->
+
+      <!--  Malayalam -->
+        <File name="s321100.cab" relativePath="/office/data/%version%/" language="1100" />
+        <File name="stream.x86.ml-in.dat" hashLocation="s321100.cab/stream.x86.ml-in.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1100"/>
+      <!-- End Malayalam -->
+
+      <!--  Maltese -->
+        <File name="s321082.cab" relativePath="/office/data/%version%/" language="1082" />
+        <File name="stream.x86.mt-mt.dat" hashLocation="s321082.cab/stream.x86.mt-mt.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1082"/>
+      <!-- End Maltese -->
+
+      <!--  Maori -->
+        <File name="s321153.cab" relativePath="/office/data/%version%/" language="1153" />
+        <File name="stream.x86.mi-nz.dat" hashLocation="s321153.cab/stream.x86.mi-nz.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1153"/>
+      <!-- End Maori -->
+
+      <!--  Marathi -->
+        <File name="s321102.cab" relativePath="/office/data/%version%/" language="1102" />
+        <File name="stream.x86.mr-in.dat" hashLocation="s321102.cab/stream.x86.mr-in.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1102"/>
+      <!-- End Marathi -->
+
+      <!--  Mongolian (Cyrillic) -->
+        <File name="s321104.cab" relativePath="/office/data/%version%/" language="1104" />
+        <File name="stream.x86.mn-mn.dat" hashLocation="s321104.cab/stream.x86.mn-mn.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1104"/>
+      <!-- End Mongolian (Cyrillic) -->
+
+      <!--  Nepali -->
+        <File name="s321121.cab" relativePath="/office/data/%version%/" language="1121" />
+        <File name="stream.x86.ne-np.dat" hashLocation="s321121.cab/stream.x86.ne-np.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1121"/>
+      <!-- End Nepali -->
+
+      <!--  Norwedian Nynorsk -->
+        <File name="s322068.cab" relativePath="/office/data/%version%/" language="2068" />
+        <File name="stream.x86.nn-no.dat" hashLocation="s322068.cab/stream.x86.nn-no.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="2068"/>
+      <!-- End Norwedian Nynorsk -->
+
+      <!--  Odia -->
+        <File name="s321096.cab" relativePath="/office/data/%version%/" language="1096" />
+        <File name="stream.x86.or-in.dat" hashLocation="s321096.cab/stream.x86.or-in.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1096"/>
+      <!-- End Odia -->
+
+      <!--  Persian (Farsi) -->
+        <File name="s321065.cab" relativePath="/office/data/%version%/" language="1065" />
+        <File name="stream.x86.fa-ir.dat" hashLocation="s321065.cab/stream.x86.fa-ir.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1065"/>
+      <!-- End Persian (Farsi) -->
+
+      <!--  Punjabi (Gurmukhi) -->
+        <File name="s321094.cab" relativePath="/office/data/%version%/" language="1094" />
+        <File name="stream.x86.pa-in.dat" hashLocation="s321094.cab/stream.x86.pa-in.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1094"/>
+      <!-- End Punjabi (Gurmukhi) -->
+
+      <!--  Quechua -->
+        <File name="s323179.cab" relativePath="/office/data/%version%/" language="3179" />
+        <File name="stream.x86.quz-pe.dat" hashLocation="s323179.cab/stream.x86.quz-pe.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="3179"/>
+      <!-- End Quechua -->
+
+      <!--  Scottish Gaelic -->
+        <File name="s321169.cab" relativePath="/office/data/%version%/" language="1169" />
+        <File name="stream.x86.gd-gb.dat" hashLocation="s321169.cab/stream.x86.gd-gb.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1169"/>
+      <!-- End Scottish Gaelic -->
+
+      <!--  Serbian (Cyrillic, Serbia) -->
+        <File name="s3210266.cab" relativePath="/office/data/%version%/" language="10266" />
+        <File name="stream.x86.sr-cyrl-rs.dat" hashLocation="s3210266.cab/stream.x86.sr-cyrl-rs.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="10266"/>
+      <!-- End Serbian (Cyrillic, Serbia) -->
+
+      <!--  Serbian (Cyrillic, Bosnia & Herzegovina) -->
+        <File name="s327194.cab" relativePath="/office/data/%version%/" language="7194" />
+        <File name="stream.x86.sr-cyrl-ba.dat" hashLocation="s327194.cab/stream.x86.sr-cyrl-ba.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="7194"/>
+      <!-- End Serbian (Cyrillic, Bosnia & Herzegovina) -->
+
+      <!--  Sindhi (Arabic) -->
+        <File name="s322137.cab" relativePath="/office/data/%version%/" language="2137" />
+        <File name="stream.x86.sd-arab-pk.dat" hashLocation="s322137.cab/stream.x86.sd-arab-pk.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="2137"/>
+      <!-- End Sindhi (Arabic) -->
+
+      <!--  Sinhala -->
+        <File name="s321115.cab" relativePath="/office/data/%version%/" language="1115" />
+        <File name="stream.x86.si-lk.dat" hashLocation="s321115.cab/stream.x86.si-lk.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1115"/>
+      <!-- End Sinhala -->
+
+      <!--  Tamil -->
+        <File name="s321097.cab" relativePath="/office/data/%version%/" language="1097" />
+        <File name="stream.x86.ta-in.dat" hashLocation="s321097.cab/stream.x86.ta-in.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1097"/>
+      <!-- End Tamil -->
+
+      <!--  Tatar (Cyrillic) -->
+        <File name="s321092.cab" relativePath="/office/data/%version%/" language="1092" />
+        <File name="stream.x86.tt-ru.dat" hashLocation="s321092.cab/stream.x86.tt-ru.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1092"/>
+      <!-- End Tatar (Cyrillic) -->
+
+      <!--  Telugu -->
+        <File name="s321098.cab" relativePath="/office/data/%version%/" language="1098" />
+        <File name="stream.x86.te-in.dat" hashLocation="s321098.cab/stream.x86.te-in.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1098"/>
+      <!-- End Telugu -->
+
+      <!--  Turkmen (Latin) -->
+        <File name="s321090.cab" relativePath="/office/data/%version%/" language="1090" />
+        <File name="stream.x86.tk-tm.dat" hashLocation="s321090.cab/stream.x86.tk-tm.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1090"/>
+      <!-- End Turkmen (Latin) -->
+
+      <!--  Urdu -->
+        <File name="s321056.cab" relativePath="/office/data/%version%/" language="1056" />
+        <File name="stream.x86.ur-pk.dat" hashLocation="s321056.cab/stream.x86.ur-pk.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1056"/>
+      <!-- End Urdu -->
+
+      <!--  Uyghur -->
+        <File name="s321152.cab" relativePath="/office/data/%version%/" language="1152" />
+        <File name="stream.x86.ug-cn.dat" hashLocation="s321152.cab/stream.x86.ug-cn.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1152"/>
+      <!-- End Uyghur -->
+
+      <!--  Uzbek (Latin) -->
+        <File name="s321091.cab" relativePath="/office/data/%version%/" language="1091" />
+        <File name="stream.x86.uz-latn-uz.dat" hashLocation="s321091.cab/stream.x86.uz-latn-uz.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1091"/>
+      <!-- End Uzbek (Latin) -->
+
+      <!--  Valencian -->
+        <File name="s322051.cab" relativePath="/office/data/%version%/" language="2051" />
+        <File name="stream.x86.ca-es-valencia.dat" hashLocation="s322051.cab/stream.x86.ca-es-valencia.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="2051"/>
+      <!-- End Valencian -->
+
+      <!--  Welsh -->
+        <File name="s321106.cab" relativePath="/office/data/%version%/" language="1106" />
+        <File name="stream.x86.cy-gb.dat" hashLocation="s321106.cab/stream.x86.cy-gb.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1106"/>
+      <!-- End Welsh -->
+    <!--End Partial Languages -->
+
+  
+    <!-- Proofing Tools -->
+      <!--  Hausa -->
+        <File name="s321128.cab" relativePath="/office/data/%version%/" language="1128" />
+        <File name="stream.x86.ha-latn-ng.dat" hashLocation="s321128.cab/stream.x86.ha-latn-ng.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1128"/>
+      <!-- End Hausa -->
+
+      <!--  Igbo -->
+        <File name="s321136.cab" relativePath="/office/data/%version%/" language="1136" />
+        <File name="stream.x86.ig-ng.dat" hashLocation="s321136.cab/stream.x86.ig-ng.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1136"/>
+      <!-- End Igbo -->
+
+      <!--  isiXhosa -->
+        <File name="s321076.cab" relativePath="/office/data/%version%/" language="1076" />
+        <File name="stream.x86.xh-za.dat" hashLocation="s321076.cab/stream.x86.xh-za.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1076"/>
+      <!-- End isiXhosa -->
+
+      <!--  isiZulu -->
+        <File name="s321077.cab" relativePath="/office/data/%version%/" language="1077" />
+        <File name="stream.x86.zu-za.dat" hashLocation="s321077.cab/stream.x86.zu-za.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1077"/>
+      <!-- End isiZulu -->
+
+      <!--  Kinyarwanda -->
+        <File name="s321159.cab" relativePath="/office/data/%version%/" language="1159" />
+        <File name="stream.x86.rw-rw.dat" hashLocation="s321159.cab/stream.x86.rw-rw.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1159"/>
+      <!-- End Kinyarwanda -->
+
+      <!--  Pashto -->
+        <File name="s321123.cab" relativePath="/office/data/%version%/" language="1123" />
+        <File name="stream.x86.ps-af.dat" hashLocation="s321123.cab/stream.x86.ps-af.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1123"/>
+      <!-- End Pashto -->
+
+      <!--  Romansh -->
+        <File name="s321047.cab" relativePath="/office/data/%version%/" language="1047" />
+        <File name="stream.x86.rm-ch.dat" hashLocation="s321047.cab/stream.x86.rm-ch.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1047"/>
+      <!-- End Romansh -->
+
+      <!--  Sesotho sa Leboa -->
+        <File name="s321132.cab" relativePath="/office/data/%version%/" language="1132" />
+        <File name="stream.x86.nso-za.dat" hashLocation="s321132.cab/stream.x86.nso-za.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1132"/>
+      <!-- End Sesotho sa Leboa -->
+
+      <!--  Setswana -->
+        <File name="s321074.cab" relativePath="/office/data/%version%/" language="1074" />
+        <File name="stream.x86.tn-za.dat" hashLocation="s321074.cab/stream.x86.tn-za.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1074"/>
+      <!-- End Setswana -->
+
+      <!--  Wolof -->
+        <File name="s321160.cab" relativePath="/office/data/%version%/" language="1160" />
+        <File name="stream.x86.wo-sn.dat" hashLocation="s321160.cab/stream.x86.wo-sn.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1160"/>
+      <!-- End Wolof -->
+
+      <!--  Yoruba -->
+        <File name="s321130.cab" relativePath="/office/data/%version%/" language="1130" />
+        <File name="stream.x86.yo-ng.dat" hashLocation="s321130.cab/stream.x86.yo-ng.hash" hashAlgo="Sha256" relativePath="/office/data/%version%/" language="1130"/>
+      <!-- End Yoruba -->
+    <!-- End Proofing Tools -->
+  
+
+  <!-- End Language Specific Files-->
+
+
+</UpdateFiles >

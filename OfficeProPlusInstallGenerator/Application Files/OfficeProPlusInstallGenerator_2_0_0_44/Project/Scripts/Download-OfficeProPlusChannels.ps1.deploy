@@ -1,0 +1,534 @@
+﻿try +AHs-
++ACQ-enumDef +AD0- +ACI-
+using System+ADs-
+       +AFs-FlagsAttribute+AF0-
+       public enum Bitness
+       +AHs-
+          Both +AD0- 0,
+          v32 +AD0- 1,
+          v64 +AD0- 2
+       +AH0-
++ACI-
+Add-Type -TypeDefinition +ACQ-enumDef -ErrorAction SilentlyContinue
++AH0- catch +AHs- +AH0-
+
+try +AHs-
++ACQ-enumDef +AD0- +ACI-
+using System+ADs-
+       +AFs-FlagsAttribute+AF0-
+       public enum OfficeBranch
+       +AHs-
+          FirstReleaseCurrent +AD0- 0,
+          Current +AD0- 1,
+          FirstReleaseBusiness +AD0- 2,
+          Business +AD0- 3,
+          CMValidation +AD0- 4
+       +AH0-
++ACI-
+Add-Type -TypeDefinition +ACQ-enumDef -ErrorAction SilentlyContinue
++AH0- catch +AHs- +AH0-
+
+try +AHs-
++ACQ-enumDef +AD0- +ACI-
+using System+ADs-
+       +AFs-FlagsAttribute+AF0-
+       public enum OfficeChannel
+       +AHs-
+          FirstReleaseCurrent +AD0- 0,
+          Current +AD0- 1,
+          FirstReleaseDeferred +AD0- 2,
+          Deferred +AD0- 3
+       +AH0-
++ACI-
+Add-Type -TypeDefinition +ACQ-enumDef -ErrorAction SilentlyContinue
++AH0- catch +AHs- +AH0-
+
+function Download-OfficeProPlusChannels+AHs-
++ADwAIw-
+.SYNOPSIS
+Downloads each Office ProPlus Channel with installation files
+.DESCRIPTION
+This script will dynamically downloaded the most current Office ProPlus version for each deployment Channel
+.PARAMETER Version
+The version number you wish to download. For example: 16.0.6228.1010
+.PARAMETER TargetDirectory
+Required. Where all the channels will be downloaded. Each channel then goes into a folder of the same name as the channel.
+.PARAMETER Languages
+Array of Microsoft language codes. Will throw error if provided values don't match the validation set. Defaults to +ACI-en-us+ACI-
+(+ACI-en-us+ACI-,+ACI-ar-sa+ACI-,+ACI-bg-bg+ACI-,+ACI-zh-cn+ACI-,+ACI-zh-tw+ACI-,+ACI-hr-hr+ACI-,+ACI-cs-cz+ACI-,+ACI-da-dk+ACI-,+ACI-nl-nl+ACI-,+ACI-et-ee+ACI-,+ACI-fi-fi+ACI-,+ACI-fr-fr+ACI-,+ACI-de-de+ACI-,+ACI-el-gr+ACI-,+ACI-he-il+ACI-,+ACI-hi-in+ACI-,+ACI-hu-hu+ACI-,+ACI-id-id+ACI-,+ACI-it-it+ACI-,
++ACI-ja-jp+ACI-,+ACI-kk-kz+ACI-,+ACI-ko-kr+ACI-,+ACI-lv-lv+ACI-,+ACI-lt-lt+ACI-,+ACI-ms-my+ACI-,+ACI-nb-no+ACI-,+ACI-pl-pl+ACI-,+ACI-pt-br+ACI-,+ACI-pt-pt+ACI-,+ACI-ro-ro+ACI-,+ACI-ru-ru+ACI-,+ACI-sr-latn-rs+ACI-,+ACI-sk-sk+ACI-,+ACI-sl-si+ACI-,+ACI-es-es+ACI-,+ACI-sv-se+ACI-,+ACI-th-th+ACI-,
++ACI-tr-tr+ACI-,+ACI-uk-ua+ACI-)
+.PARAMETER Bitness
+v32, v64, or Both. What bitness of office you wish to download. Defaults to Both.
+.PARAMETER OverWrite
+If this parameter is specified then existing files will be overwritten.
+.PARAMETER Branches
+An array of the Branches you wish to download (This parameter is left for legacy usage)
+.PARAMETER Channels
+An array of the Channels you wish to download. Defaults to all available channels except First Release Current
+.PARAMETER NumVersionsToKeep
+This parameter controls the number of versions to retain. Any older versions will be deleted.
+.PARAMETER UseChannelFolderShortName
+This parameter change the folder name that the scripts creates for each Channel folder. For example if this paramter is set to +ACQ-true then the Current Channel folder will be named +ACI-CC+ACI-
+.PARAMETER NumOfRetries
+This parameter Controls the number of times the script will retry if a failure happens
+.PARAMETER IncludeChannelInfo
+This parameter Controls whether the ofl.cab file is downloaded and cached in the root of the TargetDirectory folder
+.Example
+Download-OfficeProPlusChannels -TargetDirectory +ACIAXABc-server+AFw-updateshare+ACI-
+Default downloads all available channels of the most recent version for both bitnesses into an update source. Downloads the English language pack by default if language is not specified.
+.Link
+https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
++ACMAPg-
+
+Param(
+    +AFs-Parameter()+AF0-
+    +AFs-string+AF0- +ACQ-Version,
+
+    +AFs-Parameter(Mandatory+AD0AJA-true)+AF0-
+    +AFs-string+AF0- +ACQ-TargetDirectory,
+
+    +AFs-Parameter()+AF0-
+    +AFs-ValidateSet(+ACI-en-us+ACI-,+ACI-ar-sa+ACI-,+ACI-bg-bg+ACI-,+ACI-zh-cn+ACI-,+ACI-zh-tw+ACI-,+ACI-hr-hr+ACI-,+ACI-cs-cz+ACI-,+ACI-da-dk+ACI-,+ACI-nl-nl+ACI-,+ACI-et-ee+ACI-,+ACI-fi-fi+ACI-,+ACI-fr-fr+ACI-,+ACI-de-de+ACI-,+ACI-el-gr+ACI-,+ACI-he-il+ACI-,+ACI-hi-in+ACI-,+ACI-hu-hu+ACI-,+ACI-id-id+ACI-,+ACI-it-it+ACI-,
+                +ACI-ja-jp+ACI-,+ACI-kk-kz+ACI-,+ACI-ko-kr+ACI-,+ACI-lv-lv+ACI-,+ACI-lt-lt+ACI-,+ACI-ms-my+ACI-,+ACI-nb-no+ACI-,+ACI-pl-pl+ACI-,+ACI-pt-br+ACI-,+ACI-pt-pt+ACI-,+ACI-ro-ro+ACI-,+ACI-ru-ru+ACI-,+ACI-sr-latn-rs+ACI-,+ACI-sk-sk+ACI-,+ACI-sl-si+ACI-,+ACI-es-es+ACI-,+ACI-sv-se+ACI-,+ACI-th-th+ACI-,
+                +ACI-tr-tr+ACI-,+ACI-uk-ua+ACI-)+AF0-
+    +AFs-string+AFsAXQBd- +ACQ-Languages +AD0- (+ACI-en-us+ACI-),
+
+    +AFs-Parameter()+AF0-
+    +AFs-Bitness+AF0- +ACQ-Bitness +AD0- 0,
+
+    +AFs-Parameter()+AF0-
+    +AFs-int+AF0- +ACQ-NumVersionsToKeep +AD0- 2,
+
+    +AFs-Parameter()+AF0-
+    +AFs-bool+AF0- +ACQ-UseChannelFolderShortName +AD0- +ACQ-true,
+
+    +AFs-Parameter()+AF0-
+    +AFs-bool+AF0- +ACQ-OverWrite +AD0- +ACQ-false,
+
+    +AFs-Parameter()+AF0-
+    +AFs-OfficeBranch+AFsAXQBd- +ACQ-Branches,
+
+    +AFs-Parameter()+AF0-
+    +AFs-OfficeChannel+AFsAXQBd- +ACQ-Channels +AD0- (0, 1, 2, 3),
+
+    +AFs-Parameter()+AF0-
+    +AFs-int+AF0- +ACQ-NumOfRetries +AD0- 5,
+
+    +AFs-Parameter()+AF0-
+    +AFs-bool+AF0- +ACQ-IncludeChannelInfo +AD0- +ACQ-false
+)
+
++ACQ-BranchesOrChannels +AD0- +AEA-()
+
+if(+ACQ-Branches.Count -gt 0)
++AHs-
+    foreach (+ACQ-branchName in +ACQ-Branches) +AHs-
+      +ACQ-channelConvertName +AD0- ConvertBranchNameToChannelName -BranchName +ACQ-branchName
+      +ACQ-BranchesOrChannels +-+AD0- +ACQ-channelConvertName
+    +AH0-
++AH0-
+else+AHs-
+    +ACQ-BranchesOrChannels +AD0- +ACQ-Channels
++AH0-
+      
++ACQ-numberOfFiles +AD0- ((+ACQ-BranchesOrChannels.Count) +ACo- (((+ACQ-Languages.Count +- 1)+ACo-3) +- 5))
+
++AFs-bool+AF0AJA-downloadSuccess +AD0- +ACQ-TRUE+ADs-
+For(+ACQ-i+AD0-1+ADs- +ACQ-i -le +ACQ-NumOfRetries+ADs- +ACQ-i+-+-)+AHsAIw-loops through download process in the event of a failure in order to retry
+
+    try+AHs-
+        +ACQ-XMLFilePath +AD0- +ACIAJA-env:TEMP/ofl.cab+ACI-
+        +ACQ-XMLDownloadURL +AD0- +ACI-http://officecdn.microsoft.com/pr/wsus/ofl.cab+ACI-
+
+        DownloadFile -url +ACQ-XMLDownloadURL -targetFile +ACQ-XMLFilePath
+
+        if (+ACQ-IncludeChannelInfo) +AHs-
+            Copy-Item -Path +ACQ-XMLFilePath -Destination +ACIAJA-TargetDirectory+AFw-ofl.cab+ACI-
+        +AH0-
+
+        if(+ACQ-Bitness -eq +AFs-Bitness+AF0-::Both -or +ACQ-Bitness -eq +AFs-Bitness+AF0-::v32)+AHs-
+            +ACQ-32XMLFileName +AD0- +ACI-o365client+AF8-32bit.xml+ACI-
+            expand +ACQ-XMLFilePath +ACQ-env:TEMP -f:+ACQ-32XMLFileName +AHw- Out-Null
+            +ACQ-32XMLFilePath +AD0- +ACQ-env:TEMP +- +ACIAXA-o365client+AF8-32bit.xml+ACI-
+            +AFs-xml+AF0AJA-32XML +AD0- Get-Content +ACQ-32XMLFilePath
+            +ACQ-xmlArray +AD0- (+ACQ-32XML)
+        +AH0-
+
+        if(+ACQ-Bitness -eq +AFs-Bitness+AF0-::Both -or +ACQ-Bitness -eq +AFs-Bitness+AF0-::v64)+AHs-
+            +ACQ-64XMLFileName +AD0- +ACI-o365client+AF8-64bit.xml+ACI-
+            expand +ACQ-XMLFilePath +ACQ-env:TEMP -f:+ACQ-64XMLFileName +AHw- Out-Null
+            +ACQ-64XMLFilePath +AD0- +ACQ-env:TEMP +- +ACIAXA-o365client+AF8-64bit.xml+ACI-
+            +AFs-xml+AF0AJA-64XML +AD0- Get-Content +ACQ-64XMLFilePath
+            if(+ACQ-xmlArray -ne +ACQ-null)+AHs-
+                +ACQ-xmlArray +AD0- (+ACQ-32XML,+ACQ-64XML)
+                +ACQ-numberOfFiles +AD0- +ACQ-numberOfFiles +ACo- 2
+            +AH0-else+AHs-
+                +ACQ-xmlArray +AD0- (+ACQ-64XML)
+            +AH0-
+        +AH0-
+
+        +ACQ-j +AD0- 0
+        +ACQ-b +AD0- 0
+        +ACQ-BranchCount +AD0- +ACQ-BranchesOrChannels.Count +ACo- 2
+
+        +ACM-loop to download files
+        +ACQ-xmlArray +AHw- +ACUAew-
+            +ACQ-CurrentVersionXML +AD0- +ACQAXw-
+    
+            +ACQ-currentBitness +AD0- +ACI-32-Bit+ACI-
+            if (+ACQ-CurrentVersionXML.OuterXml.Contains(+ACI-Architecture: 64 Bit+ACI-)) +AHs-
+                +ACQ-currentBitness +AD0- +ACI-64-Bit+ACI-
+            +AH0-
+
+            Write-Host
+            Write-Host +ACI-Downloading Bitness : +ACQ-currentBitness+ACI-
+
+            +ACM-loop for each branch
+            +ACQ-BranchesOrChannels +AHw- +ACUAew-
+                +ACQ-currentBranch +AD0- +ACQAXw-
+                +ACQ-b+-+-
+
+                Write-Progress -id 1 -Activity +ACI-Downloading Channel+ACI- -status +ACI-Channel: +ACQ-(+ACQ-currentBranch.ToString()) : +ACQ-currentBitness+ACI- -percentComplete (+ACQ-b / +ACQ-BranchCount +ACo-100) 
+                Write-Host +ACIAYA-tDownloading Channel: +ACQ-currentBranch+ACI-
+
+                +ACQ-FolderName +AD0- +ACQ-(+ACQAXw-.ToString())
+
+                if (+ACQ-UseChannelFolderShortName) +AHs-
+                   +ACQ-FolderName +AD0- ConvertChannelNameToShortName -ChannelName +ACQ-FolderName  
+                +AH0-
+       
+                +ACQ-baseURL +AD0- +ACQ-CurrentVersionXML.UpdateFiles.baseURL +AHw- ? branch -eq +ACQAXw-.ToString() +AHw- +ACUAewAkAF8-.URL+AH0AOw-
+                if(+ACE-(Test-Path +ACIAJA-TargetDirectory+AFwAJA-FolderName+AFwAIg-))+AHs-
+                    New-Item -Path +ACIAJA-TargetDirectory+AFwAJA-FolderName+AFwAIg- -ItemType directory -Force +AHw- Out-Null
+                +AH0-
+                if(+ACE-(Test-Path +ACIAJA-TargetDirectory+AFwAJA-FolderName+AFw-Office+ACI-))+AHs-
+                    New-Item -Path +ACIAJA-TargetDirectory+AFwAJA-FolderName+AFw-Office+ACI- -ItemType directory -Force +AHw- Out-Null
+                +AH0-
+                if(+ACE-(Test-Path +ACIAJA-TargetDirectory+AFwAJA-FolderName+AFw-Office+AFw-Data+ACI-))+AHs-
+                    New-Item -Path +ACIAJA-TargetDirectory+AFwAJA-FolderName+AFw-Office+AFw-Data+ACI- -ItemType directory -Force +AHw- Out-Null
+                +AH0-
+
+                if(+AFs-String+AF0-::IsNullOrWhiteSpace(+ACQ-Version))+AHs-
+                    +ACM-get base .cab to get current version
+                    +ACQ-baseCabFile +AD0- +ACQ-CurrentVersionXML.UpdateFiles.File +AHw- ? rename -ne +ACQ-null
+                    +ACQ-url +AD0- +ACIAJA-baseURL+ACQ-(+ACQ-baseCabFile.relativePath)+ACQ-(+ACQ-baseCabFile.rename)+ACI-
+                    +ACQ-destination +AD0- +ACIAJA-TargetDirectory+AFwAJA-FolderName+AFw-Office+AFw-Data+AFwAJA-(+ACQ-baseCabFile.rename)+ACI-
+
+                    DownloadFile -url +ACQ-url -targetFile +ACQ-destination
+
+                    expand +ACQ-destination +ACQ-env:TEMP -f:+ACI-VersionDescriptor.xml+ACI- +AHw- Out-Null
+                    +ACQ-baseCabFileName +AD0- +ACQ-env:TEMP +- +ACIAXA-VersionDescriptor.xml+ACI-
+                    +AFs-xml+AF0AJA-vdxml +AD0- Get-Content +ACQ-baseCabFileName
+                    +ACQ-currentVersion +AD0- +ACQ-vdxml.Version.Available.Build+ADs-
+                    Remove-Item -Path +ACQ-baseCabFileName
+                +AH0-else+AHs-
+                    +ACQ-currentVersion +AD0- +ACQ-Version
+
+                    +ACQ-relativePath +AD0- +ACQAXw-.relativePath -replace +ACIAYAAl-version+AGAAJQAi-, +ACQ-currentVersion
+                    +ACQ-fileName +AD0- +ACI-/Office/Data/v32+AF8AJA-currentVersion.cab+ACI-
+                    +ACQ-url +AD0- +ACIAJA-baseURL+ACQ-relativePath+ACQ-fileName+ACI-
+
+                    try +AHs-
+                        Invoke-WebRequest -Uri +ACQ-url -ErrorAction Stop +AHw- Out-Null
+                    +AH0- catch +AHs-
+                      Write-Host +ACIAYA-t+AGA-tVersion Not Found: +ACQ-currentVersion+ACI-
+                      return 
+                    +AH0-
+                +AH0-
+
+                if(+ACE-(Test-Path +ACIAJA-TargetDirectory+AFwAJA-FolderName+AFw-Office+AFw-Data+AFwAJA-currentVersion+ACI-))+AHs-
+                    New-Item -Path +ACIAJA-TargetDirectory+AFwAJA-FolderName+AFw-Office+AFw-Data+AFwAJA-currentVersion+ACI- -ItemType directory -Force +AHw- Out-Null
+                +AH0-
+				if(+ACE-(Test-Path +ACIAJA-TargetDirectory+AFwAJA-FolderName+AFw-Office+AFw-Data+AFwAJA-currentVersion+AFw-Experiment+ACI-))+AHs-
+                    New-Item -Path +ACIAJA-TargetDirectory+AFwAJA-FolderName+AFw-Office+AFw-Data+AFwAJA-currentVersion+AFw-Experiment+ACI- -ItemType directory -Force +AHw- Out-Null
+				+AH0-
+                +ACQ-numberOfFiles +AD0- 0
+                +ACQ-j +AD0- 0
+
+                +ACQ-CurrentVersionXML.UpdateFiles.File +AHw- ? language -eq +ACI-0+ACI- +AHw- 
+                +ACUAew-
+                   +ACQ-numberOfFiles +-+-
+                +AH0-
+
+                +ACQ-Languages +AHw- 
+                +ACUAew-
+                    +ACM-LANGUAGE LOGIC HERE
+                    +ACQ-languageId  +AD0- +AFs-globalization.cultureinfo+AF0-::GetCultures(+ACI-allCultures+ACI-) +AHw- ? Name -eq +ACQAXw- +AHw- +ACUAewAkAF8-.LCID+AH0-
+                    +ACQ-CurrentVersionXML.UpdateFiles.File +AHw- ? language -eq +ACQ-languageId +AHw- 
+                            +ACUAew-
+                   +ACQ-numberOfFiles +-+-
+                +AH0-
+                +AH0-
+
+
+                +ACM-basic files
+                +ACQ-CurrentVersionXML.UpdateFiles.File +AHw- ? language -eq +ACI-0+ACI- +AHw- 
+                +ACUAew-
+                    +ACQ-name +AD0- +ACQAXw-.name -replace +ACIAYAAl-version+AGAAJQAi-, +ACQ-currentVersion
+                    +ACQ-relativePath +AD0- +ACQAXw-.relativePath -replace +ACIAYAAl-version+AGAAJQAi-, +ACQ-currentVersion
+                    +ACQ-url +AD0- +ACIAJA-baseURL+ACQ-relativePath+ACQ-name+ACI-
+                    +ACQ-destination +AD0- +ACIAJA-TargetDirectory+AFwAJA-FolderName+ACQ-relativePath+ACQ-name+ACI-
+
+                    if (+ACE-(Test-Path -Path +ACQ-destination) -or +ACQ-OverWrite) +AHs-
+                       DownloadFile -url +ACQ-url -targetFile +ACQ-destination
+                    +AH0-
+
+                    +ACQ-j +AD0- +ACQ-j +- 1
+                    Write-Progress -id 2 -ParentId 1 -Activity +ACI-Downloading Channel Files+ACI- -status +ACI-Channel: +ACQ-(+ACQ-currentBranch.ToString())+ACI- -percentComplete (+ACQ-j / +ACQ-numberOfFiles +ACo-100)
+                +AH0-
+
+                +ACM-language files
+                +ACQ-Languages +AHw- 
+                +ACUAew-
+                    +ACM-LANGUAGE LOGIC HERE
+                    +ACQ-languageId  +AD0- +AFs-globalization.cultureinfo+AF0-::GetCultures(+ACI-allCultures+ACI-) +AHw- ? Name -eq +ACQAXw- +AHw- +ACUAewAkAF8-.LCID+AH0-
+                    +ACQ-CurrentVersionXML.UpdateFiles.File +AHw- ? language -eq +ACQ-languageId +AHw- 
+                    +ACUAew-
+                        +ACQ-name +AD0- +ACQAXw-.name -replace +ACIAYAAl-version+AGAAJQAi-, +ACQ-currentVersion
+                        +ACQ-relativePath +AD0- +ACQAXw-.relativePath -replace +ACIAYAAl-version+AGAAJQAi-, +ACQ-currentVersion
+                        +ACQ-url +AD0- +ACIAJA-baseURL+ACQ-relativePath+ACQ-name+ACI-
+                        +ACQ-destination +AD0- +ACIAJA-TargetDirectory+AFwAJA-FolderName+ACQ-relativePath+ACQ-name+ACI-
+
+                        if (+ACE-(Test-Path -Path +ACQ-destination) -or +ACQ-OverWrite) +AHs-
+                           DownloadFile -url +ACQ-url -targetFile +ACQ-destination
+                        +AH0-
+
+                        +ACQ-j +AD0- +ACQ-j +- 1
+                        Write-Progress -id 2 -ParentId 1 -Activity +ACI-Downloading Channel Files+ACI- -status +ACI-Channel: +ACQ-(+ACQ-currentBranch.ToString())+ACI- -percentComplete (+ACQ-j / +ACQ-numberOfFiles +ACo-100)
+                    +AH0-
+                +AH0-
+
+
+            +AH0-
+
+        +AH0-
+
+    +AH0-
+    catch 
+    +AHs-
+        +ACM-if download fails, displays error, continues loop
+        +ACQ-errorMessage +AD0- +ACQ-computer +- +ACI-: +ACI- +- +ACQAXw-
+        Write-Host +ACQ-errorMessage -ForegroundColor White -BackgroundColor Red
+        +ACQ-downloadSuccess +AD0- +ACQ-FALSE+ADs-
+    +AH0-
+
+    if(+ACQ-downloadSuccess)+AHsAIw-if download succeeds, breaks out of loop
+        break
+    +AH0-
+
++AH0AIw-end of for loop
+
+PurgeOlderVersions +ACQ-TargetDirectory +ACQ-NumVersionsToKeep +ACQ-BranchesOrChannels
+
++AH0-
+
+function DownloadFile(+ACQ-url, +ACQ-targetFile) +AHs-
+
+  for(+ACQ-t+AD0-1+ADsAJA-t -lt 10+ADs- +ACQ-t+-+-) +AHs-
+   try +AHs-
+       +ACQ-uri +AD0- New-Object +ACI-System.Uri+ACI- +ACIAJA-url+ACI-
+       +ACQ-request +AD0- +AFs-System.Net.HttpWebRequest+AF0-::Create(+ACQ-uri)
+       +ACQ-request.set+AF8-Timeout(3000) +ACM-15 second timeout
+
+       +ACQ-response +AD0- +ACQ-request.GetResponse()
+       +ACQ-totalLength +AD0- +AFs-System.Math+AF0-::Floor(+ACQ-response.get+AF8-ContentLength()/1024)
+       +ACQ-responseStream +AD0- +ACQ-response.GetResponseStream()
+       +ACQ-targetStream +AD0- New-Object -TypeName System.IO.FileStream -ArgumentList +ACQ-targetFile, Create
+       +ACQ-buffer +AD0- new-object byte+AFsAXQ- 8192KB
+       +ACQ-count +AD0- +ACQ-responseStream.Read(+ACQ-buffer,0,+ACQ-buffer.length)
+       +ACQ-downloadedBytes +AD0- +ACQ-count
+
+       while (+ACQ-count -gt 0)
+       +AHs-
+           +ACQ-targetStream.Write(+ACQ-buffer, 0, +ACQ-count)
+           +ACQ-count +AD0- +ACQ-responseStream.Read(+ACQ-buffer,0,+ACQ-buffer.length)
+           +ACQ-downloadedBytes +AD0- +ACQ-downloadedBytes +- +ACQ-count
+           Write-Progress -id 3 -ParentId 2 -activity +ACI-Downloading file '+ACQ-(+ACQ-url.split('/') +AHw- Select -Last 1)'+ACI- -status +ACI-Downloaded (+ACQ-(+AFs-System.Math+AF0-::Floor(+ACQ-downloadedBytes/1024))K of +ACQ-(+ACQ-totalLength)K): +ACI- -PercentComplete (((+AFs-System.Math+AF0-::Floor(+ACQ-downloadedBytes/1024)) / +ACQ-totalLength)  +ACo- 100)
+       +AH0-
+
+       Write-Progress -id 3 -ParentId 2 -activity +ACI-Finished downloading file '+ACQ-(+ACQ-url.split('/') +AHw- Select -Last 1)'+ACI-
+
+       +ACQ-targetStream.Flush()
+       +ACQ-targetStream.Close()
+       +ACQ-targetStream.Dispose()
+       +ACQ-responseStream.Dispose()
+       break+ADs-
+   +AH0- catch +AHs-
+     +ACQ-strError +AD0- +ACQAXw-.Message
+     if (+ACQ-t -ge 9) +AHs-
+        throw
+     +AH0-
+   +AH0-
+   Start-Sleep -Milliseconds 500
+  +AH0-
++AH0-
+
+function PurgeOlderVersions(+AFs-string+AF0AJA-targetDirectory, +AFs-int+AF0AJA-numVersionsToKeep, +AFs-array+AF0AJA-channels)+AHs-
+    Write-Host +ACI-Checking for Older Versions+ACI-
+                         
+    for(+ACQ-k +AD0- 0+ADs- +ACQ-k -lt +ACQ-channels.Count+ADs- +ACQ-k+-+-)
+    +AHs-
+        +AFs-array+AF0AJA-totalVersions +AD0- +AEA-()+ACM-declare empty array so each folder can be purged of older versions individually
+        +AFs-string+AF0AJA-channelName +AD0- +ACQ-channels+AFsAJA-k+AF0-
+        +AFs-string+AF0AJA-shortChannelName +AD0- ConvertChannelNameToShortName -ChannelName +ACQ-channelName
+        +AFs-string+AF0AJA-branchName +AD0- ConvertChannelNameToBranchName -ChannelName +ACQ-channelName
+        +AFs-string+AF0AJA-channelName2 +AD0- ConvertBranchNameToChannelName -BranchName +ACQ-channelName
+
+        +ACQ-folderList +AD0- +AEA-(+ACQ-channelName, +ACQ-shortChannelName, +ACQ-channelName2, +ACQ-branchName)
+
+        foreach (+ACQ-folderName in +ACQ-folderList) +AHs-
+            +ACQ-directoryPath +AD0- +ACQ-TargetDirectory.ToString() +- '+AFw-'+- +ACQ-folderName +-'+AFw-Office+AFw-Data'
+
+            if (Test-Path -Path +ACQ-directoryPath) +AHs-
+               break+ADs-
+            +AH0-
+        +AH0-
+
+        if (Test-Path -Path +ACQ-directoryPath) +AHs-
+            Write-Host +ACIAYA-tChannel: +ACQ-channelName2+ACI-
+             +AFs-bool+AF0AJA-versionsToRemove +AD0- +ACQ-false
+
+            +ACQ-files +AD0- Get-ChildItem +ACQ-directoryPath  
+            Foreach(+ACQ-file in +ACQ-files)
+            +AHs-        
+                if(+ACQ-file.GetType().Name -eq 'DirectoryInfo')
+                +AHs-
+                    +ACQ-totalVersions+-+AD0AJA-file.Name
+                +AH0-
+            +AH0-
+
+            +ACM-check if number of versions is greater than number of versions to hold onto, if not, then we don't need to do anything
+            if(+ACQ-totalVersions.Length -gt +ACQ-numVersionsToKeep)
+            +AHs-
+                +ACM-sort array in numerical order
+                +ACQ-totalVersions +AD0- +ACQ-totalVersions +AHw- Sort-Object 
+               
+                +ACM-delete older versions
+                +ACQ-numToDelete +AD0- +ACQ-totalVersions.Length - +ACQ-numVersionsToKeep
+                for(+ACQ-i +AD0- 1+ADs- +ACQ-i -le +ACQ-numToDelete+ADs- +ACQ-i+-+-)+ACM-loop through versions
+                +AHs-
+                     +ACQ-versionsToRemove +AD0- +ACQ-true
+                     +ACQ-removeVersion +AD0- +ACQ-totalVersions+AFs-(+ACQ-i-1)+AF0-
+                     Write-Host +ACIAYA-t+AGA-tRemoving Version: +ACQ-removeVersion+ACI-
+                     
+                     Foreach(+ACQ-file in +ACQ-files)+ACM-loop through files
+                     +AHs-  +ACM-array is 0 based
+
+                        if(+ACQ-file.Name.Contains(+ACQ-removeVersion))
+                        +AHs-                               
+                            +ACQ-folderPath +AD0- +ACIAJA-directoryPath+AFwAJA-file+ACI-
+
+                             for(+ACQ-t+AD0-1+ADsAJA-t -lt 5+ADs- +ACQ-t+-+-) +AHs-
+                               try +AHs-
+                                  Remove-Item -Recurse -Force +ACQ-folderPath
+                                  break+ADs-
+                               +AH0- catch +AHs-
+                                 if (+ACQ-t -ge 4) +AHs-
+                                    throw
+                                 +AH0-
+                               +AH0-
+                             +AH0-
+                        +AH0-
+                     +AH0-
+                +AH0-
+
+            +AH0-
+
+            if (+ACE-(+ACQ-versionsToRemove)) +AHs-
+                Write-Host +ACIAYA-t+AGA-tNo Versions to Remove+ACI-
+            +AH0-
+        +AH0-
+
+
+    +AH0-    
+      
++AH0-
+
+function ConvertChannelNameToShortName +AHs-
+    Param(
+       +AFs-Parameter()+AF0-
+       +AFs-string+AF0- +ACQ-ChannelName
+    )
+    Process +AHs-
+       if (+ACQ-ChannelName.ToLower() -eq +ACI-FirstReleaseCurrent+ACI-.ToLower()) +AHs-
+         return +ACI-FRCC+ACI-
+       +AH0-
+       if (+ACQ-ChannelName.ToLower() -eq +ACI-Current+ACI-.ToLower()) +AHs-
+         return +ACI-CC+ACI-
+       +AH0-
+       if (+ACQ-ChannelName.ToLower() -eq +ACI-FirstReleaseDeferred+ACI-.ToLower()) +AHs-
+         return +ACI-FRDC+ACI-
+       +AH0-
+       if (+ACQ-ChannelName.ToLower() -eq +ACI-Deferred+ACI-.ToLower()) +AHs-
+         return +ACI-DC+ACI-
+       +AH0-
+       if (+ACQ-ChannelName.ToLower() -eq +ACI-Business+ACI-.ToLower()) +AHs-
+         return +ACI-DC+ACI-
+       +AH0-
+       if (+ACQ-ChannelName.ToLower() -eq +ACI-FirstReleaseBusiness+ACI-.ToLower()) +AHs-
+         return +ACI-FRDC+ACI-
+       +AH0-
+    +AH0-
++AH0-
+
+function ConvertChannelNameToBranchName +AHs-
+    Param(
+       +AFs-Parameter()+AF0-
+       +AFs-string+AF0- +ACQ-ChannelName
+    )
+    Process +AHs-
+       if (+ACQ-ChannelName.ToLower() -eq +ACI-FirstReleaseCurrent+ACI-.ToLower()) +AHs-
+         return +ACI-FirstReleaseCurrent+ACI-
+       +AH0-
+       if (+ACQ-ChannelName.ToLower() -eq +ACI-Current+ACI-.ToLower()) +AHs-
+         return +ACI-Current+ACI-
+       +AH0-
+       if (+ACQ-ChannelName.ToLower() -eq +ACI-FirstReleaseDeferred+ACI-.ToLower()) +AHs-
+         return +ACI-FirstReleaseBusiness+ACI-
+       +AH0-
+       if (+ACQ-ChannelName.ToLower() -eq +ACI-Deferred+ACI-.ToLower()) +AHs-
+         return +ACI-Business+ACI-
+       +AH0-
+       if (+ACQ-ChannelName.ToLower() -eq +ACI-Business+ACI-.ToLower()) +AHs-
+         return +ACI-Business+ACI-
+       +AH0-
+       if (+ACQ-ChannelName.ToLower() -eq +ACI-FirstReleaseBusiness+ACI-.ToLower()) +AHs-
+         return +ACI-FirstReleaseBusiness+ACI-
+       +AH0-
+    +AH0-
++AH0-
+
+function ConvertBranchNameToChannelName +AHs-
+    Param(
+       +AFs-Parameter()+AF0-
+       +AFs-string+AF0- +ACQ-BranchName
+    )
+    Process +AHs-
+       if (+ACQ-BranchName.ToLower() -eq +ACI-FirstReleaseCurrent+ACI-.ToLower()) +AHs-
+         return +ACI-FirstReleaseCurrent+ACI-
+       +AH0-
+       if (+ACQ-BranchName.ToLower() -eq +ACI-Current+ACI-.ToLower()) +AHs-
+         return +ACI-Current+ACI-
+       +AH0-
+       if (+ACQ-BranchName.ToLower() -eq +ACI-FirstReleaseDeferred+ACI-.ToLower()) +AHs-
+         return +ACI-FirstReleaseDeferred+ACI-
+       +AH0-
+       if (+ACQ-BranchName.ToLower() -eq +ACI-Deferred+ACI-.ToLower()) +AHs-
+         return +ACI-Deferred+ACI-
+       +AH0-
+       if (+ACQ-BranchName.ToLower() -eq +ACI-Business+ACI-.ToLower()) +AHs-
+         return +ACI-Deferred+ACI-
+       +AH0-
+       if (+ACQ-BranchName.ToLower() -eq +ACI-FirstReleaseBusiness+ACI-.ToLower()) +AHs-
+         return +ACI-FirstReleaseDeferred+ACI-
+       +AH0-
+    +AH0-
++AH0-
+
+
+
+
+
+
+
