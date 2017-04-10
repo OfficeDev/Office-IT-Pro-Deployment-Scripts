@@ -22,7 +22,6 @@
 	margin:-8px -16px -20px -16px;
 	min-height:180px;
 	border-bottom:1px solid #106ebe;
-	width: inherit;
 }
 
 .Header-Subtext{
@@ -37,7 +36,7 @@
 	color:white;
 	border-color: white;
 	border-width: 1px;
-	background-color: #2488d8;
+	background-color: #005a9e;
 	margin-bottom:5px;
 }
 
@@ -49,99 +48,23 @@
 	margin-top:10px;
 }
 
-#siteNav{
-	height:in;
-/*	padding:0px 0px 0px 16px !important;
-*/
+
+.Site-Content
+{
+	margin:20px -20px 0px -20px;
+	height:100vh;
 }
-
-
-.Vertical-Nav{
-	background-color:#f4f4f4;
-	border-right: 2px solid #eaeaea;
-	margin-left:-30px;
-	margin-top:20px;
-	height:100%;
-	padding:0px 0px 0px 10px !important;
-}
-
 
 .Nav-Option{
-	background-color: #f4f4f4;
-	color:#3c3c3c;
-	width: auto;
-	min-height:40px;
-  	text-overflow: ellipsis;
-	cursor:pointer;
-	padding: 5px 5px 5px 25px;
-	margin-top:5px;
-	line-height: 40px;
-	/*text-align: center;*/
+	padding: 10px 0 10px 10px; 
 }
 
-.selected{
-	background-color: #a6a6a6;
-	margin:0;
-}
-
-
-.Section-Header{
-	border-bottom: 1px solid #a6a6a6;
-	color:#3c3c3c;
-	margin-left:10px;
-	margin-top: 30px;
-	cursor: pointer;
-}
-
-.Section-Body{
-	background-color:  #f4f4f4;
-	min-height: 50px;
-	margin:10px 0px 0px 10px;
-	margin-left:10px;
+#partialViews{
+	height:100%;
 	padding:10px;
 }
 
-.section-Header-Chevron{
-	color:#3c3c3c
-}
-
-
-#partial-views{
-	height:inherit;
-}
-.open-Chevron{
-    -ms-transform: rotate(90deg); /* IE 9 */
-    -webkit-transform: rotate(90deg); /* Chrome, Safari, Opera */
-    transform: rotate(90deg);
-}
-
-.close-Chevron{
-    -ms-transform: rotate(0deg); /* IE 9 */
-    -webkit-transform: rotate(0deg); /* Chrome, Safari, Opera */
-    transform: rotate(0deg);
-}
-
-
-#Trending{
-	background-color:#f4f4f4;
-	border-left: 2px solid #eaeaea;
-	margin-top:20px;
-	margin-left:8px;
-	height:inherit;
-}
-
-.TopicScreenShot-small{
-	height: 75px;
-	width:75px;
-	padding-right:12px;
-}
-
-.TopicDescription{
-	padding: 0px 30px 10px 0px;
-word-break: break-all;
-}
-
-.Topic{
- margin: 20px 10px 0px 0px;
- border-bottom: 1px solid #a6a6a6;
+.Selected{
+	color:#0078d7;
+	background-color: #b3d6f2;
 }
