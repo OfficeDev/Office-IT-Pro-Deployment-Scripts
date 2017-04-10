@@ -733,6 +733,14 @@ $(document).ready(function () {
         $("#btRemoveExcludeApp").prop('disabled', false);
     }
 
+
+    var locationHash = window.location.hash.replace('#',''); 
+
+    if(typeof(locationHash) !== "undefined" && locationHash !== ""){
+
+        setPanel("GenerateInstallPanel", locationHash); 
+    }
+
     //if (typeof ($.cookie('xmlHistory') !== undefined)) {
     //    $.removeCookie('xmlHistory', { path: '/' });
     //}
@@ -936,6 +944,13 @@ function setPanel(panelId, buttonId) {
     }
 
     $("#" + panelId).addClass("ms-u-slideLeftIn400");
+
+    if(buttonId === "installRow"){
+        window.location.hash = "installRow";
+    }
+    else{
+        window.location.hash = ""; 
+    }
 }
 
 function setVersionPanel(buttonId) {
