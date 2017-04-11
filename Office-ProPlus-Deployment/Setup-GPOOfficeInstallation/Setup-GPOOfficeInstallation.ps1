@@ -52,7 +52,8 @@ using System;
     {
         DeployWithScript = 0,
         DeployWithConfigurationFile = 1,
-        DeployWithInstallationFile = 2
+        DeployWithInstallationFile = 2,
+        RemoveWithScript = 3
     }
 "
 Add-Type -TypeDefinition $enum -ErrorAction SilentlyContinue
@@ -581,6 +582,12 @@ Create-GPOOfficeDeployment -GroupPolicyName DeployWithMSI -DeploymentType Deploy
             $newContent[$nextIndex+1] = "{0}CmdLine={1}" -f $nextScriptIndex, $ScriptName
             $newContent[$nextIndex+2] = "{0}Parameters=-OfficeDeploymentPath {1} -OfficeDeploymentFileName {2} -Quiet {3}" -f $nextScriptIndex, $OfficeDeploymentUNC, $OfficeDeploymentFileName, $Quiet
 
+        } elseif($DeploymentType -eq "RemoveWithScript")
+        {
+            if(!$ScriptName){$ScriptName = "GPO-ExampleRemovePreviousOfficeInstalls.ps1"}
+            
+            $newContent[$nextIndex+1] = "{0}CmdLine={1}" -f $nextScriptIndex, $ScriptName
+            $newContent[$nextIndex+2] = "{0}Parameters=-OfficeDeploymentPath {1}" -f $nextScriptIndex, $OfficeDeploymentUNC
         }
 
 	    for($i=$nextIndex; $i -lt $length; $i++)
