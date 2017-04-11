@@ -1,6 +1,6 @@
 ﻿$(document).ready(function() {
     // $('#Hamburger').remove();
-    // checkAddress();
+    checkAddress();
     // resizePage();
 
 });
@@ -212,21 +212,20 @@ function loadSection(sectionId){
 //         }}});
 // }
 
-// function checkAddress(){
-//     var pageId = location.hash.split('#')[1];
-//     var sectionId = location.hash.split('#')[2];
+function checkAddress(){
+    var pageId = location.hash.split('#')[1];
+    var sectionId = location.hash.split('#')[2];
 
-//     if(!pageId){
-//         pageId = 'Home' 
-//     }  
+    if(!pageId){
+        pageId = 'Home' 
+    }  
     
-//     $('.Nav-Option').each(function(i,obj){
-//          var onclickvalue = ($(obj).attr('onClick'))
-        
-//         if(onclickvalue.indexOf(pageId) > -1){
-//             $(obj).click();
-//         }
-//     });
-// }
+    $('.Nav-Option').each(function(i,obj){
+         var onclickvalue = ($(obj).attr('onClick'))        
+        if(onclickvalue.indexOf(pageId) > -1){
+            $(obj).click();
+        }
+    });
+}
 
 

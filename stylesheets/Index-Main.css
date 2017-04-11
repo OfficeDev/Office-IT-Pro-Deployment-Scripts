@@ -48,10 +48,9 @@
 	margin-top:10px;
 }
 
-
 .Site-Content
 {
-	margin:20px -20px 0px -20px;
+	margin:20px 0px 0px -20px;
 	height:100vh;
 }
 
@@ -64,7 +63,22 @@
 	padding:10px;
 }
 
+#trendingTopics{
+	height:100%;
+	padding:10px 0px 0px 0px;
+}
+
+.trendingHeader, .topic, .topicImg{
+	padding:5px 10px 5px 20px;
+}
+
+.topicImg{
+	width:200px;
+	height: 100px;
+}
+
 .Selected{
 	color:#0078d7;
 	background-color: #b3d6f2;
 }
+

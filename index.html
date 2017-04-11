@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en-us" style="height:100%">
+<html lang="en-us" style="height:100vh;margin-left:0px;margin-right:0px">
   <head>
     <meta charset="UTF-8">
     <title>Office Deployment Scripts for IT Pros by OfficeDev</title>
@@ -30,25 +30,24 @@
             
   </head>
     <body>
-        <main class="container" onresize="sidebarHeight()">
           <div class="ms-Grid">
             <div class="ms-Grid-row">
               <div class="ms-Grid-col ms-u-sm12 ms-u-xxxl12">
                 <div id="Header" class="Header ms-bgColor-themeDark">
-                  <div class="ms-Grid-row">&nbsp</div>
+                  <div class="ms-Grid-row" style="margin-right:0px">&nbsp</div>
                   <div class="ms-fontColor-white">
-                    <div class="ms-Grid-row">
+                    <div class="ms-Grid-row" style="margin-right:0px">
                         <div class="ms-Grid-col ms-u-sm10 ms-u-smPush1">
                           <div class="ms-font-xxl ms-fontWeight-regular ms-u-textAlignCenter">Office Deployment Scripts for IT Pros</div>
                         </div>
                       </div>
-                      <div class="ms-Grid-row">
+                      <div class="ms-Grid-row" style="margin-right:0px">
                         <div class="ms-Grid-col ms-u-sm10 ms-u-smPush1">
                           <div class="ms-font-s-plus ms-fontWeight-semiLight ms-u-textAlignCenter Header-Subtext" >Making Office 2016 and Office 365 ProPlus as simple as CLI</div>
                         </div>
                       </div>
-                      <div class="ms-Grid-row">&nbsp</div>
-                      <div class="ms-Grid-row">
+                      <div class="ms-Grid-row" style="margin-right:0px">&nbsp</div>
+                      <div class="ms-Grid-row" style="margin-right:0px">
                         <div class="ms-Grid-col ms-u-sm10 ms-u-smPush1 Header-buttonRow">
                           <div class="ms-Button ms-Button--primaryButton Header-button" onclick="openInNewTab('https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts');">Open On GitHub</div>
                           <div class="ms-Button ms-Button--primaryButton Header-button" onclick="downloadZip();">Download .zip</div>     
@@ -63,50 +62,50 @@
                   <div class="container">
                     <div class="ms-Grid">
                       <div id="home" class="ms-Grid-row ms-font-xl ms-fontWeight-semibold ms-fontColor-neutralPrimaryAlt ms-bgColor-neutralTertiaryAlt--hover Nav-Option" onclick="loadSection('home')">
-                        <div class="ms-Grid-col ms-u-xl2">
+                        <div class="ms-Grid-col ms-u-xl3">
                           <i class="ms-Icon ms-Icon--Home ms-fontSize-xxl" aria-hidden="true"></i>
                         </div>
-                        <div class="ms-Grid-col ms-u-xl10">
+                        <div class="ms-Grid-col ms-u-xl9">
                           Home
                         </div>
                       </div>
                       <div id="scripts" class="ms-Grid-row ms-font-xl ms-fontWeight-semibold ms-fontColor-neutralPrimaryAlt ms-bgColor-neutralTertiaryAlt--hover Nav-Option" onclick="loadSection('scripts')">
-                        <div class="ms-Grid-col ms-u-xl2">
+                        <div class="ms-Grid-col ms-u-xl3">
                           <i class="ms-Icon ms-Icon--Code ms-fontSize-xxl" aria-hidden="true"></i>
                         </div>
-                        <div class="ms-Grid-col ms-u-xl10">
+                        <div class="ms-Grid-col ms-u-xl9">
                           Scripts
                         </div>
                       </div>
                       <div  id="videos" class="ms-Grid-row ms-font-xl ms-fontWeight-semibold ms-fontColor-neutralPrimaryAlt ms-bgColor-neutralTertiaryAlt--hover Nav-Option" onclick="loadSection('videos')">
-                        <div class="ms-Grid-col ms-u-xl2">
+                        <div class="ms-Grid-col ms-u-xl3">
                           <i class="ms-Icon ms-Icon--Video ms-fontSize-xxl" aria-hidden="true"></i>
                         </div>
-                        <div class="ms-Grid-col ms-u-xl10">
+                        <div class="ms-Grid-col ms-u-xl9">
                           Videos
                         </div>
                       </div>
                       <div id="toolkit" class="ms-Grid-row ms-font-xl ms-fontWeight-semibold ms-fontColor-neutralPrimaryAlt  ms-bgColor-neutralTertiaryAlt--hover Nav-Option" onclick="loadSection('toolkit')">
-                        <div class="ms-Grid-col ms-u-xl2">
+                        <div class="ms-Grid-col ms-u-xl3">
                           <i class="ms-Icon ms-Icon--Work ms-fontSize-xxl" aria-hidden="true"></i>
                         </div>
-                        <div class="ms-Grid-col ms-u-xl10">
+                        <div class="ms-Grid-col ms-u-xl9">
                           Toolkit
                         </div>
                       </div>
                       <div id="xmlEditor" class="ms-Grid-row ms-font-xl ms-fontWeight-semibold ms-fontColor-neutralPrimaryAlt ms-bgColor-neutralTertiaryAlt--hover Nav-Option" onclick="loadSection('xmlEditor')">
-                        <div class="ms-Grid-col ms-u-xl2">
+                        <div class="ms-Grid-col ms-u-xl3">
                           <i class="ms-Icon ms-Icon--Embed ms-fontSize-xxl" aria-hidden="true"></i>
                         </div>
-                        <div class="ms-Grid-col ms-u-xl10">
+                        <div class="ms-Grid-col ms-u-xl9">
                           XML Editor
                         </div>
                     </div>
                     <div id="faq" class="ms-Grid-row ms-font-xl ms-fontWeight-semibold ms-fontColor-neutralPrimaryAlt ms-bgColor-neutralTertiaryAlt--hover Nav-Option" onclick="loadSection('faq')">
-                        <div class="ms-Grid-col ms-u-xl2">
+                        <div class="ms-Grid-col ms-u-xl3">
                           <i class="ms-Icon ms-Icon--Help ms-fontSize-xxl" aria-hidden="true"></i>
                         </div>
-                        <div class="ms-Grid-col ms-u-xl10">
+                        <div class="ms-Grid-col ms-u-xl9">
                           FAQ
                         </div>
                     </div>
@@ -118,10 +117,24 @@
                   <!-- Partial Views -->
                 </div>
 
-                <div class="ms-Grid-col ms-u-xl2" style="height:100px";>
-                    <!-- Trending Topics -->
+                <div id="trendingTopics" class="ms-Grid-col ms-u-xl2">
+                    <div class="container">
+                      <div class="ms-Grid">
+                        <div class="ms-Grid-row ms-font-xl ms-fontWeight-semibold">
+                            <div class="ms-Grid-col ms-u-sm12 trendingHeader">Trending Topics</div>
+                        </div>
+                        <div class="ms-Grid-row">
+                          <img class="ms-Grid-col ms-u-sm12 topicImg" src="/Images/placeholder.png"/>
+                        </div>
+                        <div class="ms-Grid-row  ms-font-s-plus ms-fontWeight-regular topic">
+                          Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+                          tempor incididunt ut labore et dolore magna aliqua. 
+                        </div>
+                      </div>
+                    </div>
               </div>
-        </main>
+            </div> 
+        </div>
     </body>
 </html>
 
