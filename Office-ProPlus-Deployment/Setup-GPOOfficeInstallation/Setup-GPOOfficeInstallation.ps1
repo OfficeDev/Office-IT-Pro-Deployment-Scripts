@@ -126,18 +126,23 @@ Download-GPOOfficeChannelFiles -OfficeFilesPath D:\OfficeChannelFiles -Bitness v
         [bool] $IncludeChannelInfo = $false,
 
         [Parameter()]
-        [bool] $OverWrite = $false
-        
+        [bool] $OverWrite = $false,
+
+        [Parameter()]
+        [string]$LogFilePath        
     )
 
     Process {
+        $currentFileName = Get-CurrentFileName
+        Set-Alias -name LINENUM -value Get-CurrentLineNumber
+
         if (Test-Path "$PSScriptRoot\Download-OfficeProPlusChannels.ps1") {
            . "$PSScriptRoot\Download-OfficeProPlusChannels.ps1"
         } else {
             $lineNum = Get-CurrentLineNumber    
             $filName = Get-CurrentFileName 
 
-            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Dependency file missing: $PSScriptRoot\Download-OfficeProPlusChannels.ps1"
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Dependency file missing: $PSScriptRoot\Download-OfficeProPlusChannels.ps1" -LogFilePath $LogFilePath
            
             throw "Dependency file missing: $PSScriptRoot\Download-OfficeProPlusChannels.ps1"
         }
@@ -189,7 +194,10 @@ Configure-GPOOfficeDeployment -Channel Current -Bitness 64 -OfficeSourceFilesPat
 	    [string]$OfficeFilesPath,
 
         [Parameter()]
-        [string]$MoveSourceFiles = $true
+        [string]$MoveSourceFiles = $true,
+
+        [Parameter()]
+        [string]$LogFilePath 
     )
 
     Begin
@@ -202,6 +210,9 @@ Configure-GPOOfficeDeployment -Channel Current -Bitness 64 -OfficeSourceFilesPat
     Process 
     {
         Try{
+            $currentFileName = Get-CurrentFileName
+            Set-Alias -name LINENUM -value Get-CurrentLineNumber
+
             $cabFilePath = "$OfficeFilesPath\ofl.cab"
             if(Test-Path $cabFilePath){
                 Copy-Item -Path $cabFilePath -Destination "$PSScriptRoot\ofl.cab" -Force
@@ -239,10 +250,7 @@ Configure-GPOOfficeDeployment -Channel Current -Bitness 64 -OfficeSourceFilesPat
                 }
 
                 if (!(Test-Path -Path $officeFileChannelPath)) {
-                    $lineNum = Get-CurrentLineNumber    
-                    $filName = Get-CurrentFileName 
-                    WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Channel Folder Missing: $officeFileChannelPath - Ensure that you have downloaded the Channel you are trying to deploy"
-
+                    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Channel Folder Missing: $officeFileChannelPath - Ensure that you have downloaded the Channel you are trying to deploy" -LogFilePath $LogFilePath
                     throw "Channel Folder Missing: $officeFileChannelPath - Ensure that you have downloaded the Channel you are trying to deploy"
                 }
 
@@ -275,10 +283,7 @@ Configure-GPOOfficeDeployment -Channel Current -Bitness 64 -OfficeSourceFilesPat
             if (Test-Path -Path $DeploymentFilePath) {
                 Copy-Item -Path $DeploymentFilePath -Destination "$LocalPath" -Force -Recurse
             } else {
-                <# write log#>
-                $lineNum = Get-CurrentLineNumber    
-                $filName = Get-CurrentFileName 
-                WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Deployment folder missing: $DeploymentFilePath"
+                WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Deployment folder missing: $DeploymentFilePath" -LogFilePath $LogFilePath
                 throw "Deployment folder missing: $DeploymentFilePath"
             }
         } Catch{}
@@ -366,7 +371,10 @@ Create-GPOOfficeDeployment -GroupPolicyName DeployWithMSI -DeploymentType Deploy
         [bool]$InstallProofingTools = $false,
 
         [Parameter()]
-        [bool]$Quiet = $true
+        [bool]$Quiet = $true,
+
+        [Parameter()]
+        [string]$LogFilePath 
     )
 
     Begin
@@ -378,43 +386,31 @@ Create-GPOOfficeDeployment -GroupPolicyName DeployWithMSI -DeploymentType Deploy
 
     Process
     {
+        $currentFileName = Get-CurrentFileName
+        Set-Alias -name LINENUM -value Get-CurrentLineNumber
+
         $Root = [ADSI]"LDAP://RootDSE"
         $DomainPath = $Root.Get("DefaultNamingContext")
 
         Write-Host "Configuring Group Policy to Install Office Click-To-Run"
         Write-Host
-        <# write log#>
-        $lineNum = Get-CurrentLineNumber    
-        $filName = Get-CurrentFileName 
-        WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Configuring Group Policy to Install Office Click-To-Run"
+        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Configuring Group Policy to Install Office Click-To-Run" -LogFilePath $LogFilePath
 
         Write-Host "Searching for GPO: $GroupPolicyName..." -NoNewline
-        <# write log#>
-        $lineNum = Get-CurrentLineNumber    
-        $filName = Get-CurrentFileName 
-        WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Searching for GPO: $GroupPolicyName..."
+        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Searching for GPO: $GroupPolicyName..." -LogFilePath $LogFilePath
 	    $gpo = Get-GPO -Name $GroupPolicyName
 	
 	    if(!$gpo -or ($gpo -eq $null))
 	    {
-            <# write log#>
-            $lineNum = Get-CurrentLineNumber    
-            $filName = Get-CurrentFileName 
-            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "The GPO $GroupPolicyName could not be found."
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "The GPO $GroupPolicyName could not be found." -LogFilePath $LogFilePath
 		    Write-Error "The GPO $GroupPolicyName could not be found."
 	    }
 
         Write-Host "GPO Found"
-        <# write log#>
-        $lineNum = Get-CurrentLineNumber    
-        $filName = Get-CurrentFileName 
-        WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "GPO Found"
+        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "GPO Found" -LogFilePath $LogFilePath
 
         Write-Host "Modifying GPO: $GroupPolicyName..." -NoNewline
-        <# write log#>
-        $lineNum = Get-CurrentLineNumber    
-        $filName = Get-CurrentFileName 
-        WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Modifying GPO: $GroupPolicyName..."
+        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Modifying GPO: $GroupPolicyName..." -LogFilePath $LogFilePath
 
 	    $baseSysVolPath = "$env:LOGONSERVER\sysvol"
 
@@ -523,9 +519,6 @@ Create-GPOOfficeDeployment -GroupPolicyName DeployWithMSI -DeploymentType Deploy
 		    $newContent[$i] = $content[$i]
 	    }
                       
-        #$ChannelShortName = ConvertChannelNameToShortName -ChannelName $Channel
-        #$LargeDrv = Get-LargestDrive        
-        #$OfficeDeploymentLocalPath = "$LargeDrv\OfficeDeployment"
         $OfficeDeploymentShare = Get-WmiObject Win32_Share | ? {$_.Name -like "OfficeDeployment$"}
         $OfficeDeploymentName = $OfficeDeploymentShare.Name
         $OfficeDeploymentUNC = "\\" + $OfficeDeploymentShare.PSComputerName + "\$OfficeDeploymentName" 
@@ -684,13 +677,10 @@ Create-GPOOfficeDeployment -GroupPolicyName DeployWithMSI -DeploymentType Deploy
         Write-Host ""
         Write-Host "The Group Policy '$GroupPolicyName' has been modified to install Office at Workstation Startup." -BackgroundColor DarkBlue
         Write-Host "Once Group Policy has refreshed on the Workstations then Office will install on next startup if the computer has access to the Network Share." -BackgroundColor DarkBlue
-        <# write log#>
-        $lineNum = Get-CurrentLineNumber    
-        $filName = Get-CurrentFileName 
-        WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "GPO Modified"
-        WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "The Group Policy '$GroupPolicyName' has been modified to install Office at Workstation Startup."
-        WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Once Group Policy has refreshed on the Workstations then Office will install on next startup if the computer has access to the Network Share."
 
+        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "GPO Modified" -LogFilePath $LogFilePath
+        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "The Group Policy '$GroupPolicyName' has been modified to install Office at Workstation Startup." -LogFilePath $LogFilePath
+        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Once Group Policy has refreshed on the Workstations then Office will install on next startup if the computer has access to the Network Share." -LogFilePath $LogFilePath
     }
 
     End 
@@ -1193,36 +1183,37 @@ function Get-CurrentFileName{
     $MyInvocation.ScriptName.Substring($MyInvocation.ScriptName.LastIndexOf("\")+1)
 }
 
-function Get-CurrentFunctionName {
-    (Get-Variable MyInvocation -Scope 1).Value.MyCommand.Name;
-}
-
 Function WriteToLogFile() {
     param( 
-      [Parameter(Mandatory=$true)]
-      [string]$LNumber,
-      [Parameter(Mandatory=$true)]
-      [string]$FName,
-      [Parameter(Mandatory=$true)]
-      [string]$ActionError
+        [Parameter(Mandatory=$true)]
+        [string]$LNumber,
+
+        [Parameter(Mandatory=$true)]
+        [string]$FName,
+
+        [Parameter(Mandatory=$true)]
+        [string]$ActionError,
+
+        [Parameter()]
+        [string]$LogFilePath
     )
+
     try{
         $headerString = "Time".PadRight(30, ' ') + "Line Number".PadRight(15,' ') + "FileName".PadRight(60,' ') + "Action"
         $stringToWrite = $(Get-Date -Format G).PadRight(30, ' ') + $($LNumber).PadRight(15, ' ') + $($FName).PadRight(60,' ') + $ActionError
 
-        #check if file exists, create if it doesn't
-        $getCurrentDatePath = "C:\Windows\Temp\" + (Get-Date -Format u).Substring(0,10)+"OfficeAutoScriptLog.txt"
-        if(Test-Path $getCurrentDatePath){#if exists, append  
-             Add-Content $getCurrentDatePath $stringToWrite
+        if(!$LogFilePath){
+            $LogFilePath = "$env:windir\Temp\" + (Get-Date -Format u).Substring(0,10)+"_OfficeDeploymentLog.txt"
+        }
+        if(Test-Path $LogFilePath){
+             Add-Content $LogFilePath $stringToWrite
         }
         else{#if not exists, create new
-             Add-Content $getCurrentDatePath $headerString
-             Add-Content $getCurrentDatePath $stringToWrite
+             Add-Content $LogFilePath $headerString
+             Add-Content $LogFilePath $stringToWrite
         }
     } catch [Exception]{
         Write-Host $_
-        $fileName = $_.InvocationInfo.ScriptName.Substring($_.InvocationInfo.ScriptName.LastIndexOf("\")+1)
-        WriteToLogFile -LNumber $_.InvocationInfo.ScriptLineNumber -FName $fileName -ActionError $_
     }
 }
 
