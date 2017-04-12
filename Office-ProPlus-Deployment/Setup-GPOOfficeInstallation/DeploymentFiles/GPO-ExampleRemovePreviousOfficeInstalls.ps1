@@ -21,7 +21,7 @@ Process {
  #--------------------------------------------------------------------------------------
 
  # Available list of ProductsToRemove:  AllOfficeProducts,MainOfficeProduct,Visio,Project
- [string[]]$ProductsToRemove = "MainOfficeProduct"
+ [string[]]$ProductsToRemove = "AllOfficeProducts"
  
  [bool]$RemoveClickToRunVersions = $false
  
