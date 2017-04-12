@@ -1,18 +1,18 @@
-#**Install or Upgrade Office 365 ProPlus**
+# **Install or Upgrade Office 365 ProPlus**
 
 This guide provides the different options for installing or upgrading Office 365 ProPlus. We've divided the guide into 3 sections:  
 
-**Unmanaged deployments** - For organizations that are not using managed deployment software like System Center Configuration Manager and Microsoft Intune. 
+** Unmanaged deployments** - For organizations that are not using managed deployment software like System Center Configuration Manager and Microsoft Intune. 
 Several examples are shown on how to deploy Office ProPlus using PowerShell.  
 
-**Managed deployments** - Deploy Office 365 ProPlus through System Center Configuration Manager using PowerShell commands. In addition, instructions for deploying
+** Managed deployments** - Deploy Office 365 ProPlus through System Center Configuration Manager using PowerShell commands. In addition, instructions for deploying
 Office ProPlus through Group Policy are also outlined.
 
 **Package Office deployments into an MSI or EXE** - Package an Office 365 ProPlus installation into an MSI or Executable file using the Microsoft Office ProPlus Install Toolkit.  
 
-##**Upgrade Office 2010 using PowerShell**
+## **Upgrade Office 2010 using PowerShell**
 
-###**Before you run a script**
+### **Before you run a script**
 1. Copy the folder containing the necessary PowerShell scripts and files locally.  
 2. Run PowerShell with elevated privileges.  
 a. In Windows 10, from the Cortana search box type PowerShell, right click on Windows PowerShell and choose Run as Administrator.
@@ -32,7 +32,7 @@ Note: By typing **.\** before a script name lets PowerShell know to execute a sc
 PowerShell also uses IntelliSense which will allow you to start typing the name of a script, cmdlet, or function and press tab to finish the name. 
 Use PowerShell to install or upgrade to Office ProPlus
 
-###Manually upgrade Office 2010 to Office 365 ProPlus
+### Manually upgrade Office 2010 to Office 365 ProPlus
 This script is meant to be a template for upgrading existing Office installations. It will capture the existing Office 2010 installation and generate a configuration.xml file. 
 Office 2010 products will be removed using the offscrub scripts and when all products are removed Office 365 ProPlus will be installed using the configuration.xml.  
 
@@ -41,9 +41,9 @@ Office 2010 products will be removed using the offscrub scripts and when all pro
 3. After you've modified the script to fit your Office installation requirements **save** and **close** the script.  
 4. From the PowerShell console type **.\10-ExampleRemovePreviousAndUpgrade.ps1** and press **Enter**.  
 
-##Upgrade Office 2010 using a managed deployment
+## Upgrade Office 2010 using a managed deployment
 
-###Upgrade Office 2010 to Office 365 ProPlus using System Center Configuration Manager
+### Upgrade Office 2010 to Office 365 ProPlus using System Center Configuration Manager
 1. Before we begin, determine if you need to modify the script **CM-ExampleRemovePreviousAndUpgrade.ps1** located inside of the DeploymentFiles folder. Right click on the script and choose **Edit**.  
 2. The script is designed to be as dynamic as possible by capturing existing Office installations on the computer and generating the configuration.xml.  
 Make any necessary changes that align with your deployment criteria, then save and close the file. 
@@ -73,7 +73,7 @@ For example, if we wanted to create a deployment program for the Deferred channe
 	c. **Update-CMOfficePackage –Channels Deferred –OfficeSourceFilesPath E:\OfficeChannelFiles -MoveSourceFiles $true**. Wait for the distribution to finish before deploying the program to the collection.   
 	d. **Deploy-CMOfficeProgram –Collection HR –ProgramType DeployWithScript –Channel Deferred –Bitness v32 –DeploymentPurpose Available**    
 
-###Upgrade Office 2010 using using Group Policy 
+### Upgrade Office 2010 using using Group Policy 
 1. Copy the Configure-GPOOfficeInstallation folder locally.  
 2. Open PowerShell with elevated privileges.  
 3. Change the directory to Configure-GPOOfficeInstallation folder. For example, type **cd C:\PowerShellScripts\Configure-GPOOfficeInstallation** and press **Enter**.  

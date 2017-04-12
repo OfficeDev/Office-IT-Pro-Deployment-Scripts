@@ -1,9 +1,20 @@
-# Office IT Pro Deployment Scripts
+﻿# Office IT Pro Deployment Scripts
 This repo is a collection of useful PowerShell scripts to make deploying Office 2016 and Office 365 ProPlus easier for IT Pros and administrators. 
 
 Read more about it here: [Office Blogs](https://blogs.office.com/2015/08/19/introducing-the-office-it-pro-deployment-script-project/)
 
+Watch the video presentation from [Microsoft Ignite](https://www.youtube.com/watch?v=TPAFTXae4g4)
+
+More related videos from Microsoft Ignite 2016  
+[Deploy and manage Office in complex scenarios with Configuration Manager](https://www.youtube.com/watch?v=59nxWjFFeWg)  
+[Grok the Office engineering roadmap for deployment and management](https://www.youtube.com/watch?v=KrnfswbJb8g)
+
 The software is licensed “as-is.” under the [MIT License](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/master/LICENSE).
+
+## Upgrade to Office 365 ProPlus
+Click [here](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/master/Office-ProPlus-Deployment/Deploy-OfficeClickToRun/Upgrade_Office2007_README.md) to upgrade from Office 2007  
+Click [here](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/master/Office-ProPlus-Deployment/Deploy-OfficeClickToRun/Upgrade_Office2010_README.md) to upgrade from Office 2010  
+Click [here](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/master/Office-ProPlus-Deployment/Deploy-OfficeClickToRun/Upgrade_Office2013_README.md) to upgrade from Office 2013 
 
 ## Do you have System Center Configuration Manager?
 You can automate the configuration of ConfigMgr to deploy and manage your Office ProPlus environment using [Deploying Office ProPlus with Configuration Manager](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/master/Office-ProPlus-Deployment/Setup-CMOfficeDeployment)
