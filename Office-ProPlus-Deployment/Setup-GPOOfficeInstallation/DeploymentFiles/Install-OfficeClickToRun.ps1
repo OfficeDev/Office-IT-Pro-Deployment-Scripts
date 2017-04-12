@@ -130,15 +130,17 @@ Word, Excel, and Outlook will be pinned to the Start Menu. The PowerShell consol
         [string[]]$PinToTaskbar,
 
         [Parameter()]
-        [bool]$InstallProofingTools = $false
+        [bool]$InstallProofingTools = $false,
 
+        [Parameter()]
+        [string]$LogFilePath
     )
+    $currentFileName = Get-CurrentFileName
+    Set-Alias -name LINENUM -value Get-CurrentLineNumber
 
     $scriptRoot = GetScriptRoot
-	#write log
-    $lineNum = Get-CurrentLineNumber    
-    $filName = Get-CurrentFileName 
-    WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "install office function, loading config file"
+
+    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "install office function, loading config file" -LogFilePath $LogFilePath
 
     #Load the file
     [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
@@ -207,10 +209,7 @@ Word, Excel, and Outlook will be pinned to the Start Menu. The PowerShell consol
     $cmdArgs = "/configure " + '"' + $TargetFilePath + '"'
 
     Write-Host "Installing Office Click-To-Run..."
-	#write log
-    $lineNum = Get-CurrentLineNumber    
-    $filName = Get-CurrentFileName 
-    WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Installing Office Click-To-Run..."
+    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Installing Office Click-To-Run..." -LogFilePath $LogFilePath
 	
     if ($WaitForInstallToFinish) {
         StartProcess -execFilePath $cmdLine -execParams $cmdArgs -WaitForExit $false
@@ -1961,31 +1960,34 @@ function Get-CurrentFileName{
     $MyInvocation.ScriptName.Substring($MyInvocation.ScriptName.LastIndexOf("\")+1)
 }
 
-function Get-CurrentFunctionName {
-    (Get-Variable MyInvocation -Scope 1).Value.MyCommand.Name;
-}
-
 Function WriteToLogFile() {
     param( 
-      [Parameter(Mandatory=$true)]
-      [string]$LNumber,
-      [Parameter(Mandatory=$true)]
-      [string]$FName,
-      [Parameter(Mandatory=$true)]
-      [string]$ActionError
+        [Parameter(Mandatory=$true)]
+        [string]$LNumber,
+
+        [Parameter(Mandatory=$true)]
+        [string]$FName,
+
+        [Parameter(Mandatory=$true)]
+        [string]$ActionError,
+
+        [Parameter()]
+        [string]$LogFilePath
     )
+
     try{
         $headerString = "Time".PadRight(30, ' ') + "Line Number".PadRight(15,' ') + "FileName".PadRight(60,' ') + "Action"
         $stringToWrite = $(Get-Date -Format G).PadRight(30, ' ') + $($LNumber).PadRight(15, ' ') + $($FName).PadRight(60,' ') + $ActionError
 
-        #check if file exists, create if it doesn't   
-        $getCurrentDatePath = "C:\Windows\Temp\" + (Get-Date -Format u).Substring(0,10)+"OfficeAutoScriptLog.txt"
-        if(Test-Path $getCurrentDatePath){#if exists, append   
-            Add-Content $getCurrentDatePath $stringToWrite
+        if(!$LogFilePath){
+            $LogFilePath = "$env:windir\Temp\" + (Get-Date -Format u).Substring(0,10)+"_OfficeDeploymentLog.txt"
+        }
+        if(Test-Path $LogFilePath){
+             Add-Content $LogFilePath $stringToWrite
         }
         else{#if not exists, create new
-            Add-Content $getCurrentDatePath $headerString
-            Add-Content $getCurrentDatePath $stringToWrite
+             Add-Content $LogFilePath $headerString
+             Add-Content $LogFilePath $stringToWrite
         }
     } catch [Exception]{
         Write-Host $_

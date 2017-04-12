@@ -158,11 +158,16 @@ Function SetODTAdd{
         [string] $SourcePath = $NULL,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [string] $TargetFilePath
+        [string] $TargetFilePath,
 
+        [Parameter()]
+        [string]$LogFilePath
     )
 
     Process{
+        $currentFileName = Get-CurrentFileName
+        Set-Alias -name LINENUM -value Get-CurrentLineNumber
+
         $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
 
         #Load file
@@ -183,10 +188,7 @@ Function SetODTAdd{
 
         #Check for proper root element
         if($ConfigFile.Configuration -eq $null){
-            <# write log#>
-            $lineNum = Get-CurrentLineNumber    
-            $filName = Get-CurrentFileName 
-            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "No configuration element"
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "No configuration element" -LogFilePath $LogFilePath
             throw $NoConfigurationElement
         }
 
@@ -217,10 +219,7 @@ Function SetODTAdd{
 
             Write-Host
             Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
-            <# write log#>
-            $lineNum = Get-CurrentLineNumber    
-            $filName = Get-CurrentFileName 
-            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "The Office XML Configuration file has been saved to: $TargetFilePath"
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "The Office XML Configuration file has been saved to: $TargetFilePath" -LogFilePath $LogFilePath
         } else {
             $results = new-object PSObject[] 0;
             $Result = New-Object –TypeName PSObject 
@@ -236,7 +235,6 @@ Function SetODTAdd{
 
 Function SetODTUpdates{
     Param(
-
         [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
         [string] $ConfigurationXML = $NULL,
 
@@ -244,11 +242,16 @@ Function SetODTUpdates{
         [string] $UpdatePath = $NULL,        
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [string] $TargetFilePath
+        [string] $TargetFilePath,
 
+        [Parameter()]
+        [string]$LogFilePath
     )
 
     Process{
+        $currentFileName = Get-CurrentFileName
+        Set-Alias -name LINENUM -value Get-CurrentLineNumber
+
         $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
 
         #Load file
@@ -269,10 +272,7 @@ Function SetODTUpdates{
 
         #Check for proper root element
         if($ConfigFile.Configuration -eq $null){
-            <# write log#>
-            $lineNum = Get-CurrentLineNumber    
-            $filName = Get-CurrentFileName 
-            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "No configuration element"
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "No configuration element" -LogFilePath $LogFilePath
         }
 
         #Get Add element if it exists
@@ -307,10 +307,7 @@ Function SetODTUpdates{
 
             Write-Host
             Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
-            <# write log#>
-            $lineNum = Get-CurrentLineNumber    
-            $filName = Get-CurrentFileName 
-            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "The Office XML Configuration file has been saved to: $TargetFilePath"
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "The Office XML Configuration file has been saved to: $TargetFilePath" -LogFilePath $LogFilePath
         } else {
             $results = new-object PSObject[] 0;
             $Result = New-Object –TypeName PSObject 
@@ -328,8 +325,13 @@ Function SetODTUpdates{
 Function GetFilePath() {
     Param(
        [Parameter(ValueFromPipelineByPropertyName=$true)]
-       [string] $TargetFilePath
+       [string] $TargetFilePath,
+
+       [Parameter()]
+       [string]$LogFilePath
     )
+    $currentFileName = Get-CurrentFileName
+    Set-Alias -name LINENUM -value Get-CurrentLineNumber
 
     if (!($TargetFilePath)) {
         $TargetFilePath = $global:saveLastFilePath
@@ -337,10 +339,7 @@ Function GetFilePath() {
 
     if (!($TargetFilePath)) {
        Write-Host "Enter the path to the XML Configuration File: " -NoNewline
-       <# write log#>
-        $lineNum = Get-CurrentLineNumber    
-        $filName = Get-CurrentFileName 
-        WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Enter the path to the XML Configuration File: "       
+       WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Enter the path to the XML Configuration File: " -LogFilePath $LogFilePath      
        $TargetFilePath = Read-Host
     } else {
        #Write-Host "Target XML Configuration File: $TargetFilePath"
@@ -367,7 +366,6 @@ Function GetScriptPath() {
      if ($PSScriptRoot) {
        $scriptPath = $PSScriptRoot
      } else {
-       #$scriptPath = (Split-Path $MyInvocation.MyCommand.Path) + "\"
        $scriptPath = (Get-Location).Path
      }
 
@@ -563,7 +561,7 @@ Function GetScriptPath() {
     return $SubnetMask
  }
 
- function Get-CurrentLineNumber {
+function Get-CurrentLineNumber {
     $MyInvocation.ScriptLineNumber
 }
 
@@ -571,31 +569,34 @@ function Get-CurrentFileName{
     $MyInvocation.ScriptName.Substring($MyInvocation.ScriptName.LastIndexOf("\")+1)
 }
 
-function Get-CurrentFunctionName {
-    (Get-Variable MyInvocation -Scope 1).Value.MyCommand.Name;
-}
-
 Function WriteToLogFile() {
     param( 
-      [Parameter(Mandatory=$true)]
-      [string]$LNumber,
-      [Parameter(Mandatory=$true)]
-      [string]$FName,
-      [Parameter(Mandatory=$true)]
-      [string]$ActionError
+        [Parameter(Mandatory=$true)]
+        [string]$LNumber,
+
+        [Parameter(Mandatory=$true)]
+        [string]$FName,
+
+        [Parameter(Mandatory=$true)]
+        [string]$ActionError,
+
+        [Parameter()]
+        [string]$LogFilePath
     )
+
     try{
         $headerString = "Time".PadRight(30, ' ') + "Line Number".PadRight(15,' ') + "FileName".PadRight(60,' ') + "Action"
         $stringToWrite = $(Get-Date -Format G).PadRight(30, ' ') + $($LNumber).PadRight(15, ' ') + $($FName).PadRight(60,' ') + $ActionError
 
-        #check if file exists, create if it doesn't   
-        $getCurrentDatePath = "C:\Windows\Temp\" + (Get-Date -Format u).Substring(0,10)+"OfficeAutoScriptLog.txt"
-        if(Test-Path $getCurrentDatePath){#if exists, append  
-             Add-Content $getCurrentDatePath $stringToWrite
+        if(!$LogFilePath){
+            $LogFilePath = "$env:windir\Temp\" + (Get-Date -Format u).Substring(0,10)+"_OfficeDeploymentLog.txt"
+        }
+        if(Test-Path $LogFilePath){
+             Add-Content $LogFilePath $stringToWrite
         }
         else{#if not exists, create new
-             Add-Content $getCurrentDatePath $headerString
-             Add-Content $getCurrentDatePath $stringToWrite
+             Add-Content $LogFilePath $headerString
+             Add-Content $LogFilePath $stringToWrite
         }
     } catch [Exception]{
         Write-Host $_
