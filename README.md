@@ -11,7 +11,7 @@ More related videos from Microsoft Ignite 2016
 
 The software is licensed “as-is.” under the [MIT License](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/master/LICENSE).
 
-##Upgrade to Office 365 ProPlus
+## Upgrade to Office 365 ProPlus
 Click [here](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/Feature-UpgradeDocumentation/Office-ProPlus-Deployment/Deploy-OfficeClickToRun/Upgrade_Office2007_README.md) to upgrade from Office 2007  
 Click [here](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/Feature-UpgradeDocumentation/Office-ProPlus-Deployment/Deploy-OfficeClickToRun/Upgrade_Office2010_README.md) to upgrade from Office 2010  
 Click [here](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/Feature-UpgradeDocumentation/Office-ProPlus-Deployment/Deploy-OfficeClickToRun/Upgrade_Office2013_README.md) to upgrade from Office 2013  
@@ -34,7 +34,7 @@ For more detailed documentation of each script, check the [Wiki](https://github.
 ## New to PowerShell and Office 365?
 Check out [PowerShell for Office 365](http://powershell.office.com) for advice on getting started, key scenarios and script samples.  
 
-##Questions and comments
+## Questions and comments
 If you have any trouble running this sample, please log an issue.
 
 ## How to Contribute to this project
