@@ -44,7 +44,7 @@ For more detailed documentation of each script, check the [Wiki](https://github.
 ## New to PowerShell and Office 365?
 Check out [PowerShell for Office 365](http://powershell.office.com) for advice on getting started, key scenarios and script samples.  
 
-##Questions and comments
+## Questions and comments
 If you have any trouble running this sample, please log an issue.
 
 ## How to Contribute to this project
