@@ -176,10 +176,10 @@ The path to the required deployment files.
 By default, the installation files will be moved to the source folder. Set this to $false to copy the installation files.
 
 .EXAMPLE
-Configure-GPOOfficeDeployment -Channel Current -Bitness 64 -OfficeSourceFilesPath D:\OfficeChannelFiles
+Configure-GPOOfficeDeployment -Channels Current,Deferred,FirstReleaseDeferred -OfficeSourceFilesPath D:\OfficeChannelFiles
 
 .EXAMPLE
-Configure-GPOOfficeDeployment -Channel Current -Bitness 64 -OfficeSourceFilesPath D:\OfficeChannelFiles -MoveSourceFiles $false
+Configure-GPOOfficeDeployment -Channels Current,Deferred,FirstReleaseDeferred -OfficeSourceFilesPath D:\OfficeChannelFiles -MoveSourceFiles $false
 #>
     [CmdletBinding(SupportsShouldProcess=$true)]
     Param
