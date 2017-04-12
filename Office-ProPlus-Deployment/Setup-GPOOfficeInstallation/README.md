@@ -26,7 +26,9 @@ This script will configure an existing Active Directory Group Policy to silently
 
 		Example: Download-GPOOfficeChannelFiles -Channels Deferred,FirstReleaseDeferred -OfficeFilesPath C:\OfficeChannelFiles -Languages en-us,de-de -Bitness v32
 
-			 In this example, the latest 32-bit versions of the Deferred and FirstReleaseDeferred channels will be downloaded to C:\OfficeChannelFiles. If C:\OfficeChannelFiles does not exist a new directory will be created. Both English and German languages will be downlaoded.
+			 In this example, the latest 32-bit versions of the Deferred and FirstReleaseDeferred 
+			 channels will be downloaded to C:\OfficeChannelFiles. If C:\OfficeChannelFiles does not 
+			 exist a new directory will be created. Both English and German languages will be downlaoded.
 
 
 #### Configure the OfficeDeployment folder used to stage the Office channel files and the PowerShell scripts
@@ -53,14 +55,17 @@ This script will configure an existing Active Directory Group Policy to silently
 
 		Type Create-GPOOfficeDeployment -GroupPolicyName "DeployDeferredChannel" -DeploymentType DeployWithInstallationFile -OfficeDeploymentFileName OfficeProPlus.msi -Quiet $true
 
-		This is example is intended to use an installation MSI or executable file that was generated using the Office 365 ProPlus Toolkit that can located from the [XML Editor site](http://officedev.github.io/Office-IT-Pro-Deployment-Scripts/XmlEditor.html).
+		This is example is intended to use an installation MSI or executable file that was generated using 
+		the Office 365 ProPlus Toolkit that can located from 
+		the [XML Editor site](http://officedev.github.io/Office-IT-Pro-Deployment-Scripts/XmlEditor.html).
 
 #### Remove previous versions of Office
 1. Remove the previous versions of Office
 
 		Type Create-GPOOfficeDeployment -GroupPolicyName "DeployDeferredChannel" -DeploymentType RemoveWithScript
 
-		This example will remove all previous versions of Office using the GPO-ExampleRemovePreviousOfficeInstalls.ps1 script.
+		This example will remove all previous versions of Office using the 
+		GPO-ExampleRemovePreviousOfficeInstalls.ps1 script.
 
 2. Remove the previous versions of Office with a custom script
 
