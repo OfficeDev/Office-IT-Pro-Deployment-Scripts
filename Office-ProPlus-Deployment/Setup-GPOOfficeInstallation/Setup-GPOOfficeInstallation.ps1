@@ -176,16 +176,16 @@ The path to the required deployment files.
 By default, the installation files will be moved to the source folder. Set this to $false to copy the installation files.
 
 .EXAMPLE
-Configure-GPOOfficeDeployment -Channel Current -Bitness 64 -OfficeSourceFilesPath D:\OfficeChannelFiles
+Configure-GPOOfficeDeployment -Channels Current,Deferred,FirstReleaseDeferred -OfficeSourceFilesPath D:\OfficeChannelFiles
 
 .EXAMPLE
-Configure-GPOOfficeDeployment -Channel Current -Bitness 64 -OfficeSourceFilesPath D:\OfficeChannelFiles -MoveSourceFiles $false
+Configure-GPOOfficeDeployment -Channels Current,Deferred,FirstReleaseDeferred -OfficeSourceFilesPath D:\OfficeChannelFiles -MoveSourceFiles $false
 #>
     [CmdletBinding(SupportsShouldProcess=$true)]
     Param
     (      
         [Parameter()]
-        [OfficeChannel]$Channel,
+        [OfficeChannel[]]$Channels = @(1,2,3),
 
         [Parameter()]
         [Bitness]$Bitness = "v32",
@@ -218,73 +218,78 @@ Configure-GPOOfficeDeployment -Channel Current -Bitness 64 -OfficeSourceFilesPat
                 Copy-Item -Path $cabFilePath -Destination "$PSScriptRoot\ofl.cab" -Force
             }
 
+            $ChannelList = @("FirstReleaseCurrent","Current","Deferred","FirstReleaseDeferred")
             $ChannelXml = Get-ChannelXml -FolderPath $OfficeFilesPath -OverWrite $false
-           
-            $selectChannel = $ChannelXml.UpdateFiles.baseURL | Where {$_.branch -eq $Channel.ToString() }
-            $latestVersion = Get-ChannelLatestVersion -ChannelUrl $selectChannel.URL -Channel $Channel -FolderPath $OfficeFilesPath -OverWrite $false
+            
+            foreach($Channel in $ChannelList){
+                if($Channels -contains $Channel){
+                    $selectChannel = $ChannelXml.UpdateFiles.baseURL | Where {$_.branch -eq $Channel.ToString() }
+                    $latestVersion = Get-ChannelLatestVersion -ChannelUrl $selectChannel.URL -Channel $Channel -FolderPath $OfficeFilesPath -OverWrite $false
         
-            $ChannelShortName = ConvertChannelNameToShortName -ChannelName $Channel
-            $LargeDrv = Get-LargestDrive
+                    $ChannelShortName = ConvertChannelNameToShortName -ChannelName $Channel
+                    $LargeDrv = Get-LargestDrive
         
-            $Path = CreateOfficeChannelShare -Path "$LargeDrv\OfficeDeployment"
+                    $Path = CreateOfficeChannelShare -Path "$LargeDrv\OfficeDeployment"
         
-            $ChannelPath = "$Path\$Channel"
-            $LocalPath = "$LargeDrv\OfficeDeployment"
-            $LocalChannelPath = "$LargeDrv\OfficeDeployment\SourceFiles"
+                    $ChannelPath = "$Path\$Channel"
+                    $LocalPath = "$LargeDrv\OfficeDeployment"
+                    $LocalChannelPath = "$LargeDrv\OfficeDeployment\SourceFiles"
         
-            [System.IO.Directory]::CreateDirectory($LocalChannelPath) | Out-Null
-                   
-            if($OfficeFilesPath) {
-                $officeFileChannelPath = "$OfficeFilesPath\$ChannelShortName"
-                $officeFileTargetPath = "$LocalChannelPath"
+                    [System.IO.Directory]::CreateDirectory($LocalChannelPath) | Out-Null
+                           
+                    if($OfficeFilesPath) {
+                        $officeFileChannelPath = "$OfficeFilesPath\$ChannelShortName"
+                        $officeFileTargetPath = "$LocalChannelPath"
 
-                [string]$oclVersion = $NULL
-                if ($officeFileChannelPath) {
-                    if (Test-Path -Path "$officeFileChannelPath\Office\Data") {
-                       $oclVersion = Get-LatestVersion -UpdateURLPath $officeFileChannelPath
+                        [string]$oclVersion = $NULL
+                        if ($officeFileChannelPath) {
+                            if (Test-Path -Path "$officeFileChannelPath\Office\Data") {
+                               $oclVersion = Get-LatestVersion -UpdateURLPath $officeFileChannelPath
+                            }
+                        }
+
+                        if ($oclVersion) {
+                           $latestVersion = $oclVersion
+                        }
+
+                        if (!(Test-Path -Path $officeFileChannelPath)) {
+                            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Channel Folder Missing: $officeFileChannelPath - Ensure that you have downloaded the Channel you are trying to deploy" -LogFilePath $LogFilePath
+                            throw "Channel Folder Missing: $officeFileChannelPath - Ensure that you have downloaded the Channel you are trying to deploy"
+                        }
+
+                        [System.IO.Directory]::CreateDirectory($officeFileTargetPath) | Out-Null
+
+                        if ($MoveSourceFiles) {
+                            Move-Item -Path $officeFileChannelPath -Destination $officeFileTargetPath -Force
+                        } else {
+                            Copy-Item -Path $officeFileChannelPath -Destination $officeFileTargetPath -Recurse -Force
+                        }
+
+                        $cabFilePath = "$OfficeFilesPath\ofl.cab"
+                        if (Test-Path $cabFilePath) {
+                            Copy-Item -Path $cabFilePath -Destination "$LocalPath\ofl.cab" -Force
+                        }
+                    } else {
+                        if(Test-Path -Path "$LocalChannelPath\Office") {
+                            Remove-Item -Path "$LocalChannelPath\Office" -Force -Recurse
+                        }
+                    }
+        
+                    $cabFilePath = "$env:TEMP/ofl.cab"
+                    if(!(Test-Path $cabFilePath)) {
+                        Copy-Item -Path "$LocalPath\ofl.cab" -Destination $cabFilePath -Force
+                    }
+
+                    CreateMainCabFiles -LocalPath $LocalPath -ChannelShortName $ChannelShortName -LatestVersion $latestVersion
+
+                    $DeploymentFilePath = "$PSSCriptRoot\DeploymentFiles\*.*"
+                    if (Test-Path -Path $DeploymentFilePath) {
+                        Copy-Item -Path $DeploymentFilePath -Destination "$LocalPath" -Force -Recurse
+                    } else {
+                        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Deployment folder missing: $DeploymentFilePath" -LogFilePath $LogFilePath
+                        throw "Deployment folder missing: $DeploymentFilePath"
                     }
                 }
-
-                if ($oclVersion) {
-                   $latestVersion = $oclVersion
-                }
-
-                if (!(Test-Path -Path $officeFileChannelPath)) {
-                    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Channel Folder Missing: $officeFileChannelPath - Ensure that you have downloaded the Channel you are trying to deploy" -LogFilePath $LogFilePath
-                    throw "Channel Folder Missing: $officeFileChannelPath - Ensure that you have downloaded the Channel you are trying to deploy"
-                }
-
-                [System.IO.Directory]::CreateDirectory($officeFileTargetPath) | Out-Null
-
-                if ($MoveSourceFiles) {
-                    Move-Item -Path $officeFileChannelPath -Destination $officeFileTargetPath -Force
-                } else {
-                    Copy-Item -Path $officeFileChannelPath -Destination $officeFileTargetPath -Recurse -Force
-                }
-
-                $cabFilePath = "$OfficeFilesPath\ofl.cab"
-                if (Test-Path $cabFilePath) {
-                    Copy-Item -Path $cabFilePath -Destination "$LocalPath\ofl.cab" -Force
-                }
-            } else {
-                if(Test-Path -Path "$LocalChannelPath\Office") {
-                    Remove-Item -Path "$LocalChannelPath\Office" -Force -Recurse
-                }
-            }
-        
-            $cabFilePath = "$env:TEMP/ofl.cab"
-            if(!(Test-Path $cabFilePath)) {
-                Copy-Item -Path "$LocalPath\ofl.cab" -Destination $cabFilePath -Force
-            }
-
-            CreateMainCabFiles -LocalPath $LocalPath -ChannelShortName $ChannelShortName -LatestVersion $latestVersion
-
-            $DeploymentFilePath = "$PSSCriptRoot\DeploymentFiles\*.*"
-            if (Test-Path -Path $DeploymentFilePath) {
-                Copy-Item -Path $DeploymentFilePath -Destination "$LocalPath" -Force -Recurse
-            } else {
-                WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Deployment folder missing: $DeploymentFilePath" -LogFilePath $LogFilePath
-                throw "Deployment folder missing: $DeploymentFilePath"
             }
         } Catch{}
     }        

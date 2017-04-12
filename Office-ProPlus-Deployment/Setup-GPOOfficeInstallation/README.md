@@ -32,16 +32,13 @@ This script will configure an existing Active Directory Group Policy to silently
 
 
 #### Configure the OfficeDeployment folder used to stage the Office channel files and the PowerShell scripts
-1. Create the OfficeDeployment$ folder.
+1. Create the OfficeDeployment$ folder and stage the files.
 
-		Type Configure-GPOOfficeDeployment -Channel Deferred -Bitness v32 -OfficeFilesPath C:\OfficeChannelFiles -MoveSourceFiles $true
+		Type Configure-GPOOfficeDeployment -Channel Deferred,FirstReleaseDeferred -OfficeFilesPath C:\OfficeChannelFiles -MoveSourceFiles $true
 
 		A new directory will be created on your largest drive called OfficeDeployment$ and 
 		all of the necessary files will be copied here. 
 
-		Note - Don't worry if you have multiple channels downloaded, choose any of the channels 
-		you've downloaded and the bit. If you do not set -MoveSourceFiles to $true the files will 
-		only be copied to the new directory.
 
 #### Create a new Office deployment using an existing GPO
 1. Install Office using dynamic PowerShell scripts
