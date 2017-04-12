@@ -2,10 +2,10 @@
 
 This guide provides the different options for installing or upgrading Office 365 ProPlus. We've divided the guide into 3 sections:  
 
-** Unmanaged deployments** - For organizations that are not using managed deployment software like System Center Configuration Manager and Microsoft Intune. 
+**Unmanaged deployments** - For organizations that are not using managed deployment software like System Center Configuration Manager and Microsoft Intune. 
 Several examples are shown on how to deploy Office ProPlus using PowerShell.  
 
-** Managed deployments** - Deploy Office 365 ProPlus through System Center Configuration Manager using PowerShell commands. In addition, instructions for deploying
+**Managed deployments** - Deploy Office 365 ProPlus through System Center Configuration Manager using PowerShell commands. In addition, instructions for deploying
 Office ProPlus through Group Policy are also outlined.
 
 **Package Office deployments into an MSI or EXE** - Package an Office 365 ProPlus installation into an MSI or Executable file using the Microsoft Office ProPlus Install Toolkit.  
@@ -52,26 +52,26 @@ Make any necessary changes that align with your deployment criteria, then save a
 5. Dot source the Setup-CMOfficeDeployment.ps1 script. For example, type **. .\Setup-CMOfficeDeployment.ps1** and press **Enter**. 
 Dot sourcing the script allows us to run functions outside of the scope of the script.  
 6. Download a channel that will be deployed. .  
-	a. Type **Download-CMOfficeChannelFiles –Channels Current –OfficeFilesPath E:\OfficeChannelFiles –Bitness v32**  
+	a. Type **Download-CMOfficeChannelFiles â€“Channels Current â€“OfficeFilesPath E:\OfficeChannelFiles â€“Bitness v32**  
 7. Create the package.  
-	a. Type **Create-CMOfficePackage –Channels Current –Bitness v32 –OfficeSourceFilesPath E:\OfficeChannelFiles -MoveSourceFiles $true**  
+	a. Type **Create-CMOfficePackage â€“Channels Current â€“Bitness v32 â€“OfficeSourceFilesPath E:\OfficeChannelFiles -MoveSourceFiles $true**  
 	b. If a package called Office 365 ProPlus already exists the script will not run.   
 8. Create the deployment program.  
-	a. Type **Create-CMOfficeDeploymentProgram –Channels Current –Bitness v32 –DeploymentType DeployWithScript**   
+	a. Type **Create-CMOfficeDeploymentProgram â€“Channels Current â€“Bitness v32 â€“DeploymentType DeployWithScript**   
 	b. For the DeploymentType you can choose between **DeployWithConfigurationFile** or **DeployWithScript**. 
 	Deploying with a configuration file will standardize the deployment for all clients in the collection. 
 	Deploying with script will still deploy the channel and bit, but it will preserve the languages and other configurations that may impact the Office installation.   
 9. Distribute the package to the distribution points.  
-	a. Type **Distribute-CMOfficePackage –DistributionPoint cm.contoso.com**    
+	a. Type **Distribute-CMOfficePackage â€“DistributionPoint cm.contoso.com**    
 	b. Wait for the distribution to finish before creating more programs or deploying the program.  
 10. Deploy the program to a collection.  
-	a. Type **Deploy-CMOfficeProgram –Collection Accounting –ProgramType DeployWithScript –Channel Current –Bitness v32 –DeploymentPurpose Available**    
+	a. Type **Deploy-CMOfficeProgram â€“Collection Accounting â€“ProgramType DeployWithScript â€“Channel Current â€“Bitness v32 â€“DeploymentPurpose Available**    
 11. If you plan to deploy different channels repeat steps 6, 8, 10, and 11. You will need to update the package before step 8. 
 For example, if we wanted to create a deployment program for the Deferred channel we would perform the following steps:  
-	a. **Download-CMOfficeChannelFiles –Channels Deferred –OfficeFilesPath E:\OfficeChannelFiles –Bitness v32**    
-	b. **Create-CMOfficeDeploymentProgram –Channels Deferred –Bitness v32 –DeploymentType DeployWithScript -ScriptName CM-ExampleRemovePreviousAndUpgrade.ps1**    
-	c. **Update-CMOfficePackage –Channels Deferred –OfficeSourceFilesPath E:\OfficeChannelFiles -MoveSourceFiles $true**. Wait for the distribution to finish before deploying the program to the collection.   
-	d. **Deploy-CMOfficeProgram –Collection HR –ProgramType DeployWithScript –Channel Deferred –Bitness v32 –DeploymentPurpose Available**    
+	a. **Download-CMOfficeChannelFiles â€“Channels Deferred â€“OfficeFilesPath E:\OfficeChannelFiles â€“Bitness v32**    
+	b. **Create-CMOfficeDeploymentProgram â€“Channels Deferred â€“Bitness v32 â€“DeploymentType DeployWithScript -ScriptName CM-ExampleRemovePreviousAndUpgrade.ps1**    
+	c. **Update-CMOfficePackage â€“Channels Deferred â€“OfficeSourceFilesPath E:\OfficeChannelFiles -MoveSourceFiles $true**. Wait for the distribution to finish before deploying the program to the collection.   
+	d. **Deploy-CMOfficeProgram â€“Collection HR â€“ProgramType DeployWithScript â€“Channel Deferred â€“Bitness v32 â€“DeploymentPurpose Available**    
 
 ### Upgrade Office 2010 using using Group Policy 
 1. Copy the Configure-GPOOfficeInstallation folder locally.  
@@ -80,6 +80,6 @@ For example, if we wanted to create a deployment program for the Deferred channe
 4. Dot source the Configure-GPOOfficeInstallation.ps1 script. Type **. .\Configure-GPOOfficeInstallation.ps1** and press **Enter**.
 Dot sourcing the script allows us to run functions outside of the scope of the script.  
 5. Download the required Office installation files and modify the Office Deployment Tool (ODT) xml files that will be used to deploy Office.
-For example, type **Download-GPOOfficeInstallation –UncPath \\server1\OfficeChannelFiles -OfficeVersion Office2016 –Bitness 32**  
-6. Configure an existing group policy. Type **Configure-GPOOfficeInstallation –UncPath \\server1\OfficeChannelFiles -GpoName OfficeProPlusDeployments –OfficeVersion Office2016**    
+For example, type **Download-GPOOfficeInstallation â€“UncPath \\server1\OfficeChannelFiles -OfficeVersion Office2016 â€“Bitness 32**  
+6. Configure an existing group policy. Type **Configure-GPOOfficeInstallation â€“UncPath \\server1\OfficeChannelFiles -GpoName OfficeProPlusDeployments â€“OfficeVersion Office2016**    
 7. Refresh the group policy on a client that has the configured GPO and Office ProPlus will install after the next restart.  
