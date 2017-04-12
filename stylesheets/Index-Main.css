@@ -50,17 +50,21 @@
 
 .Site-Content
 {
-	margin:20px 0px 0px -20px;
-	height:100vh;
+	margin:20px -16px 0px -20px;
+	height:100%;
 }
 
 .Nav-Option{
 	padding: 10px 0 10px 10px; 
 }
 
+#Nav{
+	height:100%;
+}
+
 #partialViews{
 	height:100%;
-	padding:10px;
+	padding:20px;
 }
 
 #trendingTopics{
@@ -73,7 +77,7 @@
 }
 
 .topicImg{
-	width:200px;
+	width:75%;
 	height: 100px;
 }
 
@@ -82,3 +86,7 @@
 	background-color: #b3d6f2;
 }
 
+.PartialView-Item{
+	padding:15px;
+	margin: 5px 
+}

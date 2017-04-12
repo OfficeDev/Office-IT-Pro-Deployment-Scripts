@@ -1,16 +1,20 @@
 <!DOCTYPE html>
-<html lang="en-us" style="height:100vh;margin-left:0px;margin-right:0px">
+<html lang="en-us" style="height:100vh;margin-left:0px;margin-right:-12px">
   <head>
     <meta charset="UTF-8">
     <title>Office Deployment Scripts for IT Pros by OfficeDev</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-js/1.4.0/css/fabric.min.css">
     <link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-js/1.4.0/css/fabric.components.min.css">
+    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/jquery.slick/1.6.0/slick.css"/>
     <link href="stylesheets/Index-Main.css" rel="stylesheet">  
     <script src="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-js/1.4.0/js/fabric.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="crossorigin="anonymous"></script>
-    <script src="http://unpkg.com/botframework-directlinejs/directLine.js"/></script>
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
     <script type="text/javascript" src="./Scripts/Index-Main.js"></script>
+    <script type="text/javascript" src="//cdn.jsdelivr.net/jquery.slick/1.6.0/slick.min.js"></script>
+
 
     <script type="text/javascript">
               var TextFieldElements = document.querySelectorAll(".ms-TextField");
@@ -29,7 +33,7 @@
     </script>
             
   </head>
-    <body>
+    <body class="ms-fontColor-neutralPrimaryAlt">
           <div class="ms-Grid">
             <div class="ms-Grid-row">
               <div class="ms-Grid-col ms-u-sm12 ms-u-xxxl12">
@@ -58,52 +62,52 @@
                 </div>
               </div>
               <div  class="ms-Grid-row Site-Content">
-                <div class="ms-Grid-col ms-u-xl2" style="height:100px;">
+                <div id="Nav" class="ms-Grid-col ms-u-sm12 ms-u-xl2">
                   <div class="container">
                     <div class="ms-Grid">
-                      <div id="home" class="ms-Grid-row ms-font-xl ms-fontWeight-semibold ms-fontColor-neutralPrimaryAlt ms-bgColor-neutralTertiaryAlt--hover Nav-Option" onclick="loadSection('home')">
+                      <div id="home" class="ms-Grid-row ms-font-l ms-fontWeight-semibold ms-fontColor-neutralPrimaryAlt ms-bgColor-neutralTertiaryAlt--hover Nav-Option" onclick="loadSection('home')">
                         <div class="ms-Grid-col ms-u-xl3">
-                          <i class="ms-Icon ms-Icon--Home ms-fontSize-xxl" aria-hidden="true"></i>
+                          <i class="ms-Icon ms-Icon--Home ms-fontSize-xl" aria-hidden="true"></i>
                         </div>
                         <div class="ms-Grid-col ms-u-xl9">
                           Home
                         </div>
                       </div>
-                      <div id="scripts" class="ms-Grid-row ms-font-xl ms-fontWeight-semibold ms-fontColor-neutralPrimaryAlt ms-bgColor-neutralTertiaryAlt--hover Nav-Option" onclick="loadSection('scripts')">
+                      <div id="scripts" class="ms-Grid-row ms-font-l ms-fontWeight-semibold ms-fontColor-neutralPrimaryAlt ms-bgColor-neutralTertiaryAlt--hover Nav-Option" onclick="loadSection('scripts')">
                         <div class="ms-Grid-col ms-u-xl3">
-                          <i class="ms-Icon ms-Icon--Code ms-fontSize-xxl" aria-hidden="true"></i>
+                          <i class="ms-Icon ms-Icon--Code ms-fontSize-xl" aria-hidden="true"></i>
                         </div>
                         <div class="ms-Grid-col ms-u-xl9">
                           Scripts
                         </div>
                       </div>
-                      <div  id="videos" class="ms-Grid-row ms-font-xl ms-fontWeight-semibold ms-fontColor-neutralPrimaryAlt ms-bgColor-neutralTertiaryAlt--hover Nav-Option" onclick="loadSection('videos')">
+                      <div  id="videos" class="ms-Grid-row ms-font-l ms-fontWeight-semibold ms-fontColor-neutralPrimaryAlt ms-bgColor-neutralTertiaryAlt--hover Nav-Option" onclick="loadSection('videos')">
                         <div class="ms-Grid-col ms-u-xl3">
-                          <i class="ms-Icon ms-Icon--Video ms-fontSize-xxl" aria-hidden="true"></i>
+                          <i class="ms-Icon ms-Icon--Video ms-fontSize-xl" aria-hidden="true"></i>
                         </div>
                         <div class="ms-Grid-col ms-u-xl9">
                           Videos
                         </div>
                       </div>
-                      <div id="toolkit" class="ms-Grid-row ms-font-xl ms-fontWeight-semibold ms-fontColor-neutralPrimaryAlt  ms-bgColor-neutralTertiaryAlt--hover Nav-Option" onclick="loadSection('toolkit')">
+                      <div id="toolkit" class="ms-Grid-row ms-font-l ms-fontWeight-semibold ms-fontColor-neutralPrimaryAlt  ms-bgColor-neutralTertiaryAlt--hover Nav-Option" onclick="loadSection('toolkit')">
                         <div class="ms-Grid-col ms-u-xl3">
-                          <i class="ms-Icon ms-Icon--Work ms-fontSize-xxl" aria-hidden="true"></i>
+                          <i class="ms-Icon ms-Icon--Work ms-fontSize-xl" aria-hidden="true"></i>
                         </div>
                         <div class="ms-Grid-col ms-u-xl9">
                           Toolkit
                         </div>
                       </div>
-                      <div id="xmlEditor" class="ms-Grid-row ms-font-xl ms-fontWeight-semibold ms-fontColor-neutralPrimaryAlt ms-bgColor-neutralTertiaryAlt--hover Nav-Option" onclick="loadSection('xmlEditor')">
+                      <div id="xmlEditor" class="ms-Grid-row ms-font-l ms-fontWeight-semibold ms-fontColor-neutralPrimaryAlt ms-bgColor-neutralTertiaryAlt--hover Nav-Option" onclick="loadSection('xmlEditor')">
                         <div class="ms-Grid-col ms-u-xl3">
-                          <i class="ms-Icon ms-Icon--Embed ms-fontSize-xxl" aria-hidden="true"></i>
+                          <i class="ms-Icon ms-Icon--Embed ms-fontSize-xl" aria-hidden="true"></i>
                         </div>
                         <div class="ms-Grid-col ms-u-xl9">
                           XML Editor
                         </div>
                     </div>
-                    <div id="faq" class="ms-Grid-row ms-font-xl ms-fontWeight-semibold ms-fontColor-neutralPrimaryAlt ms-bgColor-neutralTertiaryAlt--hover Nav-Option" onclick="loadSection('faq')">
+                    <div id="faq" class="ms-Grid-row ms-font-l ms-fontWeight-semibold ms-fontColor-neutralPrimaryAlt ms-bgColor-neutralTertiaryAlt--hover Nav-Option" onclick="loadSection('faq')">
                         <div class="ms-Grid-col ms-u-xl3">
-                          <i class="ms-Icon ms-Icon--Help ms-fontSize-xxl" aria-hidden="true"></i>
+                          <i class="ms-Icon ms-Icon--Help ms-fontSize-xl" aria-hidden="true"></i>
                         </div>
                         <div class="ms-Grid-col ms-u-xl9">
                           FAQ
@@ -113,22 +117,45 @@
                   </div>
                 </div>
 
-                <div id="partialViews" class="ms-Grid-col ms-u-xl8 ms-bgColor-neutralLighter">
+                <div id="partialViews" class="ms-Grid-col ms-u-sm12 ms-u-xl8 ms-bgColor-neutralLighter">
                   <!-- Partial Views -->
                 </div>
 
-                <div id="trendingTopics" class="ms-Grid-col ms-u-xl2">
+                <div id="trendingTopics" class="ms-Grid-col ms-u-sm12 ms-u-xl2">
                     <div class="container">
                       <div class="ms-Grid">
                         <div class="ms-Grid-row ms-font-xl ms-fontWeight-semibold">
-                            <div class="ms-Grid-col ms-u-sm12 trendingHeader">Trending Topics</div>
+                            <div class="ms-Grid-col ms-u-sm12 ms-u-xl12 trendingHeader">Trending Topics</div>
                         </div>
                         <div class="ms-Grid-row">
-                          <img class="ms-Grid-col ms-u-sm12 topicImg" src="/Images/placeholder.png"/>
-                        </div>
-                        <div class="ms-Grid-row  ms-font-s-plus ms-fontWeight-regular topic">
-                          Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-                          tempor incididunt ut labore et dolore magna aliqua. 
+                          <div class="ms-Grid-col ms-u-sm6 ms-u-xl12  ms-font-s-plus ms-fontWeight-regular">
+                            <img  class="topicImg" src="/Images/placeholder.png"/>
+                            <div class="topic">
+                              Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+                              tempor incididunt ut labore et dolore magna aliqua.
+                            </div>
+                          </div>
+                          <div class="ms-Grid-col ms-u-sm6 ms-u-xl12  ms-font-s-plus ms-fontWeight-regular">
+                            <img  class="topicImg" src="/Images/placeholder.png"/>
+                            <div class="topic">
+                              Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+                              tempor incididunt ut labore et dolore magna aliqua. 
+                              </div>
+                          </div>
+                          <div class="ms-Grid-col ms-u-sm6 ms-u-xl12  ms-font-s-plus ms-fontWeight-regular">
+                            <img  class="topicImg" src="/Images/placeholder.png"/>
+                            <div class="topic">
+                              Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+                              tempor incididunt ut labore et dolore magna aliqua. 
+                              </div>
+                          </div>
+                          <div class="ms-Grid-col ms-u-sm6 ms-u-xl12  ms-font-s-plus ms-fontWeight-regular">
+                            <img  class="topicImg" src="/Images/placeholder.png"/>
+                            <div class="topic">
+                              Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+                              tempor incididunt ut labore et dolore magna aliqua. 
+                              </div>
+                          </div>
                         </div>
                       </div>
                     </div>
