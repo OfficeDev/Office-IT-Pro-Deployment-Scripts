@@ -57,7 +57,7 @@ This script will configure an existing Active Directory Group Policy to silently
 
 		This is example is intended to use an installation MSI or executable file that was generated using 
 		the Office 365 ProPlus Toolkit that can located from 
-		the [XML Editor site](http://officedev.github.io/Office-IT-Pro-Deployment-Scripts/XmlEditor.html).
+		the [Office Click-To-Run Configuration XML Editor](http://officedev.github.io/Office-IT-Pro-Deployment-Scripts/XmlEditor.html): 
 
 #### Remove previous versions of Office
 1. Remove the previous versions of Office
