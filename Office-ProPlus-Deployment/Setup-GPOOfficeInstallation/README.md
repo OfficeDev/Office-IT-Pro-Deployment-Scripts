@@ -24,11 +24,11 @@ This script will configure an existing Active Directory Group Policy to silently
 
 4. Download the Office channel files you plan to deploy in your environment
 
-		Example: Download-GPOOfficeChannelFiles -Channels Deferred,FirstReleaseDeferred -OfficeFilesPath C:\OfficeChannelFiles -Languages en-us,de-de -Bitness v32
+		For example, type Download-GPOOfficeChannelFiles -Channels Deferred,FirstReleaseDeferred -OfficeFilesPath C:\OfficeChannelFiles -Languages en-us,de-de -Bitness v32
 
-			 In this example, the latest 32-bit versions of the Deferred and FirstReleaseDeferred 
-			 channels will be downloaded to C:\OfficeChannelFiles. If C:\OfficeChannelFiles does not 
-			 exist a new directory will be created. Both English and German languages will be downlaoded.
+		In this example, the latest 32-bit versions of the Deferred and FirstReleaseDeferred 
+		channels will be downloaded to C:\OfficeChannelFiles. If C:\OfficeChannelFiles does not 
+		exist a new directory will be created. Both English and German languages will be downlaoded.
 
 
 #### Configure the OfficeDeployment folder used to stage the Office channel files and the PowerShell scripts
@@ -36,9 +36,12 @@ This script will configure an existing Active Directory Group Policy to silently
 
 		Type Configure-GPOOfficeDeployment -Channel Deferred -Bitness v32 -OfficeFilesPath C:\OfficeChannelFiles -MoveSourceFiles $true
 
-		A new directory will be created on your largest drive called OfficeDeployment$ and all of the necessary files will be copied here.
+		A new directory will be created on your largest drive called OfficeDeployment$ and 
+		all of the necessary files will be copied here. 
 
-		Note - Don't worry if you have multiple channels downloaded, choose any of the channels you've downloaded and the bit. If you do not set -MoveSourceFiles to $true the files will only be copied to the new directory.
+		Note - Don't worry if you have multiple channels downloaded, choose any of the channels 
+		you've downloaded and the bit. If you do not set -MoveSourceFiles to $true the files will 
+		only be copied to the new directory.
 
 #### Create a new Office deployment using an existing GPO
 1. Install Office using dynamic PowerShell scripts
