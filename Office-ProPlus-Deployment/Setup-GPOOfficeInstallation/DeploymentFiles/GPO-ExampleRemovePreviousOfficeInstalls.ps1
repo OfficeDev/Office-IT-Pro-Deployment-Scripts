@@ -1,11 +1,10 @@
 ﻿param(
-[Parameter()]
-[string]$OfficeDeploymentPath
+ [Parameter()]
+ [string]$OfficeDeploymentPath
 )
 
-# Deploy Office 365 ProPlus using Group Policy
 Begin {
-    Set-Location $OfficeDeploymentPath
+ Set-Location $OfficeDeploymentPath
 }
 
 Process {
@@ -14,18 +13,21 @@ Process {
  # Importing required functions
  . $scriptPath\Generate-ODTConfigurationXML.ps1
  . $scriptPath\Edit-OfficeConfigurationFile.ps1
- . $scriptPath\Remove-PreviousOfficeInstalls.ps1
  . $scriptPath\SharedFunctions.ps1
-
+ . $scriptPath\Remove-PreviousOfficeInstalls.ps1
+  
  #--------------------------------------------------------------------------------------
  #   Customize the parameters - Modify the variables below to customize this script
  #--------------------------------------------------------------------------------------
 
+ # Available list of ProductsToRemove:  AllOfficeProducts,MainOfficeProduct,Visio,Project
+ [string[]]$ProductsToRemove = "MainOfficeProduct"
+ 
  [bool]$RemoveClickToRunVersions = $false
  
  [bool]$Remove2016Installs = $false
  
- [bool]$Force = $true
+ [bool]$Force = $false
  
  [bool]$KeepUserSettings = $true
  
@@ -33,12 +35,11 @@ Process {
 
  [bool]$NoReboot = $false
 
- # Available list of products:  AllOfficeProducts,MainOfficeProduct,Visio,Project
- [string[]]$ProductsToRemove = "AllOfficeProducts" 
+ [string]$LogFilePath = "$env:TEMP\RemovePreviousOfficeInstall.log"
 
  #-------------------------------------------------------------------------------------
 
  # Remove the products
- Remove-PreviousOfficeInstalls -RemoveClickToRunVersions $RemoveClickToRunVersions -Remove2016Installs $Remove2016Installs -Force $Force -KeepUserSettings $KeepUserSettings -KeepLync $KeepLync -NoReboot $NoReboot -ProductsToRemove $ProductsToRemove
+ Remove-PreviousOfficeInstalls -ProductsToRemove $ProductsToRemove -RemoveClickToRunVersions $RemoveClickToRunVersions -Remove2016Installs $Remove2016Installs -Force $Force -KeepUserSettings $KeepUserSettings -KeepLync $KeepLync -NoReboot $NoReboot -LogFilePath $LogFilePath
 
 }
