@@ -2,13 +2,13 @@
 
 This guide provides the different options for installing or upgrading Office 365 ProPlus. We've divided the guide into 3 sections:  
 
-** Unmanaged deployments** - For organizations that are not using managed deployment software like System Center Configuration Manager and Microsoft Intune. 
+**Unmanaged deployments** - For organizations that are not using managed deployment software like System Center Configuration Manager and Microsoft Intune. 
 Several examples are shown on how to deploy Office ProPlus using PowerShell.  
 
-** Managed deployments** - Deploy Office 365 ProPlus through System Center Configuration Manager using PowerShell commands. In addition, instructions for deploying
+**Managed deployments** - Deploy Office 365 ProPlus through System Center Configuration Manager using PowerShell commands. In addition, instructions for deploying
 Office ProPlus through Group Policy are also outlined.
 
-** Package Office deployments into an MSI or EXE** - Package an Office 365 ProPlus installation into an MSI or Executable file using the Microsoft Office ProPlus Install Toolkit.  
+**Package Office deployments into an MSI or EXE** - Package an Office 365 ProPlus installation into an MSI or Executable file using the Microsoft Office ProPlus Install Toolkit.  
 
 ## **Upgrade Office 2007 using PowerShell**
 
