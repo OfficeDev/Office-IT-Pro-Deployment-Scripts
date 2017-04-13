@@ -28,7 +28,10 @@ param(
 [Parameter()]
 [ValidateSet("O365ProPlusRetail","O365BusinessRetail","VisioProRetail","ProjectProRetail", "SPDRetail", "VisioProXVolume", "VisioStdXVolume", 
              "ProjectProXVolume", "ProjectStdXVolume", "InfoPathRetail", "SkypeforBusinessEntryRetail", "LyncEntryRetail")]
-[string]$C2RProductsToRemove = "O365ProPlusRetail"
+[string]$C2RProductsToRemove = "O365ProPlusRetail",
+
+[Parameter()]
+[string]$LogFilePath
 )
 
 $validProductIds = @("O365ProPlusRetail","O365BusinessRetail","VisioProRetail","ProjectProRetail", "SPDRetail", "VisioProXVolume", "VisioStdXVolume", 
@@ -212,10 +215,16 @@ In this example the primary Office product will be removed even if it is Click-T
 
     [Parameter(ValueFromPipelineByPropertyName=$true)]
     [ValidateSet("AllOfficeProducts","MainOfficeProduct","Visio","Project")]
-    [string[]]$ProductsToRemove = "AllOfficeProducts"
+    [string[]]$ProductsToRemove = "AllOfficeProducts",
+
+    [Parameter()]
+    [string]$LogFilePath
   )
 
   Process {
+    $currentFileName = Get-CurrentFileName
+    Set-Alias -name LINENUM -value Get-CurrentLineNumber
+
     $c2rVBS = "OffScrubc2r.vbs"
     $03VBS = "OffScrub03.vbs"
     $07VBS = "OffScrub07.vbs"
@@ -325,6 +334,7 @@ In this example the primary Office product will be removed even if it is Click-T
     $scriptPath = GetScriptRoot
 
     Write-Host "Detecting Office installs..."
+    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Detecting Office installs..." -LogFilePath $LogFilePath
 
     $officeVersions = Get-OfficeVersion -ShowAllInstalledProducts | select *
     $ActionFiles = @()
@@ -332,6 +342,7 @@ In this example the primary Office product will be removed even if it is Click-T
     $removeOffice = $true
     if (!( $officeVersions)) {
        Write-Host "Microsoft Office is not installed"
+       WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Microsoft Office is not installed" -LogFilePath $LogFilePath
        $removeOffice = $false
     }
 
@@ -373,6 +384,7 @@ In this example the primary Office product will be removed even if it is Click-T
                                     if($RemoveClickToRunVersions){
                                         Remove-OfficeClickToRun -C2RProductsToRemove $MainOfficeProduct.Name.Split('-')[0].Trim()
                                     } else {
+                                        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Office 2013 Click-To-Run cannot be removed. Use the -RemoveClickToRunVersions parameter to remove Click-To-Run 2016 installs." -LogFilePath $LogFilePath
                                         throw "Office 2013 Click-To-Run cannot be removed. Use the -RemoveClickToRunVersions parameter to remove Click-To-Run 2016 installs."
                                     }
                                 }
@@ -385,10 +397,12 @@ In this example the primary Office product will be removed even if it is Click-T
                                         if($RemoveClickToRunVersions){
                                             Remove-OfficeClickToRun -C2RProductsToRemove $MainOfficeProduct.Name.Split('-')[0].Trim()
                                         } else {
+                                            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Office 2016 Click-To-Run cannot be removed. Use the -RemoveClickToRunVersions parameter to remove Click-To-Run 2016 installs." -LogFilePath $LogFilePath
                                             throw "Office 2016 Click-To-Run cannot be removed. Use the -RemoveClickToRunVersions parameter to remove Click-To-Run 2016 installs."
                                         }
                                     }
                                 } else {
+                                    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Office 2016 Click-To-Run cannot be removed. Use the -RemoveClickToRunVersions and -Remove2016Installs parameters to remove Click-To-Run 2016 installs." -LogFilePath $LogFilePath
                                     throw "Office 2016 Click-To-Run cannot be removed. Use the -RemoveClickToRunVersions and -Remove2016Installs parameters to remove Click-To-Run 2016 installs."
                                 }
                             }
@@ -396,7 +410,9 @@ In this example the primary Office product will be removed even if it is Click-T
 
                         try{
                              if($ActionFile -And (Test-Path -Path $ActionFile)){
+                                $MainOfficeProductDisplayName = $MainOfficeProduct.DisplayName
                                 Write-Host "`tRemoving "$MainOfficeProduct.DisplayName"..."
+                                WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Removing the MainOfficeProduct..." -LogFilePath $LogFilePath
                                 $cmdLine = """$ActionFile"" $MainOfficeProductName $argList"
                                 $cmd = "cmd /c cscript //Nologo $cmdLine"
                                 Invoke-Expression $cmd
@@ -407,6 +423,7 @@ In this example the primary Office product will be removed even if it is Click-T
                     }
                     "Visio" {
                         Write-Host "`tRemoving Visio products..."
+                        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Removing Visio products..." -LogFilePath $LogFilePath
                         $VisioProductName = $VisioProduct.Name
 
                         switch($VisioProduct.Version){
@@ -426,6 +443,7 @@ In this example the primary Office product will be removed even if it is Click-T
                                     if($RemoveClickToRunVersions){
                                         Remove-OfficeClickToRun -C2RProductsToRemove "VisioProRetail","VisioProXVolume", "VisioStdXVolume"
                                     } else {
+                                        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Visio cannot be removed. Use the -RemoveClickToRunVersions parameter to remove Click-To-Run 2016 installs." -LogFilePath $LogFilePath
                                         throw "Visio cannot be removed. Use the -RemoveClickToRunVersions parameter to remove Click-To-Run 2016 installs."
                                     }
                                 }
@@ -438,10 +456,12 @@ In this example the primary Office product will be removed even if it is Click-T
                                         if($RemoveClickToRunVersions){
                                             Remove-OfficeClickToRun -C2RProductsToRemove "VisioProRetail","VisioProXVolume", "VisioStdXVolume"
                                         } else {
+                                            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Visio cannot be removed. Use the -RemoveClickToRunVersions parameter to remove Click-To-Run 2016 installs." -LogFilePath $LogFilePath
                                             throw "Visio cannot be removed. Use the -RemoveClickToRunVersions parameter to remove Click-To-Run 2016 installs."
                                         }
                                     }
                                 } else {
+                                    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Visio cannot be removed. Use the -RemoveClickToRunVersions and -Remove2016Installs parameters to remove Click-To-Run 2016 installs." -LogFilePath $LogFilePath
                                     throw "Visio cannot be removed. Use the -RemoveClickToRunVersions and -Remove2016Installs parameters to remove Click-To-Run 2016 installs."
                                 }
                             }
@@ -456,6 +476,7 @@ In this example the primary Office product will be removed even if it is Click-T
                     }
                     "Project" {
                         Write-Host "`tRemoving Project products..."
+                        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Removing Project products..." -LogFilePath $LogFilePath
                         $ProjectProductName = $ProjectProduct.Name
 
                         switch($ProjectProduct.Version){
@@ -475,6 +496,7 @@ In this example the primary Office product will be removed even if it is Click-T
                                     if($RemoveClickToRunVersions){
                                         Remove-OfficeClickToRun -C2RProductsToRemove "ProjectProXVolume", "ProjectStdXVolume","ProjectProRetail"
                                     } else {
+                                        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Project cannot be removed. Use the -RemoveClickToRunVersions parameter to remove Click-To-Run 2016 installs." -LogFilePath $LogFilePath
                                         throw "Project cannot be removed. Use the -RemoveClickToRunVersions parameter to remove Click-To-Run 2016 installs."
                                     }
                                 }
@@ -487,10 +509,12 @@ In this example the primary Office product will be removed even if it is Click-T
                                         if($RemoveClickToRunVersions){
                                             Remove-OfficeClickToRun -C2RProductsToRemove "ProjectProXVolume", "ProjectStdXVolume","ProjectProRetail"
                                         } else {
+                                            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Project cannot be removed. Use the -RemoveClickToRunVersions parameter to remove Click-To-Run 2016 installs." -LogFilePath $LogFilePath
                                             throw "Project cannot be removed. Use the -RemoveClickToRunVersions parameter to remove Click-To-Run 2016 installs."
                                         }
                                         }
                                     } else {
+                                        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Project cannot be removed. Use the -RemoveClickToRunVersions and -Remove2016Installs parameters to remove Click-To-Run 2016 installs." -LogFilePath $LogFilePath
                                         throw "Project cannot be removed. Use the -RemoveClickToRunVersions and -Remove2016Installs parameters to remove Click-To-Run 2016 installs."
                                     }
                                 }
@@ -505,6 +529,7 @@ In this example the primary Office product will be removed even if it is Click-T
             }
         } else {
             Write-Host "`tRemoving all Office products..."
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Removing all Office products..." -LogFilePath $LogFilePath
 
             foreach($product in $officeVersions){
                 try{
@@ -544,6 +569,7 @@ In this example the primary Office product will be removed even if it is Click-T
                                     if($RemoveClickToRunVersions){
                                         $ActionFile = "$scriptPath\$c2rVBS"
                                     } else {
+                                        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Office 2013 cannot be removed if 2013 Click-To-Run is installed. Use the -RemoveClickToRunVersions parameter to remove Click-To-Run installs." -LogFilePath $LogFilePath
                                         throw "Office 2013 cannot be removed if 2013 Click-To-Run is installed. Use the -RemoveClickToRunVersions parameter to remove Click-To-Run installs."
                                     }
                                 }
@@ -566,6 +592,7 @@ In this example the primary Office product will be removed even if it is Click-T
                                     if($RemoveClickToRunVersions){
                                         $ActionFile = "$scriptPath\$c2rVBS"  
                                     } else {
+                                        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Office 2016 cannot be removed if 2016 Click-To-Run is installed. Use the -RemoveClickToRunVersions parameter to remove Click-To-Run installs." -LogFilePath $LogFilePath
                                         throw "Office 2016 cannot be removed if 2016 Click-To-Run is installed. Use the -RemoveClickToRunVersions parameter to remove Click-To-Run installs."
                                     }
                                 }
@@ -618,11 +645,16 @@ Will uninstall Office Click-to-Run.
         [Parameter()]
         [ValidateSet("All","O365ProPlusRetail","O365BusinessRetail","VisioProRetail","ProjectProRetail", "SPDRetail", "VisioProXVolume", "VisioStdXVolume", 
                      "ProjectProXVolume", "ProjectStdXVolume", "InfoPathRetail", "SkypeforBusinessEntryRetail", "LyncEntryRetail")]
-        [string[]]$C2RProductsToRemove = "All"
+        [string[]]$C2RProductsToRemove = "All",
+
+        [Parameter()]
+        [string]$LogFilePath
     )
 
      Process{
- 
+        $currentFileName = Get-CurrentFileName
+        Set-Alias -name LINENUM -value Get-CurrentLineNumber 
+
         $scriptRoot = GetScriptRoot
 
         newCTRRemoveXml | Out-File $RemoveCTRXmlPath
@@ -689,10 +721,7 @@ Will uninstall Office Click-to-Run.
         if($c2rVersion) {
             if(!($isInPipe)) {
                 Write-Host "Please wait while $c2rName is being uninstalled..."
-                #write log
-                $lineNum = Get-CurrentLineNumber    
-                $filName = Get-CurrentFileName 
-                WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Please wait while $c2rName is being uninstalled..."
+                WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Please wait while $c2rName is being uninstalled..." -LogFilePath $LogFilePath
             }            
         }
    
@@ -718,10 +747,7 @@ Will uninstall Office Click-to-Run.
             if(!($c2rTest)){                           
                 if (!($isInPipe)) {                        
                     Write-Host "Office Click-to-Run has been successfully uninstalled." 
-                    <# write log#>
-                    $lineNum = Get-CurrentLineNumber    
-                    $filName = Get-CurrentFileName 
-                    WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Office Click-to-Run has been successfully uninstalled." 
+                    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Office Click-to-Run has been successfully uninstalled." -LogFilePath $LogFilePath 
                 }
             }
         }                                      
@@ -757,8 +783,14 @@ Function StartProcess {
         [String]$execParams,
 
         [Parameter()]
-        [bool]$WaitForExit = $false
+        [bool]$WaitForExit = $false,
+
+        [Parameter()]
+        [string]$LogFilePath
 	)
+
+    $currentFileName = Get-CurrentFileName
+    Set-Alias -name LINENUM -value Get-CurrentLineNumber 
 
     Try
     {
@@ -776,8 +808,7 @@ Function StartProcess {
     Catch
     {
         Write-Log -Message $_.Exception.Message -severity 1 -component "Office 365 Update Anywhere"
-        $fileName = $_.InvocationInfo.ScriptName.Substring($_.InvocationInfo.ScriptName.LastIndexOf("\")+1)
-        WriteToLogFile -LNumber $_.InvocationInfo.ScriptLineNumber -FName $fileName -ActionError $_
+        WriteToLogFile -LNumber $_.InvocationInfo.ScriptLineNumber -FName $currentFileName -ActionError $_
     }
 }
 
@@ -787,19 +818,27 @@ Function IsSupportedLanguage() {
            [string] $Language,
 
            [Parameter()]
-           [bool] $ShowLanguages = $true
+           [bool] $ShowLanguages = $true,
+
+           [Parameter()]
+           [string]$LogFilePath
         )
         
+        $currentFileName = Get-CurrentFileName
+        Set-Alias -name LINENUM -value Get-CurrentLineNumber
+
         $lang = $validLanguages | where {$_.ToString().ToUpper().EndsWith("|$Language".ToUpper())}
           
         if (!($lang)) {
            if ($ShowLanguages) {
               Write-Host
               Write-Host "Invalid or Unsupported Language. Please select a language." -NoNewLine -BackgroundColor Red
+              WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Invalid or Unsupported Language. Please select a language." -NoNewLine -BackgroundColor Red -LogFilePath $LogFilePath
               Write-Host
 
               return SelectLanguage 
            } else {
+              WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Invalid or Unsupported Language: $Language" -NoNewLine -BackgroundColor Red -LogFilePath $LogFilePath
               throw "Invalid or Unsupported Language: $Language"
            }
            
@@ -1220,7 +1259,6 @@ Function GetScriptRoot() {
      if ($PSScriptRoot) {
        $scriptPath = $PSScriptRoot
      } else {
-       $scriptPath = split-path -parent $MyInvocation.MyCommand.Definition
        $scriptPath = (Get-Item -Path ".\").FullName
      }
 
@@ -1246,6 +1284,8 @@ param(
             $primaryOfficeLanguage = GetClientCulture
             $MainOfficeProduct = (Get-OfficeVersion) | ? {$_.DisplayName -match $primaryOfficeLanguage}
             $ProductName = $MainOfficeProduct.DisplayName
+        } else {
+            $ProductName = $MainOfficeProducts.DisplayName
         }
     } 
         
@@ -1362,7 +1402,7 @@ function getCTRConfig() {
                      'SOFTWARE\Wow6432Node\Microsoft\Office\ClickToRun'
 
     $Object = New-Object PSObject
-    $Object | add-member Noteproperty ClickToRunInstalled $false
+    $Object | Add-Member Noteproperty ClickToRunInstalled $false
 
     [string]$officeKeyPath = "";
     foreach ($regPath in $officeCTRKeys) {
@@ -1523,31 +1563,34 @@ function Get-CurrentFileName{
     $MyInvocation.ScriptName.Substring($MyInvocation.ScriptName.LastIndexOf("\")+1)
 }
 
-function Get-CurrentFunctionName {
-    (Get-Variable MyInvocation -Scope 1).Value.MyCommand.Name;
-}
-
 Function WriteToLogFile() {
     param( 
-      [Parameter(Mandatory=$true)]
-      [string]$LNumber,
-      [Parameter(Mandatory=$true)]
-      [string]$FName,
-      [Parameter(Mandatory=$true)]
-      [string]$ActionError
+        [Parameter(Mandatory=$true)]
+        [string]$LNumber,
+
+        [Parameter(Mandatory=$true)]
+        [string]$FName,
+
+        [Parameter(Mandatory=$true)]
+        [string]$ActionError,
+
+        [Parameter()]
+        [string]$LogFilePath
     )
+
     try{
         $headerString = "Time".PadRight(30, ' ') + "Line Number".PadRight(15,' ') + "FileName".PadRight(60,' ') + "Action"
         $stringToWrite = $(Get-Date -Format G).PadRight(30, ' ') + $($LNumber).PadRight(15, ' ') + $($FName).PadRight(60,' ') + $ActionError
 
-        #check if file exists, create if it doesn't   
-        $getCurrentDatePath = "C:\Windows\Temp\" + (Get-Date -Format u).Substring(0,10)+"OfficeAutoScriptLog.txt"
-        if(Test-Path $getCurrentDatePath){#if exists, append   
-            Add-Content $getCurrentDatePath $stringToWrite
+        if(!$LogFilePath){
+            $LogFilePath = "$env:windir\Temp\" + (Get-Date -Format u).Substring(0,10)+"_OfficeDeploymentLog.txt"
+        }
+        if(Test-Path $LogFilePath){
+             Add-Content $LogFilePath $stringToWrite
         }
         else{#if not exists, create new
-            Add-Content $getCurrentDatePath $headerString
-            Add-Content $getCurrentDatePath $stringToWrite
+             Add-Content $LogFilePath $headerString
+             Add-Content $LogFilePath $stringToWrite
         }
     } catch [Exception]{
         Write-Host $_
@@ -1557,5 +1600,5 @@ Function WriteToLogFile() {
 $dotSourced = IsDotSourced -InvocationLine $MyInvocation.Line
 
 if (!($dotSourced)) {
-   Remove-PreviousOfficeInstalls -RemoveClickToRunVersions $RemoveClickToRunVersions -Remove2016Installs $Remove2016Installs -Force $Force -KeepUserSettings $KeepUserSettings -KeepLync $KeepLync -NoReboot $NoReboot -ProductsToRemove $ProductsToRemove
+   Remove-PreviousOfficeInstalls -RemoveClickToRunVersions $RemoveClickToRunVersions -Remove2016Installs $Remove2016Installs -Force $Force -KeepUserSettings $KeepUserSettings -KeepLync $KeepLync -NoReboot $NoReboot -ProductsToRemove $ProductsToRemove -LogFilePath $LogFilePath
 }
