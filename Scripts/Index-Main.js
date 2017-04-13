@@ -1,4 +1,4 @@
-$(document).ready(function() {
+$(document).ready(function() {    
     $('#Hamburger').remove();
     addHamburger();
     checkAddress();
@@ -11,25 +11,31 @@ window.onresize = function(){
 }
 
 function resizePage(){
-    if(screen.width >= 480)
-    {
-        $('#Nav').height($('.Site-Content').height()); 
-        $('#partialViews').height($('.Site-Content').height()); 
-        $('#trendingTopics').height($('.Site-Content').height()); 
-        $('#Hamburger').remove();
-        
+
+    if(window.outerWidth >= 640){
+
+         $('#Hamburger').remove();
+
         $('.Nav-Option').each(function(i,obj){
             $(obj).removeClass('hidden');
             $(obj).removeClass('ms-u-slideUpOut10');
         });
+
+        $('.Site-Content').height($('body').height());
+
+        $('#Nav').height($('.Site-Content').height()); 
+        $('#partialViews').height($('.Site-Content').height()); 
+        $('#trendingTopics').height($('.Site-Content').height()); 
     }
     else{
-        toggleHamburger();
-        $('#Nav').height('100%'); 
-        $('#partialViews').height('100%'); 
-        $('#trendingTopics').height('100%'); 
+        $('.Site-Content').height('auto');
+        $('#Nav').height('auto'); 
+        $('#partialViews').height('auto'); 
+        $('#trendingTopics').height('auto');  
+
         addHamburger(); 
     }
+
 }
 
 function openInNewTab(url) {
@@ -235,7 +241,7 @@ function toggleHamburger(){
 }
 
 function addHamburger(){
-    if( $('#Hamburger').length === 0 && screen.width < 480){
+    if( $('#Hamburger').length === 0 && window.outerWidth < 640){
             var navHtml = "<div id='Hamburger' class='ms-Grid-row'>\
                           <div class='ms-Grid-col ms-u-sm12'>\
                               <div class='Nav-Option ms-font-l ms-fontWeight-regular ms-u-textAlignLeft' onclick='toggleHamburger()'>\
@@ -257,8 +263,8 @@ function checkAddress(){
     var pageId = location.hash.split('#')[1];
     var sectionId = location.hash.split('#')[2];
 
-    if(!pageId){
-        pageId = 'Home' 
+    if(pageId === undefined){
+        pageId = 'home' 
     }  
     
     $('.Nav-Option').each(function(i,obj){

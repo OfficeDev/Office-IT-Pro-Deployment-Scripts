@@ -1,4 +1,4 @@
-﻿@media screen and (min-width: 0px) and (max-width: 639px){
+@media screen and (min-width: 0px) and (max-width: 639px){
 	#Trending,#siteNav {margin-right: -15px;}
 	#Trending{display:none;}
 
@@ -19,7 +19,7 @@
 }
 
 .Header{
-	margin:-8px -16px -20px -16px;
+	margin: -8px -16px -20px -16px;
 	min-height:180px;
 	border-bottom:1px solid #106ebe;
 }
@@ -54,8 +54,10 @@
 	height:100%;
 }
 
+
 .Nav-Option{
-	padding: 10px 0 10px 10px; 
+	padding: 10px 0 10px 10px; 	
+	cursor:pointer;
 }
 
 #Nav{
@@ -63,22 +65,24 @@
 }
 
 #partialViews{
-	height:100%;
 	padding:20px;
 }
 
 #trendingTopics{
-	height:100%;
-	padding:10px 0px 0px 0px;
+	padding: 10px 15px 0px 15px;
 }
 
 .trendingHeader, .topic, .topicImg{
-	padding:5px 10px 5px 20px;
+	padding: 5px 0px 5px 0px;
 }
 
+.topic{
+	cursor:pointer;
+}
 .topicImg{
-	width:75%;
-	height: 100px;
+	cursor:pointer;
+	width: 95%;
+	height: inherit;
 }
 
 .Selected{
@@ -87,6 +91,26 @@
 }
 
 .PartialView-Item{
-	padding:15px;
-	margin: 5px 
+	padding: 15px;
+	margin: 5px 5px 20px 5px;
+}
+
+.Automation-Carousel,.Test-Scripts-Carousel{
+	padding: 15px;
+	margin: 5px 5px 20px 5px;
+}
+
+.Carousel-Img{
+	cursor:pointer;
+	height:inherit; 
+	width:95%;
+}
+
+.Carousel-Text{
+	cursor:pointer;
+	padding: 10px 8px 8px 8px;
+}
+
+.Carousel-Chevron{
+	cursor:pointer;
 }
