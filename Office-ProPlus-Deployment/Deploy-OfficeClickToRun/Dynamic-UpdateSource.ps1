@@ -66,7 +66,9 @@ Will Dynamically set the Update Source based a list Provided
         [Parameter(ValueFromPipelineByPropertyName=$true)]
         [bool] $SourceByIP = $false,
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [bool] $IncludeUpdatePath = $true
+        [bool] $IncludeUpdatePath = $true,
+        [Parameter()]
+        [string]$LogFilePath
     )
 
     Process{
@@ -131,9 +133,9 @@ Will Dynamically set the Update Source based a list Provided
             }          
      }
      if ($SourceValue) {
-        SetODTAdd -TargetFilePath $TargetFilePath -SourcePath $SourceValue
+        SetODTAdd -TargetFilePath $TargetFilePath -SourcePath $SourceValue -LogFilePath $LogFilePath
         if($IncludeUpdatePath){
-            SetODTUpdates -TargetFilePath $TargetFilePath -UpdatePath $SourceValue
+            SetODTUpdates -TargetFilePath $TargetFilePath -UpdatePath $SourceValue -LogFilePath $LogFilePath
         }
 
      } else {
@@ -660,16 +662,12 @@ Function CreateSubnet(){
     return $SubnetMask
  }
 
-Function Get-CurrentLineNumber {
+function Get-CurrentLineNumber {
     $MyInvocation.ScriptLineNumber
 }
 
-Function Get-CurrentFileName{
+function Get-CurrentFileName{
     $MyInvocation.ScriptName.Substring($MyInvocation.ScriptName.LastIndexOf("\")+1)
-}
-
-Function Get-CurrentFunctionName {
-    (Get-Variable MyInvocation -Scope 1).Value.MyCommand.Name;
 }
 
 Function WriteToLogFile() {
@@ -692,14 +690,14 @@ Function WriteToLogFile() {
         $stringToWrite = $(Get-Date -Format G).PadRight(30, ' ') + $($LNumber).PadRight(15, ' ') + $($FName).PadRight(60,' ') + $ActionError
 
         if(!$LogFilePath){
-            $getCurrentDatePath = "C:\Windows\Temp\" + (Get-Date -Format u).Substring(0,10)+"_OfficeDeploymentLog.txt"
+            $LogFilePath = "$env:windir\Temp\" + (Get-Date -Format u).Substring(0,10)+"_OfficeDeploymentLog.txt"
         }
-        if(Test-Path $getCurrentDatePath){
-             Add-Content $getCurrentDatePath $stringToWrite
+        if(Test-Path $LogFilePath){
+             Add-Content $LogFilePath $stringToWrite
         }
         else{#if not exists, create new
-             Add-Content $getCurrentDatePath $headerString
-             Add-Content $getCurrentDatePath $stringToWrite
+             Add-Content $LogFilePath $headerString
+             Add-Content $LogFilePath $stringToWrite
         }
     } catch [Exception]{
         Write-Host $_

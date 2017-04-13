@@ -143,7 +143,7 @@ Word, Excel, and Outlook will be pinned to the Start Menu. The PowerShell consol
     $scriptRoot = GetScriptRoot
 
     #Load the file
-    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Loading the configuration xml file..."
+    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Loading the configuration xml file..." -LogFilePath $LogFilePath
     [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
         
     if ($TargetFilePath) {
@@ -162,7 +162,7 @@ Word, Excel, and Outlook will be pinned to the Start Menu. The PowerShell consol
     if ($OfficeVersion -eq "Office2013") {
         $officeCtrPath = Join-Path $scriptRoot "Office2013Setup.exe"
         if (!(Test-Path -Path $officeCtrPath)) {
-           WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Cannot find the Office 2013 Setup executable"
+           WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Cannot find the Office 2013 Setup executable" -LogFilePath $LogFilePath
            throw "Cannot find the Office 2013 Setup executable"
         }
     }
@@ -170,7 +170,7 @@ Word, Excel, and Outlook will be pinned to the Start Menu. The PowerShell consol
     if ($OfficeVersion -eq "Office2016") {
         $officeCtrPath = $scriptRoot + "\Office2016Setup.exe"
         if (!(Test-Path -Path $officeCtrPath)) {
-           WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Cannot find the Office 2016 Setup executable"
+           WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Cannot find the Office 2016 Setup executable" -LogFilePath $LogFilePath
            throw "Cannot find the Office 2016 Setup executable"
         }
     }
@@ -199,7 +199,7 @@ Word, Excel, and Outlook will be pinned to the Start Menu. The PowerShell consol
           $languages = getProductLanguages -Product $product 
           $existingLangs = checkForLanguagesInSourceFiles -Languages $languages -SourcePath $sourcePath -Version $version -Edition $edition
           if ($product.ProductId) {
-              Set-ODTProductToAdd -TargetFilePath $TargetFilePath -ProductId $product.ProductId -LanguageIds $existingLangs | Out-Null
+              Set-ODTProductToAdd -TargetFilePath $TargetFilePath -ProductId $product.ProductId -LanguageIds $existingLangs -LogFilePath $LogFilePath | Out-Null
           }
         }
     }
@@ -212,15 +212,15 @@ Word, Excel, and Outlook will be pinned to the Start Menu. The PowerShell consol
     $cmdArgs = "/configure " + '"' + $TargetFilePath + '"'
 
     Write-Host "Installing Office Click-To-Run..."
-    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Installing Office 365 ProPlus..."
+    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Installing Office 365 ProPlus..." -LogFilePath $LogFilePath
 
     if ($WaitForInstallToFinish) {
         StartProcess -execFilePath $cmdLine -execParams $cmdArgs -WaitForExit $false
 
         Start-Sleep -Seconds 5
 
-        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Waiting for Office to finish installing..."
-        Wait-ForOfficeCTRInstall -OfficeVersion $OfficeVersion
+        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Waiting for Office to finish installing..." -LogFilePath $LogFilePath
+        Wait-ForOfficeCTRInstall -OfficeVersion $OfficeVersion -LogFilePath $LogFilePath
     }else {
         StartProcess -execFilePath $cmdLine -execParams $cmdArgs -WaitForExit $true
     }
@@ -251,8 +251,8 @@ Word, Excel, and Outlook will be pinned to the Start Menu. The PowerShell consol
             if($OfficeAppPinnedStatus -ne $NULL){
                 foreach($app in $OfficeAppPinnedStatus){
                     if($app.PinToStartMenuAvailable -eq $true){
-                        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Pinning $app.name to the Start Menu"
-                        Set-OfficePinnedApplication -Action PinToStartMenu -OfficeApps $app.Name -ClickToRun $ClickToRun -InstallPath $InstallPath -OfficeVersion $officeVersionInt
+                        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Pinning $app.name to the Start Menu" -LogFilePath $LogFilePath
+                        Set-OfficePinnedApplication -Action PinToStartMenu -OfficeApps $app.Name -ClickToRun $ClickToRun -InstallPath $InstallPath -OfficeVersion $officeVersionInt -LogFilePath $LogFilePath
                     }   
                 }
             }   
@@ -263,8 +263,8 @@ Word, Excel, and Outlook will be pinned to the Start Menu. The PowerShell consol
                 foreach($app in $allPinnedApps){
                     if($PinToStartMenu -notcontains $app.Name){
                         if($app.PinToStartMenuAvailable -eq $false){
-                            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Removing $app.name from the Start Menu"
-                            Set-OfficePinnedApplication -Action UnpinFromStartMenu -OfficeApps $app.Name -ClickToRun $ClickToRun -InstallPath $InstallPath -OfficeVersion $officeVersionInt
+                            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Removing $app.name from the Start Menu" -LogFilePath $LogFilePath
+                            Set-OfficePinnedApplication -Action UnpinFromStartMenu -OfficeApps $app.Name -ClickToRun $ClickToRun -InstallPath $InstallPath -OfficeVersion $officeVersionInt -LogFilePath $LogFilePath
                         }  
                     }
                 } 
@@ -274,8 +274,8 @@ Word, Excel, and Outlook will be pinned to the Start Menu. The PowerShell consol
                 $OfficeAppPinnedStatus = GetOfficeAppVerbStatus | ? {$_.PinToStartMenuAvailable -eq $true}
                 foreach($app in $PinnedStartMenuApps){
                     if($OfficeAppPinnedStatus.Name -contains $app.Name){
-                        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Pinning $app.name to the Start Menu"
-                        Set-OfficePinnedApplication -Action PinToStartMenu -OfficeApps $app.Name -ClickToRun $ClickToRun -InstallPath $InstallPath -OfficeVersion $officeVersionInt
+                        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Pinning $app.name to the Start Menu" -LogFilePath $LogFilePath -LogFilePath $LogFilePath
+                        Set-OfficePinnedApplication -Action PinToStartMenu -OfficeApps $app.Name -ClickToRun $ClickToRun -InstallPath $InstallPath -OfficeVersion $officeVersionInt -LogFilePath $LogFilePath
                     }
                 }   
             }
@@ -290,8 +290,8 @@ Word, Excel, and Outlook will be pinned to the Start Menu. The PowerShell consol
             
             foreach($app in $OfficeAppPinnedStatus){
                 if($app.PinToTaskbarAvailable -eq $true){
-                    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Pinning $app.name to the Taskbar"
-                    Set-OfficePinnedApplication -Action PinToTaskbar -OfficeApps $app.Name -ClickToRun $ClickToRun -InstallPath $InstallPath -OfficeVersion $officeVersionInt
+                    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Pinning $app.name to the Taskbar" -LogFilePath $LogFilePath
+                    Set-OfficePinnedApplication -Action PinToTaskbar -OfficeApps $app.Name -ClickToRun $ClickToRun -InstallPath $InstallPath -OfficeVersion $officeVersionInt -LogFilePath $LogFilePath
                     $pinnedApp += $app.Name
                 }     
             }
@@ -302,8 +302,8 @@ Word, Excel, and Outlook will be pinned to the Start Menu. The PowerShell consol
                 foreach($app in $allPinnedApps){
                     if($PinToTaskbar -notcontains $app.Name){
                         if($app.PinToTaskbarAvailable -eq $false){
-                            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Removing $app.name from the Taskbar"
-                            Set-OfficePinnedApplication -Action UnpinFromTaskbar -OfficeApps $app.Name -ClickToRun $ClickToRun -InstallPath $InstallPath -OfficeVersion $officeVersionInt
+                            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Removing $app.name from the Taskbar" -LogFilePath $LogFilePath
+                            Set-OfficePinnedApplication -Action UnpinFromTaskbar -OfficeApps $app.Name -ClickToRun $ClickToRun -InstallPath $InstallPath -OfficeVersion $officeVersionInt -LogFilePath $LogFilePath
                         }  
                     }
                 } 
@@ -313,8 +313,8 @@ Word, Excel, and Outlook will be pinned to the Start Menu. The PowerShell consol
                 $OfficeAppPinnedStatus = GetOfficeAppVerbStatus | ? {$_.PinToTaskbarAvailable -eq $true}
                 foreach($app in $PinnedTaskbarApps){
                     if($OfficeAppPinnedStatus.Name -contains $app.Name){
-                        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Pinning $app.name to the Taskbar"
-                        Set-OfficePinnedApplication -Action PinToTaskbar -OfficeApps $app.Name -ClickToRun $ClickToRun -InstallPath $InstallPath -OfficeVersion $officeVersionInt
+                        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Pinning $app.name to the Taskbar" -LogFilePath $LogFilePath
+                        Set-OfficePinnedApplication -Action PinToTaskbar -OfficeApps $app.Name -ClickToRun $ClickToRun -InstallPath $InstallPath -OfficeVersion $officeVersionInt -LogFilePath $LogFilePath
                     }
                 }
             }
@@ -324,7 +324,7 @@ Word, Excel, and Outlook will be pinned to the Start Menu. The PowerShell consol
     if($InstallProofingTools -eq $true){
         Write-Host ""
         Write-Host "Installing Proofing Tools..."
-        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Installing Proofing Tools..."
+        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Installing Proofing Tools..." -LogFilePath $LogFilePath
 
         if((Get-OfficeVersion).Bitness -eq "32-bit"){
             $proofingToolFileName = "proofingtools2016_en-us-x86.exe"
@@ -1169,18 +1169,26 @@ Here is what the portion of configuration file looks like when modified by this 
         [string[]] $LanguageIds = $NULL,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [string[]] $ExcludeApps = $NULL
+        [string[]] $ExcludeApps = $NULL,
+
+        [Parameter()]
+        [string]$LogFilePath
 
     )
 
     Process{
+        $currentFileName = Get-CurrentFileName
+        Set-Alias -name LINENUM -value Get-CurrentLineNumber
+
         $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
+        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "TargetFilePath set to $TargetFilePath" -LogFilePath $LogFilePath
 
         if ($ProductId -eq "Unknown") {
            $ProductId = SelectProductId
         }
 
         $ProductId = IsValidProductId -ProductId $ProductId
+        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "ProductId set to $ProductId" -LogFilePath $LogFilePath
         
         $langCount = $LanguageIds.Count
 
@@ -1191,6 +1199,7 @@ Here is what the portion of configuration file looks like when modified by this 
         }
 
         #Load the file
+        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Loading the configuration file" -LogFilePath $LogFilePath
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
         
         if ($TargetFilePath) {
@@ -1210,12 +1219,14 @@ Here is what the portion of configuration file looks like when modified by this 
 
         #Check that the file is properly formatted
         if($ConfigFile.Configuration -eq $null){
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "$NoConfigurationElement" -LogFilePath $LogFilePath
             throw $NoConfigurationElement
         }
 
         [System.XML.XMLElement]$AddElement=$NULL
         if($ConfigFile.Configuration.Add -eq $null){
-           throw "Cannot find 'Add' element"
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Cannot find 'Add' element" -LogFilePath $LogFilePath
+            throw "Cannot find 'Add' element"
         }
 
         $AddElement = $ConfigFile.Configuration.Add 
@@ -1223,7 +1234,8 @@ Here is what the portion of configuration file looks like when modified by this 
         #Set the desired values
         [System.XML.XMLElement]$ProductElement = $ConfigFile.Configuration.Add.Product | Where { $_.ID -eq $ProductId }
         if($ProductElement -eq $null){
-           throw "Cannot find Product with Id '$ProductId'"
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Cannot find Product with Id '$ProductId'" -LogFilePath $LogFilePath
+            throw "Cannot find Product with Id '$ProductId'"
         }
 
         if ($LanguageIds) {
@@ -1273,6 +1285,8 @@ Here is what the portion of configuration file looks like when modified by this 
 
             Write-Host
             Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "The Office XML Configuration file has been saved to: $TargetFilePath" -LogFilePath $LogFilePath
+
         } else {
             $results = new-object PSObject[] 0;
             $Result = New-Object -TypeName PSObject 
@@ -1281,10 +1295,7 @@ Here is what the portion of configuration file looks like when modified by this 
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "LanguageIds" -Value $LanguageIds
             $Result
         }
-
-
     }
-
 }
 
 Function Wait-ForOfficeCTRInstall() {
@@ -1294,7 +1305,10 @@ Function Wait-ForOfficeCTRInstall() {
         [int] $TimeOutInMinutes = 120,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [OfficeCTRVersion] $OfficeVersion = "Office2016"
+        [OfficeCTRVersion] $OfficeVersion = "Office2016",
+
+        [Parameter()]
+        [string]$LogFilePath
     )
 
     begin {
@@ -1303,7 +1317,11 @@ Function Wait-ForOfficeCTRInstall() {
     }
 
     process {
+        $currentFileName = Get-CurrentFileName
+        Set-Alias -name LINENUM -value Get-CurrentLineNumber
+
         Write-Host "Waiting for Install to Begin..."
+        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Waiting for Install to Begin..." -LogFilePath $LogFilePath
  
         #Start-Sleep -Seconds 25
 
@@ -1365,6 +1383,7 @@ Function Wait-ForOfficeCTRInstall() {
                             ($status.ToUpper() -eq "TASKSTATE_FAILED")) {
                                 if (($trackProgress -contains $keyValue) -and !($trackComplete -contains $keyValue)) {
                                     $displayValue
+                                    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError $displayValue -LogFilePath $LogFilePath
                                     $trackComplete += $keyValue
                                     Start-Sleep -Seconds 1
                                 }
@@ -1374,6 +1393,7 @@ Function Wait-ForOfficeCTRInstall() {
 
                             if ($trackProgress -notcontains $keyValue) {
                                 $displayValue
+                                WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError $displayValue -LogFilePath $LogFilePath
                                 $trackProgress += $keyValue                                
                                 Start-Sleep -Seconds 1
                             }
@@ -1383,6 +1403,7 @@ Function Wait-ForOfficeCTRInstall() {
             }
 
             if ($startTime -lt (Get-Date).AddHours(-$TimeOutInMinutes)) {
+                WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Waiting for Update Timed-Out" -LogFilePath $LogFilePath
                 throw "Waiting for Update Timed-Out"
                 break;
             }
@@ -1398,13 +1419,16 @@ Function Wait-ForOfficeCTRInstall() {
         if($failure){
             Write-Host ""
             Write-Host 'Update failed'
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError 'Update failed' -LogFilePath $LogFilePath
         } else {
             if($trackProgress.Count -gt 0){
                 Write-Host ""
                 Write-Host 'Update complete'
+                WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError 'Update complete' -LogFilePath $LogFilePath
             } else {
                 Write-Host ""
                 Write-Host 'Update not running'
+                WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError 'Update not running' -LogFilePath $LogFilePath
             }
         } 
     }
@@ -1526,8 +1550,13 @@ Set-PinnedApplication -Action UnPinFromStartMenu
         [string]$InstallPath,
 
         [Parameter()]
-        [string]$OfficeVersion
+        [string]$OfficeVersion,
+
+        [Parameter()]
+        [string]$LogFilePath
     )
+    $currentFileName = Get-CurrentFileName
+    Set-Alias -name LINENUM -value Get-CurrentLineNumber
 
     if(!$ClickToRun){
         $ctr = Get-OfficeVersion
@@ -1616,6 +1645,7 @@ Set-PinnedApplication -Action UnPinFromStartMenu
             switch($Action) {
                 "PinToStartMenu" {
                     Write-Host "Pinning $app to the Start Menu..."
+                    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Pinning $app to the Start Menu..." -LogFilePath $LogFilePath
                     if([Environment]::OSVersion.Version.Major -ge 10){
                         $actionId = '51201'
                     } else { 
@@ -1624,6 +1654,7 @@ Set-PinnedApplication -Action UnPinFromStartMenu
                 }
                 "UnpinFromStartMenu" {
                     Write-Host "Removing $app from the Start Menu..."
+                    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Removing $app from the Start Menu..." -LogFilePath $LogFilePath
                     if([Environment]::OSVersion.Version.Major -ge 10){
                         $actionId = '51394'
                     } else { 
@@ -1632,6 +1663,7 @@ Set-PinnedApplication -Action UnPinFromStartMenu
                 }
                 "PinToTaskbar" {
                     Write-Host "Pinning $app to the TaskBar..."
+                    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Pinning $app to the TaskBar..." -LogFilePath $LogFilePath
                     if([Environment]::OSVersion.Version.Major -ge 10){
                         throw "Unable to pin items to the taskbar in Windows 10"
                     }
@@ -1640,6 +1672,7 @@ Set-PinnedApplication -Action UnPinFromStartMenu
                 }
                 "UnpinFromTaskbar" {
                     Write-Host "Removing $app from the TaskBar..."
+                    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Removing $app from the TaskBar..." -LogFilePath $LogFilePath
                     $actionId = '5387'
                 }
             }
@@ -1971,10 +2004,6 @@ function Get-CurrentFileName{
     $MyInvocation.ScriptName.Substring($MyInvocation.ScriptName.LastIndexOf("\")+1)
 }
 
-function Get-CurrentFunctionName {
-    (Get-Variable MyInvocation -Scope 1).Value.MyCommand.Name;
-}
-
 Function WriteToLogFile() {
     param( 
         [Parameter(Mandatory=$true)]
@@ -1995,14 +2024,14 @@ Function WriteToLogFile() {
         $stringToWrite = $(Get-Date -Format G).PadRight(30, ' ') + $($LNumber).PadRight(15, ' ') + $($FName).PadRight(60,' ') + $ActionError
 
         if(!$LogFilePath){
-            $getCurrentDatePath = "C:\Windows\Temp\" + (Get-Date -Format u).Substring(0,10)+"_OfficeDeploymentLog.txt"
+            $LogFilePath = "$env:windir\Temp\" + (Get-Date -Format u).Substring(0,10)+"_OfficeDeploymentLog.txt"
         }
-        if(Test-Path $getCurrentDatePath){
-             Add-Content $getCurrentDatePath $stringToWrite
+        if(Test-Path $LogFilePath){
+             Add-Content $LogFilePath $stringToWrite
         }
         else{#if not exists, create new
-             Add-Content $getCurrentDatePath $headerString
-             Add-Content $getCurrentDatePath $stringToWrite
+             Add-Content $LogFilePath $headerString
+             Add-Content $LogFilePath $stringToWrite
         }
     } catch [Exception]{
         Write-Host $_

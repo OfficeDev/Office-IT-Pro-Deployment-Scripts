@@ -86,7 +86,8 @@ $enum4 = "
 } catch {}
 
 $validLanguages = @(
-"English|en-us",
+"English|en-us",          #beginning of core languages
+"MatchOS|MatchOS",
 "Arabic|ar-sa",
 "Bulgarian|bg-bg",
 "Chinese (Simplified)|zh-cn",
@@ -125,7 +126,70 @@ $validLanguages = @(
 "Thai|th-th",
 "Turkish|tr-tr",
 "Ukrainian|uk-ua",
-"Vietnamese|vi-vn")
+"Vietnamese|vi-vn",       #end of core languages
+"Afrikaans (South Africa)|af-za",                #beginning of partial languages
+"Albanian (Albania)|sq-al",
+"Amharic (Ethiopia)|am-et",
+"Armenian (Armenia)|hy-am",
+"Assamese (India)|as-in",
+"Azerbaijani (Latin, Azerbaijan)|az-latn-az",
+"Basque (Basque)|eu-es",
+"Belarusian (Belarus)|be-by",
+"Bangla (Bangladesh)|bn-bd",
+"Bangla (India)|bn-in",
+"Bosnian (Latin, Bosnia and Herzegovina)|bs-latn-ba",
+"Catalan (Catalan)|ca-es",
+"Dari (Afghanistan)|prs-af",
+"Filipino (Philippines)|fil-ph",
+"Galician (Galician)|gl-es",
+"Georgian (Georgia)|ka-ge",
+"Gujarati (India)|gu-in",
+"Icelandic (Iceland)|is-is",
+"Irish (Ireland)|ga-ie",
+"Kannada (India)|kn-in",
+"Khmer (Cambodia)|km-kh",
+"Kiswahili (Kenya)|sw-ke",
+"Konkani (India)|kok-in",
+"Kyrgyz (Kyrgyzstan)|ky-kg",
+"Luxembourgish (Luxembourg)|lb-lu",
+"Macedonian (Former Yugoslav Republic of Macedonia)|mk-mk",
+"Malayalam (India)|ml-in",
+"Maltese (Malta)|mt-mt",
+"Maori (New Zealand)|mi-nz",
+"Marathi (India)|mr-in",
+"Mongolian (Cyrillic, Mongolia)|mn-mn",
+"Nepali (Nepal)|ne-np",
+"Norwegian, Nynorsk (Norway)|nn-no",
+"Odia (India)|or-in",
+"Persian (Iran)|fa-ir",
+"Punjabi (India)|pa-in",
+"Quechua (Peru)|quz-pe",
+"Scottish Gaelic (United Kingdom)|gd-gb",
+"Serbian (Cyrillic, Serbia)|sr-cyrl-rs",
+"Serbian (Cyrillic, Bosnia and Herzegovina)|sr-cyrl-ba",
+"Sindhi (Islamic Republic of Pakistan)|sd-arab-pk",
+"Sinhala (Sri Lanka)|si-lk",
+"Tamil (India)|ta-in",
+"Tatar (Russia)|tt-ru",
+"Telugu (India)|te-in",
+"Turkmen (Turkmenistan)|tk-tm",
+"Urdu (Islamic Republic of Pakistan)|ur-pk",
+"Uyghur (PRC)|ug-cn",
+"Uzbek (Latin, Uzbekistan)|uz-latn-uz",
+"Valencian (Spain)|ca-es-valencia",
+"Welsh (United Kingdom)|cy-gb",         #end of partial languages
+"Hausa (Latin, Nigeria)|ha-latn-ng",    #beginning of proofing languages
+"Igbo (Nigeria)|ig-ng",
+"isiXhosa (South Africa)|xh-za",
+"isiZulu (South Africa)|zu-za",
+"Kinyarwanda (Rwanda)|rw-rw",
+"Pashto (Afghanistan)|ps-af",
+"Romansh (Switzerland)|rm-ch",
+"Sesotho sa Leboa (South Africa)|nso-za",
+"Setswana (South Africa)|tn-za",
+"Wolof (Senegal)|wo-sn",
+"Yoruba (Nigeria)|yo-ng")   #end of proofing languages
+
 
 $validExcludeAppIds = @(
 "Access",
@@ -221,12 +285,18 @@ Here is what the configuration file looks like when created from this function:
     [string] $LanguageId = $NULL,
 
     [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName=$true)]
-    [string] $TargetFilePath
+    [string] $TargetFilePath,
+
+    [Parameter()]
+    [string]$LogFilePath
 
     )
 
     Begin {
       $once = $false
+
+      Set-Alias -name LINENUM -value Get-CurrentLineNumber
+      $currentFileName = Get-CurrentFileName
     }
 
     Process{
@@ -263,21 +333,25 @@ Here is what the configuration file looks like when created from this function:
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
         [System.XML.XMLElement]$ConfigurationRoot=$ConfigFile.CreateElement("Configuration")
         $ConfigFile.appendChild($ConfigurationRoot) | Out-Null
+        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Configuration element added" -LogFilePath $LogFilePath
 
         #Add the Add Element under Configuration and set the Bitness
         [System.XML.XMLElement]$AddElement=$ConfigFile.CreateElement("Add")
         $ConfigurationRoot.appendChild($AddElement) | Out-Null
         $AddElement.SetAttribute("OfficeClientEdition",$Bitness) | Out-Null
+        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Add element added" -LogFilePath $LogFilePath
 
         #Add the Product Element under Add and set the ID
         [System.XML.XMLElement]$ProductElement=$ConfigFile.CreateElement("Product")
         $AddElement.appendChild($ProductElement) | Out-Null
         $ProductElement.SetAttribute("ID",$ProductId) | Out-Null
+        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Product element added" -LogFilePath $LogFilePath
 
         #Add the Language Element under Product and set the ID
         [System.XML.XMLElement]$LanguageElement=$ConfigFile.CreateElement("Language")
         $ProductElement.appendChild($LanguageElement) | Out-Null
         $LanguageElement.SetAttribute("ID",$LanguageId) | Out-Null
+        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Language element added" -LogFilePath $LogFilePath
 
         $ConfigFile.Save($TargetFilePath) | Out-Null
         $global:saveLastFilePath = $TargetFilePath
@@ -289,6 +363,7 @@ Here is what the configuration file looks like when created from this function:
 
             Write-Host
             Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "The Office XML Configuration file has been saved to: $TargetFilePath" -LogFilePath $LogFilePath
         } else {
             $results = new-object PSObject[] 0;
             $Result = New-Object –TypeName PSObject 
@@ -304,7 +379,6 @@ Here is what the configuration file looks like when created from this function:
 Function Undo-ODTLastChange {
 
     Process{
-        
         if ($global:saveLastConfigFile -and $global:saveLastFilePath) {
             [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
 
@@ -407,11 +481,17 @@ Here is what the portion of configuration file looks like when modified by this 
         [string[]] $LanguageIds = @(),
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [string[]] $ExcludeApps
+        [string[]] $ExcludeApps,
+
+        [Parameter()]
+        [string]$LogFilePath
 
     )
 
     Process{
+
+        Set-Alias -name LINENUM -value Get-CurrentLineNumber
+        $currentFileName = Get-CurrentFileName
         
         $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
 
@@ -433,6 +513,7 @@ Here is what the portion of configuration file looks like when modified by this 
         }
 
         #Load the file
+        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Loading the configuration xml file" -LogFilePath $LogFilePath
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
         
         if ($TargetFilePath) {
@@ -465,6 +546,7 @@ Here is what the portion of configuration file looks like when modified by this 
         #Set the desired values
         [System.XML.XMLElement]$ProductElement = $ConfigFile.Configuration.Add.Product | Where { $_.ID -eq $ProductId }
         if($ProductElement -eq $null){
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Creating the Product element" -LogFilePath $LogFilePath
             [System.XML.XMLElement]$ProductElement=$ConfigFile.CreateElement("Product")
             $AddElement.appendChild($ProductElement) | Out-Null
             $ProductElement.SetAttribute("ID", $ProductId) | Out-Null
@@ -478,6 +560,7 @@ Here is what the portion of configuration file looks like when modified by this 
         foreach($LanguageId in $LanguageIds){
             [System.XML.XMLElement]$LanguageElement = $ProductElement.Language | Where { $_.ID -eq $LanguageId }
             if($LanguageElement -eq $null){
+                WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Adding $LanguageId to the Product element" -LogFilePath $LogFilePath
                 [System.XML.XMLElement]$LanguageElement=$ConfigFile.CreateElement("Language")
                 $ProductElement.appendChild($LanguageElement) | Out-Null
                 $LanguageElement.SetAttribute("ID", $LanguageId) | Out-Null
@@ -487,6 +570,7 @@ Here is what the portion of configuration file looks like when modified by this 
         foreach($ExcludeApp in $ExcludeApps){
             [System.XML.XMLElement]$ExcludeAppElement = $ProductElement.ExcludeApp | Where { $_.ID -eq $ExcludeApp }
             if($ExcludeAppElement -eq $null){
+                WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Adding $ExcludeApp as an excluded app" -LogFilePath $LogFilePath
                 [System.XML.XMLElement]$ExcludeAppElement=$ConfigFile.CreateElement("ExcludeApp")
                 $ProductElement.appendChild($ExcludeAppElement) | Out-Null
                 $ExcludeAppElement.SetAttribute("ID", $ExcludeApp) | Out-Null
@@ -504,6 +588,8 @@ Here is what the portion of configuration file looks like when modified by this 
 
             Write-Host
             Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "The Office XML Configuration file has been saved to: $TargetFilePath" -LogFilePath $LogFilePath
+
         } else {
             $results = new-object PSObject[] 0;
             $Result = New-Object –TypeName PSObject 
@@ -582,12 +668,17 @@ Here is what the portion of configuration file looks like when modified by this 
         [string[]] $LanguageIds = $NULL,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [string[]] $ExcludeApps = $NULL
+        [string[]] $ExcludeApps = $NULL,
+
+        [Parameter()]
+        [string]$LogFilePath
 
     )
 
     Process{
-        
+        Set-Alias -name LINENUM -value Get-CurrentLineNumber
+        $currentFileName = Get-CurrentFileName
+
         $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
 
         if ($ProductId -eq "Unknown") {
@@ -605,6 +696,7 @@ Here is what the portion of configuration file looks like when modified by this 
         }
 
         #Load the file
+        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Loading the configuration xml file" -LogFilePath $LogFilePath
         [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
         
         if ($TargetFilePath) {
@@ -636,6 +728,7 @@ Here is what the portion of configuration file looks like when modified by this 
         #Set the desired values
         [System.XML.XMLElement]$ProductElement = $ConfigFile.Configuration.Add.Product | Where { $_.ID -eq $ProductId }
         if($ProductElement -eq $null){
+           WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Cannot find Product with Id '$ProductId'" -LogFilePath $LogFilePath
            throw "Cannot find Product with Id '$ProductId'"
         }
 
@@ -658,6 +751,7 @@ Here is what the portion of configuration file looks like when modified by this 
                         [System.XML.XMLElement]$LanguageElement=$ConfigFile.CreateElement("Language")
                         $ProductElement.appendChild($LanguageElement) | Out-Null
                         $LanguageElement.SetAttribute("ID", $LanguageId) | Out-Null
+                        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Setting $LanguageId to the Language element" -LogFilePath $LogFilePath
                     }
                 }
             }
@@ -677,6 +771,7 @@ Here is what the portion of configuration file looks like when modified by this 
                     [System.XML.XMLElement]$ExcludeAppElement=$ConfigFile.CreateElement("ExcludeApp")
                     $ProductElement.appendChild($ExcludeAppElement) | Out-Null
                     $ExcludeAppElement.SetAttribute("ID", $ExcludeApp) | Out-Null
+                    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Setting $ExcludeApp to the ExcludeApp element" -LogFilePath $LogFilePath
                 }
             }
         }
@@ -692,6 +787,7 @@ Here is what the portion of configuration file looks like when modified by this 
 
             Write-Host
             Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "The Office XML Configuration file has been saved to: $TargetFilePath" -LogFilePath $LogFilePath
         } else {
             $results = new-object PSObject[] 0;
             $Result = New-Object –TypeName PSObject 
@@ -743,7 +839,10 @@ Language and Exclude values
         [string] $TargetFilePath,
 
         [Parameter(ParameterSetName="All")]
-        [switch] $All
+        [switch] $All,
+
+        [Parameter()]
+        [string]$LogFilePath
     )
 
     Process{
@@ -779,8 +878,14 @@ Language and Exclude values
 
                 Add-Member -InputObject $Result -MemberType NoteProperty -Name "ProductId" -Value ($ProductElement.GetAttribute("ID"))
 
+                $productLanguages = @()
+
                 if($ProductElement.Language -ne $null){
-                    Add-Member -InputObject $Result -MemberType NoteProperty -Name "Languages" -Value ($ProductElement.Language.GetAttribute("ID"))
+                    foreach($lang in $ProductElement.Language){
+                        $productLanguages += $lang.ID
+                    }
+                    #Add-Member -InputObject $Result -MemberType NoteProperty -Name "Languages" -Value ($ProductElement.Language.GetAttribute("ID"))
+                    Add-Member -InputObject $Result -MemberType NoteProperty -Name "Languages" -Value $productLanguages
                 }
 
                 if($ProductElement.ExcludeApp -ne $null){
@@ -839,11 +944,17 @@ Removes the ProductToAdd with the ProductId 'O365ProPlusRetail' from the XML Con
         [string] $TargetFilePath,
 
         [Parameter(ParameterSetName="All", ValueFromPipelineByPropertyName=$true)]
-        [switch] $All
+        [switch] $All,
+
+        [Parameter()]
+        [string]$LogFilePath
     )
 
     Process{
         $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
+
+        Set-Alias -name LINENUM -value Get-CurrentLineNumber
+        $currentFileName = Get-CurrentFileName
 
         foreach($Product in $ProductId){
             if ($Product -eq "Unknown") {
@@ -882,6 +993,7 @@ Removes the ProductToAdd with the ProductId 'O365ProPlusRetail' from the XML Con
                 [System.XML.XMLElement]$ProductElement = $ConfigFile.Configuration.Add.Product | Where { $_.ID -eq $Product }
                 if($ProductElement -ne $null){
                     $ConfigFile.Configuration.Add.removeChild($ProductElement) | Out-Null
+                    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Removed $Product from the configuration file" -LogFilePath $LogFilePath
                 }
 
                 if ($ConfigFile.Configuration.Add.Product.Count -eq 0) {
@@ -892,6 +1004,7 @@ Removes the ProductToAdd with the ProductId 'O365ProPlusRetail' from the XML Con
                 }
             } else {
                $ConfigFile.Configuration.Add.RemoveAll() | Out-Null
+               WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Removed all Products from the configuration file" -LogFilePath $LogFilePath
            
             }
         
@@ -906,6 +1019,7 @@ Removes the ProductToAdd with the ProductId 'O365ProPlusRetail' from the XML Con
 
                 Write-Host
                 Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+                WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "The Office XML Configuration file has been saved to: $TargetFilePath" -LogFilePath $LogFilePath
             } else {
                 $results = new-object PSObject[] 0;
                 $Result = New-Object –TypeName PSObject 
@@ -938,7 +1052,10 @@ Param(
         [string] $TargetFilePath,
                                                 
         [Parameter(ParameterSetName="All", ValueFromPipelineByPropertyName=$true)]
-        [switch] $All
+        [switch] $All,
+
+        [Parameter()]
+        [string]$LogFilePath
      )
 
     Process{
@@ -993,10 +1110,16 @@ Removes the ExcludeApp with the Id 'Lync' (which is Skype for Business) from the
 
         #$All is not implemented at the moment
         [Parameter(ParameterSetName="All", ValueFromPipelineByPropertyName=$true)]
-        [switch] $All
+        [switch] $All,
+
+        [Parameter()]
+        [string]$LogFilePath
     )
 
     Process{
+
+        Set-Alias -name LINENUM -value Get-CurrentLineNumber
+        $currentFileName = Get-CurrentFileName
         
         $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
 
@@ -1033,6 +1156,7 @@ Removes the ExcludeApp with the Id 'Lync' (which is Skype for Business) from the
         [System.XML.XMLElement]$ExcludeAppElement = $ConfigFile.Configuration.Add.Product.ExcludeApp | Where { $_.ID -eq $ExcludeAppId }
         if($ExcludeAppElement -ne $null){
             $ConfigFile.Configuration.Add.Product.removeChild($ExcludeAppElement) | Out-Null
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Removed $ExcludeAppElement element" -LogFilePath $LogFilePath
         }
 
         $ConfigFile.Save($TargetFilePath) | Out-Null
@@ -1046,6 +1170,7 @@ Removes the ExcludeApp with the Id 'Lync' (which is Skype for Business) from the
 
             Write-Host
             Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "The Office XML Configuration file has been saved to: $TargetFilePath" -LogFilePath $LogFilePath
         } else {
             $results = new-object PSObject[] 0;
             $Result = New-Object –TypeName PSObject 
@@ -1123,11 +1248,16 @@ Here is what the portion of configuration file looks like when modified by this 
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
         [Alias("LanguageId")]
-        [string[]] $LanguageIds
+        [string[]] $LanguageIds,
+
+        [Parameter()]
+        [string]$LogFilePath
     )
 
     Process{
-        
+        Set-Alias -name LINENUM -value Get-CurrentLineNumber
+        $currentFileName = Get-CurrentFileName
+
         $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
 
         if ($ProductId -eq "Unknown") {
@@ -1167,12 +1297,14 @@ Here is what the portion of configuration file looks like when modified by this 
         #Set the desired values
         if($All){
              $RemoveElement.SetAttribute("All", "TRUE") | Out-Null
+             WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Setting all products to be removed" -LogFilePath $LogFilePath
         }else{
             [System.XML.XMLElement]$ProductElement = $RemoveElement.Product | Where { $_.ID -eq $ProductId }
             if($ProductElement -eq $null){
                 [System.XML.XMLElement]$ProductElement=$ConfigFile.CreateElement("Product")
                 $RemoveElement.appendChild($ProductElement) | Out-Null
                 $ProductElement.SetAttribute("ID", $ProductId) | Out-Null
+                WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Setting $ProductId to be removed" -LogFilePath $LogFilePath
             }
             foreach($LanguageId in $LanguageIds){
                 [System.XML.XMLElement]$LanguageElement = $ProductElement.Language | Where { $_.ID -eq $LanguageId }
@@ -1197,6 +1329,7 @@ Here is what the portion of configuration file looks like when modified by this 
 
             Write-Host
             Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "The Office XML Configuration file has been saved to: $TargetFilePath" -LogFilePath $LogFilePath
         } else {
             $results = new-object PSObject[] 0;
             $Result = New-Object –TypeName PSObject 
@@ -1341,11 +1474,16 @@ Removes the ProductToRemove with the ProductId 'O365ProPlusRetail' from the XML 
         [Microsoft.Office.Products] $ProductId = "Unknown",
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [string] $TargetFilePath
+        [string] $TargetFilePath,
+
+        [Parameter()]
+        [string]$LogFilePath
     )
 
     Process{
-        
+        Set-Alias -name LINENUM -value Get-CurrentLineNumber
+        $currentFileName = Get-CurrentFileName
+
         $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
 
         if ($ProductId -eq "Unknown") {
@@ -1381,6 +1519,7 @@ Removes the ProductToRemove with the ProductId 'O365ProPlusRetail' from the XML 
         [System.XML.XMLElement]$ProductElement = $ConfigFile.Configuration.Remove.Product | Where { $_.ID -eq $ProductId }
         if($ProductElement -ne $null){
             $ConfigFile.Configuration.Remove.removeChild($ProductElement) | Out-Null
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Removing $ProductId from the removed product list" -LogFilePath $LogFilePath
         }
 
         if ($ConfigFile.Configuration.Remove.Product.Count -eq 0) {
@@ -1401,6 +1540,7 @@ Removes the ProductToRemove with the ProductId 'O365ProPlusRetail' from the XML 
 
             Write-Host
             Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "The Office XML Configuration file has been saved to: $TargetFilePath" -LogFilePath $LogFilePath
         } else {
             $results = new-object PSObject[] 0;
             $Result = New-Object –TypeName PSObject 
@@ -1497,12 +1637,17 @@ Here is what the portion of configuration file looks like when modified by this 
         [Microsoft.Office.Channel] $Channel = "Current",
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [string] $Deadline
+        [string] $Deadline,
+
+        [Parameter()]
+        [string]$LogFilePath
 
     )
 
     Process{
-        
+        Set-Alias -name LINENUM -value Get-CurrentLineNumber
+        $currentFileName = Get-CurrentFileName
+
         $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
 
         #Load the file
@@ -1531,6 +1676,7 @@ Here is what the portion of configuration file looks like when modified by this 
         if($ConfigFile.Configuration.Updates -eq $null){
             [System.XML.XMLElement]$UpdateElement=$ConfigFile.CreateElement("Updates")
             $ConfigFile.Configuration.appendChild($UpdateElement) | Out-Null
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "The Updates element has been added to the configuration xml file" -LogFilePath $LogFilePath
         }
 
         #Set the desired values
@@ -1546,37 +1692,46 @@ Here is what the portion of configuration file looks like when modified by this 
 
         if($Channel -ne $null){
              $UpdateElement.SetAttribute("Channel", $Channel);
+             WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Setting the Update Channel to $Channel" -LogFilePath $LogFilePath
         }
 
         if($Enabled -ne $NULL){
             $UpdateElement.SetAttribute("Enabled", $Enabled.ToString().ToUpper()) | Out-Null
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Setting Enabled to $Enabled" -LogFilePath $LogFilePath
         } else {
           if ($PSBoundParameters.ContainsKey('Enabled')) {
               $ConfigFile.Configuration.Updates.RemoveAttribute("Enabled")
+              WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Removed the Updates element" -LogFilePath $LogFilePath
           }
         }
 
         if($UpdatePath){
             $UpdateElement.SetAttribute("UpdatePath", $UpdatePath) | Out-Null
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Setting Updatepath to $UpdatePath" -LogFilePath $LogFilePath
         } else {
           if ($PSBoundParameters.ContainsKey('UpdatePath')) {
               $ConfigFile.Configuration.Updates.RemoveAttribute("UpdatePath")
+              WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Removed the UpdatePath element" -LogFilePath $LogFilePath
           }
         }
 
         if($TargetVersion){
             $UpdateElement.SetAttribute("TargetVersion", $TargetVersion) | Out-Null
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Setting the TargetVersion to $TargetVersion" -LogFilePath $LogFilePath
         } else {
           if ($PSBoundParameters.ContainsKey('TargetVersion')) {
               $ConfigFile.Configuration.Updates.RemoveAttribute("TargetVersion")
+              WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Removed the TargetVersion element" -LogFilePath $LogFilePath
           }
         }
 
         if($Deadline){
             $UpdateElement.SetAttribute("Deadline", $Deadline) | Out-Null
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Setting Deadline to $Deadline" -LogFilePath $LogFilePath
         } else {
           if ($PSBoundParameters.ContainsKey('Deadline')) {
               $ConfigFile.Configuration.Updates.RemoveAttribute("Deadline")
+              WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Removed the Deadline element" -LogFilePath $LogFilePath
           }
         }
 
@@ -1591,6 +1746,7 @@ Here is what the portion of configuration file looks like when modified by this 
 
             Write-Host
             Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "The Office XML Configuration file has been saved to: $TargetFilePath" -LogFilePath $LogFilePath
         } else {
             $results = new-object PSObject[] 0;
             $Result = New-Object –TypeName PSObject 
@@ -1687,11 +1843,16 @@ This is the section that would be removed when running this function
         [string] $ConfigurationXML = $NULL,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [string] $TargetFilePath
+        [string] $TargetFilePath,
+
+        [Parameter()]
+        [string]$LogFilePath
     )
 
     Process{
-        
+        Set-Alias -name LINENUM -value Get-CurrentLineNumber
+        $currentFileName = Get-CurrentFileName
+
         $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
 
         #Load the file
@@ -1719,6 +1880,7 @@ This is the section that would be removed when running this function
         [System.XML.XMLElement]$UpdateElement = $ConfigFile.Configuration.GetElementsByTagName("Updates").Item(0)
         if($ConfigFile.Configuration.Updates -ne $null){
             $ConfigFile.Configuration.removeChild($UpdateElement) | Out-Null
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "The Updates element has been removed" -LogFilePath $LogFilePath
         }
 
         $ConfigFile.Save($TargetFilePath) | Out-Null
@@ -1732,6 +1894,7 @@ This is the section that would be removed when running this function
 
             Write-Host
             Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "The Office XML Configuration file has been saved to: $TargetFilePath" -LogFilePath $LogFilePath
         } else {
             $results = new-object PSObject[] 0;
             $Result = New-Object –TypeName PSObject 
@@ -1823,11 +1986,16 @@ Here is what the portion of configuration file looks like when modified by this 
         [string] $TargetFilePath,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [System.Nullable[bool]] $PinIconsToTaskbar = $NULL
+        [System.Nullable[bool]] $PinIconsToTaskbar = $NULL,
+
+        [Parameter()]
+        [string]$LogFilePath
     )
 
     Process{
-        
+        Set-Alias -name LINENUM -value Get-CurrentLineNumber
+        $currentFileName = Get-CurrentFileName
+
         $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
 
         #Load file
@@ -1856,16 +2024,19 @@ Here is what the portion of configuration file looks like when modified by this 
             [System.XML.XMLElement]$AutoActivateElement = $ConfigFile.Configuration.Property | Where { $_.Name -eq "AUTOACTIVATE" }
             if($AutoActivateElement -eq $null){
                 [System.XML.XMLElement]$AutoActivateElement=$ConfigFile.CreateElement("Property")
+                WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "The Property element has been created" -LogFilePath $LogFilePath
             }
                 
             $ConfigFile.Configuration.appendChild($AutoActivateElement) | Out-Null
             $AutoActivateElement.SetAttribute("Name", "AUTOACTIVATE") | Out-Null
             $AutoActivateElement.SetAttribute("Value", $AutoActivate.ToString().ToUpper()) | Out-Null
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Setting the AUTOACTIVATE element to $AutoActivate.ToString().ToUpper()" -LogFilePath $LogFilePath
         } Else {
             [System.XML.XMLElement]$AutoActivateElement = $ConfigFile.Configuration.Property | Where { $_.Name -eq "AUTOACTIVATE" }
             if($AutoActivateElement -ne $null){
                if ($PSBoundParameters.ContainsKey('AUTOACTIVATE')) {
                    $ConfigFile.Configuration.removeChild($AutoActivateElement) | Out-Null
+                   WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Removed the AUTOACTIVATE element" -LogFilePath $LogFilePath
                }
             }
         }
@@ -1874,16 +2045,19 @@ Here is what the portion of configuration file looks like when modified by this 
             [System.XML.XMLElement]$ForceAppShutDownElement = $ConfigFile.Configuration.Property | Where { $_.Name -eq "FORCEAPPSHUTDOWN" }
             if($ForceAppShutDownElement -eq $null){
                 [System.XML.XMLElement]$ForceAppShutDownElement=$ConfigFile.CreateElement("Property")
+                WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "The Property element has been created" -LogFilePath $LogFilePath
             }
                 
             $ConfigFile.Configuration.appendChild($ForceAppShutDownElement) | Out-Null
             $ForceAppShutDownElement.SetAttribute("Name", "FORCEAPPSHUTDOWN") | Out-Null
             $ForceAppShutDownElement.SetAttribute("Value", $ForceAppShutDown.ToString().ToUpper()) | Out-Null
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Setting the FORCEAPPSHUTDOWN element to $ForceAppShutDown.ToString().ToUpper()" -LogFilePath $LogFilePath
         } Else {
             [System.XML.XMLElement]$ForceAppShutDownElement = $ConfigFile.Configuration.Property | Where { $_.Name -eq "FORCEAPPSHUTDOWN" }
             if($ForceAppShutDownElement -ne $null){
                if ($PSBoundParameters.ContainsKey('FORCEAPPSHUTDOWN')) {
                    $ConfigFile.Configuration.removeChild($ForceAppShutDownElement) | Out-Null
+                   WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Removed the FORCEAPPSHUTDOWN element" -LogFilePath $LogFilePath
                }
             }
         }
@@ -1892,16 +2066,19 @@ Here is what the portion of configuration file looks like when modified by this 
             [System.XML.XMLElement]$PackageGUIDElement = $ConfigFile.Configuration.Property | Where { $_.Name -eq "PACKAGEGUID" }
             if($PackageGUIDElement -eq $null){
                 [System.XML.XMLElement]$PackageGUIDElement=$ConfigFile.CreateElement("Property")
+                WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "The Property element has been created" -LogFilePath $LogFilePath
             }
                 
             $ConfigFile.Configuration.appendChild($PackageGUIDElement) | Out-Null
             $PackageGUIDElement.SetAttribute("Name", "PACKAGEGUID") | Out-Null
             $PackageGUIDElement.SetAttribute("Value", $PackageGUID) | Out-Null
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Setting the PACKAGEGUID element to $PackageGUID" -LogFilePath $LogFilePath
         } Else {
             [System.XML.XMLElement]$PackageGUIDElement = $ConfigFile.Configuration.Property | Where { $_.Name -eq "PACKAGEGUID" }
             if($PackageGUIDElement -ne $null){
                if ($PSBoundParameters.ContainsKey('PACKAGEGUID')) {
                    $ConfigFile.Configuration.removeChild($PackageGUIDElement) | Out-Null
+                   WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Removed the PACKAGEGUID element" -LogFilePath $LogFilePath
                }
             }
         }
@@ -1910,16 +2087,19 @@ Here is what the portion of configuration file looks like when modified by this 
             [System.XML.XMLElement]$SharedComputerLicensingElement = $ConfigFile.Configuration.Property | Where { $_.Name -eq "SharedComputerLicensing" }
             if($SharedComputerLicensingElement -eq $null){
                 [System.XML.XMLElement]$SharedComputerLicensingElement=$ConfigFile.CreateElement("Property")
+                WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "The Property element has been created" -LogFilePath $LogFilePath
             }
                 
             $ConfigFile.Configuration.appendChild($SharedComputerLicensingElement) | Out-Null
             $SharedComputerLicensingElement.SetAttribute("Name", "SharedComputerLicensing") | Out-Null
             $SharedComputerLicensingElement.SetAttribute("Value", $SharedComputerLicensing.ToString().ToUpper()) | Out-Null
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Setting the SharedComputerLicensing element to $SharedComputerLicensing.ToString().ToUpper()" -LogFilePath $LogFilePath
         } Else {
             [System.XML.XMLElement]$SharedComputerLicensingElement = $ConfigFile.Configuration.Property | Where { $_.Name -eq "SharedComputerLicensing" }
             if($SharedComputerLicensingElement -ne $null){
                if ($PSBoundParameters.ContainsKey('SharedComputerLicensing')) {
                    $ConfigFile.Configuration.removeChild($SharedComputerLicensingElement) | Out-Null
+                   WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Removed the SharedComputerLicensing element" -LogFilePath $LogFilePath
                }
             }
         }
@@ -1928,16 +2108,19 @@ Here is what the portion of configuration file looks like when modified by this 
             [System.XML.XMLElement]$PinIconsToTaskbarElement = $ConfigFile.Configuration.Property | Where { $_.Name -eq "PinIconsToTaskbar" }
             if($PinIconsToTaskbarElement -eq $null){
                 [System.XML.XMLElement]$PinIconsToTaskbarElement=$ConfigFile.CreateElement("Property")
+                WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "The Property element has been created" -LogFilePath $LogFilePath
             }
                 
             $ConfigFile.Configuration.appendChild($PinIconsToTaskbarElement) | Out-Null
             $PinIconsToTaskbarElement.SetAttribute("Name", "PinIconsToTaskbar") | Out-Null
             $PinIconsToTaskbarElement.SetAttribute("Value", $PinIconsToTaskbar.ToString().ToUpper()) | Out-Null
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Setting the PinIconsToTaskbar element to $PinIconsToTaskbar.ToString().ToUpper()" -LogFilePath $LogFilePath
         } Else {
             [System.XML.XMLElement]$PinIconsToTaskbarElement = $ConfigFile.Configuration.Property | Where { $_.Name -eq "PinIconsToTaskbar" }
             if($PinIconsToTaskbarElement -ne $null){
                if ($PSBoundParameters.ContainsKey('PinIconsToTaskbar')) {
                    $ConfigFile.Configuration.removeChild($PinIconsToTaskbarElement) | Out-Null
+                   WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Removed the PinIconsToTaskbar element" -LogFilePath $LogFilePath
                }
             }
         }
@@ -1953,6 +2136,7 @@ Here is what the portion of configuration file looks like when modified by this 
 
             Write-Host
             Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "The Office XML Configuration file has been saved to: $TargetFilePath" -LogFilePath $LogFilePath
         } else {
             $results = new-object PSObject[] 0;
             $Result = New-Object –TypeName PSObject 
@@ -2060,11 +2244,16 @@ Here is what the portion of configuration file that would be removed by this fun
         [string] $TargetFilePath,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [string] $Name = $NULL
+        [string] $Name = $NULL,
+
+        [Parameter()]
+        [string]$LogFilePath
     )
 
     Process{
-        
+        Set-Alias -name LINENUM -value Get-CurrentLineNumber
+        $currentFileName = Get-CurrentFileName
+
         $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
 
         #Load file
@@ -2092,9 +2281,11 @@ Here is what the portion of configuration file that would be removed by this fun
           [System.XML.XMLElement]$ForceAppShutDownElement = $ConfigFile.Configuration.Property | Where { $_.Name -eq $Name.ToUpper() }
           if ($ForceAppShutDownElement) {
               $removeNode = $ConfigFile.Configuration.removeChild($ForceAppShutDownElement)
+              WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Removed the ForceAppShutDownElement element" -LogFilePath $LogFilePath
           }
         } else {
           $removeAll = $ConfigFile.Configuration.Property.RemoveAll()
+          WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Removed the Property element" -LogFilePath $LogFilePath
         }
         
         $ConfigFile.Save($TargetFilePath) | Out-Null
@@ -2108,6 +2299,7 @@ Here is what the portion of configuration file that would be removed by this fun
 
             Write-Host
             Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "The Office XML Configuration file has been saved to: $TargetFilePath" -LogFilePath $LogFilePath
         } else {
             $results = new-object PSObject[] 0;
             $Result = New-Object –TypeName PSObject 
@@ -2208,12 +2400,17 @@ Here is what the portion of configuration file looks like when modified by this 
         [Microsoft.Office.Channel] $Channel,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [System.Nullable[bool]] $OfficeMgmtCOM = $NULL
+        [System.Nullable[bool]] $OfficeMgmtCOM = $NULL,
+
+        [Parameter()]
+        [string]$LogFilePath
 
     )
 
     Process{
-        
+        $currentFileName = Get-CurrentFileName
+        Set-Alias -name LINENUM -value Get-CurrentLineNumber
+
         if(!$OfficeClientEdition)
         {
             #checking if office client edition is null, if not, set bitness to client office edition
@@ -2247,6 +2444,7 @@ Here is what the portion of configuration file looks like when modified by this 
 
         #Check for proper root element
         if($ConfigFile.Configuration -eq $null){
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "$NoConfigurationElement" -LogFilePath $LogFilePath
             throw $NoConfigurationElement
         }
 
@@ -2269,48 +2467,61 @@ Here is what the portion of configuration file looks like when modified by this 
 
         if($Channel -ne $null){
             $ConfigFile.Configuration.Add.SetAttribute("Channel", $Channel);
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Channel set to $Channel" -LogFilePath $LogFilePath
         }
 
         if($SourcePath){
             $ConfigFile.Configuration.Add.SetAttribute("SourcePath", $SourcePath) | Out-Null
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Sourcepath set to $SourcePath" -LogFilePath $LogFilePath
         } else {
             if ($PSBoundParameters.ContainsKey('SourcePath')) {
                 $ConfigFile.Configuration.Add.RemoveAttribute("SourcePath")
+                WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "SourcePath attribute removed" -LogFilePath $LogFilePath
             }
         }
 
         if($DownloadPath){
             $ConfigFile.Configuration.Add.SetAttribute("DownloadPath", $DownloadPath) | Out-Null
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "DownloadPath set to $DownloadPath" -LogFilePath $LogFilePath
         } else {
             if ($PSBoundParameters.ContainsKey('DownloadPath')) {
                 $ConfigFile.Configuration.Add.RemoveAttribute("DownloadPath")
+                WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "DownloadPath attribute removed" -LogFilePath $LogFilePath
             }
         }
 
         if($Version){
             $ConfigFile.Configuration.Add.SetAttribute("Version", $Version) | Out-Null
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Version set to $Version" -LogFilePath $LogFilePath
         } else {
             if ($PSBoundParameters.ContainsKey('Version')) {
                 $ConfigFile.Configuration.Add.RemoveAttribute("Version")
+                WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Version attribute removed" -LogFilePath $LogFilePath
             }
         }
 
         if($Bitness){
             $ConfigFile.Configuration.Add.SetAttribute("OfficeClientEdition", $Bitness) | Out-Null
+                WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "OfficeClientEdition set to $Bitness" -LogFilePath $LogFilePath
+
         } else {
             if ($PSBoundParameters.ContainsKey('OfficeClientEdition')) {
                 $ConfigFile.Configuration.Add.RemoveAttribute("OfficeClientEdition")
+                WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "OfficeClientEdition attribute removed" -LogFilePath $LogFilePath
             }
         }        
         if ($OfficeMgmtCOM -ne $NULL) {
            if ($OfficeMgmtCOM) {
              $ConfigFile.Configuration.Add.SetAttribute("OfficeMgmtCOM", "True") | Out-Null
+             WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "OfficeMgmtCOM set to True" -LogFilePath $LogFilePath
            } else {
              $ConfigFile.Configuration.Add.SetAttribute("OfficeMgmtCOM", "False") | Out-Null
+             WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "OfficeMgmtCOM set to False" -LogFilePath $LogFilePath
            }
         } else {
           if ($PSBoundParameters.ContainsKey('OfficeMgmtCOM')) {
               $ConfigFile.Configuration.Add.RemoveAttribute("OfficeMgmtCOM")
+              WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "OfficeMgmtCOM attribute removed" -LogFilePath $LogFilePath
           }
         }
 
@@ -2325,6 +2536,7 @@ Here is what the portion of configuration file looks like when modified by this 
 
             Write-Host
             Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Changes saved to filepath: $TargetFilePath" -LogFilePath $LogFilePath
         } else {
             $results = new-object PSObject[] 0;
             $Result = New-Object –TypeName PSObject 
@@ -2416,11 +2628,16 @@ Removes the Add node from the xml congfiguration file
         [string] $ConfigurationXML = $NULL,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [string] $TargetFilePath
+        [string] $TargetFilePath,
+
+        [Parameter()]
+        [string]$LogFilePath
     )
 
     Process{
-        
+        Set-Alias -name LINENUM -value Get-CurrentLineNumber
+        $currentFileName = Get-CurrentFileName
+
         $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
 
         #Load file
@@ -2448,6 +2665,7 @@ Removes the Add node from the xml congfiguration file
         $addNode = $ConfigFile.SelectSingleNode("/Configuration/Add")
         if ($addNode) {
             $removeAll = $ConfigFile.Configuration.removeChild($addNode)
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Removed the Add node" -LogFilePath $LogFilePath
         }
 
         $ConfigFile.Save($TargetFilePath) | Out-Null
@@ -2461,6 +2679,7 @@ Removes the Add node from the xml congfiguration file
 
             Write-Host
             Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "The Office XML Configuration file has been saved to: $TargetFilePath" -LogFilePath $LogFilePath
         } else {
             $results = new-object PSObject[] 0;
             $Result = New-Object –TypeName PSObject 
@@ -2518,12 +2737,17 @@ Here is what the portion of configuration file looks like when modified by this 
         [string] $Path,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [string] $TargetFilePath
+        [string] $TargetFilePath,
+
+        [Parameter()]
+        [string]$LogFilePath
 
     )
 
     Process{
-        
+        Set-Alias -name LINENUM -value Get-CurrentLineNumber
+        $currentFileName = Get-CurrentFileName
+
         $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
 
         #Load file
@@ -2553,22 +2777,27 @@ Here is what the portion of configuration file looks like when modified by this 
         if($ConfigFile.Configuration.Logging -eq $null){
             [System.XML.XMLElement]$LoggingElement=$ConfigFile.CreateElement("Logging")
             $ConfigFile.Configuration.appendChild($LoggingElement) | Out-Null
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Created the Logging element" -LogFilePath $LogFilePath
         }
 
         #Set values
         if($Level -ne $null){
             $LoggingElement.SetAttribute("Level", $Level) | Out-Null
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Setting Level to $Level" -LogFilePath $LogFilePath
         } else {
             if ($PSBoundParameters.ContainsKey('Level')) {
                 $ConfigFile.Configuration.Add.RemoveAttribute("Level")
+                WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Removed the Level attribute" -LogFilePath $LogFilePath
             }
         }
 
         if($Path){
             $LoggingElement.SetAttribute("Path", $Path) | Out-Null
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Setting Path to $Path" -LogFilePath $LogFilePath
         } else {
             if ($PSBoundParameters.ContainsKey('Path')) {
                 $ConfigFile.Configuration.Add.RemoveAttribute("Path")
+                WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Removed the Path attribute" -LogFilePath $LogFilePath
             }
         }
 
@@ -2583,6 +2812,7 @@ Here is what the portion of configuration file looks like when modified by this 
 
             Write-Host
             Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "The Office XML Configuration file has been saved to: $TargetFilePath" -LogFilePath $LogFilePath
         } else {
             $results = new-object PSObject[] 0;
             $Result = New-Object –TypeName PSObject 
@@ -2676,12 +2906,17 @@ Here is what the portion of configuration file that will be removed by this func
         [string] $ConfigurationXML = $NULL,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [string] $TargetFilePath
+        [string] $TargetFilePath,
+
+        [Parameter()]
+        [string]$LogFilePath
 
     )
 
     Process{
-        
+        Set-Alias -name LINENUM -value Get-CurrentLineNumber
+        $currentFileName = Get-CurrentFileName
+
         $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
 
         #Load file
@@ -2710,6 +2945,7 @@ Here is what the portion of configuration file that will be removed by this func
         [System.XML.XMLElement]$LoggingElement = $ConfigFile.Configuration.GetElementsByTagName("Logging").Item(0)
         if($ConfigFile.Configuration.Logging -ne $null){
             $ConfigFile.Configuration.removeChild($LoggingElement) | Out-Null
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Removed the Logging element" -LogFilePath $LogFilePath
         }
 
         $ConfigFile.Save($TargetFilePath) | Out-Null
@@ -2723,6 +2959,7 @@ Here is what the portion of configuration file that will be removed by this func
 
             Write-Host
             Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "The Office XML Configuration file has been saved to: $TargetFilePath" -LogFilePath $LogFilePath
         } else {
             $results = new-object PSObject[] 0;
             $Result = New-Object –TypeName PSObject 
@@ -2785,11 +3022,16 @@ Here is what the portion of configuration file looks like when modified by this 
         [bool] $AcceptEULA = $true,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [string] $TargetFilePath
+        [string] $TargetFilePath,
+
+        [Parameter()]
+        [string]$LogFilePath
 
     )
 
     Process{
+        Set-Alias -name LINENUM -value Get-CurrentLineNumber
+        $currentFileName = Get-CurrentFileName
         
         $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
 
@@ -2820,22 +3062,27 @@ Here is what the portion of configuration file looks like when modified by this 
         if($ConfigFile.Configuration.Display -eq $null){
             [System.XML.XMLElement]$DisplayElement=$ConfigFile.CreateElement("Display")
             $ConfigFile.Configuration.appendChild($DisplayElement) | Out-Null
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Created the Display element" -LogFilePath $LogFilePath
         }
 
         #Set values
         if($Level -ne $null){
             $DisplayElement.SetAttribute("Level", $Level) | Out-Null
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Setting Level to $Level" -LogFilePath $LogFilePath
         } else {
             if ($PSBoundParameters.ContainsKey('Level')) {
                 $ConfigFile.Configuration.Add.RemoveAttribute("Level")
+                WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Removed the Level attribute" -LogFilePath $LogFilePath
             }
         }
 
         if($AcceptEULA -ne $null){
             $DisplayElement.SetAttribute("AcceptEULA", $AcceptEULA.ToString().ToUpper()) | Out-Null
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Setting AcceptEULA to $AcceptEULA" -LogFilePath $LogFilePath
         } else {
             if ($PSBoundParameters.ContainsKey('AcceptEULA')) {
                 $ConfigFile.Configuration.Add.RemoveAttribute("AcceptEULA")
+                WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Removed the AcceptEULA attribute" -LogFilePath $LogFilePath
             }
         }
 
@@ -2850,6 +3097,7 @@ Here is what the portion of configuration file looks like when modified by this 
 
             Write-Host
             Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "The Office XML Configuration file has been saved to: $TargetFilePath" -LogFilePath $LogFilePath
         } else {
             $results = new-object PSObject[] 0;
             $Result = New-Object –TypeName PSObject 
@@ -2945,12 +3193,17 @@ Here is what the removed portion of configuration file looks like:
         [string] $ConfigurationXML = $NULL,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [string] $TargetFilePath
+        [string] $TargetFilePath,
+
+        [Parameter()]
+        [string]$LogFilePath
 
     )
 
     Process{
-        
+        Set-Alias -name LINENUM -value Get-CurrentLineNumber
+        $currentFileName = Get-CurrentFileName
+
         $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
 
         #Load file
@@ -2978,7 +3231,8 @@ Here is what the removed portion of configuration file looks like:
         #Get display element if it exists
         [System.XML.XMLElement]$DisplayElement = $ConfigFile.Configuration.GetElementsByTagName("Display").Item(0)
         if($ConfigFile.Configuration.Display -ne $null){
-           $ConfigFile.Configuration.removeChild($LoggingElement) | Out-Null
+           $ConfigFile.Configuration.removeChild($DisplayElement) | Out-Null
+           WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Removed the Display element" -LogFilePath $LogFilePath
         }
 
         $ConfigFile.Save($TargetFilePath) | Out-Null
@@ -2992,6 +3246,7 @@ Here is what the removed portion of configuration file looks like:
 
             Write-Host
             Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "The Office XML Configuration file has been saved to: $TargetFilePath" -LogFilePath $LogFilePath
         } else {
             $results = new-object PSObject[] 0;
             $Result = New-Object –TypeName PSObject 
@@ -3032,188 +3287,223 @@ Function GetFilePath() {
 Function LanguagePrompt() {
     Param(
         [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName=$true)]
-           [string] $DefaultLanguage
-        )
-        
-        
-  do {
-   Write-Host
-   Write-Host "Enter Language (Current: $DefaultLanguage):" -NoNewline
-   $selection = Read-Host
+        [string] $DefaultLanguage,
 
-   if ($selection) {
-     $selection = IsSupportedLanguage -Language $selection
-     if (!($selection)) {
-       Write-Host "Invalid Selection" -BackgroundColor Red
-     } else {
-       return $selection
-     }
-    } else {
-      return $DefaultLanguage
-    }
-  } while($true);
+        [Parameter()]
+        [string]$LogFilePath
+    )
+        
+    Set-Alias -name LINENUM -value Get-CurrentLineNumber
+    $currentFileName = Get-CurrentFileName
+        
+    do {
+    Write-Host
+    Write-Host "Enter Language (Current: $DefaultLanguage):" -NoNewline
+    $selection = Read-Host
+
+    if ($selection) {
+        $selection = IsSupportedLanguage -Language $selection
+        if (!($selection)) {
+            Write-Host "Invalid Selection" -BackgroundColor Red
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Invalid Selection" -LogFilePath $LogFilePath
+        } else {
+            return $selection
+        }
+        } else {
+            return $DefaultLanguage
+        }
+    } while($true);
   
 }
 
 Function SelectLanguage() {
+    Param(
+        [Parameter()]
+        [string]$LogFilePath
+    )
 
-  do {
-   Write-Host
-   Write-Host "Available Language identifiers"
-   Write-Host
+    Set-Alias -name LINENUM -value Get-CurrentLineNumber
+    $currentFileName = Get-CurrentFileName
 
-   $index = 1;
-   foreach ($language in $validLanguages) {
-      $langSplit = $language.Split("|")
+    do {
+        Write-Host
+        Write-Host "Available Language identifiers"
+        Write-Host
 
-      $lineText = "`t$index - " + $langSplit[0] + " (" + $langSplit[1] + ")"
-      Write-Host $lineText
-      $index++
-   }
+        $index = 1;
+        foreach ($language in $validLanguages) {
+            $langSplit = $language.Split("|")
 
-   Write-Host
-   Write-Host "Select a Language:" -NoNewline
-   $selection = Read-Host
+            $lineText = "`t$index - " + $langSplit[0] + " (" + $langSplit[1] + ")"
+            Write-Host $lineText
+            $index++
+        }
 
-   $load = [reflection.assembly]::LoadWithPartialName("'Microsoft.VisualBasic")
-   $isNumeric = [Microsoft.VisualBasic.Information]::isnumeric($selection)
+        Write-Host
+        Write-Host "Select a Language:" -NoNewline
+        $selection = Read-Host
 
-   if (!($isNumeric)) {
-      Write-Host "Invalid Selection" -BackgroundColor Red
-   } else {
+        $load = [reflection.assembly]::LoadWithPartialName("'Microsoft.VisualBasic")
+        $isNumeric = [Microsoft.VisualBasic.Information]::isnumeric($selection)
 
-     [int] $numSelection = $selection
+        if (!($isNumeric)) {
+            Write-Host "Invalid Selection" -BackgroundColor Red
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Invalid Selection" -LogFilePath $LogFilePath
+        } else {
+
+            [int] $numSelection = $selection
   
-     if ($numSelection -gt 0 -and $numSelection -lt $index) {
-        $selectedItem = $validLanguages[$numSelection - 1]
-        $langSplit = $selectedItem.Split("|")
-        return $langSplit[1]
-        break;
-     }
+            if ($numSelection -gt 0 -and $numSelection -lt $index) {
+                $selectedItem = $validLanguages[$numSelection - 1]
+                $langSplit = $selectedItem.Split("|")
+                return $langSplit[1]
+                break;
+            }
 
-     Write-Host "Invalid Selection" -BackgroundColor Red
-   }
+            Write-Host "Invalid Selection" -BackgroundColor Red
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Invalid Selection" -LogFilePath $LogFilePath
+        }
 
-  } while($true);
-  
+    } while($true); 
 }
 
 Function SelectProductId() {
+    Param(
+        [Parameter()]
+        [string]$LogFilePath
+    )
 
-  do {
-   Write-Host
-   Write-Host "Office Deployment Tool for Click-to-Run Product Ids"
-   Write-Host
+    Set-Alias -name LINENUM -value Get-CurrentLineNumber
+    $currentFileName = Get-CurrentFileName
 
-   $index = 1;
-   foreach ($product in $validProductIds) {
-      Write-Host "`t$index - $product"
-      $index++
-   }
+    do {
+        Write-Host
+        Write-Host "Office Deployment Tool for Click-to-Run Product Ids"
+        Write-Host
 
-   Write-Host
-   Write-Host "Select a ProductId:" -NoNewline
-   $selection = Read-Host
+        $index = 1;
+        foreach ($product in $validProductIds) {
+            Write-Host "`t$index - $product"
+            $index++
+        }
 
-   $load = [reflection.assembly]::LoadWithPartialName("'Microsoft.VisualBasic")
-   $isNumeric = [Microsoft.VisualBasic.Information]::isnumeric($selection)
+        Write-Host
+        Write-Host "Select a ProductId:" -NoNewline
+        $selection = Read-Host
 
-   if (!($isNumeric)) {
-      Write-Host "Invalid Selection" -BackgroundColor Red
-   } else {
+        $load = [reflection.assembly]::LoadWithPartialName("'Microsoft.VisualBasic")
+        $isNumeric = [Microsoft.VisualBasic.Information]::isnumeric($selection)
 
-     [int] $numSelection = $selection
-
-     if ($numSelection -gt 0 -and $numSelection -lt $index) {
-        return $validProductIds[$numSelection - 1]
-        break;
-     }
-
-     Write-Host "Invalid Selection" -BackgroundColor Red
-   }
-
-  } while($true);
-  
+        if (!($isNumeric)) {
+            Write-Host "Invalid Selection" -BackgroundColor Red
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Invalid Selection" -LogFilePath $LogFilePath
+        } else {
+        
+            [int] $numSelection = $selection
+        
+            if ($numSelection -gt 0 -and $numSelection -lt $index) {
+                return $validProductIds[$numSelection - 1]
+                break;
+            }
+        
+            Write-Host "Invalid Selection" -BackgroundColor Red
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Invalid Selection" -LogFilePath $LogFilePath
+        }
+    } while($true);
 }
 
 Function SelectBitness() {
+    Param(
+        [Parameter()]
+        [string]$LogFilePath
+    )
 
-  do {
-   Write-Host
-   Write-Host "Office Bitness"
-   Write-Host
+    Set-Alias -name LINENUM -value Get-CurrentLineNumber
+    $currentFileName = Get-CurrentFileName
 
-   $index = 1;
-   Write-Host "`t1 - 32-Bit"
-   Write-Host "`t2 - 64-Bit"
+    do {
+        Write-Host
+        Write-Host "Office Bitness"
+        Write-Host
 
-   Write-Host
-   Write-Host "Select Product Bitness:" -NoNewline
-   $selection = Read-Host
+        $index = 1;
+        Write-Host "`t1 - 32-Bit"
+        Write-Host "`t2 - 64-Bit"
+        
+        Write-Host
+        Write-Host "Select Product Bitness:" -NoNewline
+        $selection = Read-Host
 
-   $load = [reflection.assembly]::LoadWithPartialName("'Microsoft.VisualBasic")
-   $isNumeric = [Microsoft.VisualBasic.Information]::isnumeric($selection)
+        $load = [reflection.assembly]::LoadWithPartialName("'Microsoft.VisualBasic")
+        $isNumeric = [Microsoft.VisualBasic.Information]::isnumeric($selection)
 
-   if (!($isNumeric)) {
-      Write-Host "Invalid Selection" -BackgroundColor Red
-   } else {
+        if (!($isNumeric)) {
+            Write-Host "Invalid Selection" -BackgroundColor Red 
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Invalid Selection" -LogFilePath $LogFilePath
+        } else {
 
-     [int] $numSelection = $selection
+            [int] $numSelection = $selection
 
-     if ($numSelection -eq 1 -or $numSelection -eq 2)
-     {
-        if ($numSelection -eq 1) {
-           return "32"
+            if ($numSelection -eq 1 -or $numSelection -eq 2)
+            {
+                if ($numSelection -eq 1) {
+                    return "32"
+                }
+                if ($numSelection -eq 2) {
+                    return "64"
+                }
+                break;
+            }
+
+            Write-Host "Invalid Selection" -BackgroundColor Red
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Invalid Selection" -LogFilePath $LogFilePath
         }
-        if ($numSelection -eq 2) {
-           return "64"
-        }
-        break;
-     }
-
-     Write-Host "Invalid Selection" -BackgroundColor Red
-   }
-
-  } while($true);
-  
+    } while($true);
 }
 
 Function SelectExcludeAppId() {
+    Param(
+        [Parameter()]
+        [string]$LogFilePath
+    )
 
-  do {
-   Write-Host
-   Write-Host "Office Deployment Tool for Click-to-Run ExcludeApp Ids"
-   Write-Host
+    Set-Alias -name LINENUM -value Get-CurrentLineNumber
+    $currentFileName = Get-CurrentFileName
 
-   $index = 1;
-   foreach ($app in $validExcludeAppIds) {
-      Write-Host "`t$index - $app"
-      $index++
-   }
+    do {
+        Write-Host
+        Write-Host "Office Deployment Tool for Click-to-Run ExcludeApp Ids"
+        Write-Host
 
-   Write-Host
-   Write-Host "Select an ExcludeAppId:" -NoNewline
-   $selection = Read-Host
+        $index = 1;
+        foreach ($app in $validExcludeAppIds) {
+            Write-Host "`t$index - $app"
+            $index++
+        }
 
-   $load = [reflection.assembly]::LoadWithPartialName("'Microsoft.VisualBasic")
-   $isNumeric = [Microsoft.VisualBasic.Information]::isnumeric($selection)
+        Write-Host
+        Write-Host "Select an ExcludeAppId:" -NoNewline
+        $selection = Read-Host
 
-   if (!($isNumeric)) {
-      Write-Host "Invalid Selection" -BackgroundColor Red
-   } else {
+        $load = [reflection.assembly]::LoadWithPartialName("'Microsoft.VisualBasic")
+        $isNumeric = [Microsoft.VisualBasic.Information]::isnumeric($selection)
 
-     [int] $numSelection = $selection
+        if (!($isNumeric)) {
+            Write-Host "Invalid Selection" -BackgroundColor Red
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Invalid Selection" -LogFilePath $LogFilePath
+        } else {
 
-     if ($numSelection -gt 0 -and $numSelection -lt $index) {
-        return $validExcludeAppIds[$numSelection - 1]
-        break;
-     }
+            [int] $numSelection = $selection
 
-     Write-Host "Invalid Selection" -BackgroundColor Red
-   }
+            if ($numSelection -gt 0 -and $numSelection -lt $index) {
+                return $validExcludeAppIds[$numSelection - 1]
+                break;
+            }
 
-  } while($true);
-  
+            Write-Host "Invalid Selection" -BackgroundColor Red
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Invalid Selection" -LogFilePath $LogFilePath
+        }
+    } while($true);  
 }
 
 Function Format-XML ([xml]$xml, $indent=2) { 
@@ -3229,60 +3519,79 @@ Function Format-XML ([xml]$xml, $indent=2) {
 
 Function IsSupportedLanguage() {
     Param(
-           [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName=$true)]
-           [string] $Language,
+        [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName=$true)]
+        [string] $Language,
 
-           [Parameter()]
-           [bool] $ShowLanguages = $true
-        )
-        
-        $lang = $validLanguages | where {$_.ToString().ToUpper().EndsWith("|$Language".ToUpper())}
-          
-        if (!($lang)) {
-           if ($ShowLanguages) {
-              Write-Host
-              Write-Host "Invalid or Unsupported Language. Please select a language." -NoNewLine -BackgroundColor Red
-              Write-Host
+        [Parameter()]
+        [bool] $ShowLanguages = $true,
+            
+        [Parameter()]
+        [string]$LogFilePath
+    )
 
-              return SelectLanguage 
-           } else {
-              throw "Invalid or Unsupported Language: $Language"
-           }
-           
-        }
+    Set-Alias -name LINENUM -value Get-CurrentLineNumber
+    $currentFileName = Get-CurrentFileName
         
-        return $Language
+    $lang = $validLanguages | where {$_.ToString().ToUpper().EndsWith("|$Language".ToUpper())}
+      
+    if (!($lang)) {
+        if ($ShowLanguages) {
+            Write-Host
+            Write-Host "Invalid or Unsupported Language. Please select a language." -NoNewLine -BackgroundColor Red
+            Write-Host
+
+            return SelectLanguage 
+        } else {
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Invalid or Unsupported Language: $Language" -LogFilePath $LogFilePath
+            throw "Invalid or Unsupported Language: $Language"
+        } 
+    }
+    
+    return $Language
 }
 
 Function IsValidProductId() {
     Param(
-           [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName=$true)]
-           [string] $ProductId
-        )
-        
-        $prod = $validProductIds | where {$_.ToString().ToUpper().Equals("$ProductId".ToUpper())}
+        [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName=$true)]
+        [string] $ProductId,
+
+        [Parameter()]
+        [string]$LogFilePath
+    )
+    
+    Set-Alias -name LINENUM -value Get-CurrentLineNumber
+    $currentFileName = Get-CurrentFileName
+
+    $prod = $validProductIds | where {$_.ToString().ToUpper().Equals("$ProductId".ToUpper())}
           
-        if (!($prod)) {
-            throw "Invalid or Unsupported ProductId: $ProductId"
-        }
-        
-        return $ProductId
+    if (!($prod)) {
+        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Invalid or Unsupported ProductId: $ProductId" -LogFilePath $LogFilePath
+        throw "Invalid or Unsupported ProductId: $ProductId"
+    }
+    
+    return $ProductId
 }
 
 Function IsValidExcludeAppId() {
     Param(
-           [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName=$true)]
-           [string] $ExcludeAppId
-        )
-        
-        $exclude = $validExcludeAppIds | where {$_.ToString().ToUpper().Equals("$ExcludeAppId".ToUpper())}
-          
-        if (!($exclude)) {
-            throw "Invalid or Unsupported ExcludeAppId: $ExcludeAppId"
-        }
+        [Parameter(Mandatory=$true, ValueFromPipelineByPropertyName=$true)]
+        [string] $ExcludeAppId,
 
+        [Parameter()]
+        [string]$LogFilePath
+    )
+
+    Set-Alias -name LINENUM -value Get-CurrentLineNumber
+    $currentFileName = Get-CurrentFileName
         
-        return $ExcludeAppId
+    $exclude = $validExcludeAppIds | where {$_.ToString().ToUpper().Equals("$ExcludeAppId".ToUpper())}
+      
+    if (!($exclude)) {
+        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Invalid or Unsupported ExcludeAppId: $ExcludeAppId" -LogFilePath $LogFilePath
+        throw "Invalid or Unsupported ExcludeAppId: $ExcludeAppId"
+    }
+    
+    return $ExcludeAppId
 }
 
 Function GetScriptRoot() {
@@ -3326,82 +3635,88 @@ function ConvertBranchNameToChannelName {
 }
 
 function Change-UpdatePathToChannel {
-   [CmdletBinding()]
-   param( 
-     [Parameter()]
-     [string] $UpdatePath,
+    [CmdletBinding()]
+    param( 
+        [Parameter()]
+        [string] $UpdatePath,
      
-     [Parameter()]
-     [String] $Channel
-   )
+        [Parameter()]
+        [String] $Channel,
 
-   
-   $newUpdatePath = $UpdatePath
+        [Parameter()]
+        [string]$LogFilePath
+    )
 
-   $branchShortName = "DC"
-   if ($Channel.ToString().ToLower() -eq "current") {
-      $branchShortName = "CC"
-   }
-   if ($Channel.ToString().ToLower() -eq "firstreleasecurrent") {
-      $branchShortName = "FRCC"
-   }
-   if ($Channel.ToString().ToLower() -eq "firstreleasedeferred") {
-      $branchShortName = "FRDC"
-   }
-   if ($Channel.ToString().ToLower() -eq "deferred") {
-      $branchShortName = "DC"
-   }
+    Set-Alias -name LINENUM -value Get-CurrentLineNumber
+    $currentFileName = Get-CurrentFileName
 
-   $channelNames = @("FRCC", "CC", "FRDC", "DC")
+    $newUpdatePath = $UpdatePath
 
-   $madeChange = $false
-   foreach ($channelName in $channelNames) {
-      if ($UpdatePath.ToUpper().EndsWith("\$channelName")) {
-         $newUpdatePath = $newUpdatePath -replace "\\$channelName", "\$branchShortName"
-         $madeChange = $true
-      } 
-      if ($UpdatePath.ToUpper().Contains("\$channelName\")) {
-         $newUpdatePath = $newUpdatePath -replace "\\$channelName\\", "\$branchShortName\"
-         $madeChange = $true
-      } 
-      if ($UpdatePath.ToUpper().EndsWith("/$channelName")) {
-         $newUpdatePath = $newUpdatePath -replace "\/$channelName", "/$branchShortName"
-         $madeChange = $true
-      }
-      if ($UpdatePath.ToUpper().Contains("/$channelName/")) {
-         $newUpdatePath = $newUpdatePath -replace "\/$channelName\/", "/$branchShortName/"
-         $madeChange = $true
-      }
-   }
+    $branchShortName = "DC"
+    if ($Channel.ToString().ToLower() -eq "current") {
+       $branchShortName = "CC"
+    }
+    if ($Channel.ToString().ToLower() -eq "firstreleasecurrent") {
+       $branchShortName = "FRCC"
+    }
+    if ($Channel.ToString().ToLower() -eq "firstreleasedeferred") {
+       $branchShortName = "FRDC"
+    }
+    if ($Channel.ToString().ToLower() -eq "deferred") {
+       $branchShortName = "DC"
+    }
 
-   if (!($madeChange)) {
-      if ($newUpdatePath.Contains("/")) {
-         if ($newUpdatePath.EndsWith("/")) {
-           $newUpdatePath += "$branchShortName"
-         } else {
-           $newUpdatePath += "/$branchShortName"
-         }
-      }
-      if ($newUpdatePath.Contains("\")) {
-         if ($newUpdatePath.EndsWith("\")) {
-           $newUpdatePath += "$branchShortName"
-         } else {
-           $newUpdatePath += "\$branchShortName"
-         }
-      }
-   }
+    $channelNames = @("FRCC", "CC", "FRDC", "DC")
 
-   try {
-     $pathAlive = Test-UpdateSource -UpdateSource $newUpdatePath
-   } catch {
-     $pathAlive = $false
-   }
-   
-   if ($pathAlive) {    
-     return $newUpdatePath
-   } else {    
-     return $UpdatePath
-   }
+    $madeChange = $false
+    foreach ($channelName in $channelNames) {
+       if ($UpdatePath.ToUpper().EndsWith("\$channelName")) {
+          $newUpdatePath = $newUpdatePath -replace "\\$channelName", "\$branchShortName"
+          $madeChange = $true
+       } 
+       if ($UpdatePath.ToUpper().Contains("\$channelName\")) {
+          $newUpdatePath = $newUpdatePath -replace "\\$channelName\\", "\$branchShortName\"
+          $madeChange = $true
+       } 
+       if ($UpdatePath.ToUpper().EndsWith("/$channelName")) {
+          $newUpdatePath = $newUpdatePath -replace "\/$channelName", "/$branchShortName"
+          $madeChange = $true
+       }
+       if ($UpdatePath.ToUpper().Contains("/$channelName/")) {
+          $newUpdatePath = $newUpdatePath -replace "\/$channelName\/", "/$branchShortName/"
+          $madeChange = $true
+       }
+    }
+
+    if (!($madeChange)) {
+       if ($newUpdatePath.Contains("/")) {
+          if ($newUpdatePath.EndsWith("/")) {
+            $newUpdatePath += "$branchShortName"
+          } else {
+            $newUpdatePath += "/$branchShortName"
+          }
+       }
+       if ($newUpdatePath.Contains("\")) {
+          if ($newUpdatePath.EndsWith("\")) {
+            $newUpdatePath += "$branchShortName"
+          } else {
+            $newUpdatePath += "\$branchShortName"
+          }
+       }
+    }
+
+    try {
+        $pathAlive = Test-UpdateSource -UpdateSource $newUpdatePath
+        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "pathAlive set to $pathAlive" -LogFilePath $LogFilePath
+    } catch {
+        $pathAlive = $false
+    }
+    
+    if ($pathAlive) {    
+        return $newUpdatePath
+    } else {    
+        return $UpdatePath
+    }
 }
 
 Function Test-UpdateSource() {
@@ -3420,18 +3735,23 @@ Function Test-UpdateSource() {
         [String] $OfficeClientEdition = $NULL,
         
         [Parameter()]
-        [String] $Bitness = $NULL
+        [String] $Bitness = $NULL,
+
+        [Parameter()]
+        [string]$LogFilePath
     )
 
-    
+    Set-Alias -name LINENUM -value Get-CurrentLineNumber
+    $currentFileName = Get-CurrentFileName
+
     if(!$OfficeClientEdition)
-        {
-            #checking if office client edition is null, if not, set bitness to client office edition
-        }
-        else
-        {
-            $Bitness = $OfficeClientEdition
-        }
+    {
+        #checking if office client edition is null, if not, set bitness to client office edition
+    }
+    else
+    {
+        $Bitness = $OfficeClientEdition
+    }
 
   	$uri = [System.Uri]$UpdateSource
 
@@ -3439,22 +3759,24 @@ Function Test-UpdateSource() {
 
     if($uri.Host){
 	    $sourceIsAlive = Test-Connection -Count 1 -computername $uri.Host -Quiet
+        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "sourceIsAlive set to $sourceIsAlive" -LogFilePath $LogFilePath
     }else{
         $sourceIsAlive = Test-Path $uri.LocalPath -ErrorAction SilentlyContinue
+        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "sourceIsAlive set to $sourceIsAlive" -LogFilePath $LogFilePath
     }
 
     if ($ValidateUpdateSourceFiles) {
-       if ($sourceIsAlive) {
-           [string]$strIsAlive = Validate-UpdateSource -UpdateSource $UpdateSource -OfficeLanguages $OfficeLanguages -Bitness $Bitness
-           if ($strIsAlive.ToLower() -eq "true") {
-              $sourceIsAlive = $true
-           } else {
-              $sourceIsAlive = $false
-           }
-       }
+        if ($sourceIsAlive) {
+            [string]$strIsAlive = Validate-UpdateSource -UpdateSource $UpdateSource -OfficeLanguages $OfficeLanguages -Bitness $Bitness
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "strIsAlive set to $strIsAlive" -LogFilePath $LogFilePath
+            if ($strIsAlive.ToLower() -eq "true") {
+                $sourceIsAlive = $true
+            } else {
+                $sourceIsAlive = $false
+            }
+        }
     }
-
-    
+   
     return $sourceIsAlive
 }
 
@@ -3474,17 +3796,23 @@ Function Validate-UpdateSource() {
         [string[]] $OfficeLanguages = $null,
 
         [Parameter()]
-        [bool]$ShowMissingFiles = $true
+        [bool]$ShowMissingFiles = $true,
+
+        [Parameter()]
+        [string]$LogFilePath
     )
-    
+
+    Set-Alias -name LINENUM -value Get-CurrentLineNumber
+    $currentFileName = Get-CurrentFileName
+
     if(!$OfficeClientEdition)
-        {
-            #checking if office client edition is null, if not, set bitness to client office edition
-        }
-        else
-        {
-            $Bitness = $OfficeClientEdition
-        }
+    {
+        #checking if office client edition is null, if not, set bitness to client office edition
+    }
+    else
+    {
+        $Bitness = $OfficeClientEdition
+    }
 
     [bool]$validUpdateSource = $true
     [string]$cabPath = ""
@@ -3554,6 +3882,7 @@ Function Validate-UpdateSource() {
                  $missingFiles.Add($fullPath)
                  if($ShowMissingFiles){
                     Write-Host "Source File Missing: $fullPath"
+                    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Source File Missing: $fullPath" -LogFilePath $LogFilePath
                  }
                  Write-Log -Message "Source File Missing: $fullPath" -severity 1 -component "Office 365 Update Anywhere" 
               }     
@@ -3562,7 +3891,8 @@ Function Validate-UpdateSource() {
         }
 
     }
-    
+    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "validUpdateSource set to $validUpdateSource" -LogFilePath $LogFilePath
+
     return $validUpdateSource
 }
 
@@ -3577,55 +3907,68 @@ function Get-ChannelXml() {
 	    [bool]$OverWrite = $false,
 
         [Parameter()]
-        [string] $Bitness = "32"
+        [string] $Bitness = "32",
+
+        [Parameter()]
+        [string]$LogFilePath
 	)
 
-   process {
+    process {
+
+        Set-Alias -name LINENUM -value Get-CurrentLineNumber
+        $currentFileName = Get-CurrentFileName
         
-       $cabPath = "$PSScriptRoot\ofl.cab"
-       [bool]$downloadFile = $true
+        $cabPath = "$PSScriptRoot\ofl.cab"
+        [bool]$downloadFile = $true
 
-       if (!($OverWrite)) {
-          if ($FolderPath) {
-              $XMLFilePath = "$FolderPath\ofl.cab"
-              if (Test-Path -Path $XMLFilePath) {
-                 $downloadFile = $false
-              } else {
-                throw "File missing $FolderPath\ofl.cab"
-              }
-          }
-       }
+        if (!($OverWrite)) {
+            if ($FolderPath) {
+                $XMLFilePath = "$FolderPath\ofl.cab"
+                if (Test-Path -Path $XMLFilePath) {
+                    $downloadFile = $false
+                } else {
+                    throw "File missing $FolderPath\ofl.cab"
+                }
+            }
+        }
 
-       if ($downloadFile) {
-           $webclient = New-Object System.Net.WebClient
-           $XMLFilePath = "$env:TEMP/ofl.cab"
-           $XMLDownloadURL = "http://officecdn.microsoft.com/pr/wsus/ofl.cab"
-           $webclient.DownloadFile($XMLDownloadURL,$XMLFilePath)
+        if ($downloadFile) {
+            $webclient = New-Object System.Net.WebClient
+            $XMLFilePath = "$env:TEMP/ofl.cab"
+            $XMLDownloadURL = "http://officecdn.microsoft.com/pr/wsus/ofl.cab"
+            $webclient.DownloadFile($XMLDownloadURL,$XMLFilePath)
 
-           if ($FolderPath) {
-             [System.IO.Directory]::CreateDirectory($FolderPath) | Out-Null
-             $targetFile = "$FolderPath\ofl.cab"
-             Copy-Item -Path $XMLFilePath -Destination $targetFile -Force
-           }
-       }
+            if ($FolderPath) {
+              [System.IO.Directory]::CreateDirectory($FolderPath) | Out-Null
+              $targetFile = "$FolderPath\ofl.cab"
+              Copy-Item -Path $XMLFilePath -Destination $targetFile -Force
+              WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Copied $XMLFilePath to $targetFile" -LogFilePath $LogFilePath
+            }
+        }
 
-       if($PSVersionTable.PSVersion.Major -ge '3'){
-           $tmpName = "o365client_$Bitness" + "bit.xml"
-           expand $XMLFilePath $env:TEMP -f:$tmpName | Out-Null
-           $tmpName = $env:TEMP + "\o365client_$Bitness" + "bit.xml"
-       }else {
-           $scriptPath = GetScriptRoot
-           $tmpName = $scriptPath + "\o365client_$Bitness" + "bit.xml"         
-       }
-       
-       [xml]$channelXml = Get-Content $tmpName
-
-       
-       return $channelXml
-   }
-
+        if($PSVersionTable.PSVersion.Major -ge '3'){
+            $tmpName = "o365client_$Bitness" + "bit.xml"
+            expand $XMLFilePath $env:TEMP -f:$tmpName | Out-Null
+            $tmpName = $env:TEMP + "\o365client_$Bitness" + "bit.xml"
+        }else {
+            $scriptPath = GetScriptRoot
+            $tmpName = $scriptPath + "\o365client_$Bitness" + "bit.xml"         
+        }
+        
+        [xml]$channelXml = Get-Content $tmpName
+     
+        return $channelXml
+    }
 }
 
+
+function Get-CurrentLineNumber {
+    $MyInvocation.ScriptLineNumber
+}
+
+function Get-CurrentFileName{
+    $MyInvocation.ScriptName.Substring($MyInvocation.ScriptName.LastIndexOf("\")+1)
+}
 
 Function WriteToLogFile() {
     param( 
@@ -3659,12 +4002,4 @@ Function WriteToLogFile() {
     } catch [Exception]{
         Write-Host $_
     }
-}
-
-function Get-CurrentLineNumber {
-    $MyInvocation.ScriptLineNumber
-}
-
-function Get-CurrentFileName{
-    $MyInvocation.ScriptName.Substring($MyInvocation.ScriptName.LastIndexOf("\")+1)
 }

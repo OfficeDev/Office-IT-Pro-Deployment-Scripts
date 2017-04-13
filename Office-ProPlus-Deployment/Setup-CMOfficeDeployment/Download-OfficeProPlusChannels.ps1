@@ -153,8 +153,13 @@ Param(
     [bool] $IncludeChannelInfo = $false,
 
     [Parameter()]
-    [bool] $DownloadThrottledVersions = $true
+    [bool] $DownloadThrottledVersions = $true,
+
+    [Parameter()]
+    [string]$LogFilePath
 )
+$currentFileName = Get-CurrentFileName
+Set-Alias -name LINENUM -value Get-CurrentLineNumber
 
 #create array for all languages including core, partial, and proofing
 $AllPartialLanguages = ""
@@ -252,10 +257,7 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
 
             Write-Host
             Write-Host "Downloading Bitness : $currentBitness"
-            #write log
-            $lineNum = Get-CurrentLineNumber    
-            $filName = Get-CurrentFileName 
-            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Downloading Bitness : $currentBitness"
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Downloading Bitness : $currentBitness" -LogFilePath $LogFilePath
 
             #loop for each branch
             $BranchesOrChannels | %{
@@ -270,10 +272,7 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
 
                 Write-Progress -id 1 -Activity "Downloading Channel" -status "Channel: $($currentBranch.ToString()) : $currentBitness" -percentComplete ($b / $BranchCount *100) 
 
-                #write log
-                $lineNum = Get-CurrentLineNumber    
-                $filName = Get-CurrentFileName 
-                WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Downloading Channel: $currentBranch"
+                WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Downloading Channel: $currentBranch" -LogFilePath $LogFilePath
 
                 $FolderName = $($_.ToString())
 
@@ -332,10 +331,7 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
                         Invoke-WebRequest -Uri $url -ErrorAction Stop | Out-Null
                     } catch {
                       Write-Host "`t`tVersion Not Found: $currentVersion"
-                        #write log
-                        $lineNum = Get-CurrentLineNumber    
-                        $filName = Get-CurrentFileName 
-                        WriteToLogFile -LNumber $lineNum -FName $fileName -ActionError "Version Not Found: $currentVersion"
+                      WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Version Not Found: $currentVersion" -LogFilePath $LogFilePath
                       return 
                     }
                 }
@@ -348,8 +344,10 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
                 
                 if (([int]$Throttle -lt 1000) -and (!$DownloadThrottledVersions) -and (![String]::IsNullOrWhiteSpace($Throttle))) {
                    Write-Host "`tDownloading Channel: $currentBranch - Version: $currentVersion (Using previous version instead of Throttled Version: $NewestVersion - Throttle: $Throttle)"
+                   WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Downloading Channel: $currentBranch - Version: $currentVersion (Using previous version instead of Throttled Version: $NewestVersion - Throttle: $Throttle)" -LogFilePath $LogFilePath
                 } else {
                    Write-Host "`tDownloading Channel: $currentBranch - Version: $currentVersion"
+                   WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Downloading Channel: $currentBranch - Version: $currentVersion" -LogFilePath $LogFilePath
                 }
 
                 if(!(Test-Path "$TargetDirectory\$FolderName\Office\Data\$currentVersion")){
@@ -537,8 +535,7 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
         $errorMessage = $computer + ": " + $_
         Write-Host $errorMessage -ForegroundColor White -BackgroundColor Red
         $downloadSuccess = $FALSE;
-        $fileName = $_.InvocationInfo.ScriptName.Substring($_.InvocationInfo.ScriptName.LastIndexOf("\")+1)
-        WriteToLogFile -LNumber $_.InvocationInfo.ScriptLineNumber -FName $fileName -ActionError $_
+        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError $_
     }
 
     if($downloadSuccess){#if download succeeds, breaks out of loop
@@ -548,7 +545,7 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
 }#end of for loop
 
 Write-Host
-PurgeOlderVersions $TargetDirectory $NumVersionsToKeep $BranchesOrChannels
+PurgeOlderVersions -TargetDirectory $TargetDirectory -NumVersionsToKeep $NumVersionsToKeep -channels $BranchesOrChannels -LogFilePath $LogFilePath
 
 }
 
@@ -828,12 +825,25 @@ function GetVersionBasedOnThrottle {
     }
 }
 
-function PurgeOlderVersions([string]$targetDirectory, [int]$numVersionsToKeep, [array]$channels){
+function PurgeOlderVersions {
+Param(
+    [Parameter()]
+    [string]$targetDirectory,
+    
+    [Parameter()]
+    [int]$numVersionsToKeep,
+    
+    [Parameter()]
+    [array]$channels,
+    
+    [Parameter()]
+    [string]$LogFilePath
+)
+    $currentFileName = Get-CurrentFileName
+    Set-Alias -name LINENUM -value Get-CurrentLineNumber
+
     Write-Host "Checking for Older Versions"
-    #write log
-    $lineNum = Get-CurrentLineNumber    
-    $filName = Get-CurrentFileName 
-    WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Checking for Older Versions"
+    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Checking for Older Versions" -LogFilePath $LogFilePath
                          
     for($k = 0; $k -lt $channels.Count; $k++)
     {
@@ -855,11 +865,9 @@ function PurgeOlderVersions([string]$targetDirectory, [int]$numVersionsToKeep, [
 
         if (Test-Path -Path $directoryPath) {
             Write-Host "`tChannel: $channelName2"
-            #write log
-            $lineNum = Get-CurrentLineNumber    
-            $filName = Get-CurrentFileName 
-            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Channel: $channelName2"
-             [bool]$versionsToRemove = $false
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Channel: $channelName2" -LogFilePath $LogFilePath
+            
+            [bool]$versionsToRemove = $false
 
             $files = Get-ChildItem $directoryPath  
             Foreach($file in $files)
@@ -880,13 +888,10 @@ function PurgeOlderVersions([string]$targetDirectory, [int]$numVersionsToKeep, [
                 $numToDelete = $totalVersions.Length - $numVersionsToKeep
                 for($i = 1; $i -le $numToDelete; $i++)#loop through versions
                 {
-                     $versionsToRemove = $true
-                     $removeVersion = $totalVersions[($i-1)]
-                     Write-Host "`t`tRemoving Version: $removeVersion"
-                    #write log
-                    $lineNum = Get-CurrentLineNumber    
-                    $filName = Get-CurrentFileName 
-                    WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Removing Version: $removeVersion"
+                    $versionsToRemove = $true
+                    $removeVersion = $totalVersions[($i-1)]
+                    Write-Host "`t`tRemoving Version: $removeVersion"
+                    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Removing Version: $removeVersion" -LogFilePath $LogFilePath
                      
                      Foreach($file in $files)#loop through files
                      {  #array is 0 based
@@ -913,16 +918,10 @@ function PurgeOlderVersions([string]$targetDirectory, [int]$numVersionsToKeep, [
 
             if (!($versionsToRemove)) {
                 Write-Host "`t`tNo Versions to Remove"
-                #write log
-                $lineNum = Get-CurrentLineNumber    
-                $filName = Get-CurrentFileName 
-                WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "No Versions to Remove"
+                WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "No Versions to Remove" -LogFilePath $LogFilePath
             }
         }
-
-
-    }    
-      
+    }         
 }
 
 function ConvertChannelNameToShortName {
@@ -1039,8 +1038,38 @@ function Get-CurrentFileName{
     $MyInvocation.ScriptName.Substring($MyInvocation.ScriptName.LastIndexOf("\")+1)
 }
 
-function Get-CurrentFunctionName {
-    (Get-Variable MyInvocation -Scope 1).Value.MyCommand.Name;
+Function WriteToLogFile() {
+    param( 
+        [Parameter(Mandatory=$true)]
+        [string]$LNumber,
+
+        [Parameter(Mandatory=$true)]
+        [string]$FName,
+
+        [Parameter(Mandatory=$true)]
+        [string]$ActionError,
+
+        [Parameter()]
+        [string]$LogFilePath
+    )
+
+    try{
+        $headerString = "Time".PadRight(30, ' ') + "Line Number".PadRight(15,' ') + "FileName".PadRight(60,' ') + "Action"
+        $stringToWrite = $(Get-Date -Format G).PadRight(30, ' ') + $($LNumber).PadRight(15, ' ') + $($FName).PadRight(60,' ') + $ActionError
+
+        if(!$LogFilePath){
+            $LogFilePath = "$env:windir\Temp\" + (Get-Date -Format u).Substring(0,10)+"_OfficeDeploymentLog.txt"
+        }
+        if(Test-Path $LogFilePath){
+             Add-Content $LogFilePath $stringToWrite
+        }
+        else{#if not exists, create new
+             Add-Content $LogFilePath $headerString
+             Add-Content $LogFilePath $stringToWrite
+        }
+    } catch [Exception]{
+        Write-Host $_
+    }
 }
 
 function Check-FileHash {
@@ -1076,34 +1105,5 @@ function Check-FileHash {
            Write-Progress -id 3 -ParentId 2 -activity "File hash check successful: $FileName"
            return $true
         }           
-    }
-}
-
-Function WriteToLogFile() {
-    param( 
-      [Parameter(Mandatory=$true)]
-      [string]$LNumber,
-      [Parameter(Mandatory=$true)]
-      [string]$FName,
-      [Parameter(Mandatory=$true)]
-      [string]$ActionError
-    )
-    try{
-        $headerString = "Time".PadRight(30, ' ') + "Line Number".PadRight(15,' ') + "FileName".PadRight(60,' ') + "Action"
-        $stringToWrite = $(Get-Date -Format G).PadRight(30, ' ') + $($LNumber).PadRight(15, ' ') + $($FName).PadRight(60,' ') + $ActionError
-
-        #check if file exists, create if it doesn't
-        $getCurrentDatePath = "C:\Windows\Temp\" + (Get-Date -Format u).Substring(0,10)+"OfficeAutoScriptLog.txt"
-        if(Test-Path $getCurrentDatePath){#if exists, append
-             Add-Content $getCurrentDatePath $stringToWrite
-        }
-        else{#if not exists, create new
-             Add-Content $getCurrentDatePath $headerString
-             Add-Content $getCurrentDatePath $stringToWrite
-        }
-    } catch [Exception]{
-        Write-Host $_
-        $fileName = $_.InvocationInfo.ScriptName.Substring($_.InvocationInfo.ScriptName.LastIndexOf("\")+1)
-        WriteToLogFile -LNumber $_.InvocationInfo.ScriptLineNumber -FName $fileName -ActionError $_
     }
 }
