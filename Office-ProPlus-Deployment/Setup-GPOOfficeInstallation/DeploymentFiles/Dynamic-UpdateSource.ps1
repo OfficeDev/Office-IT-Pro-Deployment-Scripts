@@ -1,5 +1,4 @@
-try {
-$enum3 = "
+ï»¿$enum3 = "
 using System;
 
 namespace Microsoft.Office
@@ -15,28 +14,29 @@ namespace Microsoft.Office
     }
 }
 "
-Add-Type -TypeDefinition $enum3 -ErrorAction SilentlyContinue
+try {
+ Add-Type -TypeDefinition $enum3 -ErrorAction SilentlyContinue
 } catch {}
 
 $enum4 = "
- using System;
+using System;
  
- namespace Microsoft.Office
- {
-     [FlagsAttribute]
-     public enum Channel
-     {
-         Current=0,
-         Deferred=1,
-         Validation=2,
-         FirstReleaseCurrent=3,
-         FirstReleaseDeferred=4
-     }
- }
- "
- try {
+namespace Microsoft.Office
+{
+    [FlagsAttribute]
+    public enum Channel
+    {
+        Current=0,
+        Deferred=1,
+        Validation=2,
+        FirstReleaseCurrent=3,
+        FirstReleaseDeferred=4
+    }
+}
+"
+try {
  Add-Type -TypeDefinition $enum4 -ErrorAction SilentlyContinue
- } catch {}
+} catch {}
 
 Function Dynamic-UpdateSource {
 <#
@@ -66,7 +66,9 @@ Will Dynamically set the Update Source based a list Provided
         [Parameter(ValueFromPipelineByPropertyName=$true)]
         [bool] $SourceByIP = $false,
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [bool] $IncludeUpdatePath = $true
+        [bool] $IncludeUpdatePath = $true,
+        [Parameter()]
+        [string]$LogFilePath
     )
 
     Process{
@@ -131,15 +133,15 @@ Will Dynamically set the Update Source based a list Provided
             }          
      }
      if ($SourceValue) {
-        SetODTAdd -TargetFilePath $TargetFilePath -SourcePath $SourceValue
+        SetODTAdd -TargetFilePath $TargetFilePath -SourcePath $SourceValue -LogFilePath $LogFilePath
         if($IncludeUpdatePath){
-            SetODTUpdates -TargetFilePath $TargetFilePath -UpdatePath $SourceValue
+            SetODTUpdates -TargetFilePath $TargetFilePath -UpdatePath $SourceValue -LogFilePath $LogFilePath
         }
 
      } else {
         if ($isInPipe) {
             $results = new-object PSObject[] 0;
-            $Result = New-Object –TypeName PSObject 
+            $Result = New-Object -TypeName PSObject 
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
             $Result
         } 
@@ -158,15 +160,148 @@ Function SetODTAdd{
         [string] $SourcePath = $NULL,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [string] $Version,
+
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [string] $Bitness,
+
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $TargetFilePath,
+
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [Microsoft.Office.Branches] $Branch,
+
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [Microsoft.Office.Channel] $Channel = "Current",
 
         [Parameter()]
         [string]$LogFilePath
+
     )
 
     Process{
         $currentFileName = Get-CurrentFileName
         Set-Alias -name LINENUM -value Get-CurrentLineNumber
+
+        $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
+
+        #Load file
+        [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
+
+        if ($TargetFilePath) {
+           if (!(Test-Path $TargetFilePath)) {
+              $TargetFilePath = GetScriptRoot + "\" + $TargetFilePath
+           }
+        
+           $content = Get-Content $TargetFilePath
+           $ConfigFile.LoadXml($content) | Out-Null
+        } else {
+            if ($ConfigurationXml) 
+            {
+              $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
+              $global:saveLastConfigFile = $NULL
+              $global:saveLastFilePath = $NULL
+            }
+        }
+
+        $global:saveLastConfigFile = $ConfigFile.OuterXml
+
+        #Check for proper root element
+        if($ConfigFile.Configuration -eq $null){
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "No configuration element" -LogFilePath $LogFilePath
+            throw $NoConfigurationElement
+        }
+
+        #Get Add element if it exists
+        if($ConfigFile.Configuration.Add -eq $null){
+            [System.XML.XMLElement]$AddElement=$ConfigFile.CreateElement("Add")
+            $ConfigFile.Configuration.appendChild($AddElement) | Out-Null
+        }
+
+        #Set values as desired
+        if($Branch -ne $null -and $Channel -eq $null){
+            $Channel = ConvertBranchNameToChannelName -BranchName $Branch
+        }
+
+        if($ConfigFile.Configuration.Add -ne $null){
+            if($ConfigFile.Configuration.Add.Branch -ne $null){
+                $ConfigFile.Configuration.Add.RemoveAttribute("Branch")
+            }
+        }
+
+        if($Channel -ne $null){
+            $ConfigFile.Configuration.Add.SetAttribute("Channel", $Channel);
+        }
+
+        if($SourcePath){
+            $ConfigFile.Configuration.Add.SetAttribute("SourcePath", $SourcePath) | Out-Null
+        } else {
+            if ($PSBoundParameters.ContainsKey('SourcePath')) {
+                $ConfigFile.Configuration.Add.RemoveAttribute("SourcePath")
+            }
+        }
+
+        if($Version){
+            $ConfigFile.Configuration.Add.SetAttribute("Version", $Version) | Out-Null
+        } else {
+            if ($PSBoundParameters.ContainsKey('Version')) {
+                $ConfigFile.Configuration.Add.RemoveAttribute("Version")
+            }
+        }
+
+        if($Bitness){
+            $ConfigFile.Configuration.Add.SetAttribute("OfficeClientEdition", $Bitness) | Out-Null
+        } else {
+            if ($PSBoundParameters.ContainsKey('OfficeClientEdition')) {
+                $ConfigFile.Configuration.Add.RemoveAttribute("OfficeClientEdition")
+            }
+        }
+
+        $ConfigFile.Save($TargetFilePath) | Out-Null
+        $global:saveLastFilePath = $TargetFilePath
+
+        if (($PSCmdlet.MyInvocation.PipelineLength -eq 1) -or `
+            ($PSCmdlet.MyInvocation.PipelineLength -eq $PSCmdlet.MyInvocation.PipelinePosition)) {
+            Write-Host
+
+            Format-XML ([xml](cat $TargetFilePath)) -indent 4
+
+            Write-Host
+            Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "The Office XML Configuration file has been saved to: $TargetFilePath" -LogFilePath $LogFilePath
+        } else {
+            $results = new-object PSObject[] 0;
+            $Result = New-Object ï¿½TypeName PSObject 
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "SourcePath" -Value $SourcePath
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "Version" -Value $Version
+            Add-Member -InputObject $Result -MemberType NoteProperty -Name "Bitness" -Value $Bitness
+            $Result
+        }
+    }
+
+}
+
+Function SetODTUpdates{
+    Param(
+
+        [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
+        [string] $ConfigurationXML = $NULL,
+
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [string] $UpdatePath = $NULL,        
+
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [string] $TargetFilePath,
+
+        [Parameter()]
+        [string]$LogFilePath
+
+    )
+
+    Process{
+        $currentFileName = Get-CurrentFileName
+        Set-Alias -name LINENUM -value Get-CurrentLineNumber 
 
         $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
 
@@ -193,89 +328,6 @@ Function SetODTAdd{
         }
 
         #Get Add element if it exists
-        if($ConfigFile.Configuration.Add -eq $null){
-            [System.XML.XMLElement]$AddElement=$ConfigFile.CreateElement("Add")
-            $ConfigFile.Configuration.appendChild($AddElement) | Out-Null
-        }
-
-        #Set values as desired
-
-        if([string]::IsNullOrWhiteSpace($SourcePath) -eq $false){
-            $ConfigFile.Configuration.Add.SetAttribute("SourcePath", $SourcePath) | Out-Null
-        } else {
-            if ($PSBoundParameters.ContainsKey('SourcePath')) {
-                $ConfigFile.Configuration.Add.RemoveAttribute("SourcePath")
-            }
-        }
-
-        $ConfigFile.Save($TargetFilePath) | Out-Null
-        $global:saveLastFilePath = $TargetFilePath
-
-        if (($PSCmdlet.MyInvocation.PipelineLength -eq 1) -or `
-            ($PSCmdlet.MyInvocation.PipelineLength -eq $PSCmdlet.MyInvocation.PipelinePosition)) {
-            Write-Host
-
-            Format-XML ([xml](cat $TargetFilePath)) -indent 4
-
-            Write-Host
-            Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
-            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "The Office XML Configuration file has been saved to: $TargetFilePath" -LogFilePath $LogFilePath
-        } else {
-            $results = new-object PSObject[] 0;
-            $Result = New-Object –TypeName PSObject 
-            Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
-            Add-Member -InputObject $Result -MemberType NoteProperty -Name "SourcePath" -Value $SourcePath
-            Add-Member -InputObject $Result -MemberType NoteProperty -Name "Version" -Value $Version
-            Add-Member -InputObject $Result -MemberType NoteProperty -Name "Bitness" -Value $Bitness
-            $Result
-        }
-    }
-
-}
-
-Function SetODTUpdates{
-    Param(
-        [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
-        [string] $ConfigurationXML = $NULL,
-
-        [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [string] $UpdatePath = $NULL,        
-
-        [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [string] $TargetFilePath,
-
-        [Parameter()]
-        [string]$LogFilePath
-    )
-
-    Process{
-        $currentFileName = Get-CurrentFileName
-        Set-Alias -name LINENUM -value Get-CurrentLineNumber
-
-        $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
-
-        #Load file
-        [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
-
-        if ($TargetFilePath) {
-           $ConfigFile.Load($TargetFilePath) | Out-Null
-        } else {
-            if ($ConfigurationXml) 
-            {
-              $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
-              $global:saveLastConfigFile = $NULL
-              $global:saveLastFilePath = $NULL
-            }
-        }
-
-        $global:saveLastConfigFile = $ConfigFile.OuterXml
-
-        #Check for proper root element
-        if($ConfigFile.Configuration -eq $null){
-            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "No configuration element" -LogFilePath $LogFilePath
-        }
-
-        #Get Add element if it exists
         if($ConfigFile.Configuration.Updates -eq $null){
             [System.XML.XMLElement]$AddElement=$ConfigFile.CreateElement("Updates")
             $ConfigFile.Configuration.appendChild($AddElement) | Out-Null
@@ -287,7 +339,7 @@ Function SetODTUpdates{
         foreach($node in $nodes){
  
              #Set values as desired
-             if([string]::IsNullOrWhiteSpace($UpdatePath) -eq $false){
+             if($UpdatePath){
                  $node.SetAttribute("UpdatePath", $UpdatePath) | Out-Null
              } else {
                  if ($node.HasAttribute('UpdatePath')) {
@@ -310,7 +362,7 @@ Function SetODTUpdates{
             WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "The Office XML Configuration file has been saved to: $TargetFilePath" -LogFilePath $LogFilePath
         } else {
             $results = new-object PSObject[] 0;
-            $Result = New-Object –TypeName PSObject 
+            $Result = New-Object ï¿½TypeName PSObject 
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "Enabled" -Value $Enabled
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "UpdatePath" -Value $UpdatePath
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetVersion" -Value $TargetVersion
@@ -322,16 +374,66 @@ Function SetODTUpdates{
 
 }
 
+Function Get-ODTAdd{
+<#
+.SYNOPSIS
+Gets the value of the Add section in the configuration file
+.PARAMETER TargetFilePath
+Required. Full file path for the file.
+.Example
+Get-ODTAdd -TargetFilePath "$env:Public\Documents\config.xml"
+Returns the value of the Add section if it exists in the specified
+file. 
+#>
+    Param(
+
+        [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
+        [string] $ConfigurationXML = $NULL,
+
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [string] $TargetFilePath,
+
+        [Parameter()]
+        [string]$LogFilePath
+
+    )
+
+    Process{
+        $currentFileName = Get-CurrentFileName
+        Set-Alias -name LINENUM -value Get-CurrentLineNumber
+
+        $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
+
+        #Load the file
+        [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
+
+        if ($TargetFilePath) {
+           $ConfigFile.Load($TargetFilePath) | Out-Null
+        } else {
+            if ($ConfigurationXml) 
+            {
+              $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
+              $global:saveLastConfigFile = $NULL
+              $global:saveLastFilePath = $NULL
+            }
+        }
+
+        #Check that the file is properly formatted
+        if($ConfigFile.Configuration -eq $null){
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "No configuration element" -LogFilePath $LogFilePath
+            throw $NoConfigurationElement            
+        }
+        
+        $ConfigFile.Configuration.GetElementsByTagName("Add") | Select OfficeClientEdition, SourcePath, Version, Branch
+    }
+
+}
+
 Function GetFilePath() {
     Param(
        [Parameter(ValueFromPipelineByPropertyName=$true)]
-       [string] $TargetFilePath,
-
-       [Parameter()]
-       [string]$LogFilePath
+       [string] $TargetFilePath
     )
-    $currentFileName = Get-CurrentFileName
-    Set-Alias -name LINENUM -value Get-CurrentLineNumber
 
     if (!($TargetFilePath)) {
         $TargetFilePath = $global:saveLastFilePath
@@ -339,7 +441,6 @@ Function GetFilePath() {
 
     if (!($TargetFilePath)) {
        Write-Host "Enter the path to the XML Configuration File: " -NoNewline
-       WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Enter the path to the XML Configuration File: " -LogFilePath $LogFilePath      
        $TargetFilePath = Read-Host
     } else {
        #Write-Host "Target XML Configuration File: $TargetFilePath"
@@ -366,14 +467,14 @@ Function GetScriptPath() {
      if ($PSScriptRoot) {
        $scriptPath = $PSScriptRoot
      } else {
-       $scriptPath = (Get-Location).Path
+       $scriptPath = (Get-Item -Path ".\").FullName
      }
 
      return $scriptPath
  }
 }
 
- Function ConvertSubnetMaskToNumBits(){
+Function ConvertSubnetMaskToNumBits(){
  Param 
     ( 
         [string] 
@@ -411,7 +512,7 @@ Function GetScriptPath() {
     return $bitCounter
  }
 
- Function GetSubnet(){
+Function GetSubnet(){
  Param 
     ( 
         [string] 
@@ -503,7 +604,7 @@ Function GetScriptPath() {
     return $Subnet
  }
 
- Function CreateSubnet(){
+Function CreateSubnet(){
      Param 
         ( 
             [int] 
