@@ -671,7 +671,6 @@ Process {
      $CurrentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $UpdateChannel -and $_.branch -notmatch 'Business' }  
    }
 
-   WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "CurrentChannel set to $CurrentChannel" -LogFilePath $LogFilePath
    return $CurrentChannel
 }
 
@@ -914,7 +913,7 @@ try {
 
     $detectChannelUrl = $NULL
     $detectChannel = (Detect-Channel)
-    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "detectChannel set to $detectChannel" -LogFilePath $LogFilePath
+
     if ($detectChannel) {
         $detectChannelBranch = $detectChannel.Branch
         $detectChannelUrl = $detectChannel.Url
