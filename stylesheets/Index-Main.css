@@ -44,8 +44,17 @@
 	background-color:#0078d7;
 }
 
-.Home,.Videos, .Scripts, .Toolkit, .XmlEditor, .Section-Header{
+.Home,.Videos, .Scripts, .Toolkit, .XmlEditor, .Section-Header,.Faq{
 	margin-top:10px;
+}
+
+.Faq{
+	padding: 30px 30px 30px 30px !important;
+	margin-bottom: 30px;
+}
+
+.Faq-Header{
+	border-bottom: 1px solid #c8c8c8;
 }
 
 .Site-Content
@@ -56,7 +65,7 @@
 
 
 .Nav-Option{
-	padding: 10px 0 10px 10px; 	
+	padding: 10px 0 10px 10px;
 	cursor:pointer;
 }
 
@@ -65,11 +74,17 @@
 }
 
 #partialViews{
-	padding:20px;
+	padding: 20px 20px 0px 20px;
+	height: 100%;
+	/* bottom: 0; */
 }
 
 #trendingTopics{
 	padding: 10px 15px 0px 15px;
+}
+
+#trendingTopics div.container div.ms-Grid div.ms-Grid-row{
+	margin: 0 -16px 0 0px;
 }
 
 .trendingHeader, .topic, .topicImg{
@@ -96,8 +111,8 @@
 }
 
 .Automation-Carousel,.Test-Scripts-Carousel{
-	padding: 15px;
-	margin: 5px 5px 20px 5px;
+	padding: 15px 15px 0px 15px;
+	margin: 5px 5px 0px 5px;
 }
 
 .Carousel-Img{
@@ -113,4 +128,8 @@
 
 .Carousel-Chevron{
 	cursor:pointer;
+}
+
+.Carousel-Header{
+	margin: 0px 0px -70px 0px;
 }

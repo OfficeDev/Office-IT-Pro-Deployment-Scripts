@@ -12,20 +12,18 @@ window.onresize = function(){
 
 function resizePage(){
 
-    if(window.outerWidth >= 640){
-
-         $('#Hamburger').remove();
-
+    if(window.innerWidth >= 640){
+        $('#Hamburger').remove();
         $('.Nav-Option').each(function(i,obj){
             $(obj).removeClass('hidden');
             $(obj).removeClass('ms-u-slideUpOut10');
-        });
-
-        $('.Site-Content').height($('body').height());
-
-        $('#Nav').height($('.Site-Content').height()); 
+        }); 
+        
+        $('#partialViews').height('auto'); 
+        $('.Site-Content').height($('auto').height()); 
+        $('.Site-Content').height($('body').height()); 
         $('#partialViews').height($('.Site-Content').height()); 
-        $('#trendingTopics').height($('.Site-Content').height()); 
+
     }
     else{
         $('.Site-Content').height('auto');
@@ -33,7 +31,7 @@ function resizePage(){
         $('#partialViews').height('auto'); 
         $('#trendingTopics').height('auto');  
 
-        addHamburger(); 
+        addHamburger();
     }
 
 }
@@ -241,7 +239,7 @@ function toggleHamburger(){
 }
 
 function addHamburger(){
-    if( $('#Hamburger').length === 0 && window.outerWidth < 640){
+    if( $('#Hamburger').length === 0 && window.innerWidth < 640){
             var navHtml = "<div id='Hamburger' class='ms-Grid-row'>\
                           <div class='ms-Grid-col ms-u-sm12'>\
                               <div class='Nav-Option ms-font-l ms-fontWeight-regular ms-u-textAlignLeft' onclick='toggleHamburger()'>\
@@ -262,6 +260,7 @@ function addHamburger(){
 function checkAddress(){
     var pageId = location.hash.split('#')[1];
     var sectionId = location.hash.split('#')[2];
+    resizePage();
 
     if(pageId === undefined){
         pageId = 'home' 
