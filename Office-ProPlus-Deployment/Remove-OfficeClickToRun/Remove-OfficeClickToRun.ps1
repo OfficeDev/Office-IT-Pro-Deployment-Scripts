@@ -482,10 +482,7 @@ Function GetScriptRoot() {
      if ($PSScriptRoot) {
        $scriptPath = $PSScriptRoot
      } else {
-       $scriptPath = split-path -parent $MyInvocation.MyCommand.Definition
-       if (!($scriptPath)) {
-          $scriptPath = (Get-Location).Path
-       }
+       $scriptPath = (Get-Item -Path ".\").FullName
      }
 
      return $scriptPath
@@ -527,7 +524,7 @@ Function StartProcess {
     Catch
     {
         Write-Log -Message $_.Exception.Message -severity 1 -component "Office 365 Update Anywhere"
-        WriteToLogFile -LNumber $_.InvocationInfo.ScriptLineNumber -FName $currentFileName -ActionError $_
+        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError $_
     }
 }
 

@@ -40,8 +40,8 @@ Will uninstall Office Click-to-Run.
 
      Process{
         $currentFileName = Get-CurrentFileName
-        Set-Alias -name LINENUM -value Get-CurrentLineNumber
- 
+        Set-Alias -name LINENUM -value Get-CurrentLineNumber 
+
         $scriptRoot = GetScriptRoot
 
         newCTRRemoveXml | Out-File $RemoveCTRXmlPath
@@ -482,7 +482,7 @@ Function GetScriptRoot() {
      if ($PSScriptRoot) {
        $scriptPath = $PSScriptRoot
      } else {
-       $scriptPath = (Get-Item -Path ".\").FullName
+       $scriptPath = (Get-Item -Path ".\").FullName  
      }
 
      return $scriptPath
@@ -499,8 +499,14 @@ Function StartProcess {
         [String]$execParams,
 
         [Parameter()]
-        [bool]$WaitForExit = $false
+        [bool]$WaitForExit = $false,
+
+        [Parameter()]
+        [string]$LogFilePath
 	)
+    
+    $currentFileName = Get-CurrentFileName
+    Set-Alias -name LINENUM -value Get-CurrentLineNumber 
 
     Try
     {
@@ -518,8 +524,7 @@ Function StartProcess {
     Catch
     {
         Write-Log -Message $_.Exception.Message -severity 1 -component "Office 365 Update Anywhere"
-        $fileName = $_.InvocationInfo.ScriptName.Substring($_.InvocationInfo.ScriptName.LastIndexOf("\")+1)
-        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError $_ -LogFilePath $LogFilePath
+        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError $_
     }
 }
 

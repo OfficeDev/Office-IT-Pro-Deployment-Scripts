@@ -32,11 +32,16 @@ Will uninstall Office Click-to-Run.
         [Parameter()]
         [ValidateSet("All","O365ProPlusRetail","O365BusinessRetail","VisioProRetail","ProjectProRetail", "SPDRetail", "VisioProXVolume", "VisioStdXVolume", 
                      "ProjectProXVolume", "ProjectStdXVolume", "InfoPathRetail", "SkypeforBusinessEntryRetail", "LyncEntryRetail")]
-        [string[]]$C2RProductsToRemove = "All"
+        [string[]]$C2RProductsToRemove = "All",
+
+        [Parameter()]
+        [string]$LogFilePath
     )
 
      Process{
- 
+        $currentFileName = Get-CurrentFileName
+        Set-Alias -name LINENUM -value Get-CurrentLineNumber 
+
         $scriptRoot = GetScriptRoot
 
         newCTRRemoveXml | Out-File $RemoveCTRXmlPath
@@ -103,10 +108,7 @@ Will uninstall Office Click-to-Run.
         if($c2rVersion) {
             if(!($isInPipe)) {
                 Write-Host "Please wait while $c2rName is being uninstalled..."
-                #write log
-                $lineNum = Get-CurrentLineNumber    
-                $filName = Get-CurrentFileName 
-                WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Please wait while $c2rName is being uninstalled..."
+                WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Please wait while $c2rName is being uninstalled..." -LogFilePath $LogFilePath
             }            
         }
    
@@ -132,10 +134,7 @@ Will uninstall Office Click-to-Run.
             if(!($c2rTest)){                           
                 if (!($isInPipe)) {                        
                     Write-Host "Office Click-to-Run has been successfully uninstalled." 
-                    <# write log#>
-                    $lineNum = Get-CurrentLineNumber    
-                    $filName = Get-CurrentFileName 
-                    WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Office Click-to-Run has been successfully uninstalled." 
+                    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Office Click-to-Run has been successfully uninstalled." -LogFilePath $LogFilePath 
                 }
             }
         }                                      
@@ -470,7 +469,7 @@ Function newCTRRemoveXml {
 <Configuration>
   <Remove All="True">
   </Remove>
-  <Display Level="None" AcceptEULA="TRUE" 
+  <Display Level="None" AcceptEULA="TRUE" />
   <Property Name="FORCEAPPSHUTDOWN" Value="TRUE" />
 </Configuration>
 "@
@@ -483,10 +482,7 @@ Function GetScriptRoot() {
      if ($PSScriptRoot) {
        $scriptPath = $PSScriptRoot
      } else {
-       $scriptPath = split-path -parent $MyInvocation.MyCommand.Definition
-       if (!($scriptPath)) {
-          $scriptPath = (Get-Location).Path
-       }
+       $scriptPath = (Get-Item -Path ".\").FullName
      }
 
      return $scriptPath
@@ -503,8 +499,14 @@ Function StartProcess {
         [String]$execParams,
 
         [Parameter()]
-        [bool]$WaitForExit = $false
+        [bool]$WaitForExit = $false,
+
+        [Parameter()]
+        [string]$LogFilePath
 	)
+    
+    $currentFileName = Get-CurrentFileName
+    Set-Alias -name LINENUM -value Get-CurrentLineNumber 
 
     Try
     {
@@ -522,8 +524,7 @@ Function StartProcess {
     Catch
     {
         Write-Log -Message $_.Exception.Message -severity 1 -component "Office 365 Update Anywhere"
-        $fileName = $_.InvocationInfo.ScriptName.Substring($_.InvocationInfo.ScriptName.LastIndexOf("\")+1)
-        WriteToLogFile -LNumber $_.InvocationInfo.ScriptLineNumber -FName $fileName -ActionError $_
+        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError $_
     }
 }
 
@@ -535,31 +536,34 @@ function Get-CurrentFileName{
     $MyInvocation.ScriptName.Substring($MyInvocation.ScriptName.LastIndexOf("\")+1)
 }
 
-function Get-CurrentFunctionName {
-    (Get-Variable MyInvocation -Scope 1).Value.MyCommand.Name;
-}
-
 Function WriteToLogFile() {
     param( 
-      [Parameter(Mandatory=$true)]
-      [string]$LNumber,
-      [Parameter(Mandatory=$true)]
-      [string]$FName,
-      [Parameter(Mandatory=$true)]
-      [string]$ActionError
+        [Parameter(Mandatory=$true)]
+        [string]$LNumber,
+
+        [Parameter(Mandatory=$true)]
+        [string]$FName,
+
+        [Parameter(Mandatory=$true)]
+        [string]$ActionError,
+
+        [Parameter()]
+        [string]$LogFilePath
     )
+
     try{
         $headerString = "Time".PadRight(30, ' ') + "Line Number".PadRight(15,' ') + "FileName".PadRight(60,' ') + "Action"
         $stringToWrite = $(Get-Date -Format G).PadRight(30, ' ') + $($LNumber).PadRight(15, ' ') + $($FName).PadRight(60,' ') + $ActionError
 
-        #check if file exists, create if it doesn't
-        $getCurrentDatePath = "C:\Windows\Temp\" + (Get-Date -Format u).Substring(0,10)+"OfficeAutoScriptLog.txt"
-        if(Test-Path $getCurrentDatePath){#if exists, append 
-             Add-Content $getCurrentDatePath $stringToWrite
+        if(!$LogFilePath){
+            $LogFilePath = "$env:windir\Temp\" + (Get-Date -Format u).Substring(0,10)+"_OfficeDeploymentLog.txt"
+        }
+        if(Test-Path $LogFilePath){
+             Add-Content $LogFilePath $stringToWrite
         }
         else{#if not exists, create new
-             Add-Content $getCurrentDatePath $headerString
-             Add-Content $getCurrentDatePath $stringToWrite
+             Add-Content $LogFilePath $headerString
+             Add-Content $LogFilePath $stringToWrite
         }
     } catch [Exception]{
         Write-Host $_

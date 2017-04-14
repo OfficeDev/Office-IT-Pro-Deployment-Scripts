@@ -7,7 +7,10 @@
     [switch]$RollBack,
 
     [Parameter()]
-    [bool]$SendExitCode = $false
+    [bool]$SendExitCode = $false,
+
+    [Parameter()]
+    [string]$LogFilePath
 )
 
 Function Get-ScriptPath() {
@@ -58,14 +61,14 @@ Function Wait-ForOfficeCTRUpdate() {
     begin {
         $HKLM = [UInt32] "0x80000002"
         $HKCR = [UInt32] "0x80000000"
+
+        $currentFileName = Get-CurrentFileName
+        Set-Alias -name LINENUM -value Get-CurrentLineNumber
     }
 
     process {
        Write-Host "Waiting for Update process to Complete..."
-        #write log
-        $lineNum = Get-CurrentLineNumber    
-        $filName = Get-CurrentFileName 
-        WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Waiting for Update process to Complete..."
+       WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Waiting for Update process to Complete..." -LogFilePath $LogFilePath
 
        [datetime]$operationStart = Get-Date
        [datetime]$totalOperationStart = Get-Date
@@ -129,10 +132,7 @@ Function Wait-ForOfficeCTRUpdate() {
                                 $displayText = $statusName + "`t" + $operationTime
 
                                 Write-Host $displayText
-                                #write log
-                                $lineNum = Get-CurrentLineNumber    
-                                $filName = Get-CurrentFileName 
-                                WriteToLogFile -LNumber $lineNum -FName $filName -ActionError $displayText
+                                WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError $displayText -LogFilePath $LogFilePath
                             }
                         }
                     } else {
@@ -148,26 +148,17 @@ Function Wait-ForOfficeCTRUpdate() {
 
                              if ($operation.ToUpper().IndexOf("DOWNLOAD") -gt -1) {
                                 Write-Host "Downloading Update: " -NoNewline
-                                #write log
-                                $lineNum = Get-CurrentLineNumber    
-                                $filName = Get-CurrentFileName 
-                                WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Downloading Update: "
+                                WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Downloading Update: " -LogFilePath $LogFilePath
                              }
 
                              if ($operation.ToUpper().IndexOf("APPLY") -gt -1) {
                                 Write-Host "Applying Update: " -NoNewline
-                                #write log
-                                $lineNum = Get-CurrentLineNumber    
-                                $filName = Get-CurrentFileName 
-                                WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Applying Update: "
+                                WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Applying Update: " -LogFilePath $LogFilePath
                              }
 
                              if ($operation.ToUpper().IndexOf("FINALIZE") -gt -1) {
                                 Write-Host "Finalizing Update: " -NoNewline
-                                #write log
-                                $lineNum = Get-CurrentLineNumber    
-                                $filName = Get-CurrentFileName 
-                                WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Finalizing Update: "
+                                WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Applying Update: " -LogFilePath $LogFilePath
                              }
 
                              #Write-Host $displayValue
@@ -203,10 +194,7 @@ Function Wait-ForOfficeCTRUpdate() {
        }
 
        Write-Host $displayValue
-       #write log
-       $lineNum = Get-CurrentLineNumber    
-       $filName = Get-CurrentFileName 
-       WriteToLogFile -LNumber $lineNum -FName $filName -ActionError $displayValue
+       WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError $displayValue -LogFilePath $LogFilePath
 
        $totalOperationTime = getOperationTime -OperationStart $totalOperationStart
        [bool]$UpdateCompleted = $true
@@ -215,25 +203,16 @@ Function Wait-ForOfficeCTRUpdate() {
           if ($failure) {
             $UpdateCompleted = $false
             Write-Host "Update Failed"
-            #write log
-            $lineNum = Get-CurrentLineNumber    
-            $filName = Get-CurrentFileName 
-            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Update Failed"
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Update Failed" -LogFilePath $LogFilePath
             throw "Update Failed"
           } else {
             Write-Host "Update Completed - Total Time: $totalOperationTime"
-            #write log
-            $lineNum = Get-CurrentLineNumber    
-            $filName = Get-CurrentFileName 
-            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Update Completed - Total Time: $totalOperationTime"
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Update Completed - Total Time: $totalOperationTime" -LogFilePath $LogFilePath
           }
        } else {
             $UpdateCompleted = $false
             Write-Host "Update Not Running"
-            #write log
-            $lineNum = Get-CurrentLineNumber    
-            $filName = Get-CurrentFileName 
-            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Update Not Running"
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Update Not Running" -LogFilePath $LogFilePath
        }
 
        return $UpdateCompleted
@@ -305,8 +284,14 @@ Function Test-UpdateSource() {
     [CmdletBinding()]
     Param(
         [Parameter(Mandatory=$true)]
-        [string] $UpdateSource = $NULL
+        [string] $UpdateSource = $NULL,
+
+        [Parameter()]
+        [string]$LogFilePath
     )
+    
+    $currentFileName = Get-CurrentFileName
+    Set-Alias -name LINENUM -value Get-CurrentLineNumber
 
   	$uri = [System.Uri]$UpdateSource
 
@@ -321,6 +306,8 @@ Function Test-UpdateSource() {
     if ($sourceIsAlive) {
         $sourceIsAlive = Validate-UpdateSource -UpdateSource $UpdateSource
     }
+
+    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "sourceIsAlive set to $sourceIsAlive" -LogFilePath $LogFilePath
 
     return $sourceIsAlive
 }
@@ -356,10 +343,16 @@ Function Validate-UpdateSource() {
     [CmdletBinding()]
     Param(
         [Parameter(Mandatory=$true)]
-        [string] $UpdateSource = $NULL
+        [string] $UpdateSource = $NULL,
+
+        [Parameter()]
+        [string]$LogFilePath
     )
 
     Process {
+    $currentFileName = Get-CurrentFileName
+    Set-Alias -name LINENUM -value Get-CurrentLineNumber
+
     [bool]$validUpdateSource = $false
     [string]$cabPath = ""
 
@@ -393,6 +386,7 @@ Function Validate-UpdateSource() {
         }
         
         if (!$validUpdateSource) {
+           WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Invalid UpdateSource. File Not Found: $cabPath" -LogFilePath $LogFilePath
            throw "Invalid UpdateSource. File Not Found: $cabPath"
         }
     }
@@ -405,10 +399,16 @@ Function Get-LatestVersion() {
   [CmdletBinding()]
   Param(
      [Parameter(Mandatory=$true)]
-     [string] $UpdateURLPath
+     [string] $UpdateURLPath,
+
+     [Parameter()]
+     [string]$LogFilePath
   )
 
   process {
+    $currentFileName = Get-CurrentFileName
+    Set-Alias -name LINENUM -value Get-CurrentLineNumber
+
     [array]$totalVersion = @()
     $Version = $null
 
@@ -444,6 +444,8 @@ Function Get-LatestVersion() {
         }
     }
 
+    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Latest Version set to $Version" -LogFilePath $LogFilePath
+
     return $Version
   }
 }
@@ -452,10 +454,16 @@ Function Get-PreviousVersion() {
   [CmdletBinding()]
   Param(
      [Parameter(Mandatory=$true)]
-     [string] $UpdateURLPath
+     [string] $UpdateURLPath,
+
+     [Parameter()]
+     [string]$LogFilePath
   )
 
   process {
+    $currentFileName = Get-CurrentFileName
+    Set-Alias -name LINENUM -value Get-CurrentLineNumber
+
     [array]$totalVersion = @()
     $Version = $null
 
@@ -480,6 +488,8 @@ Function Get-PreviousVersion() {
         return $null
     } 
 
+    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Previous Version set to $Version" -LogFilePath $LogFilePath
+
     return $Version
   }
 }
@@ -491,8 +501,14 @@ function Change-UpdatePathToChannel {
      [string] $UpdatePath,
      
      [Parameter()]
-     [string] $Channel
+     [string] $Channel,
+
+     [Parameter()]
+     [string]$LogFilePath
    )
+
+   $currentFileName = Get-CurrentFileName
+   Set-Alias -name LINENUM -value Get-CurrentLineNumber
 
    $newUpdatePath = $UpdatePath
 
@@ -556,8 +572,10 @@ function Change-UpdatePathToChannel {
    }
    
    if ($pathAlive) {
+     WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "newUpdatePath set to $newUpdatePath" -LogFilePath $LogFilePath
      return $newUpdatePath
    } else {
+     WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "UpdatePath set to $UpdatePath" -LogFilePath $LogFilePath
      return $UpdatePath
    }
 }
@@ -577,8 +595,14 @@ function Test-UpdateSourceTcpPort {
         $Port,
 
         [parameter()]
-        [string]$UpdateSource = $null
+        [string]$UpdateSource = $null,
+
+        [Parameter()]
+        [string]$LogFilePath
     )
+
+    $currentFileName = Get-CurrentFileName
+    Set-Alias -name LINENUM -value Get-CurrentLineNumber
 
     $sourceIsAlive = $false
 
@@ -601,15 +625,21 @@ function Test-UpdateSourceTcpPort {
         $sourceIsAlive = Validate-UpdateSource -UpdateSource $UpdateSource
     }
 
+    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "sourceIsAlive set to $sourceIsAlive" -LogFilePath $LogFilePath
+
     return $sourceIsAlive
 }
 
 function Detect-Channel {
    param( 
-
+        [Parameter()]
+        [string]$LogFilePath
    )
 
-Process {      
+Process {
+   $currentFileName = Get-CurrentFileName
+   Set-Alias -name LINENUM -value Get-CurrentLineNumber 
+        
    $channelXml = Get-ChannelXml
 
    $UpdateChannel = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration -Name UpdateChannel -ErrorAction SilentlyContinue).UpdateChannel      
@@ -700,10 +730,14 @@ function Get-ChannelXml() {
            $webclient.DownloadFile($XMLDownloadURL,$XMLFilePath)
        }
 
-       $tmpName = "o365client_64bit.xml"
-       expand $XMLFilePath $env:TEMP -f:$tmpName | Out-Null
-       $tmpName = $env:TEMP + "\o365client_64bit.xml"
-       [xml]$channelXml = Get-Content $tmpName
+       if($PSVersionTable.PSVersion.Major -ge '3'){
+           $tmpName = "o365client_64bit.xml"
+           expand $XMLFilePath $env:TEMP -f:$tmpName | Out-Null
+           $tmpName = $env:TEMP + "\o365client_64bit.xml"
+       }else {
+           $scriptPath = Get-ScriptPath
+           $tmpName = $scriptPath + "\o365client_64bit.xml"
+       }
 
        return $channelXml
    }
@@ -714,10 +748,16 @@ Function Set-OfficeCDNUrl() {
    [CmdletBinding()]
    param( 
       [Parameter(Mandatory=$true)]
-      [string]$Channel
+      [string]$Channel,
+
+      [Parameter()]
+      [string]$LogFilePath
    )
 
    Process {
+        $currentFileName = Get-CurrentFileName
+        Set-Alias -name LINENUM -value Get-CurrentLineNumber 
+
         $CDNBaseUrl = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration -Name CDNBaseUrl -ErrorAction SilentlyContinue).CDNBaseUrl
         if (!($CDNBaseUrl)) {
            $CDNBaseUrl = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Office\15.0\ClickToRun\Configuration -Name CDNBaseUrl -ErrorAction SilentlyContinue).CDNBaseUrl
@@ -733,6 +773,7 @@ Function Set-OfficeCDNUrl() {
         $ChannelUrl = Get-ChannelUrl -Channel $Channel
            
         New-ItemProperty $regPath -Name CDNBaseUrl -PropertyType String -Value $ChannelUrl.URL -Force | Out-Null
+        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "CDNBaseUrl registry key set to $ChannelUrl.URL" -LogFilePath $LogFilePath
    }
 }
 
@@ -771,41 +812,47 @@ function Get-CurrentFileName{
     $MyInvocation.ScriptName.Substring($MyInvocation.ScriptName.LastIndexOf("\")+1)
 }
 
-function Get-CurrentFunctionName {
-    (Get-Variable MyInvocation -Scope 1).Value.MyCommand.Name;
-}
-
 Function WriteToLogFile() {
     param( 
         [Parameter(Mandatory=$true)]
         [string]$LNumber,
+
         [Parameter(Mandatory=$true)]
         [string]$FName,
+
         [Parameter(Mandatory=$true)]
-        [string]$ActionError
+        [string]$ActionError,
+
+        [Parameter()]
+        [string]$LogFilePath
     )
+
     try{
         $headerString = "Time".PadRight(30, ' ') + "Line Number".PadRight(15,' ') + "FileName".PadRight(60,' ') + "Action"
         $stringToWrite = $(Get-Date -Format G).PadRight(30, ' ') + $($LNumber).PadRight(15, ' ') + $($FName).PadRight(60,' ') + $ActionError
 
-        #check if file exists, create if it doesn't
-        $getCurrentDatePath = "C:\Windows\Temp\" + (Get-Date -Format u).Substring(0,10)+"OfficeAutoScriptLog.txt"
-        if(Test-Path $getCurrentDatePath){#if exists, append
-            Add-Content $getCurrentDatePath $stringToWrite
+        if(!$LogFilePath){
+            $LogFilePath = "$env:windir\Temp\" + (Get-Date -Format u).Substring(0,10)+"_OfficeDeploymentLog.txt"
+        }
+        if(Test-Path $LogFilePath){
+             Add-Content $LogFilePath $stringToWrite
         }
         else{#if not exists, create new
-            Add-Content $getCurrentDatePath $headerString
-            Add-Content $getCurrentDatePath $stringToWrite
+             Add-Content $LogFilePath $headerString
+             Add-Content $LogFilePath $stringToWrite
         }
     } catch [Exception]{
-    Write-Host $_
+        Write-Host $_
     }
 }
 
 try {
+    $currentFileName = Get-CurrentFileName
+    Set-Alias -name LINENUM -value Get-CurrentLineNumber
 
     if (!($RollBack)) {
       if (!($Channel)) {
+         WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Channel Parameter is required. Use the -Channel parameter and enter either Current, FirstReleaseCurrent, Deferred, or FirstReleaseDeferred." -LogFilePath $LogFilePath
          throw "Channel Parameter is required. Use the -Channel parameter and enter either Current, FirstReleaseCurrent, Deferred, or FirstReleaseDeferred."
       }
     }
@@ -865,10 +912,12 @@ try {
         }
     }
 
+    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "UpdateURLPath set to $UpdateURLPath" -LogFilePath $LogFilePath
     $OldUpdatePath = $UpdateURLPath
 
     $detectChannelUrl = $NULL
     $detectChannel = (Detect-Channel)
+
     if ($detectChannel) {
         $detectChannelBranch = $detectChannel.Branch
         $detectChannelUrl = $detectChannel.Url
@@ -894,7 +943,7 @@ try {
     } else {
       $UpdateURLPath = Change-UpdatePathToChannel -Channel $Channel -UpdatePath $UpdateURLPath
     }
-  
+    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "UpdateURLPath set to $UpdateURLPath" -LogFilePath $LogFilePath
     if($UpdateURLPath -like '*officecdn.microsoft.com*'){
         $validSource = Test-UpdateSourceTcpPort -URL "officecdn.microsoft.com" -Port 80 -UpdateSource $UpdateURLPath
     } else {
@@ -902,6 +951,7 @@ try {
     }
 
     if (!($validSource)) {
+        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "UpdateSource not Valid $UpdateURLPath" -LogFilePath $LogFilePath
         throw "UpdateSource not Valid $UpdateURLPath"
     }
 
@@ -911,25 +961,30 @@ try {
         $oldUpdatePath = (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration").UpdateUrl
         if ($oldUpdatePath) {
             New-ItemProperty $Office2RClientKey -Name BackupUpdateUrl -PropertyType String -Value $oldUpdatePath -Force | Out-Null
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "BackupUpdateUrl registry key set to $oldUpdatePath" -LogFilePath $LogFilePath
         }
     }
 
     if ($UpdateURLPath -and $UpdateUrl -ne $NULL) {
         if ($PolicyPath) {
             New-ItemProperty $OfficePolicyPath -Name updatepath -PropertyType String -Value $UpdateURLPath -Force | Out-Null
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "updatepath registry key set to $UpdateURLPath" -LogFilePath $LogFilePath
         } elseif($oldUpdatePath) {
             New-ItemProperty $Office2RClientKey -Name UpdateUrl -PropertyType String -Value $UpdateURLPath -Force | Out-Null
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "UpdateUrl registry key set to $UpdateURLPath" -LogFilePath $LogFilePath
         }
     }
 
     $OfficeUpdatePath = Get-OfficeC2Rexe
     if (!($OfficeUpdatePath)) {
+        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Cannot find OfficeC2RClient.exe file" -LogFilePath $LogFilePath
         throw "Cannot find OfficeC2RClient.exe file"
     }
     
     if ($RollBack) {
       $Version = Get-PreviousVersion -UpdateURLPath $UpdateURLPath
       if (!($Version)) {
+        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Rollback Version Not Available" -LogFilePath $LogFilePath
         throw "Rollback Version Not Available"
       }
     } else {
@@ -941,6 +996,7 @@ try {
 
            if($UpdateChannel -ne $NULL){
                New-ItemProperty $Office2RClientKey -Name UpdateChannel -PropertyType String -Value $UpdateURLPath -Force | Out-Null
+               WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "UpdateChannel registry key set to $UpdateURLPath" -LogFilePath $LogFilePath
            }
         }
 
@@ -958,14 +1014,17 @@ try {
 
                 if ($PolicyPath) {
                     New-ItemProperty $OfficePolicyPath -Name updatepath -PropertyType String -Value $OldUpdatePath -Force | Out-Null
+                    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "updatepath registry key set to $OldUpdatePath" -LogFilePath $LogFilePath
                 } elseif($oldUpdatePath) {
-                if($UpdateUrl -ne $NULL){
-                    New-ItemProperty $Office2RClientKey -Name UpdateUrl -PropertyType String -Value $OldUpdatePath -Force | Out-Null
+                    if($UpdateUrl -ne $NULL){
+                        New-ItemProperty $Office2RClientKey -Name UpdateUrl -PropertyType String -Value $OldUpdatePath -Force | Out-Null
+                        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "UpdateUrl registry key set to $OldUpdatePath" -LogFilePath $LogFilePath
                     }
                 }
             }
         } else {
             Write-Host "The channel has been changed to $Channel"
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "The channel has been changed to $Channel" -LogFilePath $LogFilePath
         }
 
         
@@ -973,28 +1032,26 @@ try {
         if ($SetBack) {
             if ($oldUpdatePath) {
                 Remove-ItemProperty $Office2RClientKey -Name BackupUpdateUrl -Force | Out-Null
+                WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Removed the BackupUpdateUrl registry key" -LogFilePath $LogFilePath
             }
         }
     } else {
         Write-Host "The client already has version installed: $Version"
-        #write log
-        $lineNum = Get-CurrentLineNumber    
-        $filName = Get-CurrentFileName 
-        WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "The client already has version installed: $Version"
+        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "The client already has version installed: $Version" -LogFilePath $LogFilePath
 
         if (!($RollBack)) {
            Set-OfficeCDNUrl -Channel $Channel
         }
 
         Remove-ItemProperty $Office2RClientKey -Name BackupUpdateUrl -Force -ErrorAction SilentlyContinue | Out-Null
+        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Removed the BackupUpdateUrl registry key" -LogFilePath $LogFilePath
     }
     if ($SendExitCode) {
        [System.Environment]::Exit(0)
     }
 } catch {
     Write-Host $_ -ForegroundColor Red
-    $fileName = $_.InvocationInfo.ScriptName.Substring($_.InvocationInfo.ScriptName.LastIndexOf("\")+1)
-    WriteToLogFile -LNumber $_.InvocationInfo.ScriptLineNumber -FName $fileName -ActionError $_
+    WriteToLogFile -LNumber $_.InvocationInfo.ScriptLineNumber -FName $currentFileName -ActionError $_
     $Error = $null
     if ($SendExitCode) {
         [System.Environment]::Exit(1)

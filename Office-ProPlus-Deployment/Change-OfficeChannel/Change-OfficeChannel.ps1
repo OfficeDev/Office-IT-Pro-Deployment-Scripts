@@ -730,10 +730,14 @@ function Get-ChannelXml() {
            $webclient.DownloadFile($XMLDownloadURL,$XMLFilePath)
        }
 
-       $tmpName = "o365client_64bit.xml"
-       expand $XMLFilePath $env:TEMP -f:$tmpName | Out-Null
-       $tmpName = $env:TEMP + "\o365client_64bit.xml"
-       [xml]$channelXml = Get-Content $tmpName
+       if($PSVersionTable.PSVersion.Major -ge '3'){
+           $tmpName = "o365client_64bit.xml"
+           expand $XMLFilePath $env:TEMP -f:$tmpName | Out-Null
+           $tmpName = $env:TEMP + "\o365client_64bit.xml"
+       }else {
+           $scriptPath = Get-ScriptPath
+           $tmpName = $scriptPath + "\o365client_64bit.xml"
+       }
 
        return $channelXml
    }
