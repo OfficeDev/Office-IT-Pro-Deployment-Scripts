@@ -278,6 +278,8 @@ Create-CMOfficePackage -Channels Deferred -Bitness v32 -OfficeSourceFilesPath D:
        $ChannelList = @("FirstReleaseCurrent", "Current", "FirstReleaseDeferred", "Deferred")
        $ChannelXml = Get-ChannelXml -FolderPath $OfficeSourceFilesPath -OverWrite $false
 
+       [bool]$packageCreated = $false
+
        foreach ($Channel in $ChannelList) {
          if ($Channels -contains $Channel) {
            $selectChannel = $ChannelXml.UpdateFiles.baseURL | Where {$_.branch -eq $Channel.ToString() }
@@ -358,9 +360,14 @@ Create-CMOfficePackage -Channels Deferred -Bitness v32 -OfficeSourceFilesPath D:
 
            if (!($existingPackage)) {
               $package = CreateCMPackage -Name $packageName -Path $Path -Channel $Channel -UpdateOnlyChangedBits $UpdateOnlyChangedBits -CustomPackageShareName $CustomPackageShareName -LogFilePath $LogFilePath
+              $packageCreated = $true
+              Write-Host "`tPackage Created: $packageName"
+              WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Package Created: $packageName" -LogFilePath $LogFilePath
            } else {
-              Write-Host "`tPackage Already Exists: $packageName"
-              WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Package Already Exists: $packageName" -LogFilePath $LogFilePath
+              if(!$packageCreated){
+                Write-Host "`tPackage Already Exists: $packageName"
+                WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Package Already Exists: $packageName" -LogFilePath $LogFilePath
+              }
            }
 
            Write-Host
