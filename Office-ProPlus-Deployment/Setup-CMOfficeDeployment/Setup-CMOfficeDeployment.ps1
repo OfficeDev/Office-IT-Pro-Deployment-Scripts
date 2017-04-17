@@ -149,18 +149,21 @@ Download-CMOfficeChannelFiles -OfficeFilesPath D:\OfficeChannelFiles -Bitness v3
         [Bitness] $Bitness = 0,
 
         [Parameter()]
-        [string] $Version = $NULL
+        [string] $Version = $NULL,
+
+        [Parameter()]
+        [string]$LogFilePath
         
     )
 
     Process {
+       $currentFileName = Get-CurrentFileName
+       Set-Alias -name LINENUM -value Get-CurrentLineNumber
+
        if (Test-Path "$PSScriptRoot\Download-OfficeProPlusChannels.ps1") {
          . "$PSScriptRoot\Download-OfficeProPlusChannels.ps1"
        } else {
-        #write log
-        $lineNum = Get-CurrentLineNumber    
-        $filName = Get-CurrentFileName 
-        WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Dependency file missing: $PSScriptRoot\Download-OfficeProPlusChannels.ps1"
+         WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Dependency file missing: $PSScriptRoot\Download-OfficeProPlusChannels.ps1" -LogFilePath $LogFilePath
          throw "Dependency file missing: $PSScriptRoot\Download-OfficeProPlusChannels.ps1"
        }
 
@@ -181,6 +184,7 @@ Download-CMOfficeChannelFiles -OfficeFilesPath D:\OfficeChannelFiles -Bitness v3
             Download-OfficeProPlusChannels -TargetDirectory $OfficeFilesPath  -Channels $Channel -Version $latestVersion -UseChannelFolderShortName $true -Languages $Languages -Bitness $Bitness -PartialLanguages $PartialLanguages -ProofingLanguages $ProofingLanguages
 
             $cabFilePath = "$env:TEMP/ofl.cab"
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Copying $cabFilePath to $OfficeFilesPath\ofl.cab" -LogFilePath $LogFilePath
             Copy-Item -Path $cabFilePath -Destination "$OfficeFilesPath\ofl.cab" -Force
 
             $latestVersion = Get-ChannelLatestVersion -ChannelUrl $selectChannel.URL -Channel $Channel -FolderPath $OfficeFilesPath -OverWrite $true 
@@ -247,7 +251,10 @@ Create-CMOfficePackage -Channels Deferred -Bitness v32 -OfficeSourceFilesPath D:
 	    [String]$SiteCode = $null,
 
 	    [Parameter()]
-	    [String]$CMPSModulePath = $NULL
+	    [String]$CMPSModulePath = $NULL,
+
+        [Parameter()]
+        [string]$LogFilePath
     )
     Begin
     {
@@ -257,11 +264,14 @@ Create-CMOfficePackage -Channels Deferred -Bitness v32 -OfficeSourceFilesPath D:
     }
     Process {
        try {
+       $currentFileName = Get-CurrentFileName
+       Set-Alias -name LINENUM -value Get-CurrentLineNumber
 
        Check-AdminAccess
 
        $cabFilePath = "$OfficeSourceFilesPath\ofl.cab"
        if (Test-Path $cabFilePath) {
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Copying $cabFilePath to $PSScriptRoot\ofl.cab" -LogFilePath $LogFilePath
             Copy-Item -Path $cabFilePath -Destination "$PSScriptRoot\ofl.cab" -Force
        }
 
@@ -302,23 +312,23 @@ Create-CMOfficePackage -Channels Deferred -Bitness v32 -OfficeSourceFilesPath D:
                 }
 
                 if (!(Test-Path -Path $officeFileChannelPath)) {
-                    #write log
-                    $lineNum = Get-CurrentLineNumber    
-                    $filName = Get-CurrentFileName 
-                    WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Channel Folder Missing: $officeFileChannelPath - Ensure that you have downloaded the Channel you are trying to deploy"
+                    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Channel Folder Missing: $officeFileChannelPath - Ensure that you have downloaded the Channel you are trying to deploy" -LogFilePath $LogFilePath
                     throw "Channel Folder Missing: $officeFileChannelPath - Ensure that you have downloaded the Channel you are trying to deploy"
                 }
 
                 [System.IO.Directory]::CreateDirectory($officeFileTargetPath) | Out-Null
 
                 if ($MoveSourceFiles) {
+                    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Moving $officeFileChannelPath to $officeFileTargetPath" -LogFilePath $LogFilePath
                     Move-Item -Path $officeFileChannelPath -Destination $officeFileTargetPath -Force
                 } else {
+                    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Copying $officeFileChannelPath to $officeFileTargetPath" -LogFilePath $LogFilePath
                     Copy-Item -Path $officeFileChannelPath -Destination $officeFileTargetPath -Recurse -Force
                 }
 
                 $cabFilePath = "$OfficeSourceFilesPath\ofl.cab"
                 if (Test-Path $cabFilePath) {
+                    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Copying $cabFilePath to $LocalPath\ofl.cab" -LogFilePath $LogFilePath
                     Copy-Item -Path $cabFilePath -Destination "$LocalPath\ofl.cab" -Force
                 }
            } else {
@@ -329,6 +339,7 @@ Create-CMOfficePackage -Channels Deferred -Bitness v32 -OfficeSourceFilesPath D:
 
            $cabFilePath = "$env:TEMP/ofl.cab"
            if (!(Test-Path $cabFilePath)) {
+                WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Copying $LocalPath\ofl.cab to $cabFilePath" -LogFilePath $LogFilePath
                 Copy-Item -Path "$LocalPath\ofl.cab" -Destination $cabFilePath -Force
            }
 
@@ -336,25 +347,20 @@ Create-CMOfficePackage -Channels Deferred -Bitness v32 -OfficeSourceFilesPath D:
 
            $DeploymentFilePath = "$PSSCriptRoot\DeploymentFiles\*.*"
            if (Test-Path -Path $DeploymentFilePath) {
+             WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Copying $DeploymentFilePath to $LocalPath" -LogFilePath $LogFilePath
              Copy-Item -Path $DeploymentFilePath -Destination "$LocalPath" -Force -Recurse
            } else {
-            #write log
-            $lineNum = Get-CurrentLineNumber    
-            $filName = Get-CurrentFileName 
-            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Deployment folder missing: $DeploymentFilePath"
+             WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Deployment folder missing: $DeploymentFilePath" -LogFilePath $LogFilePath
              throw "Deployment folder missing: $DeploymentFilePath"
            }
 
            LoadCMPrereqs -SiteCode $SiteCode -CMPSModulePath $CMPSModulePath
 
            if (!($existingPackage)) {
-              $package = CreateCMPackage -Name $packageName -Path $Path -Channel $Channel -UpdateOnlyChangedBits $UpdateOnlyChangedBits -CustomPackageShareName $CustomPackageShareName
+              $package = CreateCMPackage -Name $packageName -Path $Path -Channel $Channel -UpdateOnlyChangedBits $UpdateOnlyChangedBits -CustomPackageShareName $CustomPackageShareName -LogFilePath $LogFilePath
            } else {
               Write-Host "`tPackage Already Exists: $packageName"
-            #write log
-            $lineNum = Get-CurrentLineNumber    
-            $filName = Get-CurrentFileName 
-            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Package Already Exists: $packageName"
+              WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Package Already Exists: $packageName" -LogFilePath $LogFilePath
            }
 
            Write-Host
@@ -429,7 +435,10 @@ Update-CMOfficePackage -Channels Current -Bitness Both -OfficeSourceFilesPath D:
 	    [bool]$UpdateDistributionPoints = $true,
 
         [Parameter()]
-        [bool]$WaitForUpdateToFinish = $false
+        [bool]$WaitForUpdateToFinish = $false,
+
+        [Parameter()]
+        [string]$LogFilePath
     )
     Begin
     {
@@ -439,6 +448,8 @@ Update-CMOfficePackage -Channels Current -Bitness Both -OfficeSourceFilesPath D:
     }
     Process {
        try {
+       $currentFileName = Get-CurrentFileName
+       Set-Alias -name LINENUM -value Get-CurrentLineNumber
 
        Check-AdminAccess
 
@@ -459,10 +470,7 @@ Update-CMOfficePackage -Channels Current -Bitness Both -OfficeSourceFilesPath D:
            $ChannelShortName = ConvertChannelNameToShortName -ChannelName $Channel
            $existingPackage = CheckIfPackageExists
            if (!($existingPackage)) {
-                #write log
-                $lineNum = Get-CurrentLineNumber    
-                $filName = Get-CurrentFileName 
-                WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "No Package Exists to Update. Please run the Create-CMOfficePackage function first to create the package."
+              WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "No Package Exists to Update. Please run the Create-CMOfficePackage function first to create the package." -LogFilePath $LogFilePath
               throw "No Package Exists to Update. Please run the Create-CMOfficePackage function first to create the package."
            }
 
@@ -473,10 +481,7 @@ Update-CMOfficePackage -Channels Current -Bitness Both -OfficeSourceFilesPath D:
 
            $existingShare = Get-Fileshare -Name $shareName
            if (!($existingShare)) {
-                #write log
-                $lineNum = Get-CurrentLineNumber    
-                $filName = Get-CurrentFileName 
-                WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "No Package Exists to Update. Please run the Create-CMOfficePackage function first to create the package."
+              WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "No Package Exists to Update. Please run the Create-CMOfficePackage function first to create the package." -LogFilePath $LogFilePath
               throw "No Package Exists to Update. Please run the Create-CMOfficePackage function first to create the package."
            }
 
@@ -485,10 +490,7 @@ Update-CMOfficePackage -Channels Current -Bitness Both -OfficeSourceFilesPath D:
 
            if(!$packageNotification){
                Write-Host "`tUpdating Package: $packageName"
-            #write log
-            $lineNum = Get-CurrentLineNumber    
-            $filName = Get-CurrentFileName 
-            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Updating Package: $packageName"
+               WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Updating Package: $packageName" -LogFilePath $LogFilePath
                $packageNotification = $true
            }           
 
@@ -503,19 +505,13 @@ Update-CMOfficePackage -Channels Current -Bitness Both -OfficeSourceFilesPath D:
                           
            if ($OfficeSourceFilesPath) {
                 Write-Host "`t`tUpdating Source Files for $Channel..."
-                #write log
-                $lineNum = Get-CurrentLineNumber    
-                $filName = Get-CurrentFileName 
-                WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Updating Source Files for $Channel..."
+                WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Updating Source Files for $Channel..." -LogFilePath $LogFilePath
 
                 $officeFileChannelPath = "$OfficeSourceFilesPath\$ChannelShortName"
                 $officeFileTargetPath = "$LocalChannelPath\$ChannelShortName"
 
                 if (!(Test-Path -Path $officeFileChannelPath)) {
-                    #write log
-                    $lineNum = Get-CurrentLineNumber    
-                    $filName = Get-CurrentFileName 
-                    WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Channel Folder Missing: $officeFileChannelPath - Ensure that you have downloaded the Channel you are trying to deploy"
+                    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Channel Folder Missing: $officeFileChannelPath - Ensure that you have downloaded the Channel you are trying to deploy" -LogFilePath $LogFilePath
                     throw "Channel Folder Missing: $officeFileChannelPath - Ensure that you have downloaded the Channel you are trying to deploy"
                 }
 
@@ -536,13 +532,14 @@ Update-CMOfficePackage -Channels Current -Bitness Both -OfficeSourceFilesPath D:
                 if ($MoveSourceFiles){                                
                     if(!(Test-Path -Path $officeFileTargetPath)) {
                         #[System.IO.Directory]::CreateDirectory($officeFileTargetPath) | Out-Null
-
+                        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Moving $officeFileChannelPath to $LocalChannelPath" -LogFilePath $LogFilePath
                         Move-Item -Path $officeFileChannelPath -Destination $LocalChannelPath -Force
                     }else{
                         $subfiles = Get-ChildItem $tempofficeFileChannelPath
                         foreach($file in $subfiles){
                             [array]$tempLocalChannelPathFiles = (Get-ChildItem -Path $tempLocalChannelPath).Name
                             if($tempLocalChannelPathFiles -notcontains $file.Name){
+                                WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Moving $tempofficeFileChannelPath\$file to $tempLocalChannelPath" -LogFilePath $LogFilePath
                                 Move-Item -Path $tempofficeFileChannelPath\$file -Destination $tempLocalChannelPath -Force
                             }
                             else{
@@ -550,6 +547,7 @@ Update-CMOfficePackage -Channels Current -Bitness Both -OfficeSourceFilesPath D:
                                 [array]$officeChannelVersionFiles = (Get-ChildItem -Path "$tempofficeFileChannelPath\$latestVersion").Name
                                 foreach($officeChannelVersionFile in $officeChannelVersionFiles) {
                                     if($versionFiles -notcontains $officeChannelVersionFile){
+                                        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Moving $tempofficeFileChannelPath\$latestVersion\$officeChannelVersionFile to $tempLocalChannelPath\$latestVersion" -LogFilePath $LogFilePath
                                         Move-Item -Path $tempofficeFileChannelPath\$latestVersion\$officeChannelVersionFile -Destination $tempLocalChannelPath\$latestVersion -Force
                                     }
                                 }
@@ -563,12 +561,13 @@ Update-CMOfficePackage -Channels Current -Bitness Both -OfficeSourceFilesPath D:
                 }else {
                     if(!(Test-Path -Path $officeFileTargetPath)) {
                         [System.IO.Directory]::CreateDirectory($officeFileTargetPath) | Out-Null
-
+                        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Copying $officeFileChannelPath to $LocalChannelPath" -LogFilePath $LogFilePath
                         Copy-Item -Path $officeFileChannelPath -Destination $LocalChannelPath -Recurse -Force
                     }
                     else{
                         $subfiles = Get-ChildItem $tempofficeFileChannelPath
                         foreach($file in $subfiles){
+                            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Copying $tempofficeFileChannelPath\$file to $tempLocalChannelPath" -LogFilePath $LogFilePath
                             Copy-Item -Path $tempofficeFileChannelPath\$file -Destination $tempLocalChannelPath -Recurse -Force 
                         }             
                     }
@@ -576,6 +575,7 @@ Update-CMOfficePackage -Channels Current -Bitness Both -OfficeSourceFilesPath D:
 
                 $cabFilePath = "$OfficeSourceFilesPath\ofl.cab"
                 if (Test-Path $cabFilePath) {
+                    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Copying $cabFilePath to $LocalPath\ofl.cab" -LogFilePath $LogFilePath
                     Copy-Item -Path $cabFilePath -Destination "$LocalPath\ofl.cab" -Force
                 }
 
@@ -583,6 +583,7 @@ Update-CMOfficePackage -Channels Current -Bitness Both -OfficeSourceFilesPath D:
 
            $cabFilePath = "$env:TEMP/ofl.cab"
            if (!(Test-Path $cabFilePath)) {
+                WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Copying $LocalPath\ofl.cab to $cabFilePath" -LogFilePath $LogFilePath
                 Copy-Item -Path "$LocalPath\ofl.cab" -Destination $cabFilePath -Force
            }
 
@@ -594,16 +595,11 @@ Update-CMOfficePackage -Channels Current -Bitness Both -OfficeSourceFilesPath D:
        $DeploymentFilePath = "$PSSCriptRoot\DeploymentFiles\*.*"
            if (Test-Path -Path $DeploymentFilePath) {
              Write-Host "`t`tUpdating Deployment Files..."
-                #write log
-                $lineNum = Get-CurrentLineNumber    
-                $filName = Get-CurrentFileName 
-                WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Updating Deployment Files..."
+             WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Updating Deployment Files..." -LogFilePath $LogFilePath
+             WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Copying $DeploymentFilePath to $LocalPath" -LogFilePath $LogFilePath
              Copy-Item -Path $DeploymentFilePath -Destination "$LocalPath" -Force -Recurse
            } else {
-            #write log
-            $lineNum = Get-CurrentLineNumber    
-            $filName = Get-CurrentFileName 
-            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Deployment folder missing: $DeploymentFilePath"
+             WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Deployment folder missing: $DeploymentFilePath" -LogFilePath $LogFilePath
              throw "Deployment folder missing: $DeploymentFilePath"
            }
 
@@ -611,6 +607,7 @@ Update-CMOfficePackage -Channels Current -Bitness Both -OfficeSourceFilesPath D:
 
        if ($UpdateDistributionPoints) {
            Write-Host "`t`tUpdating Distribution Points..."
+           WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Updating Distribution Points..." -LogFilePath $LogFilePath
            Update-CMDistributionPoint -PackageId $packageId
            if($WaitForUpdateToFinish){
                $distributionStatus = Get-CMOfficeDistributionStatus
@@ -622,7 +619,7 @@ Update-CMOfficePackage -Channels Current -Bitness Both -OfficeSourceFilesPath D:
                    Write-Host "      content distribution is complete." -BackgroundColor Red
                }
 
-               Get-CMOfficeDistributionStatus -WaitForDistributionToFinish $true
+               Get-CMOfficeDistributionStatus -WaitForDistributionToFinish $true -LogFilePath $LogFilePath
            }
        }
 
@@ -701,7 +698,10 @@ Create-CMOfficeDeploymentProgram -Channels Current -DeploymentType DeployWithCon
 	    [String]$ConfigurationXml = ".\DeploymentFiles\DefaultConfiguration.xml",
 
 	    [Parameter()]
-	    [String]$CustomName = $NULL
+	    [String]$CustomName = $NULL,
+
+        [Parameter()]
+        [string]$LogFilePath
     )
     Begin
     {
@@ -712,6 +712,8 @@ Create-CMOfficeDeploymentProgram -Channels Current -DeploymentType DeployWithCon
     Process 
     {
        try {
+         $currentFileName = Get-CurrentFileName
+         Set-Alias -name LINENUM -value Get-CurrentLineNumber
 
          Check-AdminAccess
 
@@ -741,10 +743,7 @@ Create-CMOfficeDeploymentProgram -Channels Current -DeploymentType DeployWithCon
          $CustomName = $CustomName -replace ' ', ''
 
          if ($CustomName.Length -gt 50) {
-            #write log
-            $lineNum = Get-CurrentLineNumber    
-            $filName = Get-CurrentFileName 
-            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "CustomName is too long.  Must be less then 50 Characters"
+             WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "CustomName is too long.  Must be less then 50 Characters" -LogFilePath $LogFilePath
              throw "CustomName is too long.  Must be less then 50 Characters"
          }
 
@@ -758,10 +757,7 @@ Create-CMOfficeDeploymentProgram -Channels Current -DeploymentType DeployWithCon
 
              $existingPackage = CheckIfPackageExists
              if (!($existingPackage)) {
-                #write log
-                $lineNum = Get-CurrentLineNumber    
-                $filName = Get-CurrentFileName 
-                WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "You must run the Create-CMOfficePackage function before running this function"
+                WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError  "You must run the Create-CMOfficePackage function before running this function" -LogFilePath $LogFilePath
                 throw "You must run the Create-CMOfficePackage function before running this function"
              }
 
@@ -788,10 +784,7 @@ Create-CMOfficeDeploymentProgram -Channels Current -DeploymentType DeployWithCon
 
                  } elseif ($DeploymentType -eq "DeployWithConfigurationFile") {
                      if (!(Test-Path -Path $ConfigurationXml)) {
-                        #write log
-                        $lineNum = Get-CurrentLineNumber    
-                        $filName = Get-CurrentFileName 
-                        WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Configuration file does not exist: $ConfigurationXml"
+                        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError  "Configuration file does not exist: $ConfigurationXml" -LogFilePath $LogFilePath
                         throw "Configuration file does not exist: $ConfigurationXml"
                      }
 
@@ -806,6 +799,7 @@ Create-CMOfficeDeploymentProgram -Channels Current -DeploymentType DeployWithCon
 
                      $configFilePath = "$LocalPath\$configFileName"
 
+                     WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError  "Copying $ConfigurationXml to $configFilePath" -LogFilePath $LogFilePath
                      Copy-Item -Path $ConfigurationXml -Destination $configFilePath
 
                      $sourcePath = $NULL
@@ -820,7 +814,7 @@ Create-CMOfficeDeploymentProgram -Channels Current -DeploymentType DeployWithCon
                        }
                      }
 
-                     UpdateConfigurationXml -Path $configFilePath -Channel $channel -Bitness $platform -SourcePath $sourcePath
+                     UpdateConfigurationXml -Path $configFilePath -Channel $channel -Bitness $platform -SourcePath $sourcePath -LogFilePath $LogFilePath
 
                      $ProgramName = "Deploy $channelShortNameLabel Channel with Config File - $platform-Bit"
 
@@ -842,7 +836,8 @@ Create-CMOfficeDeploymentProgram -Channels Current -DeploymentType DeployWithCon
                        $comment += "-$CustomName"
                     }
 
-                    CreateCMProgram -Name $ProgramName -PackageID $packageId -RequiredPlatformNames $requiredPlatformNames -CommandLine $CommandLine -Comment $comment
+                    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError  "Creating the program: $ProgramName" -LogFilePath $LogFilePath
+                    CreateCMProgram -Name $ProgramName -PackageID $packageId -RequiredPlatformNames $requiredPlatformNames -CommandLine $CommandLine -Comment $comment -LogFilePath $LogFilePath
                  }
              }
          }
@@ -888,7 +883,10 @@ Create-CMOfficeChannelChangeProgram -Sitecode S01 -Channels Current
 	    [String]$SiteCode = $null,
 
 	    [Parameter()]
-	    [String]$CMPSModulePath = $NULL
+	    [String]$CMPSModulePath = $NULL,
+
+        [Parameter()]
+        [string]$LogFilePath
     )
     Begin
     {
@@ -899,6 +897,8 @@ Create-CMOfficeChannelChangeProgram -Sitecode S01 -Channels Current
     Process 
     {
        try {
+         $currentFileName = Get-CurrentFileName
+         Set-Alias -name LINENUM -value Get-CurrentLineNumber
 
          Check-AdminAccess
 
@@ -906,10 +906,7 @@ Create-CMOfficeChannelChangeProgram -Sitecode S01 -Channels Current
 
          $existingPackage = CheckIfPackageExists
          if (!($existingPackage)) {
-            #write log
-            $lineNum = Get-CurrentLineNumber    
-            $filName = Get-CurrentFileName 
-            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "You must run the Create-CMOfficePackage function before running this function"
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError  "You must run the Create-CMOfficePackage function before running this function" -LogFilePath $LogFilePath
             throw "You must run the Create-CMOfficePackage function before running this function"
          }
 
@@ -926,10 +923,7 @@ Create-CMOfficeChannelChangeProgram -Sitecode S01 -Channels Current
              $OCScriptPath = "$SharePath\Change-OfficeChannel.ps1"
 
              if (!(Test-Path $OSSourcePath)) {
-                #write log
-                $lineNum = Get-CurrentLineNumber    
-                $filName = Get-CurrentFileName 
-                WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Required file missing: $OSSourcePath"
+                WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Required file missing: $OSSourcePath" -LogFilePath $LogFilePath
                 throw "Required file missing: $OSSourcePath"
              } else {
                  if (!(Test-ItemPathUNC -Path $SharePath -FileName "Change-OfficeChannel.ps1")) {
@@ -940,7 +934,8 @@ Create-CMOfficeChannelChangeProgram -Sitecode S01 -Channels Current
                  if ($packageId) {
                     $comment = "ChangeChannel-$channel"
 
-                    CreateCMProgram -Name $ProgramName -PackageID $packageId -CommandLine $CommandLine -RequiredPlatformNames $requiredPlatformNames -Comment $comment
+                    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Creating the program: $ProgramName" -LogFilePath $LogFilePath
+                    CreateCMProgram -Name $ProgramName -PackageID $packageId -CommandLine $CommandLine -RequiredPlatformNames $requiredPlatformNames -Comment $comment -LogFilePath $LogFilePath
                  }
              }
          }
@@ -980,7 +975,10 @@ Create-CMOfficeRollBackProgram -Sitecode S01
 	    [String]$SiteCode = $null,
 
 	    [Parameter()]
-	    [String]$CMPSModulePath = $NULL
+	    [String]$CMPSModulePath = $NULL,
+
+        [Parameter()]
+        [string]$LogFilePath
     )
     Begin
     {
@@ -991,6 +989,8 @@ Create-CMOfficeRollBackProgram -Sitecode S01
     Process 
     {
        try {
+         $currentFileName = Get-CurrentFileName
+         Set-Alias -name LINENUM -value Get-CurrentLineNumber
 
          Check-AdminAccess
 
@@ -998,10 +998,7 @@ Create-CMOfficeRollBackProgram -Sitecode S01
 
          $existingPackage = CheckIfPackageExists
          if (!($existingPackage)) {
-            #write log
-            $lineNum = Get-CurrentLineNumber    
-            $filName = Get-CurrentFileName 
-            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "You must run the Create-CMOfficePackage function before running this function"
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "You must run the Create-CMOfficePackage function before running this function" -LogFilePath $LogFilePath
             throw "You must run the Create-CMOfficePackage function before running this function"
          }
 
@@ -1017,10 +1014,7 @@ Create-CMOfficeRollBackProgram -Sitecode S01
          $OCScriptPath = "$SharePath\Change-OfficeChannel.ps1"
 
          if (!(Test-Path $OSSourcePath)) {
-            #write log
-            $lineNum = Get-CurrentLineNumber    
-            $filName = Get-CurrentFileName 
-            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Required file missing: $OSSourcePath"
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Required file missing: $OSSourcePath" -LogFilePath $LogFilePath
             throw "Required file missing: $OSSourcePath"
          } else {
              if (!(Test-ItemPathUNC -Path $SharePath -FileName "Change-OfficeChannel.ps1")) {
@@ -1031,7 +1025,8 @@ Create-CMOfficeRollBackProgram -Sitecode S01
              if ($packageId) {
                 $comment = "RollBack"
 
-                CreateCMProgram -Name $ProgramName -PackageID $packageId -CommandLine $CommandLine -RequiredPlatformNames $requiredPlatformNames -Comment $comment
+                WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Creating the program: $ProgramName" -LogFilePath $LogFilePath
+                CreateCMProgram -Name $ProgramName -PackageID $packageId -CommandLine $CommandLine -RequiredPlatformNames $requiredPlatformNames -Comment $comment -LogFilePath $LogFilePath
              }
          }
 
@@ -1126,7 +1121,10 @@ Create-CMOfficeUpdateProgram -ForceAppShutdown $true -EnableUpdateAnywhere $fals
 	    [String]$CMPSModulePath = $NULL,
 
 	    [Parameter()]
-	    [bool]$UseScriptLocationAsUpdateSource = $true
+	    [bool]$UseScriptLocationAsUpdateSource = $true,
+
+        [Parameter()]
+        [string]$LogFilePath
     )
     Begin
     {
@@ -1137,6 +1135,8 @@ Create-CMOfficeUpdateProgram -ForceAppShutdown $true -EnableUpdateAnywhere $fals
     Process 
     {
        try {
+         $currentFileName = Get-CurrentFileName
+         Set-Alias -name LINENUM -value Get-CurrentLineNumber
 
          Check-AdminAccess
 
@@ -1144,10 +1144,7 @@ Create-CMOfficeUpdateProgram -ForceAppShutdown $true -EnableUpdateAnywhere $fals
 
          $existingPackage = CheckIfPackageExists
          if (!($existingPackage)) {
-            #write log
-            $lineNum = Get-CurrentLineNumber    
-            $filName = Get-CurrentFileName 
-            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "You must run the Create-CMOfficePackage function before running this function"
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "You must run the Create-CMOfficePackage function before running this function" -LogFilePath $LogFilePath
             throw "You must run the Create-CMOfficePackage function before running this function"
          }
 
@@ -1171,10 +1168,7 @@ Create-CMOfficeUpdateProgram -ForceAppShutdown $true -EnableUpdateAnywhere $fals
          $OCScriptPath = "$SharePath\Update-Office365Anywhere.ps1"
 
          if (!(Test-Path $OSSourcePath)) {
-            #write log
-            $lineNum = Get-CurrentLineNumber    
-            $filName = Get-CurrentFileName 
-            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Required file missing: $OSSourcePath"
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Required file missing: $OSSourcePath" -LogFilePath $LogFilePath
             throw "Required file missing: $OSSourcePath"
          } else {
              if (!(Test-ItemPathUNC -Path $SharePath -FileName "Update-Office365Anywhere.ps1")) {
@@ -1185,7 +1179,8 @@ Create-CMOfficeUpdateProgram -ForceAppShutdown $true -EnableUpdateAnywhere $fals
              if ($packageId) {
                 $comment = "UpdateWithConfigMgr"
 
-                CreateCMProgram -Name $ProgramName -PackageID $packageId -CommandLine $CommandLine -RequiredPlatformNames $requiredPlatformNames -Comment $comment
+                WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Creating the program: $ProgramName" -LogFilePath $LogFilePath
+                CreateCMProgram -Name $ProgramName -PackageID $packageId -CommandLine $CommandLine -RequiredPlatformNames $requiredPlatformNames -Comment $comment -LogFilePath $LogFilePath
              }
          }
 
@@ -1305,7 +1300,10 @@ be prompted before updating and will display the progress.
 	    [String]$CMPSModulePath = $NULL,
 
 	    [Parameter()]
-	    [bool]$UseScriptLocationAsUpdateSource = $true
+	    [bool]$UseScriptLocationAsUpdateSource = $true,
+
+        [Parameter()]
+        [string]$LogFilePath
     )
     Begin
     {
@@ -1316,6 +1314,8 @@ be prompted before updating and will display the progress.
     Process 
     {
        try {
+         $currentFileName = Get-CurrentFileName
+         Set-Alias -name LINENUM -value Get-CurrentLineNumber
 
          Check-AdminAccess
 
@@ -1323,10 +1323,7 @@ be prompted before updating and will display the progress.
 
          $existingPackage = CheckIfPackageExists
          if (!($existingPackage)) {
-            #write log
-            $lineNum = Get-CurrentLineNumber    
-            $filName = Get-CurrentFileName 
-            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "You must run the Create-CMOfficePackage function before running this function"
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "You must run the Create-CMOfficePackage function before running this function" -LogFilePath $LogFilePath
             throw "You must run the Create-CMOfficePackage function before running this function"
          }
 
@@ -1363,10 +1360,7 @@ be prompted before updating and will display the progress.
          $OCScriptPathTask = "$SharePath\Create-Office365AnywhereTask.ps1"
 
          if (!(Test-Path $OSSourcePath)) {
-            #write log
-            $lineNum = Get-CurrentLineNumber    
-            $filName = Get-CurrentFileName 
-            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Required file missing: $OSSourcePath"
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Required file missing: $OSSourcePath" -LogFilePath $LogFilePath
             throw "Required file missing: $OSSourcePath"
          } else {
              if (!(Test-ItemPathUNC -Path $SharePath -FileName "Update-Office365Anywhere.ps1")) {
@@ -1383,7 +1377,8 @@ be prompted before updating and will display the progress.
              if ($packageId) {
                 $comment = "UpdateWithTask"
 
-                CreateCMProgram -Name $ProgramName -PackageID $packageId -CommandLine $CommandLine -RequiredPlatformNames $requiredPlatformNames -Comment $comment
+                WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Creating the program: $ProgramName" -LogFilePath $LogFilePath
+                CreateCMProgram -Name $ProgramName -PackageID $packageId -CommandLine $CommandLine -RequiredPlatformNames $requiredPlatformNames -Comment $comment -LogFilePath $LogFilePath
              }
          }
 
@@ -1468,7 +1463,10 @@ to install additional languages on a client
         [string]$Version = $NULL,
 
         [Parameter()]
-	    [String]$ConfigurationXml = ".\DeploymentFiles\LanguageConfiguration.xml"        
+	    [String]$ConfigurationXml = ".\DeploymentFiles\LanguageConfiguration.xml",
+
+        [Parameter()]
+        [string]$LogFilePath        
     )
     
     Begin {
@@ -1495,6 +1493,8 @@ to install additional languages on a client
 
     Process {
         try{
+        $currentFileName = Get-CurrentFileName
+        Set-Alias -name LINENUM -value Get-CurrentLineNumber
 
         Check-AdminAccess
 
@@ -1522,10 +1522,7 @@ to install additional languages on a client
 
                 $existingPackage = CheckIfPackageExists
                 if (!($existingPackage)) {
-                    #write log
-                    $lineNum = Get-CurrentLineNumber    
-                    $filName = Get-CurrentFileName 
-                    WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "You must run the Create-CMOfficePackage function before running this function"
+                    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "You must run the Create-CMOfficePackage function before running this function" -LogFilePath $LogFilePath
                     throw "You must run the Create-CMOfficePackage function before running this function"
                 }
         
@@ -1601,6 +1598,7 @@ to install additional languages on a client
 
                 Set-Location $startLocation
 
+                WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Copying $ConfigurationXml to $configFilePath" -LogFilePath $LogFilePath
                 Copy-Item -Path $ConfigurationXml -Destination $configFilePath
 
                 $CommandLine = "%windir%\Sysnative\windowsPowershell\V1.0\powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive " + `
@@ -1619,14 +1617,11 @@ to install additional languages on a client
                 foreach ($language in $allLanguages){
                     if(!(Get-ChildItem -Path $SharePath\SourceFiles\$channelShortName\Office\Data\$latestVersion | Where-Object {$_ -like "*$language*"})){
                         Remove-Item -Path $configFilePath
-                        #write log
-                        $lineNum = Get-CurrentLineNumber    
-                        $filName = Get-CurrentFileName 
-                        WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "The language pack $language was not found. To download the language run Download-CMOfficeChannelFiles using the -Languages parameter"
+                        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "The language pack $language was not found. To download the language run Download-CMOfficeChannelFiles using the -Languages parameter" -LogFilePath $LogFilePath
                         throw "The language pack $language was not found. To download the language run Download-CMOfficeChannelFiles using the -Languages parameter"
                     }
                     else{
-                        UpdateConfigurationXml -Path $configFilePath -Channel $ChannelName -Bitness $Bit -SourcePath $sourcePath -Language $language
+                        UpdateConfigurationXml -Path $configFilePath -Channel $ChannelName -Bitness $Bit -SourcePath $sourcePath -Language $language -LogFilePath $LogFilePath
                     }
                 }
         
@@ -1650,7 +1645,8 @@ to install additional languages on a client
                         $comment += "-$CustomName"
                     }
 
-                    CreateCMProgram -Name $ProgramName -PackageID $packageId -RequiredPlatformNames $requiredPlatformNames -CommandLine $CommandLine -Comment $comment
+                    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Creating the program: $ProgramName" -LogFilePath $LogFilePath
+                    CreateCMProgram -Name $ProgramName -PackageID $packageId -RequiredPlatformNames $requiredPlatformNames -CommandLine $CommandLine -Comment $comment -LogFilePath $LogFilePath
                 }
             }
         }
@@ -1716,7 +1712,10 @@ Distributes the package 'Office 365 ProPlus' to the distribution point cm.contos
 	    [String]$CMPSModulePath = $NULL,
 
         [Parameter()]
-        [bool]$WaitForDistributionToFinish = $false
+        [bool]$WaitForDistributionToFinish = $false,
+
+        [Parameter()]
+        [string]$LogFilePath
 
     )
     Begin
@@ -1728,16 +1727,15 @@ Distributes the package 'Office 365 ProPlus' to the distribution point cm.contos
     Process
     {
        try {
+        $currentFileName = Get-CurrentFileName
+        Set-Alias -name LINENUM -value Get-CurrentLineNumber
 
         Check-AdminAccess
 
         $package = CheckIfPackageExists
 
         if (!($package)) {
-            #write log
-            $lineNum = Get-CurrentLineNumber    
-            $filName = Get-CurrentFileName 
-            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "You must run the Create-CMOfficePackage function before running this function"
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "You must run the Create-CMOfficePackage function before running this function" -LogFilePath $LogFilePath
             throw "You must run the Create-CMOfficePackage function before running this function"
         }
 
@@ -1748,25 +1746,19 @@ Distributes the package 'Office 365 ProPlus' to the distribution point cm.contos
 
             if ($DistributionPointGroupName) {
                 Write-Host "Starting Content Distribution for package: $packageName"
-                #write log
-                $lineNum = Get-CurrentLineNumber    
-                $filName = Get-CurrentFileName 
-                WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Starting Content Distribution for package: $packageName"
+                WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Starting Content Distribution for package: $packageName" -LogFilePath $LogFilePath
 	            Start-CMContentDistribution -PackageName $packageName -DistributionPointGroupName $DistributionPointGroupName
             }
 
             if ($DistributionPoint) {
                 Write-Host "Starting Content Distribution for package: $packageName"
-                #write log
-                $lineNum = Get-CurrentLineNumber    
-                $filName = Get-CurrentFileName 
-                WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Starting Content Distribution for package: $packageName"
+                WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Starting Content Distribution for package: $packageName" -LogFilePath $LogFilePath
                 Start-CMContentDistribution -PackageName $packageName -DistributionPointName $DistributionPoint
             }
         }
 
         if($WaitForDistributionToFinish){
-            Get-CMOfficeDistributionStatus -WaitForDistributionToFinish $true
+            Get-CMOfficeDistributionStatus -WaitForDistributionToFinish $true -LogFilePath $LogFilePath
         }
         
         Write-Host 
@@ -1933,7 +1925,10 @@ clients in the target collection 'Office Update'.
 	    [DeploymentPurpose]$DeploymentPurpose = "Default",
 
 	    [Parameter()]
-	    [String]$CustomName = $NULL
+	    [String]$CustomName = $NULL,
+
+        [Parameter()]
+        [string]$LogFilePath
 	) 
     Begin
     {
@@ -1948,6 +1943,8 @@ clients in the target collection 'Office Update'.
     Process
     {
        try {
+        $currentFileName = Get-CurrentFileName
+        Set-Alias -name LINENUM -value Get-CurrentLineNumber
 
         Check-AdminAccess
 
@@ -1960,10 +1957,7 @@ clients in the target collection 'Office Update'.
         $CustomName = $CustomName -replace ' ', ''
 
         if ($CustomName.Length -gt 50) {
-            #write log
-            $lineNum = Get-CurrentLineNumber    
-            $filName = Get-CurrentFileName 
-            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "CustomName is too long.  Must be less then 50 Characters"
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "CustomName is too long.  Must be less then 50 Characters" -LogFilePath $LogFilePath
             throw "CustomName is too long.  Must be less then 50 Characters"
         }
 
@@ -1980,10 +1974,7 @@ clients in the target collection 'Office Update'.
                 $package = CheckIfPackageExists
 
                 if (!($package)) {
-                    #write log
-                    $lineNum = Get-CurrentLineNumber    
-                    $filName = Get-CurrentFileName 
-                    WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "You must run the Create-CMOfficePackage function before running this function"
+                    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "You must run the Create-CMOfficePackage function before running this function" -LogFilePath $LogFilePath
                     throw "You must run the Create-CMOfficePackage function before running this function"
                 }
 
@@ -2130,16 +2121,10 @@ clients in the target collection 'Office Update'.
                                                                 -AllowSharedContent $false -Comment $comment
 
                                     Write-Host "`tDeployment created for: $packageName ($ProgramName)"
-                                    #write log
-                                    $lineNum = Get-CurrentLineNumber    
-                                    $filName = Get-CurrentFileName 
-                                    WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Deployment created for: $packageName ($ProgramName)"
+                                    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Deployment created for: $packageName ($ProgramName)" -LogFilePath $LogFilePath
                                 } else {
                                     Write-Host "Could Not find Program in Package for Type: $ProgramType - Channel: $ChannelName" -ForegroundColor White -BackgroundColor Red
-                                    #write log
-                                    $lineNum = Get-CurrentLineNumber    
-                                    $filName = Get-CurrentFileName 
-                                    WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Could Not find Program in Package for Type: $ProgramType - Channel: $ChannelName"
+                                    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Could Not find Program in Package for Type: $ProgramType - Channel: $ChannelName" -LogFilePath $LogFilePath
                                 }
                             } catch {
                                 [string]$ErrorMessage = $_.ErrorDetails 
@@ -2148,35 +2133,24 @@ clients in the target collection 'Office Update'.
                                     Write-Host "Package: $packageName"
                                     Write-Host "The package has not finished deploying to the distribution points." -BackgroundColor Red
                                     Write-Host "Please try this command against once the distribution points have been updated" -BackgroundColor Red
-                                    #write log
-                                    $lineNum = Get-CurrentLineNumber    
-                                    $filName = Get-CurrentFileName 
-                                    WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Package: $packageName"
-                                    WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "The package has not finished deploying to the distribution points."
-                                    WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Please try this command against once the distribution points have been updated"
+
+                                    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Package: $packageName" -LogFilePath $LogFilePath
+                                    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "The package has not finished deploying to the distribution points." -LogFilePath $LogFilePath
+                                    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Please try this command against once the distribution points have been updated" -LogFilePath $LogFilePath
                                 } else {
                                     throw
                                 }
                             }  
                         } else {
-                          Write-Host "`tDeployment already exists for: $packageName ($ProgramName)"
-                            #write log
-                            $lineNum = Get-CurrentLineNumber    
-                            $filName = Get-CurrentFileName 
-                            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Deployment already exists for: $packageName ($ProgramName)"
+                            Write-Host "`tDeployment already exists for: $packageName ($ProgramName)"
+                            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Deployment already exists for: $packageName ($ProgramName)" -LogFilePath $LogFilePath
                         }
                    } else {
                         Write-Host "Could Not find Program in Package for Type: $ProgramType - Channel: $ChannelName - Bitness: $Bitness" -ForegroundColor White -BackgroundColor Red
-                        #write log
-                        $lineNum = Get-CurrentLineNumber    
-                        $filName = Get-CurrentFileName 
-                        WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Could Not find Program in Package for Type: $ProgramType - Channel: $ChannelName - Bitness: $Bitness"
+                        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Could Not find Program in Package for Type: $ProgramType - Channel: $ChannelName - Bitness: $Bitness" -LogFilePath $LogFilePath
                    }
                 } else {
-                    #write log
-                    $lineNum = Get-CurrentLineNumber    
-                    $filName = Get-CurrentFileName 
-                    WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Package does not exist: $packageName"
+                    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Package does not exist: $packageName" -LogFilePath $LogFilePath
                     throw "Package does not exist: $packageName"
                 }
             }
@@ -2193,7 +2167,11 @@ clients in the target collection 'Office Update'.
 
 function Get-CMOfficeDistributionStatus{
 Param(
-    [bool]$WaitForDistributionToFinish = $false
+    [Parameter()]
+    [bool]$WaitForDistributionToFinish = $false,
+
+    [Parameter()]
+    [string]$LogFilePath
 )
 
 Begin{
@@ -2203,28 +2181,33 @@ Begin{
 }
 
 Process{
+    $currentFileName = Get-CurrentFileName
+    Set-Alias -name LINENUM -value Get-CurrentLineNumber
+
     $SiteCode = GetLocalSiteCode -SiteCode $SiteCode
     $Package = CheckIfPackageExists
     $PkgID = $Package.PackageID
 
-    $Status = GetQueryStatus -SiteCode $SiteCode -PkgID $PkgID
+    $Status = GetQueryStatus -SiteCode $SiteCode -PkgID $PkgID -LogFilePath $LogFilePath
 
     if($WaitForDistributionToFinish){
         [string[]]$trackProgress = @()
         $currentTime = Get-Date -Format "MM/dd/yyyy HH:mm:ss"            
         Do{
-            $Status = GetQueryStatus -SiteCode $SiteCode -PkgID $PkgID
+            $Status = GetQueryStatus -SiteCode $SiteCode -PkgID $PkgID -LogFilePath $LogFilePath
 
             if(!$trackProgress){
                 if($Status.DateTime -ge $currentTime){
                     $trackProgress += $Status.Status
                     $updateRunning = $true
+                    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError $Status -LogFilePath $LogFilePath
                     $Status
                 }
             }else{
                 if($trackProgress -notcontains $Status.Status){
                     $trackProgress += $Status.Status
                     $updateRunning = $true
+                    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError $Status -LogFilePath $LogFilePath
                     $Status
                 }
             }            
@@ -2232,7 +2215,7 @@ Process{
         }until($Status.Operation -eq 'In Progress')
                
         Do{
-            $Status = GetQueryStatus -SiteCode $SiteCode -PkgID $PkgID
+            $Status = GetQueryStatus -SiteCode $SiteCode -PkgID $PkgID -LogFilePath $LogFilePath
 
             if(!$trackProgress){
                 $trackProgress += $Status.Status
@@ -2241,6 +2224,7 @@ Process{
                 if($trackProgress -notcontains $Status.Status){
                     $trackProgress += $Status.Status
                     $updateRunning = $true
+                    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError $Status -LogFilePath $LogFilePath
                     $Status
                 }
             }
@@ -2248,6 +2232,7 @@ Process{
             if(($Status.Operation -eq 'Failed') -or`
                ($Status.Operation -eq 'Error')){
                 $trackProgress += $Status.Status
+                WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError $Status -LogFilePath $LogFilePath
                 $Status
 
                 break;
@@ -2256,19 +2241,21 @@ Process{
         }until($Status.Operation -eq 'Success')  
               
         Do{
-            $Status = GetQueryStatus -SiteCode $SiteCode -PkgID $PkgID
+            $Status = GetQueryStatus -SiteCode $SiteCode -PkgID $PkgID -LogFilePath $LogFilePath
         
             if($Status.Operation -eq "Success"){
                 if($Status.Status -eq 'Content was distributed to distribution point'){
                     $trackProgress += $Status.Status
                     $allComplete = $true
                     $updateRunning = $false
+                    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError $Status -LogFilePath $LogFilePath
                     $Status
                 }
                 else{        
                     if($trackProgress -notcontains $Status.Status){
                         $trackProgress += $Status.Status
                         $updateRunning = $true
+                        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError $Status -LogFilePath $LogFilePath
                         $Status
                     }
                 }
@@ -2276,11 +2263,13 @@ Process{
 
             if($Status.Operation -eq "Failed"){
                 $updateRunning = $false
+                WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError $Status -LogFilePath $LogFilePath
                 $Status
             }  
             
         }while($updateRunning -eq $true)
     }else{
+        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError $Status -LogFilePath $LogFilePath
         $Status
     }
 }
@@ -2291,7 +2280,6 @@ End{
 }
 
 }
-
 
 function UpdateConfigurationXml() {
     [CmdletBinding()]	
@@ -2310,10 +2298,16 @@ function UpdateConfigurationXml() {
 		[String]$SourcePath = $NULL,
 		
         [Parameter()]
-		[String]$Language
+		[String]$Language,
+
+        [Parameter()]
+        [string]$LogFilePath
         
 	) 
     Process {
+      $currentFileName = Get-CurrentFileName
+      Set-Alias -name LINENUM -value Get-CurrentLineNumber
+
 	  $doc = [Xml] (Get-Content $Path)
 
       $addNode = $doc.Configuration.Add
@@ -2341,10 +2335,7 @@ function UpdateConfigurationXml() {
           if ($languageNode.ID){
               if($languageNode.ID -contains $Language) {
                   Write-Host "$Language already exists in the xml"
-                #write log
-                $lineNum = Get-CurrentLineNumber    
-                $filName = Get-CurrentFileName 
-                WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "$Language already exists in the xml"
+                  WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "$Language already exists in the xml" -LogFilePath $LogFilePath
               } else {
                   $newLanguageElement = $doc.CreateElement("Language")
                   $newLanguage = $doc.Configuration.Add.Product.AppendChild($newLanguageElement)
@@ -2475,7 +2466,7 @@ function LoadCMPrereqs() {
     }
     Process {
 
-        $CMModulePath = GetCMPSModulePath -CMPSModulePath $CMPSModulePath 
+        $CMModulePath = GetCMPSModulePath -CMPSModulePath $CMPSModulePath -LogFilePath $LogFilePath
     
         if ($CMModulePath) {
             Import-Module $CMModulePath
@@ -2528,31 +2519,27 @@ function CreateCMPackage() {
 		[String]$CustomPackageShareName = $null,
 
 		[Parameter()]	
-		[Bool]$UpdateOnlyChangedBits = $true
+		[Bool]$UpdateOnlyChangedBits = $true,
+
+        [Parameter()]
+        [string]$LogFilePath
 	) 
+    $currentFileName = Get-CurrentFileName
+    Set-Alias -name LINENUM -value Get-CurrentLineNumber
 
     $package = Get-CMPackage | Where { $_.Name -eq $Name }
     if($package -eq $null -or !$package)
     {
         Write-Host "`tCreating Package: $Name"
-        #write log
-        $lineNum = Get-CurrentLineNumber    
-        $filName = Get-CurrentFileName 
-        WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Creating Package: $Name"
+        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Creating Package: $Name" -LogFilePath $LogFilePath
         $package = New-CMPackage -Name $Name -Path $path -Version $Version
     } else {
         Write-Host "`t`tPackage Already Exists: $Name"  
-        #write log
-        $lineNum = Get-CurrentLineNumber    
-        $filName = Get-CurrentFileName 
-        WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Package Already Exists: $Name"      
+        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Package Already Exists: $Name" -LogFilePath $LogFilePath      
     }
 		
-    Write-Host "`t`tSetting Package Properties"
-    #write log
-    $lineNum = Get-CurrentLineNumber    
-    $filName = Get-CurrentFileName 
-    WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Setting Package Properties"      
+    Write-Host "`t`tSetting Package Properties" 
+    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Setting Package Properties" -LogFilePath $LogFilePath     
 
     $VersionName = "$Channel - $Version"
 
@@ -2576,9 +2563,14 @@ function RemovePreviousCMPackages() {
 		[String]$Name = "Office ProPlus Deployment",
 		
 		[Parameter()]
-		[String]$Version
+		[String]$Version,
+
+        [Parameter()]
+        [string]$LogFilePath      
 	) 
-    
+    $currentFileName = Get-CurrentFileName
+    Set-Alias -name LINENUM -value Get-CurrentLineNumber
+
     if ($Version) {
         $packages = Get-CMPackage | Where { $_.Name -eq $Name -and $_.Version -ne $Version }
         foreach ($package in $packages) {
@@ -2586,10 +2578,7 @@ function RemovePreviousCMPackages() {
            $pkversion = $package.Version
 
            Write-Host "Removing previous version: $packageName - $pkversion"
-            #write log
-            $lineNum = Get-CurrentLineNumber    
-            $filName = Get-CurrentFileName 
-            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Removing previous version: $packageName - $pkversion"      
+           WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Removing previous version: $packageName - $pkversion" -LogFilePath $LogFilePath       
            Remove-CMPackage -Id $package.PackageId -Force | Out-Null
         }
     }
@@ -2612,27 +2601,26 @@ function CreateCMProgram() {
 		[String]$Comment = $null,
 
 		[Parameter()]
-		[String[]] $RequiredPlatformNames = @()
+		[String[]] $RequiredPlatformNames = @(),
+
+        [Parameter()]
+        [string]$LogFilePath 
 
 	) 
+    $currentFileName = Get-CurrentFileName
+    Set-Alias -name LINENUM -value Get-CurrentLineNumber
 
     $program = Get-CMProgram | Where { $_.PackageID -eq $PackageID -and $_.Comment -eq $Comment -and $_.ProgramName -eq $Name }
 
     if($program -eq $null -or !$program) {
         Write-Host "`t`tCreating Program: $Name ..."	   
-        #write log
-        $lineNum = Get-CurrentLineNumber    
-        $filName = Get-CurrentFileName 
-        WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Creating Program: $Name ..."     
+        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Creating Program: $Name ..." -LogFilePath $LogFilePath     
 	    $program = New-CMProgram -PackageId $PackageID -StandardProgramName $Name -DriveMode RenameWithUnc `
                                  -CommandLine $CommandLine -ProgramRunType OnlyWhenUserIsLoggedOn `
                                  -RunMode RunWithAdministrativeRights -UserInteraction $true -RunType Normal
     } else {
         Write-Host "`t`tProgram Already Exists: $Name"
-        #write log
-        $lineNum = Get-CurrentLineNumber    
-        $filName = Get-CurrentFileName 
-        WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Program Already Exists: $Name"     
+        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Program Already Exists: $Name" -LogFilePath $LogFilePath     
     }
 
     if ($program) {
@@ -2684,7 +2672,7 @@ function CreateOfficeChannelShare() {
 function GetSupportedPlatforms([String[]] $requiredPlatformNames){
     $computerName = $env:COMPUTERNAME
     #$assignedSite = $([WmiClass]"\\$computerName\ROOT\ccm:SMS_Client").getassignedsite()
-    $siteCode = Get-Site  
+    $siteCode = Get-Site -LogFilePath $LogFilePath
     $filteredPlatforms = Get-WmiObject -ComputerName $computerName -Class SMS_SupportedPlatforms -Namespace "root\sms\site_$siteCode" | Where-Object {$_.IsSupported -eq $true -and  $_.OSName -like 'Win NT' -and ($_.OSMinVersion -match "6\.[0-9]{1,2}\.[0-9]{1,4}\.[0-9]{1,4}" -or $_.OSMinVersion -match "10\.[0-9]{1,2}\.[0-9]{1,4}\.[0-9]{1,4}") -and ($_.OSPlatform -like 'I386' -or $_.OSPlatform -like 'x64')}
 
     $requiredPlatforms = $filteredPlatforms| Where-Object {$requiredPlatformNames.Contains($_.DisplayText) } #| Select DisplayText, OSMaxVersion, OSMinVersion, OSName, OSPlatform | Out-GridView
@@ -2775,8 +2763,13 @@ function GetCMPSModulePath() {
     Param
 	(
 		[Parameter()]
-		[String]$CMPSModulePath = $NULL
+		[String]$CMPSModulePath = $NULL,
+
+        [Parameter()]
+        [string]$LogFilePath
 	)
+    $currentFileName = Get-CurrentFileName
+    Set-Alias -name LINENUM -value Get-CurrentLineNumber
 
     [bool]$pathExists = $false
 
@@ -2821,25 +2814,29 @@ function GetCMPSModulePath() {
     }
 
     if (!$pathExists) {
-        #write log
-        $lineNum = Get-CurrentLineNumber    
-        $filName = Get-CurrentFileName 
-        WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Cannot find the ConfigurationManager.psd1 file. Please use the -CMPSModulePath parameter to specify the location of the PowerShell Module"
-       throw "Cannot find the ConfigurationManager.psd1 file. Please use the -CMPSModulePath parameter to specify the location of the PowerShell Module"
+        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Cannot find the ConfigurationManager.psd1 file. Please use the -CMPSModulePath parameter to specify the location of the PowerShell Module" -LogFilePath $LogFilePath
+        throw "Cannot find the ConfigurationManager.psd1 file. Please use the -CMPSModulePath parameter to specify the location of the PowerShell Module"
     }
 
     return $CMModulePath
 }
 
-function Get-Site([string[]]$computerName = $env:COMPUTERNAME) {
+function Get-Site {
+Param(
+    [Parameter()]
+    [string[]]$computerName = $env:COMPUTERNAME,
+
+    [Parameter()]
+    [string]$LogFilePath
+)
+    $currentFileName = Get-CurrentFileName
+    Set-Alias -name LINENUM -value Get-CurrentLineNumber
+
     Get-WmiObject -ComputerName $ComputerName -Namespace "root\SMS" -Class "SMS_ProviderLocation" | foreach-object{ 
         if ($_.ProviderForLocalSite -eq $true){$SiteCode=$_.sitecode} 
     } 
     if ($SiteCode -eq "") { 
-        #write log
-        $lineNum = Get-CurrentLineNumber    
-        $filName = Get-CurrentFileName 
-        WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Sitecode of ConfigMgr Site at " + $ComputerName + " could not be determined."
+        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Sitecode of ConfigMgr Site at " + $ComputerName + " could not be determined." -LogFilePath $LogFilePath
         throw ("Sitecode of ConfigMgr Site at " + $ComputerName + " could not be determined.") 
     } else { 
         Return $SiteCode 
@@ -2856,10 +2853,7 @@ function DownloadBits() {
 
     $DownloadScript = "$PSScriptRoot\Download-OfficeProPlusBranch.ps1"
     if (Test-Path -Path $DownloadScript) {
-       
-
-
-
+      
     }
 }
 
@@ -2870,7 +2864,7 @@ Function GetScriptRoot() {
      if ($PSScriptRoot) {
        $scriptPath = $PSScriptRoot
      } else {
-       $scriptPath = split-path -parent $MyInvocation.MyCommand.Definition
+       $scriptPath = Split-Path -parent $MyInvocation.MyCommand.Definition
      }
 
      return $scriptPath
@@ -2879,18 +2873,23 @@ Function GetScriptRoot() {
 
 function GetQueryStatus(){
 Param(
+    [Parameter()]
     [string]$SiteCode,
-    [string]$PkgID
+
+    [Parameter()]
+    [string]$PkgID,
+
+    [Parameter()]
+    [string]$LogFilePath
 )
+    $currentFileName = Get-CurrentFileName
+    Set-Alias -name LINENUM -value Get-CurrentLineNumber
 
     $query = Get-WmiObject -NameSpace Root\SMS\Site_$SiteCode -Class SMS_DistributionDPStatus -Filter "PackageID='$PkgID'" | Select Name, MessageID, MessageState, LastUpdateDate
 
     if ($query -eq $null)
     {  
-        #write log
-        $lineNum = Get-CurrentLineNumber    
-        $filName = Get-CurrentFileName 
-        WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "PackageID not found"
+        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "PackageID not found" -LogFilePath $LogFilePath
         throw "PackageID not found"
     }
 
@@ -2973,36 +2972,42 @@ function Get-CurrentFileName{
     $MyInvocation.ScriptName.Substring($MyInvocation.ScriptName.LastIndexOf("\")+1)
 }
 
-function Get-CurrentFunctionName {
-    (Get-Variable MyInvocation -Scope 1).Value.MyCommand.Name;
-}
-
 Function WriteToLogFile() {
     param( 
-      [Parameter(Mandatory=$true)]
-      [string]$LNumber,
-      [Parameter(Mandatory=$true)]
-      [string]$FName,
-      [Parameter(Mandatory=$true)]
-      [string]$ActionError
+        [Parameter(Mandatory=$true)]
+        [string]$LNumber,
+
+        [Parameter(Mandatory=$true)]
+        [string]$FName,
+
+        [Parameter(Mandatory=$true)]
+        [string]$ActionError,
+
+        [Parameter()]
+        [string]$LogFilePath
     )
+
     try{
         $headerString = "Time".PadRight(30, ' ') + "Line Number".PadRight(15,' ') + "FileName".PadRight(60,' ') + "Action"
         $stringToWrite = $(Get-Date -Format G).PadRight(30, ' ') + $($LNumber).PadRight(15, ' ') + $($FName).PadRight(60,' ') + $ActionError
 
-        #check if file exists, create if it doesn't
-        $getCurrentDatePath = "C:\Windows\Temp\" + (Get-Date -Format u).Substring(0,10)+"OfficeAutoScriptLog.txt"
-        if(Test-Path $getCurrentDatePath){#if exists, append    
-             Add-Content $getCurrentDatePath $stringToWrite
+        if(!$LogFilePath){
+            $LogFilePath = "$env:windir\Temp\" + (Get-Date -Format u).Substring(0,10)+"_OfficeDeploymentLog.txt"
+        }
+        if(Test-Path $LogFilePath){
+             Add-Content $LogFilePath $stringToWrite
         }
         else{#if not exists, create new
-             Add-Content $getCurrentDatePath $headerString
-             Add-Content $getCurrentDatePath $stringToWrite
+             Add-Content $LogFilePath $headerString
+             Add-Content $LogFilePath $stringToWrite
         }
     } catch [Exception]{
         Write-Host $_
     }
 }
+
+$currentFileName = Get-CurrentFileName
+Set-Alias -name LINENUM -value Get-CurrentLineNumber
 
 $scriptPath = GetScriptRoot
 
@@ -3010,10 +3015,7 @@ $shareFunctionsPath = "$scriptPath\SharedFunctions.ps1"
 if ($scriptPath.StartsWith("\\")) {
 } else {
     if (!(Test-Path -Path $shareFunctionsPath)) {
-        #write log
-        $lineNum = Get-CurrentLineNumber    
-        $filName = Get-CurrentFileName 
-        WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Missing Dependency File SharedFunctions.ps1"    
+        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Missing Dependency File SharedFunctions.ps1" -LogFilePath $LogFilePath    
         throw "Missing Dependency File SharedFunctions.ps1"    
     }
 }
