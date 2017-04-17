@@ -1,6 +1,5 @@
 @media screen and (min-width: 0px) and (max-width: 639px){
 	#Trending,#siteNav {margin-right: -15px;}
-	#Trending{display:none;}
 
 }
 
@@ -10,12 +9,8 @@
 }
 
 
-.ms-Grid{
-	/*padding: 0px 0px 0px 0px !important;*/
-}
-
 .hidden{
-	display: none;
+	visibility: hidden;
 }
 
 .Header{
@@ -55,6 +50,8 @@
 
 .Faq-Header{
 	border-bottom: 1px solid #c8c8c8;
+	min-height: 32px;
+	margin:0px 0px 8px 0px;
 }
 
 .Site-Content
@@ -101,8 +98,8 @@
 }
 
 .Selected{
-	color:#0078d7;
-	background-color: #b3d6f2;
+	color:#106ebe;
+	background-color: #deecf9;
 }
 
 .PartialView-Item{
@@ -133,3 +130,15 @@
 .Carousel-Header{
 	margin: 0px 0px -70px 0px;
 }
+
+.Section-Link{
+	padding: 0px 10px 0px 10px;
+	cursor:pointer;
+	display: inline-block;
+	vertical-align:top;
+}
+
+.Link-TextField{
+/* 	width:60%; */
+	margin:0px 0px 8px 0px;
+/* } */
