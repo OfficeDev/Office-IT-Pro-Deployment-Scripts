@@ -1001,35 +1001,44 @@ try {
                WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "UpdateChannel registry key set to $UpdateURLPath" -LogFilePath $LogFilePath
            }
         }
+    
+    [bool]$continue = $true
+    if(!$RollBack){
+        if (($Version) -and ($oldChannel -eq $Channel)) {
+            [bool]$continue = $false
+            
+            Write-Host "The client already has version installed: $Version"
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "The client already has version installed: $Version" -LogFilePath $LogFilePath
 
-    if (($Version) -and ($oldChannel -ne $Channel)) {
+            Set-OfficeCDNUrl -Channel $Channel
+        }
+    } else {
+        if($Version -ne $currentVersion){ 
+            [bool]$continue = $false
+        }
+    }
+
+    if($continue){
         $arguments = "/update user displaylevel=false forceappshutdown=true updatepromptuser=false updatetoversion=$Version"
-       
-        if($Version -ne $currentVersion){         
-            #run update exe file
-            Start-Process -FilePath $OfficeUpdatePath -ArgumentList $arguments
+                
+        #run update exe file
+        Start-Process -FilePath $OfficeUpdatePath -ArgumentList $arguments
      
-            $UpdateStatus = Wait-ForOfficeCTRUpdate
+        $UpdateStatus = Wait-ForOfficeCTRUpdate
 
-            if ($UpdateStatus -eq $false){
-                Set-OfficeCDNUrl -Channel $oldChannel
+        if ($UpdateStatus -eq $false){
+            Set-OfficeCDNUrl -Channel $oldChannel
 
-                if ($PolicyPath) {
-                    New-ItemProperty $OfficePolicyPath -Name updatepath -PropertyType String -Value $OldUpdatePath -Force | Out-Null
-                    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "updatepath registry key set to $OldUpdatePath" -LogFilePath $LogFilePath
-                } elseif($oldUpdatePath) {
-                    if($UpdateUrl -ne $NULL){
-                        New-ItemProperty $Office2RClientKey -Name UpdateUrl -PropertyType String -Value $OldUpdatePath -Force | Out-Null
-                        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "UpdateUrl registry key set to $OldUpdatePath" -LogFilePath $LogFilePath
-                    }
+            if ($PolicyPath) {
+                New-ItemProperty $OfficePolicyPath -Name updatepath -PropertyType String -Value $OldUpdatePath -Force | Out-Null
+                WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "updatepath registry key set to $OldUpdatePath" -LogFilePath $LogFilePath
+            } elseif($oldUpdatePath) {
+                if($UpdateUrl -ne $NULL){
+                    New-ItemProperty $Office2RClientKey -Name UpdateUrl -PropertyType String -Value $OldUpdatePath -Force | Out-Null
+                    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "UpdateUrl registry key set to $OldUpdatePath" -LogFilePath $LogFilePath
                 }
             }
-        } else {
-            Write-Host "The channel has been changed to $Channel"
-            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "The channel has been changed to $Channel" -LogFilePath $LogFilePath
         }
-
-        
 
         if ($SetBack) {
             if ($oldUpdatePath) {
@@ -1038,16 +1047,13 @@ try {
             }
         }
     } else {
-        Write-Host "The client already has version installed: $Version"
-        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "The client already has version installed: $Version" -LogFilePath $LogFilePath
-
-        if (!($RollBack)) {
-           Set-OfficeCDNUrl -Channel $Channel
-        }
+        Write-Host "The channel has been changed to $Channel"
+        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "The channel has been changed to $Channel" -LogFilePath $LogFilePath
 
         Remove-ItemProperty $Office2RClientKey -Name BackupUpdateUrl -Force -ErrorAction SilentlyContinue | Out-Null
         WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Removed the BackupUpdateUrl registry key" -LogFilePath $LogFilePath
     }
+
     if ($SendExitCode) {
        [System.Environment]::Exit(0)
     }
