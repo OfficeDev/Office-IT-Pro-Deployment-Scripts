@@ -1,12 +1,12 @@
-﻿#**Deploy Office Click-To-Run**
+﻿# **Deploy Office Click-To-Run**
 
 This readme's topic covers using several scripts in this GitHub repository to create a Office Click-To-Run Deployment Solution.  
 
-###**Computer Requirements**
+### **Computer Requirements**
 
 Minimum requirements for these scripts are Windows 7 with .net 2.0 and powershell 2.0.
 
-###**Example Scripts**
+### **Example Scripts**
 
 1. Example Script '1-ExampleDeployGeneric.ps1': This script provides an example on how to use the deployment scripts in one script to provide a solution for Deploying Office Click-To-Run
 
