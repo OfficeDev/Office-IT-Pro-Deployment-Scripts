@@ -249,6 +249,7 @@ In this example the primary Office product will be removed even if it is Click-T
             switch($product){
                 "MainOfficeProduct"{
                     $OfficeProduct = GetProductName -ProductName MainOfficeProduct
+                    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "OfficeProduct set to $OfficeProduct" -LogFilePath $LogFilePath
                     $MainOfficeProduct = $OfficeProduct | ? {$_.DisplayName -notmatch "Language Pack"}
                     $OfficeLanguagePacks = $officeProduct | ? {$_.DisplayName -match "Language Pack"}
                     if($OfficeLanguagePacks){
@@ -261,6 +262,7 @@ In this example the primary Office product will be removed even if it is Click-T
                 }
                 "Visio" {
                     $VisioProduct = GetProductName -ProductName Visio
+                    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "VisioProduct set to $VisioProduct" -LogFilePath $LogFilePath
                     $MainVisioProduct = $VisioProduct | ? {$_.DisplayName -notmatch "Language Pack"}
                     $VisioLanguagePacks = $VisioProduct | ? {$_.DisplayName -match "Language Pack"}
                     if($VisioLanguagePacks){
@@ -283,6 +285,7 @@ In this example the primary Office product will be removed even if it is Click-T
                 }
                 "Project" {
                     $ProjectProduct = GetProductName -ProductName Project
+                    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "ProjectProduct set to $ProjectProduct" -LogFilePath $LogFilePath
                     $MainProjectProduct = $ProjectProduct | ? {$_.DisplayName -notmatch "Language Pack"}
                     $ProjectLanguagePacks = $ProjectProduct | ? {$_.DisplayName -match "Language Pack"}
                     if($ProjectLanguagePacks){
@@ -808,7 +811,7 @@ Function StartProcess {
     Catch
     {
         Write-Log -Message $_.Exception.Message -severity 1 -component "Office 365 Update Anywhere"
-        WriteToLogFile -LNumber $_.InvocationInfo.ScriptLineNumber -FName $currentFileName -ActionError $_
+        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError $_
     }
 }
 
@@ -833,12 +836,12 @@ Function IsSupportedLanguage() {
            if ($ShowLanguages) {
               Write-Host
               Write-Host "Invalid or Unsupported Language. Please select a language." -NoNewLine -BackgroundColor Red
-              WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Invalid or Unsupported Language. Please select a language." -NoNewLine -BackgroundColor Red -LogFilePath $LogFilePath
+              WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Invalid or Unsupported Language. Please select a language." -LogFilePath $LogFilePath
               Write-Host
 
               return SelectLanguage 
            } else {
-              WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Invalid or Unsupported Language: $Language" -NoNewLine -BackgroundColor Red -LogFilePath $LogFilePath
+              WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Invalid or Unsupported Language: $Language" -LogFilePath $LogFilePath
               throw "Invalid or Unsupported Language: $Language"
            }
            
@@ -1269,13 +1272,19 @@ Function GetScriptRoot() {
 function GetProductName {
 param(
     [Parameter()]
-    [string]$ProductName
+    [string]$ProductName,
+
+    [Parameter()]
+    [string]$LogFilePath
 )
     $defaultDisplaySet = 'DisplayName','Name','Version'
     $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet('DefaultDisplayPropertySet',[string[]]$defaultDisplaySet)
     $PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultDisplayPropertySet)
     $results = New-Object PSObject[] 0;
     
+    $currentFileName = Get-CurrentFileName
+    Set-Alias -name LINENUM -value Get-CurrentLineNumber
+
     if($ProductName -eq 'MainOfficeProduct'){
         $MainOfficeProducts = @()
         #$Products = (Get-OfficeVersion).DisplayName | select -Unique
@@ -1287,7 +1296,9 @@ param(
         } else {
             $ProductName = $MainOfficeProducts.DisplayName
         }
-    } 
+    }
+    
+    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "ProductName set to $ProductName" -LogFilePath $LogFilePath 
         
     $HKLM = [UInt32] "0x80000002"
     $HKCR = [UInt32] "0x80000000"
