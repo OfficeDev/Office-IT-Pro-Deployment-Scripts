@@ -1020,8 +1020,10 @@ try {
 
     if($continue){
         $arguments = "/update user displaylevel=false forceappshutdown=true updatepromptuser=false updatetoversion=$Version"
+        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "arguments set to /update user displaylevel=false forceappshutdown=true updatepromptuser=false updatetoversion=$Version" -LogFilePath $LogFilePath
                 
         #run update exe file
+        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Starting the update" -LogFilePath $LogFilePath
         Start-Process -FilePath $OfficeUpdatePath -ArgumentList $arguments
      
         $UpdateStatus = Wait-ForOfficeCTRUpdate
