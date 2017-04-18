@@ -618,7 +618,7 @@ function Test-UpdateSourceTcpPort {
 
     Finally
     {
-        $test.Dispose();
+        $test.Close();
     }
 
     if ($sourceIsAlive) {
