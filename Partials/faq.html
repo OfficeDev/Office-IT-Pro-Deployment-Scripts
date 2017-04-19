@@ -22,7 +22,7 @@
                                             <div class="ms-Grid-col ms-u-sm12 ms-u-lg5 hidden">
                                                 <input class="ms-TextField-field Link-TextField" type="text" value="" placeholder="">
                                             </div>
-                                             <div class="ms-Grid-col ms-u-sm12 ms-u-lg1 hidden">
+                                            <div class="ms-Grid-col ms-u-sm12 ms-u-lg1 hidden">
                                                 <i class="ms-Icon ms-Icon--Copy ms-fontColor-themePrimary--hover ms-font-xl" aria-hidden="true" onclick="copyToClipboard(this)"></i>
                                             </div>
                                         </div>
@@ -45,7 +45,7 @@
                         <div class="ms-Grid-row">
                             <br>
                             <br>
-                             <div class="ms-Grid-col ms-u-sm12 ms-fontSize-xl ms-fontWeight-semibold Faq-Header">
+                            <div class="ms-Grid-col ms-u-sm12 ms-fontSize-xl ms-fontWeight-semibold Faq-Header">
                                 <div class="container">
                                     <div class="ms-Grid">
                                         <div class="ms-Grid-row">
@@ -56,7 +56,7 @@
                                             <div class="ms-Grid-col ms-u-sm12 ms-u-lg5 hidden">
                                                 <input class="ms-TextField-field Link-TextField" type="text" value="" placeholder="">
                                             </div>
-                                             <div class="ms-Grid-col ms-u-sm12 ms-u-lg1 hidden">
+                                            <div class="ms-Grid-col ms-u-sm12 ms-u-lg1 hidden">
                                                 <i class="ms-Icon ms-Icon--Copy ms-fontColor-themePrimary--hover ms-font-xl" aria-hidden="true" onclick="copyToClipboard(this)"></i>
                                             </div>
                                         </div>
@@ -76,7 +76,23 @@
                         <div class="ms-Grid-row">
                             <br>
                             <br>
-                            <div class="ms-Grid-col ms-u-sm12 ms-fontSize-xl ms-fontWeight-semibold Faq-Header">Are you manually editing your configuration XML files?
+                            <div class="ms-Grid-col ms-u-sm12 ms-fontSize-xl ms-fontWeight-semibold Faq-Header">
+                                <div class="container">
+                                    <div class="ms-Grid">
+                                        <div class="ms-Grid-row">
+                                            <div class="ms-Grid-col ms-u-sm12 ms-u-lg8">
+                                                Are you manually editing your configuration XML files?
+                                                <i id="XMLEditor" class="ms-Icon ms-Icon--MiniLink ms-fontColor-themePrimary--hover ms-font-xl Section-Link" ari onclick="toggleCopyLink(this)" a-hidden="true"></i>
+                                            </div>
+                                            <div class="ms-Grid-col ms-u-sm12 ms-u-lg3 hidden">
+                                                <input class="ms-TextField-field Link-TextField" type="text" value="" placeholder="">
+                                            </div>
+                                            <div class="ms-Grid-col ms-u-sm12 ms-u-lg1 hidden">
+                                                <i class="ms-Icon ms-Icon--Copy ms-fontColor-themePrimary--hover ms-font-xl" aria-hidden="true" onclick="copyToClipboard(this)"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="ms-Grid-row">
@@ -91,7 +107,23 @@
                         <div class="ms-Grid-row">
                             <br>
                             <br>
-                            <div class="ms-Grid-col ms-u-sm12 ms-fontSize-xl ms-fontWeight-semibold Faq-Header">Would you like a faster and easier way to download your Office ProPlus files?
+                            <div class="ms-Grid-col ms-u-sm12 ms-fontSize-xl ms-fontWeight-semibold Faq-Header">
+                                <div class="container">
+                                    <div class="ms-Grid">
+                                        <div class="ms-Grid-row">
+                                            <div class="ms-Grid-col ms-u-sm12 ms-u-lg9">
+                                                Would you like a faster and easier way to download your Office ProPlus files?
+                                                <i id="DownloadScript" class="ms-Icon ms-Icon--MiniLink ms-fontColor-themePrimary--hover ms-font-xl Section-Link" ari onclick="toggleCopyLink(this)" a-hidden="true"></i>
+                                            </div>
+                                            <div class="ms-Grid-col ms-u-sm12 ms-u-lg2 hidden">
+                                                <input class="ms-TextField-field Link-TextField" type="text" value="" placeholder="">
+                                            </div>
+                                            <div class="ms-Grid-col ms-u-sm12 ms-u-lg1 hidden">
+                                                <i class="ms-Icon ms-Icon--Copy ms-fontColor-themePrimary--hover ms-font-xl" aria-hidden="true" onclick="copyToClipboard(this)"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="ms-Grid-row">
@@ -99,35 +131,57 @@
                                 <br>
                                 Try using <a href="https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/master/Office-ProPlus-Deployment/Download-OfficeProPlusBranch">Download-OfficeProPlusChannels</a>
                                 to quickly and easily download from multiple Channels and languages with one operation.
-                            
-                            
-                            
-                            
-                            
                             </div>
                         </div>
                         <div class="ms-Grid-row">
                             <br>
                             <br>
-                            <div class="ms-Grid-col ms-u-sm12 ms-fontSize-xl ms-fontWeight-semibold Faq-Header">Do you use Group Policy to configure your Office Clients?
+                            <div class="ms-Grid-col ms-u-sm12 ms-fontSize-xl ms-fontWeight-semibold Faq-Header">
+                                <div class="container">
+                                    <div class="ms-Grid">
+                                        <div class="ms-Grid-row">
+                                            <div class="ms-Grid-col ms-u-sm12 ms-u-lg8">
+                                                Do you use Group Policy to configure your Office Clients?
+                                                <i id="UseGPO" class="ms-Icon ms-Icon--MiniLink ms-fontColor-themePrimary--hover ms-font-xl Section-Link" ari onclick="toggleCopyLink(this)" a-hidden="true"></i>
+                                            </div>
+                                            <div class="ms-Grid-col ms-u-sm12 ms-u-lg3 hidden">
+                                                <input class="ms-TextField-field Link-TextField" type="text" value="" placeholder="">
+                                            </div>
+                                            <div class="ms-Grid-col ms-u-sm12 ms-u-lg1 hidden">
+                                                <i class="ms-Icon ms-Icon--Copy ms-fontColor-themePrimary--hover ms-font-xl" aria-hidden="true" onclick="copyToClipboard(this)"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="ms-Grid-row">
                             <div class="ms-Grid-col ms-u-sm12 ms-fontSize-l ms-fontWeight-regular">
                                 <br>
                                 If you have Group Policy setting from previous versions of Office use our <a href="https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/master/Office-ProPlus-Preparation/Copy-OfficeGPOSettings">Copy-OfficeGPOSettings</a>
-                                to migrate your settings to Office 2016.
-                            
-                            
-                            
-                            
-                            
+                                to migrate your settings to Office 2016                   
                             </div>
                         </div>
                         <div class="ms-Grid-row">
                             <br>
                             <br>
-                            <div class="ms-Grid-col ms-u-sm12 ms-fontSize-xl ms-fontWeight-semibold Faq-Header">Would you like to see example of how to use our scripts to create deployment solutions?
+                            <div class="ms-Grid-col ms-u-sm12 ms-fontSize-xl ms-fontWeight-semibold Faq-Header">
+                                <div class="container">
+                                    <div class="ms-Grid">
+                                        <div class="ms-Grid-row">
+                                            <div class="ms-Grid-col ms-u-sm12 ms-u-lg8">
+                                                Would you like to see examples of how to use our scripts?
+                                                <i id="ExampleScripts" class="ms-Icon ms-Icon--MiniLink ms-fontColor-themePrimary--hover ms-font-xl Section-Link" ari onclick="toggleCopyLink(this)" a-hidden="true"></i>
+                                            </div>
+                                            <div class="ms-Grid-col ms-u-sm12 ms-u-lg3 hidden">
+                                                <input class="ms-TextField-field Link-TextField" type="text" value="" placeholder="">
+                                            </div>
+                                            <div class="ms-Grid-col ms-u-sm12 ms-u-lg1 hidden">
+                                                <i class="ms-Icon ms-Icon--Copy ms-fontColor-themePrimary--hover ms-font-xl" aria-hidden="true" onclick="copyToClipboard(this)"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="ms-Grid-row">
@@ -139,25 +193,52 @@
                         <div class="ms-Grid-row">
                             <br>
                             <br>
-                            <div class="ms-Grid-col ms-u-sm12 ms-fontSize-xl ms-fontWeight-semibold Faq-Header">Scripts
+                            <div class="ms-Grid-col ms-u-sm12 ms-fontSize-xl ms-fontWeight-semibold Faq-Header">
+                                <div class="container">
+                                    <div class="ms-Grid">
+                                        <div class="ms-Grid-row">
+                                            <div class="ms-Grid-col ms-u-sm12 ms-u-lg8">
+                                                Scripts
+                                                <i id="Scripts" class="ms-Icon ms-Icon--MiniLink ms-fontColor-themePrimary--hover ms-font-xl Section-Link" ari onclick="toggleCopyLink(this)" a-hidden="true"></i>
+                                            </div>
+                                            <div class="ms-Grid-col ms-u-sm12 ms-u-lg3 hidden">
+                                                <input class="ms-TextField-field Link-TextField" type="text" value="" placeholder="">
+                                            </div>
+                                            <div class="ms-Grid-col ms-u-sm12 ms-u-lg1 hidden">
+                                                <i class="ms-Icon ms-Icon--Copy ms-fontColor-themePrimary--hover ms-font-xl" aria-hidden="true" onclick="copyToClipboard(this)"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="ms-Grid-row">
                             <div class="ms-Grid-col ms-u-sm12 ms-fontSize-l ms-fontWeight-regular">
                                 <br>
                                 For more detailed documentation of each script, check the <a href="https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/wiki">Wiki</a>
-                                or the readme file in the corresponding folder
-                            
-                            
-                            
-                            
-                            
+                                or the readme file in the corresponding folder              
                             </div>
                         </div>
                         <div class="ms-Grid-row">
                             <br>
                             <br>
-                            <div class="ms-Grid-col ms-u-sm12 ms-fontSize-xl ms-fontWeight-semibold Faq-Header">New to PowerShell and Office 365?
+                            <div class="ms-Grid-col ms-u-sm12 ms-fontSize-xl ms-fontWeight-semibold Faq-Header">
+                                <div class="container">
+                                    <div class="ms-Grid">
+                                        <div class="ms-Grid-row">
+                                            <div class="ms-Grid-col ms-u-sm12 ms-u-lg8">
+                                                New to PowerShell and Office 365?
+                                                <i id="NewToPowershell" class="ms-Icon ms-Icon--MiniLink ms-fontColor-themePrimary--hover ms-font-xl Section-Link" ari onclick="toggleCopyLink(this)" a-hidden="true"></i>
+                                            </div>
+                                            <div class="ms-Grid-col ms-u-sm12 ms-u-lg3 hidden">
+                                                <input class="ms-TextField-field Link-TextField" type="text" value="" placeholder="">
+                                            </div>
+                                            <div class="ms-Grid-col ms-u-sm12 ms-u-lg1 hidden">
+                                                <i class="ms-Icon ms-Icon--Copy ms-fontColor-themePrimary--hover ms-font-xl" aria-hidden="true" onclick="copyToClipboard(this)"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="ms-Grid-row">
@@ -167,15 +248,28 @@
                                 for advice on getting started, key scenarios and script samples.
                             
                             
-                            
-                            
-                            
                             </div>
                         </div>
                         <div class="ms-Grid-row">
                             <br>
                             <br>
-                            <div class="ms-Grid-col ms-u-sm12 ms-fontSize-xl ms-fontWeight-semibold Faq-Header">Questions and comments?
+                            <div class="ms-Grid-col ms-u-sm12 ms-fontSize-xl ms-fontWeight-semibold Faq-Header">
+                                <div class="container">
+                                    <div class="ms-Grid">
+                                        <div class="ms-Grid-row">
+                                            <div class="ms-Grid-col ms-u-sm12 ms-u-lg8">
+                                                Questions and comments?
+                                                <i id="QuestionsComments" class="ms-Icon ms-Icon--MiniLink ms-fontColor-themePrimary--hover ms-font-xl Section-Link" ari onclick="toggleCopyLink(this)" a-hidden="true"></i>
+                                            </div>
+                                            <div class="ms-Grid-col ms-u-sm12 ms-u-lg3 hidden">
+                                                <input class="ms-TextField-field Link-TextField" type="text" value="" placeholder="">
+                                            </div>
+                                            <div class="ms-Grid-col ms-u-sm12 ms-u-lg1 hidden">
+                                                <i class="ms-Icon ms-Icon--Copy ms-fontColor-themePrimary--hover ms-font-xl" aria-hidden="true" onclick="copyToClipboard(this)"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="ms-Grid-row">

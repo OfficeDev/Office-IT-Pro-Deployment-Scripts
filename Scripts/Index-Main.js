@@ -6,10 +6,10 @@ window.onresize = function(){
     resizePage();
 }
 
-// $(window).bind( 'hashchange', function(e) 
-// {
-//     loadPage(); 
-// });
+$(window).bind( 'hashchange', function(e) 
+{
+     loadPage(); 
+});
 
 
 function loadPage(){
@@ -51,26 +51,40 @@ function downloadZip(){
         return false;
 }
 
-function loadSection(sectionId){
-    window.location.hash = sectionId; 
-
-    if (location.hash) {
-      setTimeout(function() {
-
-        window.scrollTo(0, 0);
-      }, 1);
+function loadSection(pageId){  
+    
+    var obj = {
+        page    : pageId,
+        section : ''
     }
+
+    if(pageId === undefined){
+        obj.page = "home"
+    }
+
+    var sectionId = getUrlVars()['section'];
+
+    if(sectionId != undefined){
+        obj.section.val = sectionId; 
+    }
+    
+
+    var baseUrl = location.host+"/#/"; 
+    var url =  baseUrl +"/#/?"+ $.param(obj);
+
+    window.history.pushState("string", "","/#/?" + $.param(obj));
+    window.location = url;
 
     $('.Nav-Option').each(function(i,obj){
         $(obj).removeClass('Selected'); 
     });
 
-    $('#'+sectionId).addClass('Selected');
+    $('#'+pageId).addClass('Selected');
 
     $('#partial-views').empty();
     $.ajax({
         type: 'GET',
-        url: './Partials/'+sectionId+'.html',    
+        url: './Partials/'+pageId+'.html',    
         dataType: 'html', 
         success:function(result)
         {
@@ -114,18 +128,29 @@ function addHamburger(){
 }
 
 function checkAddress(){
-    var pageId = location.hash.split('#')[1];
-    var sectionId = location.hash.split('#')[2];
+
+    var pageId = getUrlVars()['page'];
+    var sectionId = getUrlVars()['section'];
 
     if(pageId === undefined){
         pageId = 'home' 
-                loadSection(pageId);
+        loadSection(pageId);
     }  
     else{
         loadSection(pageId);
         if(sectionId != undefined){
-            location.href += '#' +sectionId; 
-            $("html, body").delay(2000).animate({scrollTop: $(sectionId).offset().top()}, 2000);
+            var baseUrl = location.host; 
+            var obj = {
+                page : pageId, 
+                section : sectionId
+            }
+            window.history.pushState("string", "","/#/?" + $.param(obj));
+            window.location = baseUrl +"/#/?"+$.param(obj);
+
+
+            $('html, body').animate({
+                    scrollTop: $("#"+sectionId).offset().top
+                }, 2000);        
         }
     }
 
@@ -136,10 +161,23 @@ function toggleCopyLink(section){
     var textFieldParent = $(section).parent().siblings()[0];
     var copyButton = $(section).parent().siblings()[1];
     var textField = $(textFieldParent).children('input'); 
-    var url = location.href; 
     var sectionId = $(section).attr('Id');
+    var pageId = getUrlVars()['page'];
+    var url = location.host; 
 
-    $(textField).val(url+"#"+sectionId);
+
+    if(url.indexOf(sectionId) == -1){
+       var obj = {
+           page: pageId,
+           section: sectionId
+       }
+
+       url = url +"/#/?"+ $.param(obj);
+       $(textField).val(url);
+    }
+    else{
+        $(textField).val(location.href);
+    }
     $(textFieldParent).toggleClass('hidden');
     $(copyButton).toggleClass('hidden');
 }
@@ -153,3 +191,15 @@ function copyToClipboard(icon){
   document.execCommand('copy');
 }
 
+function getUrlVars()
+{
+    var vars = [], hash;
+    var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+    for(var i = 0; i < hashes.length; i++)
+    {
+        hash = hashes[i].split('=');
+        vars.push(hash[0]);
+        vars[hash[0]] = hash[1];
+    }
+    return vars;
+}
