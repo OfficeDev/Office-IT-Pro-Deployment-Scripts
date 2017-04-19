@@ -494,9 +494,9 @@ namespace Microsoft.OfficeProPlus.Downloader
             foreach (var table in tables)
             {
                 var headerRow = table
-                    .Descendants("tr")
-                    .Where(tr => tr.Elements("th").Count() > 1)
-                    .Select(tr => tr.Elements("th").Select(td => td.InnerText.Trim()).ToList())
+                    .Descendants("thead")
+                    .Where(thhead => thhead.Elements("tr").Count() == 1)
+                    .Select(tr => tr.Descendants("td").Select(td => td.InnerText.Trim()).ToList())
                     .FirstOrDefault();
                 if (headerRow == null) continue;
                 if (headerRow[0].ToLower() != "version") continue;
