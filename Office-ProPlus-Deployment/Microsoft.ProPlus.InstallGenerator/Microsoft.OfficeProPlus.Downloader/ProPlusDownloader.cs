@@ -494,9 +494,9 @@ namespace Microsoft.OfficeProPlus.Downloader
             foreach (var table in tables)
             {
                 var headerRow = table
-                    .Descendants("tr")
-                    .Where(tr => tr.Elements("th").Count() > 1)
-                    .Select(tr => tr.Elements("th").Select(td => td.InnerText.Trim()).ToList())
+                    .Descendants("thead")
+                    .Where(thhead => thhead.Elements("tr").Count() == 1)
+                    .Select(tr => tr.Descendants("td").Select(td => td.InnerText.Trim()).ToList())
                     .FirstOrDefault();
                 if (headerRow == null) continue;
                 if (headerRow[0].ToLower() != "version") continue;
@@ -537,15 +537,15 @@ namespace Microsoft.OfficeProPlus.Downloader
 
                     var currentChannel = row[ccIndex];
                     var ccVersions = Regex.Matches(currentChannel, @"\d{4}\.\d{4}\s");
-                    //if (ccVersions.Count == 0) continue;
+                    
 
                     var frdc = row[frdcIndex];
                     var frdcVersions = Regex.Matches(frdc, @"\d{4}\.\d{4}");
-                   // if (frdcVersions.Count == 0) continue;
+                    
 
                     var dc = row[dcIndex];
                     var dcVersions = Regex.Matches(dc, @"\d{4}\.\d{4}");
-                    //if (dcVersions.Count == 0) continue;
+                    
                     
                     foreach (Match build in ccVersions)
                     {
