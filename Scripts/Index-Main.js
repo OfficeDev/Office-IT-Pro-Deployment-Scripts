@@ -210,3 +210,15 @@ function getUrlVars() {
     }
     return vars;
 }
+
+function goToSection(pageId, sectionId){
+    var obj = {
+            page: pageId,
+            section: sectionId
+        }
+    var baseUrl = location.host;
+    
+    window.history.pushState("string", "", "/#/?" + $.param(obj));
+    window.location = baseUrl + "/#/?" + $.param(obj);
+    checkAddress();
+}
