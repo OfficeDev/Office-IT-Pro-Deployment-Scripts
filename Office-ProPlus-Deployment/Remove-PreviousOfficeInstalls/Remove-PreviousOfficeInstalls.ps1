@@ -250,15 +250,21 @@ In this example the primary Office product will be removed even if it is Click-T
                 "MainOfficeProduct"{
                     $OfficeProduct = GetProductName -ProductName MainOfficeProduct
                     WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "OfficeProduct set to $OfficeProduct" -LogFilePath $LogFilePath
-                    $MainOfficeProduct = $OfficeProduct | ? {$_.DisplayName -notmatch "Language Pack"}
+                    foreach($product in $OfficeProduct){
+                        $MainOfficeProduct = $OfficeProduct | ? {$_.DisplayName -notmatch "Language Pack"}
+                    }
+
                     $OfficeLanguagePacks = $officeProduct | ? {$_.DisplayName -match "Language Pack"}
+
                     if($OfficeLanguagePacks){
                         foreach($OffLang in $OfficeLanguagePacks){
                             $OfficeLanguagePacks += $OffLang.Name
                         }
                     }
+
                     $OfficeArgListProducts += $MainOfficeProduct.Name
                     $OfficeArgListProducts = $OfficeArgListProducts -join ","
+                    
                 }
                 "Visio" {
                     $VisioProduct = GetProductName -ProductName Visio
@@ -364,97 +370,87 @@ In this example the primary Office product will be removed even if it is Click-T
             foreach($product in $ProductsToRemove){
                 switch($product){
                     "MainOfficeProduct" {
-                        $MainOfficeProductName = $MainOfficeProduct.Name
-                        
-                        if((Get-OfficeVersion | select *).ClickToRun -eq $true){
-                            $c2rInstalled = $true
-                        }
+                        foreach($prod in $OfficeProduct){
+                            $MainOfficeProductName = $prod.Name
+                            
+                            if((Get-OfficeVersion | select *).ClickToRun -eq $true){
+                                $c2rInstalled = $true
+                            }
 
-                        switch($MainOfficeProduct.Version){
-                            "11" {
-                                $ActionFile = "$scriptPath\$03VBS"
-                            }
-                            "12" {
-                                $ActionFile = "$scriptPath\$07VBS"
-                            }
-                            "14" {
-                                $ActionFile = "$scriptPath\$10VBS"
-                            }
-                            "15" {             
-                                if(!$c2rInstalled){
-                                    $ActionFile = "$scriptPath\$15MSIVBS"
-                                } else {
-                                    if($RemoveClickToRunVersions){
-                                        Remove-OfficeClickToRun -C2RProductsToRemove $MainOfficeProduct.Name.Split('-')[0].Trim()
-                                    } else {
-                                        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Office 2013 Click-To-Run cannot be removed. Use the -RemoveClickToRunVersions parameter to remove Click-To-Run 2016 installs." -LogFilePath $LogFilePath
-                                        throw "Office 2013 Click-To-Run cannot be removed. Use the -RemoveClickToRunVersions parameter to remove Click-To-Run 2016 installs."
-                                    }
+                            switch($prod.Version){
+                                "11" {
+                                    $ActionFile = "$scriptPath\$03VBS"
                                 }
-                            }
-                            "16" {
-                                if($Remove2016Installs){
+                                "12" {
+                                    $ActionFile = "$scriptPath\$07VBS"
+                                }
+                                "14" {
+                                    $ActionFile = "$scriptPath\$10VBS"
+                                }
+                                "15" {             
                                     if(!$c2rInstalled){
-                                        $ActionFile = "$scriptPath\$16MSIVBS"
+                                        $ActionFile = "$scriptPath\$15MSIVBS"
                                     } else {
                                         if($RemoveClickToRunVersions){
-                                            Remove-OfficeClickToRun -C2RProductsToRemove $MainOfficeProduct.Name.Split('-')[0].Trim()
+                                            Remove-OfficeClickToRun -C2RProductsToRemove $product.Name.Split('-')[0].Trim()
                                         } else {
-                                            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Office 2016 Click-To-Run cannot be removed. Use the -RemoveClickToRunVersions parameter to remove Click-To-Run 2016 installs." -LogFilePath $LogFilePath
-                                            throw "Office 2016 Click-To-Run cannot be removed. Use the -RemoveClickToRunVersions parameter to remove Click-To-Run 2016 installs."
+                                            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Office 2013 Click-To-Run cannot be removed. Use the -RemoveClickToRunVersions parameter to remove Click-To-Run 2016 installs." -LogFilePath $LogFilePath
+                                            throw "Office 2013 Click-To-Run cannot be removed. Use the -RemoveClickToRunVersions parameter to remove Click-To-Run 2016 installs."
                                         }
                                     }
-                                } else {
-                                    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Office 2016 Click-To-Run cannot be removed. Use the -RemoveClickToRunVersions and -Remove2016Installs parameters to remove Click-To-Run 2016 installs." -LogFilePath $LogFilePath
-                                    throw "Office 2016 Click-To-Run cannot be removed. Use the -RemoveClickToRunVersions and -Remove2016Installs parameters to remove Click-To-Run 2016 installs."
                                 }
-                            }
-                        }
-
-                        try{
-                             if($ActionFile -And (Test-Path -Path $ActionFile)){
-                                $MainOfficeProductDisplayName = $MainOfficeProduct.DisplayName
-                                Write-Host "`tRemoving "$MainOfficeProduct.DisplayName"..."
-                                WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Removing the MainOfficeProduct..." -LogFilePath $LogFilePath
-                                $cmdLine = """$ActionFile"" $MainOfficeProductName $argList"
-                                $cmd = "cmd /c cscript //Nologo $cmdLine"
-                                Invoke-Expression $cmd
-                            } else {
-                                throw "Required file missing: $ActionFile"
-                            }
-                        } catch {}                                  
-                    }
-                    "Visio" {
-                        Write-Host "`tRemoving Visio products..."
-                        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Removing Visio products..." -LogFilePath $LogFilePath
-                        $VisioProductName = $VisioProduct.Name
-
-                        switch($VisioProduct.Version){
-                            "11" {
-                                $ActionFile = "$scriptPath\$03VBS"
-                            }
-                            "12" {
-                                $ActionFile = "$scriptPath\$07VBS"
-                            }
-                            "14" {
-                                $ActionFile = "$scriptPath\$10VBS"
-                            }
-                            "15" {
-                                if(!$isVisioC2R){
-                                    $ActionFile = "$scriptPath\$15MSIVBS"
-                                } else {
-                                    if($RemoveClickToRunVersions){
-                                        Remove-OfficeClickToRun -C2RProductsToRemove "VisioProRetail","VisioProXVolume", "VisioStdXVolume"
+                                "16" {
+                                    if($Remove2016Installs){
+                                        if(!$c2rInstalled){
+                                            $ActionFile = "$scriptPath\$16MSIVBS"
+                                        } else {
+                                            if($RemoveClickToRunVersions){
+                                                Remove-OfficeClickToRun -C2RProductsToRemove $MainOfficeProduct.Name.Split('-')[0].Trim()
+                                            } else {
+                                                WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Office 2016 Click-To-Run cannot be removed. Use the -RemoveClickToRunVersions parameter to remove Click-To-Run 2016 installs." -LogFilePath $LogFilePath
+                                                throw "Office 2016 Click-To-Run cannot be removed. Use the -RemoveClickToRunVersions parameter to remove Click-To-Run 2016 installs."
+                                            }
+                                        }
                                     } else {
-                                        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Visio cannot be removed. Use the -RemoveClickToRunVersions parameter to remove Click-To-Run 2016 installs." -LogFilePath $LogFilePath
-                                        throw "Visio cannot be removed. Use the -RemoveClickToRunVersions parameter to remove Click-To-Run 2016 installs."
+                                        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Office 2016 Click-To-Run cannot be removed. Use the -RemoveClickToRunVersions and -Remove2016Installs parameters to remove Click-To-Run 2016 installs." -LogFilePath $LogFilePath
+                                        throw "Office 2016 Click-To-Run cannot be removed. Use the -RemoveClickToRunVersions and -Remove2016Installs parameters to remove Click-To-Run 2016 installs."
                                     }
                                 }
                             }
-                            "16" {
-                                if($Remove2016Installs){
+
+                            try{
+                                 if($ActionFile -And (Test-Path -Path $ActionFile)){
+                                    $MainOfficeProductDisplayName = $prod.DisplayName
+                                    Write-Host "`tRemoving "$prod.DisplayName"..."
+                                    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Removing the MainOfficeProduct..." -LogFilePath $LogFilePath
+                                    $cmdLine = """$ActionFile"" $MainOfficeProductName $argList"
+                                    $cmd = "cmd /c cscript //Nologo $cmdLine"
+                                    Invoke-Expression $cmd
+                                } else {
+                                    throw "Required file missing: $ActionFile"
+                                }
+                            } catch {}
+                        }                                
+                    }
+                    "Visio" {
+                        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Removing Visio products..." -LogFilePath $LogFilePath
+
+                        foreach($prod in $VisioProduct){
+                            $VisioProductName = $prod.Name
+
+                            switch($prod.Version){
+                                "11" {
+                                    $ActionFile = "$scriptPath\$03VBS"
+                                }
+                                "12" {
+                                    $ActionFile = "$scriptPath\$07VBS"
+                                }
+                                "14" {
+                                    $ActionFile = "$scriptPath\$10VBS"
+                                }
+                                "15" {
                                     if(!$isVisioC2R){
-                                        $ActionFile = "$scriptPath\$16MSIVBS"
+                                        $ActionFile = "$scriptPath\$15MSIVBS"
                                     } else {
                                         if($RemoveClickToRunVersions){
                                             Remove-OfficeClickToRun -C2RProductsToRemove "VisioProRetail","VisioProXVolume", "VisioStdXVolume"
@@ -463,51 +459,53 @@ In this example the primary Office product will be removed even if it is Click-T
                                             throw "Visio cannot be removed. Use the -RemoveClickToRunVersions parameter to remove Click-To-Run 2016 installs."
                                         }
                                     }
-                                } else {
-                                    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Visio cannot be removed. Use the -RemoveClickToRunVersions and -Remove2016Installs parameters to remove Click-To-Run 2016 installs." -LogFilePath $LogFilePath
-                                    throw "Visio cannot be removed. Use the -RemoveClickToRunVersions and -Remove2016Installs parameters to remove Click-To-Run 2016 installs."
                                 }
-                            }
-                        }
-
-                        if($ActionFile -And (Test-Path -Path $ActionFile)){
-                            $cmdLine = """$ActionFile"" $VisioArgListProducts $argList"
-                            $cmd = "cmd /c cscript //Nologo $cmdLine"
-                            Invoke-Expression $cmd
-                        }
-
-                    }
-                    "Project" {
-                        Write-Host "`tRemoving Project products..."
-                        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Removing Project products..." -LogFilePath $LogFilePath
-                        $ProjectProductName = $ProjectProduct.Name
-
-                        switch($ProjectProduct.Version){
-                            "11" {
-                                $ActionFile = "$scriptPath\$03VBS"
-                            }
-                            "12" {
-                                $ActionFile = "$scriptPath\$07VBS"
-                            }
-                            "14" {
-                                $ActionFile = "$scriptPath\$10VBS"
-                            }
-                            "15" {
-                                if(!$isProjectC2R){
-                                    $ActionFile = "$scriptPath\$15MSIVBS"
-                                } else {
-                                    if($RemoveClickToRunVersions){
-                                        Remove-OfficeClickToRun -C2RProductsToRemove "ProjectProXVolume", "ProjectStdXVolume","ProjectProRetail"
+                                "16" {
+                                    if($Remove2016Installs){
+                                        if(!$isVisioC2R){
+                                            $ActionFile = "$scriptPath\$16MSIVBS"
+                                        } else {
+                                            if($RemoveClickToRunVersions){
+                                                Remove-OfficeClickToRun -C2RProductsToRemove "VisioProRetail","VisioProXVolume", "VisioStdXVolume"
+                                            } else {
+                                                WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Visio cannot be removed. Use the -RemoveClickToRunVersions parameter to remove Click-To-Run 2016 installs." -LogFilePath $LogFilePath
+                                                throw "Visio cannot be removed. Use the -RemoveClickToRunVersions parameter to remove Click-To-Run 2016 installs."
+                                            }
+                                        }
                                     } else {
-                                        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Project cannot be removed. Use the -RemoveClickToRunVersions parameter to remove Click-To-Run 2016 installs." -LogFilePath $LogFilePath
-                                        throw "Project cannot be removed. Use the -RemoveClickToRunVersions parameter to remove Click-To-Run 2016 installs."
+                                        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Visio cannot be removed. Use the -RemoveClickToRunVersions and -Remove2016Installs parameters to remove Click-To-Run 2016 installs." -LogFilePath $LogFilePath
+                                        throw "Visio cannot be removed. Use the -RemoveClickToRunVersions and -Remove2016Installs parameters to remove Click-To-Run 2016 installs."
                                     }
                                 }
                             }
-                            "16" {
-                                if($Remove2016Installs){
+
+                            if($ActionFile -And (Test-Path -Path $ActionFile)){
+                                $VisioProductDisplayName = $prod.DisplayName
+                                Write-Host "`tRemoving "$prod.DisplayName"..."
+                                #$cmdLine = """$ActionFile"" $VisioArgListProducts $argList"
+                                $cmdLine = """$ActionFile"" $VisioProductName $argList"
+                                $cmd = "cmd /c cscript //Nologo $cmdLine"
+                                Invoke-Expression $cmd
+                            }
+                        }
+                    }
+                    "Project" {
+                        foreach($prod in $ProjectProduct){
+                            $ProjectProductName = $prod.Name
+
+                            switch($prod.Version){
+                                "11" {
+                                    $ActionFile = "$scriptPath\$03VBS"
+                                }
+                                "12" {
+                                    $ActionFile = "$scriptPath\$07VBS"
+                                }
+                                "14" {
+                                    $ActionFile = "$scriptPath\$10VBS"
+                                }
+                                "15" {
                                     if(!$isProjectC2R){
-                                        $ActionFile = "$scriptPath\$16MSIVBS"
+                                        $ActionFile = "$scriptPath\$15MSIVBS"
                                     } else {
                                         if($RemoveClickToRunVersions){
                                             Remove-OfficeClickToRun -C2RProductsToRemove "ProjectProXVolume", "ProjectStdXVolume","ProjectProRetail"
@@ -515,17 +513,33 @@ In this example the primary Office product will be removed even if it is Click-T
                                             WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Project cannot be removed. Use the -RemoveClickToRunVersions parameter to remove Click-To-Run 2016 installs." -LogFilePath $LogFilePath
                                             throw "Project cannot be removed. Use the -RemoveClickToRunVersions parameter to remove Click-To-Run 2016 installs."
                                         }
-                                        }
-                                    } else {
-                                        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Project cannot be removed. Use the -RemoveClickToRunVersions and -Remove2016Installs parameters to remove Click-To-Run 2016 installs." -LogFilePath $LogFilePath
-                                        throw "Project cannot be removed. Use the -RemoveClickToRunVersions and -Remove2016Installs parameters to remove Click-To-Run 2016 installs."
                                     }
                                 }
+                                "16" {
+                                    if($Remove2016Installs){
+                                        if(!$isProjectC2R){
+                                            $ActionFile = "$scriptPath\$16MSIVBS"
+                                        } else {
+                                            if($RemoveClickToRunVersions){
+                                                Remove-OfficeClickToRun -C2RProductsToRemove "ProjectProXVolume", "ProjectStdXVolume","ProjectProRetail"
+                                            } else {
+                                                WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Project cannot be removed. Use the -RemoveClickToRunVersions parameter to remove Click-To-Run 2016 installs." -LogFilePath $LogFilePath
+                                                throw "Project cannot be removed. Use the -RemoveClickToRunVersions parameter to remove Click-To-Run 2016 installs."
+                                            }
+                                            }
+                                        } else {
+                                            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Project cannot be removed. Use the -RemoveClickToRunVersions and -Remove2016Installs parameters to remove Click-To-Run 2016 installs." -LogFilePath $LogFilePath
+                                            throw "Project cannot be removed. Use the -RemoveClickToRunVersions and -Remove2016Installs parameters to remove Click-To-Run 2016 installs."
+                                        }
+                                    }
+                                }
+                            if($ActionFile -And (Test-Path -Path $ActionFile)){
+                                Write-Host "`tRemoving "$prod.DisplayName"..."
+                                #cmdLine = """$ActionFile"" $ProjectArgListProducts $argList"
+                                $cmdLine = """$ActionFile"" $ProjectProductName $argList"
+                                $cmd = "cmd /c cscript //Nologo $cmdLine"
+                                Invoke-Expression $cmd
                             }
-                        if($ActionFile -And (Test-Path -Path $ActionFile)){
-                            $cmdLine = """$ActionFile"" $ProjectProductName $argList"
-                            $cmd = "cmd /c cscript //Nologo $cmdLine"
-                            Invoke-Expression $cmd
                         }
                     }
                 }
@@ -1285,17 +1299,55 @@ param(
     $currentFileName = Get-CurrentFileName
     Set-Alias -name LINENUM -value Get-CurrentLineNumber
 
-    if($ProductName -eq 'MainOfficeProduct'){
+    switch ($ProductName){
+    "MainOfficeProduct" {
         $MainOfficeProducts = @()
-        #$Products = (Get-OfficeVersion).DisplayName | select -Unique
         $MainOfficeProducts = (Get-OfficeVersion)
-        if($MainOfficeProducts.GetType().Name -eq "Object[]"){
-            $primaryOfficeLanguage = GetClientCulture
-            $MainOfficeProduct = (Get-OfficeVersion) | ? {$_.DisplayName -match $primaryOfficeLanguage}
-            $ProductName = $MainOfficeProduct.DisplayName
-        } else {
-            $ProductName = $MainOfficeProducts.DisplayName
+        $ProductNames = @()
+        if($MainOfficeProducts){
+            if($MainOfficeProducts.GetType().Name -eq "Object[]"){
+                $primaryOfficeLanguage = GetClientCulture
+                $MainOfficeProduct = (Get-OfficeVersion) | ? {$_.DisplayName -match $primaryOfficeLanguage}
+                if($MainOfficeProduct.GetType().Name -eq "Object[]"){
+                    foreach($product in $MainOfficeProduct){
+                        $ProductNames += $product.DisplayName
+                    }
+                } else {
+                    $ProductNames = $MainOfficeProduct.DisplayName
+                }
+            } else {
+                $ProductNames = $MainOfficeProducts.DisplayName
+            }
         }
+    }
+    "Visio" {
+        $VisioProducts = @()
+        $VisioProducts = Get-OfficeVersion -ShowAllInstalledProducts | ? {$_.DisplayName -match "Visio"}
+        $ProductNames = @()
+        if($VisioProducts){
+            if($VisioProducts.GetType().Name -eq "Object[]"){
+                foreach($product in $VisioProducts){
+                    $ProductNames += $product.DisplayName
+                }
+            } else {
+                $ProductNames += $product.DisplayName
+            }
+        }
+    }
+    "Project" {
+        $ProjectProducts = @()
+        $ProjectProducts = Get-OfficeVersion -ShowAllInstalledProducts | ? {$_.DisplayName -match "Project"}
+        $ProductNames = @()
+        if($ProjectProducts){
+            if($ProjectProducts.GetType().Name -eq "Object[]"){
+                foreach($product in $ProjectProducts){
+                    $ProductNames += $product.DisplayName
+                }
+            } else {
+                $ProductNames += $product.DisplayName
+            }
+        }
+    }
     }
     
     WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "ProductName set to $ProductName" -LogFilePath $LogFilePath 
@@ -1323,27 +1375,31 @@ param(
             $version = $regProv.GetStringValue($HKLM, $path, "DisplayVersion").sValue
             
             if($name){
-                if($name.ToLower() -match $ProductName.ToLower()){
-                    if($path -notmatch "{.{8}-.{4}-.{4}-.{4}-0000000FF1CE}"){
-                        if($name -match "Language Pack"){
-                            if($key.Split(".")[1] -ne $null){
-                                $regex = "^[^.]*"
-                                $string = $key -replace $regex, ""
-                                $prodName = $string.trim(".")
-                            }
-                        } else {
-                            if($key.Split(".")[1] -ne $null){
-                                $prodName = $key.Split(".")[1]
+                foreach($product in $ProductNames){
+                    if($name.ToLower() -match $product.ToLower()){
+                        if($path -notmatch "{.{8}-.{4}-.{4}-.{4}-0000000FF1CE}"){
+                            if($name -match "Language Pack"){
+                                if($key.Split(".")[1] -ne $null){
+                                    $regex = "^[^.]*"
+                                    $string = $key -replace $regex, ""
+                                    $prodName = $string.trim(".")
+                                }
                             } else {
-                                $prodName = $key
+                                if($key.Split(".")[1] -ne $null){
+                                    $prodName = $key.Split(".")[1]
+                                } else {
+                                    $prodName = $key
+                                }
+                            }
+                            $prodVersion = $version.Split(".")[0]
+                            $DisplayName = $name
+
+                            if($results.DisplayName -notcontains $DisplayName){
+                                $object = New-Object PSObject -Property @{DisplayName = $DisplayName; Name = $prodName; Version = $prodVersion }
+                                $object | Add-Member MemberSet PSStandardMembers $PSStandardMembers
+                                $results += $object
                             }
                         }
-                        $prodVersion = $version.Split(".")[0]
-                        $DisplayName = $name
-
-                        $object = New-Object PSObject -Property @{DisplayName = $DisplayName; Name = $prodName; Version = $prodVersion }
-                        $object | Add-Member MemberSet PSStandardMembers $PSStandardMembers
-                        $results += $object
                     }
                 }
             }
