@@ -1,4 +1,4 @@
-﻿
+
 var selectDate;
 var odt2016Window;
 var odt2013Window;
@@ -7,6 +7,15 @@ var xmlHistoryLength = 0;
 var versionData;
 var officeExcludeProducts = ["Access", "Excel", "Groove", "Lync", "OneNote", "Outlook", "OneDrive", "PowerPoint", "Publisher", "Word"];
 var Office2016Versions;
+
+
+window.onresize = function() {
+    resizePage();
+}
+
+
+
+
 
 $(document).ready(function () {
     var finput = document.getElementById('fileInput');
@@ -597,20 +606,11 @@ $(document).ready(function () {
         return false;
     });
 
-    $("#btViewOnGitHub").on('click', function () {
-        window.open("https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/master/Office-ProPlus-Deployment/CTROfficeXmlWebEditor");
-        return false;
-    });
-
     $("#menuViewOnGitHub").on('click', function () {
         window.open("https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/master/Office-ProPlus-Deployment/CTROfficeXmlWebEditor");
         return false;
     });
 
-    $("#menuGitHubIssues").on('click', function () {
-        window.open("https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/issues");
-        return false;
-    });
 
     $('#btrClickToRun').on('click', function (e) {
         window.location = "http://officedev.github.io/Office-IT-Pro-Deployment-Scripts/OfficeProPlusInstallGenerator/OfficeProPlusInstallGenerator.application";
@@ -752,6 +752,19 @@ $(document).ready(function () {
 
 });
 
+
+  function resizePage(){
+
+         if(window.innerWidth >= 640){
+            $('#Site-Content').height('auto');
+            $('#LeftNav').height('100%');
+            }
+            else{
+                
+            }   
+
+    }
+    
 (function ($) {
 
     $.fn.msdropdownval = function (value) {
@@ -834,6 +847,11 @@ $(document).ready(function () {
 
 
 })(jQuery);
+
+function openPage(url){
+     window.open(url);
+        return false;
+}
 
 function GetVersionData() {
     $.ajax({
@@ -932,16 +950,18 @@ function setPanel(panelId, buttonId) {
     hideAllCallOuts();
 
     $(".option-panel").removeClass('visible');
-    $(".navrow").removeClass('is-selected');
+    $(".NavOption").removeClass('is-selected');
     $("#" + buttonId).addClass('is-selected');
     $("#" + panelId).addClass('visible');
 
-    var siblings = $("#" + panelId).siblings();
 
-    for (var i = 0; i < siblings.length; i++) {
-        var sibling = siblings[i];
-        $("#" + sibling.id).removeClass("ms-u-slideLeftIn400");
-    }
+      $('.option-panel').each(function(i,obj){
+        if(obj.Id !== panelId){
+            $(obj).removeClass("ms-u-slideLeftIn400");
+        }
+
+    });
+
 
     $("#" + panelId).addClass("ms-u-slideLeftIn400");
 
@@ -954,7 +974,7 @@ function setPanel(panelId, buttonId) {
 }
 
 function setVersionPanel(buttonId) {
-    $(".navrowversion").removeClass('is-selected');
+    $(".NavOption").removeClass('is-selected');
     $("#" + buttonId).addClass('is-selected');
 
     if (buttonId.toLowerCase() == "office2013select") {
@@ -3168,7 +3188,7 @@ function showInfo(calloutId, icon) {
 }
 
 function hideAllCallOuts() {
-    $("#infoOverlay")[0].style.display = 'none';
+    // $("#infoOverlay")[0].style.display('none');
     var callOuts = document.getElementsByClassName("ms-Callout");
     for (var i = 0; i < callOuts.length; i++) {
         var callOut = callOuts[i];

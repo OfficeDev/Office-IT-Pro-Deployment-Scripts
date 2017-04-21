@@ -1,0 +1,48 @@
+body{
+    margin-top: 0px;
+}
+
+#CommandBar{
+    min-height:50px;
+    padding:0px 0px 0px 10px; 
+}
+.CommandBarItem{
+    border-left: solid 1px white;
+    height:100%;
+    padding:10px;
+    text-align: center;
+    cursor:pointer;
+}
+
+.CommandBarTitle{
+    margin-top:10px;
+}
+
+#LeftNav{
+    padding: 20px 0px 0px 5px;
+}
+
+.NavOptions{
+    margin: 30px 15px 20px 15px;
+}
+
+.NavOption{
+    padding-top:5px;
+    min-height: 30px;
+}
+
+#configColumn{
+    border-left: 1px solid #eaeaea;
+}
+
+.is-selected{
+    background: #b3d6f2;
+}
+
+.option-panel{
+    display: none
+}
+
+.visible{
+    display: inherit;
+}
