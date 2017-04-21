@@ -1364,6 +1364,15 @@ param(
     }
     }
     
+    $Products = @()
+    foreach($prod in $ProductNames){
+        if($Products -notcontains $prod){
+            $Products += $prod
+        }
+    }
+
+    $ProductNames = $Products
+
     WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "ProductName set to $ProductName" -LogFilePath $LogFilePath 
         
     $HKLM = [UInt32] "0x80000002"
@@ -1654,40 +1663,42 @@ function GetLanguagePacks() {
     $OfficeLanguagePacks = @()
     $OfficeLanguagePacks = Get-OfficeVersion -ShowAllInstalledProducts | ? {$_.DisplayName -match "Language Pack"}
     
-    foreach ($regKey in $installKeys) {
-        $keyList = New-Object System.Collections.ArrayList
-        $keys = $regProv.EnumKey($HKLM, $regKey)
-    
-        foreach ($key in $keys.sNames) {
-            $path = Join-Path $regKey $key
-            $name = $regProv.GetStringValue($HKLM, $path, "DisplayName").sValue
-            $version = $regProv.GetStringValue($HKLM, $path, "DisplayVersion").sValue
-            
-            if($name){
-                foreach($product in $OfficeLanguagePacks){
-                    if($name.ToLower() -match $product.DisplayName.ToLower()){
-                        if($path -notmatch "{.{8}-.{4}-.{4}-.{4}-0000000FF1CE}"){
-                            if($name -match "Language Pack"){
-                                if($key.Split(".")[1] -ne $null){
-                                    #$regex = "^[^.]*"
-                                    #$string = $key -replace $regex, ""
-                                    #$prodName = $string.trim(".")
-                                    $prodName = $key
-                                }
-                            } else {
-                                if($key.Split(".")[1] -ne $null){
-                                    $prodName = $key.Split(".")[1]
+    if($OfficeLanguagePacks){
+        foreach ($regKey in $installKeys) {
+            $keyList = New-Object System.Collections.ArrayList
+            $keys = $regProv.EnumKey($HKLM, $regKey)
+        
+            foreach ($key in $keys.sNames) {
+                $path = Join-Path $regKey $key
+                $name = $regProv.GetStringValue($HKLM, $path, "DisplayName").sValue
+                $version = $regProv.GetStringValue($HKLM, $path, "DisplayVersion").sValue
+                
+                if($name){
+                    foreach($product in $OfficeLanguagePacks){
+                        if($name.ToLower() -match $product.DisplayName.ToLower()){
+                            if($path -notmatch "{.{8}-.{4}-.{4}-.{4}-0000000FF1CE}"){
+                                if($name -match "Language Pack"){
+                                    if($key.Split(".")[1] -ne $null){
+                                        #$regex = "^[^.]*"
+                                        #$string = $key -replace $regex, ""
+                                        #$prodName = $string.trim(".")
+                                        $prodName = $key
+                                    }
                                 } else {
-                                    $prodName = $key
+                                    if($key.Split(".")[1] -ne $null){
+                                        $prodName = $key.Split(".")[1]
+                                    } else {
+                                        $prodName = $key
+                                    }
                                 }
-                            }
-                            $prodVersion = $version.Split(".")[0]
-                            $DisplayName = $name
-    
-                            if($results.DisplayName -notcontains $DisplayName){
-                                $object = New-Object PSObject -Property @{DisplayName = $DisplayName; Name = $prodName; Version = $prodVersion }
-                                $object | Add-Member MemberSet PSStandardMembers $PSStandardMembers
-                                $results += $object
+                                $prodVersion = $version.Split(".")[0]
+                                $DisplayName = $name
+        
+                                if($results.DisplayName -notcontains $DisplayName){
+                                    $object = New-Object PSObject -Property @{DisplayName = $DisplayName; Name = $prodName; Version = $prodVersion }
+                                    $object | Add-Member MemberSet PSStandardMembers $PSStandardMembers
+                                    $results += $object
+                                }
                             }
                         }
                     }
