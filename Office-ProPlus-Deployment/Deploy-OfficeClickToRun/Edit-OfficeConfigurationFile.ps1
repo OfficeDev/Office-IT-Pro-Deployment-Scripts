@@ -2692,6 +2692,106 @@ Removes the Add node from the xml congfiguration file
 }
 
 
+Function Set-ODTRemoveClickToRun{
+    Param(
+
+        [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
+        [string] $ConfigurationXML = $NULL,
+
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [string] $TargetFilePath,
+
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [bool] $RemoveAll = $true,
+
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [Microsoft.Office.Products[]] $ProductId = "Unknown",
+        
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [Alias("LanguageId")]
+        [string[]] $LanguageIds = @()
+    )
+
+    Process{
+        Set-Alias -name LINENUM -value Get-CurrentLineNumber
+        $currentFileName = Get-CurrentFileName
+
+        $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
+
+        if(!$RemoveAll){
+            if ($ProductId -eq "Unknown") {
+               $ProductId = SelectProductId
+            }
+        }
+
+        #Load the file
+        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Loading the configuration xml file" -LogFilePath $LogFilePath
+        [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
+        
+        if ($TargetFilePath) {
+           $ConfigFile.Load($TargetFilePath) | Out-Null
+        } else {
+            if ($ConfigurationXml) 
+            {
+              $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
+              $global:saveLastConfigFile = $NULL
+              $global:saveLastFilePath = $NULL
+              $TargetFilePath = $NULL
+            }
+        }
+
+        $global:saveLastConfigFile = $ConfigFile.OuterXml
+
+        #Check that the file is properly formatted
+        if($ConfigFile.Configuration -eq $null){
+            throw $NoConfigurationElement
+        } 
+
+        if(!$RemoveAll){
+            #Set the desired values
+            [System.XML.XMLElement]$RemoveElement = $ConfigFile.Configuration.Remove
+            $RemoveElement.SetAttribute("All",$false)
+            
+
+            foreach($product in $ProductId){
+                $ProductId = IsValidProductId -ProductId $product
+                #Get the Product Element if it exists
+                [System.XML.XMLElement]$ProductElement = $ConfigFile.Configuration.Remove.GetElementsByTagName("Product").Item(0)
+                if($ConfigFile.Configuration.Remove.Product -eq $null){
+                    [System.XML.XMLElement]$ProductElement = $ConfigFile.CreateElement("Product")
+                    $ProductElement.SetAttribute("ID",$product)
+                    $ConfigFile.Configuration.Remove.appendChild($ProductElement) | Out-Null
+                    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "The Product element has been added to the configuration xml file" -LogFilePath $LogFilePath
+                } else {
+                    if(!($ConfigFile.Configuration.Remove.Product.ID.Contains($product))){
+                        [System.XML.XMLElement]$ProductElement = $ConfigFile.CreateElement("Product")
+                        $ProductElement.SetAttribute("ID",$product)
+                        $ConfigFile.Configuration.Remove.appendChild($ProductElement) | Out-Null
+                    }
+                }
+
+                #Set the Language IDs
+                if(!($LanguageIds.Count -gt 0)){
+                    $LanguageIds = Get-ODTOfficeLanguages -productId $product
+                }
+                foreach($LanguageId in $LanguageIds){
+                    [System.XML.XMLElement]$LanguageElement = $ProductElement.Language | Where { $_.ID -eq $LanguageId }
+                    if($LanguageElement -eq $null){
+                        #WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Adding $LanguageId to the Product element" -LogFilePath $LogFilePath
+                        [System.XML.XMLElement]$LanguageElement = $ConfigFile.CreateElement("Language")
+                        $ProductElement.appendChild($LanguageElement) | Out-Null
+                        $LanguageElement.SetAttribute("ID", $LanguageId) | Out-Null
+                    }
+                }
+            }
+        }
+        
+        $ConfigFile.Save($TargetFilePath) | Out-Null
+        $global:saveLastFilePath = $TargetFilePath     
+    }
+}
+
+
 Function Set-ODTLogging{
 <#
 .SYNOPSIS
@@ -3258,6 +3358,28 @@ Here is what the removed portion of configuration file looks like:
 
 }
 
+function Get-ODTOfficeLanguages {
+Param(
+    [Parameter(ValueFromPipelineByPropertyName=$true, Position=0)]
+    [string[]]$Computer = $env:COMPUTERNAME,
+
+    [Parameter(ValueFromPipelineByPropertyName=$true)]
+    [string] $productId
+)
+Process{
+    if ($Credentials) {
+       $regProv = Get-Wmiobject -list "StdRegProv" -namespace root\default -computername $computer -Credential $Credentials  -ErrorAction Stop
+    } else {
+       $regProv = Get-Wmiobject -list "StdRegProv" -namespace root\default -computername $computer  -ErrorAction Stop
+    }
+    
+    $officeConfig = getCTRConfig -regProv $regProv
+    
+    $officeAddLangs = odtGetOfficeLanguages -OfficeKeyPath $officeConfig.OfficeKeyPath -ProductId $productId
+
+    return $officeAddLangs
+}
+}
 
 Function GetFilePath() {
     Param(

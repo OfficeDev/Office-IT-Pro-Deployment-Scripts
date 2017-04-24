@@ -2183,6 +2183,18 @@ Function Get-OfficeCDNUrl() {
     return $CDNBaseUrl
 }
 
+Function newCTRRemoveXml {
+#Create a xml configuration file to remove all Office CTR products.
+@"
+<Configuration>
+  <Remove All="True">
+  </Remove>
+  <Display Level="None" AcceptEULA="TRUE" />
+  <Property Name="FORCEAPPSHUTDOWN" Value="TRUE" />
+</Configuration>
+"@
+}
+
 
 function Get-CurrentLineNumber {
     $MyInvocation.ScriptLineNumber
