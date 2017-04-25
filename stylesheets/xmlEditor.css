@@ -6,6 +6,22 @@ body{
     min-height:50px;
     padding:0px 0px 0px 10px; 
 }
+
+.xmlCommandBar{
+    min-height:40px;
+    background:#eff6fc;
+    padding:10px 0px 10px 0px;
+}
+
+.xmlCommandBar-item{
+    margin: 0px 0px 0px 8px;
+    padding: 10px 15px 0px 15px;
+    min-height: 40px;
+}
+.xmlCommandBar-item  > i {
+    padding: 0px 2px 0px 0px;
+    font-weight: bold;
+}
 .CommandBarItem{
     border-left: solid 1px white;
     height:100%;
@@ -26,7 +42,7 @@ body{
     margin: 30px 15px 20px 15px;
 }
 
-.NavOption{
+.NavOption, .VersionOption{
     padding-top:5px;
     min-height: 30px;
 }

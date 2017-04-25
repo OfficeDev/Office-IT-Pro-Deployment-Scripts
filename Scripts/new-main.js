@@ -13,11 +13,10 @@ window.onresize = function() {
     resizePage();
 }
 
-
-
-
-
 $(document).ready(function () {
+
+        addDropDowns();
+
     var finput = document.getElementById('fileInput');
     finput.addEventListener('change', function (e) {
         var hWCheck = $.cookie("hideWelcome1");
@@ -51,7 +50,7 @@ $(document).ready(function () {
     changeExcludeApps("2016");
     changeProducts("2016");
 
-    $("#commentDialog").draggable();
+//     $("#commentDialog").draggable();
 
     $("#btRemoveProduct").prop("disabled", true);
     $("#btAddLanguage").prop("disabled", true);
@@ -68,9 +67,10 @@ $(document).ready(function () {
 
     setActiveTab();
 
-    resizeWindow();
+//     resizeWindow();
 
     GetVersionData();
+    LoadPage(); 
 
     $(window).resize(function () {
         resizeWindow();
@@ -749,21 +749,10 @@ $(document).ready(function () {
     //    sessionStorage.removeItem('xmlHistory'); 
     //}
 
-
 });
 
 
-  function resizePage(){
 
-         if(window.innerWidth >= 640){
-            $('#Site-Content').height('auto');
-            $('#LeftNav').height('100%');
-            }
-            else{
-                
-            }   
-
-    }
     
 (function ($) {
 
@@ -848,6 +837,40 @@ $(document).ready(function () {
 
 })(jQuery);
 
+
+function LoadPage(){
+    var pageId = getUrlVars()['page'];
+    var sectionId = getUrlVars()['section'];
+
+    if(pageId ==="" || pageId === undefined || sectionId === "" || sectionId === undefined ){
+        pageId ="addProductRow"; 
+        sectionId = "AddProductPanel";
+    }
+
+    setPanel(sectionId,pageId);
+}
+
+
+function resizePage(){
+
+     if(window.innerWidth >= 640){
+        $('#Site-Content').height('auto');
+        $('#LeftNav').height('100%');
+        }
+        else{
+
+        }   
+}
+
+function addDropDowns(){
+    var DropdownHTMLElements = document.querySelectorAll('.ms-Dropdown');
+    for (var i = 0; i < DropdownHTMLElements.length; ++i) {
+        if($(DropdownHTMLElements[i]).children('.ms-Dropdown-truncator').length === 0 ){
+            var Dropdown = new fabric['Dropdown'](DropdownHTMLElements[i]);
+        }
+    }       
+}
+
 function openPage(url){
      window.open(url);
         return false;
@@ -855,7 +878,7 @@ function openPage(url){
 
 function GetVersionData() {
     $.ajax({
-        url: "https://microsoft-apiapp2f1d0adbd6b6403da68a8cd3e1888ddc.azurewebsites.net/api/Channel",
+        url: "https://officeproplusinfo2.azurewebsites.net/api/Channel",
         type: "GET",
         crossDomain: true,
         success: function(data) {
@@ -960,28 +983,66 @@ function setPanel(panelId, buttonId) {
             $(obj).removeClass("ms-u-slideLeftIn400");
         }
 
-    });
-
-
+    });                                        
+        
     $("#" + panelId).addClass("ms-u-slideLeftIn400");
+    var version = getUrlVars()['version'];
+    var obj = {
+                page : 'addProductRow',
+                section : 'AddProductPanel',
+                version : version
+            }
 
-    if(buttonId === "installRow"){
-        window.location.hash = "installRow";
+    if(buttonId !== "" && buttonId !== undefined){
+        obj = {
+            page : buttonId,
+            section : panelId
+        }     
     }
-    else{
-        window.location.hash = ""; 
-    }
+    setQueryString(obj);
+
+     $('html, body').animate({
+        scrollTop: $("#CommandBar").offset().top
+    }, 0);
+   
+   addDropDowns();
+   
+    $('#LeftNav').height($('body').height());
+    $('#configColumn').height($('body').height());
+    $('#configColumn').children()[0].height('100%');
+    $('#XmlPane').height($('body').height());
 }
 
+function setQueryString(objToAdd){
+     var baseUrl = location.host + location.pathname; 
+     window.history.pushState("string", "", location.pathname+"#/?" + $.param(objToAdd));
+     window.location = baseUrl + "#/?" + $.param(objToAdd);
+}
+
+function getUrlVars() {
+    var vars = [], hash;
+    var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+    for (var i = 0; i < hashes.length; i++) {
+        hash = hashes[i].split('=');
+        vars.push(hash[0]);
+        vars[hash[0]] = hash[1];
+    }
+    return vars;
+}
+
+
 function setVersionPanel(buttonId) {
-    $(".NavOption").removeClass('is-selected');
+    $(".VersionOption").removeClass('is-selected');
     $("#" + buttonId).addClass('is-selected');
+    var version = "office2013selectl";
+
 
     if (buttonId.toLowerCase() == "office2013select") {
         changeVersions("2013");
     }
     if (buttonId.toLowerCase() == "office2016select") {
         changeVersions("2016");
+        version =  "office2016select";
     }
 }
 
@@ -1128,17 +1189,17 @@ function OpenInNewTab(url) {
 }
 
 function changeExcludeApps(version) {
-    //$("#cbExcludeApp").empty();
-    //var mySelect = $('#cbExcludeApp');
+    $("#cbExcludeApp").empty();
+    var mySelect = $('#cbExcludeApp');
 
-    //if (version == "2013") {
-    //    mySelect.msdropdownvals(excludeApps2013, excludeApps2013);
-    //}
-    //if (version == "2016") {
-    //    mySelect.msdropdownvals(excludeApps2016, excludeApps2016);
-    //}
+    if (version == "2013") {
+       mySelect.msdropdownvals(excludeApps2013, excludeApps2013);
+    }
+    if (version == "2016") {
+       mySelect.msdropdownvals(excludeApps2016, excludeApps2016);
+    }
 
-    //mySelect.trigger("chosen:updated");
+    mySelect.trigger("chosen:updated");
 }
 
 function changeProducts(version) {
@@ -1589,7 +1650,7 @@ function validatePackageGuid(t) {
 
 }
 
-
+    
 function changeSelectedLanguage() {
     var selectedProduct = $("#cbProduct").val();
     var selectLanguage = $("#cbLanguage").val();
