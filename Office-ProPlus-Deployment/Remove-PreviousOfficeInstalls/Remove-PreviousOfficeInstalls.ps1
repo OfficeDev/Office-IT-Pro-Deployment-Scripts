@@ -373,11 +373,12 @@ In this example the primary Office product will be removed even if it is Click-T
                         foreach($prod in $OfficeProduct){
                             [string[]]$MainOfficeProductArgs = $prod.Name                     
                             $OfficeLanguagePacks = GetLanguagePacks | ? {$_.DisplayName -notmatch "Visio" -and $_.DisplayName -notmatch "Project" -and $_.Version -match $prod.Version}
-                            foreach($lang in $OfficeLanguagePacks){
-                                $MainOfficeProductArgs += $lang.Name
-                            }
 
-                            $MainOfficeProductArgs = $MainOfficeProductArgs -join ","
+                            #foreach($lang in $OfficeLanguagePacks){
+                            #    $MainOfficeProductArgs += $lang.Name
+                            #}
+                            #
+                            #$MainOfficeProductArgs = $MainOfficeProductArgs -join ","
                               
                             if((Get-OfficeVersion | select *).ClickToRun -eq $true){
                                 $c2rInstalled = $true
@@ -426,12 +427,17 @@ In this example the primary Office product will be removed even if it is Click-T
 
                             try{
                                  if($ActionFile -And (Test-Path -Path $ActionFile)){
+                                    # Remove the main Office product
                                     $MainOfficeProductDisplayName = $prod.DisplayName
                                     Write-Host "`tRemoving "$prod.DisplayName"..."
                                     WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Removing the MainOfficeProduct..." -LogFilePath $LogFilePath
                                     $cmdLine = """$ActionFile"" $MainOfficeProductArgs $argList"
                                     $cmd = "cmd /c cscript //Nologo $cmdLine"
                                     Invoke-Expression $cmd
+
+                                    # Remove the main Office product Language Packs
+                                    Write-Host "`tRemoving the language packs..."
+                                    Remove-LanguagePack -LanguagePacks $OfficeLanguagePacks
                                 } else {
                                     throw "Required file missing: $ActionFile"
                                 }
@@ -442,11 +448,11 @@ In this example the primary Office product will be removed even if it is Click-T
                         foreach($prod in $VisioProduct){
                             [string[]]$VisioProductArgs = $prod.Name                     
                             $VisioLanguagePacks = GetLanguagePacks | ? {$_.DisplayName -match "Visio" -and $_.Version -match $prod.Version}
-                            foreach($lang in $VisioLanguagePacks){
-                                $VisioProductArgs += $lang.Name
-                            }
-
-                            $VisioProductArgs = $VisioProductArgs -join ","
+                            #foreach($lang in $VisioLanguagePacks){
+                            #    $VisioProductArgs += $lang.Name
+                            #}
+                            #
+                            #$VisioProductArgs = $VisioProductArgs -join ","
 
                             switch($prod.Version){
                                 "11" {
@@ -495,6 +501,10 @@ In this example the primary Office product will be removed even if it is Click-T
                                 $cmdLine = """$ActionFile"" $VisioProductArgs $argList"
                                 $cmd = "cmd /c cscript //Nologo $cmdLine"
                                 Invoke-Expression $cmd
+
+                                # Remove the main Office product Language Packs
+                                Write-Host "`tRemoving the language packs..."
+                                Remove-LanguagePack -LanguagePacks $VisioLanguagePacks
                             }
                         }
                     }
@@ -502,11 +512,11 @@ In this example the primary Office product will be removed even if it is Click-T
                         foreach($prod in $ProjectProduct){
                             [string[]]$ProjectProductArgs = $prod.Name                     
                             $ProjectLanguagePacks = GetLanguagePacks | ? {$_.DisplayName -match "Project" -and $_.Version -match $prod.Version}
-                            foreach($lang in $ProjectLanguagePacks){
-                                $ProjectProductArgs += $lang.Name
-                            }
-
-                            $ProjectProductArgs = $ProjectProductArgs -join ","
+                            #foreach($lang in $ProjectLanguagePacks){
+                            #    $ProjectProductArgs += $lang.Name
+                            #}
+                            #
+                            #$ProjectProductArgs = $ProjectProductArgs -join ","
 
                             switch($prod.Version){
                                 "11" {
@@ -553,6 +563,10 @@ In this example the primary Office product will be removed even if it is Click-T
                                 $cmdLine = """$ActionFile"" $ProjectProductArgs $argList"
                                 $cmd = "cmd /c cscript //Nologo $cmdLine"
                                 Invoke-Expression $cmd
+
+                                # Remove the main Office product Language Packs
+                                Write-Host "`tRemoving the Visio language packs..."
+                                Remove-LanguagePack -LanguagePacks $ProjectLanguagePacks
                             }
                         }
                     }
@@ -802,6 +816,118 @@ Function newCTRRemoveXml {
   <Property Name="FORCEAPPSHUTDOWN" Value="TRUE" />
 </Configuration>
 "@
+}
+
+Function newLanguagePackRemoveXml {
+#Create a xml configuration file to remove all Office CTR products.
+@"
+<Configuration Product="">
+  <Display Level="None" CompletionNotice="No" SuppressModal="Yes" NoCancel="No" AcceptEula="Yes" />
+  <Setting Id="MSIRESTARTMANAGERCONTROL" Value="Disable" />
+  <Setting Id="SETUP_REBOOT" Value="Never" />
+</Configuration>
+"@
+}
+
+function Set-LanguagePackRemoveXml {
+Param(
+    [Parameter()]
+    [string] $TargetFilePath,
+
+    [Parameter()]
+    [string] $MUI
+)
+    [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
+
+    if ($TargetFilePath) {
+       if (!(Test-Path $TargetFilePath)) {
+          $TargetFilePath = GetScriptRoot + "\" + $TargetFilePath
+       }
+    
+       $content = Get-Content $TargetFilePath
+       $ConfigFile.LoadXml($content) | Out-Null
+    } else {
+        if ($ConfigurationXml) 
+        {
+          $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
+          $global:saveLastConfigFile = $NULL
+          $global:saveLastFilePath = $NULL
+        }
+    }
+
+    $global:saveLastConfigFile = $ConfigFile.OuterXml
+
+    $ConfigFile.Configuration.SetAttribute('Product',$MUI)
+
+    $ConfigFile.Save($TargetFilePath) | Out-Null
+    $global:saveLastFilePath = $TargetFilePath
+}
+
+function Remove-LanguagePack {
+Param(
+    [Parameter()]
+    [PSCustomObject]$LanguagePacks
+)
+    
+    # create the Language Pack config file
+    if(!$LanguagePacks){
+        $languagePacks = GetLanguagePacks
+    }
+    
+    foreach($languagepack in $languagePacks){
+        $filename = $languagepack.Name + "-config.xml"
+        $TargetFilePath = "$env:TEMP\$filename"
+        
+        newLanguagePackRemoveXml | Out-File $TargetFilePath 
+        
+        Set-LanguagePackRemoveXml -TargetFilePath $TargetFilePath -MUI $languagepack.Name  
+
+        # remove the product
+        $uninstallString = Get-LanguagePackUninstallString -Product $languagepack.DisplayName
+        $uninstallString = '"' + $uninstallString + '"' + " /uninstall " + $languagepack.Name + " /config " + $TargetFilePath
+
+        $cmd = "cmd /c $uninstallString"
+        Invoke-Expression $cmd
+    }
+}
+
+function Get-LanguagePackUninstallString {
+Param(
+    [Parameter()]
+    [string]$Product
+)
+    $HKLM = [UInt32] "0x80000002"
+    $HKCR = [UInt32] "0x80000000"
+    
+    $installKeys = 'SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall',
+               'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall'
+               
+    
+    $regProv = Get-WmiObject -list "StdRegProv" -namespace root\default -ComputerName $env:COMPUTERNAME
+    
+    foreach ($regKey in $installKeys) {
+        $keyList = New-Object System.Collections.ArrayList
+        $keys = $regProv.EnumKey($HKLM, $regKey)
+    
+        foreach ($key in $keys.sNames) {
+            $path = Join-Path $regKey $key
+            $name = $regProv.GetStringValue($HKLM, $path, "DisplayName").sValue
+            $version = $regProv.GetStringValue($HKLM, $path, "DisplayVersion").sValue
+            
+            if($name){
+                if($name.ToLower() -match $product.ToLower()){
+                    if($path -notmatch "{.{8}-.{4}-.{4}-.{4}-0000000FF1CE}"){
+                        if($name -eq $product){
+                            $uninstallString = $regProv.GetStringValue($HKLM, $path, "UninstallString").sValue
+                            $uninstallString = $uninstallString.Split('"')[1]
+                        }
+                    }
+                }  
+            }
+        }
+    } 
+    
+    return $uninstallString  
 }
 
 Function StartProcess {
