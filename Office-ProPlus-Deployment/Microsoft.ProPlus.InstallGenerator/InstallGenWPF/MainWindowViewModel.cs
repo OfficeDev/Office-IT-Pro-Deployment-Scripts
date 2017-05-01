@@ -323,6 +323,116 @@ namespace MetroDemo
                 },
             };
 
+            C2RProductsToRemove = new List<Product>()
+            {
+                new Product()
+                {
+                    DisplayName = "",
+                    Id = "",
+                    ShortName = ""
+                },
+               new Product()
+                {
+                    DisplayName = "O365ProPlusRetail",
+                    Id = "O365ProPlusRetail",
+                    ShortName = "O365ProPlusRetail"
+                },
+                new Product()
+                {
+                    DisplayName = "O365BusinessRetail",
+                    Id = "O365BusinessRetail",
+                    ShortName = "O365BusinessRetail"
+                },
+                 new Product()
+                {
+                    DisplayName = "VisioProRetail",
+                    Id = "VisioProRetail",
+                    ShortName = "VisioProRetail"
+                },
+                 new Product()
+                {
+                    DisplayName = "ProjectProRetail",
+                    Id = "ProjectProRetail",
+                    ShortName = "ProjectProRetail"
+                },
+                 new Product()
+                {
+                    DisplayName = "SPDRetail",
+                    Id = "SPDRetail",
+                    ShortName = "SPDRetail"
+                },
+                 new Product()
+                {
+                    DisplayName = "VisioProXVolume",
+                    Id = "VisioProXVolume",
+                    ShortName = "VisioProXVolume"
+                },
+                 new Product()
+                {
+                    DisplayName = "VisioStdXVolume",
+                    Id = "VisioStdXVolume",
+                    ShortName = "VisioStdXVolume"
+                },
+                 new Product()
+                {
+                    DisplayName = "ProjectProXVolume",
+                    Id = "ProjectProXVolume",
+                    ShortName = "ProjectProXVolume"
+                },
+                 new Product()
+                {
+                    DisplayName = "ProjectStdXVolume",
+                    Id = "ProjectStdXVolume",
+                    ShortName = "ProjectStdXVolume"
+                },
+                 new Product()
+                {
+                    DisplayName = "InfoPathRetail",
+                    Id = "InfoPathRetail",
+                    ShortName = "InfoPathRetail"
+                },
+                 new Product()
+                {
+                    DisplayName = "SkypeforBusinessEntryRetail",
+                    Id = "SkypeforBusinessEntryRetail",
+                    ShortName = "SkypeforBusinessEntryRetail"
+                },
+                 new Product()
+                {
+                    DisplayName = "LyncEntryRetail",
+                    Id = "LyncEntryRetail",
+                    ShortName = "LyncEntryRetail"
+                },
+            };
+
+            ProductsToUninstall = new List<Product>()
+            {
+                new Product()
+                {
+                    DisplayName = "AllOfficeProducts",
+                    Id = "AllOfficeProducts",
+                    ShortName = "AllOfficeProducts"
+                },
+                new Product()
+                {
+                    DisplayName = "MainOfficeProduct",
+                    Id = "MainOfficeProduct",
+                    ShortName = "MainOfficeProduct"
+                },
+                new Product()
+                {
+                    DisplayName = "Visio",
+                    Id = "Visio",
+                    ShortName = "Visio"
+                },
+                new Product()
+                {
+                    DisplayName = "Project",
+                    Id = "Project",
+                    ShortName = "Project"
+                },
+            };
+
             ProjectProducts = new List<Product>()
             {
                 new Product()
@@ -630,9 +740,13 @@ namespace MetroDemo
 
         public List<Product> MainProducts { get; set; }
 
+        public List<Product> ProductsToUninstall { get; set; }
+
         public List<Product> LanguagePackProducts { get; set; }
 
         public List<Product> VisioProducts { get; set; }
+
+        public List<Product> C2RProductsToRemove { get; set; }
 
         public List<Product> ProjectProducts { get; set; }
 
@@ -660,6 +774,27 @@ namespace MetroDemo
             {
                 _remoteLoggingPath = value;
                 RaisePropertyChanged("RemoteLoggingPath");
+            }
+        }
+
+        private string _unistallInfo = "";
+        public string UninstallInfo
+        {
+            get { return _unistallInfo; }
+            set
+            {
+                _unistallInfo = value;
+            }
+        }
+
+        private string _changeChannel = "";
+
+        public string ChangeChannel
+        {
+            get { return _changeChannel; }
+            set
+            {
+                _changeChannel = value;
             }
         }
 

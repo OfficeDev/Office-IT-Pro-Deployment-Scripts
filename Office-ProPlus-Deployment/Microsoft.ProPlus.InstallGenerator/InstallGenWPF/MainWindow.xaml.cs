@@ -61,6 +61,7 @@ namespace MetroDemo
                 GenerateView.TransitionTab += TransitionTab;
                 DownloadView.TransitionTab += TransitionTab;
                 LocalView.TransitionTab += TransitionTab;
+                ChangeChannelView.TransitionTab += TransitionTab;
                 
 
                 LocalView.BranchChanged += BranchChanged;
@@ -221,6 +222,7 @@ namespace MetroDemo
                     ProductView.ProductTab.Visibility = Visibility.Visible;
                     ProductView.OptionalTab.Visibility = Visibility.Visible;
                     ProductView.ExcludedTab.Visibility = Visibility.Visible;
+                    TabChangeChannel.Visibility = Visibility.Collapsed;
                 }
 
                 if (GlobalObjects.ViewModel.ApplicationMode == ApplicationMode.LanguagePack)
@@ -230,6 +232,7 @@ namespace MetroDemo
                     ProductView.ProductTab.Visibility = Visibility.Collapsed;
                     ProductView.OptionalTab.Visibility = Visibility.Collapsed;
                     ProductView.ExcludedTab.Visibility = Visibility.Collapsed;
+                    TabChangeChannel.Visibility = Visibility.Collapsed;
                 }
 
                 if (GlobalObjects.ViewModel.ApplicationMode == ApplicationMode.ManageLocal)
@@ -237,8 +240,10 @@ namespace MetroDemo
                     GenerateTabName.Visibility = Visibility.Collapsed;
                     RemoteTabName.Visibility = Visibility.Collapsed;
                     LocalTabName.Visibility = Visibility.Visible;
+                    TabChangeChannel.Visibility = Visibility.Collapsed;
                     GenerateView.Tag = 99;
                     LocalView.Tag = 5;
+                    LocalTabName.IsSelected = true;
                 }
                 else if(GlobalObjects.ViewModel.ApplicationMode == ApplicationMode.ManageRemote)
                 {
@@ -247,12 +252,26 @@ namespace MetroDemo
                     TabProducts.Visibility = Visibility.Collapsed;
                     TabDownload.Visibility = Visibility.Collapsed;
                     TabUpdates.Visibility = Visibility.Collapsed;
-                    TabOptions.Visibility = Visibility.Collapsed; 
-                             
+                    TabOptions.Visibility = Visibility.Collapsed;
+                    TabChangeChannel.Visibility = Visibility.Collapsed;
                     RemoteTabName.Visibility = Visibility.Visible;
                     RemoteTabName.IsSelected = true;
                     GenerateView.Tag = 99;
                     LocalView.Tag = 5;
+                }
+                else if (GlobalObjects.ViewModel.ApplicationMode == ApplicationMode.ChangeChannel)
+                {
+                    GenerateTabName.Visibility = Visibility.Visible;
+                    LocalTabName.Visibility = Visibility.Collapsed;
+                    TabProducts.Visibility = Visibility.Collapsed;
+                    TabDownload.Visibility = Visibility.Collapsed;
+                    TabUpdates.Visibility = Visibility.Collapsed;
+                    TabOptions.Visibility = Visibility.Collapsed;
+
+                    RemoteTabName.Visibility = Visibility.Collapsed;
+                    TabChangeChannel.Visibility = Visibility.Visible;
+                    TabChangeChannel.Tag = 11;
+                    TabChangeChannel.IsSelected = true;
                 }
                 else
                 {
@@ -261,7 +280,7 @@ namespace MetroDemo
                     TabDownload.Visibility = Visibility.Visible;
                     TabUpdates.Visibility = Visibility.Visible;
                     TabOptions.Visibility = Visibility.Visible;
-
+                    TabChangeChannel.Visibility = Visibility.Collapsed;
                     RemoteTabName.Visibility = Visibility.Collapsed;
                     LocalTabName.Visibility = Visibility.Collapsed;
 
@@ -278,6 +297,11 @@ namespace MetroDemo
                 {
                     index = newIndex - 1;
                 }
+
+                if (GlobalObjects.ViewModel.ApplicationMode == ApplicationMode.ChangeChannel)
+                    {
+                        if (index == 4) index = 5;
+                    }
 
                 if (GlobalObjects.ViewModel.ApplicationMode == ApplicationMode.ManageLocal)
                 {

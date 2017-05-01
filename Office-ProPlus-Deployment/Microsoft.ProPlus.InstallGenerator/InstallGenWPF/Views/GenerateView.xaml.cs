@@ -276,6 +276,18 @@ namespace MetroDemo.ExampleViews
                     {
                         remoteLogPath = GlobalObjects.ViewModel.RemoteLoggingPath;
                     }
+                    var uninstallLine = "";
+                    if(GlobalObjects.ViewModel.UninstallInfo != null &&
+                    !string.IsNullOrEmpty(GlobalObjects.ViewModel.UninstallInfo))
+                    {
+                        uninstallLine = GlobalObjects.ViewModel.UninstallInfo;
+                    }
+                    var changeChannelLine = "";
+                    if (GlobalObjects.ViewModel.ChangeChannel != null &&
+                    !string.IsNullOrEmpty(GlobalObjects.ViewModel.ChangeChannel))
+                    {
+                        changeChannelLine = GlobalObjects.ViewModel.ChangeChannel;
+                    }
                     FixFileExtension();
                     var executablePath = "";
 
@@ -547,7 +559,7 @@ namespace MetroDemo.ExampleViews
                             installer = new OfficeInstallMsiGenerator();
                             LogAnaylytics("/GenerateView", "GenerateMSI");
                         }
-                        installer.Generate(installProperty, remoteLogPath);
+                        installer.Generate(installProperty, remoteLogPath, uninstallLine, changeChannelLine);
                     }
 
 

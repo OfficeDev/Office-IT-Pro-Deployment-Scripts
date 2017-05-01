@@ -35,6 +35,7 @@ namespace MetroDemo.ExampleViews
                     cbActions.Items.Add("Create new Office 365 ProPlus installer");
                     cbActions.Items.Add("Import an existing Office 365 ProPlus installer");
                     cbActions.Items.Add("Manage your local Office 365 ProPlus installation");
+                    cbActions.Items.Add("Change Office Channel");
                     //cbActions.Items.Add("Create Office 365 ProPlus language pack");
                     //cbActions.Items.Add("Manage remote Office 365 ProPlus installation");
                     cbActions.SelectedIndex = 0;
@@ -70,6 +71,45 @@ namespace MetroDemo.ExampleViews
                     Direction = TransitionTabDirection.Forward,
                     Index = 0
                 });
+
+                LogAnaylytics("/StartView", "StartNew");
+
+            }
+            catch (Exception ex)
+            {
+                LogErrorMessage(ex);
+            }
+        }
+
+
+        private void ChangeChannel()
+        {
+            try
+            {
+                if (_running) return;
+                GlobalObjects.ViewModel.LocalConfig = false;
+                GlobalObjects.ViewModel.ApplicationMode = ApplicationMode.ChangeChannel;
+
+                GlobalObjects.ViewModel.ConfigXmlParser.LoadXml(GlobalObjects.DefaultXml);
+                GlobalObjects.ViewModel.ResetXml = true;
+                GlobalObjects.ViewModel.ImportFile = null;
+
+                if (RestartWorkflow != null)
+                {
+                    this.RestartWorkflow(this, new EventArgs());
+                }
+
+                GlobalObjects.ViewModel.ChangeChannel = "$scriptPath = \".\"" + Environment.NewLine + Environment.NewLine + "if ($PSScriptRoot) {" + Environment.NewLine + "$scriptPath = $PSScriptRoot" + Environment.NewLine + "} else {" + Environment.NewLine + "$scriptPath = (Get-Item -Path \".\\\").FullName" + Environment.NewLine + "}" + Environment.NewLine + Environment.NewLine + ". $scriptPath\\Change-OfficeChannel.ps1 -Channel Current -RollBack $false";
+                    
+
+                this.TransitionTab(this, new TransitionTabEventArgs()
+                {
+                    Direction = TransitionTabDirection.Forward,
+                    Index = 5,
+                    UseIndex = true
+                });
+
+
 
                 LogAnaylytics("/StartView", "StartNew");
 
@@ -223,7 +263,7 @@ namespace MetroDemo.ExampleViews
                     this.TransitionTab(this, new TransitionTabEventArgs()
                     {
                         Direction = TransitionTabDirection.Forward,
-                        Index = 6,
+                        Index = 7,
                         UseIndex = true
                     });
                 }
@@ -312,6 +352,7 @@ namespace MetroDemo.ExampleViews
 
         private void strtButton_Click(object sender, RoutedEventArgs e)
         {
+            GlobalObjects.ViewModel.ChangeChannel = "";
             switch (cbActions.SelectedIndex)
             {
                 case 0:
@@ -324,9 +365,12 @@ namespace MetroDemo.ExampleViews
                     ManageLocal();
                     break;
                 case 3:
-                    CreateLanguagePack();
+                    ChangeChannel();
                     break;
                 case 4:
+                    CreateLanguagePack();
+                    break;
+                case 5:
                     ManageRemote();
                     break;
                 default:

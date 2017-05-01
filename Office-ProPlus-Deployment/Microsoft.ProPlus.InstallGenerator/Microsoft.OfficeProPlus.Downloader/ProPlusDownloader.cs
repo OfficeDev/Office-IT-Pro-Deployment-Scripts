@@ -500,7 +500,7 @@ namespace Microsoft.OfficeProPlus.Downloader
                     .FirstOrDefault();
                 if (headerRow == null) continue;
                 if (headerRow[0].ToLower() != "version") continue;
-             
+
                 var rows = table
                     .Descendants("tr")
                     .Where(tr => tr.Elements("td").Count() > 1)

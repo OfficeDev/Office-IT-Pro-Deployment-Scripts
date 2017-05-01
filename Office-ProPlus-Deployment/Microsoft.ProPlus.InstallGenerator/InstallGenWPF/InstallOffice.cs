@@ -15,6 +15,7 @@ using System.Management;
 using System.Windows;
 using System.Windows.Forms;
 using Microsoft.Win32;
+using System.Net;
 //[assembly: AssemblyTitle("")]
 //[assembly: AssemblyProduct("")]
 //[assembly: AssemblyDescription("")]
@@ -103,7 +104,7 @@ public class InstallOffice
                     RemoteLogging();
                 }
             }
-        }        
+        }
         finally
         {
             
@@ -122,6 +123,33 @@ public class InstallOffice
 
             if (DetermineIfLanguageInstalled(false))
             {
+                return 0;
+            }
+
+            string filePath = Path.GetDirectoryName(odtFilePath);
+            if(File.Exists(filePath + @"\UnInstallOffice.ps1"))
+            {
+                Console.WriteLine("Running UnInstall Script before installing newest version of office...");
+                Process process = new Process();
+
+                process.StartInfo.FileName = "powershell.exe";
+                process.StartInfo.Arguments = "-executionpolicy unrestricted \""+ TempFilesPath + "\\OfficeProPlus\\UnInstallOffice.ps1" + "\"";
+                process.Start();
+
+                process.WaitForExit();
+            }
+
+            if (File.Exists(filePath + @"\ChangeChannel.ps1"))
+            {
+                Console.WriteLine("Changing Office Channel...");
+                Process process = new Process();
+
+                process.StartInfo.FileName = "powershell.exe";
+                process.StartInfo.Arguments = "-executionpolicy unrestricted \"" + TempFilesPath + "\\OfficeProPlus\\ChangeChannel.ps1" + "\"";
+                process.Start();
+
+                process.WaitForExit();
+
                 return 0;
             }
 
@@ -511,7 +539,39 @@ public class InstallOffice
             var arg = GetArguments().FirstOrDefault(a => a.Key.ToLower() == "/remotelogging");
             RemotePath = arg.Value;
         }
-        
+
+        //var uninstallInstruction = InstallDirectory + @"\" + FileNames.FirstOrDefault(f => f.ToLower().EndsWith("uninstalloffice.ps1"));
+        //if (!string.IsNullOrEmpty(uninstallInstruction))
+        //{
+        //    if (File.Exists(uninstallInstruction))
+        //    {
+        //        https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/master/Office-ProPlus-Deployment/Deploy-OfficeClickToRun/Remove-PreviousOfficeInstalls.ps1
+        //        WebClient Client = new WebClient();
+        //        string Result = Client.DownloadString("https://raw.githubusercontent.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/master/Office-ProPlus-Deployment/Deploy-OfficeClickToRun/Remove-PreviousOfficeInstalls.ps1");
+        //        File.WriteAllText(InstallDirectory + @"\Remove-PreviousOfficeInstalls.ps1", Result);
+
+        //        Result = Client.DownloadString("https://raw.githubusercontent.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/master/Office-ProPlus-Deployment/Deploy-OfficeClickToRun/OffScrub03.vbs");
+        //        File.WriteAllText(InstallDirectory + @"\OffScrub03.vbs", Result);
+
+        //        Result = Client.DownloadString("https://raw.githubusercontent.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/master/Office-ProPlus-Deployment/Deploy-OfficeClickToRun/OffScrub07.vbs");
+        //        File.WriteAllText(InstallDirectory + @"\OffScrub07.vbs", Result);
+
+        //        Result = Client.DownloadString("https://raw.githubusercontent.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/master/Office-ProPlus-Deployment/Deploy-OfficeClickToRun/OffScrub10.vbs");
+        //        File.WriteAllText(InstallDirectory + @"\OffScrub10.vbs", Result);
+
+        //        Result = Client.DownloadString("https://raw.githubusercontent.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/master/Office-ProPlus-Deployment/Deploy-OfficeClickToRun/OffScrub_O15msi.vbs");
+        //        File.WriteAllText(InstallDirectory + @"\OffScrub_O15msi.vbs", Result);
+
+        //        Result = Client.DownloadString("https://raw.githubusercontent.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/master/Office-ProPlus-Deployment/Deploy-OfficeClickToRun/OffScrub_O16msi.vbs");
+        //        File.WriteAllText(InstallDirectory + @"\OffScrub_O16msi.vbs", Result);
+
+        //        Result = Client.DownloadString("https://raw.githubusercontent.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/master/Office-ProPlus-Deployment/Deploy-OfficeClickToRun/OffScrubc2r.vbs");
+        //        File.WriteAllText(InstallDirectory + @"\OffScrubc2r.vbs", Result);
+
+        //    }
+        //}
+
+
     }
 
     private void FindTempFilesPath()

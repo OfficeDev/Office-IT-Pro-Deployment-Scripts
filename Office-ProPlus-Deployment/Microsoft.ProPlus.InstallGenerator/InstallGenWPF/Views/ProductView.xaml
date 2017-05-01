@@ -577,6 +577,178 @@
 
                         </Grid>
                     </TabItem>
+                    <TabItem x:Name="RemovePreviousVersion" Height="50">
+                        <TabItem.Header>
+                            <DockPanel Margin="0,5,0,0">
+                                <Label Style="{StaticResource CustomMetroLabelTopHeader}" Padding="0,2,0,0" FontFamily="Segoe UI Semilight">UninstallPrevious</Label>
+                            </DockPanel>
+                        </TabItem.Header>
+                        <Grid Width="900" Grid.Row="1" HorizontalAlignment="Left" Margin="10 0 0 0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="440" />
+                                <ColumnDefinition Width="5" />
+                                <ColumnDefinition Width="455" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="600"></RowDefinition>
+                            </Grid.RowDefinitions>
+
+                            <StackPanel Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" Width="420">
+                                <Grid Height="50" >
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="100" />
+                                        <ColumnDefinition Width="450" />
+                                        <ColumnDefinition Width="30" />
+                                    </Grid.ColumnDefinitions>
+                                    <Label Content="Use Uninstall" Style="{StaticResource CustomMetroLabelHeader}" Grid.Column="1" VerticalAlignment="Center" FontFamily="Segoe UI Semibold"  />
+
+                                    <Controls:ToggleSwitch x:Name="isUsingUninstall" Grid.Column="0" Grid.Row="0" 
+                                   VerticalAlignment="Center"  Style="{StaticResource MetroToggleSwitchStyle}"
+                                   IsChecked="False" Checked="isUsingUninstall_OnChecked" Unchecked="isUsingUninstall_OnChecked"
+                                   OnLabel="Yes" OffLabel="No" HorizontalAlignment="Right" />
+
+                                </Grid>
+                                <Grid Height="30" >
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="430" />
+                                        <ColumnDefinition Width="50" />
+                                        <ColumnDefinition Width="30" />
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    
+                                    <Label Grid.Row="0" Grid.Column="0" Content="Product to Remove" Style="{StaticResource CustomMetroLabelHeader}"  
+                                               HorizontalAlignment="Left"  Width="200" VerticalAlignment="Center" FontFamily="Segoe UI Semibold"/>
+                                    <CheckBox x:Name="chkOfficeProductsToRemove" Grid.Column="2" Style="{StaticResource MetroCheckBox}" Checked="chkofficeProd_Checked" Unchecked="chkofficeProd_Checked" Click="chkofficeProd_Click" ></CheckBox>
+                                </Grid>
+
+                                <ListBox x:Name="ProductToRemove"  Style="{StaticResource VirtualizedMetroListBox}" 
+                                            ItemsSource="{Binding ProductsToUninstall}" Width="400" HorizontalAlignment="Left"
+                                            DisplayMemberPath="DisplayName" Height="150" Margin="0 10 0 0" FontWeight="Normal"
+                                            SelectedIndex="0" SelectionMode="Multiple" FontSize="20" SelectionChanged="Products_OnSelectionChanged" 
+                                             BorderThickness="2,2,2,2" RenderTransformOrigin="0.508,0.123" FontFamily="Segoe UI Semilight"/>
+
+                                <Grid Height="30" Margin="0 20 0 0" >
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="430" />
+                                        <ColumnDefinition Width="50" />
+                                        <ColumnDefinition Width="30" />
+                                    </Grid.ColumnDefinitions>
+
+                                    
+                                    <Label Grid.Row="0" Grid.Column="0" Content="Click to Run Products to Remove" Style="{StaticResource CustomMetroLabelHeader}"  
+                                               HorizontalAlignment="Left"  Width="300" VerticalAlignment="Center" FontFamily="Segoe UI Semibold"/>
+                                    <CheckBox x:Name="chkVisio1" Grid.Column="2" Style="{StaticResource MetroCheckBox}" Checked="ChkVisio_OnChecked"
+                                                  Unchecked="ChkVisio_OnChecked" Click="chkofficeProd_Click"></CheckBox>
+                                </Grid>
+
+
+                                <ComboBox x:Name="cbProductsToRemove" Width="400" FontSize="20" Height="40" BorderBrush="{StaticResource GrayBrush}"
+                                              ItemsSource="{Binding C2RProductsToRemove}" DisplayMemberPath="DisplayName" Margin="0 5 0 0"
+                                              Foreground="{StaticResource GrayBrush}" HorizontalAlignment="Left" BorderThickness="2" DropDownClosed="DrpDownCLosed"
+                                              VerticalAlignment="Center" FontFamily="Segoe UI Semilight" />                                
+                            </StackPanel>
+
+                            <StackPanel Grid.Row="0" Grid.Column="2" HorizontalAlignment="Left"  Width="420">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="380" />
+                                    </Grid.ColumnDefinitions>                                    
+                                    <Label Content="Remove Click to Run Versions" Style="{StaticResource CustomMetroLabelHeader}" HorizontalAlignment="Left" Grid.Column="0" FontFamily="Segoe UI Semibold"/>
+                                    <Controls:ToggleSwitch x:Name="isRemoveC2RVersions" Grid.Column="0" Grid.Row="0" 
+                                   VerticalAlignment="Center"  Style="{StaticResource MetroToggleSwitchStyle}"
+                                   IsChecked="False"  Checked="isUsingUninstall_OnChecked" Unchecked="isUsingUninstall_OnChecked"
+                                   OnLabel="Yes" OffLabel="No" HorizontalAlignment="Right" />
+                                </Grid>
+                                
+
+                                <Grid Margin="0 20 0 0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="380" />
+                                    </Grid.ColumnDefinitions>
+
+                                    
+                                    <Label Content="Remove 2016 Versions" Style="{StaticResource CustomMetroLabelHeader}" HorizontalAlignment="Left" Grid.Column="0" FontFamily="Segoe UI Semibold" />
+                                    <Controls:ToggleSwitch x:Name="isRemove2016Versions" Grid.Column="0" Grid.Row="0" 
+                                   VerticalAlignment="Center"  Style="{StaticResource MetroToggleSwitchStyle}"
+                                   IsChecked="False"  Checked="isUsingUninstall_OnChecked" Unchecked="isUsingUninstall_OnChecked"
+                                   OnLabel="Yes" OffLabel="No" HorizontalAlignment="Right" />
+                                </Grid>
+                                
+
+                                <Grid Margin="0 20 0 0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="380" />
+                                    </Grid.ColumnDefinitions>
+
+
+                                    <Label Content="Force Run Script" Style="{StaticResource CustomMetroLabelHeader}" HorizontalAlignment="Left" Grid.Column="0" FontFamily="Segoe UI Semibold" />
+                                    <Controls:ToggleSwitch x:Name="isForced" Grid.Column="0" Grid.Row="0" 
+                                   VerticalAlignment="Center"  Style="{StaticResource MetroToggleSwitchStyle}"
+                                   IsChecked="False"  Checked="isUsingUninstall_OnChecked" Unchecked="isUsingUninstall_OnChecked"
+                                   OnLabel="Yes" OffLabel="No" HorizontalAlignment="Right" />
+                                </Grid>
+                                
+
+                                <Grid Margin="0 20 0 0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="380" />
+                                    </Grid.ColumnDefinitions>
+
+
+                                    <Label Content="Keep User Settings" Style="{StaticResource CustomMetroLabelHeader}" HorizontalAlignment="Left" Grid.Column="0" FontFamily="Segoe UI Semibold" />
+                                    <Controls:ToggleSwitch x:Name="isKeepingUserSettings" Grid.Column="0" Grid.Row="0" 
+                                   VerticalAlignment="Center"  Style="{StaticResource MetroToggleSwitchStyle}"
+                                   IsChecked="True"  Checked="isUsingUninstall_OnChecked" Unchecked="isUsingUninstall_OnChecked"
+                                   OnLabel="Yes" OffLabel="No" HorizontalAlignment="Right" />
+                                </Grid>
+                                
+
+
+                                <Grid Margin="0 20 0 0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="380" />
+                                    </Grid.ColumnDefinitions>
+
+
+                                    <Label Content="Keep Lync" Style="{StaticResource CustomMetroLabelHeader}" HorizontalAlignment="Left" Grid.Column="0" FontFamily="Segoe UI Semibold" />
+                                    <Controls:ToggleSwitch x:Name="isKeepLync" Grid.Column="0" Grid.Row="0" 
+                                   VerticalAlignment="Center"  Style="{StaticResource MetroToggleSwitchStyle}"
+                                   IsChecked="False"  Checked="isUsingUninstall_OnChecked" Unchecked="isUsingUninstall_OnChecked"
+                                   OnLabel="Yes" OffLabel="No" HorizontalAlignment="Right" />
+                                </Grid>
+
+                                <Grid Margin="0 20 0 0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="380" />
+                                    </Grid.ColumnDefinitions>
+
+
+                                    <Label Content="Reboot After Uninstall" Style="{StaticResource CustomMetroLabelHeader}" HorizontalAlignment="Left" Grid.Column="0" FontFamily="Segoe UI Semibold" />
+                                    <Controls:ToggleSwitch x:Name="isNoReboot" Grid.Column="0" Grid.Row="0" 
+                                   VerticalAlignment="Center"  Style="{StaticResource MetroToggleSwitchStyle}"
+                                   IsChecked="False"  Checked="isUsingUninstall_OnChecked" Unchecked="isUsingUninstall_OnChecked"
+                                   OnLabel="Yes" OffLabel="No" HorizontalAlignment="Right" />
+                                </Grid>
+
+                                <Grid Margin="0 20 0 0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="380" />
+                                    </Grid.ColumnDefinitions>
+
+
+                                    <Label Content="Run Script Silent" Style="{StaticResource CustomMetroLabelHeader}" HorizontalAlignment="Left" Grid.Column="0" FontFamily="Segoe UI Semibold" />
+                                    <Controls:ToggleSwitch x:Name="isSilent" Grid.Column="0" Grid.Row="0" 
+                                   VerticalAlignment="Center"  Style="{StaticResource MetroToggleSwitchStyle}"
+                                   IsChecked="True"  Checked="isUsingUninstall_OnChecked" Unchecked="isUsingUninstall_OnChecked"
+                                   OnLabel="Yes" OffLabel="No" HorizontalAlignment="Right" />
+                                </Grid>
+
+
+
+                            </StackPanel>
+
+                        </Grid>
+                    </TabItem>
                 </Controls:MetroAnimatedSingleRowTabControl>
             </Grid>
 

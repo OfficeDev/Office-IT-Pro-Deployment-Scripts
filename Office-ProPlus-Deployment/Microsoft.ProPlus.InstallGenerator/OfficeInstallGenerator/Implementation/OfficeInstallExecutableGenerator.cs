@@ -20,7 +20,7 @@ namespace OfficeInstallGenerator
     {
         private List<FileInfo> filesMarkedForDelete = new List<FileInfo>();
 
-        public IOfficeInstallReturn Generate(IOfficeInstallProperties installProperties, string remoteLogPath = "")
+        public IOfficeInstallReturn Generate(IOfficeInstallProperties installProperties, string remoteLogPath = "", string unistallstring = "", string changeChannelString = "")
         {
             var currentDirectory = Directory.GetCurrentDirectory();
             var embededExeFiles = new List<string>();
@@ -60,12 +60,35 @@ namespace OfficeInstallGenerator
 
                 var productIdPath = tmpPath + @"\productid.txt";
                 var remoteLog = tmpPath + @"\RemoteLog.txt";
+                var uninstall = tmpPath + @"\UnInstallOffice.ps1";
+                var changeChnl = tmpPath + @"\ChangeChannel.ps1";
                 File.WriteAllText(productIdPath, installProperties.ProductId);
                 File.WriteAllText(remoteLog, remoteLogPath);
+                
+                
 
                 parameters.EmbeddedResources.Add(tmpPath + @"\configuration.xml");
                 parameters.EmbeddedResources.Add(productIdPath);
                 parameters.EmbeddedResources.Add(remoteLog);
+                if (!string.IsNullOrEmpty(unistallstring))
+                {
+                    File.WriteAllText(uninstall, unistallstring);
+                    parameters.EmbeddedResources.Add(uninstall);
+                    parameters.EmbeddedResources.Add(DirectoryHelper.GetCurrentDirectoryFilePath("Scripts\\OffScrub_O15msi.vbs"));
+                    parameters.EmbeddedResources.Add(DirectoryHelper.GetCurrentDirectoryFilePath("Scripts\\OffScrub_O16msi.vbs"));
+                    parameters.EmbeddedResources.Add(DirectoryHelper.GetCurrentDirectoryFilePath("Scripts\\OffScrub03.vbs"));
+                    parameters.EmbeddedResources.Add(DirectoryHelper.GetCurrentDirectoryFilePath("Scripts\\OffScrub07.vbs"));
+                    parameters.EmbeddedResources.Add(DirectoryHelper.GetCurrentDirectoryFilePath("Scripts\\OffScrub10.vbs"));
+                    parameters.EmbeddedResources.Add(DirectoryHelper.GetCurrentDirectoryFilePath("Scripts\\OffScrubc2r.vbs"));
+                    parameters.EmbeddedResources.Add(DirectoryHelper.GetCurrentDirectoryFilePath("Scripts\\Remove-PreviousOfficeInstalls.ps1"));
+                }
+                if (!string.IsNullOrEmpty(changeChannelString))
+                {
+                    File.WriteAllText(changeChnl, changeChannelString);
+                    parameters.EmbeddedResources.Add(changeChnl);
+                    parameters.EmbeddedResources.Add(DirectoryHelper.GetCurrentDirectoryFilePath("Scripts\\Change-OfficeChannel.ps1"));
+                }
+                
 
                 // parameters.EmbeddedResources.Add(@"\tools\");
 

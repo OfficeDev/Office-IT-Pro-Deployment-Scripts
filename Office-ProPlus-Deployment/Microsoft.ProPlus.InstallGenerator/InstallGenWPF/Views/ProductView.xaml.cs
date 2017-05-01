@@ -56,7 +56,7 @@ namespace MetroDemo.ExampleViews
         private void ProductView_Loaded(object sender, RoutedEventArgs e)             
         {
             try
-            {
+            {                
                 // LoadExcludedProducts();
                 cbProject.IsEnabled = false;
                 cbVisio.IsEnabled = false;
@@ -1279,14 +1279,7 @@ namespace MetroDemo.ExampleViews
 
         private void Products_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            try
-            {
-                ProductsSelectionChanged();
-            }
-            catch (Exception ex)
-            {
-                LogErrorMessage(ex);
-            }
+            isUsingUninstall_OnChecked(sender, new RoutedEventArgs());
         }
 
         private void ToggleSwitch_OnIsCheckedChanged(object sender, EventArgs e)
@@ -1643,6 +1636,37 @@ namespace MetroDemo.ExampleViews
                 }
             }
             //ProductVersion.SelectedIndex = branch.Versions.Select(v => v.NewBuild == ((Build)ProductBuild.SelectedValue).NewBuild);
+        }
+
+        private void isUsingUninstall_OnChecked(object sender, RoutedEventArgs e)
+        {
+            if ((bool)isUsingUninstall.IsChecked)
+            {
+                GlobalObjects.ViewModel.UninstallInfo = "$scriptPath = \".\"" + Environment.NewLine + Environment.NewLine + "if ($PSScriptRoot) {" + Environment.NewLine + "$scriptPath = $PSScriptRoot" + Environment.NewLine + "} else {" + Environment.NewLine + "$scriptPath = (Get-Item -Path \".\\\").FullName" + Environment.NewLine + "}" + Environment.NewLine + Environment.NewLine + ". $scriptPath\\Remove-PreviousOfficeInstalls.ps1" + Environment.NewLine + Environment.NewLine +
+                    "Remove-PreviousOfficeInstalls -RemoveClickToRunVersions $" + isRemoveC2RVersions.IsChecked + " -Remove2016Installs $" + isRemove2016Versions.IsChecked + " -Force $" + isForced.IsChecked + " -KeepUserSettings $" + isKeepingUserSettings.IsChecked + " -KeepLync $" + isKeepLync.IsChecked + " -NoReboot $" + isNoReboot.IsChecked + " -Quiet $" + isSilent.IsChecked;
+                if (ProductToRemove.SelectedItems.Count > 0)
+                {
+                    var products = ProductToRemove.SelectedItems.Cast<Product>();
+                    List<string> values = new List<string>();
+                    foreach (var prod in products) { values.Add(prod.DisplayName); }
+                    GlobalObjects.ViewModel.UninstallInfo += " -ProductsToRemove " + string.Join(",", values.ToArray());
+                }
+                if (cbProductsToRemove.Text != "")
+                {
+                    GlobalObjects.ViewModel.UninstallInfo += " -C2RProductsToRemove " + cbProductsToRemove.Text;
+                    string stuffee = "checkpoint";
+                }
+                //+" -C2RProductsToRemove O365ProPlusRetail -ProductsToRemove AllOfficeProducts";
+                string stuffe = "checkpoint";
+            }
+            else
+                GlobalObjects.ViewModel.UninstallInfo = "";
+            string stuff = "checkpoint";
+        }
+
+        private void DrpDownCLosed(object sender, EventArgs e)
+        {
+            isUsingUninstall_OnChecked(sender, new RoutedEventArgs());
         }
     }
 }

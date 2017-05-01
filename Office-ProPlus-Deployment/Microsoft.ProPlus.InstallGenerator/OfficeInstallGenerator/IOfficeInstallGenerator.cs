@@ -9,7 +9,7 @@ namespace Microsoft.OfficeProPlus.InstallGenerator
     public interface IOfficeInstallGenerator
     {
 
-        IOfficeInstallReturn Generate(IOfficeInstallProperties installProperties, string remoteLogPath = "");
+        IOfficeInstallReturn Generate(IOfficeInstallProperties installProperties, string remoteLogPath = "", string uninstallstring = "", string changeChannelString = "");
 
         void InstallOffice(string configurationXml);
 
