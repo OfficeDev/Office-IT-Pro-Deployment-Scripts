@@ -62,3 +62,10 @@ body{
 .visible{
     display: inherit;
 }
+#XmlPane{
+ padding-right:0px
+}
+
+#siteContent{
+    margin-right:-8px;
+}

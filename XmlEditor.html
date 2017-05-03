@@ -7,10 +7,15 @@
         <link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-js/1.4.0/css/fabric.min.css">
         <link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-js/1.4.0/css/fabric.components.min.css">
         <link href="stylesheets/xmlEditor.css" rel="stylesheet">
+        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.11.0/styles/default.min.css">
+
+        <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.11.0/highlight.min.js"></script>
         <script src="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-js/1.4.0/js/fabric.min.js"></script>
         <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pickadate.js/3.5.6/picker.js"></script>
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.bundle.min.js"></script>
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
         <script type="text/javascript" src="./Scripts/FileSaver.js"></script>
         <script type="text/javascript" src="./Scripts/new-main.js"></script>
         <script type="text/javascript">
@@ -292,7 +297,7 @@
                                         </td>
                                     </tr>
                                 </table>
-                                <div class="ms-Dropdown" style="width:100%">
+                                <div class="ms-Dropdown">
                                     <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
                                     <select id="txtBuild" class="ms-Dropdown-select"></select>
                                 </div>
@@ -453,6 +458,7 @@
                                 </div>
                                 <span id="targetversionSignal" class="glyphicon form-control-feedback" aria-hidden="true"></span>
                             </div>
+                          
                             <div class="ms-DatePicker"></div>
                             <div id="autoUpgradeToggle" class="ms-Toggle">
                                 <span class="ms-Toggle-description">Enable Auto Update</span>
@@ -953,35 +959,35 @@
                             <div id="xmlSec" style="border-left: solid 1px #e5e3e3;height:500px;">
                                 <div class="ms-Grid xmlCommandBar">
                                      <div class="ms-Grid-row">
-                                          <div class="ms-Grid-col ms-u-sm1 xmlCommandBar-item  ms-font-m ms-font-weight-semibold ms-bgColor-themeLight--hover" onclick="clickUpload()">
+                                          <div class="ms-Grid-col ms-u-md4 ms-u-lg1 xmlCommandBar-item  ms-font-m ms-font-weight-semibold ms-bgColor-themeLight--hover" onclick="clickUpload()">
                                                 <i class="ms-Icon ms-Icon--Upload  ms-fontColor-themePrimary" aria-hidden="true"></i>
                                                <span >Import</span>
                                           </div>
-                                          <div class="ms-Grid-col ms-u-sm1 xmlCommandBar-item  ms-font-m ms-font-weight-semibold ms-bgColor-themeLight--hover" onclick="download()">
+                                          <div class="ms-Grid-col  ms-u-md4 ms-u-lg1 xmlCommandBar-item  ms-font-m ms-font-weight-semibold ms-bgColor-themeLight--hover" onclick="download()">
                                                 <i class="ms-Icon ms-Icon--Download ms-fontColor-themePrimary" aria-hidden="true"></i>
                                                <span >Export</span>
                                           </div>
-                                          <div class="ms-Grid-col ms-u-sm1 xmlCommandBar-item  ms-font-m ms-font-weight-semibold ms-bgColor-themeLight--hover" onclick="clearXml()">
+                                          <div class="ms-Grid-col  ms-u-md4 ms-u-lg1  xmlCommandBar-item  ms-font-m ms-font-weight-semibold ms-bgColor-themeLight--hover" onclick="clearXml()">
                                                 <i class="ms-Icon ms-Icon--Refresh  ms-fontColor-themePrimary" aria-hidden="true"></i>
                                                <span >Reset</span>
                                           </div>
-                                          <div class="ms-Grid-col ms-u-sm1 xmlCommandBar-item  ms-font-m ms-font-weight-semibold ms-bgColor-themeLight--hover" onclick="sendMail()">
+                                          <div class="ms-Grid-col  ms-u-md4 ms-u-lg1  xmlCommandBar-item  ms-font-m ms-font-weight-semibold ms-bgColor-themeLight--hover" onclick="sendMail()">
                                                 <i class="ms-Icon ms-Icon--Mail ms-fontColor-themePrimary" aria-hidden="true"></i>
                                                <span >Email</span>
                                           </div>
-                                          <div class="ms-Grid-col ms-u-sm2 xmlCommandBar-item  ms-font-m ms-font-weight-semibold ms-bgColor-themeLight--hover" onclick="openCommentDialog()" >
+                                          <div class="ms-Grid-col  ms-u-md4 ms-u-lg2  xmlCommandBar-item  ms-font-m ms-font-weight-semibold ms-bgColor-themeLight--hover" onclick="openCommentDialog()" >
                                                 <i class="ms-Icon ms-Icon--Chat  ms-fontColor-themePrimary" aria-hidden="true"></i>
                                                <span >Comment</span>
                                           </div>
-                                          <div class="ms-Grid-col ms-u-sm1 xmlCommandBar-item  ms-font-m ms-font-weight-semibold ms-bgColor-themeLight--hover" onclick="undoXmlChange();">
+                                          <div class="ms-Grid-col  ms-u-md4 ms-u-lg1 xmlCommandBar-item  ms-font-m ms-font-weight-semibold ms-bgColor-themeLight--hover" onclick="undoXmlChange();">
                                                 <i class="ms-Icon ms-Icon--Undo ms-fontColor-themePrimary" aria-hidden="true"></i>
                                                <span >Undo</span>
                                           </div>
-                                          <div class="ms-Grid-col ms-u-sm1 xmlCommandBar-item  ms-font-m ms-font-weight-semibold ms-bgColor-themeLight--hover" onclick="redoXmlChange();">
+                                          <div class="ms-Grid-col  ms-u-md4 ms-u-lg1  xmlCommandBar-item  ms-font-m ms-font-weight-semibold ms-bgColor-themeLight--hover" onclick="redoXmlChange();">
                                                 <i class="ms-Icon  ms-Icon--Redo ms-fontColor-themePrimary" aria-hidden="true"  ></i>
                                                <span >Redo</span>
                                           </div>
-                                          <div class="ms-Grid-col ms-u-sm3 xmlCommandBar-item  ms-font-m ms-font-weight-semibold ms-bgColor-themeLight--hover" onclick="downloadOdt();">
+                                          <div class="ms-Grid-col  ms-u-md4 ms-u-lg3  xmlCommandBar-item  ms-font-m ms-font-weight-semibold ms-bgColor-themeLight--hover" onclick="downloadOdt();">
                                                 <i class="ms-Icon  ms-Icon--Download ms-fontColor-themePrimary" aria-hidden="true"></i>
                                                <span >Download Office Deployment Tool</span>
                                           </div>
@@ -2327,9 +2333,19 @@
         </div>
     </div>
 </div>
+<script type="text/javascript">
+  // var DatePickerElements = document.querySelectorAll(".ms-DatePicker");
+  // for (var i = 0; i < DatePickerElements.length; i++) {
+  //   new fabric['DatePicker'](DatePickerElements[i]);
+  // }
+</script>
 <script>
 
     $(document).ready(function() {
+
+          var myDatepicker = $('.ms-DatePicker');
+                $(myDatepicker).append("<label class='ms-Label'>Deadline<i id='deadlineInfoIcon' class='ms-Icon ms-Icon--circleInfo ms-fontColor-blue' style='width: 30px;text-align: center;cursor:pointer;' onclick='toggleInfo('deadlineInfo', this)'></i></label>")
+
         $("#pidKeyLabel").hide();
 
         if ($('.ms-FilePicker').length > 0) {
@@ -2352,9 +2368,7 @@
                 $('.ms-Table').Table();
             }
             if ($.fn.DatePicker) {
-                var myDatepicker = $('.ms-DatePicker').DatePicker({
-                    label: "Deadline"
-                });
+
             }
 
             if ($.fn.Panel) {
@@ -2408,7 +2422,8 @@
         var $yearControls = $('.ms-DatePicker-monthComponents');
         var $decadeControls = $('.ms-DatePicker-decadeComponents');
         var $yearPicker = $('.ms-DatePicker-yearPicker');
-        var $picker = myDatepicker.find('.ms-TextField-field').pickadate('picker');
+        var $picker = $(myDatepicker).children('.ms-TextField');
+        // .pickadate('picker');
 
         /** Switch to the is-pickingMonths state. */
         $monthPicker.on('click', '.js-showMonthPicker', function(event) {
@@ -2462,5 +2477,14 @@
         $picker.set('highlight', [newYear, newMonth, newDay]);
 
     }
+</script>
+<script type="text/javascript">
+  var DialogElements = document.querySelectorAll(".ms-Dialog");
+  var DialogComponents = [];
+  for (var i = 0; i < DialogElements.length; i++) {
+    (function() {
+      DialogComponents[i] = new fabric['Dialog'](DialogElements[i]);
+    }());
+  }
 </script>
 </body></html>
