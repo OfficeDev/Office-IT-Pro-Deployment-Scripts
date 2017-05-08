@@ -71,7 +71,7 @@ $(document).ready(function () {
     LoadPage(); 
 
     $(window).resize(function () {
-        resizeWindow();
+        // resizeWindow();
     });
 
     $('#txtPidKey').keydown(function (e) {
@@ -215,6 +215,10 @@ $(document).ready(function () {
 
         return false;
     });
+
+
+    $("#txtBuild").siblings('ul').children('li').on('click',function(){console.log("clicky")});
+
 
     $("#btSaveVersion").on('click', function () {
         if ($("#cbProduct").val() === "LanguagePack" && $("#btAddProduct").text() !== "Edit Product") {
@@ -450,6 +454,7 @@ $(document).ready(function () {
     $("#txtVersion").change(function () {
         var end = this.value;
         UpdateBuild(end);
+
     });
 
     $("#txtBuild").change(function () {
@@ -714,7 +719,7 @@ $(document).ready(function () {
 
     setScrollBar();
 
-    fixDatePicker();
+    // fixDatePicker();
 
     var productId = $('#cbProduct').val();
 
@@ -782,7 +787,7 @@ $(document).ready(function () {
         }
 
         return currentValue;
-    };
+    };  
 
     $.fn.msdropdownvals = function (displays, values) {
         var currentValues = this.val();
@@ -797,6 +802,7 @@ $(document).ready(function () {
                 var jquerySelected = $(selectedItem);
                 jquerySelected.empty();
                 jquerySelected.append(values[0]);
+
             }
             var mySelect = $("#" + selects[0].id);
 
@@ -828,7 +834,7 @@ $(document).ready(function () {
             var displayName = displays[r];
             var value = values[r];
             mySelect.append(
-                $('<option></option>').val(value).html(displayName)
+            $('<option></option>').val(value).html(displayName)
             );
         }
 
@@ -837,6 +843,9 @@ $(document).ready(function () {
 
 })(jQuery);
 
+function changeSelectedBuild(){
+    console.log('clicky');
+}
 
 function LoadPage(){
     var pageId = getUrlVars()['page'];
@@ -854,12 +863,19 @@ function LoadPage(){
 function resizePage(){
 
      if(window.innerWidth >= 640){
-        $('#Site-Content').height('auto');
-        $('#LeftNav').height('100%');
-        }
-        else{
+        var configHeight = $('#configColumn').height();
 
-        }   
+        $('#Site-Content').height('auto');
+        $('#LeftNav').height('auto');
+        $('#XmlPane').height('auto');
+        }
+    else{
+
+    }   
+}
+
+function buildVersionClicked(){
+    console.log("clicky");
 }
 
 function addDropDowns(){
@@ -867,11 +883,18 @@ function addDropDowns(){
     $('.ms-Dropdown').each(function(i,obj){
          if($(obj).children('.ms-Dropdown-truncator').length == 0 ){
             var Dropdown = new fabric['Dropdown'](obj);
-            console.log(i);
-         }
+
+            if($(Dropdown._originalDropdown).attr('Id') == 'txtBuild'){
+                $(Dropdown._dropdownItems).each(function(i,obj){
+                    obj.onclick = buildVersionClicked();
+                });
+              }
+            }
+         
     });
        
 }
+
 
 function openPage(url){
      window.open(url);
@@ -879,7 +902,6 @@ function openPage(url){
 }
 
 function GetVersionData() {
-    console.log("getting version data");
     $.ajax({
         url: "https://officeproplusinfo2.azurewebsites.net/api/Channel",
         type: "GET",
@@ -1008,10 +1030,13 @@ function setPanel(panelId, buttonId) {
         scrollTop: $("#CommandBar").offset().top
     }, 0);
    
-    $('#LeftNav').height($('body').height());
-    $('#configColumn').height($('body').height());
-    $('#configColumn').children().first().height('100%');   
-    $('#XmlPane').height($('body').height());
+   if(window.innerHeight > 479){
+        $('#XmlPane').height($('#siteContent').height());
+        $('#LeftNav').height($('#xmlSection').height());
+        $('#configColumn').height($('#xmlSection').height());
+   }
+
+
 }
 
 function setQueryString(objToAdd){
@@ -1030,6 +1055,7 @@ function getUrlVars() {
     }
     return vars;
 }
+
 
 
 function setVersionPanel(buttonId) {
@@ -1723,35 +1749,35 @@ function changeSelectedProduct() {
 
 
 function resizeWindow() {
-    var bodyHeight = window.innerHeight;
-    var bodyWidth = window.innerWidth;
-    var leftPaneHeight = bodyHeight - 180;
-    var mainAreaDiv = document.getElementById("mainArea");
-    var mainAreaDivHeight = mainAreaDiv.clientHeight;
+    // var bodyHeight = window.innerHeight;
+    // var bodyWidth = window.innerWidth;
+    // var leftPaneHeight = bodyHeight - 180;
+    // var mainAreaDiv = document.getElementById("mainArea");
+    // var mainAreaDivHeight = mainAreaDiv.clientHeight;
 
-    var rightPaneHeight = bodyHeight - 100;
+    // var rightPaneHeight = bodyHeight - 100;
 
-    var scrollTop = $(window).scrollTop();
-    if (scrollTop > 50) {
-        rightPaneHeight = rightPaneHeight + 50;
-    }
+    // var scrollTop = $(window).scrollTop();
+    // if (scrollTop > 50) {
+    //     rightPaneHeight = rightPaneHeight + 50;
+    // }
 
-    var offsetHeight = mainAreaDivHeight + 3;
+    // var offsetHeight = mainAreaDivHeight + 3;
 
-    $("#xmlText").height(rightPaneHeight - offsetHeight);
-    $("#menuSec").height(bodyHeight - offsetHeight);
-    $("#xmlSec").height(bodyHeight - offsetHeight);
+    // // $("#xmlText").height(rightPaneHeight - offsetHeight);
+    // // $("#menuSec").height(bodyHeight - offsetHeight);
+    // // $("#xmlSec").height(bodyHeight - offsetHeight);
 
-    var menuWidth = $("#menuColumn").width();
-    var configWidth = $("#configColumn").width();
+    // var menuWidth = $("#menuColumn").width();
+    // var configWidth = $("#configColumn").width();
 
-    $("#xmlSection").width(bodyWidth - menuWidth - configWidth - 48);
+    // // $("#xmlSection").width(bodyWidth - menuWidth - configWidth - 48);
 
-    setScrollBar();
+    // setScrollBar();
 
-    if ($('#screen').is(":visible")) {
-        fadeBackground(true);
-    }
+    // if ($('#screen').is(":visible")) {
+    //     fadeBackground(true);
+    // }
 }
 
 function cacheNodes(xmlDoc) {
@@ -2302,15 +2328,15 @@ function getExcludeAppNodeCount(xmlDoc, productId) {
 function odtToggleUpdate() {
     var $UpdatesEnabled = $("#updatesEnabled")[0];
     if ($UpdatesEnabled.checked) {
-        $("#txtUpdatePath").removeProp("disabled");
-        $("#txtTargetVersion").removeProp("disabled");
-        $(".ms-DatePicker .ms-TextField input").removeProp("disabled"); //deadline textbox
+        $("#txtUpdatePath").prop("disabled",false);
+        $("#txtTargetVersion").prop("disabled",false);
+        $(".ms-DatePicker .ms-TextField input").prop("disabled",false);; //deadline textbox
         $('#txtTargetVersion').css("background-color", "");
 
     } else {
-        $("#txtUpdatePath").prop("disabled", "true");
-        $("#txtTargetVersion").prop("disabled", "true");
-        $(".ms-DatePicker .ms-TextField input").prop("disabled", "true"); //deadline textbox
+        $("#txtUpdatePath").prop("disabled", true);
+        $("#txtTargetVersion").prop("disabled", true);
+        $(".ms-DatePicker .ms-TextField input").prop("disabled", true); //deadline textbox
         $('#txtTargetVersion').css("background-color", "#f0f0f0");
     }
 }
@@ -3231,7 +3257,7 @@ function showInfo(calloutId, icon) {
     $("#" + calloutId)[0].style.top = nTop.toString() + "px";
     $("#" + calloutId)[0].style.left = nLeft.toString() + "px";
     $("#" + calloutId)[0].style.display = 'block';
-    $("#infoOverlay")[0].style.display = 'block';
+//     $("#infoOverlay")[0].style.display = 'block';
     $("#xmlText").css('z-index', 0);
 }
 
@@ -3272,8 +3298,7 @@ function foreverHideWelcome() {
 }
 
 function openCommentDialog() {
-    //$("#commentDialog")[0].style.display = 'block';
-
+    $("#commentDialog")[0].style.display = 'block';
     $("textarea#commentText").val("");
 
     var xmlDoc = getXmlDocument();

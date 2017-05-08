@@ -8,29 +8,33 @@
         <link rel="stylesheet" href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-js/1.4.0/css/fabric.components.min.css">
         <link href="stylesheets/xmlEditor.css" rel="stylesheet">
         <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.11.0/styles/default.min.css">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/styles/solarized_light.min.css" rel="stylesheet">
+        <link href="https://raw.githubusercontent.com/bassjobsen/typeahead.js-bootstrap-css/master/typeaheadjs.css" rel="stylesheet">
+
+        <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
+        <script src="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-js/1.4.0/js/fabric.min.js"></script>
 
         <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.11.0/highlight.min.js"></script>
-        <script src="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-js/1.4.0/js/fabric.min.js"></script>
-        <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/pickadate.js/3.5.6/picker.js"></script>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+        <script type="text/javascript" src="https://dev.office.com/fabric-js/lib/PickaDate.js"></script>
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.11.1/typeahead.bundle.min.js"></script>
-        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
         <script type="text/javascript" src="./Scripts/FileSaver.js"></script>
+        <script type="text/javascript" src="./Scripts/vkbeautify.0.99.00.beta.js"></script>
+        <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/highlight.min.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.9.1/languages/xml.min.js"></script>
         <script type="text/javascript" src="./Scripts/new-main.js"></script>
-        <script type="text/javascript">
-            
-            
-    	$(document).ready(function(){
-    		var ToggleElements = document.querySelectorAll(".ms-Toggle");
-			for (var i = 0; i < ToggleElements.length; i++) {
-				new fabric['Toggle'](ToggleElements[i]);
-			}   
-    	});
+
         
-        
+        <script type="text/javascript">       
+        $(document).ready(function(){
+            $('.ms-Toggle').each(function (i,obj){
+                new fabric['Toggle'](obj);
+            });
+        });      
         </script>
-    </head>
+
+        </head>
     <body>
         <div id="siteContent" class="container">
             <div class="ms-Grid">
@@ -134,7 +138,7 @@
                             </div>
                         </div>
                     </div>
-                    <div id="configColumn" class="ms-Grid-col ms-u-sm12 ms-u-lg3 Editor-Column">
+                    <div id="configColumn" class="ms-Grid-col ms-u-sm12 ms-u-lg4 Editor-Column">
                         <div id="AddProductPanel" class="option-panel visible">
                             <h1 class="ms-font-xxl">Add Product</h1>
                             <div style="border-bottom:1px solid #e5e3e3">
@@ -145,12 +149,12 @@
                                             <label class="ms-Label">Product</label>
                                         </td>
                                         <td>
-                                            <i id="productInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('productInfo', this)"></i>
+                                            <i id="productInfoIcon" class="ms-Icon ms-Icon--Info ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('productInfo', this)"></i>
                                         </td>
                                     </tr>
                                 </table>
                                 <div class="ms-Dropdown">
-                                    <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
+                                    <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--ChevronDown"></i>
                                     <select id="cbProduct" class="ms-Dropdown-select">
                                         <option value="O365ProPlusRetail">Office 365 ProPlus</option>
                                         <option value="O365BusinessRetail">Office 365 for Business</option>
@@ -169,12 +173,12 @@
                                             <label class="ms-Label">Edition</label>
                                         </td>
                                         <td>
-                                            <i id="editionInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('editionInfo', this)"></i>
+                                            <i id="editionInfoIcon" class="ms-Icon ms-Icon--Info ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('editionInfo', this)"></i>
                                         </td>
                                     </tr>
                                 </table>
                                 <div class="ms-Dropdown">
-                                    <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
+                                    <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--ChevronDown"></i>
                                     <select id="cbEdition" class="ms-Dropdown-select">
                                         <option value="32">32-bit</option>
                                         <option value="64">64-bit</option>
@@ -187,12 +191,12 @@
                                                 <label class="ms-Label">Channel</label>
                                             </td>
                                             <td>
-                                                <i id="branchInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('branchInfo', this)"></i>
+                                                <i id="branchInfoIcon" class="ms-Icon ms-Icon--Info ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('branchInfo', this)"></i>
                                             </td>
                                         </tr>
                                     </table>
                                     <div class="ms-Dropdown">
-                                        <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
+                                        <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--ChevronDown"></i>
                                         <select id="cbBranch" class="ms-Dropdown-select">
                                             <option oldvalue="Current" value="Current">Current</option>
                                             <option oldvalue="Business" value="Deferred">Deferred</option>
@@ -207,74 +211,75 @@
                                             <label class="ms-Label">Language</label>
                                         </td>
                                         <td>
-                                            <i id="languageInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('languageInfo', this)"></i>
+                                            <i id="languageInfoIcon" class="ms-Icon ms-Icon--Info ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('languageInfo', this)"></i>
                                         </td>
                                     </tr>
                                 </table>
-                                <table style="position: relative;left:-3px;">
-                                    <tr>
-                                        <td style="width: 100%; padding-right: 10px">
+                                <div class="ms-Grid">
+                                    <div class="ms-Grid-row">
+                                        <div class="ms-Grid-col ms-u-lg12 ms-u-xl4 ms-u-xxl6">
                                             <div class="ms-Dropdown">
-                                                <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
-                                                <select id="cbLanguage" class="ms-Dropdown-select">
-                                                    <option value="en-us">English (en-us)</option>
-                                                    <option value="ar-sa">Arabic (ar-sa)</option>
-                                                    <option value="bg-bg">Bulgarian (bg-bg)</option>
-                                                    <option value="zh-cn">Chinese (Simplified) (zh-cn)</option>
-                                                    <option value="zh-tw">Chinese (zh-tw)</option>
-                                                    <option value="hr-hr">Croatian (hr-hr)</option>
-                                                    <option value="cs-cz">Czech (cs-cz)</option>
-                                                    <option value="da-dk">Danish (da-dk)</option>
-                                                    <option value="nl-nl">Dutch (nl-nl)</option>
-                                                    <option value="et-ee">Estonian (et-ee)</option>
-                                                    <option value="fi-fi">Finnish (fi-fi)</option>
-                                                    <option value="fr-fr">French (fr-fr)</option>
-                                                    <option value="de-de">German (de-de)</option>
-                                                    <option value="el-gr">Greek (el-gr)</option>
-                                                    <option value="he-il">Hebrew (he-il)</option>
-                                                    <option value="hi-in">Hindi (hi-in)</option>
-                                                    <option value="hu-hu">Hungarian (hu-hu)</option>
-                                                    <option value="id-id">Indonesian (id-id)</option>
-                                                    <option value="it-it">Italian (it-it)</option>
-                                                    <option value="ja-jp">Japanese (ja-jp)</option>
-                                                    <option value="kk-kz">Kazakh (kk-kz)</option>
-                                                    <option value="ko-kr">Korean (ko-kr)</option>
-                                                    <option value="lv-lv">Latvian (lv-lv)</option>
-                                                    <option value="lt-lt">Lithuanian (lt-lt)</option>
-                                                    <option value="ms-my">Malay (ms-my)</option>
-                                                    <option value="nb-no">Norwegian (Bokm�l) (nb-no)</option>
-                                                    <option value="pl-pl">Polish (pl-pl)</option>
-                                                    <option value="pt-br">Portuguese (pt-br)</option>
-                                                    <option value="pt-pt">Portuguese (pt-pt)</option>
-                                                    <option value="ro-ro">Romanian (ro-ro)</option>
-                                                    <option value="ru-ru">Russian (ru-ru)</option>
-                                                    <option value="sr-latn-rs">Serbian (Latin) (sr-latn-rs)</option>
-                                                    <option value="sk-sk">Slovak (sk-sk)</option>
-                                                    <option value="sl-si">Slovenian (sl-si)</option>
-                                                    <option value="es-es">Spanish (es-es)</option>
-                                                    <option value="sv-se">Swedish (sv-se)</option>
-                                                    <option value="th-th">Thai (th-th)</option>
-                                                    <option value="tr-tr">Turkish (tr-tr)</option>
-                                                    <option value="uk-ua">Ukrainian (uk-ua)</option>
-                                                    <option value="vi-vn">Vietnamese (vi-vn)</option>
-                                                </select>
+                                                    <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--ChevronDown"></i>
+                                                    <select id="cbLanguage" class="ms-Dropdown-select">
+                                                        <option value="en-us">English (en-us)</option>
+                                                        <option value="ar-sa">Arabic (ar-sa)</option>
+                                                        <option value="bg-bg">Bulgarian (bg-bg)</option>
+                                                        <option value="zh-cn">Chinese (Simplified) (zh-cn)</option>
+                                                        <option value="zh-tw">Chinese (zh-tw)</option>
+                                                        <option value="hr-hr">Croatian (hr-hr)</option>
+                                                        <option value="cs-cz">Czech (cs-cz)</option>
+                                                        <option value="da-dk">Danish (da-dk)</option>
+                                                        <option value="nl-nl">Dutch (nl-nl)</option>
+                                                        <option value="et-ee">Estonian (et-ee)</option>
+                                                        <option value="fi-fi">Finnish (fi-fi)</option>
+                                                        <option value="fr-fr">French (fr-fr)</option>
+                                                        <option value="de-de">German (de-de)</option>
+                                                        <option value="el-gr">Greek (el-gr)</option>
+                                                        <option value="he-il">Hebrew (he-il)</option>
+                                                        <option value="hi-in">Hindi (hi-in)</option>
+                                                        <option value="hu-hu">Hungarian (hu-hu)</option>
+                                                        <option value="id-id">Indonesian (id-id)</option>
+                                                        <option value="it-it">Italian (it-it)</option>
+                                                        <option value="ja-jp">Japanese (ja-jp)</option>
+                                                        <option value="kk-kz">Kazakh (kk-kz)</option>
+                                                        <option value="ko-kr">Korean (ko-kr)</option>
+                                                        <option value="lv-lv">Latvian (lv-lv)</option>
+                                                        <option value="lt-lt">Lithuanian (lt-lt)</option>
+                                                        <option value="ms-my">Malay (ms-my)</option>
+                                                        <option value="nb-no">Norwegian (Bokm�l) (nb-no)</option>
+                                                        <option value="pl-pl">Polish (pl-pl)</option>
+                                                        <option value="pt-br">Portuguese (pt-br)</option>
+                                                        <option value="pt-pt">Portuguese (pt-pt)</option>
+                                                        <option value="ro-ro">Romanian (ro-ro)</option>
+                                                        <option value="ru-ru">Russian (ru-ru)</option>
+                                                        <option value="sr-latn-rs">Serbian (Latin) (sr-latn-rs)</option>
+                                                        <option value="sk-sk">Slovak (sk-sk)</option>
+                                                        <option value="sl-si">Slovenian (sl-si)</option>
+                                                        <option value="es-es">Spanish (es-es)</option>
+                                                        <option value="sv-se">Swedish (sv-se)</option>
+                                                        <option value="th-th">Thai (th-th)</option>
+                                                        <option value="tr-tr">Turkish (tr-tr)</option>
+                                                        <option value="uk-ua">Ukrainian (uk-ua)</option>
+                                                        <option value="vi-vn">Vietnamese (vi-vn)</option>
+                                                    </select>
                                             </div>
-                                        </td>
-                                        <td style="width: 150px;text-align: right; padding-right: 10px;padding-bottom: 10px">
-                                            <button id="btAddLanguage" class="ms-Button">Add
-                            </button>
-                                        </td>
-                                        <td style="width:80px;text-align: right;padding-bottom: 10px">
-                                            <button id="btRemoveLanguage" class="ms-Button" disabled="true">Remove
-                            </button>
-                                        </td>
-                                    </tr>
-                                </table>
-                                <div style="margin-bottom:10px">
-                                    <button id="btAddProduct" class="ms-Button">Add Product
-                    </button>
-                                    <button id="btRemoveProduct" class="ms-Button">Delete Product
-                    </button>
+                                        </div>
+                                        <div class="ms-Grid-col ms-u-sm12  ms-u-lg6 ms-u-xl4 ms-u-xxl3" style="margin-bottom:10px">
+                                            <button id="btAddLanguage" class="ms-Button">Add</button>
+                                        </div>
+                                        <div class="ms-Grid-col  ms-u-sm12 ms-u-lg6  ms-u-xl4 ms-u-xxl3  ms-u-xxlPull1" style="margin-bottom:10px">
+                                            <button id="btRemoveLanguage" class="ms-Button" disabled="true">Remove</button>
+                                        </div>
+                                    </div>
+
+                                    <div class="ms-Grid-row">
+                                        <div class="ms-Grid-col ms-u-sm6 ms-u-lg6 ms-u-xxl "  style="margin-bottom: 10px">
+                                            <button id="btAddProduct" class="ms-Button">Add Product</button>
+                                        </div>
+                                        <div class="ms-Grid-col ms-u-sm6 ms-u-lg6 ms-u-xxl6 ms-u-xlPull2  ms-u-xxlPull3"  style="margin-bottom: 10px">
+                                            <button id="btRemoveProduct" class="ms-Button">Delete Product</button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <h2 class="ms-font-xl">Version</h2>
@@ -287,7 +292,7 @@
                                     </tr>
                                 </table>
                                 <div class="ms-Dropdown">
-                                    <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
+                                    <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--ChevronDown"></i>
                                     <select id="txtVersion" class="ms-Dropdown-select"></select>
                                 </div>
                                 <table>
@@ -298,7 +303,7 @@
                                     </tr>
                                 </table>
                                 <div class="ms-Dropdown">
-                                    <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
+                                    <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--ChevronDown"></i>
                                     <select id="txtBuild" class="ms-Dropdown-select"></select>
                                 </div>
                             </div>
@@ -348,7 +353,7 @@
                                             <label class="ms-Label">SourcePath</label>
                                         </td>
                                         <td>
-                                            <i id="srcPathInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('srcPathInfo', this)"></i>
+                                            <i id="srcPathInfoIcon" class="ms-Icon ms-Icon--Info ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('srcPathInfo', this)"></i>
                                         </td>
                                     </tr>
                                 </table>
@@ -364,7 +369,7 @@
                                             <label class="ms-Label">DownloadPath</label>
                                         </td>
                                         <td>
-                                            <i id="dwnpthPathInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('dwnPathInfo', this)"></i>
+                                            <i id="dwnpthPathInfoIcon" class="ms-Icon ms-Icon--Info ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('dwnPathInfo', this)"></i>
                                         </td>
                                     </tr>
                                 </table>
@@ -381,7 +386,7 @@
                                                 <label class="ms-Label">PIDKEY</label>
                                             </td>
                                             <td>
-                                                <i id="pidkeyInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('pidkeyInfo', this)"></i>
+                                                <i id="pidkeyInfoIcon" class="ms-Icon ms-Icon--Info ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('pidkeyInfo', this)"></i>
                                             </td>
                                         </tr>
                                     </table>
@@ -414,12 +419,12 @@
                                             <label class="ms-Label">Channel</label>
                                         </td>
                                         <td>
-                                            <i id="updatesBranchInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('updatesBranchInfo', this)"></i>
+                                            <i id="updatesBranchInfoIcon" class="ms-Icon ms-Icon--Info ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('updatesBranchInfo', this)"></i>
                                         </td>
                                     </tr>
                                 </table>
                                 <div class="ms-Dropdown">
-                                    <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
+                                    <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--ChevronDown"></i>
                                     <select id="cbUpdateBranch" class="ms-Dropdown-select">
                                         <option oldvalue="Business" value="Deferred">Deferred</option>
                                         <option oldvalue="FirstReleaseBusiness" value="FirstReleaseDeferred">First Release Deferred</option>
@@ -434,7 +439,7 @@
                                         <label class="ms-Label">UpdatePath</label>
                                     </td>
                                     <td>
-                                        <i id="updatePathInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('updatePathInfo', this)"></i>
+                                        <i id="updatePathInfoIcon" class="ms-Icon ms-Icon--Info ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('updatePathInfo', this)"></i>
                                     </td>
                                 </tr>
                             </table>
@@ -448,7 +453,7 @@
                                         <label class="ms-Label">TargetVersion</label>
                                     </td>
                                     <td>
-                                        <i id="targetVersionInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('targetVersionInfo', this)"></i>
+                                        <i id="targetVersionInfoIcon" class="ms-Icon ms-Icon--Info ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('targetVersionInfo', this)"></i>
                                     </td>
                                 </tr>
                             </table>
@@ -458,9 +463,58 @@
                                 </div>
                                 <span id="targetversionSignal" class="glyphicon form-control-feedback" aria-hidden="true"></span>
                             </div>
-                          
-                            <div class="ms-DatePicker"></div>
-                            <div id="autoUpgradeToggle" class="ms-Toggle">
+                               <table>
+                                <tr>
+                                    <td>
+                                        <label class="ms-Label">Deadline</label>  
+                                     </td>
+                                    <td>
+                                         <i id="deadlineInfoIcon" class="ms-Icon ms-Icon--Info ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('deadlineInfo', this)"></i>
+                                    </td>
+                                </tr>
+                            </table>
+                            <div class="ms-DatePicker">
+                              <div class="ms-TextField">
+                                <i class="ms-DatePicker-event ms-Icon ms-Icon--Event"></i>
+                                <input class="ms-TextField-field" type="text" placeholder="Select a date&hellip;">
+                              </div>
+                              <div class="ms-DatePicker-monthComponents">
+                                <span class="ms-DatePicker-nextMonth js-nextMonth"><i class="ms-Icon ms-Icon--ChevronRight"></i></span> 
+                                <span class="ms-DatePicker-prevMonth js-prevMonth"><i class="ms-Icon ms-Icon--ChevronLeft"></i></span> 
+                                <div class="ms-DatePicker-headerToggleView js-showMonthPicker"></div>
+                              </div>
+                              <span class="ms-DatePicker-goToday js-goToday">Go to today</span> 
+                              <div class="ms-DatePicker-monthPicker">
+                                <div class="ms-DatePicker-header">
+                                  <div class="ms-DatePicker-yearComponents">
+                                    <span class="ms-DatePicker-nextYear js-nextYear"><i class="ms-Icon ms-Icon--ChevronRight"></i></span> 
+                                    <span class="ms-DatePicker-prevYear js-prevYear"><i class="ms-Icon ms-Icon--ChevronLeft"></i></span> 
+                                  </div>
+                                  <div class="ms-DatePicker-currentYear js-showYearPicker"></div>
+                                </div>
+                                <div class="ms-DatePicker-optionGrid">
+                                  <span class="ms-DatePicker-monthOption js-changeDate" data-month="0">Jan</span> 
+                                  <span class="ms-DatePicker-monthOption js-changeDate" data-month="1">Feb</span> 
+                                  <span class="ms-DatePicker-monthOption js-changeDate" data-month="2">Mar</span> 
+                                  <span class="ms-DatePicker-monthOption js-changeDate" data-month="3">Apr</span> 
+                                  <span class="ms-DatePicker-monthOption js-changeDate" data-month="4">May</span> 
+                                  <span class="ms-DatePicker-monthOption js-changeDate" data-month="5">Jun</span> 
+                                  <span class="ms-DatePicker-monthOption js-changeDate" data-month="6">Jul</span> 
+                                  <span class="ms-DatePicker-monthOption js-changeDate" data-month="7">Aug</span> 
+                                  <span class="ms-DatePicker-monthOption js-changeDate" data-month="8">Sep</span> 
+                                  <span class="ms-DatePicker-monthOption js-changeDate" data-month="9">Oct</span> 
+                                  <span class="ms-DatePicker-monthOption js-changeDate" data-month="10">Nov</span> 
+                                  <span class="ms-DatePicker-monthOption js-changeDate" data-month="11">Dec</span> 
+                                </div>
+                              </div>
+                              <div class="ms-DatePicker-yearPicker">
+                                <div class="ms-DatePicker-decadeComponents">
+                                  <span class="ms-DatePicker-nextDecade js-nextDecade"><i class="ms-Icon ms-Icon--ChevronRight"></i></span> 
+                                  <span class="ms-DatePicker-prevDecade js-prevDecade"><i class="ms-Icon ms-Icon--ChevronLeft"></i></span> 
+                                </div>
+                              </div>
+                            </div>  
+                           <div id="autoUpgradeToggle" class="ms-Toggle">
                                 <span class="ms-Toggle-description">Enable Auto Update</span>
                                 <input type="checkbox" id="autoUpgradeEnable" class="ms-Toggle-input"/>
                                 <label for="autoUpgradeEnable" class="ms-Toggle-field">
@@ -491,7 +545,7 @@
                                             <label class="ms-Toggle-description">Display Level</label>
                                         </td>
                                         <td>
-                                            <i id="displayLevelInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('displayLevelInfo', this)"></i>
+                                            <i id="displayLevelInfoIcon" class="ms-Icon ms-Icon--Info ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('displayLevelInfo', this)"></i>
                                         </td>
                                     </tr>
                                 </table>
@@ -508,7 +562,7 @@
                                             <label class="ms-Toggle-description">Accept EULA</label>
                                         </td>
                                         <td>
-                                            <i id="acceptEULAInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('acceptEULAInfo', this)"></i>
+                                            <i id="acceptEULAInfoIcon" class="ms-Icon ms-Icon--Info ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('acceptEULAInfo', this)"></i>
                                         </td>
                                     </tr>
                                 </table>
@@ -530,14 +584,13 @@
                         <div id="LoggingPanel" class="option-panel">
                             <h1 class="ms-font-xxl">Logging</h1>
                             <div class="ms-Toggle">
-                                <div class="ms-Toggle">
                                     <table>
                                         <tr>
                                             <td>
                                                 <label class="ms-Toggle-description">Logging Level</label>
                                             </td>
                                             <td>
-                                                <i id="logLevelInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('logLevelInfo', this)"></i>
+                                                <i id="logLevelInfoIcon" class="ms-Icon ms-Icon--Info ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('logLevelInfo', this)"></i>
                                             </td>
                                         </tr>
                                     </table>
@@ -546,7 +599,6 @@
                                         <span class="ms-Label ms-Label--off">Off</span>
                                         <span class="ms-Label ms-Label--on">Standard</span>
                                     </label>
-                                </div>
                             </div>
                             <table>
                                 <tr>
@@ -554,7 +606,7 @@
                                         <label class="ms-Label">Path</label>
                                     </td>
                                     <td>
-                                        <i id="logPathInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('logPathInfo', this)"></i>
+                                        <i id="logPathInfoIcon" class="ms-Icon ms-Icon--Info ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('logPathInfo', this)"></i>
                                     </td>
                                 </tr>
                             </table>
@@ -580,7 +632,7 @@
                                             <label class="ms-Toggle-description">AutoActivate</label>
                                         </td>
                                         <td>
-                                            <i id="aaInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('aaInfo', this)"></i>
+                                            <i id="aaInfoIcon" class="ms-Icon ms-Icon--Info ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('aaInfo', this)"></i>
                                         </td>
                                     </tr>
                                 </table>
@@ -597,7 +649,7 @@
                                             <label class="ms-Toggle-description">ForceAppShutdown</label>
                                         </td>
                                         <td>
-                                            <i id="fasInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('fasInfo', this)"></i>
+                                            <i id="fasInfoIcon" class="ms-Icon ms-Icon--Info ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('fasInfo', this)"></i>
                                         </td>
                                     </tr>
                                 </table>
@@ -614,7 +666,7 @@
                                             <label class="ms-Toggle-description">SharedComputerLicensing</label>
                                         </td>
                                         <td>
-                                            <i id="sclInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px; text-align: center; cursor: pointer;" onclick="toggleInfo('sclInfo', this)"></i>
+                                            <i id="sclInfoIcon" class="ms-Icon ms-Icon--Info ms-fontColor-blue" style="width: 30px; text-align: center; cursor: pointer;" onclick="toggleInfo('sclInfo', this)"></i>
                                         </td>
                                     </tr>
                                 </table>
@@ -631,7 +683,7 @@
                                             <label class="ms-Toggle-description">PinIconsToTaskbar</label>
                                         </td>
                                         <td>
-                                            <i id="pinIconsIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('pinIconInfo', this)"></i>
+                                            <i id="pinIconsIcon" class="ms-Icon ms-Icon--Info ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('pinIconInfo', this)"></i>
                                         </td>
                                     </tr>
                                 </table>
@@ -647,7 +699,7 @@
                                         <label class="ms-Label">PACKAGEGUID</label>
                                     </td>
                                     <td>
-                                        <i id="PACKAGEGUIDInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('PACKAGEGUIDInfo', this)"></i>
+                                        <i id="PACKAGEGUIDInfoIcon" class="ms-Icon ms-Icon--Info ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('PACKAGEGUIDInfo', this)"></i>
                                     </td>
                                 </tr>
                             </table>
@@ -727,112 +779,153 @@
                                     <td>
                                         <h1 class="ms-font-xxl">Exclude Office Programs</h1>
                                     </td>
-                                    <td>
-                                        <i id="excludeProductsIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('excludeProductsInfo', this)"></i>
-                                    </td>
                                 </tr>
                             </table>
                             <div class="container">
                                 <div class="ms-Grid">
                                     <div class="ms-Dropdown">
-                                        <label class="ms-Label">Product</label>
-                                        <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
+                                        <label class="ms-Label">Product
+                                        <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--ChevronDown"></i>
                                         <select id="cbExcludeProduct" class="ms-Dropdown-select">
                                             <option value="O365ProPlusRetail">Office 365 ProPlus</option>
                                             <option value="O365BusinessRetail">Office 365 for Business</option>
                                         </select>
+                                        </label>
                                     </div>
                                 </div>
                             </div>
-                            <table style="position: relative; left: 70px;">
-                                <tr>
-                                    <td style="width: 100px;">
+                            <div class="ms-Grid">
+                                <div class="ms-Grid-row">
+                                    <div class="ms-Grid-col ms-u-sm6 ms-u-md4 ms-u-lg6 ms-u-xxl3">
                                         <div class="ms-Toggle">
-                                            <span class="ms-Toggle-description" style="position: relative; left: -60px; top: 30px;">Access</span>
-                                            <input type="checkbox" id="excludeAccess" class="ms-Toggle-input" checked/>
-                                            <label for="excludeAccess" class="ms-Toggle-field">
-                                                <span class="ms-Label ms-Label--off">Excluded</span>
-                                                <span class="ms-Label ms-Label--on">Included</span>
-                                            </label>
+                                                <span class="ms-Toggle-description" >Access</span>
+                                                <input type="checkbox" id="excludeAccess" class="ms-Toggle-input" checked/>
+                                                <label for="excludeAccess" class="ms-Toggle-field">
+                                                    <span class="ms-Label ms-Label--off">Excluded</span>
+                                                    <span class="ms-Label ms-Label--on">Included</span>
+                                                </label>
+                                                
                                         </div>
-                                        <div class="ms-Toggle" style="position: relative; top: -40px;">
-                                            <span class="ms-Toggle-description" style="position: relative; left: -60px; top: 30px;">Excel</span>
+                                    </div>
+                                    <div class="ms-Grid-col ms-u-sm6 ms-u-md4 ms-u-lg6 ms-u-xxl3">
+                                    <div class="ms-Toggle" >
+                                            <span class="ms-Toggle-description" >Excel</span>
                                             <input type="checkbox" id="excludeExcel" class="ms-Toggle-input" checked/>
                                             <label for="excludeExcel" class="ms-Toggle-field">
                                                 <span class="ms-Label ms-Label--off">Excluded</span>
                                                 <span class="ms-Label ms-Label--on">Included</span>
                                             </label>
+                                            
                                         </div>
-                                        <div class="ms-Toggle" style="position: relative; top: -80px;">
-                                            <span class="ms-Toggle-description" style="position: relative; left: -60px; top: 30px;">OneNote</span>
+                                    </div>
+                                    <div class="ms-Grid-col ms-u-sm6 ms-u-md4 ms-u-lg6 ms-u-xxl3">
+                                    <div class="ms-Toggle">
+                                            <span class="ms-Toggle-description">OneNote</span>
                                             <input type="checkbox" id="excludeOneNote" class="ms-Toggle-input" checked/>
                                             <label for="excludeOneNote" class="ms-Toggle-field">
                                                 <span class="ms-Label ms-Label--off">Excluded</span>
                                                 <span class="ms-Label ms-Label--on">Included</span>
                                             </label>
+                                            
                                         </div>
-                                        <div class="ms-Toggle" style="position: relative; top: -120px;">
-                                            <span class="ms-Toggle-description" style="position: relative; left: -60px; top: 30px;">OneDrive</span>
+                                    </div>
+                                    <div class="ms-Grid-col ms-u-sm6 ms-u-md4 ms-u-lg6 ms-u-xxl3">
+                                    <div class="ms-Toggle">
+                                            <span class="ms-Toggle-description" >OneDrive</span>
                                             <input type="checkbox" id="excludeOneDrive" class="ms-Toggle-input" checked/>
                                             <label for="excludeOneDrive" class="ms-Toggle-field">
                                                 <span class="ms-Label ms-Label--off">Excluded</span>
                                                 <span class="ms-Label ms-Label--on">Included</span>
                                             </label>
+                                            
                                         </div>
-                                        <div class="ms-Toggle" style="position: relative; top: -160px;">
-                                            <span class="ms-Toggle-description" style="position: relative; left: -60px; top: 30px;">Publisher</span>
+                                    </div>
+                                    <div class="ms-Grid-col ms-u-sm6 ms-u-md4 ms-u-lg6 ms-u-xxl3">
+                                     <div class="ms-Toggle">
+                                            <span class="ms-Toggle-description">Publisher</span>
                                             <input type="checkbox" id="excludePublisher" class="ms-Toggle-input" checked/>
                                             <label for="excludePublisher" class="ms-Toggle-field">
                                                 <span class="ms-Label ms-Label--off">Excluded</span>
                                                 <span class="ms-Label ms-Label--on">Included</span>
                                             </label>
+                                            
                                         </div>
-                                    </td>
-                                    <td style="width: 140px;"></td>
-                                    <td>
-                                        <div class="ms-Toggle">
-                                            <span class="ms-Toggle-description" style="position: relative; left: -65px; top: 30px;">Groove</span>
+                                    </div>
+                                    <div class="ms-Grid-col ms-u-sm6 ms-u-md4 ms-u-lg6 ms-u-xxl3">
+                                    <div class="ms-Toggle">
+                                            <span class="ms-Toggle-description">Groove</span>
                                             <input type="checkbox" id="excludeGroove" class="ms-Toggle-input" checked/>
                                             <label for="excludeGroove" class="ms-Toggle-field">
                                                 <span class="ms-Label ms-Label--off">Excluded</span>
                                                 <span class="ms-Label ms-Label--on">Included</span>
                                             </label>
+                                            
                                         </div>
-                                        <div class="ms-Toggle" style="position: relative; top: -40px;">
-                                            <span class="ms-Toggle-description" style="position: relative; left: -65px; top: 30px;">Lync</span>
+                                    </div>
+                                    <div class="ms-Grid-col ms-u-sm6 ms-u-md4 ms-u-lg6 ms-u-xxl3">
+                                    <div class="ms-Toggle" >
+                                            <span class="ms-Toggle-description" >Lync</span>
                                             <input type="checkbox" id="excludeLync" class="ms-Toggle-input" checked/>
                                             <label for="excludeLync" class="ms-Toggle-field">
                                                 <span class="ms-Label ms-Label--off">Excluded</span>
                                                 <span class="ms-Label ms-Label--on">Included</span>
                                             </label>
+                                            
                                         </div>
-                                        <div class="ms-Toggle" style="position: relative; top: -80px;">
-                                            <span class="ms-Toggle-description" style="position: relative; left: -65px; top: 30px;">Outlook</span>
+                                    </div>
+                                    <div class="ms-Grid-col ms-u-sm6 ms-u-md4 ms-u-lg6 ms-u-xxl3">
+                                    <div class="ms-Toggle" >
+                                            <span class="ms-Toggle-description" >Outlook</span>
                                             <input type="checkbox" id="excludeOutlook" class="ms-Toggle-input" checked/>
                                             <label for="excludeOutlook" class="ms-Toggle-field">
                                                 <span class="ms-Label ms-Label--off">Excluded</span>
                                                 <span class="ms-Label ms-Label--on">Included</span>
                                             </label>
+                                            
                                         </div>
-                                        <div class="ms-Toggle" style="position: relative; top: -120px;">
-                                            <span class="ms-Toggle-description" style="position: relative; left: -65px; top: 30px;">PowerPoint</span>
+                                    </div>
+                                    <div class="ms-Grid-col ms-u-sm6 ms-u-md4 ms-u-lg6 ms-u-xxl3">
+                                     <div class="ms-Toggle" >
+                                            <span class="ms-Toggle-description" >PowerPoint</span>
                                             <input type="checkbox" id="excludePowerPoint" class="ms-Toggle-input" checked/>
                                             <label for="excludePowerPoint" class="ms-Toggle-field">
                                                 <span class="ms-Label ms-Label--off">Excluded</span>
                                                 <span class="ms-Label ms-Label--on">Included</span>
                                             </label>
+                                            
                                         </div>
-                                        <div class="ms-Toggle" style="position: relative; top: -160px;">
-                                            <span class="ms-Toggle-description" style="position: relative; left: -65px; top: 30px;">Word</span>
+                                    </div>
+                                    <div class="ms-Grid-col ms-u-sm6 ms-u-md4 ms-u-lg6 ms-u-xxl3">
+                                     <div class="ms-Toggle" >
+                                            <span class="ms-Toggle-description" >Word</span>
                                             <input type="checkbox" id="excludeWord" class="ms-Toggle-input" checked/>
                                             <label for="excludeWord" class="ms-Toggle-field">
                                                 <span class="ms-Label ms-Label--off">Excluded</span>
                                                 <span class="ms-Label ms-Label--on">Included</span>
                                             </label>
                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+                          <!--   <table style="position: relative; left: 70px;">
+                                <tr>
+                                    <td style="width: 100px;">
+                                        
+                                        
+                                        
+                                        
+                                       
+                                    </td>
+                                    <td style="width: 140px;"></td>
+                                    <td>
+                                        
+                                        
+                                        
+                                       
+                                       
                                     </td>
                                 </tr>
-                            </table>
+                            </table> -->
                             <div style="margin-bottom:10px">
                                 <button id="btSaveExcludePrograms" class="ms-Button">Save
                                         </button>
@@ -847,7 +940,7 @@
                                         <h1 class="ms-font-xxl">Add Remove Product</h1>
                                     </td>
                                     <td>
-                                        <i id="removeProductInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('removeProductInfo', this)"></i>
+                                        <i id="removeProductInfoIcon" class="ms-Icon ms-Icon--Info ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('removeProductInfo', this)"></i>
                                     </td>
                                 </tr>
                             </table>
@@ -867,7 +960,7 @@
                                 </tr>
                             </table>
                             <div class="ms-Dropdown">
-                                <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
+                                <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--ChevronDown"></i>
                                 <select id="cbRemoveProduct" class="ms-Dropdown-select">
                                     <option value="O365ProPlusRetail">Office 365 ProPlus</option>
                                     <option value="O365BusinessRetail">Office 365 for Business</option>
@@ -890,7 +983,7 @@
                                 <tr>
                                     <td style="width: 100%; padding-right: 10px">
                                         <div class="ms-Dropdown">
-                                            <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--caretDown"></i>
+                                            <i class="ms-Dropdown-caretDown ms-Icon ms-Icon--ChevronDown"></i>
                                             <select id="cbRemoveLanguage" class="ms-Dropdown-select">
                                                 <option value="en-us">English (en-us)</option>
                                                 <option value="ar-sa">Arabic (ar-sa)</option>
@@ -954,49 +1047,56 @@
                         </div>
                         <!-- End Remove Product Panel -->
                     </div>
-                    <div id="XmlPane" class="ms-Grid-col ms-u-sm12 ms-u-lg7">
+                    <div id="XmlPane" class="ms-Grid-col ms-u-sm12 ms-u-lg6">
                         <div id="xmlSection" class="Editor-Column" style="width:100%">
                             <div id="xmlSec" style="border-left: solid 1px #e5e3e3;height:500px;">
                                 <div class="ms-Grid xmlCommandBar">
                                      <div class="ms-Grid-row">
-                                          <div class="ms-Grid-col ms-u-md4 ms-u-lg1 xmlCommandBar-item  ms-font-m ms-font-weight-semibold ms-bgColor-themeLight--hover" onclick="clickUpload()">
+                                          <div class="ms-Grid-col ms-u-md3 ms-u-lg2 ms-u-xl2  ms-u-xxxl1 xmlCommandBar-item  ms-font-m ms-font-weight-semibold ms-bgColor-themeLight--hover" onclick="clickUpload()">
                                                 <i class="ms-Icon ms-Icon--Upload  ms-fontColor-themePrimary" aria-hidden="true"></i>
-                                               <span >Import</span>
+                                               Import
                                           </div>
-                                          <div class="ms-Grid-col  ms-u-md4 ms-u-lg1 xmlCommandBar-item  ms-font-m ms-font-weight-semibold ms-bgColor-themeLight--hover" onclick="download()">
+                                          <div class="ms-Grid-col  ms-u-md3 ms-u-lg2 ms-u-xl2 ms-u-xxxl1 xmlCommandBar-item  ms-font-m ms-font-weight-semibold ms-bgColor-themeLight--hover" onclick="download()">
                                                 <i class="ms-Icon ms-Icon--Download ms-fontColor-themePrimary" aria-hidden="true"></i>
-                                               <span >Export</span>
+                                               Export
                                           </div>
-                                          <div class="ms-Grid-col  ms-u-md4 ms-u-lg1  xmlCommandBar-item  ms-font-m ms-font-weight-semibold ms-bgColor-themeLight--hover" onclick="clearXml()">
+                                          <div class="ms-Grid-col  ms-u-md3 ms-u-lg2 ms-u-xl2 ms-u-xxxl1 xmlCommandBar-item  ms-font-m ms-font-weight-semibold ms-bgColor-themeLight--hover" onclick="clearXml()">
                                                 <i class="ms-Icon ms-Icon--Refresh  ms-fontColor-themePrimary" aria-hidden="true"></i>
-                                               <span >Reset</span>
+                                               Reset
                                           </div>
-                                          <div class="ms-Grid-col  ms-u-md4 ms-u-lg1  xmlCommandBar-item  ms-font-m ms-font-weight-semibold ms-bgColor-themeLight--hover" onclick="sendMail()">
+                                          <div class="ms-Grid-col  ms-u-md3 ms-u-lg2 ms-u-xl2 ms-u-xxxl1 xmlCommandBar-item  ms-font-m ms-font-weight-semibold ms-bgColor-themeLight--hover" onclick="sendMail()">
                                                 <i class="ms-Icon ms-Icon--Mail ms-fontColor-themePrimary" aria-hidden="true"></i>
-                                               <span >Email</span>
+                                               Email
                                           </div>
-                                          <div class="ms-Grid-col  ms-u-md4 ms-u-lg2  xmlCommandBar-item  ms-font-m ms-font-weight-semibold ms-bgColor-themeLight--hover" onclick="openCommentDialog()" >
+                                          <div class="ms-Grid-col  ms-u-md3 ms-u-lg2 ms-u-xl2 ms-u-xxxl1 xmlCommandBar-item  ms-font-m ms-font-weight-semibold ms-bgColor-themeLight--hover" style="margin:0; padding-left:5px;padding-right:0px"
+                                          onclick="openCommentDialog()" >
                                                 <i class="ms-Icon ms-Icon--Chat  ms-fontColor-themePrimary" aria-hidden="true"></i>
-                                               <span >Comment</span>
+                                               Comment
                                           </div>
-                                          <div class="ms-Grid-col  ms-u-md4 ms-u-lg1 xmlCommandBar-item  ms-font-m ms-font-weight-semibold ms-bgColor-themeLight--hover" onclick="undoXmlChange();">
+                                          <div class="ms-Grid-col  ms-u-md3 ms-u-lg2 ms-u-xl2 ms-u-xxxl1 xmlCommandBar-item  ms-font-m ms-font-weight-semibold ms-bgColor-themeLight--hover " onclick="undoXmlChange();">
                                                 <i class="ms-Icon ms-Icon--Undo ms-fontColor-themePrimary" aria-hidden="true"></i>
-                                               <span >Undo</span>
+                                               Undo
                                           </div>
-                                          <div class="ms-Grid-col  ms-u-md4 ms-u-lg1  xmlCommandBar-item  ms-font-m ms-font-weight-semibold ms-bgColor-themeLight--hover" onclick="redoXmlChange();">
+                                          <div class="ms-Grid-col  ms-u-md3 ms-u-lg ms-u-xl2  ms-u-xxxl1 xmlCommandBar-item  ms-font-m ms-font-weight-semibold ms-bgColor-themeLight--hover  " onclick="redoXmlChange();">
                                                 <i class="ms-Icon  ms-Icon--Redo ms-fontColor-themePrimary" aria-hidden="true"  ></i>
-                                               <span >Redo</span>
+                                                Redo
                                           </div>
-                                          <div class="ms-Grid-col  ms-u-md4 ms-u-lg3  xmlCommandBar-item  ms-font-m ms-font-weight-semibold ms-bgColor-themeLight--hover" onclick="downloadOdt();">
+                                          <div class="ms-Grid-col  ms-u-md3 ms-u-lg3 ms-u-xl4 ms-u-xxl4 ms-u-xxxl3  xmlCommandBar-item  ms-font-m ms-font-weight-semibold ms-bgColor-themeLight--hover " onclick="downloadOdt();">
                                                 <i class="ms-Icon  ms-Icon--Download ms-fontColor-themePrimary" aria-hidden="true"></i>
-                                               <span >Download Office Deployment Tool</span>
+                                               Download Office Deployment Tool
                                           </div>
                                      </div>
                                 </div>
                                 <div class="ms-TextField" style="margin-top:0px;margin-left: 30px;">
-                                    <pre style="border: white none 0;padding:0px;margin:0px;background-color: white;">
-                                        <code id="xmlText" style="height:800px;font-size: 23px;border-width: 0;overflow-y: auto; background-color: white;" readonly onchange="updateXmlHistory()"></code>
+                                    <div class="ms-Grid">
+                                    <div class="ms-Grid-row">
+                                        <div class="ms-Grid-col ms-u-sm12">
+                                            <code id="xmlText" style="height:800px;font-size: 23px;border-width: 0; background-color: white;" readonly onchange="updateXmlHistory      ()"></code>
+                                        </div>
                                     </pre>
+                                    </div>
+
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -1012,7 +1112,7 @@
     <div class="ms-Overlay"></div>
     <div class="ms-Dialog-main">
         <button class="ms-Dialog-button ms-Dialog-button--close" onclick="hideAbout()">
-            <i class="ms-Icon ms-Icon--x"></i>
+            <i class="ms-Icon ms-Icon--Cancel"></i>
         </button>
         <div class="ms-Dialog-header">
             <p class="ms-Dialog-title">Office Click-To-Run Configuration XML Editor</p>
@@ -1248,7 +1348,7 @@
     <div class="ms-Overlay"></div>
     <div class="ms-Dialog-main" style="min-width:50%">
         <button class="ms-Dialog-button ms-Dialog-button--close" onclick="hideCommentDialog()">
-            <i class="ms-Icon ms-Icon--x"></i>
+            <i class="ms-Icon ms-Icon--Cancel"></i>
         </button>
         <div class="ms-Dialog-header">
             <p class="ms-Dialog-title">Add Comment</p>
@@ -1270,7 +1370,7 @@
 <div id="productInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none;">
     <div class="ms-Callout-main">
         <div class="ms-Callout-header">
-            <span style="float:right; cursor:pointer" class="ms-Icon ms-Icon--x" onclick="toggleInfo('productInfo')"></span>
+            <span style="float:right; cursor:pointer" class="ms-Icon ms-Icon--Cancel" onclick="toggleInfo('productInfo')"></span>
             <p class="ms-Callout-title">Office Product</p>
         </div>
         <div class="ms-Callout-inner">
@@ -1280,13 +1380,6 @@
                 <p class="ms-Callout-subText">
                     Required. <strong>ID</strong>
                     must be set to a valid ProductRelease ID.
-                    
-                    
-                    
-                    
-                
-                
-                
                 </p>
                 <br/>
                 <p class="ms-Callout-subText">The supported ProductRelease IDs for Click-to-Run for Office 365 products are as follows:</p>
@@ -1319,26 +1412,12 @@
                 <p class="ms-Callout-subText">
                     If <strong>ID</strong>
                     is not set, the operation fails and indicates that the input is not valid.
-                    
-                    
-                    
-                    
-                
-                
-                
                 </p>
                 <br/>
                 <p class="ms-Callout-subText">
                     The order of <strong>Product</strong>
                     elements determines the order in which the products are installed. The first <strong>Product ID</strong>
                     is used to determine in which context the Microsoft Office First Run Experience application starts. Microsoft Office First Run Experience refers to the first time each Office application starts.
-                    
-                    
-                    
-                    
-                
-                
-                
                 </p>
             </div>
         </div>
@@ -1347,7 +1426,7 @@
 <div id="versionInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:100px; display:none;">
     <div class="ms-Callout-main">
         <div class="ms-Callout-header">
-            <span style="float:right; cursor:pointer" class="ms-Icon ms-Icon--x" onclick="toggleInfo('versionInfo')"></span>
+            <span style="float:right; cursor:pointer" class="ms-Icon ms-Icon--Cancel" onclick="toggleInfo('versionInfo')"></span>
             <p class="ms-Callout-title">Product Version</p>
         </div>
         <div class="ms-Callout-inner">
@@ -1357,25 +1436,11 @@
                 <p class="ms-Callout-subText">
                     Optional. If a <strong>Version</strong>
                     value is not set, the Click-to-Run product installation streams the latest available version from the source. The default is to use the most recently advertised build (as defined in v32.CAB or v64.CAB at the Click-to-Run Office installation source). 
-                    
-                    
-                    
-                    
-                
-                
-                
                 </p>
                 <br/>
                 <p class="ms-Callout-subText">
                     <strong>Version</strong>
                     can be set to an Office 2013 build number by using this format: X.X.X.X
-                    
-                    
-                    
-                    
-                
-                
-                
                 </p>
                 <br/>
                 <p class="ms-Callout-subText">
@@ -1388,7 +1453,7 @@
 <div id="branchInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:75px; top:115px; display:none">
     <div class="ms-Callout-main">
         <div class="ms-Callout-header">
-            <span style="float:right; cursor:pointer" class="ms-Icon ms-Icon--x" onclick="toggleInfo('branchInfo')"></span>
+            <span style="float:right; cursor:pointer" class="ms-Icon ms-Icon--Cancel" onclick="toggleInfo('branchInfo')"></span>
             <p class="ms-Callout-title">Office Branch</p>
         </div>
         <div class="ms-Callout-inner">
@@ -1405,7 +1470,7 @@
 <div id="updatesBranchInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:75px; top:115px; display:none">
     <div class="ms-Callout-main">
         <div class="ms-Callout-header">
-            <span style="float:right; cursor:pointer" class="ms-Icon ms-Icon--x" onclick="toggleInfo('updatesBranchInfo')"></span>
+            <span style="float:right; cursor:pointer" class="ms-Icon ms-Icon--Cancel" onclick="toggleInfo('updatesBranchInfo')"></span>
             <p class="ms-Callout-title">Office Branch</p>
         </div>
         <div class="ms-Callout-inner">
@@ -1422,7 +1487,7 @@
 <div id="pidkeyInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:75px; top:472px; display:none">
     <div class="ms-Callout-main">
         <div class="ms-Callout-header">
-            <span style="float:right; cursor:pointer" class="ms-Icon ms-Icon--x" onclick="toggleInfo('pidkeyInfo')"></span>
+            <span style="float:right; cursor:pointer" class="ms-Icon ms-Icon--Cancel" onclick="toggleInfo('pidkeyInfo')"></span>
             <p class="ms-Callout-title">PIDKEY</p>
         </div>
         <div class="ms-Callout-inner">
@@ -1433,13 +1498,6 @@
                 <p class="ms-Callout-subText">
                     When the <strong>PIDKEY</strong>
                     value is set, users are not required to enter a product key when they install Office.
-                    
-                    
-                    
-                    
-                
-                
-                
                 </p>
                 <br/>
                 <p class="ms-Callout-subText">If this element is not defined, the default settings are used. If an invalid value is specified, Setup ends the installation. </p>
@@ -1448,13 +1506,6 @@
                     If the <strong>Level</strong>
                     attribute is set to "basic" or “none” and you supply a product key by using the <strong>PIDKEY</strong>
                     , Setup assumes that you also accept the license agreement on behalf of the user.
-                    
-                    
-                    
-                    
-                
-                
-                
                 </p>
             </div>
         </div>
@@ -1463,7 +1514,7 @@
 <div id="editionInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:75px; top:115px; display:none">
     <div class="ms-Callout-main">
         <div class="ms-Callout-header">
-            <span style="float:right; cursor:pointer" class="ms-Icon ms-Icon--x" onclick="toggleInfo('editionInfo')"></span>
+            <span style="float:right; cursor:pointer" class="ms-Icon ms-Icon--Cancel" onclick="toggleInfo('editionInfo')"></span>
             <p class="ms-Callout-title">Office Client Edition</p>
         </div>
         <div class="ms-Callout-inner">
@@ -1471,26 +1522,12 @@
                 <p class="ms-Callout-subText">
                     Required. Specifies the edition of Click-to-Run for Office 365 product to use: 32- or 64-bit. The action fails if <strong>OfficeClientEdition</strong>
                     is not set to a valid value.
-                    
-                    
-                    
-                    
-                
-                
-                
                 </p>
                 <br/>
                 <p class="ms-Callout-subText">
                     A <strong>configure</strong>
                     mode action may fail if <strong>OfficeClientEdition</strong>
                     is set incorrectly. For example, if you attempt to install a 64-bit edition of a Click-to-Run for Office 365 product on a computer that is running a 32-bit Windows operating system, or if you try to install a 32-bit Click-to-Run for Office 365 product on a computer that has a 64-bit edition of Office installed.
-                    
-                    
-                    
-                    
-                
-                
-                
                 </p>
             </div>
         </div>
@@ -1499,7 +1536,7 @@
 <div id="languageInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:90px; top:188px; display:none">
     <div class="ms-Callout-main">
         <div class="ms-Callout-header">
-            <span style="float:right; cursor:pointer" class="ms-Icon ms-Icon--x" onclick="toggleInfo('languageInfo')"></span>
+            <span style="float:right; cursor:pointer" class="ms-Icon ms-Icon--Cancel" onclick="toggleInfo('languageInfo')"></span>
             <p class="ms-Callout-title">Product Language</p>
         </div>
         <div class="ms-Callout-inner">
@@ -1509,26 +1546,12 @@
                 <p class="ms-Callout-subText">
                     Required. If the <strong>Language ID</strong>
                     value is not set, the installation operation fails and indicates that the input is not valid.
-                    
-                    
-                    
-                    
-                
-                
-                
                 </p>
                 <br/>
                 <p class="ms-Callout-subText">
                     The <strong>ID</strong>
                     value can be set to a valid Office culture language (such as en-us for English US or ja-jp for Japanese). The <em>ll-cc</em>
                     value is the language identifier. 
-                    
-                    
-                    
-                    
-                
-                
-                
                 </p>
                 <br/>
                 <p class="ms-Callout-subText">Language elements determine which product languages to install. Administrators must specify the languages they want to install. The first language determines the Shell UI culture. The Shell UI is the language of shortcuts, right-click context menus, and tooltips.
@@ -1543,7 +1566,7 @@
 <div id="srcPathInfo" class="ms-Callout ms-Callout--arrowLeft" style="position: absolute; left: 98px; top: 408px; display: none;">
     <div class="ms-Callout-main">
         <div class="ms-Callout-header">
-            <span style="float: right; cursor: pointer" class="ms-Icon ms-Icon--x" onclick="toggleInfo('srcPathInfo')"></span>
+            <span style="float: right; cursor: pointer" class="ms-Icon ms-Icon--Cancel" onclick="toggleInfo('srcPathInfo')"></span>
             <p class="ms-Callout-title">Source Path</p>
         </div>
         <div class="ms-Callout-inner">
@@ -1554,28 +1577,12 @@
                 <p class="ms-Callout-subText">
                     The <strong>SourcePath</strong>
                     value can be set to a network, local, or HTTP path that contains a Click-to-Run source. Environment variables can be used for network or local paths.
-                    
-                    
-                    
-                    
-                    
-                
-                
-                
                 </p>
                 <br/>
                 <p class="ms-Callout-subText">
                     <strong>SourcePath</strong>
                     indicates the location to save the Click-to-Run installation source when you run the Office Deployment Tool in <strong>download</strong>
                     mode.
-                    
-                    
-                    
-                    
-                    
-                
-                
-                
                 </p>
                 <br/>
                 <p class="ms-Callout-subText">
@@ -1584,42 +1591,18 @@
                     mode. If you don’t specify <strong>SourcePath</strong>
                     in <strong>configure</strong>
                     mode, Setup will look in the current folder for the Office source files. If the Office source files aren’t found in the current folder, Setup will look on Office 365 for them.
-                    
-                    
-                    
-                    
-                    
-                
-                
-                
                 </p>
                 <br/>
                 <p class="ms-Callout-subText">
                     <strong>SourcePath</strong>
                     specifies the path of the Click-to-Run Office source from which the App-V package will be made when you run the Office Deployment Tool in <strong>packager</strong>
                     mode.
-                    
-                    
-                    
-                    
-                    
-                
-                
-                
                 </p>
                 <br/>
                 <p class="ms-Callout-subText">
                     If you do not specify <strong>SourcePath</strong>
                     , Setup will attempt to create an <strong>\Office\Data\...</strong>
                     folder structure in the working directory from which you are running setup.exe.
-                    
-                    
-                    
-                    
-                    
-                
-                
-                
                 </p>
             </div>
         </div>
@@ -1628,7 +1611,7 @@
 <div id="dwnPathInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:98px; top:408px; display:none;">
     <div class="ms-Callout-main">
         <div class="ms-Callout-header">
-            <span style="float:right; cursor:pointer" class="ms-Icon ms-Icon--x" onclick="toggleInfo('dwnPathInfo')"></span>
+            <span style="float:right; cursor:pointer" class="ms-Icon ms-Icon--Cancel" onclick="toggleInfo('dwnPathInfo')"></span>
             <p class="ms-Callout-title">Download Path</p>
         </div>
         <div class="ms-Callout-inner">
@@ -1639,13 +1622,6 @@
                 <p class="ms-Callout-subText">
                     The <strong>DownloadPath</strong>
                     value can be set to a network, local, or HTTP path that contains a Click-to-Run source. Environment variables can be used for network or local paths.
-                    
-                    
-                    
-                    
-                
-                
-                
                 </p>
                 <br/>
                 <p class="ms-Callout-subText">
@@ -1654,25 +1630,11 @@
                     mode. If you don’t specify <strong>DownloadPath</strong>
                     in <strong>configure</strong>
                     mode, Setup will look in the current folder for the Office source files. If the Office source files aren’t found in the current folder, Setup will look on Office 365 for them.
-                    
-                    
-                    
-                    
-                
-                
-                
                 </p>
                 <br/>
                 <p class="ms-Callout-subText">
                     If you do not specify <strong>DownloadPath</strong>
                     , Setup will attempt to download the files required for installation from the CDN.
-                    
-                    
-                    
-                    
-                
-                
-                
                 </p>
             </div>
         </div>
@@ -1681,7 +1643,7 @@
 <div id="removeProductInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none">
     <div class="ms-Callout-main">
         <div class="ms-Callout-header">
-            <span style="float:right; cursor:pointer" class="ms-Icon ms-Icon--x" onclick="toggleInfo('removeProductInfo')"></span>
+            <span style="float:right; cursor:pointer" class="ms-Icon ms-Icon--Cancel" onclick="toggleInfo('removeProductInfo')"></span>
             <p class="ms-Callout-title">Remove Products</p>
         </div>
         <div class="ms-Callout-inner">
@@ -1694,14 +1656,6 @@
                 <p class="ms-Callout-subText">
                     To remove an installed language for a product, you must specify the ID for the product, and specify the ID for the language that you want to remove. To remove a product completely, you must specify the ID for the product, and specify the IDs of all the languages that are installed. But, if the product and languages are also specified in the <a href="#BKMK_AddElement" id="A_10">Add element</a>
                     of the configuration.xml file, then the product or languages won’t be removed.
-                        
-                    
-                    
-                    
-                    
-                
-                
-                
                 </p>
                 <br/>
                 <p class="ms-Callout-subText">
@@ -1709,14 +1663,6 @@
                     is set to <strong>TRUE</strong>
                     , then all products and languages are removed, regardless of what is specified in the <strong>Add element</strong>
                     .
-                        
-                    
-                    
-                    
-                    
-                
-                
-                
                 </p>
             </div>
         </div>
@@ -1725,7 +1671,7 @@
 <div id="exclAppInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:150px; top:510px; display:none">
     <div class="ms-Callout-main">
         <div class="ms-Callout-header">
-            <span style="float:right; cursor:pointer" class="ms-Icon ms-Icon--x" onclick="toggleInfo('exclAppInfo')"></span>
+            <span style="float:right; cursor:pointer" class="ms-Icon ms-Icon--Cancel" onclick="toggleInfo('exclAppInfo')"></span>
             <p class="ms-Callout-title">ExcludeApp</p>
         </div>
         <div class="ms-Callout-inner">
@@ -1736,13 +1682,6 @@
                 <p class="ms-Callout-subText">
                     The following is a list of the supported values for <strong>ID</strong>
                     :
-                    
-                    
-                    
-                    
-                
-                
-                
                 </p>
                 <ul>
                     <li>
@@ -1791,7 +1730,7 @@
 <div id="updatePathInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none">
     <div class="ms-Callout-main">
         <div class="ms-Callout-header">
-            <span style="float:right; cursor:pointer" class="ms-Icon ms-Icon--x" onclick="toggleInfo('updatePathInfo')"></span>
+            <span style="float:right; cursor:pointer" class="ms-Icon ms-Icon--Cancel" onclick="toggleInfo('updatePathInfo')"></span>
             <p class="ms-Callout-title">Update Path</p>
         </div>
         <div class="ms-Callout-inner">
@@ -1804,14 +1743,6 @@
                     If <strong>UpdatePath</strong>
                     is not set, Click-to-Run installations obtain updates from the Microsoft Click-to-Run source (Content Delivery Network or CDN). This is by default. If <strong>UpdatePath</strong>
                     is set to empty (""), updates are obtained from the Microsoft Click-to-Run source, CDN.
-                        
-                    
-                    
-                    
-                    
-                
-                
-                
                 </p>
                 <br/>
                 <p class="ms-Callout-subText">
@@ -1821,13 +1752,6 @@
                     by using the <strong>Update Path</strong>
                     policy setting. You can find this policy setting under Computer Configuration\Administrative Templates\Microsoft Office 2013 (Machine)\Updates.
                         
-                    
-                    
-                    
-                    
-                
-                
-                
                 </p>
             </div>
         </div>
@@ -1836,7 +1760,7 @@
 <div id="targetVersionInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none">
     <div class="ms-Callout-main">
         <div class="ms-Callout-header">
-            <span style="float:right; cursor:pointer" class="ms-Icon ms-Icon--x" onclick="toggleInfo('targetVersionInfo')"></span>
+            <span style="float:right; cursor:pointer" class="ms-Icon ms-Icon--Cancel" onclick="toggleInfo('targetVersionInfo')"></span>
             <p class="ms-Callout-title">Remove Products</p>
         </div>
         <div class="ms-Callout-inner">
@@ -1849,14 +1773,6 @@
                     If <strong>TargetVersion</strong>
                     is not set, Click-to-Run updates to the most recent version from the Microsoft Click-to-Run source. If <strong>TargetVersion</strong>
                     is set to empty (""), Click-to-Run updates to the latest version from the Microsoft Click-to-Run source.
-                        
-                    
-                    
-                    
-                    
-                
-                
-                
                 </p>
                 <br/>
                 <p class="ms-Callout-subText">
@@ -1865,14 +1781,6 @@
                     , you can set <strong>TargetVersion</strong>
                     by using the <strong>Target Version</strong>
                     policy setting. You can find this policy setting under Computer Configuration\Administrative Templates\Microsoft Office 2013 (Machine)\Updates.
-                        
-                    
-                    
-                    
-                    
-                
-                
-                
                 </p>
                 <br/>
                 <p class="ms-Callout-subText">
@@ -1885,7 +1793,7 @@
 <div id="editionInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:75px; top:115px; display:none">
     <div class="ms-Callout-main">
         <div class="ms-Callout-header">
-            <span style="float:right; cursor:pointer" class="ms-Icon ms-Icon--x" onclick="toggleInfo('editionInfo')"></span>
+            <span style="float:right; cursor:pointer" class="ms-Icon ms-Icon--Cancel" onclick="toggleInfo('editionInfo')"></span>
             <p class="ms-Callout-title">Office Branch</p>
         </div>
         <div class="ms-Callout-inner">
@@ -1893,26 +1801,12 @@
                 <p class="ms-Callout-subText">
                     Required. Specifies the edition of Click-to-Run for Office 365 product to use: 32- or 64-bit. The action fails if <strong>OfficeClientEdition</strong>
                     is not set to a valid value.
-                    
-                    
-                    
-                    
-                
-                
-                
                 </p>
                 <br/>
                 <p class="ms-Callout-subText">
                     A <strong>configure</strong>
                     mode action may fail if <strong>OfficeClientEdition</strong>
                     is set incorrectly. For example, if you attempt to install a 64-bit edition of a Click-to-Run for Office 365 product on a computer that is running a 32-bit Windows operating system, or if you try to install a 32-bit Click-to-Run for Office 365 product on a computer that has a 64-bit edition of Office installed.
-                    
-                    
-                    
-                    
-                
-                
-                
                 </p>
             </div>
         </div>
@@ -1921,7 +1815,7 @@
 <div id="deadlineInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none">
     <div class="ms-Callout-main">
         <div class="ms-Callout-header">
-            <span style="float:right; cursor:pointer" class="ms-Icon ms-Icon--x" onclick="toggleInfo('deadlineInfo')"></span>
+            <span style="float:right; cursor:pointer" class="ms-Icon ms-Icon--Cancel" onclick="toggleInfo('deadlineInfo')"></span>
             <p class="ms-Callout-title">Deadline</p>
         </div>
         <div class="ms-Callout-inner">
@@ -1934,14 +1828,6 @@
                     Sets a deadline by when updates to Office must be applied. The deadline is specified in Coordinated Universal Time (UTC). You can use <strong>Deadline</strong>
                     with <strong>Target Version</strong>
                     to make sure that Office is updated to a particular version by a particular date.
-                        
-                    
-                    
-                    
-                    
-                
-                
-                
                 </p>
                 <br/>
                 <p class="ms-Callout-subText">We recommend that you set the deadline at least a week in the future to allow users time to install the updates. Prior to the deadline, users receive multiple reminders to install the updates. If Office isn’t updated by the deadline, users see a notification that the updates will be applied in 15 minutes. This gives users the opportunity to save the Office documents that they are working on and to close any Office programs that are open. If users don’t close the Office programs, the programs are closed automatically when the 15 minutes are up, which might result in data loss. After the Office programs are closed, the updates are applied automatically.
@@ -1952,14 +1838,6 @@
                     , you can set <strong>Deadline</strong>
                     by using the <strong>Update Deadline</strong>
                     policy setting. You can find this policy setting under Computer Configuration\Administrative Templates\Microsoft Office 2013 (Machine)\Updates.
-                        
-                    
-                    
-                    
-                    
-                
-                
-                
                 </p>
             </div>
         </div>
@@ -1968,7 +1846,7 @@
 <div id="displayLevelInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none">
     <div class="ms-Callout-main">
         <div class="ms-Callout-header">
-            <span style="float:right; cursor:pointer" class="ms-Icon ms-Icon--x" onclick="toggleInfo('displayLevelInfo')"></span>
+            <span style="float:right; cursor:pointer" class="ms-Icon ms-Icon--Cancel" onclick="toggleInfo('displayLevelInfo')"></span>
             <p class="ms-Callout-title">Display Level</p>
         </div>
         <div class="ms-Callout-inner">
@@ -1983,14 +1861,6 @@
                     , the user sees no UI. No progress UI, completion screen, error dialog boxes, or first run automatic start UI are displayed. If <strong>Level</strong>
                     is set to <strong>Full</strong>
                     , the user sees the normal Click-to-Run user interface: Automatic start, application splash screen, and error dialog boxes.
-                        
-                    
-                    
-                    
-                    
-                
-                
-                
                 </p>
             </div>
         </div>
@@ -1999,7 +1869,7 @@
 <div id="acceptEULAInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none">
     <div class="ms-Callout-main">
         <div class="ms-Callout-header">
-            <span style="float:right; cursor:pointer" class="ms-Icon ms-Icon--x" onclick="toggleInfo('acceptEULAInfo')"></span>
+            <span style="float:right; cursor:pointer" class="ms-Icon ms-Icon--Cancel" onclick="toggleInfo('acceptEULAInfo')"></span>
             <p class="ms-Callout-title">Accept EULA</p>
         </div>
         <div class="ms-Callout-inner">
@@ -2012,14 +1882,6 @@
                     If this attribute is set to <strong>TRUE</strong>
                     , the user does not see a Microsoft Software License Terms dialog box. If this attribute is set to <strong>FALSE</strong>
                     or is not set, the user may see a Microsoft Software License Terms dialog box. This attribute only applies if you install with the user's account. If you use System Center Configuration Manager or some other software distribution tool which uses the SYSTEM account to install, then the setting for this attribute is not applied.
-                        
-                    
-                    
-                    
-                    
-                
-                
-                
                 </p>
             </div>
         </div>
@@ -2028,7 +1890,7 @@
 <div id="logLevelInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none">
     <div class="ms-Callout-main">
         <div class="ms-Callout-header">
-            <span style="float:right; cursor:pointer" class="ms-Icon ms-Icon--x" onclick="toggleInfo('logLevelInfo')"></span>
+            <span style="float:right; cursor:pointer" class="ms-Icon ms-Icon--Cancel" onclick="toggleInfo('logLevelInfo')"></span>
             <p class="ms-Callout-title">Log Level</p>
         </div>
         <div class="ms-Callout-inner">
@@ -2046,7 +1908,7 @@
 <div id="logPathInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none">
     <div class="ms-Callout-main">
         <div class="ms-Callout-header">
-            <span style="float:right; cursor:pointer" class="ms-Icon ms-Icon--x" onclick="toggleInfo('logPathInfo')"></span>
+            <span style="float:right; cursor:pointer" class="ms-Icon ms-Icon--Cancel" onclick="toggleInfo('logPathInfo')"></span>
             <p class="ms-Callout-title">Log Path</p>
         </div>
         <div class="ms-Callout-inner">
@@ -2058,14 +1920,6 @@
                 <p class="ms-Callout-subText">
                     You can use environment variables. The default is <strong>%temp%</strong>
                     .
-                        
-                    
-                    
-                    
-                    
-                
-                
-                
                 </p>
             </div>
         </div>
@@ -2074,7 +1928,7 @@
 <div id="aaInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none">
     <div class="ms-Callout-main">
         <div class="ms-Callout-header">
-            <span style="float:right; cursor:pointer" class="ms-Icon ms-Icon--x" onclick="toggleInfo('aaInfo')"></span>
+            <span style="float:right; cursor:pointer" class="ms-Icon ms-Icon--Cancel" onclick="toggleInfo('aaInfo')"></span>
             <p class="ms-Callout-title">AUTOACTIVATE</p>
         </div>
         <div class="ms-Callout-inner">
@@ -2085,28 +1939,12 @@
                     If <strong>AUTOACTIVATE</strong>
                     is set to 1, the specified products will attempt to activate automatically. If <strong>AUTOACTIVATE</strong>
                     is not set, the user may see the Activation Wizard UI.
-                        
-                    
-                    
-                    
-                    
-                
-                
-                
                 </p>
                 <br/>
                 <p class="ms-Callout-subText">
                     <strong>Note:</strong>
                     Office 365 Click-to-Run products are already set to activate automatically. You must not set <strong>AUTOACTIVATE</strong>
-                    for Office 365 Click-to-Run products. This setting applies only to perpetual retail versions of Click-to-Run products.
-                        
-                    
-                    
-                    
-                    
-                
-                
-                
+                    for Office 365 Click-to-Run products. This setting applies only to perpetual retail versions of Click-to-Run products.            
                 </p>
             </div>
         </div>
@@ -2115,7 +1953,7 @@
 <div id="fasInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none">
     <div class="ms-Callout-main">
         <div class="ms-Callout-header">
-            <span style="float:right; cursor:pointer" class="ms-Icon ms-Icon--x" onclick="toggleInfo('fasInfo')"></span>
+            <span style="float:right; cursor:pointer" class="ms-Icon ms-Icon--Cancel" onclick="toggleInfo('fasInfo')"></span>
             <p class="ms-Callout-title">FORCEAPPSHUTDOWN</p>
         </div>
         <div class="ms-Callout-inner">
@@ -2134,14 +1972,6 @@
                     is set to
                             <strong>FALSE</strong>
                     (default), the action may fail if Office applications are running.
-                        
-                    
-                    
-                    
-                    
-                
-                
-                
                 </p>
             </div>
         </div>
@@ -2150,7 +1980,7 @@
 <div id="sclInfo" class="ms-Callout ms-Callout--arrowLeft" style="position: absolute; left: 80px; top: 40px; display: none">
     <div class="ms-Callout-main">
         <div class="ms-Callout-header">
-            <span style="float: right; cursor: pointer" class="ms-Icon ms-Icon--x" onclick="toggleInfo('sclInfo')"></span>
+            <span style="float: right; cursor: pointer" class="ms-Icon ms-Icon--Cancel" onclick="toggleInfo('sclInfo')"></span>
             <p class="ms-Callout-title">SharedComputerLicensing</p>
         </div>
         <div class="ms-Callout-inner">
@@ -2164,14 +1994,6 @@
                             For more information, see
                             <a href="https://technet.microsoft.com/en-us/library/dn782860.aspx">Overview of shared computer activation for Office 365 ProPlus</a>
                     .
-                        
-                    
-                    
-                    
-                    
-                
-                
-                
                 </p>
             </div>
         </div>
@@ -2180,7 +2002,7 @@
 <div id="pinIconInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none">
     <div class="ms-Callout-main">
         <div class="ms-Callout-header">
-            <span style="float:right; cursor:pointer" class="ms-Icon ms-Icon--x" onclick="toggleInfo('pinIconInfo')"></span>
+            <span style="float:right; cursor:pointer" class="ms-Icon ms-Icon--Cancel" onclick="toggleInfo('pinIconInfo')"></span>
             <p class="ms-Callout-title">PinIcons</p>
         </div>
         <div class="ms-Callout-inner">
@@ -2191,14 +2013,6 @@
                 <p class="ms-Callout-subText">
                     Set <strong id="STRONG_3">PinIcons</strong>
                     to FALSE if you do not want the Office icons pinned to the taskbar
-                        
-                    
-                    
-                    
-                    
-                
-                
-                
                 </p>
             </div>
         </div>
@@ -2207,7 +2021,7 @@
 <div id="PACKAGEGUIDInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none">
     <div class="ms-Callout-main">
         <div class="ms-Callout-header">
-            <span style="float:right; cursor:pointer" class="ms-Icon ms-Icon--x" onclick="toggleInfo('PACKAGEGUIDInfo')"></span>
+            <span style="float:right; cursor:pointer" class="ms-Icon ms-Icon--Cancel" onclick="toggleInfo('PACKAGEGUIDInfo')"></span>
             <p class="ms-Callout-title">PACKAGEGUID</p>
         </div>
         <div class="ms-Callout-inner">
@@ -2219,14 +2033,6 @@
                     By default, all Office 2013 App-V packages created by using the Office Deployment Tool share the same App-V Package ID. Administrators can use <strong>PACKAGEGUID</strong>
                     to specify a different Package ID. You can only use the following characters for <strong>PACKAGEGUID</strong>
                     :
-                        
-                    
-                    
-                    
-                    
-                
-                
-                
                 </p>
                 <ul>
                     <li>
@@ -2242,14 +2048,6 @@
                     If you use any other characters, the App-V package is created with the default Package ID. Also, <strong>PACKAGEGUID</strong>
                     needs to be 25 characters in length and be separated into 5 sections, with each section separated by a dash. The sections need to have the following number of characters: 8, 4, 4, 4, and 12. For example, 12345678-ABCD-1234-ABCD-1234567890AB is a valid value for <strong>PACKAGEGUID</strong>
                     . This allows you to publish multiple App-V packages of Office 2013 to an App-V Management Server. But, this doesn’t enable you to deploy more than one Office 2013 App-V package to a single computer.
-                        
-                    
-                    
-                    
-                    
-                
-                
-                
                 </p>
             </div>
         </div>
@@ -2280,7 +2078,7 @@
                     <div >
                         <div class="ms-CommandBarItem-linkWrapper">
                             <div class="ms-CommandBarItem-link js-togglePanel" style="position: relative">
-                                <span class="ms-CommandBarItem-icon ms-Icon ms-Icon--xCircle"></span>
+                                <span class="ms-CommandBarItem-icon ms-Icon ms-Icon--CancelCircle"></span>
                                 <span class="ms-CommandBarItem ms-font-m ms-font-weight-regular">Cancel</span>
                             </div>
                         </div>
@@ -2299,7 +2097,7 @@
     <div class="ms-Overlay"></div>
     <div class="ms-Dialog-main">
         <button class="ms-Dialog-button ms-Dialog-button--close">
-            <i class="ms-Icon ms-Icon--x"></i>
+            <i class="ms-Icon ms-Icon--Cancel"></i>
         </button>
         <div class="ms-Dialog-header">
             <p class="ms-Dialog-title">All emails together</p>
@@ -2333,18 +2131,9 @@
         </div>
     </div>
 </div>
-<script type="text/javascript">
-  // var DatePickerElements = document.querySelectorAll(".ms-DatePicker");
-  // for (var i = 0; i < DatePickerElements.length; i++) {
-  //   new fabric['DatePicker'](DatePickerElements[i]);
-  // }
-</script>
 <script>
 
     $(document).ready(function() {
-
-          var myDatepicker = $('.ms-DatePicker');
-                $(myDatepicker).append("<label class='ms-Label'>Deadline<i id='deadlineInfoIcon' class='ms-Icon ms-Icon--circleInfo ms-fontColor-blue' style='width: 30px;text-align: center;cursor:pointer;' onclick='toggleInfo('deadlineInfo', this)'></i></label>")
 
         $("#pidKeyLabel").hide();
 
@@ -2356,7 +2145,7 @@
             $('.ms-Dropdown').FilePicker();
             $('.ms-Toggle').FilePicker();
             $('.ms-Table').FilePicker();
-            $('.ms-DatePicker').FilePicker();
+            //$('.ms-DatePicker').FilePicker();
         } else {
             if ($.fn.Dropdown) {
                 $('.ms-Dropdown').Dropdown();
@@ -2416,47 +2205,6 @@
                 component = new fabric.Spinner(componentHolder);
             }
         }
-        //Corrections to bad datepicker behavior (from UI Fabric)
-        var $monthPicker = $('.ms-DatePicker-monthPicker');
-        var $monthControls = $('.ms-DatePicker-monthComponents');
-        var $yearControls = $('.ms-DatePicker-monthComponents');
-        var $decadeControls = $('.ms-DatePicker-decadeComponents');
-        var $yearPicker = $('.ms-DatePicker-yearPicker');
-        var $picker = $(myDatepicker).children('.ms-TextField');
-        // .pickadate('picker');
-
-        /** Switch to the is-pickingMonths state. */
-        $monthPicker.on('click', '.js-showMonthPicker', function(event) {
-            myDatepicker.toggleClass('is-pickingMonths');
-            myDatepicker.toggleClass('is-pickingYears');
-        });
-
-        $monthControls.on('click', '.js-showMonthPicker', function(event) {
-            //fix disappearing box behavior
-            myDatepicker.toggleClass('is-pickingMonths');
-
-            //check to see if trying to click previous month icon
-            var $prevClickIcon = $('.js-prevMonth');
-            var X = (event.pageX);
-            var Y = (event.pageY);
-            if (($prevClickIcon.offset().left < X) && (($prevClickIcon.offset().left + $prevClickIcon.width()) > X) && ($prevClickIcon.offset().top < Y) && (($prevClickIcon.offset().top + $prevClickIcon.width()) > Y)) {
-                //process the event
-                event.preventDefault();
-                var newMonth = $picker.get('highlight').month - 1;
-                changeHighlightedDate($picker, null, newMonth, null);
-            }
-        });
-
-        $decadeControls.on('click', '.js-showMonthPicker', function(event) {
-            myDatepicker.toggleClass('is-pickingMonths');
-        });
-
-        /** Switch to the is-pickingYears state. */
-        $yearControls.on('click', '.js-showYearPicker', function(event) {
-            myDatepicker.toggleClass('is-pickingYears');
-        });
-
-        myDatepicker.find('.ms-Label').append("<i id=\"deadlineInfoIcon\" class=\"ms-Icon ms-Icon--circleInfo ms-fontColor-blue\" style=\"width: 30px;text-align: center;cursor:pointer;\" onclick=\"toggleInfo('deadlineInfo', this)\"></i>");
     });
 
     /** Change the highlighted date. */
@@ -2487,4 +2235,25 @@
     }());
   }
 </script>
+<script type="text/javascript">
+  var DatePickerElements = document.querySelectorAll(".ms-DatePicker");
+  for (var i = 0; i < DatePickerElements.length; i++) {
+    new fabric['DatePicker'](DatePickerElements[i]);
+  }
+</script>
+
+<script type="text/javascript">
+    var CalloutExamples = document.querySelectorAll(".ms-Callout");
+    for (var i = 0; i < CalloutExamples.length; i++) {
+    var Example = CalloutExamples[i];
+    var ExampleButtonElement = Example.querySelector(".ms-Callout.ms-Button");
+    var CalloutElement = Example.querySelector(".ms-Callout");
+    new fabric['Callout'](
+      CalloutElement,
+      ExampleButtonElement,
+      "right"
+    );
+}
+</script>
+    </head>
 </body></html>
