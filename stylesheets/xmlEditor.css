@@ -21,19 +21,20 @@ body{
 
 #CommandBar{
     min-height:50px;
+    margin-left: -8px;
+    margin-right: 0;
     padding:0px 0px 0px 10px;
-    /* margin-right: -16px; */
 }
 
 .xmlCommandBar{
     min-height:40px;
     background:#eff6fc;
-    /* padding:10px 0px 10px 0px; */
+    padding:10px 0px 10px 0px;
 }
 
 .xmlCommandBar-item{
     margin: 0px 0px 0px 8px;
-    padding: 10px 0px 0px 10px;
+    padding: 10px 15px 0px 15px;
     min-height: 40px;
     font-size: 11px;
 }
@@ -47,7 +48,6 @@ body{
     padding:10px;
     text-align: center;
     cursor:pointer;
-    /* margin-right: -16px; */
 }
 
 .CommandBarTitle{
@@ -55,7 +55,8 @@ body{
 }
 
 #LeftNav{
-    padding: 20px 0px 0px 5px;
+    padding: 0px 0px 0px 5px;
+    margin-top:20px;
 }
 
 .NavOptions{
@@ -104,5 +105,5 @@ body{
 }
 
 #xmlSec, #xmlSection {
-    height:auto !important;
+    height:100% !important;
 }

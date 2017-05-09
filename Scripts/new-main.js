@@ -65,14 +65,7 @@ $(document).ready(function () {
     $("#removeAllProducts").change(odtToggleRemoveApp());
 
     setActiveTab();
-
-//     resizeWindow();
-
     LoadPage(); 
-
-    $(window).resize(function () {
-        // resizeWindow();
-    });
 
     $('#txtPidKey').keydown(function (e) {
         var currentText = this.value;
@@ -744,6 +737,7 @@ $(document).ready(function () {
 
         setPanel(section,page); 
     }
+    resizePage();
     //if (typeof ($.cookie('xmlHistory') !== undefined)) {
     //    $.removeCookie('xmlHistory', { path: '/' });
     //}
@@ -862,15 +856,23 @@ function LoadPage(){
 
 function resizePage(){
 
-     if(window.innerWidth >= 640){
-        var configHeight = $('#configColumn').height();
+     if(window.outerWidth >= 640){
+        var bodyHeight = window.innerHeight - $('#CommandBar').height() - 30;
 
-        $('#Site-Content').height('auto');
-        $('#LeftNav').height('auto');
-        $('#XmlPane').height('auto');
+        $('#SiteContent').height(bodyHeight+10);
+        $('#configColumn').height(bodyHeight);
+        $('#XmlPane').height(bodyHeight);   
         }
     else{
 
+
+        $('#siteContent').height('auto');
+        $('#LeftNav').height('auto');
+
+        $('#LeftNav').height('auto');
+        $('#configColumn').height('auto');
+
+        $('#XmlPane').height('auto');
     }   
 }
 
