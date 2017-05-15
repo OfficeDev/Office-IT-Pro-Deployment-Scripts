@@ -54,7 +54,8 @@ if ($installOffice) {
       }
 
       $OfficeCDNUrl = Get-OfficeCDNUrl
-      $SourcePath = Get-UpdateSource
+      #$SourcePath = Get-UpdateSource
+      $SourcePath = $scriptPath
 
       Remove-OfficeClickToRun -TargetFilePath $targetFilePath
 
