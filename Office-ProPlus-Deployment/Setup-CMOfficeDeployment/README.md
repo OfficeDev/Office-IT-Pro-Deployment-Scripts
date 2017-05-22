@@ -1,11 +1,11 @@
-#Setup Config Manager Office Deployment
+# Setup Config Manager Office Deployment
 
 This PowerShell function automates the setup of Office 365 Click-To-Run deployment and update scenarios in Config Manager. For more reading on how to create packages and programs outside of this script visit https://technet.microsoft.com/en-us/library/gg699369.aspx and https://technet.microsoft.com/en-us/library/gg682112.aspx
 
 [README](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/wiki/Readme_Setup-CMOfficeDeployment)
 
-##**Section 1:** These are the scenarios for creating, updating, and deploying the Office 365 ProPlus programs using System Center Configuration Manager. Please see the next section for step by step instructions on how to use these Functions
-###Deploy Office 365 ProPlus
+## **Section 1:** These are the scenarios for creating, updating, and deploying the Office 365 ProPlus programs using System Center Configuration Manager. Please see the next section for step by step instructions on how to use these Functions
+### Deploy Office 365 ProPlus
 1. Download the channel files from the CDN.
 
 		Download-CMOOfficeChannelFiles -Channels Deferred -Bitness v32 -OfficeFilesPath D:\OfficeChannels
@@ -36,7 +36,7 @@ This PowerShell function automates the setup of Office 365 Click-To-Run deployme
 		
 	* A deployment will be created and made available to the collection 'Human Resources' that will install the "Deploy Deferred Channel with Config File - 32-Bit" program and make it "Available" for install from the software center.
 
-###Change the channel of an Office 365 client.
+### Change the channel of an Office 365 client.
 1. Download the channel files from the CDN.
 
 		Download-CMOOfficeChannelFiles -Channels FirstReleaseDeferred -Bitness v32 -OfficeFilesPath D:\OfficeChannels
@@ -65,7 +65,7 @@ This PowerShell function automates the setup of Office 365 Click-To-Run deployme
 
 		Deploy-CMOfficeProgram -Collection 'Human Resources' -ProgramType DeployWithConfigurationFile -Channel FirstReleaseDeferred -Bitness v32 -SiteCode S01 -DeploymentPurpose Available
 
-###Rollback the version of an Office 365 client.
+### Rollback the version of an Office 365 client.
 
 1. Download the channel version files.
 
@@ -91,7 +91,7 @@ This PowerShell function automates the setup of Office 365 Click-To-Run deployme
 
 		Deploy-CMOfficeProgram -Collection 'Human Resources' -ProgramType RollBack -Channel FirstReleaseDeferred -Bitness v32 -SiteCode S01 -DeploymentPurpose Available
 
-###Update an Office 365 ProPlus client with ConfigMgr
+### Update an Office 365 ProPlus client with ConfigMgr
 
 1. Download the channel files to update the client.
 
@@ -117,7 +117,7 @@ This PowerShell function automates the setup of Office 365 Click-To-Run deployme
 
 		Deploy-CMOfficeProgram -Collection 'Human Resources' -ProgramType UpdateWithConfigMgr -Channel FirstReleaseDeferred -Bitness v32 -SiteCode S01 -DeploymentPurpose Required
 
-###Update an Office 365 ProPlus client using a scheduled task.
+### Update an Office 365 ProPlus client using a scheduled task.
 
 1. Download-CMOOfficeChannelFiles
 
@@ -143,8 +143,8 @@ This PowerShell function automates the setup of Office 365 Click-To-Run deployme
 
 		Deploy-CMOfficeProgram -Collection 'Human Resources' -ProgramType UpdateWithTask -Channel FirstReleaseDeferred -Bitness v32 -SiteCode S01 -DeploymentPurpose Required
 
-##**Section 2:** Creating the Office ProPlus Package. This section will walk you through setting up your System Center Configuration Manager environment to create the package that your programs will exist under. 
-###First you need to prepare the environment
+## **Section 2:** Creating the Office ProPlus Package. This section will walk you through setting up your System Center Configuration Manager environment to create the package that your programs will exist under. 
+### First you need to prepare the environment
 
 1. Download the **Setup-CMOfficeDeployment** script folder to your Config Manager Server. Save it to a place that is easy to access. 
 
@@ -164,7 +164,7 @@ This PowerShell function automates the setup of Office 365 Click-To-Run deployme
    		the PowerShell function in the script into your PowerShell session which will allow you to 
    		run the inner functions from the console.
 
-###Downloading the source files from the CDN
+### Downloading the source files from the CDN
 
 1. Run **Download-CMOOfficeChannelFiles**. This function will download all the source files from the CDN.
 
@@ -177,7 +177,7 @@ This PowerShell function automates the setup of Office 365 Click-To-Run deployme
 	
 			Example: Download-CMOfficeChannels -Channels Deferred,FirstReleaseDeferred -OfficeFilesPath D:\OfficeChannels -Languages en-us,es-es,de-de -Bitness v32
 
-###Create the Office ProPlus package
+### Create the Office ProPlus package
 
 1. Run **Create-CMOfficePackage**. This function creates the package and associated package share
 
@@ -193,7 +193,7 @@ This PowerShell function automates the setup of Office 365 Click-To-Run deployme
 	
 			Example: Create-CMOfficePackage -Channels Deferred -OfficeSourceFilesPath D:\OfficeChanels -MoveSourceFiles $true -SiteCode S01 -Bitness v32
 
-##**Section 2a:** Updating the Office 365 ProPlus package.
+## **Section 2a:** Updating the Office 365 ProPlus package.
 ### This is used when you download new content that needs to be included in the package. 
 
 1. To update the Office ProPlus package use **Update-CMOfficePackage**
@@ -205,8 +205,8 @@ This PowerShell function automates the setup of Office 365 Click-To-Run deployme
 	
 			Example: Update-CMOfficePackage -Channels FirstReleaseDeferred -OfficeSourceFilesPath D:\OfficeChannels -MoveSourceFiles $true
 
-##**Section 2b**Creating Office 365 Client Programs. Once the package is created you create the various programs as lined out below.
-###Create-CMOfficeDeploymentProgram
+## **Section 2b**Creating Office 365 Client Programs. Once the package is created you create the various programs as lined out below.
+### Create-CMOfficeDeploymentProgram
 1. To create an Office 365 deployment program use **Create-CMOfficeDeploymentProgram**
 
 	The available parameters with the function are as follows.
@@ -221,7 +221,7 @@ This PowerShell function automates the setup of Office 365 Click-To-Run deployme
 	
 			Example: Create-CMOfficeDeploymentProgram -Channels Deferred,FirstReleaseDeferred -Bitness v32 -DeploymentType DeployWithConfigurationFile -SiteCode S01
 
-###Create-CMOfficeChannelChangeProgram
+### Create-CMOfficeChannelChangeProgram
 
 1. To create an Office 365 channel change program use **Create-CMOfficeChannelChangeProgram**
 	
@@ -232,7 +232,7 @@ This PowerShell function automates the setup of Office 365 Click-To-Run deployme
 
 			Example: Create-CMOfficeChannelChangeProgram -Channels Deferred -SiteCode S01
 			
-###Create-CMOfficeRollBackProgram
+### Create-CMOfficeRollBackProgram
 
 1. To create an Office 365 rollback program use **Create-CMOfficeRollBackProgram**
 	
@@ -242,7 +242,7 @@ This PowerShell function automates the setup of Office 365 Click-To-Run deployme
 
 			Example: Create-CMOfficeRollBackProgram
 			
-###Create-CMOfficeUpdateProgram
+### Create-CMOfficeUpdateProgram
 
 1. To create an Office 365 client update program use **Create-CMOfficeUpdateProgram**
 	
@@ -286,7 +286,7 @@ This PowerShell function automates the setup of Office 365 Click-To-Run deployme
 
 			Example: Create-CMOfficeUpdateAsTaskProgram -WaitForUpdateToFinish $false -EnableUpdateAnywhere $false -ForceAppShutdown $true -UpdatePromptUser $true -UpdateToVersion 16.0.6001.1078
 		
-###Create-CMOfficeLanguageProgram
+### Create-CMOfficeLanguageProgram
 1. To create an Office 365 language pack deployment use **Create-CMOfficeLanguageProgram**
 
 	The available parameters with the functions are as follows.
@@ -297,7 +297,7 @@ This PowerShell function automates the setup of Office 365 Click-To-Run deployme
 	* **Version** You can specify a version to download. Versions and the associated channels can be found [Here](https://technet.microsoft.com/en-us/library/mt592918.aspx)
 	* **ConfigurationXml** Default value has the name of the "programname".xml
 
-##**Section 2c:**Distribute the Office 365 ProPlus Package. Once the package and programs have been made you need to distribute the content(performed only once). If you add or update programs after the initial distribution please use the update package funtion.
+## **Section 2c:**Distribute the Office 365 ProPlus Package. Once the package and programs have been made you need to distribute the content(performed only once). If you add or update programs after the initial distribution please use the update package funtion.
 
 1. To distribute the Office 365 package use **Distribute-CMOfficePackage**
 	
@@ -312,7 +312,7 @@ This PowerShell function automates the setup of Office 365 Click-To-Run deployme
 
 			Example: Distribute-CMOfficePackage -Channels Deferred -DistributionPoint cm.contoso.com -WaitForDistributionToFinish $true
 			
-##**Section 2d:**Deploy the Office 365 ProPlus programs. Once you have dsitributed the content to the distribution points you need to deploy each package using the below script. 
+## **Section 2d:**Deploy the Office 365 ProPlus programs. Once you have dsitributed the content to the distribution points you need to deploy each package using the below script. 
 
 1. To create an Office 365 deployment use **Deploy-CMOfficeProgram**
 
@@ -329,7 +329,7 @@ This PowerShell function automates the setup of Office 365 Click-To-Run deployme
 			Example: Deploy-CMOfficeProgram -Collection 'Human Resources' -ProgramType DeployWithConfigurationFile -Channel Deferred -Bitness v32 -SiteCode S01 -DeploymentPurpose Available
 
 
-##Advisories
+## Advisories
 
 1. These scripts make the assumption that your Configuration Manager Distribution Point is in a healthy state as they rely heavily on it.
 2. When createing the package you must not be in the file explorer location for the source files.
