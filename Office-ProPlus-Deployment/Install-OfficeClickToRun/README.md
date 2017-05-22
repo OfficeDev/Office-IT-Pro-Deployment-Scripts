@@ -1,8 +1,8 @@
-﻿#**Install Office Click-To-Run**
+﻿# **Install Office Click-To-Run**
 
 This PowerShell function will take and existing Office Click-To-Run configuration xml and deploys it via the Office Deployment Tool (ODT) 
 
-###**Examples**
+### **Examples**
 
 1. Open a PowerShell console.
 
