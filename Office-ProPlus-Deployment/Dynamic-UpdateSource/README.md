@@ -1,8 +1,8 @@
-#Dynamically Set Source Path, Office Click-to-Run
+# Dynamically Set Source Path, Office Click-to-Run
 
 This PowerShell function works with the other deployment scripts to provide a way to dynamically set the SourcePath for the Office Click-To-Run configuration xml.  The script uses the computers Active Directory site to lookup the SourcePath location from the LookupFilePath.  The LookupFilePath is a CSV file that you will need to populate with the Active Directory site and cooresponding SourcePath.
 
-###Example
+### Example
 
 1. Open a PowerShell console.
 
