@@ -903,14 +903,9 @@ Function Validate-UpdateSource() {
         [bool]$ShowMissingFiles = $true
     )
     
-    if(!$OfficeClientEdition)
-        {
-            #checking if office client edition is null, if not, set bitness to client office edition
-        }
-        else
-        {
-            $Bitness = $OfficeClientEdition
-        }
+    if($OfficeClientEdition) {
+        $Bitness = $OfficeClientEdition
+    }
 
     [bool]$validUpdateSource = $true
     [string]$cabPath = ""
@@ -974,7 +969,7 @@ Function Validate-UpdateSource() {
                }
            }
 
-           if (!($updateFileExists)) {
+           if (!($updateFileExists) -and ($checkFile.relativePath -notmatch "Experiment")) {
               $fileExists = $missingFiles.Contains($fullPath)
               if (!($fileExists)) {
                  $missingFiles.Add($fullPath)
@@ -986,7 +981,6 @@ Function Validate-UpdateSource() {
               $validUpdateSource = $false
            }
         }
-
     }
     
     return $validUpdateSource
@@ -1176,7 +1170,6 @@ Function GetScriptRoot() {
      if ($PSScriptRoot) {
        $scriptPath = $PSScriptRoot
      } else {
-       $scriptPath = split-path -parent $MyInvocation.MyCommand.Definition
        $scriptPath = (Get-Item -Path ".\").FullName
      }
 
