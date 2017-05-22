@@ -1,8 +1,8 @@
-#Remove Office Click-to-Run
+# Remove Office Click-to-Run
 
 This PowerShell function will create a configuration xml file and uninstall Office Click-to-Run via the Office Deployment Tool (ODT).
 
-###Example
+### Example
 
 1. Open a PowerShell console.
 
