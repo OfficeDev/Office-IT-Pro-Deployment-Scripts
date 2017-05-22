@@ -1,4 +1,4 @@
-#Office Configuration XML Builder
+# Office Configuration XML Builder
 
 The Click-to-Run for Office 365 Configuration.xml file is used to specify Click-to-Run installation and update options. The Office Deployment Tool is a downloadable tool that includes a sample Configuration.xml file. Administrators can modify the Configuration.xml file to configure installation options for Click-to-Run for Office 365 products.
 
@@ -33,9 +33,9 @@ Functions included:
 	Show-ODTConfiguration
 	Undo-ODTLastChange
 
-###Examples
+### Examples
 
-####Build Configuration XML:
+#### Build Configuration XML:
 
 1. Open a PowerShell console.
 
