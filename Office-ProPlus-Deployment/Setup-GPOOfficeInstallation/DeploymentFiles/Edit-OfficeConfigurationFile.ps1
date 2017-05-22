@@ -3805,12 +3805,7 @@ Function Validate-UpdateSource() {
     Set-Alias -name LINENUM -value Get-CurrentLineNumber
     $currentFileName = Get-CurrentFileName
 
-    if(!$OfficeClientEdition)
-    {
-        #checking if office client edition is null, if not, set bitness to client office edition
-    }
-    else
-    {
+    if($OfficeClientEdition){
         $Bitness = $OfficeClientEdition
     }
 
@@ -3876,7 +3871,7 @@ Function Validate-UpdateSource() {
                }
            }
 
-           if (!($updateFileExists)) {
+           if (!($updateFileExists) -and ($checkFile.relativePath -notmatch "Experiment")) {
               $fileExists = $missingFiles.Contains($fullPath)
               if (!($fileExists)) {
                  $missingFiles.Add($fullPath)

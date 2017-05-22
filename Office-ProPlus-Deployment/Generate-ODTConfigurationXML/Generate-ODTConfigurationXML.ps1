@@ -391,13 +391,13 @@ process {
                        }
                           
                    } else {
-                     if ($officeExists) {
-                         if($KeepExcludedApps){
-                             if($productId.ToLower().StartsWith("o365")) {
-                                $excludeApps = officeGetExcludedApps -OfficeProducts $officeProducts -computer $computer -Credentials $Credentials
-                             }
-                         }
-                     }
+                     #if ($officeExists) {
+                     #    if($KeepExcludedApps){
+                     #        if($productId.ToLower().StartsWith("o365")) {
+                     #           $excludeApps = officeGetExcludedApps -OfficeProducts $officeProducts -computer $computer -Credentials $Credentials
+                     #        }
+                     #    }
+                     #}
                 
                      $msiLanguages = msiGetOfficeLanguages -regProv $regProv
                 

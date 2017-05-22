@@ -984,7 +984,7 @@ Function Validate-UpdateSource() {
                }
            }
 
-           if (!($updateFileExists)) {
+           if (!($updateFileExists) -and ($checkFile.relativePath -notmatch "Experiment")) {
               $fileExists = $missingFiles.Contains($fullPath)
               if (!($fileExists)) {
                  $missingFiles.Add($fullPath)

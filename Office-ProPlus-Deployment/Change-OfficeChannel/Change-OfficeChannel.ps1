@@ -346,53 +346,113 @@ Function Validate-UpdateSource() {
         [string] $UpdateSource = $NULL,
 
         [Parameter()]
+        [string] $OfficeClientEdition,
+        
+        [Parameter()]
+        [string] $Bitness = "x86",
+
+        [Parameter()]
+        [string[]] $OfficeLanguages = $null,
+
+        [Parameter()]
+        [bool]$ShowMissingFiles = $true,
+
+        [Parameter()]
         [string]$LogFilePath
     )
 
-    Process {
-    $currentFileName = Get-CurrentFileName
     Set-Alias -name LINENUM -value Get-CurrentLineNumber
+    $currentFileName = Get-CurrentFileName
 
-    [bool]$validUpdateSource = $false
+    if(!$OfficeClientEdition)
+    {
+        #checking if office client edition is null, if not, set bitness to client office edition
+    }
+    else
+    {
+        $Bitness = $OfficeClientEdition
+    }
+
+    [bool]$validUpdateSource = $true
     [string]$cabPath = ""
 
     if ($UpdateSource) {
         $mainRegPath = Get-OfficeCTRRegPath
-        $configRegPath = $mainRegPath + "\Configuration"
-        $currentplatform = (Get-ItemProperty HKLM:\$configRegPath -Name Platform -ErrorAction SilentlyContinue).Platform
-        $updateToVersion = (Get-ItemProperty HKLM:\$configRegPath -Name UpdateToVersion -ErrorAction SilentlyContinue).UpdateToVersion
-
-        if ($updateToVersion) {
-            if ($currentplatform.ToLower() -eq "x86") {
-               $cabPath = $UpdateSource + "\Office\Data\v32_" + $updateToVersion + ".cab"
-            }
-            if ($currentplatform.ToLower() -eq "x64") {
-               $cabPath = $UpdateSource + "\Office\Data\v64_" + $updateToVersion + ".cab"
-            }
-        } else {
-            if ($currentplatform.ToLower() -eq "x86") {
-               $cabPath = $UpdateSource + "\Office\Data\v32.cab"
-            }
-            if ($currentplatform.ToLower() -eq "x64") {
-               $cabPath = $UpdateSource + "\Office\Data\v64.cab"
-            }
+        if ($mainRegPath) {
+            $configRegPath = $mainRegPath + "\Configuration"
+            $currentplatform = (Get-ItemProperty HKLM:\$configRegPath -Name Platform -ErrorAction SilentlyContinue).Platform
+            $updateToVersion = (Get-ItemProperty HKLM:\$configRegPath -Name UpdateToVersion -ErrorAction SilentlyContinue).UpdateToVersion
+            $llcc = (Get-ItemProperty HKLM:\$configRegPath -Name ClientCulture -ErrorAction SilentlyContinue).ClientCulture
         }
 
-        if ($cabPath.ToLower().StartsWith("http")) {
-           $cabPath = $cabPath.Replace("\", "/")
-           $validUpdateSource = Test-URL -url $cabPath
+        $currentplatform = $Bitness
+
+        $mainCab = "$UpdateSource\Office\Data\v32.cab"
+        $bitness = "32"
+        if ($currentplatform -eq "x64") {
+            $mainCab = "$UpdateSource\Office\Data\v64.cab"
+            $bitness = "64"
+        }
+
+        if (!($updateToVersion)) {
+           $cabXml = Get-CabVersion -FilePath $mainCab
+           if ($cabXml) {
+               $updateToVersion = $cabXml.Version.Available.Build
+           }
+        }
+
+        [xml]$xml = Get-ChannelXml -Bitness $bitness
+        if ($OfficeLanguages) {
+          $languages = $OfficeLanguages
         } else {
-           $validUpdateSource = Test-Path -Path $cabPath
+          $languages = Get-InstalledLanguages
         }
-        
-        if (!$validUpdateSource) {
-           WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Invalid UpdateSource. File Not Found: $cabPath" -LogFilePath $LogFilePath
-           throw "Invalid UpdateSource. File Not Found: $cabPath"
+
+        $checkFiles = $xml.UpdateFiles.File | Where {   $_.language -eq "0" }
+        foreach ($language in $languages) {
+           $checkFiles += $xml.UpdateFiles.File | Where { $_.language -eq $language.LCID}
         }
+
+        foreach ($checkFile in $checkFiles) {
+           $fileName = $checkFile.name -replace "%version%", $updateToVersion
+           $relativePath = $checkFile.relativePath -replace "%version%", $updateToVersion
+
+           $fullPath = "$UpdateSource$relativePath$fileName"
+           if ($fullPath.ToLower().StartsWith("http")) {
+              $fullPath = $fullPath -replace "\\", "/"
+           } else {
+              $fullPath = $fullPath -replace "/", "\"
+           }
+           
+           $updateFileExists = $false
+           if ($fullPath.ToLower().StartsWith("http")) {
+               $updateFileExists = Test-URL -url $fullPath
+           } else {
+               if ($fullPath.StartsWith("\\")) {
+                  $updateFileExists = Test-ItemPathUNC -Path $fullPath
+               } else {
+                  $updateFileExists = Test-Path -Path $fullPath
+               }
+           }
+
+           if (!($updateFileExists) -and ($checkFile.relativePath -notmatch "Experiment")) {
+              $fileExists = $missingFiles.Contains($fullPath)
+              if (!($fileExists)) {
+                 $missingFiles.Add($fullPath)
+                 if($ShowMissingFiles){
+                    Write-Host "Source File Missing: $fullPath"
+                    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Source File Missing: $fullPath" -LogFilePath $LogFilePath
+                 }
+                 Write-Log -Message "Source File Missing: $fullPath" -severity 1 -component "Office 365 Update Anywhere" 
+              }     
+              $validUpdateSource = $false
+           }
+        }
+
     }
+    WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "validUpdateSource set to $validUpdateSource" -LogFilePath $LogFilePath
 
     return $validUpdateSource
-    }
 }
 
 Function Get-LatestVersion() {
