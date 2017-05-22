@@ -1,8 +1,8 @@
-﻿#**Move Office 2016 ShortCuts**
+﻿# **Move Office 2016 ShortCuts**
 
 This PowerShell Script will move the Start Menu shortcuts created by Office 365 ProPlus client into a sub folder instead of the default root location
 
-###Example
+### Example
 
 1. Open a PowerShell console.
 
