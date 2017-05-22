@@ -4,7 +4,8 @@ This PowerShell function automates the setup of Office 365 Click-To-Run deployme
 
 [README](https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/wiki/Readme_Setup-CMOfficeDeployment)
 
-## **Section 1:** These are the scenarios for creating, updating, and deploying the Office 365 ProPlus programs using System Center Configuration Manager. Please see the next section for step by step instructions on how to use these Functions
+## **Section 1:** Create, update, and deploy Office 365 ProPlus programs using System Center Configuration Manager. 
+Please see the next section for step by step instructions on how to use these Functions
 ### Deploy Office 365 ProPlus
 1. Download the channel files from the CDN.
 
