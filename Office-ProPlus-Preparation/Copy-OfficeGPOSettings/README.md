@@ -1,8 +1,8 @@
-#**Copy GPO settings from Office 2013 to Office 2016**
+# **Copy GPO settings from Office 2013 to Office 2016**
 
 Automates the process of copying configured Office 2013 Group Policy Settings to the Office 2016 Group Policy Settings. 
 
-###**Pre-requisites**
+### **Pre-requisites**
 
 Before running the script, you will need at least the following requirements
 
@@ -10,7 +10,7 @@ Before running the script, you will need at least the following requirements
 2. The Administrative templates of the source Office version installed on the Domain Controller.
 2. The Administrative templates of the target Office version installed on the Domain Controller.
 
-###**Running the script**
+### **Running the script**
 
 1. Open a PowerShell console:
 
