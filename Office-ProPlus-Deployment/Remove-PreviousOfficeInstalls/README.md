@@ -1,8 +1,8 @@
-﻿#**Remove previous versions of Office**
+﻿# **Remove previous versions of Office**
 
 This PowerShell Script will create remove the local MSI installations of Office 2013 and older. The Offscrub vbs scripts are used to remove the MSI installations of Office products.
 
-###**Using the Offscrub scripts**
+### **Using the Offscrub scripts**
 
 The Offscrub vbs scripts can be used to automate the removal of Office products. The scripts will uninstall the existing Office products regardless of the current health of the installation. The Remove-PreviousOfficeInstalls.ps1 script will determine which version of Office is currently installed and will call the appropriate Offscrub vbs script to remove the Office products installations.
 
@@ -17,7 +17,7 @@ The Offscrub vbs files included are:
 
 More information can be found at: https://blogs.technet.microsoft.com/odsupport/2011/04/08/how-to-obtain-and-use-offscrub-to-automate-the-uninstallation-of-office-products/
 
-###Example
+### Example
 
 1. Open a PowerShell console.
 
