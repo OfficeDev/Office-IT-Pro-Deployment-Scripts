@@ -1,17 +1,17 @@
-#Lock Office Applications
+# Lock Office Applications
 
 This PowerShell function will prevent a client in the domain from opening a specified version of Office by creating a group policy and WMI filter.
 
-###Pre-requisites
+### Pre-requisites
 1. Active Directory
 2. Server Manager
 3. Copy the New-OfficeAppLockGPO and Manage-OfficeWmiFilters functions to a local folder.
 
-###Links
+### Links
 Group Policy Management Console - https://technet.microsoft.com/en-us/library/cc753298.aspx
 WMI filtering - https://technet.microsoft.com/en-us/library/cc779036(v=ws.10).aspx
 
-###**Examples**
+### **Examples**
 
 1. Open a PowerShell console.
 
