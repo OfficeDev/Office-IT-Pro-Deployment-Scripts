@@ -1,4 +1,4 @@
-﻿#**Generate Office Deployment Tool (ODT) LanguagePack XML**
+﻿# **Generate Office Deployment Tool (ODT) LanguagePack XML**
 
 This PowerShell function will create a new XML file that can be used to deploy additional languages packs to a computer with Office 365 ProPlus already installed. This XML is used with the [Office Deployment Tool (ODT)](http://www.microsoft.com/en-us/download/details.aspx?id=36778) to deploy Office Click-To-Run products.    
 
@@ -9,7 +9,7 @@ You can control the bit and language IDs that are needed for the deployment.
 For more information on the specifics of deploying Office 365 ProPlus language packs go to the following link.
 [Add languages to existing installations of Office 365 ProPlus](https://technet.microsoft.com/en-us/library/jj219422.aspx#Anchor_7)
 
-###**Examples**
+### **Examples**
 
 1. Open a PowerShell console.
 
