@@ -205,7 +205,7 @@ This PowerShell function automates the setup of Office 365 Click-To-Run deployme
 	
 			Example: Update-CMOfficePackage -Channels FirstReleaseDeferred -OfficeSourceFilesPath D:\OfficeChannels -MoveSourceFiles $true
 
-## **Section 2b**Creating Office 365 Client Programs. Once the package is created you create the various programs as lined out below.
+## **Section 2b** Creating Office 365 Client Programs. Once the package is created you create the various programs as lined out below.
 ### Create-CMOfficeDeploymentProgram
 1. To create an Office 365 deployment program use **Create-CMOfficeDeploymentProgram**
 
@@ -262,7 +262,7 @@ This PowerShell function automates the setup of Office 365 Click-To-Run deployme
 
 			Example: Create-CMOfficeUpdateProgram -WaitForUpdateToFinish $true -EnableUpdateAnywhere $true -ForceAppShutdown $true -SiteCode S01
 			
-###Create-CMOfficeUpdateAsTaskProgram
+### Create-CMOfficeUpdateAsTaskProgram
 
 1. To create an Office 365 update program that will run as a task use **Create-CMOfficeUpdateAsTaskProgram**
 	
@@ -297,7 +297,7 @@ This PowerShell function automates the setup of Office 365 Click-To-Run deployme
 	* **Version** You can specify a version to download. Versions and the associated channels can be found [Here](https://technet.microsoft.com/en-us/library/mt592918.aspx)
 	* **ConfigurationXml** Default value has the name of the "programname".xml
 
-## **Section 2c:**Distribute the Office 365 ProPlus Package. Once the package and programs have been made you need to distribute the content(performed only once). If you add or update programs after the initial distribution please use the update package funtion.
+## **Section 2c:** Distribute the Office 365 ProPlus Package. Once the package and programs have been made you need to distribute the content(performed only once). If you add or update programs after the initial distribution please use the update package funtion.
 
 1. To distribute the Office 365 package use **Distribute-CMOfficePackage**
 	
@@ -312,7 +312,7 @@ This PowerShell function automates the setup of Office 365 Click-To-Run deployme
 
 			Example: Distribute-CMOfficePackage -Channels Deferred -DistributionPoint cm.contoso.com -WaitForDistributionToFinish $true
 			
-## **Section 2d:**Deploy the Office 365 ProPlus programs. Once you have dsitributed the content to the distribution points you need to deploy each package using the below script. 
+## **Section 2d:** Deploy the Office 365 ProPlus programs. Once you have dsitributed the content to the distribution points you need to deploy each package using the below script. 
 
 1. To create an Office 365 deployment use **Deploy-CMOfficeProgram**
 
