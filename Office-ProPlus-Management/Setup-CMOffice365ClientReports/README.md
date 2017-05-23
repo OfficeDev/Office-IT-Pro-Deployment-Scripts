@@ -1,12 +1,13 @@
 ﻿# Configure and setup Office 365 client reports in System Center Configuration Manager
 
 ## Before you begin
-### Copy the required files locally
-*       Configuration.txt  
-*	Office365ClientConfigurations.mof  
-*	Office365ClientConfigurations2013.mof  
-*	Setup-Office365ClientReports.ps1  
-*	Reports  
+### Copy the required files locally 
+ 
+* Office365ClientConfigurations.mof  
+* Configuration.txt  
+* Office365ClientConfigurations2013.mof  
+* Setup-Office365ClientReports.ps1  
+* Reports 
       *	Office 365 Client computers with shared activation.rdl  
       *	Office 365 Client count per channel.rdl  
       *	Office 365 Client languages per product.rdl  
