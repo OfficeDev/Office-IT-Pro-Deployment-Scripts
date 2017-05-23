@@ -1,7 +1,7 @@
-﻿#Configure and setup Office 365 client reports in System Center Configuration Manager
+﻿# Configure and setup Office 365 client reports in System Center Configuration Manager
 
-##Before you begin
-###Copy the required files locally
+## Before you begin
+### Copy the required files locally
 *       Configuration.txt  
 *	Office365ClientConfigurations.mof  
 *	Office365ClientConfigurations2013.mof  
@@ -19,8 +19,8 @@
       *	Office 365 Client update status for each computer.rdl  
       *	Office 365 Client users and their associated computers with details.rdl  
       
-##Add the new classes into Hardware Inventory
-###Step 1: Append the configuration.mof file  
+## Add the new classes into Hardware Inventory
+### Step 1: Append the configuration.mof file  
 
 Before we can create the reports we need to modify the configuration.mof file with the new class information. There are two methods available:
       
@@ -36,7 +36,7 @@ Before we can create the reports we need to modify the configuration.mof file wi
         
 You can find more information about MOF, Managed Object Format, files at https://technet.microsoft.com/en-us/library/bb632896.aspx
 
-####Use PowerShell to copy the content to the MOF file
+#### Use PowerShell to copy the content to the MOF file
 1.	Open a PowerShell console  
 
         From the Run dialog type PowerShell. Open the program as an administrator.
@@ -54,7 +54,7 @@ You can find more information about MOF, Managed Object Format, files at https:/
 
         Edit-ConfigurationMofFile
         
-####Manually copy the content into the MOF file
+#### Manually copy the content into the MOF file
 1.	**Copy** the contents of **configuration.txt**.  
 2.	Navigate to the Configuration Installation folder. Default installations will be inside **`<installation directory>`\Program Files\Microsoft Configuration Manager**.  
 3.	Create a backup copy of configuration.mof.  
@@ -62,7 +62,7 @@ You can find more information about MOF, Managed Object Format, files at https:/
 5.	**Paste the contents** from configuration.txt to the **end** of the configuration.mof file.  
 6.	**Save** and **close** configuration.mof.  
 
-###Step 2: Enable the new class in Configuration Manager
+### Step 2: Enable the new class in Configuration Manager
 1.	From the Configuration Manager Console go to **Administration**, expand **Site Configuration**, then click **Client Settings**.  
 2.	Right click **Default Client Settings** and choose **Properties**.  
 3.	Click on **Hardware Inventory**, then click **Set Classes**.  
@@ -72,7 +72,7 @@ You can find more information about MOF, Managed Object Format, files at https:/
 7.	In the Hardware Inventory Classes window the new Office365ClientConfigurations and Office365ProPlusConfigurations2013 classes will be at the top of the list. You can leave the check mark to apply the classes to all devices, or uncheck the classes to enable on a custom Client Device Setting.   
 8.	Click **OK**.  
 
-###Step 3: Enable the classes in a custom Client Device Setting
+### Step 3: Enable the classes in a custom Client Device Setting
 
 If you enabled the new classes in Default Client Settings you can move on to Step 5. If you want to enable the new class on a custom Client Device Setting proceed with the following steps.  
 
@@ -81,20 +81,20 @@ If you enabled the new classes in Default Client Settings you can move on to Ste
 3.	Scroll down until you see **Office365ClientConfigurations** and **Office365ProPlusConfigurations2013**, **check the boxes**, and click **OK**.  
 4.	Click **OK** on the Device Settings window.  
 
-###Step 4: Deploy the Device Setting to a collection
+### Step 4: Deploy the Device Setting to a collection
 1.	**Right click** on the **Device Setting** that has the Office365ClientConfigurations classes enabled and choose **Deploy**.  
 2.	Select the **collection** and click **OK**.  
 
 **Note** - When the next hardware inventory runs on the client the information from the new class will be collected. This may take some time.
           
-##Import the custom reports
+## Import the custom reports
 
 The Office 365 Client reports can be imported using PowerShell or by manually uploading the files to the reporting server.
 
 After the Office 365 Client reports are imported they will be available in the Configuration Manager console. The reports will 
 start to show data once the hardware inventory has run on the clients. Completion time will depend on the size of the environment and the frequency of hardware inventory scans.
 
-###Use PowerShell to import the reports
+### Use PowerShell to import the reports
 1.	Open a PowerShell console.  
 
           From the Run dialog type PowerShell. Open the program as an administrator.
@@ -122,7 +122,7 @@ start to show data once the hardware inventory has run on the clients. Completio
           A folder called Software – Office 365 Clients will be created and used to host the report files on the report server.
 
           
-###Manually upload the reports
+### Manually upload the reports
 1.	From **Report Manager**, navigate to the Contents page.  
 2.	Click **Upload File**.  
 3.	Click **Browse**.  
