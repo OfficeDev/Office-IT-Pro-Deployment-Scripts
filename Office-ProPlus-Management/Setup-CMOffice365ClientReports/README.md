@@ -8,8 +8,8 @@
 * Office365ClientConfigurations2013.mof  
 * Setup-Office365ClientReports.ps1  
 * Reports 
-      *	Office 365 Client computers with shared activation.rdl  
-      *	Office 365 Client count per channel.rdl  
+	*	Office 365 Client computers with shared activation.rdl  
+	*	Office 365 Client count per channel.rdl  
       *	Office 365 Client languages per product.rdl  
       *	Office 365 Client product versions count with graph.rdl  
       *	Office 365 Client product versions count.rdl  
