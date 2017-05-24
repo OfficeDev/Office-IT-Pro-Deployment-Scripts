@@ -3421,6 +3421,7 @@ var excludeApps2016 = [
 
 var productSkus2016Names = [
     'Office 365 ProPlus',
+    'Office ProPlus',
     'Office 365 for Business',
     'Language Pack',
     'Visio for Office 365',
@@ -3436,6 +3437,7 @@ var productSkus2016Names = [
 
 var productSkus2016Values = [
     'O365ProPlusRetail',
+    'ProPlusRetail',
     'O365BusinessRetail',
     'LanguagePack',
     'VisioProRetail',
