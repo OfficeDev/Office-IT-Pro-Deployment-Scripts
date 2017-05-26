@@ -8,7 +8,9 @@
                             <div class="ms-Grid-col ms-u-sm12 ms-fontSize-xxl ms-fontWeight-semibold">Scripts
                             </div>
                         </div>
-                        <div class="ms-Grid-row ">
+                       
+                        
+                          <div class="ms-Grid-row">
                             <br>
                             <br>
                             <div class="ms-Grid-col ms-u-sm12 ms-fontSize-xl ms-fontWeight-semibold Script-Header">
@@ -16,8 +18,8 @@
                                     <div class="ms-Grid">
                                         <div class="ms-Grid-row">
                                             <div class="ms-Grid-col ms-u-sm12 ms-u-lg8">
-                                                Script Title
-                                                <i id="TestScript1" class="ms-Icon ms-Icon--MiniLink ms-fontColor-themePrimary--hover ms-font-xl Section-Link" ari onclick="toggleCopyLink(this)" a-hidden="true"></i>
+                                                Are you upgrading from a previous version of Office?
+                                                <i id="OfficeUpgrade" class="ms-Icon ms-Icon--MiniLink ms-fontColor-themePrimary--hover ms-font-xl Section-Link" ari onclick="toggleCopyLink(this)" a-hidden="true"></i>
                                             </div>
                                             <div class="ms-Grid-col ms-u-sm12 ms-u-lg3 hidden">
                                                 <input class="ms-TextField-field Link-TextField" type="text" value="" placeholder="">
@@ -33,23 +35,14 @@
                         <div class="ms-Grid-row">
                             <div class="ms-Grid-col ms-u-sm12 ms-fontSize-l ms-fontWeight-regular">
                                 <br>
-                                <strong>Script Usecase: </strong>
-                                &nbsp &nbsp Monotonectally embrace exceptional services rather than dynamic e-tailers. Appropriately redefine stand-alone web-readiness and fully tested alignments. Authoritatively cultivate high-payoff ideas and functional collaboration and idea-sharing.
-                                <br>
-                                <br>
-                                Monotonectally embrace exceptional services rather than dynamic e-tailers. Appropriately redefine stand-alone web-readiness and fully tested alignments. Authoritatively cultivate high-payoff ideas and functional collaboration and idea-sharing.
-                                <br>
-                                <br>
-                                <strong>Script Notes: </strong>
-                                &nbsp &nbsp Monotonectally embrace exceptional services rather than dynamic e-tailers. Appropriately redefine stand-alone web-readiness and fully tested alignments. Authoritatively cultivate high-payoff ideas and functional collaboration and idea-sharing.
-                               <br>
-                                <br>
-                                <strong>Find Script Here: </strong>
-                                <a href="https://blogs.office.com/2015/08/19/introducing-the-office-it-pro-deployment-script-project/">Link To Script</a>
-                                <br>
-                                <br>
+                                <a href="https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/master/Office-ProPlus-Deployment/Deploy-OfficeClickToRun/Upgrade_Office2007_README.md">Upgrade from Office 2007</a>
+                                <br/><br/>
+                                <a href="https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/master/Office-ProPlus-Deployment/Deploy-OfficeClickToRun/Upgrade_Office2010_README.md">Upgrade from Office 2010</a>
+                                <br/><br/>
+                                <a href="https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/blob/master/Office-ProPlus-Deployment/Deploy-OfficeClickToRun/Upgrade_Office2013_README.md">Upgrade from Office 2013</a>
                             </div>
                         </div>
+                        
                         <div class="ms-Grid-row">
                             <br>
                             <br>
@@ -58,7 +51,44 @@
                                     <div class="ms-Grid">
                                         <div class="ms-Grid-row">
                                             <div class="ms-Grid-col ms-u-sm12 ms-u-lg8">
-                                                Do you have SCCM?
+                                                Do you want to set up a dynamic solution to deploy Office 365 ProPlus?
+                                                <i id="DeployOffice" class="ms-Icon ms-Icon--MiniLink ms-fontColor-themePrimary--hover ms-font-xl Section-Link" ari onclick="toggleCopyLink(this)" a-hidden="true"></i>
+                                            </div>
+                                            <div class="ms-Grid-col ms-u-sm12 ms-u-lg3 hidden">
+                                                <input class="ms-TextField-field Link-TextField" type="text" value="" placeholder="">
+                                            </div>
+                                            <div class="ms-Grid-col ms-u-sm12 ms-u-lg1 hidden">
+                                                <i class="ms-Icon ms-Icon--Copy ms-fontColor-themePrimary--hover ms-font-xl" aria-hidden="true" onclick="copyToClipboard(this)"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ms-Grid-row">
+                            <div class="ms-Grid-col ms-u-sm12 ms-fontSize-l ms-fontWeight-regular">
+                                <br>
+                                A basic deployment can be configured in just a few steps:
+                                <br/><br/>
+                                1.	Generate a dynamic ODT configuration xml file using a computer's existing installation settings using the <a href="https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/master/Office-ProPlus-Deployment/Generate-ODTConfigurationXML">Generate-ODTConfigurationXML</a> script. This script will detect the languages and Office products that may already be installed.
+                                <br/><br/> 
+                                2.	Edit the configuration xml file using the <a href="https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/master/Office-ProPlus-Deployment/Edit-OfficeConfigurationFile">Edit-ODTConfigurationFile</a> script. This function is designed to reduce the effort required to create or makes changes to the configuration file while also reducing the chance of formatting errors in xml.
+                                <br/><br/>
+                                3.	Install Office 365 ProPlus using the <a href="https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/master/Office-ProPlus-Deployment/Install-OfficeClickToRun">Install-OfficeClickToRun</a> script. This PowerShell function will take an existing Office Click-To-Run configuration xml and deploy it using the Office Deployment Tool (ODT).
+
+                            </div>
+                        </div>
+                        
+                        
+                        <div class="ms-Grid-row">
+                            <br>
+                            <br>
+                            <div class="ms-Grid-col ms-u-sm12 ms-fontSize-xl ms-fontWeight-semibold Script-Header">
+                                <div class="container">
+                                    <div class="ms-Grid">
+                                        <div class="ms-Grid-row">
+                                            <div class="ms-Grid-col ms-u-sm12 ms-u-lg8">
+                                                Do you have System Center Configuration Manager?
                                                 <i id="UseSCCM" class="ms-Icon ms-Icon--MiniLink ms-fontColor-themePrimary--hover ms-font-xl Section-Link" ari onclick="toggleCopyLink(this)" a-hidden="true"></i>
                                             </div>
                                             <div class="ms-Grid-col ms-u-sm12 ms-u-lg3 hidden">
@@ -76,11 +106,12 @@
                             <div class="ms-Grid-col ms-u-sm12 ms-fontSize-l ms-fontWeight-regular">
                                 <br>
                                 You can automate the configuration of ConfigMgr to deploy and manage your Office ProPlus environment using <a href="https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/master/Office-ProPlus-Deployment/Setup-CMOfficeDeployment">Deploying Office ProPlus with Configuration Manager</a>
-                                <br>
-                                <br>
-                                We also provide Office ProPlus specific reports. <a href="http://officedev.github.io/Office-IT-Pro-Deployment-Scripts/XmlEditor.html">Office ProPlus ConfigMgr Reports.</a>
+                                <br/><br/>
+                                We also provide Office ProPlus specific reports. Office ProPlus ConfigMgr Reports
                             </div>
                         </div>
+                        
+                        
                         <div class="ms-Grid-row">
                             <br>
                             <br>
@@ -89,69 +120,8 @@
                                     <div class="ms-Grid">
                                         <div class="ms-Grid-row">
                                             <div class="ms-Grid-col ms-u-sm12 ms-u-lg8">
-                                                Are you manually editing your configuration XML files?
-                                                <i id="XMLEditor" class="ms-Icon ms-Icon--MiniLink ms-fontColor-themePrimary--hover ms-font-xl Section-Link" ari onclick="toggleCopyLink(this)" a-hidden="true"></i>
-                                            </div>
-                                            <div class="ms-Grid-col ms-u-sm12 ms-u-lg3 hidden">
-                                                <input class="ms-TextField-field Link-TextField" type="text" value="" placeholder="">
-                                            </div>
-                                            <div class="ms-Grid-col ms-u-sm12 ms-u-lg1 hidden">
-                                                <i class="ms-Icon ms-Icon--Copy ms-fontColor-themePrimary--hover ms-font-xl" aria-hidden="true" onclick="copyToClipboard(this)"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="ms-Grid-row">
-                            <div class="ms-Grid-col ms-u-sm12 ms-fontSize-l ms-fontWeight-regular ">
-                                <br>
-                                Tired of manually editing the Office ProPlus Configuration XML File?
-                                <br>
-                                <br>
-                                Try our online <a href="http://officedev.github.io/Office-IT-Pro-Deployment-Scripts/XmlEditor.html">XML Editor Office Click-To-Run Configuration XML Editor</a>
-                            </div>
-                        </div>
-                        <div class="ms-Grid-row">
-                            <br>
-                            <br>
-                            <div class="ms-Grid-col ms-u-sm12 ms-fontSize-xl ms-fontWeight-semibold Script-Header">
-                                <div class="container">
-                                    <div class="ms-Grid">
-                                        <div class="ms-Grid-row">
-                                            <div class="ms-Grid-col ms-u-sm12 ms-u-lg9">
-                                                Would you like an easier way to download your Office ProPlus files?
-                                                <i id="DownloadScript" class="ms-Icon ms-Icon--MiniLink ms-fontColor-themePrimary--hover ms-font-xl Section-Link" ari onclick="toggleCopyLink(this)" a-hidden="true"></i>
-                                            </div>
-                                            <div class="ms-Grid-col ms-u-sm12 ms-u-lg2 hidden">
-                                                <input class="ms-TextField-field Link-TextField" type="text" value="" placeholder="">
-                                            </div>
-                                            <div class="ms-Grid-col ms-u-sm12 ms-u-lg1 hidden">
-                                                <i class="ms-Icon ms-Icon--Copy ms-fontColor-themePrimary--hover ms-font-xl" aria-hidden="true" onclick="copyToClipboard(this)"></i>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="ms-Grid-row">
-                            <div class="ms-Grid-col ms-u-sm12 ms-fontSize-l ms-fontWeight-regular">
-                                <br>
-                                Try using <a href="https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/master/Office-ProPlus-Deployment/Download-OfficeProPlusBranch">Download-OfficeProPlusChannels</a>
-                                to quickly and easily download from multiple Channels and languages with one operation.
-                            
-                            </div>
-                        </div>
-                        <div class="ms-Grid-row">
-                            <br>
-                            <br>
-                            <div class="ms-Grid-col ms-u-sm12 ms-fontSize-xl ms-fontWeight-semibold Script-Header">
-                                <div class="container">
-                                    <div class="ms-Grid">
-                                        <div class="ms-Grid-row">
-                                            <div class="ms-Grid-col ms-u-sm12 ms-u-lg8">
-                                                Do you use GPO to configure your Office Clients?
-                                                <i id="UseGPO" class="ms-Icon ms-Icon--MiniLink ms-fontColor-themePrimary--hover ms-font-xl Section-Link" ari onclick="toggleCopyLink(this)" a-hidden="true"></i>
+                                                Do you use Group Policy to configure your Office clients?
+                                                <i id="GroupPolicy" class="ms-Icon ms-Icon--MiniLink ms-fontColor-themePrimary--hover ms-font-xl Section-Link" ari onclick="toggleCopyLink(this)" a-hidden="true"></i>
                                             </div>
                                             <div class="ms-Grid-col ms-u-sm12 ms-u-lg3 hidden">
                                                 <input class="ms-TextField-field Link-TextField" type="text" value="" placeholder="">
@@ -167,11 +137,15 @@
                         <div class="ms-Grid-row">
                             <div class="ms-Grid-col ms-u-sm12 ms-fontSize-l ms-fontWeight-regular">
                                 <br>
-                                If you have Group Policy setting from previous versions of Office use our <a href="https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/master/Office-ProPlus-Preparation/Copy-OfficeGPOSettings">Copy-OfficeGPOSettings</a>
-                                to migrate your settings to Office 2016                   
-                            
+                                If you have Group Policy setting from previous versions of Office use our <a href="https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/master/Office-ProPlus-Preparation/Copy-OfficeGPOSettings">Copy-OfficeGPOSettings</a> to migrate your settings to Office 2016.
+                                <br/><br/>
+                               You can automate the configuration of Group Policy to deploy and manage your Office ProPlus environment using <a href="https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/master/Office-ProPlus-Deployment/Setup-GPOOfficeInstallation">Deploying Office ProPlus with Group Policy</a>
+                                <br/><br/>
+                               You can prevent specific versions of Office from being opened by using the <a href="https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/master/Office-ProPlus-Deployment/Lock-OfficeApps">New-OfficeAppLockGPO</a> script.
                             </div>
                         </div>
+                        
+                        
                         <div class="ms-Grid-row">
                             <br>
                             <br>
@@ -180,8 +154,8 @@
                                     <div class="ms-Grid">
                                         <div class="ms-Grid-row">
                                             <div class="ms-Grid-col ms-u-sm12 ms-u-lg8">
-                                                Would you like to see how to use our scripts?
-                                                <i id="ExampleScripts" class="ms-Icon ms-Icon--MiniLink ms-fontColor-themePrimary--hover ms-font-xl Section-Link" ari onclick="toggleCopyLink(this)" a-hidden="true"></i>
+                                               Would you like a faster and easier way to download your Office ProPlus files
+                                               <i id="FasterDownload" class="ms-Icon ms-Icon--MiniLink ms-fontColor-themePrimary--hover ms-font-xl Section-Link" ari onclick="toggleCopyLink(this)" a-hidden="true"></i>
                                             </div>
                                             <div class="ms-Grid-col ms-u-sm12 ms-u-lg3 hidden">
                                                 <input class="ms-TextField-field Link-TextField" type="text" value="" placeholder="">
@@ -197,10 +171,12 @@
                         <div class="ms-Grid-row">
                             <div class="ms-Grid-col ms-u-sm12 ms-fontSize-l ms-fontWeight-regular">
                                 <br>
-                                <a href="https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/master/Office-ProPlus-Deployment/Deploy-OfficeClickToRun">Deployment Examples</a>
+                                Try using <a href="https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/master/Office-ProPlus-Deployment/Download-OfficeProPlusBranch">Download-OfficeProPlusChannels</a> to quickly and easily download from multiple Channels and languages with one operation.
                             </div>
                         </div>
-                        <div class="ms-Grid-row">
+                        
+                        
+                         <div class="ms-Grid-row">
                             <br>
                             <br>
                             <div class="ms-Grid-col ms-u-sm12 ms-fontSize-xl ms-fontWeight-semibold Script-Header">
@@ -208,8 +184,8 @@
                                     <div class="ms-Grid">
                                         <div class="ms-Grid-row">
                                             <div class="ms-Grid-col ms-u-sm12 ms-u-lg8">
-                                                Scripts
-                                                <i id="Scripts" class="ms-Icon ms-Icon--MiniLink ms-fontColor-themePrimary--hover ms-font-xl Section-Link" ari onclick="toggleCopyLink(this)" a-hidden="true"></i>
+                                              Do you want to change to a different Office update channel?
+                                                <i id="ChangeChannel" class="ms-Icon ms-Icon--MiniLink ms-fontColor-themePrimary--hover ms-font-xl Section-Link" ari onclick="toggleCopyLink(this)" a-hidden="true"></i>
                                             </div>
                                             <div class="ms-Grid-col ms-u-sm12 ms-u-lg3 hidden">
                                                 <input class="ms-TextField-field Link-TextField" type="text" value="" placeholder="">
@@ -225,11 +201,11 @@
                         <div class="ms-Grid-row">
                             <div class="ms-Grid-col ms-u-sm12 ms-fontSize-l ms-fontWeight-regular">
                                 <br>
-                                For more detailed documentation of each script, check the <a href="https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/wiki">Wiki</a>
-                                or the readme file in the corresponding folder              
-                            
+                                Use the <a href="https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/master/Office-ProPlus-Deployment/Change-OfficeChannel">Change-OfficeChannel</a> script to easily move a client that already has Office 365 ProPlus to a different update channel.
                             </div>
                         </div>
+                        
+                        
                         <div class="ms-Grid-row">
                             <br>
                             <br>
@@ -238,8 +214,8 @@
                                     <div class="ms-Grid">
                                         <div class="ms-Grid-row">
                                             <div class="ms-Grid-col ms-u-sm12 ms-u-lg8">
-                                                New to PowerShell and Office 365?
-                                                <i id="NewToPowershell" class="ms-Icon ms-Icon--MiniLink ms-fontColor-themePrimary--hover ms-font-xl Section-Link" ari onclick="toggleCopyLink(this)" a-hidden="true"></i>
+                                              Do you want to dynamically set a SourcePath by looking at Active Directory for a location?
+                                                <i id="DynamicSource" class="ms-Icon ms-Icon--MiniLink ms-fontColor-themePrimary--hover ms-font-xl Section-Link" ari onclick="toggleCopyLink(this)" a-hidden="true"></i>
                                             </div>
                                             <div class="ms-Grid-col ms-u-sm12 ms-u-lg3 hidden">
                                                 <input class="ms-TextField-field Link-TextField" type="text" value="" placeholder="">
@@ -255,14 +231,12 @@
                         <div class="ms-Grid-row">
                             <div class="ms-Grid-col ms-u-sm12 ms-fontSize-l ms-fontWeight-regular">
                                 <br>
-                                Check out <a href="http://powershell.office.com/">PowerShell for Office 365</a>
-                                for advice on getting started, key scenarios and script samples.
-                            
-                            
-                            
+                                This <a href="https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/master/Office-ProPlus-Deployment/Dynamic-UpdateSource">Dynamic-UpdateSource</a> function works with the other deployment scripts to provide a way to dynamically set the SourcePath for the Office Click-To-Run configuration xml. The script uses the computers Active Directory site to lookup the SourcePath location from the LookupFilePath. The LookupFilePath is a CSV file that you will need to populate with the Active Directory site and corresponding SourcePath.
                             </div>
                         </div>
-                        <div class="ms-Grid-row">
+                        
+                        
+                         <div class="ms-Grid-row">
                             <br>
                             <br>
                             <div class="ms-Grid-col ms-u-sm12 ms-fontSize-xl ms-fontWeight-semibold Script-Header">
@@ -270,8 +244,8 @@
                                     <div class="ms-Grid">
                                         <div class="ms-Grid-row">
                                             <div class="ms-Grid-col ms-u-sm12 ms-u-lg8">
-                                                Questions and comments?
-                                                <i id="QuestionsComments" class="ms-Icon ms-Icon--MiniLink ms-fontColor-themePrimary--hover ms-font-xl Section-Link" ari onclick="toggleCopyLink(this)" a-hidden="true"></i>
+                                              Do you want to create a configuration file to deploy specific language packs?
+                                                <i id="LanguagePack" class="ms-Icon ms-Icon--MiniLink ms-fontColor-themePrimary--hover ms-font-xl Section-Link" ari onclick="toggleCopyLink(this)" a-hidden="true"></i>
                                             </div>
                                             <div class="ms-Grid-col ms-u-sm12 ms-u-lg3 hidden">
                                                 <input class="ms-TextField-field Link-TextField" type="text" value="" placeholder="">
@@ -287,9 +261,103 @@
                         <div class="ms-Grid-row">
                             <div class="ms-Grid-col ms-u-sm12 ms-fontSize-l ms-fontWeight-regular">
                                 <br>
-                                If you have any trouble running this sample, please <a href="https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/issues">log an issue.</a>
+                                Use the <a href="https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/master/Office-ProPlus-Deployment/Generate-ODTLanguagePackXML">Generate-ODTLanguagePackXML</a> script to create a configuration file that can be used to deploy additional language packs.
                             </div>
                         </div>
+                        
+                        
+                        <div class="ms-Grid-row">
+                            <br>
+                            <br>
+                            <div class="ms-Grid-col ms-u-sm12 ms-fontSize-xl ms-fontWeight-semibold Script-Header">
+                                <div class="container">
+                                    <div class="ms-Grid">
+                                        <div class="ms-Grid-row">
+                                            <div class="ms-Grid-col ms-u-sm12 ms-u-lg8">
+                                              Do you want to remove Office Click-To-Run?
+                                                <i id="RemoveClickToRun" class="ms-Icon ms-Icon--MiniLink ms-fontColor-themePrimary--hover ms-font-xl Section-Link" ari onclick="toggleCopyLink(this)" a-hidden="true"></i>
+                                            </div>
+                                            <div class="ms-Grid-col ms-u-sm12 ms-u-lg3 hidden">
+                                                <input class="ms-TextField-field Link-TextField" type="text" value="" placeholder="">
+                                            </div>
+                                            <div class="ms-Grid-col ms-u-sm12 ms-u-lg1 hidden">
+                                                <i class="ms-Icon ms-Icon--Copy ms-fontColor-themePrimary--hover ms-font-xl" aria-hidden="true" onclick="copyToClipboard(this)"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ms-Grid-row">
+                            <div class="ms-Grid-col ms-u-sm12 ms-fontSize-l ms-fontWeight-regular">
+                                <br>
+                               This <a href="https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/master/Office-ProPlus-Deployment/Remove-OfficeClickToRun">Remove-OfficeClickToRun</a> function will create a configuration xml file and uninstall Office Click-to-Run via the Office Deployment Tool (ODT).
+                            </div>
+                        </div>
+                        
+                        
+                         <div class="ms-Grid-row">
+                            <br>
+                            <br>
+                            <div class="ms-Grid-col ms-u-sm12 ms-fontSize-xl ms-fontWeight-semibold Script-Header">
+                                <div class="container">
+                                    <div class="ms-Grid">
+                                        <div class="ms-Grid-row">
+                                            <div class="ms-Grid-col ms-u-sm12 ms-u-lg8">
+                                              Do you want to remove previous versions of Office?
+                                                <i id="RemoveOffice" class="ms-Icon ms-Icon--MiniLink ms-fontColor-themePrimary--hover ms-font-xl Section-Link" ari onclick="toggleCopyLink(this)" a-hidden="true"></i>
+                                            </div>
+                                            <div class="ms-Grid-col ms-u-sm12 ms-u-lg3 hidden">
+                                                <input class="ms-TextField-field Link-TextField" type="text" value="" placeholder="">
+                                            </div>
+                                            <div class="ms-Grid-col ms-u-sm12 ms-u-lg1 hidden">
+                                                <i class="ms-Icon ms-Icon--Copy ms-fontColor-themePrimary--hover ms-font-xl" aria-hidden="true" onclick="copyToClipboard(this)"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ms-Grid-row">
+                            <div class="ms-Grid-col ms-u-sm12 ms-fontSize-l ms-fontWeight-regular">
+                                <br>
+                               The <a href="https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/master/Office-ProPlus-Deployment/Remove-PreviousOfficeInstalls">Remove-PreviousOfficeInstalls</a> function will remove installations of Office 2013 and older. The Offscrub vbs scripts are used to remove the MSI installations of Office products.
+
+                            </div>
+                        </div>
+                        
+                        
+                              
+                        
+                         <div class="ms-Grid-row">
+                            <br>
+                            <br>
+                            <div class="ms-Grid-col ms-u-sm12 ms-fontSize-xl ms-fontWeight-semibold Script-Header">
+                                <div class="container">
+                                    <div class="ms-Grid">
+                                        <div class="ms-Grid-row">
+                                            <div class="ms-Grid-col ms-u-sm12 ms-u-lg8">
+                                              Would you like to see examples of how to use our scripts to create deployment solutions?
+                                                <i id="Examples" class="ms-Icon ms-Icon--MiniLink ms-fontColor-themePrimary--hover ms-font-xl Section-Link" ari onclick="toggleCopyLink(this)" a-hidden="true"></i>
+                                            </div>
+                                            <div class="ms-Grid-col ms-u-sm12 ms-u-lg3 hidden">
+                                                <input class="ms-TextField-field Link-TextField" type="text" value="" placeholder="">
+                                            </div>
+                                            <div class="ms-Grid-col ms-u-sm12 ms-u-lg1 hidden">
+                                                <i class="ms-Icon ms-Icon--Copy ms-fontColor-themePrimary--hover ms-font-xl" aria-hidden="true" onclick="copyToClipboard(this)"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="ms-Grid-row">
+                            <div class="ms-Grid-col ms-u-sm12 ms-fontSize-l ms-fontWeight-regular">
+                                <br>
+                               Click <a href="https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts/tree/master/Office-ProPlus-Deployment/Deploy-OfficeClickToRun">here</a>  to see a list of deployment examples.
+                            </div>
+                        </div>
+                        
                     </div>
                 </div>
             </div>
