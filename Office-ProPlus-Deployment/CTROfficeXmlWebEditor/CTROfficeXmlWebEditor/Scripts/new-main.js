@@ -67,6 +67,30 @@ $(document).ready(function () {
         resizeWindow();
     });
 
+    $('#autoActivate').change(function(e){
+        var isChecked = $("#autoActivate")[0].checked;
+        var xmlDoc = getXmlDocument();
+        if (isChecked) {
+            var addNode = xmlDoc.documentElement.getElementsByTagName("Add")[0];
+            if (addNode) {
+                var productVisNode1 = getProductNode(addNode, "VisioProXVolume");
+                var productVisNode2 = getProductNode(addNode, "VisioStdXVolume");
+                var productProjNode1 = getProductNode(addNode, "ProjectProXVolume");
+                var productProjNode2 = getProductNode(addNode, "ProjectStdXVolume");
+                if (productVisNode1 || productVisNode2) {
+                    $("#VisioLicenseSection").show("slow");
+                }
+                if (productProjNode1 || productProjNode2) {
+                    $("#ProjectLicenseSection").show("slow");
+                }
+            }
+        } else {
+            $("#ProjectLicenseSection").hide("slow");
+            $("#VisioLicenseSection").hide("slow");
+        }
+
+});
+
     $('#txtPidKey').keydown(function (e) {
         var currentText = this.value;
         var code = e.keyCode || e.which;
@@ -167,6 +191,44 @@ $(document).ready(function () {
         }
     });
 
+    //$('#txtVisioLicenseKey').keydown(function (e) {
+    //    var currentText = this.value;
+    //    var code = e.keyCode || e.which;
+
+    //    var start = document.getElementById("txtVisioLicenseKey").selectionStart;
+    //    var end = document.getElementById("txtVisioLicenseKey").selectionEnd;
+
+    //    if (code == 189) {
+    //        if (start != 5 && start != 11 && start != 17 && start != 23) {
+    //            e.preventDefault();
+    //        }
+    //    }
+
+    //    if (code == 8 || code == 46) {
+    //        if (end < currentText.length) {
+    //            var selPart = currentText.substring(start - 1, end);
+    //            if (selPart.indexOf("-") > -1) {
+    //                e.preventDefault();
+    //            }
+    //        }
+    //    }
+
+    //    if (code == 8 || (code >= 37 && code <= 40)) return;
+    //    if (code == 46 || code == 16) return;
+
+    //    var strSplit = currentText.split('-');
+    //    for (var t = 0; t < strSplit.length; t++) {
+    //        var part = strSplit[t];
+    //        if (part.length > 5) {
+    //            //e.preventDefault();
+    //        }
+    //    }
+
+    //    if (currentText.length > 30) {
+    //        e.preventDefault();
+    //    }
+    //});
+
     $('#txtPACKAGEGUID').keyup(function () {
         validatePackageGuid(this);
 
@@ -188,6 +250,54 @@ $(document).ready(function () {
             this.value = newCode;
             document.getElementById("txtPACKAGEGUID").selectionStart = start;
             document.getElementById("txtPACKAGEGUID").selectionEnd = end;
+        }
+    });
+
+    $('#txtVisioLicenseKey').keyup(function () {
+        validateVisio(this);
+
+        var currentText = this.value;
+        if (currentText.length >= 31) {
+
+            while (currentText.indexOf("-") > -1) {
+                currentText = currentText.replace("-", "");
+            }
+
+            var newCode = currentText.substring(0, 5) + "-" +
+                          currentText.substring(5, 10) + "-" +
+                          currentText.substring(10, 15) + "-" +
+                          currentText.substring(15, 20) + "-" +
+                          currentText.substring(20, 25);
+
+            var start = document.getElementById("txtVisioLicenseKey").selectionStart;
+            var end = document.getElementById("txtVisioLicenseKey").selectionEnd;
+            this.value = newCode;
+            document.getElementById("txtVisioLicenseKey").selectionStart = start;
+            document.getElementById("txtVisioLicenseKey").selectionEnd = end;
+        }
+    });
+
+    $('#txtProjectLicenseKey').keyup(function () {
+        validateVisio(this);
+
+        var currentText = this.value;
+        if (currentText.length >= 31) {
+
+            while (currentText.indexOf("-") > -1) {
+                currentText = currentText.replace("-", "");
+            }
+
+            var newCode = currentText.substring(0, 5) + "-" +
+                          currentText.substring(5, 10) + "-" +
+                          currentText.substring(10, 15) + "-" +
+                          currentText.substring(15, 20) + "-" +
+                          currentText.substring(20, 25);
+
+            var start = document.getElementById("txtProjectLicenseKey").selectionStart;
+            var end = document.getElementById("txtProjectLicenseKey").selectionEnd;
+            this.value = newCode;
+            document.getElementById("txtProjectLicenseKey").selectionStart = start;
+            document.getElementById("txtProjectLicenseKey").selectionEnd = end;
         }
     });
 
@@ -213,7 +323,7 @@ $(document).ready(function () {
         if ($("#cbProduct").val() === "LanguagePack" && $("#btAddProduct").text() !== "Edit Product") {
             alert("If creating a language pack, please set the first language to the client computer's culture language.  If the first language set does not match the client's culture language then the chosen language will be installed as the Shell UI language.");
         }
-
+        
         var xmlDoc = getXmlDocument();
 
         odtAddProduct(xmlDoc);
@@ -223,6 +333,10 @@ $(document).ready(function () {
         displayXml(xmlDoc);
 
         $("#btAddProduct").text('Edit Product');
+
+
+        
+
 
         return false;
     });
@@ -302,11 +416,11 @@ $(document).ready(function () {
     });
 
     $("#cbBranch").change(function () {
-        if ($("#office2016Select").hasClass('is-selected')) {
-            setVersionPanel("office2016Select");
-        } else {
-            setVersionPanel("office2013Select");
-        }
+        //if ($("#office2016Select").hasClass('is-selected')) {
+        //    setVersionPanel("office2016Select");
+        //} else {
+        //    setVersionPanel("office2013Select");
+        //}
 
         var selectedBranch = $("#cbBranch").val();
         $("#cbUpdateBranch").msdropdownval(selectedBranch);
@@ -584,6 +698,46 @@ $(document).ready(function () {
 
         odtSaveProperties(xmlDoc);
 
+        
+        var selectVisioKey = $("#txtVisioLicenseKey").val();
+        var selectProjectKey = $("#txtProjectLicenseKey").val();
+        var isChecked = $("#autoActivate")[0].checked;
+        
+            var addNode = xmlDoc.documentElement.getElementsByTagName("Add")[0];
+            if (addNode) {
+                var productVisNode1 = getProductNode(addNode, "VisioProXVolume");
+                var productVisNode2 = getProductNode(addNode, "VisioStdXVolume");
+                var productProjNode1 = getProductNode(addNode, "ProjectProXVolume");
+                var productProjNode2 = getProductNode(addNode, "ProjectStdXVolume");
+                if (productVisNode1) {
+                    if (selectVisioKey.length === 29 && isChecked) {
+                        productVisNode1.setAttribute("PIDKEY", selectVisioKey);
+                        //addNode.appendChild(productVisNode1)
+                    } else
+                        productVisNode1.removeAttribute("PIDKEY");
+                }
+                if (productVisNode2) {
+                    if (selectVisioKey.length === 29 && isChecked)
+                        productVisNode2.setAttribute("PIDKEY", selectVisioKey);
+                    else
+                        productVisNode2.removeAttribute("PIDKEY");
+                }
+
+                if (productProjNode1) {
+                    if (selectProjectKey.length === 29 && isChecked)
+                        productProjNode1.setAttribute("PIDKEY", selectProjectKey);
+                    else
+                        productProjNode1.removeAttribute("PIDKEY");
+                }
+                if (productProjNode2) {
+                    if (selectProjectKey.length === 29 && isChecked)
+                        productProjNode2.setAttribute("PIDKEY", selectProjectKey);
+                    else
+                        productProjNode2.removeAttribute("PIDKEY");
+                }
+
+            }
+        
         displayXml(xmlDoc);
         return false;
     });
@@ -952,7 +1106,7 @@ function setVersionPanel(buttonId) {
 
 function changeVersions(version) {
     if (version == "2013") {
-        $("#branchSection").hide("slow");
+        $("#branchSection").hide("slow");        
         $("#newVersionSection").hide("slow");
         $("#updateBranchSection").hide("slow");
         $("#mgtToggleGroup").hide("slow");
@@ -994,6 +1148,8 @@ function changeVersions(version) {
     }
     if (version == "2016") {        
         $("#branchSection").show("slow");
+        //$("#ProjectLicenseSection").hide("slow");
+        //$("#VisioLicenseSection").hide("slow");
         $("#newVersionSection").show("slow");
         $("#updateBranchSection").show("slow");
         $("#mgtToggleGroup").show("slow");
@@ -1555,6 +1711,39 @@ function validatePackageGuid(t) {
 }
 
 
+
+
+function validateVisio(t) {
+    //if (!this.value.match(/[0-9]/)) {
+    //    this.value = this.value.replace(/[^0-9]/g, '');
+    //}
+
+    var firstPart = "";
+    var secondPart = "";
+    var thirdPart = "";
+    var fourthPart = "";
+    var fifthPart = "";
+
+    var currentText = t.value;
+    for (var i = 1; i < 7; i++)
+        currentText = currentText.replace("-", "");
+    
+    if (currentText.length > 20)
+        firstPart = currentText.substring(0, 5) + "-" + currentText.substring(5, 10) + "-" + currentText.substring(10, 15) + "-" + currentText.substring(15, 20) + "-" + currentText.substring(20);
+    else if (currentText.length > 15)
+        firstPart = currentText.substring(0, 5) + "-" + currentText.substring(5, 10) + "-" + currentText.substring(10, 15) + "-" + currentText.substring(15);
+    else if (currentText.length > 10) {
+        firstPart = currentText.substring(0, 5) + "-" + currentText.substring(5, 10) + "-" + currentText.substring(10);
+        secondPart = currentText.substring(5, 10)// gotta check this cause this is ABSOLUTE HORSESHIT!!!!!!!!!this is bullshit, doesn't follow the rules of a fucking substring.
+    }
+    else if (currentText.length > 5)
+        firstPart = currentText.substring(0, 5) + "-" + currentText.substring(5);
+    else
+        firstPart = currentText
+        t.value = firstPart;
+}
+
+
 function changeSelectedLanguage() {
     var selectedProduct = $("#cbProduct").val();
     var selectLanguage = $("#cbLanguage").val();
@@ -1709,6 +1898,8 @@ function odtAddProduct(xmlDoc) {
     var selectDownloadPath = $("#txtDownloadPath").val();
     var selectLanguage = $("#cbLanguage").val();
     var selectPidKey = $("#txtPidKey").val();
+    var selectVisioKey = $("#txtVisioLicenseKey").val();
+    var selectProjectKey = $("#txtProjectLicenseKey").val();    
     var mgtCOM = $('#mgtToggle')[0].checked;
 
 
@@ -1784,11 +1975,21 @@ function odtAddProduct(xmlDoc) {
         addNode.appendChild(productNode);
     }
 
-    if (selectPidKey) {
-        productNode.setAttribute("PIDKEY", selectPidKey);
-    } else {
-        productNode.removeAttribute("PIDKEY");
+    if (selectedProduct.toLowerCase().indexOf("visio") !== -1 && selectedProduct.toLowerCase().indexOf("volume") !== -1 && $("#autoActivate")[0].checked)
+        {
+        $("#VisioLicenseSection").show("slow");
     }
+
+    if (selectedProduct.toLowerCase().indexOf("project") !== -1 && selectedProduct.toLowerCase().indexOf("volume") !== -1 && $("#autoActivate")[0].checked) {
+        $("#ProjectLicenseSection").show("slow");
+    }
+
+        //if (selectProjectKey) {
+        //    productNode.setAttribute("PIDKEY", selectProjectKey);
+        //} else {
+        //    productNode.removeAttribute("PIDKEY");
+        //}
+    
 
     var langNode = getLanguageNode(productNode, selectLanguage);
     if (!(langNode)) {
@@ -1850,6 +2051,14 @@ function odtRemoveProduct(xmlDoc) {
         if (products.length == 0) {
             addNode.parentNode.removeChild(addNode);
         }
+    }
+
+    if (selectedProduct.toLowerCase().indexOf("visio") !== -1 && selectedProduct.toLowerCase().indexOf("volume") !== -1) {
+        $("#VisioLicenseSection").hide("slow");
+    }
+
+    if (selectedProduct.toLowerCase().indexOf("project") !== -1 && selectedProduct.toLowerCase().indexOf("volume") !== -1) {
+        $("#ProjectLicenseSection").hide("slow");
     }
 
     var productCount = getAddProductCount(xmlDoc);
@@ -2506,8 +2715,8 @@ function odtRemoveProperties(xmlDoc) {
     $("#btForceAppShutdownFalse").removeClass('active');
 
     $("#btSharedComputerLicensingYes").removeClass('btn-primary');
-    $("#btSharedComputerLicensingYes").removeClass('active');
     $("#btSharedComputerLicensingNo").removeClass('btn-primary');
+    $("#btSharedComputerLicensingYes").removeClass('active');    
     $("#btSharedComputerLicensingNo").removeClass('active');
 }
 
@@ -3024,6 +3233,10 @@ function clearXml() {
     $("#txtTargetVersion").val("");
     $("#txtUpdatePath").val("");
     $("#txtVersion").val("");
+    $("#txtVisioLicenseKey").val("");
+    $("#txtProjectLicenseKey").val("");
+    $("#ProjectLicenseSection").hide("slow");
+    $("#VisioLicenseSection").hide("slow");
 
     var resetDropDowns = document.getElementsByTagName("select");
     for (var t = 0; t < resetDropDowns.length; t++) {
