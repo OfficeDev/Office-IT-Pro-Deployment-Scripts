@@ -1,4 +1,4 @@
-<!-- Copyright (c) Microsoft. All rights reserved. Licensed under the MIT license. See LICENSE in the project root for license information. -->
+﻿<!-- Copyright (c) Microsoft. All rights reserved. Licensed under the MIT license. See LICENSE in the project root for license information. -->
 
 <!doctype html>
 <html lang="en">
@@ -1124,6 +1124,44 @@
                                                 <span class="ms-Label ms-Label--on">Yes</span>
                                             </label>
                                         </div>
+                                        <div id="VisioLicenseSection" style="display:none">
+                                        <!--Visio Volume Key-->
+                                        <table>
+                                            <tr>
+                                                <td>
+                                                    <label class="ms-Label">Visio License Key</label>
+                                                </td>
+                                                <td>
+                                                    <i id="PACKAGEGUIDInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('PACKAGEGUIDInfo', this)"></i>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        <div>
+                                            <input id="txtVisioLicenseKey" type="text" pattern="^.{5}-.{5}-.{5}-.{5}-.{5}$"
+                                                   class="ms-TextField-field" placeholder="XXXXX-XXXX-XXXX-XXXX-XXXXX"
+                                                   data-error="This must be a valid license key" maxlength="29">
+                                            <span id="VisioLicenseSignal" class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                                        </div>
+                                        </div>
+                                        <div id="ProjectLicenseSection" style="display:none">
+                                        <!--Project Volume Key-->
+                                        <table>
+                                            <tr>
+                                                <td>
+                                                    <label class="ms-Label">Project License Key</label>
+                                                </td>
+                                                <td>
+                                                    <i id="PACKAGEGUIDInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('PACKAGEGUIDInfo', this)"></i>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        <div>
+                                            <input id="txtProjectLicenseKey" type="text" pattern="^.{5}-.{5}-.{5}-.{5}-.{5}$"
+                                                   class="ms-TextField-field" placeholder="XXXXX-XXXX-XXXX-XXXX-XXXXX"
+                                                   data-error="This must be a valid license key" maxlength="29">
+                                            <span id="ProjectLicenseSignal" class="glyphicon form-control-feedback" aria-hidden="true"></span>
+                                        </div>
+                                        </div>
                                         <div class="ms-Toggle">
                                             <table>
                                                 <tr>
@@ -1154,8 +1192,8 @@
                                             </table>
                                             <input type="checkbox" id="sharedComputerLicensing" class="ms-Toggle-input" />
                                             <label for="sharedComputerLicensing" class="ms-Toggle-field">
-                                                <span class="ms-Label ms-Label--off">False</span>
-                                                <span class="ms-Label ms-Label--on">True</span>
+                                                <span class="ms-Label ms-Label--off">No</span>
+                                                <span class="ms-Label ms-Label--on">Yes</span>
                                             </label>
                                         </div>
 
