@@ -416,11 +416,11 @@ $(document).ready(function () {
     });
 
     $("#cbBranch").change(function () {
-        //if ($("#office2016Select").hasClass('is-selected')) {
-        //    setVersionPanel("office2016Select");
-        //} else {
-        //    setVersionPanel("office2013Select");
-        //}
+        if ($("#office2016Select").hasClass('is-selected')) {
+            setVersionPanel("office2016Select");
+        } else {
+            setVersionPanel("office2013Select");
+        }
 
         var selectedBranch = $("#cbBranch").val();
         $("#cbUpdateBranch").msdropdownval(selectedBranch);
@@ -1263,6 +1263,8 @@ function changeExcludeApps(version) {
 }
 
 function changeProducts(version) {
+    var myProduct = $("#cbProduct").val();
+    var myRemoveProduct = $("#cbProduct").val();
     $("#cbProduct").empty();
     $("#cbRemoveProduct").empty();
     var mySelectAdd = $('#cbProduct');
@@ -1271,10 +1273,34 @@ function changeProducts(version) {
     if (version == "2013") {
         mySelectAdd.msdropdownvals(productSkus2013Names, productSkus2013Values);
         mySelectRemove.msdropdownvals(productSkus2013Names, productSkus2013Values);
+        if ($.inArray(myProduct, productSkus2013Values) > -1)
+            $("#cbProduct").val(myProduct);
+        else {
+            $("#cbProduct").val(productSkus2013Values[0]);
+            $("#cbProduct").attr("placeholder", productSkus2013Names[0]);
+        }
+        if ($.inArray(myRemoveProduct, productSkus2013Values) > -1)
+            $("#cbRemoveProduct").val(myRemoveProduct);
+        else {
+            $("#cbRemoveProduct").val(productSkus2013Values[0]);
+            $("#cbRemoveProduct").attr("placeholder", productSkus2013Names[0]);
+        }
     }
     if (version == "2016") {
         mySelectAdd.msdropdownvals(productSkus2016Names, productSkus2016Values);
         mySelectRemove.msdropdownvals(productSkus2016Names, productSkus2016Values);
+        if ($.inArray(myProduct, productSkus2016Values) > -1)
+            $("#cbProduct").val(myProduct);
+        else {
+            $("#cbProduct").val(productSkus2016Values[0]);
+            $("#cbProduct").attr("placeholder", productSkus2016Names[0]);
+        }
+        if ($.inArray(myRemoveProduct, productSkus2016Values) > -1)
+            $("#cbRemoveProduct").val(myRemoveProduct);
+        else {
+            $("#cbRemoveProduct").val(productSkus2016Values[0]);
+            $("#cbRemoveProduct").attr("placeholder", productSkus2016Names[0]);
+        }
     }    
 
     mySelectAdd.trigger("chosen:updated");
