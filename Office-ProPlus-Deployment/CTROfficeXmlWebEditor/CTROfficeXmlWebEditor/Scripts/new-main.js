@@ -69,6 +69,7 @@ $(document).ready(function () {
 
     $('#autoActivate').change(function(e){
         var isChecked = $("#autoActivate")[0].checked;
+        var anyChecked = false;
         var xmlDoc = getXmlDocument();
         if (isChecked) {
             var addNode = xmlDoc.documentElement.getElementsByTagName("Add")[0];
@@ -79,10 +80,15 @@ $(document).ready(function () {
                 var productProjNode2 = getProductNode(addNode, "ProjectStdXVolume");
                 if (productVisNode1 || productVisNode2) {
                     $("#VisioLicenseSection").show("slow");
+                    anyChecked = true;
                 }
                 if (productProjNode1 || productProjNode2) {
                     $("#ProjectLicenseSection").show("slow");
+                    anyChecked = true;
                 }
+            }
+            if (anyChecked === false) {
+                $("#autoActivate")[0].checked = false;
             }
         } else {
             $("#ProjectLicenseSection").hide("slow");
@@ -2078,13 +2084,17 @@ function odtRemoveProduct(xmlDoc) {
             addNode.parentNode.removeChild(addNode);
         }
     }
-
+    
     if (selectedProduct.toLowerCase().indexOf("visio") !== -1 && selectedProduct.toLowerCase().indexOf("volume") !== -1) {
         $("#VisioLicenseSection").hide("slow");
     }
 
     if (selectedProduct.toLowerCase().indexOf("project") !== -1 && selectedProduct.toLowerCase().indexOf("volume") !== -1) {
         $("#ProjectLicenseSection").hide("slow");
+    }
+
+    if ($("#VisioLicenseSection").is(":visible") === false && $("#ProjectLicenseSection").is(":visible") === false) {
+        $("#autoActivate")[0].checked = false;
     }
 
     var productCount = getAddProductCount(xmlDoc);
