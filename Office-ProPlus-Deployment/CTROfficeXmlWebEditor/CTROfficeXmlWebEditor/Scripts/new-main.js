@@ -3531,7 +3531,8 @@ var productSkus2016Names = [
     'Project Standard 2016 Retail',
     'Publisher 2016 Retail',
     'Word 2016 Retail',
-    'Access Runtime 2016 Retail'
+    'Access Runtime 2016 Retail',
+    'Office Professional Plus 2016'
 
 ];
 
@@ -3560,8 +3561,9 @@ var productSkus2016Values = [
     'PowerPointRetail',
     'ProjectStdRetail',
     'PublisherRetail',
-    'WordRetail',
-    'AccessRuntimeRetail'
+    'WordRetail',,
+    'AccessRuntimeRetail',
+    'ProPlusRetail'
 ];
 
 var productSkusRequireKey = [
@@ -3584,7 +3586,8 @@ var productSkusRequireKey = [
     'VisioStdXVolume',
     'ProjectProXVolume',
     'ProjectStdXVolume',
-    'AccessRuntimeRetail'
+    'AccessRuntimeRetail',
+    'ProPlusRetail'
 ];
 
 var productSkus2013Names = [
