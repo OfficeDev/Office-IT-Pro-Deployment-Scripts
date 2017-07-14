@@ -1936,7 +1936,6 @@ function odtRemoveProduct(xmlDoc) {
     }
 
     if (productSkusRequireKey.indexOf(selectedProduct) > -1) {
-        ProjectProXVolumeLicenseSection
         var textBox = '#' + selectedProduct + 'LicenseSection';
         $(textBox).remove(); 
     }
