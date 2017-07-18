@@ -1,4 +1,3 @@
-
 var selectDate;
 var odt2016Window;
 var odt2013Window;
@@ -635,7 +634,32 @@ $(document).ready(function () {
                 else {
                     node.removeAttribute("PIDKEY");
                 }
+
+                //if (!isChecked || !$('#autoActivate').parent().is(':visible'))  {
+                //    var properties = xmlDoc.getElementsByTagName("Property");
+
+                //    for (var i = 0; i < properties.length; i++) {
+                //        var name = properties[i].getAttribute("Name");
+
+                //        if (name === "AUTOACTIVATE") {
+                //            xmlDoc.documentElement.removeChild(properties[i]);
+                //        }
+                //    }
+                //}
             }
+
+                if (!isChecked || !$('#autoActivate').parent().is(':visible')) {
+                    var properties = xmlDoc.getElementsByTagName("Property");
+
+                    for (var i = 0; i < properties.length; i++) {
+                        var name = properties[i].getAttribute("Name");
+
+                        if (name === "AUTOACTIVATE") {
+                            xmlDoc.documentElement.removeChild(properties[i]);
+                        }
+                    }
+                }
+            
           
         }
         
@@ -989,7 +1013,45 @@ function setPanel(panelId, buttonId) {
         $("#" + sibling.id).removeClass("ms-u-slideLeftIn400");
     }
 
+    if (panelId === "PropertiesPanel") {
+        checkSelectedProducts();
+    }
+
     $("#" + panelId).addClass("ms-u-slideLeftIn400");
+}
+
+function checkSelectedProducts() {
+    var xmlDoc = getXmlDocument();
+    var products = xmlDoc.getElementsByTagName("Product");
+    var containsNonO365 = false; 
+
+    for(var i =0;i < products.length; i++){
+        var productId = products[i].getAttribute('ID');
+
+        if (productSkusRequireKey.indexOf(productId) > -1) {
+            containsNonO365 = true;
+            break; 
+        }
+    }
+
+    if (containsNonO365) {
+        $('#autoActivate').parent().show('slow');
+    }
+    else {
+        $('#autoActivate').parent().hide('slow');
+
+        var properties = xmlDoc.getElementsByTagName("Property");
+
+        for (var i = 0; i < properties.length; i++) {
+            var name = properties[i].getAttribute("Name");
+
+            if (name === "AUTOACTIVATE") {
+                xmlDoc.documentElement.removeChild(properties[i]);
+                displayXml(xmlDoc);
+            }
+        }
+    }
+
 }
 
 function setVersionPanel(buttonId) {
