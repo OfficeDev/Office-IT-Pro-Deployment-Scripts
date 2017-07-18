@@ -1,4 +1,3 @@
-
 var selectDate;
 var odt2016Window;
 var odt2013Window;
