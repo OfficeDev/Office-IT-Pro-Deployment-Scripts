@@ -71,10 +71,11 @@ $(document).ready(function () {
         var isChecked = $("#autoActivate")[0].checked;
         var xmlDoc = getXmlDocument();
         var products = xmlDoc.documentElement.getElementsByTagName("Add")[0].children;
+        $('#LicenseSection').empty();
 
         for(var i= 0, len = products.length; i < len; i++){
             var product = products[i];
-            var prodId = product.attributes[0].value
+            var prodId = product.attributes[0].value;
 
             if (productSkusRequireKey.indexOf(prodId) != -1) {
                 var sectionId = prodId + "LicenseSection";
@@ -82,9 +83,21 @@ $(document).ready(function () {
 
                 if (isChecked) {
                     $("#" + sectionId).show("slow");
-                }
+                    $("#LicenseSection").show("slow");
+
+                    if ($("#txt" + prodId + "LicenseKey")[0].value === "") {
+
+                        if (product.attributes.length > 1) {
+                            var prodKey = product.attributes[1].value;
+                            $("#txt" + prodId + "LicenseKey")[0].value = prodKey;
+                        }
+                    }
+                 }
                 else {
                     $("#" + sectionId).hide("slow");
+                    $("#LicenseSection").hide("slow");
+
+                    $('#LicenseSection').css('display', 'none');
                 }                
             }
         }
@@ -547,7 +560,6 @@ $(document).ready(function () {
 
     $("#btSaveUpdates").on('click', function () {
         var xmlDoc = getXmlDocument();
-
         odtSaveUpdates(xmlDoc);
 
         displayXml(xmlDoc);
@@ -601,10 +613,8 @@ $(document).ready(function () {
 
     $("#btSaveProperties").on('click', function () {
         var xmlDoc = getXmlDocument();
-
         odtSaveProperties(xmlDoc);
-
-        
+      
         var selectVisioKey = $("#txtVisioLicenseKey").val();
         var selectProjectKey = $("#txtProjectLicenseKey").val();
         var isChecked = $("#autoActivate")[0].checked;
@@ -622,10 +632,8 @@ $(document).ready(function () {
                 if (key.length === 26 && isChecked) {
                     node.setAttribute("PIDKEY", key);
                 }
-
-                if(!isChecked){
+                else {
                     node.removeAttribute("PIDKEY");
-
                 }
             }
           
@@ -866,6 +874,11 @@ function AddActivationKeyBox(product) {
     var panel = $('#LicenseSection');
     var textBoxId = 'txt'+product+'LicenseKey';
     var textBox = "<div id='" + product + "LicenseSection' style='display:none'><table><tr><td><label class='ms-Label'>" + product + " License Key</label></td><td><i id='PACKAGEGUIDInfoIcon' class='ms-Icon ms-Icon--circleInfo ms-fontColor-blue' style='width: 30px;text-align: center;cursor:pointer;' onclick='toggleInfo('PACKAGEGUIDInfo', this)'></i></td></tr></table><div><input id='" + textBoxId + "' type='text' pattern='^.{5}-.{5}-.{5}-.{5}-.{5}$'class='ms-TextField-field' placeholder='XXXXX-XXXX-XXXX-XXXX-XXXXX'data-error='This must be a valid license key' maxlength='26' onkeydown='validateActivationKey(this.id)'><span id='" + product + "LicenseSignal' class='glyphicon form-control-feedback' aria-hidden='true'></span></div></div>";
+
+    if ($('#autoActivate')[0].checked) {
+        textBox = "<div id='" + product + "LicenseSection' style='display:block'><table><tr><td><label class='ms-Label'>" + product + " License Key</label></td><td><i id='PACKAGEGUIDInfoIcon' class='ms-Icon ms-Icon--circleInfo ms-fontColor-blue' style='width: 30px;text-align: center;cursor:pointer;' onclick='toggleInfo('PACKAGEGUIDInfo', this)'></i></td></tr></table><div><input id='" + textBoxId + "' type='text' pattern='^.{5}-.{5}-.{5}-.{5}-.{5}$'class='ms-TextField-field' placeholder='XXXXX-XXXX-XXXX-XXXX-XXXXX'data-error='This must be a valid license key' maxlength='26' onkeydown='validateActivationKey(this.id)'><span id='" + product + "LicenseSignal' class='glyphicon form-control-feedback' aria-hidden='true'></span></div></div>";
+    }
+
     panel.append(textBox);
 }
 
@@ -1612,10 +1625,6 @@ function validatePackageGuid(t) {
             document.getElementById("txtPACKAGEGUID").selectionEnd = startPos + 1;
         }
     }
-
-
-
-
 }
 
 function validateActivationKey(id) {
@@ -1826,6 +1835,10 @@ function odtAddProduct(xmlDoc) {
 
     if (products.length === 1 && products[0].getAttribute("ID") === "LanguagePack" && $("#btAddProduct").text() !== "Edit Product") {
         addNode.removeChild(products[0]);
+    }
+
+    if (productSkusRequireKey.indexOf(selectedProduct) > -1) {
+        AddActivationKeyBox(selectedProduct);
     }
 
     if (selectSourcePath) {
@@ -2464,6 +2477,8 @@ function odtSaveProperties(xmlDoc) {
     var packageguidNode = null;
 
     var nodes = xmlDoc.documentElement.getElementsByTagName("Property");
+    var addNode = xmlDoc.documentElement.getElementsByTagName("Add")[0];
+
     if (nodes.length > 0) {
         for (var n = 0; n < nodes.length; n++) {
             propNode = xmlDoc.documentElement.getElementsByTagName("Property")[n];
@@ -2491,6 +2506,7 @@ function odtSaveProperties(xmlDoc) {
     }
 
     var $AutoActivate = $("#autoActivate")[0];
+    var forceUpgrade = $('#forceUpgrade').is(":checked");
     var $ForceAppShutdown = $("#forceAppShutdown")[0];
     var $SharedComputerLicensing = $("#sharedComputerLicensing")[0];
     var $PinIcons = $("#pinIcons")[0];
@@ -2508,6 +2524,15 @@ function odtSaveProperties(xmlDoc) {
                 packageguidNode.setAttribute("Value", packageguidVal);
             }
         }
+    }
+
+    if (forceUpgrade) {
+        addNode.setAttribute('ForceUpgrade', 'TRUE')
+        displayXml(xmlDoc);
+    }
+    else {
+        addNode.removeAttribute('ForceUpgrade');
+        displayXml(xmlDoc);
     }
 
     if (!(autoActivateNode)) {
@@ -3140,6 +3165,7 @@ function clearXml() {
     $.cookie("xmlcache", "");
 
     $("#btAddProduct").text('Add Product');
+    $('#LicenseSection').empty();
 }
 
 function getXmlDocument() {
@@ -3153,7 +3179,6 @@ function getXmlDocument() {
 
 function createXmlDocument(string) {
     var doc;
-    //if (!detectIE()){
     if (window.DOMParser) {
         parser = new DOMParser();
         doc = parser.parseFromString(string, "application/xml");
