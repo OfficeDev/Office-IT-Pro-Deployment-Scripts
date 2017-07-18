@@ -1,4 +1,4 @@
-<!-- Copyright (c) Microsoft. All rights reserved. Licensed under the MIT license. See LICENSE in the project root for license information. -->
+﻿<!-- Copyright (c) Microsoft. All rights reserved. Licensed under the MIT license. See LICENSE in the project root for license information. -->
 
 <!doctype html>
 <html lang="en">
@@ -258,9 +258,6 @@
                                         </div>
                                         <div id="office2016Select" class="ms-Table-row is-selected navrowversion">
                                             <span class="ms-Table-cell" onclick="setVersionPanel('office2016Select')">Office 365 ProPlus (2016)</span>
-                                        </div>
-                                        <div id="office2013Select" class="ms-Table-row navrowversion">
-                                            <span class="ms-Table-cell" onclick="setVersionPanel('office2013Select')">Office 365 ProPlus (2013)</span>
                                         </div>
                                     </div>
 
@@ -1087,43 +1084,8 @@
                                                 <span class="ms-Label ms-Label--on">Yes</span>
                                             </label>
                                         </div>
-                                        <div id="LicenseSection">
-                                            <!--<div id="VisioLicenseSection" style="display:none">
-                                                <table>
-                                                    <tr>
-                                                        <td>
-                                                            <label class="ms-Label">Visio License Key</label>
-                                                        </td>
-                                                        <td>
-                                                            <i id="PACKAGEGUIDInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('PACKAGEGUIDInfo', this)"></i>
-                                                        </td>
-                                                    </tr>
-                                                </table>
-                                                <div>
-                                                    <input id="txtVisioLicenseKey" type="text" pattern="^.{5}-.{5}-.{5}-.{5}-.{5}$"
-                                                           class="ms-TextField-field" placeholder="XXXXX-XXXX-XXXX-XXXX-XXXXX"
-                                                           data-error="This must be a valid license key" maxlength="26" onkeydown="validateActivationKey(this.id)">
-                                                    <span id="VisioLicenseSignal" class="glyphicon form-control-feedback" aria-hidden="true"></span>
-                                                </div>
-                                            </div>
-                                            <div id="ProjectLicenseSection" style="display:none">
-                                                <table>
-                                                    <tr>
-                                                        <td>
-                                                            <label class="ms-Label">Project License Key</label>
-                                                        </td>
-                                                        <td>
-                                                            <i id="PACKAGEGUIDInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('PACKAGEGUIDInfo', this)"></i>
-                                                        </td>
-                                                    </tr>
-                                                </table>
-                                                <div>
-                                                    <input id="txtProjectLicenseKey" type="text" pattern="^.{5}-.{5}-.{5}-.{5}-.{5}$"
-                                                           class="ms-TextField-field" placeholder="XXXXX-XXXX-XXXX-XXXX-XXXXX"
-                                                           data-error="This must be a valid license key" maxlength="26" onkeydown="validateActivationKey(this.id)">
-                                                    <span id="ProjectLicenseSignal" class="glyphicon form-control-feedback" aria-hidden="true"></span>
-                                                </div>
-                                            </div>-->
+                                        <div id="LicenseSection" style="display: none">
+                                            <br />
                                         </div>
 
                                         <div class="ms-Toggle">
@@ -1174,6 +1136,26 @@
                                             </table>
                                             <input type="checkbox" id="pinIcons" class="ms-Toggle-input" />
                                             <label for="pinIcons" class="ms-Toggle-field">
+                                                <span class="ms-Label ms-Label--off">False</span>
+                                                <span class="ms-Label ms-Label--on">True</span>
+                                            </label>
+                                        </div>
+
+                                        <div class="ms-Toggle">
+                                            <table>
+                                                <tbody>
+                                                    <tr>
+                                                        <td>
+                                                            <label class="ms-Toggle-description">ForceUpgrade</label>
+                                                        </td>
+                                                        <td>
+                                                            <i id="fupInfoIcon" class="ms-Icon ms-Icon--circleInfo ms-fontColor-blue" style="width: 30px;text-align: center;cursor:pointer;" onclick="toggleInfo('fupInfo', this)"></i>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                            <input type="checkbox" id="forceUpgrade" class="ms-Toggle-input">
+                                            <label for="forceUpgrade" class="ms-Toggle-field">
                                                 <span class="ms-Label ms-Label--off">False</span>
                                                 <span class="ms-Label ms-Label--on">True</span>
                                             </label>
@@ -2123,6 +2105,24 @@
                         </ul>
                         <p class="ms-Callout-subText">
                             If you use any other characters, the App-V package is created with the default Package ID. Also, <strong>PACKAGEGUID</strong> needs to be 25 characters in length and be separated into 5 sections, with each section separated by a dash. The sections need to have the following number of characters: 8, 4, 4, 4, and 12. For example, 12345678-ABCD-1234-ABCD-1234567890AB is a valid value for <strong>PACKAGEGUID</strong>. This allows you to publish multiple App-V packages of Office 2013 to an App-V Management Server. But, this doesn’t enable you to deploy more than one Office 2013 App-V package to a single computer.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="fupInfo" class="ms-Callout ms-Callout--arrowLeft" style="position:absolute; left:80px; top:40px; display:none">
+            <div class="ms-Callout-main">
+                <div class="ms-Callout-header">
+                    <span style="float:right; cursor:pointer" class="ms-Icon ms-Icon--x" onclick="toggleInfo('fupInfo')"></span>
+                    <p class="ms-Callout-title">ForceUpgrade</p>
+                </div>
+                <div class="ms-Callout-inner">
+                    <div class="ms-Callout-content">
+                        <p class="ms-Callout-subText">When set to True, ForceUpgrade automatically upgrades from Office 365 ProPlus 2013 to Office 365 ProPlus 2016 without asking for input from the user. This attribute is often used alongside the Display element to hide the user interface during installation.</p>
+                        <hr>
+                        <p class="ms-Callout-subText">Optional. </p>
+                        <p class="ms-Callout-subText">
+                            Default is False.
                         </p>
                     </div>
                 </div>
