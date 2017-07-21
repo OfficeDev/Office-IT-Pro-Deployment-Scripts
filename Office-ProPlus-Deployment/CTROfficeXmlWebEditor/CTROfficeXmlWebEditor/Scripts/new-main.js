@@ -70,10 +70,20 @@ $(document).ready(function () {
         var isChecked = $("#autoActivate")[0].checked;
         var xmlDoc = getXmlDocument();
         var products = xmlDoc.documentElement.getElementsByTagName("Add")[0].children;
+
         $('#LicenseSection').empty();
 
+        if (detectIE()) {
+            products = xmlDoc.documentElement.getElementsByTagName("Add")[0].childNodes
+        }
+
         for(var i= 0, len = products.length; i < len; i++){
-            var product = products[i];
+            var product = product = products[i];
+            
+            if (products[i].nodeValue != null) {
+                continue; 
+            }
+           
             var prodId = product.attributes[0].value;
 
             if (productSkusRequireKey.indexOf(prodId) != -1) {
@@ -619,8 +629,16 @@ $(document).ready(function () {
         var isChecked = $("#autoActivate")[0].checked;
         var products = xmlDoc.documentElement.getElementsByTagName("Add")[0].children;
 
+        if (detectIE()) {
+            products = xmlDoc.documentElement.getElementsByTagName("Add")[0].childNodes;
+        }
+
         for (var i = 0, len = products.length; i < len; i++) {
-            var prodId = products[i].attributes[0].value
+            if (products[i].nodeValue != null) {
+                continue;
+            }
+
+            var prodId = products[i].attributes[0].value;
 
             if (productSkusRequireKey.indexOf(prodId) != -1)
             {
@@ -634,33 +652,18 @@ $(document).ready(function () {
                 else {
                     node.removeAttribute("PIDKEY");
                 }
-
-                //if (!isChecked || !$('#autoActivate').parent().is(':visible'))  {
-                //    var properties = xmlDoc.getElementsByTagName("Property");
-
-                //    for (var i = 0; i < properties.length; i++) {
-                //        var name = properties[i].getAttribute("Name");
-
-                //        if (name === "AUTOACTIVATE") {
-                //            xmlDoc.documentElement.removeChild(properties[i]);
-                //        }
-                //    }
-                //}
             }
 
-                if (!isChecked || !$('#autoActivate').parent().is(':visible')) {
-                    var properties = xmlDoc.getElementsByTagName("Property");
+            if (!isChecked || !$('#autoActivate').parent().is(':visible')) {
+                var properties = xmlDoc.getElementsByTagName("Property");
 
-                    for (var i = 0; i < properties.length; i++) {
-                        var name = properties[i].getAttribute("Name");
-
-                        if (name === "AUTOACTIVATE") {
-                            xmlDoc.documentElement.removeChild(properties[i]);
-                        }
+                for (var i = 0; i < properties.length; i++) {
+                    var name = properties[i].getAttribute("Name");
+                    if (name === "AUTOACTIVATE") {
+                        xmlDoc.documentElement.removeChild(properties[i]);
                     }
                 }
-            
-          
+            }       
         }
         
         displayXml(xmlDoc);
