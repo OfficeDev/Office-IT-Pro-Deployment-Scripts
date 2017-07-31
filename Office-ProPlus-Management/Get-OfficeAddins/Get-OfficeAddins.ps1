@@ -17,8 +17,8 @@ Param(
     
     $COMKeys = @("SOFTWARE\Microsoft\Office\ClickToRun\REGISTRY\MACHINE\Software\Microsoft\Office",
                  "SOFTWARE\Microsoft\Office\ClickToRun\REGISTRY\MACHINE\Software\Microsoft\Visio\Addins",
-                 "SOFTWARE\Microsoft\Office\ClickToRun\REGISTRY\USER\.DEFAULT\Software\Microsoft\Office",
-                 "SOFTWARE\Microsoft\Office\ClickToRun\REGISTRY\USER\.DEFAULT\Software\Microsoft\Visio\Addins")
+                 "SOFTWARE\Microsoft\Office\ClickToRun\REGISTRY\USERS\.DEFAULT\Software\Microsoft\Office",
+                 "SOFTWARE\Microsoft\Office\ClickToRun\REGISTRY\USERS\.DEFAULT\Software\Microsoft\Visio\Addins")
     
     $VSTOKeys = @("Software\Microsoft\Office",  
                   "Software\Wow6432Node\Microsoft\Office",
@@ -173,23 +173,138 @@ Param(
     [string]$ComputerName = $env:COMPUTERNAME
 )
 
+    $defaultDisplaySet = 'Name','Path','Manifest','Hive'
+    $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet('DefaultDisplayPropertySet',[string[]]$defaultDisplaySet)
+    $PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultDisplayPropertySet)
+    $results = New-Object PSObject[] 0;
+
     $regProv = Get-WmiObject -List "StdRegProv" -Namespace root\default -ComputerName $ComputerName
 
     $HKCU = [UInt32] "0x80000001"
     $HKLM = [UInt32] "0x80000002"
 
+    $hkeys = @($HKCU,$HKLM)
+
     $officeApps = @("Word","Excel","PowerPoint","Outlook","MS Project")
 
     $multiManifestKeys = @("SOFTWARE\Wow6432Node\Microsoft\Office",
                            "SOFTWARE\Microsoft\Office",
-                           "SOFTWARE\Wow6432Node\Microsoft\Visio",
-                           "SOFTWARE\Microsoft\Visio]\Addins")
+                           "SOFTWARE\Wow6432Node\Microsoft",
+                           "SOFTWARE\Microsoft")
 
-    $hklmManifestKeys = @("HKLM\SOFTWARE\Microsoft\Office\ClickToRun\REGISTRY\MACHINE\Software\Microsoft\Office",
-                          "HKLM\SOFTWARE\Microsoft\Office\ClickToRun\REGISTRY\MACHINE\Software\Microsoft\Visio\Addins",
-                          "HKLM\SOFTWARE\Microsoft\Office\ClickToRun\REGISTRY\USER\.DEFAULT\Software\Microsoft\Office",
-                          "HKLM\SOFTWARE\Microsoft\Office\ClickToRun\REGISTRY\USER\.DEFAULT\Software\Microsoft\Visio\Addins")
+    $hklmManifestKeys = @("SOFTWARE\Microsoft\Office\ClickToRun\REGISTRY\MACHINE\Software\Microsoft\Office",
+                          "SOFTWARE\Microsoft\Office\ClickToRun\REGISTRY\MACHINE\Software\Microsoft",
+                          "SOFTWARE\Microsoft\Office\ClickToRun\REGISTRY\USERS\.DEFAULT\Software\Microsoft\Office",
+                          "SOFTWARE\Microsoft\Office\ClickToRun\REGISTRY\USERS\.DEFAULT\Software\Microsoft")
 
+    
+    foreach($hkey in $hkeys){
+        foreach($key in $multiManifestKeys){
+            if($key -notmatch "Office"){
+                $searchApps = "Visio"
+            } else {
+                $searchApps = $officeApps
+            }
+
+            switch($hkey){
+                '2147483649'{
+                    $hive = 'HKCU'
+                }
+                '2147483650'{
+                    $hive = 'HKLM'
+                }
+            }
+
+            foreach($app in $searchApps){
+                $path = Join-Path $key $app
+                $fullpath = Join-Path $path "Addins"
+                
+                $enumKeys = $regProv.EnumKey($hkey, $fullpath)
+                foreach($enumkey in $enumKeys.sNames){
+                    $addinpath = Join-Path $fullpath $enumkey
+                    $values = $regProv.EnumValues($hkey, $addinpath)
+         
+                    foreach($value in $values.sNames){
+                        if($value -eq "Manifest"){
+                            $ManifestValue = ($regProv.GetStringValue($hkey, $addinpath, $value)).sValue
+                            if($ManifestValue -match "|"){
+                                $ManifestValue = $ManifestValue.Split("|")[0]
+                            }
+
+                            $object = New-Object PSObject -Property @{Name = $enumkey; Path = $fullpath; Manifest = $ManifestValue; Hive = $hive}
+                            $object | Add-Member MemberSet PSStandardMembers $PSStandardMembers
+                            $results += $object
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
+    foreach($key in $hklmManifestKeys){
+        if($key -match "Office"){
+            $searchapps = $officeApps
+        } else {
+            $searchApps = "Visio"
+        }
+    
+
+        foreach($app in $searchApps){
+            $path = Join-Path $key $app
+            $fullpath = Join-Path $path "Addins"
+
+            $enumKeys = $regProv.EnumKey($HKLM, $fullpath)
+            foreach($enumkey in $enumKeys.sNames){
+                $addinpath = Join-Path $fullpath $enumkey
+                $values = $regProv.EnumValues($hklm, $addinpath)
+                if($value -eq "Manifest"){
+                    $ManifestValue = ($regProv.GetStringValue($hklm, $addinpath, $value)).sValue
+                    if($ManifestValue -match "|"){
+                        $ManifestValue = $ManifestValue.Split("|")[0]
+                    }
+
+                    $object = New-Object PSObject -Property @{Name = $enumkey; Path = $fullpath; Manifest = $ManifestValue; Hive = 'HKLM'}
+                    $object | Add-Member MemberSet PSStandardMembers $PSStandardMembers
+                    $results += $object
+                }
+            }
+        }
+    }
+
+    return $results;
+}
+
+function Get-AddinLoadtime {
+Param(
+    [string]$ComputerName = $env:COMPUTERNAME,
+    [string]$AddinID
+)
+    $regProv = Get-WmiObject -List "StdRegProv" -Namespace root\default -ComputerName $ComputerName
+
+    $HKCU = [UInt32] "0x80000001"
+
+    $loadTimeKey = "SOFTWARE\Microsoft\Office"
+    $officeVersions = @("11.0","12.0","13.0","14.0","15.0","16.0")
+    $officeApps = @("Word","Excel","PowerPoint","Outlook","Visio","MS Project")
+
+    foreach($officeVersion in $officeVersions){
+        $OfficeVersionPath = Join-Path $loadTimeKey $officeVersion
+        foreach($officeApp in $officeApps){
+            $officeAppPath = Join-Path $OfficeVersionPath $officeApp
+            $loadTimePath = Join-Path $officeAppPath "AddInLoadTimes"
+            
+            $values = $regProv.EnumValues($HKCU, $loadTimePath)
+            foreach($value in $values.sNames){
+                if($value -eq $AddinID){
+                    $loadBehaviorValue = $regProv.GetBinaryValue($HKCU, $loadTimePath, $value)
+
+                    return $loadBehaviorValue;
+                }
+            }
+        }
+    }
+    
     
 
 }
