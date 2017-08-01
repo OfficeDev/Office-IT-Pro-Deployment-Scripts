@@ -297,15 +297,33 @@ Param(
             $values = $regProv.EnumValues($HKCU, $loadTimePath)
             foreach($value in $values.sNames){
                 if($value -eq $AddinID){
+                    $totalValue = @()
                     $loadBehaviorValue = $regProv.GetBinaryValue($HKCU, $loadTimePath, $value)
+                    foreach($l in $loadBehaviorValue.uValue){
+                        $decValue = [convert]::ToString($l, 16)
+                        $decValueCharacters = $decValue | measure -Character
+                        
+                        if($decValueCharacters.Characters -le 1){
+                            $decValue = AddDoubleInt -int $decValue
+                        }
 
-                    return $loadBehaviorValue;
+                        $totalValue += $decValue
+                    }
+
+                    $totalValue = [system.string]::Join(" ",$totalValue)
+
+                    return $totalValue;
                 }
             }
         }
     }
-    
-    
+}
+
+function AddDoubleInt ($int) {
+    $num = "0"
+    $num += $int
+
+    return $num;
 
 }
 
