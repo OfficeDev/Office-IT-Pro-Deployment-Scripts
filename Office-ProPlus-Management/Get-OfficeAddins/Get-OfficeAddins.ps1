@@ -327,68 +327,63 @@ function AddDoubleInt ($int) {
 
 }
 
-#AddInId 
-<#
-HKCU\SOFTWARE\Microsoft\Office\[Word|Excel|PowerPoint|Outlook|MS Project]\Addins
-HKCU\SOFTWARE\Wow6432Node\Microsoft\Office\[Word|Excel|PowerPoint|Outlook|MS Project]\Addins
-HKLM\SOFTWARE\Microsoft\Office\[Word|Excel|PowerPoint|Outlook|MS Project]\Addins
-HKLM\SOFTWARE\Wow6432Node\Microsoft\Office\[Word|Excel|PowerPoint|Outlook|MS Project]\Addins
-HKCU\SOFTWARE\Microsoft\Visio\Addins
-HKCU\SOFTWARE\Wow6432Node\Microsoft\Visio\Addins
-HKLM\SOFTWARE\Microsoft\Visio\Addins
-HKLM\SOFTWARE\Wow6432Node\Microsoft\Visio\Addins
-HKLM\SOFTWARE\Microsoft\Office\ClickToRun\REGISTRY\MACHINE\Software\Microsoft\Office\[Word|Excel|PowerPoint|Outlook|MS Project]\Addins
-HKLM\SOFTWARE\Microsoft\Office\ClickToRun\REGISTRY\MACHINE\Software\Microsoft\Visio\Addins
-HKLM\SOFTWARE\Microsoft\Office\ClickToRun\REGISTRY\USER\.DEFAULT\Software\Microsoft\Office\[Word|Excel|PowerPoint|Outlook|MS Project]\Addins
-HKLM\SOFTWARE\Microsoft\Office\ClickToRun\REGISTRY\USER\.DEFAULT\Software\Microsoft\Visio\Addins
-#>
+function Get-AddinOfficeVersion {
+Param(
+    [string]$ComputerName = $env:COMPUTERNAME,
+    [string]$AddinID
+)
+    $regProv = Get-WmiObject -List "StdRegProv" -Namespace root\default -ComputerName $ComputerName
 
-#LoadBehavior
-<#
-[HKCU|HKLM]\SOFTWARE\[Wow6432Node]\Microsoft\Office\[Word|Excel|PowerPoint|Outlook|MS Project]\Addins\<add-in ID>\LoadBehavior OR 
-[HKCU|HKLM]\SOFTWARE\[Wow6432Node]\Microsoft\Visio]\Addins\<add-in ID>\LoadBehavior OR 
-HKLM\SOFTWARE\Microsoft\Office\ClickToRun\REGISTRY\MACHINE\Software\Microsoft\Office\[Word|Excel|PowerPoint|Outlook|MS Project]\Addins\<add-in ID>\LoadBehavior OR
-HKLM\SOFTWARE\Microsoft\Office\ClickToRun\REGISTRY\MACHINE\Software\Microsoft\Visio\Addins\<add-in ID>\LoadBehavior OR
-HKLM\SOFTWARE\Microsoft\Office\ClickToRun\REGISTRY\USER\.DEFAULT\Software\Microsoft\Office[Word|Excel|PowerPoint|Outlook|MS Project]\Addins\<add-in ID>\LoadBehavior OR
-HKLM\SOFTWARE\Microsoft\Office\ClickToRun\REGISTRY\USER\.DEFAULT\Software\Microsoft\Visio\Addins\<add-in ID>\LoadBehavior
-#>
+    $HKCU = [UInt32] "0x80000001"
 
-#FriendlyName 
-<#
-[HKCU|HKLM]\SOFTWARE\[Wow6432Node]\Microsoft\Office\[Word|Excel|PowerPoint|Outlook|MS Project]\Addins\<add-in ID>\FriendlyName OR 
-[HKCU|HKLM]\SOFTWARE\[Wow6432Node]\Microsoft\Visio\Addins\<add-in ID>\FriendlyName OR 
-HKLM\SOFTWARE\Microsoft\Office\ClickToRun\REGISTRY\MACHINE\Software\Microsoft\Office\[Word|Excel|PowerPoint|Outlook|MS Project]\Addins\<add-in ID>\FriendlyName OR
-HKLM\SOFTWARE\Microsoft\Office\ClickToRun\REGISTRY\MACHINE\Software\Microsoft\Visio\Addins\<add-in ID>\FriendlyName OR
-HKLM\SOFTWARE\Microsoft\Office\ClickToRun\REGISTRY\USER\.DEFAULT\Software\Microsoft\Office\[Word|Excel|PowerPoint|Outlook|MS Project]\Addins\<add-in ID>\FriendlyName OR
-HKLM\SOFTWARE\Microsoft\Office\ClickToRun\REGISTRY\USER\.DEFAULT\Software\Microsoft\Visio\Addins\<add-in ID>\FriendlyName 
-#>
+    $loadTimeKey = "SOFTWARE\Microsoft\Office"
+    $officeVersions = @("11.0","12.0","13.0","14.0","15.0","16.0")
+    $officeApps = @("Word","Excel","PowerPoint","Outlook","Visio","MS Project")
 
-#Description
-<# 
-[HKCU|HKLM]\SOFTWARE\[Wow6432Node]\Microsoft\Office\[Word|Excel|PowerPoint|Outlook|MS Project]\Addins\<add-in ID>\Description OR 
-[HKCU|HKLM]\SOFTWARE\[Wow6432Node]\Microsoft\Visio\Addins\<add-in ID>\Description OR 
-[HKCU|HKLM]\SOFTWARE\Microsoft\Office\ClickToRun\REGISTRY\MACHINE\Software\Microsoft\Office\[Word|Excel|PowerPoint|Outlook|MS Project]\Addins\<add-in ID>\Description OR
-[HKCU|HKLM]\SOFTWARE\Microsoft\Office\ClickToRun\REGISTRY\MACHINE\Software\Microsoft\Visio\Addins\<add-in ID>\Description OR
-HKLM\SOFTWARE\Microsoft\Office\ClickToRun\REGISTRY\USER\.DEFAULT\Software\Microsoft\Office\[Word|Excel|PowerPoint|Outlook|MS Project]\Addins\<add-in ID>\ Description OR
-HKLM\SOFTWARE\Microsoft\Office\ClickToRun\REGISTRY\USER\.DEFAULT\Software\Microsoft\Visio\Addins\<add-in ID>\ Description 
-#>
+    foreach($officeVersion in $officeVersions){
+        $OfficeVersionPath = Join-Path $loadTimeKey $officeVersion
+        foreach($officeApp in $officeApps){
+            $officeAppPath = Join-Path $OfficeVersionPath $officeApp
+            $loadTimePath = Join-Path $officeAppPath "AddInLoadTimes"
+            
+            $values = $regProv.EnumValues($HKCU, $loadTimePath)
+            foreach($value in $values.sNames){
+                if($value -eq $AddinID){
+                    $loadBehaviorValue = $regProv.GetBinaryValue($HKCU, $loadTimePath, $value)
+                    if($loadBehaviorValue -ne $null){
+                        $AddinOfficeVersion = $officeVersion
 
-#FullPath
-##COM Add-ins
-<#
-#Given the AddInId (above – it’s a ProgId) you can get the CLSID.
-#The CLSID can be used to lookup the FileName in the registry at:
-HKLM\SOFTWARE\Classes\[Wow6432Node]\CLSID\<CLSID>\InprocServer32\(Default) OR
-HKLM\SOFTWARE\Microsoft\Office\ClickToRun\REGISTRY\MACHINE\SOFTWARE\Classes\Wow6432Node\CLSID\<CLSID>\InprocServer32\(Default)
-#>
+                        return $AddinOfficeVersion;
+                    }
+                }
+            }
+        }
+    }
+}
 
-##VSTO Add-ins
-<#
-#This will be defined by the Manifest key 
-[HKCU|HKLM]\SOFTWARE\[Wow6432Node]\Microsoft\Office\[Word|Excel|PowerPoint|Outlook|MS Project]\Addins\<add-in ID>\Manifest OR 
-[HKCU|HKLM]\SOFTWARE\[Wow6432Node]\Microsoft\Visio]\Addins\<add-in ID>\Manifest OR 
-HKLM\SOFTWARE\Microsoft\Office\ClickToRun\REGISTRY\MACHINE\Software\Microsoft\Office\[Word|Excel|PowerPoint|Outlook|MS Project]\Addins\<add-in ID>\Manifest OR
-HKLM\SOFTWARE\Microsoft\Office\ClickToRun\REGISTRY\MACHINE\Software\Microsoft\Visio\Addins\<add-in ID>\Manifest OR
-HKLM\SOFTWARE\Microsoft\Office\ClickToRun\REGISTRY\USER\.DEFAULT\Software\Microsoft\Office[Word|Excel|PowerPoint|Outlook|MS Project]\Addins\<add-in ID>\Manifest OR
-HKLM\SOFTWARE\Microsoft\Office\ClickToRun\REGISTRY\USER\.DEFAULT\Software\Microsoft\Visio\Addins\<add-in ID>\Manifest 
-#>
+function Get-OutlookCrashingAddin {
+Param(
+    [string]$ComputerName = $env:COMPUTERNAME,
+    [string]$AddinID
+)
+    $regProv = Get-WmiObject -List "StdRegProv" -Namespace root\default -ComputerName $ComputerName
+
+    $HKCU = [UInt32] "0x80000001"
+    $OutlookRegKey = "SOFTWARE\Microsoft\Office"
+    $crashingAddinListKey = "Outlook\Resiliency\CrashingAddinList"
+    $officeVersions = @("11.0","12.0","13.0","14.0","15.0","16.0")
+    
+    foreach($officeVersion in $officeVersions){
+        $path = Join-Path $OutlookRegKey $officeVersion
+        $crashingAddinListPath = Join-Path $path $crashingAddinListKey
+
+        $crashingAddinValues =  $regProv.EnumValues($HKCU, $crashingAddinListPath)
+        foreach($crashingAddinValue in $crashingAddinValues.sNames){
+            if($crashingAddinValue -eq $AddinID){
+                $value = $regProv.GetDWORDValue($HKCU, $crashingAddinListPath, $crashingAddinValue)
+
+                return $value;
+            }
+        }
+    }
+}
