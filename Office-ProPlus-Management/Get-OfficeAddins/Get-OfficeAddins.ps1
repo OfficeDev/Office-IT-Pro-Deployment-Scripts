@@ -55,12 +55,17 @@ Param(
                             }
                         }
                         
-                        $LoadBehavior = $regprov.GetDWORDValue($hkey, $addinPath, 'LoadBehavior')
-                        $Description = $regProv.GetStringValue($hkey, $addinPath, 'Description')
-                        $FriendlyName = $regProv.GetStringValue($hkey, $addinPath, 'FriendlyName')
+                        $LoadBehavior = ($regprov.GetDWORDValue($hkey, $addinPath, 'LoadBehavior')).uValue
+                        $Description = ($regProv.GetStringValue($hkey, $addinPath, 'Description')).sValue
+                        $FriendlyName = ($regProv.GetStringValue($hkey, $addinPath, 'FriendlyName')).sValue
+                        $CLSID = (Get-CLSID -ProgId $addinapp).CLSID
+                        $manifestKey = $null
+                        $loadTime = Get-AddinLoadtime -AddinID $addinapp
+                        $addinOfficeVersion = Get-AddinOfficeVersion -AddinID $addinapp
     
                         $object = New-Object PSObject -Property @{Application = $officeapp; Hive = $hive; Name = $addinapp; Path = $addinpath; Type = "COM"; 
-                                                                  Description = $Description.sValue; FriendlyName = $FriendlyName.sValue; LoadBehavior = $LoadBehavior.uValue}
+                                                                  Description = $Description.sValue; FriendlyName = $FriendlyName.sValue; LoadBehavior = $LoadBehavior.uValue;
+                                                                  CLSID = $CLSID; ManifestKey = $manifestKey; LoadTime = $loadTime; OfficeVersion = $addinOfficeVersion}
                         $object | Add-Member MemberSet PSStandardMembers $PSStandardMembers
                         $results += $object
                     }
@@ -96,12 +101,17 @@ Param(
                             }
                         }
                       
-                        $LoadBehavior = $regprov.GetDWORDValue($hkey, $addinPath, 'LoadBehavior')
-                        $Description = $regProv.GetStringValue($hkey, $addinPath, 'Description')
-                        $FriendlyName = $regProv.GetStringValue($hkey, $addinPath, 'FriendlyName')
+                        $LoadBehavior = ($regprov.GetDWORDValue($hkey, $addinPath, 'LoadBehavior')).uValue
+                        $Description = ($regProv.GetStringValue($hkey, $addinPath, 'Description')).sValue
+                        $FriendlyName = ($regProv.GetStringValue($hkey, $addinPath, 'FriendlyName')).sValue
+                        $CLSID = (Get-CLSID -ProgId $addinapp).CLSID
+                        $manifestKey = Get-ManifestKey -AddinID $addinapp
+                        $loadTime = Get-AddinLoadtime -AddinID $addinapp
+                        $addinOfficeVersion = Get-AddinOfficeVersion -AddinID $addinapp
         
                         $object = New-Object PSObject -Property @{Application = $officeapp; Hive = $hive; Name = $addinapp; Path = $addinpath; Type = "VSTO"; 
-                                                                  Description = $Description.sValue; FriendlyName = $FriendlyName.sValue; LoadBehavior = $LoadBehavior.uValue}
+                                                                  Description = $Description.sValue; FriendlyName = $FriendlyName.sValue; LoadBehavior = $LoadBehavior.uValue;
+                                                                  CLSID = $CLSID; ManifestKey = $manifestKey; LoadTime = $loadTime; OfficeVersion = $addinOfficeVersion}
                         $object | Add-Member MemberSet PSStandardMembers $PSStandardMembers
                         $results += $object
                     }
@@ -111,6 +121,41 @@ Param(
     }
     
     return $results;
+
+}
+
+function Get-AddinFullPath {
+Param(
+    [string]$ComputerName = $env:COMPUTERNAME,
+    [string]$AddinID,
+    [string]$AddinType
+)
+
+    $regProv = Get-WmiObject -List "StdRegProv" -Namespace root\default -ComputerName $ComputerName
+
+    $HKLM = [UInt32] "0x80000002"
+
+    $comPathKeys = @("SOFTWARE\Classes\CLSID",
+                     "SOFTWARE\Classes\Wow6432Node\CLSID",
+                     "SOFTWARE\Microsoft\Office\ClickToRun\REGISTRY\MACHINE\SOFTWARE\Classes\CLSID",
+                     "SOFTWARE\Microsoft\Office\ClickToRun\REGISTRY\MACHINE\SOFTWARE\Classes\Wow6432Node\CLSID")
+
+    switch($AddinType){
+        "COM"{
+            $clsid = (Get-CLSID -ProgId $AddinID).CLSID
+            foreach($key in $comPathKeys){
+                $path = Join-Path $key $clsid
+                $InProcPath = Join-Path $path "InprocServer32"
+                $fullpath = Get-ItemProperty ("HKLM:\$InProcPath").'(Default)'
+            }
+        }
+        "VSTO"{
+            $fullpath = (Get-CLSID -ProgId $AddinID).Path
+        }
+
+    }
+
+    return $fullpath;
 
 }
 
@@ -170,7 +215,8 @@ Param(
 
 function Get-ManifestKey {
 Param(
-    [string]$ComputerName = $env:COMPUTERNAME
+    [string]$ComputerName = $env:COMPUTERNAME,
+    [string]$AddinID
 )
 
     $defaultDisplaySet = 'Name','Path','Manifest','Hive'
@@ -221,19 +267,21 @@ Param(
                 
                 $enumKeys = $regProv.EnumKey($hkey, $fullpath)
                 foreach($enumkey in $enumKeys.sNames){
-                    $addinpath = Join-Path $fullpath $enumkey
-                    $values = $regProv.EnumValues($hkey, $addinpath)
+                    if($enumkey -eq $AddinID){
+                        $addinpath = Join-Path $fullpath $enumkey
+                        $values = $regProv.EnumValues($hkey, $addinpath)
          
-                    foreach($value in $values.sNames){
-                        if($value -eq "Manifest"){
-                            $ManifestValue = ($regProv.GetStringValue($hkey, $addinpath, $value)).sValue
-                            if($ManifestValue -match "|"){
-                                $ManifestValue = $ManifestValue.Split("|")[0]
-                            }
+                        foreach($value in $values.sNames){
+                            if($value -eq "Manifest"){
+                                $ManifestValue = ($regProv.GetStringValue($hkey, $addinpath, $value)).sValue
+                                if($ManifestValue -match "|"){
+                                    $ManifestValue = $ManifestValue.Split("|")[0]
+                                }
 
-                            $object = New-Object PSObject -Property @{Name = $enumkey; Path = $fullpath; Manifest = $ManifestValue; Hive = $hive}
-                            $object | Add-Member MemberSet PSStandardMembers $PSStandardMembers
-                            $results += $object
+                                $object = New-Object PSObject -Property @{Name = $enumkey; Path = $fullpath; Manifest = $ManifestValue; Hive = $hive}
+                                $object | Add-Member MemberSet PSStandardMembers $PSStandardMembers
+                                $results += $object
+                            }
                         }
                     }
                 }
@@ -256,17 +304,19 @@ Param(
 
             $enumKeys = $regProv.EnumKey($HKLM, $fullpath)
             foreach($enumkey in $enumKeys.sNames){
-                $addinpath = Join-Path $fullpath $enumkey
-                $values = $regProv.EnumValues($hklm, $addinpath)
-                if($value -eq "Manifest"){
-                    $ManifestValue = ($regProv.GetStringValue($hklm, $addinpath, $value)).sValue
-                    if($ManifestValue -match "|"){
-                        $ManifestValue = $ManifestValue.Split("|")[0]
-                    }
+                if($enumkey -eq $AddinID){
+                    $addinpath = Join-Path $fullpath $enumkey
+                    $values = $regProv.EnumValues($hklm, $addinpath)
+                    if($value -eq "Manifest"){
+                        $ManifestValue = ($regProv.GetStringValue($hklm, $addinpath, $value)).sValue
+                        if($ManifestValue -match "|"){
+                            $ManifestValue = $ManifestValue.Split("|")[0]
+                        }
 
-                    $object = New-Object PSObject -Property @{Name = $enumkey; Path = $fullpath; Manifest = $ManifestValue; Hive = 'HKLM'}
-                    $object | Add-Member MemberSet PSStandardMembers $PSStandardMembers
-                    $results += $object
+                        $object = New-Object PSObject -Property @{Name = $enumkey; Path = $fullpath; Manifest = $ManifestValue; Hive = 'HKLM'}
+                        $object | Add-Member MemberSet PSStandardMembers $PSStandardMembers
+                        $results += $object
+                    }
                 }
             }
         }
