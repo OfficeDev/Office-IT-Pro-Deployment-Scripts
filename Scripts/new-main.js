@@ -1857,7 +1857,7 @@ function readdNodes(xmlDoc, nodeList) {
 function odtAddProduct(xmlDoc) {
     var selectedProduct = $("#cbProduct").val();
     var selectBitness = $("#cbEdition").val();
-    var selectVersion = $("#txtLegacyVersion").val();
+    var selectVersion = $("#txtLegacyVersion").val().trim();
     var selectSourcePath = $("#txtSourcePath").val();
     var selectDownloadPath = $("#txtDownloadPath").val();
     var selectLanguage = $("#cbLanguage").val();
