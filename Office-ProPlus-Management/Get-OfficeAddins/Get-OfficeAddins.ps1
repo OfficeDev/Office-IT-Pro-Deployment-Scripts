@@ -10,6 +10,7 @@ Param(
     
     $HKCU = [UInt32] "0x80000001"
     $HKLM = [UInt32] "0x80000002"
+    $HKU = [UInt32] "0x80000003"
     
     $HKEYS = @($HKCU, $HKLM)
     
@@ -228,6 +229,7 @@ Param(
 
     $HKCU = [UInt32] "0x80000001"
     $HKLM = [UInt32] "0x80000002"
+    $HKU = [UInt32] "0x80000003"
 
     $hkeys = @($HKCU,$HKLM)
 
@@ -332,37 +334,47 @@ Param(
 )
     $regProv = Get-WmiObject -List "StdRegProv" -Namespace root\default -ComputerName $ComputerName
 
-    $HKCU = [UInt32] "0x80000001"
+    $HKU = [UInt32] "0x80000003"
 
     $loadTimeKey = "SOFTWARE\Microsoft\Office"
     $officeVersions = @("11.0","12.0","13.0","14.0","15.0","16.0")
     $officeApps = @("Word","Excel","PowerPoint","Outlook","Visio","MS Project")
 
-    foreach($officeVersion in $officeVersions){
-        $OfficeVersionPath = Join-Path $loadTimeKey $officeVersion
-        foreach($officeApp in $officeApps){
-            $officeAppPath = Join-Path $OfficeVersionPath $officeApp
-            $loadTimePath = Join-Path $officeAppPath "AddInLoadTimes"
-            
-            $values = $regProv.EnumValues($HKCU, $loadTimePath)
-            foreach($value in $values.sNames){
-                if($value -eq $AddinID){
-                    $totalValue = @()
-                    $loadBehaviorValue = $regProv.GetBinaryValue($HKCU, $loadTimePath, $value)
-                    foreach($l in $loadBehaviorValue.uValue){
-                        $decValue = [convert]::ToString($l, 16)
-                        $decValueCharacters = $decValue | measure -Character
-                        
-                        if($decValueCharacters.Characters -le 1){
-                            $decValue = AddDoubleInt -int $decValue
+    $HKUsNames = $regProv.EnumKey($HKU, "")
+    
+    foreach($HKUsName in $HKUsNames.sNames){
+        if($HKUsName -notmatch "Default"){
+            $path = Join-Path $HKUsName $loadTimeKey
+            foreach($officeVersion in $officeVersions){
+                $versionPath = Join-Path $path $officeVersion
+                foreach($officeApp in $officeApps){
+                    $appPath = Join-Path $versionPath "$officeApp\AddInLoadTimes"
+
+                    $values = $regProv.EnumValues($HKU, $appPath)
+                    if($values.sNames.Count -ge 1){
+                        foreach($value in $values.sNames){
+                            if($value -eq $AddinID){
+                                $totalValue = @()
+                                $AddinLoadTime = $regProv.GetBinaryValue($HKU, $appPath, $value)
+
+                                foreach($time in $AddinLoadTime.uValue){
+                                    $decValue = [convert]::ToString($time, 16)
+                                    $decValueCharacters = $decValue | measure -Character
+                                    
+                                    if($decValueCharacters.Characters -le 1){
+                                        $decValue = AddDoubleInt -int $decValue
+                                    }
+                                
+                                    $totalValue += $decValue
+                                }
+                                
+                                $totalValue = [system.string]::Join(" ",$totalValue)
+                                
+                                return $totalValue;
+                                        
+                            }
                         }
-
-                        $totalValue += $decValue
                     }
-
-                    $totalValue = [system.string]::Join(" ",$totalValue)
-
-                    return $totalValue;
                 }
             }
         }
