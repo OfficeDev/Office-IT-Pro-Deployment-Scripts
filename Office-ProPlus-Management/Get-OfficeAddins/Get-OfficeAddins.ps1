@@ -3,7 +3,7 @@ Param(
     [string]$ComputerName = $env:COMPUTERNAME
 )
 
-    $defaultDisplaySet = 'ComputerName','Application','Name','Description','FriendlyName','LoadBehavior','RegistryPath','FullPath','LoadTime','OfficeVersion','Type'
+    $defaultDisplaySet = 'ComputerName','Application','Name','Description','FriendlyName','LoadBehavior','RegistryPath','FullPath','LoadTime','OfficeVersion'
     $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet('DefaultDisplayPropertySet',[string[]]$defaultDisplaySet)
     $PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultDisplayPropertySet)
     $results = New-Object PSObject[] 0;
@@ -16,103 +16,90 @@ Param(
     
     $officeApps = @("Word","Excel","PowerPoint","Outlook","MS Project")
     
-    $COMKeys = @("SOFTWARE\Microsoft\Office\ClickToRun\REGISTRY\MACHINE\Software\Microsoft\Office",
+    $HKLMKeys = @("SOFTWARE\Microsoft\Office\ClickToRun\REGISTRY\MACHINE\Software\Microsoft\Office",
                  "SOFTWARE\Microsoft\Office\ClickToRun\REGISTRY\MACHINE\Software\Microsoft\Visio\Addins",
                  "SOFTWARE\Microsoft\Office\ClickToRun\REGISTRY\USERS\.DEFAULT\Software\Microsoft\Office",
-                 "SOFTWARE\Microsoft\Office\ClickToRun\REGISTRY\USERS\.DEFAULT\Software\Microsoft\Visio\Addins")
+                 "SOFTWARE\Microsoft\Office\ClickToRun\REGISTRY\USERS\.DEFAULT\Software\Microsoft\Visio\Addins",
+                 "Software\Microsoft\Office",  
+                 "Software\Wow6432Node\Microsoft\Office",
+                 "Software\Microsoft",
+                 "Software\Wow6432Node")
     
-    $VSTOKeys = @("Software\Microsoft\Office",  
-                  "Software\Wow6432Node\Microsoft\Office",
-                  "Software\Microsoft",
-                  "Software\Wow6432Node")
+    $HKUKeys = @("Software\Microsoft\Office",  
+                 "Software\Wow6432Node\Microsoft\Office",
+                 "Software\Microsoft",
+                 "Software\Wow6432Node")
     
     $regProv = Get-WmiObject -List "StdRegProv" -Namespace root\default -ComputerName $ComputerName
     
-    foreach($comkey in $COMKeys){
-        if($comkey -notmatch "Office"){
+    foreach($HKLMKey in $HKLMKeys){
+        if($HKLMKey -notmatch "Office"){
             $searchApps = "Visio"
         } else {
             $searchApps = $officeApps
         }
 
         foreach($officeapp in $searchApps){
-            $path = Join-Path $comkey $officeapp
+            $path = Join-Path $HKLMKey $officeapp
+            $hkeyEnum = $regProv.EnumKey($HKLM, $path)
     
-            foreach($hkey in $hkeys){
-                $hkeyEnum = $regProv.EnumKey($hkey, $path)
+            if($hkeyEnum.sNames -contains "Addins"){
+                $addinsPath = Join-Path $path "Addins"
+                $addinEnum = $regProv.EnumKey($HKLM, $addinsPath)
+                foreach($addinapp in $addinEnum.sNames){
+                    $addinpath = Join-Path $addinsPath $addinapp
+                    $LoadBehavior = ($regprov.GetDWORDValue($HKLM, $addinPath, 'LoadBehavior')).uValue
+                    $Description = ($regProv.GetStringValue($HKLM, $addinPath, 'Description')).sValue
+                    $FriendlyName = ($regProv.GetStringValue($HKLM, $addinPath, 'FriendlyName')).sValue
+                    $FullPath = Get-AddinFullPath -AddinID $addinapp
+                    $loadTime = Get-AddinLoadtime -AddinID $addinapp
+                    $addinOfficeVersion = Get-AddinOfficeVersion -AddinID $addinapp
     
-                if($hkeyEnum.sNames -contains "Addins"){
-                    $addinsPath = Join-Path $path "Addins"
-                    $addinEnum = $regProv.EnumKey($hkey, $addinsPath)
-                    foreach($addinapp in $addinEnum.sNames){
-                        $addinpath = Join-Path $addinsPath $addinapp
-                        
-                        switch($hkey){
-                            '2147483649'{
-                                $hive = 'HKCU'
-                            }
-                            '2147483650'{
-                                $hive = 'HKLM'
-                            }
-                        }
-                        
-                        $LoadBehavior = ($regprov.GetDWORDValue($hkey, $addinPath, 'LoadBehavior')).uValue
-                        $Description = ($regProv.GetStringValue($hkey, $addinPath, 'Description')).sValue
-                        $FriendlyName = ($regProv.GetStringValue($hkey, $addinPath, 'FriendlyName')).sValue
-                        $FullPath = Get-AddinFullPath -AddinID $addinapp -AddinType "COM"
-                        $loadTime = Get-AddinLoadtime -AddinID $addinapp
-                        $addinOfficeVersion = Get-AddinOfficeVersion -AddinID $addinapp
-    
-                        $object = New-Object PSObject -Property @{ComputerName = $ComputerName; Application = $officeapp; Name = $addinapp; RegistryPath = $addinpath; Type = "COM"; 
-                                                                  Description = $Description; FriendlyName = $FriendlyName; LoadBehavior = $LoadBehavior;
-                                                                  FullPath = $FullPath; LoadTime = $loadTime; OfficeVersion = $addinOfficeVersion}
-                        $object | Add-Member MemberSet PSStandardMembers $PSStandardMembers
-                        $results += $object
-                    }
+                    $object = New-Object PSObject -Property @{ComputerName = $ComputerName; Application = $officeapp; Name = $addinapp; RegistryPath = $addinpath; 
+                                                              Description = $Description; FriendlyName = $FriendlyName; LoadBehavior = $LoadBehavior;
+                                                              FullPath = $FullPath; LoadTime = $loadTime; OfficeVersion = $addinOfficeVersion}
+                    $object | Add-Member MemberSet PSStandardMembers $PSStandardMembers
+                    $results += $object
                 }
             }
         }
     }
 
-    foreach($vstokey in $VSTOKeys){
-        if($vstokey -notmatch "Office"){
+    foreach($HKUKey in $HKUKeys){
+        if($HKUKey -notmatch "Office"){
             $searchApps = "Visio"
         } else {
             $searchApps = $officeApps
         }
-        foreach($officeapp in $searchApps){
-            $path = Join-Path $vstokey $officeapp
+
+        $HKUsNames = $regProv.EnumKey($HKU, "")
+
+        foreach($HKUsName in $HKUsNames.sNames){
+            if($HKUsName -notmatch "Default"){
+                $HKUPath = Join-Path $HKUsName $HKUKey 
+
+                foreach($officeapp in $searchApps){
+                    $path = Join-Path $HKUPath $officeapp 
+                    $hkeyEnum = $regProv.EnumKey($HKU, $path)
         
-            foreach($hkey in $hkeys){
-                $hkeyEnum = $regProv.EnumKey($hkey, $path)
+                    if($hkeyEnum.sNames -contains "Addins"){
+                        $addinsPath = Join-Path $path "Addins"
+                        $addinEnum = $regProv.EnumKey($HKU, $addinsPath)
+                        foreach($addinapp in $addinEnum.sNames){
+                            $addinpath = Join-Path $addinsPath $addinapp
+                            $LoadBehavior = ($regprov.GetDWORDValue($HKU, $addinPath, 'LoadBehavior')).uValue
+                            $Description = ($regProv.GetStringValue($HKU, $addinPath, 'Description')).sValue
+                            $FriendlyName = ($regProv.GetStringValue($HKU, $addinPath, 'FriendlyName')).sValue
+                            $FullPath = Get-AddinFullPath -AddinID $addinapp -AddinType "VSTO"
+                            $loadTime = Get-AddinLoadtime -AddinID $addinapp
+                            $addinOfficeVersion = Get-AddinOfficeVersion -AddinID $addinapp
         
-                if($hkeyEnum.sNames -contains "Addins"){
-                    $addinsPath = Join-Path $path "Addins"
-                    $addinEnum = $regProv.EnumKey($hkey, $addinsPath)
-                    foreach($addinapp in $addinEnum.sNames){
-                        $addinpath = Join-Path $addinsPath $addinapp
-        
-                        switch($hkey){
-                            '2147483649'{
-                                $hive = 'HKCU'
-                            }
-                            '2147483650'{
-                                $hive = 'HKLM'
-                            }
+                            $object = New-Object PSObject -Property @{ComputerName = $ComputerName; Application = $officeapp; Name = $addinapp; RegistryPath = $addinpath;
+                                                                      Description = $Description; FriendlyName = $FriendlyName; LoadBehavior = $LoadBehavior;
+                                                                      FullPath = $FullPath; LoadTime = $loadTime; OfficeVersion = $addinOfficeVersion}
+                            $object | Add-Member MemberSet PSStandardMembers $PSStandardMembers
+                            $results += $object
                         }
-                      
-                        $LoadBehavior = ($regprov.GetDWORDValue($hkey, $addinPath, 'LoadBehavior')).uValue
-                        $Description = ($regProv.GetStringValue($hkey, $addinPath, 'Description')).sValue
-                        $FriendlyName = ($regProv.GetStringValue($hkey, $addinPath, 'FriendlyName')).sValue
-                        $FullPath = Get-AddinFullPath -AddinID $addinapp -AddinType "VSTO"
-                        $loadTime = Get-AddinLoadtime -AddinID $addinapp
-                        $addinOfficeVersion = Get-AddinOfficeVersion -AddinID $addinapp
-        
-                        $object = New-Object PSObject -Property @{ComputerName = $ComputerName; Application = $officeapp; Name = $addinapp; RegistryPath = $addinpath; Type = "VSTO"; 
-                                                                  Description = $Description; FriendlyName = $FriendlyName; LoadBehavior = $LoadBehavior;
-                                                                  FullPath = $FullPath; LoadTime = $loadTime; OfficeVersion = $addinOfficeVersion}
-                        $object | Add-Member MemberSet PSStandardMembers $PSStandardMembers
-                        $results += $object
                     }
                 }
             }
@@ -126,39 +113,34 @@ Param(
 function Get-AddinFullPath {
 Param(
     [string]$ComputerName = $env:COMPUTERNAME,
-    [string]$AddinID,
-    [string]$AddinType
+    [string]$AddinID
 )
 
     $regProv = Get-WmiObject -List "StdRegProv" -Namespace root\default -ComputerName $ComputerName
 
     $HKLM = [UInt32] "0x80000002"
 
-    $comPathKeys = @("SOFTWARE\Classes\CLSID",
+    $clsidPathKeys = @("SOFTWARE\Classes\CLSID",
                      "SOFTWARE\Classes\Wow6432Node\CLSID",
                      "SOFTWARE\Microsoft\Office\ClickToRun\REGISTRY\MACHINE\SOFTWARE\Classes\CLSID",
                      "SOFTWARE\Microsoft\Office\ClickToRun\REGISTRY\MACHINE\SOFTWARE\Classes\Wow6432Node\CLSID")
 
-    switch($AddinType){
-        "COM"{
-            $clsid = Get-CLSID -ProgId $AddinID
-            foreach($key in $comPathKeys){
-                $path = Join-Path $key $clsid
-                $InProcPath = Join-Path $path "InprocServer32"
-                if(Test-Path "HKLM:\$InProcPath"){
-                    $fullpath = Get-ItemProperty ("HKLM:\$InProcPath")
-                    $fullpath = $fullpath.'(default)'
-                }
+    $manifestKey = Get-ManifestKey -AddinID $AddinID
+    if($manifestKey -ne $null){
+        return $manifestKey
+    } else {
+        $clsid = Get-CLSID -ProgId $AddinID
+        foreach($key in $clsidPathKeys){
+            $path = Join-Path $key $clsid
+            $InProcPath = Join-Path $path "InprocServer32"
+            if(Test-Path "HKLM:\$InProcPath"){
+                $fullpath = Get-ItemProperty ("HKLM:\$InProcPath")
+                $fullpath = $fullpath.'(default)'
+
+                return $fullpath
             }
         }
-        "VSTO"{
-            $fullpath = Get-ManifestKey -AddinID $AddinID
-        }
-
     }
-
-    return $fullpath;
-
 }
 
 function Get-CLSID {
