@@ -417,8 +417,8 @@ Param(
         if($HKUsName -notmatch "Default"){
             $path = Join-Path $HKUsName $OutlookRegKey
             foreach($officeVersion in $officeVersions){
-                $offieVersionPath = Join-Path $OutlookRegKey $officeVersion
-                $crashingAddinListPath = Join-Path $offieVersionPath $crashingAddinListKey
+                $officeVersionPath = Join-Path $OutlookRegKey $officeVersion
+                $crashingAddinListPath = Join-Path $officeVersionPath $crashingAddinListKey
                 $crashingAddinValues =  $regProv.EnumValues($HKU, $crashingAddinListPath)
 
                 foreach($crashingAddinValue in $crashingAddinValues.sNames){
