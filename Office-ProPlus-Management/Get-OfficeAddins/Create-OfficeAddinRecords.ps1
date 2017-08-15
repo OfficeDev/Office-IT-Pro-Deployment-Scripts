@@ -30,7 +30,9 @@ editions of German, Spanish, and French language packs.
 
 .EXAMPLE
 Create-OfficeAddinRecords -sqlServer cm01\ -dbName CM_S01 -user DOMAIN\username -password password 
-
+basic execution of the script
+powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteraction -NoProfile -WindowStyle Hidden -File .\Create-OfficeAddingRecords.ps1 -sqlServer 'cm01\' -dbName 'CM_S01' -user 'DOMAIN\username' -password 'password'
+if you are running the script as a package in SCCM  
 
 .NOTES
 Date created: 08-15-2017
@@ -50,11 +52,82 @@ Date created: 08-15-2017
         .\Get-OfficeAddins.ps1
     }
     Process{
-    
+        $addins = Get-OfficeAddins
+
+        $workstationTable = "Workstations"
+        $addinTable = "OfficeAddins"
+        $workstationAddinsTable = "WorkstationAddinJunction"
+
+        $connectionString ="Server="+$sqlServer+";Database="+$dbName+";Integrated Security=SSPI;"
+        $connection = New-Object System.Data.SqlClient.SqlConnection
+        $connection.ConnectionString = $connectionString
+        $connection.Open()
+
+        $command = New-Object System.Data.SqlClient.SqlCommand
+        $command.Connection = $connection
+
+        InsertWorkStation -workstationName $env:COMPUTERNAME -command $command
+        if($addins)
+        {
+             foreach($addin in $addins){
+            
+            }
+        }
+
+    }
+    End{
+        $connection.Close()
+    }
+}
+
+function InsertWorkStation{
+    Param(
+        [Parameter(Mandatory=$True)]
+        [String]$workstationName = "",
+        [Parameter(Mandatory=$True)]
+        [System.Data.SqlClient.SqlCommand]$command
+    )
+    $Id = [guid]::NewGuid()
+    $command.CommandText = "INSERT INTO Worksations VALUES('"+$Id+"','"+$workstationName+"')"
+    $command.EndExecuteNonQuery()
+}
+
+function WorkstationExists{
+        Param(
+        [Parameter(Mandatory=$True)]
+        [String]$workstationName = "",
+        [Parameter(Mandatory=$True)]
+        [System.Data.SqlClient.SqlCommand]$command
+        )
+
+        $command.CommandText = "SELECT * FROM Workstations WHERE Name = '"+$workstationName+"'"
+        $results = $command.ExecuteNonQuery() 
+
+        if($results){
+            return $true
+        }
+           
+        return $false 
     }
 
+function TableExists{
+        Param(
+        [Parameter(Mandatory=$True)]
+        [String]$tableName = "",
+        [Parameter(Mandatory=$True)]
+        [System.Data.SqlClient.SqlCommand]$command
+        )
 
-
-
-
-}
+        try{
+            $command.Text = "SELECT * FROM "+$tableName 
+            $result = $command.ExecuteNonQuery();
+            if($result){
+                return $true 
+            }
+            return $false
+            
+        }
+        catch{
+            return $false
+        }
+    }
