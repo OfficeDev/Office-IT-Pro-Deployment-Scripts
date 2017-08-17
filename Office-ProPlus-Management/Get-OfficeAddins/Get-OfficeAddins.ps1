@@ -31,6 +31,11 @@ Param(
                  "Software\Wow6432Node")
     
     $regProv = Get-WmiObject -List "StdRegProv" -Namespace root\default -ComputerName $ComputerName
+
+    $classExists = Get-WmiObject -Class Custom_OfficeAddins -ErrorAction SilentlyContinue
+    if(!$classExists){
+        New-CustomOfficeAddinWMIClass
+    }
     
     foreach($HKLMKey in $HKLMKeys){
         if($HKLMKey -notmatch "Office"){
@@ -54,12 +59,47 @@ Param(
                     $FullPath = Get-AddinFullPath -AddinID $addinapp
                     $loadTime = Get-AddinLoadtime -AddinID $addinapp
                     $addinOfficeVersion = Get-AddinOfficeVersion -AddinID $addinapp
+
+                    if(!$Description){
+                        $Description = " "
+                    }
+                    
+                    if(!$FriendlyName){
+                        $FriendlyName = " "
+                    }
+                    
+                    if(!$FullPath){
+                        $FullPath = " "
+                    }
+                    
+                    if(!$loadTime){
+                        $loadTime = " "
+                    }
+                    
+                    if(!$addinOfficeVersion){
+                        $addinOfficeVersion = " "
+                    }
+                    
+                    if(!$LoadBehavior){
+                        $LoadBehavior = " "
+                    } else {
+                        if(($LoadBehavior -as [string]) -ne $null ){
+                            [string]$LoadBehavior = $LoadBehavior
+                        }
+                    }
+                    
+                    if(!$addinpath){
+                        $addinpath = " "
+                    }
+
+                    New-CimInstance -ClassName Custom_OfficeAddins -Property @{Application=$officeapp; ComputerName=$ComputerName; Description=$Description; FriendlyName=$FriendlyName; FullPath=$FullPath;
+                                                                      LoadBehavior=$LoadBehavior; LoadTime=$loadTime; Name=$addinapp; OfficeVersion=$addinOfficeVersion; RegistryPath=$addinpath}
     
-                    $object = New-Object PSObject -Property @{ComputerName = $ComputerName; Application = $officeapp; Name = $addinapp; RegistryPath = $addinpath; 
-                                                              Description = $Description; FriendlyName = $FriendlyName; LoadBehavior = $LoadBehavior;
-                                                              FullPath = $FullPath; LoadTime = $loadTime; OfficeVersion = $addinOfficeVersion}
-                    $object | Add-Member MemberSet PSStandardMembers $PSStandardMembers
-                    $results += $object
+                    #$object = New-Object PSObject -Property @{ComputerName = $ComputerName; Application = $officeapp; Name = $addinapp; RegistryPath = $addinpath; 
+                    #                                          Description = $Description; FriendlyName = $FriendlyName; LoadBehavior = $LoadBehavior;
+                    #                                          FullPath = $FullPath; LoadTime = $loadTime; OfficeVersion = $addinOfficeVersion}
+                    #$object | Add-Member MemberSet PSStandardMembers $PSStandardMembers
+                    #$results += $object
                 }
             }
         }
@@ -93,12 +133,47 @@ Param(
                             $FullPath = Get-AddinFullPath -AddinID $addinapp -AddinType "VSTO"
                             $loadTime = Get-AddinLoadtime -AddinID $addinapp
                             $addinOfficeVersion = Get-AddinOfficeVersion -AddinID $addinapp
+                    
+                            if(!$Description){
+                                $Description = " "
+                            }
+                            
+                            if(!$FriendlyName){
+                                $FriendlyName = " "
+                            }
+                            
+                            if(!$FullPath){
+                                $FullPath = " "
+                            }
+                            
+                            if(!$loadTime){
+                                $loadTime = " "
+                            }
+                            
+                            if(!$addinOfficeVersion){
+                                $addinOfficeVersion = " "
+                            }
+                            
+                            if(!$LoadBehavior){
+                                $LoadBehavior = " "
+                            } else {
+                                if(($LoadBehavior -as [string]) -ne $null ){
+                                    [string]$LoadBehavior = $LoadBehavior
+                                }
+                            }
+                            
+                            if(!$addinpath){
+                                $addinpath = " "
+                            }
+
+                            New-CimInstance -ClassName Custom_OfficeAddins -Property @{Application=$officeapp; ComputerName=$ComputerName; Description=$Description; FriendlyName=$FriendlyName; FullPath=$FullPath;
+                                                                                       LoadBehavior=$LoadBehavior; LoadTime=$loadTime; Name=$addinapp; OfficeVersion=$addinOfficeVersion; RegistryPath=$addinpath}
         
-                            $object = New-Object PSObject -Property @{ComputerName = $ComputerName; Application = $officeapp; Name = $addinapp; RegistryPath = $addinpath;
-                                                                      Description = $Description; FriendlyName = $FriendlyName; LoadBehavior = $LoadBehavior;
-                                                                      FullPath = $FullPath; LoadTime = $loadTime; OfficeVersion = $addinOfficeVersion}
-                            $object | Add-Member MemberSet PSStandardMembers $PSStandardMembers
-                            $results += $object
+                            #$object = New-Object PSObject -Property @{ComputerName = $ComputerName; Application = $officeapp; Name = $addinapp; RegistryPath = $addinpath;
+                            #                                          Description = $Description; FriendlyName = $FriendlyName; LoadBehavior = $LoadBehavior;
+                            #                                          FullPath = $FullPath; LoadTime = $loadTime; OfficeVersion = $addinOfficeVersion}
+                            #$object | Add-Member MemberSet PSStandardMembers $PSStandardMembers
+                            #$results += $object
                         }
                     }
                 }
@@ -106,7 +181,7 @@ Param(
         }
     }
     
-    return $results;
+    #return $results;
 
 }
 
@@ -136,7 +211,7 @@ Param(
             if(Test-Path "HKLM:\$InProcPath"){
                 $fullpath = Get-ItemProperty ("HKLM:\$InProcPath")
                 $fullpath = $fullpath.'(default)'
-
+              
                 return $fullpath
             }
         }
@@ -337,6 +412,10 @@ Param(
                                 }
                                 
                                 $totalValue = [system.string]::Join(" ",$totalValue)
+
+                                if(($totalValue -as [string]) -ne $null ){
+                                    [string]$totalValue = $totalValue
+                                }
                                 
                                 return $totalValue;
                                         
@@ -431,4 +510,34 @@ Param(
             }
         }
     }
+}
+
+function New-CustomOfficeAddinWMIClass{
+    $newClass = New-Object System.Management.ManagementClass ("root\cimv2", [String]::Empty, $null); 
+    
+    $newClass["__CLASS"] = "Custom_OfficeAddins"; 
+    
+    $newClass.Qualifiers.Add("Static", $true)
+    $newClass.Properties.Add("ComputerName", [System.Management.CimType]::String, $false)
+    $newClass.Properties["ComputerName"].Qualifiers.Add("Key", $true)
+    $newClass.Properties.Add("Application", [System.Management.CimType]::String, $false)
+    $newClass.Properties["Application"].Qualifiers.Add("Key", $true)
+    $newClass.Properties.Add("Name", [System.Management.CimType]::String, $false)
+    $newClass.Properties["Name"].Qualifiers.Add("Key", $true)
+    $newClass.Properties.Add("Description", [System.Management.CimType]::String, $false)
+    $newClass.Properties["Description"].Qualifiers.Add("Key", $true)
+    $newClass.Properties.Add("FriendlyName", [System.Management.CimType]::String, $false)
+    $newClass.Properties["FriendlyName"].Qualifiers.Add("Key", $true)
+    $newClass.Properties.Add("LoadBehavior", [System.Management.CimType]::String, $false)
+    $newClass.Properties["LoadBehavior"].Qualifiers.Add("Key", $true)
+    $newClass.Properties.Add("RegistryPath", [System.Management.CimType]::String, $false)
+    $newClass.Properties["RegistryPath"].Qualifiers.Add("Key", $true)
+    $newClass.Properties.Add("FullPath", [System.Management.CimType]::String, $false)
+    $newClass.Properties["FullPath"].Qualifiers.Add("Key", $true)
+    $newClass.Properties.Add("LoadTime", [System.Management.CimType]::String, $false)
+    $newClass.Properties["LoadTime"].Qualifiers.Add("Key", $true)
+    $newClass.Properties.Add("OfficeVersion", [System.Management.CimType]::String, $false)
+    $newClass.Properties["OfficeVersion"].Qualifiers.Add("Key", $true)
+    
+    $newClass.Put()
 }
