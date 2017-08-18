@@ -32,9 +32,14 @@ Param(
     
     $regProv = Get-WmiObject -List "StdRegProv" -Namespace root\default -ComputerName $ComputerName
 
-    $classExists = Get-WmiObject -Class Custom_OfficeAddins -ErrorAction SilentlyContinue
+    $ClassName = "Custom_OfficeAddins" 
+    $classExists = Get-WmiObject -Class $ClassName -ErrorAction SilentlyContinue
     if(!$classExists){
-        New-CustomOfficeAddinWMIClass
+        New-OfficeAddinWMIClass -ClassName $ClassName
+
+        New-OfficeAddinWMIProperty -ClassName $ClassName
+
+        Set-OfficeAddinWMIPropertyQualifier -ClassName $ClassName -PropertyName Name -QualifierName Key -QualifierValue $true
     }
     
     foreach($HKLMKey in $HKLMKeys){
@@ -92,8 +97,24 @@ Param(
                         $addinpath = " "
                     }
 
-                    New-CimInstance -ClassName Custom_OfficeAddins -Property @{Application=$officeapp; ComputerName=$ComputerName; Description=$Description; FriendlyName=$FriendlyName; FullPath=$FullPath;
-                                                                      LoadBehavior=$LoadBehavior; LoadTime=$loadTime; Name=$addinapp; OfficeVersion=$addinOfficeVersion; RegistryPath=$addinpath}
+                    $MyNewInstance = New-OfficeAddinWMIClassInstance -ClassName Custom_OfficeAddins
+                    
+                    $MyNewInstance.Application = $officeapp
+                    $MyNewInstance.ComputerName = $env:COMPUTERNAME
+                    $MyNewInstance.Description = $Description
+                    $MyNewInstance.FriendlyName = $FriendlyName
+                    $MyNewInstance.FullPath = $FullPath
+                    $MyNewInstance.LoadBehavior = $LoadBehavior
+                    $MyNewInstance.LoadTime = $LoadTime
+                    $MyNewInstance.Name = $addinapp
+                    $MyNewInstance.OfficeVersion = $addinOfficeVersion
+                    $MyNewInstance.RegistryPath = $addinpath
+                    
+                    New-OfficeAddinWMIClassInstance -ClassName $ClassName -PutInstance $MyNewInstance
+                    
+                    
+                    #New-CimInstance -ClassName Custom_OfficeAddins -Property @{Application=$officeapp; ComputerName=$ComputerName; Description=$Description; FriendlyName=$FriendlyName; FullPath=$FullPath;
+                    #                                                  LoadBehavior=$LoadBehavior; LoadTime=$loadTime; Name=$addinapp; OfficeVersion=$addinOfficeVersion; RegistryPath=$addinpath}
     
                     #$object = New-Object PSObject -Property @{ComputerName = $ComputerName; Application = $officeapp; Name = $addinapp; RegistryPath = $addinpath; 
                     #                                          Description = $Description; FriendlyName = $FriendlyName; LoadBehavior = $LoadBehavior;
@@ -166,8 +187,23 @@ Param(
                                 $addinpath = " "
                             }
 
-                            New-CimInstance -ClassName Custom_OfficeAddins -Property @{Application=$officeapp; ComputerName=$ComputerName; Description=$Description; FriendlyName=$FriendlyName; FullPath=$FullPath;
-                                                                                       LoadBehavior=$LoadBehavior; LoadTime=$loadTime; Name=$addinapp; OfficeVersion=$addinOfficeVersion; RegistryPath=$addinpath}
+                            $MyNewInstance = New-OfficeAddinWMIClassInstance -ClassName Custom_OfficeAddins
+                    
+                            $MyNewInstance.Application = $officeapp
+                            $MyNewInstance.ComputerName = $env:COMPUTERNAME
+                            $MyNewInstance.Description = $Description
+                            $MyNewInstance.FriendlyName = $FriendlyName
+                            $MyNewInstance.FullPath = $FullPath
+                            $MyNewInstance.LoadBehavior = $LoadBehavior
+                            $MyNewInstance.LoadTime = $LoadTime
+                            $MyNewInstance.Name = $addinapp
+                            $MyNewInstance.OfficeVersion = $addinOfficeVersion
+                            $MyNewInstance.RegistryPath = $addinpath
+                            
+                            New-OfficeAddinWMIClassInstance -ClassName $ClassName -PutInstance $MyNewInstance
+                            
+                            #New-CimInstance -ClassName Custom_OfficeAddins -Property @{Application=$officeapp; ComputerName=$ComputerName; Description=$Description; FriendlyName=$FriendlyName; FullPath=$FullPath;
+                            #                                                           LoadBehavior=$LoadBehavior; LoadTime=$loadTime; Name=$addinapp; OfficeVersion=$addinOfficeVersion; RegistryPath=$addinpath}
         
                             #$object = New-Object PSObject -Property @{ComputerName = $ComputerName; Application = $officeapp; Name = $addinapp; RegistryPath = $addinpath;
                             #                                          Description = $Description; FriendlyName = $FriendlyName; LoadBehavior = $LoadBehavior;
@@ -540,4 +576,145 @@ function New-CustomOfficeAddinWMIClass{
     $newClass.Properties["OfficeVersion"].Qualifiers.Add("Key", $true)
     
     $newClass.Put()
+}
+
+function New-OfficeAddinWMIClass{
+Param(
+    [Parameter()]
+    [string]$ClassName = "Custom_OfficeAddins",
+
+    [Parameter()]
+    [string]$NameSpace = "root\cimv2"
+)
+    $NewClass = New-Object System.Management.ManagementClass($NameSpace, $null, $null)
+    $NewClass.Name = $ClassName
+    $NewClass.Put() | Out-Null
+}
+
+Function New-OfficeAddinWMIProperty{
+[CmdletBinding()]
+	Param(
+		[Parameter()]
+        [string]$ClassName = "Custom_OfficeAddins",
+
+        [Parameter()]
+        [string]$NameSpace="Root\cimv2",
+
+        [Parameter()]
+        [string[]]$PropertyName,
+
+        [Parameter()]
+        [string]$PropertyValue = ""
+	)
+    
+    [wmiclass]$OfficeAddinWMIClass = Get-WmiObject -Class $ClassName -Namespace $NameSpace -list
+    if(!$PropertyName){
+        $PropertyName = @("Application", "ComputerName", "Description", "FriendlyName", "FullPath", "LoadBehavior", "LoadTime","Name", "OfficeVersion", "RegistryPath")
+    }
+   
+    foreach($property in $PropertyName){
+        $OfficeAddinWMIClass.Properties.add($property,$PropertyValue)
+        $OfficeAddinWMIClass.Put() | Out-Null
+    }                                          
+}
+
+Function Set-OfficeAddinWMIPropertyQualifier{
+[CmdletBinding()]
+Param(
+	[Parameter()]
+       [string]$ClassName = "Custom_OfficeAddins",
+
+       [Parameter()]
+       [string]$NameSpace="Root\cimv2",
+
+       [Parameter()]
+       [string]$PropertyName = "Name",
+
+       [Parameter()]
+       $QualifierName = "Key",
+
+       [Parameter()]
+       $QualifierValue = $true,
+
+       [switch]$key,
+       [switch]$IsAmended = $false,
+       [switch]$IsLocal = $true,
+       [switch]$PropagatesToInstance = $true,
+       [switch]$PropagesToSubClass = $false,
+       [switch]$IsOverridable = $true
+)
+
+    $OfficeAddinWmiClass = Get-OfficeAddinWMIClass -ClassName $ClassName -NameSpace $NameSpace
+
+    if($OfficeAddinWmiClass.Properties[$PropertyName]){    
+        if ($Key){
+            $OfficeAddinWmiClass.Properties[$PropertyName].Qualifiers.Add("Key",$true)
+            $OfficeAddinWmiClass.put() | out-null
+        }else{
+            $OfficeAddinWmiClass.Properties[$PropertyName].Qualifiers.add($QualifierName,$QualifierValue, $IsAmended,$IsLocal,$PropagatesToInstance,$PropagesToSubClass)
+            $OfficeAddinWmiClass.put() | out-null
+        }
+    }
+}
+
+Function Get-OfficeAddinWMIProperty{
+[CmdletBinding()]
+Param(
+	[Parameter()]
+       [string]$ClassName = "Custom_OfficeAddins",
+
+       [Parameter()]
+       [string]$NameSpace="Root\cimv2",
+
+       [Parameter()]
+       [string]$PropertyName
+)
+    if($PropertyName){
+        $return = (Get-OfficeAddinWMIClass -ClassName $ClassName -NameSpace $NameSpace ).properties["$($PropertyName)"]
+    }else{
+        $return = (Get-OfficeAddinWMIClass -ClassName $ClassName -NameSpace $NameSpace ).properties            
+    } 
+      
+    Return $return      
+}
+
+Function Get-OfficeAddinWMIClass{
+[CmdletBinding()]
+	Param(
+		[Parameter(ValueFromPipeLine=$true)]
+        [string]$ClassName,
+
+        [Parameter()]
+        [string]$NameSpace = "root\cimv2"
+	)  
+    
+    if (!($ClassName)){
+        $return = Get-WmiObject -Namespace $NameSpace -Class * -list
+    }else{
+        $return = Get-WmiObject -Namespace $NameSpace -Class $ClassName -list
+    }
+    
+    return $return
+}
+
+Function New-OfficeAddinWMIClassInstance {
+[CmdletBinding()]
+Param(
+	[Parameter(Mandatory=$true)]
+    [string]$ClassName,
+
+    [Parameter(Mandatory=$false)]
+    [string]$NameSpace="Root\cimv2",
+
+    [Parameter(valueFromPipeLine=$true)]$PutInstance
+)
+    
+    $WmiClass = Get-OfficeAddinWMIClass -NameSpace $NameSpace -ClassName $ClassName
+     
+    if($PutInstance){  
+        $PutInstance.Put()
+    }else{
+        $CreateInstance = $WmiClass.CreateInstance()
+        $CreateInstance
+    }       
 }
