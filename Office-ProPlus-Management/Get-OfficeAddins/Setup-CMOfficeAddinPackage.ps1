@@ -30,10 +30,10 @@ Create-CMOfficePackage -Channels Deferred -Bitness v32 -OfficeSourceFilesPath D:
         [string]$PackageName = "Get Office Addins",
         
         [Parameter()]
-	    [String]$SourceFilesPath = $NULL,
+	    [String]$ScriptFilesPath = $NULL,
 
         [Parameter()]
-	    [bool]$MoveSourceFiles = $false,
+	    [bool]$MoveScriptFiles = $false,
 
 		[Parameter()]
 		[String]$CustomPackageShareName = $null,
@@ -71,18 +71,23 @@ Create-CMOfficePackage -Channels Deferred -Bitness v32 -OfficeSourceFilesPath D:
 
             $Path = CreateOfficeAddinShare -Path $SharePath
                                
-            if(Test-Path $SourceFilesPath){
-                $childItems = Get-ChildItem -Path $SourceFilesPath
-                foreach($item in $childItems.Name){
-                    $itemPath = Join-Path $SourceFilesPath $item
-                    if ($MoveSourceFiles) {   
+            if(Test-Path $ScriptFilesPath){
+                $ScriptFilesFolder = "ScriptFiles"
+                $ScriptFilesFolderPath = Join-Path $ScriptFilesPath $ScriptFilesFolder
+                $items = Get-ChildItem -Path $ScriptFilesFolderPath
+                foreach($item in $items){
+                    $itemPath = Join-Path $ScriptFilesFolderPath $item.Name
+                    if ($MoveScriptFiles) {   
                         Move-Item -Path $itemPath -Destination $SharePath -Force
                     } else {
                         Copy-Item -Path $itemPath -Destination $SharePath -Recurse -Force
                     }
                 }
+
+                Remove-Item -Path $ScriptFilesFolderPath -Force
+
             } else {
-                throw "Source folder missing: $SourceFilesPath"
+                throw "Source folder missing: $ScriptFilesPath"
             }
 
             LoadCMPrereqs -SiteCode $SiteCode -CMPSModulePath $CMPSModulePath
@@ -141,7 +146,10 @@ Create-CMOfficeDeploymentProgram -Channels Current -DeploymentType DeployWithCon
 	    [String]$ScriptName = "Get-OfficeAddins.ps1",
 
 	    [Parameter()]
-	    [String]$PackageName = "Get Office Addins",      
+	    [String]$PackageName = "Get Office Addins", 
+
+        [Parameter()]
+        [String]$ProgramName = "Get Office Add-ins",    
 
 	    [Parameter()]
 	    [String]$SiteCode = $null,
@@ -150,7 +158,10 @@ Create-CMOfficeDeploymentProgram -Channels Current -DeploymentType DeployWithCon
 	    [String]$CMPSModulePath = $NULL,
 
         [Parameter()]
-        [string]$LogFilePath
+        [string]$LogFilePath,
+
+        [Parameter(ValueFromPipeLine=$true)]
+        [string]$WMIClassName = "Custom_OfficeAddins"
     )
     Begin
     {
@@ -175,12 +186,13 @@ Create-CMOfficeDeploymentProgram -Channels Current -DeploymentType DeployWithCon
             }
 
             [string]$CommandLine = ""
-            [string]$ProgramName = ""
       
-            $ProgramName = "Get Office Add-ins"
+            if(!$ProgramName){
+                $ProgramName = "Get Office Add-ins"
+            }
 
             $CommandLine = "%windir%\Sysnative\windowsPowershell\V1.0\powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive " + `
-                           "-NoProfile -WindowStyle Hidden -Command .\$ScriptName"
+                           "-NoProfile -WindowStyle Hidden -Command .\$ScriptName -WMIClassName $WMIClassName"
 
             [string]$packageId = $null
 
@@ -201,7 +213,7 @@ Create-CMOfficeDeploymentProgram -Channels Current -DeploymentType DeployWithCon
     }
 }
 
-function Distribute-CMOfficePackage {
+function Distribute-CMOfficeAddinPackage {
 <#
 .SYNOPSIS
 Automates the configuration of System Center Configuration Manager (CM) to configure Office Click-To-Run Updates
@@ -232,6 +244,9 @@ Distributes the package 'Office 365 ProPlus' to the distribution point cm.contos
     [CmdletBinding(SupportsShouldProcess=$true)]
     Param
     (
+	    [Parameter()]
+	    [String]$PackageName = "Get Office Addins",
+  
 	    [Parameter()]
 	    [string]$DistributionPoint,
 
@@ -265,7 +280,7 @@ Distributes the package 'Office 365 ProPlus' to the distribution point cm.contos
             $package = CheckIfPackageExists -PackageName $PackageName
 
             if (!($package)) {
-                throw "You must run the Create-CMOfficePackage function before running this function"
+                throw "You must run the Create-CMOfficeAddinPackage function before running this function"
             }
 
             LoadCMPrereqs -SiteCode $SiteCode -CMPSModulePath $CMPSModulePath
@@ -291,7 +306,7 @@ Distributes the package 'Office 365 ProPlus' to the distribution point cm.contos
             }
             
             Write-Host 
-            Write-Host "NOTE: In order to deploy the package you must run the function 'Deploy-CMOfficeChannelPackage'." -BackgroundColor Red
+            Write-Host "NOTE: In order to deploy the package you must run the function 'Deploy-CMOfficeProgram'." -BackgroundColor Red
             Write-Host "      You should wait until the content has finished distributing to the distribution points." -BackgroundColor Red
             Write-Host "      otherwise the deployments will fail. The clients will continue to fail until the " -BackgroundColor Red
             Write-Host "      content distribution is complete." -BackgroundColor Red
@@ -307,7 +322,7 @@ Distributes the package 'Office 365 ProPlus' to the distribution point cm.contos
     }
 }
 
-function Deploy-CMOfficeProgram {
+function Deploy-CMOfficeAddinProgram {
 <#
 .SYNOPSIS
 Automates the configuration of System Center Configuration Manager (CM) to configure Office 365 ProPlus program deployments.
@@ -367,8 +382,8 @@ target collection 'Office Update'.
         [Parameter()]
 	    [String]$PackageName = "Get Office Addins",
 
-        [Parameter(Mandatory=$true)]
-        [String]$ProgramName,
+        [Parameter()]
+        [String]$ProgramName = "Get Office Add-ins",
 
 		[Parameter(Mandatory=$true)]
 		[String]$Collection = "",
@@ -407,8 +422,6 @@ target collection 'Office Update'.
             
             $SiteCode = GetLocalSiteCode -SiteCode $SiteCode
 
-            $pType = ""
-
             if($DeploymentPurpose -eq "Default"){
                 $DeploymentPurpose = "Required"  
             }
@@ -437,7 +450,7 @@ target collection 'Office Update'.
                             $ProgramName = $Program.ProgramName
 
      	                    Start-CMPackageDeployment -CollectionName $Collection -PackageId $packageId -ProgramName $ProgramName `
-                                                      -StandardProgram  -DeployPurpose $DeploymentPurpose.ToString() -RerunBehavior AlwaysRerunProgram `
+                                                      -StandardProgram  -DeployPurpose $DeploymentPurpose -RerunBehavior AlwaysRerunProgram `
                                                       -ScheduleEvent AsSoonAsPossible -FastNetworkOption RunProgramFromDistributionPoint `
                                                       -SlowNetworkOption RunProgramFromDistributionPoint -AllowSharedContent $false -Comment $comment
 
@@ -1031,7 +1044,3 @@ function GetLocalSiteCode() {
         return $SiteCode
     }
 }
-
-#Create-CMOfficeAddinPackage -PackageName $PackageName -SourceFilesPath $SourceFilesPath -MoveSourceFiles $MoveSourceFilesPath -CustomPackageShareName $CustomPackageShareName -SiteCode $SiteCode -CMPSModulePath $CMPSModulePath
-
-#Create-CMOfficeAddinProgram -ScriptName $ScriptName -PackageName $PackageName -SharePath $SharePath -SiteCode $SiteCode -CMPSModulePath $CMPSModulePath

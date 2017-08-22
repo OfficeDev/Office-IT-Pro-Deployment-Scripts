@@ -1,18 +1,19 @@
-﻿function Get-OfficeAddins {
-Param(
-    [string]$ComputerName = $env:COMPUTERNAME
+﻿[CmdletBinding(SupportsShouldProcess=$true)]
+param(
+[Parameter()]
+[string]$WmiClassName
 )
 
-    $defaultDisplaySet = 'ComputerName','Application','Name','Description','FriendlyName','LoadBehavior','RegistryPath','FullPath','LoadTime','OfficeVersion'
-    $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet('DefaultDisplayPropertySet',[string[]]$defaultDisplaySet)
-    $PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultDisplayPropertySet)
-    $results = New-Object PSObject[] 0;
-    
-    $HKCU = [UInt32] "0x80000001"
+function Get-OfficeAddins {
+Param(
+    [Parameter()]
+    [string]$ComputerName = $env:COMPUTERNAME,
+
+    [Parameter()]
+    [string]$WMIClassName = "Custom_OfficeAddins"
+)    
     $HKLM = [UInt32] "0x80000002"
     $HKU = [UInt32] "0x80000003"
-    
-    $HKEYS = @($HKCU, $HKLM)
     
     $officeApps = @("Word","Excel","PowerPoint","Outlook","MS Project")
     
@@ -32,14 +33,14 @@ Param(
     
     $regProv = Get-WmiObject -List "StdRegProv" -Namespace root\default -ComputerName $ComputerName
 
-    $ClassName = "Custom_OfficeAddins" 
+    $ClassName = $WMIClassName 
     $classExists = Get-WmiObject -Class $ClassName -ErrorAction SilentlyContinue
     if(!$classExists){
-        New-OfficeAddinWMIClass -ClassName $ClassName
+        New-OfficeAddinWMIClass -ClassName $WMIClassName
 
-        New-OfficeAddinWMIProperty -ClassName $ClassName
+        New-OfficeAddinWMIProperty -ClassName $WMIClassName
 
-        Set-OfficeAddinWMIPropertyQualifier -ClassName $ClassName -PropertyName Name -QualifierName Key -QualifierValue $true
+        Set-OfficeAddinWMIPropertyQualifier -ClassName $WMIClassName -PropertyName Name -QualifierName Key -QualifierValue $true
     }
     
     foreach($HKLMKey in $HKLMKeys){
@@ -90,37 +91,46 @@ Param(
                     } else {
                         if(($LoadBehavior -as [string]) -ne $null ){
                             [string]$LoadBehavior = $LoadBehavior
+                            $LoadBehaviorProperties = Get-LoadBehavior -name $addinapp -value $LoadBehavior
                         }
                     }
                     
                     if(!$addinpath){
                         $addinpath = " "
                     }
-
-                    $MyNewInstance = New-OfficeAddinWMIClassInstance -ClassName Custom_OfficeAddins
+     
+                    $instanceExists = Get-WMIClassInstance -ClassName $WMIClassName -InstanceName $addinapp
+                    if(!$instanceExists){
+                        $MyNewInstance = New-OfficeAddinWMIClassInstance -ClassName Custom_OfficeAddins
                     
-                    $MyNewInstance.Application = $officeapp
-                    $MyNewInstance.ComputerName = $env:COMPUTERNAME
-                    $MyNewInstance.Description = $Description
-                    $MyNewInstance.FriendlyName = $FriendlyName
-                    $MyNewInstance.FullPath = $FullPath
-                    $MyNewInstance.LoadBehavior = $LoadBehavior
-                    $MyNewInstance.LoadTime = $LoadTime
-                    $MyNewInstance.Name = $addinapp
-                    $MyNewInstance.OfficeVersion = $addinOfficeVersion
-                    $MyNewInstance.RegistryPath = $addinpath
-                    
-                    New-OfficeAddinWMIClassInstance -ClassName $ClassName -PutInstance $MyNewInstance
-                    
-                    
-                    #New-CimInstance -ClassName Custom_OfficeAddins -Property @{Application=$officeapp; ComputerName=$ComputerName; Description=$Description; FriendlyName=$FriendlyName; FullPath=$FullPath;
-                    #                                                  LoadBehavior=$LoadBehavior; LoadTime=$loadTime; Name=$addinapp; OfficeVersion=$addinOfficeVersion; RegistryPath=$addinpath}
-    
-                    #$object = New-Object PSObject -Property @{ComputerName = $ComputerName; Application = $officeapp; Name = $addinapp; RegistryPath = $addinpath; 
-                    #                                          Description = $Description; FriendlyName = $FriendlyName; LoadBehavior = $LoadBehavior;
-                    #                                          FullPath = $FullPath; LoadTime = $loadTime; OfficeVersion = $addinOfficeVersion}
-                    #$object | Add-Member MemberSet PSStandardMembers $PSStandardMembers
-                    #$results += $object
+                        $MyNewInstance.Application = $officeapp
+                        $MyNewInstance.ComputerName = $env:COMPUTERNAME
+                        $MyNewInstance.Description = $Description
+                        $MyNewInstance.FriendlyName = $FriendlyName
+                        $MyNewInstance.FullPath = $FullPath
+                        $MyNewInstance.LoadBehaviorValue = $LoadBehaviorProperties.Value
+                        $MyNewInstance.LoadBehaviorStatus = $LoadBehaviorProperties.Status
+                        $MyNewInstance.LoadBehavior = $LoadBehaviorProperties.LoadBehavior
+                        $MyNewInstance.LoadTime = $LoadTime
+                        $MyNewInstance.Name = $addinapp
+                        $MyNewInstance.OfficeVersion = $addinOfficeVersion
+                        $MyNewInstance.RegistryPath = $addinpath
+                        
+                        New-OfficeAddinWMIClassInstance -ClassName $ClassName -PutInstance $MyNewInstance
+                    } else {
+                        Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property Application -PropertyValue $officeapp
+                        Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property ComputerName -PropertyValue $env:COMPUTERNAME
+                        Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property Description -PropertyValue $Description
+                        Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property FriendlyName -PropertyValue $FriendlyName
+                        Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property FullPath -PropertyValue $FullPath
+                        Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property LoadBehaviorValue -PropertyValue $LoadBehaviorProperties.Value
+                        Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property LoadBehaviorStatus -PropertyValue $LoadBehaviorProperties.Status
+                        Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property LoadBehavior -PropertyValue $LoadBehaviorProperties.LoadBehavior
+                        Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property LoadTime -PropertyValue $LoadTime
+                        Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property Name -PropertyValue $addinapp
+                        Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property OfficeVersion -PropertyValue $addinOfficeVersion
+                        Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property RegistryPath -PropertyValue $addinpath
+                    }
                 }
             }
         }
@@ -180,6 +190,7 @@ Param(
                             } else {
                                 if(($LoadBehavior -as [string]) -ne $null ){
                                     [string]$LoadBehavior = $LoadBehavior
+                                    $LoadBehaviorProperties = Get-LoadBehavior -name $addinapp -value $LoadBehavior
                                 }
                             }
                             
@@ -187,38 +198,44 @@ Param(
                                 $addinpath = " "
                             }
 
-                            $MyNewInstance = New-OfficeAddinWMIClassInstance -ClassName Custom_OfficeAddins
-                    
-                            $MyNewInstance.Application = $officeapp
-                            $MyNewInstance.ComputerName = $env:COMPUTERNAME
-                            $MyNewInstance.Description = $Description
-                            $MyNewInstance.FriendlyName = $FriendlyName
-                            $MyNewInstance.FullPath = $FullPath
-                            $MyNewInstance.LoadBehavior = $LoadBehavior
-                            $MyNewInstance.LoadTime = $LoadTime
-                            $MyNewInstance.Name = $addinapp
-                            $MyNewInstance.OfficeVersion = $addinOfficeVersion
-                            $MyNewInstance.RegistryPath = $addinpath
+                            $instanceExists = Get-WMIClassInstance -ClassName $WMIClassName -InstanceName $addinapp
+                            if(!$instanceExists){
+                                $MyNewInstance = New-OfficeAddinWMIClassInstance -ClassName Custom_OfficeAddins
                             
-                            New-OfficeAddinWMIClassInstance -ClassName $ClassName -PutInstance $MyNewInstance
-                            
-                            #New-CimInstance -ClassName Custom_OfficeAddins -Property @{Application=$officeapp; ComputerName=$ComputerName; Description=$Description; FriendlyName=$FriendlyName; FullPath=$FullPath;
-                            #                                                           LoadBehavior=$LoadBehavior; LoadTime=$loadTime; Name=$addinapp; OfficeVersion=$addinOfficeVersion; RegistryPath=$addinpath}
-        
-                            #$object = New-Object PSObject -Property @{ComputerName = $ComputerName; Application = $officeapp; Name = $addinapp; RegistryPath = $addinpath;
-                            #                                          Description = $Description; FriendlyName = $FriendlyName; LoadBehavior = $LoadBehavior;
-                            #                                          FullPath = $FullPath; LoadTime = $loadTime; OfficeVersion = $addinOfficeVersion}
-                            #$object | Add-Member MemberSet PSStandardMembers $PSStandardMembers
-                            #$results += $object
+                                $MyNewInstance.Application = $officeapp
+                                $MyNewInstance.ComputerName = $env:COMPUTERNAME
+                                $MyNewInstance.Description = $Description
+                                $MyNewInstance.FriendlyName = $FriendlyName
+                                $MyNewInstance.FullPath = $FullPath
+                                $MyNewInstance.LoadBehaviorValue = $LoadBehaviorProperties.Value
+                                $MyNewInstance.LoadBehaviorStatus = $LoadBehaviorProperties.Status
+                                $MyNewInstance.LoadBehavior = $LoadBehaviorProperties.LoadBehavior
+                                $MyNewInstance.LoadTime = $LoadTime
+                                $MyNewInstance.Name = $addinapp
+                                $MyNewInstance.OfficeVersion = $addinOfficeVersion
+                                $MyNewInstance.RegistryPath = $addinpath
+                                
+                                New-OfficeAddinWMIClassInstance -ClassName $ClassName -PutInstance $MyNewInstance
+                            } else {
+                                Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property Application -PropertyValue $officeapp
+                                Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property ComputerName -PropertyValue $env:COMPUTERNAME
+                                Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property Description -PropertyValue $Description
+                                Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property FriendlyName -PropertyValue $FriendlyName
+                                Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property FullPath -PropertyValue $FullPath
+                                Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property LoadBehaviorValue -PropertyValue $LoadBehaviorProperties.Value
+                                Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property LoadBehaviorStatus -PropertyValue $LoadBehaviorProperties.Status
+                                Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property LoadBehavior -PropertyValue $LoadBehaviorProperties.LoadBehavior
+                                Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property LoadTime -PropertyValue $LoadTime
+                                Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property Name -PropertyValue $addinapp
+                                Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property OfficeVersion -PropertyValue $addinOfficeVersion
+                                Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property RegistryPath -PropertyValue $addinpath
+                            }
                         }
                     }
                 }
             }
         }
     }
-    
-    #return $results;
-
 }
 
 function Get-AddinFullPath {
@@ -548,34 +565,40 @@ Param(
     }
 }
 
-function New-CustomOfficeAddinWMIClass{
-    $newClass = New-Object System.Management.ManagementClass ("root\cimv2", [String]::Empty, $null); 
+function Get-ResiliencyAddins{
+Param(
+    [string]$ComputerName = $env:COMPUTERNAME,
+    [string]$Name
+)
+
+    $regProv = Get-WmiObject -List "StdRegProv" -Namespace root\default -ComputerName $ComputerName
+
+    $HKU = [UInt32] "0x80000003"
+
+    $keyStart = "Software\Microsoft\Office"
+    $keyEnd = "Outlook\Resiliency\DoNotDisableAddinList"
+    $officeVersions = @("11.0","12.0","13.0","14.0","15.0","16.0")
+
+    $HKUsNames = $regProv.EnumKey($HKU, "")
     
-    $newClass["__CLASS"] = "Custom_OfficeAddins"; 
-    
-    $newClass.Qualifiers.Add("Static", $true)
-    $newClass.Properties.Add("ComputerName", [System.Management.CimType]::String, $false)
-    $newClass.Properties["ComputerName"].Qualifiers.Add("Key", $true)
-    $newClass.Properties.Add("Application", [System.Management.CimType]::String, $false)
-    $newClass.Properties["Application"].Qualifiers.Add("Key", $true)
-    $newClass.Properties.Add("Name", [System.Management.CimType]::String, $false)
-    $newClass.Properties["Name"].Qualifiers.Add("Key", $true)
-    $newClass.Properties.Add("Description", [System.Management.CimType]::String, $false)
-    $newClass.Properties["Description"].Qualifiers.Add("Key", $true)
-    $newClass.Properties.Add("FriendlyName", [System.Management.CimType]::String, $false)
-    $newClass.Properties["FriendlyName"].Qualifiers.Add("Key", $true)
-    $newClass.Properties.Add("LoadBehavior", [System.Management.CimType]::String, $false)
-    $newClass.Properties["LoadBehavior"].Qualifiers.Add("Key", $true)
-    $newClass.Properties.Add("RegistryPath", [System.Management.CimType]::String, $false)
-    $newClass.Properties["RegistryPath"].Qualifiers.Add("Key", $true)
-    $newClass.Properties.Add("FullPath", [System.Management.CimType]::String, $false)
-    $newClass.Properties["FullPath"].Qualifiers.Add("Key", $true)
-    $newClass.Properties.Add("LoadTime", [System.Management.CimType]::String, $false)
-    $newClass.Properties["LoadTime"].Qualifiers.Add("Key", $true)
-    $newClass.Properties.Add("OfficeVersion", [System.Management.CimType]::String, $false)
-    $newClass.Properties["OfficeVersion"].Qualifiers.Add("Key", $true)
-    
-    $newClass.Put()
+    foreach($HKUsName in $HKUsNames.sNames){
+        if($HKUsName -notmatch "Default"){
+            foreach($officeVersion in $officeVersions){
+                $StartPath = Join-Path $HKUsName $keyStart
+                $officeVersionPath = Join-Path $StartPath $officeVersion
+                $fullpath = Join-Path $officeVersionPath $keyEnd
+                
+                $values = $regProv.EnumValues($HKU, $fullpath)
+                if($values.sNames){
+                    foreach($value in $values.sNames){
+                        if($value -eq $Name){
+                            $dwordValue = $regProv.GetDWORDValue($HKU, $fullpath, $value)
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 function New-OfficeAddinWMIClass{
@@ -609,7 +632,8 @@ Function New-OfficeAddinWMIProperty{
     
     [wmiclass]$OfficeAddinWMIClass = Get-WmiObject -Class $ClassName -Namespace $NameSpace -list
     if(!$PropertyName){
-        $PropertyName = @("Application", "ComputerName", "Description", "FriendlyName", "FullPath", "LoadBehavior", "LoadTime","Name", "OfficeVersion", "RegistryPath")
+        $PropertyName = @("Application", "ComputerName", "Description", "FriendlyName", "FullPath", "LoadBehaviorValue", 
+                          "LoadBehaviorStatus", "LoadBehavior", "LoadTime","Name", "OfficeVersion", "RegistryPath")
     }
    
     foreach($property in $PropertyName){
@@ -717,4 +741,115 @@ Param(
         $CreateInstance = $WmiClass.CreateInstance()
         $CreateInstance
     }       
+}
+
+function Set-InstancePropertyValue{
+Param(
+    [string]$ClassName,
+
+    [string]$InstanceName,
+
+    [string]$Property,
+
+    [string]$PropertyValue
+)
+    
+    [wmiclass]$WmiClass = Get-WmiObject -Class $ClassName -List
+
+    $instance = $WmiClass.GetInstances() | ? {$_.Name -eq $InstanceName}
+
+    $instance.SetPropertyValue($Property, $PropertyValue)
+
+}
+
+function Get-WMIClassInstance{
+Param(
+    [string]$ClassName,
+
+    [string]$InstanceName
+)
+    
+    [wmiclass]$WmiClass = Get-WmiObject -Class $ClassName -List
+
+    $instance = $WmiClass.GetInstances() | ? {$_.Name -eq $InstanceName}
+
+    return $instance.Name
+
+}
+
+function Get-LoadBehavior{
+Param(
+    [string]$name,
+    [string]$value
+)
+    $defaultDisplaySet = 'Name','Value', 'Status', 'LoadBehavior'
+
+    $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet('DefaultDisplayPropertySet',[string[]]$defaultDisplaySet)
+    $PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultDisplayPropertySet)
+
+    $results = new-object PSObject[] 0;
+
+    switch($value){
+        "0"{
+            $status = "Unloaded"
+            $LoadBehavior = "Do not load automatically"
+        }
+        "1"{
+            $status = "Loaded"
+            $LoadBehavior = "Do not load automatically"
+        }
+        "2"{
+            $status = "Unloaded"
+            $LoadBehavior = "Load at startup"
+        }
+        "3"{
+            $status = "Loaded"
+            $LoadBehavior = "Load at startup"
+        }
+        "8"{
+            $status = "Unloaded"
+            $LoadBehavior = "Load on demand"
+        }
+        "9"{
+            $status = "Loaded"
+            $LoadBehavior = "Load on demand"
+        }
+        "16"{
+            $status = "Loaded"
+            $LoadBehavior = "Load first time, then load on demand"
+        }
+    }
+
+    $object = New-Object PSObject -Property @{Name = $name; Value = $value; Status = $status; LoadBehavior = $LoadBehavior}
+    $object | Add-Member MemberSet PSStandardMembers $PSStandardMembers
+    $results += $object
+
+    return $results
+}
+
+Function IsDotSourced() {
+  [CmdletBinding(SupportsShouldProcess=$true)]
+  param(
+    [Parameter(ValueFromPipelineByPropertyName=$true)]
+    [string]$InvocationLine = ""
+  )
+  $cmdLine = $InvocationLine.Trim()
+  Do {
+    $cmdLine = $cmdLine.Replace(" ", "")
+  } while($cmdLine.Contains(" "))
+
+  $dotSourced = $false
+  if ($cmdLine -match '^\.\\') {
+     $dotSourced = $false
+  } else {
+     $dotSourced = ($cmdLine -match '^\.')
+  }
+
+  return $dotSourced
+}
+
+$dotSourced = IsDotSourced -InvocationLine $MyInvocation.Line
+
+if (!($dotSourced)) {
+    Get-OfficeAddins -WMIClassName $WmiClassName
 }
