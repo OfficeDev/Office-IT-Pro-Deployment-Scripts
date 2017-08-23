@@ -567,8 +567,7 @@ Param(
 
 function Get-ResiliencyAddins{
 Param(
-    [string]$ComputerName = $env:COMPUTERNAME,
-    [string]$Name
+    [string]$ComputerName = $env:COMPUTERNAME
 )
 
     $regProv = Get-WmiObject -List "StdRegProv" -Namespace root\default -ComputerName $ComputerName
@@ -581,6 +580,7 @@ Param(
 
     $HKUsNames = $regProv.EnumKey($HKU, "")
     
+    $ResiliencyList = @()
     foreach($HKUsName in $HKUsNames.sNames){
         if($HKUsName -notmatch "Default"){
             foreach($officeVersion in $officeVersions){
@@ -591,14 +591,17 @@ Param(
                 $values = $regProv.EnumValues($HKU, $fullpath)
                 if($values.sNames){
                     foreach($value in $values.sNames){
-                        if($value -eq $Name){
-                            $dwordValue = $regProv.GetDWORDValue($HKU, $fullpath, $value)
+                        $dwordValue = $regProv.GetDWORDValue($HKU, $fullpath, $value)
+                        if($dwordValue -eq '1'){
+                            $ResiliencyList += $value
                         }
                     }
                 }
             }
         }
     }
+
+    return $ResiliencyList
 }
 
 function New-OfficeAddinWMIClass{
