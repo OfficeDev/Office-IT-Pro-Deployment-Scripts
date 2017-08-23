@@ -98,11 +98,14 @@ Param(
                     if(!$addinpath){
                         $addinpath = " "
                     }
+
+                    $ID = New-Guid
      
                     $instanceExists = Get-WMIClassInstance -ClassName $WMIClassName -InstanceName $addinapp
                     if(!$instanceExists){
                         $MyNewInstance = New-OfficeAddinWMIClassInstance -ClassName Custom_OfficeAddins
                     
+                        $MyNewInstance.ID = $ID
                         $MyNewInstance.Application = $officeapp
                         $MyNewInstance.ComputerName = $env:COMPUTERNAME
                         $MyNewInstance.Description = $Description
@@ -198,10 +201,13 @@ Param(
                                 $addinpath = " "
                             }
 
+                            $ID = New-Guid
+
                             $instanceExists = Get-WMIClassInstance -ClassName $WMIClassName -InstanceName $addinapp
                             if(!$instanceExists){
                                 $MyNewInstance = New-OfficeAddinWMIClassInstance -ClassName Custom_OfficeAddins
                             
+                                $MyNewInstance.ID = $ID
                                 $MyNewInstance.Application = $officeapp
                                 $MyNewInstance.ComputerName = $env:COMPUTERNAME
                                 $MyNewInstance.Description = $Description
@@ -635,7 +641,7 @@ Function New-OfficeAddinWMIProperty{
     
     [wmiclass]$OfficeAddinWMIClass = Get-WmiObject -Class $ClassName -Namespace $NameSpace -list
     if(!$PropertyName){
-        $PropertyName = @("Application", "ComputerName", "Description", "FriendlyName", "FullPath", "LoadBehaviorValue", 
+        $PropertyName = @("ID", "Application", "ComputerName", "Description", "FriendlyName", "FullPath", "LoadBehaviorValue", 
                           "LoadBehaviorStatus", "LoadBehavior", "LoadTime","Name", "OfficeVersion", "RegistryPath")
     }
    
@@ -828,6 +834,12 @@ Param(
     $results += $object
 
     return $results
+}
+
+function New-GUID{
+ $guid = [guid]::NewGuid()
+
+ return $guid
 }
 
 Function IsDotSourced() {

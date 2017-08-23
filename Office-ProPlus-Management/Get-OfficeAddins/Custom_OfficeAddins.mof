@@ -5,6 +5,7 @@
 class Custom_OfficeAddins : SMS_Class_Template
 {
     [SMS_Report (TRUE), key ] string Name;
+    [SMS_Report (TRUE)      ] string ID;
     [SMS_Report (TRUE)      ] string Application;
     [SMS_Report (TRUE)      ] string ComputerName;
     [SMS_Report (TRUE)      ] string Description;

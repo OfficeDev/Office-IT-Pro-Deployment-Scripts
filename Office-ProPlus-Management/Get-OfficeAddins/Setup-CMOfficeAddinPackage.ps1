@@ -2,25 +2,28 @@
 <#
 
 .SYNOPSIS
-Automates the configuration of System Center Configuration Manager (CM) to create an Office Click-To-Run Package
+    Automates the configuration of System Center Configuration Manager (CM) to create an Office Click-To-Run Package
 
-.PARAMETER SourceFilesPath
-This is the location where the source files are available at
+.PARAMETER PackageName
+    The name of the package.
+
+.PARAMETER ScriptFilesPath
+    This is the location where the source files are available at
 
 .PARAMETER MoveSourceFiles
-This moves the files from the Source location to the location specified
+    This moves the files from the Source location to the location specified
 
 .PARAMETER CustomPackageShareName
-This sets a custom package share to use
+    This sets a custom package share to use
 
 .PARAMETER SiteCode
-The site code you would like to create the package on. If left blank it will default to the current site
+    The site code you would like to create the package on. If left blank it will default to the current site
 
 .PARAMETER CMPSModulePath
-Allows the user to specify that full path to the ConfigurationManager.psd1 PowerShell Module. This is especially useful if CM is installed in a non standard path.
+    Allows the user to specify that full path to the ConfigurationManager.psd1 PowerShell Module. This is especially useful if CM is installed in a non standard path.
 
 .EXAMPLE
-Create-CMOfficePackage -Channels Deferred -Bitness v32 -OfficeSourceFilesPath D:\OfficeChannelFiles
+    Create-CMOfficePackage -Channels Deferred -Bitness v32 -OfficeSourceFilesPath D:\OfficeChannelFiles
 
 #>
     [CmdletBinding(SupportsShouldProcess=$true)]
