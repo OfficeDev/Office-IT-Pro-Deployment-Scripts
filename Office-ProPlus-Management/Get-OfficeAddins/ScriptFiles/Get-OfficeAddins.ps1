@@ -35,6 +35,9 @@ Param(
 
     $ClassName = $WMIClassName 
     $classExists = Get-WmiObject -Class $ClassName -ErrorAction SilentlyContinue
+    $resiliencyList = Get-ResiliencyAddins
+    $OutlookCrashingAddins = Get-OutlookCrashingAddins
+
     if(!$classExists){
         New-OfficeAddinWMIClass -ClassName $WMIClassName
 
@@ -99,6 +102,16 @@ Param(
                         $addinpath = " "
                     }
 
+                    $isResilient = $false
+                    if($resiliencyList.Name -contains $addinapp){
+                        $isResilient = $true
+                    }
+
+                    $isOutlookCrashingAddin = $false
+                    if($OutlookCrashingAddins -contains $addinapp){
+                        $isOutlookCrashingAddin = $true
+                    }
+
                     $ID = New-Guid
      
                     $instanceExists = Get-WMIClassInstance -ClassName $WMIClassName -InstanceName $addinapp
@@ -118,6 +131,8 @@ Param(
                         $MyNewInstance.Name = $addinapp
                         $MyNewInstance.OfficeVersion = $addinOfficeVersion
                         $MyNewInstance.RegistryPath = $addinpath
+                        $MyNewInstance.IsResilient = $isResilient
+                        $MyNewInstance.IsOutlookCrashingAddin = $isOutlookCrashingAddin
                         
                         New-OfficeAddinWMIClassInstance -ClassName $ClassName -PutInstance $MyNewInstance
                     } else {
@@ -133,6 +148,8 @@ Param(
                         Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property Name -PropertyValue $addinapp
                         Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property OfficeVersion -PropertyValue $addinOfficeVersion
                         Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property RegistryPath -PropertyValue $addinpath
+                        Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property IsResilient -PropertyValue $isResilient
+                        Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property IsOutlookCrashingAddin -PropertyValue $isOutlookCrashingAddin
                     }
                 }
             }
@@ -201,6 +218,16 @@ Param(
                                 $addinpath = " "
                             }
 
+                            $isResilient = $false
+                            if($resiliencyList.Name -contains $addinapp){
+                                $isResilient = $true
+                            }
+
+                            $isOutlookCrashingAddin = $false
+                            if($OutlookCrashingAddins -contains $addinapp){
+                                $isOutlookCrashingAddin = $true
+                            }
+
                             $ID = New-Guid
 
                             $instanceExists = Get-WMIClassInstance -ClassName $WMIClassName -InstanceName $addinapp
@@ -220,6 +247,8 @@ Param(
                                 $MyNewInstance.Name = $addinapp
                                 $MyNewInstance.OfficeVersion = $addinOfficeVersion
                                 $MyNewInstance.RegistryPath = $addinpath
+                                $MyNewInstance.IsResilient = $isResilient
+                                $MyNewInstance.IsOutlookCrashingAddin = $isOutlookCrashingAddin
                                 
                                 New-OfficeAddinWMIClassInstance -ClassName $ClassName -PutInstance $MyNewInstance
                             } else {
@@ -235,6 +264,8 @@ Param(
                                 Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property Name -PropertyValue $addinapp
                                 Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property OfficeVersion -PropertyValue $addinOfficeVersion
                                 Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property RegistryPath -PropertyValue $addinpath
+                                Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property IsResilient -PropertyValue $isResilient
+                                Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property IsOutlookCrashingAddin -PropertyValue $isOutlookCrashingAddin
                             }
                         }
                     }
@@ -536,11 +567,11 @@ Param(
     }
 }
 
-function Get-OutlookCrashingAddin {
+function Get-OutlookCrashingAddins {
 Param(
-    [string]$ComputerName = $env:COMPUTERNAME,
-    [string]$AddinID
+    [string]$ComputerName = $env:COMPUTERNAME
 )
+   
     $regProv = Get-WmiObject -List "StdRegProv" -Namespace root\default -ComputerName $ComputerName
 
     $HKU = [UInt32] "0x80000003"
@@ -551,6 +582,7 @@ Param(
 
     $HKUsNames = $regProv.EnumKey($HKU, "")
     
+    $CrashingAddinList = @()
     foreach($HKUsName in $HKUsNames.sNames){
         if($HKUsName -notmatch "Default"){
             $path = Join-Path $HKUsName $OutlookRegKey
@@ -558,48 +590,11 @@ Param(
                 $officeVersionPath = Join-Path $OutlookRegKey $officeVersion
                 $crashingAddinListPath = Join-Path $officeVersionPath $crashingAddinListKey
                 $crashingAddinValues =  $regProv.EnumValues($HKU, $crashingAddinListPath)
-
                 foreach($crashingAddinValue in $crashingAddinValues.sNames){
-                    if($crashingAddinValue -eq $AddinID){
-                        $value = $regProv.GetDWORDValue($HKU, $crashingAddinListPath, $crashingAddinValue)
-
-                        return $value;
-                    }
-                }
-            }
-        }
-    }
-}
-
-function Get-ResiliencyAddins{
-Param(
-    [string]$ComputerName = $env:COMPUTERNAME
-)
-
-    $regProv = Get-WmiObject -List "StdRegProv" -Namespace root\default -ComputerName $ComputerName
-
-    $HKU = [UInt32] "0x80000003"
-
-    $keyStart = "Software\Microsoft\Office"
-    $keyEnd = "Outlook\Resiliency\DoNotDisableAddinList"
-    $officeVersions = @("11.0","12.0","13.0","14.0","15.0","16.0")
-
-    $HKUsNames = $regProv.EnumKey($HKU, "")
-    
-    $ResiliencyList = @()
-    foreach($HKUsName in $HKUsNames.sNames){
-        if($HKUsName -notmatch "Default"){
-            foreach($officeVersion in $officeVersions){
-                $StartPath = Join-Path $HKUsName $keyStart
-                $officeVersionPath = Join-Path $StartPath $officeVersion
-                $fullpath = Join-Path $officeVersionPath $keyEnd
-                
-                $values = $regProv.EnumValues($HKU, $fullpath)
-                if($values.sNames){
-                    foreach($value in $values.sNames){
-                        $dwordValue = $regProv.GetDWORDValue($HKU, $fullpath, $value)
-                        if($dwordValue -eq '1'){
-                            $ResiliencyList += $value
+                    $value = $regProv.GetDWORDValue($HKU, $crashingAddinListPath, $crashingAddinValue)
+                    if($value.uValue -eq "1"){
+                        if($CrashingAddinList -notcontains $crashingAddinValue){
+                            $CrashingAddinList += $crashingAddinValue
                         }
                     }
                 }
@@ -607,7 +602,89 @@ Param(
         }
     }
 
-    return $ResiliencyList
+    return $CrashingAddinList;
+}
+
+function Get-ResiliencyAddins{
+Param(
+    [string]$ComputerName = $env:COMPUTERNAME
+)
+    $defaultDisplaySet = 'Name','Value', 'Status'
+    $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet('DefaultDisplayPropertySet',[string[]]$defaultDisplaySet)
+    $PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultDisplayPropertySet)
+    $results = New-Object PSObject[] 0;
+    $regProv = Get-WmiObject -List "StdRegProv" -Namespace root\default -ComputerName $ComputerName
+
+    $HKU = [UInt32] "0x80000003"
+
+    $keyStart = "Software\Microsoft\Office"
+    $officeApps = @("Word","Excel","PowerPoint","Outlook","MS Project")
+    $keyEnd = "Resiliency\DoNotDisableAddinList"
+    $officeVersions = @("11.0","12.0","13.0","14.0","15.0","16.0")
+
+    $HKUsNames = $regProv.EnumKey($HKU, "")
+    
+    $resiliencyList = @()
+    foreach($HKUsName in $HKUsNames.sNames){
+        if($HKUsName -notmatch "Default"){
+            foreach($officeVersion in $officeVersions){
+                $StartPath = Join-Path $HKUsName $keyStart
+                $officeVersionPath = Join-Path $StartPath $officeVersion
+                foreach($officeApp in $officeApps){
+                    $appPath = Join-Path $officeVersionPath $officeApp
+                    $fullpath = Join-Path $appPath $keyEnd                    
+                    $values = $regProv.EnumValues($HKU, $fullpath)
+                    if($values.sNames){
+                        foreach($value in $values.sNames){
+                            if($resiliencyList -notcontains $value){
+                                $resiliencyList += $value
+                                $dwordValue = $regProv.GetDWORDValue($HKU, $fullpath, $value)
+
+                                switch($dwordValue.uValue){
+                                    "1"{
+                                        $Status = "Boot load"
+                                    }
+                                    "2"{
+                                        $Status = "Demand load"
+                                    }
+                                    "3"{
+                                        $Status = "Crash"
+                                    }
+                                    "4"{
+                                        $Status = "Handling FolderSwitch event"
+                                    }
+                                    "5"{
+                                        $Status = "Handling BeforeFolderSwitch event"
+                                    }
+                                    "6"{
+                                        $Status = "Item Open"
+                                    }
+                                    "7"{
+                                        $Status = "Iteration Count"
+                                    }
+                                    "8"{
+                                        $Status = "Shutdown"
+                                    }
+                                    "9"{
+                                        $Status = "Crash, but not disabled because add-in is in the allow list"
+                                    }
+                                    "10"{
+                                        $Status = "Crash, but not disabled because user selected no in disable dialog"
+                                    }
+                                }
+                           
+                                $object = New-Object PSObject -Property @{Name = $value; Value = $dwordValue.uValue; Status = $Status}
+                                $object | Add-Member MemberSet PSStandardMembers $PSStandardMembers
+                                $results += $object
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return $results;
 }
 
 function New-OfficeAddinWMIClass{
@@ -642,7 +719,7 @@ Function New-OfficeAddinWMIProperty{
     [wmiclass]$OfficeAddinWMIClass = Get-WmiObject -Class $ClassName -Namespace $NameSpace -list
     if(!$PropertyName){
         $PropertyName = @("ID", "Application", "ComputerName", "Description", "FriendlyName", "FullPath", "LoadBehaviorValue", 
-                          "LoadBehaviorStatus", "LoadBehavior", "LoadTime","Name", "OfficeVersion", "RegistryPath")
+                          "LoadBehaviorStatus", "LoadBehavior", "LoadTime","Name", "OfficeVersion", "RegistryPath", "IsResilient", "IsOutlookCrashingAddin")
     }
    
     foreach($property in $PropertyName){
