@@ -113,6 +113,8 @@ Param(
                     }
 
                     $ID = New-Guid
+
+                    $User = Get-LastLoggedOnUser
      
                     $instanceExists = Get-WMIClassInstance -ClassName $WMIClassName -InstanceName $addinapp
                     if(!$instanceExists){
@@ -133,6 +135,7 @@ Param(
                         $MyNewInstance.RegistryPath = $addinpath
                         $MyNewInstance.IsResilient = $isResilient
                         $MyNewInstance.IsOutlookCrashingAddin = $isOutlookCrashingAddin
+                        $MyNewInstance.User = $User
                         
                         New-OfficeAddinWMIClassInstance -ClassName $ClassName -PutInstance $MyNewInstance
                     } else {
@@ -150,6 +153,7 @@ Param(
                         Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property RegistryPath -PropertyValue $addinpath
                         Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property IsResilient -PropertyValue $isResilient
                         Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property IsOutlookCrashingAddin -PropertyValue $isOutlookCrashingAddin
+                        Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property User -PropertyValue $User
                     }
                 }
             }
@@ -230,6 +234,8 @@ Param(
 
                             $ID = New-Guid
 
+                            $User = Convert-UserSID -SID $HKUsName
+
                             $instanceExists = Get-WMIClassInstance -ClassName $WMIClassName -InstanceName $addinapp
                             if(!$instanceExists){
                                 $MyNewInstance = New-OfficeAddinWMIClassInstance -ClassName Custom_OfficeAddins
@@ -249,6 +255,7 @@ Param(
                                 $MyNewInstance.RegistryPath = $addinpath
                                 $MyNewInstance.IsResilient = $isResilient
                                 $MyNewInstance.IsOutlookCrashingAddin = $isOutlookCrashingAddin
+                                $MyNewInstance.User = $User
                                 
                                 New-OfficeAddinWMIClassInstance -ClassName $ClassName -PutInstance $MyNewInstance
                             } else {
@@ -266,6 +273,7 @@ Param(
                                 Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property RegistryPath -PropertyValue $addinpath
                                 Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property IsResilient -PropertyValue $isResilient
                                 Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property IsOutlookCrashingAddin -PropertyValue $isOutlookCrashingAddin
+                                Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property User -PropertyValue $User
                             }
                         }
                     }
@@ -719,7 +727,8 @@ Function New-OfficeAddinWMIProperty{
     [wmiclass]$OfficeAddinWMIClass = Get-WmiObject -Class $ClassName -Namespace $NameSpace -list
     if(!$PropertyName){
         $PropertyName = @("ID", "Application", "ComputerName", "Description", "FriendlyName", "FullPath", "LoadBehaviorValue", 
-                          "LoadBehaviorStatus", "LoadBehavior", "LoadTime","Name", "OfficeVersion", "RegistryPath", "IsResilient", "IsOutlookCrashingAddin")
+                          "LoadBehaviorStatus", "LoadBehavior", "LoadTime","Name", "OfficeVersion", "RegistryPath", "IsResilient", 
+                          "IsOutlookCrashingAddin", "User")
     }
    
     foreach($property in $PropertyName){
@@ -917,6 +926,52 @@ function New-GUID{
  $guid = [guid]::NewGuid()
 
  return $guid
+}
+
+function Get-LastLoggedOnUser{
+Param(
+
+)
+    $Win32Users  = Get-Win32Users
+    $LastUser = $Win32Users | Sort-Object -Property LastUseTime -Descending | Select-Object -First 1
+    $UserSID = New-Object System.Security.Principal.SecurityIdentifier($LastUser.SID)
+    $User = Convert-UserSID -SID $UserSID.Value
+
+    return $User
+}
+
+function Get-Win32Users{
+Param(
+
+)
+
+    $filter = "NOT SID = 'S-1-5-18' AND NOT SID = 'S-1-5-19' AND NOT SID = 'S-1-5-20'"
+    $Win32Users  = Get-WmiObject -Class Win32_UserProfile -Filter $filter -ComputerName $env:COMPUTERNAME
+
+    return $Win32Users
+
+}
+
+function Convert-UserSID{
+Param(
+    [string]$SID
+)
+    $UserSID = New-Object System.Security.Principal.SecurityIdentifier($SID)
+    $User = ($UserSID.Translate([System.Security.Principal.NTAccount])).Value
+    $User = $User.Split("\")[-1]
+
+    return $User
+}
+
+function Get-UserSIDAccount{
+Param(
+    [string]$SID
+)
+
+    $Win32User  = Get-Win32Users | ? {$_.SID -eq $SID}
+    
+    return $Win32User   
+
 }
 
 Function IsDotSourced() {
