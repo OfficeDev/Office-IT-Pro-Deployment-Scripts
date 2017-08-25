@@ -1,7 +1,7 @@
 ﻿[CmdletBinding(SupportsShouldProcess=$true)]
 param(
 [Parameter()]
-[string]$WmiClassName
+[string]$WmiClassName = "Custom_OfficeAddins"
 )
 
 function Get-OfficeAddins {
