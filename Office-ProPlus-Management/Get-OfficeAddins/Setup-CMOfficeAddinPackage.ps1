@@ -203,7 +203,7 @@ Create-CMOfficeDeploymentProgram -Channels Current -DeploymentType DeployWithCon
             if ($packageId) {
                $comment = "Get a list of Office add-ins and add-in attributes"
             
-               CreateCMProgram -Name $ProgramName -PackageID $packageId -CommandLine $CommandLine -Comment $comment -LogFilePath $LogFilePath
+               CreateCMProgram -Name $ProgramName -PackageID $packageId -CommandLine $CommandLine -Comment $comment
             }
         } catch {
          throw;
@@ -211,6 +211,144 @@ Create-CMOfficeDeploymentProgram -Channels Current -DeploymentType DeployWithCon
     }
     End
     {
+        Set-ExecutionPolicy $currentExecutionPolicy -Scope Process -Force
+        Set-Location $startLocation    
+    }
+}
+
+function Create-CMOfficeAddinTaskProgram {
+<#
+.SYNOPSIS
+    Creates an Office Add-in program.
+
+.DESCRIPTION
+    Creates an Office 365 ProPlus program that will create a scheduled task on clients in the target collection.
+
+.PARAMETER UseRandomStartTime
+    A random start time for the scheduled task.
+
+.PARAMETER RandomTimeEnd 
+    A random end time for the scheduled task.
+
+.PARAMETER StartTime
+    The actual start time for the scheduled task.
+
+.PARAMETER SiteCode
+    The 3 letter site code.
+
+.PARAMETER CMPSModulePath 
+    Allows the user to specify that full path to the ConfigurationManager.psd1 PowerShell Module. This is especially useful if CM is 
+    installed in a non standard path.
+
+.PARAMETER UseScriptLocationAsUpdateSource
+    The location where the script is ran will be the location of the update source files.
+
+.EXAMPLE
+    Create-CMOfficeAddinTaskProgram -StartTime 12:00
+
+    In this exmaple, a program called 'Query Office Add-ins with Task' is created. The program will run on clients in the target collection every Tuesday at 12:00. 
+
+#>
+    [CmdletBinding(SupportsShouldProcess=$true)]
+    Param
+    (
+    	[Parameter()]
+	    [String]$PackageName,
+
+        [Parameter()]
+        [string]$ProgramName,
+
+        [Parameter()]
+        [bool]$UseRandomStartTime = $true,
+
+        [Parameter()]
+        [string]$RandomTimeStart = "08:00",
+
+        [Parameter()]
+        [string]$RandomTimeEnd = "17:00",
+
+        [Parameter()]
+        [string]$StartTime,
+
+	    [Parameter()]
+	    [String]$SiteCode = $null,
+
+	    [Parameter()]
+	    [String]$CMPSModulePath = $NULL
+    )
+    Begin{
+        $currentExecutionPolicy = Get-ExecutionPolicy
+	    Set-ExecutionPolicy Unrestricted -Scope Process -Force  
+        $startLocation = Get-Location
+    }
+    Process{
+        try{
+            Check-AdminAccess
+
+            LoadCMPrereqs -SiteCode $SiteCode -CMPSModulePath $CMPSModulePath
+
+            $existingPackage = CheckIfPackageExists -PackageName $PackageName
+            if (!($existingPackage)) {
+                throw "You must run the Create-CMOfficePackage function before running this function"
+            }
+
+            $CommandLine = "%windir%\Sysnative\windowsPowershell\V1.0\Powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden -Command .\Create-QueryOfficeAddinsTask.ps1"
+            
+            if(!$ProgramName){
+                $ProgramName = "Update Office Add-in WMI Class with Task"
+            }
+                          
+            if($UseRandomStartTime){
+                $CommandLine += " -UseRandomStartTime " + (Convert-Bool -value $UseRandomStartTime) + `
+                                " -RandomTimeStart " + $RandomTimeStart + `
+                                " -RandomTimeEnd " + $RandomTimeEnd
+            }
+
+            if($StartTime){
+                $CommandLine += " -StartTime " + $StartTime
+            }
+
+            if ($UpdateToVersion) {
+                $CommandLine += " -UpdateToVersion " + $UpdateToVersion
+            }
+
+            $SharePath = $existingPackage.PkgSourcePath
+
+            $OSSourcePath = "$PSScriptRoot\ScriptFiles\Get-OfficeAddins.ps1"
+            $OCScriptPath = "$SharePath\Get-OfficeAddins.ps1"
+
+            $OSSourcePathTask = "$PSScriptRoot\ScriptFiles\Create-QueryOfficeAddinsTask.ps1"
+            $OCScriptPathTask = "$SharePath\Create-QueryOfficeAddinsTask.ps1"
+ 
+            if (!(Test-ItemPathUNC -Path $SharePath -FileName "Get-OfficeAddins.ps1")) {
+                if(!(Test-Path $OSSourcePath)){
+                    throw "Required file missing: $OSSourcePath"
+                } else {
+                    Copy-ItemUNC -SourcePath $SourcePath -TargetPath $SharePath -FileName "Get-OfficeAddins.ps1"
+                }
+            }
+
+            if($UseScheduledTask) {
+                if (!(Test-ItemPathUNC -Path $SharePath -FileName "Create-QueryOfficeAddinsTask.ps1")) {
+                    if(!(Test-Path $OSSourcePathTask)){
+                        throw "Required file missing: $OSSourcePathTask"
+                    } else {
+                        Copy-ItemUNC -SourcePath $OSSourcePathTask  -TargetPath $SharePath -FileName "Create-QueryOfficeAddinsTask.ps1"
+                    }
+                }
+            }
+
+            [string]$packageId = $existingPackage.PackageId
+            if($packageId) {
+                $comment = "QueryWithTask"
+
+                CreateCMProgram -Name $ProgramName -PackageID $packageId -CommandLine $CommandLine -Comment $comment
+            }
+        } catch {
+            throw;
+        }
+    }
+    End{
         Set-ExecutionPolicy $currentExecutionPolicy -Scope Process -Force
         Set-Location $startLocation    
     }
@@ -693,10 +831,7 @@ function CreateCMProgram() {
 		[String]$Name,
 		
 		[Parameter(Mandatory=$True)]
-		[String]$Comment = $null,
-
-        [Parameter()]
-        [string]$LogFilePath 
+		[String]$Comment = $null
 
 	) 
 
@@ -1046,4 +1181,45 @@ function GetLocalSiteCode() {
         }
         return $SiteCode
     }
+}
+
+function Test-ItemPathUNC() {    [CmdletBinding()]	
+    Param
+	(	    [Parameter(Mandatory=$true)]
+	    [String]$Path,	    [Parameter()]
+	    [String]$FileName = $null    )    Process {       $pathExists = $false       if ($FileName) {         $filePath = "$Path\$FileName"         $pathExists = [System.IO.File]::Exists($filePath)       } else {         $pathExists = [System.IO.Directory]::Exists($Path)         if (!($pathExists)) {            $pathExists = [System.IO.File]::Exists($Path)         }       }       return $pathExists;    }}
+
+function Copy-ItemUNC() {    [CmdletBinding()]	
+    Param
+	(	    [Parameter(Mandatory=$true)]
+	    [String]$SourcePath,	    [Parameter(Mandatory=$true)]
+	    [String]$TargetPath,	    [Parameter(Mandatory=$true)]
+	    [String]$FileName    )    Process {       $drvLetter = FindAvailable       $Network = New-Object -ComObject "Wscript.Network"       try {           if (!($drvLetter.EndsWith(":"))) {               $drvLetter += ":"           }           $target = $drvLetter + "\"           $Network.MapNetworkDrive($drvLetter, $TargetPath)           Copy-Item -Path $SourcePath -Destination $target -Force       } finally {         $Network.RemoveNetworkDrive($drvLetter)       }    }}function FindAvailable() {
+   #$drives = Get-PSDrive | select Name
+   $drives = Get-WmiObject -Class Win32_LogicalDisk | select DeviceID
+
+   for($n=90;$n -gt 68;$n--) {
+      $letter= [char]$n + ":"
+      $exists = $drives | where { $_.DeviceID -eq $letter }
+      if ($exists) {
+        if ($exists.Count -eq 0) {
+            return $letter
+        }
+      } else {
+        return $letter
+      }
+   }
+   return $null
+}
+
+Function Convert-Bool() {
+    [CmdletBinding(SupportsShouldProcess=$true)]
+    Param
+    (
+        [Parameter(Mandatory=$true)]
+        [bool] $value
+    )
+
+    $newValue = "$" + $value.ToString()
+    return $newValue 
 }

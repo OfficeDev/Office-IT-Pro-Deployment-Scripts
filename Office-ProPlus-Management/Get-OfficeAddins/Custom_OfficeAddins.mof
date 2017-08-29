@@ -19,4 +19,5 @@ class Custom_OfficeAddins : SMS_Class_Template
     [SMS_Report (TRUE)      ] string RegistryPath;
     [SMS_Report (TRUE)      ] string IsResilient;
     [SMS_Report (TRUE)      ] string IsOutlookCrashingAddin;
+    [SMS_Report (TRUE)      ] string User;
 };

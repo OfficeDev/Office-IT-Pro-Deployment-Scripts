@@ -18,7 +18,7 @@ Process {
     . $scriptPath\Setup-CMOfficeAddinPackage.ps1
     
     # Create the package
-    $PackageName = "OfficeAddinWMIQuery"
+    $PackageName = "Update Office Add-in WMI"
     $ScriptFilesPath = "C:\Get-OfficeAddins"
     
     Create-CMOfficeAddinPackage -PackageName $PackageName -ScriptFilesPath $ScriptFilesPath -MoveScriptFiles $true

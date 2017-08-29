@@ -2,24 +2,6 @@
 Param
 (
     [Parameter()]
-    [bool] $WaitForUpdateToFinish = $true,
-
-    [Parameter()]
-    [bool] $EnableUpdateAnywhere = $true,
-
-    [Parameter()]
-    [bool] $ForceAppShutdown = $true,
-
-    [Parameter()]
-    [bool] $UpdatePromptUser = $false,
-
-    [Parameter()]
-    [bool] $DisplayLevel = $false,
-
-    [Parameter()]
-    [string] $UpdateToVersion = $NULL,
-
-    [Parameter()]
     [bool] $UseRandomStartTime = $true,
 
     [Parameter()]
@@ -32,15 +14,6 @@ Param
     [string] $StartTime = "12:00",
 
     [Parameter()]
-    [string] $LogPath = $NULL,
-
-    [Parameter()]
-    [string] $LogName = $NULL,
-        
-    [Parameter()]
-    [bool] $ValidateUpdateSourceFiles = $true,
-
-    [Parameter()]
     [bool] $UseScriptLocationAsUpdateSource = $false
     
 )
@@ -49,18 +22,6 @@ Function Create-QueryOfficeAddinsTask {
     [CmdletBinding(SupportsShouldProcess=$true)]
     Param
     (
-        [Parameter()]
-        [bool] $WaitForUpdateToFinish = $true,
-
-        [Parameter()]
-        [bool] $EnableUpdateAnywhere = $true,
-
-        [Parameter()]
-        [bool] $UpdatePromptUser = $false,
-
-        [Parameter()]
-        [bool] $DisplayLevel = $false,
-
         [Parameter()]
         [bool] $UseRandomStartTime = $true,
 
@@ -81,7 +42,7 @@ Function Create-QueryOfficeAddinsTask {
     }
 
     Process {
-       $TaskName = "Query Office Add-ins"
+       $TaskName = "Update Office add-ins WMI class"
        $scriptRoot = GetScriptRoot
  
        if ($UseRandomStartTime) {
@@ -96,16 +57,9 @@ Function Create-QueryOfficeAddinsTask {
            Copy-Item -Path "$scriptRoot\Get-OfficeAddins.ps1" -Destination "$env:Windir\Temp\Get-OfficeAddins.ps1" -Force
        }
 
-       $exePath = "PowerShell -Command $env:windir\Temp\Get-OfficeAddins.ps1.ps1"
-
-       if ($UpdateToVersion) {
-          $exePath += " -UpdateToVersion " + $UpdateToVersion
-       }
+       $exePath = "PowerShell -Command $env:windir\Temp\Get-OfficeAddins.ps1"
 
        $runAsUser = "NT AUTHORITY\SYSTEM"
-       if (($UpdatePromptUser) -or ($DisplayLevel) -or (!($ForceAppShutdown))) {
-          $runAsUser = "BUILTIN\Users"
-       }
 
        schtasks /create /tn $TaskName /tr `"$exePath`" /sc WEEKLY /st $taskStartTime /f /D TUE /RU $runAsUser /RL Highest | Out-null
        schtasks /query /tn $TaskName /xml > $outputPath  | Out-null
@@ -210,33 +164,13 @@ Function Convert-Bool() {
     return $newValue 
 }
 
-Create-Office365AnywhereTask `
--WaitForUpdateToFinish $WaitForUpdateToFinish `
--EnableUpdateAnywhere $EnableUpdateAnywhere `
--ForceAppShutdown $ForceAppShutdown `
--UpdatePromptUser $UpdatePromptUser `
--DisplayLevel $DisplayLevel `
--UpdateToVersion $UpdateToVersion `
--UseRandomStartTime $UseRandomStartTime `
--RandomTimeStart $RandomTimeStart `
--RandomTimeEnd $RandomTimeEnd `
--StartTime $StartTime `
--LogPath $LogPath `
--LogName $LogName `
--ValidateUpdateSourceFiles $ValidateUpdateSourceFiles
+Create-QueryOfficeAddinsTask -UseRandomStartTime $UseRandomStartTime `
+    -RandomTimeStart $RandomTimeStart `
+    -RandomTimeEnd $RandomTimeEnd `
+    -StartTime $StartTime
 
 $scriptRoot = GetScriptRoot
 
-if (Test-Path -Path "$scriptRoot\Update-Office365Anywhere.ps1") {
-
-& $scriptRoot\Update-Office365Anywhere.ps1 -WaitForUpdateToFinish $WaitForUpdateToFinish `
-    -EnableUpdateAnywhere $EnableUpdateAnywhere `
-    -ForceAppShutdown $ForceAppShutdown `
-    -UpdatePromptUser $UpdatePromptUser `
-    -DisplayLevel $DisplayLevel `
-    -UpdateToVersion $UpdateToVersion `
-    -LogPath $LogPath `
-    -LogName $LogName `
-    -ValidateUpdateSourceFiles $ValidateUpdateSourceFiles `
-    -UseScriptLocationAsUpdateSource $UseScriptLocationAsUpdateSource
+if (Test-Path -Path "$scriptRoot\Get-OfficeAddins.ps1") {
+    & $scriptRoot\Get-OfficeAddins.ps1
 }
