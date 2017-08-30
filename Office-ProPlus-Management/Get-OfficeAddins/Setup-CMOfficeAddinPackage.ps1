@@ -104,9 +104,6 @@
                     Write-Host "`tPackage Already Exists: $packageName"
                 }
             }
-
-            Write-Host
-
         } catch {
             throw;
        }
@@ -430,13 +427,13 @@ Distributes the package 'Office 365 ProPlus' to the distribution point cm.contos
                 [string]$packageName = $package.Name
 
                 if ($DistributionPointGroupName) {
-                    Write-Host "Starting Content Distribution for package: $packageName"
+                    Write-Host "`tStarting Content Distribution for package: $packageName"
 
 	                Start-CMContentDistribution -PackageName $packageName -DistributionPointGroupName $DistributionPointGroupName
                 }
 
                 if ($DistributionPoint) {
-                    Write-Host "Starting Content Distribution for package: $packageName"
+                    Write-Host "`tStarting Content Distribution for package: $packageName"
 
                     Start-CMContentDistribution -PackageName $packageName -DistributionPointName $DistributionPoint
                 }
@@ -838,13 +835,13 @@ function CreateCMProgram() {
     $program = Get-CMProgram | ? {$_.PackageID -eq $PackageID -and $_.ProgramName -eq $Name}
 
     if($program -eq $null -or !$program) {
-        Write-Host "`t`tCreating Program: $Name ..."	   
+        Write-Host "`tCreating Program: $Name ..."	   
      
 	    $program = New-CMProgram -PackageId $PackageID -StandardProgramName $Name -DriveMode RenameWithUnc `
                                  -CommandLine $CommandLine -ProgramRunType OnlyWhenUserIsLoggedOn `
                                  -RunMode RunWithAdministrativeRights -UserInteraction $true -RunType Normal
     } else {
-        Write-Host "`t`tProgram Already Exists: $Name"   
+        Write-Host "`tProgram Already Exists: $Name"   
     }
 
     if ($program) {

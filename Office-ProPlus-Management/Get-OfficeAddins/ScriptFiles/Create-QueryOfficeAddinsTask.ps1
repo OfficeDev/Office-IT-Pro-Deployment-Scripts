@@ -14,7 +14,10 @@ Param
     [string] $StartTime = "12:00",
 
     [Parameter()]
-    [bool] $UseScriptLocationAsUpdateSource = $false
+    [bool] $UseScriptLocationAsUpdateSource = $false,
+    
+    [Parameter()]
+    [string]$TaskName = "Update Office Add-ins WMI class" 
     
 )
 
@@ -32,7 +35,10 @@ Function Create-QueryOfficeAddinsTask {
         [string] $RandomTimeEnd = "17:00",
 
         [Parameter()]
-        [string] $StartTime = "12:00"    
+        [string] $StartTime = "12:00",
+        
+        [Parameter()]
+        [string]$TaskName = "Update Office Add-ins WMI class"    
     )
 
     Begin {
@@ -42,7 +48,6 @@ Function Create-QueryOfficeAddinsTask {
     }
 
     Process {
-       $TaskName = "Update Office add-ins WMI class"
        $scriptRoot = GetScriptRoot
  
        if ($UseRandomStartTime) {
@@ -57,7 +62,7 @@ Function Create-QueryOfficeAddinsTask {
            Copy-Item -Path "$scriptRoot\Get-OfficeAddins.ps1" -Destination "$env:Windir\Temp\Get-OfficeAddins.ps1" -Force
        }
 
-       $exePath = "PowerShell -Command $env:windir\Temp\Get-OfficeAddins.ps1"
+       $exePath = "PowerShell.exe -ExecutionPolicy Bypass -NoProfile -WindowStyle Hidden -Command $env:windir\Temp\Get-OfficeAddins.ps1"
 
        $runAsUser = "NT AUTHORITY\SYSTEM"
 
@@ -164,13 +169,10 @@ Function Convert-Bool() {
     return $newValue 
 }
 
-Create-QueryOfficeAddinsTask -UseRandomStartTime $UseRandomStartTime `
-    -RandomTimeStart $RandomTimeStart `
-    -RandomTimeEnd $RandomTimeEnd `
-    -StartTime $StartTime
+Create-QueryOfficeAddinsTask -TaskName $TaskName `
+                             -UseRandomStartTime $UseRandomStartTime `
+                             -RandomTimeStart $RandomTimeStart `
+                             -RandomTimeEnd $RandomTimeEnd `
+                             -StartTime $StartTime
 
-$scriptRoot = GetScriptRoot
-
-if (Test-Path -Path "$scriptRoot\Get-OfficeAddins.ps1") {
-    & $scriptRoot\Get-OfficeAddins.ps1
-}
+Start-ScheduledTask -TaskName $TaskName
