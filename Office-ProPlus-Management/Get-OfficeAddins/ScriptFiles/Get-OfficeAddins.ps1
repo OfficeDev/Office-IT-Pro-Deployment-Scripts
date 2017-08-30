@@ -887,31 +887,31 @@ Param(
     switch($value){
         "0"{
             $status = "Unloaded"
-            $LoadBehavior = "Do not load automatically"
+            $LoadBehavior = "Starts on demand"
         }
         "1"{
             $status = "Loaded"
-            $LoadBehavior = "Do not load automatically"
+            $LoadBehavior = "Starts on demand"
         }
         "2"{
             $status = "Unloaded"
-            $LoadBehavior = "Load at startup"
+            $LoadBehavior = "Disabled"
         }
         "3"{
             $status = "Loaded"
-            $LoadBehavior = "Load at startup"
+            $LoadBehavior = "Starts automatically"
         }
         "8"{
             $status = "Unloaded"
-            $LoadBehavior = "Load on demand"
+            $LoadBehavior = "Starts on demand"
         }
         "9"{
             $status = "Loaded"
-            $LoadBehavior = "Load on demand"
+            $LoadBehavior = "Starts on demand"
         }
         "16"{
             $status = "Loaded"
-            $LoadBehavior = "Load first time, then load on demand"
+            $LoadBehavior = "Starts on demand"
         }
     }
 
