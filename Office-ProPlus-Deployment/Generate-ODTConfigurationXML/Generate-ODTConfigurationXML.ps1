@@ -2058,10 +2058,18 @@ Process {
    $UpdateUrl = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration -Name UpdateUrl -ErrorAction SilentlyContinue).UpdateUrl
    $currentBaseUrl = Get-OfficeCDNUrl
 
-   $CurrentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $currentBaseUrl -and $_.branch -notmatch 'Business' }
+   $CurrentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $currentBaseUrl -and $_.branch -notmatch 'Business' `
+                                                                                         -and $_.branch -notmatch 'Insiders' `
+                                                                                         -and $_.branch -notmatch 'Monthly' `
+                                                                                         -and $_.branch -notmatch 'Targeted' `
+                                                                                         -and $_.branch -notmatch 'Broad'}
       
    if($UpdateUrl -ne $null -and $UpdateUrl -like '*officecdn.microsoft.com*'){
-       $CurrentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $UpdateUrl -and $_.branch -notmatch 'Business' }  
+       $CurrentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $UpdateUrl -and $_.branch -notmatch 'Business' `
+                                                                                        -and $_.branch -notmatch 'Insiders' `
+                                                                                        -and $_.branch -notmatch 'Monthly' `
+                                                                                        -and $_.branch -notmatch 'Targeted' `
+                                                                                        -and $_.branch -notmatch 'Broad'}  
    }
 
    if($GPOUpdateChannel -ne $null){
@@ -2073,11 +2081,19 @@ Process {
    }
 
    if($GPOUpdatePath -ne $null -and $GPOUpdatePath -like '*officecdn.microsoft.com*'){
-     $CurrentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $GPOUpdatePath -and $_.branch -notmatch 'Business' }  
+     $CurrentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $GPOUpdatePath -and $_.branch -notmatch 'Business' `
+                                                                                          -and $_.branch -notmatch 'Insiders' `
+                                                                                          -and $_.branch -notmatch 'Monthly' `
+                                                                                          -and $_.branch -notmatch 'Targeted' `
+                                                                                          -and $_.branch -notmatch 'Broad' }  
    }
 
    if($UpdateChannel -ne $null -and $UpdateChannel -like '*officecdn.microsoft.com*'){
-     $CurrentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $UpdateChannel -and $_.branch -notmatch 'Business' }  
+     $CurrentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $UpdateChannel -and $_.branch -notmatch 'Business' `
+                                                                                          -and $_.branch -notmatch 'Insiders' `
+                                                                                          -and $_.branch -notmatch 'Monthly' `
+                                                                                          -and $_.branch -notmatch 'Targeted' `
+                                                                                          -and $_.branch -notmatch 'Broad'}  
    }
 
    return $CurrentChannel
