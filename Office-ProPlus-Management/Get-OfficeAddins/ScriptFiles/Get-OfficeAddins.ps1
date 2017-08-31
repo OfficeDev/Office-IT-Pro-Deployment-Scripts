@@ -139,21 +139,23 @@ Param(
                         
                         New-OfficeAddinWMIClassInstance -ClassName $ClassName -PutInstance $MyNewInstance
                     } else {
-                        Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property Application -PropertyValue $officeapp
-                        Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property ComputerName -PropertyValue $env:COMPUTERNAME
-                        Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property Description -PropertyValue $Description
-                        Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property FriendlyName -PropertyValue $FriendlyName
-                        Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property FullPath -PropertyValue $FullPath
-                        Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property LoadBehaviorValue -PropertyValue $LoadBehaviorProperties.Value
-                        Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property LoadBehaviorStatus -PropertyValue $LoadBehaviorProperties.Status
-                        Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property LoadBehavior -PropertyValue $LoadBehaviorProperties.LoadBehavior
-                        Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property LoadTime -PropertyValue $LoadTime
-                        Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property Name -PropertyValue $addinapp
-                        Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property OfficeVersion -PropertyValue $addinOfficeVersion
-                        Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property RegistryPath -PropertyValue $addinpath
-                        Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property IsResilient -PropertyValue $isResilient
-                        Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property IsOutlookCrashingAddin -PropertyValue $isOutlookCrashingAddin
-                        Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property User -PropertyValue $User
+                        $class = Get-WmiObject -Class $ClassName -List
+                        $instance = $class.GetInstances() | ? {$_.Name -eq $addinapp}
+                        $instance.SetPropertyValue("Application", $officeapp)
+                        $instance.SetPropertyValue("ComputerName", $env:COMPUTERNAME)
+                        $instance.SetPropertyValue("Description", $Description)
+                        $instance.SetPropertyValue("FriendlyName", $FriendlyName)
+                        $instance.SetPropertyValue("FullPath", $FullPath)
+                        $instance.SetPropertyValue("LoadBehaviorValue", $LoadBehaviorProperties.Value)
+                        $instance.SetPropertyValue("LoadBehaviorStatus", $LoadBehaviorProperties.Status)
+                        $instance.SetPropertyValue("LoadTime", $LoadTime)
+                        $instance.SetPropertyValue("Name", $addinapp)
+                        $instance.SetPropertyValue("OfficeVersion", $addinOfficeVersion)
+                        $instance.SetPropertyValue("RegistryPath", $addinpath)
+                        $instance.SetPropertyValue("IsResilient", $isResilient)
+                        $instance.SetPropertyValue("IsOutlookCrashingAddin", $isOutlookCrashingAddin)
+                        $instance.SetPropertyValue("User", $User)
+                        $instance.Put()
                     }
                 }
             }
@@ -256,24 +258,26 @@ Param(
                                 $MyNewInstance.IsResilient = $isResilient
                                 $MyNewInstance.IsOutlookCrashingAddin = $isOutlookCrashingAddin
                                 $MyNewInstance.User = $User
+                                $instance.Put()
                                 
                                 New-OfficeAddinWMIClassInstance -ClassName $ClassName -PutInstance $MyNewInstance
                             } else {
-                                Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property Application -PropertyValue $officeapp
-                                Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property ComputerName -PropertyValue $env:COMPUTERNAME
-                                Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property Description -PropertyValue $Description
-                                Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property FriendlyName -PropertyValue $FriendlyName
-                                Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property FullPath -PropertyValue $FullPath
-                                Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property LoadBehaviorValue -PropertyValue $LoadBehaviorProperties.Value
-                                Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property LoadBehaviorStatus -PropertyValue $LoadBehaviorProperties.Status
-                                Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property LoadBehavior -PropertyValue $LoadBehaviorProperties.LoadBehavior
-                                Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property LoadTime -PropertyValue $LoadTime
-                                Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property Name -PropertyValue $addinapp
-                                Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property OfficeVersion -PropertyValue $addinOfficeVersion
-                                Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property RegistryPath -PropertyValue $addinpath
-                                Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property IsResilient -PropertyValue $isResilient
-                                Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property IsOutlookCrashingAddin -PropertyValue $isOutlookCrashingAddin
-                                Set-InstancePropertyValue -ClassName $WMIClassName -InstanceName $instanceExists -Property User -PropertyValue $User
+                                $class = Get-WmiObject -Class $ClassName -List
+                                $instance = $class.GetInstances() | ? {$_.Name -eq $addinapp}
+                                $instance.SetPropertyValue("Application", $officeapp)
+                                $instance.SetPropertyValue("ComputerName", $env:COMPUTERNAME)
+                                $instance.SetPropertyValue("Description", $Description)
+                                $instance.SetPropertyValue("FriendlyName", $FriendlyName)
+                                $instance.SetPropertyValue("FullPath", $FullPath)
+                                $instance.SetPropertyValue("LoadBehaviorValue", $LoadBehaviorProperties.Value)
+                                $instance.SetPropertyValue("LoadBehaviorStatus", $LoadBehaviorProperties.Status)
+                                $instance.SetPropertyValue("LoadTime", $LoadTime)
+                                $instance.SetPropertyValue("Name", $addinapp)
+                                $instance.SetPropertyValue("OfficeVersion", $addinOfficeVersion)
+                                $instance.SetPropertyValue("RegistryPath", $addinpath)
+                                $instance.SetPropertyValue("IsResilient", $isResilient)
+                                $instance.SetPropertyValue("IsOutlookCrashingAddin", $isOutlookCrashingAddin)
+                                $instance.SetPropertyValue("User", $User)
                             }
                         }
                     }
