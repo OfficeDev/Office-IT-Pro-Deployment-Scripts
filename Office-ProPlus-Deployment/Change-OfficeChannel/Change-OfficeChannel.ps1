@@ -1,6 +1,7 @@
 ﻿param(
     [Parameter()]
-    [ValidateSet("FirstReleaseCurrent","Current","FirstReleaseDeferred","Deferred")]
+    [ValidateSet("FirstReleaseCurrent","Current","FirstReleaseDeferred","Deferred",
+    "Insiders","Monthly","Targeted","Broad")]
     [string]$Channel,
 
     [Parameter()]
@@ -585,8 +586,20 @@ function Change-UpdatePathToChannel {
    if ($Channel.ToString().ToLower() -eq "deferred") {
       $branchShortName = "DC"
    }
+   if ($Channel.ToString().ToLower() -eq "insiders") {
+      $branchShortName = "IC"
+   }
+   if ($Channel.ToString().ToLower() -eq "monthly") {
+      $branchShortName = "MC"
+   }
+   if ($Channel.ToString().ToLower() -eq "targeted") {
+      $branchShortName = "TC"
+   }
+   if ($Channel.ToString().ToLower() -eq "broad") {
+      $branchShortName = "BC"
+   }
 
-   $channelNames = @("FRCC", "CC", "FRDC", "DC")
+   $channelNames = @("FRCC", "CC", "FRDC", "DC", "IC", "MC", "TC", "BC")
 
    $madeChange = $false
    foreach ($channelName in $channelNames) {
@@ -729,6 +742,14 @@ Process {
 
    if($UpdateChannel -ne $null -and $UpdateChannel -like '*officecdn.microsoft.com*'){
      $CurrentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $UpdateChannel -and $_.branch -notmatch 'Business' }  
+   }
+
+   if($CurrentChannel){
+      if($CurrentChannel.GetType().Name -eq "Object[]"){
+         $CurrentChannel = $CurrentChannel | ? {$_.branch -ne "FirstReleaseCurrent" -and $_.branch -ne "Current" `
+                                                                                    -and $_.branch -ne "FirstReleaseDeferred" `
+                                                                                    -and $_.branch -ne "Deferred"}
+      }
    }
 
    return $CurrentChannel
@@ -914,8 +935,8 @@ try {
 
     if (!($RollBack)) {
       if (!($Channel)) {
-         WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Channel Parameter is required. Use the -Channel parameter and enter either Current, FirstReleaseCurrent, Deferred, or FirstReleaseDeferred." -LogFilePath $LogFilePath
-         throw "Channel Parameter is required. Use the -Channel parameter and enter either Current, FirstReleaseCurrent, Deferred, or FirstReleaseDeferred."
+         WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Channel Parameter is required. Use the -Channel parameter and enter either Insiders, Monthly, Targeted, or Broad." -LogFilePath $LogFilePath
+         throw "Channel Parameter is required. Use the -Channel parameter and enter either Insiders, Monthly, Targeted, or Broad."
       }
     }
 
