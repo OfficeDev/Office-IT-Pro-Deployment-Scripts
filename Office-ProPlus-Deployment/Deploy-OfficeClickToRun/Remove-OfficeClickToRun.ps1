@@ -1,21 +1,21 @@
 ﻿Function Remove-OfficeClickToRun {
 <#
 .Synopsis
-Removes the Click to Run version of Office installed.
+    Removes the Click to Run version of Office installed.
 
 .DESCRIPTION
-If Office Click-to-Run is installed the administrator will be prompted to confirm
-uninstallation. A configuration file will be generated and used to remove all Office CTR 
-products.
+    If Office Click-to-Run is installed the administrator will be prompted to confirm
+    uninstallation. A configuration file will be generated and used to remove all Office CTR 
+    products.
 
 .PARAMETER ComputerName
-The computer or list of computers from which to query 
+    The computer or list of computers from which to query 
 
 .EXAMPLE
-Remove-OfficeClickToRun
+    Remove-OfficeClickToRun
 
 Description:
-Will uninstall Office Click-to-Run.
+    Will uninstall Office Click-to-Run.
 #>
     [CmdletBinding()]
     Param(
@@ -151,32 +151,40 @@ Will uninstall Office Click-to-Run.
 Function Get-OfficeVersion {
 <#
 .Synopsis
-Gets the Office Version installed on the computer
+    Gets the Office Version installed on the computer
+
 .DESCRIPTION
-This function will query the local or a remote computer and return the information about Office Products installed on the computer
+    This function will query the local or a remote computer and return the information about Office Products installed on the computer
+
 .NOTES   
-Name: Get-OfficeVersion
-Version: 1.0.5
-DateCreated: 2015-07-01
-DateUpdated: 2016-10-14
+    Name: Get-OfficeVersion
+    Version: 1.0.5
+    DateCreated: 2015-07-01
+    DateUpdated: 2016-10-14
+
 .LINK
-https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
+    https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
+
 .PARAMETER ComputerName
-The computer or list of computers from which to query 
+    The computer or list of computers from which to query 
+
 .PARAMETER ShowAllInstalledProducts
-Will expand the output to include all installed Office products
+    Will expand the output to include all installed Office products
+
 .EXAMPLE
-Get-OfficeVersion
-Description:
-Will return the locally installed Office product
+    Get-OfficeVersion
+    
+    Will return the locally installed Office product
+
 .EXAMPLE
-Get-OfficeVersion -ComputerName client01,client02
-Description:
-Will return the installed Office product on the remote computers
+    Get-OfficeVersion -ComputerName client01,client02
+    
+    Will return the installed Office product on the remote computers
+
 .EXAMPLE
-Get-OfficeVersion | select *
-Description:
-Will return the locally installed Office product with all of the available properties
+    Get-OfficeVersion | select *
+    
+    Will return the locally installed Office product with all of the available properties
 #>
 [CmdletBinding(SupportsShouldProcess=$true)]
 param(
@@ -330,8 +338,6 @@ process {
        }
     }
 
-    
-
     foreach ($regKey in $installKeys) {
         $keyList = new-object System.Collections.ArrayList
         $keys = $regProv.EnumKey($HKLM, $regKey)
@@ -453,7 +459,6 @@ process {
 
         }
     }
-
   }
 
   $results = Get-Unique -InputObject $results 
@@ -482,12 +487,8 @@ Function GetScriptRoot() {
      if ($PSScriptRoot) {
        $scriptPath = $PSScriptRoot
      } else {
-       $scriptPath = split-path -parent $MyInvocation.MyCommand.Definition
-       if (!($scriptPath)) {
-          $scriptPath = (Get-Location).Path
-       }
+       $scriptPath = (Get-Item -Path ".\").FullName
      }
-
      return $scriptPath
  }
 }
