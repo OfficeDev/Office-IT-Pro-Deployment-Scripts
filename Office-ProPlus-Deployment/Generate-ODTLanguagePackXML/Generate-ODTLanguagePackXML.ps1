@@ -1,34 +1,36 @@
 ﻿function Generate-ODTLanguagePackXML {
 <#
 .SYNOPSIS
-Create an ODT configuration file to deploy additional language packs
+    Create an ODT configuration file to deploy additional language packs
 
 .DESCRIPTION
-This script will create a new xml file that should be used to deploy additional 
-language packs to computers with Office 365 ProPlus already installed.
+    This script will create a new xml file that should be used to deploy additional 
+    language packs to computers with Office 365 ProPlus already installed.
 
 .PARAMETER TargetFilePath
-The full path where to save the file.
+    The full path where to save the file.
 
 .PARAMETER OfficeClientEdition
-The bit of Office. Choose between 32 and 64.
+    The bit of Office. Choose between 32 and 64.
 
 .PARAMETER Languages
-The list of available languages.
+    The list of available languages.
 
 .EXAMPLE
-Generate-ODTLanguagePackXML -TargetFilePath $env:temp\LanguagePacks.xml -Languages de-de,es-es,fr-fr -OfficeClientEdition 64
-A new xml file will be created in the temp directory called LanguagePacks.xml which will be used to install the 64-bit
-editions of German, Spanish, and French language packs.
+    Generate-ODTLanguagePackXML -TargetFilePath $env:temp\LanguagePacks.xml -Languages de-de,es-es,fr-fr -OfficeClientEdition 64
+    
+    A new xml file will be created in the temp directory called LanguagePacks.xml which will be used to install the 64-bit
+    editions of German, Spanish, and French language packs.
 
 .EXAMPLE
-Generate-ODTLanguagePackXML -TargetFilePath $env:temp\LanguagePacks.xml -Languages de-de,es-es,fr-fr | fl
-A new xml file will be created in the temp directory called LanguagePacks.xml which will be used to install the 32-bit
-editions of German, Spanish, and French language packs. The output of the xml file will be displayed on the PowerShell console.
+    Generate-ODTLanguagePackXML -TargetFilePath $env:temp\LanguagePacks.xml -Languages de-de,es-es,fr-fr | fl
+    
+    A new xml file will be created in the temp directory called LanguagePacks.xml which will be used to install the 32-bit
+    editions of German, Spanish, and French language packs. The output of the xml file will be displayed on the PowerShell console.
 
 .NOTES
-Date created: 03-02-2017
-Date modified: 03-02-2017
+    Date created: 03-02-2017
+    Date modified: 03-02-2017
 #>
 [CmdletBinding(SupportsShouldProcess=$true)]
 param(
@@ -140,21 +142,19 @@ function odtAddLanguagePackProduct() {
 Function Remove-ODTProductToAdd{
 <#
 .SYNOPSIS
-Removes an existing product to add from the configuration file
+    Removes an existing product to add from the configuration file
 
 .PARAMETER ProductId
-Required. ID must be set to a valid ProductRelease ID.
-See https://support.microsoft.com/en-us/kb/2842297 for valid ids.
+    Required. ID must be set to a valid ProductRelease ID.
+    See https://support.microsoft.com/en-us/kb/2842297 for valid ids.
 
 .PARAMETER TargetFilePath
-Full file path for the file to be modified and be output to.
+    Full file path for the file to be modified and be output to.
 
 .Example
-Remove-ODTProductToAdd -ProductId "O365ProPlusRetail" -TargetFilePath "$env:Public/Documents/config.xml"
-Removes the ProductToAdd with the ProductId 'O365ProPlusRetail' from the XML Configuration file
-
-</Configuration>
-
+    Remove-ODTProductToAdd -ProductId "O365ProPlusRetail" -TargetFilePath "$env:Public/Documents/config.xml"
+    
+    Removes the ProductToAdd with the ProductId 'O365ProPlusRetail' from the XML Configuration file
 #>
     [CmdletBinding()]
     Param(
