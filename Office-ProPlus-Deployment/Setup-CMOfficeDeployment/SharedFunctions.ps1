@@ -7,7 +7,11 @@ using System;
           FirstReleaseCurrent = 0,
           Current = 1,
           FirstReleaseDeferred = 2,
-          Deferred = 3
+          Deferred = 3,
+          Insiders=4,
+          Monthly=5,
+          Targeted=6,
+          Broad=7
        }
 "
 Add-Type -TypeDefinition $enumDef -ErrorAction SilentlyContinue
@@ -46,6 +50,9 @@ namespace Microsoft.Office
          VisioStdXVolume = 64,
          ProjectProXVolume = 128,
          ProjectStdXVolume = 256,
+         InfoPathRetail = 512,
+         SkypeforBusinessEntryRetail = 1024,
+         LyncEntryRetail = 2048,
      }
 }
 "
@@ -75,18 +82,6 @@ namespace Microsoft.Office
 }
 "
 Add-Type -TypeDefinition $enum -ErrorAction SilentlyContinue
-} catch {}
-
-try {
-Add-Type -ErrorAction SilentlyContinue -TypeDefinition @"
-    public enum PinAction
-    {
-        PinToStartMenu,
-        UnpinFromStartMenu,
-        PinToTaskbar,
-        UnpinFromTaskbar
-    }
-"@
 } catch {}
 
 [System.Collections.ArrayList]$missingFiles = @()
@@ -205,7 +200,6 @@ function Copy-ItemUNC() {    [CmdletBinding()]
 	    [String]$FileName    )    Process {       $drvLetter = FindAvailable       $Network = New-Object -ComObject "Wscript.Network"       try {           if (!($drvLetter.EndsWith(":"))) {               $drvLetter += ":"           }           $target = $drvLetter + "\"           $Network.MapNetworkDrive($drvLetter, $TargetPath)                                 #New-PSDrive -Name $drvLetter -PSProvider FileSystem -Root $TargetPath | Out-Null           Copy-Item -Path $SourcePath -Destination $target -Force       } finally {         #Remove-PSDrive $drvLetter         $Network.RemoveNetworkDrive($drvLetter)       }    }}
 
 function FindAvailable() {
-   #$drives = Get-PSDrive | select Name
    $drives = Get-WmiObject -Class Win32_LogicalDisk | select DeviceID
 
    for($n=90;$n -gt 68;$n--) {
@@ -245,32 +239,40 @@ function Get-XMLLanguages() {
 Function Get-OfficeVersion {
 <#
 .Synopsis
-Gets the Office Version installed on the computer
+    Gets the Office Version installed on the computer
+
 .DESCRIPTION
-This function will query the local or a remote computer and return the information about Office Products installed on the computer
+    This function will query the local or a remote computer and return the information about Office Products installed on the computer
+
 .NOTES   
-Name: Get-OfficeVersion
-Version: 1.0.5
-DateCreated: 2015-07-01
-DateUpdated: 2016-10-14
+    Name: Get-OfficeVersion
+    Version: 1.0.5
+    DateCreated: 2015-07-01
+    DateUpdated: 2016-10-14
+
 .LINK
-https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
+    https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
+
 .PARAMETER ComputerName
-The computer or list of computers from which to query 
+    The computer or list of computers from which to query 
+
 .PARAMETER ShowAllInstalledProducts
-Will expand the output to include all installed Office products
+    Will expand the output to include all installed Office products
+
 .EXAMPLE
-Get-OfficeVersion
-Description:
-Will return the locally installed Office product
+    Get-OfficeVersion
+    
+    Will return the locally installed Office product
+
 .EXAMPLE
-Get-OfficeVersion -ComputerName client01,client02
-Description:
-Will return the installed Office product on the remote computers
+    Get-OfficeVersion -ComputerName client01,client02
+    
+    Will return the installed Office product on the remote computers
+
 .EXAMPLE
-Get-OfficeVersion | select *
-Description:
-Will return the locally installed Office product with all of the available properties
+    Get-OfficeVersion | select *
+   
+    Will return the locally installed Office product with all of the available properties
 #>
 [CmdletBinding(SupportsShouldProcess=$true)]
 param(
@@ -423,8 +425,6 @@ process {
           }
        }
     }
-
-    
 
     foreach ($regKey in $installKeys) {
         $keyList = new-object System.Collections.ArrayList
@@ -727,7 +727,7 @@ function Change-UpdatePathToChannel {
       if ($Channel) {
          $branchName = $Channel
       } else {
-         $branchName = "Deferred"
+         $branchName = "Broad"
       }
    }
 
@@ -744,9 +744,22 @@ function Change-UpdatePathToChannel {
    if ($branchName.ToLower() -eq "deferred") {
       $branchShortName = "DC"
    }
+   if ($branchName.ToLower() -eq "insiders") {
+      $branchShortName = "IC"
+   }
+   if ($branchName.ToLower() -eq "monthly") {
+      $branchShortName = "MC"
+   }
+   if ($branchName.ToLower() -eq "targeted") {
+      $branchShortName = "TC"
+   }
+   if ($branchName.ToLower() -eq "broad") {
+      $branchShortName = "BC"
+   }
 
-   $channelNames = @("FRCC", "CC", "FRDC", "DC")
-   $channelLongNames = @("FirstReleaseCurrent", "Current", "FirstReleaseDeferred", "Deferred", "Business", "FirstReleaseBusiness")
+   $channelNames = @("FRCC", "CC", "FRDC", "DC", "IC", "MC", "TC", "BC")
+   $channelLongNames = @("FirstReleaseCurrent", "Current", "FirstReleaseDeferred", "Deferred", "Business", "FirstReleaseBusiness",
+                         "Insiders", "Monthly", "Targeted", "Broad")
 
    $madeChange = $false
    foreach ($channelName in $channelNames) {
@@ -913,14 +926,9 @@ Function Validate-UpdateSource() {
         [bool]$ShowMissingFiles = $true
     )
     
-    if(!$OfficeClientEdition)
-        {
-            #checking if office client edition is null, if not, set bitness to client office edition
-        }
-        else
-        {
-            $Bitness = $OfficeClientEdition
-        }
+    if($OfficeClientEdition) {
+        $Bitness = $OfficeClientEdition
+    }
 
     [bool]$validUpdateSource = $true
     [string]$cabPath = ""
@@ -996,7 +1004,6 @@ Function Validate-UpdateSource() {
               $validUpdateSource = $false
            }
         }
-
     }
     
     return $validUpdateSource
@@ -1099,10 +1106,14 @@ Function Copy-OfficeSourceFiles() {
 
 function Detect-Channel {
    param( 
-
+        [Parameter()]
+        [string]$LogFilePath
    )
 
-Process {      
+Process {
+   $currentFileName = Get-CurrentFileName
+   Set-Alias -name LINENUM -value Get-CurrentLineNumber 
+        
    $channelXml = Get-ChannelXml
 
    $UpdateChannel = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration -Name UpdateChannel -ErrorAction SilentlyContinue).UpdateChannel      
@@ -1132,6 +1143,14 @@ Process {
 
    if($UpdateChannel -ne $null -and $UpdateChannel -like '*officecdn.microsoft.com*'){
      $CurrentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $UpdateChannel -and $_.branch -notmatch 'Business' }  
+   }
+
+   if($CurrentChannel){
+      if($CurrentChannel.GetType().Name -eq "Object[]"){
+         $CurrentChannel = $CurrentChannel | ? {$_.branch -ne "FirstReleaseCurrent" -and $_.branch -ne "Current" `
+                                                                                    -and $_.branch -ne "FirstReleaseDeferred" `
+                                                                                    -and $_.branch -ne "Deferred"}
+      }
    }
 
    return $CurrentChannel
@@ -1186,7 +1205,6 @@ Function GetScriptRoot() {
      if ($PSScriptRoot) {
        $scriptPath = $PSScriptRoot
      } else {
-       $scriptPath = split-path -parent $MyInvocation.MyCommand.Definition
        $scriptPath = (Get-Item -Path ".\").FullName
      }
 
@@ -1584,14 +1602,9 @@ function Get-ChannelXml() {
            }
        }
 
-       if($PSVersionTable.PSVersion.Major -ge '3'){
-           $tmpName = "o365client_$Bitness" + "bit.xml"
-           expand $XMLFilePath $env:TEMP -f:$tmpName | Out-Null
-           $tmpName = $env:TEMP + "\o365client_$Bitness" + "bit.xml"
-       }else {
-           $scriptPath = GetScriptRoot
-           $tmpName = $scriptPath + "\o365client_$Bitness" + "bit.xml"          
-       }
+       $tmpName = "o365client_" + $Bitness + "bit.xml"
+       expand $XMLFilePath $env:TEMP -f:$tmpName | Out-Null
+       $tmpName = $env:TEMP + "\" + $tmpName
        
        [xml]$channelXml = Get-Content $tmpName
 
@@ -1604,7 +1617,7 @@ function Get-ChannelUrl() {
    [CmdletBinding()]
    param( 
       [Parameter(Mandatory=$true)]
-      [Channel]$Channel
+      [OfficeChannel]$Channel
    )
 
    Process {
@@ -1734,6 +1747,18 @@ function ConvertChannelNameToShortName {
        }
        if ($ChannelName.ToLower() -eq "FirstReleaseBusiness".ToLower()) {
          return "FRDC"
+       }
+              if ($ChannelName.ToLower() -eq "Insiders".ToLower()) {
+         return "IC"
+       }
+              if ($ChannelName.ToLower() -eq "Monthly".ToLower()) {
+         return "MC"
+       }
+              if ($ChannelName.ToLower() -eq "Targeted".ToLower()) {
+         return "TC"
+       }
+              if ($ChannelName.ToLower() -eq "Broad".ToLower()) {
+         return "BC"
        }
     }
 }
@@ -1988,13 +2013,8 @@ function Remove-ProductLanguage() {
 }
 
 function Restart-ExplorerExe() {
-    $process = Get-Process
-    foreach($obj in $process){
-        if($obj.ProcessName -like "explorer*"){
-            kill $obj.ID
-            Start-Sleep -Seconds 20
-        }
-    }
+    Stop-Process -Name explorer -Confirm:$false
+    Start-Sleep -Seconds 20
 }
 
 function GetPinnedStartMenuApps {
