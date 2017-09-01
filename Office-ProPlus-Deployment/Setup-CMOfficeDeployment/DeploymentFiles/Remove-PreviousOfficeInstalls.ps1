@@ -145,49 +145,51 @@ $validLanguages = @(
 Function Remove-PreviousOfficeInstalls{
 <#
 .SYNOPSIS
-Automate the process to remove Office products.
+    Automate the process to remove Office products.
 
 .DESCRIPTION
-Automate the process to remove Office products.
+    Automate the process to remove Office products.
 
 .PARAMETER RemoveClickToRunVersions
-Set the value to $true to also remove Click-To-Run version of Office.
+    Set the value to $true to also remove Click-To-Run version of Office.
 
 .PARAMETER Remove2016Installs
-Set the value to $true to also remove 2016 versions of Office.
+    Set the value to $true to also remove 2016 versions of Office.
 
 .PARAMETER Force
-Set the value to $true to force an uninstall.
+    Set the value to $true to force an uninstall.
 
 .PARAMETER KeepUserSettings
-By default, the value is set to $true. Set to $false to remove user settings.
+    By default, the value is set to $true. Set to $false to remove user settings.
 
 .PARAMETER KeepLync
-Set the value to $true to preserve the Lync installation.
+    Set the value to $true to preserve the Lync installation.
 
 .PARAMETER NoReboot
-By default, the value is set to $false. Set to $true to offer the reboot prompt if needed.
+    By default, the value is set to $false. Set to $true to offer the reboot prompt if needed.
  
 .PARAMETER Quiet
-By default, the value is set to $true. Set to $false to show the progress of 
-the uninstall.
+    By default, the value is set to $true. Set to $false to show the progress of the uninstall.
 
 .PARAMETER ProductsToRemove
-By default the value is AllOfficeProducts which will remove all Office products. Set this value
-to MainOfficeProduct, Visio, and/or Project to only remove the specified product.
+    By default the value is AllOfficeProducts which will remove all Office products. Set this value
+    to MainOfficeProduct, Visio, and/or Project to only remove the specified product.
 
 .EXAMPLE
-Remove-PreviousOfficeInstalls
-In this example all Office products, except for click to run or 2016, will be removed.
+    Remove-PreviousOfficeInstalls
+    
+    In this example all Office products, except for click to run or 2016, will be removed.
 
 .EXAMPLE
-Remove-PreviousOfficeInstalls -ProductsToRemove MainOfficeProduct,Visio
-In this example the primary office product and Visio will be removed.Click-To-Run or 2016
-products will not be removed.
+    Remove-PreviousOfficeInstalls -ProductsToRemove MainOfficeProduct,Visio
+    
+    In this example the primary office product and Visio will be removed.Click-To-Run or 2016
+    products will not be removed.
 
 .EXAMPLE
-Remove-PreviousOfficeInstalls -ProductsToRemove MainOfficeProduct -RemoveClickToRunVersions $true
-In this example the primary Office product will be removed even if it is Click-To-Run.
+    Remove-PreviousOfficeInstalls -ProductsToRemove MainOfficeProduct -RemoveClickToRunVersions $true
+    
+    In this example the primary Office product will be removed even if it is Click-To-Run.
 
 #>
   [CmdletBinding(SupportsShouldProcess=$true)]
@@ -614,21 +616,21 @@ In this example the primary Office product will be removed even if it is Click-T
 Function Remove-OfficeClickToRun {
 <#
 .Synopsis
-Removes the Click to Run version of Office installed.
+    Removes the Click to Run version of Office installed.
 
 .DESCRIPTION
-If Office Click-to-Run is installed the administrator will be prompted to confirm
-uninstallation. A configuration file will be generated and used to remove all Office CTR 
-products.
+    If Office Click-to-Run is installed the administrator will be prompted to confirm
+    uninstallation. A configuration file will be generated and used to remove all Office CTR 
+    products.
 
 .PARAMETER ComputerName
-The computer or list of computers from which to query 
+    The computer or list of computers from which to query 
 
 .EXAMPLE
-Remove-OfficeClickToRun
+    Remove-OfficeClickToRun
 
 Description:
-Will uninstall Office Click-to-Run.
+    Will uninstall Office Click-to-Run.
 #>
     [CmdletBinding()]
     Param(
@@ -919,32 +921,40 @@ Function LanguagePrompt() {
 Function Get-OfficeVersion {
 <#
 .Synopsis
-Gets the Office Version installed on the computer
+    Gets the Office Version installed on the computer
+
 .DESCRIPTION
-This function will query the local or a remote computer and return the information about Office Products installed on the computer
+    This function will query the local or a remote computer and return the information about Office Products installed on the computer
+
 .NOTES   
-Name: Get-OfficeVersion
-Version: 1.0.5
-DateCreated: 2015-07-01
-DateUpdated: 2016-10-14
+    Name: Get-OfficeVersion
+    Version: 1.0.5
+    DateCreated: 2015-07-01
+    DateUpdated: 2016-10-14
+
 .LINK
-https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
+    https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
+
 .PARAMETER ComputerName
-The computer or list of computers from which to query 
+    The computer or list of computers from which to query 
+
 .PARAMETER ShowAllInstalledProducts
-Will expand the output to include all installed Office products
+    Will expand the output to include all installed Office products
+
 .EXAMPLE
-Get-OfficeVersion
-Description:
-Will return the locally installed Office product
+    Get-OfficeVersion
+    
+    Will return the locally installed Office product
+
 .EXAMPLE
-Get-OfficeVersion -ComputerName client01,client02
-Description:
-Will return the installed Office product on the remote computers
+    Get-OfficeVersion -ComputerName client01,client02
+    
+    Will return the installed Office product on the remote computers
+
 .EXAMPLE
-Get-OfficeVersion | select *
-Description:
-Will return the locally installed Office product with all of the available properties
+    Get-OfficeVersion | select *
+    
+    Will return the locally installed Office product with all of the available properties
 #>
 [CmdletBinding(SupportsShouldProcess=$true)]
 param(
@@ -1098,8 +1108,6 @@ process {
        }
     }
 
-    
-
     foreach ($regKey in $installKeys) {
         $keyList = new-object System.Collections.ArrayList
         $keys = $regProv.EnumKey($HKLM, $regKey)
@@ -1221,7 +1229,6 @@ process {
 
         }
     }
-
   }
 
   $results = Get-Unique -InputObject $results 
