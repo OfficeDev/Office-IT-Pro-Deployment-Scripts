@@ -67,7 +67,7 @@ Param(
                     $FriendlyName = ($regProv.GetStringValue($HKLM, $addinPath, 'FriendlyName')).sValue
                     $FullPath = Get-AddinFullPath -AddinID $addinapp
                     $loadTime = Get-AddinLoadtime -AddinID $addinapp
-                    $addinOfficeVersion = Get-AddinOfficeVersion -AddinID $addinapp
+                    $addinOfficeVersion = Get-OfficeApplicationVersion -OfficeApplication $officeapp
 
                     if(!$Description){
                         $Description = " "
@@ -189,7 +189,7 @@ Param(
                             $FriendlyName = ($regProv.GetStringValue($HKU, $addinPath, 'FriendlyName')).sValue
                             $FullPath = Get-AddinFullPath -AddinID $addinapp -AddinType "VSTO"
                             $loadTime = Get-AddinLoadtime -AddinID $addinapp
-                            $addinOfficeVersion = Get-AddinOfficeVersion -AddinID $addinapp
+                            $addinOfficeVersion = Get-OfficeApplicationVersion -OfficeApplication $officeapp
                     
                             if(!$Description){
                                 $Description = " "
@@ -570,6 +570,43 @@ Param(
                                 $AddinOfficeVersion = $officeVersion
 
                                 return $AddinOfficeVersion;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+function Get-OfficeApplicationVersion {
+Param(
+    [Parameter()]
+    [string]$OfficeApplication
+)
+
+    $HKLM = [UInt32] "0x80000002"
+
+    $regProv = Get-Wmiobject -List "StdRegProv" -Namespace root\default -ComputerName $env:COMPUTERNAME
+
+    $OfficeKeys = @('SOFTWARE\Microsoft\Office',
+                    'SOFTWARE\Wow6432Node\Microsoft\Office')
+
+    $officeVersions = @("11.0","12.0","13.0","14.0","15.0","16.0")
+
+    foreach($OfficeKey in $OfficeKeys){
+        foreach($OfficeVersion in $officeVersions){
+            $officeVersionPath = Join-Path $OfficeKey $officeVersion
+            $enumKeys = $regProv.EnumKey($HKLM, $officeVersionPath)
+            foreach($enumKey in $enumKeys.sNames){
+                if($enumKey -eq $OfficeApplication){
+                    $officeApplicationPath = Join-Path $officeVersionPath $OfficeApplication
+                    $enumOfficeApplication = $regProv.EnumKey($HKLM, $officeApplicationPath)
+                    foreach($enumOfficeAppKey in $enumOfficeApplication.sNames){
+                        if($enumOfficeAppKey -eq "InstallRoot"){
+                            $installRootValue = $regProv.GetStringValue($HKLM, $officeVersionPath, "InstallRoot")
+                            if($installRootValue){
+                                return $OfficeVersion
                             }
                         }
                     }
