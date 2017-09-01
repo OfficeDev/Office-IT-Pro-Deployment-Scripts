@@ -30,7 +30,7 @@ if((Validate-UpdateSource -UpdateSource $SourcePath -ShowMissingFiles $false) -e
 #will set the Channel to 'Deferred'.  It will then detect if O365ProPlusRetail or O365BusinessRetail is in the configuration file and if so
 #it will add Lync and Groove to the excluded apps. It will then initiate the Office installation.
 
-Generate-ODTConfigurationXml -Languages AllInUseLanguages -TargetFilePath $targetFilePath | Set-ODTAdd -Version $NULL -Channel Deferred -SourcePath $SourcePath | Out-Null
+Generate-ODTConfigurationXml -Languages AllInUseLanguages -TargetFilePath $targetFilePath | Set-ODTAdd -Version $NULL -Channel Broad -SourcePath $SourcePath | Out-Null
 
 #Get the languages currently in use so the additional products can be installed with the same languages
 $products = Get-ODTProductToAdd -TargetFilePath $targetFilePath -All
