@@ -19,15 +19,21 @@
           </QueryParameter>
         </QueryParameters>
         <CommandText>if @Solution = 'All'			
-   select ComputerName00 as ComputerName, Name00 as Solution
+   select ComputerName00 as ComputerName, 
+	CASE 
+        When  FriendlyName00  != Null OR FriendlyName00 !='' THEN FriendlyName00 ELSE 		        Name00 END as Solution
    FROM [CM_S01].[dbo].[Custom_OfficeAddins_DATA] 
-   Where IsOutlookCrashingAddin00 = 'True' AND Name00 LIKE '%'
-   Group By ComputerName00,Name00
+   Where IsOutlookCrashingAddin00 = 'True' 
+	AND (Name00 LIKE '%' OR FriendlyName00 LIKE '%')
+   Group By ComputerName00,Name00,FriendlyName00
 else
-   select ComputerName00 as ComputerName, Name00 as Solution
+   select ComputerName00 as ComputerName,
+	CASE 
+        When  FriendlyName00  != Null OR FriendlyName00 !='' THEN FriendlyName00 ELSE 		        Name00 END as Solution
    FROM [CM_S01].[dbo].[Custom_OfficeAddins_DATA] 
-   Where IsOutlookCrashingAddin00 = 'True' AND Name00 LIKE @Solution
-   Group By ComputerName00,Name00</CommandText>
+   Where IsOutlookCrashingAddin00 = 'True'
+	AND (Name00 LIKE @Solution OR FriendlyName00 LIKE @Solution)
+   Group By ComputerName00,Name00,FriendlyName00</CommandText>
         <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
       </Query>
       <Fields>
@@ -52,8 +58,9 @@ else
 CREATE TABLE OfficeAddinOutlookCrashing (SolutionName VARCHAR(MAX))
 INSERT INTO OfficeAddinOutlookCrashing VALUES('All')
 INSERT INTO OfficeAddinOutlookCrashing
-SELECT Name00 as SolutionName  FROM [CM_S01].[dbo].[Custom_OfficeAddins_DATA] 
-Group By Name00 
+SELECT DISTINCT(CASE
+WHEN FriendlyName00 != '' OR FriendlyName00 !=Null THEN FriendlyName00 ELSE Name00 END ) as Solution  FROM [CM_S01].[dbo].[Custom_OfficeAddins_DATA] 
+
 
 SELECT * FROM OfficeAddinOutlookCrashing</CommandText>
         <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
@@ -131,7 +138,7 @@ SELECT * FROM OfficeAddinOutlookCrashing</CommandText>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>Solution Name</Value>
+                                  <Value>Add-in Name</Value>
                                   <Style>
                                     <FontWeight>Bold</FontWeight>
                                   </Style>
@@ -400,7 +407,7 @@ SELECT * FROM OfficeAddinOutlookCrashing</CommandText>
                                 <Paragraph>
                                   <TextRuns>
                                     <TextRun>
-                                      <Value>Shows a list of unhealthy Outlook add-ins</Value>
+                                      <Value>Shows a list of the Outlook add-ins reporting crashes</Value>
                                       <Style>
                                         <FontFamily>Segoe UI</FontFamily>
                                         <FontSize>9pt</FontSize>
@@ -503,7 +510,7 @@ SELECT * FROM OfficeAddinOutlookCrashing</CommandText>
           <Value>All</Value>
         </Values>
       </DefaultValue>
-      <Prompt>Solution Name</Prompt>
+      <Prompt>Add-in Name</Prompt>
       <ValidValues>
         <DataSetReference>
           <DataSetName>Solutions</DataSetName>

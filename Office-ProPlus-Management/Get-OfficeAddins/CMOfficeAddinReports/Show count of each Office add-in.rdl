@@ -12,12 +12,13 @@
     <DataSet Name="DataSet1">
       <Query>
         <DataSourceName>AutoGen__5C6358F2_4BB6_4a1b_A16E_8D96795D8602_</DataSourceName>
-        <CommandText>select Distinct Name00 as Name, 
-Count(Name00) as TotalCount,
+        <CommandText>select CASE 
+When  FriendlyName00  != Null OR FriendlyName00 !='' THEN FriendlyName00 ELSE Name00 END as Name, 
+Count(Name00) as NumberOfInstallations,
 sum(case when LoadBehaviorValue00 != '2' then 1 else 0 End  ) as EnabledCount,
 sum(case when  LoadBehaviorValue00 = '2' then 1 else 0 End  ) as DisabledCount
 FROM [CM_S01].[dbo].[Custom_OfficeAddins_DATA]  
-group by Name00</CommandText>
+group by FriendlyName00, Name00</CommandText>
         <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
       </Query>
       <Fields>
@@ -25,8 +26,8 @@ group by Name00</CommandText>
           <DataField>Name</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
-        <Field Name="TotalCount">
-          <DataField>TotalCount</DataField>
+        <Field Name="NumberOfInstallations">
+          <DataField>NumberOfInstallations</DataField>
           <rd:TypeName>System.Int32</rd:TypeName>
         </Field>
         <Field Name="EnabledCount">
@@ -48,16 +49,16 @@ group by Name00</CommandText>
             <TablixBody>
               <TablixColumns>
                 <TablixColumn>
-                  <Width>3.75208in</Width>
+                  <Width>4.25209in</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>1.27083in</Width>
+                  <Width>2.25403in</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>1.36458in</Width>
+                  <Width>1.66666in</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>1.3125in</Width>
+                  <Width>1.46152in</Width>
                 </TablixColumn>
               </TablixColumns>
               <TablixRows>
@@ -76,7 +77,7 @@ group by Name00</CommandText>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>Solution Name</Value>
+                                  <Value>Add-in Name</Value>
                                   <Style>
                                     <FontWeight>Bold</FontWeight>
                                   </Style>
@@ -97,6 +98,12 @@ group by Name00</CommandText>
                             <BottomBorder>
                               <Color>Black</Color>
                             </BottomBorder>
+                            <LeftBorder>
+                              <Style>None</Style>
+                            </LeftBorder>
+                            <RightBorder>
+                              <Style>None</Style>
+                            </RightBorder>
                             <PaddingLeft>2pt</PaddingLeft>
                             <PaddingRight>2pt</PaddingRight>
                             <PaddingTop>2pt</PaddingTop>
@@ -110,14 +117,14 @@ group by Name00</CommandText>
                         <Textbox Name="Textbox3">
                           <CanGrow>true</CanGrow>
                           <UserSort>
-                            <SortExpression>=Fields!TotalCount.Value</SortExpression>
+                            <SortExpression>=Fields!NumberOfInstallations.Value</SortExpression>
                           </UserSort>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>Total Count</Value>
+                                  <Value>Number Of Installations</Value>
                                   <Style>
                                     <FontWeight>Bold</FontWeight>
                                   </Style>
@@ -138,6 +145,12 @@ group by Name00</CommandText>
                             <BottomBorder>
                               <Color>Black</Color>
                             </BottomBorder>
+                            <LeftBorder>
+                              <Style>None</Style>
+                            </LeftBorder>
+                            <RightBorder>
+                              <Style>None</Style>
+                            </RightBorder>
                             <PaddingLeft>2pt</PaddingLeft>
                             <PaddingRight>2pt</PaddingRight>
                             <PaddingTop>2pt</PaddingTop>
@@ -158,7 +171,7 @@ group by Name00</CommandText>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>Total Enabled</Value>
+                                  <Value>Enabled Count</Value>
                                   <Style>
                                     <FontWeight>Bold</FontWeight>
                                   </Style>
@@ -179,6 +192,12 @@ group by Name00</CommandText>
                             <BottomBorder>
                               <Color>Black</Color>
                             </BottomBorder>
+                            <LeftBorder>
+                              <Style>None</Style>
+                            </LeftBorder>
+                            <RightBorder>
+                              <Style>None</Style>
+                            </RightBorder>
                             <PaddingLeft>2pt</PaddingLeft>
                             <PaddingRight>2pt</PaddingRight>
                             <PaddingTop>2pt</PaddingTop>
@@ -199,7 +218,7 @@ group by Name00</CommandText>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>Total Disabled</Value>
+                                  <Value>Disabled Count</Value>
                                   <Style>
                                     <FontWeight>Bold</FontWeight>
                                   </Style>
@@ -220,12 +239,19 @@ group by Name00</CommandText>
                             <BottomBorder>
                               <Color>Black</Color>
                             </BottomBorder>
+                            <LeftBorder>
+                              <Style>None</Style>
+                            </LeftBorder>
+                            <RightBorder>
+                              <Style>None</Style>
+                            </RightBorder>
                             <PaddingLeft>2pt</PaddingLeft>
                             <PaddingRight>2pt</PaddingRight>
                             <PaddingTop>2pt</PaddingTop>
                             <PaddingBottom>2pt</PaddingBottom>
                           </Style>
                         </Textbox>
+                        <rd:Selected>true</rd:Selected>
                       </CellContents>
                     </TablixCell>
                   </TablixCells>
@@ -271,21 +297,21 @@ group by Name00</CommandText>
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="TotalCount">
+                        <Textbox Name="NumberOfInstallations">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Sum(Fields!TotalCount.Value)</Value>
+                                  <Value>=Fields!NumberOfInstallations.Value</Value>
                                   <Style />
                                 </TextRun>
                               </TextRuns>
                               <Style />
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>TotalCount</rd:DefaultName>
+                          <rd:DefaultName>NumberOfInstallations</rd:DefaultName>
                           <Style>
                             <Border>
                               <Color>LightGrey</Color>
@@ -402,7 +428,7 @@ group by Name00</CommandText>
             <DataSetName>DataSet1</DataSetName>
             <Top>1.5in</Top>
             <Height>0.5in</Height>
-            <Width>7.69999in</Width>
+            <Width>9.6343in</Width>
             <Style>
               <Border>
                 <Style>None</Style>

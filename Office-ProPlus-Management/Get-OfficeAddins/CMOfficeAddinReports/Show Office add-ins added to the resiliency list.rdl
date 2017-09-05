@@ -19,24 +19,34 @@
           </QueryParameter>
         </QueryParameters>
         <CommandText>if @Solution = 'All'
-  Select DISTINCT(Name00) , ComputerName00 
+
+  Select CASE When  FriendlyName00  != Null OR FriendlyName00 !='' THEN FriendlyName00 ELSE Name00 END as Name, ComputerName00, Application00, OfficeVersion00
   FROM [CM_S01].[dbo].[Custom_OfficeAddins_DATA]
   WHERE IsResilient00 = 'True' AND Name00 LIKE '%'
-  GROUP BY ComputerName00,Name00
+  GROUP BY ComputerName00,Name00,FriendlyName00,Application00, OfficeVersion00 
 else
-  Select DISTINCT(Name00) , ComputerName00 
+  Select CASE 
+When  FriendlyName00  != Null OR FriendlyName00 !='' THEN FriendlyName00 ELSE Name00 END as Name, ComputerName00,Application00, OfficeVersion00 
   FROM [CM_S01].[dbo].[Custom_OfficeAddins_DATA]
   WHERE IsResilient00 = 'True' AND Name00 = @Solution
-  GROUP BY ComputerName00,Name00</CommandText>
+  GROUP BY ComputerName00,Name00,FriendlyName00,Application00, OfficeVersion00</CommandText>
         <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
       </Query>
       <Fields>
-        <Field Name="Name00">
-          <DataField>Name00</DataField>
+        <Field Name="Name">
+          <DataField>Name</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
         <Field Name="ComputerName00">
           <DataField>ComputerName00</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Application00">
+          <DataField>Application00</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="OfficeVersion00">
+          <DataField>OfficeVersion00</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
       </Fields>
@@ -52,8 +62,8 @@ else
 CREATE TABLE OfficeAddinResiliency (SolutionName VARCHAR(MAX))
 INSERT INTO OfficeAddinResiliency VALUES('All')
 INSERT INTO OfficeAddinResiliency
-SELECT Name00 as SolutionName  FROM [CM_S01].[dbo].[Custom_OfficeAddins_DATA] 
-Group By Name00 
+SELECT DISTINCT(CASE
+WHEN FriendlyName00 != '' OR FriendlyName00 !=Null THEN FriendlyName00 ELSE Name00 END ) as SolutionName FROM [CM_S01].[dbo].[Custom_OfficeAddins_DATA]  
 
 SELECT * FROM OfficeAddinResiliency</CommandText>
         <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
@@ -77,7 +87,7 @@ SELECT * FROM OfficeAddinResiliency</CommandText>
                   <Width>2.59583in</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>5.10417in</Width>
+                  <Width>1in</Width>
                 </TablixColumn>
               </TablixColumns>
               <TablixRows>
@@ -137,28 +147,14 @@ SELECT * FROM OfficeAddinResiliency</CommandText>
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="Textbox3">
+                        <Textbox Name="Textbox1">
                           <CanGrow>true</CanGrow>
-                          <UserSort>
-                            <SortExpression>=Fields!Name00.Value</SortExpression>
-                          </UserSort>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>Solution Name</Value>
-                                  <Style>
-                                    <FontWeight>Bold</FontWeight>
-                                  </Style>
-                                </TextRun>
-                              </TextRuns>
-                              <Style />
-                            </Paragraph>
-                            <Paragraph>
-                              <TextRuns>
-                                <TextRun>
-                                  <Value />
+                                  <Value>Add-in Name</Value>
                                   <Style>
                                     <FontWeight>Bold</FontWeight>
                                   </Style>
@@ -167,7 +163,7 @@ SELECT * FROM OfficeAddinResiliency</CommandText>
                               <Style />
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>Textbox3</rd:DefaultName>
+                          <rd:DefaultName>Textbox1</rd:DefaultName>
                           <Style>
                             <Border>
                               <Color>LightGrey</Color>
@@ -183,6 +179,12 @@ SELECT * FROM OfficeAddinResiliency</CommandText>
                               <Style>Solid</Style>
                               <Width>1pt</Width>
                             </BottomBorder>
+                            <LeftBorder>
+                              <Style>None</Style>
+                            </LeftBorder>
+                            <RightBorder>
+                              <Style>None</Style>
+                            </RightBorder>
                             <PaddingLeft>2pt</PaddingLeft>
                             <PaddingRight>2pt</PaddingRight>
                             <PaddingTop>2pt</PaddingTop>
@@ -228,21 +230,21 @@ SELECT * FROM OfficeAddinResiliency</CommandText>
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="Name00">
+                        <Textbox Name="Name">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Fields!Name00.Value</Value>
+                                  <Value>=Fields!Name.Value</Value>
                                   <Style />
                                 </TextRun>
                               </TextRuns>
                               <Style />
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>Name00</rd:DefaultName>
+                          <rd:DefaultName>Name</rd:DefaultName>
                           <Style>
                             <Border>
                               <Color>LightGrey</Color>
@@ -280,7 +282,7 @@ SELECT * FROM OfficeAddinResiliency</CommandText>
             <Top>1.51389in</Top>
             <Left>0.0191in</Left>
             <Height>0.5in</Height>
-            <Width>7.7in</Width>
+            <Width>3.59583in</Width>
             <Style>
               <Border>
                 <Style>None</Style>
@@ -526,7 +528,7 @@ SELECT * FROM OfficeAddinResiliency</CommandText>
           <Value>All</Value>
         </Values>
       </DefaultValue>
-      <Prompt>Solution Name</Prompt>
+      <Prompt>Add-in Name</Prompt>
       <ValidValues>
         <DataSetReference>
           <DataSetName>Solutions</DataSetName>

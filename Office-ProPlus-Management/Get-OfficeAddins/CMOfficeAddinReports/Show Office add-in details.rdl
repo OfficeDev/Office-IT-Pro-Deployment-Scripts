@@ -29,13 +29,18 @@
             <Value>=Parameters!Application.Value</Value>
             <rd:UserDefined>true</rd:UserDefined>
           </QueryParameter>
+          <QueryParameter Name="@LoadStatus">
+            <Value>=Parameters!LoadStatus.Value</Value>
+            <rd:UserDefined>true</rd:UserDefined>
+          </QueryParameter>
         </QueryParameters>
-        <CommandText>DECLARE @site VARCHAR(MAX),@computer VARCHAR(MAX), @solution VARCHAR(MAX), @application VARCHAR(MAX);
+        <CommandText>DECLARE @site VARCHAR(MAX),@computer VARCHAR(MAX), @solution VARCHAR(MAX), @application VARCHAR(MAX), @status VARCHAR(MAX);
 
 SET @site = @CollectionName;
  SET @computer = @ComputerName;
  SET @solution = @SolutionName;
  SET @application = @ApplicationName;
+ SET @status = @LoadStatus
 
  if @CollectionName= 'All'
 	SET @site = '%'
@@ -45,6 +50,8 @@ if @SolutionName= 'All'
 	SET @solution ='%'
 if @ApplicationName= 'All'
 	SET @application ='%'
+if @LoadStatus = 'All'
+	SET @status ='%'
 
 
 SELECT 		DISTINCT([CM_S01].[dbo].[Custom_OfficeAddins_DATA].InstanceKey),
@@ -64,26 +71,30 @@ SELECT 		DISTINCT([CM_S01].[dbo].[Custom_OfficeAddins_DATA].InstanceKey),
 		[CM_S01].[dbo].[Custom_OfficeAddins_DATA].LoadBehaviorStatus00,
 		[CM_S01].[dbo].[Custom_OfficeAddins_DATA].LoadBehaviorValue00,
 		[CM_S01].[dbo].[Custom_OfficeAddins_DATA].LoadTime00,
-		[CM_S01].[dbo].[Custom_OfficeAddins_DATA].Name00,
+		
+		CASE 
+		When  FriendlyName00  != Null OR FriendlyName00 !='' THEN FriendlyName00 ELSE 		Name00 END as Name,
+
 		[CM_S01].[dbo].[Custom_OfficeAddins_DATA].OfficeVersion00,
 		[CM_S01].[dbo].[Custom_OfficeAddins_DATA].RegistryPath00
    From [CM_S01].[dbo].[Custom_OfficeAddins_DATA] 
  LEFT JOIN [CM_S01].[dbo].[CollectionMembers]  ON [CM_S01].[dbo].[Custom_OfficeAddins_DATA].MachineID = [CM_S01].[dbo].[CollectionMembers].MachineID
  LEFT JOIN [CM_S01].[dbo].[Collections_G] ON [CM_S01].[dbo].[Collections_G].SiteID = [CM_S01].[dbo].[CollectionMembers].SiteID
  WHERE ComputerName00 LIKE @computer AND 
-Name00 LIKE @solution AND 
-Application00 LIKE @application AND 
+(Name00 LIKE @solution OR
+FriendlyName00 LIKE @solution) AND 
+LoadBehaviorStatus00 LIKE @status AND 
 [CM_S01].[dbo].[Collections_G].CollectionName LIKE @site AND
 [CM_S01].[dbo].[Collections_G].CollectionType = 2</CommandText>
         <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
       </Query>
       <Fields>
-        <Field Name="MachineID">
-          <DataField>MachineID</DataField>
-          <rd:TypeName>System.Int32</rd:TypeName>
-        </Field>
         <Field Name="InstanceKey">
           <DataField>InstanceKey</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="MachineID">
+          <DataField>MachineID</DataField>
           <rd:TypeName>System.Int32</rd:TypeName>
         </Field>
         <Field Name="TimeKey">
@@ -146,8 +157,8 @@ Application00 LIKE @application AND
           <DataField>LoadTime00</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
-        <Field Name="Name00">
-          <DataField>Name00</DataField>
+        <Field Name="Name">
+          <DataField>Name</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
         <Field Name="OfficeVersion00">
@@ -219,7 +230,8 @@ SELECT * FROM OfficeAddinCollectionName</CommandText>
 CREATE TABLE OfficeAddinSolutionName (SolutionName VARCHAR(MAX))
 INSERT INTO OfficeAddinSolutionName VALUES('All')
 INSERT INTO OfficeAddinSolutionName
-SELECT DISTINCT(Name00) as Solution FROM [CM_S01].[dbo].[Custom_OfficeAddins_DATA] 
+SELECT DISTINCT(CASE
+WHEN FriendlyName00 != '' OR FriendlyName00 !=Null THEN FriendlyName00 ELSE Name00 END ) as Solution FROM [CM_S01].[dbo].[Custom_OfficeAddins_DATA] 
 
 
 SELECT * FROM OfficeAddinSolutionName</CommandText>
@@ -280,6 +292,30 @@ SELECT * FROM OfficeAddinOfficeVersion</CommandText>
         </Field>
       </Fields>
     </DataSet>
+    <DataSet Name="Status">
+      <Query>
+        <DataSourceName>AutoGen__5C6358F2_4BB6_4a1b_A16E_8D96795D8602_</DataSourceName>
+        <CommandText>IF EXISTS (SELECT * FROM sysobjects WHERE xtype='U' and name ='OfficeAddinStatus') 
+	BEGIN
+		DROP TABLE OfficeAddinStatus
+	END
+
+CREATE TABLE OfficeAddinStatus (LoadStatus VARCHAR(MAX))
+INSERT INTO OfficeAddinStatus VALUES('All')
+INSERT INTO OfficeAddinStatus
+SELECT DISTINCT(LoadBehaviorStatus00) as LoadStatus FROM [CM_S01].[dbo].[Custom_OfficeAddins_DATA] 
+
+
+SELECT * FROM OfficeAddinStatus</CommandText>
+        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
+      </Query>
+      <Fields>
+        <Field Name="LoadStatus">
+          <DataField>LoadStatus</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
   </DataSets>
   <ReportSections>
     <ReportSection>
@@ -292,7 +328,7 @@ SELECT * FROM OfficeAddinOfficeVersion</CommandText>
                   <Width>1.66667in</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>2.75in</Width>
+                  <Width>3.08541in</Width>
                 </TablixColumn>
                 <TablixColumn>
                   <Width>1.66667in</Width>
@@ -301,13 +337,10 @@ SELECT * FROM OfficeAddinOfficeVersion</CommandText>
                   <Width>1.51042in</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>2.8125in</Width>
+                  <Width>5.64263in</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>3.39472in</Width>
-                </TablixColumn>
-                <TablixColumn>
-                  <Width>1.77083in</Width>
+                  <Width>2in</Width>
                 </TablixColumn>
               </TablixColumns>
               <TablixRows>
@@ -353,14 +386,14 @@ SELECT * FROM OfficeAddinOfficeVersion</CommandText>
                         <Textbox Name="Textbox3">
                           <CanGrow>true</CanGrow>
                           <UserSort>
-                            <SortExpression>=Fields!Name00.Value</SortExpression>
+                            <SortExpression>=Fields!Name.Value</SortExpression>
                           </UserSort>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>Solution Name</Value>
+                                  <Value>Add-in Name</Value>
                                   <Style>
                                     <FontWeight>Bold</FontWeight>
                                   </Style>
@@ -486,44 +519,10 @@ SELECT * FROM OfficeAddinOfficeVersion</CommandText>
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="Textbox19">
+                        <Textbox Name="Textbox4">
                           <CanGrow>true</CanGrow>
                           <UserSort>
-                            <SortExpression>=Fields!FriendlyName00.Value</SortExpression>
-                          </UserSort>
-                          <KeepTogether>true</KeepTogether>
-                          <Paragraphs>
-                            <Paragraph>
-                              <TextRuns>
-                                <TextRun>
-                                  <Value>Friendly Name</Value>
-                                  <Style>
-                                    <FontWeight>Bold</FontWeight>
-                                  </Style>
-                                </TextRun>
-                              </TextRuns>
-                              <Style />
-                            </Paragraph>
-                          </Paragraphs>
-                          <rd:DefaultName>Textbox19</rd:DefaultName>
-                          <Style>
-                            <Border>
-                              <Style>None</Style>
-                            </Border>
-                            <PaddingLeft>2pt</PaddingLeft>
-                            <PaddingRight>2pt</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
-                          </Style>
-                        </Textbox>
-                      </CellContents>
-                    </TablixCell>
-                    <TablixCell>
-                      <CellContents>
-                        <Textbox Name="Textbox29">
-                          <CanGrow>true</CanGrow>
-                          <UserSort>
-                            <SortExpression>=Fields!LoadBehavior00.Value</SortExpression>
+                            <SortExpression>=Fields!LoadBehaviorStatus00.Value</SortExpression>
                           </UserSort>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
@@ -539,7 +538,7 @@ SELECT * FROM OfficeAddinOfficeVersion</CommandText>
                               <Style />
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>Textbox29</rd:DefaultName>
+                          <rd:DefaultName>Textbox4</rd:DefaultName>
                           <Style>
                             <Border>
                               <Style>None</Style>
@@ -593,21 +592,30 @@ SELECT * FROM OfficeAddinOfficeVersion</CommandText>
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="Name001">
+                        <Textbox Name="Textbox6">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Fields!Name00.Value</Value>
+                                  <Value>=Fields!Name.Value</Value>
+                                  <Style />
+                                </TextRun>
+                              </TextRuns>
+                              <Style />
+                            </Paragraph>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value />
                                   <Style />
                                 </TextRun>
                               </TextRuns>
                               <Style />
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>Name001</rd:DefaultName>
+                          <rd:DefaultName>Textbox6</rd:DefaultName>
                           <Style>
                             <Border>
                               <Style>None</Style>
@@ -729,55 +737,21 @@ SELECT * FROM OfficeAddinOfficeVersion</CommandText>
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="FriendlyName00">
+                        <Textbox Name="LoadBehaviorStatus00">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Fields!FriendlyName00.Value</Value>
+                                  <Value>=Fields!LoadBehaviorStatus00.Value</Value>
                                   <Style />
                                 </TextRun>
                               </TextRuns>
                               <Style />
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>FriendlyName00</rd:DefaultName>
-                          <Style>
-                            <Border>
-                              <Style>None</Style>
-                            </Border>
-                            <TopBorder>
-                              <Color>#e5e5e5</Color>
-                              <Style>Solid</Style>
-                              <Width>1pt</Width>
-                            </TopBorder>
-                            <PaddingLeft>2pt</PaddingLeft>
-                            <PaddingRight>2pt</PaddingRight>
-                            <PaddingTop>2pt</PaddingTop>
-                            <PaddingBottom>2pt</PaddingBottom>
-                          </Style>
-                        </Textbox>
-                      </CellContents>
-                    </TablixCell>
-                    <TablixCell>
-                      <CellContents>
-                        <Textbox Name="LoadBehavior00">
-                          <CanGrow>true</CanGrow>
-                          <KeepTogether>true</KeepTogether>
-                          <Paragraphs>
-                            <Paragraph>
-                              <TextRuns>
-                                <TextRun>
-                                  <Value>=Fields!LoadBehavior00.Value</Value>
-                                  <Style />
-                                </TextRun>
-                              </TextRuns>
-                              <Style />
-                            </Paragraph>
-                          </Paragraphs>
-                          <rd:DefaultName>LoadBehavior00</rd:DefaultName>
+                          <rd:DefaultName>LoadBehaviorStatus00</rd:DefaultName>
                           <Style>
                             <Border>
                               <Style>None</Style>
@@ -801,7 +775,6 @@ SELECT * FROM OfficeAddinOfficeVersion</CommandText>
             </TablixBody>
             <TablixColumnHierarchy>
               <TablixMembers>
-                <TablixMember />
                 <TablixMember />
                 <TablixMember />
                 <TablixMember />
@@ -1074,7 +1047,7 @@ SELECT * FROM OfficeAddinOfficeVersion</CommandText>
           <Value>All</Value>
         </Values>
       </DefaultValue>
-      <Prompt>Collection ID</Prompt>
+      <Prompt>Device Collection</Prompt>
       <ValidValues>
         <DataSetReference>
           <DataSetName>Collections</DataSetName>
@@ -1090,7 +1063,7 @@ SELECT * FROM OfficeAddinOfficeVersion</CommandText>
           <Value>All</Value>
         </Values>
       </DefaultValue>
-      <Prompt>Solution Name</Prompt>
+      <Prompt>Add-in Name</Prompt>
       <ValidValues>
         <DataSetReference>
           <DataSetName>Solutions</DataSetName>
@@ -1106,7 +1079,7 @@ SELECT * FROM OfficeAddinOfficeVersion</CommandText>
           <Value>All</Value>
         </Values>
       </DefaultValue>
-      <Prompt>Application</Prompt>
+      <Prompt>Office Application</Prompt>
       <ValidValues>
         <DataSetReference>
           <DataSetName>Applications</DataSetName>
@@ -1131,6 +1104,22 @@ SELECT * FROM OfficeAddinOfficeVersion</CommandText>
           <DataSetName>OfficeVersions</DataSetName>
           <ValueField>OfficeVersion</ValueField>
           <LabelField>OfficeVersion</LabelField>
+        </DataSetReference>
+      </ValidValues>
+    </ReportParameter>
+    <ReportParameter Name="LoadStatus">
+      <DataType>String</DataType>
+      <DefaultValue>
+        <Values>
+          <Value>All</Value>
+        </Values>
+      </DefaultValue>
+      <Prompt>Load Status</Prompt>
+      <ValidValues>
+        <DataSetReference>
+          <DataSetName>Status</DataSetName>
+          <ValueField>LoadStatus</ValueField>
+          <LabelField>LoadStatus</LabelField>
         </DataSetReference>
       </ValidValues>
     </ReportParameter>
