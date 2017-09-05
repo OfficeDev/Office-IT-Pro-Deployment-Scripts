@@ -810,7 +810,6 @@ Function StartProcess {
     }
     Catch
     {
-        Write-Log -Message $_.Exception.Message -severity 1 -component "Office 365 Update Anywhere"
         WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError $_
     }
 }
