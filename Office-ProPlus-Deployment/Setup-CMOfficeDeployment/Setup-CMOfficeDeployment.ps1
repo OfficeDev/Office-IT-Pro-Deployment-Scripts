@@ -21,7 +21,11 @@ using System;
           FirstReleaseCurrent = 0,
           Current = 1,
           FirstReleaseDeferred = 2,
-          Deferred = 3
+          Deferred = 3,
+          Insiders = 4,
+          Monthly = 5,
+          Targeted = 6,
+          Broad = 7
        }
 "
 Add-Type -TypeDefinition $enumDef -ErrorAction SilentlyContinue
@@ -124,7 +128,7 @@ Download-CMOfficeChannelFiles -OfficeFilesPath D:\OfficeChannelFiles -Bitness v3
     Param
     (
         [Parameter()]
-        [OfficeChannel[]] $Channels = @(1,2,3),
+        [OfficeChannel[]] $Channels = @(0,1,2,3,4,5,6,7),
 
         [Parameter(Mandatory=$true)]
 	    [String]$OfficeFilesPath = $NULL,
@@ -230,7 +234,7 @@ Create-CMOfficePackage -Channels Deferred -Bitness v32 -OfficeSourceFilesPath D:
     Param
     (
         [Parameter()]
-        [OfficeChannel[]] $Channels = @(1,2,3),
+        [OfficeChannel[]] $Channels = @(0,1,2,3,4,5,6,7),
 
         [Parameter()]
 	    [Bitness]$Bitness = "v32",
@@ -424,7 +428,7 @@ Update-CMOfficePackage -Channels Current -Bitness Both -OfficeSourceFilesPath D:
     Param
     (
         [Parameter()]
-        [OfficeChannel[]] $Channels = @(1,2,3),
+        [OfficeChannel[]] $Channels = @(0,1,2,3,4,5,6,7),
 
         [Parameter()]
 	    [String]$OfficeSourceFilesPath = $NULL,
@@ -684,7 +688,7 @@ Create-CMOfficeDeploymentProgram -Channels Current -DeploymentType DeployWithCon
     Param
     (
         [Parameter()]
-        [OfficeChannel[]] $Channels = @(1,2,3),
+        [OfficeChannel[]] $Channels = @(0,1,2,3,4,5,6,7),
 
         [Parameter()]
 	    [Bitness]$Bitness = "v32",
@@ -884,7 +888,7 @@ Create-CMOfficeChannelChangeProgram -Sitecode S01 -Channels Current
     Param
     (
         [Parameter()]
-        [OfficeChannel[]] $Channels = @(1,2,3),
+        [OfficeChannel[]] $Channels = @(0,1,2,3,4,5,6,7),
 
 	    [Parameter()]
 	    [String]$SiteCode = $null,
@@ -1442,7 +1446,7 @@ to install additional languages on a client
     Param
     (
         [Parameter()]
-        [OfficeChannel]$Channel = "Deferred",
+        [OfficeChannel]$Channel = "Broad",
 
         [Parameter()]
         [ValidateSet("en-us","MatchOS","ar-sa","bg-bg","zh-cn","zh-tw","hr-hr","cs-cz","da-dk","nl-nl","et-ee","fi-fi","fr-fr","de-de","el-gr","he-il","hi-in","hu-hu","id-id","it-it",
@@ -1704,7 +1708,7 @@ Distributes the package 'Office 365 ProPlus' to the distribution point cm.contos
     Param
     (
         [Parameter()]
-        [OfficeChannel[]] $Channels = @(1,2,3),
+        [OfficeChannel[]] $Channels = @(0,1,2,3,4,5,6,7),
 
 	    [Parameter()]
 	    [string]$DistributionPoint,
@@ -1901,7 +1905,7 @@ clients in the target collection 'Office Update'.
         [CMOfficeProgramType] $ProgramType,
 
         [Parameter()]
-        [OfficeChannel]$Channel = "Deferred",
+        [OfficeChannel]$Channel = "Broad",
 
         [Parameter()]
 	    [BitnessOptions]$Bitness = "v32",
