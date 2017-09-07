@@ -1,7 +1,7 @@
 ﻿[CmdletBinding(SupportsShouldProcess=$true)]
 param(
 [Parameter(ValueFromPipelineByPropertyName=$true)]
-[bool]$RemoveClickToRunVersions = $false,
+[bool]$RemoveClickToRunVersions = $true,
 
 [Parameter(ValueFromPipelineByPropertyName=$true)]
 [bool]$Remove2016Installs = $false,
