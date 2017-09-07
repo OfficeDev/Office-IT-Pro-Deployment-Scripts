@@ -1,3 +1,26 @@
+[CmdletBinding(SupportsShouldProcess=$true)]
+param(
+    [Parameter()]
+    [string[]]$ComputerName = $env:COMPUTERNAME,
+    
+    [Parameter()]
+    [string]$RemoveCTRXmlPath = "$env:PUBLIC\Documents\RemoveCTRConfig.xml",
+    
+    [Parameter()]
+    [bool] $WaitForInstallToFinish = $true,
+    
+    [Parameter(ValueFromPipelineByPropertyName=$true)]
+    [string] $TargetFilePath = $NULL,
+    
+    [Parameter()]
+    [ValidateSet("All","O365ProPlusRetail","O365BusinessRetail","VisioProRetail","ProjectProRetail", "SPDRetail", "VisioProXVolume", "VisioStdXVolume", 
+                 "ProjectProXVolume", "ProjectStdXVolume", "InfoPathRetail", "SkypeforBusinessEntryRetail", "LyncEntryRetail")]
+    [string[]]$C2RProductsToRemove = "All",
+    
+    [Parameter()]
+    [string]$LogFilePath
+)
+
 Function Remove-OfficeClickToRun {
 <#
 .Synopsis
@@ -17,26 +40,26 @@ Function Remove-OfficeClickToRun {
 Description:
     Will uninstall Office Click-to-Run.
 #>
-    [CmdletBinding()]
-    Param(
-        [string[]] $ComputerName = $env:COMPUTERNAME,
+[CmdletBinding()]
+Param(
+    [string[]] $ComputerName = $env:COMPUTERNAME,
 
-        [string] $RemoveCTRXmlPath = "$env:PUBLIC\Documents\RemoveCTRConfig.xml",
+    [string] $RemoveCTRXmlPath = "$env:PUBLIC\Documents\RemoveCTRConfig.xml",
 
-        [Parameter()]
-        [bool] $WaitForInstallToFinish = $true,
+    [Parameter()]
+    [bool] $WaitForInstallToFinish = $true,
 
-        [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [string] $TargetFilePath = $NULL,
+    [Parameter(ValueFromPipelineByPropertyName=$true)]
+    [string] $TargetFilePath = $NULL,
 
-        [Parameter()]
-        [ValidateSet("All","O365ProPlusRetail","O365BusinessRetail","VisioProRetail","ProjectProRetail", "SPDRetail", "VisioProXVolume", "VisioStdXVolume", 
-                     "ProjectProXVolume", "ProjectStdXVolume", "InfoPathRetail", "SkypeforBusinessEntryRetail", "LyncEntryRetail")]
-        [string[]]$C2RProductsToRemove = "All",
+    [Parameter()]
+    [ValidateSet("All","O365ProPlusRetail","O365BusinessRetail","VisioProRetail","ProjectProRetail", "SPDRetail", "VisioProXVolume", "VisioStdXVolume", 
+                 "ProjectProXVolume", "ProjectStdXVolume", "InfoPathRetail", "SkypeforBusinessEntryRetail", "LyncEntryRetail")]
+    [string[]]$C2RProductsToRemove = "All",
 
-        [Parameter()]
-        [string]$LogFilePath
-    )
+    [Parameter()]
+    [string]$LogFilePath
+)
 
      Process{
         $currentFileName = Get-CurrentFileName
@@ -532,6 +555,27 @@ Function StartProcess {
     }
 }
 
+Function IsDotSourced() {
+  [CmdletBinding(SupportsShouldProcess=$true)]
+  param(
+    [Parameter(ValueFromPipelineByPropertyName=$true)]
+    [string]$InvocationLine = ""
+  )
+  $cmdLine = $InvocationLine.Trim()
+  Do {
+    $cmdLine = $cmdLine.Replace(" ", "")
+  } while($cmdLine.Contains(" "))
+
+  $dotSourced = $false
+  if ($cmdLine -match '^\.\\') {
+     $dotSourced = $false
+  } else {
+     $dotSourced = ($cmdLine -match '^\.')
+  }
+
+  return $dotSourced
+}
+
 function Get-CurrentLineNumber {
     $MyInvocation.ScriptLineNumber
 }
@@ -572,4 +616,10 @@ Function WriteToLogFile() {
     } catch [Exception]{
         Write-Host $_
     }
+}
+
+$dotSourced = IsDotSourced -InvocationLine $MyInvocation.Line
+
+if (!($dotSourced)) {
+   Remove-OfficeClickToRun -ComputerName $ComputerName -RemoveCTRXmlPath $RemoveCTRXmlPath -WaitForInstallToFinish $WaitForInstallToFinish -TargetFilePath $TargetFilePath -C2RProductsToRemove $C2RProductsToRemove -LogFilePath $LogFilePath
 }
