@@ -744,7 +744,7 @@ SELECT * FROM OfficeAddinStatus</CommandText>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Fields!LoadBehaviorStatus00.Value</Value>
+                                  <Value>=Fields!LoadBehavior00.Value</Value>
                                   <Style />
                                 </TextRun>
                               </TextRuns>
@@ -767,6 +767,7 @@ SELECT * FROM OfficeAddinStatus</CommandText>
                             <PaddingBottom>2pt</PaddingBottom>
                           </Style>
                         </Textbox>
+                        <rd:Selected>true</rd:Selected>
                       </CellContents>
                     </TablixCell>
                   </TablixCells>
