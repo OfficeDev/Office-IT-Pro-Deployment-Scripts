@@ -19,7 +19,7 @@ Process {
     
     # Create the package
     $PackageName = "Update Office Add-in WMI"
-    $ScriptFilesPath = "C:\Get-OfficeAddins"
+    $ScriptFilesPath = $scriptPath
     
     Create-CMOfficeAddinPackage -PackageName $PackageName -ScriptFilesPath $ScriptFilesPath -MoveScriptFiles $true
     
