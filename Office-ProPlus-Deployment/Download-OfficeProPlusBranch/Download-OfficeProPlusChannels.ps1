@@ -328,7 +328,7 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
                     $url = "$baseURL$relativePath$fileName"
 
                     try {
-                        Invoke-WebRequest -Uri $url -ErrorAction Stop | Out-Null
+                        Invoke-WebRequest -Uri $url -UseBasicParsing -ErrorAction Stop | Out-Null
                     } catch {
                       Write-Host "`t`tVersion Not Found: $currentVersion"
                       WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Version Not Found: $currentVersion" -LogFilePath $LogFilePath
