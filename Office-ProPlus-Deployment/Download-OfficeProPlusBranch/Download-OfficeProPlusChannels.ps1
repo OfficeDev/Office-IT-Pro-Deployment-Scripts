@@ -745,7 +745,7 @@ function GetVersionBasedOnThrottle {
 
         $versionToReturn
         $checkChannel = $Channel
-        if($checkChannel -like "FirstReleaseCurrent"){$checkChannel = "InsidersSlow"}
+        if($checkChannel -like "FirstReleaseCurrent"){$checkChannel = "InsiderSlow"}
 
         $historyOfVersionsLink = "http://officecdn.microsoft.com/pr/wsus/releasehistory.cab"
 
