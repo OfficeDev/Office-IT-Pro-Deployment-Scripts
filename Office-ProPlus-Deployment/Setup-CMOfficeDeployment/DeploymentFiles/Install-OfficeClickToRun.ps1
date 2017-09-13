@@ -65,45 +65,46 @@ Add-Type  -ErrorAction SilentlyContinue -TypeDefinition @"
 function Install-OfficeClickToRun {
 <#
 .SYNOPSIS
-Installs Office Click-To-Run
+    Installs Office Click-To-Run
 
 .DESCRIPTION
-Installs Office Click-To-Run using a specified configuration file or targetfilepath.
+    Installs Office Click-To-Run using a specified configuration file or targetfilepath.
 
 .PARAMETER ConfigurationXML
-The path to a pre-configured configuration.xml file used for installation.
+    The path to a pre-configured configuration.xml file used for installation.
 
 .PARAMETER TargetFilePath
-If no ConfigurationXML is specified, this is the path where the generated configuration.xml will be saved.
+    If no ConfigurationXML is specified, this is the path where the generated configuration.xml will be saved.
 
 .PARAMETER PinToStart 
-If $true, all Office apps will be pinned to the Start Menu in Windows 10.
+    If $true, all Office apps will be pinned to the Start Menu in Windows 10.
 
 .PARAMETER OfficeVersion
-The version of Office Click-To-Run to install. Available options are Office2013 and Office2016. 
+    The version of Office Click-To-Run to install. Available options are Office2013 and Office2016. 
 
 .PARAMETER WaitForInstallToFinish
-If $true, the PowerShell console will remain open and provide status updates until Office is finished installing.
+    If $true, the PowerShell console will remain open and provide status updates until Office is finished installing.
 
 .PARAMETER PinToStartMenu
-Choose one or multiple Office applications to pin to the Start Menu after the installation is finished. 
+    Choose one or multiple Office applications to pin to the Start Menu after the installation is finished. 
 
 .PARAMETER PinToTaskbar
-Choose one or multiple Office applications to pin to the Taskbar after the installation is finished. Pinning applications
-to the Taskbar in Windows 10 is not natively supported.
+    Choose one or multiple Office applications to pin to the Taskbar after the installation is finished. Pinning applications
+    to the Taskbar in Windows 10 is not natively supported.
 
 .EXAMPLE
-Install-OfficeClickToRun -ConfigurationXML C:\OfficeDeployment\configuration.xml
-Office 2016 Click-To-Run will be installed using the settings in the specified configuration.xml.
+    Install-OfficeClickToRun -ConfigurationXML C:\OfficeDeployment\configuration.xml
+    Office 2016 Click-To-Run will be installed using the settings in the specified configuration.xml.
 
 .EXAMPLE
-Install-OfficeClickToRun -TargetFilePath $env:temp\configuration.xml
-Office 2016 Click-To-Run will be installed using an auto-generated configuration file that will be saved to the temp directory.
+    Install-OfficeClickToRun -TargetFilePath $env:temp\configuration.xml
+    Office 2016 Click-To-Run will be installed using an auto-generated configuration file that will be saved to the temp directory.
 
 .EXAMPLE
-Install-OfficeClickToRun -TargetFilePath $env:temp\configuration.xml -PinToStartMenu Word,Excel,Outlook -WaitForInstallToFinish $false
-Office 2016 Click-To-Run will be installed using an auto-generated configuration file that will be saved to the temp directory. Microsoft
-Word, Excel, and Outlook will be pinned to the Start Menu. The PowerShell console will not provide status updates of the installation.
+    Install-OfficeClickToRun -TargetFilePath $env:temp\configuration.xml -PinToStartMenu Word,Excel,Outlook -WaitForInstallToFinish $false
+    
+    Office 2016 Click-To-Run will be installed using an auto-generated configuration file that will be saved to the temp directory. Microsoft
+    Word, Excel, and Outlook will be pinned to the Start Menu. The PowerShell console will not provide status updates of the installation.
 #>
     [CmdletBinding()]
     Param(
@@ -345,32 +346,40 @@ Word, Excel, and Outlook will be pinned to the Start Menu. The PowerShell consol
 Function Get-OfficeVersion {
 <#
 .Synopsis
-Gets the Office Version installed on the computer
+    Gets the Office Version installed on the computer
+
 .DESCRIPTION
-This function will query the local or a remote computer and return the information about Office Products installed on the computer
+    This function will query the local or a remote computer and return the information about Office Products installed on the computer
+
 .NOTES   
-Name: Get-OfficeVersion
-Version: 1.0.5
-DateCreated: 2015-07-01
-DateUpdated: 2016-10-14
+    Name: Get-OfficeVersion
+    Version: 1.0.5
+    DateCreated: 2015-07-01
+    DateUpdated: 2016-10-14
+
 .LINK
-https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
+    https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
+
 .PARAMETER ComputerName
-The computer or list of computers from which to query 
+    The computer or list of computers from which to query 
+
 .PARAMETER ShowAllInstalledProducts
-Will expand the output to include all installed Office products
+    Will expand the output to include all installed Office products
+
 .EXAMPLE
-Get-OfficeVersion
-Description:
-Will return the locally installed Office product
+    Get-OfficeVersion
+    
+    Will return the locally installed Office product
+
 .EXAMPLE
-Get-OfficeVersion -ComputerName client01,client02
-Description:
-Will return the installed Office product on the remote computers
+    Get-OfficeVersion -ComputerName client01,client02
+    
+    Will return the installed Office product on the remote computers
+
 .EXAMPLE
-Get-OfficeVersion | select *
-Description:
-Will return the locally installed Office product with all of the available properties
+    Get-OfficeVersion | select *
+   
+    Will return the locally installed Office product with all of the available properties
 #>
 [CmdletBinding(SupportsShouldProcess=$true)]
 param(
@@ -523,8 +532,6 @@ process {
           }
        }
     }
-
-    
 
     foreach ($regKey in $installKeys) {
         $keyList = new-object System.Collections.ArrayList
@@ -775,27 +782,27 @@ Function getUniqueLanguages() {
 Function Get-ODTProductToAdd{
 <#
 .SYNOPSIS
-Gets list of Products and the corresponding language and exlcudeapp values
-from the specified configuration file
+    Gets list of Products and the corresponding language and exlcudeapp values
+    from the specified configuration file
 
 .PARAMETER All
-Switch to return All Products
+    Switch to return All Products
 
 .PARAMETER ProductId
-Id of Product that you want to pull from the configuration file
+    Id of Product that you want to pull from the configuration file
 
 .PARAMETER TargetFilePath
-Required. Full file path for the file.
+    Required. Full file path for the file.
 
 .Example
-Get-ODTProductToAdd -All -TargetFilePath "$env:Public\Documents\config.xml"
-Returns all Products and their corresponding Language and Exclude values
-if they have them 
+    Get-ODTProductToAdd -All -TargetFilePath "$env:Public\Documents\config.xml"
+    Returns all Products and their corresponding Language and Exclude values
+    if they have them 
 
 .Example
-Get-ODTProductToAdd -ProductId "O365ProPlusRetail" -TargetFilePath "$env:Public\Documents\config.xml"
-Returns the Product with the O365ProPlusRetail Id and its corresponding
-Language and Exclude values
+    Get-ODTProductToAdd -ProductId "O365ProPlusRetail" -TargetFilePath "$env:Public\Documents\config.xml"
+    Returns the Product with the O365ProPlusRetail Id and its corresponding
+    Language and Exclude values
 
 #>
     [CmdletBinding()]
@@ -848,13 +855,11 @@ Language and Exclude values
                 if($ProductElement.Language -ne $null){
                     $ProductLangs = $configfile.Configuration.Add.Product.Language | % {$_.ID}
                     Add-Member -InputObject $Result -MemberType NoteProperty -Name "Languages" -Value $ProductLangs
-                    #Add-Member -InputObject $Result -MemberType NoteProperty -Name "Languages" -Value ($ProductElement.Language.GetAttribute("ID"))
                 }
 
                 if($ProductElement.ExcludeApp -ne $null){
                     $ProductExlApps = $configfile.Configuration.Add.Product.ExcludeApp | % {$_.ID}
                     Add-Member -InputObject $Result -MemberType NoteProperty -Name "ExcludedApps" -Value $ProductExlApps
-                    #Add-Member -InputObject $Result -MemberType NoteProperty -Name "ExcludedApps" -Value ($ProductElement.ExcludeApp.GetAttribute("ID"))
                 }
                 $Result
             }
@@ -872,36 +877,31 @@ Language and Exclude values
                 if($ProductElement.Language -ne $null){
                     $ProductLangs = $configfile.Configuration.Add.Product.Language | % {$_.ID}
                     Add-Member -InputObject $Result -MemberType NoteProperty -Name "Languages" -Value $ProductLangs
-                    #Add-Member -InputObject $Result -MemberType NoteProperty -Name "Languages" -Value ($ProductElement.Language.GetAttribute("ID"))
                 }
 
                 if($ProductElement.ExcludeApp -ne $null){
                     $ProductExlApps = $configfile.Configuration.Add.Product.ExcludeApp | % {$_.ID}
                     Add-Member -InputObject $Result -MemberType NoteProperty -Name "ExcludedApps" -Value $ProductExlApps
-                    #Add-Member -InputObject $Result -MemberType NoteProperty -Name "ExcludedApps" -Value ($ProductElement.ExcludeApp.GetAttribute("ID"))
                 }
                 $Result
                 }
             }
         }
-
     }
-
 }
 
 Function Get-ODTAdd{
 <#
 .SYNOPSIS
-Gets the value of the Add section in the configuration file
+    Gets the value of the Add section in the configuration file
 
 .PARAMETER TargetFilePath
-Required. Full file path for the file.
+    Required. Full file path for the file.
 
 .Example
-Get-ODTAdd -TargetFilePath "$env:Public\Documents\config.xml"
-Returns the value of the Add section if it exists in the specified
-file. 
+    Get-ODTAdd -TargetFilePath "$env:Public\Documents\config.xml"
 
+    Returns the value of the Add section if it exists in the specified file.
 #>
     Param(
 
@@ -944,40 +944,42 @@ file.
 Function Set-ODTDisplay{
 <#
 .SYNOPSIS
-Modifies an existing configuration xml file to set display level and acceptance of the EULA
+    Modifies an existing configuration xml file to set display level and acceptance of the EULA
 
 .PARAMETER Level
-Optional. Determines the user interface that the user sees when the 
-operation is performed. If Level is set to None, the user sees no UI. 
-No progress UI, completion screen, error dialog boxes, or first run 
-automatic start UI are displayed. If Level is set to Full, the user 
-sees the normal Click-to-Run user interface: Automatic start, 
-application splash screen, and error dialog boxes.
+    Optional. Determines the user interface that the user sees when the 
+    operation is performed. If Level is set to None, the user sees no UI. 
+    No progress UI, completion screen, error dialog boxes, or first run 
+    automatic start UI are displayed. If Level is set to Full, the user 
+    sees the normal Click-to-Run user interface: Automatic start, 
+    application splash screen, and error dialog boxes.
 
 .PARAMETER AcceptEULA
-If this attribute is set to TRUE, the user does not see a Microsoft 
-Software License Terms dialog box. If this attribute is set to FALSE 
-or is not set, the user may see a Microsoft Software License Terms dialog box.
+    If this attribute is set to TRUE, the user does not see a Microsoft 
+    Software License Terms dialog box. If this attribute is set to FALSE 
+    or is not set, the user may see a Microsoft Software License Terms dialog box.
 
 .PARAMETER TargetFilePath
-Full file path for the file to be modified and be output to.
+    Full file path for the file to be modified and be output to.
 
 .Example
-Set-ODTLogging -Level "Full" -TargetFilePath "$env:Public/Documents/config.xml"
-Sets config show the UI during install
+    Set-ODTLogging -Level "Full" -TargetFilePath "$env:Public/Documents/config.xml"
+    
+    Sets config show the UI during install
 
 .Example
-Set-ODTDisplay -Level "none" -AcceptEULA "True" -TargetFilePath "$env:Public/Documents/config.xml"
-Sets config to hide UI and automatically accept EULA during install
+    Set-ODTDisplay -Level "none" -AcceptEULA "True" -TargetFilePath "$env:Public/Documents/config.xml"
+    
+    Sets config to hide UI and automatically accept EULA during install
 
 .Notes
-Here is what the portion of configuration file looks like when modified by this function:
+    Here is what the portion of configuration file looks like when modified by this function:
 
-<Configuration>
-  ...
-  <Display Level="None" AcceptEULA="TRUE" />
-  ...
-</Configuration>
+    <Configuration>
+      ...
+      <Display Level="None" AcceptEULA="TRUE" />
+      ...
+    </Configuration>
 
 #>
     Param(
@@ -1110,47 +1112,48 @@ Function Get-OfficeCTRRegPath() {
 Function Set-ODTProductToAdd{
 <#
 .SYNOPSIS
-Modifies an existing configuration xml file to modify a existing product item.
+    Modifies an existing configuration xml file to modify a existing product item.
 
 .PARAMETER ExcludeApps
-Array of IDs of Apps to exclude from install
+    Array of IDs of Apps to exclude from install
 
 .PARAMETER ProductId
-Required. ID must be set to a valid ProductRelease ID.
-See https://support.microsoft.com/en-us/kb/2842297 for valid ids.
+    Required. ID must be set to a valid ProductRelease ID.
+    See https://support.microsoft.com/en-us/kb/2842297 for valid ids.
 
 .PARAMETER LanguageIds
-Possible values match 'll-cc' pattern (Microsoft Language ids)
-The ID value can be set to a valid Office culture language (such as en-us 
-for English US or ja-jp for Japanese). The ll-cc value is the language 
-identifier.
+    Possible values match 'll-cc' pattern (Microsoft Language ids)
+    The ID value can be set to a valid Office culture language (such as en-us 
+    for English US or ja-jp for Japanese). The ll-cc value is the language 
+    identifier.
 
 .PARAMETER TargetFilePath
-Full file path for the file to be modified and be output to.
+    Full file path for the file to be modified and be output to.
 
 .Example
-Add-ODTProductToAdd -ProductId "O365ProPlusRetail" -LanguageId ("en-US", "es-es") -TargetFilePath "$env:Public/Documents/config.xml" -ExcludeApps ("Access", "InfoPath")
-Sets config to add the English and Spanish version of office 365 ProPlus
-excluding Access and InfoPath
+    Add-ODTProductToAdd -ProductId "O365ProPlusRetail" -LanguageId ("en-US", "es-es") -TargetFilePath "$env:Public/Documents/config.xml" -ExcludeApps ("Access", "InfoPath")
+    Sets config to add the English and Spanish version of office 365 ProPlus
+    excluding Access and InfoPath
 
 .Example
-Add-ODTProductToAdd -ProductId "O365ProPlusRetail" -LanguageId ("en-US", "es-es) -TargetFilePath "$env:Public/Documents/config.xml"
-Sets config to add the English and Spanish version of office 365 ProPlus
+    Add-ODTProductToAdd -ProductId "O365ProPlusRetail" -LanguageId ("en-US", "es-es) -TargetFilePath "$env:Public/Documents/config.xml"
+    
+    Sets config to add the English and Spanish version of office 365 ProPlus
 
 .Notes
-Here is what the portion of configuration file looks like when modified by this function:
+    Here is what the portion of configuration file looks like when modified by this function:
 
-<Configuration>
-  <Add OfficeClientEdition="64" >
-    <Product ID="O365ProPlusRetail">
-      <Language ID="en-US" />
-      <Language ID="es-es" />
-      <ExcludeApp ID="Access">
-      <ExcludeApp ID="InfoPath">
-    </Product>
-  </Add>
-  ...
-</Configuration>
+    <Configuration>
+      <Add OfficeClientEdition="64" >
+        <Product ID="O365ProPlusRetail">
+          <Language ID="en-US" />
+          <Language ID="es-es" />
+          <ExcludeApp ID="Access">
+          <ExcludeApp ID="InfoPath">
+        </Product>
+      </Add>
+      ...
+    </Configuration>
 
 #>
     [CmdletBinding()]
@@ -1515,23 +1518,13 @@ Function Format-XML ([xml]$xml, $indent=2) {
 function Set-OfficePinnedApplication { 
 <#  
 .SYNOPSIS  
-Automate the process for pinning or unpinning Office apps
+    Automate the process for pinning or unpinning Office apps
 
 .DESCRIPTION  
-Pin or unpin Office apps from the Start Menu or Taskbarb setting the action
+    Pin or unpin Office apps from the Start Menu or Taskbarb setting the action
 
 .EXAMPLE 
-Set-PinnedApplication -Action PinToTaskbar
-
-.EXAMPLE 
-Set-PinnedApplication -Action UnPinFromTaskbar 
-
-.EXAMPLE 
-Set-PinnedApplication -Action PinToStartMenu
-
-.EXAMPLE 
-Set-PinnedApplication -Action UnPinFromStartMenu 
-
+    Set-PinnedApplication -Action PinToTaskbar
 #>  
     [CmdletBinding()] 
     param( 
