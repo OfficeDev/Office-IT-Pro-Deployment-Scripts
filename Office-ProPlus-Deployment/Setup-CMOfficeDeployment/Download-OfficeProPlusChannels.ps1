@@ -22,7 +22,11 @@ using System;
           Current = 1,
           FirstReleaseBusiness = 2,
           Business = 3,
-          CMValidation = 4
+          CMValidation = 4,
+          Insiders = 5,
+          Monthly = 6,
+          Targeted = 7,
+          Broad = 8
        }
 "
 Add-Type -TypeDefinition $enumDef -ErrorAction SilentlyContinue
@@ -37,7 +41,11 @@ using System;
           FirstReleaseCurrent = 0,
           Current = 1,
           FirstReleaseDeferred = 2,
-          Deferred = 3
+          Deferred = 3,
+          Insiders = 4,
+          Monthly = 5,
+          Targeted = 6,
+          Broad = 7
        }
 "
 Add-Type -TypeDefinition $enumDef -ErrorAction SilentlyContinue
@@ -107,7 +115,7 @@ https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
 
 Param(
     [Parameter()]
-    [OfficeChannel[]] $Channels = (0, 1, 2, 3),
+    [OfficeChannel[]] $Channels = (0, 1, 2, 3, 4, 5, 6, 7),
 
     [Parameter()]
     [string] $Version,
@@ -566,7 +574,7 @@ https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
 
 Param(
     [Parameter()]
-    [OfficeChannel[]] $Channels = (0, 1, 2, 3)
+    [OfficeChannel[]] $Channels = (0, 1, 2, 3, 4, 5, 6, 7)
 )
 
 begin {
@@ -762,7 +770,7 @@ function GetVersionBasedOnThrottle {
         $APIUpdates = GetAPIVersions
         $APupdates = $APIUpdates | Where {$_.Name -like $checkChannel}#pulled from API
 
-        $updates = $UpdateChannels | Where {$_.Name -like $checkChannel}#pulled from release history
+        $updates = $UpdateChannels | Where {$_.Name -like $checkChannel -or $_.ID -like $checkChannel}#pulled from release history
 
         #foreach($update in $updates.Update){
         #
@@ -948,6 +956,18 @@ function ConvertChannelNameToShortName {
        if ($ChannelName.ToLower() -eq "FirstReleaseBusiness".ToLower()) {
          return "FRDC"
        }
+       if ($ChannelName.ToLower() -eq "Insiders".ToLower()) {
+         return "IC"
+       }
+       if ($ChannelName.ToLower() -eq "Monthly".ToLower()) {
+         return "MC"
+       }
+       if ($ChannelName.ToLower() -eq "Targeted".ToLower()) {
+         return "TC"
+       }
+       if ($ChannelName.ToLower() -eq "Broad".ToLower()) {
+         return "BC"
+       }
     }
 }
 
@@ -975,6 +995,18 @@ function ConvertChannelNameToBranchName {
        if ($ChannelName.ToLower() -eq "FirstReleaseBusiness".ToLower()) {
          return "FirstReleaseBusiness"
        }
+       if ($ChannelName.ToLower() -eq "Insiders".ToLower()) {
+         return "Insiders"
+       }
+       if ($ChannelName.ToLower() -eq "Monthly".ToLower()) {
+         return "Monthly"
+       }
+       if ($ChannelName.ToLower() -eq "Targeted".ToLower()) {
+         return "Targeted"
+       }
+       if ($ChannelName.ToLower() -eq "Broad".ToLower()) {
+         return "Broad"
+       }
     }
 }
 
@@ -1001,6 +1033,18 @@ function ConvertBranchNameToChannelName {
        }
        if ($BranchName.ToLower() -eq "FirstReleaseBusiness".ToLower()) {
          return "FirstReleaseDeferred"
+       }
+       if ($BranchName.ToLower() -eq "Insiders".ToLower()) {
+         return "Insiders"
+       }
+       if ($BranchName.ToLower() -eq "Monthly".ToLower()) {
+         return "Monthly"
+       }
+       if ($BranchName.ToLower() -eq "Targeted".ToLower()) {
+         return "Targeted"
+       }
+       if ($BranchName.ToLower() -eq "Broad".ToLower()) {
+         return "Broad"
        }
     }
 }
