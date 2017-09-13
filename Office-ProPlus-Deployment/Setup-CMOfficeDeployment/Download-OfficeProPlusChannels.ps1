@@ -770,7 +770,7 @@ function GetVersionBasedOnThrottle {
         $APIUpdates = GetAPIVersions
         $APupdates = $APIUpdates | Where {$_.Name -like $checkChannel}#pulled from API
 
-        $updates = $UpdateChannels | Where {$_.Name -like $checkChannel}#pulled from release history
+        $updates = $UpdateChannels | Where {$_.Name -like $checkChannel -or $_.ID -like $checkChannel}#pulled from release history
 
         #foreach($update in $updates.Update){
         #
