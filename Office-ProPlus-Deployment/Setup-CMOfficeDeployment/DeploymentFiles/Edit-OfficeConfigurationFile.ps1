@@ -1,7 +1,8 @@
 ﻿[String]$global:saveLastConfigFile = $NULL
 [String]$global:saveLastFilePath = $NULL
 
-$validProductIds = @("O365ProPlusRetail","O365BusinessRetail","VisioProRetail","ProjectProRetail", "SPDRetail", "VisioProXVolume", "VisioStdXVolume", "ProjectProXVolume", "ProjectStdXVolume", "InfoPathRetail", "SkypeforBusinessEntryRetail", "LyncEntryRetail")
+$validProductIds = @("O365ProPlusRetail","O365BusinessRetail","VisioProRetail","ProjectProRetail", "SPDRetail", "VisioProXVolume", 
+                     "VisioStdXVolume", "ProjectProXVolume", "ProjectStdXVolume", "InfoPathRetail", "SkypeforBusinessEntryRetail", "LyncEntryRetail")
 
 try {
 $enum = "
@@ -58,7 +59,11 @@ namespace Microsoft.Office
         Business=1,
         Validation=2,
         FirstReleaseCurrent=3,
-        FirstReleaseBusiness=4
+        FirstReleaseBusiness=4,
+        Insiders=5,
+        Monthly=6,
+        Targeted=7,
+        Broad=8
     }
 }
 "
@@ -78,7 +83,11 @@ $enum4 = "
          Deferred=1,
          Validation=2,
          FirstReleaseCurrent=3,
-         FirstReleaseDeferred=4
+         FirstReleaseDeferred=4,
+         Insiders=5,
+         Monthly=6,
+         Targeted=7,
+         Broad=8
      }
  }
  "
@@ -214,59 +223,61 @@ Creates a simple Office configuration file and outputs a
 string that is the path of the file
 
 .DESCRIPTION
-Given at least the bitness of the office version, the product id, and 
-the file path of the output file, this function creates an xml file with
-the bare minimum values to be usable. A configuration root, an add element,
-a product element, and a language element (nested one after the other).
-The output is the file path of the file so that this function can easily
-be piped into the other associated functions. 
+    Given at least the bitness of the office version, the product id, and 
+    the file path of the output file, this function creates an xml file with
+    the bare minimum values to be usable. A configuration root, an add element,
+    a product element, and a language element (nested one after the other).
+    The output is the file path of the file so that this function can easily
+    be piped into the other associated functions. 
 
 .PARAMETER Bitness
-Possible values are '32' or '64'
-Required. Specifies the edition of Click-to-Run for Office 365 product 
-to use: 32- or 64-bit. The action fails if OfficeClientEdition is not 
-set to a valid value.
+    Possible values are '32' or '64'
+    Required. Specifies the edition of Click-to-Run for Office 365 product 
+    to use: 32- or 64-bit. The action fails if OfficeClientEdition is not 
+    set to a valid value.
 
-A configure mode action may fail if OfficeClientEdition is set incorrectly. 
-For example, if you attempt to install a 64-bit edition of a Click-to-Run 
-for Office 365 product on a computer that is running a 32-bit Windows 
-operating system, or if you try to install a 32-bit Click-to-Run for Office 
-365 product on a computer that has a 64-bit edition of Office installed.
+    A configure mode action may fail if OfficeClientEdition is set incorrectly. 
+    For example, if you attempt to install a 64-bit edition of a Click-to-Run 
+    for Office 365 product on a computer that is running a 32-bit Windows 
+    operating system, or if you try to install a 32-bit Click-to-Run for Office 
+    365 product on a computer that has a 64-bit edition of Office installed.
 
 .PARAMETER ProductId
-Required. ID must be set to a valid ProductRelease ID.
-See https://support.microsoft.com/en-us/kb/2842297 for valid ids.
+    Required. ID must be set to a valid ProductRelease ID.
+    See https://support.microsoft.com/en-us/kb/2842297 for valid ids.
 
 .PARAMETER LanguageId
-Possible values match 'll-cc' pattern (Microsoft Language ids)
-The ID value can be set to a valid Office culture language (such as en-us 
-for English US or ja-jp for Japanese). The ll-cc value is the language 
-identifier.
-Defaults to the language from Get-Culture
+    Possible values match 'll-cc' pattern (Microsoft Language ids)
+    The ID value can be set to a valid Office culture language (such as en-us 
+    for English US or ja-jp for Japanese). The ll-cc value is the language 
+    identifier.
+    Defaults to the language from Get-Culture
 
 .PARAMETER TargetFilePath
-Full file path for the file to be output to.
+    Full file path for the file to be output to.
 
 .Example
-New-ODTConfiguration -Bitness "64" -ProductId "O365ProPlusRetail" -TargetFilePath "$env:Public/Documents/config.xml"
-Creates a config.xml file in public documents for installing the 64bit 
-Office 365 ProPlus and sets the language to match the value in Get-Culture
+    New-ODTConfiguration -Bitness "64" -ProductId "O365ProPlusRetail" -TargetFilePath "$env:Public/Documents/config.xml"
+    
+    Creates a config.xml file in public documents for installing the 64bit 
+    Office 365 ProPlus and sets the language to match the value in Get-Culture
 
 .Example
-New-ODTConfiguration -Bitness "64" -ProductId "O365ProPlusRetail" -TargetFilePath "$env:Public/Documents/config.xml" -LanguageId "es-es"
-Creates a config.xml file in public documents for installing the 64bit 
-Office 365 ProPlus and sets the language to Spanish
+    New-ODTConfiguration -Bitness "64" -ProductId "O365ProPlusRetail" -TargetFilePath "$env:Public/Documents/config.xml" -LanguageId "es-es"
+    
+    Creates a config.xml file in public documents for installing the 64bit 
+    Office 365 ProPlus and sets the language to Spanish
 
 .Notes
-Here is what the configuration file looks like when created from this function:
+    Here is what the configuration file looks like when created from this function:
 
-<Configuration>
-  <Add OfficeClientEdition="64">
-    <Product ID="O365ProPlusRetail">
-      <Language ID="en-US" />
-    </Product>
-  </Add>
-</Configuration>
+    <Configuration>
+      <Add OfficeClientEdition="64">
+        <Product ID="O365ProPlusRetail">
+          <Language ID="en-US" />
+        </Product>
+      </Add>
+    </Configuration>
 
 #>
     [CmdletBinding()]
@@ -392,7 +403,6 @@ Function Undo-ODTLastChange {
             Write-Host
             Write-Host "The Office XML Configuration file has been saved to: $global:saveLastFilePath"
         }
-        
     }
 }
 
@@ -415,51 +425,51 @@ Function Show-ODTConfiguration {
 Function Add-ODTProductToAdd{
 <#
 .SYNOPSIS
-Modifies an existing configuration xml file to add a particular
-click to run products.
+    Modifies an existing configuration xml file to add a particular click to run products.
 
 .PARAMETER ExcludeApps
-Array of IDs of Apps to exclude from install
+    Array of IDs of Apps to exclude from install
 
 .PARAMETER ProductId
-Required. ID must be set to a valid ProductRelease ID.
-See https://support.microsoft.com/en-us/kb/2842297 for valid ids.
+    Required. ID must be set to a valid ProductRelease ID.
+    See https://support.microsoft.com/en-us/kb/2842297 for valid ids.
 
 .PARAMETER PIDKEY
-Optional. If PIDKEY is set, the specified 25 character PIDKEY value is used for this product.
+    Optional. If PIDKEY is set, the specified 25 character PIDKEY value is used for this product.
 
 .PARAMETER LanguageIds
-Possible values match 'll-cc' pattern (Microsoft Language ids)
-The ID value can be set to a valid Office culture language (such as en-us 
-for English US or ja-jp for Japanese). The ll-cc value is the language 
-identifier.
+    Possible values match 'll-cc' pattern (Microsoft Language ids)
+    The ID value can be set to a valid Office culture language (such as en-us 
+    for English US or ja-jp for Japanese). The ll-cc value is the language 
+    identifier.
 
 .PARAMETER TargetFilePath
-Full file path for the file to be modified and be output to.
+    Full file path for the file to be modified and be output to.
 
 .Example
-Add-ODTProductToAdd -ProductId "O365ProPlusRetail" -LanguageId ("en-US", "es-es") -TargetFilePath "$env:Public/Documents/config.xml" -ExcludeApps ("Access", "InfoPath")
-Sets config to add the English and Spanish version of office 365 ProPlus
-excluding Access and InfoPath
+    Add-ODTProductToAdd -ProductId "O365ProPlusRetail" -LanguageId ("en-US", "es-es") -TargetFilePath "$env:Public/Documents/config.xml" -ExcludeApps ("Access", "InfoPath")
+    
+    Sets config to add the English and Spanish version of office 365 ProPlus excluding Access and InfoPath
 
 .Example
-Add-ODTProductToAdd -ProductId "O365ProPlusRetail" -LanguageId ("en-US", "es-es) -TargetFilePath "$env:Public/Documents/config.xml"
-Sets config to add the English and Spanish version of office 365 ProPlus
+    Add-ODTProductToAdd -ProductId "O365ProPlusRetail" -LanguageId ("en-US", "es-es) -TargetFilePath "$env:Public/Documents/config.xml"
+    
+    Sets config to add the English and Spanish version of office 365 ProPlus
 
 .Notes
-Here is what the portion of configuration file looks like when modified by this function:
+    Here is what the portion of configuration file looks like when modified by this function:
 
-<Configuration>
-  <Add OfficeClientEdition="64" >
-    <Product ID="O365ProPlusRetail">
-      <Language ID="en-US" />
-      <Language ID="es-es" />
-      <ExcludeApp ID="Access">
-      <ExcludeApp ID="InfoPath">
-    </Product>
-  </Add>
-  ...
-</Configuration>
+    <Configuration>
+      <Add OfficeClientEdition="64" >
+        <Product ID="O365ProPlusRetail">
+          <Language ID="en-US" />
+          <Language ID="es-es" />
+          <ExcludeApp ID="Access">
+          <ExcludeApp ID="InfoPath">
+        </Product>
+      </Add>
+      ...
+    </Configuration>
 
 #>
     [CmdletBinding()]
@@ -606,47 +616,49 @@ Here is what the portion of configuration file looks like when modified by this 
 Function Set-ODTProductToAdd{
 <#
 .SYNOPSIS
-Modifies an existing configuration xml file to modify a existing product item.
+    Modifies an existing configuration xml file to modify a existing product item.
 
 .PARAMETER ExcludeApps
-Array of IDs of Apps to exclude from install
+    Array of IDs of Apps to exclude from install
 
 .PARAMETER ProductId
-Required. ID must be set to a valid ProductRelease ID.
-See https://support.microsoft.com/en-us/kb/2842297 for valid ids.
+    Required. ID must be set to a valid ProductRelease ID.
+    See https://support.microsoft.com/en-us/kb/2842297 for valid ids.
 
 .PARAMETER LanguageIds
-Possible values match 'll-cc' pattern (Microsoft Language ids)
-The ID value can be set to a valid Office culture language (such as en-us 
-for English US or ja-jp for Japanese). The ll-cc value is the language 
-identifier.
+    Possible values match 'll-cc' pattern (Microsoft Language ids)
+    The ID value can be set to a valid Office culture language (such as en-us 
+    for English US or ja-jp for Japanese). The ll-cc value is the language 
+    identifier.
 
 .PARAMETER TargetFilePath
-Full file path for the file to be modified and be output to.
+    Full file path for the file to be modified and be output to.
 
 .Example
-Add-ODTProductToAdd -ProductId "O365ProPlusRetail" -LanguageId ("en-US", "es-es") -TargetFilePath "$env:Public/Documents/config.xml" -ExcludeApps ("Access", "InfoPath")
-Sets config to add the English and Spanish version of office 365 ProPlus
-excluding Access and InfoPath
+    Add-ODTProductToAdd -ProductId "O365ProPlusRetail" -LanguageId ("en-US", "es-es") -TargetFilePath "$env:Public/Documents/config.xml" -ExcludeApps ("Access", "InfoPath")
+    
+    Sets config to add the English and Spanish version of office 365 ProPlus
+    excluding Access and InfoPath
 
 .Example
-Add-ODTProductToAdd -ProductId "O365ProPlusRetail" -LanguageId ("en-US", "es-es) -TargetFilePath "$env:Public/Documents/config.xml"
-Sets config to add the English and Spanish version of office 365 ProPlus
+    Add-ODTProductToAdd -ProductId "O365ProPlusRetail" -LanguageId ("en-US", "es-es) -TargetFilePath "$env:Public/Documents/config.xml"
+    
+    Sets config to add the English and Spanish version of office 365 ProPlus
 
 .Notes
-Here is what the portion of configuration file looks like when modified by this function:
+    Here is what the portion of configuration file looks like when modified by this function:
 
-<Configuration>
-  <Add OfficeClientEdition="64" >
-    <Product ID="O365ProPlusRetail">
-      <Language ID="en-US" />
-      <Language ID="es-es" />
-      <ExcludeApp ID="Access">
-      <ExcludeApp ID="InfoPath">
-    </Product>
-  </Add>
-  ...
-</Configuration>
+    <Configuration>
+      <Add OfficeClientEdition="64" >
+        <Product ID="O365ProPlusRetail">
+          <Language ID="en-US" />
+          <Language ID="es-es" />
+          <ExcludeApp ID="Access">
+          <ExcludeApp ID="InfoPath">
+        </Product>
+      </Add>
+      ...
+    </Configuration>
 
 #>
     [CmdletBinding()]
@@ -805,27 +817,29 @@ Here is what the portion of configuration file looks like when modified by this 
 Function Get-ODTProductToAdd{
 <#
 .SYNOPSIS
-Gets list of Products and the corresponding language and exlcudeapp values
-from the specified configuration file
+    Gets list of Products and the corresponding language and exlcudeapp values
+    from the specified configuration file
 
 .PARAMETER All
-Switch to return All Products
+    Switch to return All Products
 
 .PARAMETER ProductId
-Id of Product that you want to pull from the configuration file
+    Id of Product that you want to pull from the configuration file
 
 .PARAMETER TargetFilePath
-Required. Full file path for the file.
+    Required. Full file path for the file.
 
 .Example
-Get-ODTProductToAdd -All -TargetFilePath "$env:Public\Documents\config.xml"
-Returns all Products and their corresponding Language and Exclude values
-if they have them 
+    Get-ODTProductToAdd -All -TargetFilePath "$env:Public\Documents\config.xml"
+    
+    Returns all Products and their corresponding Language and Exclude values
+    if they have them 
 
 .Example
-Get-ODTProductToAdd -ProductId "O365ProPlusRetail" -TargetFilePath "$env:Public\Documents\config.xml"
-Returns the Product with the O365ProPlusRetail Id and its corresponding
-Language and Exclude values
+    Get-ODTProductToAdd -ProductId "O365ProPlusRetail" -TargetFilePath "$env:Public\Documents\config.xml"
+    
+    Returns the Product with the O365ProPlusRetail Id and its corresponding
+    Language and Exclude values
 
 #>
     [CmdletBinding()]
@@ -916,20 +930,19 @@ Language and Exclude values
 Function Remove-ODTProductToAdd{
 <#
 .SYNOPSIS
-Removes an existing product to add from the configuration file
+    Removes an existing product to add from the configuration file
 
 .PARAMETER ProductId
-Required. ID must be set to a valid ProductRelease ID.
-See https://support.microsoft.com/en-us/kb/2842297 for valid ids.
+    Required. ID must be set to a valid ProductRelease ID.
+    See https://support.microsoft.com/en-us/kb/2842297 for valid ids.
 
 .PARAMETER TargetFilePath
-Full file path for the file to be modified and be output to.
+    Full file path for the file to be modified and be output to.
 
 .Example
-Remove-ODTProductToAdd -ProductId "O365ProPlusRetail" -TargetFilePath "$env:Public/Documents/config.xml"
-Removes the ProductToAdd with the ProductId 'O365ProPlusRetail' from the XML Configuration file
-
-</Configuration>
+    Remove-ODTProductToAdd -ProductId "O365ProPlusRetail" -TargetFilePath "$env:Public/Documents/config.xml"
+    
+    Removes the ProductToAdd with the ProductId 'O365ProPlusRetail' from the XML Configuration file
 
 #>
     [CmdletBinding()]
@@ -1033,13 +1046,10 @@ Removes the ProductToAdd with the ProductId 'O365ProPlusRetail' from the XML Con
 Function Get-LanguagesFromXML{
 <#
 .SYNOPSIS
-retreives languages from the configuration file
-
+    Retreives languages from the configuration file
 
 .PARAMETER TargetFilePath
-Full file path for the file to be modified and be output to.
-
-
+    Full file path for the file to be modified and be output to.
 #>
 Param(
         [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
@@ -1081,21 +1091,19 @@ Param(
 Function Remove-ODTExcludeApp{
 <#
 .SYNOPSIS
-Removes an existing ExcludeApp-entry from the configuration file
+    Removes an existing ExcludeApp-entry from the configuration file
 
 .PARAMETER ExcludeAppID
-Required. ID must be set to a valid ExcludeApp ID.
-See https://technet.microsoft.com/en-us/library/jj219426.aspx for valid ids.
+    Required. ID must be set to a valid ExcludeApp ID.
+    See https://technet.microsoft.com/en-us/library/jj219426.aspx for valid ids.
 
 .PARAMETER TargetFilePath
-Full file path for the file to be modified and be output to.
+    Full file path for the file to be modified and be output to.
 
 .Example
-Remove-ODÊxcludeApp -ExcludeAppId "Lync" -TargetFilePath "$env:Public/Documents/config.xml"
-Removes the ExcludeApp with the Id 'Lync' (which is Skype for Business) from the XML Configuration file
-
-</Configuration>
-
+    Remove-ODÊxcludeApp -ExcludeAppId "Lync" -TargetFilePath "$env:Public/Documents/config.xml"
+    
+    Removes the ExcludeApp with the Id 'Lync' (which is Skype for Business) from the XML Configuration file
 #>
     [CmdletBinding()]
     Param(
@@ -1185,51 +1193,53 @@ Removes the ExcludeApp with the Id 'Lync' (which is Skype for Business) from the
 Function Add-ODTProductToRemove{
 <#
 .SYNOPSIS
-Modifies an existing configuration xml file to remove all or particular
-click to run products.
+    Modifies an existing configuration xml file to remove all or particular
+    click to run products.
 
 .PARAMETER All
-Set this switch to remove all click to run products
+    Set this switch to remove all click to run products
 
 .PARAMETER ProductId
-Required. ID must be set to a valid ProductRelease ID.
-See https://support.microsoft.com/en-us/kb/2842297 for valid ids.
+    Required. ID must be set to a valid ProductRelease ID.
+    See https://support.microsoft.com/en-us/kb/2842297 for valid ids.
 
 .PARAMETER LanguageIds
-Possible values match 'll-cc' pattern (Microsoft Language ids)
-The ID value can be set to a valid Office culture language (such as en-us 
-for English US or ja-jp for Japanese). The ll-cc value is the language 
-identifier.
+    Possible values match 'll-cc' pattern (Microsoft Language ids)
+    The ID value can be set to a valid Office culture language (such as en-us 
+    for English US or ja-jp for Japanese). The ll-cc value is the language 
+    identifier.
 
 .PARAMETER TargetFilePath
-Full file path for the file to be modified and be output to.
+    Full file path for the file to be modified and be output to.
 
 .Example
-Add-ODTProductToRemove -All -TargetFilePath "$env:Public/Documents/config.xml"
-Sets config to remove all click to run products
+    Add-ODTProductToRemove -All -TargetFilePath "$env:Public/Documents/config.xml"
+    
+    Sets config to remove all click to run products
 
 .Example
-Add-ODTProductToRemove -ProductId "O365ProPlusRetail" -LanguageId "en-US" -TargetFilePath "$env:Public/Documents/config.xml"
-Sets config to remove the english version of office 365 ProPlus
+    Add-ODTProductToRemove -ProductId "O365ProPlusRetail" -LanguageId "en-US" -TargetFilePath "$env:Public/Documents/config.xml"
+    
+    Sets config to remove the english version of office 365 ProPlus
 
 .Notes
-Here is what the portion of configuration file looks like when modified by this function:
+    Here is what the portion of configuration file looks like when modified by this function:
 
-<Configuration>
-...
-  <Remove>
-    <Product ID="O365ProPlusRetail">
-        <Language ID="en-US"
-    </Product>
-  </Remove>
-</Configuration>
+    <Configuration>
+    ...
+      <Remove>
+        <Product ID="O365ProPlusRetail">
+            <Language ID="en-US"
+        </Product>
+      </Remove>
+    </Configuration>
 
--or-
+    -or-
 
-<Configuration>
-...
-  <Remove All="TRUE" />
-</Configuration>
+    <Configuration>
+    ...
+      <Remove All="TRUE" />
+    </Configuration>
 
 #>
     [CmdletBinding()]
@@ -1346,24 +1356,26 @@ Here is what the portion of configuration file looks like when modified by this 
 Function Get-ODTProductToRemove{
 <#
 .SYNOPSIS
-Gets list of Products and the corresponding language values
-from the specified configuration file
+    Gets list of Products and the corresponding language values
+    from the specified configuration file
 
 .PARAMETER ProductId
-Id of Product that you want to pull from the configuration file
+    Id of Product that you want to pull from the configuration file
 
 .PARAMETER TargetFilePath
-Required. Full file path for the file.
+    Required. Full file path for the file.
 
 .Example
-Get-ODTProductToRemove -TargetFilePath "$env:Public\Documents\config.xml"
-Returns all Products and their corresponding Language and Exclude values
-if they have them 
+    Get-ODTProductToRemove -TargetFilePath "$env:Public\Documents\config.xml"
+    
+    Returns all Products and their corresponding Language and Exclude values
+    if they have them 
 
 .Example
-Get-ODTProductToRemove -ProductId "O365ProPlusRetail" -TargetFilePath "$env:Public\Documents\config.xml"
-Returns the Product with the O365ProPlusRetail Id and its corresponding
-Language and Exclude values
+    Get-ODTProductToRemove -ProductId "O365ProPlusRetail" -TargetFilePath "$env:Public\Documents\config.xml"
+    
+    Returns the Product with the O365ProPlusRetail Id and its corresponding
+    Language and Exclude values
 
 #>
     [cmdletbinding()]
@@ -1449,21 +1461,19 @@ Language and Exclude values
 Function Remove-ODTProductToRemove{
 <#
 .SYNOPSIS
-Removes an existing product to remove from the configuration file
+    Removes an existing product to remove from the configuration file
 
 .PARAMETER ProductId
-Required. ID must be set to a valid ProductRelease ID.
-See https://support.microsoft.com/en-us/kb/2842297 for valid ids.
+    Required. ID must be set to a valid ProductRelease ID.
+    See https://support.microsoft.com/en-us/kb/2842297 for valid ids.
 
 .PARAMETER TargetFilePath
-Full file path for the file to be modified and be output to.
+    Full file path for the file to be modified and be output to.
 
 .Example
-Add-ODTProductToRemove -ProductId "O365ProPlusRetail" -TargetFilePath "$env:Public/Documents/config.xml"
-Removes the ProductToRemove with the ProductId 'O365ProPlusRetail' from the XML Configuration file
-
-</Configuration>
-
+    Add-ODTProductToRemove -ProductId "O365ProPlusRetail" -TargetFilePath "$env:Public/Documents/config.xml"
+    
+    Removes the ProductToRemove with the ProductId 'O365ProPlusRetail' from the XML Configuration file
 #>
     [cmdletbinding()]
     Param(
@@ -1556,61 +1566,63 @@ Removes the ProductToRemove with the ProductId 'O365ProPlusRetail' from the XML 
 Function Set-ODTUpdates{
 <#
 .SYNOPSIS
-Modifies an existing configuration xml file to enable/disable updates
+    Modifies an existing configuration xml file to enable/disable updates
 
 .PARAMETER Enabled
-Optional. If Enabled is set to TRUE, the Click-to-Run update system will 
-check for updates. If it is set to FALSE, the Click-to-Run update system 
-is dormant.
+    Optional. If Enabled is set to TRUE, the Click-to-Run update system will 
+    check for updates. If it is set to FALSE, the Click-to-Run update system 
+    is dormant.
 
 .PARAMETER UpdatePath
-Optional. If UpdatePath is not set, Click-to-Run installations obtain updates 
-from the Microsoft Click-to-Run source (Content Delivery Network or CDN). This is by default.
-UpdatePath can specify a network, local, or HTTP path of a Click-to-Run source.
-Environment variables can be used for network or local paths.
+    Optional. If UpdatePath is not set, Click-to-Run installations obtain updates 
+    from the Microsoft Click-to-Run source (Content Delivery Network or CDN). This is by default.
+    UpdatePath can specify a network, local, or HTTP path of a Click-to-Run source.
+    Environment variables can be used for network or local paths.
 
 .PARAMETER TargetVersion
-Optional. If TargetVersion is not set, Click-to-Run updates to the most 
-recent version from the Microsoft Click-to-Run source. If TargetVersion 
-is set to empty (""), Click-to-Run updates to the latest version from the 
-Microsoft Click-to-Run source. TargetVersion can be set to an Office build number,
-for example, 15.1.2.3. When the version is set, Office attempts to transition to
-the specified version in the next update cycle.
+    Optional. If TargetVersion is not set, Click-to-Run updates to the most 
+    recent version from the Microsoft Click-to-Run source. If TargetVersion 
+    is set to empty (""), Click-to-Run updates to the latest version from the 
+    Microsoft Click-to-Run source. TargetVersion can be set to an Office build number,
+    for example, 15.1.2.3. When the version is set, Office attempts to transition to
+    the specified version in the next update cycle.
 
 .PARAMETER Deadline
-Optional. Sets a deadline by when updates to Office must be applied. 
-The deadline is specified in Coordinated Universal Time (UTC).
-You can use Deadline with Target Version to make sure that Office is 
-updated to a particular version by a particular date. We recommend that 
-you set the deadline at least a week in the future to allow users time 
-to install the updates.
+    Optional. Sets a deadline by when updates to Office must be applied. 
+    The deadline is specified in Coordinated Universal Time (UTC).
+    You can use Deadline with Target Version to make sure that Office is 
+    updated to a particular version by a particular date. We recommend that 
+    you set the deadline at least a week in the future to allow users time 
+    to install the updates.
 
 .PARAMETER TargetFilePath
-Full file path for the file to be modified and be output to.
+    Full file path for the file to be modified and be output to.
 
 .PARAMETER Branch
-Optional. Depreicated as of 2-29-16 replaced with Channel. Specifies the update branch for the product that you want to download or install.
+    Optional. Depreicated as of 2-29-16 replaced with Channel. Specifies the update branch for the product that you want to download or install.
 
 .PARAMETER Channel
-Optional. Specifies the update Channel for the product that you want to download or install.
+    Optional. Specifies the update Channel for the product that you want to download or install.
 
 .Example
-Set-ODTUpdates -Enabled "False" -TargetFilePath "$env:Public/Documents/config.xml"
-Sets config to disable updates
+    Set-ODTUpdates -Enabled "False" -TargetFilePath "$env:Public/Documents/config.xml"
+    
+    Sets config to disable updates
 
 .Example
-Set-ODTUpdates -Enabled "True" -UpdatePath "\\Server\share\" -TargetFilePath "$env:Public/Documents/config.xml" -Deadline "05/16/2014 18:30" -TargetVersion "15.1.2.3"
-Office updates are enabled, update path is \\Server\share\, the product 
-version is set to 15.1.2.3, and the deadline is set to May 16, 2014 at 6:30 PM UTC.
+    Set-ODTUpdates -Enabled "True" -UpdatePath "\\Server\share\" -TargetFilePath "$env:Public/Documents/config.xml" -Deadline "05/16/2014 18:30" -TargetVersion "15.1.2.3"
+    
+    Office updates are enabled, update path is \\Server\share\, the product 
+    version is set to 15.1.2.3, and the deadline is set to May 16, 2014 at 6:30 PM UTC.
 
 .Notes
-Here is what the portion of configuration file looks like when modified by this function:
+    Here is what the portion of configuration file looks like when modified by this function:
 
-<Configuration>
-  ...
-  <Updates Enabled="TRUE" UpdatePath="\\Server\share\" TargetVersion="15.1.2.3" Deadline="05/16/2014 18:30"/>
-  ...
-</Configuration>
+    <Configuration>
+      ...
+      <Updates Enabled="TRUE" UpdatePath="\\Server\share\" TargetVersion="15.1.2.3" Deadline="05/16/2014 18:30"/>
+      ...
+    </Configuration>
 
 #>
     [CmdletBinding()]
@@ -1634,7 +1646,7 @@ Here is what the portion of configuration file looks like when modified by this 
         [Microsoft.Office.Branches] $Branch,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [Microsoft.Office.Channel] $Channel = "Current",
+        [Microsoft.Office.Channel] $Channel = "Monthly",
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
         [string] $Deadline,
@@ -1765,15 +1777,16 @@ Here is what the portion of configuration file looks like when modified by this 
 Function Get-ODTUpdates{
 <#
 .SYNOPSIS
-Gets the value of the Updates section in the configuration file
+    Gets the value of the Updates section in the configuration file
 
 .PARAMETER TargetFilePath
-Required. Full file path for the file.
+    Required. Full file path for the file.
 
 .Example
-Get-ODTUpdates -TargetFilePath "$env:Public\Documents\config.xml"
-Returns the value of the Updates section if it exists in the specified
-file. 
+    Get-ODTUpdates -TargetFilePath "$env:Public\Documents\config.xml"
+    
+    Returns the value of the Updates section if it exists in the specified
+    file. 
 
 #>
     [CmdletBinding()]
@@ -1819,22 +1832,22 @@ file.
 Function Remove-ODTUpdates{
 <#
 .SYNOPSIS
-Removes the update section from an existing configuration xml file
+    Removes the update section from an existing configuration xml file
 
 .PARAMETER TargetFilePath
-Full file path for the file to be modified and be output to.
+    Full file path for the file to be modified and be output to.
 
 .Example
-Set-ODTUpdates -TargetFilePath "$env:Public/Documents/config.xml"
+    Set-ODTUpdates -TargetFilePath "$env:Public/Documents/config.xml"
 
 .Notes
-This is the section that would be removed when running this function
+    This is the section that would be removed when running this function
 
-<Configuration>
-  ...
-  <Updates Enabled="TRUE" UpdatePath="\\Server\share\" TargetVersion="15.1.2.3" Deadline="05/16/2014 18:30"/>
-  ...
-</Configuration>
+    <Configuration>
+      ...
+      <Updates Enabled="TRUE" UpdatePath="\\Server\share\" TargetVersion="15.1.2.3" Deadline="05/16/2014 18:30"/>
+      ...
+    </Configuration>
 
 #>
     [CmdletBinding()]
@@ -1909,59 +1922,61 @@ This is the section that would be removed when running this function
 Function Set-ODTConfigProperties{
 <#
 .SYNOPSIS
-Modifies an existing configuration xml file to set property values
+    Modifies an existing configuration xml file to set property values
 
 .PARAMETER AutoActivate
-If AUTOACTIVATE is set to 1, the specified products will attempt to activate automatically. 
-If AUTOACTIVATE is not set, the user may see the Activation Wizard UI.
-You must not set AUTOACTIVATE for Office 365 Click-to-Run products. 
+    If AUTOACTIVATE is set to 1, the specified products will attempt to activate automatically. 
+    If AUTOACTIVATE is not set, the user may see the Activation Wizard UI.
+    You must not set AUTOACTIVATE for Office 365 Click-to-Run products. 
 
 .PARAMETER ForceAppShutDown
-An installation or removal action may be blocked if Office applications are running. 
-Normally, such cases would start a process killer UI. Administrators can set 
-FORCEAPPSHUTDOWN value to TRUE to prevent dependence on user interaction. When 
-FORCEAPPSHUTDOWN is set to TRUE, any applications that block the action will be shut 
-down. Data loss may occur. When FORCEAPPSHUTDOWN is set to FALSE (default), the 
-action may fail if Office applications are running.
+    An installation or removal action may be blocked if Office applications are running. 
+    Normally, such cases would start a process killer UI. Administrators can set 
+    FORCEAPPSHUTDOWN value to TRUE to prevent dependence on user interaction. When 
+    FORCEAPPSHUTDOWN is set to TRUE, any applications that block the action will be shut 
+    down. Data loss may occur. When FORCEAPPSHUTDOWN is set to FALSE (default), the 
+    action may fail if Office applications are running.
 
 .PARAMETER PackageGUID
-Optional. By default, all Office 2013 App-V packages created by using the Office 
-Deployment Tool share the same App-V Package ID. Administrators can use PACKAGEGUID 
-to specify a different Package ID. Also, PACKAGEGUID needs to be at least 25 
-characters in length and be separated into 5 sections, with each section separated by 
-a dash. The sections need to have the following number of characters: 8, 4, 4, 4, and 12. 
+    Optional. By default, all Office 2013 App-V packages created by using the Office 
+    Deployment Tool share the same App-V Package ID. Administrators can use PACKAGEGUID 
+    to specify a different Package ID. Also, PACKAGEGUID needs to be at least 25 
+    characters in length and be separated into 5 sections, with each section separated by 
+    a dash. The sections need to have the following number of characters: 8, 4, 4, 4, and 12. 
 
 .PARAMETER SharedComputerLicensing
-Optional. Set SharedComputerLicensing to 1 if you deploy Office 365 ProPlus to shared 
-computers by using Remote Desktop Services.
+    Optional. Set SharedComputerLicensing to 1 if you deploy Office 365 ProPlus to shared 
+    computers by using Remote Desktop Services.
 
 .PARAMETER TargetFilePath
-Full file path for the file to be modified and be output to.
+    Full file path for the file to be modified and be output to.
 
 .PARAMETER PinIconsToTaskbar
-Optional. Set PinIconsToTaskbar to $true to pin icons to taskbar and $false to not.  Does not apply to Windows 10
+    Optional. Set PinIconsToTaskbar to $true to pin icons to taskbar and $false to not.  Does not apply to Windows 10
 
 .Example
-Set-ODTConfigProperties -AutoActivate "1" -TargetFilePath "$env:Public/Documents/config.xml"
-Sets config to automatically activate the products
+    Set-ODTConfigProperties -AutoActivate "1" -TargetFilePath "$env:Public/Documents/config.xml"
+    
+    Sets config to automatically activate the products
 
 .Example
-Set-ODTConfigProperties -ForceAppShutDown "True" -PackageGUID "12345678-ABCD-1234-ABCD-1234567890AB" -TargetFilePath "$env:Public/Documents/config.xml"
-Sets the config so that apps are forced to shutdown during install and the package guid
-to "12345678-ABCD-1234-ABCD-1234567890AB"
+    Set-ODTConfigProperties -ForceAppShutDown "True" -PackageGUID "12345678-ABCD-1234-ABCD-1234567890AB" -TargetFilePath "$env:Public/Documents/config.xml"
+    
+    Sets the config so that apps are forced to shutdown during install and the package guid
+    to "12345678-ABCD-1234-ABCD-1234567890AB"
 
 .Notes
-Here is what the portion of configuration file looks like when modified by this function:
+    Here is what the portion of configuration file looks like when modified by this function:
 
-<Configuration>
-  ...
-  <Property Name="AUTOACTIVATE" Value="1" />
-  <Property Name="FORCEAPPSHUTDOWN" Value="TRUE" />
-  <Property Name="PACKAGEGUID" Value="12345678-ABCD-1234-ABCD-1234567890AB" />
-  <Property Name="SharedComputerLicensing" Value="0" />
-  <Property Name="PinIconsToTaskbar" Value="1" />
-  ...
-</Configuration>
+    <Configuration>
+      ...
+      <Property Name="AUTOACTIVATE" Value="1" />
+      <Property Name="FORCEAPPSHUTDOWN" Value="TRUE" />
+      <Property Name="PACKAGEGUID" Value="12345678-ABCD-1234-ABCD-1234567890AB" />
+      <Property Name="SharedComputerLicensing" Value="0" />
+      <Property Name="PinIconsToTaskbar" Value="1" />
+      ...
+    </Configuration>
 
 #>
     [CmdletBinding()]
@@ -2154,15 +2169,16 @@ Here is what the portion of configuration file looks like when modified by this 
 Function Get-ODTConfigProperties{
 <#
 .SYNOPSIS
-Gets the value of the ODTConfigProperties in the configuration file
+    Gets the value of the ODTConfigProperties in the configuration file
 
 .PARAMETER TargetFilePath
-Required. Full file path for the file.
+    Required. Full file path for the file.
 
 .Example
-Get-ODTConfigProperties -TargetFilePath "$env:Public\Documents\config.xml"
-Returns the value of the Properties if they exists in the specified
-file. 
+    Get-ODTConfigProperties -TargetFilePath "$env:Public\Documents\config.xml"
+    
+    Returns the value of the Properties if they exists in the specified
+    file. 
 
 #>
     Param(
@@ -2207,33 +2223,35 @@ file.
 Function Remove-ODTConfigProperties{
 <#
 .SYNOPSIS
-Removes the property items from an existing configuration xml file
+    Removes the property items from an existing configuration xml file
 
 .PARAMETER TargetFilePath
-Full file path for the file to be modified and be output to.
+    Full file path for the file to be modified and be output to.
 
 .PARAMETER Name
-Name of the property to remove
+    Name of the property to remove
 
 .Example
-Remove-ODTConfigProperties -TargetFilePath "$env:Public/Documents/config.xml"
-Removes all of the poperty items from the existing configuration xml file
+    Remove-ODTConfigProperties -TargetFilePath "$env:Public/Documents/config.xml"
+    
+    Removes all of the poperty items from the existing configuration xml file
 
 .Example
-Remove-ODTConfigProperties -Name "AUTOACTIVATE" -TargetFilePath "$env:Public/Documents/config.xml"
-Removes the poperty items with the Name "AUTOACTIVATE" from the existing configuration xml file
+    Remove-ODTConfigProperties -Name "AUTOACTIVATE" -TargetFilePath "$env:Public/Documents/config.xml"
+    
+    Removes the poperty items with the Name "AUTOACTIVATE" from the existing configuration xml file
 
 .Notes
-Here is what the portion of configuration file that would be removed by this function:
+    Here is what the portion of configuration file that would be removed by this function:
 
-<Configuration>
-  ...
-  <Property Name="AUTOACTIVATE" Value="1" />
-  <Property Name="FORCEAPPSHUTDOWN" Value="TRUE" />
-  <Property Name="PACKAGEGUID" Value="12345678-ABCD-1234-ABCD-1234567890AB" />
-  <Property Name="SharedComputerLicensing" Value="0" />
-  ...
-</Configuration>
+    <Configuration>
+      ...
+      <Property Name="AUTOACTIVATE" Value="1" />
+      <Property Name="FORCEAPPSHUTDOWN" Value="TRUE" />
+      <Property Name="PACKAGEGUID" Value="12345678-ABCD-1234-ABCD-1234567890AB" />
+      <Property Name="SharedComputerLicensing" Value="0" />
+      ...
+    </Configuration>
 
 #>
     Param(
@@ -2314,60 +2332,62 @@ Here is what the portion of configuration file that would be removed by this fun
 Function Set-ODTAdd{
 <#
 .SYNOPSIS
-Modifies an existing configuration xml file's add section
+    Modifies an existing configuration xml file's add section
 
 .PARAMETER SourcePath
-Optional.
-The SourcePath value can be set to a network, local, or HTTP path that contains a 
-Click-to-Run source. Environment variables can be used for network or local paths.
-SourcePath indicates the location to save the Click-to-Run installation source 
-when you run the Office Deployment Tool in download mode.
-SourcePath indicates the installation source path from which to install Office 
-when you run the Office Deployment Tool in configure mode. If you don’t specify 
-SourcePath in configure mode, Setup will look in the current folder for the Office 
-source files. If the Office source files aren’t found in the current folder, Setup 
-will look on Office 365 for them.
-SourcePath specifies the path of the Click-to-Run Office source from which the 
-App-V package will be made when you run the Office Deployment Tool in packager mode.
-If you do not specify SourcePath, Setup will attempt to create an \Office\Data\... 
-folder structure in the working directory from which you are running setup.exe.
+    Optional.
+    The SourcePath value can be set to a network, local, or HTTP path that contains a 
+    Click-to-Run source. Environment variables can be used for network or local paths.
+    SourcePath indicates the location to save the Click-to-Run installation source 
+    when you run the Office Deployment Tool in download mode.
+    SourcePath indicates the installation source path from which to install Office 
+    when you run the Office Deployment Tool in configure mode. If you don’t specify 
+    SourcePath in configure mode, Setup will look in the current folder for the Office 
+    source files. If the Office source files aren’t found in the current folder, Setup 
+    will look on Office 365 for them.
+    SourcePath specifies the path of the Click-to-Run Office source from which the 
+    App-V package will be made when you run the Office Deployment Tool in packager mode.
+    If you do not specify SourcePath, Setup will attempt to create an \Office\Data\... 
+    folder structure in the working directory from which you are running setup.exe.
 
 .PARAMETER Version
-Optional. If a Version value is not set, the Click-to-Run product installation streams 
-the latest available version from the source. The default is to use the most recently 
-advertised build (as defined in v32.CAB or v64.CAB at the Click-to-Run Office installation source).
-Version can be set to an Office 2013 build number by using this format: X.X.X.X
+    Optional. If a Version value is not set, the Click-to-Run product installation streams 
+    the latest available version from the source. The default is to use the most recently 
+    advertised build (as defined in v32.CAB or v64.CAB at the Click-to-Run Office installation source).
+    Version can be set to an Office 2013 build number by using this format: X.X.X.X
 
 .PARAMETER Bitness
-Required. Specifies the edition of Click-to-Run for Office 365 product to use: 32- or 64-bit.
+    Required. Specifies the edition of Click-to-Run for Office 365 product to use: 32- or 64-bit.
 
 .PARAMETER TargetFilePath
-Full file path for the file to be modified and be output to.
+    Full file path for the file to be modified and be output to.
 
 .PARAMETER Branch
-Optional. Specifies the update branch for the product that you want to download or install.
+    Optional. Specifies the update branch for the product that you want to download or install.
 
 .PARAMETER OfficeMgmtCOM
-Optional. Configures Office 365 client to receive updates from Configuration Manager
+    Optional. Configures Office 365 client to receive updates from Configuration Manager
 
 .Example
-Set-ODTAdd -SourcePath "C:\Preload\Office" -TargetFilePath "$env:Public/Documents/config.xml"
-Sets config SourcePath property of the add element to C:\Preload\Office
+    Set-ODTAdd -SourcePath "C:\Preload\Office" -TargetFilePath "$env:Public/Documents/config.xml"
+    
+    Sets config SourcePath property of the add element to C:\Preload\Office
 
 .Example
-Set-ODTAdd -SourcePath "C:\Preload\Office" -Version "15.1.2.3" -TargetFilePath "$env:Public/Documents/config.xml"
-Sets config SourcePath property of the add element to C:\Preload\Office and version to 15.1.2.3
+    Set-ODTAdd -SourcePath "C:\Preload\Office" -Version "15.1.2.3" -TargetFilePath "$env:Public/Documents/config.xml"
+    
+    Sets config SourcePath property of the add element to C:\Preload\Office and version to 15.1.2.3
 
 .Notes
-Here is what the portion of configuration file looks like when modified by this function:
+    Here is what the portion of configuration file looks like when modified by this function:
 
-<Configuration>
-  ...
-  <Add SourcePath="\\server\share\" Version="15.1.2.3" OfficeClientEdition="32"> 
+    <Configuration>
       ...
-  </Add>
-  ...
-</Configuration>
+      <Add SourcePath="\\server\share\" Version="15.1.2.3" OfficeClientEdition="32"> 
+          ...
+      </Add>
+      ...
+    </Configuration>
 
 #>
     Param(
@@ -2555,15 +2575,15 @@ Here is what the portion of configuration file looks like when modified by this 
 Function Get-ODTAdd{
 <#
 .SYNOPSIS
-Gets the value of the Add section in the configuration file
+    Gets the value of the Add section in the configuration file
 
 .PARAMETER TargetFilePath
-Required. Full file path for the file.
+    Required. Full file path for the file.
 
 .Example
-Get-ODTAdd -TargetFilePath "$env:Public\Documents\config.xml"
-Returns the value of the Add section if it exists in the specified
-file. 
+    Get-ODTAdd -TargetFilePath "$env:Public\Documents\config.xml"
+    Returns the value of the Add section if it exists in the specified
+    file. 
 
 #>
     Param(
@@ -2609,18 +2629,20 @@ file.
 Function Remove-ODTAdd{
 <#
 .SYNOPSIS
-Removes the Add node from existing configuration xml file
+    Removes the Add node from existing configuration xml file
 
 .PARAMETER TargetFilePath
-Full file path for the file to be modified and be output to.
+    Full file path for the file to be modified and be output to.
 
 .Example
-Set-ODTAdd -SourcePath "C:\Preload\Office" -TargetFilePath "$env:Public/Documents/config.xml"
-Sets config SourcePath property of the add element to C:\Preload\Office
+    Set-ODTAdd -SourcePath "C:\Preload\Office" -TargetFilePath "$env:Public/Documents/config.xml"
+    
+    Sets config SourcePath property of the add element to C:\Preload\Office
 
 .Example
-Remove-ODTAdd -TargetFilePath "$env:Public/Documents/config.xml"
-Removes the Add node from the xml congfiguration file
+    Remove-ODTAdd -TargetFilePath "$env:Public/Documents/config.xml"
+    
+    Removes the Add node from the xml congfiguration file
 
 #>
     Param(
@@ -2695,35 +2717,36 @@ Removes the Add node from the xml congfiguration file
 Function Set-ODTLogging{
 <#
 .SYNOPSIS
-Modifies an existing configuration xml file to enable/disable logging
+    Modifies an existing configuration xml file to enable/disable logging
 
 .PARAMETER Level
-Optional. Specifies options for the logging that Click-to-Run Setup 
-performs. The default level is Standard.
+    Optional. Specifies options for the logging that Click-to-Run Setup 
+    performs. The default level is Standard.
 
 .PARAMETER Path
-Optional. Specifies the fully qualified path of the folder that is 
-used for the log file. You can use environment variables. The default is %temp%.
+    Optional. Specifies the fully qualified path of the folder that is 
+    used for the log file. You can use environment variables. The default is %temp%.
 
 .PARAMETER TargetFilePath
-Full file path for the file to be modified and be output to.
+    Full file path for the file to be modified and be output to.
 
 .Example
-Set-ODTLogging -Level "Off" -TargetFilePath "$env:Public/Documents/config.xml"
-Sets config to turn off logging
+    Set-ODTLogging -Level "Off" -TargetFilePath "$env:Public/Documents/config.xml"
+    Sets config to turn off logging
 
 .Example
-Set-ODTLogging -Level "Standard" -Path "%temp%" -TargetFilePath "$env:Public/Documents/config.xml"
-Sets config to turn logging on and store the logs in the temp folder
+    Set-ODTLogging -Level "Standard" -Path "%temp%" -TargetFilePath "$env:Public/Documents/config.xml"
+    
+    Sets config to turn logging on and store the logs in the temp folder
 
 .Notes
-Here is what the portion of configuration file looks like when modified by this function:
+    Here is what the portion of configuration file looks like when modified by this function:
 
-<Configuration>
-  ...
-  <Logging Level="Standard" Path="%temp%" />
-  ...
-</Configuration>
+    <Configuration>
+      ...
+      <Logging Level="Standard" Path="%temp%" />
+      ...
+    </Configuration>
 
 #>
     Param(
@@ -2828,16 +2851,16 @@ Here is what the portion of configuration file looks like when modified by this 
 Function Get-ODTLogging{
 <#
 .SYNOPSIS
-Gets the value of the Logging section in the configuration file
+    Gets the value of the Logging section in the configuration file
 
 .PARAMETER TargetFilePath
-Required. Full file path for the file.
+    Required. Full file path for the file.
 
 .Example
-Get-ODTLogging -TargetFilePath "$env:Public\Documents\config.xml"
-Returns the value of the Logging section if it exists in the specified
-file. 
-
+    Get-ODTLogging -TargetFilePath "$env:Public\Documents\config.xml"
+    
+    Returns the value of the Logging section if it exists in the specified
+    file. 
 #>
     Param(
         [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
@@ -2881,23 +2904,24 @@ file.
 Function Remove-ODTLogging{
 <#
 .SYNOPSIS
-Removes the Logging item from configuration xml file
+    Removes the Logging item from configuration xml file
 
 .PARAMETER TargetFilePath
-Full file path for the file to be modified and be output to.
+    Full file path for the file to be modified and be output to.
 
 .Example
-Remove-ODTLogging -TargetFilePath "$env:Public/Documents/config.xml"
-Remove the Logging node from the Target File
+    Remove-ODTLogging -TargetFilePath "$env:Public/Documents/config.xml"
+    
+    Remove the Logging node from the Target File
 
 .Notes
-Here is what the portion of configuration file that will be removed by this function:
+    Here is what the portion of configuration file that will be removed by this function:
 
-<Configuration>
-  ...
-  <Logging Level="Standard" Path="%temp%" />
-  ...
-</Configuration>
+    <Configuration>
+      ...
+      <Logging Level="Standard" Path="%temp%" />
+      ...
+    </Configuration>
 
 #>
     Param(
@@ -2974,40 +2998,42 @@ Here is what the portion of configuration file that will be removed by this func
 Function Set-ODTDisplay{
 <#
 .SYNOPSIS
-Modifies an existing configuration xml file to set display level and acceptance of the EULA
+    Modifies an existing configuration xml file to set display level and acceptance of the EULA
 
 .PARAMETER Level
-Optional. Determines the user interface that the user sees when the 
-operation is performed. If Level is set to None, the user sees no UI. 
-No progress UI, completion screen, error dialog boxes, or first run 
-automatic start UI are displayed. If Level is set to Full, the user 
-sees the normal Click-to-Run user interface: Automatic start, 
-application splash screen, and error dialog boxes.
+    Optional. Determines the user interface that the user sees when the 
+    operation is performed. If Level is set to None, the user sees no UI. 
+    No progress UI, completion screen, error dialog boxes, or first run 
+    automatic start UI are displayed. If Level is set to Full, the user 
+    sees the normal Click-to-Run user interface: Automatic start, 
+    application splash screen, and error dialog boxes.
 
 .PARAMETER AcceptEULA
-If this attribute is set to TRUE, the user does not see a Microsoft 
-Software License Terms dialog box. If this attribute is set to FALSE 
-or is not set, the user may see a Microsoft Software License Terms dialog box.
+    If this attribute is set to TRUE, the user does not see a Microsoft 
+    Software License Terms dialog box. If this attribute is set to FALSE 
+    or is not set, the user may see a Microsoft Software License Terms dialog box.
 
 .PARAMETER TargetFilePath
-Full file path for the file to be modified and be output to.
+    Full file path for the file to be modified and be output to.
 
 .Example
-Set-ODTLogging -Level "Full" -TargetFilePath "$env:Public/Documents/config.xml"
-Sets config show the UI during install
+    Set-ODTLogging -Level "Full" -TargetFilePath "$env:Public/Documents/config.xml"
+    
+    Sets config show the UI during install
 
 .Example
-Set-ODTDisplay -Level "none" -AcceptEULA "True" -TargetFilePath "$env:Public/Documents/config.xml"
-Sets config to hide UI and automatically accept EULA during install
+    Set-ODTDisplay -Level "none" -AcceptEULA "True" -TargetFilePath "$env:Public/Documents/config.xml"
+    
+    Sets config to hide UI and automatically accept EULA during install
 
 .Notes
-Here is what the portion of configuration file looks like when modified by this function:
+    Here is what the portion of configuration file looks like when modified by this function:
 
-<Configuration>
-  ...
-  <Display Level="None" AcceptEULA="TRUE" />
-  ...
-</Configuration>
+    <Configuration>
+      ...
+      <Display Level="None" AcceptEULA="TRUE" />
+      ...
+    </Configuration>
 
 #>
     Param(
@@ -3114,16 +3140,15 @@ Here is what the portion of configuration file looks like when modified by this 
 Function Get-ODTDisplay{
 <#
 .SYNOPSIS
-Gets the value of the Display section in the configuration file
+    Gets the value of the Display section in the configuration file
 
 .PARAMETER TargetFilePath
-Required. Full file path for the file.
+    Required. Full file path for the file.
 
 .Example
-Get-ODTDisplay -TargetFilePath "$env:Public\Documents\config.xml"
-Returns the value of the Display section if it exists in the specified
-file. 
-
+    Get-ODTDisplay -TargetFilePath "$env:Public\Documents\config.xml"
+    
+    Returns the value of the Display section if it exists in the specified file. 
 #>
     Param(
 
@@ -3168,23 +3193,24 @@ file.
 Function Remove-ODTDisplay{
 <#
 .SYNOPSIS
-Modifies an existing configuration xml file to remove the diplay item
+    Modifies an existing configuration xml file to remove the diplay item
 
 .PARAMETER TargetFilePath
-Full file path for the file to be modified and be output to.
+    Full file path for the file to be modified and be output to.
 
 .Example
-Remove-ODTDisplay -TargetFilePath "$env:Public/Documents/config.xml"
-Sets config show the UI during install
+    Remove-ODTDisplay -TargetFilePath "$env:Public/Documents/config.xml"
+    
+    Sets config show the UI during install
 
 .Notes
-Here is what the removed portion of configuration file looks like:
+    Here is what the removed portion of configuration file looks like:
 
-<Configuration>
-  ...
-  <Display Level="None" AcceptEULA="TRUE" />
-  ...
-</Configuration>
+    <Configuration>
+      ...
+      <Display Level="None" AcceptEULA="TRUE" />
+      ...
+    </Configuration>
 
 #>
     Param(
@@ -3631,6 +3657,18 @@ function ConvertBranchNameToChannelName {
        if ($BranchName.ToLower() -eq "FirstReleaseBusiness".ToLower()) {
          return "FirstReleaseDeferred"
        }
+       if ($BranchName.ToLower() -eq "Insiders".ToLower()) {
+         return "FirstReleaseDeferred"
+       }
+       if ($BranchName.ToLower() -eq "Monthly".ToLower()) {
+         return "FirstReleaseDeferred"
+       }
+       if ($BranchName.ToLower() -eq "Targeted".ToLower()) {
+         return "FirstReleaseDeferred"
+       }
+       if ($BranchName.ToLower() -eq "Broad".ToLower()) {
+         return "FirstReleaseDeferred"
+       }
     }
 }
 
@@ -3665,8 +3703,20 @@ function Change-UpdatePathToChannel {
     if ($Channel.ToString().ToLower() -eq "deferred") {
        $branchShortName = "DC"
     }
+    if ($Channel.ToString().ToLower() -eq "insiders") {
+       $branchShortName = "IC"
+    }
+    if ($Channel.ToString().ToLower() -eq "monthly") {
+       $branchShortName = "MC"
+    }
+    if ($Channel.ToString().ToLower() -eq "targeted") {
+       $branchShortName = "TC"
+    }
+    if ($Channel.ToString().ToLower() -eq "broad") {
+       $branchShortName = "BC"
+    }
 
-    $channelNames = @("FRCC", "CC", "FRDC", "DC")
+    $channelNames = @("FRCC", "CC", "FRDC", "DC", "IC", "MC", "TC", "BC")
 
     $madeChange = $false
     foreach ($channelName in $channelNames) {

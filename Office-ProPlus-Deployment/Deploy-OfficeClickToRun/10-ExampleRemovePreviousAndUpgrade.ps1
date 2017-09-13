@@ -44,7 +44,7 @@ if ($Office2016C2RExists) {
   Write-Host "Office 2016 Click-To-Run is already installed"
 } else {
     if (!(Test-Path -Path $targetFilePath)) {
-       Generate-ODTConfigurationXml -Languages AllInUseLanguages -TargetFilePath $targetFilePath | Set-ODTAdd -Version $NULL -SourcePath $SourcePath -Channel Deferred | Set-ODTDisplay -Level None -AcceptEULA $true | Out-Null
+       Generate-ODTConfigurationXml -Languages AllInUseLanguages -TargetFilePath $targetFilePath | Set-ODTAdd -Version $NULL -SourcePath $SourcePath -Channel Broad | Set-ODTDisplay -Level None -AcceptEULA $true | Out-Null
 
        $products = Get-ODTProductToAdd -TargetFilePath $targetFilePath -All
        if ($products) { $languages = $products.Languages } else { $languages = @("en-us") }
