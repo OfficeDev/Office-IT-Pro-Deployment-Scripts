@@ -340,6 +340,12 @@ Else {
 }
 }
 
+function Test-ItemPathUNC() {    [CmdletBinding()]	
+    Param
+	(	    [Parameter(Mandatory=$true)]
+	    [String]$Path,	    [Parameter()]
+	    [String]$FileName = $null    )    Process {       $pathExists = $false       if ($FileName) {         $filePath = "$Path\$FileName"         $pathExists = [System.IO.File]::Exists($filePath)       } else {         $pathExists = [System.IO.Directory]::Exists($Path)         if (!($pathExists)) {            $pathExists = [System.IO.File]::Exists($Path)         }       }       return $pathExists;    }}
+
 Function Validate-UpdateSource() {
     [CmdletBinding()]
     Param(
@@ -402,7 +408,7 @@ Function Validate-UpdateSource() {
            }
         }
 
-        [xml]$xml = Get-ChannelXml -Bitness $bitness
+        [xml]$xml = Get-ChannelXml
         if ($OfficeLanguages) {
           $languages = $OfficeLanguages
         } else {
@@ -757,6 +763,46 @@ Process {
 
 }
 
+function Get-CabVersion {
+   [CmdletBinding()]
+   param( 
+      [Parameter(Mandatory=$true)]
+      [string] $FilePath = $NULL
+   )
+
+   process {
+       $cabPath = $FilePath
+       $fileName = Split-Path -Path $cabPath -Leaf
+       $XMLFilePath = ""
+
+       if ($cabPath.ToLower().StartsWith("http")) {
+           $webclient = New-Object System.Net.WebClient
+           $XMLFilePath = "$env:TEMP/$fileName"
+           $XMLDownloadURL= $FilePath
+           $webclient.DownloadFile($XMLDownloadURL,$XMLFilePath)
+       } else {
+         if ($cabPath.StartsWith("\\")) {
+             if (Test-ItemPathUNC -Path $cabPath) {
+                 $XMLFilePath = $cabPath
+             }
+         } else {
+             if (Test-Path -Path $cabPath) {
+                 $XMLFilePath = $cabPath
+             }
+         }
+       }
+
+       if ($XMLFilePath) {
+           $tmpName = "VersionDescriptor.xml"
+           expand $XMLFilePath $env:TEMP -f:$tmpName | Out-Null
+           $tmpName = $env:TEMP + "\VersionDescriptor.xml"
+           [xml]$versionXml = Get-Content $tmpName
+           return $versionXml
+       }
+       return $null
+   }
+}
+
 function Get-ChannelUrl() {
    [CmdletBinding()]
    param( 
@@ -885,6 +931,73 @@ Function Get-OfficeCDNUrl() {
         Pop-Location
     }
     return $CDNBaseUrl
+}
+
+Function Get-InstalledLanguages() {
+    [CmdletBinding()]
+    Param(
+        [string]$computer = $env:COMPUTERNAME
+    )
+    process {
+       $returnLangs = @()
+       $mainRegPath = Get-OfficeCTRRegPath
+
+       if ($mainRegPath) {
+          if (Test-Path -Path "hklm:\$mainRegPath\ProductReleaseIDs") {
+               $activeConfig = Get-ItemProperty -Path "hklm:\$mainRegPath\ProductReleaseIDs"
+               if($activeConfig.ActiveConfiguration){
+                  $activeId = $activeConfig.ActiveConfiguration
+                  $languages = Get-ChildItem -Path "hklm:\$mainRegPath\ProductReleaseIDs\$activeId\culture"
+                  foreach ($language in $languages) {
+                      $lang = Get-ItemProperty -Path  $language.pspath
+                      $keyName = $lang.PSChildName
+                      if ($keyName.Contains(".")) {
+                          $keyName = $keyName.Split(".")[0]
+                      }
+                      
+                      if ($keyName.ToLower() -ne "x-none") {
+                         $culture = New-Object system.globalization.cultureinfo($keyName)
+                         $returnLangs += $culture
+                      }
+                  }
+               } else {
+                  $HKLM = [UInt32] "0x80000002"
+                  $regProv = Get-Wmiobject -list "StdRegProv" -Namespace root\default -ComputerName $computer
+
+                  $activeConfig = "hklm:\$mainRegPath\ProductReleaseIDs"
+                  $activeItems = Get-ChildItem -Path $activeConfig
+    
+                  foreach($config in $activeItems){
+                      $item = $config.Name | Split-Path -Leaf
+                      $path = Join-Path $activeConfig $item
+                  
+                      $pathItems = Get-ChildItem -Path $path
+                  
+                      foreach($pathItem in $pathItems){
+                          if($pathItem.Name -match "Culture"){
+                              $activeID = $item
+                          }
+                      }
+                  }
+
+                  $languages = (Get-Item -Path "hklm:\$mainRegPath\ProductReleaseIDs\$activeId\culture").Property
+
+                  foreach ($language in $languages) {
+                      if ($language.Contains(".")) {
+                          $language = $keyName.Split(".")[0]
+                      }
+                      
+                      if ($language.ToLower() -ne "x-none") {
+                         $culture = New-Object system.globalization.cultureinfo($language)
+                         $returnLangs += $culture
+                      }
+                  }
+               }
+          }
+       }
+
+       return $returnLangs
+    }
 }
 
 function Get-CurrentLineNumber {
