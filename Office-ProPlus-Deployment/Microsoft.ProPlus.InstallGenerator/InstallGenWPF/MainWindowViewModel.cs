@@ -153,7 +153,7 @@ namespace MetroDemo
                 new OfficeBranch()
                 {
                     Branch = Branch.Current,
-                    Name = "Current",
+                    Name = "Monthly",
                     NewName = "Current",
                     Id = "Current",
                     CurrentVersion = "16.0.7070.2028",
@@ -190,7 +190,7 @@ namespace MetroDemo
                 new OfficeBranch()
                 {
                     Branch = Branch.Business,
-                    Name = "Deferred",
+                    Name = "Broad",
                     NewName = "Deferred",
                     Id = "Business",
                     CurrentVersion = "16.0.6741.2056",
@@ -209,7 +209,7 @@ namespace MetroDemo
                 new OfficeBranch()
                 {
                     Branch = Branch.FirstReleaseCurrent,
-                    Name = "First Release Current",
+                    Name = "Insiders",
                     NewName = "FirstReleaseCurrent",
                     Id = "FirstReleaseCurrent",
                     CurrentVersion = "16.0.7070.2030",
@@ -242,7 +242,7 @@ namespace MetroDemo
                 new OfficeBranch()
                 {
                     Branch = Branch.FirstReleaseBusiness,
-                    Name = "First Release Deferred",
+                    Name = "Targeted",
                     NewName = "FirstReleaseDeferred",
                     Id = "FirstReleaseBusiness",
                     CurrentVersion = "16.0.6965.2069",

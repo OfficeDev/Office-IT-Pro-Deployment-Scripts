@@ -466,17 +466,20 @@ namespace Microsoft.OfficeProPlus.Downloader
             var lstReturn = new List<UpdateChannel>();
             var ccUpdateChannel = new UpdateChannel()
             {
-                Name = "Current",
+                Name = "Monthly",
+                OldName = "Current",
                 Updates = new List<Update>()
             };
             var dcUpdateChannel = new UpdateChannel()
             {
-                Name = "Deferred",
+                Name = "Targeted",
+                OldName = "First Release",
                 Updates = new List<Update>()
             };
             var frdcUpdateChannel = new UpdateChannel()
             {
-                Name = "FirstReleaseDeferred",
+                Name = "Broad",
+                OldName = "Deferred",
                 Updates = new List<Update>()
             };
             lstReturn.Add(ccUpdateChannel);
@@ -514,17 +517,15 @@ namespace Microsoft.OfficeProPlus.Downloader
                 for (var i = 1; i <= 3; i++)
                 {
                     var rowHeader = headerRow[i];
-                    if (rowHeader.ToLower().Contains("current"))
+                    if (rowHeader.ToLower().Contains("monthly"))
                     {
                         ccIndex = i;
                     }
-                    if (rowHeader.ToLower().Contains("deferred") &&
-                        rowHeader.ToLower().Contains("first release"))
+                    if (rowHeader.ToLower().Contains("semi-annual"))
                     {
                         frdcIndex = i;
                     }
-                    if (rowHeader.ToLower().Contains("deferred") &&
-                        !rowHeader.ToLower().Contains("first release"))
+                    if (rowHeader.ToLower().Contains("deferred"))
                     {
                         dcIndex = i;
                     }
