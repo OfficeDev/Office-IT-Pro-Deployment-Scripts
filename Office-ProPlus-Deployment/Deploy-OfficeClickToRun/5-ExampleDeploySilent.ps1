@@ -31,7 +31,7 @@ if((Validate-UpdateSource -UpdateSource $SourcePath -ShowMissingFiles $false) -e
 
 #This script additionally sets the "AcceptEULA" to "True" and the display "Level" to "None" so the install is silent.
 
-Generate-ODTConfigurationXml -Languages AllInUseLanguages -TargetFilePath $targetFilePath | Set-ODTAdd -Version $NULL -Channel Deferred -SourcePath $SourcePath | Set-ODTDisplay -Level None -AcceptEULA $true | Install-OfficeClickToRun
+Generate-ODTConfigurationXml -Languages AllInUseLanguages -TargetFilePath $targetFilePath | Set-ODTAdd -Version $NULL -Channel Broad -SourcePath $SourcePath | Set-ODTDisplay -Level None -AcceptEULA $true | Install-OfficeClickToRun
 
 # Configuration.xml file for Click-to-Run for Office 365 products reference. https://technet.microsoft.com/en-us/library/JJ219426.aspx
 }
