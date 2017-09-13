@@ -37,8 +37,8 @@ namespace OfficeVersionHistory.Controllers
         {
             //
             var updateChannels = await _versionDownloader.GetUpdateChannelsAsync();
-            var selectChannel = updateChannels.FirstOrDefault(c => c.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase)||
-             c.OldName.Equals(name, StringComparison.InvariantCultureIgnoreCase));
+            var selectChannel = updateChannels.FirstOrDefault(c => c.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase)
+           || c.NewName.Equals(name, StringComparison.InvariantCultureIgnoreCase));
             return selectChannel;
         }
 

@@ -15,7 +15,7 @@ namespace Microsoft.OfficeProPlus.Downloader.Model
 
         public string Name { get; set; }
 
-        public string OldName { get; set; }
+        public string NewName { get; set; }
 
 
         public List<Update> Updates { get; set; }

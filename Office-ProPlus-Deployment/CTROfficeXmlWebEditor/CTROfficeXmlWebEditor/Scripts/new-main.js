@@ -366,7 +366,7 @@ $(document).ready(function () {
                 for (var i = 0; i < versionData.length; i++) {
                     var flagMatch = false;
 
-                    var branchName = versionData[i].Name;
+                    var branchName = versionData[i].NewName;
 
                     if (branchName == "InsidersSlow") {
                         branchName = "FirstReleaseCurrent";
@@ -417,7 +417,7 @@ $(document).ready(function () {
                 var flagMatch = false;
                 var selectedBranch = $("#cbBranch").val();
 
-                var branchName = versionData[i].Name;
+                var branchName = versionData[i].NewName;
 
                 if (branchName == "InsidersSlow") {
                     branchName = "FirstReleaseCurrent";
@@ -453,7 +453,7 @@ $(document).ready(function () {
                 var flagMatch = false;
                 var selectedBranch = $("#cbBranch").val();
 
-                var branchName = versionData[i].Name;
+                var branchName = versionData[i].NewName;
 
                 if (branchName == "InsidersSlow") {
                     branchName = "FirstReleaseCurrent";
@@ -1134,7 +1134,7 @@ function changeVersions(version) {
             for (var i = 0; i < versionData.length; i++) {
                 var flagMatch = false;
 
-                var branchName = versionData[i].Name;
+                var branchName = versionData[i].NewName;
 
                 if (branchName == "InsidersSlow") {
                     branchName = "FirstReleaseCurrent";
