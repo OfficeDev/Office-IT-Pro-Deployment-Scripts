@@ -521,7 +521,7 @@ namespace Microsoft.OfficeProPlus.Downloader
                     {
                         ccIndex = i;
                     }
-                    if (rowHeader.ToLower().Contains("semi-annual"))
+                    if (rowHeader.ToLower().Contains("targeted"))
                     {
                         frdcIndex = i;
                     }
