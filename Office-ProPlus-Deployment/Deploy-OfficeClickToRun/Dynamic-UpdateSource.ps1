@@ -10,7 +10,11 @@ namespace Microsoft.Office
         Business=1,
         Validation=2,
         FirstReleaseCurrent=3,
-        FirstReleaseBusiness=4
+        FirstReleaseBusiness=4,
+        Insiders=5,
+        Monthly=6,
+        Targeted=7,
+        Broad=8
     }
 }
 "
@@ -30,7 +34,11 @@ namespace Microsoft.Office
         Deferred=1,
         Validation=2,
         FirstReleaseCurrent=3,
-        FirstReleaseDeferred=4
+        FirstReleaseDeferred=4,
+        Insiders=5,
+        Monthly=6,
+        Targeted=7,
+        Broad=8
     }
 }
 "
@@ -41,19 +49,23 @@ try {
 Function Dynamic-UpdateSource {
 <#
 .Synopsis
-Dynamically updates the ODT Configuration Xml Update Source based on the location of the computer
+    Dynamically updates the ODT Configuration Xml Update Source based on the location of the computer
+
 .DESCRIPTION
-If Office Click-to-Run is installed the administrator will be prompted to confirm
-uninstallation. A configuration file will be generated and used to remove all Office CTR 
-products.
+    If Office Click-to-Run is installed the administrator will be prompted to confirm
+    uninstallation. A configuration file will be generated and used to remove all Office CTR 
+    products.
+
 .PARAMETER TargetFilePath
-Specifies file path and name for the resulting XML file, for example "\\comp1\folder\config.xml".  Is also the source of the XML that will be updated.
+    Specifies file path and name for the resulting XML file, for example "\\comp1\folder\config.xml".  Is also the source of the XML that will be updated.
+
 .PARAMETER LookupFilePath
-Specifies the source of the csv that contains ADSites with their corresponding SourcePath, for example "\\comp1\folder\sources.csv"
+    Specifies the source of the csv that contains ADSites with their corresponding SourcePath, for example "\\comp1\folder\sources.csv"
+
 .EXAMPLE
-Dynamic-UpdateSource -TargetFilePath "\\comp1\folder\config.xml" -LookupFilePath "\\comp1\folder\sources.csv"
-Description:
-Will Dynamically set the Update Source based a list Provided
+    Dynamic-UpdateSource -TargetFilePath "\\comp1\folder\config.xml" -LookupFilePath "\\comp1\folder\sources.csv"
+    
+    In this example, an Update Source is dynamically set based on a list provided.
 #>
     [CmdletBinding()]
     Param(
@@ -66,7 +78,9 @@ Will Dynamically set the Update Source based a list Provided
         [Parameter(ValueFromPipelineByPropertyName=$true)]
         [bool] $SourceByIP = $false,
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [bool] $IncludeUpdatePath = $true
+        [bool] $IncludeUpdatePath = $true,
+        [Parameter()]
+        [string]$LogFilePath
     )
 
     Process{
@@ -131,9 +145,9 @@ Will Dynamically set the Update Source based a list Provided
             }          
      }
      if ($SourceValue) {
-        SetODTAdd -TargetFilePath $TargetFilePath -SourcePath $SourceValue
+        SetODTAdd -TargetFilePath $TargetFilePath -SourcePath $SourceValue -LogFilePath $LogFilePath
         if($IncludeUpdatePath){
-            SetODTUpdates -TargetFilePath $TargetFilePath -UpdatePath $SourceValue
+            SetODTUpdates -TargetFilePath $TargetFilePath -UpdatePath $SourceValue -LogFilePath $LogFilePath
         }
 
      } else {
@@ -170,11 +184,17 @@ Function SetODTAdd{
         [Microsoft.Office.Branches] $Branch,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [Microsoft.Office.Channel] $Channel = "Current"
+        [Microsoft.Office.Channel] $Channel = "Current",
+
+        [Parameter()]
+        [string]$LogFilePath
 
     )
 
     Process{
+        $currentFileName = Get-CurrentFileName
+        Set-Alias -name LINENUM -value Get-CurrentLineNumber
+
         $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
 
         #Load file
@@ -200,10 +220,7 @@ Function SetODTAdd{
 
         #Check for proper root element
         if($ConfigFile.Configuration -eq $null){
-            #write log
-            $lineNum = Get-CurrentLineNumber    
-            $filName = Get-CurrentFileName 
-            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "No configuration element"
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "No configuration element" -LogFilePath $LogFilePath
             throw $NoConfigurationElement
         }
 
@@ -263,10 +280,7 @@ Function SetODTAdd{
 
             Write-Host
             Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
-            #write log
-            $lineNum = Get-CurrentLineNumber    
-            $filName = Get-CurrentFileName 
-            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "The Office XML Configuration file has been saved to: $TargetFilePath"
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "The Office XML Configuration file has been saved to: $TargetFilePath" -LogFilePath $LogFilePath
         } else {
             $results = new-object PSObject[] 0;
             $Result = New-Object �TypeName PSObject 
@@ -290,11 +304,17 @@ Function SetODTUpdates{
         [string] $UpdatePath = $NULL,        
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [string] $TargetFilePath
+        [string] $TargetFilePath,
+
+        [Parameter()]
+        [string]$LogFilePath
 
     )
 
     Process{
+        $currentFileName = Get-CurrentFileName
+        Set-Alias -name LINENUM -value Get-CurrentLineNumber 
+
         $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
 
         #Load file
@@ -315,10 +335,7 @@ Function SetODTUpdates{
 
         #Check for proper root element
         if($ConfigFile.Configuration -eq $null){
-            #write log
-            $lineNum = Get-CurrentLineNumber    
-            $filName = Get-CurrentFileName 
-            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "No configuration element"
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "No configuration element" -LogFilePath $LogFilePath
             throw $NoConfigurationElement
         }
 
@@ -354,10 +371,7 @@ Function SetODTUpdates{
 
             Write-Host
             Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
-            #write log
-            $lineNum = Get-CurrentLineNumber    
-            $filName = Get-CurrentFileName 
-            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "The Office XML Configuration file has been saved to: $TargetFilePath"
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "The Office XML Configuration file has been saved to: $TargetFilePath" -LogFilePath $LogFilePath
         } else {
             $results = new-object PSObject[] 0;
             $Result = New-Object �TypeName PSObject 
@@ -375,13 +389,15 @@ Function SetODTUpdates{
 Function Get-ODTAdd{
 <#
 .SYNOPSIS
-Gets the value of the Add section in the configuration file
+    Gets the value of the Add section in the configuration file
+
 .PARAMETER TargetFilePath
-Required. Full file path for the file.
+    Required. Full file path for the file.
+
 .Example
-Get-ODTAdd -TargetFilePath "$env:Public\Documents\config.xml"
-Returns the value of the Add section if it exists in the specified
-file. 
+    Get-ODTAdd -TargetFilePath "$env:Public\Documents\config.xml"
+    
+    Returns the value of the Add section if it exists in the specified file. 
 #>
     Param(
 
@@ -389,11 +405,17 @@ file.
         [string] $ConfigurationXML = $NULL,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [string] $TargetFilePath
+        [string] $TargetFilePath,
+
+        [Parameter()]
+        [string]$LogFilePath
 
     )
 
     Process{
+        $currentFileName = Get-CurrentFileName
+        Set-Alias -name LINENUM -value Get-CurrentLineNumber
+
         $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
 
         #Load the file
@@ -412,10 +434,7 @@ file.
 
         #Check that the file is properly formatted
         if($ConfigFile.Configuration -eq $null){
-            #write log
-            $lineNum = Get-CurrentLineNumber    
-            $filName = Get-CurrentFileName 
-            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "No configuration element"
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "No configuration element" -LogFilePath $LogFilePath
             throw $NoConfigurationElement            
         }
         
@@ -436,10 +455,6 @@ Function GetFilePath() {
 
     if (!($TargetFilePath)) {
        Write-Host "Enter the path to the XML Configuration File: " -NoNewline
-        #write log
-        $lineNum = Get-CurrentLineNumber    
-        $filName = Get-CurrentFileName 
-        WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "Enter the path to the XML Configuration File: "
        $TargetFilePath = Read-Host
     } else {
        #Write-Host "Target XML Configuration File: $TargetFilePath"
@@ -466,7 +481,6 @@ Function GetScriptPath() {
      if ($PSScriptRoot) {
        $scriptPath = $PSScriptRoot
      } else {
-       $scriptPath = split-path -parent $MyInvocation.MyCommand.Definition
        $scriptPath = (Get-Item -Path ".\").FullName
      }
 
@@ -662,39 +676,42 @@ Function CreateSubnet(){
     return $SubnetMask
  }
 
-Function Get-CurrentLineNumber {
+function Get-CurrentLineNumber {
     $MyInvocation.ScriptLineNumber
 }
 
-Function Get-CurrentFileName{
+function Get-CurrentFileName{
     $MyInvocation.ScriptName.Substring($MyInvocation.ScriptName.LastIndexOf("\")+1)
-}
-
-Function Get-CurrentFunctionName {
-    (Get-Variable MyInvocation -Scope 1).Value.MyCommand.Name;
 }
 
 Function WriteToLogFile() {
     param( 
-      [Parameter(Mandatory=$true)]
-      [string]$LNumber,
-      [Parameter(Mandatory=$true)]
-      [string]$FName,
-      [Parameter(Mandatory=$true)]
-      [string]$ActionError
+        [Parameter(Mandatory=$true)]
+        [string]$LNumber,
+
+        [Parameter(Mandatory=$true)]
+        [string]$FName,
+
+        [Parameter(Mandatory=$true)]
+        [string]$ActionError,
+
+        [Parameter()]
+        [string]$LogFilePath
     )
+
     try{
         $headerString = "Time".PadRight(30, ' ') + "Line Number".PadRight(15,' ') + "FileName".PadRight(60,' ') + "Action"
-        stringToWrite = $(Get-Date -Format G).PadRight(30, ' ') + $($LNumber).PadRight(15, ' ') + $($FName).PadRight(60,' ') + $ActionError
+        $stringToWrite = $(Get-Date -Format G).PadRight(30, ' ') + $($LNumber).PadRight(15, ' ') + $($FName).PadRight(60,' ') + $ActionError
 
-        #check if file exists, create if it doesn't   
-        $getCurrentDatePath = "C:\Windows\Temp\" + (Get-Date -Format u).Substring(0,10)+"OfficeAutoScriptLog.txt"
-        if(Test-Path $getCurrentDatePath){#if exists, append  
-             Add-Content $getCurrentDatePath $stringToWrite
+        if(!$LogFilePath){
+            $LogFilePath = "$env:windir\Temp\" + (Get-Date -Format u).Substring(0,10)+"_OfficeDeploymentLog.txt"
+        }
+        if(Test-Path $LogFilePath){
+             Add-Content $LogFilePath $stringToWrite
         }
         else{#if not exists, create new
-             Add-Content $getCurrentDatePath $headerString
-             Add-Content $getCurrentDatePath $stringToWrite
+             Add-Content $LogFilePath $headerString
+             Add-Content $LogFilePath $stringToWrite
         }
     } catch [Exception]{
         Write-Host $_
