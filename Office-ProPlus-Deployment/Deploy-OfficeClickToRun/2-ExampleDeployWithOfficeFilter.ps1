@@ -34,7 +34,7 @@ if((Validate-UpdateSource -UpdateSource $SourcePath -ShowMissingFiles $false) -e
 Generate-ODTConfigurationXml -Languages AllInUseLanguages -TargetFilePath $targetFilePath | Out-Null
 
 #Ensure the Version attribute is not set so the install will install the latest version
-Set-ODTAdd -TargetFilePath $targetFilePath -Version $NULL -Channel Deferred -SourcePath $SourcePath | Out-Null
+Set-ODTAdd -TargetFilePath $targetFilePath -Version $NULL -Channel Broad -SourcePath $SourcePath | Out-Null
 
 #Any workstation in the Paris Office Active Directory Organizational Unit (OU) or sub OU's will have their configuration overrided to set the lanuguage to French
 if ((Check-ComputerInOUPath -ContainerPath "OU=Paris" -IncludeSubContainers $true)) {
