@@ -60,10 +60,10 @@ namespace Microsoft.Office
         Validation=2,
         FirstReleaseCurrent=3,
         FirstReleaseBusiness=4,
-        Insiders=5,
+        MonthlyTargeted=5,
         Monthly=6,
-        Targeted=7,
-        Broad=8
+        SemiAnnualTargeted=7,
+        SemiAnnual=8
     }
 }
 "
@@ -84,10 +84,10 @@ $enum4 = "
          Validation=2,
          FirstReleaseCurrent=3,
          FirstReleaseDeferred=4,
-         Insiders=5,
+         MonthlyTargeted=5,
          Monthly=6,
-         Targeted=7,
-         Broad=8
+         SemiAnnualTargeted=7,
+         SemiAnnual=8
      }
  }
  "
@@ -3657,17 +3657,17 @@ function ConvertBranchNameToChannelName {
        if ($BranchName.ToLower() -eq "FirstReleaseBusiness".ToLower()) {
          return "FirstReleaseDeferred"
        }
-       if ($BranchName.ToLower() -eq "Insiders".ToLower()) {
-         return "FirstReleaseDeferred"
+       if ($BranchName.ToLower() -eq "MonthlyTargeted".ToLower()) {
+         return "MonthlyTargeted"
        }
        if ($BranchName.ToLower() -eq "Monthly".ToLower()) {
-         return "FirstReleaseDeferred"
+         return "Monthly"
        }
-       if ($BranchName.ToLower() -eq "Targeted".ToLower()) {
-         return "FirstReleaseDeferred"
+       if ($BranchName.ToLower() -eq "SemiAnnualTargeted".ToLower()) {
+         return "SemiAnnualTargeted"
        }
-       if ($BranchName.ToLower() -eq "Broad".ToLower()) {
-         return "FirstReleaseDeferred"
+       if ($BranchName.ToLower() -eq "SemiAnnual".ToLower()) {
+         return "SemiAnnual"
        }
     }
 }
@@ -3703,20 +3703,20 @@ function Change-UpdatePathToChannel {
     if ($Channel.ToString().ToLower() -eq "deferred") {
        $branchShortName = "DC"
     }
-    if ($Channel.ToString().ToLower() -eq "insiders") {
-       $branchShortName = "IC"
+    if ($Channel.ToString().ToLower() -eq "monthlytargeted") {
+       $branchShortName = "MTC"
     }
     if ($Channel.ToString().ToLower() -eq "monthly") {
        $branchShortName = "MC"
     }
-    if ($Channel.ToString().ToLower() -eq "targeted") {
-       $branchShortName = "TC"
+    if ($Channel.ToString().ToLower() -eq "semiannualtargeted") {
+       $branchShortName = "SATC"
     }
-    if ($Channel.ToString().ToLower() -eq "broad") {
-       $branchShortName = "BC"
+    if ($Channel.ToString().ToLower() -eq "semiannual") {
+       $branchShortName = "SAC"
     }
 
-    $channelNames = @("FRCC", "CC", "FRDC", "DC", "IC", "MC", "TC", "BC")
+    $channelNames = @("FRCC", "CC", "FRDC", "DC", "MTC", "MC", "SATC", "SAC")
 
     $madeChange = $false
     foreach ($channelName in $channelNames) {
