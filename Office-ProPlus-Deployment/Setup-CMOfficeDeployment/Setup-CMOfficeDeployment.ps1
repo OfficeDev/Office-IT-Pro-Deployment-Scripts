@@ -22,10 +22,10 @@ using System;
           Current = 1,
           FirstReleaseDeferred = 2,
           Deferred = 3,
-          Insiders = 4,
+          MonthlyTargeted = 4,
           Monthly = 5,
-          Targeted = 6,
-          Broad = 7
+          SemiAnnualTargeted = 6,
+          SemiAnnual = 7
        }
 "
 Add-Type -TypeDefinition $enumDef -ErrorAction SilentlyContinue
@@ -171,7 +171,7 @@ Download-CMOfficeChannelFiles -OfficeFilesPath D:\OfficeChannelFiles -Bitness v3
          throw "Dependency file missing: $PSScriptRoot\Download-OfficeProPlusChannels.ps1"
        }
 
-       $ChannelList = @("FirstReleaseCurrent","Current","FirstReleaseDeferred","Deferred","Insiders","Monthly","Targeted","Broad")
+       $ChannelList = @("FirstReleaseCurrent","Current","FirstReleaseDeferred","Deferred","MonthlyTargeted","Monthly","SemiAnnualTargeted","SemiAnnual")
        $ChannelXml = Get-ChannelXml -FolderPath $OfficeFilesPath -OverWrite $true
 
        foreach ($Channel in $ChannelList) {
@@ -279,7 +279,7 @@ Create-CMOfficePackage -Channels Deferred -Bitness v32 -OfficeSourceFilesPath D:
             Copy-Item -Path $cabFilePath -Destination "$PSScriptRoot\ofl.cab" -Force
        }
 
-       $ChannelList = @("FirstReleaseCurrent", "Current", "FirstReleaseDeferred", "Deferred","Insiders","Monthly","Targeted","Broad")
+       $ChannelList = @("FirstReleaseCurrent", "Current", "FirstReleaseDeferred", "Deferred","MonthlyTargeted","Monthly","SemiAnnualTargeted","SemiAnnual")
        $ChannelXml = Get-ChannelXml -FolderPath $OfficeSourceFilesPath -OverWrite $false
 
        [bool]$packageCreated = $false
@@ -469,7 +469,7 @@ Update-CMOfficePackage -Channels Current -Bitness Both -OfficeSourceFilesPath D:
             Copy-Item -Path $cabFilePath -Destination "$PSScriptRoot\ofl.cab" -Force
        }
 
-       $ChannelList = @("FirstReleaseCurrent", "Current", "FirstReleaseDeferred", "Deferred","Insiders","Monthly","Targeted","Broad")
+       $ChannelList = @("FirstReleaseCurrent", "Current", "FirstReleaseDeferred", "Deferred","MonthlyTargeted","Monthly","SemiAnnualTargeted","SemiAnnual")
        $ChannelXml = Get-ChannelXml -FolderPath $OfficeSourceFilesPath -OverWrite $false
        [bool]$packageNotification = $false
 
@@ -1512,7 +1512,7 @@ to install additional languages on a client
         $LargeDrv = Get-LargestDrive
         $LocalPath = "$LargeDrv\OfficeDeployment"
 
-        $ChannelList = @("FirstReleaseCurrent", "Current", "FirstReleaseDeferred", "Deferred","Insiders","Monthly","Targeted","Broad")
+        $ChannelList = @("FirstReleaseCurrent", "Current", "FirstReleaseDeferred", "Deferred","MonthlyTargeted","Monthly","SemiAnnualTargeted","SemiAnnual")
         $ChannelXml = Get-ChannelXml -FolderPath $LocalPath -OverWrite $true
 
         foreach ($ChannelName in $ChannelList) {
@@ -1974,7 +1974,7 @@ clients in the target collection 'Office Update'.
 
         $strBitness = $Bitness.ToString() -Replace "v", ""
 
-        $ChannelList = @("FirstReleaseCurrent", "Current", "FirstReleaseDeferred", "Deferred","Insiders","Monthly","Targeted","Broad")
+        $ChannelList = @("FirstReleaseCurrent", "Current", "FirstReleaseDeferred", "Deferred","MonthlyTargeted","Monthly","SemiAnnualTargeted","SemiAnnual")
         $ChannelXml = Get-ChannelXml
 
         foreach ($ChannelName in $ChannelList) {
