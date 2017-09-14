@@ -87,10 +87,10 @@ namespace MetroDemo.ExampleViews
                 ProductUpdateSource.Text = GlobalObjects.ViewModel.DownloadFolderPath;
             }
 
-            var currentBranch = GlobalObjects.ViewModel.Branches.FirstOrDefault(b => b.NewName.ToLower() == "Current".ToLower());
-            var deferredBranch = GlobalObjects.ViewModel.Branches.FirstOrDefault(b => b.NewName.ToLower() == "Deferred".ToLower());
-            var firstReleaseDeferred = GlobalObjects.ViewModel.Branches.FirstOrDefault(b => b.NewName.ToLower() == "FirstReleaseDeferred".ToLower());
-            var firstReleaseCurrent = GlobalObjects.ViewModel.Branches.FirstOrDefault(b => b.NewName.ToLower() == "FirstReleaseCurrent".ToLower());
+            var currentBranch = GlobalObjects.ViewModel.Branches.FirstOrDefault(b => b.NewName.ToLower() == "Monthly".ToLower());
+            var deferredBranch = GlobalObjects.ViewModel.Branches.FirstOrDefault(b => b.NewName.ToLower() == "Broad".ToLower());
+            var firstReleaseDeferred = GlobalObjects.ViewModel.Branches.FirstOrDefault(b => b.NewName.ToLower() == "Targeted".ToLower());
+            var firstReleaseCurrent = GlobalObjects.ViewModel.Branches.FirstOrDefault(b => b.NewName.ToLower() == "Insiders".ToLower());
             if (currentBranch == null) currentBranch = new OfficeBranch();
             if (deferredBranch == null) deferredBranch = new OfficeBranch();
             if (firstReleaseDeferred == null) firstReleaseDeferred = new OfficeBranch();
@@ -100,14 +100,14 @@ namespace MetroDemo.ExampleViews
             {
                 new Channel()
                 {
-                    Name = "Current",
+                    Name = "Monthly",
                     ChannelName = "Current",
                     Version = "Latest",
                     Builds = currentBranch.Versions,
                     ForeGround = "Gray",
                 },
                 new Channel() {
-                    Name = "Deferred", 
+                    Name = "Broad", 
                     ChannelName = "Deferred", 
                     Version = "Latest", 
                     ForeGround = "Gray",
@@ -115,7 +115,7 @@ namespace MetroDemo.ExampleViews
                 },
                 new Channel()
                 {
-                    Name = "First Release Deferred",
+                    Name = "Targeted",
                     ChannelName = "FirstReleaseDeferred",
                     Version = "Latest",
                     ForeGround = "Gray",
@@ -123,7 +123,7 @@ namespace MetroDemo.ExampleViews
                 },
                 new Channel()
                 {
-                    Name = "First Release Current",
+                    Name = "Insiders",
                     ChannelName = "FirstReleaseCurrent",
                     Version = "Latest",
                     ForeGround = "Gray",

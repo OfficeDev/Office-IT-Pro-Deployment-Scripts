@@ -16,10 +16,10 @@ namespace Micorosft.OfficeProPlus.ConfigurationXml
     }
     public enum ODTChannel
     {
-        Current = 0,
-        FirstReleaseCurrent = 4,
-        Deferred = 1,
+        Monthly = 0,
+        Insiders = 4,
+        Broad = 1,
         Validation = 2,
-        FirstReleaseDeferred = 3
+        Targeted = 3
     }
 }

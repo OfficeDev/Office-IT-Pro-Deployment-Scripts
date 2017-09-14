@@ -153,8 +153,8 @@ namespace MetroDemo
                 new OfficeBranch()
                 {
                     Branch = Branch.Current,
-                    Name = "Monthly",
-                    NewName = "Current",
+                    Name = "Current",
+                    NewName = "Monthly",
                     Id = "Current",
                     CurrentVersion = "16.0.7070.2028",
                     Versions = new List<Build>()
@@ -190,8 +190,8 @@ namespace MetroDemo
                 new OfficeBranch()
                 {
                     Branch = Branch.Business,
-                    Name = "Broad",
-                    NewName = "Deferred",
+                    Name = "Deferred",
+                    NewName = "Broad",
                     Id = "Business",
                     CurrentVersion = "16.0.6741.2056",
                     Versions = new List<Build>()
@@ -209,8 +209,8 @@ namespace MetroDemo
                 new OfficeBranch()
                 {
                     Branch = Branch.FirstReleaseCurrent,
-                    Name = "Insiders",
-                    NewName = "FirstReleaseCurrent",
+                    Name = "FirstReleaseCurrent",
+                    NewName = "Insider Slow",
                     Id = "FirstReleaseCurrent",
                     CurrentVersion = "16.0.7070.2030",
                     Versions = new List<Build>()
@@ -242,8 +242,8 @@ namespace MetroDemo
                 new OfficeBranch()
                 {
                     Branch = Branch.FirstReleaseBusiness,
-                    Name = "Targeted",
-                    NewName = "FirstReleaseDeferred",
+                    Name = "FirstReleaseDeferred",
+                    NewName = "Targeted",
                     Id = "FirstReleaseBusiness",
                     CurrentVersion = "16.0.6965.2069",
                     Versions = new List<Build>()
@@ -487,30 +487,30 @@ namespace MetroDemo
                     if (updatedBranch.Name.ToLower() == "current")
                     {
                         branch.Branch = Branch.Current;
-                        branch.Name = updatedBranch.Name;
-                        branch.NewName = updatedBranch.Name;
-                        branch.Id = updatedBranch.Name;
+                        branch.Name = "Monthly";
+                        branch.NewName = "Monthly";
+                        branch.Id = "Monthly";
                     }
                     if (updatedBranch.Name.ToLower() == "deferred")
                     {
                         branch.Branch = Branch.Business;
-                        branch.Name = updatedBranch.Name;
-                        branch.NewName = updatedBranch.Name;
-                        branch.Id = "Business";
+                        branch.Name = "Broad";
+                        branch.NewName = "Broad";
+                        branch.Id = "Broad";
                     }
                     if (updatedBranch.Name.ToLower() == "firstreleasedeferred")
                     {
                         branch.Branch = Branch.FirstReleaseBusiness;
-                        branch.Name = "First Release Deferred";
-                        branch.NewName = updatedBranch.Name;
-                        branch.Id = "FirstReleaseBusiness";
+                        branch.Name = "Targeted";
+                        branch.NewName = "Targeted";
+                        branch.Id = "Targeted";
                     }
                     if (updatedBranch.Name.ToLower() == "insidersslow")
                     {
                         branch.Branch = Branch.FirstReleaseCurrent;
-                        branch.Name = "First Release Current";
-                        branch.NewName = "FirstReleaseCurrent";
-                        branch.Id = "FirstReleaseCurrent";
+                        branch.Name = "Insider Slow";
+                        branch.NewName = "Insider Slow";
+                        branch.Id = "Insider Slow";
                     }
                     branch.Updated = false;
                     foreach (var update in updatedBranch.Updates)

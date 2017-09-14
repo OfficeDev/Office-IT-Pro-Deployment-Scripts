@@ -368,7 +368,7 @@ $(document).ready(function () {
 
                     var branchName = versionData[i].NewName;
 
-                    if (branchName == "InsidersSlow") {
+                    if (branchName == "Insider Slow") {
                         branchName = "FirstReleaseCurrent";
                     }
 
@@ -419,10 +419,6 @@ $(document).ready(function () {
 
                 var branchName = versionData[i].NewName;
 
-                if (branchName == "InsidersSlow") {
-                    branchName = "FirstReleaseCurrent";
-                }
-
                 if (branchName == selectedBranch.replace(" ", "")) {
                     flagMatch = true;
                 }
@@ -443,6 +439,14 @@ $(document).ready(function () {
                     UpdateLegacyVersion();
                     $('#txtTargetVersion').val($('#txtLegacyVersion').val());
                 }
+                if (selectedBranch == "Insiders") {
+                    var builds = [];
+                    builds.push('Latest');
+                    var drpBuild = $('#txtBuild');
+                    drpBuild.msdropdownvals(builds, builds);
+                    UpdateLegacyVersion();
+                }
+               
             }
         }
     }
@@ -455,7 +459,7 @@ $(document).ready(function () {
 
                 var branchName = versionData[i].NewName;
 
-                if (branchName == "InsidersSlow") {
+                if (branchName == "InsiderSlow") {
                     branchName = "FirstReleaseCurrent";
                 }
 
@@ -1129,17 +1133,16 @@ function changeVersions(version) {
         selectVersions.push('');
         var versionss = [];
         var selectedBranch = $("#cbBranch").val();
+   
+
+
 
         if (versionData) {
             for (var i = 0; i < versionData.length; i++) {
                 var flagMatch = false;
 
                 var branchName = versionData[i].NewName;
-
-                if (branchName == "InsidersSlow") {
-                    branchName = "FirstReleaseCurrent";
-                }
-
+                
                 if (branchName == selectedBranch.replace(" ", "")) {
                     flagMatch = true;
                 }
@@ -1147,7 +1150,7 @@ function changeVersions(version) {
                 if (flagMatch) {
                     versionss.push('Latest');
                     for (var v = 0; v < versionData[i].Updates.length; v++) {
-                        var update = versionData[i].Updates[v];                        
+                        var update = versionData[i].Updates[v];
                         selectVersions.push(update.LegacyVersion);
                         if ($.inArray(update.Version, versionss) === -1) {
                             versionss.push(update.Version);
@@ -1155,8 +1158,17 @@ function changeVersions(version) {
                     }
                     var txtVersion = $('#txtVersion');
                     txtVersion.msdropdownvals(versionss, versionss);
-                    txtVersion.change();                    
+                    txtVersion.change();
                 }
+                if (selectedBranch == "Insiders") {
+                    var txtVersion = $('#txtVersion');
+
+                    var versionss = [];
+                    versionss.push('Latest');
+                    txtVersion.msdropdownvals(versionss, versionss);
+                    txtVersion.change();
+                }
+            
             }
         }
         $("#txtVersion").attr("placeholder", selectVersions[0]);
@@ -1929,6 +1941,15 @@ function odtAddProduct(xmlDoc) {
 
     if ($("#office2016Select").hasClass("is-selected")) {
         var selectedBranch = $("#cbBranch").val();
+
+        if (selectedBranch === "SemiAnnualTargeted") {
+            selectedBranch = "Targeted";
+        }
+
+        if (selectedBranch === "SemiAnnual") {
+            selectedBranch = "Broad";
+        }
+
         addNode.removeAttribute("Branch");
         addNode.setAttribute("Channel", selectedBranch);
     } else {

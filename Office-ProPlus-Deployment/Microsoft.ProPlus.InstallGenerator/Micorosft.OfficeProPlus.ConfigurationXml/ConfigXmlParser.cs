@@ -116,12 +116,17 @@ namespace OfficeInstallGenerator
                     {
                         if (channel.ToLower() == "business")
                         {
-                            channel = "Deferred";
+                            channel = "Broad";
                         }
 
                         if (channel.ToLower() == "firstreleasebusiness")
                         {
-                            channel = "FirstReleaseDeferred";
+                            channel = "Targeted";
+                        }
+
+                        if (channel.ToLower() == "current")
+                        {
+                            channel = "Monthly";
                         }
 
                         odtAdd.ODTChannel = (ODTChannel)Enum.Parse(typeof(ODTChannel), channel);

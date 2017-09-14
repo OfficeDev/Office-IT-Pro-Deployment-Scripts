@@ -89,7 +89,7 @@ namespace MetroDemo.ExampleViews
                     MainProducts.ItemsSource = GlobalObjects.ViewModel.LanguagePackProducts;
                     MainProducts.SelectedIndex = 0;
 
-                    ProductsSelectionChanged();
+                    ProductsSelectionChanged(); 
 
                     UseLangForAllLabel.Visibility = Visibility.Collapsed;
                     UseLangForAllProducts.Visibility = Visibility.Collapsed;

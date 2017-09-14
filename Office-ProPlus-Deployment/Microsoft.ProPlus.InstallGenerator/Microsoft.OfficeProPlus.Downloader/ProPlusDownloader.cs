@@ -473,13 +473,13 @@ namespace Microsoft.OfficeProPlus.Downloader
             var dcUpdateChannel = new UpdateChannel()
             {
                 Name = "Deferred",
-                NewName = "Broad",
+                NewName = "SemiAnnual",
                 Updates = new List<Update>()
             };
             var frdcUpdateChannel = new UpdateChannel()
             {
                 Name = "FirstReleaseDeferred",
-                NewName = "Targeted",
+                NewName = "SemiAnnualTargeted",
                 Updates = new List<Update>()
             };
             lstReturn.Add(ccUpdateChannel);
