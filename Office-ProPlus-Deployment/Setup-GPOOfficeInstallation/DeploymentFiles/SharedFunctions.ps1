@@ -727,7 +727,7 @@ function Change-UpdatePathToChannel {
       if ($Channel) {
          $branchName = $Channel
       } else {
-         $branchName = "Broad"
+         $branchName = "SemiAnnual"
       }
    }
 
