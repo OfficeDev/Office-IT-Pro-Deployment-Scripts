@@ -11,10 +11,10 @@ namespace Microsoft.Office
         Validation=2,
         FirstReleaseCurrent=3,
         FirstReleaseBusiness=4,
-        Insiders=5,
+        MonthlyTargeted=5,
         Monthly=6,
-        Targeted=7,
-        Broad=8
+        SemiAnnualTargeted=7,
+        SemiAnnual=8
     }
 }
 "
@@ -35,10 +35,10 @@ namespace Microsoft.Office
         Validation=2,
         FirstReleaseCurrent=3,
         FirstReleaseDeferred=4,
-        Insiders=5,
+        MonthlyTargeted=5,
         Monthly=6,
-        Targeted=7,
-        Broad=8
+        SemiAnnualTargeted=7,
+        SemiAnnual=8
     }
 }
 "
@@ -184,7 +184,7 @@ Function SetODTAdd{
         [Microsoft.Office.Branches] $Branch,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [Microsoft.Office.Channel] $Channel = "Current",
+        [Microsoft.Office.Channel] $Channel = "Monthly",
 
         [Parameter()]
         [string]$LogFilePath
