@@ -270,6 +270,26 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
             #loop for each branch
             $BranchesOrChannels | %{
                 $currentBranch = $_
+
+                switch($currentBranch){
+                    "MonthlyTargeted"{
+                        $selectedBranchName = $currentBranch
+                        $currentBranch = "Insiders"
+                    }
+                    "Monthly"{
+                        $selectedBranchName = $currentBranch
+                        $currentBranch = "Monthly"
+                    }
+                    "SemiAnnualTargeted"{
+                        $selectedBranchName = $currentBranch
+                        $currentBranch = "Targeted"
+                    }
+                    "SemiAnnual"{
+                        $selectedBranchName = $currentBranch
+                        $currentBranch = "Broad"
+                    }
+                }
+
                 $b++
 
                 $Version = $UserSpecifiedVersion
@@ -278,9 +298,9 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
                 $Throttle = ""
                 $VersionFile = ""
 
-                Write-Progress -id 1 -Activity "Downloading Channel" -status "Channel: $($currentBranch.ToString()) : $currentBitness" -percentComplete ($b / $BranchCount *100) 
+                Write-Progress -id 1 -Activity "Downloading Channel" -status "Channel: $selectedBranchName : $currentBitness" -percentComplete ($b / $BranchCount *100) 
 
-                WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Downloading Channel: $currentBranch" -LogFilePath $LogFilePath
+                WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Downloading Channel: $selectedBranchName" -LogFilePath $LogFilePath
 
                 $FolderName = $($_.ToString())
 
@@ -288,7 +308,7 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
                    $FolderName = ConvertChannelNameToShortName -ChannelName $FolderName  
                 }
        
-                $baseURL = $CurrentVersionXML.UpdateFiles.baseURL | ? branch -eq $_.ToString() | %{$_.URL};
+                $baseURL = $CurrentVersionXML.UpdateFiles.baseURL | ? branch -eq $currentBranch | %{$_.URL};
                 if(!(Test-Path "$TargetDirectory\$FolderName\")){
                     New-Item -Path "$TargetDirectory\$FolderName\" -ItemType directory -Force | Out-Null
                 }
@@ -311,7 +331,7 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
                         }
                     }
                     $NewestVersion = $versionReturn.NewestVersion
-                    $PreviousVersion = $versionReturn.PreviousVesion
+                    $PreviousVersion = $versionReturn.PreviousVersion
                     $Throttle = $versionReturn.Throttle
                 }          
 
@@ -351,11 +371,11 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
                 }
                 
                 if (([int]$Throttle -lt 1000) -and (!$DownloadThrottledVersions) -and (![String]::IsNullOrWhiteSpace($Throttle))) {
-                   Write-Host "`tDownloading Channel: $currentBranch - Version: $currentVersion (Using previous version instead of Throttled Version: $NewestVersion - Throttle: $Throttle)"
-                   WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Downloading Channel: $currentBranch - Version: $currentVersion (Using previous version instead of Throttled Version: $NewestVersion - Throttle: $Throttle)" -LogFilePath $LogFilePath
+                   Write-Host "`tDownloading Channel: $selectedBranchName - Version: $currentVersion (Using previous version instead of Throttled Version: $NewestVersion - Throttle: $Throttle)"
+                   WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Downloading Channel: $selectedBranchName - Version: $currentVersion (Using previous version instead of Throttled Version: $NewestVersion - Throttle: $Throttle)" -LogFilePath $LogFilePath
                 } else {
-                   Write-Host "`tDownloading Channel: $currentBranch - Version: $currentVersion"
-                   WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Downloading Channel: $currentBranch - Version: $currentVersion" -LogFilePath $LogFilePath
+                   Write-Host "`tDownloading Channel: $selectedBranchName - Version: $currentVersion"
+                   WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Downloading Channel: $selectedBranchName - Version: $currentVersion" -LogFilePath $LogFilePath
                 }
 
                 if(!(Test-Path "$TargetDirectory\$FolderName\Office\Data\$currentVersion")){
@@ -448,9 +468,9 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
                     $j = $j + 1
 
                     if (([int]$Throttle -lt 1000) -and (!$DownloadThrottledVersions) -and (![string]::IsNullOrWhiteSpace($Throttle))) {
-                       Write-Progress -id 2 -ParentId 1 -Activity "Downloading Channel Files" -status "Channel: $($currentBranch.ToString()) - Version: $currentVersion (Using previous version instead of Throttled Version: $NewestVersion - Throttle: $Throttle)" -percentComplete ($j / $numberOfFiles *100)
+                       Write-Progress -id 2 -ParentId 1 -Activity "Downloading Channel Files" -status "Channel: $selectedBranchName - Version: $currentVersion (Using previous version instead of Throttled Version: $NewestVersion - Throttle: $Throttle)" -percentComplete ($j / $numberOfFiles *100)
                     } else {
-                       Write-Progress -id 2 -ParentId 1 -Activity "Downloading Channel Files" -status "Channel: $($currentBranch.ToString()) - Version: $currentVersion" -percentComplete ($j / $numberOfFiles *100)
+                       Write-Progress -id 2 -ParentId 1 -Activity "Downloading Channel Files" -status "Channel: $selectedBranchName - Version: $currentVersion" -percentComplete ($j / $numberOfFiles *100)
                     }
                 }
 
@@ -518,7 +538,7 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
                         }
 
                         $j = $j + 1
-                        Write-Progress -id 2 -ParentId 1 -Activity "Downloading Channel Files" -status "Channel: $($currentBranch.ToString())" -percentComplete ($j / $numberOfFiles *100)
+                        Write-Progress -id 2 -ParentId 1 -Activity "Downloading Channel Files" -status "Channel: $selectedBranchName" -percentComplete ($j / $numberOfFiles *100)
                     }
                 }
 
@@ -753,7 +773,7 @@ function GetVersionBasedOnThrottle {
 
         $versionToReturn
         $checkChannel = $Channel
-        if($checkChannel -like "FirstReleaseCurrent"){$checkChannel = "MonthlyTargeted"}
+        if($checkChannel -like "FirstReleaseCurrent"){$checkChannel = "InsiderSlow"}
 
         $historyOfVersionsLink = "http://officecdn.microsoft.com/pr/wsus/releasehistory.cab"
 
