@@ -1,0 +1,96 @@
+﻿  param(
+    +AFs-Parameter()+AF0-
+    +AFs-string+AF0AJA-Channel +AD0- +ACQ-null,
+
+    +AFs-Parameter()+AF0-
+    +AFs-string+AF0AJA-Bitness +AD0- +ACI-32+ACI-,
+
+    +AFs-Parameter()+AF0-
+    +AFs-string+AF0AJA-SourceFileFolder +AD0- +ACI-SourceFiles+ACI-
+  )
+
++ACM-  Deploy Office 365 ProPlus using ConfigMgr
+
+Process +AHs-
+ +ACQ-targetFilePath +AD0- +ACIAJA-env:temp+AFw-configuration.xml+ACI-
+
+ +AFs-string+AF0AJA-scriptPath +AD0- +ACI-.+ACI-
+
+ if (+ACQ-PSScriptRoot) +AHs-
+    +ACQ-scriptPath +AD0- +ACQ-PSScriptRoot
+ +AH0- else +AHs-
+   +ACQ-scriptPath +AD0- (Get-Item -Path +ACI-.+AFwAIg-).FullName
+ +AH0-
+
+ . +ACIAJA-scriptPath+AFw-SharedFunctions.ps1+ACI-
+
+ if (Get-OfficeC2RVersion) +AHs- Write-Host +ACI-Office 365 ProPlus Already Installed+ACI- +AH0-
+
+ +ACQ-dependFiles +AD0- +AEA-(+ACIAJA-scriptPath+AFw-Generate-ODTConfigurationXML.ps1+ACI-
+                  +ACIAJA-scriptPath+AFw-Edit-OfficeConfigurationFile.ps1+ACI-
+                  +ACIAJA-scriptPath+AFw-Install-OfficeClickToRun.ps1+ACI-
+                  +ACIAJA-scriptPath+AFw-SharedFunctions.ps1+ACI-)
+
+ foreach (+ACQ-file in +ACQ-dependFiles) +AHs-
+    +ACQ-fileExists +AD0- Test-ItemPathUNC -Path +ACQ-file
+    if (+ACE-(+ACQ-fileExists)) +AHs-
+        throw +ACI-Missing Dependency File +ACQ-file+ACI-    
+    +AH0-
+    . +ACQ-file
+ +AH0-
+
+ +ACQ-UpdateURLPath +AD0- Locate-UpdateSource -Channel +ACQ-Channel -UpdateURLPath +ACQ-scriptPath -SourceFileFolder +ACQ-SourceFileFolder
+ Generate-ODTConfigurationXml -Languages AllInUseLanguages -TargetFilePath +ACQ-targetFilePath +AHw- Set-ODTAdd -Version +ACQ-NULL -Channel +ACQ-Channel +AHw- Set-ODTUpdates -Channel +ACQ-Channel -UpdatePath +ACQ-UpdateURLPath +AHw-Set-ODTDisplay -Level None -AcceptEULA +ACQ-true  +AHw- Out-Null
+ Update-ConfigurationXml -TargetFilePath +ACQ-targetFilePath -UpdateURLPath +ACQ-UpdateURLPath -Channel +ACQ-Channel
+ +ACQ-languages +AD0- Get-XMLLanguages -Path +ACQ-TargetFilePath
+
+ +ACM-------------------------------------------------------------------------------------------------------------
+ +ACM-   Customize Deployment Script - Uncomment and modify the code below to customize this deployment script
+ +ACM-------------------------------------------------------------------------------------------------------------
+
+  +ACMAIwAjACM- ------- Exclude Applications ------- +ACMAIwAjACM-
+  +ACM- Exclude-Applications -TargetFilePath +ACQ-targetFilePath -ExcludeApps +AEA-(+ACI-Access+ACI-,+ACI-Excel+ACI-,+ACI-Groove+ACI-,+ACI-InfoPath+ACI-,+ACI-Lync+ACI-,+ACI-OneDrive+ACI-,+ACI-OneNote+ACI-,+ACI-Outlook+ACI-,+ACI-PowerPoint+ACI-,+ACI-Project+ACI-,+ACI-Publisher+ACI-,+ACI-SharePointDesigner+ACI-,+ACI-Visio+ACI-,+ACI-Word+ACI-)
+ 
+
+  +ACMAIwAjACM- ------- Add an additional Product Sku ------- +ACMAIwAjACM-
+  +ACM- Add-ProductSku -TargetFilePath +ACQ-targetFilePath -Languages +ACQ-languages -ProductIDs O365ProPlusRetail,O365BusinessRetail,VisioProRetail,ProjectProRetail
+
+
+  +ACMAIwAjACM- ------- Remove an additional Product Sku ------- +ACMAIwAjACM-
+  +ACM- Remove-ProductSku -TargetFilePath +ACQ-targetFilePath -Languages +ACQ-languages -ProductIDs O365ProPlusRetail,O365BusinessRetail,VisioProRetail,ProjectProRetail
+
+
+  +ACMAIwAjACM- ------- Add languages to all Product Skus in the Configuration Xml File ------- +ACMAIwAjACM-
+  +ACM- Add-ProductLanguage -TargetFilePath +ACQ-targetFilePath -ProductIDs All -Languages fr-fr,it-it 
+
+
+  +ACMAIwAjACM- ------- Remove languages from all Product Skus in the Configuration Xml File ------- +ACMAIwAjACM-
+  +ACM- Remove-ProductLanguage -TargetFilePath +ACQ-targetFilePath -ProductIDs All -Languages fr-fr,it-it 
+
+
+  +ACMAIwAjACM- ------- Set the display to Full so the installation   ------- +ACMAIwAjACM-
+  +ACM- Set-ODTDisplay -TargetFilePath +ACQ-targetFilePath -Level Full -AcceptEULA +ACQ-true
+
+
+  +ACMAIwAjACM- ------- Enable Automatic Updates   ------- +ACMAIwAjACM-
+  +ACM- Set-ODTUpdates -TargetFilePath +ACQ-targetFilePath -Enabled +ACQ-true -Channel +ACQ-Channel
+
+
+  +ACMAIwAjACM- ------- Disable Automatic Updates   ------- +ACMAIwAjACM-
+  +ACM- Set-ODTUpdates -TargetFilePath +ACQ-targetFilePath -Enabled +ACQ-false
+ 
+ +ACM-------------------------------------------------------------------------------------------------------------
+
+ +ACM- Installs Office 365 ProPlus
+ Install-OfficeClickToRun -TargetFilePath +ACQ-targetFilePath
+ 
+ +ACM- Configuration.xml file for Click-to-Run for Office 365 products reference. https://technet.microsoft.com/en-us/library/JJ219426.aspx
++AH0-
+
+
+
+
+
+
+
+

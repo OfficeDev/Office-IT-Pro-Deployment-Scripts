@@ -1,0 +1,727 @@
+﻿  param(
+    +AFs-Parameter()+AF0-
+    +AFs-string+AF0AJA-Channel +AD0- +ACQ-null,
+
+    +AFs-Parameter()+AF0-
+    +AFs-switch+AF0AJA-RollBack
+  )
+
+Function Get-ScriptPath() +AHs-
+  +AFs-CmdletBinding()+AF0-
+  param(
+
+  )
+
+  process +AHs-
+    +ACM-get local path
+    +ACQ-scriptPath +AD0- +ACI-.+ACI-
+
+    if (+ACQ-PSScriptRoot) +AHs-
+        +ACQ-scriptPath +AD0- +ACQ-PSScriptRoot
+    +AH0- else +AHs-
+        +ACQ-scriptPath +AD0- split-path -parent +ACQ-MyInvocation.MyCommand.Definition
+        +ACQ-scriptPath +AD0- (Get-Item -Path +ACI-.+AFwAIg-).FullName
+    +AH0-
+    return +ACQ-scriptPath
+  +AH0-
++AH0-
+
+Function Get-OfficeC2Rexe() +AHs-
+    +AFs-CmdletBinding()+AF0-
+    Param(
+
+    )
+    process +AHs-
+        +ACQ-Office2RClientKey +AD0- 'Registry::HKEY+AF8-LOCAL+AF8-MACHINE+AFw-SOFTWARE+AFw-Microsoft+AFw-Office+AFw-ClickToRun+AFw-Configuration' +ACM-ClientFolder
+
+        +ACM-find update exe file
+        +ACQ-OfficeUpdatePath +AD0- Get-ItemProperty -Path +ACQ-Office2RClientKey +AHw- Select-Object -Property ClientFolder
+        +ACQ-temp +AD0- Out-String -InputObject +ACQ-OfficeUpdatePath
+        +ACQ-temp +AD0- +ACQ-temp.Substring(+ACQ-temp.LastIndexOf('-')+-2)
+        +ACQ-temp +AD0- +ACQ-temp.Trim()
+        +ACQ-OfficeUpdatePath +AD0- +ACQ-temp
+        +ACQ-OfficeUpdatePath+-+AD0- '+AFw-OfficeC2RClient.exe'
+        return +ACQ-OfficeUpdatePath
+    +AH0-
++AH0-
+
+Function Wait-ForOfficeCTRUpadate() +AHs-
+    +AFs-CmdletBinding()+AF0-
+    Param(
+        +AFs-Parameter()+AF0-
+        +AFs-int+AF0- +ACQ-TimeOutInMinutes +AD0- 120
+    )
+
+    begin +AHs-
+        +ACQ-HKLM +AD0- +AFs-UInt32+AF0- +ACI-0x80000002+ACI-
+        +ACQ-HKCR +AD0- +AFs-UInt32+AF0- +ACI-0x80000000+ACI-
+    +AH0-
+
+    process +AHs-
+       Write-Host +ACI-Waiting for Update process to Complete...+ACI-
+
+       +AFs-datetime+AF0AJA-operationStart +AD0- Get-Date
+       +AFs-datetime+AF0AJA-totalOperationStart +AD0- Get-Date
+
+       Start-Sleep -Seconds 10
+
+       +ACQ-mainRegPath +AD0- Get-OfficeCTRRegPath
+       +ACQ-scenarioPath +AD0- +ACQ-mainRegPath +- +ACIAXA-scenario+ACI-
+
+       +ACQ-regProv +AD0- Get-Wmiobject -list +ACI-StdRegProv+ACI- -namespace root+AFw-default -ErrorAction Stop
+
+       +AFs-DateTime+AF0AJA-startTime +AD0- Get-Date
+
+       +AFs-string+AF0AJA-executingScenario +AD0- +ACIAIg-
+       +ACQ-failure +AD0- +ACQ-false
+       +ACQ-cancelled +AD0- +ACQ-false
+       +ACQ-updateRunning+AD0AJA-false
+       +AFs-string+AFsAXQBdACQ-trackProgress +AD0- +AEA-()
+       +AFs-string+AFsAXQBdACQ-trackComplete +AD0- +AEA-()
+       +AFs-int+AF0AJA-noScenarioCount +AD0- 0
+
+       do +AHs-
+           +ACQ-allComplete +AD0- +ACQ-true
+           +ACQ-executingScenario +AD0- +ACQ-regProv.GetStringValue(+ACQ-HKLM, +ACQ-mainRegPath, +ACI-ExecutingScenario+ACI-).sValue
+           
+           +ACQ-scenarioKeys +AD0- +ACQ-regProv.EnumKey(+ACQ-HKLM, +ACQ-scenarioPath)
+           foreach (+ACQ-scenarioKey in +ACQ-scenarioKeys.sNames) +AHs-
+              if (+ACE-(+ACQ-executingScenario)) +AHs- continue +AH0-
+              if (+ACQ-scenarioKey.ToLower() -eq +ACQ-executingScenario.ToLower()) +AHs-
+                +ACQ-taskKeyPath +AD0- Join-Path +ACQ-scenarioPath +ACIAJA-scenarioKey+AFw-TasksState+ACI-
+                +ACQ-taskValues +AD0- +ACQ-regProv.EnumValues(+ACQ-HKLM, +ACQ-taskKeyPath).sNames
+
+                foreach (+ACQ-taskValue in +ACQ-taskValues) +AHs-
+                    +AFs-string+AF0AJA-status +AD0- +ACQ-regProv.GetStringValue(+ACQ-HKLM, +ACQ-taskKeyPath, +ACQ-taskValue).sValue
+                    +ACQ-operation +AD0- +ACQ-taskValue.Split(':')+AFs-0+AF0-
+                    +ACQ-keyValue +AD0- +ACQ-taskValue
+                   
+                    if (+ACQ-status.ToUpper() -eq +ACI-TASKSTATE+AF8-FAILED+ACI-) +AHs-
+                        +ACQ-failure +AD0- +ACQ-true
+                    +AH0-
+
+                    if (+ACQ-status.ToUpper() -eq +ACI-TASKSTATE+AF8-CANCELLED+ACI-) +AHs-
+                        +ACQ-cancelled +AD0- +ACQ-true
+                    +AH0-
+
+                    if ((+ACQ-status.ToUpper() -eq +ACI-TASKSTATE+AF8-COMPLETED+ACI-) -or+AGA-
+                        (+ACQ-status.ToUpper() -eq +ACI-TASKSTATE+AF8-CANCELLED+ACI-) -or+AGA-
+                        (+ACQ-status.ToUpper() -eq +ACI-TASKSTATE+AF8-FAILED+ACI-)) +AHs-
+                        if ((+ACQ-trackProgress -contains +ACQ-keyValue) -and +ACE-(+ACQ-trackComplete -contains +ACQ-keyValue)) +AHs-
+                            +ACQ-displayValue +AD0- +ACQ-operation +- +ACIAYA-t+ACI- +- +ACQ-status +- +ACIAYA-t+ACI- +- (Get-Date).ToString('yyyy-MM-dd HH:mm:ss')
+                            +ACM-Write-Host +ACQ-displayValue
+                            +ACQ-trackComplete +-+AD0- +ACQ-keyValue 
+
+                            +ACQ-statusName +AD0- +ACQ-status.Split('+AF8-')+AFs-1+AF0AOw-
+
+                            if ((+ACQ-operation.ToUpper().IndexOf(+ACI-DOWNLOAD+ACI-) -gt -1) -or +AGA-
+                                (+ACQ-operation.ToUpper().IndexOf(+ACI-APPLY+ACI-) -gt -1)) +AHs-
+
+                                +ACQ-operationTime +AD0- getOperationTime -OperationStart +ACQ-operationStart
+
+                                +ACQ-displayText +AD0- +ACQ-statusName +- +ACIAYA-t+ACI- +- +ACQ-operationTime
+
+                                Write-Host +ACQ-displayText
+                            +AH0-
+                        +AH0-
+                    +AH0- else +AHs-
+                        +ACQ-allComplete +AD0- +ACQ-false
+                        +ACQ-updateRunning+AD0AJA-true
+
+
+                        if (+ACE-(+ACQ-trackProgress -contains +ACQ-keyValue)) +AHs-
+                             +ACQ-trackProgress +-+AD0- +ACQ-keyValue 
+                             +ACQ-displayValue +AD0- +ACQ-operation +- +ACIAYA-t+ACI- +- +ACQ-status +- +ACIAYA-t+ACI- +- (Get-Date).ToString('yyyy-MM-dd HH:mm:ss')
+
+                             +ACQ-operationStart +AD0- Get-Date
+
+                             if (+ACQ-operation.ToUpper().IndexOf(+ACI-DOWNLOAD+ACI-) -gt -1) +AHs-
+                                Write-Host +ACI-Downloading Update: +ACI- -NoNewline
+                             +AH0-
+
+                             if (+ACQ-operation.ToUpper().IndexOf(+ACI-APPLY+ACI-) -gt -1) +AHs-
+                                Write-Host +ACI-Applying Update: +ACI- -NoNewline
+                             +AH0-
+
+                             if (+ACQ-operation.ToUpper().IndexOf(+ACI-FINALIZE+ACI-) -gt -1) +AHs-
+                                Write-Host +ACI-Finalizing Update: +ACI- -NoNewline
+                             +AH0-
+
+                             +ACM-Write-Host +ACQ-displayValue
+                        +AH0-
+                    +AH0-
+                +AH0-
+              +AH0-
+           +AH0-
+
+           if (+ACQ-allComplete) +AHs-
+              break+ADs-
+           +AH0-
+
+           if (+ACQ-startTime -lt (Get-Date).AddHours(-+ACQ-TimeOutInMinutes)) +AHs-
+              throw +ACI-Waiting for Update Timed-Out+ACI-
+              break+ADs-
+           +AH0-
+
+           Start-Sleep -Seconds 5
+       +AH0- while(+ACQ-true -eq +ACQ-true) 
+
+       +ACQ-operationTime +AD0- getOperationTime -OperationStart +ACQ-operationStart
+
+       +ACQ-displayValue +AD0- +ACIAIg-
+       if (+ACQ-cancelled) +AHs-
+         +ACQ-displayValue +AD0- +ACI-CANCELLED+AGA-t+ACI- +- +ACQ-operationTime
+       +AH0- else +AHs-
+         if (+ACQ-failure) +AHs-
+            +ACQ-displayValue +AD0- +ACI-FAILED+AGA-t+ACI- +- +ACQ-operationTime
+         +AH0- else +AHs-
+            +ACQ-displayValue +AD0- +ACI-COMPLETED+AGA-t+ACI- +- +ACQ-operationTime
+         +AH0-
+       +AH0-
+
+       Write-Host +ACQ-displayValue
+
+       +ACQ-totalOperationTime +AD0- getOperationTime -OperationStart +ACQ-totalOperationStart
+
+       if (+ACQ-updateRunning) +AHs-
+          if (+ACQ-failure) +AHs-
+            Write-Host +ACI-Update Failed+ACI-
+            throw +ACI-Update Failed+ACI-
+          +AH0- else +AHs-
+            Write-Host +ACI-Update Completed - Total Time: +ACQ-totalOperationTime+ACI-
+          +AH0-
+       +AH0- else +AHs-
+          Write-Host +ACI-Update Not Running+ACI-
+       +AH0- 
+    +AH0-
++AH0-
+
+Function Get-OfficeCTRRegPath() +AHs-
+    +ACQ-path15 +AD0- 'SOFTWARE+AFw-Microsoft+AFw-Office+AFw-15.0+AFw-ClickToRun'
+    +ACQ-path16 +AD0- 'SOFTWARE+AFw-Microsoft+AFw-Office+AFw-ClickToRun'
+    if (Test-Path +ACI-HKLM:+AFwAJA-path16+ACI-) +AHs-
+        return +ACQ-path16
+    +AH0-
+    else +AHs-
+        if (Test-Path +ACI-HKLM:+AFwAJA-path15+ACI-) +AHs-
+            return +ACQ-path15
+        +AH0-
+    +AH0-
++AH0-
+
+Function getOperationTime() +AHs-
+    +AFs-CmdletBinding()+AF0-
+    Param(
+        +AFs-Parameter(Mandatory+AD0AJA-true)+AF0-
+        +AFs-DateTime+AF0- +ACQ-OperationStart
+    )
+
+    +ACQ-operationTime +AD0- +ACIAIg-
+
+    +ACQ-dateDiff +AD0- NEW-TIMESPAN ?Start +ACQ-OperationStart ?End (GET-DATE)
+    +ACQ-strHours +AD0- formatTimeItem -TimeItem +ACQ-dateDiff.Hours.ToString() 
+    +ACQ-strMinutes +AD0- formatTimeItem -TimeItem +ACQ-dateDiff.Minutes.ToString() 
+    +ACQ-strSeconds +AD0- formatTimeItem -TimeItem +ACQ-dateDiff.Seconds.ToString() 
+
+    if (+ACQ-dateDiff.Days -gt 0) +AHs-
+        +ACQ-operationTime +-+AD0- +ACI-Days: +ACI- +- +ACQ-dateDiff.Days.ToString() +- +ACI-:+ACI-  +- +ACQ-strHours +- +ACI-:+ACI- +- +ACQ-strMinutes +- +ACI-:+ACI- +- +ACQ-strSeconds
+    +AH0-
+    if (+ACQ-dateDiff.Hours -gt 0 -and +ACQ-dateDiff.Days -eq 0) +AHs-
+        if (+ACQ-operationTime.Length -gt 0) +AHs- +ACQ-operationTime +-+AD0- +ACI- +ACI- +AH0-
+        +ACQ-operationTime +-+AD0- +ACI-Hours: +ACI- +- +ACQ-strHours +- +ACI-:+ACI- +- +ACQ-strMinutes +- +ACI-:+ACI- +- +ACQ-strSeconds
+    +AH0-
+    if (+ACQ-dateDiff.Minutes -gt 0 -and +ACQ-dateDiff.Days -eq 0 -and +ACQ-dateDiff.Hours -eq 0) +AHs-
+        if (+ACQ-operationTime.Length -gt 0) +AHs- +ACQ-operationTime +-+AD0- +ACI- +ACI- +AH0-
+        +ACQ-operationTime +-+AD0- +ACI-Minutes: +ACI- +- +ACQ-strMinutes +- +ACI-:+ACI- +- +ACQ-strSeconds
+    +AH0-
+    if (+ACQ-dateDiff.Seconds -gt 0 -and +ACQ-dateDiff.Days -eq 0 -and +ACQ-dateDiff.Hours -eq 0 -and +ACQ-dateDiff.Minutes -eq 0) +AHs-
+        if (+ACQ-operationTime.Length -gt 0) +AHs- +ACQ-operationTime +-+AD0- +ACI- +ACI- +AH0-
+        +ACQ-operationTime +-+AD0- +ACI-Seconds: +ACI- +- +ACQ-strSeconds
+    +AH0-
+
+    return +ACQ-operationTime
++AH0-
+
+Function formatTimeItem() +AHs-
+    +AFs-CmdletBinding()+AF0-
+    Param(
+        +AFs-Parameter(Mandatory+AD0AJA-true)+AF0-
+        +AFs-string+AF0- +ACQ-TimeItem +AD0- +ACIAIg-
+    )
+
+    +AFs-string+AF0AJA-returnItem +AD0- +ACQ-TimeItem
+    if (+ACQ-TimeItem.Length -eq 1) +AHs-
+       +ACQ-returnItem +AD0- +ACI-0+ACI- +- +ACQ-TimeItem
+    +AH0-
+    return +ACQ-returnItem
++AH0-
+
+Function Test-UpdateSource() +AHs-
+    +AFs-CmdletBinding()+AF0-
+    Param(
+        +AFs-Parameter(Mandatory+AD0AJA-true)+AF0-
+        +AFs-string+AF0- +ACQ-UpdateSource +AD0- +ACQ-NULL
+    )
+
+  	+ACQ-uri +AD0- +AFs-System.Uri+AF0AJA-UpdateSource
+
+    +AFs-bool+AF0AJA-sourceIsAlive +AD0- +ACQ-false
+
+    if(+ACQ-uri.Host)+AHs-
+	    +ACQ-sourceIsAlive +AD0- Test-Connection -Count 1 -computername +ACQ-uri.Host -Quiet
+    +AH0-else+AHs-
+        +ACQ-sourceIsAlive +AD0- Test-Path +ACQ-uri.LocalPath -ErrorAction SilentlyContinue
+    +AH0-
+
+    if (+ACQ-sourceIsAlive) +AHs-
+        +ACQ-sourceIsAlive +AD0- Validate-UpdateSource -UpdateSource +ACQ-UpdateSource
+    +AH0-
+
+    return +ACQ-sourceIsAlive
++AH0-
+
+Function Validate-UpdateSource() +AHs-
+    +AFs-CmdletBinding()+AF0-
+    Param(
+        +AFs-Parameter(Mandatory+AD0AJA-true)+AF0-
+        +AFs-string+AF0- +ACQ-UpdateSource +AD0- +ACQ-NULL
+    )
+
+    Process +AHs-
+    +AFs-bool+AF0AJA-validUpdateSource +AD0- +ACQ-false
+    +AFs-string+AF0AJA-cabPath +AD0- +ACIAIg-
+
+    if (+ACQ-UpdateSource) +AHs-
+        +ACQ-mainRegPath +AD0- Get-OfficeCTRRegPath
+        +ACQ-configRegPath +AD0- +ACQ-mainRegPath +- +ACIAXA-Configuration+ACI-
+        +ACQ-currentplatform +AD0- (Get-ItemProperty HKLM:+AFwAJA-configRegPath -Name Platform -ErrorAction SilentlyContinue).Platform
+        +ACQ-updateToVersion +AD0- (Get-ItemProperty HKLM:+AFwAJA-configRegPath -Name UpdateToVersion -ErrorAction SilentlyContinue).UpdateToVersion
+
+        if (+ACQ-updateToVersion) +AHs-
+            if (+ACQ-currentplatform.ToLower() -eq +ACI-x86+ACI-) +AHs-
+               +ACQ-cabPath +AD0- +ACQ-UpdateSource +- +ACIAXA-Office+AFw-Data+AFw-v32+AF8AIg- +- +ACQ-updateToVersion +- +ACI-.cab+ACI-
+            +AH0-
+            if (+ACQ-currentplatform.ToLower() -eq +ACI-x64+ACI-) +AHs-
+               +ACQ-cabPath +AD0- +ACQ-UpdateSource +- +ACIAXA-Office+AFw-Data+AFw-v64+AF8AIg- +- +ACQ-updateToVersion +- +ACI-.cab+ACI-
+            +AH0-
+        +AH0- else +AHs-
+            if (+ACQ-currentplatform.ToLower() -eq +ACI-x86+ACI-) +AHs-
+               +ACQ-cabPath +AD0- +ACQ-UpdateSource +- +ACIAXA-Office+AFw-Data+AFw-v32.cab+ACI-
+            +AH0-
+            if (+ACQ-currentplatform.ToLower() -eq +ACI-x64+ACI-) +AHs-
+               +ACQ-cabPath +AD0- +ACQ-UpdateSource +- +ACIAXA-Office+AFw-Data+AFw-v64.cab+ACI-
+            +AH0-
+        +AH0-
+
+        if (+ACQ-cabPath.ToLower().StartsWith(+ACI-http+ACI-)) +AHs-
+           +ACQ-cabPath +AD0- +ACQ-cabPath.Replace(+ACIAXAAi-, +ACI-/+ACI-)
+           +ACQ-validUpdateSource +AD0- Test-URL -url +ACQ-cabPath
+        +AH0- else +AHs-
+           +ACQ-validUpdateSource +AD0- Test-Path -Path +ACQ-cabPath
+        +AH0-
+        
+        if (+ACEAJA-validUpdateSource) +AHs-
+           throw +ACI-Invalid UpdateSource. File Not Found: +ACQ-cabPath+ACI-
+        +AH0-
+    +AH0-
+
+    return +ACQ-validUpdateSource
+    +AH0-
++AH0-
+
+Function Get-LatestVersion() +AHs-
+  +AFs-CmdletBinding()+AF0-
+  Param(
+     +AFs-Parameter(Mandatory+AD0AJA-true)+AF0-
+     +AFs-string+AF0- +ACQ-UpdateURLPath
+  )
+
+  process +AHs-
+    +AFs-array+AF0AJA-totalVersion +AD0- +AEA-()
+    +ACQ-Version +AD0- +ACQ-null
+
+    +ACQ-LatestBranchVersionPath +AD0- +ACQ-UpdateURLPath +- '+AFw-Office+AFw-Data'
+    if(Test-Path +ACQ-LatestBranchVersionPath)+AHs-
+        +ACQ-DirectoryList +AD0- Get-ChildItem +ACQ-LatestBranchVersionPath
+        Foreach(+ACQ-listItem in +ACQ-DirectoryList)+AHs-
+            if(+ACQ-listItem.GetType().Name -eq 'DirectoryInfo')+AHs-
+                +ACQ-totalVersion+-+AD0AJA-listItem.Name
+            +AH0-
+        +AH0-
+    +AH0-
+
+    +ACQ-totalVersion +AD0- +ACQ-totalVersion +AHw- Sort-Object -Descending
+    
+    +ACM-sets version number to the newest version in directory for channel if version is not set by user in argument  
+    if(+ACQ-totalVersion.Count -gt 0)+AHs-
+        +ACQ-Version +AD0- +ACQ-totalVersion+AFs-0+AF0-
+    +AH0-
+
+    return +ACQ-Version
+  +AH0-
++AH0-
+
+Function Get-PreviousVersion() +AHs-
+  +AFs-CmdletBinding()+AF0-
+  Param(
+     +AFs-Parameter(Mandatory+AD0AJA-true)+AF0-
+     +AFs-string+AF0- +ACQ-UpdateURLPath
+  )
+
+  process +AHs-
+    +AFs-array+AF0AJA-totalVersion +AD0- +AEA-()
+    +ACQ-Version +AD0- +ACQ-null
+
+    +ACQ-LatestBranchVersionPath +AD0- +ACQ-UpdateURLPath +- '+AFw-Office+AFw-Data'
+    if(Test-Path +ACQ-LatestBranchVersionPath)+AHs-
+        +ACQ-DirectoryList +AD0- Get-ChildItem +ACQ-LatestBranchVersionPath
+        Foreach(+ACQ-listItem in +ACQ-DirectoryList)+AHs-
+            if(+ACQ-listItem.GetType().Name -eq 'DirectoryInfo')+AHs-
+              if (+ACQ-listItem.Name -match '+AFw-d+AHs-2+AH0AXA-.+AFw-d+AFw-.+AFw-d+AHs-4+AH0AXA-.+AFw-d+AHs-4+AH0-') +AHs-
+                +ACQ-totalVersion+-+AD0AJA-listItem.Name
+              +AH0-
+            +AH0-
+        +AH0-
+    +AH0-
+
+    +ACQ-totalVersion +AD0- +ACQ-totalVersion +AHw- Sort-Object -Descending
+    
+    +ACM-sets version number to the newest version in directory for channel if version is not set by user in argument  
+    if(+ACQ-totalVersion.Count -gt 1)+AHs-
+        +ACQ-Version +AD0- +ACQ-totalVersion+AFs-1+AF0-
+    +AH0- else +AHs-
+        return +ACQ-null
+    +AH0- 
+
+    return +ACQ-Version
+  +AH0-
++AH0-
+
+function Change-UpdatePathToChannel +AHs-
+   +AFs-CmdletBinding()+AF0-
+   param( 
+     +AFs-Parameter()+AF0-
+     +AFs-string+AF0- +ACQ-UpdatePath,
+     
+     +AFs-Parameter()+AF0-
+     +AFs-Channel+AF0- +ACQ-Channel
+   )
+
+   +ACQ-newUpdatePath +AD0- +ACQ-UpdatePath
+
+   +ACQ-branchShortName +AD0- +ACI-DC+ACI-
+   if (+ACQ-Channel.ToString().ToLower() -eq +ACI-current+ACI-) +AHs-
+      +ACQ-branchShortName +AD0- +ACI-CC+ACI-
+   +AH0-
+   if (+ACQ-Channel.ToString().ToLower() -eq +ACI-firstreleasecurrent+ACI-) +AHs-
+      +ACQ-branchShortName +AD0- +ACI-FRCC+ACI-
+   +AH0-
+   if (+ACQ-Channel.ToString().ToLower() -eq +ACI-firstreleasedeferred+ACI-) +AHs-
+      +ACQ-branchShortName +AD0- +ACI-FRDC+ACI-
+   +AH0-
+   if (+ACQ-Channel.ToString().ToLower() -eq +ACI-deferred+ACI-) +AHs-
+      +ACQ-branchShortName +AD0- +ACI-DC+ACI-
+   +AH0-
+
+   +ACQ-channelNames +AD0- +AEA-(+ACI-FRCC+ACI-, +ACI-CC+ACI-, +ACI-FRDC+ACI-, +ACI-DC+ACI-)
+
+   +ACQ-madeChange +AD0- +ACQ-false
+   foreach (+ACQ-channelName in +ACQ-channelNames) +AHs-
+      if (+ACQ-UpdatePath.ToUpper().EndsWith(+ACIAXAAk-channelName+ACI-)) +AHs-
+         +ACQ-newUpdatePath +AD0- +ACQ-newUpdatePath -replace +ACIAXABcACQ-channelName+ACI-, +ACIAXAAk-branchShortName+ACI-
+         +ACQ-madeChange +AD0- +ACQ-true
+      +AH0- 
+      if (+ACQ-UpdatePath.ToUpper().Contains(+ACIAXAAk-channelName+AFwAIg-)) +AHs-
+         +ACQ-newUpdatePath +AD0- +ACQ-newUpdatePath -replace +ACIAXABcACQ-channelName+AFwAXAAi-, +ACIAXAAk-branchShortName+AFwAIg-
+         +ACQ-madeChange +AD0- +ACQ-true
+      +AH0- 
+      if (+ACQ-UpdatePath.ToUpper().EndsWith(+ACI-/+ACQ-channelName+ACI-)) +AHs-
+         +ACQ-newUpdatePath +AD0- +ACQ-newUpdatePath -replace +ACIAXA-/+ACQ-channelName+ACI-, +ACI-/+ACQ-branchShortName+ACI-
+         +ACQ-madeChange +AD0- +ACQ-true
+      +AH0-
+      if (+ACQ-UpdatePath.ToUpper().Contains(+ACI-/+ACQ-channelName/+ACI-)) +AHs-
+         +ACQ-newUpdatePath +AD0- +ACQ-newUpdatePath -replace +ACIAXA-/+ACQ-channelName+AFw-/+ACI-, +ACI-/+ACQ-branchShortName/+ACI-
+         +ACQ-madeChange +AD0- +ACQ-true
+      +AH0-
+   +AH0-
+
+   if (+ACE-(+ACQ-madeChange)) +AHs-
+      if (+ACQ-newUpdatePath.Contains(+ACI-/+ACI-)) +AHs-
+         if (+ACQ-newUpdatePath.EndsWith(+ACI-/+ACI-)) +AHs-
+           +ACQ-newUpdatePath +-+AD0- +ACIAJA-branchShortName+ACI-
+         +AH0- else +AHs-
+           +ACQ-newUpdatePath +-+AD0- +ACI-/+ACQ-branchShortName+ACI-
+         +AH0-
+      +AH0-
+      if (+ACQ-newUpdatePath.Contains(+ACIAXAAi-)) +AHs-
+         if (+ACQ-newUpdatePath.EndsWith(+ACIAXAAi-)) +AHs-
+           +ACQ-newUpdatePath +-+AD0- +ACIAJA-branchShortName+ACI-
+         +AH0- else +AHs-
+           +ACQ-newUpdatePath +-+AD0- +ACIAXAAk-branchShortName+ACI-
+         +AH0-
+      +AH0-
+   +AH0-
+
+   try +AHs-
+     +ACQ-pathAlive +AD0- Test-UpdateSource -UpdateSource +ACQ-newUpdatePath
+   +AH0- catch +AHs-
+     +ACQ-pathAlive +AD0- +ACQ-false
+   +AH0-
+   
+   if (+ACQ-pathAlive) +AHs-
+     return +ACQ-newUpdatePath
+   +AH0- else +AHs-
+     return +ACQ-UpdatePath
+   +AH0-
++AH0-
+
+function Detect-Channel() +AHs-
+   +AFs-CmdletBinding()+AF0-
+   param( 
+      
+   )
+
+   Process +AHs-
+      +ACQ-currentBaseUrl +AD0- Get-OfficeCDNUrl
+      +ACQ-channelXml +AD0- Get-ChannelXml
+
+      +ACQ-currentChannel +AD0- +ACQ-channelXml.UpdateFiles.baseURL +AHw- Where +AHsAJABf-.URL -eq +ACQ-currentBaseUrl -and +ACQAXw-.branch -notcontains 'Business' +AH0-
+      return +ACQ-currentChannel
+   +AH0-
+
++AH0-
+
+function Get-ChannelUrl() +AHs-
+   +AFs-CmdletBinding()+AF0-
+   param( 
+      +AFs-Parameter(Mandatory+AD0AJA-true)+AF0-
+      +AFs-Channel+AF0AJA-Channel
+   )
+
+   Process +AHs-
+      +ACQ-channelXml +AD0- Get-ChannelXml
+
+      +ACQ-currentChannel +AD0- +ACQ-channelXml.UpdateFiles.baseURL +AHw- Where +AHsAJABf-.branch -eq +ACQ-Channel.ToString() +AH0-
+      return +ACQ-currentChannel
+   +AH0-
++AH0-
+
+function Get-ChannelXml() +AHs-
+   +AFs-CmdletBinding()+AF0-
+   param( 
+      
+   )
+
+   process +AHs-
+       +ACQ-XMLFilePath +AD0- +ACIAJA-PSScriptRoot+AFw-ofl.cab+ACI-
+
+       if (+ACE-(Test-Path -Path +ACQ-XMLFilePath)) +AHs-
+           +ACQ-webclient +AD0- New-Object System.Net.WebClient
+           +ACQ-XMLFilePath +AD0- +ACIAJA-env:TEMP/ofl.cab+ACI-
+           +ACQ-XMLDownloadURL +AD0- +ACI-http://officecdn.microsoft.com/pr/wsus/ofl.cab+ACI-
+           +ACQ-webclient.DownloadFile(+ACQ-XMLDownloadURL,+ACQ-XMLFilePath)
+       +AH0-
+
+       if(+ACQ-PSVersionTable.PSVersion.Major -ge '3')+AHs-
+           +ACQ-tmpName +AD0- +ACI-o365client+AF8-64bit.xml+ACI-
+           expand +ACQ-XMLFilePath +ACQ-env:TEMP -f:+ACQ-tmpName +AHw- Out-Null
+           +ACQ-tmpName +AD0- +ACQ-env:TEMP +- +ACIAXA-o365client+AF8-64bit.xml+ACI-
+       +AH0-else +AHs-
+           +ACQ-scriptPath +AD0- Get-ScriptPath
+           +ACQ-tmpName +AD0- +ACQ-scriptPath +- +ACIAXA-o365client+AF8-64bit.xml+ACI-           
+       +AH0-
+
+       +AFs-xml+AF0AJA-channelXml +AD0- Get-Content +ACQ-tmpName
+
+       return +ACQ-channelXml
+   +AH0-
+
++AH0-
+
+Function Set-OfficeCDNUrl() +AHs-
+   +AFs-CmdletBinding()+AF0-
+   param( 
+      +AFs-Parameter(Mandatory+AD0AJA-true)+AF0-
+      +AFs-Channel+AF0AJA-Channel
+   )
+
+   Process +AHs-
+        +ACQ-CDNBaseUrl +AD0- (Get-ItemProperty HKLM:+AFw-SOFTWARE+AFw-Microsoft+AFw-Office+AFw-ClickToRun+AFw-Configuration -Name CDNBaseUrl -ErrorAction SilentlyContinue).CDNBaseUrl
+        if (+ACE-(+ACQ-CDNBaseUrl)) +AHs-
+           +ACQ-CDNBaseUrl +AD0- (Get-ItemProperty HKLM:+AFw-SOFTWARE+AFw-Microsoft+AFw-Office+AFw-15.0+AFw-ClickToRun+AFw-Configuration -Name CDNBaseUrl -ErrorAction SilentlyContinue).CDNBaseUrl
+        +AH0-
+
+        +ACQ-path15 +AD0- 'HKLM:+AFw-SOFTWARE+AFw-Microsoft+AFw-Office+AFw-15.0+AFw-ClickToRun+AFw-Configuration'
+        +ACQ-path16 +AD0- 'HKLM:+AFw-SOFTWARE+AFw-Microsoft+AFw-Office+AFw-ClickToRun+AFw-Configuration'
+        +ACQ-regPath +AD0- +ACQ-path16
+
+        if (Test-Path -Path +ACQ-path16) +AHs- +ACQ-regPath +AD0- +ACQ-path16 +AH0-
+        if (Test-Path -Path +ACQ-path15) +AHs- +ACQ-regPath +AD0- +ACQ-path15 +AH0-
+
+        +ACQ-ChannelUrl +AD0- Get-ChannelUrl -Channel +ACQ-Channel
+           
+        New-ItemProperty +ACQ-regPath -Name CDNBaseUrl -PropertyType String -Value +ACQ-ChannelUrl.URL -Force +AHw- Out-Null
+   +AH0-
++AH0-
+
+Function Get-OfficeCDNUrl() +AHs-
+    +ACQ-CDNBaseUrl +AD0- (Get-ItemProperty HKLM:+AFw-SOFTWARE+AFw-Microsoft+AFw-Office+AFw-ClickToRun+AFw-Configuration -Name CDNBaseUrl -ErrorAction SilentlyContinue).CDNBaseUrl
+    if (+ACE-(+ACQ-CDNBaseUrl)) +AHs-
+       +ACQ-CDNBaseUrl +AD0- (Get-ItemProperty HKLM:+AFw-SOFTWARE+AFw-Microsoft+AFw-Office+AFw-15.0+AFw-ClickToRun+AFw-Configuration -Name CDNBaseUrl -ErrorAction SilentlyContinue).CDNBaseUrl
+    +AH0-
+    if (+ACE-(+ACQ-CDNBaseUrl)) +AHs-
+        Push-Location
+        +ACQ-path15 +AD0- 'HKLM:+AFw-SOFTWARE+AFw-Microsoft+AFw-Office+AFw-15.0+AFw-ClickToRun+AFw-ProductReleaseIDs+AFw-Active+AFw-stream'
+        +ACQ-path16 +AD0- 'HKLM:+AFw-SOFTWARE+AFw-Microsoft+AFw-Office+AFw-ClickToRun+AFw-ProductReleaseIDs+AFw-Active+AFw-stream'
+        if (Test-Path -Path +ACQ-path16) +AHs- Set-Location +ACQ-path16 +AH0-
+        if (Test-Path -Path +ACQ-path15) +AHs- Set-Location +ACQ-path15 +AH0-
+
+        +ACQ-items +AD0- Get-Item . +AHw- Select-Object -ExpandProperty property
+        +ACQ-properties +AD0- +ACQ-items +AHw- ForEach-Object +AHs-
+           New-Object psobject -Property +AEAAewAi-property+ACIAPQAkAF8AOw- +ACI-Value+ACI- +AD0- (Get-ItemProperty -Path . -Name +ACQAXw-).+ACQAXwB9-
+        +AH0-
+
+        +ACQ-value +AD0- +ACQ-properties +AHw- Select Value
+        +ACQ-firstItem +AD0- +ACQ-value+AFs-0+AF0-
+        +AFs-string+AF0- +ACQ-cdnPath +AD0- +ACQ-firstItem.Value
+
+        +ACQ-CDNBaseUrl +AD0- Select-String -InputObject +ACQ-cdnPath -Pattern +ACI-http://officecdn.microsoft.com/.+ACo-/.+AHs-8+AH0--.+AHs-4+AH0--.+AHs-4+AH0--.+AHs-4+AH0--.+AHs-12+AH0AIg- -AllMatches +AHw- +ACU- +AHs- +ACQAXw-.Matches +AH0- +AHw- +ACU- +AHs- +ACQAXw-.Value +AH0-
+        Pop-Location
+    +AH0-
+    return +ACQ-CDNBaseUrl
++AH0-
+
+Add-Type -ErrorAction SilentlyContinue -TypeDefinition +AEAAIg-
+   public enum Channel
+   +AHs-
+      Current,
+      Deferred,
+      FirstReleaseCurrent,
+      FirstReleaseDeferred
+   +AH0-
++ACIAQA-
+
+try +AHs-
+
+    if (+ACE-(+ACQ-RollBack)) +AHs-
+      if (+ACE-(+ACQ-Channel)) +AHs-
+         throw +ACI-Channel Parameter is required+ACI-
+      +AH0-
+    +AH0-
+
+    +AFs-bool+AF0AJA-PolicyPath +AD0- +ACQ-true
+    +AFs-bool+AF0AJA-SetBack +AD0- +ACQ-false
+
+    +ACQ-UpdateURLKey +AD0- 'HKEY+AF8-LOCAL+AF8-MACHINE+AFw-SOFTWARE+AFw-Microsoft+AFw-Office+AFw-ClickToRun+AFw-Configuration'  +ACM-UpdateURL
+    +ACQ-Office2RClientKey +AD0- 'Registry::HKEY+AF8-LOCAL+AF8-MACHINE+AFw-SOFTWARE+AFw-Microsoft+AFw-Office+AFw-ClickToRun+AFw-Configuration' +ACM-ClientFolder
+    +ACQ-OfficePolicyPath +AD0- 'HKLM:+AFw-Software+AFw-Policies+AFw-Microsoft+AFw-Office+AFw-16.0+AFw-common+AFw-officeupdate'
+
+    +ACQ-UpdateURLPath +AD0- (Get-ItemProperty +ACQ-OfficePolicyPath).updatepath
+    if (+ACE-(+ACQ-UpdateURLPath)) +AHs-
+        +ACQ-UpdateURLPath  +AD0- (Get-ItemProperty +ACI-HKLM:+AFw-SOFTWARE+AFw-Microsoft+AFw-Office+AFw-ClickToRun+AFw-Configuration+ACI-).UpdateUrl
+        +ACQ-PolicyPath +AD0- +ACQ-false
+    +AH0-
+    if (+ACE-(+ACQ-UpdateURLPath)) +AHs-
+        +ACQ-UpdateURLPath +AD0- Get-ScriptPath
+        +ACQ-SetBack +AD0- +ACQ-true
+
+        +ACQ-TmpUpdateUrlPath +AD0- +ACIAJA-UpdateURLPath+AFw-SourceFiles+ACI-
+        if (Test-Path -Path +ACQ-TmpUpdateUrlPath) +AHs-
+           +ACQ-UpdateURLPath +AD0- +ACQ-TmpUpdateUrlPath
+        +AH0-
+    +AH0-
+    else+AHs-
+        +ACQ-urlPathChk +AD0- Test-Path +ACQ-UpdateURLPath
+        if(+ACEAJA-urlPathChk)+AHs-
+            +ACQ-UpdateURLPath +AD0- Get-ScriptPath
+            +ACQ-SetBack +AD0- +ACQ-true
+
+            +ACQ-TmpUpdateUrlPath +AD0- +ACIAJA-UpdateURLPath+AFw-SourceFiles+ACI-
+            if (Test-Path -Path +ACQ-TmpUpdateUrlPath) +AHs-
+               +ACQ-UpdateURLPath +AD0- +ACQ-TmpUpdateUrlPath
+            +AH0-
+        +AH0-
+    +AH0-
+
+    +ACQ-OldUpdatePath +AD0- +ACQ-UpdateURLPath
+
+    if (+ACQ-RollBack) +AHs-
+       +ACQ-Channel +AD0- (Detect-Channel).branch
+    +AH0-
+
+    +ACQ-UpdateURLPath +AD0- Change-UpdatePathToChannel -Channel +ACQ-Channel -UpdatePath +ACQ-UpdateURLPath
+   
+    +ACQ-validSource +AD0- Test-UpdateSource -UpdateSource +ACQ-UpdateURLPath
+    if (+ACE-(+ACQ-validSource)) +AHs-
+        throw +ACI-UpdateSource not Valid +ACQ-UpdateURLPath+ACI-
+    +AH0-
+
+    +ACQ-currentVersion +AD0- (Get-ItemProperty +ACI-HKLM:+AFw-SOFTWARE+AFw-Microsoft+AFw-Office+AFw-ClickToRun+AFw-Configuration+ACI-).VersionToReport
+
+    if (+ACQ-SetBack) +AHs-
+        +ACQ-oldUpdatePath +AD0- (Get-ItemProperty +ACI-HKLM:+AFw-SOFTWARE+AFw-Microsoft+AFw-Office+AFw-ClickToRun+AFw-Configuration+ACI-).UpdateUrl
+        if (+ACQ-oldUpdatePath) +AHs-
+            New-ItemProperty +ACQ-Office2RClientKey -Name BackupUpdateUrl -PropertyType String -Value +ACQ-oldUpdatePath -Force +AHw- Out-Null
+        +AH0-
+    +AH0-
+
+    if (+ACQ-UpdateURLPath) +AHs-
+        if (+ACQ-PolicyPath) +AHs-
+            New-ItemProperty +ACQ-OfficePolicyPath -Name updatepath -PropertyType String -Value +ACQ-UpdateURLPath -Force +AHw- Out-Null
+        +AH0- else +AHs-
+            New-ItemProperty +ACQ-Office2RClientKey -Name UpdateUrl -PropertyType String -Value +ACQ-UpdateURLPath -Force +AHw- Out-Null
+        +AH0-
+    +AH0-
+
+    +ACQ-OfficeUpdatePath +AD0- Get-OfficeC2Rexe
+    if (+ACE-(+ACQ-OfficeUpdatePath)) +AHs-
+        throw +ACI-Cannot find OfficeC2RClient.exe file+ACI-
+    +AH0-
+    
+    if (+ACQ-RollBack) +AHs-
+      +ACQ-Version +AD0- Get-PreviousVersion -UpdateURLPath +ACQ-UpdateURLPath
+      if (+ACE-(+ACQ-Version)) +AHs-
+        throw +ACI-Rollback Version Not Available+ACI-
+      +AH0-
+    +AH0- else +AHs-
+      +ACQ-Version +AD0- Get-LatestVersion -UpdateURLPath +ACQ-UpdateURLPath
+    +AH0-
+
+    if ((+ACQ-Version) -and (+ACQ-currentVersion -ne +ACQ-Version)) +AHs-
+        +ACQ-arguments +AD0- +ACI-/update user displaylevel+AD0-false forceappshutdown+AD0-true updatepromptuser+AD0-false updatetoversion+AD0AJA-Version+ACI-
+       
+        +ACM-run update exe file
+        Start-Process -FilePath +ACQ-OfficeUpdatePath -ArgumentList +ACQ-arguments
+     
+        Wait-ForOfficeCTRUpadate
+
+        if (+ACE-(+ACQ-RollBack)) +AHs-
+           Set-OfficeCDNUrl -Channel +ACQ-Channel
+        +AH0-
+
+        if (+ACQ-SetBack) +AHs-
+            if (+ACQ-oldUpdatePath) +AHs-
+                Remove-ItemProperty +ACQ-Office2RClientKey -Name BackupUpdateUrl -Force +AHw- Out-Null
+            +AH0-
+        +AH0-
+    +AH0- else +AHs-
+        Write-Host +ACI-The client already has version installed: +ACQ-Version+ACI-
+
+        if (+ACE-(+ACQ-RollBack)) +AHs-
+           Set-OfficeCDNUrl -Channel +ACQ-Channel
+        +AH0-
+    +AH0-
+    +AFs-System.Environment+AF0-::Exit(0)
++AH0- catch +AHs-
+  Write-Host +ACQAXw- -ForegroundColor Red
+  +ACQ-Error +AD0- +ACQ-null
+  +AFs-System.Environment+AF0-::Exit(1)
++AH0-
+
+
+
+
+
+
+
+

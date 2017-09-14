@@ -1,0 +1,552 @@
+﻿try +AHs-
++ACQ-enum3 +AD0- +ACI-
+using System+ADs-
+
+namespace Microsoft.Office
++AHs-
+    +AFs-FlagsAttribute+AF0-
+    public enum Branches
+    +AHs-
+        Current+AD0-0,
+        Business+AD0-1,
+        Validation+AD0-2,
+        FirstReleaseCurrent+AD0-3,
+        FirstReleaseBusiness+AD0-4
+    +AH0-
++AH0-
++ACI-
+Add-Type -TypeDefinition +ACQ-enum3 -ErrorAction SilentlyContinue
++AH0- catch +AHsAfQ-
+
++ACQ-enum4 +AD0- +ACI-
+ using System+ADs-
+ 
+ namespace Microsoft.Office
+ +AHs-
+     +AFs-FlagsAttribute+AF0-
+     public enum Channel
+     +AHs-
+         Current+AD0-0,
+         Deferred+AD0-1,
+         Validation+AD0-2,
+         FirstReleaseCurrent+AD0-3,
+         FirstReleaseDeferred+AD0-4
+     +AH0-
+ +AH0-
+ +ACI-
+ try +AHs-
+ Add-Type -TypeDefinition +ACQ-enum4 -ErrorAction SilentlyContinue
+ +AH0- catch +AHsAfQ-
+
+
+Function Dynamic-UpdateSource +AHs-
++ADwAIw-
+.Synopsis
+Dynamically updates the ODT Configuration Xml Update Source based on the location of the computer
+.DESCRIPTION
+If Office Click-to-Run is installed the administrator will be prompted to confirm
+uninstallation. A configuration file will be generated and used to remove all Office CTR 
+products.
+.PARAMETER TargetFilePath
+Specifies file path and name for the resulting XML file, for example +ACIAXABc-comp1+AFw-folder+AFw-config.xml+ACI-.  Is also the source of the XML that will be updated.
+.PARAMETER LookupFilePath
+Specifies the source of the csv that contains ADSites with their corresponding SourcePath, for example +ACIAXABc-comp1+AFw-folder+AFw-sources.csv+ACI-
+.EXAMPLE
+Dynamic-UpdateSource -TargetFilePath +ACIAXABc-comp1+AFw-folder+AFw-config.xml+ACI- -LookupFilePath +ACIAXABc-comp1+AFw-folder+AFw-sources.csv+ACI-
+Description:
+Will Dynamically set the Update Source based a list Provided
++ACMAPg-
+    +AFs-CmdletBinding()+AF0-
+    Param(
+        +AFs-Parameter(ValueFromPipeline+AD0AJA-true,ValueFromPipelineByPropertyName+AD0AJA-true, Position+AD0-0)+AF0-
+        +AFs-string+AF0- +ACQ-ConfigurationXML +AD0- +ACQ-NULL,
+        +AFs-Parameter(ValueFromPipelineByPropertyName+AD0AJA-true)+AF0-
+        +AFs-string+AF0- +ACQ-TargetFilePath +AD0- +ACQ-NULL,
+        +AFs-Parameter(ValueFromPipelineByPropertyName+AD0AJA-true)+AF0-
+        +AFs-string+AF0- +ACQ-LookupFilePath +AD0- +ACQ-NULL,
+        +AFs-Parameter(ValueFromPipelineByPropertyName+AD0AJA-true)+AF0-
+        +AFs-bool+AF0- +ACQ-SourceByIP +AD0- +ACQ-false,
+        +AFs-Parameter(ValueFromPipelineByPropertyName+AD0AJA-true)+AF0-
+        +AFs-bool+AF0- +ACQ-IncludeUpdatePath +AD0- +ACQ-true
+    )
+
+    Process+AHs-
+
+     +ACM-get computer ADSite and IP address
+     +ACQ-computerADSite +AD0- +ACI-ADSite+ACI-
+     +ACQ-computerIPSubnet +AD0- +ACIAIg-
+     +ACQ-SourceValue +AD0- +ACIAIg-
+     
+     +ACM-add ip address and subnet mask here
+     +ACQ-nic +AD0- gwmi -computer . -class +ACI-win32+AF8-networkadapterconfiguration+ACI- +AHw- Where-Object +AHsAJABf-.defaultIPGateway -ne +ACQ-null+AH0-
+     +ACQ-IPAddress +AD0- +ACQ-nic.ipaddress +AHw- select-object -first 1
+       
+     
+     +AFs-bool+AF0- +ACQ-isInPipe +AD0- +ACQ-true
+     if ((+ACQ-PSCmdlet.MyInvocation.PipelineLength -eq 1) -or (+ACQ-PSCmdlet.MyInvocation.PipelineLength -eq +ACQ-PSCmdlet.MyInvocation.PipelinePosition)) +AHs-
+        +ACQ-isInPipe +AD0- +ACQ-false
+     +AH0-
+
+     +ACQ-computerADSite +AD0- +AFs-System.DirectoryServices.ActiveDirectory.ActiveDirectorySite+AF0-::GetComputerSite().Name
+     
+
+     +ACM-looks for sourcepathlookup.csv file in local directory if parameter was not entered.
+     if(+ACEAJA-LookupFilePath)+AHs-
+        +ACQ-LookupFilePath +AD0- GetScriptPath
+        +ACQ-LookupFilePath+-+AD0- +ACIAXA-SourcePathLookup.csv+ACI-
+     +AH0-
+
+     +ACM-get csv file for +ACI-SourcePath update+ACI-
+     
+     +ACQ-importedSource +AD0- Import-Csv -Path +ACQ-LookupFilePath -Delimiter +ACI-,+ACI-
+
+     if(+ACEAJA-SourceByIP)+AHs-    +ACM-searches by domain name first 
+        foreach(+ACQ-imp in +ACQ-importedSource)+AHs-
+            if(+ACQ-imp.ADSite -eq +ACQ-computerADSite)+AHsAIw-try to match source from the ADSite gathered from csv
+                +ACQ-SourceValue +AD0- +ACQ-imp.source
+            +AH0-
+        +AH0-
+        if(+ACEAJA-SourceValue)+AHsAIw-if no domain is found, tries by IP
+            foreach(+ACQ-imp in +ACQ-importedSource)+AHs-                          +ACM-updated to use the subnet mask of the CSV file against the computer's IP address, then compare it to the Subnet in the CSV file for a match
+                +AFs-int+AF0AJA-subnetMaskNumbits +AD0- +ACQ-imp.Subnet.ToString().Substring(+ACQ-imp.Subnet.ToString().IndexOf('/')+-1)
+                +ACQ-subnetMask +AD0- CreateSubnet -SubnetMaskNumBits +ACQ-subnetMaskNumbits
+                +ACQ-computerIPSubnet +AD0- GetSubnet -IpAddress +ACQ-IPAddress -SubnetMask +ACQ-subnetMask
+                +ACQ-computerIPSubnet +-+AD0- +ACI-/+ACI-
+                +ACQ-computerIPSubnet +-+AD0- ConvertSubnetMaskToNumBits -SubnetMask  +ACQ-subnetMask
+                if(+ACQ-imp.Subnet -eq +ACQ-computerIPSubnet)+AHsAIw-try to match source from the IP gathered from csv
+                    +ACQ-SourceValue +AD0- +ACQ-imp.source
+                +AH0-
+            +AH0-  
+        +AH0-   
+     +AH0-
+     else+AHs-        +ACM-uses this path if the +ACI--SourceByIP+ACI- is set to true
+            foreach(+ACQ-imp in +ACQ-importedSource)+AHsAIw-updated to use the subnet mask of the CSV file against the computer's IP address, then compare it to the Subnet in the CSV file for a match
+                +AFs-int+AF0AJA-subnetMaskNumbits +AD0- +ACQ-imp.Subnet.ToString().Substring(+ACQ-imp.Subnet.ToString().IndexOf('/')+-1)
+                +ACQ-subnetMask +AD0- CreateSubnet -SubnetMaskNumBits +ACQ-subnetMaskNumbits
+                +ACQ-computerIPSubnet +AD0- GetSubnet -IpAddress +ACQ-IPAddress -SubnetMask +ACQ-subnetMask
+                +ACQ-computerIPSubnet +-+AD0- +ACI-/+ACI-
+                +ACQ-computerIPSubnet +-+AD0- ConvertSubnetMaskToNumBits -SubnetMask  +ACQ-subnetMask
+                if(+ACQ-imp.Subnet -eq +ACQ-computerIPSubnet)+AHsAIw-try to match source from the IP gathered from csv
+                    +ACQ-SourceValue +AD0- +ACQ-imp.source
+                +AH0-
+            +AH0-          
+     +AH0-
+     if (+ACQ-SourceValue) +AHs-
+        SetODTAdd -TargetFilePath +ACQ-TargetFilePath -SourcePath +ACQ-SourceValue
+        if(+ACQ-IncludeUpdatePath)+AHs-
+            SetODTUpdates -TargetFilePath +ACQ-TargetFilePath -UpdatePath +ACQ-SourceValue
+        +AH0-
+
+     +AH0- else +AHs-
+        if (+ACQ-isInPipe) +AHs-
+            +ACQ-results +AD0- new-object PSObject+AFsAXQ- 0+ADs-
+            +ACQ-Result +AD0- New-Object -TypeName PSObject 
+            Add-Member -InputObject +ACQ-Result -MemberType NoteProperty -Name +ACI-TargetFilePath+ACI- -Value +ACQ-TargetFilePath
+            +ACQ-Result
+        +AH0- 
+     +AH0-
+
+    +AH0-
++AH0-
+
+Function SetODTAdd+AHs-
+    Param(
+
+        +AFs-Parameter(ValueFromPipeline+AD0AJA-true,ValueFromPipelineByPropertyName+AD0AJA-true, Position+AD0-0)+AF0-
+        +AFs-string+AF0- +ACQ-ConfigurationXML +AD0- +ACQ-NULL,
+
+        +AFs-Parameter(ValueFromPipelineByPropertyName+AD0AJA-true)+AF0-
+        +AFs-string+AF0- +ACQ-SourcePath +AD0- +ACQ-NULL,
+
+        +AFs-Parameter(ValueFromPipelineByPropertyName+AD0AJA-true)+AF0-
+        +AFs-string+AF0- +ACQ-TargetFilePath
+
+    )
+
+    Process+AHs-
+        +ACQ-TargetFilePath +AD0- GetFilePath -TargetFilePath +ACQ-TargetFilePath
+
+        +ACM-Load file
+        +AFs-System.XML.XMLDocument+AF0AJA-ConfigFile +AD0- New-Object System.XML.XMLDocument
+
+        if (+ACQ-TargetFilePath) +AHs-
+           +ACQ-ConfigFile.Load(+ACQ-TargetFilePath) +AHw- Out-Null
+        +AH0- else +AHs-
+            if (+ACQ-ConfigurationXml) 
+            +AHs-
+              +ACQ-ConfigFile.LoadXml(+ACQ-ConfigurationXml) +AHw- Out-Null
+              +ACQ-global:saveLastConfigFile +AD0- +ACQ-NULL
+              +ACQ-global:saveLastFilePath +AD0- +ACQ-NULL
+            +AH0-
+        +AH0-
+
+        +ACQ-global:saveLastConfigFile +AD0- +ACQ-ConfigFile.OuterXml
+
+        +ACM-Check for proper root element
+        if(+ACQ-ConfigFile.Configuration -eq +ACQ-null)+AHs-
+            throw +ACQ-NoConfigurationElement
+        +AH0-
+
+        +ACM-Get Add element if it exists
+        if(+ACQ-ConfigFile.Configuration.Add -eq +ACQ-null)+AHs-
+            +AFs-System.XML.XMLElement+AF0AJA-AddElement+AD0AJA-ConfigFile.CreateElement(+ACI-Add+ACI-)
+            +ACQ-ConfigFile.Configuration.appendChild(+ACQ-AddElement) +AHw- Out-Null
+        +AH0-
+
+        +ACM-Set values as desired
+
+        if(+AFs-string+AF0-::IsNullOrWhiteSpace(+ACQ-SourcePath) -eq +ACQ-false)+AHs-
+            +ACQ-ConfigFile.Configuration.Add.SetAttribute(+ACI-SourcePath+ACI-, +ACQ-SourcePath) +AHw- Out-Null
+        +AH0- else +AHs-
+            if (+ACQ-PSBoundParameters.ContainsKey('SourcePath')) +AHs-
+                +ACQ-ConfigFile.Configuration.Add.RemoveAttribute(+ACI-SourcePath+ACI-)
+            +AH0-
+        +AH0-
+
+        +ACQ-ConfigFile.Save(+ACQ-TargetFilePath) +AHw- Out-Null
+        +ACQ-global:saveLastFilePath +AD0- +ACQ-TargetFilePath
+
+        if ((+ACQ-PSCmdlet.MyInvocation.PipelineLength -eq 1) -or +AGA-
+            (+ACQ-PSCmdlet.MyInvocation.PipelineLength -eq +ACQ-PSCmdlet.MyInvocation.PipelinePosition)) +AHs-
+            Write-Host
+
+            Format-XML (+AFs-xml+AF0-(cat +ACQ-TargetFilePath)) -indent 4
+
+            Write-Host
+            Write-Host +ACI-The Office XML Configuration file has been saved to: +ACQ-TargetFilePath+ACI-
+        +AH0- else +AHs-
+            +ACQ-results +AD0- new-object PSObject+AFsAXQ- 0+ADs-
+            +ACQ-Result +AD0- New-Object -TypeName PSObject 
+            Add-Member -InputObject +ACQ-Result -MemberType NoteProperty -Name +ACI-TargetFilePath+ACI- -Value +ACQ-TargetFilePath
+            Add-Member -InputObject +ACQ-Result -MemberType NoteProperty -Name +ACI-SourcePath+ACI- -Value +ACQ-SourcePath
+            Add-Member -InputObject +ACQ-Result -MemberType NoteProperty -Name +ACI-Version+ACI- -Value +ACQ-Version
+            Add-Member -InputObject +ACQ-Result -MemberType NoteProperty -Name +ACI-Bitness+ACI- -Value +ACQ-Bitness
+            +ACQ-Result
+        +AH0-
+    +AH0-
+
++AH0-
+
+Function SetODTUpdates+AHs-
+    Param(
+
+        +AFs-Parameter(ValueFromPipeline+AD0AJA-true,ValueFromPipelineByPropertyName+AD0AJA-true, Position+AD0-0)+AF0-
+        +AFs-string+AF0- +ACQ-ConfigurationXML +AD0- +ACQ-NULL,
+
+        +AFs-Parameter(ValueFromPipelineByPropertyName+AD0AJA-true)+AF0-
+        +AFs-string+AF0- +ACQ-UpdatePath +AD0- +ACQ-NULL,        
+
+        +AFs-Parameter(ValueFromPipelineByPropertyName+AD0AJA-true)+AF0-
+        +AFs-string+AF0- +ACQ-TargetFilePath
+
+    )
+
+    Process+AHs-
+        +ACQ-TargetFilePath +AD0- GetFilePath -TargetFilePath +ACQ-TargetFilePath
+
+        +ACM-Load file
+        +AFs-System.XML.XMLDocument+AF0AJA-ConfigFile +AD0- New-Object System.XML.XMLDocument
+
+        if (+ACQ-TargetFilePath) +AHs-
+           +ACQ-ConfigFile.Load(+ACQ-TargetFilePath) +AHw- Out-Null
+        +AH0- else +AHs-
+            if (+ACQ-ConfigurationXml) 
+            +AHs-
+              +ACQ-ConfigFile.LoadXml(+ACQ-ConfigurationXml) +AHw- Out-Null
+              +ACQ-global:saveLastConfigFile +AD0- +ACQ-NULL
+              +ACQ-global:saveLastFilePath +AD0- +ACQ-NULL
+            +AH0-
+        +AH0-
+
+        +ACQ-global:saveLastConfigFile +AD0- +ACQ-ConfigFile.OuterXml
+
+        +ACM-Check for proper root element
+        if(+ACQ-ConfigFile.Configuration -eq +ACQ-null)+AHs-
+            throw +ACQ-NoConfigurationElement
+        +AH0-
+
+        +ACM-Get Add element if it exists
+        if(+ACQ-ConfigFile.Configuration.Updates -eq +ACQ-null)+AHs-
+            +AFs-System.XML.XMLElement+AF0AJA-AddElement+AD0AJA-ConfigFile.CreateElement(+ACI-Updates+ACI-)
+            +ACQ-ConfigFile.Configuration.appendChild(+ACQ-AddElement) +AHw- Out-Null
+        +AH0-
+
+        +ACM-Set values as desired
+         +ACQ-nodes +AD0- +ACQ-ConfigFile.SelectNodes(+ACI-/Configuration/Updates+ACI-)+ADs-
+
+        foreach(+ACQ-node in +ACQ-nodes)+AHs-
+ 
+             +ACM-Set values as desired
+             if(+AFs-string+AF0-::IsNullOrWhiteSpace(+ACQ-UpdatePath) -eq +ACQ-false)+AHs-
+                 +ACQ-node.SetAttribute(+ACI-UpdatePath+ACI-, +ACQ-UpdatePath) +AHw- Out-Null
+             +AH0- else +AHs-
+                 if (+ACQ-node.HasAttribute('UpdatePath')) +AHs-
+                     +ACQ-node.RemoveAttribute(+ACI-UpdatePath+ACI-)
+                 +AH0-
+             +AH0-
+         +AH0-
+        
+        +ACQ-ConfigFile.Save(+ACQ-TargetFilePath) +AHw- Out-Null
+        +ACQ-global:saveLastFilePath +AD0- +ACQ-TargetFilePath
+
+        if ((+ACQ-PSCmdlet.MyInvocation.PipelineLength -eq 1) -or +AGA-
+            (+ACQ-PSCmdlet.MyInvocation.PipelineLength -eq +ACQ-PSCmdlet.MyInvocation.PipelinePosition)) +AHs-
+            Write-Host
+
+            Format-XML (+AFs-xml+AF0-(cat +ACQ-TargetFilePath)) -indent 4
+
+            Write-Host
+            Write-Host +ACI-The Office XML Configuration file has been saved to: +ACQ-TargetFilePath+ACI-
+        +AH0- else +AHs-
+            +ACQ-results +AD0- new-object PSObject+AFsAXQ- 0+ADs-
+            +ACQ-Result +AD0- New-Object -TypeName PSObject 
+            Add-Member -InputObject +ACQ-Result -MemberType NoteProperty -Name +ACI-Enabled+ACI- -Value +ACQ-Enabled
+            Add-Member -InputObject +ACQ-Result -MemberType NoteProperty -Name +ACI-UpdatePath+ACI- -Value +ACQ-UpdatePath
+            Add-Member -InputObject +ACQ-Result -MemberType NoteProperty -Name +ACI-TargetVersion+ACI- -Value +ACQ-TargetVersion
+            Add-Member -InputObject +ACQ-Result -MemberType NoteProperty -Name +ACI-Deadline+ACI- -Value +ACQ-Deadline
+            Add-Member -InputObject +ACQ-Result -MemberType NoteProperty -Name +ACI-Branch+ACI- -Value +ACQ-Branch
+            +ACQ-Result
+        +AH0-
+    +AH0-
+
++AH0-
+
+Function GetFilePath() +AHs-
+    Param(
+       +AFs-Parameter(ValueFromPipelineByPropertyName+AD0AJA-true)+AF0-
+       +AFs-string+AF0- +ACQ-TargetFilePath
+    )
+
+    if (+ACE-(+ACQ-TargetFilePath)) +AHs-
+        +ACQ-TargetFilePath +AD0- +ACQ-global:saveLastFilePath
+    +AH0-  
+
+    if (+ACE-(+ACQ-TargetFilePath)) +AHs-
+       Write-Host +ACI-Enter the path to the XML Configuration File: +ACI- -NoNewline
+       +ACQ-TargetFilePath +AD0- Read-Host
+    +AH0- else +AHs-
+       +ACM-Write-Host +ACI-Target XML Configuration File: +ACQ-TargetFilePath+ACI-
+    +AH0-
+
+    return +ACQ-TargetFilePath
++AH0-
+
+Function Format-XML (+AFs-xml+AF0AJA-xml, +ACQ-indent+AD0-2) +AHs- 
+    +ACQ-StringWriter +AD0- New-Object System.IO.StringWriter 
+    +ACQ-XmlWriter +AD0- New-Object System.XMl.XmlTextWriter +ACQ-StringWriter 
+    +ACQ-xmlWriter.Formatting +AD0- +ACI-indented+ACI- 
+    +ACQ-xmlWriter.Indentation +AD0- +ACQ-Indent 
+    +ACQ-xml.WriteContentTo(+ACQ-XmlWriter) 
+    +ACQ-XmlWriter.Flush() 
+    +ACQ-StringWriter.Flush() 
+    Write-Output +ACQ-StringWriter.ToString() 
++AH0-
+
+Function GetScriptPath() +AHs-
+ process +AHs-
+     +AFs-string+AF0AJA-scriptPath +AD0- +ACI-.+ACI-
+
+     if (+ACQ-PSScriptRoot) +AHs-
+       +ACQ-scriptPath +AD0- +ACQ-PSScriptRoot
+     +AH0- else +AHs-
+       +ACMAJA-scriptPath +AD0- (Split-Path +ACQ-MyInvocation.MyCommand.Path) +- +ACIAXAAi-
+       +ACQ-scriptPath +AD0- (Get-Location).Path
+     +AH0-
+
+     return +ACQ-scriptPath
+ +AH0-
++AH0-
+
+ Function ConvertSubnetMaskToNumBits()+AHs-
+ Param 
+    ( 
+        +AFs-string+AF0- 
+        +ACQ-SubnetMask 
+    )
+    +ACQ-bitCounter +AD0- 0
+    +ACQ-octects +AD0- +ACQ-SubnetMask.Split(+ACI-.+ACI-)
+    
+    foreach(+ACQ-octet in +ACQ-octects)+AHs-      +ACM-for checking number of bits used in subnet, increases counter since the mask always counts from left hand side, so 
+        if(+AFs-int+AF0AJA-octet -ge 128)+AHs-               +ACM-just adding value of that slot for each bit as it reads to the right
+            +ACQ-bitCounter+-+-
+        +AH0-
+        if(+AFs-int+AF0AJA-octet -ge 192)+AHs-
+            +ACQ-bitCounter+-+-
+        +AH0-
+        if(+AFs-int+AF0AJA-octet -ge 224)+AHs-
+            +ACQ-bitCounter+-+-
+        +AH0-
+        if(+AFs-int+AF0AJA-octet -ge 240)+AHs-
+            +ACQ-bitCounter+-+-
+        +AH0-
+        if(+AFs-int+AF0AJA-octet -ge 248)+AHs-
+            +ACQ-bitCounter+-+-
+        +AH0-
+        if(+AFs-int+AF0AJA-octet -ge 252)+AHs-
+            +ACQ-bitCounter+-+-
+        +AH0-
+        if(+AFs-int+AF0AJA-octet -ge 254)+AHs-
+            +ACQ-bitCounter+-+-
+        +AH0-
+        if(+AFs-int+AF0AJA-octet -ge 255)+AHs-
+            +ACQ-bitCounter+-+-
+        +AH0-
+    +AH0-
+    return +ACQ-bitCounter
+ +AH0-
+
+ Function GetSubnet()+AHs-
+ Param 
+    ( 
+        +AFs-string+AF0- 
+        +ACQ-SubnetMask,
+        +AFs-string+AF0-
+        +ACQ-IpAddress
+    )
+    +ACQ-numTotalbits +AD0- ConvertSubnetMaskToNumBits -SubnetMask +ACQ-SubnetMask
+    +ACQ-Subnet +AD0- +ACIAIg-
+
+    +ACQ-octets +AD0- +ACQ-IpAddress.Split(+ACI-.+ACI-)
+    foreach(+ACQ-octet in +ACQ-octets)+AHs-
+        +ACQ-tempOctet +AD0- 0
+        +ACM-set num bits in current octet
+        +ACQ-numBitsInThisOctet +AD0- 0
+        if(+ACQ-numTotalbits -ge 8)+AHs-
+            +ACQ-numTotalbits -+AD0- 8
+            +ACQ-numBitsInThisOctet +AD0- 8
+        +AH0-
+        else+AHs-
+            if(+ACQ-numTotalbits -gt 0)+AHs-
+                +ACQ-numBitsInThisOctet +AD0- +ACQ-numTotalbits
+                +ACQ-numTotalbits +AD0- 0
+            +AH0-
+        +AH0-
+        +ACM-end set num bits in current octet
+
+        if(+ACQ-numBitsInThisOctet -gt 0)+AHs-    +ACM-to find subnet, subtract value of each spot while decrementing the number of spots used in this octet
+            +ACQ-numBitsInThisOctet--         +ACM-it'll stop counting when the number of spots used for subnet runs out
+            if(+AFs-int+AF0AJA-octet -ge 128)+AHs-
+                +ACQ-tempOctet +-+AD0- 128
+                +ACQ-octet -+AD0- 128
+            +AH0-
+        +AH0-
+        if(+ACQ-numBitsInThisOctet -gt 0)+AHs-
+            +ACQ-numBitsInThisOctet--
+            if(+AFs-int+AF0AJA-octet -ge 64)+AHs-
+                +ACQ-tempOctet +-+AD0- 64
+                +ACQ-octet -+AD0- 64
+            +AH0-
+        +AH0-
+        if(+ACQ-numBitsInThisOctet -gt 0)+AHs-
+            +ACQ-numBitsInThisOctet--
+            if(+AFs-int+AF0AJA-octet -ge 32)+AHs-
+                +ACQ-tempOctet +-+AD0- 32
+                +ACQ-octet -+AD0- 32
+            +AH0-
+        +AH0-
+        if(+ACQ-numBitsInThisOctet -gt 0)+AHs-
+            +ACQ-numBitsInThisOctet--
+            if(+AFs-int+AF0AJA-octet -ge 16)+AHs-
+                +ACQ-tempOctet +-+AD0- 16
+                +ACQ-octet -+AD0- 16
+            +AH0-
+        +AH0-
+        if(+ACQ-numBitsInThisOctet -gt 0)+AHs-
+            +ACQ-numBitsInThisOctet--
+            if(+AFs-int+AF0AJA-octet -ge 8)+AHs-
+                +ACQ-tempOctet +-+AD0- 8
+                +ACQ-octet -+AD0- 8
+            +AH0-
+        +AH0-
+        if(+ACQ-numBitsInThisOctet -gt 0)+AHs-
+            +ACQ-numBitsInThisOctet--
+            if(+AFs-int+AF0AJA-octet -ge 4)+AHs-
+                +ACQ-tempOctet +-+AD0- 4
+                +ACQ-octet -+AD0- 4
+            +AH0-
+        +AH0-
+        if(+ACQ-numBitsInThisOctet -gt 0)+AHs-
+            +ACQ-numBitsInThisOctet--
+            if(+AFs-int+AF0AJA-octet -ge 2)+AHs-
+                +ACQ-tempOctet +-+AD0- 2
+                +ACQ-octet -+AD0- 2
+            +AH0-
+        +AH0-
+        if(+ACQ-numBitsInThisOctet -gt 0)+AHs-
+            +ACQ-numBitsInThisOctet--
+            if(+AFs-int+AF0AJA-octet -ge 1)+AHs-
+                +ACQ-tempOctet +-+AD0- 1
+                +ACQ-octet -+AD0- 1
+            +AH0-
+        +AH0-
+
+        +ACQ-Subnet +-+AD0- +ACQ-tempOctet.ToString() +- +ACI-.+ACI-
+    +AH0-
+    +ACQ-Subnet +AD0- +ACQ-Subnet.Remove(+ACQ-Subnet.Length - 1, 1)
+
+    return +ACQ-Subnet
+ +AH0-
+
+ Function CreateSubnet()+AHs-
+     Param 
+        ( 
+            +AFs-int+AF0- 
+            +ACQ-SubnetMaskNumBits
+        )
+        +ACQ-SubnetMask +AD0- +ACIAIg-        
+
+        for(+ACQ-i+AD0-1+ADs- +ACQ-i -lt 5+ADs- +ACQ-i+-+-)+AHs-      
+        +ACQ-SubnetMaskBitsInOctect +AD0- 0
+        if(+ACQ-SubnetMaskNumBits -gt 0)
+        +AHs-
+            if(+ACQ-SubnetMaskNumBits -lt 8)
+            +AHs-
+                +ACQ-SubnetMaskBitsInOctect +AD0- +ACQ-SubnetMaskNumBits
+                +ACQ-SubnetMaskNumBits +AD0- 0
+            +AH0-
+            else
+            +AHs-
+                +ACQ-SubnetMaskBitsInOctect +AD0- 8
+                +ACQ-SubnetMaskNumBits -+AD0- 8
+            +AH0-
+        +AH0-
+        +ACQ-tempSubnetOctect +AD0- 0
+        if(+AFs-int+AF0AJA-SubnetMaskBitsInOctect -eq 1)+AHs-               
+            +ACQ-tempSubnetOctect +AD0-128
+        +AH0-
+        if(+AFs-int+AF0AJA-SubnetMaskBitsInOctect -eq 2)+AHs-
+            +ACQ-tempSubnetOctect +AD0- 192
+        +AH0-
+        if(+AFs-int+AF0AJA-SubnetMaskBitsInOctect -eq 3)+AHs-
+            +ACQ-tempSubnetOctect +AD0- 224
+        +AH0-
+        if(+AFs-int+AF0AJA-SubnetMaskBitsInOctect -eq 4)+AHs-
+            +ACQ-tempSubnetOctect +AD0- 240
+        +AH0-
+        if(+AFs-int+AF0AJA-SubnetMaskBitsInOctect -eq 5)+AHs-
+            +ACQ-tempSubnetOctect +AD0- 248
+        +AH0-
+        if(+AFs-int+AF0AJA-SubnetMaskBitsInOctect -eq 6)+AHs-
+            +ACQ-tempSubnetOctect +AD0- 252
+        +AH0-
+        if(+AFs-int+AF0AJA-SubnetMaskBitsInOctect -eq 7)+AHs-
+            +ACQ-tempSubnetOctect +AD0- 254
+        +AH0-
+        if(+AFs-int+AF0AJA-SubnetMaskBitsInOctect -eq 8)+AHs-
+            +ACQ-tempSubnetOctect +AD0- 255
+        +AH0-
+        if(+AFs-int+AF0AJA-i -lt 4)+AHs-
+            +ACQ-SubnetMask +-+AD0- +ACQ-tempSubnetOctect.ToString() +- +ACI-.+ACI-
+        +AH0-
+        else+AHs-
+            +ACQ-SubnetMask +-+AD0- +ACQ-tempSubnetOctect.ToString()
+        +AH0-
+    +AH0-
+    return +ACQ-SubnetMask
+ +AH0-
+
+
+
+
+
+

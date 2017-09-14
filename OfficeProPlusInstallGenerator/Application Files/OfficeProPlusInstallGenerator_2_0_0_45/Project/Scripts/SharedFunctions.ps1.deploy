@@ -1,0 +1,2044 @@
+﻿try +AHs-
++ACQ-enumDef +AD0- +ACI-
+using System+ADs-
+       +AFs-FlagsAttribute+AF0-
+       public enum OfficeChannel
+       +AHs-
+          FirstReleaseCurrent +AD0- 0,
+          Current +AD0- 1,
+          FirstReleaseDeferred +AD0- 2,
+          Deferred +AD0- 3
+       +AH0-
++ACI-
+Add-Type -TypeDefinition +ACQ-enumDef -ErrorAction SilentlyContinue
++AH0- catch +AHs- +AH0-
+
+try +AHs-
++ACQ-enumBitness +AD0- +ACI-
+using System+ADs-
+       +AFs-FlagsAttribute+AF0-
+       public enum Bitness
+       +AHs-
+          Both +AD0- 0,
+          v32 +AD0- 1,
+          v64 +AD0- 2
+       +AH0-
++ACI-
+Add-Type -TypeDefinition +ACQ-enumBitness -ErrorAction SilentlyContinue
++AH0- catch +AHs- +AH0-
+
+try +AHs-
++ACQ-enum +AD0- +ACI-
+using System+ADs-
+ 
+namespace Microsoft.Office
++AHs-
+     +AFs-FlagsAttribute+AF0-
+     public enum Products
+     +AHs-
+         Unknown +AD0- 0,
+         O365ProPlusRetail +AD0- 1,
+         O365BusinessRetail +AD0- 2,
+         VisioProRetail +AD0- 4,
+         ProjectProRetail +AD0- 8,
+         SPDRetail +AD0- 16,
+         VisioProXVolume +AD0- 32,
+         VisioStdXVolume +AD0- 64,
+         ProjectProXVolume +AD0- 128,
+         ProjectStdXVolume +AD0- 256,
+     +AH0-
++AH0-
++ACI-
+Add-Type -TypeDefinition +ACQ-enum -ErrorAction SilentlyContinue
++AH0- catch +AHsAfQ-
+
+try +AHs-
++ACQ-enum +AD0- +ACI-
+using System+ADs-
+ 
+namespace Microsoft.Office
++AHs-
+     +AFs-FlagsAttribute+AF0-
+     public enum ProductSelection
+     +AHs-
+         All +AD0- 0,
+         O365ProPlusRetail +AD0- 1,
+         O365BusinessRetail +AD0- 2,
+         VisioProRetail +AD0- 4,
+         ProjectProRetail +AD0- 8,
+         SPDRetail +AD0- 16,
+         VisioProXVolume +AD0- 32,
+         VisioStdXVolume +AD0- 64,
+         ProjectProXVolume +AD0- 128,
+         ProjectStdXVolume +AD0- 256,
+     +AH0-
++AH0-
++ACI-
+Add-Type -TypeDefinition +ACQ-enum -ErrorAction SilentlyContinue
++AH0- catch +AHsAfQ-
+
++AFs-System.Collections.ArrayList+AF0AJA-missingFiles +AD0- +AEA-()
+
+Function Write-Log +AHs-
+ 
+    PARAM
+	(
+         +AFs-String+AF0AJA-Message,
+         +AFs-String+AF0AJA-Path +AD0- +ACQ-Global:UpdateAnywhereLogPath,
+         +AFs-String+AF0AJA-LogName +AD0- +ACQ-Global:UpdateAnywhereLogFileName,
+         +AFs-int+AF0AJA-severity,
+         +AFs-string+AF0AJA-component
+	)
+ 
+    try +AHs-
+        +ACQ-Path +AD0- +ACQ-Global:UpdateAnywhereLogPath
+        +ACQ-LogName +AD0- +ACQ-Global:UpdateAnywhereLogFileName
+        if(+AFs-String+AF0-::IsNullOrWhiteSpace(+ACQ-Path))+AHs-
+            +ACM- Get Windows Folder Path
+            +ACQ-windowsDirectory +AD0- +AFs-Environment+AF0-::GetFolderPath(+ACI-Windows+ACI-)
+
+            +ACM- Build log folder
+            +ACQ-Path +AD0- +ACIAJA-windowsDirectory+AFw-CCM+AFw-logs+ACI-
+        +AH0-
+
+        if(+AFs-String+AF0-::IsNullOrWhiteSpace(+ACQ-LogName))+AHs-
+             +ACM- Set log file name
+            +ACQ-LogName +AD0- +ACI-Office365UpdateAnywhere.log+ACI-
+        +AH0-
+        +ACM- Build log path
+        +ACQ-LogFilePath +AD0- Join-Path +ACQ-Path +ACQ-LogName
+
+        +ACM- Create log file
+        If (+ACE-(+ACQ-(Test-Path +ACQ-LogFilePath -PathType Leaf)))
+        +AHs-
+            +ACQ-null +AD0- New-Item -Path +ACQ-LogFilePath -ItemType File -ErrorAction SilentlyContinue
+        +AH0-
+
+	    +ACQ-TimeZoneBias +AD0- Get-WmiObject -Query +ACI-Select Bias from Win32+AF8-TimeZone+ACI-
+        +ACQ-Date+AD0- Get-Date -Format +ACI-HH:mm:ss.fff+ACI-
+        +ACQ-Date2+AD0- Get-Date -Format +ACI-MM-dd-yyyy+ACI-
+        +ACQ-type+AD0-1
+ 
+        if (+ACQ-LogFilePath) +AHs-
+           +ACIAPAAhAFs-LOG+AFsAJA-Message+AF0-LOG+AF0AIQA+ADw-time+AD0AJA-(+AFs-char+AF0-34)+ACQ-date+ACQ-(+ACQ-TimeZoneBias.bias)+ACQ-(+AFs-char+AF0-34) date+AD0AJA-(+AFs-char+AF0-34)+ACQ-date2+ACQ-(+AFs-char+AF0-34) component+AD0AJA-(+AFs-char+AF0-34)+ACQ-component+ACQ-(+AFs-char+AF0-34) context+AD0AJA-(+AFs-char+AF0-34)+ACQ-(+AFs-char+AF0-34) type+AD0AJA-(+AFs-char+AF0-34)+ACQ-severity+ACQ-(+AFs-char+AF0-34) thread+AD0AJA-(+AFs-char+AF0-34)+ACQ-(+AFs-char+AF0-34) file+AD0AJA-(+AFs-char+AF0-34)+ACQ-(+AFs-char+AF0-34)+AD4AIgB8- Out-File -FilePath +ACQ-LogFilePath -Append -NoClobber -Encoding default
+        +AH0-
+    +AH0- catch +AHs-
+
+    +AH0-
++AH0-
+
+Function Set-Reg +AHs-
+	PARAM
+	(
+        +AFs-String+AF0AJA-hive,
+        +AFs-String+AF0AJA-keyPath,
+	    +AFs-String+AF0AJA-valueName,
+	    +AFs-String+AF0AJA-value,
+        +AFs-String+AF0AJA-Type
+    )
+
+    Try
+    +AHs-
+        +ACQ-null +AD0- New-ItemProperty -Path +ACIAJA-(+ACQ-hive):+AFwAJA-(+ACQ-keyPath)+ACI- -Name +ACIAJA-(+ACQ-valueName)+ACI- -Value +ACIAJA-(+ACQ-value)+ACI- -PropertyType +ACQ-Type -Force -ErrorAction Stop
+    +AH0-
+    Catch
+    +AHs-
+        Write-Log -Message +ACQAXw-.Exception.Message -severity 3 -component +ACQ-LogFileName
+    +AH0-
++AH0-
+
+Function StartProcess +AHs-
+	Param
+	(
+        +AFs-Parameter()+AF0-
+		+AFs-String+AF0AJA-execFilePath,
+
+        +AFs-Parameter()+AF0-
+        +AFs-String+AF0AJA-execParams,
+
+        +AFs-Parameter()+AF0-
+        +AFs-bool+AF0AJA-WaitForExit +AD0- +ACQ-false
+	)
+
+    Try
+    +AHs-
+        +ACQ-startExe +AD0- new-object System.Diagnostics.ProcessStartInfo
+        +ACQ-startExe.FileName +AD0- +ACQ-execFilePath
+        +ACQ-startExe.Arguments +AD0- +ACQ-execParams
+        +ACQ-startExe.CreateNoWindow +AD0- +ACQ-false
+        +ACQ-startExe.UseShellExecute +AD0- +ACQ-false
+
+        +ACQ-execStatement +AD0- +AFs-System.Diagnostics.Process+AF0-::Start(+ACQ-startExe) 
+        if (+ACQ-WaitForExit) +AHs-
+           +ACQ-execStatement.WaitForExit()
+        +AH0-
+    +AH0-
+    Catch
+    +AHs-
+        Write-Log -Message +ACQAXw-.Exception.Message -severity 1 -component +ACI-Office 365 Update Anywhere+ACI-
+    +AH0-
++AH0-
+
+function Test-ItemPathUNC() +AHs-
+    +AFs-CmdletBinding()+AF0-	
+    Param
+	(
+	    +AFs-Parameter(Mandatory+AD0AJA-true)+AF0-
+	    +AFs-String+AF0AJA-Path,
+
+	    +AFs-Parameter()+AF0-
+	    +AFs-String+AF0AJA-FileName +AD0- +ACQ-null
+    )
+
+    Process +AHs-
+       +ACQ-pathExists +AD0- +ACQ-false
+       if (+ACQ-FileName) +AHs-
+         +ACQ-filePath +AD0- +ACIAJA-Path+AFwAJA-FileName+ACI-
+         +ACQ-pathExists +AD0- +AFs-System.IO.File+AF0-::Exists(+ACQ-filePath)
+       +AH0- else +AHs-
+         +ACQ-pathExists +AD0- +AFs-System.IO.Directory+AF0-::Exists(+ACQ-Path)
+         if (+ACE-(+ACQ-pathExists)) +AHs-
+            +ACQ-pathExists +AD0- +AFs-System.IO.File+AF0-::Exists(+ACQ-Path)
+         +AH0-
+       +AH0-
+       return +ACQ-pathExists+ADs-
+    +AH0-
++AH0-
+
+function Copy-ItemUNC() +AHs-
+    +AFs-CmdletBinding()+AF0-	
+    Param
+	(
+	    +AFs-Parameter(Mandatory+AD0AJA-true)+AF0-
+	    +AFs-String+AF0AJA-SourcePath,
+
+	    +AFs-Parameter(Mandatory+AD0AJA-true)+AF0-
+	    +AFs-String+AF0AJA-TargetPath,
+
+	    +AFs-Parameter(Mandatory+AD0AJA-true)+AF0-
+	    +AFs-String+AF0AJA-FileName
+    )
+
+    Process +AHs-
+       +ACQ-drvLetter +AD0- FindAvailable
+       +ACQ-Network +AD0- New-Object -ComObject +ACI-Wscript.Network+ACI-
+       try +AHs-
+           if (+ACE-(+ACQ-drvLetter.EndsWith(+ACI-:+ACI-))) +AHs-
+               +ACQ-drvLetter +-+AD0- +ACI-:+ACI-
+           +AH0-
+           +ACQ-target +AD0- +ACQ-drvLetter +- +ACIAXAAi-
+           +ACQ-Network.MapNetworkDrive(+ACQ-drvLetter, +ACQ-TargetPath)
+                      
+           +ACM-New-PSDrive -Name +ACQ-drvLetter -PSProvider FileSystem -Root +ACQ-TargetPath +AHw- Out-Null
+
+           Copy-Item -Path +ACQ-SourcePath -Destination +ACQ-target -Force
+       +AH0- finally +AHs-
+         +ACM-Remove-PSDrive +ACQ-drvLetter
+         +ACQ-Network.RemoveNetworkDrive(+ACQ-drvLetter)
+       +AH0-
+    +AH0-
++AH0-
+
+function FindAvailable() +AHs-
+   +ACMAJA-drives +AD0- Get-PSDrive +AHw- select Name
+   +ACQ-drives +AD0- Get-WmiObject -Class Win32+AF8-LogicalDisk +AHw- select DeviceID
+
+   for(+ACQ-n+AD0-90+ADsAJA-n -gt 68+ADsAJA-n--) +AHs-
+      +ACQ-letter+AD0- +AFs-char+AF0AJA-n +- +ACI-:+ACI-
+      +ACQ-exists +AD0- +ACQ-drives +AHw- where +AHs- +ACQAXw-.DeviceID -eq +ACQ-letter +AH0-
+      if (+ACQ-exists) +AHs-
+        if (+ACQ-exists.Count -eq 0) +AHs-
+            return +ACQ-letter
+        +AH0-
+      +AH0- else +AHs-
+        return +ACQ-letter
+      +AH0-
+   +AH0-
+   return +ACQ-null
++AH0-
+
+function Get-XMLLanguages() +AHs-
+    +AFs-CmdletBinding(SupportsShouldProcess+AD0AJA-true)+AF0-
+    param(
+       	+AFs-Parameter(Mandatory+AD0AJA-true)+AF0-
+	    +AFs-String+AF0AJA-Path
+    )
+    Process +AHs-
+      +AFs-string+AFsAXQBdACQ-languages +AD0- +AEA-()
+      +AFs-xml+AF0AJA-configXml +AD0- Get-Content +ACQ-Path
+      if (+ACQ-configXml.Configuration.Add) +AHs-
+         foreach (+ACQ-product in +ACQ-configXml.Configuration.Add.Product) +AHs-
+             foreach (+ACQ-language in +ACQ-product.Language) +AHs-
+                +ACQ-languages +-+AD0- +ACQ-language.ID
+             +AH0-
+         +AH0-
+      +AH0-
+      return +ACQ-languages
+    +AH0-
++AH0-
+
+Function Get-OfficeVersion +AHs-
++ADwAIw-
+.Synopsis
+Gets the Office Version installed on the computer
+
+.DESCRIPTION
+This function will query the local or a remote computer and return the information about Office Products installed on the computer
+
+.NOTES   
+Name: Get-OfficeVersion
+Version: 1.0.4
+DateCreated: 2015-07-01
+DateUpdated: 2015-08-28
+
+.LINK
+https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
+
+.PARAMETER ComputerName
+The computer or list of computers from which to query 
+
+.PARAMETER ShowAllInstalledProducts
+Will expand the output to include all installed Office products
+
+.EXAMPLE
+Get-OfficeVersion
+
+Description:
+Will return the locally installed Office product
+
+.EXAMPLE
+Get-OfficeVersion -ComputerName client01,client02
+
+Description:
+Will return the installed Office product on the remote computers
+
+.EXAMPLE
+Get-OfficeVersion +AHw- select +ACo-
+
+Description:
+Will return the locally installed Office product with all of the available properties
+
++ACMAPg-
++AFs-CmdletBinding(SupportsShouldProcess+AD0AJA-true)+AF0-
+param(
+    +AFs-Parameter(ValueFromPipeline+AD0AJA-true,ValueFromPipelineByPropertyName+AD0AJA-true, Position+AD0-0)+AF0-
+    +AFs-string+AFsAXQBdACQ-ComputerName +AD0- +ACQ-env:COMPUTERNAME,
+    +AFs-switch+AF0AJA-ShowAllInstalledProducts,
+    +AFs-System.Management.Automation.PSCredential+AF0AJA-Credentials
+)
+
+begin +AHs-
+    +ACQ-HKLM +AD0- +AFs-UInt32+AF0- +ACI-0x80000002+ACI-
+    +ACQ-HKCR +AD0- +AFs-UInt32+AF0- +ACI-0x80000000+ACI-
+
+    +ACQ-excelKeyPath +AD0- +ACI-Excel+AFw-DefaultIcon+ACI-
+    +ACQ-wordKeyPath +AD0- +ACI-Word+AFw-DefaultIcon+ACI-
+   
+    +ACQ-installKeys +AD0- 'SOFTWARE+AFw-Microsoft+AFw-Windows+AFw-CurrentVersion+AFw-Uninstall',
+                   'SOFTWARE+AFw-Wow6432Node+AFw-Microsoft+AFw-Windows+AFw-CurrentVersion+AFw-Uninstall'
+
+    +ACQ-officeKeys +AD0- 'SOFTWARE+AFw-Microsoft+AFw-Office',
+                  'SOFTWARE+AFw-Wow6432Node+AFw-Microsoft+AFw-Office'
+
+    +ACQ-defaultDisplaySet +AD0- 'DisplayName','Version', 'ComputerName'
+
+    +ACQ-defaultDisplayPropertySet +AD0- New-Object System.Management.Automation.PSPropertySet('DefaultDisplayPropertySet',+AFs-string+AFsAXQBdACQ-defaultDisplaySet)
+    +ACQ-PSStandardMembers +AD0- +AFs-System.Management.Automation.PSMemberInfo+AFsAXQBdAEA-(+ACQ-defaultDisplayPropertySet)
++AH0-
+
+process +AHs-
+
+ +ACQ-results +AD0- new-object PSObject+AFsAXQ- 0+ADs-
+
+ foreach (+ACQ-computer in +ACQ-ComputerName) +AHs-
+    if (+ACQ-Credentials) +AHs-
+       +ACQ-os+AD0-Get-WMIObject win32+AF8-operatingsystem -computername +ACQ-computer -Credential +ACQ-Credentials
+    +AH0- else +AHs-
+       +ACQ-os+AD0-Get-WMIObject win32+AF8-operatingsystem -computername +ACQ-computer
+    +AH0-
+
+    +ACQ-osArchitecture +AD0- +ACQ-os.OSArchitecture
+
+    if (+ACQ-Credentials) +AHs-
+       +ACQ-regProv +AD0- Get-Wmiobject -list +ACI-StdRegProv+ACI- -namespace root+AFw-default -computername +ACQ-computer -Credential +ACQ-Credentials
+    +AH0- else +AHs-
+       +ACQ-regProv +AD0- Get-Wmiobject -list +ACI-StdRegProv+ACI- -namespace root+AFw-default -computername +ACQ-computer
+    +AH0-
+
+    +AFs-System.Collections.ArrayList+AF0AJA-VersionList +AD0- New-Object -TypeName System.Collections.ArrayList
+    +AFs-System.Collections.ArrayList+AF0AJA-PathList +AD0- New-Object -TypeName System.Collections.ArrayList
+    +AFs-System.Collections.ArrayList+AF0AJA-PackageList +AD0- New-Object -TypeName System.Collections.ArrayList
+    +AFs-System.Collections.ArrayList+AF0AJA-ClickToRunPathList +AD0- New-Object -TypeName System.Collections.ArrayList
+    +AFs-System.Collections.ArrayList+AF0AJA-ConfigItemList +AD0- New-Object -TypeName  System.Collections.ArrayList
+    +ACQ-ClickToRunList +AD0- new-object PSObject+AFsAXQ- 0+ADs-
+
+    foreach (+ACQ-regKey in +ACQ-officeKeys) +AHs-
+       +ACQ-officeVersion +AD0- +ACQ-regProv.EnumKey(+ACQ-HKLM, +ACQ-regKey)
+       foreach (+ACQ-key in +ACQ-officeVersion.sNames) +AHs-
+          if (+ACQ-key -match +ACIAXA-d+AHs-2+AH0AXA-.+AFw-d+ACI-) +AHs-
+            if (+ACEAJA-VersionList.Contains(+ACQ-key)) +AHs-
+              +ACQ-AddItem +AD0- +ACQ-VersionList.Add(+ACQ-key)
+            +AH0-
+
+            +ACQ-path +AD0- join-path +ACQ-regKey +ACQ-key
+
+            +ACQ-configPath +AD0- join-path +ACQ-path +ACI-Common+AFw-Config+ACI-
+            +ACQ-configItems +AD0- +ACQ-regProv.EnumKey(+ACQ-HKLM, +ACQ-configPath)
+            if (+ACQ-configItems) +AHs-
+               foreach (+ACQ-configId in +ACQ-configItems.sNames) +AHs-
+                 if (+ACQ-configId) +AHs-
+                    +ACQ-Add +AD0- +ACQ-ConfigItemList.Add(+ACQ-configId.ToUpper())
+                 +AH0-
+               +AH0-
+            +AH0-
+
+            +ACQ-cltr +AD0- New-Object -TypeName PSObject
+            +ACQ-cltr +AHw- Add-Member -MemberType NoteProperty -Name InstallPath -Value +ACIAIg-
+            +ACQ-cltr +AHw- Add-Member -MemberType NoteProperty -Name UpdatesEnabled -Value +ACQ-false
+            +ACQ-cltr +AHw- Add-Member -MemberType NoteProperty -Name UpdateUrl -Value +ACIAIg-
+            +ACQ-cltr +AHw- Add-Member -MemberType NoteProperty -Name StreamingFinished -Value +ACQ-false
+            +ACQ-cltr +AHw- Add-Member -MemberType NoteProperty -Name Platform -Value +ACIAIg-
+            +ACQ-cltr +AHw- Add-Member -MemberType NoteProperty -Name ClientCulture -Value +ACIAIg-
+            
+            +ACQ-packagePath +AD0- join-path +ACQ-path +ACI-Common+AFw-InstalledPackages+ACI-
+            +ACQ-clickToRunPath +AD0- join-path +ACQ-path +ACI-ClickToRun+AFw-Configuration+ACI-
+            +ACQ-virtualInstallPath +AD0- +ACQ-regProv.GetStringValue(+ACQ-HKLM, +ACQ-clickToRunPath, +ACI-InstallationPath+ACI-).sValue
+
+            +AFs-string+AF0AJA-officeLangResourcePath +AD0- join-path  +ACQ-path +ACI-Common+AFw-LanguageResources+ACI-
+            +ACQ-mainLangId +AD0- +ACQ-regProv.GetDWORDValue(+ACQ-HKLM, +ACQ-officeLangResourcePath, +ACI-SKULanguage+ACI-).uValue
+            if (+ACQ-mainLangId) +AHs-
+                +ACQ-mainlangCulture +AD0- +AFs-globalization.cultureinfo+AF0-::GetCultures(+ACI-allCultures+ACI-) +AHw- where +AHsAJABf-.LCID -eq +ACQ-mainLangId+AH0-
+                if (+ACQ-mainlangCulture) +AHs-
+                    +ACQ-cltr.ClientCulture +AD0- +ACQ-mainlangCulture.Name
+                +AH0-
+            +AH0-
+
+            +AFs-string+AF0AJA-officeLangPath +AD0- join-path  +ACQ-path +ACI-Common+AFw-LanguageResources+AFw-InstalledUIs+ACI-
+            +ACQ-langValues +AD0- +ACQ-regProv.EnumValues(+ACQ-HKLM, +ACQ-officeLangPath)+ADs-
+            if (+ACQ-langValues) +AHs-
+               foreach (+ACQ-langValue in +ACQ-langValues) +AHs-
+                  +ACQ-langCulture +AD0- +AFs-globalization.cultureinfo+AF0-::GetCultures(+ACI-allCultures+ACI-) +AHw- where +AHsAJABf-.LCID -eq +ACQ-langValue+AH0-
+               +AH0- 
+            +AH0-
+
+            if (+ACQ-virtualInstallPath) +AHs-
+
+            +AH0- else +AHs-
+              +ACQ-clickToRunPath +AD0- join-path +ACQ-regKey +ACI-ClickToRun+AFw-Configuration+ACI-
+              +ACQ-virtualInstallPath +AD0- +ACQ-regProv.GetStringValue(+ACQ-HKLM, +ACQ-clickToRunPath, +ACI-InstallationPath+ACI-).sValue
+            +AH0-
+
+            if (+ACQ-virtualInstallPath) +AHs-
+               if (+ACEAJA-ClickToRunPathList.Contains(+ACQ-virtualInstallPath.ToUpper())) +AHs-
+                  +ACQ-AddItem +AD0- +ACQ-ClickToRunPathList.Add(+ACQ-virtualInstallPath.ToUpper())
+               +AH0-
+
+               +ACQ-cltr.InstallPath +AD0- +ACQ-virtualInstallPath
+               +ACQ-cltr.StreamingFinished +AD0- +ACQ-regProv.GetStringValue(+ACQ-HKLM, +ACQ-clickToRunPath, +ACI-StreamingFinished+ACI-).sValue
+               +ACQ-cltr.UpdatesEnabled +AD0- +ACQ-regProv.GetStringValue(+ACQ-HKLM, +ACQ-clickToRunPath, +ACI-UpdatesEnabled+ACI-).sValue
+               +ACQ-cltr.UpdateUrl +AD0- +ACQ-regProv.GetStringValue(+ACQ-HKLM, +ACQ-clickToRunPath, +ACI-UpdateUrl+ACI-).sValue
+               +ACQ-cltr.Platform +AD0- +ACQ-regProv.GetStringValue(+ACQ-HKLM, +ACQ-clickToRunPath, +ACI-Platform+ACI-).sValue
+               +ACQ-cltr.ClientCulture +AD0- +ACQ-regProv.GetStringValue(+ACQ-HKLM, +ACQ-clickToRunPath, +ACI-ClientCulture+ACI-).sValue
+               +ACQ-ClickToRunList +-+AD0- +ACQ-cltr
+            +AH0-
+
+            +ACQ-packageItems +AD0- +ACQ-regProv.EnumKey(+ACQ-HKLM, +ACQ-packagePath)
+            +ACQ-officeItems +AD0- +ACQ-regProv.EnumKey(+ACQ-HKLM, +ACQ-path)
+
+            foreach (+ACQ-itemKey in +ACQ-officeItems.sNames) +AHs-
+              +ACQ-itemPath +AD0- join-path +ACQ-path +ACQ-itemKey
+              +ACQ-installRootPath +AD0- join-path +ACQ-itemPath +ACI-InstallRoot+ACI-
+
+              +ACQ-filePath +AD0- +ACQ-regProv.GetStringValue(+ACQ-HKLM, +ACQ-installRootPath, +ACI-Path+ACI-).sValue
+              if (+ACEAJA-PathList.Contains(+ACQ-filePath)) +AHs-
+                  +ACQ-AddItem +AD0- +ACQ-PathList.Add(+ACQ-filePath)
+              +AH0-
+            +AH0-
+
+            foreach (+ACQ-packageGuid in +ACQ-packageItems.sNames) +AHs-
+              +ACQ-packageItemPath +AD0- join-path +ACQ-packagePath +ACQ-packageGuid
+              +ACQ-packageName +AD0- +ACQ-regProv.GetStringValue(+ACQ-HKLM, +ACQ-packageItemPath, +ACIAIg-).sValue
+            
+              if (+ACEAJA-PackageList.Contains(+ACQ-packageName)) +AHs-
+                if (+ACQ-packageName) +AHs-
+                   +ACQ-AddItem +AD0- +ACQ-PackageList.Add(+ACQ-packageName.Replace(' ', '').ToLower())
+                +AH0-
+              +AH0-
+            +AH0-
+
+          +AH0-
+       +AH0-
+    +AH0-
+
+    
+
+    foreach (+ACQ-regKey in +ACQ-installKeys) +AHs-
+        +ACQ-keyList +AD0- new-object System.Collections.ArrayList
+        +ACQ-keys +AD0- +ACQ-regProv.EnumKey(+ACQ-HKLM, +ACQ-regKey)
+
+        foreach (+ACQ-key in +ACQ-keys.sNames) +AHs-
+           +ACQ-path +AD0- join-path +ACQ-regKey +ACQ-key
+           +ACQ-installPath +AD0- +ACQ-regProv.GetStringValue(+ACQ-HKLM, +ACQ-path, +ACI-InstallLocation+ACI-).sValue
+           if (+ACE-(+ACQ-installPath)) +AHs- continue +AH0-
+           if (+ACQ-installPath.Length -eq 0) +AHs- continue +AH0-
+
+           +ACQ-buildType +AD0- +ACI-64-Bit+ACI-
+           if (+ACQ-osArchitecture -eq +ACI-32-bit+ACI-) +AHs-
+              +ACQ-buildType +AD0- +ACI-32-Bit+ACI-
+           +AH0-
+
+           if (+ACQ-regKey.ToUpper().Contains(+ACI-Wow6432Node+ACI-.ToUpper())) +AHs-
+              +ACQ-buildType +AD0- +ACI-32-Bit+ACI-
+           +AH0-
+
+           if (+ACQ-key -match +ACIAew-.+AHs-8+AH0--.+AHs-4+AH0--.+AHs-4+AH0--1000-0000000FF1CE+AH0AIg-) +AHs-
+              +ACQ-buildType +AD0- +ACI-64-Bit+ACI- 
+           +AH0-
+
+           if (+ACQ-key -match +ACIAew-.+AHs-8+AH0--.+AHs-4+AH0--.+AHs-4+AH0--0000-0000000FF1CE+AH0AIg-) +AHs-
+              +ACQ-buildType +AD0- +ACI-32-Bit+ACI- 
+           +AH0-
+
+           if (+ACQ-modifyPath) +AHs-
+               if (+ACQ-modifyPath.ToLower().Contains(+ACI-platform+AD0-x86+ACI-)) +AHs-
+                  +ACQ-buildType +AD0- +ACI-32-Bit+ACI-
+               +AH0-
+
+               if (+ACQ-modifyPath.ToLower().Contains(+ACI-platform+AD0-x64+ACI-)) +AHs-
+                  +ACQ-buildType +AD0- +ACI-64-Bit+ACI-
+               +AH0-
+           +AH0-
+
+           +ACQ-primaryOfficeProduct +AD0- +ACQ-false
+           +ACQ-officeProduct +AD0- +ACQ-false
+           foreach (+ACQ-officeInstallPath in +ACQ-PathList) +AHs-
+             if (+ACQ-officeInstallPath) +AHs-
+                +ACQ-installReg +AD0- +ACIAXgAi- +- +ACQ-installPath.Replace('+AFw-', '+AFwAXA-')
+                +ACQ-installReg +AD0- +ACQ-installReg.Replace('(', '+AFw-(')
+                +ACQ-installReg +AD0- +ACQ-installReg.Replace(')', '+AFw-)')
+                if (+ACQ-officeInstallPath -match +ACQ-installReg) +AHs- +ACQ-officeProduct +AD0- +ACQ-true +AH0-
+             +AH0-
+           +AH0-
+
+           if (+ACEAJA-officeProduct) +AHs- continue +AH0AOw-
+           
+           +ACQ-name +AD0- +ACQ-regProv.GetStringValue(+ACQ-HKLM, +ACQ-path, +ACI-DisplayName+ACI-).sValue          
+
+           if (+ACQ-ConfigItemList.Contains(+ACQ-key.ToUpper()) -and +ACQ-name.ToUpper().Contains(+ACI-MICROSOFT OFFICE+ACI-)) +AHs-
+              +ACQ-primaryOfficeProduct +AD0- +ACQ-true
+           +AH0-
+
+           +ACQ-version +AD0- +ACQ-regProv.GetStringValue(+ACQ-HKLM, +ACQ-path, +ACI-DisplayVersion+ACI-).sValue
+           +ACQ-modifyPath +AD0- +ACQ-regProv.GetStringValue(+ACQ-HKLM, +ACQ-path, +ACI-ModifyPath+ACI-).sValue 
+
+           +ACQ-cltrUpdatedEnabled +AD0- +ACQ-NULL
+           +ACQ-cltrUpdateUrl +AD0- +ACQ-NULL
+           +ACQ-clientCulture +AD0- +ACQ-NULL+ADs-
+
+           +AFs-string+AF0AJA-clickToRun +AD0- +ACQ-false
+           if (+ACQ-ClickToRunPathList.Contains(+ACQ-installPath.ToUpper())) +AHs-
+               +ACQ-clickToRun +AD0- +ACQ-true
+               if (+ACQ-name.ToUpper().Contains(+ACI-MICROSOFT OFFICE+ACI-)) +AHs-
+                  +ACQ-primaryOfficeProduct +AD0- +ACQ-true
+               +AH0-
+
+               foreach (+ACQ-cltr in +ACQ-ClickToRunList) +AHs-
+                 if (+ACQ-cltr.InstallPath) +AHs-
+                   if (+ACQ-cltr.InstallPath.ToUpper() -eq +ACQ-installPath.ToUpper()) +AHs-
+                       +ACQ-cltrUpdatedEnabled +AD0- +ACQ-cltr.UpdatesEnabled
+                       +ACQ-cltrUpdateUrl +AD0- +ACQ-cltr.UpdateUrl
+                       if (+ACQ-cltr.Platform -eq 'x64') +AHs-
+                           +ACQ-buildType +AD0- +ACI-64-Bit+ACI- 
+                       +AH0-
+                       if (+ACQ-cltr.Platform -eq 'x86') +AHs-
+                           +ACQ-buildType +AD0- +ACI-32-Bit+ACI- 
+                       +AH0-
+                       +ACQ-clientCulture +AD0- +ACQ-cltr.ClientCulture
+                   +AH0-
+                 +AH0-
+               +AH0-
+           +AH0-
+           
+           if (+ACEAJA-primaryOfficeProduct) +AHs-
+              if (+ACEAJA-ShowAllInstalledProducts) +AHs-
+                  continue
+              +AH0-
+           +AH0-
+
+           +ACQ-object +AD0- New-Object PSObject -Property +AEAAew-DisplayName +AD0- +ACQ-name+ADs- Version +AD0- +ACQ-version+ADs- InstallPath +AD0- +ACQ-installPath+ADs- ClickToRun +AD0- +ACQ-clickToRun+ADs- 
+                     Bitness+AD0AJA-buildType+ADs- ComputerName+AD0AJA-computer+ADs- ClickToRunUpdatesEnabled+AD0AJA-cltrUpdatedEnabled+ADs- ClickToRunUpdateUrl+AD0AJA-cltrUpdateUrl+ADs-
+                     ClientCulture+AD0AJA-clientCulture +AH0-
+           +ACQ-object +AHw- Add-Member MemberSet PSStandardMembers +ACQ-PSStandardMembers
+           +ACQ-results +-+AD0- +ACQ-object
+
+        +AH0-
+    +AH0-
+
+  +AH0-
+
+  +ACQ-results +AD0- Get-Unique -InputObject +ACQ-results 
+
+  return +ACQ-results+ADs-
++AH0-
+
++AH0-
+
+Function Get-InstalledLanguages() +AHs-
+    +AFs-CmdletBinding()+AF0-
+    Param(
+    )
+    process +AHs-
+       +ACQ-returnLangs +AD0- +AEA-()
+       +ACQ-mainRegPath +AD0- Get-OfficeCTRRegPath
+
+       if (+ACQ-mainRegPath) +AHs-
+          if (Test-Path -Path +ACI-hklm:+AFwAJA-mainRegPath+AFw-ProductReleaseIDs+ACI-) +AHs-
+               +ACQ-activeConfig +AD0- Get-ItemProperty -Path +ACI-hklm:+AFwAJA-mainRegPath+AFw-ProductReleaseIDs+ACI-
+               +ACQ-activeId +AD0- +ACQ-activeConfig.ActiveConfiguration
+               +ACQ-languages +AD0- Get-ChildItem -Path +ACI-hklm:+AFwAJA-mainRegPath+AFw-ProductReleaseIDs+AFwAJA-activeId+AFw-culture+ACI-
+
+               foreach (+ACQ-language in +ACQ-languages) +AHs-
+                  +ACQ-lang +AD0- Get-ItemProperty -Path  +ACQ-language.pspath
+                  +ACQ-keyName +AD0- +ACQ-lang.PSChildName
+                  if (+ACQ-keyName.Contains(+ACI-.+ACI-)) +AHs-
+                      +ACQ-keyName +AD0- +ACQ-keyName.Split(+ACI-.+ACI-)+AFs-0+AF0-
+                  +AH0-
+
+                  if (+ACQ-keyName.ToLower() -ne +ACI-x-none+ACI-) +AHs-
+                     +ACQ-culture +AD0- New-Object system.globalization.cultureinfo(+ACQ-keyName)
+                     +ACQ-returnLangs +-+AD0- +ACQ-culture
+                  +AH0-
+               +AH0-
+          +AH0-
+       +AH0-
+
+       return +ACQ-returnLangs
+    +AH0-
++AH0-
+
+Function Get-OfficeCDNUrl() +AHs-
+    +ACQ-CDNBaseUrl +AD0- (Get-ItemProperty HKLM:+AFw-SOFTWARE+AFw-Microsoft+AFw-Office+AFw-ClickToRun+AFw-Configuration -Name CDNBaseUrl -ErrorAction SilentlyContinue).CDNBaseUrl
+    if (+ACE-(+ACQ-CDNBaseUrl)) +AHs-
+       +ACQ-CDNBaseUrl +AD0- (Get-ItemProperty HKLM:+AFw-SOFTWARE+AFw-Microsoft+AFw-Office+AFw-15.0+AFw-ClickToRun+AFw-Configuration -Name CDNBaseUrl -ErrorAction SilentlyContinue).CDNBaseUrl
+    +AH0-
+    if (+ACE-(+ACQ-CDNBaseUrl)) +AHs-
+        +ACQ-OfficeRegPath +AD0- +ACIAIg-
+        +ACQ-path15 +AD0- 'HKLM:+AFw-SOFTWARE+AFw-Microsoft+AFw-Office+AFw-15.0+AFw-ClickToRun+AFw-ProductReleaseIDs+AFw-Active+AFw-stream'
+        +ACQ-path16 +AD0- 'HKLM:+AFw-SOFTWARE+AFw-Microsoft+AFw-Office+AFw-ClickToRun+AFw-ProductReleaseIDs+AFw-Active+AFw-stream'
+        if (Test-Path -Path +ACQ-path16) +AHs- +ACQ-OfficeRegPath +AD0- +ACQ-path16 +AH0-
+        if (Test-Path -Path +ACQ-path15) +AHs- +ACQ-OfficeRegPath +AD0- +ACQ-path15 +AH0-
+
+        if(+ACQ-OfficeRegPath) +AHs-
+            +ACQ-items +AD0- Get-Item -Path +ACQ-OfficeRegPath -ErrorAction SilentlyContinue +AHw- Select-Object -ExpandProperty property
+            if (+ACQ-items) +AHs-
+                +ACQ-properties +AD0- +ACQ-items +AHw- ForEach-Object +AHs-
+                   New-Object psobject -Property +AEAAewAi-property+ACIAPQAkAF8AOw- +ACI-Value+ACI- +AD0- (Get-ItemProperty -Path . -Name +ACQAXw-).+ACQAXwB9-
+                +AH0-
+
+                +ACQ-value +AD0- +ACQ-properties +AHw- Select Value
+                +ACQ-firstItem +AD0- +ACQ-value+AFs-0+AF0-
+                +AFs-string+AF0- +ACQ-cdnPath +AD0- +ACQ-firstItem.Value
+
+                +ACQ-CDNBaseUrl +AD0- Select-String -InputObject +ACQ-cdnPath -Pattern +ACI-http://officecdn.microsoft.com/.+ACo-/.+AHs-8+AH0--.+AHs-4+AH0--.+AHs-4+AH0--.+AHs-4+AH0--.+AHs-12+AH0AIg- -AllMatches +AHw- +ACU- +AHs- +ACQAXw-.Matches +AH0- +AHw- +ACU- +AHs- +ACQAXw-.Value +AH0-
+            +AH0-
+        +AH0-
+    +AH0-
+    return +ACQ-CDNBaseUrl
++AH0-
+
+Function Get-OfficeC2RVersion() +AHs-
+    +ACQ-VersionToReport +AD0- (Get-ItemProperty HKLM:+AFw-SOFTWARE+AFw-Microsoft+AFw-Office+AFw-ClickToRun+AFw-Configuration -Name VersionToReport -ErrorAction SilentlyContinue).VersionToReport
+    if (+ACE-(+ACQ-VersionToReport)) +AHs-
+       +ACQ-VersionToReport +AD0- (Get-ItemProperty HKLM:+AFw-SOFTWARE+AFw-Microsoft+AFw-Office+AFw-ClickToRun+AFw-Configuration -Name ClientVersionToReport -ErrorAction SilentlyContinue).ClientVersionToReport
+    +AH0-
+    return +ACQ-VersionToReport
++AH0-
+
+Function Get-OfficeCTRRegPath() +AHs-
+    +ACQ-path15 +AD0- 'SOFTWARE+AFw-Microsoft+AFw-Office+AFw-15.0+AFw-ClickToRun'
+    +ACQ-path16 +AD0- 'SOFTWARE+AFw-Microsoft+AFw-Office+AFw-ClickToRun'
+    if (Test-Path +ACI-HKLM:+AFwAJA-path16+ACI-) +AHs-
+        return +ACQ-path16
+    +AH0-
+    else +AHs-
+        if (Test-Path +ACI-HKLM:+AFwAJA-path15+ACI-) +AHs-
+            return +ACQ-path15
+        +AH0-
+    +AH0-
++AH0-
+
+function Test-URL +AHs-
+   param( 
+      +AFs-string+AF0AJA-url +AD0- +ACQ-NULL
+   )
+
+   +AFs-bool+AF0AJA-validUrl +AD0- +ACQ-false
+   try +AHs-
+     +ACQ-req +AD0- +AFs-System.Net.HttpWebRequest+AF0-::Create(+ACQ-url)+ADs-
+     +ACQ-res +AD0- +ACQ-req.GetResponse()
+
+     if(+ACQ-res.StatusCode -eq +ACI-OK+ACI-) +AHs-
+        +ACQ-validUrl +AD0- +ACQ-true
+     +AH0-
+     +ACQ-res.Close()+ADs- 
+   +AH0- catch +AHs-
+      Write-Host +ACI-Invalid UpdateSource. File Not Found: +ACQ-url+ACI- -ForegroundColor Red
+      +ACQ-validUrl +AD0- +ACQ-false
+      throw+ADs-
+   +AH0-
+
+   return +ACQ-validUrl
++AH0-
+
+function Change-UpdatePathToChannel +AHs-
+   +AFs-CmdletBinding()+AF0-
+   param( 
+     +AFs-Parameter()+AF0-
+     +AFs-string+AF0- +ACQ-UpdatePath,
+
+     +AFs-Parameter()+AF0-
+     +AFs-bool+AF0- +ACQ-ValidateUpdateSourceFiles +AD0- +ACQ-true,
+
+     +AFs-Parameter()+AF0-
+     +AFs-string+AF0- +ACQ-Channel +AD0- +ACQ-null,
+
+     +AFs-Parameter()+AF0-
+     +AFs-string+AF0- +ACQ-Bitness +AD0- +ACQ-null
+   )
+
+   +ACQ-newUpdatePath +AD0- +ACQ-UpdatePath
+   +ACQ-newUpdateLong +AD0- +ACQ-UpdatePath
+
+   if (+ACE-(+ACQ-Channel)) +AHs-
+      +ACQ-detectedChannel +AD0- Detect-Channel 
+   +AH0-
+
+   if (+ACQ-detectedChannel) +AHs-
+       +ACQ-branchName +AD0- +ACQ-detectedChannel.branch
+   +AH0- else +AHs-
+      if (+ACQ-Channel) +AHs-
+         +ACQ-branchName +AD0- +ACQ-Channel
+      +AH0- else +AHs-
+         +ACQ-branchName +AD0- +ACI-Deferred+ACI-
+      +AH0-
+   +AH0-
+
+   +ACQ-branchShortName +AD0- +ACI-DC+ACI-
+   if (+ACQ-branchName.ToLower() -eq +ACI-current+ACI-) +AHs-
+      +ACQ-branchShortName +AD0- +ACI-CC+ACI-
+   +AH0-
+   if (+ACQ-branchName.ToLower() -eq +ACI-firstreleasecurrent+ACI-) +AHs-
+      +ACQ-branchShortName +AD0- +ACI-FRCC+ACI-
+   +AH0-
+   if (+ACQ-branchName.ToLower() -eq +ACI-firstreleasedeferred+ACI-) +AHs-
+      +ACQ-branchShortName +AD0- +ACI-FRDC+ACI-
+   +AH0-
+   if (+ACQ-branchName.ToLower() -eq +ACI-deferred+ACI-) +AHs-
+      +ACQ-branchShortName +AD0- +ACI-DC+ACI-
+   +AH0-
+
+   +ACQ-channelNames +AD0- +AEA-(+ACI-FRCC+ACI-, +ACI-CC+ACI-, +ACI-FRDC+ACI-, +ACI-DC+ACI-)
+   +ACQ-channelLongNames +AD0- +AEA-(+ACI-FirstReleaseCurrent+ACI-, +ACI-Current+ACI-, +ACI-FirstReleaseDeferred+ACI-, +ACI-Deferred+ACI-, +ACI-Business+ACI-, +ACI-FirstReleaseBusiness+ACI-)
+
+   +ACQ-madeChange +AD0- +ACQ-false
+   foreach (+ACQ-channelName in +ACQ-channelNames) +AHs-
+      if (+ACQ-UpdatePath.ToUpper().EndsWith(+ACIAXAAk-channelName+ACI-)) +AHs-
+         +ACQ-newUpdatePath +AD0- +ACQ-newUpdatePath -replace +ACIAXABcACQ-channelName+ACI-, +ACIAXAAk-branchShortName+ACI-
+         +ACQ-newUpdateLong +AD0- +ACQ-newUpdateLong -replace +ACIAXABcACQ-channelName+ACI-, +ACIAXAAk-branchName+ACI-
+         +ACQ-madeChange +AD0- +ACQ-true
+      +AH0- 
+      if (+ACQ-UpdatePath.ToUpper().Contains(+ACIAXAAk-channelName+AFwAIg-)) +AHs-
+         +ACQ-newUpdatePath +AD0- +ACQ-newUpdatePath -replace +ACIAXABcACQ-channelName+AFwAXAAi-, +ACIAXAAk-branchShortName+AFwAIg-
+         +ACQ-newUpdateLong +AD0- +ACQ-newUpdateLong -replace +ACIAXABcACQ-channelName+AFwAXAAi-, +ACIAXAAk-branchName+AFwAIg-
+         +ACQ-madeChange +AD0- +ACQ-true
+      +AH0- 
+      if (+ACQ-UpdatePath.ToUpper().EndsWith(+ACI-/+ACQ-channelName+ACI-)) +AHs-
+         +ACQ-newUpdatePath +AD0- +ACQ-newUpdatePath -replace +ACIAXA-/+ACQ-channelName+ACI-, +ACI-/+ACQ-branchShortName+ACI-
+         +ACQ-newUpdateLong +AD0- +ACQ-newUpdateLong -replace +ACIAXABcACQ-channelName+AFwAXAAi-, +ACIAXAAk-branchName+AFwAIg-
+         +ACQ-madeChange +AD0- +ACQ-true
+      +AH0-
+      if (+ACQ-UpdatePath.ToUpper().Contains(+ACI-/+ACQ-channelName/+ACI-)) +AHs-
+         +ACQ-newUpdatePath +AD0- +ACQ-newUpdatePath -replace +ACIAXA-/+ACQ-channelName+AFw-/+ACI-, +ACI-/+ACQ-branchShortName/+ACI-
+         +ACQ-newUpdateLong +AD0- +ACQ-newUpdateLong -replace +ACIAXA-/+ACQ-channelName+AFw-/+ACI-, +ACI-/+ACQ-branchName/+ACI-
+         +ACQ-madeChange +AD0- +ACQ-true
+      +AH0-
+   +AH0-
+
+   foreach (+ACQ-channelName in +ACQ-channelLongNames) +AHs-
+      +ACQ-channelName +AD0- +ACQ-channelName.ToString().ToUpper()
+      if (+ACQ-UpdatePath.ToUpper().EndsWith(+ACIAXAAk-channelName+ACI-)) +AHs-
+         +ACQ-newUpdatePath +AD0- +ACQ-newUpdatePath -replace +ACIAXABcACQ-channelName+ACI-, +ACIAXAAk-branchShortName+ACI-
+         +ACQ-newUpdateLong +AD0- +ACQ-newUpdateLong -replace +ACIAXABcACQ-channelName+ACI-, +ACIAXAAk-branchName+ACI-
+         +ACQ-madeChange +AD0- +ACQ-true
+      +AH0- 
+      if (+ACQ-UpdatePath.ToUpper().Contains(+ACIAXAAk-channelName+AFwAIg-)) +AHs-
+         +ACQ-newUpdatePath +AD0- +ACQ-newUpdatePath -replace +ACIAXABcACQ-channelName+AFwAXAAi-, +ACIAXAAk-branchShortName+AFwAIg-
+         +ACQ-newUpdateLong +AD0- +ACQ-newUpdateLong -replace +ACIAXABcACQ-channelName+AFwAXAAi-, +ACIAXAAk-branchName+AFwAIg-
+         +ACQ-madeChange +AD0- +ACQ-true
+      +AH0- 
+      if (+ACQ-UpdatePath.ToUpper().EndsWith(+ACI-/+ACQ-channelName+ACI-)) +AHs-
+         +ACQ-newUpdatePath +AD0- +ACQ-newUpdatePath -replace +ACIAXA-/+ACQ-channelName+ACI-, +ACI-/+ACQ-branchShortName+ACI-
+         +ACQ-newUpdateLong +AD0- +ACQ-newUpdateLong -replace +ACIAXABcACQ-channelName+AFwAXAAi-, +ACIAXAAk-branchName+AFwAIg-
+         +ACQ-madeChange +AD0- +ACQ-true
+      +AH0-
+      if (+ACQ-UpdatePath.ToUpper().Contains(+ACI-/+ACQ-channelName/+ACI-)) +AHs-
+         +ACQ-newUpdatePath +AD0- +ACQ-newUpdatePath -replace +ACIAXA-/+ACQ-channelName+AFw-/+ACI-, +ACI-/+ACQ-branchShortName/+ACI-
+         +ACQ-newUpdateLong +AD0- +ACQ-newUpdateLong -replace +ACIAXA-/+ACQ-channelName+AFw-/+ACI-, +ACI-/+ACQ-branchName/+ACI-
+         +ACQ-madeChange +AD0- +ACQ-true
+      +AH0-
+   +AH0-
+
+   if (+ACE-(+ACQ-madeChange)) +AHs-
+      if (+ACQ-newUpdatePath.Contains(+ACI-/+ACI-)) +AHs-
+         if (+ACQ-newUpdatePath.EndsWith(+ACI-/+ACI-)) +AHs-
+           +ACQ-newUpdatePath +-+AD0- +ACIAJA-branchShortName+ACI-
+         +AH0- else +AHs-
+           +ACQ-newUpdatePath +-+AD0- +ACI-/+ACQ-branchShortName+ACI-
+         +AH0-
+      +AH0-
+      if (+ACQ-newUpdatePath.Contains(+ACIAXAAi-)) +AHs-
+         if (+ACQ-newUpdatePath.EndsWith(+ACIAXAAi-)) +AHs-
+           +ACQ-newUpdatePath +-+AD0- +ACIAJA-branchShortName+ACI-
+         +AH0- else +AHs-
+           +ACQ-newUpdatePath +-+AD0- +ACIAXAAk-branchShortName+ACI-
+         +AH0-
+      +AH0-
+   +AH0-
+
+   if (+ACE-(+ACQ-madeChange)) +AHs-
+      if (+ACQ-newUpdateLong.Contains(+ACI-/+ACI-)) +AHs-
+         if (+ACQ-newUpdateLong.EndsWith(+ACI-/+ACI-)) +AHs-
+           +ACQ-newUpdateLong +-+AD0- +ACIAJA-branchName+ACI-
+         +AH0- else +AHs-
+           +ACQ-newUpdateLong +-+AD0- +ACI-/+ACQ-branchName+ACI-
+         +AH0-
+      +AH0-
+      if (+ACQ-newUpdateLong.Contains(+ACIAXAAi-)) +AHs-
+         if (+ACQ-newUpdateLong.EndsWith(+ACIAXAAi-)) +AHs-
+           +ACQ-newUpdateLong +-+AD0- +ACIAJA-branchName+ACI-
+         +AH0- else +AHs-
+           +ACQ-newUpdateLong +-+AD0- +ACIAXAAk-branchName+ACI-
+         +AH0-
+      +AH0-
+   +AH0-
+
+   try +AHs-
+     +ACQ-pathAlive +AD0- Test-UpdateSource -UpdateSource +ACQ-newUpdatePath -ValidateUpdateSourceFiles +ACQ-ValidateUpdateSourceFiles -Bitness +ACQ-Bitness
+   +AH0- catch +AHs-
+     +ACQ-pathAlive +AD0- +ACQ-false
+   +AH0-
+
+     if (+ACE-(+ACQ-pathAlive)) +AHs-
+        try +AHs-
+           +ACQ-pathAlive +AD0- Test-UpdateSource -UpdateSource +ACQ-newUpdateLong -ValidateUpdateSourceFiles +ACQ-ValidateUpdateSourceFiles -Bitness +ACQ-Bitness
+        +AH0- catch +AHs-
+            +ACQ-pathAlive +AD0- +ACQ-false
+        +AH0-
+        if (+ACQ-pathAlive) +AHs-
+           +ACQ-newUpdatePath +AD0- +ACQ-newUpdateLong
+        +AH0-
+     +AH0-
+   
+   if (+ACQ-pathAlive) +AHs-
+     return +ACQ-newUpdatePath
+   +AH0- else +AHs-
+     return +ACQ-UpdatePath
+   +AH0-
++AH0-
+
+Function Test-UpdateSource() +AHs-
+    +AFs-CmdletBinding()+AF0-
+    Param(
+        +AFs-Parameter(Mandatory+AD0AJA-true)+AF0-
+        +AFs-string+AF0- +ACQ-UpdateSource +AD0- +ACQ-NULL,
+
+        +AFs-Parameter()+AF0-
+        +AFs-bool+AF0- +ACQ-ValidateUpdateSourceFiles +AD0- +ACQ-true,
+
+        +AFs-Parameter()+AF0-
+        +AFs-string+AFsAXQBd- +ACQ-OfficeLanguages +AD0- +ACQ-null,
+
+        +AFs-Parameter()+AF0-
+        +AFs-String+AF0- +ACQ-Bitness +AD0- +ACQ-NULL
+    )
+
+  	+ACQ-uri +AD0- +AFs-System.Uri+AF0AJA-UpdateSource
+
+    +AFs-bool+AF0AJA-sourceIsAlive +AD0- +ACQ-false
+
+    if(+ACQ-uri.Host)+AHs-
+	    +ACQ-sourceIsAlive +AD0- Test-Connection -Count 1 -computername +ACQ-uri.Host -Quiet
+    +AH0-else+AHs-
+        +ACQ-sourceIsAlive +AD0- Test-Path +ACQ-uri.LocalPath -ErrorAction SilentlyContinue
+    +AH0-
+
+    if (+ACQ-ValidateUpdateSourceFiles) +AHs-
+       if (+ACQ-sourceIsAlive) +AHs-
+           +AFs-string+AF0AJA-strIsAlive +AD0- Validate-UpdateSource -UpdateSource +ACQ-UpdateSource -OfficeLanguages +ACQ-OfficeLanguages -Bitness +ACQ-Bitness
+           if (+ACQ-strIsAlive.ToLower() -eq +ACI-true+ACI-) +AHs-
+              +ACQ-sourceIsAlive +AD0- +ACQ-true
+           +AH0- else +AHs-
+              +ACQ-sourceIsAlive +AD0- +ACQ-false
+           +AH0-
+       +AH0-
+    +AH0-
+
+    return +ACQ-sourceIsAlive
++AH0-
+
+Function Validate-UpdateSource() +AHs-
+    +AFs-CmdletBinding()+AF0-
+    Param(
+        +AFs-Parameter(Mandatory+AD0AJA-true)+AF0-
+        +AFs-string+AF0- +ACQ-UpdateSource +AD0- +ACQ-NULL,
+
+        +AFs-Parameter()+AF0-
+        +AFs-string+AF0- +ACQ-Bitness +AD0- +ACQ-NULL,
+
+        +AFs-Parameter()+AF0-
+        +AFs-string+AFsAXQBd- +ACQ-OfficeLanguages +AD0- +ACQ-NULL
+    )
+
+    +AFs-bool+AF0AJA-validUpdateSource +AD0- +ACQ-true
+    +AFs-string+AF0AJA-cabPath +AD0- +ACIAIg-
+
+    if (+ACQ-UpdateSource) +AHs-
+        +ACQ-mainRegPath +AD0- Get-OfficeCTRRegPath
+
+        if(+ACEAJA-Bitness)+AHs-
+            +ACQ-Bitness +AD0- +ACI-32+ACI-
+        +AH0-
+
+        +ACQ-currentplatform +AD0- +ACQ-Bitness
+
+        if (+ACQ-currentplatform -eq +ACI-x64+ACI-) +AHs-
+            +ACQ-mainCab +AD0- +ACIAJA-UpdateSource+AFw-Office+AFw-Data+AFw-v64.cab+ACI-
+            +ACQ-Bitness +AD0- +ACI-64+ACI-
+        +AH0-
+        else+AHs-
+            +ACQ-mainCab +AD0- +ACIAJA-UpdateSource+AFw-Office+AFw-Data+AFw-v32.cab+ACI-
+            +ACQ-Bitness +AD0- +ACI-32+ACI-
+        +AH0-
+
+        if (+ACQ-mainRegPath) +AHs-
+            +ACQ-configRegPath +AD0- +ACQ-mainRegPath +- +ACIAXA-Configuration+ACI-
+            +ACQ-currentplatform +AD0- (Get-ItemProperty HKLM:+AFwAJA-configRegPath -Name Platform -ErrorAction SilentlyContinue).Platform
+            +ACQ-updateToVersion +AD0- (Get-ItemProperty HKLM:+AFwAJA-configRegPath -Name UpdateToVersion -ErrorAction SilentlyContinue).UpdateToVersion
+            +ACQ-llcc +AD0- (Get-ItemProperty HKLM:+AFwAJA-configRegPath -Name ClientCulture -ErrorAction SilentlyContinue).ClientCulture
+        +AH0-
+
+        if (+ACE-(+ACQ-updateToVersion)) +AHs-
+           +ACQ-cabXml +AD0- Get-CabVersion -FilePath +ACQ-mainCab
+           if (+ACQ-cabXml) +AHs-
+               +ACQ-updateToVersion +AD0- +ACQ-cabXml.Version.Available.Build
+           +AH0-
+        +AH0-
+
+        +AFs-xml+AF0AJA-xml +AD0- Get-ChannelXml -Bitness +ACQ-Bitness
+        if (+ACQ-OfficeLanguages) +AHs-
+          +ACQ-languages +AD0- +ACQ-OfficeLanguages
+        +AH0- else +AHs-
+          +ACQ-languages +AD0- Get-InstalledLanguages
+        +AH0-
+
+        +ACQ-checkFiles +AD0- +ACQ-xml.UpdateFiles.File +AHw- Where +AHs-   +ACQAXw-.language -eq +ACI-0+ACI- +AH0-
+        foreach (+ACQ-language in +ACQ-languages) +AHs-
+           +ACQ-checkFiles +-+AD0- +ACQ-xml.UpdateFiles.File +AHw- Where +AHs- +ACQAXw-.language -eq +ACQ-language.LCID+AH0-
+        +AH0-
+
+        foreach (+ACQ-checkFile in +ACQ-checkFiles) +AHs-
+           +ACQ-fileName +AD0- +ACQ-checkFile.name -replace +ACIAJQ-version+ACUAIg-, +ACQ-updateToVersion
+           +ACQ-relativePath +AD0- +ACQ-checkFile.relativePath -replace +ACIAJQ-version+ACUAIg-, +ACQ-updateToVersion
+
+           +ACQ-fullPath +AD0- +ACIAJA-UpdateSource+ACQ-relativePath+ACQ-fileName+ACI-
+           if (+ACQ-fullPath.ToLower().StartsWith(+ACI-http+ACI-)) +AHs-
+              +ACQ-fullPath +AD0- +ACQ-fullPath -replace +ACIAXABcACI-, +ACI-/+ACI-
+           +AH0- else +AHs-
+              +ACQ-fullPath +AD0- +ACQ-fullPath -replace +ACI-/+ACI-, +ACIAXAAi-
+           +AH0-
+           
+           +ACQ-updateFileExists +AD0- +ACQ-false
+           if (+ACQ-fullPath.ToLower().StartsWith(+ACI-http+ACI-)) +AHs-
+               +ACQ-updateFileExists +AD0- Test-URL -url +ACQ-fullPath
+           +AH0- else +AHs-
+               if (+ACQ-fullPath.StartsWith(+ACIAXABcACI-)) +AHs-
+                  +ACQ-updateFileExists +AD0- Test-ItemPathUNC -Path +ACQ-fullPath
+               +AH0- else +AHs-
+                  +ACQ-updateFileExists +AD0- Test-Path -Path +ACQ-fullPath
+               +AH0-
+           +AH0-
+
+           if (+ACE-(+ACQ-updateFileExists)) +AHs-
+              +ACQ-fileExists +AD0- +ACQ-missingFiles.Contains(+ACQ-fullPath)
+              if (+ACE-(+ACQ-fileExists)) +AHs-
+                 +ACQ-missingFiles.Add(+ACQ-fullPath)
+                 Write-Host +ACI-Source File Missing: +ACQ-fullPath+ACI-
+                 Write-Log -Message +ACI-Source File Missing: +ACQ-fullPath+ACI- -severity 1 -component +ACI-Office 365 Update Anywhere+ACI- 
+              +AH0-     
+              +ACQ-validUpdateSource +AD0- +ACQ-false
+           +AH0-
+        +AH0-
+
+    +AH0-
+    
+    return +ACQ-validUpdateSource
++AH0-
+
+Function Copy-OfficeSourceFiles() +AHs-
+    +AFs-CmdletBinding()+AF0-
+    Param(
+        +AFs-Parameter(Mandatory+AD0AJA-true)+AF0-
+        +AFs-string+AF0- +ACQ-Path +AD0- +ACQ-NULL,
+
+        +AFs-Parameter(Mandatory+AD0AJA-true)+AF0-
+        +AFs-string+AF0- +ACQ-Destination +AD0- +ACQ-NULL,
+
+        +AFs-Parameter()+AF0-
+        +AFs-string+AF0- +ACQ-Bitness +AD0- +ACI-x86+ACI-,
+
+        +AFs-Parameter()+AF0-
+        +AFs-string+AFsAXQBd- +ACQ-OfficeLanguages +AD0- +ACQ-null
+    )
+
+    +AFs-bool+AF0AJA-validUpdateSource +AD0- +ACQ-true
+    +AFs-string+AF0AJA-cabPath +AD0- +ACIAIg-
+
+    if ((+ACQ-Path) -and (+ACQ-Destination)) +AHs-
+        +ACQ-mainRegPath +AD0- Get-OfficeCTRRegPath
+        if (+ACQ-mainRegPath) +AHs-
+            +ACQ-configRegPath +AD0- +ACQ-mainRegPath +- +ACIAXA-Configuration+ACI-
+            +ACQ-currentplatform +AD0- (Get-ItemProperty HKLM:+AFwAJA-configRegPath -Name Platform -ErrorAction SilentlyContinue).Platform
+            +ACQ-updateToVersion +AD0- (Get-ItemProperty HKLM:+AFwAJA-configRegPath -Name UpdateToVersion -ErrorAction SilentlyContinue).UpdateToVersion
+            +ACQ-llcc +AD0- (Get-ItemProperty HKLM:+AFwAJA-configRegPath -Name ClientCulture -ErrorAction SilentlyContinue).ClientCulture
+        +AH0-
+
+        +ACQ-currentplatform +AD0- +ACQ-Bitness
+
+        +ACQ-mainCab +AD0- +ACIAJA-Path+AFw-Office+AFw-Data+AFw-v32.cab+ACI-
+        +ACQ-bitness +AD0- +ACI-32+ACI-
+        if (+ACQ-currentplatform -eq +ACI-x64+ACI-) +AHs-
+            +ACQ-mainCab +AD0- +ACIAJA-Path+AFw-Office+AFw-Data+AFw-v64.cab+ACI-
+            +ACQ-bitness +AD0- +ACI-64+ACI-
+        +AH0-
+
+        if (+ACE-(+ACQ-updateToVersion)) +AHs-
+           +ACQ-cabXml +AD0- Get-CabVersion -FilePath +ACQ-mainCab
+           if (+ACQ-cabXml) +AHs-
+               +ACQ-updateToVersion +AD0- +ACQ-cabXml.Version.Available.Build
+           +AH0-
+        +AH0-
+
+        +AFs-xml+AF0AJA-xml +AD0- Get-ChannelXml -Bitness +ACQ-bitness
+        if (+ACQ-OfficeLanguages) +AHs-
+          +ACQ-languages +AD0- +ACQ-OfficeLanguages
+        +AH0- else +AHs-
+          +ACQ-languages +AD0- Get-InstalledLanguages
+        +AH0-
+
+        +ACQ-checkFiles +AD0- +ACQ-xml.UpdateFiles.File +AHw- Where +AHs-   +ACQAXw-.language -eq +ACI-0+ACI- +AH0-
+        foreach (+ACQ-language in +ACQ-languages) +AHs-
+           +ACQ-checkFiles +-+AD0- +ACQ-xml.UpdateFiles.File +AHw- Where +AHs- +ACQAXw-.language -eq +ACQ-language.LCID+AH0-
+        +AH0-
+
+        foreach (+ACQ-checkFile in +ACQ-checkFiles) +AHs-
+           +ACQ-fileName +AD0- +ACQ-checkFile.name -replace +ACIAJQ-version+ACUAIg-, +ACQ-updateToVersion
+           +ACQ-relativePath +AD0- +ACQ-checkFile.relativePath -replace +ACIAJQ-version+ACUAIg-, +ACQ-updateToVersion
+
+           +ACQ-fullPath +AD0- +ACIAJA-UpdateSource+ACQ-relativePath+ACQ-fileName+ACI-
+           if (+ACQ-fullPath.ToLower().StartsWith(+ACI-http+ACI-)) +AHs-
+              +ACQ-fullPath +AD0- +ACQ-fullPath -replace +ACIAXABcACI-, +ACI-/+ACI-
+           +AH0- else +AHs-
+              +ACQ-fullPath +AD0- +ACQ-fullPath -replace +ACI-/+ACI-, +ACIAXAAi-
+           +AH0-
+           
+           +ACQ-updateFileExists +AD0- +ACQ-false
+           if (+ACQ-fullPath.ToLower().StartsWith(+ACI-http+ACI-)) +AHs-
+               +ACQ-updateFileExists +AD0- Test-URL -url +ACQ-fullPath
+           +AH0- else +AHs-
+               if (+ACQ-fullPath.StartsWith(+ACIAXABcACI-)) +AHs-
+                  +ACQ-updateFileExists +AD0- Test-ItemPathUNC -Path +ACQ-fullPath
+               +AH0- else +AHs-
+                  +ACQ-updateFileExists +AD0- Test-Path -Path +ACQ-fullPath
+               +AH0-
+           +AH0-
+
+           if (+ACE-(+ACQ-updateFileExists)) +AHs-
+              +ACQ-fileExists +AD0- +ACQ-missingFiles.Contains(+ACQ-fullPath)
+              if (+ACE-(+ACQ-fileExists)) +AHs-
+                 +ACQ-missingFiles.Add(+ACQ-fullPath)
+                 Write-Host +ACI-Source File Missing: +ACQ-fullPath+ACI-
+                 Write-Log -Message +ACI-Source File Missing: +ACQ-fullPath+ACI- -severity 1 -component +ACI-Office 365 Update Anywhere+ACI- 
+              +AH0-     
+              +ACQ-validUpdateSource +AD0- +ACQ-false
+           +AH0-
+        +AH0-
+
+    +AH0-
+    
+    return +ACQ-validUpdateSource
++AH0-
+
+
+function Detect-Channel +AHs-
+   param( 
+
+   )
+
+   Process +AHs-
+      +ACQ-currentBaseUrl +AD0- Get-OfficeCDNUrl
+      +ACQ-channelXml +AD0- Get-ChannelXml
+
+      +ACQ-currentChannel +AD0- +ACQ-channelXml.UpdateFiles.baseURL +AHw- Where +AHsAJABf-.URL -eq +ACQ-currentBaseUrl -and +ACQAXw-.branch -notcontains 'Business' +AH0-
+      return +ACQ-currentChannel
+   +AH0-
+
++AH0-
+
+function Get-CabVersion +AHs-
+   +AFs-CmdletBinding()+AF0-
+   param( 
+      +AFs-Parameter(Mandatory+AD0AJA-true)+AF0-
+      +AFs-string+AF0- +ACQ-FilePath +AD0- +ACQ-NULL
+   )
+
+   process +AHs-
+       +ACQ-cabPath +AD0- +ACQ-FilePath
+       +ACQ-fileName +AD0- Split-Path -Path +ACQ-cabPath -Leaf
+       +ACQ-XMLFilePath +AD0- +ACIAIg-
+
+       if (+ACQ-cabPath.ToLower().StartsWith(+ACI-http+ACI-)) +AHs-
+           +ACQ-webclient +AD0- New-Object System.Net.WebClient
+           +ACQ-XMLFilePath +AD0- +ACIAJA-env:TEMP/+ACQ-fileName+ACI-
+           +ACQ-XMLDownloadURL+AD0- +ACQ-FilePath
+           +ACQ-webclient.DownloadFile(+ACQ-XMLDownloadURL,+ACQ-XMLFilePath)
+       +AH0- else +AHs-
+         if (+ACQ-cabPath.StartsWith(+ACIAXABcACI-)) +AHs-
+             if (Test-ItemPathUNC -Path +ACQ-cabPath) +AHs-
+                 +ACQ-XMLFilePath +AD0- +ACQ-cabPath
+             +AH0-
+         +AH0- else +AHs-
+             if (Test-Path -Path +ACQ-cabPath) +AHs-
+                 +ACQ-XMLFilePath +AD0- +ACQ-cabPath
+             +AH0-
+         +AH0-
+       +AH0-
+
+       if (+ACQ-XMLFilePath) +AHs-
+           +ACQ-tmpName +AD0- +ACI-VersionDescriptor.xml+ACI-
+           expand +ACQ-XMLFilePath +ACQ-env:TEMP -f:+ACQ-tmpName +AHw- Out-Null
+           +ACQ-tmpName +AD0- +ACQ-env:TEMP +- +ACIAXA-VersionDescriptor.xml+ACI-
+           +AFs-xml+AF0AJA-versionXml +AD0- Get-Content +ACQ-tmpName
+           return +ACQ-versionXml
+       +AH0-
+       return +ACQ-null
+   +AH0-
++AH0-
+
+Function GetScriptRoot() +AHs-
+ process +AHs-
+     +AFs-string+AF0AJA-scriptPath +AD0- +ACI-.+ACI-
+
+     if (+ACQ-PSScriptRoot) +AHs-
+       +ACQ-scriptPath +AD0- +ACQ-PSScriptRoot
+     +AH0- else +AHs-
+       +ACQ-scriptPath +AD0- split-path -parent +ACQ-MyInvocation.MyCommand.Definition
+       +ACQ-scriptPath +AD0- (Get-Item -Path +ACI-.+AFwAIg-).FullName
+     +AH0-
+
+     return +ACQ-scriptPath
+ +AH0-
++AH0-
+
+Function formatTimeItem() +AHs-
+    +AFs-CmdletBinding()+AF0-
+    Param(
+        +AFs-Parameter(Mandatory+AD0AJA-true)+AF0-
+        +AFs-string+AF0- +ACQ-TimeItem +AD0- +ACIAIg-
+    )
+
+    +AFs-string+AF0AJA-returnItem +AD0- +ACQ-TimeItem
+    if (+ACQ-TimeItem.Length -eq 1) +AHs-
+       +ACQ-returnItem +AD0- +ACI-0+ACI- +- +ACQ-TimeItem
+    +AH0-
+    return +ACQ-returnItem
++AH0-
+
+Function getOperationTime() +AHs-
+    +AFs-CmdletBinding()+AF0-
+    Param(
+        +AFs-Parameter(Mandatory+AD0AJA-true)+AF0-
+        +AFs-DateTime+AF0- +ACQ-OperationStart
+    )
+
+    +ACQ-operationTime +AD0- +ACIAIg-
+
+    +ACQ-dateDiff +AD0- New-TimeSpan -Start +ACQ-OperationStart -End (Get-Date)
+    +ACQ-strHours +AD0- formatTimeItem -TimeItem +ACQ-dateDiff.Hours.ToString() 
+    +ACQ-strMinutes +AD0- formatTimeItem -TimeItem +ACQ-dateDiff.Minutes.ToString() 
+    +ACQ-strSeconds +AD0- formatTimeItem -TimeItem +ACQ-dateDiff.Seconds.ToString() 
+
+    if (+ACQ-dateDiff.Days -gt 0) +AHs-
+        +ACQ-operationTime +-+AD0- +ACI-Days: +ACI- +- +ACQ-dateDiff.Days.ToString() +- +ACI-:+ACI-  +- +ACQ-strHours +- +ACI-:+ACI- +- +ACQ-strMinutes +- +ACI-:+ACI- +- +ACQ-strSeconds
+    +AH0-
+    if (+ACQ-dateDiff.Hours -gt 0 -and +ACQ-dateDiff.Days -eq 0) +AHs-
+        if (+ACQ-operationTime.Length -gt 0) +AHs- +ACQ-operationTime +-+AD0- +ACI- +ACI- +AH0-
+        +ACQ-operationTime +-+AD0- +ACI-Hours: +ACI- +- +ACQ-strHours +- +ACI-:+ACI- +- +ACQ-strMinutes +- +ACI-:+ACI- +- +ACQ-strSeconds
+    +AH0-
+    if (+ACQ-dateDiff.Minutes -gt 0 -and +ACQ-dateDiff.Days -eq 0 -and +ACQ-dateDiff.Hours -eq 0) +AHs-
+        if (+ACQ-operationTime.Length -gt 0) +AHs- +ACQ-operationTime +-+AD0- +ACI- +ACI- +AH0-
+        +ACQ-operationTime +-+AD0- +ACI-Minutes: +ACI- +- +ACQ-strMinutes +- +ACI-:+ACI- +- +ACQ-strSeconds
+    +AH0-
+    if (+ACQ-dateDiff.Seconds -gt 0 -and +ACQ-dateDiff.Days -eq 0 -and +ACQ-dateDiff.Hours -eq 0 -and +ACQ-dateDiff.Minutes -eq 0) +AHs-
+        if (+ACQ-operationTime.Length -gt 0) +AHs- +ACQ-operationTime +-+AD0- +ACI- +ACI- +AH0-
+        +ACQ-operationTime +-+AD0- +ACI-Seconds: +ACI- +- +ACQ-strSeconds
+    +AH0-
+
+    return +ACQ-operationTime
++AH0-
+
+Function Wait-ForOfficeCTRUpadate() +AHs-
+    +AFs-CmdletBinding()+AF0-
+    Param(
+        +AFs-Parameter()+AF0-
+        +AFs-int+AF0- +ACQ-TimeOutInMinutes +AD0- 120
+    )
+
+    begin +AHs-
+        +ACQ-HKLM +AD0- +AFs-UInt32+AF0- +ACI-0x80000002+ACI-
+        +ACQ-HKCR +AD0- +AFs-UInt32+AF0- +ACI-0x80000000+ACI-
+    +AH0-
+
+    process +AHs-
+       Write-Host +ACI-Waiting for Update process to Complete...+ACI-
+
+       +AFs-datetime+AF0AJA-operationStart +AD0- Get-Date
+       +AFs-datetime+AF0AJA-totalOperationStart +AD0- Get-Date
+
+       Start-Sleep -Seconds 10
+
+       +ACQ-mainRegPath +AD0- Get-OfficeCTRRegPath
+       +ACQ-scenarioPath +AD0- +ACQ-mainRegPath +- +ACIAXA-scenario+ACI-
+
+       +ACQ-regProv +AD0- Get-Wmiobject -list +ACI-StdRegProv+ACI- -namespace root+AFw-default -ErrorAction Stop
+
+       +AFs-DateTime+AF0AJA-startTime +AD0- Get-Date
+
+       +AFs-string+AF0AJA-executingScenario +AD0- +ACIAIg-
+       +ACQ-failure +AD0- +ACQ-false
+       +ACQ-cancelled +AD0- +ACQ-false
+       +ACQ-updateRunning+AD0AJA-false
+       +AFs-string+AFsAXQBdACQ-trackProgress +AD0- +AEA-()
+       +AFs-string+AFsAXQBdACQ-trackComplete +AD0- +AEA-()
+       +AFs-int+AF0AJA-noScenarioCount +AD0- 0
+
+       do +AHs-
+           +ACQ-allComplete +AD0- +ACQ-true
+           +ACQ-executingScenario +AD0- +ACQ-regProv.GetStringValue(+ACQ-HKLM, +ACQ-mainRegPath, +ACI-ExecutingScenario+ACI-).sValue
+           
+           +ACQ-scenarioKeys +AD0- +ACQ-regProv.EnumKey(+ACQ-HKLM, +ACQ-scenarioPath)
+           foreach (+ACQ-scenarioKey in +ACQ-scenarioKeys.sNames) +AHs-
+              if (+ACE-(+ACQ-executingScenario)) +AHs- continue +AH0-
+              if (+ACQ-scenarioKey.ToLower() -eq +ACQ-executingScenario.ToLower()) +AHs-
+                +ACQ-taskKeyPath +AD0- Join-Path +ACQ-scenarioPath +ACIAJA-scenarioKey+AFw-TasksState+ACI-
+                +ACQ-taskValues +AD0- +ACQ-regProv.EnumValues(+ACQ-HKLM, +ACQ-taskKeyPath).sNames
+
+                foreach (+ACQ-taskValue in +ACQ-taskValues) +AHs-
+                    +AFs-string+AF0AJA-status +AD0- +ACQ-regProv.GetStringValue(+ACQ-HKLM, +ACQ-taskKeyPath, +ACQ-taskValue).sValue
+                    +ACQ-operation +AD0- +ACQ-taskValue.Split(':')+AFs-0+AF0-
+                    +ACQ-keyValue +AD0- +ACQ-taskValue
+                   
+                    if (+ACQ-status.ToUpper() -eq +ACI-TASKSTATE+AF8-FAILED+ACI-) +AHs-
+                        +ACQ-failure +AD0- +ACQ-true
+                    +AH0-
+
+                    if (+ACQ-status.ToUpper() -eq +ACI-TASKSTATE+AF8-CANCELLED+ACI-) +AHs-
+                        +ACQ-cancelled +AD0- +ACQ-true
+                    +AH0-
+
+                    if ((+ACQ-status.ToUpper() -eq +ACI-TASKSTATE+AF8-COMPLETED+ACI-) -or+AGA-
+                        (+ACQ-status.ToUpper() -eq +ACI-TASKSTATE+AF8-CANCELLED+ACI-) -or+AGA-
+                        (+ACQ-status.ToUpper() -eq +ACI-TASKSTATE+AF8-FAILED+ACI-)) +AHs-
+                        if ((+ACQ-trackProgress -contains +ACQ-keyValue) -and +ACE-(+ACQ-trackComplete -contains +ACQ-keyValue)) +AHs-
+                            +ACQ-displayValue +AD0- +ACQ-operation +- +ACIAYA-t+ACI- +- +ACQ-status +- +ACIAYA-t+ACI- +- (Get-Date).ToString('yyyy-MM-dd HH:mm:ss')
+                            +ACM-Write-Host +ACQ-displayValue
+                            +ACQ-trackComplete +-+AD0- +ACQ-keyValue 
+
+                            +ACQ-statusName +AD0- +ACQ-status.Split('+AF8-')+AFs-1+AF0AOw-
+
+                            if ((+ACQ-operation.ToUpper().IndexOf(+ACI-DOWNLOAD+ACI-) -gt -1) -or +AGA-
+                                (+ACQ-operation.ToUpper().IndexOf(+ACI-APPLY+ACI-) -gt -1)) +AHs-
+
+                                +ACQ-operationTime +AD0- getOperationTime -OperationStart +ACQ-operationStart
+
+                                +ACQ-displayText +AD0- +ACQ-statusName +- +ACIAYA-t+ACI- +- +ACQ-operationTime
+
+                                Write-Host +ACQ-displayText
+                            +AH0-
+                        +AH0-
+                    +AH0- else +AHs-
+                        +ACQ-allComplete +AD0- +ACQ-false
+                        +ACQ-updateRunning+AD0AJA-true
+
+
+                        if (+ACE-(+ACQ-trackProgress -contains +ACQ-keyValue)) +AHs-
+                             +ACQ-trackProgress +-+AD0- +ACQ-keyValue 
+                             +ACQ-displayValue +AD0- +ACQ-operation +- +ACIAYA-t+ACI- +- +ACQ-status +- +ACIAYA-t+ACI- +- (Get-Date).ToString('yyyy-MM-dd HH:mm:ss')
+
+                             +ACQ-operationStart +AD0- Get-Date
+
+                             if (+ACQ-operation.ToUpper().IndexOf(+ACI-DOWNLOAD+ACI-) -gt -1) +AHs-
+                                Write-Host +ACI-Downloading Update: +ACI- -NoNewline
+                             +AH0-
+
+                             if (+ACQ-operation.ToUpper().IndexOf(+ACI-APPLY+ACI-) -gt -1) +AHs-
+                                Write-Host +ACI-Applying Update: +ACI- -NoNewline
+                             +AH0-
+
+                             if (+ACQ-operation.ToUpper().IndexOf(+ACI-FINALIZE+ACI-) -gt -1) +AHs-
+                                Write-Host +ACI-Finalizing Update: +ACI- -NoNewline
+                             +AH0-
+
+                             +ACM-Write-Host +ACQ-displayValue
+                        +AH0-
+                    +AH0-
+                +AH0-
+              +AH0-
+           +AH0-
+
+           if (+ACQ-allComplete) +AHs-
+              break+ADs-
+           +AH0-
+
+           if (+ACQ-startTime -lt (Get-Date).AddHours(-+ACQ-TimeOutInMinutes)) +AHs-
+              throw +ACI-Waiting for Update Timed-Out+ACI-
+              break+ADs-
+           +AH0-
+
+           Start-Sleep -Seconds 5
+       +AH0- while(+ACQ-true -eq +ACQ-true) 
+
+       +ACQ-operationTime +AD0- getOperationTime -OperationStart +ACQ-operationStart
+
+       +ACQ-displayValue +AD0- +ACIAIg-
+       if (+ACQ-cancelled) +AHs-
+         +ACQ-displayValue +AD0- +ACI-CANCELLED+AGA-t+ACI- +- +ACQ-operationTime
+       +AH0- else +AHs-
+         if (+ACQ-failure) +AHs-
+            +ACQ-displayValue +AD0- +ACI-FAILED+AGA-t+ACI- +- +ACQ-operationTime
+         +AH0- else +AHs-
+            +ACQ-displayValue +AD0- +ACI-COMPLETED+AGA-t+ACI- +- +ACQ-operationTime
+         +AH0-
+       +AH0-
+
+       Write-Host +ACQ-displayValue
+
+       +ACQ-totalOperationTime +AD0- getOperationTime -OperationStart +ACQ-totalOperationStart
+
+       if (+ACQ-updateRunning) +AHs-
+          if (+ACQ-failure) +AHs-
+            Write-Host +ACI-Update Failed+ACI-
+          +AH0- else +AHs-
+            Write-Host +ACI-Update Completed - Total Time: +ACQ-totalOperationTime+ACI-
+          +AH0-
+       +AH0- else +AHs-
+          Write-Host +ACI-Update Not Running+ACI-
+       +AH0- 
+    +AH0-
++AH0-
+
+Function Convert-Bool() +AHs-
+    +AFs-CmdletBinding(SupportsShouldProcess+AD0AJA-true)+AF0-
+    Param
+    (
+        +AFs-Parameter(Mandatory+AD0AJA-true)+AF0-
+        +AFs-bool+AF0- +ACQ-value
+    )
+
+    +ACQ-newValue +AD0- +ACIAJAAi- +- +ACQ-value.ToString()
+    return +ACQ-newValue 
++AH0-
+
+function Create-FileShare() +AHs-
+    +AFs-CmdletBinding()+AF0-	
+    Param
+	(
+		+AFs-Parameter()+AF0-
+		+AFs-String+AF0AJA-Name +AD0- +ACIAIg-,
+		
+		+AFs-Parameter()+AF0-
+		+AFs-String+AF0AJA-Path +AD0- +ACIAIg-
+	)
+
+    +ACQ-description +AD0- +ACIAJA-name+ACI-
+
+    +ACQ-Method +AD0- +ACI-Create+ACI-
+    +ACQ-sd +AD0- (+AFs-WMIClass+AF0- +ACI-Win32+AF8-SecurityDescriptor+ACI-).CreateInstance()
+
+    +ACM-AccessMasks:
+    +ACM-2032127 +AD0- Full Control
+    +ACM-1245631 +AD0- Change
+    +ACM-1179817 +AD0- Read
+
+    +ACQ-userName +AD0- +ACIAJA-env:USERDOMAIN+AFwAJA-env:USERNAME+ACI-
+
+    +ACM-Share with the user
+    +ACQ-ACE +AD0- (+AFs-WMIClass+AF0- +ACI-Win32+AF8-ACE+ACI-).CreateInstance()
+    +ACQ-Trustee +AD0- (+AFs-WMIClass+AF0- +ACI-Win32+AF8-Trustee+ACI-).CreateInstance()
+    +ACQ-Trustee.Name +AD0- +ACQ-userName
+    +ACQ-Trustee.Domain +AD0- +ACQ-NULL
+    +ACM-original example assigned this, but I found it worked better if I left it empty
+    +ACMAJA-Trustee.SID +AD0- (+AFs-wmi+AF0AIg-win32+AF8-userAccount.Domain+AD0-'york.edu',Name+AD0-'+ACQ-name'+ACI-).sid   
+    +ACQ-ace.AccessMask +AD0- 2032127
+    +ACQ-ace.AceFlags +AD0- 3 +ACM-Should almost always be three. Really. don't change it.
+    +ACQ-ace.AceType +AD0- 0 +ACM- 0 +AD0- allow, 1 +AD0- deny
+    +ACQ-ACE.Trustee +AD0- +ACQ-Trustee 
+    +ACQ-sd.DACL +-+AD0- +ACQ-ACE.psObject.baseobject 
+
+    +ACM-Share with Domain Admins
+    +ACQ-ACE +AD0- (+AFs-WMIClass+AF0- +ACI-Win32+AF8-ACE+ACI-).CreateInstance()
+    +ACQ-Trustee +AD0- (+AFs-WMIClass+AF0- +ACI-Win32+AF8-Trustee+ACI-).CreateInstance()
+    +ACQ-Trustee.Name +AD0- +ACI-Domain Admins+ACI-
+    +ACQ-Trustee.Domain +AD0- +ACQ-Null
+    +ACMAJA-Trustee.SID +AD0- (+AFs-wmi+AF0AIg-win32+AF8-userAccount.Domain+AD0-'york.edu',Name+AD0-'+ACQ-name'+ACI-).sid   
+    +ACQ-ace.AccessMask +AD0- 2032127
+    +ACQ-ace.AceFlags +AD0- 3
+    +ACQ-ace.AceType +AD0- 0
+    +ACQ-ACE.Trustee +AD0- +ACQ-Trustee 
+    +ACQ-sd.DACL +-+AD0- +ACQ-ACE.psObject.baseobject    
+    
+     +ACM-Share with the user
+    +ACQ-ACE +AD0- (+AFs-WMIClass+AF0- +ACI-Win32+AF8-ACE+ACI-).CreateInstance()
+    +ACQ-Trustee +AD0- (+AFs-WMIClass+AF0- +ACI-Win32+AF8-Trustee+ACI-).CreateInstance()
+    +ACQ-Trustee.Name +AD0- +ACI-Everyone+ACI-
+    +ACQ-Trustee.Domain +AD0- +ACQ-Null
+    +ACM-original example assigned this, but I found it worked better if I left it empty
+    +ACMAJA-Trustee.SID +AD0- (+AFs-wmi+AF0AIg-win32+AF8-userAccount.Domain+AD0-'york.edu',Name+AD0-'+ACQ-name'+ACI-).sid   
+    +ACQ-ace.AccessMask +AD0- 1179817 
+    +ACQ-ace.AceFlags +AD0- 3 +ACM-Should almost always be three. Really. don't change it.
+    +ACQ-ace.AceType +AD0- 0 +ACM- 0 +AD0- allow, 1 +AD0- deny
+    +ACQ-ACE.Trustee +AD0- +ACQ-Trustee 
+    +ACQ-sd.DACL +-+AD0- +ACQ-ACE.psObject.baseobject    
+
+    +ACQ-mc +AD0- +AFs-WmiClass+AF0AIg-Win32+AF8-Share+ACI-
+    +ACQ-InParams +AD0- +ACQ-mc.psbase.GetMethodParameters(+ACQ-Method)
+    +ACQ-InParams.Access +AD0- +ACQ-sd
+    +ACQ-InParams.Description +AD0- +ACQ-description
+    +ACQ-InParams.MaximumAllowed +AD0- +ACQ-Null
+    +ACQ-InParams.Name +AD0- +ACQ-name
+    +ACQ-InParams.Password +AD0- +ACQ-Null
+    +ACQ-InParams.Path +AD0- +ACQ-path
+    +ACQ-InParams.Type +AD0- +AFs-uint32+AF0-0
+
+    +ACQ-R +AD0- +ACQ-mc.PSBase.InvokeMethod(+ACQ-Method, +ACQ-InParams, +ACQ-Null)
+    switch (+ACQ-(+ACQ-R.ReturnValue))
+     +AHs-
+          0 +AHs- break+AH0-
+          2 +AHs-Write-Host +ACI-Share:+ACQ-name Path:+ACQ-path Result:Access Denied+ACI- -foregroundcolor red -backgroundcolor yellow+ADs-break+AH0-
+          8 +AHs-Write-Host +ACI-Share:+ACQ-name Path:+ACQ-path Result:Unknown Failure+ACI- -foregroundcolor red -backgroundcolor yellow+ADs-break+AH0-
+          9 +AHs-Write-Host +ACI-Share:+ACQ-name Path:+ACQ-path Result:Invalid Name+ACI- -foregroundcolor red -backgroundcolor yellow+ADs-break+AH0-
+          10 +AHs-Write-Host +ACI-Share:+ACQ-name Path:+ACQ-path Result:Invalid Level+ACI- -foregroundcolor red -backgroundcolor yellow+ADs-break+AH0-
+          21 +AHs-Write-Host +ACI-Share:+ACQ-name Path:+ACQ-path Result:Invalid Parameter+ACI- -foregroundcolor red -backgroundcolor yellow+ADs-break+AH0-
+          22 +AHs-Write-Host +ACI-Share:+ACQ-name Path:+ACQ-path Result:Duplicate Share+ACI- -foregroundcolor red -backgroundcolor yellow+ADs-break+AH0-
+          23 +AHs-Write-Host +ACI-Share:+ACQ-name Path:+ACQ-path Result:Reedirected Path+ACI- -foregroundcolor red -backgroundcolor yellow+ADs-break+AH0-
+          24 +AHs-Write-Host +ACI-Share:+ACQ-name Path:+ACQ-path Result:Unknown Device or Directory+ACI- -foregroundcolor red -backgroundcolor yellow+ADs-break+AH0-
+          25 +AHs-Write-Host +ACI-Share:+ACQ-name Path:+ACQ-path Result:Network Name Not Found+ACI- -foregroundcolor red -backgroundcolor yellow+ADs-break+AH0-
+          default +AHs-Write-Host +ACI-Share:+ACQ-name Path:+ACQ-path Result:+ACoAKgAq- Unknown Error +ACoAKgAqACI- -foregroundcolor red -backgroundcolor yellow+ADs-break+AH0-
+     +AH0-
++AH0-
+
+function Get-Fileshare() +AHs-
+    +AFs-CmdletBinding()+AF0-	
+    Param
+	(
+		+AFs-Parameter()+AF0-
+		+AFs-String+AF0AJA-Name +AD0- +ACIAIg-
+	)
+
+    +ACQ-share +AD0- Get-WmiObject Win32+AF8-Share +AHw- where +AHs- +ACQAXw-.Name -eq +ACQ-Name +AH0-
+
+    if (+ACQ-share) +AHs-
+        return +ACQ-share+ADs-
+    +AH0-
+
+    return +ACQ-null
++AH0-
+
+function Check-AdminAccess() +AHs-
+If (-NOT (+AFs-Security.Principal.WindowsPrincipal+AF0- +AFs-Security.Principal.WindowsIdentity+AF0-::GetCurrent()).IsInRole(+AGA-
+    +AFs-Security.Principal.WindowsBuiltInRole+AF0- +ACI-Administrator+ACI-))
++AHs-
+    throw +ACI-You do not have Administrator rights to run this script+ACEAYA-nPlease re-run this script as an Administrator+ACEAIg-
++AH0-
++AH0-
+
+function Get-LargestDrive() +AHs-
+   +AFs-CmdletBinding()+AF0-
+   param( 
+   )
+   process +AHs-
+      +ACQ-drives +AD0- Get-Partition +AHw- where +AHsAJABf-.DriveLetter+AH0-
+      +ACQ-driveInfoList +AD0- +AEA-()
+
+      foreach (+ACQ-drive in +ACQ-drives) +AHs-
+          +ACQ-driveLetter +AD0- +ACQ-drive.DriveLetter
+          +ACQ-deviceFilter +AD0- +ACI-DeviceID+AD0-'+ACI- +- +ACQ-driveLetter +- +ACI-:'+ACI- 
+ 
+          +ACQ-driveInfo +AD0- Get-WmiObject Win32+AF8-LogicalDisk -ComputerName +ACI-.+ACI- -Filter +ACQ-deviceFilter
+          +ACQ-driveInfoList +-+AD0- +ACQ-driveInfo
+      +AH0-
+
+      +ACQ-itemList +AD0- +AEA-()
+      foreach(+ACQ-item in +ACQ-driveInfoList)+AHs-
+          +ACQ-itemList +-+AD0- +ACQ-item.Freespace
+      +AH0-
+
+      +ACQ-largItem +AD0- +ACQ-itemList +AHw- measure -Maximum      
+      +ACQ-largestItem +AD0- +ACQ-largItem.Maximum
+
+      +ACQ-FreeSpaceDrive +AD0- +ACQ-driveInfoList +AHw- Where-Object +AHsAJABf-.Freespace -eq +ACQ-largestItem+AH0-
+
+      return +ACQ-FreeSpaceDrive.DeviceID
+   +AH0-
++AH0-
+
+function Get-ChannelXml() +AHs-
+    +AFs-CmdletBinding()+AF0-	
+    Param
+	(
+	    +AFs-Parameter()+AF0-
+	    +AFs-string+AF0AJA-FolderPath +AD0- +ACQ-null,
+
+	    +AFs-Parameter()+AF0-
+	    +AFs-bool+AF0AJA-OverWrite +AD0- +ACQ-false,
+
+        +AFs-Parameter()+AF0-
+        +AFs-string+AF0- +ACQ-Bitness +AD0- +ACI-32+ACI-
+	)
+
+   process +AHs-
+       +ACQ-cabPath +AD0- +ACIAJA-PSScriptRoot+AFw-ofl.cab+ACI-
+       +AFs-bool+AF0AJA-downloadFile +AD0- +ACQ-true
+
+       if (+ACE-(+ACQ-OverWrite)) +AHs-
+          if (+ACQ-FolderPath) +AHs-
+              +ACQ-XMLFilePath +AD0- +ACIAJA-FolderPath+AFw-ofl.cab+ACI-
+              if (Test-Path -Path +ACQ-XMLFilePath) +AHs-
+                 +ACQ-downloadFile +AD0- +ACQ-false
+              +AH0- else +AHs-
+                throw +ACI-File missing +ACQ-FolderPath+AFw-ofl.cab+ACI-
+              +AH0-
+          +AH0-
+       +AH0-
+
+       if (+ACQ-downloadFile) +AHs-
+           +ACQ-webclient +AD0- New-Object System.Net.WebClient
+           +ACQ-XMLFilePath +AD0- +ACIAJA-env:TEMP/ofl.cab+ACI-
+           +ACQ-XMLDownloadURL +AD0- +ACI-http://officecdn.microsoft.com/pr/wsus/ofl.cab+ACI-
+           +ACQ-webclient.DownloadFile(+ACQ-XMLDownloadURL,+ACQ-XMLFilePath)
+
+           if (+ACQ-FolderPath) +AHs-
+             +AFs-System.IO.Directory+AF0-::CreateDirectory(+ACQ-FolderPath) +AHw- Out-Null
+             +ACQ-targetFile +AD0- +ACIAJA-FolderPath+AFw-ofl.cab+ACI-
+             Copy-Item -Path +ACQ-XMLFilePath -Destination +ACQ-targetFile -Force
+           +AH0-
+       +AH0-
+
+       if(+ACQ-PSVersionTable.PSVersion.Major -ge '3')+AHs-
+           +ACQ-tmpName +AD0- +ACI-o365client+AF8AJA-Bitness+ACI- +- +ACI-bit.xml+ACI-
+           expand +ACQ-XMLFilePath +ACQ-env:TEMP -f:+ACQ-tmpName +AHw- Out-Null
+           +ACQ-tmpName +AD0- +ACQ-env:TEMP +- +ACIAXA-o365client+AF8AJA-Bitness+ACI- +- +ACI-bit.xml+ACI-
+       +AH0-else +AHs-
+           +ACQ-scriptPath +AD0- GetScriptRoot
+           +ACQ-tmpName +AD0- +ACQ-scriptPath +- +ACIAXA-o365client+AF8AJA-Bitness+ACI- +- +ACI-bit.xml+ACI-          
+       +AH0-
+       
+       +AFs-xml+AF0AJA-channelXml +AD0- Get-Content +ACQ-tmpName
+
+       return +ACQ-channelXml
+   +AH0-
+
++AH0-
+
+function Get-ChannelUrl() +AHs-
+   +AFs-CmdletBinding()+AF0-
+   param( 
+      +AFs-Parameter(Mandatory+AD0AJA-true)+AF0-
+      +AFs-Channel+AF0AJA-Channel
+   )
+
+   Process +AHs-
+      +ACQ-channelXml +AD0- Get-ChannelXml
+
+      +ACQ-currentChannel +AD0- +ACQ-channelXml.UpdateFiles.baseURL +AHw- Where +AHsAJABf-.branch -eq +ACQ-Channel.ToString() +AH0-
+      return +ACQ-currentChannel
+   +AH0-
+
++AH0-
+
+Function Get-LatestVersion() +AHs-
+  +AFs-CmdletBinding()+AF0-
+  Param(
+     +AFs-Parameter(Mandatory+AD0AJA-true)+AF0-
+     +AFs-string+AF0- +ACQ-UpdateURLPath
+  )
+
+  process +AHs-
+    +AFs-array+AF0AJA-totalVersion +AD0- +AEA-()
+    +ACQ-Version +AD0- +ACQ-null
+
+    +ACQ-LatestBranchVersionPath +AD0- +ACQ-UpdateURLPath +- '+AFw-Office+AFw-Data'
+    if(Test-Path +ACQ-LatestBranchVersionPath)+AHs-
+        +ACQ-DirectoryList +AD0- Get-ChildItem +ACQ-LatestBranchVersionPath
+        Foreach(+ACQ-listItem in +ACQ-DirectoryList)+AHs-
+            if(+ACQ-listItem.GetType().Name -eq 'DirectoryInfo')+AHs-
+                +ACQ-totalVersion+-+AD0AJA-listItem.Name
+            +AH0-
+        +AH0-
+    +AH0-
+
+    +ACQ-totalVersion +AD0- +ACQ-totalVersion +AHw- Sort-Object -Descending
+    
+    +ACM-sets version number to the newest version in directory for channel if version is not set by user in argument  
+    if(+ACQ-totalVersion.Count -gt 0)+AHs-
+        +ACQ-Version +AD0- +ACQ-totalVersion+AFs-0+AF0-
+    +AH0-
+
+    return +ACQ-Version
+  +AH0-
++AH0-
+
+function Get-ChannelLatestVersion() +AHs-
+   +AFs-CmdletBinding()+AF0-
+   param( 
+      +AFs-Parameter(Mandatory+AD0AJA-true)+AF0-
+      +AFs-string+AF0AJA-ChannelUrl,
+
+      +AFs-Parameter(Mandatory+AD0AJA-true)+AF0-
+      +AFs-string+AF0AJA-Channel,
+
+	  +AFs-Parameter()+AF0-
+	  +AFs-string+AF0AJA-FolderPath +AD0- +ACQ-null,
+
+	  +AFs-Parameter()+AF0-
+	  +AFs-bool+AF0AJA-OverWrite +AD0- +ACQ-false
+   )
+
+   process +AHs-
+
+       +AFs-bool+AF0AJA-downloadFile +AD0- +ACQ-true
+
+       +ACQ-channelShortName +AD0- ConvertChannelNameToShortName -ChannelName +ACQ-Channel
+
+       if (+ACE-(+ACQ-OverWrite)) +AHs-
+          if (+ACQ-FolderPath) +AHs-
+              +ACQ-CABFilePath +AD0- +ACIAJA-FolderPath+AFwAJA-channelShortName+AFw-v32.cab+ACI-
+
+              if (+ACE-(Test-Path -Path +ACQ-CABFilePath)) +AHs-
+                 +ACQ-CABFilePath +AD0- +ACIAJA-FolderPath+AFwAJA-channelShortName+AFw-v64.cab+ACI-
+              +AH0-
+
+              if (Test-Path -Path +ACQ-CABFilePath) +AHs-
+                 +ACQ-downloadFile +AD0- +ACQ-false
+              +AH0- else +AHs-
+                throw +ACI-File missing +ACQ-FolderPath+AFwAJA-channelShortName+AFw-v64.cab or +ACQ-FolderPath+AFwAJA-channelShortName+AFw-v64.cab+ACI-
+              +AH0-
+          +AH0-
+       +AH0-
+
+       if (+ACQ-downloadFile) +AHs-
+           +ACQ-webclient +AD0- New-Object System.Net.WebClient
+           +ACQ-CABFilePath +AD0- +ACIAJA-env:TEMP/v32.cab+ACI-
+           +ACQ-XMLDownloadURL +AD0- +ACIAJA-ChannelUrl/Office/Data/v32.cab+ACI-
+           +ACQ-webclient.DownloadFile(+ACQ-XMLDownloadURL,+ACQ-CABFilePath)
+
+           if (+ACQ-FolderPath) +AHs-
+             +AFs-System.IO.Directory+AF0-::CreateDirectory(+ACQ-FolderPath) +AHw- Out-Null
+
+             +ACQ-channelShortName +AD0- ConvertChannelNameToShortName -ChannelName +ACQ-Channel 
+
+             +ACQ-targetFile +AD0- +ACIAJA-FolderPath+AFwAJA-channelShortName+AFw-v32.cab+ACI-
+             Copy-Item -Path +ACQ-CABFilePath -Destination +ACQ-targetFile -Force
+           +AH0-
+       +AH0-
+
+       +ACQ-tmpName +AD0- +ACI-VersionDescriptor.xml+ACI-
+       expand +ACQ-CABFilePath +ACQ-env:TEMP -f:+ACQ-tmpName +AHw- Out-Null
+       +ACQ-tmpName +AD0- +ACQ-env:TEMP +- +ACIAXA-VersionDescriptor.xml+ACI-
+       +AFs-xml+AF0AJA-versionXml +AD0- Get-Content +ACQ-tmpName
+
+       return +ACQ-versionXml.Version.Available.Build
+   +AH0-
++AH0-
+
+function ConvertChannelNameToShortName +AHs-
+    Param(
+       +AFs-Parameter()+AF0-
+       +AFs-string+AF0- +ACQ-ChannelName
+    )
+    Process +AHs-
+       if (+ACQ-ChannelName.ToLower() -eq +ACI-FirstReleaseCurrent+ACI-.ToLower()) +AHs-
+         return +ACI-FRCC+ACI-
+       +AH0-
+       if (+ACQ-ChannelName.ToLower() -eq +ACI-Current+ACI-.ToLower()) +AHs-
+         return +ACI-CC+ACI-
+       +AH0-
+       if (+ACQ-ChannelName.ToLower() -eq +ACI-FirstReleaseDeferred+ACI-.ToLower()) +AHs-
+         return +ACI-FRDC+ACI-
+       +AH0-
+       if (+ACQ-ChannelName.ToLower() -eq +ACI-Deferred+ACI-.ToLower()) +AHs-
+         return +ACI-DC+ACI-
+       +AH0-
+       if (+ACQ-ChannelName.ToLower() -eq +ACI-Business+ACI-.ToLower()) +AHs-
+         return +ACI-DC+ACI-
+       +AH0-
+       if (+ACQ-ChannelName.ToLower() -eq +ACI-FirstReleaseBusiness+ACI-.ToLower()) +AHs-
+         return +ACI-FRDC+ACI-
+       +AH0-
+    +AH0-
++AH0-
+
+function Check-FileDependencies() +AHs-
+   +AFs-CmdletBinding()+AF0-
+   param( 
+      +AFs-Parameter(Mandatory+AD0AJA-true)+AF0-
+      +AFs-string+AFsAXQBdACQ-Files
+   )
+
+   process +AHs-
+      foreach (+ACQ-file in +ACQ-Files) +AHs-
+        +ACQ-fileExists +AD0- Test-ItemPathUNC -Path +ACQ-file
+        if (+ACE-(+ACQ-fileExists)) +AHs-
+                throw +ACI-Missing Dependency File +ACQ-file+ACI-    
+        +AH0-
+        . +ACQ-file
+      +AH0-
+   +AH0-
++AH0-
+
+function ImportDeploymentDependencies() +AHs-
+   +AFs-CmdletBinding()+AF0-
+   param( 
+      +AFs-Parameter(Mandatory+AD0AJA-true)+AF0-
+      +AFs-string+AF0AJA-ScriptPath
+   )
+   process +AHs-
+       +ACM-Importing all required functions
+       +ACQ-dependFiles +AD0- +AEA-(  +ACIAJA-scriptPath+AFw-Generate-ODTConfigurationXML.ps1+ACI-
+                          +ACIAJA-scriptPath+AFw-Edit-OfficeConfigurationFile.ps1+ACI-
+                          +ACIAJA-scriptPath+AFw-Install-OfficeClickToRun.ps1+ACI-
+                          +ACIAJA-scriptPath+AFw-SharedFunctions.ps1+ACI-
+                          )
+
+       foreach (+ACQ-dependFile in +ACQ-dependFiles) +AHs-
+          Check-FileDependencies -Files +ACQ-dependFiles
+       +AH0-
+   +AH0-
++AH0-
+
+function UpdateConfigurtionXml() +AHs-
+   +AFs-CmdletBinding()+AF0-
+   param( 
+      +AFs-Parameter(Mandatory+AD0AJA-true)+AF0-
+      +AFs-string+AFsAXQBdACQ-Files
+   )
+   process +AHs-
+     +ACQ-languages +AD0- Get-XMLLanguages -Path +ACQ-targetFilePath
+
+     if (Test-UpdateSource -UpdateSource +ACQ-UpdateURLPath -OfficeLanguages +ACQ-languages) +AHs-
+         Set-ODTAdd -TargetFilePath +ACQ-targetFilePath -SourcePath +ACQ-UpdateURLPath +AHw- Out-Null
+     +AH0-
+
+     if ((+ACQ-Bitness -eq +ACI-32+ACI-) -or (+ACQ-Bitness -eq +ACI-x86+ACI-)) +AHs-
+         Set-ODTAdd -TargetFilePath +ACQ-targetFilePath -Bitness 32 +AHw- Out-Null
+     +AH0- else +AHs-
+         Set-ODTAdd -TargetFilePath +ACQ-targetFilePath -Bitness 64 +AHw- Out-Null
+     +AH0-
+   +AH0-
++AH0-
+
+function Locate-UpdateSource() +AHs-
+   +AFs-CmdletBinding()+AF0-
+   param( 
+      +AFs-Parameter(Mandatory+AD0AJA-true)+AF0-
+      +AFs-string+AF0AJA-UpdateURLPath,
+
+      +AFs-Parameter(Mandatory+AD0AJA-true)+AF0-
+      +AFs-string+AF0AJA-SourceFileFolder,
+
+      +AFs-Parameter(Mandatory+AD0AJA-true)+AF0-
+      +AFs-string+AF0- +ACQ-Channel +AD0- +ACQ-null,
+
+      +AFs-Parameter(Mandatory+AD0AJA-false)+AF0-
+      +AFs-string+AF0- +ACQ-Bitness +AD0- +ACQ-null
+   )
+   process +AHs-
+     if (+ACQ-SourceFileFolder) +AHs-
+       if (Test-ItemPathUNC -Path +ACIAJA-UpdateURLPath+AFwAJA-SourceFileFolder+ACI-) +AHs-
+          +ACQ-UpdateURLPath +AD0- +ACIAJA-UpdateURLPath+AFwAJA-SourceFileFolder+ACI-
+       +AH0-
+     +AH0-
+
+     +ACQ-UpdateURLPath +AD0- Change-UpdatePathToChannel -Channel +ACQ-Channel -UpdatePath +ACQ-UpdateURLPath -Bitness +ACQ-Bitness
+     return +ACQ-UpdateURLPath
+   +AH0-
++AH0-
+
+function Update-ConfigurationXml() +AHs-
+   +AFs-CmdletBinding()+AF0-
+   param(
+      +AFs-Parameter(Mandatory+AD0AJA-true)+AF0-
+      +AFs-string+AF0- +ACQ-TargetFilePath,
+
+      +AFs-Parameter(Mandatory+AD0AJA-true)+AF0-
+      +AFs-string+AF0- +ACQ-UpdateURLPath,
+
+      +AFs-string+AF0- +ACQ-Channel
+   )
+   process +AHs-
+      +ACQ-scriptPath +AD0- GetScriptRoot
+      +ACQ-editFilePath +AD0- +ACIAJA-scriptPath+AFw-Edit-OfficeConfigurationFile.ps1+ACI-
+
+      +ACQ-languages +AD0- Get-XMLLanguages -Path +ACQ-TargetFilePath
+
+      if (Test-Path -Path +ACQ-editFilePath) +AHs-
+          . +ACQ-editFilePath
+
+          if (Test-Path -Path +ACIAJA-UpdateURLPath+AFw-Office+AFw-Data+ACI-) +AHs-
+              if (Test-UpdateSource -UpdateSource +ACQ-UpdateURLPath -OfficeLanguages +ACQ-languages) +AHs-
+                 Set-ODTAdd -TargetFilePath +ACQ-TargetFilePath -SourcePath +ACQ-UpdateURLPath -Channel +ACQ-Channel +AHw- Out-Null
+              +AH0-
+          +AH0-
+
+          if ((+ACQ-Bitness -eq +ACI-32+ACI-) -or (+ACQ-Bitness -eq +ACI-x86+ACI-)) +AHs-
+             Set-ODTAdd -TargetFilePath +ACQ-TargetFilePath -Bitness 32 -Channel +ACQ-Channel +AHw- Out-Null
+          +AH0- else +AHs-
+             Set-ODTAdd -TargetFilePath +ACQ-TargetFilePath -Bitness 64 -Channel +ACQ-Channel +AHw- Out-Null
+          +AH0-
+      +AH0-
+   +AH0-
+ +AH0-
+
+function Exclude-Applications() +AHs-
+   +AFs-CmdletBinding()+AF0-
+   param(
+      +AFs-Parameter(Mandatory+AD0AJA-true)+AF0-
+      +AFs-string+AF0- +ACQ-TargetFilePath,
+
+      +AFs-Parameter(Mandatory+AD0AJA-true)+AF0-
+      +AFs-string+AFsAXQBd- +ACQ-ExcludeApps
+   )
+   process +AHs-
+      if ((Get-ODTProductToAdd -TargetFilePath +ACQ-targetFilePath -ProductId O365ProPlusRetail)) +AHs-
+           Set-ODTProductToAdd -ProductId +ACI-O365ProPlusRetail+ACI- -TargetFilePath +ACQ-targetFilePath -ExcludeApps +ACQ-ExcludeApps +AHw- Out-Null
+      +AH0-
+
+      if ((Get-ODTProductToAdd -TargetFilePath +ACQ-targetFilePath -ProductId O365BusinessRetail)) +AHs-
+           Set-ODTProductToAdd -ProductId +ACI-O365BusinessRetail+ACI- -TargetFilePath +ACQ-targetFilePath -ExcludeApps +ACQ-ExcludeApps +AHw- Out-Null
+      +AH0-
+   +AH0-
++AH0-
+
+function Add-ProductSku() +AHs-
+   +AFs-CmdletBinding()+AF0-
+   param(
+      +AFs-Parameter(Mandatory+AD0AJA-true)+AF0-
+      +AFs-string+AF0- +ACQ-TargetFilePath,
+
+      +AFs-Parameter(Mandatory+AD0AJA-true)+AF0-
+      +AFs-Microsoft.Office.Products+AFsAXQBd- +ACQ-ProductIDs,
+
+      +AFs-Parameter(Mandatory+AD0AJA-true)+AF0-
+      +AFs-string+AFsAXQBd- +ACQ-Languages
+   )
+   process +AHs-
+     +ACQ-scriptPath +AD0- GetScriptRoot
+     +ACQ-editFilePath +AD0- +ACIAJA-scriptPath+AFw-Edit-OfficeConfigurationFile.ps1+ACI-
+     if (Test-Path -Path +ACQ-editFilePath) +AHs-
+          . +ACQ-editFilePath
+     +AH0-
+
+    foreach (+ACQ-ProductID in +ACQ-ProductIDs) +AHs-
+        if (+ACE-(Get-ODTProductToAdd -TargetFilePath +ACQ-targetFilePath -ProductId +ACQ-ProductID)) +AHs-
+              Add-ODTProductToAdd -ProductId +ACQ-ProductID -TargetFilePath +ACQ-targetFilePath -LanguageIds +ACQ-languages +AHw- Out-Null    
+        +AH0-
+    +AH0-
+   +AH0-
++AH0-
+
+function Remove-ProductSku() +AHs-
+   +AFs-CmdletBinding()+AF0-
+   param(
+      +AFs-Parameter(Mandatory+AD0AJA-true)+AF0-
+      +AFs-string+AF0- +ACQ-TargetFilePath,
+
+      +AFs-Parameter(Mandatory+AD0AJA-true)+AF0-
+      +AFs-Microsoft.Office.Products+AFsAXQBd- +ACQ-ProductIDs
+   )
+   process +AHs-
+     +ACQ-scriptPath +AD0- GetScriptRoot
+     +ACQ-editFilePath +AD0- +ACIAJA-scriptPath+AFw-Edit-OfficeConfigurationFile.ps1+ACI-
+     if (Test-Path -Path +ACQ-editFilePath) +AHs-
+          . +ACQ-editFilePath
+     +AH0-
+    foreach (+ACQ-ProductID in +ACQ-ProductIDs) +AHs-
+        if (Get-ODTProductToAdd -TargetFilePath +ACQ-targetFilePath -ProductId +ACQ-ProductID) +AHs-
+            Remove-ODTProductToAdd -ProductId +ACQ-ProductID -TargetFilePath +ACQ-targetFilePath -LanguageIds +ACQ-languages +AHw- Out-Null    
+        +AH0-
+    +AH0-
+   +AH0-
++AH0-
+
+function Add-ProductLanguage() +AHs-
+   +AFs-CmdletBinding()+AF0-
+   param(
+      +AFs-Parameter(Mandatory+AD0AJA-true)+AF0-
+      +AFs-string+AF0- +ACQ-TargetFilePath,
+
+      +AFs-Parameter(Mandatory+AD0AJA-true)+AF0-
+      +AFs-Microsoft.Office.ProductSelection+AFsAXQBd- +ACQ-ProductIDs,
+
+      +AFs-Parameter(Mandatory+AD0AJA-true)+AF0-
+      +AFs-string+AFsAXQBd- +ACQ-Languages
+   )
+   process +AHs-
+     +ACQ-scriptPath +AD0- GetScriptRoot
+     +ACQ-editFilePath +AD0- +ACIAJA-scriptPath+AFw-Edit-OfficeConfigurationFile.ps1+ACI-
+     if (Test-Path -Path +ACQ-editFilePath) +AHs-
+          . +ACQ-editFilePath
+     +AH0-
+
+    if (+ACQ-ProductIDs -eq +ACI-All+ACI-) +AHs-
+        +ACQ-productsToCheck +AD0- +AEA-(+ACI-O365ProPlusRetail+ACI-,+ACI-O365BusinessRetail+ACI-,+ACI-VisioProRetail+ACI-,+ACI-ProjectProRetail+ACI-,+ACI-SPDRetail+ACI-,+ACI-VisioProXVolume+ACI-,+ACI-VisioStdXVolume+ACI-,+ACI-ProjectProXVolume+ACI-,+ACI-ProjectStdXVolume+ACI-)
+         
+        foreach (+ACQ-ProductID in +ACQ-productsToCheck) +AHs-
+            +ACQ-existingSku +AD0- Get-ODTProductToAdd -TargetFilePath +ACQ-targetFilePath -ProductId +ACQ-ProductID
+            if (+ACQ-existingSku) +AHs-
+                +ACQ-newLangList +AD0- +AEA-()
+
+                foreach (+ACQ-language in +ACQ-existingSku.Languages) +AHs-
+                   +ACQ-newLangList +-+AD0- +ACQ-language
+                +AH0-
+
+                foreach (+ACQ-newLanguage in +ACQ-languages) +AHs-
+                   if (+ACE-(+ACQ-newLangList.Contains(+ACQ-newLanguage))) +AHs-
+                     +ACQ-newLangList +-+AD0- +ACQ-newLanguage
+                   +AH0-
+                +AH0-
+
+                if (Get-ODTProductToAdd -TargetFilePath +ACQ-targetFilePath -ProductId +ACQ-ProductID) +AHs-
+                   Set-ODTProductToAdd -ProductId +ACQ-ProductID -TargetFilePath +ACQ-targetFilePath -LanguageIds +ACQ-newLangList +AHw- Out-Null  
+                +AH0-
+            +AH0-
+        +AH0-
+    +AH0- else +AHs-
+        foreach (+ACQ-ProductID in +ACQ-ProductIDs) +AHs-
+            if (+ACE-(Get-ODTProductToAdd -TargetFilePath +ACQ-targetFilePath -ProductId +ACQ-ProductID.ToString())) +AHs-
+                  Add-ODTProductToAdd -ProductId +ACQ-ProductID.ToString() -TargetFilePath +ACQ-targetFilePath -LanguageIds +ACQ-languages +AHw- Out-Null    
+            +AH0-
+
+            +ACQ-existingSku +AD0- Get-ODTProductToAdd -TargetFilePath +ACQ-targetFilePath -ProductId +ACQ-ProductID.ToString()
+            if (+ACQ-existingSku) +AHs-
+                +ACQ-newLangList +AD0- +AEA-()
+
+                foreach (+ACQ-language in +ACQ-existingSku.Languages) +AHs-
+                   +ACQ-newLangList +-+AD0- +ACQ-language
+                +AH0-
+
+                foreach (+ACQ-newLanguage in +ACQ-languages) +AHs-
+                   if (+ACE-(+ACQ-newLangList.Contains(+ACQ-newLanguage))) +AHs-
+                     +ACQ-newLangList +-+AD0- +ACQ-newLanguage
+                   +AH0-
+                +AH0-
+
+                if (Get-ODTProductToAdd -TargetFilePath +ACQ-targetFilePath -ProductId +ACQ-ProductID.ToString()) +AHs-
+                   Set-ODTProductToAdd -ProductId +ACQ-ProductID.ToString() -TargetFilePath +ACQ-targetFilePath -LanguageIds +ACQ-newLangList +AHw- Out-Null  
+                +AH0-
+            +AH0-
+        +AH0-
+    +AH0-
+   +AH0-
++AH0-
+
+function Remove-ProductLanguage() +AHs-
+   +AFs-CmdletBinding()+AF0-
+   param(
+      +AFs-Parameter(Mandatory+AD0AJA-true)+AF0-
+      +AFs-string+AF0- +ACQ-TargetFilePath,
+
+      +AFs-Parameter(Mandatory+AD0AJA-true)+AF0-
+      +AFs-Microsoft.Office.ProductSelection+AFsAXQBd- +ACQ-ProductIDs,
+
+      +AFs-Parameter(Mandatory+AD0AJA-true)+AF0-
+      +AFs-string+AFsAXQBd- +ACQ-Languages
+   )
+   process +AHs-
+     +ACQ-scriptPath +AD0- GetScriptRoot
+     +ACQ-editFilePath +AD0- +ACIAJA-scriptPath+AFw-Edit-OfficeConfigurationFile.ps1+ACI-
+     if (Test-Path -Path +ACQ-editFilePath) +AHs-
+          . +ACQ-editFilePath
+     +AH0-
+
+    if (+ACQ-ProductIDs -eq +ACI-All+ACI-) +AHs-
+        +ACQ-productsToCheck +AD0- +AEA-(+ACI-O365ProPlusRetail+ACI-,+ACI-O365BusinessRetail+ACI-,+ACI-VisioProRetail+ACI-,+ACI-ProjectProRetail+ACI-,+ACI-SPDRetail+ACI-,+ACI-VisioProXVolume+ACI-,+ACI-VisioStdXVolume+ACI-,+ACI-ProjectProXVolume+ACI-,+ACI-ProjectStdXVolume+ACI-)
+         
+        foreach (+ACQ-ProductID in +ACQ-productsToCheck) +AHs-
+            +ACQ-existingSku +AD0- Get-ODTProductToAdd -TargetFilePath +ACQ-targetFilePath -ProductId +ACQ-ProductID
+            if (+ACQ-existingSku) +AHs-
+                +ACQ-newLangList +AD0- +AEA-()
+
+                foreach (+ACQ-language in +ACQ-existingSku.Languages) +AHs-
+                   +AFs-bool+AF0AJA-addLanguages +AD0- +ACQ-true
+                   foreach (+ACQ-newLanguage in +ACQ-languages) +AHs-
+                      if (+ACQ-language.ToLower() -eq +ACQ-newLanguage.ToLower()) +AHs-
+                         +ACQ-addLanguages +AD0- +ACQ-false
+                      +AH0-
+                   +AH0-
+
+                   if (+ACQ-addLanguages) +AHs-
+                       +ACQ-newLangList +-+AD0- +ACQ-language
+                   +AH0-
+                +AH0-
+
+                if (Get-ODTProductToAdd -TargetFilePath +ACQ-targetFilePath -ProductId +ACQ-ProductID) +AHs-
+                   Set-ODTProductToAdd -ProductId +ACQ-ProductID -TargetFilePath +ACQ-targetFilePath -LanguageIds +ACQ-newLangList +AHw- Out-Null  
+                +AH0-
+            +AH0-
+        +AH0-
+    +AH0- else +AHs-
+        foreach (+ACQ-ProductID in +ACQ-ProductIDs) +AHs-
+            if (+ACE-(Get-ODTProductToAdd -TargetFilePath +ACQ-targetFilePath -ProductId +ACQ-ProductID.ToString())) +AHs-
+                  Add-ODTProductToAdd -ProductId +ACQ-ProductID.ToString() -TargetFilePath +ACQ-targetFilePath -LanguageIds +ACQ-languages +AHw- Out-Null    
+            +AH0-
+
+            +ACQ-existingSku +AD0- Get-ODTProductToAdd -TargetFilePath +ACQ-targetFilePath -ProductId +ACQ-ProductID.ToString()
+            if (+ACQ-existingSku) +AHs-
+                +ACQ-newLangList +AD0- +AEA-()
+
+                foreach (+ACQ-language in +ACQ-existingSku.Languages) +AHs-
+                   +AFs-bool+AF0AJA-addLanguages +AD0- +ACQ-true
+                   foreach (+ACQ-newLanguage in +ACQ-languages) +AHs-
+                      if (+ACQ-language.ToLower() -eq +ACQ-newLanguage.ToLower()) +AHs-
+                         +ACQ-addLanguages +AD0- +ACQ-false
+                      +AH0-
+                   +AH0-
+
+                   if (+ACQ-addLanguages) +AHs-
+                       +ACQ-newLangList +-+AD0- +ACQ-language
+                   +AH0-
+                +AH0-
+
+                if (Get-ODTProductToAdd -TargetFilePath +ACQ-targetFilePath -ProductId +ACQ-ProductID.ToString()) +AHs-
+                   Set-ODTProductToAdd -ProductId +ACQ-ProductID.ToString() -TargetFilePath +ACQ-targetFilePath -LanguageIds +ACQ-newLangList +AHw- Out-Null  
+                +AH0-
+            +AH0-
+        +AH0-
+    +AH0-
+   +AH0-
++AH0-
+
+
+
+
+
+
+

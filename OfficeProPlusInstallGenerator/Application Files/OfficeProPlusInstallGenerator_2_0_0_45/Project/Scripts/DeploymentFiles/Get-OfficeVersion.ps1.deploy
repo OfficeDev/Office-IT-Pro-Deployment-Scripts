@@ -1,0 +1,320 @@
+﻿+AFs-CmdletBinding(SupportsShouldProcess+AD0AJA-true)+AF0-
+param(
+    +AFs-string+AFsAXQBdACQ-ComputerName +AD0- +ACQ-env:COMPUTERNAME,
+    +AFs-switch+AF0AJA-ShowAllInstalledProducts,
+    +AFs-System.Management.Automation.PSCredential+AF0AJA-Credentials
+)
+
+Function Get-OfficeVersion +AHs-
++ADwAIw-
+.Synopsis
+Gets the Office Version installed on the computer
+.DESCRIPTION
+This function will query the local or a remote computer and return the information about Office Products installed on the computer
+.NOTES   
+Name: Get-OfficeVersion
+Version: 1.0.5
+DateCreated: 2015-07-01
+DateUpdated: 2016-07-20
+.LINK
+https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
+.PARAMETER ComputerName
+The computer or list of computers from which to query 
+.PARAMETER ShowAllInstalledProducts
+Will expand the output to include all installed Office products
+.EXAMPLE
+Get-OfficeVersion
+Description:
+Will return the locally installed Office product
+.EXAMPLE
+Get-OfficeVersion -ComputerName client01,client02
+Description:
+Will return the installed Office product on the remote computers
+.EXAMPLE
+Get-OfficeVersion +AHw- select +ACo-
+Description:
+Will return the locally installed Office product with all of the available properties
++ACMAPg-
++AFs-CmdletBinding(SupportsShouldProcess+AD0AJA-true)+AF0-
+param(
+    +AFs-Parameter(ValueFromPipeline+AD0AJA-true,ValueFromPipelineByPropertyName+AD0AJA-true, Position+AD0-0)+AF0-
+    +AFs-string+AFsAXQBdACQ-ComputerName +AD0- +ACQ-env:COMPUTERNAME,
+    +AFs-switch+AF0AJA-ShowAllInstalledProducts,
+    +AFs-System.Management.Automation.PSCredential+AF0AJA-Credentials
+)
+
+begin +AHs-
+    +ACQ-HKLM +AD0- +AFs-UInt32+AF0- +ACI-0x80000002+ACI-
+    +ACQ-HKCR +AD0- +AFs-UInt32+AF0- +ACI-0x80000000+ACI-
+
+    +ACQ-excelKeyPath +AD0- +ACI-Excel+AFw-DefaultIcon+ACI-
+    +ACQ-wordKeyPath +AD0- +ACI-Word+AFw-DefaultIcon+ACI-
+   
+    +ACQ-installKeys +AD0- 'SOFTWARE+AFw-Microsoft+AFw-Windows+AFw-CurrentVersion+AFw-Uninstall',
+                   'SOFTWARE+AFw-Wow6432Node+AFw-Microsoft+AFw-Windows+AFw-CurrentVersion+AFw-Uninstall'
+
+    +ACQ-officeKeys +AD0- 'SOFTWARE+AFw-Microsoft+AFw-Office',
+                  'SOFTWARE+AFw-Wow6432Node+AFw-Microsoft+AFw-Office'
+
+    +ACQ-defaultDisplaySet +AD0- 'DisplayName','Version', 'ComputerName'
+
+    +ACQ-defaultDisplayPropertySet +AD0- New-Object System.Management.Automation.PSPropertySet('DefaultDisplayPropertySet',+AFs-string+AFsAXQBdACQ-defaultDisplaySet)
+    +ACQ-PSStandardMembers +AD0- +AFs-System.Management.Automation.PSMemberInfo+AFsAXQBdAEA-(+ACQ-defaultDisplayPropertySet)
++AH0-
+
+process +AHs-
+
+ +ACQ-results +AD0- new-object PSObject+AFsAXQ- 0+ADs-
+
+ foreach (+ACQ-computer in +ACQ-ComputerName) +AHs-
+    if (+ACQ-Credentials) +AHs-
+       +ACQ-os+AD0-Get-WMIObject win32+AF8-operatingsystem -computername +ACQ-computer -Credential +ACQ-Credentials
+    +AH0- else +AHs-
+       +ACQ-os+AD0-Get-WMIObject win32+AF8-operatingsystem -computername +ACQ-computer
+    +AH0-
+
+    +ACQ-osArchitecture +AD0- +ACQ-os.OSArchitecture
+
+    if (+ACQ-Credentials) +AHs-
+       +ACQ-regProv +AD0- Get-Wmiobject -list +ACI-StdRegProv+ACI- -namespace root+AFw-default -computername +ACQ-computer -Credential +ACQ-Credentials
+    +AH0- else +AHs-
+       +ACQ-regProv +AD0- Get-Wmiobject -list +ACI-StdRegProv+ACI- -namespace root+AFw-default -computername +ACQ-computer
+    +AH0-
+
+    +AFs-System.Collections.ArrayList+AF0AJA-VersionList +AD0- New-Object -TypeName System.Collections.ArrayList
+    +AFs-System.Collections.ArrayList+AF0AJA-PathList +AD0- New-Object -TypeName System.Collections.ArrayList
+    +AFs-System.Collections.ArrayList+AF0AJA-PackageList +AD0- New-Object -TypeName System.Collections.ArrayList
+    +AFs-System.Collections.ArrayList+AF0AJA-ClickToRunPathList +AD0- New-Object -TypeName System.Collections.ArrayList
+    +AFs-System.Collections.ArrayList+AF0AJA-ConfigItemList +AD0- New-Object -TypeName  System.Collections.ArrayList
+    +ACQ-ClickToRunList +AD0- new-object PSObject+AFsAXQ- 0+ADs-
+
+    foreach (+ACQ-regKey in +ACQ-officeKeys) +AHs-
+       +ACQ-officeVersion +AD0- +ACQ-regProv.EnumKey(+ACQ-HKLM, +ACQ-regKey)
+       foreach (+ACQ-key in +ACQ-officeVersion.sNames) +AHs-
+          if (+ACQ-key -match +ACIAXA-d+AHs-2+AH0AXA-.+AFw-d+ACI-) +AHs-
+            if (+ACEAJA-VersionList.Contains(+ACQ-key)) +AHs-
+              +ACQ-AddItem +AD0- +ACQ-VersionList.Add(+ACQ-key)
+            +AH0-
+
+            +ACQ-path +AD0- join-path +ACQ-regKey +ACQ-key
+
+            +ACQ-configPath +AD0- join-path +ACQ-path +ACI-Common+AFw-Config+ACI-
+            +ACQ-configItems +AD0- +ACQ-regProv.EnumKey(+ACQ-HKLM, +ACQ-configPath)
+            if (+ACQ-configItems) +AHs-
+               foreach (+ACQ-configId in +ACQ-configItems.sNames) +AHs-
+                 if (+ACQ-configId) +AHs-
+                    +ACQ-Add +AD0- +ACQ-ConfigItemList.Add(+ACQ-configId.ToUpper())
+                 +AH0-
+               +AH0-
+            +AH0-
+
+            +ACQ-cltr +AD0- New-Object -TypeName PSObject
+            +ACQ-cltr +AHw- Add-Member -MemberType NoteProperty -Name InstallPath -Value +ACIAIg-
+            +ACQ-cltr +AHw- Add-Member -MemberType NoteProperty -Name UpdatesEnabled -Value +ACQ-false
+            +ACQ-cltr +AHw- Add-Member -MemberType NoteProperty -Name UpdateUrl -Value +ACIAIg-
+            +ACQ-cltr +AHw- Add-Member -MemberType NoteProperty -Name StreamingFinished -Value +ACQ-false
+            +ACQ-cltr +AHw- Add-Member -MemberType NoteProperty -Name Platform -Value +ACIAIg-
+            +ACQ-cltr +AHw- Add-Member -MemberType NoteProperty -Name ClientCulture -Value +ACIAIg-
+            
+            +ACQ-packagePath +AD0- join-path +ACQ-path +ACI-Common+AFw-InstalledPackages+ACI-
+            +ACQ-clickToRunPath +AD0- join-path +ACQ-path +ACI-ClickToRun+AFw-Configuration+ACI-
+            +ACQ-virtualInstallPath +AD0- +ACQ-regProv.GetStringValue(+ACQ-HKLM, +ACQ-clickToRunPath, +ACI-InstallationPath+ACI-).sValue
+
+            +AFs-string+AF0AJA-officeLangResourcePath +AD0- join-path  +ACQ-path +ACI-Common+AFw-LanguageResources+ACI-
+            +ACQ-mainLangId +AD0- +ACQ-regProv.GetDWORDValue(+ACQ-HKLM, +ACQ-officeLangResourcePath, +ACI-SKULanguage+ACI-).uValue
+            if (+ACQ-mainLangId) +AHs-
+                +ACQ-mainlangCulture +AD0- +AFs-globalization.cultureinfo+AF0-::GetCultures(+ACI-allCultures+ACI-) +AHw- where +AHsAJABf-.LCID -eq +ACQ-mainLangId+AH0-
+                if (+ACQ-mainlangCulture) +AHs-
+                    +ACQ-cltr.ClientCulture +AD0- +ACQ-mainlangCulture.Name
+                +AH0-
+            +AH0-
+
+            +AFs-string+AF0AJA-officeLangPath +AD0- join-path  +ACQ-path +ACI-Common+AFw-LanguageResources+AFw-InstalledUIs+ACI-
+            +ACQ-langValues +AD0- +ACQ-regProv.EnumValues(+ACQ-HKLM, +ACQ-officeLangPath)+ADs-
+            if (+ACQ-langValues) +AHs-
+               foreach (+ACQ-langValue in +ACQ-langValues) +AHs-
+                  +ACQ-langCulture +AD0- +AFs-globalization.cultureinfo+AF0-::GetCultures(+ACI-allCultures+ACI-) +AHw- where +AHsAJABf-.LCID -eq +ACQ-langValue+AH0-
+               +AH0- 
+            +AH0-
+
+            if (+ACQ-virtualInstallPath) +AHs-
+
+            +AH0- else +AHs-
+              +ACQ-clickToRunPath +AD0- join-path +ACQ-regKey +ACI-ClickToRun+AFw-Configuration+ACI-
+              +ACQ-virtualInstallPath +AD0- +ACQ-regProv.GetStringValue(+ACQ-HKLM, +ACQ-clickToRunPath, +ACI-InstallationPath+ACI-).sValue
+            +AH0-
+
+            if (+ACQ-virtualInstallPath) +AHs-
+               if (+ACEAJA-ClickToRunPathList.Contains(+ACQ-virtualInstallPath.ToUpper())) +AHs-
+                  +ACQ-AddItem +AD0- +ACQ-ClickToRunPathList.Add(+ACQ-virtualInstallPath.ToUpper())
+               +AH0-
+
+               +ACQ-cltr.InstallPath +AD0- +ACQ-virtualInstallPath
+               +ACQ-cltr.StreamingFinished +AD0- +ACQ-regProv.GetStringValue(+ACQ-HKLM, +ACQ-clickToRunPath, +ACI-StreamingFinished+ACI-).sValue
+               +ACQ-cltr.UpdatesEnabled +AD0- +ACQ-regProv.GetStringValue(+ACQ-HKLM, +ACQ-clickToRunPath, +ACI-UpdatesEnabled+ACI-).sValue
+               +ACQ-cltr.UpdateUrl +AD0- +ACQ-regProv.GetStringValue(+ACQ-HKLM, +ACQ-clickToRunPath, +ACI-UpdateUrl+ACI-).sValue
+               +ACQ-cltr.Platform +AD0- +ACQ-regProv.GetStringValue(+ACQ-HKLM, +ACQ-clickToRunPath, +ACI-Platform+ACI-).sValue
+               +ACQ-cltr.ClientCulture +AD0- +ACQ-regProv.GetStringValue(+ACQ-HKLM, +ACQ-clickToRunPath, +ACI-ClientCulture+ACI-).sValue
+               +ACQ-ClickToRunList +-+AD0- +ACQ-cltr
+            +AH0-
+
+            +ACQ-packageItems +AD0- +ACQ-regProv.EnumKey(+ACQ-HKLM, +ACQ-packagePath)
+            +ACQ-officeItems +AD0- +ACQ-regProv.EnumKey(+ACQ-HKLM, +ACQ-path)
+
+            foreach (+ACQ-itemKey in +ACQ-officeItems.sNames) +AHs-
+              +ACQ-itemPath +AD0- join-path +ACQ-path +ACQ-itemKey
+              +ACQ-installRootPath +AD0- join-path +ACQ-itemPath +ACI-InstallRoot+ACI-
+
+              +ACQ-filePath +AD0- +ACQ-regProv.GetStringValue(+ACQ-HKLM, +ACQ-installRootPath, +ACI-Path+ACI-).sValue
+              if (+ACEAJA-PathList.Contains(+ACQ-filePath)) +AHs-
+                  +ACQ-AddItem +AD0- +ACQ-PathList.Add(+ACQ-filePath)
+              +AH0-
+            +AH0-
+
+            foreach (+ACQ-packageGuid in +ACQ-packageItems.sNames) +AHs-
+              +ACQ-packageItemPath +AD0- join-path +ACQ-packagePath +ACQ-packageGuid
+              +ACQ-packageName +AD0- +ACQ-regProv.GetStringValue(+ACQ-HKLM, +ACQ-packageItemPath, +ACIAIg-).sValue
+            
+              if (+ACEAJA-PackageList.Contains(+ACQ-packageName)) +AHs-
+                if (+ACQ-packageName) +AHs-
+                   +ACQ-AddItem +AD0- +ACQ-PackageList.Add(+ACQ-packageName.Replace(' ', '').ToLower())
+                +AH0-
+              +AH0-
+            +AH0-
+
+          +AH0-
+       +AH0-
+    +AH0-
+
+    
+
+    foreach (+ACQ-regKey in +ACQ-installKeys) +AHs-
+        +ACQ-keyList +AD0- new-object System.Collections.ArrayList
+        +ACQ-keys +AD0- +ACQ-regProv.EnumKey(+ACQ-HKLM, +ACQ-regKey)
+
+        foreach (+ACQ-key in +ACQ-keys.sNames) +AHs-
+           +ACQ-path +AD0- join-path +ACQ-regKey +ACQ-key
+           +ACQ-installPath +AD0- +ACQ-regProv.GetStringValue(+ACQ-HKLM, +ACQ-path, +ACI-InstallLocation+ACI-).sValue
+           if (+ACE-(+ACQ-installPath)) +AHs- continue +AH0-
+           if (+ACQ-installPath.Length -eq 0) +AHs- continue +AH0-
+
+           +ACQ-buildType +AD0- +ACI-64-Bit+ACI-
+           if (+ACQ-osArchitecture -eq +ACI-32-bit+ACI-) +AHs-
+              +ACQ-buildType +AD0- +ACI-32-Bit+ACI-
+           +AH0-
+
+           if (+ACQ-regKey.ToUpper().Contains(+ACI-Wow6432Node+ACI-.ToUpper())) +AHs-
+              +ACQ-buildType +AD0- +ACI-32-Bit+ACI-
+           +AH0-
+
+           if (+ACQ-key -match +ACIAew-.+AHs-8+AH0--.+AHs-4+AH0--.+AHs-4+AH0--1000-0000000FF1CE+AH0AIg-) +AHs-
+              +ACQ-buildType +AD0- +ACI-64-Bit+ACI- 
+           +AH0-
+
+           if (+ACQ-key -match +ACIAew-.+AHs-8+AH0--.+AHs-4+AH0--.+AHs-4+AH0--0000-0000000FF1CE+AH0AIg-) +AHs-
+              +ACQ-buildType +AD0- +ACI-32-Bit+ACI- 
+           +AH0-
+
+           if (+ACQ-modifyPath) +AHs-
+               if (+ACQ-modifyPath.ToLower().Contains(+ACI-platform+AD0-x86+ACI-)) +AHs-
+                  +ACQ-buildType +AD0- +ACI-32-Bit+ACI-
+               +AH0-
+
+               if (+ACQ-modifyPath.ToLower().Contains(+ACI-platform+AD0-x64+ACI-)) +AHs-
+                  +ACQ-buildType +AD0- +ACI-64-Bit+ACI-
+               +AH0-
+           +AH0-
+
+           +ACQ-primaryOfficeProduct +AD0- +ACQ-false
+           +ACQ-officeProduct +AD0- +ACQ-false
+           foreach (+ACQ-officeInstallPath in +ACQ-PathList) +AHs-
+             if (+ACQ-officeInstallPath) +AHs-
+                +ACQ-installReg +AD0- +ACIAXgAi- +- +ACQ-installPath.Replace('+AFw-', '+AFwAXA-')
+                +ACQ-installReg +AD0- +ACQ-installReg.Replace('(', '+AFw-(')
+                +ACQ-installReg +AD0- +ACQ-installReg.Replace(')', '+AFw-)')
+                if (+ACQ-officeInstallPath -match +ACQ-installReg) +AHs- +ACQ-officeProduct +AD0- +ACQ-true +AH0-
+             +AH0-
+           +AH0-
+
+           if (+ACEAJA-officeProduct) +AHs- continue +AH0AOw-
+           
+           +ACQ-name +AD0- +ACQ-regProv.GetStringValue(+ACQ-HKLM, +ACQ-path, +ACI-DisplayName+ACI-).sValue          
+
+           if (+ACQ-ConfigItemList.Contains(+ACQ-key.ToUpper()) -and +ACQ-name.ToUpper().Contains(+ACI-MICROSOFT OFFICE+ACI-)) +AHs-
+              +ACQ-primaryOfficeProduct +AD0- +ACQ-true
+           +AH0-
+
+           +ACQ-clickToRunComponent +AD0- +ACQ-regProv.GetDWORDValue(+ACQ-HKLM, +ACQ-path, +ACI-ClickToRunComponent+ACI-).uValue
+           +ACQ-uninstallString +AD0- +ACQ-regProv.GetStringValue(+ACQ-HKLM, +ACQ-path, +ACI-UninstallString+ACI-).sValue
+           if (+ACE-(+ACQ-clickToRunComponent)) +AHs-
+              if (+ACQ-uninstallString) +AHs-
+                 if (+ACQ-uninstallString.Contains(+ACI-OfficeClickToRun+ACI-)) +AHs-
+                     +ACQ-clickToRunComponent +AD0- +ACQ-true
+                 +AH0-
+              +AH0-
+           +AH0-
+
+           +ACQ-modifyPath +AD0- +ACQ-regProv.GetStringValue(+ACQ-HKLM, +ACQ-path, +ACI-ModifyPath+ACI-).sValue 
+           +ACQ-version +AD0- +ACQ-regProv.GetStringValue(+ACQ-HKLM, +ACQ-path, +ACI-DisplayVersion+ACI-).sValue
+
+           +ACQ-cltrUpdatedEnabled +AD0- +ACQ-NULL
+           +ACQ-cltrUpdateUrl +AD0- +ACQ-NULL
+           +ACQ-clientCulture +AD0- +ACQ-NULL+ADs-
+
+           +AFs-string+AF0AJA-clickToRun +AD0- +ACQ-false
+
+           if (+ACQ-clickToRunComponent) +AHs-
+               +ACQ-clickToRun +AD0- +ACQ-true
+               if (+ACQ-name.ToUpper().Contains(+ACI-MICROSOFT OFFICE+ACI-)) +AHs-
+                  +ACQ-primaryOfficeProduct +AD0- +ACQ-true
+               +AH0-
+
+               foreach (+ACQ-cltr in +ACQ-ClickToRunList) +AHs-
+                 if (+ACQ-cltr.InstallPath) +AHs-
+                   if (+ACQ-cltr.InstallPath.ToUpper() -eq +ACQ-installPath.ToUpper()) +AHs-
+                       +ACQ-cltrUpdatedEnabled +AD0- +ACQ-cltr.UpdatesEnabled
+                       +ACQ-cltrUpdateUrl +AD0- +ACQ-cltr.UpdateUrl
+                       if (+ACQ-cltr.Platform -eq 'x64') +AHs-
+                           +ACQ-buildType +AD0- +ACI-64-Bit+ACI- 
+                       +AH0-
+                       if (+ACQ-cltr.Platform -eq 'x86') +AHs-
+                           +ACQ-buildType +AD0- +ACI-32-Bit+ACI- 
+                       +AH0-
+                       +ACQ-clientCulture +AD0- +ACQ-cltr.ClientCulture
+                   +AH0-
+                 +AH0-
+               +AH0-
+           +AH0-
+           
+           if (+ACEAJA-primaryOfficeProduct) +AHs-
+              if (+ACEAJA-ShowAllInstalledProducts) +AHs-
+                  continue
+              +AH0-
+           +AH0-
+
+           +ACQ-object +AD0- New-Object PSObject -Property +AEAAew-DisplayName +AD0- +ACQ-name+ADs- Version +AD0- +ACQ-version+ADs- InstallPath +AD0- +ACQ-installPath+ADs- ClickToRun +AD0- +ACQ-clickToRun+ADs- 
+                     Bitness+AD0AJA-buildType+ADs- ComputerName+AD0AJA-computer+ADs- ClickToRunUpdatesEnabled+AD0AJA-cltrUpdatedEnabled+ADs- ClickToRunUpdateUrl+AD0AJA-cltrUpdateUrl+ADs-
+                     ClientCulture+AD0AJA-clientCulture +AH0-
+           +ACQ-object +AHw- Add-Member MemberSet PSStandardMembers +ACQ-PSStandardMembers
+           +ACQ-results +-+AD0- +ACQ-object
+
+        +AH0-
+    +AH0-
+
+  +AH0-
+
+  +ACQ-results +AD0- Get-Unique -InputObject +ACQ-results 
+
+  return +ACQ-results+ADs-
++AH0-
+
++AH0-
+
+
+
+
+
+
+
+
+

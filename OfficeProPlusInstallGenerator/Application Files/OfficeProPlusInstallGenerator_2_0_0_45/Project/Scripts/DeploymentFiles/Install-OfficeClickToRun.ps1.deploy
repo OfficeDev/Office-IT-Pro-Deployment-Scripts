@@ -1,0 +1,984 @@
+﻿try +AHs-
+Add-Type  -ErrorAction SilentlyContinue -TypeDefinition +AEAAIg-
+   public enum OfficeCTRVersion
+   +AHs-
+      Office2013,
+      Office2016
+   +AH0-
++ACIAQA-
++AH0- catch +AHsAfQ-
+
+try +AHs-
++ACQ-enum +AD0- +ACI-
+using System+ADs-
+ 
+namespace Microsoft.Office
++AHs-
+     +AFs-FlagsAttribute+AF0-
+     public enum Products
+     +AHs-
+         Unknown +AD0- 0,
+         O365ProPlusRetail +AD0- 1,
+         O365BusinessRetail +AD0- 2,
+         VisioProRetail +AD0- 4,
+         ProjectProRetail +AD0- 8,
+         SPDRetail +AD0- 16,
+         VisioProXVolume +AD0- 32,
+         VisioStdXVolume +AD0- 64,
+         ProjectProXVolume +AD0- 128,
+         ProjectStdXVolume +AD0- 256,
+         InfoPathRetail +AD0- 512,
+         SkypeforBusinessEntryRetail +AD0- 1024,
+         LyncEntryRetail +AD0- 2048,
+     +AH0-
++AH0-
++ACI-
+Add-Type -TypeDefinition +ACQ-enum -ErrorAction SilentlyContinue
++AH0- catch +AHsAfQ-
+
+try +AHs-
++ACQ-enum2 +AD0- +ACI-
+using System+ADs-
+ 
+    +AFs-FlagsAttribute+AF0-
+    public enum LogLevel
+    +AHs-
+        None+AD0-0,
+        Full+AD0-1
+    +AH0-
++ACI-
+Add-Type -TypeDefinition +ACQ-enum2 -ErrorAction SilentlyContinue
++AH0- catch +AHsAfQ-
+
+function Install-OfficeClickToRun +AHs-
+    +AFs-CmdletBinding()+AF0-
+    Param(
+        +AFs-Parameter(ValueFromPipeline+AD0AJA-true,ValueFromPipelineByPropertyName+AD0AJA-true, Position+AD0-0)+AF0-
+        +AFs-string+AF0- +ACQ-ConfigurationXML +AD0- +ACQ-NULL,
+
+        +AFs-Parameter(ValueFromPipelineByPropertyName+AD0AJA-true)+AF0-
+        +AFs-string+AF0- +ACQ-TargetFilePath +AD0- +ACQ-NULL,
+
+        +AFs-Parameter(ValueFromPipelineByPropertyName+AD0AJA-true)+AF0-
+        +AFs-OfficeCTRVersion+AF0- +ACQ-OfficeVersion +AD0- +ACI-Office2016+ACI-,
+
+        +AFs-Parameter()+AF0-
+        +AFs-bool+AF0- +ACQ-WaitForInstallToFinish +AD0- +ACQ-true
+
+    )
+
+    +ACQ-scriptRoot +AD0- GetScriptRoot
+
+    +ACM-Load the file
+    +AFs-System.XML.XMLDocument+AF0AJA-ConfigFile +AD0- New-Object System.XML.XMLDocument
+        
+    if (+ACQ-TargetFilePath) +AHs-
+        +ACQ-ConfigFile.Load(+ACQ-TargetFilePath) +AHw- Out-Null
+    +AH0- else +AHs-
+        if (+ACQ-ConfigurationXml) 
+        +AHs-
+            +ACQ-ConfigFile.LoadXml(+ACQ-ConfigurationXml) +AHw- Out-Null
+            +ACQ-global:saveLastConfigFile +AD0- +ACQ-NULL
+            +ACQ-TargetFilePath +AD0- +ACQ-NULL
+        +AH0-
+    +AH0-
+
+    +AFs-string+AF0AJA-officeCtrPath +AD0- +ACIAIg-
+
+    if (+ACQ-OfficeVersion -eq +ACI-Office2013+ACI-) +AHs-
+        +ACQ-officeCtrPath +AD0- Join-Path +ACQ-scriptRoot +ACI-Office2013Setup.exe+ACI-
+        if (+ACE-(Test-Path -Path +ACQ-officeCtrPath)) +AHs-
+           throw +ACI-Cannot find the Office 2013 Setup executable+ACI-
+        +AH0-
+    +AH0-
+
+    if (+ACQ-OfficeVersion -eq +ACI-Office2016+ACI-) +AHs-
+        +ACQ-officeCtrPath +AD0- +ACQ-scriptRoot +- +ACIAXA-Office2016Setup.exe+ACI-
+        if (+ACE-(Test-Path -Path +ACQ-officeCtrPath)) +AHs-
+           throw +ACI-Cannot find the Office 2016 Setup executable+ACI-
+        +AH0-
+    +AH0-
+    
+    if (+ACE-(+ACQ-TargetFilePath)) +AHs-
+      if (+ACQ-ConfigurationXML) +AHs-
+         +ACQ-TargetFilePath +AD0- +ACQ-scriptRoot +- +ACIAXA-configuration.xml+ACI-
+         New-Item -Path +ACQ-TargetFilePath -ItemType +ACI-File+ACI- -Value +ACQ-ConfigurationXML -Force +AHw- Out-Null
+      +AH0-
+    +AH0-
+    
+    if (+ACE-(Test-Path -Path +ACQ-TargetFilePath)) +AHs-
+       +ACQ-TargetFilePath +AD0- +ACQ-scriptRoot +- +ACIAXA-configuration.xml+ACI-
+    +AH0-
+    
+    +ACQ-products +AD0- Get-ODTProductToAdd -TargetFilePath +ACQ-TargetFilePath 
+    +ACQ-addNode +AD0- Get-ODTAdd -TargetFilePath +ACQ-TargetFilePath 
+
+    +ACQ-sourcePath +AD0- +ACQ-addNode.SourcePath
+    +ACQ-version +AD0- +ACQ-addNode.Version
+    +ACQ-edition +AD0- +ACQ-addNode.OfficeClientEdition
+
+    foreach (+ACQ-product in +ACQ-products)
+    +AHs-
+        if (+ACQ-product) +AHs-
+          +ACQ-languages +AD0- getProductLanguages -Product +ACQ-product 
+          +ACQ-existingLangs +AD0- checkForLanguagesInSourceFiles -Languages +ACQ-languages -SourcePath +ACQ-sourcePath -Version +ACQ-version -Edition +ACQ-edition
+          if (+ACQ-product.ProductId) +AHs-
+              Set-ODTProductToAdd -TargetFilePath +ACQ-TargetFilePath -ProductId +ACQ-product.ProductId -LanguageIds +ACQ-existingLangs +AHw- Out-Null
+          +AH0-
+        +AH0-
+    +AH0-
+
+    +ACQ-localPath +AD0- +ACIAJA-env:TEMP+AFw-setup.exe+ACI-
+
+    Copy-Item -Path +ACQ-officeCtrPath -Destination +ACQ-localPath -Force
+
+    +ACQ-cmdLine +AD0- +ACQ-localPath
+    +ACQ-cmdArgs +AD0- +ACI-/configure +ACI- +- '+ACI-' +- +ACQ-TargetFilePath +- '+ACI-'
+
+    Write-Host +ACI-Installing Office Click-To-Run...+ACI-
+
+    if (+ACQ-WaitForInstallToFinish) +AHs-
+        StartProcess -execFilePath +ACQ-cmdLine -execParams +ACQ-cmdArgs -WaitForExit +ACQ-false
+
+        Start-Sleep -Seconds 5
+
+        Wait-ForOfficeCTRInstall -OfficeVersion +ACQ-OfficeVersion
+    +AH0-else +AHs-
+        StartProcess -execFilePath +ACQ-cmdLine -execParams +ACQ-cmdArgs -WaitForExit +ACQ-true
+    +AH0-
++AH0-
+
+Function checkForLanguagesInSourceFiles() +AHs-
+    +AFs-CmdletBinding()+AF0-
+    Param(
+        +AFs-Parameter(ValueFromPipeline+AD0AJA-true,ValueFromPipelineByPropertyName+AD0AJA-true, Position+AD0-0)+AF0-
+        +ACQ-Languages +AD0- +ACQ-NULL,
+
+        +AFs-Parameter(ValueFromPipelineByPropertyName+AD0AJA-true)+AF0-
+        +AFs-string+AF0AJA-SourcePath +AD0- +ACQ-NULL,
+
+        +AFs-Parameter(ValueFromPipelineByPropertyName+AD0AJA-true)+AF0-
+        +AFs-string+AF0AJA-Version +AD0- +ACQ-NULL,
+
+        +AFs-Parameter(ValueFromPipelineByPropertyName+AD0AJA-true)+AF0-
+        +AFs-string+AF0AJA-Edition +AD0- +ACQ-NULL
+    )
+
+    +ACQ-scriptRoot +AD0- GetScriptRoot
+
+    +ACQ-returnLanguages +AD0- +AEA-()
+
+    if (+ACE-(+ACQ-SourcePath)) +AHs-
+      +ACQ-localSource +AD0- +ACQ-scriptRoot +- +ACIAXA-Office+AFw-Data+ACI-
+      if (Test-Path -Path +ACQ-localSource) +AHs-
+         +ACQ-SourcePath +AD0- +ACQ-scriptRoot
+      +AH0-
+    +AH0-
+
+    if (+ACE-(+ACQ-Version)) +AHs-
+       +ACQ-localPath +AD0- +ACQ-env:TEMP
+       +ACQ-cabPath +AD0- +ACQ-scriptRoot +- +ACIAXA-Office+AFw-Data+AFw-v+ACQ-Edition.cab+ACI-
+       +ACQ-cabFolderPath +AD0- +ACQ-scriptRoot +- +ACIAXA-Office+AFw-Data+ACI-
+       +ACQ-vdXmlPath +AD0- +ACQ-localPath +- +ACIAXA-VersionDescriptor.xml+ACI-
+       
+       if (Test-Path -Path +ACQ-cabPath) +AHs-
+          Invoke-Expression -Command +ACI-Expand +ACQ-cabPath -F:VersionDescriptor.xml +ACQ-localPath+ACI- +AHw- Out-Null
+          +ACQ-Version +AD0- getVersionFromVersionDescriptor -vesionDescriptorPath +ACQ-vdXmlPath
+          Remove-Item -Path +ACQ-vdXmlPath -Force
+       +AH0-
+    +AH0-
+
+    +ACQ-verionDir +AD0- +ACQ-scriptRoot +- +ACIAXA-Office+AFw-Data+AFwAJA-Version+ACI-
+    
+    if (Test-Path -Path +ACQ-verionDir) +AHs-
+       foreach (+ACQ-lang in +ACQ-Languages) +AHs-
+          +ACQ-fileName +AD0- +ACI-stream.x86.+ACQ-lang.dat+ACI-
+          if (+ACQ-Edition -eq +ACI-64+ACI-) +AHs-
+             +ACQ-fileName +AD0- +ACI-stream.x64.+ACQ-lang.dat+ACI-
+          +AH0-
+          
+          +ACQ-langFile +AD0- +ACQ-verionDir +- +ACIAXAAi- +- +ACQ-fileName 
+          
+          if (Test-Path -Path +ACQ-langFile) +AHs-
+             +ACQ-returnLanguages +-+AD0- +ACQ-lang
+          +AH0-
+       +AH0-
+    +AH0-
+
+    return +ACQ-returnLanguages
++AH0-
+
+Function getVersionFromVersionDescriptor() +AHs-
+    +AFs-CmdletBinding()+AF0-
+    Param(
+        +AFs-Parameter(Mandatory+AD0AJA-true)+AF0-
+        +AFs-string+AF0- +ACQ-vesionDescriptorPath +AD0- +ACQ-NULL
+    )
+
+    +AFs-System.XML.XMLDocument+AF0AJA-doc +AD0- New-Object System.XML.XMLDocument
+
+    if (+ACQ-vesionDescriptorPath) +AHs-
+        +ACQ-doc.Load(+ACQ-vesionDescriptorPath) +AHw- Out-Null
+        return +ACQ-doc.DocumentElement.Available.Build
+    +AH0-
++AH0-
+
+Function getProductLanguages() +AHs-
+    +AFs-CmdletBinding()+AF0-
+    Param(
+        +AFs-Parameter(ValueFromPipeline+AD0AJA-true,ValueFromPipelineByPropertyName+AD0AJA-true, Position+AD0-0)+AF0-
+        +ACQ-Product +AD0- +ACQ-NULL
+    )
+
+    +ACQ-languages +AD0- +AEA-()
+
+    foreach (+ACQ-language in +ACQ-Product.Languages)
+    +AHs-
+      if (+ACE-(+ACQ-languages -contains (+ACQ-language))) +AHs-
+          +ACQ-languages +-+AD0- +ACQ-language
+      +AH0-
+    +AH0-
+
+    return +ACQ-languages
++AH0-
+
+Function getUniqueLanguages() +AHs-
+    +AFs-CmdletBinding()+AF0-
+    Param(
+        +AFs-Parameter(ValueFromPipeline+AD0AJA-true,ValueFromPipelineByPropertyName+AD0AJA-true, Position+AD0-0)+AF0-
+        +ACQ-Products +AD0- +ACQ-NULL
+    )
+
+    +ACQ-languages +AD0- +AEA-()
+    foreach (+ACQ-product in +ACQ-Products)
+    +AHs-
+       foreach (+ACQ-language in +ACQ-product.Languages)
+       +AHs-
+          if (+ACE-(+ACQ-languages -contains +ACQ-language)) +AHs-
+            +ACQ-languages +-+AD0- +ACQ-language
+          +AH0-
+       +AH0-
+    +AH0-
+
+    return +ACQ-languages
++AH0-
+
+Function Get-ODTProductToAdd+AHs-
++ADwAIw-
+.SYNOPSIS
+Gets list of Products and the corresponding language and exlcudeapp values
+from the specified configuration file
+
+.PARAMETER All
+Switch to return All Products
+
+.PARAMETER ProductId
+Id of Product that you want to pull from the configuration file
+
+.PARAMETER TargetFilePath
+Required. Full file path for the file.
+
+.Example
+Get-ODTProductToAdd -All -TargetFilePath +ACIAJA-env:Public+AFw-Documents+AFw-config.xml+ACI-
+Returns all Products and their corresponding Language and Exclude values
+if they have them 
+
+.Example
+Get-ODTProductToAdd -ProductId +ACI-O365ProPlusRetail+ACI- -TargetFilePath +ACIAJA-env:Public+AFw-Documents+AFw-config.xml+ACI-
+Returns the Product with the O365ProPlusRetail Id and its corresponding
+Language and Exclude values
+
++ACMAPg-
+    +AFs-CmdletBinding()+AF0-
+    Param(
+        +AFs-Parameter(ValueFromPipeline+AD0AJA-true,ValueFromPipelineByPropertyName+AD0AJA-true, Position+AD0-0)+AF0-
+        +AFs-string+AF0- +ACQ-ConfigurationXML +AD0- +ACQ-NULL,
+
+        +AFs-Microsoft.Office.Products+AF0- +ACQ-ProductId +AD0- +ACI-Unknown+ACI-,
+
+        +AFs-Parameter(ValueFromPipelineByPropertyName+AD0AJA-true)+AF0-
+        +AFs-string+AF0- +ACQ-TargetFilePath,
+
+        +AFs-Parameter(ParameterSetName+AD0AIg-All+ACI-)+AF0-
+        +AFs-switch+AF0- +ACQ-All
+    )
+
+    Process+AHs-
+        +ACQ-TargetFilePath +AD0- GetFilePath -TargetFilePath +ACQ-TargetFilePath
+
+        +ACM-Load the file
+        +AFs-System.XML.XMLDocument+AF0AJA-ConfigFile +AD0- New-Object System.XML.XMLDocument
+
+        if (+ACQ-TargetFilePath) +AHs-
+           +ACQ-content +AD0- Get-Content +ACQ-TargetFilePath
+           +ACQ-ConfigFile.LoadXml(+ACQ-content) +AHw- Out-Null
+        +AH0- else +AHs-
+            if (+ACQ-ConfigurationXml) 
+            +AHs-
+              +ACQ-ConfigFile.LoadXml(+ACQ-ConfigurationXml) +AHw- Out-Null
+              +ACQ-global:saveLastConfigFile +AD0- +ACQ-NULL
+              +ACQ-global:saveLastFilePath +AD0- +ACQ-NULL
+            +AH0-
+        +AH0-
+
+        +ACM-Check that the file is properly formatted
+        if(+ACQ-ConfigFile.Configuration -eq +ACQ-null)+AHs-
+            throw +ACQ-NoConfigurationElement
+        +AH0-
+
+        if(+ACQ-ConfigFile.Configuration.Add -eq +ACQ-null)+AHs-
+            throw +ACQ-NoAddElement
+        +AH0-
+
+        if(+ACQ-PSCmdlet.ParameterSetName -eq +ACI-All+ACI-)+AHs-
+            foreach(+ACQ-ProductElement in +ACQ-ConfigFile.Configuration.Add.Product)+AHs-
+                +ACQ-Result +AD0- New-Object -TypeName PSObject 
+
+                Add-Member -InputObject +ACQ-Result -MemberType NoteProperty -Name +ACI-ProductId+ACI- -Value (+ACQ-ProductElement.GetAttribute(+ACI-ID+ACI-))
+
+                if(+ACQ-ProductElement.Language -ne +ACQ-null)+AHs-
+                    +ACQ-ProductLangs +AD0- +ACQ-configfile.Configuration.Add.Product.Language +AHw- +ACU- +AHsAJABf-.ID+AH0-
+                    Add-Member -InputObject +ACQ-Result -MemberType NoteProperty -Name +ACI-Languages+ACI- -Value +ACQ-ProductLangs
+                    +ACM-Add-Member -InputObject +ACQ-Result -MemberType NoteProperty -Name +ACI-Languages+ACI- -Value (+ACQ-ProductElement.Language.GetAttribute(+ACI-ID+ACI-))
+                +AH0-
+
+                if(+ACQ-ProductElement.ExcludeApp -ne +ACQ-null)+AHs-
+                    +ACQ-ProductExlApps +AD0- +ACQ-configfile.Configuration.Add.Product.ExcludeApp +AHw- +ACU- +AHsAJABf-.ID+AH0-
+                    Add-Member -InputObject +ACQ-Result -MemberType NoteProperty -Name +ACI-ExcludedApps+ACI- -Value +ACQ-ProductExlApps
+                    +ACM-Add-Member -InputObject +ACQ-Result -MemberType NoteProperty -Name +ACI-ExcludedApps+ACI- -Value (+ACQ-ProductElement.ExcludeApp.GetAttribute(+ACI-ID+ACI-))
+                +AH0-
+                +ACQ-Result
+            +AH0-
+        +AH0-else+AHs-
+            if (+ACQ-ProductId) +AHs-
+            
+
+                +AFs-System.XML.XMLElement+AF0AJA-ProductElement +AD0- +ACQ-ConfigFile.Configuration.Add.Product +AHw- where +AHs- +ACQAXw-.ID -eq +ACQ-ProductId +AH0-
+                if (+ACQ-ProductElement) +AHs-
+                +ACQ-tempId +AD0- +ACQ-ProductElement.GetAttribute(+ACI-ID+ACI-)
+                
+                
+                +ACQ-Result +AD0- New-Object -TypeName PSObject 
+                Add-Member -InputObject +ACQ-Result -MemberType NoteProperty -Name +ACI-ProductId+ACI- -Value +ACQ-tempId 
+                if(+ACQ-ProductElement.Language -ne +ACQ-null)+AHs-
+                    +ACQ-ProductLangs +AD0- +ACQ-configfile.Configuration.Add.Product.Language +AHw- +ACU- +AHsAJABf-.ID+AH0-
+                    Add-Member -InputObject +ACQ-Result -MemberType NoteProperty -Name +ACI-Languages+ACI- -Value +ACQ-ProductLangs
+                    +ACM-Add-Member -InputObject +ACQ-Result -MemberType NoteProperty -Name +ACI-Languages+ACI- -Value (+ACQ-ProductElement.Language.GetAttribute(+ACI-ID+ACI-))
+                +AH0-
+
+                if(+ACQ-ProductElement.ExcludeApp -ne +ACQ-null)+AHs-
+                    +ACQ-ProductExlApps +AD0- +ACQ-configfile.Configuration.Add.Product.ExcludeApp +AHw- +ACU- +AHsAJABf-.ID+AH0-
+                    Add-Member -InputObject +ACQ-Result -MemberType NoteProperty -Name +ACI-ExcludedApps+ACI- -Value +ACQ-ProductExlApps
+                    +ACM-Add-Member -InputObject +ACQ-Result -MemberType NoteProperty -Name +ACI-ExcludedApps+ACI- -Value (+ACQ-ProductElement.ExcludeApp.GetAttribute(+ACI-ID+ACI-))
+                +AH0-
+                +ACQ-Result
+                +AH0-
+            +AH0-
+        +AH0-
+
+    +AH0-
+
++AH0-
+
+Function Get-ODTAdd+AHs-
++ADwAIw-
+.SYNOPSIS
+Gets the value of the Add section in the configuration file
+
+.PARAMETER TargetFilePath
+Required. Full file path for the file.
+
+.Example
+Get-ODTAdd -TargetFilePath +ACIAJA-env:Public+AFw-Documents+AFw-config.xml+ACI-
+Returns the value of the Add section if it exists in the specified
+file. 
+
++ACMAPg-
+    Param(
+
+        +AFs-Parameter(ValueFromPipeline+AD0AJA-true,ValueFromPipelineByPropertyName+AD0AJA-true, Position+AD0-0)+AF0-
+        +AFs-string+AF0- +ACQ-ConfigurationXML +AD0- +ACQ-NULL,
+
+        +AFs-Parameter(ValueFromPipelineByPropertyName+AD0AJA-true)+AF0-
+        +AFs-string+AF0- +ACQ-TargetFilePath
+
+    )
+
+    Process+AHs-
+        +ACQ-TargetFilePath +AD0- GetFilePath -TargetFilePath +ACQ-TargetFilePath
+
+        +ACM-Load the file
+        +AFs-System.XML.XMLDocument+AF0AJA-ConfigFile +AD0- New-Object System.XML.XMLDocument
+
+        if (+ACQ-TargetFilePath) +AHs-
+           +ACQ-content +AD0- Get-Content +ACQ-TargetFilePath
+           +ACQ-ConfigFile.LoadXml(+ACQ-content) +AHw- Out-Null
+        +AH0- else +AHs-
+            if (+ACQ-ConfigurationXml) 
+            +AHs-
+              +ACQ-ConfigFile.LoadXml(+ACQ-ConfigurationXml) +AHw- Out-Null
+              +ACQ-global:saveLastConfigFile +AD0- +ACQ-NULL
+              +ACQ-global:saveLastFilePath +AD0- +ACQ-NULL
+            +AH0-
+        +AH0-
+
+        +ACM-Check that the file is properly formatted
+        if(+ACQ-ConfigFile.Configuration -eq +ACQ-null)+AHs-
+            throw +ACQ-NoConfigurationElement
+        +AH0-
+        
+        +ACQ-ConfigFile.Configuration.GetElementsByTagName(+ACI-Add+ACI-) +AHw- Select OfficeClientEdition, SourcePath, Version, Channel, Branch
+    +AH0-
+
++AH0-
+
+Function Set-ODTDisplay+AHs-
++ADwAIw-
+.SYNOPSIS
+Modifies an existing configuration xml file to set display level and acceptance of the EULA
+
+.PARAMETER Level
+Optional. Determines the user interface that the user sees when the 
+operation is performed. If Level is set to None, the user sees no UI. 
+No progress UI, completion screen, error dialog boxes, or first run 
+automatic start UI are displayed. If Level is set to Full, the user 
+sees the normal Click-to-Run user interface: Automatic start, 
+application splash screen, and error dialog boxes.
+
+.PARAMETER AcceptEULA
+If this attribute is set to TRUE, the user does not see a Microsoft 
+Software License Terms dialog box. If this attribute is set to FALSE 
+or is not set, the user may see a Microsoft Software License Terms dialog box.
+
+.PARAMETER TargetFilePath
+Full file path for the file to be modified and be output to.
+
+.Example
+Set-ODTLogging -Level +ACI-Full+ACI- -TargetFilePath +ACIAJA-env:Public/Documents/config.xml+ACI-
+Sets config show the UI during install
+
+.Example
+Set-ODTDisplay -Level +ACI-none+ACI- -AcceptEULA +ACI-True+ACI- -TargetFilePath +ACIAJA-env:Public/Documents/config.xml+ACI-
+Sets config to hide UI and automatically accept EULA during install
+
+.Notes
+Here is what the portion of configuration file looks like when modified by this function:
+
++ADw-Configuration+AD4-
+  ...
+  +ADw-Display Level+AD0AIg-None+ACI- AcceptEULA+AD0AIg-TRUE+ACI- /+AD4-
+  ...
++ADw-/Configuration+AD4-
+
++ACMAPg-
+    Param(
+
+        +AFs-Parameter(ValueFromPipeline+AD0AJA-true,ValueFromPipelineByPropertyName+AD0AJA-true, Position+AD0-0)+AF0-
+        +AFs-string+AF0- +ACQ-ConfigurationXML +AD0- +ACQ-NULL,
+
+        +AFs-Parameter(ValueFromPipelineByPropertyName+AD0AJA-true)+AF0-
+        +AFs-LogLevel+AF0- +ACQ-Level,
+
+        +AFs-Parameter(ValueFromPipelineByPropertyName+AD0AJA-true)+AF0-
+        +AFs-bool+AF0- +ACQ-AcceptEULA +AD0- +ACQ-true,
+
+        +AFs-Parameter(ValueFromPipelineByPropertyName+AD0AJA-true)+AF0-
+        +AFs-string+AF0- +ACQ-TargetFilePath
+
+    )
+
+    Process+AHs-
+        +ACQ-TargetFilePath +AD0- GetFilePath -TargetFilePath +ACQ-TargetFilePath
+
+        +ACM-Load file
+        +AFs-System.XML.XMLDocument+AF0AJA-ConfigFile +AD0- New-Object System.XML.XMLDocument
+
+        if (+ACQ-TargetFilePath) +AHs-
+           +ACQ-content +AD0- Get-Content +ACQ-TargetFilePath
+           +ACQ-ConfigFile.LoadXml(+ACQ-content) +AHw- Out-Null
+        +AH0- else +AHs-
+            if (+ACQ-ConfigurationXml) 
+            +AHs-
+              +ACQ-ConfigFile.LoadXml(+ACQ-ConfigurationXml) +AHw- Out-Null
+              +ACQ-global:saveLastConfigFile +AD0- +ACQ-NULL
+              +ACQ-global:saveLastFilePath +AD0- +ACQ-NULL
+            +AH0-
+        +AH0-
+
+        +ACQ-global:saveLastConfigFile +AD0- +ACQ-ConfigFile.OuterXml
+
+        +ACM-Check for proper root element
+        if(+ACQ-ConfigFile.Configuration -eq +ACQ-null)+AHs-
+            throw +ACQ-NoConfigurationElement
+        +AH0-
+
+        +ACM-Get display element if it exists
+        +AFs-System.XML.XMLElement+AF0AJA-DisplayElement +AD0- +ACQ-ConfigFile.Configuration.GetElementsByTagName(+ACI-Display+ACI-).Item(0)
+        if(+ACQ-ConfigFile.Configuration.Display -eq +ACQ-null)+AHs-
+            +AFs-System.XML.XMLElement+AF0AJA-DisplayElement+AD0AJA-ConfigFile.CreateElement(+ACI-Display+ACI-)
+            +ACQ-ConfigFile.Configuration.appendChild(+ACQ-DisplayElement) +AHw- Out-Null
+        +AH0-
+
+        +ACM-Set values
+        if(+ACQ-Level -ne +ACQ-null)+AHs-
+            +ACQ-DisplayElement.SetAttribute(+ACI-Level+ACI-, +ACQ-Level) +AHw- Out-Null
+        +AH0- else +AHs-
+            if (+ACQ-PSBoundParameters.ContainsKey('Level')) +AHs-
+                +ACQ-ConfigFile.Configuration.Add.RemoveAttribute(+ACI-Level+ACI-)
+            +AH0-
+        +AH0-
+
+        if(+ACQ-AcceptEULA -ne +ACQ-null)+AHs-
+            +ACQ-DisplayElement.SetAttribute(+ACI-AcceptEULA+ACI-, +ACQ-AcceptEULA.ToString().ToUpper()) +AHw- Out-Null
+        +AH0- else +AHs-
+            if (+ACQ-PSBoundParameters.ContainsKey('AcceptEULA')) +AHs-
+                +ACQ-ConfigFile.Configuration.Add.RemoveAttribute(+ACI-AcceptEULA+ACI-)
+            +AH0-
+        +AH0-
+
+        +ACQ-ConfigFile.Save(+ACQ-TargetFilePath) +AHw- Out-Null
+        +ACQ-global:saveLastFilePath +AD0- +ACQ-TargetFilePath
+
+        if ((+ACQ-PSCmdlet.MyInvocation.PipelineLength -eq 1) -or +AGA-
+            (+ACQ-PSCmdlet.MyInvocation.PipelineLength -eq +ACQ-PSCmdlet.MyInvocation.PipelinePosition)) +AHs-
+            Write-Host
+
+            Format-XML (+AFs-xml+AF0-(cat +ACQ-TargetFilePath)) -indent 4
+
+            Write-Host
+            Write-Host +ACI-The Office XML Configuration file has been saved to: +ACQ-TargetFilePath+ACI-
+        +AH0- else +AHs-
+            +ACQ-results +AD0- new-object PSObject+AFsAXQ- 0+ADs-
+            +ACQ-Result +AD0- New-Object -TypeName PSObject 
+            Add-Member -InputObject +ACQ-Result -MemberType NoteProperty -Name +ACI-TargetFilePath+ACI- -Value +ACQ-TargetFilePath
+            Add-Member -InputObject +ACQ-Result -MemberType NoteProperty -Name +ACI-Level+ACI- -Value +ACQ-Level
+            Add-Member -InputObject +ACQ-Result -MemberType NoteProperty -Name +ACI-AcceptEULA+ACI- -Value +ACQ-AcceptEULA
+            +ACQ-Result
+        +AH0-
+    +AH0-
+
++AH0-
+
+Function GetFilePath() +AHs-
+    Param(
+       +AFs-Parameter(ValueFromPipelineByPropertyName+AD0AJA-true)+AF0-
+       +AFs-string+AF0- +ACQ-TargetFilePath
+    )
+
+    if (+ACE-(+ACQ-TargetFilePath)) +AHs-
+        +ACQ-TargetFilePath +AD0- +ACQ-global:saveLastFilePath
+    +AH0-  
+
+    if (+ACE-(+ACQ-TargetFilePath)) +AHs-
+       Write-Host +ACI-Enter the path to the XML Configuration File: +ACI- -NoNewline
+       +ACQ-TargetFilePath +AD0- Read-Host
+    +AH0- else +AHs-
+       +ACM-Write-Host +ACI-Target XML Configuration File: +ACQ-TargetFilePath+ACI-
+    +AH0-
+    
+   +ACQ-locationPath +AD0- (Get-Location).Path
+    
+    if (+ACE-(+ACQ-TargetFilePath.IndexOf('+AFw-') -gt -1)) +AHs-
+      +ACQ-TargetFilePath +AD0- +ACQ-locationPath +- +ACIAXAAi- +- +ACQ-TargetFilePath
+    +AH0-
+
+    return +ACQ-TargetFilePath
++AH0-
+
+Function Get-OfficeCTRRegPath() +AHs-
+    +ACQ-path15 +AD0- 'SOFTWARE+AFw-Microsoft+AFw-Office+AFw-15.0+AFw-ClickToRun'
+    +ACQ-path16 +AD0- 'SOFTWARE+AFw-Microsoft+AFw-Office+AFw-ClickToRun'
+
+    if (Test-Path +ACI-HKLM:+AFwAJA-path15+ACI-) +AHs-
+      return +ACQ-path15
+    +AH0- else +AHs-
+      if (Test-Path +ACI-HKLM:+AFwAJA-path16+ACI-) +AHs-
+         return +ACQ-path16
+      +AH0-
+    +AH0-
++AH0-
+
+Function Set-ODTProductToAdd+AHs-
++ADwAIw-
+.SYNOPSIS
+Modifies an existing configuration xml file to modify a existing product item.
+
+.PARAMETER ExcludeApps
+Array of IDs of Apps to exclude from install
+
+.PARAMETER ProductId
+Required. ID must be set to a valid ProductRelease ID.
+See https://support.microsoft.com/en-us/kb/2842297 for valid ids.
+
+.PARAMETER LanguageIds
+Possible values match 'll-cc' pattern (Microsoft Language ids)
+The ID value can be set to a valid Office culture language (such as en-us 
+for English US or ja-jp for Japanese). The ll-cc value is the language 
+identifier.
+
+.PARAMETER TargetFilePath
+Full file path for the file to be modified and be output to.
+
+.Example
+Add-ODTProductToAdd -ProductId +ACI-O365ProPlusRetail+ACI- -LanguageId (+ACI-en-US+ACI-, +ACI-es-es+ACI-) -TargetFilePath +ACIAJA-env:Public/Documents/config.xml+ACI- -ExcludeApps (+ACI-Access+ACI-, +ACI-InfoPath+ACI-)
+Sets config to add the English and Spanish version of office 365 ProPlus
+excluding Access and InfoPath
+
+.Example
+Add-ODTProductToAdd -ProductId +ACI-O365ProPlusRetail+ACI- -LanguageId (+ACI-en-US+ACI-, +ACI-es-es) -TargetFilePath +ACIAJA-env:Public/Documents/config.xml+ACI-
+Sets config to add the English and Spanish version of office 365 ProPlus
+
+.Notes
+Here is what the portion of configuration file looks like when modified by this function:
+
++ADw-Configuration+AD4-
+  +ADw-Add OfficeClientEdition+AD0AIg-64+ACI- +AD4-
+    +ADw-Product ID+AD0AIg-O365ProPlusRetail+ACIAPg-
+      +ADw-Language ID+AD0AIg-en-US+ACI- /+AD4-
+      +ADw-Language ID+AD0AIg-es-es+ACI- /+AD4-
+      +ADw-ExcludeApp ID+AD0AIg-Access+ACIAPg-
+      +ADw-ExcludeApp ID+AD0AIg-InfoPath+ACIAPg-
+    +ADw-/Product+AD4-
+  +ADw-/Add+AD4-
+  ...
++ADw-/Configuration+AD4-
+
++ACMAPg-
+    +AFs-CmdletBinding()+AF0-
+    Param(
+        +AFs-Parameter(ValueFromPipeline+AD0AJA-true,ValueFromPipelineByPropertyName+AD0AJA-true, Position+AD0-0)+AF0-
+        +AFs-string+AF0- +ACQ-ConfigurationXML +AD0- +ACQ-NULL,
+
+        +AFs-Parameter(ValueFromPipelineByPropertyName+AD0AJA-true)+AF0-
+        +AFs-string+AF0- +ACQ-TargetFilePath +AD0- +ACQ-NULL,
+
+        +AFs-Parameter(ValueFromPipelineByPropertyName+AD0AJA-true)+AF0-
+        +AFs-Microsoft.Office.Products+AF0- +ACQ-ProductId +AD0- +ACI-Unknown+ACI-,
+
+        +AFs-Parameter(ValueFromPipelineByPropertyName+AD0AJA-true)+AF0-
+        +AFs-Alias(+ACI-LanguageId+ACI-)+AF0-
+        +AFs-string+AFsAXQBd- +ACQ-LanguageIds +AD0- +ACQ-NULL,
+
+        +AFs-Parameter(ValueFromPipelineByPropertyName+AD0AJA-true)+AF0-
+        +AFs-string+AFsAXQBd- +ACQ-ExcludeApps +AD0- +ACQ-NULL
+
+    )
+
+    Process+AHs-
+        +ACQ-TargetFilePath +AD0- GetFilePath -TargetFilePath +ACQ-TargetFilePath
+
+        if (+ACQ-ProductId -eq +ACI-Unknown+ACI-) +AHs-
+           +ACQ-ProductId +AD0- SelectProductId
+        +AH0-
+
+        +ACQ-ProductId +AD0- IsValidProductId -ProductId +ACQ-ProductId
+        
+        +ACQ-langCount +AD0- +ACQ-LanguageIds.Count
+
+        if (+ACQ-langCount -gt 0) +AHs-
+           foreach (+ACQ-language in +ACQ-LanguageIds) +AHs-
+              +ACQ-language +AD0- IsSupportedLanguage -Language +ACQ-language
+           +AH0-
+        +AH0-
+
+        +ACM-Load the file
+        +AFs-System.XML.XMLDocument+AF0AJA-ConfigFile +AD0- New-Object System.XML.XMLDocument
+        
+        if (+ACQ-TargetFilePath) +AHs-
+           +ACQ-content +AD0- Get-Content +ACQ-TargetFilePath
+           +ACQ-ConfigFile.LoadXml(+ACQ-content) +AHw- Out-Null
+        +AH0- else +AHs-
+            if (+ACQ-ConfigurationXml) 
+            +AHs-
+              +ACQ-ConfigFile.LoadXml(+ACQ-ConfigurationXml) +AHw- Out-Null
+              +ACQ-global:saveLastConfigFile +AD0- +ACQ-NULL
+              +ACQ-global:saveLastFilePath +AD0- +ACQ-NULL
+              +ACQ-TargetFilePath +AD0- +ACQ-NULL
+            +AH0-
+        +AH0-
+
+        +ACQ-global:saveLastConfigFile +AD0- +ACQ-ConfigFile.OuterXml
+
+        +ACM-Check that the file is properly formatted
+        if(+ACQ-ConfigFile.Configuration -eq +ACQ-null)+AHs-
+            throw +ACQ-NoConfigurationElement
+        +AH0-
+
+        +AFs-System.XML.XMLElement+AF0AJA-AddElement+AD0AJA-NULL
+        if(+ACQ-ConfigFile.Configuration.Add -eq +ACQ-null)+AHs-
+           throw +ACI-Cannot find 'Add' element+ACI-
+        +AH0-
+
+        +ACQ-AddElement +AD0- +ACQ-ConfigFile.Configuration.Add 
+
+        +ACM-Set the desired values
+        +AFs-System.XML.XMLElement+AF0AJA-ProductElement +AD0- +ACQ-ConfigFile.Configuration.Add.Product +AHw- Where +AHs- +ACQAXw-.ID -eq +ACQ-ProductId +AH0-
+        if(+ACQ-ProductElement -eq +ACQ-null)+AHs-
+           throw +ACI-Cannot find Product with Id '+ACQ-ProductId'+ACI-
+        +AH0-
+
+        if (+ACQ-LanguageIds) +AHs-
+            +ACQ-existingLangs +AD0- +ACQ-ProductElement.selectnodes(+ACI-./Language+ACI-)
+            if (+ACQ-existingLangs.count -gt 0) +AHs-
+                foreach (+ACQ-lang in +ACQ-existingLangs) +AHs-
+                  +ACQ-ProductElement.removeChild(+ACQ-lang) +AHw- Out-Null
+                +AH0-
+
+                foreach(+ACQ-LanguageId in +ACQ-LanguageIds)+AHs-
+                    +AFs-System.XML.XMLElement+AF0AJA-LanguageElement +AD0- +ACQ-ProductElement.Language +AHw- Where +AHs- +ACQAXw-.ID -eq +ACQ-LanguageId +AH0-
+                    if(+ACQ-LanguageElement -eq +ACQ-null)+AHs-
+                        +AFs-System.XML.XMLElement+AF0AJA-LanguageElement+AD0AJA-ConfigFile.CreateElement(+ACI-Language+ACI-)
+                        +ACQ-ProductElement.appendChild(+ACQ-LanguageElement) +AHw- Out-Null
+                        +ACQ-LanguageElement.SetAttribute(+ACI-ID+ACI-, +ACQ-LanguageId) +AHw- Out-Null
+                    +AH0-
+                +AH0-
+            +AH0-
+        +AH0-
+
+        if (+ACQ-ExcludeApps) +AHs-
+            +ACQ-existingExcludes +AD0- +ACQ-ProductElement.selectnodes(+ACI-./ExcludeApp+ACI-)
+            if (+ACQ-existingExcludes.count -gt 0) +AHs-
+                foreach (+ACQ-exclude in +ACQ-existingLangs) +AHs-
+                  +ACQ-ProductElement.removeChild(+ACQ-exclude) +AHw- Out-Null
+                +AH0-
+            +AH0-
+
+            foreach(+ACQ-ExcludeApp in +ACQ-ExcludeApps)+AHs-
+                +AFs-System.XML.XMLElement+AF0AJA-ExcludeAppElement +AD0- +ACQ-ProductElement.ExcludeApp +AHw- Where +AHs- +ACQAXw-.ID -eq +ACQ-ExcludeApp +AH0-
+                if(+ACQ-ExcludeAppElement -eq +ACQ-null)+AHs-
+                    +AFs-System.XML.XMLElement+AF0AJA-ExcludeAppElement+AD0AJA-ConfigFile.CreateElement(+ACI-ExcludeApp+ACI-)
+                    +ACQ-ProductElement.appendChild(+ACQ-ExcludeAppElement) +AHw- Out-Null
+                    +ACQ-ExcludeAppElement.SetAttribute(+ACI-ID+ACI-, +ACQ-ExcludeApp) +AHw- Out-Null
+                +AH0-
+            +AH0-
+        +AH0-
+
+        +ACQ-ConfigFile.Save(+ACQ-TargetFilePath) +AHw- Out-Null
+        +ACQ-global:saveLastFilePath +AD0- +ACQ-TargetFilePath
+
+        if ((+ACQ-PSCmdlet.MyInvocation.PipelineLength -eq 1) -or +AGA-
+            (+ACQ-PSCmdlet.MyInvocation.PipelineLength -eq +ACQ-PSCmdlet.MyInvocation.PipelinePosition)) +AHs-
+            Write-Host
+
+            Format-XML (+AFs-xml+AF0-(cat +ACQ-TargetFilePath)) -indent 4
+
+            Write-Host
+            Write-Host +ACI-The Office XML Configuration file has been saved to: +ACQ-TargetFilePath+ACI-
+        +AH0- else +AHs-
+            +ACQ-results +AD0- new-object PSObject+AFsAXQ- 0+ADs-
+            +ACQ-Result +AD0- New-Object -TypeName PSObject 
+            Add-Member -InputObject +ACQ-Result -MemberType NoteProperty -Name +ACI-TargetFilePath+ACI- -Value +ACQ-TargetFilePath
+            Add-Member -InputObject +ACQ-Result -MemberType NoteProperty -Name +ACI-ProductId+ACI- -Value +ACQ-ProductId
+            Add-Member -InputObject +ACQ-Result -MemberType NoteProperty -Name +ACI-LanguageIds+ACI- -Value +ACQ-LanguageIds
+            +ACQ-Result
+        +AH0-
+
+
+    +AH0-
+
++AH0-
+
+Function Wait-ForOfficeCTRInstall() +AHs-
+    +AFs-CmdletBinding()+AF0-
+    Param(
+        +AFs-Parameter()+AF0-
+        +AFs-int+AF0- +ACQ-TimeOutInMinutes +AD0- 120,
+
+        +AFs-Parameter(ValueFromPipelineByPropertyName+AD0AJA-true)+AF0-
+        +AFs-OfficeCTRVersion+AF0- +ACQ-OfficeVersion +AD0- +ACI-Office2016+ACI-
+    )
+
+    begin +AHs-
+        +ACQ-HKLM +AD0- +AFs-UInt32+AF0- +ACI-0x80000002+ACI-
+        +ACQ-HKCR +AD0- +AFs-UInt32+AF0- +ACI-0x80000000+ACI-
+    +AH0-
+
+    process +AHs-
+        Write-Host +ACI-Waiting for Install to Begin...+ACI-
+ 
+        +ACM-Start-Sleep -Seconds 25
+
+        if(+ACQ-OfficeVersion -eq 'Office2016')+AHs-
+            +ACQ-mainRegPath +AD0- 'SOFTWARE+AFw-Microsoft+AFw-Office+AFw-ClickToRun'
+        +AH0- else +AHs-
+            +ACQ-mainRegPath +AD0- Get-OfficeCTRRegPath
+        +AH0- 
+
+        +ACQ-scenarioPath +AD0- +ACQ-mainRegPath +- +ACIAXA-scenario+ACI-
+
+        +ACQ-regProv +AD0- Get-Wmiobject -list +ACI-StdRegProv+ACI- -namespace root+AFw-default -ErrorAction Stop
+
+        +AFs-DateTime+AF0AJA-startTime +AD0- Get-Date
+
+        +AFs-string+AF0AJA-executingScenario +AD0- +ACIAIg-
+        +ACQ-failure +AD0- +ACQ-false
+        +ACQ-updateRunning+AD0AJA-false
+        +AFs-string+AFsAXQBdACQ-trackProgress +AD0- +AEA-()
+        +AFs-string+AFsAXQBdACQ-trackComplete +AD0- +AEA-()
+        
+        +ACQ-timeout +AD0- New-TimeSpan -Minutes 2
+        +ACQ-sw +AD0- +AFs-diagnostics.stopwatch+AF0-::StartNew()
+        while (+ACQ-sw.elapsed -lt +ACQ-timeout)+AHs-
+            try +AHs-
+                +ACQ-exScenario +AD0- +ACQ-regProv.GetStringValue(+ACQ-HKLM, +ACQ-mainRegPath, +ACI-ExecutingScenario+ACI-)
+                if(+ACQ-exScenario.sValue)+AHs- break+ADs- +AH0-
+            +AH0- catch +AHsAfQ-
+
+            Start-Sleep -Seconds 5
+        +AH0-
+       
+        if (+ACQ-exScenario) +AHs-
+            +ACQ-executingScenario +AD0- +ACQ-exScenario.sValue
+        +AH0-
+         
+        do +AHs-
+            +ACQ-allComplete +AD0- +ACQ-true
+            +ACQ-scenarioKeys +AD0- +ACQ-regProv.EnumKey(+ACQ-HKLM, +ACQ-scenarioPath)
+            foreach (+ACQ-scenarioKey in +ACQ-scenarioKeys.sNames) +AHs-
+                if (+ACE-(+ACQ-executingScenario)) +AHs- continue +AH0-
+                if (+ACQ-scenarioKey.ToLower() -eq +ACQ-executingScenario.ToLower()) +AHs-
+                    +ACQ-taskKeyPath +AD0- +ACQ-scenarioPath +- +ACIAXAAk-scenarioKey+AFw-TasksState+ACI-
+                    +ACQ-taskValues +AD0- +ACQ-regProv.EnumValues(+ACQ-HKLM, +ACQ-taskKeyPath).sNames
+
+                    foreach (+ACQ-taskValue in +ACQ-taskValues) +AHs-
+                        +AFs-string+AF0AJA-status +AD0- +ACQ-regProv.GetStringValue(+ACQ-HKLM, +ACQ-taskKeyPath, +ACQ-taskValue).sValue
+                        +ACQ-operation +AD0- +ACQ-taskValue.Split(':')+AFs-0+AF0-
+                        +ACQ-keyValue +AD0- +ACQ-taskValue
+
+                        if (+ACQ-status.ToUpper() -eq +ACI-TASKSTATE+AF8-FAILED+ACI-) +AHs-
+                            +ACQ-failure +AD0- +ACQ-true
+                        +AH0-
+
+                        +ACQ-displayValue +AD0- showTaskStatus -Operation +ACQ-operation -Status +ACQ-status -DateTime (Get-Date).ToString('yyyy-MM-dd HH:mm:ss')
+
+                        if ((+ACQ-status.ToUpper() -eq +ACI-TASKSTATE+AF8-COMPLETED+ACI-) -or+AGA-
+                            (+ACQ-status.ToUpper() -eq +ACI-TASKSTATE+AF8-CANCELLED+ACI-) -or+AGA-
+                            (+ACQ-status.ToUpper() -eq +ACI-TASKSTATE+AF8-FAILED+ACI-)) +AHs-
+                                if ((+ACQ-trackProgress -contains +ACQ-keyValue) -and +ACE-(+ACQ-trackComplete -contains +ACQ-keyValue)) +AHs-
+                                    +ACQ-displayValue
+                                    +ACQ-trackComplete +-+AD0- +ACQ-keyValue
+                                    Start-Sleep -Seconds 1
+                                +AH0-
+                        +AH0- else +AHs-
+                            +ACQ-allComplete +AD0- +ACQ-false
+                            +ACQ-updateRunning +AD0- +ACQ-true
+
+                            if (+ACQ-trackProgress -notcontains +ACQ-keyValue) +AHs-
+                                +ACQ-displayValue
+                                +ACQ-trackProgress +-+AD0- +ACQ-keyValue                                
+                                Start-Sleep -Seconds 1
+                            +AH0-
+                        +AH0-
+                    +AH0-
+                +AH0-
+            +AH0-
+
+            if (+ACQ-startTime -lt (Get-Date).AddHours(-+ACQ-TimeOutInMinutes)) +AHs-
+                throw +ACI-Waiting for Update Timed-Out+ACI-
+                break+ADs-
+            +AH0-
+
+            if(+ACQ-allComplete)+AHs-
+                +ACQ-updateRunning +AD0- +ACQ-false
+            +AH0-
+
+            Start-Sleep -Seconds 5
+
+        +AH0- while(+ACQ-updateRunning -eq +ACQ-true)
+    
+        if(+ACQ-failure)+AHs-
+            Write-Host +ACIAIg-
+            Write-Host 'Update failed'
+        +AH0- else +AHs-
+            if(+ACQ-trackProgress.Count -gt 0)+AHs-
+                Write-Host +ACIAIg-
+                Write-Host 'Update complete'
+            +AH0- else +AHs-
+                Write-Host +ACIAIg-
+                Write-Host 'Update not running'
+            +AH0-
+        +AH0- 
+    +AH0-
++AH0-
+
+function showTaskStatus() +AHs-
+    +AFs-CmdletBinding()+AF0-
+    Param(
+        +AFs-Parameter()+AF0-
+        +AFs-string+AF0- +ACQ-Operation +AD0- +ACIAIg-,
+
+        +AFs-Parameter()+AF0-
+        +AFs-string+AF0- +ACQ-Status +AD0- +ACIAIg-,
+
+        +AFs-Parameter()+AF0-
+        +AFs-string+AF0- +ACQ-DateTime +AD0- +ACIAIg-
+    )
+
+    +ACQ-Result +AD0- New-Object -TypeName PSObject 
+    Add-Member -InputObject +ACQ-Result -MemberType NoteProperty -Name +ACI-Operation+ACI- -Value +ACQ-Operation
+    Add-Member -InputObject +ACQ-Result -MemberType NoteProperty -Name +ACI-Status+ACI- -Value +ACQ-Status
+    Add-Member -InputObject +ACQ-Result -MemberType NoteProperty -Name +ACI-DateTime+ACI- -Value +ACQ-DateTime
+    return +ACQ-Result
++AH0-
+
+Function StartProcess +AHs-
+	Param
+	(
+        +AFs-Parameter()+AF0-
+		+AFs-String+AF0AJA-execFilePath,
+
+        +AFs-Parameter()+AF0-
+        +AFs-String+AF0AJA-execParams,
+
+        +AFs-Parameter()+AF0-
+        +AFs-bool+AF0AJA-WaitForExit +AD0- +ACQ-false
+	)
+
+    Try
+    +AHs-
+        +ACQ-startExe +AD0- new-object System.Diagnostics.ProcessStartInfo
+        +ACQ-startExe.FileName +AD0- +ACQ-execFilePath
+        +ACQ-startExe.Arguments +AD0- +ACQ-execParams
+        +ACQ-startExe.CreateNoWindow +AD0- +ACQ-false
+        +ACQ-startExe.UseShellExecute +AD0- +ACQ-false
+
+        +ACQ-execStatement +AD0- +AFs-System.Diagnostics.Process+AF0-::Start(+ACQ-startExe) 
+        if (+ACQ-WaitForExit) +AHs-
+           +ACQ-execStatement.WaitForExit()
+        +AH0-
+    +AH0-
+    Catch
+    +AHs-
+        Write-Log -Message +ACQAXw-.Exception.Message -severity 1 -component +ACI-Office 365 Update Anywhere+ACI-
+    +AH0-
++AH0-
+
+Function GetScriptRoot() +AHs-
+ process +AHs-
+     +AFs-string+AF0AJA-scriptPath +AD0- +ACI-.+ACI-
+
+     if (+ACQ-PSScriptRoot) +AHs-
+       +ACQ-scriptPath +AD0- +ACQ-PSScriptRoot
+     +AH0- else +AHs-
+       +ACQ-scriptPath +AD0- (Get-Item -Path +ACI-.+AFwAIg-).FullName
+     +AH0-
+     return +ACQ-scriptPath
+ +AH0-
++AH0-
+
+Function Format-XML (+AFs-xml+AF0AJA-xml, +ACQ-indent+AD0-2) +AHs- 
+    +ACQ-StringWriter +AD0- New-Object System.IO.StringWriter 
+    +ACQ-XmlWriter +AD0- New-Object System.XMl.XmlTextWriter +ACQ-StringWriter 
+    +ACQ-xmlWriter.Formatting +AD0- +ACI-indented+ACI- 
+    +ACQ-xmlWriter.Indentation +AD0- +ACQ-Indent 
+    +ACQ-xml.WriteContentTo(+ACQ-XmlWriter) 
+    +ACQ-XmlWriter.Flush() 
+    +ACQ-StringWriter.Flush() 
+    Write-Output +ACQ-StringWriter.ToString() 
++AH0-
+
+
+
+
+
+

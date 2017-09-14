@@ -1,0 +1,12 @@
+<Configuration>
+    <Add OfficeClientEdition="32" Channel="Deferred">
+        <Product ID="O365ProPlusRetail">
+            <Language ID="en-us"/>
+        </Product>
+    </Add>
+    <Property Name="AUTOACTIVATE" Value="1"/>
+    <Property Name="FORCEAPPSHUTDOWN" Value="TRUE"/>
+    <Property Name="SharedComputerLicensing" Value="0"/>
+    <Property Name="PinIconsToTaskbar" Value="TRUE"/>
+    <Display Level="None" AcceptEULA="TRUE"/>
+</Configuration>

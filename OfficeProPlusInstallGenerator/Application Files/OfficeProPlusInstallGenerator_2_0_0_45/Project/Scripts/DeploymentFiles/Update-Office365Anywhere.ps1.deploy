@@ -1,0 +1,389 @@
+﻿+AFs-CmdletBinding()+AF0-
+Param(
+    +AFs-Parameter()+AF0-
+    +AFs-bool+AF0- +ACQ-WaitForUpdateToFinish +AD0- +ACQ-true,
+
+    +AFs-Parameter()+AF0-
+    +AFs-bool+AF0- +ACQ-EnableUpdateAnywhere +AD0- +ACQ-true,
+
+    +AFs-Parameter()+AF0-
+    +AFs-bool+AF0- +ACQ-ForceAppShutdown +AD0- +ACQ-true,
+    
+    +AFs-Parameter()+AF0-
+    +AFs-bool+AF0- +ACQ-UpdatePromptUser +AD0- +ACQ-false,
+
+    +AFs-Parameter()+AF0-
+    +AFs-bool+AF0- +ACQ-DisplayLevel +AD0- +ACQ-false,
+
+    +AFs-Parameter()+AF0-
+    +AFs-string+AF0- +ACQ-UpdateToVersion +AD0- +ACQ-NULL,
+
+    +AFs-Parameter()+AF0-
+    +AFs-string+AF0- +ACQ-LogPath +AD0- +ACQ-null,
+
+    +AFs-Parameter()+AF0-
+    +AFs-string+AF0- +ACQ-LogName +AD0- +ACQ-null,
+
+    +AFs-Parameter()+AF0-
+    +AFs-bool+AF0- +ACQ-ValidateUpdateSourceFiles +AD0- +ACQ-true,
+
+    +AFs-Parameter()+AF0-
+    +AFs-bool+AF0- +ACQ-UseScriptLocationAsUpdateSource +AD0- +ACQ-false
+
+)
+
+Function GetScriptRoot() +AHs-
+ process +AHs-
+     +AFs-string+AF0AJA-scriptPath +AD0- +ACI-.+ACI-
+
+     if (+ACQ-PSScriptRoot) +AHs-
+       +ACQ-scriptPath +AD0- +ACQ-PSScriptRoot
+     +AH0- else +AHs-
+       +ACQ-scriptPath +AD0- (Get-Item -Path +ACI-.+AFwAIg-).FullName
+     +AH0-
+
+     return +ACQ-scriptPath
+ +AH0-
++AH0-
+
+Function Update-Office365Anywhere() +AHs-
++ADwAIw-
+.Synopsis
+This function is designed to provide way for Office Click-To-Run clients to have the ability to update themselves from a managed network source
+or from the Internet depending on the availability of the primary update source.
+
+.DESCRIPTION
+This function is designed to provide way for Office Click-To-Run clients to have the ability to update themselves from a managed network source
+or from the Internet depending on the availability of the primary update source.  The idea behind this is if users have laptops and are mobile 
+they may not recieve updates if they are not able to be in the office on regular basis.  This functionality is available with this function but it's 
+use can be controller by the parameter -EnableUpdateAnywhere.  This function also provides a way to initiate an update and the script will wait
+for the update to complete before exiting. Natively starting an update executable does not wait for the process to complete before exiting and
+in certain scenarios it may be useful to have the update process wait for the update to complete.
+
+.NOTES   
+Name: Update-Office365Anywhere
+Version: 1.1.0
+DateCreated: 2015-08-28
+DateUpdated: 2015-09-03
+
+.LINK
+https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
+
+.PARAMETER WaitForUpdateToFinish
+If this parameter is set to +ACQ-true then the function will monitor the Office update and will not exit until the update process has stopped.
+If this parameter is set to +ACQ-false then the script will exit right after the update process has been started.  By default this parameter is set
+to +ACQ-true
+
+.PARAMETER EnableUpdateAnywhere
+This parameter controls whether the UpdateAnywhere functionality is used or not. When enabled the update process will check the availbility
+of the update source set for the client.  If that update source is not available then it will update the client from the Microsoft Office CDN.
+When set to +ACQ-false the function will only use the Update source configured on the client. By default it is set to +ACQ-true.
+
+.PARAMETER ForceAppShutdown
+This specifies whether the user will be given the option to cancel out of the update. However, if this variable is set to True, then the applications will be shut down immediately and the update will proceed.
+
+.PARAMETER UpdatePromptUser
+This specifies whether or not the user will see this dialog before automatically applying the updates:
+
+.PARAMETER DisplayLevel
+This specifies whether the user will see a user interface during the update. Setting this to false will hide all update UI (including error UI that is encountered during the update scenario).
+
+.PARAMETER UpdateToVersion
+This specifies the version to which Office needs to be updated to.  This can used to install a newer or an older version than what is presently installed.
+
+.PARAMETER ValidateUpdateSourceFiles
+If this parameter is set to true then the script will ensure the update source has all the files necessary to perform the update
+
+.EXAMPLE
+Update-Office365Anywhere 
+
+Description:
+Will generate the Office Deployment Tool (ODT) configuration XML based on the local computer
+
++ACMAPg-
+
+    +AFs-CmdletBinding()+AF0-
+    Param(
+        +AFs-Parameter()+AF0-
+        +AFs-bool+AF0- +ACQ-WaitForUpdateToFinish +AD0- +ACQ-true,
+
+        +AFs-Parameter()+AF0-
+        +AFs-bool+AF0- +ACQ-EnableUpdateAnywhere +AD0- +ACQ-true,
+
+        +AFs-Parameter()+AF0-
+        +AFs-bool+AF0- +ACQ-ForceAppShutdown +AD0- +ACQ-false,
+
+        +AFs-Parameter()+AF0-
+        +AFs-bool+AF0- +ACQ-UpdatePromptUser +AD0- +ACQ-false,
+
+        +AFs-Parameter()+AF0-
+        +AFs-bool+AF0- +ACQ-DisplayLevel +AD0- +ACQ-false,
+
+        +AFs-Parameter()+AF0-
+        +AFs-string+AF0- +ACQ-UpdateToVersion +AD0- +ACQ-NULL,
+
+        +AFs-Parameter()+AF0-
+        +AFs-string+AF0- +ACQ-LogPath +AD0- +ACQ-NULL,
+
+        +AFs-Parameter()+AF0-
+        +AFs-string+AF0- +ACQ-LogName +AD0- +ACQ-NULL,
+        
+        +AFs-Parameter()+AF0-
+        +AFs-bool+AF0- +ACQ-ValidateUpdateSourceFiles +AD0- +ACQ-true,
+
+        +AFs-Parameter()+AF0-
+        +AFs-bool+AF0- +ACQ-UseScriptLocationAsUpdateSource +AD0- +ACQ-false
+    )
+
+    Process +AHs-
+        try +AHs-
+            +ACQ-Global:UpdateAnywhereLogPath +AD0- +ACQ-LogPath+ADs-
+            +ACQ-Global:UpdateAnywhereLogFileName +AD0- +ACQ-LogName+ADs-
+
+            +ACQ-scriptPath +AD0- GetScriptRoot
+
+            +ACQ-shareFunctionsPath +AD0- +ACIAJA-scriptPath+AFw-SharedFunctions.ps1+ACI-
+            if (+ACQ-scriptPath.StartsWith(+ACIAXABcACI-)) +AHs-
+            +AH0- else +AHs-
+              if (+ACE-(Test-Path -Path +ACQ-shareFunctionsPath)) +AHs-
+                 throw +ACI-Missing Dependency File SharedFunctions.ps1+ACI-    
+              +AH0-
+            +AH0-
+            . +ACQ-shareFunctionsPath
+
+            +ACQ-mainRegPath +AD0- Get-OfficeCTRRegPath
+            if (+ACE-(+ACQ-mainRegPath)) +AHs-
+               throw +ACI-Office 365 ProPlus is not installed+ACI-
+            +AH0-
+
+            +ACQ-configRegPath +AD0- +ACQ-mainRegPath +- +ACIAXA-Configuration+ACI-
+            +ACQ-GPORegPath +AD0- +ACI-HKLM:+AFw-Software+AFw-Policies+AFw-Microsoft+AFw-Office+AFw-16.0+AFw-common+AFw-officeupdate+ACI-
+            +ACQ-GPORegPath2 +AD0- +ACI-Software+AFw-Policies+AFw-Microsoft+AFw-Office+AFw-16.0+AFw-common+AFw-officeupdate+ACI-
+
+            +ACQ-GPOUpdateSource +AD0- +ACQ-true
+            +ACQ-currentUpdateSource +AD0- (Get-ItemProperty +ACQ-GPORegPath -Name updatepath -ErrorAction SilentlyContinue).updatepath
+
+            if(+ACE-(+ACQ-currentUpdateSource))+AHs-
+              +ACQ-currentUpdateSource +AD0- (Get-ItemProperty HKLM:+AFwAJA-configRegPath -Name UpdateUrl -ErrorAction SilentlyContinue).UpdateUrl
+              +ACQ-GPOUpdateSource +AD0- +ACQ-false
+            +AH0-
+
+            +ACQ-saveUpdateSource +AD0- (Get-ItemProperty HKLM:+AFwAJA-configRegPath -Name SaveUpdateUrl -ErrorAction SilentlyContinue).SaveUpdateUrl
+            +ACQ-clientFolder +AD0- (Get-ItemProperty HKLM:+AFwAJA-configRegPath -Name ClientFolder -ErrorAction SilentlyContinue).ClientFolder
+
+            +ACQ-officeUpdateCDN +AD0- Get-OfficeCDNUrl
+
+            +ACQ-officeCDN +AD0- +ACI-http://officecdn.microsoft.com+ACI-
+            +ACQ-oc2rcFilePath +AD0- Join-Path +ACQ-clientFolder +ACIAXA-OfficeC2RClient.exe+ACI-
+
+            +ACQ-oc2rcParams +AD0- +ACI-/update user+ACI-
+            if (+ACQ-ForceAppShutdown) +AHs-
+              +ACQ-oc2rcParams +-+AD0- +ACI- forceappshutdown+AD0-true+ACI-
+            +AH0- else +AHs-
+              +ACQ-oc2rcParams +-+AD0- +ACI- forceappshutdown+AD0-false+ACI-
+            +AH0-
+
+            if (+ACQ-UpdatePromptUser) +AHs-
+              +ACQ-oc2rcParams +-+AD0- +ACI- updatepromptuser+AD0-true+ACI-
+            +AH0- else +AHs-
+              +ACQ-oc2rcParams +-+AD0- +ACI- updatepromptuser+AD0-false+ACI-
+            +AH0-
+
+            if (+ACQ-DisplayLevel) +AHs-
+              +ACQ-oc2rcParams +-+AD0- +ACI- displaylevel+AD0-true+ACI-
+            +AH0- else +AHs-
+              +ACQ-oc2rcParams +-+AD0- +ACI- displaylevel+AD0-false+ACI-
+            +AH0-
+
+            if (+ACQ-UpdateToVersion) +AHs-
+              +ACQ-oc2rcParams +-+AD0- +ACI- updatetoversion+AD0AJA-UpdateToVersion+ACI-
+            +AH0-
+
+            +AFs-string+AF0AJA-localUpdatePath +AD0- +ACIAIg-
+            +AFs-bool+AF0AJA-scriptPathIsUpdateSource +AD0- +ACQ-false
+            if (+ACQ-UseScriptLocationAsUpdateSource) +AHs-
+              if (+ACQ-scriptPath) +AHs-
+                  if (Test-ItemPathUNC -Path +ACIAJA-scriptPath+AFw-SourceFiles+ACI-) +AHs-
+                     +ACQ-localUpdatePath +AD0- Change-UpdatePathToChannel -UpdatePath +ACIAJA-scriptPath+AFw-SourceFiles+ACI- -ValidateUpdateSourceFiles +ACQ-ValidateUpdateSourceFiles                     
+                  +AH0- else +AHs-
+                     +ACQ-localUpdatePath +AD0- Change-UpdatePathToChannel -UpdatePath +ACQ-scriptPath -ValidateUpdateSourceFiles +ACQ-ValidateUpdateSourceFiles
+                  +AH0-
+
+                  +AFs-bool+AF0AJA-localIsAlive +AD0- Test-UpdateSource -UpdateSource +ACQ-localUpdatePath -ValidateUpdateSourceFiles +ACQ-ValidateUpdateSourceFiles
+
+                  if (+ACQ-localIsAlive) +AHs-
+                      +ACQ-scriptPathIsUpdateSource +AD0- +ACQ-true
+                      +ACQ-currentUpdateSource +AD0- +ACQ-localUpdatePath
+                  +AH0-
+              +AH0-  
+            +AH0-
+
+            +ACQ-UpdateSource +AD0- +ACI-http+ACI-
+            if (+ACQ-currentUpdateSource) +AHs-
+              If (+ACQ-currentUpdateSource.StartsWith(+ACIAXABcACI-,1)) +AHs-
+                 +ACQ-UpdateSource +AD0- +ACI-UNC+ACI-
+              +AH0-
+            +AH0-
+
+            if (+ACQ-EnableUpdateAnywhere) +AHs-
+
+                if (+ACQ-currentUpdateSource) +AHs-
+                    +AFs-bool+AF0AJA-isAlive +AD0- +ACQ-false
+                    if (+ACQ-currentUpdateSource.ToLower() -eq +ACQ-officeUpdateCDN.ToLower() -and (+ACQ-saveUpdateSource)) +AHs-
+                        if (+ACQ-currentUpdateSource -ne +ACQ-saveUpdateSource) +AHs-
+                            +ACQ-channelUpdateSource +AD0- Change-UpdatePathToChannel -UpdatePath +ACQ-saveUpdateSource -ValidateUpdateSourceFiles +ACQ-ValidateUpdateSourceFiles
+
+                            if (+ACQ-channelUpdateSource -ne +ACQ-saveUpdateSource) +AHs-
+                                +ACQ-saveUpdateSource +AD0- +ACQ-channelUpdateSource
+                            +AH0-
+
+	                        +ACQ-isAlive +AD0- Test-UpdateSource -UpdateSource +ACQ-saveUpdateSource -ValidateUpdateSourceFiles +ACQ-ValidateUpdateSourceFiles
+                            if (+ACQ-isAlive) +AHs-
+                               Write-Log -Message +ACI-Restoring Saved Update Source +ACQ-saveUpdateSource+ACI- -severity 1 -component +ACI-Office 365 Update Anywhere+ACI-
+
+                               if (+ACQ-GPOUpdateSource) +AHs-
+                                   New-ItemProperty -Path +ACI-HKLM:+AFwAJA-GPORegPath+ACI- -Name +ACI-updatepath+ACI- -Value +ACQ-saveUpdateSource -PropertyType String -Force -ErrorAction Stop +AHw- Out-Null
+                               +AH0- else +AHs-
+                                   New-ItemProperty -Path +ACI-HKLM:+AFwAJA-configRegPath+ACI- -Name +ACI-UpdateUrl+ACI- -Value +ACQ-saveUpdateSource -PropertyType String -Force -ErrorAction Stop +AHw- Out-Null
+                               +AH0-
+                            +AH0-
+                        +AH0-
+                    +AH0-
+                +AH0-
+
+                if (+ACE-(+ACQ-currentUpdateSource)) +AHs-
+                   if (+ACQ-officeUpdateCDN) +AHs-
+                       Write-Log -Message +ACI-No Update source is set so defaulting to Office CDN+ACI- -severity 1 -component +ACI-Office 365 Update Anywhere+ACI-
+
+                       if (+ACQ-GPOUpdateSource) +AHs-
+                           New-ItemProperty -Path +ACI-HKLM:+AFwAJA-GPORegPath+ACI- -Name +ACI-updatepath+ACI- -Value +ACQ-officeUpdateCDN -PropertyType String -Force -ErrorAction Stop +AHw- Out-Null
+                       +AH0- else +AHs-
+                           New-ItemProperty -Path +ACI-HKLM:+AFwAJA-configRegPath+ACI- -Name +ACI-UpdateUrl+ACI- -Value +ACQ-officeUpdateCDN -PropertyType String -Force -ErrorAction Stop +AHw- Out-Null
+                       +AH0-
+
+                       +ACQ-currentUpdateSource +AD0- +ACQ-officeUpdateCDN
+                   +AH0-
+                +AH0-
+
+                if (+ACEAJA-isAlive) +AHs-
+                    +ACQ-channelUpdateSource +AD0- Change-UpdatePathToChannel -UpdatePath +ACQ-currentUpdateSource -ValidateUpdateSourceFiles +ACQ-ValidateUpdateSourceFiles
+
+                    if (+ACQ-channelUpdateSource -ne +ACQ-currentUpdateSource) +AHs-
+                        +ACQ-currentUpdateSource +AD0- +ACQ-channelUpdateSource
+                    +AH0-
+
+                    +ACQ-isAlive +AD0- Test-UpdateSource -UpdateSource +ACQ-currentUpdateSource -ValidateUpdateSourceFiles +ACQ-ValidateUpdateSourceFiles
+                    if (+ACE-(+ACQ-isAlive)) +AHs-
+                        if (+ACQ-currentUpdateSource.ToLower() -ne +ACQ-officeUpdateCDN.ToLower()) +AHs-
+                            Set-Reg -Hive +ACI-HKLM+ACI- -keyPath +ACQ-configRegPath -ValueName +ACI-SaveUpdateUrl+ACI- -Value +ACQ-currentUpdateSource -Type String
+                        +AH0-
+
+                        Write-Host +ACI-Unable to use +ACQ-currentUpdateSource. Will now use +ACQ-officeUpdateCDN+ACI-
+                        Write-Log -Message +ACI-Unable to use +ACQ-currentUpdateSource. Will now use +ACQ-officeUpdateCDN+ACI- -severity 1 -component +ACI-Office 365 Update Anywhere+ACI-
+
+                        if (+ACQ-GPOUpdateSource) +AHs-
+                            New-ItemProperty -Path +ACI-HKLM:+AFwAJA-GPORegPath+ACI- -Name +ACI-updatepath+ACI- -Value +ACQ-officeUpdateCDN -PropertyType String -Force -ErrorAction Stop +AHw- Out-Null
+                        +AH0- else +AHs-
+                            New-ItemProperty -Path +ACI-HKLM:+AFwAJA-configRegPath+ACI- -Name +ACI-UpdateUrl+ACI- -Value +ACQ-officeUpdateCDN -PropertyType String -Force -ErrorAction Stop +AHw- Out-Null
+                        +AH0-
+
+                        +ACQ-isAlive +AD0- Test-UpdateSource -UpdateSource +ACQ-officeUpdateCDN -ValidateUpdateSourceFiles +ACQ-ValidateUpdateSourceFiles
+                    +AH0-
+                +AH0-
+
+            +AH0- else +AHs-
+                if(+ACQ-currentUpdateSource -ne +ACQ-null)+AHs-
+                    +ACQ-channelUpdateSource +AD0- Change-UpdatePathToChannel -UpdatePath +ACQ-currentUpdateSource -ValidateUpdateSourceFiles +ACQ-ValidateUpdateSourceFiles
+
+                    if (+ACQ-channelUpdateSource -ne +ACQ-currentUpdateSource) +AHs-
+                        +ACQ-currentUpdateSource+AD0- +ACQ-channelUpdateSource
+                    +AH0-
+
+                    +ACQ-isAlive +AD0- Test-UpdateSource -UpdateSource +ACQ-currentUpdateSource -ValidateUpdateSourceFiles +ACQ-ValidateUpdateSourceFiles
+
+                +AH0-else+AHs-
+                    +ACQ-isAlive +AD0- Test-UpdateSource -UpdateSource +ACQ-officeUpdateCDN -ValidateUpdateSourceFiles +ACQ-ValidateUpdateSourceFiles
+                    +ACQ-currentUpdateSource +AD0- +ACQ-officeUpdateCDN+ADs-
+                +AH0-
+            +AH0-
+
+            if (+ACQ-isAlive) +AHs-
+               if (+ACE-(+ACQ-scriptPathIsUpdateSource)) +AHs-
+                   if (+ACQ-GPOUpdateSource) +AHs-
+                     +ACQ-currentUpdateSource +AD0- (Get-ItemProperty +ACQ-GPORegPath -Name updatepath -ErrorAction SilentlyContinue).updatepath
+                   +AH0- else +AHs-
+                     +ACQ-currentUpdateSource +AD0- (Get-ItemProperty HKLM:+AFwAJA-configRegPath -Name UpdateUrl -ErrorAction SilentlyContinue).UpdateUrl
+                   +AH0-
+               +AH0-
+
+               if(+ACQ-currentUpdateSource.ToLower().StartsWith(+ACI-http+ACI-))+AHs-
+                   +ACQ-channelUpdateSource +AD0- +ACQ-currentUpdateSource
+               +AH0-
+               else+AHs-
+                   +ACQ-channelUpdateSource +AD0- Change-UpdatePathToChannel -UpdatePath +ACQ-currentUpdateSource -ValidateUpdateSourceFiles +ACQ-ValidateUpdateSourceFiles
+               +AH0-
+
+               if ((+ACQ-channelUpdateSource -ne +ACQ-currentUpdateSource) -or +ACQ-scriptPathIsUpdateSource) +AHs-
+                   if (+ACQ-scriptPathIsUpdateSource) +AHs-
+                       if (+ACQ-GPOUpdateSource) +AHs-
+                          New-ItemProperty -Path +ACI-HKLM:+AFwAJA-GPORegPath2+ACI- -Name +ACI-updatepath+ACI- -Value +ACQ-localUpdatePath -PropertyType String -Force -ErrorAction Stop +AHw- Out-Null
+                       +AH0- else +AHs-
+                          New-ItemProperty -Path +ACI-HKLM:+AFwAJA-configRegPath+ACI- -Name +ACI-UpdateUrl+ACI- -Value +ACQ-localUpdatePath -PropertyType String -Force -ErrorAction Stop +AHw- Out-Null
+                       +AH0-
+                       +ACQ-channelUpdateSource +AD0- +ACQ-localUpdatePath
+
+                       Remove-ItemProperty HKLM:+AFwAJA-configRegPath -Name SaveUpdateUrl -Force -ErrorAction SilentlyContinue
+                       +ACQ-saveUpdateSource +AD0- +ACQ-null
+                   +AH0- elseif (+ACQ-GPOUpdateSource) +AHs-
+                       New-ItemProperty -Path +ACI-HKLM:+AFwAJA-GPORegPath2+ACI- -Name +ACI-updatepath+ACI- -Value +ACQ-channelUpdateSource -PropertyType String -Force -ErrorAction Stop +AHw- Out-Null
+                       +ACQ-channelUpdateSource +AD0- +ACQ-channelUpdateSource
+                   +AH0- else +AHs-
+                       New-ItemProperty -Path +ACI-HKLM:+AFwAJA-configRegPath+ACI- -Name +ACI-UpdateUrl+ACI- -Value +ACQ-channelUpdateSource -PropertyType String -Force -ErrorAction Stop +AHw- Out-Null
+                       +ACQ-channelUpdateSource +AD0- +ACQ-channelUpdateSource
+                   +AH0-
+               +AH0-
+
+               Write-Host +ACI-Starting Update process+ACI-
+               Write-Host +ACI-Update Source: +ACQ-channelUpdateSource+ACI- 
+               Write-Log -Message +ACI-Will now execute +ACQ-oc2rcFilePath +ACQ-oc2rcParams with UpdateSource:+ACQ-channelUpdateSource+ACI- -severity 1 -component +ACI-Office 365 Update Anywhere+ACI-
+
+               StartProcess -execFilePath +ACQ-oc2rcFilePath -execParams +ACQ-oc2rcParams
+
+               if (+ACQ-WaitForUpdateToFinish) +AHs-
+                    Wait-ForOfficeCTRUpadate
+               +AH0-
+
+               +ACQ-saveUpdateSource +AD0- (Get-ItemProperty HKLM:+AFwAJA-configRegPath -Name SaveUpdateUrl -ErrorAction SilentlyContinue).SaveUpdateUrl
+               if (+ACQ-saveUpdateSource) +AHs-
+                   if (+ACQ-GPOUpdateSource) +AHs-
+                       New-ItemProperty -Path +ACI-HKLM:+AFwAJA-GPORegPath2+ACI- -Name +ACI-updatepath+ACI- -Value +ACQ-saveUpdateSource -PropertyType String -Force -ErrorAction Stop +AHw- Out-Null
+                   +AH0- else +AHs-
+                       New-ItemProperty -Path +ACI-HKLM:+AFwAJA-configRegPath+ACI- -Name +ACI-UpdateUrl+ACI- -Value +ACQ-saveUpdateSource -PropertyType String -Force -ErrorAction Stop +AHw- Out-Null
+                   +AH0-
+                   Remove-ItemProperty HKLM:+AFwAJA-configRegPath -Name SaveUpdateUrl -Force -ErrorAction SilentlyContinue
+               +AH0-
+
+            +AH0- else +AHs-
+               +ACQ-currentUpdateSource +AD0- (Get-ItemProperty HKLM:+AFwAJA-configRegPath -Name UpdateUrl -ErrorAction SilentlyContinue).UpdateUrl
+               Write-Host +ACI-Update Source '+ACQ-currentUpdateSource' Unavailable+ACI-
+               Write-Log -Message +ACI-Update Source '+ACQ-currentUpdateSource' Unavailable+ACI- -severity 1 -component +ACI-Office 365 Update Anywhere+ACI-
+            +AH0-
+
+       +AH0- catch +AHs-
+           Write-Log -Message +ACQAXw-.Exception.Message -severity 1 -component +ACQ-LogFileName
+           throw+ADs-
+       +AH0-
+    +AH0-
++AH0-
+
+Update-Office365Anywhere -WaitForUpdateToFinish +ACQ-WaitForUpdateToFinish -EnableUpdateAnywhere +ACQ-EnableUpdateAnywhere -ForceAppShutdown +ACQ-ForceAppShutdown -UpdatePromptUser +ACQ-UpdatePromptUser -DisplayLevel +ACQ-DisplayLevel -UpdateToVersion +ACQ-UpdateToVersion -LogPath +ACQ-LogPath -LogName +ACQ-LogName -ValidateUpdateSourceFiles +ACQ-ValidateUpdateSourceFiles -UseScriptLocationAsUpdateSource +ACQ-UseScriptLocationAsUpdateSource
+
+
+
+
+
+
+
+
+
+

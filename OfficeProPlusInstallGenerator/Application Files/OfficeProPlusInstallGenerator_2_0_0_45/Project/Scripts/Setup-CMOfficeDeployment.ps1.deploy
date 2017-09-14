@@ -1,0 +1,2753 @@
+﻿try +AHs-
++ACQ-enum +AD0- +ACI-
+using System+ADs-
+ 
+    +AFs-FlagsAttribute+AF0-
+    public enum CMDeploymentType
+    +AHs-
+        DeployWithScript +AD0- 0,
+        DeployWithConfigurationFile +AD0- 1
+    +AH0-
++ACI-
+Add-Type -TypeDefinition +ACQ-enum -ErrorAction SilentlyContinue
++AH0- catch +AHs- +AH0-
+
+try +AHs-
++ACQ-enumDef +AD0- +ACI-
+using System+ADs-
+       +AFs-FlagsAttribute+AF0-
+       public enum OfficeChannel
+       +AHs-
+          FirstReleaseCurrent +AD0- 0,
+          Current +AD0- 1,
+          FirstReleaseDeferred +AD0- 2,
+          Deferred +AD0- 3
+       +AH0-
++ACI-
+Add-Type -TypeDefinition +ACQ-enumDef -ErrorAction SilentlyContinue
++AH0- catch +AHs- +AH0-
+
+try +AHs-
++ACQ-enum2 +AD0- +ACI-
+using System+ADs-
+ 
+    +AFs-FlagsAttribute+AF0-
+    public enum CMOfficeProgramType
+    +AHs-
+        DeployWithScript +AD0- 0,
+        DeployWithConfigurationFile +AD0- 1,
+        ChangeChannel +AD0- 2,
+        RollBack +AD0- 3,
+        UpdateWithConfigMgr +AD0- 4,
+        UpdateWithTask +AD0- 5,
+        LanguagePack +AD0- 6
+    +AH0-
++ACI-
+Add-Type -TypeDefinition +ACQ-enum2 -ErrorAction SilentlyContinue
++AH0- catch +AHs- +AH0-
+
+try +AHs-
++ACQ-enumBitness +AD0- +ACI-
+using System+ADs-
+       +AFs-FlagsAttribute+AF0-
+       public enum Bitness
+       +AHs-
+          Both +AD0- 0,
+          v32 +AD0- 1,
+          v64 +AD0- 2
+       +AH0-
++ACI-
+Add-Type -TypeDefinition +ACQ-enumBitness -ErrorAction SilentlyContinue
++AH0- catch +AHs- +AH0-
+
+try +AHs-
++ACQ-enumBitnessOptions +AD0- +ACI-
+using System+ADs-
+       +AFs-FlagsAttribute+AF0-
+       public enum BitnessOptions
+       +AHs-
+          v32 +AD0- 1,
+          v64 +AD0- 2
+       +AH0-
++ACI-
+Add-Type -TypeDefinition +ACQ-enumBitnessOptions -ErrorAction SilentlyContinue
++AH0- catch +AHs- +AH0-
+
+try +AHs-
++ACQ-deploymentPurpose +AD0- +ACI-
+using System+ADs-
+       +AFs-FlagsAttribute+AF0-
+       public enum DeploymentPurpose
+       +AHs-
+          Default+AD0- 0,
+          Required +AD0- 1,
+          Available +AD0- 2
+       +AH0-
++ACI-
+Add-Type -TypeDefinition +ACQ-deploymentPurpose -ErrorAction SilentlyContinue
++AH0- catch +AHs- +AH0-
+
+function Download-CMOfficeChannelFiles() +AHs-
++ADwAIw-
+.SYNOPSIS
+Downloads the Office Click-to-Run files into the specified folder for package creation.
+
+.DESCRIPTION
+Downloads the Office 365 ProPlus installation files to a specified file path.
+
+.PARAMETER Channels
+The update channel. Current, Deferred, FirstReleaseDeferred, FirstReleaseCurrent
+
+.PARAMETER OfficeFilesPath
+This is the location where the source files will be downloaded to
+
+.PARAMETER Languages
+All office languages are supported in the ll-cc format +ACI-en-us+ACI-
+
+.PARAMETER Bitness
+Downloads the bitness of Office Click-to-Run +ACI-v32, v64, Both+ACI-
+
+.PARAMETER Version
+You can specify the version to download. 16.0.6868.2062. Version information can be found here https://technet.microsoft.com/en-us/library/mt592918.aspx
+
+.EXAMPLE
+Download-CMOfficeChannelFiles -OfficeFilesPath D:+AFw-OfficeChannelFiles
+
+.EXAMPLE
+Download-CMOfficeChannelFiles -OfficeFilesPath D:+AFw-OfficeChannelFiles -Channels Deferred -Bitness v32
+
+.EXAMPLE
+Download-CMOfficeChannelFiles -OfficeFilesPath D:+AFw-OfficeChannelFiles -Bitness v32 -Channels Deferred,FirstReleaseDeferred -Languages en-us,es-es,ja-jp
++ACMAPg-
+
+    +AFs-CmdletBinding(SupportsShouldProcess+AD0AJA-true)+AF0-
+    Param
+    (
+        +AFs-Parameter()+AF0-
+        +AFs-OfficeChannel+AFsAXQBd- +ACQ-Channels +AD0- +AEA-(1,2,3),
+
+        +AFs-Parameter(Mandatory+AD0AJA-true)+AF0-
+	    +AFs-String+AF0AJA-OfficeFilesPath +AD0- +ACQ-NULL,
+
+        +AFs-Parameter()+AF0-
+        +AFs-ValidateSet(+ACI-en-us+ACI-,+ACI-ar-sa+ACI-,+ACI-bg-bg+ACI-,+ACI-zh-cn+ACI-,+ACI-zh-tw+ACI-,+ACI-hr-hr+ACI-,+ACI-cs-cz+ACI-,+ACI-da-dk+ACI-,+ACI-nl-nl+ACI-,+ACI-et-ee+ACI-,+ACI-fi-fi+ACI-,+ACI-fr-fr+ACI-,+ACI-de-de+ACI-,+ACI-el-gr+ACI-,+ACI-he-il+ACI-,+ACI-hi-in+ACI-,+ACI-hu-hu+ACI-,+ACI-id-id+ACI-,+ACI-it-it+ACI-,
+                    +ACI-ja-jp+ACI-,+ACI-kk-kz+ACI-,+ACI-ko-kr+ACI-,+ACI-lv-lv+ACI-,+ACI-lt-lt+ACI-,+ACI-ms-my+ACI-,+ACI-nb-no+ACI-,+ACI-pl-pl+ACI-,+ACI-pt-br+ACI-,+ACI-pt-pt+ACI-,+ACI-ro-ro+ACI-,+ACI-ru-ru+ACI-,+ACI-sr-latn-rs+ACI-,+ACI-sk-sk+ACI-,+ACI-sl-si+ACI-,+ACI-es-es+ACI-,+ACI-sv-se+ACI-,+ACI-th-th+ACI-,
+                    +ACI-tr-tr+ACI-,+ACI-uk-ua+ACI-)+AF0-
+        +AFs-string+AFsAXQBd- +ACQ-Languages +AD0- (+ACI-en-us+ACI-),
+
+        +AFs-Parameter()+AF0-
+        +AFs-Bitness+AF0- +ACQ-Bitness +AD0- 0,
+
+        +AFs-Parameter()+AF0-
+        +AFs-string+AF0- +ACQ-Version +AD0- +ACQ-NULL
+        
+    )
+
+    Process +AHs-
+       if (Test-Path +ACIAJA-PSScriptRoot+AFw-Download-OfficeProPlusChannels.ps1+ACI-) +AHs-
+         . +ACIAJA-PSScriptRoot+AFw-Download-OfficeProPlusChannels.ps1+ACI-
+       +AH0- else +AHs-
+         throw +ACI-Dependency file missing: +ACQ-PSScriptRoot+AFw-Download-OfficeProPlusChannels.ps1+ACI-
+       +AH0-
+
+       +ACQ-ChannelList +AD0- +AEA-(+ACI-FirstReleaseCurrent+ACI-, +ACI-Current+ACI-, +ACI-FirstReleaseDeferred+ACI-, +ACI-Deferred+ACI-)
+       +ACQ-ChannelXml +AD0- Get-ChannelXml -FolderPath +ACQ-OfficeFilesPath -OverWrite +ACQ-true
+
+       foreach (+ACQ-Channel in +ACQ-ChannelList) +AHs-
+         if (+ACQ-Channels -contains +ACQ-Channel) +AHs-
+
+            +ACQ-selectChannel +AD0- +ACQ-ChannelXml.UpdateFiles.baseURL +AHw- Where +AHsAJABf-.branch -eq +ACQ-Channel.ToString() +AH0-
+            +ACQ-latestVersion +AD0- Get-ChannelLatestVersion -ChannelUrl +ACQ-selectChannel.URL -Channel +ACQ-Channel
+            +ACQ-ChannelShortName +AD0- ConvertChannelNameToShortName -ChannelName +ACQ-Channel
+
+            if (+ACQ-Version) +AHs-
+               +ACQ-latestVersion +AD0- +ACQ-Version
+            +AH0-
+
+            Download-OfficeProPlusChannels -TargetDirectory +ACQ-OfficeFilesPath  -Channels +ACQ-Channel -Version +ACQ-latestVersion -UseChannelFolderShortName +ACQ-true -Languages +ACQ-Languages -Bitness +ACQ-Bitness
+
+            +ACQ-cabFilePath +AD0- +ACIAJA-env:TEMP/ofl.cab+ACI-
+            Copy-Item -Path +ACQ-cabFilePath -Destination +ACIAJA-OfficeFilesPath+AFw-ofl.cab+ACI- -Force
+
+            +ACQ-latestVersion +AD0- Get-ChannelLatestVersion -ChannelUrl +ACQ-selectChannel.URL -Channel +ACQ-Channel -FolderPath +ACQ-OfficeFilesPath -OverWrite +ACQ-true 
+         +AH0-
+       +AH0-
+    +AH0-
++AH0-
+
+function Create-CMOfficePackage +AHs-
++ADwAIw-
+
+.SYNOPSIS
+Automates the configuration of System Center Configuration Manager (CM) to create an Office Click-To-Run Package
+
+.PARAMETER Channels
+The update channel. Current, Deferred, FirstReleaseDeferred, FirstReleaseCurrent
+
+.PARAMETER Bitness
+Downloads the bitness of Office Click-to-Run +ACI-v32, v64, Both+ACI-
+
+.PARAMETER OfficeSourceFilesPath
+This is the location where the source files are available at
+
+.PARAMETER MoveSourceFiles
+This moves the files from the Source location to the location specified
+
+.PARAMETER CustomPackageShareName
+This sets a custom package share to use
+
+.PARAMETER UpdateOnlyChangedBits
+
+.PARAMETER SiteCode
+The site code you would like to create the package on. If left blank it will default to the current site
+
+.PARAMETER CMPSModulePath
+Allows the user to specify that full path to the ConfigurationManager.psd1 PowerShell Module. This is especially useful if CM is installed in a non standard path.
+
+.EXAMPLE
+Create-CMOfficePackage -Channels Deferred -Bitness v32 -OfficeSourceFilesPath D:+AFw-OfficeChannelFiles
+
++ACMAPg-
+    +AFs-CmdletBinding(SupportsShouldProcess+AD0AJA-true)+AF0-
+    Param
+    (
+        +AFs-Parameter()+AF0-
+        +AFs-OfficeChannel+AFsAXQBd- +ACQ-Channels +AD0- +AEA-(1,2,3),
+
+        +AFs-Parameter()+AF0-
+	    +AFs-Bitness+AF0AJA-Bitness +AD0- +ACI-v32+ACI-,
+
+        +AFs-Parameter()+AF0-
+	    +AFs-String+AF0AJA-OfficeSourceFilesPath +AD0- +ACQ-NULL,
+
+        +AFs-Parameter()+AF0-
+	    +AFs-bool+AF0AJA-MoveSourceFiles +AD0- +ACQ-false,
+
+		+AFs-Parameter()+AF0-
+		+AFs-String+AF0AJA-CustomPackageShareName +AD0- +ACQ-null,
+
+	    +AFs-Parameter()+AF0-	
+	    +AFs-Bool+AF0AJA-UpdateOnlyChangedBits +AD0- +ACQ-true,
+
+	    +AFs-Parameter()+AF0-
+	    +AFs-String+AF0AJA-SiteCode +AD0- +ACQ-null,
+
+	    +AFs-Parameter()+AF0-
+	    +AFs-String+AF0AJA-CMPSModulePath +AD0- +ACQ-NULL
+    )
+    Begin
+    +AHs-
+        +ACQ-currentExecutionPolicy +AD0- Get-ExecutionPolicy
+	    Set-ExecutionPolicy Unrestricted -Scope Process -Force  
+        +ACQ-startLocation +AD0- Get-Location
+    +AH0-
+    Process +AHs-
+       try +AHs-
+
+       Check-AdminAccess
+
+       +ACQ-cabFilePath +AD0- +ACIAJA-OfficeSourceFilesPath+AFw-ofl.cab+ACI-
+       if (Test-Path +ACQ-cabFilePath) +AHs-
+            Copy-Item -Path +ACQ-cabFilePath -Destination +ACIAJA-PSScriptRoot+AFw-ofl.cab+ACI- -Force
+       +AH0-
+
+       +ACQ-ChannelList +AD0- +AEA-(+ACI-FirstReleaseCurrent+ACI-, +ACI-Current+ACI-, +ACI-FirstReleaseDeferred+ACI-, +ACI-Deferred+ACI-)
+       +ACQ-ChannelXml +AD0- Get-ChannelXml -FolderPath +ACQ-OfficeSourceFilesPath -OverWrite +ACQ-false
+
+       foreach (+ACQ-Channel in +ACQ-ChannelList) +AHs-
+         if (+ACQ-Channels -contains +ACQ-Channel) +AHs-
+           +ACQ-selectChannel +AD0- +ACQ-ChannelXml.UpdateFiles.baseURL +AHw- Where +AHsAJABf-.branch -eq +ACQ-Channel.ToString() +AH0-
+           +ACQ-latestVersion +AD0- Get-ChannelLatestVersion -ChannelUrl +ACQ-selectChannel.URL -Channel +ACQ-Channel -FolderPath +ACQ-OfficeFilesPath -OverWrite +ACQ-false
+
+           +ACQ-ChannelShortName +AD0- ConvertChannelNameToShortName -ChannelName +ACQ-Channel
+           +ACQ-existingPackage +AD0- CheckIfPackageExists
+           +ACQ-LargeDrv +AD0- Get-LargestDrive
+
+           +ACQ-Path +AD0- CreateOfficeChannelShare -Path +ACIAJA-LargeDrv+AFw-OfficeDeployment+ACI-
+
+           +ACQ-packageName +AD0- +ACI-Office 365 ProPlus+ACI-
+           +ACQ-ChannelPath +AD0- +ACIAJA-Path+AFwAJA-Channel+ACI-
+           +ACQ-LocalPath +AD0- +ACIAJA-LargeDrv+AFw-OfficeDeployment+ACI-
+           +ACQ-LocalChannelPath +AD0- +ACIAJA-LargeDrv+AFw-OfficeDeployment+AFw-SourceFiles+ACI-
+
+           +AFs-System.IO.Directory+AF0-::CreateDirectory(+ACQ-LocalChannelPath) +AHw- Out-Null
+                          
+           if (+ACQ-OfficeSourceFilesPath) +AHs-
+                +ACQ-officeFileChannelPath +AD0- +ACIAJA-OfficeSourceFilesPath+AFwAJA-ChannelShortName+ACI-
+                +ACQ-officeFileTargetPath +AD0- +ACIAJA-LocalChannelPath+ACI-
+
+                +AFs-string+AF0AJA-oclVersion +AD0- +ACQ-NULL
+                if (+ACQ-officeFileChannelPath) +AHs-
+                    if (Test-Path -Path +ACIAJA-officeFileChannelPath+AFw-Office+AFw-Data+ACI-) +AHs-
+                       +ACQ-oclVersion +AD0- Get-LatestVersion -UpdateURLPath +ACQ-officeFileChannelPath
+                    +AH0-
+                +AH0-
+
+                if (+ACQ-oclVersion) +AHs-
+                   +ACQ-latestVersion +AD0- +ACQ-oclVersion
+                +AH0-
+
+                if (+ACE-(Test-Path -Path +ACQ-officeFileChannelPath)) +AHs-
+                    throw +ACI-Channel Folder Missing: +ACQ-officeFileChannelPath - Ensure that you have downloaded the Channel you are trying to deploy+ACI-
+                +AH0-
+
+                +AFs-System.IO.Directory+AF0-::CreateDirectory(+ACQ-officeFileTargetPath) +AHw- Out-Null
+
+                if (+ACQ-MoveSourceFiles) +AHs-
+                    Move-Item -Path +ACQ-officeFileChannelPath -Destination +ACQ-officeFileTargetPath -Force
+                +AH0- else +AHs-
+                    Copy-Item -Path +ACQ-officeFileChannelPath -Destination +ACQ-officeFileTargetPath -Recurse -Force
+                +AH0-
+
+                +ACQ-cabFilePath +AD0- +ACIAJA-OfficeSourceFilesPath+AFw-ofl.cab+ACI-
+                if (Test-Path +ACQ-cabFilePath) +AHs-
+                    Copy-Item -Path +ACQ-cabFilePath -Destination +ACIAJA-LocalPath+AFw-ofl.cab+ACI- -Force
+                +AH0-
+           +AH0- else +AHs-
+              if (Test-Path -Path +ACIAJA-LocalChannelPath+AFw-Office+ACI-) +AHs-
+                 Remove-Item -Path +ACIAJA-LocalChannelPath+AFw-Office+ACI- -Force -Recurse
+              +AH0-
+           +AH0-
+
+           +ACQ-cabFilePath +AD0- +ACIAJA-env:TEMP/ofl.cab+ACI-
+           if (+ACE-(Test-Path +ACQ-cabFilePath)) +AHs-
+                Copy-Item -Path +ACIAJA-LocalPath+AFw-ofl.cab+ACI- -Destination +ACQ-cabFilePath -Force
+           +AH0-
+
+           CreateMainCabFiles -LocalPath +ACQ-LocalPath -ChannelShortName +ACQ-ChannelShortName -LatestVersion +ACQ-latestVersion
+
+           +ACQ-DeploymentFilePath +AD0- +ACIAJA-PSSCriptRoot+AFw-DeploymentFiles+AFwAKg-.+ACoAIg-
+           if (Test-Path -Path +ACQ-DeploymentFilePath) +AHs-
+             Copy-Item -Path +ACQ-DeploymentFilePath -Destination +ACIAJA-LocalPath+ACI- -Force -Recurse
+           +AH0- else +AHs-
+             throw +ACI-Deployment folder missing: +ACQ-DeploymentFilePath+ACI-
+           +AH0-
+
+           LoadCMPrereqs -SiteCode +ACQ-SiteCode -CMPSModulePath +ACQ-CMPSModulePath
+
+           if (+ACE-(+ACQ-existingPackage)) +AHs-
+              +ACQ-package +AD0- CreateCMPackage -Name +ACQ-packageName -Path +ACQ-Path -Channel +ACQ-Channel -UpdateOnlyChangedBits +ACQ-UpdateOnlyChangedBits -CustomPackageShareName +ACQ-CustomPackageShareName
+           +AH0- else +AHs-
+              Write-Host +ACIAYA-tPackage Already Exists: +ACQ-packageName+ACI-
+           +AH0-
+
+           Write-Host
+
+         +AH0-
+       +AH0-
+       +AH0- catch +AHs-
+         throw+ADs-
+       +AH0-
+    +AH0-
+    End
+    +AHs-
+        Set-ExecutionPolicy +ACQ-currentExecutionPolicy -Scope Process -Force
+        Set-Location +ACQ-startLocation    
+    +AH0-
++AH0-
+
+function Update-CMOfficePackage +AHs-
++ADwAIw-
+.SYNOPSIS
+Automates the configuration of System Center Configuration Manager (CM) to update the Office Click-To-Run package
+
+.DESCRIPTION
+
+
+.PARAMETER Channels
+The update channel. Current, Deferred, FirstReleaseDeferred, FirstReleaseCurrent
+
+.PARAMETER OfficeSourceFilesPath
+The location of the source files.
+
+.PARAMETER MoveSourceFiles
+This moves the files from the Source location to the location specified.
+
+.PARAMETER SiteCode
+The site code you would like to create the package on. If left blank it will default to the current site.
+
+.PARAMETER CMPSModulePath
+Allows the user to specify that full path to the ConfigurationManager.psd1 PowerShell Module. This is especially useful if CM is installed in a non standard path.
+
+.PARAMETER UpdateDistributionPoints
+Sets the distribution point to update to the latest files in the package share.
+
+
+.EXAMPLE
+Update-CMOfficePackage -Channels Deferred -Bitness v32 -OfficeSourceFilesPath D:+AFw-OfficeChannelFiles
+
+.EXAMPLE
+Update-CMOfficePackage -Channels Current -Bitness Both -OfficeSourceFilesPath D:+AFw-OfficeChannelFiles -UpdateDistributionPoints
+
+
++ACMAPg-   
+    +AFs-CmdletBinding(SupportsShouldProcess+AD0AJA-true)+AF0-
+    Param
+    (
+        +AFs-Parameter()+AF0-
+        +AFs-OfficeChannel+AFsAXQBd- +ACQ-Channels +AD0- +AEA-(1,2,3),
+
+        +AFs-Parameter()+AF0-
+	    +AFs-String+AF0AJA-OfficeSourceFilesPath +AD0- +ACQ-NULL,
+
+        +AFs-Parameter()+AF0-
+	    +AFs-bool+AF0AJA-MoveSourceFiles +AD0- +ACQ-false,
+
+	    +AFs-Parameter()+AF0-
+	    +AFs-String+AF0AJA-SiteCode +AD0- +ACQ-null,
+
+	    +AFs-Parameter()+AF0-
+	    +AFs-String+AF0AJA-CMPSModulePath +AD0- +ACQ-NULL,
+
+        +AFs-Parameter()+AF0-
+	    +AFs-bool+AF0AJA-UpdateDistributionPoints +AD0- +ACQ-true,
+
+        +AFs-Parameter()+AF0-
+        +AFs-bool+AF0AJA-WaitForUpdateToFinish +AD0- +ACQ-false
+    )
+    Begin
+    +AHs-
+        +ACQ-currentExecutionPolicy +AD0- Get-ExecutionPolicy
+	    Set-ExecutionPolicy Unrestricted -Scope Process -Force  
+        +ACQ-startLocation +AD0- Get-Location
+    +AH0-
+    Process +AHs-
+       try +AHs-
+
+       Check-AdminAccess
+
+       +ACQ-cabFilePath +AD0- +ACIAJA-OfficeSourceFilesPath+AFw-ofl.cab+ACI-
+       if (Test-Path +ACQ-cabFilePath) +AHs-
+            Copy-Item -Path +ACQ-cabFilePath -Destination +ACIAJA-PSScriptRoot+AFw-ofl.cab+ACI- -Force
+       +AH0-
+
+       +ACQ-ChannelList +AD0- +AEA-(+ACI-FirstReleaseCurrent+ACI-, +ACI-Current+ACI-, +ACI-FirstReleaseDeferred+ACI-, +ACI-Deferred+ACI-)
+       +ACQ-ChannelXml +AD0- Get-ChannelXml -FolderPath +ACQ-OfficeSourceFilesPath -OverWrite +ACQ-false
+       +AFs-bool+AF0AJA-packageNotification +AD0- +ACQ-false
+
+       foreach (+ACQ-Channel in +ACQ-ChannelList) +AHs-
+         if (+ACQ-Channels -contains +ACQ-Channel) +AHs-
+           +ACQ-selectChannel +AD0- +ACQ-ChannelXml.UpdateFiles.baseURL +AHw- Where +AHsAJABf-.branch -eq +ACQ-Channel.ToString() +AH0-
+           +ACQ-latestVersion +AD0- Get-ChannelLatestVersion -ChannelUrl +ACQ-selectChannel.URL -Channel +ACQ-Channel -FolderPath +ACQ-OfficeFilesPath -OverWrite +ACQ-false
+
+           +ACQ-ChannelShortName +AD0- ConvertChannelNameToShortName -ChannelName +ACQ-Channel
+           +ACQ-existingPackage +AD0- CheckIfPackageExists
+           if (+ACE-(+ACQ-existingPackage)) +AHs-
+              throw +ACI-No Package Exists to Update. Please run the Create-CMOfficePackage function first to create the package.+ACI-
+           +AH0-
+
+           +ACQ-packagePath +AD0- +ACQ-existingPackage.PkgSourcePath
+           if (+ACQ-packagePath.StartsWith(+ACIAXABcACI-)) +AHs-
+               +ACQ-shareName +AD0- +ACQ-packagePath.Split(+ACIAXAAi-)+AFs-3+AF0-
+           +AH0-
+
+           +ACQ-existingShare +AD0- Get-Fileshare -Name +ACQ-shareName
+           if (+ACE-(+ACQ-existingShare)) +AHs-
+              throw +ACI-No Package Exists to Update. Please run the Create-CMOfficePackage function first to create the package.+ACI-
+           +AH0-
+
+           +ACQ-packageName +AD0- +ACQ-existingPackage.Name
+           +ACQ-packageId +AD0- +ACQ-existingPackage.PackageID
+
+           if(+ACEAJA-packageNotification)+AHs-
+               Write-Host +ACIAYA-tUpdating Package: +ACQ-packageName+ACI-
+               +ACQ-packageNotification +AD0- +ACQ-true
+           +AH0-           
+
+           +ACQ-Path +AD0- +ACQ-existingPackage.PkgSourcePath
+
+           +ACQ-packageName +AD0- +ACI-Office 365 ProPlus+ACI-
+           +ACQ-ChannelPath +AD0- +ACIAJA-Path+AFwAJA-Channel+ACI-
+           +ACQ-LocalPath +AD0- +ACQ-existingShare.Path
+           +ACQ-LocalChannelPath +AD0- +ACQ-existingShare.Path +- +ACIAXA-SourceFiles+ACI-
+
+           +AFs-System.IO.Directory+AF0-::CreateDirectory(+ACQ-LocalChannelPath) +AHw- Out-Null
+                          
+           if (+ACQ-OfficeSourceFilesPath) +AHs-
+                Write-Host +ACIAYA-t+AGA-tUpdating Source Files for +ACQ-Channel...+ACI-
+
+                +ACQ-officeFileChannelPath +AD0- +ACIAJA-OfficeSourceFilesPath+AFwAJA-ChannelShortName+ACI-
+                +ACQ-officeFileTargetPath +AD0- +ACIAJA-LocalChannelPath+AFwAJA-ChannelShortName+ACI-
+
+                if (+ACE-(Test-Path -Path +ACQ-officeFileChannelPath)) +AHs-
+                    throw +ACI-Channel Folder Missing: +ACQ-officeFileChannelPath - Ensure that you have downloaded the Channel you are trying to deploy+ACI-
+                +AH0-
+
+                +ACQ-tempofficeFileChannelPath +AD0- +ACIAJA-officeFileChannelPath+AFw-Office+AFw-Data+ACI-
+                +ACQ-tempLocalChannelPath +AD0- +ACIAJA-LocalChannelPath+AFwAJA-ChannelShortName+AFw-Office+AFw-Data+ACI-
+
+                +AFs-string+AF0AJA-oclVersion +AD0- +ACQ-NULL
+                if (+ACQ-officeFileChannelPath) +AHs-
+                    if (Test-Path -Path +ACIAJA-officeFileChannelPath+AFw-Office+AFw-Data+ACI-) +AHs-
+                       +ACQ-oclVersion +AD0- Get-LatestVersion -UpdateURLPath +ACQ-officeFileChannelPath
+                    +AH0-
+                +AH0-
+
+                if (+ACQ-oclVersion) +AHs-
+                   +ACQ-latestVersion +AD0- +ACQ-oclVersion
+                +AH0-
+
+                if (+ACQ-MoveSourceFiles)+AHs-                                
+                    if(+ACE-(Test-Path -Path +ACQ-officeFileTargetPath)) +AHs-
+                        +ACMAWw-System.IO.Directory+AF0-::CreateDirectory(+ACQ-officeFileTargetPath) +AHw- Out-Null
+
+                        Move-Item -Path +ACQ-officeFileChannelPath -Destination +ACQ-LocalChannelPath -Force
+                    +AH0-else+AHs-
+                        +ACQ-subfiles +AD0- Get-ChildItem +ACQ-tempofficeFileChannelPath
+                        foreach(+ACQ-file in +ACQ-subfiles)+AHs-
+                            +AFs-array+AF0AJA-tempLocalChannelPathFiles +AD0- (Get-ChildItem -Path +ACQ-tempLocalChannelPath).Name
+                            if(+ACQ-tempLocalChannelPathFiles -notcontains +ACQ-file.Name)+AHs-
+                                Move-Item -Path +ACQ-tempofficeFileChannelPath+AFwAJA-file -Destination +ACQ-tempLocalChannelPath -Force
+                            +AH0-
+                            else+AHs-
+                                +AFs-array+AF0AJA-versionFiles +AD0- (Get-ChildItem -Path +ACQ-tempLocalChannelPath+AFwAJA-latestVersion).Name
+                                +AFs-array+AF0AJA-officeChannelVersionFiles +AD0- (Get-ChildItem -Path +ACIAJA-tempofficeFileChannelPath+AFwAJA-latestVersion+ACI-).Name
+                                foreach(+ACQ-officeChannelVersionFile in +ACQ-officeChannelVersionFiles) +AHs-
+                                    if(+ACQ-versionFiles -notcontains +ACQ-officeChannelVersionFile)+AHs-
+                                        Move-Item -Path +ACQ-tempofficeFileChannelPath+AFwAJA-latestVersion+AFwAJA-officeChannelVersionFile -Destination +ACQ-tempLocalChannelPath+AFwAJA-latestVersion -Force
+                                    +AH0-
+                                +AH0-
+                            +AH0-           
+                        +AH0-
+
+                        Get-ChildItem -Path +ACQ-officeFileChannelPath -Recurse +AHw- Remove-Item -Force -Recurse +AHw- Out-Null
+
+                        +AFs-System.IO.Directory+AF0-::Delete(+ACQ-officeFileChannelPath) +AHw- Out-Null
+                    +AH0-
+                +AH0-else +AHs-
+                    if(+ACE-(Test-Path -Path +ACQ-officeFileTargetPath)) +AHs-
+                        +AFs-System.IO.Directory+AF0-::CreateDirectory(+ACQ-officeFileTargetPath) +AHw- Out-Null
+
+                        Copy-Item -Path +ACQ-officeFileChannelPath -Destination +ACQ-LocalChannelPath -Recurse -Force
+                    +AH0-
+                    else+AHs-
+                        +ACQ-subfiles +AD0- Get-ChildItem +ACQ-tempofficeFileChannelPath
+                        foreach(+ACQ-file in +ACQ-subfiles)+AHs-
+                            Copy-Item -Path +ACQ-tempofficeFileChannelPath+AFwAJA-file -Destination +ACQ-tempLocalChannelPath -Recurse -Force 
+                        +AH0-             
+                    +AH0-
+                +AH0-
+
+                +ACQ-cabFilePath +AD0- +ACIAJA-OfficeSourceFilesPath+AFw-ofl.cab+ACI-
+                if (Test-Path +ACQ-cabFilePath) +AHs-
+                    Copy-Item -Path +ACQ-cabFilePath -Destination +ACIAJA-LocalPath+AFw-ofl.cab+ACI- -Force
+                +AH0-
+
+           +AH0-
+
+           +ACQ-cabFilePath +AD0- +ACIAJA-env:TEMP/ofl.cab+ACI-
+           if (+ACE-(Test-Path +ACQ-cabFilePath)) +AHs-
+                Copy-Item -Path +ACIAJA-LocalPath+AFw-ofl.cab+ACI- -Destination +ACQ-cabFilePath -Force
+           +AH0-
+
+           CreateMainCabFiles -LocalPath +ACQ-LocalPath -ChannelShortName +ACQ-ChannelShortName -LatestVersion +ACQ-latestVersion
+
+         +AH0-
+       +AH0-
+
+       +ACQ-DeploymentFilePath +AD0- +ACIAJA-PSSCriptRoot+AFw-DeploymentFiles+AFwAKg-.+ACoAIg-
+           if (Test-Path -Path +ACQ-DeploymentFilePath) +AHs-
+             Write-Host +ACIAYA-t+AGA-tUpdating Deployment Files...+ACI-
+             Copy-Item -Path +ACQ-DeploymentFilePath -Destination +ACIAJA-LocalPath+ACI- -Force -Recurse
+           +AH0- else +AHs-
+             throw +ACI-Deployment folder missing: +ACQ-DeploymentFilePath+ACI-
+           +AH0-
+
+       LoadCMPrereqs -SiteCode +ACQ-SiteCode -CMPSModulePath +ACQ-CMPSModulePath
+
+       if (+ACQ-UpdateDistributionPoints) +AHs-
+           Write-Host +ACIAYA-t+AGA-tUpdating Distribution Points...+ACI-
+           Update-CMDistributionPoint -PackageId +ACQ-packageId
+           if(+ACQ-WaitForUpdateToFinish)+AHs-
+               +ACQ-distributionStatus +AD0- Get-CMOfficeDistributionStatus
+               if(+ACEAJA-distributionStatus)+AHs-
+                   Write-Host +ACIAIg-
+                   Write-Host +ACI-NOTE: In order to update the package you must run the function 'Distribute-CMOfficePackage'.+ACI- -BackgroundColor Red
+                   Write-Host +ACI-      You should wait until the content has finished distributing to the distribution points.+ACI- -BackgroundColor Red
+                   Write-Host +ACI-      Otherwise the deployments will fail. The clients will continue to fail until the +ACI- -BackgroundColor Red
+                   Write-Host +ACI-      content distribution is complete.+ACI- -BackgroundColor Red
+               +AH0-
+
+               Get-CMOfficeDistributionStatus -WaitForDistributionToFinish +ACQ-true
+           +AH0-
+       +AH0-
+
+       +AH0- catch +AHs-
+         throw+ADs-
+       +AH0-
+    +AH0-
+    End
+    +AHs-
+        Set-ExecutionPolicy +ACQ-currentExecutionPolicy -Scope Process -Force
+        Set-Location +ACQ-startLocation    
+    +AH0-
++AH0-
+
+function Create-CMOfficeDeploymentProgram +AHs-
++ADwAIw-
+.SYNOPSIS
+Automates the configuration of System Center Configuration Manager (CM) to configure Office Click-To-Run Deployment
+
+.DESCRIPTION
+Creates a program that can be deployed to clients in a target collection to install Office 365 ProPlus.
+
+.PARAMETER Channels
+The update channel. Current, Deferred, FirstReleaseDeferred, FirstReleaseCurrent
+
+.PARAMETER Bitness
+Downloads the bitness of Office Click-to-Run +ACI-v32, v64, Both+ACI-
+
+.PARAMETER DeploymentType
+Chose how you would like to deploy Office. DeployWithScript, DeployWithConfigurationFile
+
+.PARAMETER ScriptName
+Name the script you would like to use +ACI-configuration.xml+ACI-
+
+.PARAMETER SiteCode 
+The site code you would like to create the package on. If left blank it will default to the current site
+
+.PARAMETER CMPSModulePath
+Allows the user to specify that full path to the ConfigurationManager.psd1 PowerShell Module. This is especially useful if CM is installed in a non standard path.
+
+.PARAMETER ConfigurationXml
+Sets the configuration file to be used for the instalation.
+
+.PARAMETER CustomName
+Replaces the default program name with a custom name. The custom name will also need to be provided when running the Deploy-CMOfficeProgram function.
+
+.EXAMPLE
+Create-CMOfficeDeploymentProgram -Channels Deferred -DeploymentType DeployWithScript
+
+.EXAMPLE
+Create-CMOfficeDeploymentProgram -Channels Current -DeploymentType DeployWithConfigurationFile -ScriptName engineering.xml
+
++ACMAPg-
+    +AFs-CmdletBinding(SupportsShouldProcess+AD0AJA-true)+AF0-
+    Param
+    (
+        +AFs-Parameter()+AF0-
+        +AFs-OfficeChannel+AFsAXQBd- +ACQ-Channels +AD0- +AEA-(1,2,3),
+
+        +AFs-Parameter()+AF0-
+	    +AFs-Bitness+AF0AJA-Bitness +AD0- +ACI-v32+ACI-,
+
+	    +AFs-Parameter()+AF0-
+	    +AFs-CMDeploymentType+AF0AJA-DeploymentType +AD0- 0,
+
+	    +AFs-Parameter()+AF0-
+	    +AFs-String+AF0AJA-ScriptName +AD0- +ACI-CM-OfficeDeploymentScript.ps1+ACI-,
+
+	    +AFs-Parameter()+AF0-
+	    +AFs-String+AF0AJA-SiteCode +AD0- +ACQ-null,
+
+	    +AFs-Parameter()+AF0-
+	    +AFs-String+AF0AJA-CMPSModulePath +AD0- +ACQ-NULL,
+
+	    +AFs-Parameter()+AF0-
+	    +AFs-String+AF0AJA-ConfigurationXml +AD0- +ACI-.+AFw-DeploymentFiles+AFw-DefaultConfiguration.xml+ACI-,
+
+	    +AFs-Parameter()+AF0-
+	    +AFs-String+AF0AJA-CustomName +AD0- +ACQ-NULL
+    )
+    Begin
+    +AHs-
+        +ACQ-currentExecutionPolicy +AD0- Get-ExecutionPolicy
+	    Set-ExecutionPolicy Unrestricted -Scope Process -Force  
+        +ACQ-startLocation +AD0- Get-Location
+    +AH0-
+    Process 
+    +AHs-
+       try +AHs-
+
+         Check-AdminAccess
+
+         +ACQ-platforms +AD0- +AEA-()
+
+         if (+ACQ-Bitness -eq +ACI-Both+ACI-) +AHs-
+            +ACQ-platforms +-+AD0- +ACI-32+ACI-
+            +ACQ-platforms +-+AD0- +ACI-64+ACI-
+         +AH0- else +AHs-
+            +ACQ-platforms +-+AD0- +ACQ-Bitness.ToString().Replace(+ACI-v+ACI-, +ACIAIg-)
+         +AH0-
+
+         if (+ACQ-ConfigurationXml.StartsWith(+ACI-.+AFwAIg-)) +AHs-
+           +ACQ-ConfigurationXml +AD0- +ACQ-ConfigurationXml -replace +ACIAXgBc-.+AFwAXAAi-, +ACIAJA-PSScriptRoot+AFwAIg-
+         +AH0-
+
+         +ACQ-tmpCustomName +AD0- +ACQ-CustomName
+         +ACQ-CustomName +AD0- +ACQ-CustomName -replace ' ', ''
+
+         if (+ACQ-CustomName) +AHs-
+             if (+ACE-(+ACQ-CustomName.ToLower().Contains(+ACI-deploy+ACI-))) +AHs-
+                +ACQ-CustomName +AD0- +ACI-Deploy +ACI- +- +ACQ-CustomName
+                +ACQ-tmpCustomName +AD0- +ACI-Deploy +ACI- +- +ACQ-tmpCustomName
+             +AH0-
+         +AH0-
+
+         +ACQ-CustomName +AD0- +ACQ-CustomName -replace ' ', ''
+
+         if (+ACQ-CustomName.Length -gt 50) +AHs-
+             throw +ACI-CustomName is too long.  Must be less then 50 Characters+ACI-
+         +AH0-
+
+         foreach (+ACQ-channel in +ACQ-Channels) +AHs-
+             LoadCMPrereqs -SiteCode +ACQ-SiteCode -CMPSModulePath +ACQ-CMPSModulePath
+
+             +ACQ-LargeDrv +AD0- Get-LargestDrive
+             +ACQ-LocalPath +AD0- +ACIAJA-LargeDrv+AFw-OfficeDeployment+ACI-
+
+             +ACQ-channelShortName +AD0- ConvertChannelNameToShortName -ChannelName +ACQ-channel
+
+             +ACQ-existingPackage +AD0- CheckIfPackageExists
+             if (+ACE-(+ACQ-existingPackage)) +AHs-
+                throw +ACI-You must run the Create-CMOfficePackage function before running this function+ACI-
+             +AH0-
+
+             foreach (+ACQ-platform in +ACQ-platforms) +AHs-
+                 +AFs-string+AF0AJA-CommandLine +AD0- +ACIAIg-
+                 +AFs-string+AF0AJA-ProgramName +AD0- +ACIAIg-
+
+                 +AFs-string+AF0AJA-channelShortNameLabel +AD0- +ACQ-channel
+                 if (+ACQ-channel -eq +ACI-FirstReleaseCurrent+ACI-) +AHs-
+                    +ACQ-channelShortNameLabel +AD0- +ACI-FRCC+ACI-
+                 +AH0-
+                 if (+ACQ-channel -eq +ACI-FirstReleaseDeferred+ACI-) +AHs-
+                    +ACQ-channelShortNameLabel +AD0- +ACI-FRDC+ACI-
+                 +AH0-
+
+                 if (+ACQ-DeploymentType -eq +ACI-DeployWithScript+ACI-) +AHs-
+                     +ACQ-ProgramName +AD0- +ACI-Deploy +ACQ-channelShortNameLabel Channel With Script - +ACQ-platform-Bit+ACI-
+                     if (+ACQ-CustomName) +AHs-
+                       +ACQ-ProgramName +AD0- +ACQ-tmpCustomName
+                     +AH0-
+
+                     +ACQ-CommandLine +AD0- +ACIAJQ-windir+ACUAXA-Sysnative+AFw-windowsPowershell+AFw-V1.0+AFw-powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive +ACI- +- +AGA-
+                                    +ACI--NoProfile -WindowStyle Hidden -Command .+AFwAJA-ScriptName -Channel +ACQ-channel -SourceFileFolder SourceFiles -Bitness +ACQ-platform+ACI-
+
+                 +AH0- elseif (+ACQ-DeploymentType -eq +ACI-DeployWithConfigurationFile+ACI-) +AHs-
+                     if (+ACE-(Test-Path -Path +ACQ-ConfigurationXml)) +AHs-
+                        throw +ACI-Configuration file does not exist: +ACQ-ConfigurationXml+ACI-
+                     +AH0-
+
+                     +ACMAWw-guid+AF0-::NewGuid().Guid.ToString()
+
+                     +ACQ-configId +AD0- +ACI-Config-+ACQ-channel-+ACQ-platform-Bit+ACI-
+                     +ACQ-configFileName +AD0- +ACQ-configId +- +ACI-.xml+ACI-
+
+                     if (+ACQ-CustomName) +AHs-
+                         +ACQ-configFileName +AD0- +ACQ-configId +- +ACI--+ACI- +- +ACQ-CustomName +- +ACI-.xml+ACI-
+                     +AH0-
+
+                     +ACQ-configFilePath +AD0- +ACIAJA-LocalPath+AFwAJA-configFileName+ACI-
+
+                     Copy-Item -Path +ACQ-ConfigurationXml -Destination +ACQ-configFilePath
+
+                     +ACQ-sourcePath +AD0- +ACQ-NULL
+
+                     +ACQ-sourceFilePath +AD0- +ACIAJA-LocalPath+AFw-SourceFiles+AFwAJA-channelShortName+AFw-Office+AFw-Data+ACI-
+                     if (Test-Path -Path +ACQ-sourceFilePath) +AHs-
+                        +ACQ-sourcePath +AD0- +ACI-.+AFw-SourceFiles+AFwAJA-channelShortName+ACI-
+                     +AH0- else +AHs-
+                       +ACQ-sourceFilePath +AD0- +ACIAJA-LocalPath+AFw-SourceFiles+AFwAJA-channel+AFw-Office+AFw-Data+ACI-
+                       if (Test-Path -Path +ACQ-sourceFilePath) +AHs-
+                          +ACQ-sourcePath +AD0- +ACI-.+AFw-SourceFiles+AFwAJA-channel+ACI-
+                       +AH0-
+                     +AH0-
+
+                     UpdateConfigurationXml -Path +ACQ-configFilePath -Channel +ACQ-channel -Bitness +ACQ-platform -SourcePath +ACQ-sourcePath
+
+                     +ACQ-ProgramName +AD0- +ACI-Deploy +ACQ-channelShortNameLabel Channel with Config File - +ACQ-platform-Bit+ACI-
+
+                     if (+ACQ-CustomName) +AHs-
+                       +ACQ-ProgramName +AD0- +ACQ-tmpCustomName
+                     +AH0-
+
+                     +ACQ-CommandLine +AD0- +ACIAJQ-windir+ACUAXA-Sysnative+AFw-windowsPowershell+AFw-V1.0+AFw-powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive +ACI- +- +AGA-
+                                    +ACI--NoProfile -WindowStyle Hidden -Command .+AFw-DeployConfigFile.ps1 -ConfigFileName +ACQ-configFileName+ACI-
+                 +AH0-
+
+                 +AFs-string+AF0AJA-packageId +AD0- +ACQ-null
+
+                 +ACQ-packageId +AD0- +ACQ-existingPackage.PackageId
+                 if (+ACQ-packageId) +AHs-
+                    +ACQ-comment +AD0- +ACQ-DeploymentType.ToString() +- +ACI--+ACI- +- +ACQ-channel +- +ACI--+ACI- +- +ACQ-platform
+
+                    if (+ACQ-CustomName) +AHs-
+                       +ACQ-comment +-+AD0- +ACI--+ACQ-CustomName+ACI-
+                    +AH0-
+
+                    CreateCMProgram -Name +ACQ-ProgramName -PackageID +ACQ-packageId -RequiredPlatformNames +ACQ-requiredPlatformNames -CommandLine +ACQ-CommandLine -Comment +ACQ-comment
+                 +AH0-
+             +AH0-
+         +AH0-
+
+       +AH0- catch +AHs-
+         throw+ADs-
+       +AH0-
+    +AH0-
+    End
+    +AHs-
+        Set-ExecutionPolicy +ACQ-currentExecutionPolicy -Scope Process -Force
+        Set-Location +ACQ-startLocation    
+    +AH0-
++AH0-
+
+function Create-CMOfficeChannelChangeProgram +AHs-
+ +ADwAIw-
+.SYNOPSIS
+Automates the configuration of System Center Configuration Manager (CM) to configure Office Click-To-Run channel change program
+
+.DESCRIPTION
+Creates an Office 365 ProPlus program that will change the channel of the client in a target collection.
+
+.PARAMETER Channels
+The update channel. Current, Deferred, FirstReleaseDeferred, FirstReleaseCurrent
+
+.PARAMETER SiteCode
+The 3 Letter Site ID.
+
+.PARAMETER CMPSModulePath
+Allows the user to specify that full path to the ConfigurationManager.psd1 PowerShell Module. This is especially useful if CM is installed in a non standard path.
+
+.Example
+Create-CMOfficeChannelChangeProgram -Sitecode S01 -Channels Current
++ACMAPg-
+    +AFs-CmdletBinding(SupportsShouldProcess+AD0AJA-true)+AF0-
+    Param
+    (
+        +AFs-Parameter()+AF0-
+        +AFs-OfficeChannel+AFsAXQBd- +ACQ-Channels +AD0- +AEA-(1,2,3),
+
+	    +AFs-Parameter()+AF0-
+	    +AFs-String+AF0AJA-SiteCode +AD0- +ACQ-null,
+
+	    +AFs-Parameter()+AF0-
+	    +AFs-String+AF0AJA-CMPSModulePath +AD0- +ACQ-NULL
+    )
+    Begin
+    +AHs-
+        +ACQ-currentExecutionPolicy +AD0- Get-ExecutionPolicy
+	    Set-ExecutionPolicy Unrestricted -Scope Process -Force  
+        +ACQ-startLocation +AD0- Get-Location
+    +AH0-
+    Process 
+    +AHs-
+       try +AHs-
+
+         Check-AdminAccess
+
+         LoadCMPrereqs -SiteCode +ACQ-SiteCode -CMPSModulePath +ACQ-CMPSModulePath
+
+         +ACQ-existingPackage +AD0- CheckIfPackageExists
+         if (+ACE-(+ACQ-existingPackage)) +AHs-
+            throw +ACI-You must run the Create-CMOfficePackage function before running this function+ACI-
+         +AH0-
+
+         +AFs-string+AF0AJA-CommandLine +AD0- +ACIAIg-
+         +AFs-string+AF0AJA-ProgramName +AD0- +ACIAIg-
+
+         foreach (+ACQ-channel in +ACQ-Channels) +AHs-
+             +ACQ-ProgramName +AD0- +ACI-Change Channel to +ACQ-channel+ACI-
+             +ACQ-CommandLine +AD0- +ACIAJQ-windir+ACUAXA-Sysnative+AFw-windowsPowershell+AFw-V1.0+AFw-Powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden -Command .+AFw-Change-OfficeChannel.ps1 -Channel +ACQ-Channel+ACI-
+
+             +ACQ-SharePath +AD0- +ACQ-existingPackage.PkgSourcePath
+
+             +ACQ-OSSourcePath +AD0- +ACIAJA-PSScriptRoot+AFw-DeploymentFiles+AFw-Change-OfficeChannel.ps1+ACI-
+             +ACQ-OCScriptPath +AD0- +ACIAJA-SharePath+AFw-Change-OfficeChannel.ps1+ACI-
+
+             if (+ACE-(Test-Path +ACQ-OSSourcePath)) +AHs-
+                throw +ACI-Required file missing: +ACQ-OSSourcePath+ACI-
+             +AH0- else +AHs-
+                 if (+ACE-(Test-ItemPathUNC -Path +ACQ-SharePath -FileName +ACI-Change-OfficeChannel.ps1+ACI-)) +AHs-
+                    Copy-ItemUNC -SourcePath +ACQ-OSSourcePath -TargetPath +ACQ-SharePath -FileName +ACI-Change-OfficeChannel.ps1+ACI-
+                 +AH0-
+
+                 +AFs-string+AF0AJA-packageId +AD0- +ACQ-existingPackage.PackageId
+                 if (+ACQ-packageId) +AHs-
+                    +ACQ-comment +AD0- +ACI-ChangeChannel-+ACQ-channel+ACI-
+
+                    CreateCMProgram -Name +ACQ-ProgramName -PackageID +ACQ-packageId -CommandLine +ACQ-CommandLine -RequiredPlatformNames +ACQ-requiredPlatformNames -Comment +ACQ-comment
+                 +AH0-
+             +AH0-
+         +AH0-
+
+       +AH0- catch +AHs-
+         throw+ADs-
+       +AH0-
+    +AH0-
+    End
+    +AHs-
+        Set-ExecutionPolicy +ACQ-currentExecutionPolicy -Scope Process -Force
+        Set-Location +ACQ-startLocation    
+    +AH0-
++AH0-
+
+function Create-CMOfficeRollBackProgram +AHs-
+ +ADwAIw-
+.SYNOPSIS
+Automates the configuration of System Center Configuration Manager (CM) to configure Office Click-To-Run rollback program
+
+.DESCRIPTION
+Creates an Office 365 ProPlus program that will look at the update source and install the previous version.
+
+.PARAMETER +ACQ-SiteCode
+The 3 Letter Site ID.
+
+.PARAMETER CMPSModulePath
+Allows the user to specify that full path to the ConfigurationManager.psd1 PowerShell Module. This is especially useful if CM is installed in a non standard path.
+
+.Example
+Create-CMOfficeRollBackProgram -Sitecode S01
++ACMAPg-  
+    +AFs-CmdletBinding(SupportsShouldProcess+AD0AJA-true)+AF0-
+    Param
+    (
+	    +AFs-Parameter()+AF0-
+	    +AFs-String+AF0AJA-SiteCode +AD0- +ACQ-null,
+
+	    +AFs-Parameter()+AF0-
+	    +AFs-String+AF0AJA-CMPSModulePath +AD0- +ACQ-NULL
+    )
+    Begin
+    +AHs-
+        +ACQ-currentExecutionPolicy +AD0- Get-ExecutionPolicy
+	    Set-ExecutionPolicy Unrestricted -Scope Process -Force  
+        +ACQ-startLocation +AD0- Get-Location
+    +AH0-
+    Process 
+    +AHs-
+       try +AHs-
+
+         Check-AdminAccess
+
+         LoadCMPrereqs -SiteCode +ACQ-SiteCode -CMPSModulePath +ACQ-CMPSModulePath
+
+         +ACQ-existingPackage +AD0- CheckIfPackageExists
+         if (+ACE-(+ACQ-existingPackage)) +AHs-
+            throw +ACI-You must run the Create-CMOfficePackage function before running this function+ACI-
+         +AH0-
+
+         +AFs-string+AF0AJA-CommandLine +AD0- +ACIAIg-
+         +AFs-string+AF0AJA-ProgramName +AD0- +ACIAIg-
+
+         +ACQ-ProgramName +AD0- +ACI-Rollback+ACI-
+         +ACQ-CommandLine +AD0- +ACIAJQ-windir+ACUAXA-Sysnative+AFw-windowsPowershell+AFw-V1.0+AFw-Powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden -Command .+AFw-Change-OfficeChannel.ps1 -Rollback+ACI-
+
+         +ACQ-SharePath +AD0- +ACQ-existingPackage.PkgSourcePath
+
+         +ACQ-OSSourcePath +AD0- +ACIAJA-PSScriptRoot+AFw-DeploymentFiles+AFw-Change-OfficeChannel.ps1+ACI-
+         +ACQ-OCScriptPath +AD0- +ACIAJA-SharePath+AFw-Change-OfficeChannel.ps1+ACI-
+
+         if (+ACE-(Test-Path +ACQ-OSSourcePath)) +AHs-
+            throw +ACI-Required file missing: +ACQ-OSSourcePath+ACI-
+         +AH0- else +AHs-
+             if (+ACE-(Test-ItemPathUNC -Path +ACQ-SharePath -FileName +ACI-Change-OfficeChannel.ps1+ACI-)) +AHs-
+                Copy-ItemUNC -SourcePath +ACQ-OSSourcePath -TargetPath +ACQ-SharePath -FileName +ACI-Change-OfficeChannel.ps1+ACI-
+             +AH0-
+
+             +AFs-string+AF0AJA-packageId +AD0- +ACQ-existingPackage.PackageId
+             if (+ACQ-packageId) +AHs-
+                +ACQ-comment +AD0- +ACI-RollBack+ACI-
+
+                CreateCMProgram -Name +ACQ-ProgramName -PackageID +ACQ-packageId -CommandLine +ACQ-CommandLine -RequiredPlatformNames +ACQ-requiredPlatformNames -Comment +ACQ-comment
+             +AH0-
+         +AH0-
+
+       +AH0- catch +AHs-
+         throw+ADs-
+       +AH0-
+    +AH0-
+    End
+    +AHs-
+        Set-ExecutionPolicy +ACQ-currentExecutionPolicy -Scope Process -Force
+        Set-Location +ACQ-startLocation    
+    +AH0-
++AH0-
+
+function Create-CMOfficeUpdateProgram +AHs-
++ADwAIw-
+.SYNOPSIS
+Automates the configuration of System Center Configuration Manager (CM) to configure Office Click-To-Run rollback program
+
+.DESCRIPTION
+Creates an Office 365 ProPlus update program.
+
+.PARAMETER WaitForUpdateToFinish
+The PowerShell service will continue to run until the update has finished.
+
+.PARAMETER EnableUpdateAnywhere
+Attempts to update Office 365 ProPlus using the existing update source. If the update source is not available (mobile users) then
+the script will failover to the CDN as an update source.
+
+.PARAMETER ForceAppShutdown
+If set to +ACQ-true Office apps will close automatically.
+
+.PARAMETER UpdatePromptUser
+If set to +ACQ-true the user will be prompted to update.
+
+.PARAMETER DisplayLevel
+If ste to +ACQ-true the update will be visible.
+
+.PARAMETER UpdateToVersion
+The version to update to.
+
+.PARAMETER SiteCode
+The 3 letter site code.
+
+.PARAMETER CMPSModulePath
+Allows the user to specify that full path to the ConfigurationManager.psd1 PowerShell Module. This is especially useful if CM is installed in a non standard path.
+
+.PARAMETER UseScriptLocationAsUpdateSource
+The location where the script is ran will be the location of the update source files.
+
+.EXAMPLE
+Create-CMOfficeUpdateProgram
+
+.EXAMPLE
+Create-CMOfficeUpdateProgram -ForceAppShutdown +ACQ-true -EnableUpdateAnywhere +ACQ-false -LogPath +ACIAJA-env:PUBLIC+AFw-UpdateOffice.log+ACI- -UpdateToVersion 16.0.6001.1078
+
++ACMAPg-
+    +AFs-CmdletBinding(SupportsShouldProcess+AD0AJA-true)+AF0-
+    Param
+    (
+        +AFs-Parameter()+AF0-
+        +AFs-bool+AF0- +ACQ-WaitForUpdateToFinish +AD0- +ACQ-true,
+
+        +AFs-Parameter()+AF0-
+        +AFs-bool+AF0- +ACQ-EnableUpdateAnywhere +AD0- +ACQ-true,
+
+        +AFs-Parameter()+AF0-
+        +AFs-bool+AF0- +ACQ-ForceAppShutdown +AD0- +ACQ-false,
+
+        +AFs-Parameter()+AF0-
+        +AFs-bool+AF0- +ACQ-UpdatePromptUser +AD0- +ACQ-false,
+
+        +AFs-Parameter()+AF0-
+        +AFs-bool+AF0- +ACQ-DisplayLevel +AD0- +ACQ-false,
+
+        +AFs-Parameter()+AF0-
+        +AFs-string+AF0- +ACQ-UpdateToVersion +AD0- +ACQ-NULL,
+
+        +AFs-Parameter()+AF0-
+        +AFs-string+AF0- +ACQ-LogPath +AD0- +ACQ-NULL,
+
+        +AFs-Parameter()+AF0-
+        +AFs-string+AF0- +ACQ-LogName +AD0- +ACQ-NULL,
+        
+        +AFs-Parameter()+AF0-
+        +AFs-bool+AF0- +ACQ-ValidateUpdateSourceFiles +AD0- +ACQ-true,
+
+	    +AFs-Parameter()+AF0-
+	    +AFs-String+AF0AJA-SiteCode +AD0- +ACQ-null,
+
+	    +AFs-Parameter()+AF0-
+	    +AFs-String+AF0AJA-CMPSModulePath +AD0- +ACQ-NULL,
+
+	    +AFs-Parameter()+AF0-
+	    +AFs-bool+AF0AJA-UseScriptLocationAsUpdateSource +AD0- +ACQ-true
+    )
+    Begin
+    +AHs-
+        +ACQ-currentExecutionPolicy +AD0- Get-ExecutionPolicy
+	    Set-ExecutionPolicy Unrestricted -Scope Process -Force  
+        +ACQ-startLocation +AD0- Get-Location
+    +AH0-
+    Process 
+    +AHs-
+       try +AHs-
+
+         Check-AdminAccess
+
+         LoadCMPrereqs -SiteCode +ACQ-SiteCode -CMPSModulePath +ACQ-CMPSModulePath
+
+         +ACQ-existingPackage +AD0- CheckIfPackageExists
+         if (+ACE-(+ACQ-existingPackage)) +AHs-
+            throw +ACI-You must run the Create-CMOfficePackage function before running this function+ACI-
+         +AH0-
+
+         +AFs-string+AF0AJA-ProgramName +AD0- +ACI-Update Office 365 With ConfigMgr+ACI-
+         +AFs-string+AF0AJA-CommandLine +AD0- +ACIAJQ-windir+ACUAXA-Sysnative+AFw-windowsPowershell+AFw-V1.0+AFw-Powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden -Command .+AFw-Update-Office365Anywhere.ps1+ACI-
+
+         +ACQ-CommandLine +-+AD0- +ACI- -WaitForUpdateToFinish +ACI- +- (Convert-Bool -value +ACQ-WaitForUpdateToFinish) +- +AGA- 
+                         +ACI- -EnableUpdateAnywhere +ACI- +- (Convert-Bool -value +ACQ-EnableUpdateAnywhere) +- +AGA- 
+                         +ACI- -ForceAppShutdown +ACI- +- (Convert-Bool -value +ACQ-ForceAppShutdown) +- +AGA- 
+                         +ACI- -UpdatePromptUser +ACI- +- (Convert-Bool -value +ACQ-UpdatePromptUser) +- +AGA- 
+                         +ACI- -DisplayLevel +ACI- +- (Convert-Bool -value +ACQ-DisplayLevel) +- +AGA- 
+                         +ACI- -UseScriptLocationAsUpdateSource +ACI- +- (Convert-Bool -value +ACQ-UseScriptLocationAsUpdateSource)
+
+         if (+ACQ-UpdateToVersion) +AHs-
+             +ACQ-CommandLine +-+AD0- +ACI- -UpdateToVersion +ACI- +- +ACQ-UpdateToVersion
+         +AH0-
+
+         +ACQ-SharePath +AD0- +ACQ-existingPackage.PkgSourcePath
+
+         +ACQ-OSSourcePath +AD0- +ACIAJA-PSScriptRoot+AFw-DeploymentFiles+AFw-Update-Office365Anywhere.ps1+ACI-
+         +ACQ-OCScriptPath +AD0- +ACIAJA-SharePath+AFw-Update-Office365Anywhere.ps1+ACI-
+
+         if (+ACE-(Test-Path +ACQ-OSSourcePath)) +AHs-
+            throw +ACI-Required file missing: +ACQ-OSSourcePath+ACI-
+         +AH0- else +AHs-
+             if (+ACE-(Test-ItemPathUNC -Path +ACQ-SharePath -FileName +ACI-Update-Office365Anywhere.ps1+ACI-)) +AHs-
+                Copy-ItemUNC -SourcePath +ACQ-OSSourcePath -TargetPath +ACQ-SharePath -FileName +ACI-Update-Office365Anywhere.ps1+ACI-
+             +AH0-
+
+             +AFs-string+AF0AJA-packageId +AD0- +ACQ-existingPackage.PackageId
+             if (+ACQ-packageId) +AHs-
+                +ACQ-comment +AD0- +ACI-UpdateWithConfigMgr+ACI-
+
+                CreateCMProgram -Name +ACQ-ProgramName -PackageID +ACQ-packageId -CommandLine +ACQ-CommandLine -RequiredPlatformNames +ACQ-requiredPlatformNames -Comment +ACQ-comment
+             +AH0-
+         +AH0-
+
+       +AH0- catch +AHs-
+         throw+ADs-
+       +AH0-
+    +AH0-
+    End
+    +AHs-
+        Set-ExecutionPolicy +ACQ-currentExecutionPolicy -Scope Process -Force
+        Set-Location +ACQ-startLocation    
+    +AH0-
++AH0-
+
+function Create-CMOfficeUpdateAsTaskProgram +AHs-
++ADwAIw-
+.SYNOPSIS
+Creates an Office 365 ProPlus program.
+
+.DESCRIPTION
+Creates an Office 365 ProPlus program that will create a scheduled task on clients in the target collection.
+
+.PARAMETER WaitForUpdateToFinish
+The PowerShell service will continue to run until the update has finished.
+
+.PARAMETER EnableUpdateAnywhere
+Attempts to update Office 365 ProPlus using the existing update source. If the update source is not available (mobile users) then
+the script will failover to the CDN as an update source.
+
+.PARAMETER ForceAppShutdown
+If set to +ACQ-true Office apps will close automatically.
+
+.PARAMETER UpdatePromptUser
+If set to +ACQ-true the user will be prompted to update.
+
+.PARAMETER DisplayLevel
+If ste to +ACQ-true the update will be visible.
+
+.PARAMETER UpdateToVersion
+The version to update to.
+
+.PARAMETER UseRandomStartTime
+A random start time for the scheduled task.
+
+.PARAMETER RandomTimeEnd 
+A random end time for the scheduled task.
+
+.PARAMETER StartTime
+The actual start time for the scheduled task.
+
+.PARAMETER SiteCode
+The 3 letter site code.
+
+.PARAMETER CMPSModulePath 
+Allows the user to specify that full path to the ConfigurationManager.psd1 PowerShell Module. This is especially useful if CM is 
+installed in a non standard path.
+
+.PARAMETER UseScriptLocationAsUpdateSource
+The location where the script is ran will be the location of the update source files.
+
+.EXAMPLE
+Create-CMOfficeUpdateAsTaskProgram -UpdateToVersion 16.0.6001.1078
+Creates an Office 365 ProPlus program called 'Update Office 365 With Scheduled Task' that will update the client to version 16.0.6001.1078.
+
+.EXAMPLE
+Create-CMOfficeUpdateAsTaskProgram -WaitForUpdateToFinish +ACQ-true -EnableUpdateAnywhere +ACQ-true -ForceAppShutdown +ACQ-false -UpdatePromptUser +ACQ-true -DisplayLevel +ACQ-true -StartTime 12:00
+Creates an Office 365 ProPlus program called 'Update Office 365 With Scheduled Task'. The program will run on clients in the target collection every Tuesday. The client will
+be prompted before updating and will display the progress. 
+
++ACMAPg-
+    +AFs-CmdletBinding(SupportsShouldProcess+AD0AJA-true)+AF0-
+    Param
+    (
+        +AFs-Parameter()+AF0-
+        +AFs-bool+AF0- +ACQ-WaitForUpdateToFinish +AD0- +ACQ-true,
+
+        +AFs-Parameter()+AF0-
+        +AFs-bool+AF0- +ACQ-EnableUpdateAnywhere +AD0- +ACQ-true,
+
+        +AFs-Parameter()+AF0-
+        +AFs-bool+AF0- +ACQ-ForceAppShutdown +AD0- +ACQ-false,
+
+        +AFs-Parameter()+AF0-
+        +AFs-bool+AF0- +ACQ-UpdatePromptUser +AD0- +ACQ-false,
+
+        +AFs-Parameter()+AF0-
+        +AFs-bool+AF0- +ACQ-DisplayLevel +AD0- +ACQ-false,
+
+        +AFs-Parameter()+AF0-
+        +AFs-string+AF0- +ACQ-UpdateToVersion +AD0- +ACQ-NULL,
+
+        +AFs-Parameter()+AF0-
+        +AFs-bool+AF0- +ACQ-UseRandomStartTime +AD0- +ACQ-true,
+
+        +AFs-Parameter()+AF0-
+        +AFs-string+AF0- +ACQ-RandomTimeStart +AD0- +ACI-08:00+ACI-,
+
+        +AFs-Parameter()+AF0-
+        +AFs-string+AF0- +ACQ-RandomTimeEnd +AD0- +ACI-17:00+ACI-,
+
+        +AFs-Parameter()+AF0-
+        +AFs-string+AF0- +ACQ-StartTime,
+
+        +AFs-Parameter()+AF0-
+        +AFs-string+AF0- +ACQ-LogPath +AD0- +ACQ-NULL,
+
+        +AFs-Parameter()+AF0-
+        +AFs-string+AF0- +ACQ-LogName +AD0- +ACQ-NULL,
+        
+        +AFs-Parameter()+AF0-
+        +AFs-bool+AF0- +ACQ-ValidateUpdateSourceFiles +AD0- +ACQ-true,
+
+	    +AFs-Parameter()+AF0-
+	    +AFs-String+AF0AJA-SiteCode +AD0- +ACQ-null,
+
+	    +AFs-Parameter()+AF0-
+	    +AFs-String+AF0AJA-CMPSModulePath +AD0- +ACQ-NULL,
+
+	    +AFs-Parameter()+AF0-
+	    +AFs-bool+AF0AJA-UseScriptLocationAsUpdateSource +AD0- +ACQ-true
+    )
+    Begin
+    +AHs-
+        +ACQ-currentExecutionPolicy +AD0- Get-ExecutionPolicy
+	    Set-ExecutionPolicy Unrestricted -Scope Process -Force  
+        +ACQ-startLocation +AD0- Get-Location
+    +AH0-
+    Process 
+    +AHs-
+       try +AHs-
+
+         Check-AdminAccess
+
+         LoadCMPrereqs -SiteCode +ACQ-SiteCode -CMPSModulePath +ACQ-CMPSModulePath
+
+         +ACQ-existingPackage +AD0- CheckIfPackageExists
+         if (+ACE-(+ACQ-existingPackage)) +AHs-
+            throw +ACI-You must run the Create-CMOfficePackage function before running this function+ACI-
+         +AH0-
+
+         +AFs-string+AF0AJA-CommandLine +AD0- +ACIAJQ-windir+ACUAXA-Sysnative+AFw-windowsPowershell+AFw-V1.0+AFw-Powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile -WindowStyle Hidden -Command .+AFw-Create-Office365AnywhereTask.ps1+ACI-
+         +AFs-string+AF0AJA-ProgramName +AD0- +ACI-Update Office 365 With Scheduled Task+ACI-
+
+         +ACQ-CommandLine +-+AD0- +ACI- -WaitForUpdateToFinish +ACI- +- (Convert-Bool -value +ACQ-WaitForUpdateToFinish) +- +AGA- 
+                         +ACI- -EnableUpdateAnywhere +ACI- +- (Convert-Bool -value +ACQ-EnableUpdateAnywhere) +- +AGA- 
+                         +ACI- -ForceAppShutdown +ACI- +- (Convert-Bool -value +ACQ-ForceAppShutdown) +- +AGA- 
+                         +ACI- -UpdatePromptUser +ACI- +- (Convert-Bool -value +ACQ-UpdatePromptUser) +- +AGA- 
+                         +ACI- -DisplayLevel +ACI- +- (Convert-Bool -value +ACQ-DisplayLevel) +- +AGA- 
+                         +ACI- -UseScriptLocationAsUpdateSource +ACI- +- (Convert-Bool -value +ACQ-UseScriptLocationAsUpdateSource)
+                         
+         if(+ACQ-UseRandomStartTime)+AHs-
+             +ACQ-CommandLine +-+AD0- +ACI- -UseRandomStartTime +ACI- +- (Convert-Bool -value +ACQ-UseRandomStartTime) +- +AGA-
+                             +ACI- -RandomTimeStart +ACI- +- +ACQ-RandomTimeStart +- +AGA-
+                             +ACI- -RandomTimeEnd +ACI- +- +ACQ-RandomTimeEnd
+         +AH0-
+
+         if(+ACQ-StartTime)+AHs-
+             +ACQ-CommandLine +-+AD0- +ACI- -StartTime +ACI- +- +ACQ-StartTime
+         +AH0-
+
+         if (+ACQ-UpdateToVersion) +AHs-
+             +ACQ-CommandLine +-+AD0- +ACI- -UpdateToVersion +ACI- +- +ACQ-UpdateToVersion
+         +AH0-
+
+         +ACQ-SharePath +AD0- +ACQ-existingPackage.PkgSourcePath
+
+         +ACQ-OSSourcePath +AD0- +ACIAJA-PSScriptRoot+AFw-DeploymentFiles+AFw-Update-Office365Anywhere.ps1+ACI-
+         +ACQ-OCScriptPath +AD0- +ACIAJA-SharePath+AFw-Update-Office365Anywhere.ps1+ACI-
+
+         +ACQ-OSSourcePathTask +AD0- +ACIAJA-PSScriptRoot+AFw-DeploymentFiles+AFw-Create-Office365AnywhereTask.ps1+ACI-
+         +ACQ-OCScriptPathTask +AD0- +ACIAJA-SharePath+AFw-Create-Office365AnywhereTask.ps1+ACI-
+
+         if (+ACE-(Test-Path +ACQ-OSSourcePath)) +AHs-
+            throw +ACI-Required file missing: +ACQ-OSSourcePath+ACI-
+         +AH0- else +AHs-
+             if (+ACE-(Test-ItemPathUNC -Path +ACQ-SharePath -FileName +ACI-Update-Office365Anywhere.ps1+ACI-)) +AHs-
+                Copy-ItemUNC -SourcePath +ACQ-OSSourcePath -TargetPath +ACQ-SharePath -FileName +ACI-Update-Office365Anywhere.ps1+ACI-
+             +AH0-
+
+             if (+ACQ-UseScheduledTask) +AHs-
+               if (+ACE-(Test-ItemPathUNC -Path +ACQ-SharePath -FileName +ACI-Create-Office365AnywhereTask.ps1+ACI-)) +AHs-
+                  Copy-ItemUNC -SourcePath +ACQ-OSSourcePathTask  -TargetPath +ACQ-SharePath -FileName +ACI-Create-Office365AnywhereTask.ps1+ACI-
+               +AH0-
+             +AH0-
+
+             +AFs-string+AF0AJA-packageId +AD0- +ACQ-existingPackage.PackageId
+             if (+ACQ-packageId) +AHs-
+                +ACQ-comment +AD0- +ACI-UpdateWithTask+ACI-
+
+                CreateCMProgram -Name +ACQ-ProgramName -PackageID +ACQ-packageId -CommandLine +ACQ-CommandLine -RequiredPlatformNames +ACQ-requiredPlatformNames -Comment +ACQ-comment
+             +AH0-
+         +AH0-
+
+       +AH0- catch +AHs-
+         throw+ADs-
+       +AH0-
+    +AH0-
+    End
+    +AHs-
+        Set-ExecutionPolicy +ACQ-currentExecutionPolicy -Scope Process -Force
+        Set-Location +ACQ-startLocation    
+    +AH0-
++AH0-
+
+function Create-CMOfficeLanguageProgram+AHs-   
++ADwAIw-
+.SYNOPSIS
+Automates the configuration of System Center Configuration Manager (CM) to configure Office 365 ProPlus program deployments.
+
+.DESCRIPTION
+Creates a program in System Center Configuration Manager (CM) to deploy and install a specified language or multiple languages.
+
+.PARAMETER Channel
+The target update channel+ADs- Current, Deferred, FirstReleaseDeferred, or FirstReleaseCurrent.
+
+.PARAMETER Languages
+All office languages are supported in the ll-cc format +ACI-en-us+ACI-
+
+.PARAMETER Bitness
+The architecture of Office specified as v32 or v64.
+
+.PARAMETER MainOfficeLanguage
+The Shell UI language of Office.
+
+.PARAMETER Version
+The version of Office containing the language files.
+
+.PARAMETER ConfigurationXml
+Sets the configuration file to be used for the instalation.
+
+.EXAMPLE
+Create-CMOfficeLanguageProgram -Channel Deferred -Languages de-de,fr-fr -Bitness v32
+A language pack configuration file will be created to add the German and French language packs. A program will be created
+for the Office 365 ProPlus package that can be deployed to install additional languages on a client.
+
+.EXAMPLE
+Create-CMOfficeLanguageProgram -Channel Deferred -Languages de-de,fr-fr -Bitness v32 -MainOfficeLanguage ja-jp
+A language pack configuration file will be created to add the German and French language packs. The Japanese language will
+replace English as the Shell UI language. A program will be created for the Office 365 ProPlus package that can be deployed 
+to install additional languages on a client
+
++ACMAPg-   
+    +AFs-CmdletBinding(SupportsShouldProcess+AD0AJA-true)+AF0-
+    Param
+    (
+        +AFs-Parameter()+AF0-
+        +AFs-OfficeChannel+AF0AJA-Channel +AD0- +ACI-Deferred+ACI-,
+
+        +AFs-Parameter()+AF0-
+        +AFs-ValidateSet(+ACI-en-us+ACI-,+ACI-ar-sa+ACI-,+ACI-bg-bg+ACI-,+ACI-zh-cn+ACI-,+ACI-zh-tw+ACI-,+ACI-hr-hr+ACI-,+ACI-cs-cz+ACI-,+ACI-da-dk+ACI-,+ACI-nl-nl+ACI-,+ACI-et-ee+ACI-,+ACI-fi-fi+ACI-,+ACI-fr-fr+ACI-,+ACI-de-de+ACI-,+ACI-el-gr+ACI-,+ACI-he-il+ACI-,+ACI-hi-in+ACI-,+ACI-hu-hu+ACI-,+ACI-id-id+ACI-,+ACI-it-it+ACI-,
+                    +ACI-ja-jp+ACI-,+ACI-kk-kz+ACI-,+ACI-ko-kr+ACI-,+ACI-lv-lv+ACI-,+ACI-lt-lt+ACI-,+ACI-ms-my+ACI-,+ACI-nb-no+ACI-,+ACI-pl-pl+ACI-,+ACI-pt-br+ACI-,+ACI-pt-pt+ACI-,+ACI-ro-ro+ACI-,+ACI-ru-ru+ACI-,+ACI-sr-latn-rs+ACI-,+ACI-sk-sk+ACI-,+ACI-sl-si+ACI-,+ACI-es-es+ACI-,+ACI-sv-se+ACI-,+ACI-th-th+ACI-,
+                    +ACI-tr-tr+ACI-,+ACI-uk-ua+ACI-)+AF0-
+        +AFs-string+AFsAXQBdACQ-Languages +AD0- (+ACI-en-us+ACI-),
+
+        +AFs-Parameter()+AF0-
+        +AFs-Bitness+AF0AJA-Bitness +AD0- +ACI-v32+ACI-,
+
+        +AFs-Parameter()+AF0-
+        +AFs-string+AF0AJA-MainOfficeLanguage +AD0- +ACI-en-us+ACI-,
+
+        +AFs-Parameter()+AF0-
+        +AFs-string+AF0AJA-Version +AD0- +ACQ-NULL,
+
+        +AFs-Parameter()+AF0-
+	    +AFs-String+AF0AJA-ConfigurationXml +AD0- +ACI-.+AFw-DeploymentFiles+AFw-LanguageConfiguration.xml+ACI-        
+    )
+    
+    Begin +AHs-
+        +ACQ-currentExecutionPolicy +AD0- Get-ExecutionPolicy
+	    Set-ExecutionPolicy Unrestricted -Scope Process -Force  
+        +ACQ-startLocation +AD0- Get-Location
+    +AH0-
+
+    Process +AHs-
+        try+AHs-
+
+        Check-AdminAccess
+
+        +ACQ-LargeDrv +AD0- Get-LargestDrive
+        +ACQ-LocalPath +AD0- +ACIAJA-LargeDrv+AFw-OfficeDeployment+ACI-
+
+        +ACQ-ChannelList +AD0- +AEA-(+ACI-FirstReleaseCurrent+ACI-, +ACI-Current+ACI-, +ACI-FirstReleaseDeferred+ACI-, +ACI-Deferred+ACI-)
+        +ACQ-ChannelXml +AD0- Get-ChannelXml -FolderPath +ACQ-LocalPath -OverWrite +ACQ-true
+
+        foreach (+ACQ-ChannelName in +ACQ-ChannelList) +AHs-
+            if (+ACQ-Channel -eq +ACQ-ChannelName) +AHs-
+                +ACQ-selectChannel +AD0- +ACQ-ChannelXml.UpdateFiles.baseURL +AHw- ? +AHsAJABf-.branch -eq +ACQ-ChannelName.ToString() +AH0-
+                +ACQ-latestVersion +AD0- Get-ChannelLatestVersion -ChannelUrl +ACQ-selectChannel.URL -Channel +ACQ-ChannelName
+                +ACQ-ChannelShortName +AD0- ConvertChannelNameToShortName -ChannelName +ACQ-ChannelName
+
+                if (+ACQ-Version) +AHs-
+                    +ACQ-latestVersion +AD0- +ACQ-Version
+                +AH0-
+
+                +ACQ-Bit +AD0- +ACQ-Bitness.ToString().Replace(+ACI-v+ACI-, +ACIAIg-)
+
+                LoadCMPrereqs -SiteCode +ACQ-SiteCode -CMPSModulePath +ACQ-CMPSModulePath
+
+                +ACQ-siteDrive +AD0- Get-Location
+
+                +ACQ-existingPackage +AD0- CheckIfPackageExists
+                if (+ACE-(+ACQ-existingPackage)) +AHs-
+                    throw +ACI-You must run the Create-CMOfficePackage function before running this function+ACI-
+                +AH0-
+        
+                +AFs-string+AF0AJA-CommandLine +AD0- +ACIAIg-
+                +AFs-string+AF0AJA-ProgramName +AD0- +ACIAIg-
+
+                +AFs-string+AF0AJA-channelShortNameLabel +AD0- +ACQ-ChannelName
+                if (+ACQ-Channel -eq +ACI-FirstReleaseCurrent+ACI-) +AHs-
+                    +ACQ-channelShortNameLabel +AD0- +ACI-FRCC+ACI-
+                +AH0-
+                if (+ACQ-Channel -eq +ACI-FirstReleaseDeferred+ACI-) +AHs-
+                    +ACQ-channelShortNameLabel +AD0- +ACI-FRDC+ACI-
+                +AH0-
+                if (+ACQ-Channel -eq +ACI-Current+ACI-) +AHs-
+                    +ACQ-channelShortNameLabel +AD0- +ACI-CC+ACI-
+                +AH0-
+                if (+ACQ-Channel -eq +ACI-Deferred+ACI-) +AHs-
+                    +ACQ-channelShortNameLabel +AD0- +ACI-DC+ACI-
+                +AH0-
+                             
+                +ACQ-SharePath +AD0- +ACQ-existingPackage.PkgSourcePath
+
+                +ACQ-OSSourcePath +AD0- +ACIAJA-PSScriptRoot+AFw-DeploymentFiles+AFw-DeployConfigFile.ps1+ACI-
+                +ACQ-OCScriptPath +AD0- +ACIAJA-SharePath+AFw-DeployConfigFile.ps1+ACI-
+
+                +ACQ-sourcePath +AD0- +ACQ-NULL
+                +ACQ-sourceFilePath +AD0- +ACIAJA-LocalPath+AFw-SourceFiles+AFwAJA-channelShortName+AFw-Office+AFw-Data+ACI-
+                if (Test-Path -Path +ACQ-sourceFilePath) +AHs-
+                    +ACQ-sourcePath +AD0- +ACI-.+AFw-SourceFiles+AFwAJA-channelShortName+ACI-
+                +AH0- else +AHs-
+                    +ACQ-sourceFilePath +AD0- +ACIAJA-LocalPath+AFw-SourceFiles+AFwAJA-Channel+AFw-Office+AFw-Data+ACI-
+                    if (Test-Path -Path +ACQ-sourceFilePath) +AHs-
+                        +ACQ-sourcePath +AD0- +ACI-.+AFw-SourceFiles+AFwAJA-Channel+ACI-
+                    +AH0-
+                +AH0-
+                
+                if(+ACQ-Languages.Count -gt +ACI-1+ACI-)+AHs-
+                    Set-Location +ACQ-siteDrive
+
+                    +ACQ-languagePrograms +AD0- Get-CMProgram +AHw- ? +AHsAJABf-.ProgramName -like +ACI-DeployLanguagePack+ACoAIg- -and +ACQAXw-.ProgramName -like +ACIAKg-Multi+ACoAIgB9-
+                    if(+ACQ-languagePrograms)+AHs-
+                        +ACQ-languageProgramNumList +AD0- +AEA-()
+                        if(+ACQ-languagePrograms.Count -gt +ACI-0+ACI-)+AHs-
+                            foreach(+ACQ-Program in +ACQ-languagePrograms)+AHs-
+                                +ACQ-languageProgramName +AD0- +ACQ-Program.ProgramName
+                                +ACQ-languageProgramNumList +-+AD0- +ACQ-languageProgramName.Split(+ACI--+ACI-)+AFs-4+AF0-
+                            +AH0-
+
+                            +ACQ-languageProgramNumList +AD0- +ACQ-languageProgramNumList +AHw- Sort-Object -Descending
+                            +ACQ-sortedProgramNum +AD0- +ACQ-languageProgramNumList+AFs-0+AF0-
+                            +AFs-int+AF0AJA-oldLanguageProgramNum +AD0- +AFs-convert+AF0-::ToInt32(+ACQ-sortedProgramNum, 10)                  
+                            +ACQ-newLanguageProgramNum +AD0- +ACQ-oldLanguageProgramNum +- 1
+
+                            +ACQ-ProgramName +AD0- +ACI-DeployLanguagePack-+ACQ-Channel-+ACI- +- +ACQ-Bit +- +ACI-bit-Multi-+ACQ-newLanguageProgramNum+ACI-
+
+
+
+                        +AH0-
+                    +AH0- else +AHs-
+                        +ACQ-ProgramName +AD0- +ACI-DeployLanguagePack-+ACQ-Channel-+ACI- +- +ACQ-Bit +- +ACI-bit-Multi-1+ACI-    
+                    +AH0-
+                +AH0- else +AHs-
+                    +ACQ-ProgramName +AD0- +ACI-DeployLanguagePack-+ACQ-Channel-+ACI- +- +ACIAJA-Bit+ACI- +- +ACI-bit-+ACQ-Languages+ACI-
+                +AH0-
+
+                +ACQ-configFileName +AD0- +ACQ-ProgramName +- +ACI-.xml+ACI-
+
+                if (+ACQ-CustomName) +AHs-
+                    +ACQ-configFileName +AD0- +ACQ-ProgramName +- +ACI--+ACI- +- +ACQ-CustomName +- +ACI-.xml+ACI-
+                +AH0-
+
+                +ACQ-configFilePath +AD0- +ACIAJA-LocalPath+AFwAJA-configFileName+ACI-
+
+                Set-Location +ACQ-startLocation
+
+                Copy-Item -Path +ACQ-ConfigurationXml -Destination +ACQ-configFilePath
+
+                +ACQ-CommandLine +AD0- +ACIAJQ-windir+ACUAXA-Sysnative+AFw-windowsPowershell+AFw-V1.0+AFw-powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive +ACI- +- +AGA-
+                               +ACI--NoProfile -WindowStyle Hidden -Command .+AFw-DeployConfigFile.ps1 -ConfigFileName +ACQ-configFileName+ACI-
+               
+                if(+ACQ-MainOfficeLanguage.ToLower() -ne +ACI-en-us+ACI-) +AHs-
+                    +AFs-System.XML.XMLDocument+AF0AJA-ConfigFile +AD0- New-Object System.XML.XMLDocument
+                    +ACQ-ConfigFile.Load(+ACQ-configFilePath) +AHw- Out-Null
+                    +AFs-System.XML.XMLElement+AF0AJA-nodes +AD0- +ACQ-ConfigFile.Configuration.Add.Product.Language
+                    foreach(+ACQ-node in +ACQ-nodes) +AHs-
+                        +ACQ-node.SetAttribute(+ACI-ID+ACI-, +ACIAJA-MainOfficeLanguage+ACI-)
+                    +AH0-
+                    +ACQ-ConfigFile.Save(+ACQ-configFilePath)
+                +AH0-
+                
+                foreach (+ACQ-language in +ACQ-Languages)+AHs-
+                    if(+ACE-(Get-ChildItem -Path +ACQ-SharePath+AFw-SourceFiles+AFwAJA-channelShortName+AFw-Office+AFw-Data+AFwAJA-latestVersion +AHw- Where-Object +AHsAJABf- -like +ACIAKgAk-language+ACoAIgB9-))+AHs-
+                        Remove-Item -Path +ACQ-configFilePath
+                        throw +ACI-The language pack +ACQ-language was not found. To download the language run Download-CMOfficeChannelFiles using the -Languages parameter+ACI-
+                    +AH0-
+                    else+AHs-
+                        UpdateConfigurationXml -Path +ACQ-configFilePath -Channel +ACQ-ChannelName -Bitness +ACQ-Bit -SourcePath +ACQ-sourcePath -Language +ACQ-language
+                    +AH0-
+                +AH0-
+        
+                +AFs-string+AF0AJA-packageId +AD0- +ACQ-null
+
+                Set-Location +ACQ-siteDrive
+
+                +ACQ-packageId +AD0- +ACQ-existingPackage.PackageId
+                if (+ACQ-packageId) +AHs-
+                    +ACQ-comment +AD0- +ACQ-NULL
+                    foreach(+ACQ-language in +ACQ-Languages)+AHs-
+                        if(+ACQ-comment -eq +ACQ-NULL)+AHs-
+                            +ACQ-comment +-+AD0- +ACQ-language
+                        +AH0- else +AHs-
+                            +ACQ-comment +-+AD0- +ACI-,+ACQ-language+ACI-
+                        +AH0-
+                    +AH0-
+                    +ACMAJA-comment +AD0- +ACI-DeployLanguagePack-+ACQ-Channel-+ACQ-Bit-+ACQ-Languages+ACI-
+
+                    if (+ACQ-CustomName) +AHs-
+                        +ACQ-comment +-+AD0- +ACI--+ACQ-CustomName+ACI-
+                    +AH0-
+
+                    CreateCMProgram -Name +ACQ-ProgramName -PackageID +ACQ-packageId -RequiredPlatformNames +ACQ-requiredPlatformNames -CommandLine +ACQ-CommandLine -Comment +ACQ-comment
+                +AH0-
+            +AH0-
+        +AH0-
+
+        +AH0- catch+AHs-
+            throw+ADs-
+        +AH0-
+    +AH0-
+
+    End +AHs-
+        Set-ExecutionPolicy +ACQ-currentExecutionPolicy -Scope Process -Force
+        Set-Location +ACQ-startLocation 
+    +AH0-
++AH0-
+
+function Distribute-CMOfficePackage +AHs-
++ADwAIw-
+.SYNOPSIS
+Automates the configuration of System Center Configuration Manager (CM) to configure Office Click-To-Run Updates
+
+.DESCRIPTION
+Distributes the Office 365 ProPlus package to the specified Distribution Point or Distribution Point Group.
+
+.PARAMETER Channels
+The update channel. Current, Deferred, FirstReleaseDeferred, FirstReleaseCurrent
+
+.PARAMETER DistributionPoint
+The distribution point name.
+
+.PARAMETER DistributionPointGroupName
+The distribution point group name.
+
+.PARAMETER SiteCode
+The 3 Letter Site ID.
+
+.PARAMETER CMPSModulePath
+Allows the user to specify that full path to the ConfigurationManager.psd1 PowerShell Module. This is especially useful if CM is installed in a non standard path.
+
+.PARAMETER distributionPoint
+Sets which distribution points will be used, and distributes the package.
+
+.Example
+Distribute-CMOfficePackage -DistirbutionPoint cm.contoso.com
+Distributes the package 'Office 365 ProPlus' to the distribution point cm.contoso.com
+
++ACMAPg-
+    +AFs-CmdletBinding(SupportsShouldProcess+AD0AJA-true)+AF0-
+    Param
+    (
+        +AFs-Parameter()+AF0-
+        +AFs-OfficeChannel+AFsAXQBd- +ACQ-Channels +AD0- +AEA-(1,2,3),
+
+	    +AFs-Parameter()+AF0-
+	    +AFs-string+AF0AJA-DistributionPoint,
+
+	    +AFs-Parameter()+AF0-
+	    +AFs-string+AF0AJA-DistributionPointGroupName,
+
+	    +AFs-Parameter()+AF0-
+	    +AFs-String+AF0AJA-SiteCode +AD0- +ACQ-null,
+
+	    +AFs-Parameter()+AF0-
+	    +AFs-String+AF0AJA-CMPSModulePath +AD0- +ACQ-NULL,
+
+        +AFs-Parameter()+AF0-
+        +AFs-bool+AF0AJA-WaitForDistributionToFinish +AD0- +ACQ-false
+
+    )
+    Begin
+    +AHs-
+        +ACQ-currentExecutionPolicy +AD0- Get-ExecutionPolicy
+	    Set-ExecutionPolicy Unrestricted -Scope Process -Force  
+        +ACQ-startLocation +AD0- Get-Location
+    +AH0-
+    Process
+    +AHs-
+       try +AHs-
+
+        Check-AdminAccess
+
+        +ACQ-package +AD0- CheckIfPackageExists
+
+        if (+ACE-(+ACQ-package)) +AHs-
+            throw +ACI-You must run the Create-CMOfficePackage function before running this function+ACI-
+        +AH0-
+
+        LoadCMPrereqs -SiteCode +ACQ-SiteCode -CMPSModulePath +ACQ-CMPSModulePath
+
+        if (+ACQ-package) +AHs-
+            +AFs-string+AF0AJA-packageName +AD0- +ACQ-package.Name
+
+            if (+ACQ-DistributionPointGroupName) +AHs-
+                Write-Host +ACI-Starting Content Distribution for package: +ACQ-packageName+ACI-
+	            Start-CMContentDistribution -PackageName +ACQ-packageName -DistributionPointGroupName +ACQ-DistributionPointGroupName
+            +AH0-
+
+            if (+ACQ-DistributionPoint) +AHs-
+                Write-Host +ACI-Starting Content Distribution for package: +ACQ-packageName+ACI-
+                Start-CMContentDistribution -PackageName +ACQ-packageName -DistributionPointName +ACQ-DistributionPoint
+            +AH0-
+        +AH0-
+
+        if(+ACQ-WaitForDistributionToFinish)+AHs-
+            Get-CMOfficeDistributionStatus -WaitForDistributionToFinish +ACQ-true
+        +AH0-
+        
+        Write-Host 
+        Write-Host +ACI-NOTE: In order to deploy the package you must run the function 'Deploy-CMOfficeChannelPackage'.+ACI- -BackgroundColor Red
+        Write-Host +ACI-      You should wait until the content has finished distributing to the distribution points.+ACI- -BackgroundColor Red
+        Write-Host +ACI-      otherwise the deployments will fail. The clients will continue to fail until the +ACI- -BackgroundColor Red
+        Write-Host +ACI-      content distribution is complete.+ACI- -BackgroundColor Red
+
+       +AH0- catch +AHs-
+         throw+ADs-
+       +AH0-
+    +AH0-
+    End
+    +AHs-
+        Set-ExecutionPolicy +ACQ-currentExecutionPolicy -Scope Process -Force
+        Set-Location +ACQ-startLocation    
+    +AH0-
++AH0-
+
+function Deploy-CMOfficeProgram +AHs-
++ADwAIw-
+.SYNOPSIS
+Automates the configuration of System Center Configuration Manager (CM) to configure Office 365 ProPlus program deployments.
+
+.DESCRIPTION
+Creates a deployment for the Office 365 ProPlus program created from the functions Create-CMOfficeDeploymentProgram, Create-CMOfficeChannelChangeProgram
+Create-CMOfficeRollBackProgram, Create-CMOfficeUpdateProgram, and Create-CMOfficeUpdateAsTaskProgram.
+
+.PARAMETER Collection
+Required. The target ConfigMgr Collection ID.
+
+.PARAMETER Channel
+The target update channel+ADs- Current, Deferred, FirstReleaseDeferred, or FirstReleaseCurrent.
+
+.PARAMETER ProgramType
+Required. The type of program that will be deployed.
+DeployWithScript
+    A script will be used to configure the Office 365 ProPlus installation.
+DeployWithConfigurationFile
+    A configuration xml file will be used to install Office.
+ChangeChannel
+    The program is used to change the current channel of the client.
+RollBack
+    The program is used to rollback to a previous version.
+UpdateWithConfigMg
+    Configuration Manager will be used to start the update.
+UpdateWithTask
+    A task will be configured to start the update. 
+
+.PARAMETER Bitness
+The architecture of Office specified as v32 or v64.
+
+.PARAMETER SiteCode
+The 3 Letter Site ID.
+
+.PARAMETER DeploymentPurpose
+Choose between Default, Required, or Available. If the DeploymentPurpose is set to Required the program will be required to be installed on the client. If DeploymentPurpose
+is Available the program will be become available on the client in the Software Center. If the DeploymentPurpose is not specified or set to Default the deployment will be
+required to be installed on the clients of the collection.
+
+.PARAMETER CMPSModulePath
+Allows the user to specify that full path to the ConfigurationManager.psd1 PowerShell Module. This is especially useful if CM is installed in a non standard path.
+
+.PARAMETER CustomName
+Replaces the default program name with a custom name if it was provided while running Create-CMOfficeDeploymentProgram
+
+.EXAMPLE
+Deploy-CMOfficeProgram -Collection +ACI-Office Update+ACI- -ProgramType DeployWithScript
+Creates an Office 365 ProPlus deployment for the program 'Office 365 ProPlus (Deploy Deferred Channel With Script - 32-Bit) that will be required to download on clients in the
+target collection 'Office Update'.
+
+.EXAMPLE
+Deploy-CMOfficeProgram -Collection +ACI-Office Update+ACI- -ProgramType DeployWithScript -Channel Current -DeploymentPurpose Available
+Creates an Office 365 ProPlus deployment for the program 'Office 365 ProPlus (Deploy Current Channel With Script - 32-Bit) that will be available in the software 
+center on clients in the target collection 'Office Update'.
+
+.EXAMPLE
+Deploy-CMOfficeProgram -Collection +ACI-Office Update+ACI- -ProgramType DeployWithConfigurationFile
+Creates an Office 365 ProPlus deployment for the program 'Office 365 ProPlus (Deploy Deffered Channel with Config File - 32-Bit). The deployment will be a 
+required installation on clients in the target collection.
+
+.EXAMPLE
+Deploy-CMOfficeProgram -Collection +ACI-Office Update+ACI- -ProgramType DeployWithConfigurationFile -Channel FirstReleaseDeferred -DeploymentPurpose Available
+Creates an Office 365 ProPlus deployment for the program 'Deploy FRDC Channel with Config File' that will be available in the software center on clients in the target 
+collection 'Office Update'. The deployment will install Office 365 ProPlus FirstReleaseDeferred using an xml configuration file.
+
+.EXAMPLE
+Deploy-CMOfficeProgram -Collection +ACI-Office Update+ACI- -ProgramType ChangeChannel -Channel Current
+Creates a deployment for the program 'Office 365 ProPlus (Change Channel to Current) that will be available in the software center on 
+clients in the target collection 'Office Update'. 
+
+.EXAMPLE
+Deploy-CMOfficeProgram -Collection +ACI-Office Update+ACI- -ProgramType ChangeChannel -Channel FirstReleaseDeferred
+Creates a deployment for the program 'Office 365 ProPlus (Change Channel to FirstReleaseDeferred) that will be available in the software center for 
+clients in the target collection 'Office Update'.
+
+.EXAMPLE
+Deploy-CMOfficeProgram -Collection +ACI-Office Update+ACI- -ProgramType RollBack
+Creates a deployment for the program 'Office 365 ProPlus (Rollback)' that will be required to download for clients in the
+target collection 'Office Update'.
+
+.EXAMPLE
+Deploy-CMOfficeProgram -Collection +ACI-Office Update+ACI- -ProgramType RollBack -DeploymentPurpose Available
+Creates a deployment for the program 'Office 365 ProPlus (Rollback)' that will be available in the software center for clients in the
+target collection 'Office Update'.
+
+.Example
+Deploy-CMOfficeProgram -Collection +ACI-Office Update+ACI- -ProgramType UpdateWithConfigMgr -DeploymentPurpose Available -Channel Deferred
+Deploys the Package created by the Setup-CMOfficeProPlusPackage function to Collection ID +ACI-Office Update+ACI-.
+
+.EXAMPLE
+Deploy-CMOfficeProgram -Collection +ACI-Office Update+ACI- -ProgramType UpdateWithConfigMgr -DeploymentPurpose Available -Channel Deferred -Bitness v32
+Deploys the Package created by the Setup-CMOfficeProPlusPackage function to Collection ID +ACI-Office Update+ACI- and will be referenced as 32 bit.
+
+.EXAMPLE
+Deploy-CMOfficeProgram -Collection +ACI-Office Update+ACI- -ProgramType UpdateWithTask
+Creates a deployment for the program 'Office 365 ProPlus (Update Office 365 With Scheduled Task)' that will be required to download on clients in the
+target collection 'Office Update'. 
+
+.EXAMPLE
+Deploy-CMOfficeProgram -Collection +ACI-Office Update+ACI- -ProgramType UpdateWithTask -Channel Deferred -DeploymentPurpose Available
+Creates a deployment for the program 'Office 365 ProPlus (Update Office 365 With Scheduled Task)' that will be available in the software center for 
+clients in the target collection 'Office Update'.
+
++ACMAPg-
+    +AFs-CmdletBinding()+AF0-	
+    Param
+	(
+		+AFs-Parameter(Mandatory+AD0AJA-true)+AF0-
+		+AFs-String+AF0AJA-Collection +AD0- +ACIAIg-,
+
+        +AFs-Parameter(Mandatory+AD0AJA-true)+AF0-
+        +AFs-CMOfficeProgramType+AF0- +ACQ-ProgramType,
+
+        +AFs-Parameter()+AF0-
+        +AFs-OfficeChannel+AF0AJA-Channel +AD0- +ACI-Deferred+ACI-,
+
+        +AFs-Parameter()+AF0-
+	    +AFs-BitnessOptions+AF0AJA-Bitness +AD0- +ACI-v32+ACI-,
+
+        +AFs-Parameter()+AF0-
+        +AFs-ValidateSet(+ACI-en-us+ACI-,+ACI-ar-sa+ACI-,+ACI-bg-bg+ACI-,+ACI-zh-cn+ACI-,+ACI-zh-tw+ACI-,+ACI-hr-hr+ACI-,+ACI-cs-cz+ACI-,+ACI-da-dk+ACI-,+ACI-nl-nl+ACI-,+ACI-et-ee+ACI-,+ACI-fi-fi+ACI-,+ACI-fr-fr+ACI-,+ACI-de-de+ACI-,+ACI-el-gr+ACI-,+ACI-he-il+ACI-,+ACI-hi-in+ACI-,+ACI-hu-hu+ACI-,+ACI-id-id+ACI-,+ACI-it-it+ACI-,
+                    +ACI-ja-jp+ACI-,+ACI-kk-kz+ACI-,+ACI-ko-kr+ACI-,+ACI-lv-lv+ACI-,+ACI-lt-lt+ACI-,+ACI-ms-my+ACI-,+ACI-nb-no+ACI-,+ACI-pl-pl+ACI-,+ACI-pt-br+ACI-,+ACI-pt-pt+ACI-,+ACI-ro-ro+ACI-,+ACI-ru-ru+ACI-,+ACI-sr-latn-rs+ACI-,+ACI-sk-sk+ACI-,+ACI-sl-si+ACI-,+ACI-es-es+ACI-,+ACI-sv-se+ACI-,+ACI-th-th+ACI-,
+                    +ACI-tr-tr+ACI-,+ACI-uk-ua+ACI-)+AF0-
+        +AFs-string+AFsAXQBdACQ-Languages +AD0- (+ACI-en-us+ACI-),
+    
+	    +AFs-Parameter()+AF0-
+	    +AFs-String+AF0AJA-SiteCode +AD0- +ACQ-NULL,
+
+	    +AFs-Parameter()+AF0-
+	    +AFs-String+AF0AJA-CMPSModulePath +AD0- +ACQ-NULL,
+
+    	+AFs-Parameter()+AF0-
+	    +AFs-DeploymentPurpose+AF0AJA-DeploymentPurpose +AD0- +ACI-Default+ACI-,
+
+	    +AFs-Parameter()+AF0-
+	    +AFs-String+AF0AJA-CustomName +AD0- +ACQ-NULL
+	) 
+    Begin
+    +AHs-
+        +ACQ-currentExecutionPolicy +AD0- Get-ExecutionPolicy
+	    Set-ExecutionPolicy Unrestricted -Scope Process -Force  
+        +ACQ-startLocation +AD0- Get-Location
+    +AH0-
+    Process
+    +AHs-
+       try +AHs-
+
+        Check-AdminAccess
+
+        if (+ACQ-CustomName) +AHs-
+           if (+ACE-(+ACQ-CustomName.ToLower().Contains(+ACI-deploy+ACI-))) +AHs-
+              +ACQ-CustomName +AD0- +ACI-Deploy +ACI- +- +ACQ-CustomName
+           +AH0-
+        +AH0-
+
+        +ACQ-CustomName +AD0- +ACQ-CustomName -replace ' ', ''
+
+        if (+ACQ-CustomName.Length -gt 50) +AHs-
+            throw +ACI-CustomName is too long.  Must be less then 50 Characters+ACI-
+        +AH0-
+
+        +ACQ-strBitness +AD0- +ACQ-Bitness.ToString() -Replace +ACI-v+ACI-, +ACIAIg-
+
+        +ACQ-ChannelList +AD0- +AEA-(+ACI-FirstReleaseCurrent+ACI-, +ACI-Current+ACI-, +ACI-FirstReleaseDeferred+ACI-, +ACI-Deferred+ACI-)
+        +ACQ-ChannelXml +AD0- Get-ChannelXml
+
+        foreach (+ACQ-ChannelName in +ACQ-ChannelList) +AHs-
+            if (+ACQ-Channel.ToString().ToLower() -eq +ACQ-ChannelName.ToLower()) +AHs-
+                +ACQ-selectChannel +AD0- +ACQ-ChannelXml.UpdateFiles.baseURL +AHw- Where +AHsAJABf-.branch -eq +ACQ-ChannelName.ToString() +AH0-
+                +ACQ-latestVersion +AD0- Get-ChannelLatestVersion -ChannelUrl +ACQ-selectChannel.URL -Channel +ACQ-ChannelName
+                +ACQ-ChannelShortName +AD0- ConvertChannelNameToShortName -ChannelName +ACQ-ChannelName
+                +ACQ-package +AD0- CheckIfPackageExists
+
+                if (+ACE-(+ACQ-package)) +AHs-
+                    throw +ACI-You must run the Create-CMOfficePackage function before running this function+ACI-
+                +AH0-
+
+                LoadCMPrereqs -SiteCode +ACQ-SiteCode -CMPSModulePath +ACQ-CMPSModulePath
+                +ACQ-SiteCode +AD0- GetLocalSiteCode -SiteCode +ACQ-SiteCode
+
+                +ACQ-pType +AD0- +ACIAIg-
+
+                Switch (+ACQ-ProgramType) +AHs-
+                    +ACI-DeployWithScript+ACI- +AHs- 
+                         +ACQ-pType +AD0- +ACI-DeployWithScript-+ACQ-Channel-+ACQ-strBitness+ACIAOw- 
+                         if (+ACQ-DeploymentPurpose -eq +ACI-Default+ACI-) +AHs-
+                             +ACQ-DeploymentPurpose +AD0- +ACI-Required+ACIAOw-
+                         +AH0-
+                    +AH0-
+                    +ACI-DeployWithConfigurationFile+ACI- +AHs- 
+                         +ACQ-pType +AD0- +ACI-DeployWithConfigurationFile-+ACQ-Channel-+ACQ-strBitness+ACIAOw- 
+                         if (+ACQ-DeploymentPurpose -eq +ACI-Default+ACI-) +AHs-
+                           +ACQ-DeploymentPurpose +AD0- +ACI-Required+ACI- 
+                         +AH0- 
+                    +AH0-
+                    +ACI-ChangeChannel+ACI- +AHs- 
+                         +ACQ-pType +AD0- +ACI-ChangeChannel-+ACQ-Channel+ACIAOw- 
+                         if (+ACQ-DeploymentPurpose -eq +ACI-Default+ACI-) +AHs-
+                             +ACQ-DeploymentPurpose +AD0- +ACI-Available+ACI- 
+                         +AH0-
+                         +ACQ-CustomName +AD0- +ACQ-NULL
+                    +AH0-
+                    +ACI-RollBack+ACI- +AHs- 
+                         +ACQ-pType +AD0- +ACI-RollBack+ACIAOw- 
+                         if (+ACQ-DeploymentPurpose -eq +ACI-Default+ACI-) +AHs-
+                            +ACQ-DeploymentPurpose +AD0- +ACI-Available+ACI- 
+                         +AH0-
+                         +ACQ-CustomName +AD0- +ACQ-NULL
+                    +AH0-
+                    +ACI-UpdateWithConfigMgr+ACI- +AHs- 
+                         +ACQ-pType +AD0- +ACI-UpdateWithConfigMgr+ACIAOw- 
+                         if (+ACQ-DeploymentPurpose -eq +ACI-Default+ACI-) +AHs-
+                            +ACQ-DeploymentPurpose +AD0- +ACI-Required+ACI-  
+                         +AH0-
+                         +ACQ-CustomName +AD0- +ACQ-NULL
+                    +AH0-
+                    +ACI-UpdateWithTask+ACI- +AHs- 
+                         +ACQ-pType +AD0- +ACI-UpdateWithTask+ACIAOw- 
+                         if (+ACQ-DeploymentPurpose -eq +ACI-Default+ACI-) +AHs-
+                            +ACQ-DeploymentPurpose +AD0- +ACI-Required+ACI-  
+                         +AH0-
+                         +ACQ-CustomName +AD0- +ACQ-NULL
+                    +AH0-
+                    +ACI-LanguagePack+ACI- +AHs-
+                         +ACQ-pType +AD0- +ACI-DeployLanguagePack-+ACQ-Channel-+ACQ-Languages+ACIAOw-
+                         if (+ACQ-DeploymentPurpose -eq +ACI-Default+ACI-) +AHs-
+                            +ACQ-DeploymentPurpose +AD0- +ACI-Available+ACI-  
+                         +AH0-
+                         +ACQ-CustomName +AD0- +ACQ-NULL
+                    +AH0-
+                +AH0-
+
+                if (+ACQ-DeploymentPurpose -eq +ACI-Default+ACI-) +AHs-
+                   +ACQ-DeploymentPurpose +AD0- +ACI-Required+ACI-  
+                +AH0-
+
+                +ACQ-tmpPType +AD0- +ACQ-pType
+                if (+ACQ-CustomName) +AHs-
+                   +ACQ-tmpPType +-+AD0- +ACI--+ACQ-CustomName+ACI-
+                +AH0-
+
+                if(+ACQ-ProgramType -ne +ACI-LanguagePack+ACI-) +AHs-
+                    +ACQ-Program +AD0- Get-CMProgram +AHw- Where +AHsAJABf-.Comment.ToLower() -eq +ACQ-tmpPType.ToLower() +AH0-
+                +AH0-
+                else+AHs-
+                    +ACQ-languagePrograms +AD0- Get-CMProgram +AHw- ? +AHsAJABf-.ProgramName -like +ACI-DeployLanguage+ACoAIgB9-
+                    +ACQ-tempLanguages +AD0- +AEA-()
+                    foreach(+ACQ-lang in +ACQ-Languages)+AHs-
+                        +ACQ-tempLanguages +-+AD0- +ACQ-lang
+                    +AH0-
+                    +ACQ-tempLanguages +AD0- +ACQ-tempLanguages +AHw- Sort-Object -Descending
+                    +AFs-string+AF0AJA-sortedTempLanguages +AD0- +ACQ-NULL
+                    foreach(+ACQ-lang in +ACQ-tempLanguages)+AHs-
+                        if(+ACEAJA-sortedTempLanguages)+AHs-
+                            +ACQ-sortedTempLanguages +-+AD0- +ACQ-lang
+                        +AH0- else +AHs-
+                            +ACQ-sortedTempLanguages +-+AD0- +ACI-,+ACQ-lang+ACI-
+                        +AH0-
+                    +AH0-
+                    foreach(+ACQ-langProgram in +ACQ-languagePrograms)+AHs-
+                        +ACQ-commentLang +AD0- +ACQ-langProgram.Comment.Split(+ACI-,+ACI-) +AHw- Sort-Object -Descending
+                        +AFs-string+AF0AJA-sortedCommentLangs +AD0- +ACQ-NULL
+                        foreach(+ACQ-comLang in +ACQ-commentLang)+AHs-
+                            if(+ACEAJA-sortedCommentLangs)+AHs-
+                                +ACQ-sortedCommentLangs +-+AD0- +ACQ-comLang
+                            +AH0- else +AHs-
+                                +ACQ-sortedCommentLangs +-+AD0- +ACI-,+ACQ-comLang+ACI-
+                            +AH0-
+                        +AH0-
+                        if(+ACQ-langProgram.ProgramName -like +ACI-DeployLanguagePack-+ACQ-Channel-+ACQ-strBitness+ACoAIg- -and +ACQ-sortedCommentLangs -eq +ACQ-sortedTempLanguages)+AHs-
+                            +ACQ-Program +AD0- +ACQ-langProgram
+                        +AH0-
+                    +AH0-
+                +AH0-
+
+                +ACQ-programName +AD0- +ACQ-Program.ProgramName
+
+                +ACQ-packageName +AD0- +ACI-Office 365 ProPlus+ACI-
+                if (+ACQ-package) +AHs-
+                   if (+ACQ-Program) +AHs-
+
+                        +AFs-int+AF0AJA-deploymentIntent +AD0- 1
+                        Switch (+ACQ-ProgramType) +AHs-
+                            +ACI-Available+ACI- +AHs- 
+                               +ACQ-deploymentIntent +AD0- 2
+                            +AH0-
+                            +ACI-Required+ACI- +AHs- 
+                               +ACQ-deploymentIntent +AD0- 1
+                            +AH0-
+                        +AH0-
+
+                        if(+ACQ-ProgramType -ne +ACI-LanguagePack+ACI-) +AHs-
+                            +ACQ-comment +AD0- +ACQ-ProgramType.ToString() +- +ACI--+ACI- +- +ACQ-ChannelName +- +ACI--+ACI- +- +ACQ-Bitness.ToString() +- +ACI--+ACI- +- +ACQ-Collection.ToString()
+                            if (+ACQ-CustomName) +AHs-
+                               +ACQ-comment +-+AD0- +ACI--+ACQ-CustomName+ACI- 
+                            +AH0-
+                        +AH0- else +AHs-
+                            if(+ACQ-programName -like +ACIAKg-Multi+ACoAIg-)+AHs-
+                                +ACQ-programComment +AD0- +ACQ-ProgramName.Split(+ACI--+ACI-)+AFs-3+AF0- +- +ACQ-ProgramName.Split(+ACI--+ACI-)+AFs-4+AF0-
+                            +AH0- else +AHs-
+                                +ACQ-programComment +AD0- +ACQ-ProgramName.Split(+ACI--+ACI-)+AFs-3+AF0-
+                            +AH0-
+                            +ACQ-comment +AD0- +ACQ-ProgramType.ToString() +- +ACI--+ACI- +- +ACQ-ChannelName +- +ACI--+ACI- +- +ACQ-Bitness.ToString() +- +ACI--+ACQ-programComment-+ACI- +- +ACQ-Collection.ToString()
+                        +AH0-
+
+                        +ACQ-packageDeploy +AD0- Get-WmiObject -Namespace +ACI-root+AFw-sms+AFw-site+AF8AJA-SiteCode+ACI- -Class SMS+AF8-Advertisement  +AHw- where +AHsAJABf-.PackageId -eq +ACQ-package.PackageId -and +ACQAXw-.Comment -eq +ACQ-comment +AH0-
+                        if (+ACQ-packageDeploy.Count -eq 0) +AHs-
+                            try +AHs-
+                                +ACQ-packageId +AD0- +ACQ-package.PackageId
+
+                                if (+ACQ-Program) +AHs-
+                                    +ACQ-ProgramName +AD0- +ACQ-Program.ProgramName
+
+     	                            Start-CMPackageDeployment -CollectionName +ACIAJA-Collection+ACI- -PackageId +ACQ-packageId -ProgramName +ACIAJA-ProgramName+ACI- +AGA-
+                                                                -StandardProgram  -DeployPurpose +ACQ-DeploymentPurpose.ToString() -RerunBehavior AlwaysRerunProgram +AGA-
+                                                                -ScheduleEvent AsSoonAsPossible -FastNetworkOption RunProgramFromDistributionPoint +AGA-
+                                                                -SlowNetworkOption RunProgramFromDistributionPoint +AGA-
+                                                                -AllowSharedContent +ACQ-false -Comment +ACQ-comment
+
+                                    Write-Host +ACIAYA-tDeployment created for: +ACQ-packageName (+ACQ-ProgramName)+ACI-
+                                +AH0- else +AHs-
+                                    Write-Host +ACI-Could Not find Program in Package for Type: +ACQ-ProgramType - Channel: +ACQ-ChannelName+ACI- -ForegroundColor White -BackgroundColor Red
+                                +AH0-
+                            +AH0- catch +AHs-
+                                +AFs-string+AF0AJA-ErrorMessage +AD0- +ACQAXw-.ErrorDetails 
+                                if (+ACQ-ErrorMessage.ToLower().Contains(+ACI-Could not find property PackageID+ACI-.ToLower())) +AHs-
+                                    Write-Host 
+                                    Write-Host +ACI-Package: +ACQ-packageName+ACI-
+                                    Write-Host +ACI-The package has not finished deploying to the distribution points.+ACI- -BackgroundColor Red
+                                    Write-Host +ACI-Please try this command against once the distribution points have been updated+ACI- -BackgroundColor Red
+                                +AH0- else +AHs-
+                                    throw
+                                +AH0-
+                            +AH0-  
+                        +AH0- else +AHs-
+                          Write-Host +ACIAYA-tDeployment already exists for: +ACQ-packageName (+ACQ-ProgramName)+ACI-
+                        +AH0-
+                   +AH0- else +AHs-
+                        Write-Host +ACI-Could Not find Program in Package for Type: +ACQ-ProgramType - Channel: +ACQ-ChannelName - Bitness: +ACQ-Bitness+ACI- -ForegroundColor White -BackgroundColor Red
+                   +AH0-
+                +AH0- else +AHs-
+                    throw +ACI-Package does not exist: +ACQ-packageName+ACI-
+                +AH0-
+            +AH0-
+        +AH0-
+       +AH0- catch +AHs-
+         throw+ADs-
+       +AH0-
+    +AH0-
+    End +AHs-
+        Set-ExecutionPolicy +ACQ-currentExecutionPolicy -Scope Process -Force
+        Set-Location +ACQ-startLocation 
+    +AH0-
++AH0-
+
+function Get-CMOfficeDistributionStatus+AHs-
+Param(
+    +AFs-bool+AF0AJA-WaitForDistributionToFinish +AD0- +ACQ-false
+)
+
+Begin+AHs-
+    +ACQ-currentExecutionPolicy +AD0- Get-ExecutionPolicy
+	Set-ExecutionPolicy Unrestricted -Scope Process -Force  
+    +ACQ-startLocation +AD0- Get-Location
++AH0-
+
+Process+AHs-
+    +ACQ-SiteCode +AD0- GetLocalSiteCode -SiteCode +ACQ-SiteCode
+    +ACQ-Package +AD0- CheckIfPackageExists
+    +ACQ-PkgID +AD0- +ACQ-Package.PackageID
+
+    +ACQ-Status +AD0- GetQueryStatus -SiteCode +ACQ-SiteCode -PkgID +ACQ-PkgID
+
+    if(+ACQ-WaitForDistributionToFinish)+AHs-
+        +AFs-string+AFsAXQBdACQ-trackProgress +AD0- +AEA-()
+        +ACQ-currentTime +AD0- Get-Date -Format +ACI-MM/dd/yyyy HH:mm:ss+ACI-            
+        Do+AHs-
+            +ACQ-Status +AD0- GetQueryStatus -SiteCode +ACQ-SiteCode -PkgID +ACQ-PkgID
+
+            if(+ACEAJA-trackProgress)+AHs-
+                if(+ACQ-Status.DateTime -ge +ACQ-currentTime)+AHs-
+                    +ACQ-trackProgress +-+AD0- +ACQ-Status.Status
+                    +ACQ-updateRunning +AD0- +ACQ-true
+                    +ACQ-Status
+                +AH0-
+            +AH0-else+AHs-
+                if(+ACQ-trackProgress -notcontains +ACQ-Status.Status)+AHs-
+                    +ACQ-trackProgress +-+AD0- +ACQ-Status.Status
+                    +ACQ-updateRunning +AD0- +ACQ-true
+                    +ACQ-Status
+                +AH0-
+            +AH0-            
+            
+        +AH0-until(+ACQ-Status.Operation -eq 'In Progress')
+               
+        Do+AHs-
+            +ACQ-Status +AD0- GetQueryStatus -SiteCode +ACQ-SiteCode -PkgID +ACQ-PkgID
+
+            if(+ACEAJA-trackProgress)+AHs-
+                +ACQ-trackProgress +-+AD0- +ACQ-Status.Status
+                +ACQ-Status
+            +AH0-else+AHs-
+                if(+ACQ-trackProgress -notcontains +ACQ-Status.Status)+AHs-
+                    +ACQ-trackProgress +-+AD0- +ACQ-Status.Status
+                    +ACQ-updateRunning +AD0- +ACQ-true
+                    +ACQ-Status
+                +AH0-
+            +AH0-
+
+            if((+ACQ-Status.Operation -eq 'Failed') -or+AGA-
+               (+ACQ-Status.Operation -eq 'Error'))+AHs-
+                +ACQ-trackProgress +-+AD0- +ACQ-Status.Status
+                +ACQ-Status
+
+                break+ADs-
+            +AH0-
+
+        +AH0-until(+ACQ-Status.Operation -eq 'Success')  
+              
+        Do+AHs-
+            +ACQ-Status +AD0- GetQueryStatus -SiteCode +ACQ-SiteCode -PkgID +ACQ-PkgID
+        
+            if(+ACQ-Status.Operation -eq +ACI-Success+ACI-)+AHs-
+                if(+ACQ-Status.Status -eq 'Content was distributed to distribution point')+AHs-
+                    +ACQ-trackProgress +-+AD0- +ACQ-Status.Status
+                    +ACQ-allComplete +AD0- +ACQ-true
+                    +ACQ-updateRunning +AD0- +ACQ-false
+                    +ACQ-Status
+                +AH0-
+                else+AHs-        
+                    if(+ACQ-trackProgress -notcontains +ACQ-Status.Status)+AHs-
+                        +ACQ-trackProgress +-+AD0- +ACQ-Status.Status
+                        +ACQ-updateRunning +AD0- +ACQ-true
+                        +ACQ-Status
+                    +AH0-
+                +AH0-
+            +AH0-
+
+            if(+ACQ-Status.Operation -eq +ACI-Failed+ACI-)+AHs-
+                +ACQ-updateRunning +AD0- +ACQ-false
+                +ACQ-Status
+            +AH0-  
+            
+        +AH0-while(+ACQ-updateRunning -eq +ACQ-true)
+    +AH0-else+AHs-
+        +ACQ-Status
+    +AH0-
++AH0-
+
+End+AHs-
+    Set-ExecutionPolicy +ACQ-currentExecutionPolicy -Scope Process -Force
+    Set-Location +ACQ-startLocation
++AH0-
+
++AH0-
+
+
+
+function UpdateConfigurationXml() +AHs-
+    +AFs-CmdletBinding()+AF0-	
+    Param
+	(
+		+AFs-Parameter(Mandatory+AD0AJA-true)+AF0-
+		+AFs-String+AF0AJA-Path +AD0- +ACIAIg-,
+
+		+AFs-Parameter(Mandatory+AD0AJA-true)+AF0-
+		+AFs-String+AF0AJA-Channel +AD0- +ACIAIg-,
+
+		+AFs-Parameter(Mandatory+AD0AJA-true)+AF0-
+		+AFs-String+AF0AJA-Bitness,
+
+		+AFs-Parameter()+AF0-
+		+AFs-String+AF0AJA-SourcePath +AD0- +ACQ-NULL,
+		
+        +AFs-Parameter()+AF0-
+		+AFs-String+AF0AJA-Language
+        
+	) 
+    Process +AHs-
+	  +ACQ-doc +AD0- +AFs-Xml+AF0- (Get-Content +ACQ-Path)
+
+      +ACQ-addNode +AD0- +ACQ-doc.Configuration.Add
+      +ACQ-languageNode +AD0- +ACQ-addNode.Product.Language
+
+      if (+ACQ-addNode.OfficeClientEdition) +AHs-
+          +ACQ-addNode.OfficeClientEdition +AD0- +ACQ-Bitness
+      +AH0- else +AHs-
+          +ACQ-addNode.SetAttribute(+ACI-OfficeClientEdition+ACI-, +ACQ-Bitness)
+      +AH0-
+
+      if (+ACQ-addNode.Channel) +AHs-
+          +ACQ-addNode.Channel +AD0- +ACQ-Channel
+      +AH0- else +AHs-
+          +ACQ-addNode.SetAttribute(+ACI-Channel+ACI-, +ACQ-Channel)
+      +AH0-
+
+      if (+ACQ-addNode.SourcePath) +AHs-
+          +ACQ-addNode.SourcePath +AD0- +ACQ-SourcePath
+      +AH0- else +AHs-
+          +ACQ-addNode.SetAttribute(+ACI-SourcePath+ACI-, +ACQ-SourcePath)
+      +AH0-
+
+      if(+ACQ-Language)+AHs-
+          if (+ACQ-languageNode.ID)+AHs-
+              if(+ACQ-languageNode.ID -contains +ACQ-Language) +AHs-
+                  Write-Host +ACIAJA-Language already exists in the xml+ACI-
+              +AH0- else +AHs-
+                  +ACQ-newLanguageElement +AD0- +ACQ-doc.CreateElement(+ACI-Language+ACI-)
+                  +ACQ-newLanguage +AD0- +ACQ-doc.Configuration.Add.Product.AppendChild(+ACQ-newLanguageElement)
+                  +ACQ-newLanguage.SetAttribute(+ACI-ID+ACI-, +ACQ-Language)
+              +AH0-
+          +AH0- else +AHs-
+              +ACQ-languageNode.SetAttribute(+ACI-ID+ACI-, +ACQ-language)
+          +AH0-
+     +AH0-
+
+      +ACQ-doc.Save(+ACQ-Path)
+    +AH0-
++AH0-
+
+function CreateMainCabFiles() +AHs-
+    +AFs-CmdletBinding()+AF0-	
+    Param
+	(
+		+AFs-Parameter(Mandatory+AD0AJA-true)+AF0-
+		+AFs-String+AF0AJA-LocalPath +AD0- +ACIAIg-,
+
+        +AFs-Parameter(Mandatory+AD0AJA-true)+AF0-
+        +AFs-String+AF0- +ACQ-ChannelShortName,
+
+        +AFs-Parameter(Mandatory+AD0AJA-true)+AF0-
+        +AFs-String+AF0- +ACQ-LatestVersion
+	) 
+    Process +AHs-
+        +ACQ-versionFile321 +AD0- +ACIAJA-LocalPath+AFwAJA-ChannelShortName+AFw-Office+AFw-Data+AFw-v32+AF8AJA-LatestVersion.cab+ACI-
+        +ACQ-v32File1 +AD0- +ACIAJA-LocalPath+AFwAJA-ChannelShortName+AFw-Office+AFw-Data+AFw-v32.cab+ACI-
+
+        +ACQ-versionFile641 +AD0- +ACIAJA-LocalPath+AFwAJA-ChannelShortName+AFw-Office+AFw-Data+AFw-v64+AF8AJA-LatestVersion.cab+ACI-
+        +ACQ-v64File1 +AD0- +ACIAJA-LocalPath+AFwAJA-ChannelShortName+AFw-Office+AFw-Data+AFw-v64.cab+ACI-
+
+        +ACQ-versionFile322 +AD0- +ACIAJA-LocalPath+AFw-SourceFiles+AFwAJA-ChannelShortName+AFw-Office+AFw-Data+AFw-v32+AF8AJA-LatestVersion.cab+ACI-
+        +ACQ-v32File2 +AD0- +ACIAJA-LocalPath+AFw-SourceFiles+AFwAJA-ChannelShortName+AFw-Office+AFw-Data+AFw-v32.cab+ACI-
+
+        +ACQ-versionFile642 +AD0- +ACIAJA-LocalPath+AFw-SourceFiles+AFwAJA-ChannelShortName+AFw-Office+AFw-Data+AFw-v64+AF8AJA-LatestVersion.cab+ACI-
+        +ACQ-v64File2 +AD0- +ACIAJA-LocalPath+AFw-SourceFiles+AFwAJA-ChannelShortName+AFw-Office+AFw-Data+AFw-v64.cab+ACI-
+
+        if (Test-Path -Path +ACQ-versionFile321) +AHs-
+            Copy-Item -Path +ACQ-versionFile321 -Destination +ACQ-v32File1 -Force
+        +AH0-
+
+        if (Test-Path -Path +ACQ-versionFile641) +AHs-
+            Copy-Item -Path +ACQ-versionFile641 -Destination +ACQ-v64File1 -Force
+        +AH0-
+
+        if (Test-Path -Path +ACQ-versionFile322) +AHs-
+            Copy-Item -Path +ACQ-versionFile322 -Destination +ACQ-v32File2 -Force
+        +AH0-
+
+        if (Test-Path -Path +ACQ-versionFile642) +AHs-
+            Copy-Item -Path +ACQ-versionFile642 -Destination +ACQ-v64File2 -Force
+        +AH0-
+    +AH0-
++AH0-
+
+function CheckIfPackageExists() +AHs-
+    +AFs-CmdletBinding()+AF0-	
+    Param
+	(
+
+    )
+    Begin
+    +AHs-
+        +ACQ-startLocation +AD0- Get-Location
+    +AH0-
+    Process +AHs-
+       LoadCMPrereqs
+
+       +ACQ-packageName +AD0- +ACI-Office 365 ProPlus+ACI-
+
+       +ACQ-existingPackage +AD0- Get-CMPackage +AHw- Where +AHs- +ACQAXw-.Name -eq +ACQ-packageName +AH0-
+       if (+ACQ-existingPackage) +AHs-
+         return +ACQ-existingPackage
+       +AH0-
+
+       return +ACQ-null
+    +AH0-
++AH0-
+
+function CheckIfVersionExists() +AHs-
+    +AFs-CmdletBinding()+AF0-	
+    Param
+	(
+	   +AFs-Parameter(Mandatory+AD0AJA-True)+AF0-
+	   +AFs-String+AF0AJA-Version,
+
+		+AFs-Parameter()+AF0-
+		+AFs-String+AF0AJA-Channel
+    )
+    Begin
+    +AHs-
+        +ACQ-startLocation +AD0- Get-Location
+    +AH0-
+    Process +AHs-
+       LoadCMPrereqs
+
+       +ACQ-VersionName +AD0- +ACIAJA-Channel - +ACQ-Version+ACI-
+
+       +ACQ-packageName +AD0- +ACI-Office 365 ProPlus+ACI-
+
+       +ACQ-existingPackage +AD0- Get-CMPackage +AHw- Where +AHs- +ACQAXw-.Name -eq +ACQ-packageName -and +ACQAXw-.Version -eq +ACQ-Version +AH0-
+       if (+ACQ-existingPackage) +AHs-
+         return +ACQ-true
+       +AH0-
+
+       return +ACQ-false
+    +AH0-
++AH0-
+
+function LoadCMPrereqs() +AHs-
+    +AFs-CmdletBinding()+AF0-	
+    Param
+	(
+	    +AFs-Parameter()+AF0-
+	    +AFs-String+AF0AJA-SiteCode +AD0- +ACQ-null,
+
+	    +AFs-Parameter()+AF0-
+	    +AFs-String+AF0AJA-CMPSModulePath +AD0- +ACQ-NULL
+    )
+    Begin
+    +AHs-
+        +ACQ-currentExecutionPolicy +AD0- Get-ExecutionPolicy
+	    Set-ExecutionPolicy Unrestricted -Scope Process -Force  
+        +ACQ-startLocation +AD0- Get-Location
+    +AH0-
+    Process +AHs-
+
+        +ACQ-CMModulePath +AD0- GetCMPSModulePath -CMPSModulePath +ACQ-CMPSModulePath 
+    
+        if (+ACQ-CMModulePath) +AHs-
+            Import-Module +ACQ-CMModulePath
+
+            if (+ACEAJA-SiteCode) +AHs-
+               +ACQ-SiteCode +AD0- (Get-ItemProperty -Path +ACI-hklm:+AFw-SOFTWARE+AFw-Microsoft+AFw-SMS+AFw-Identification+ACI- -Name +ACI-Site Code+ACI-).'Site Code'
+            +AH0-
+
+            Set-Location +ACIAJA-SiteCode+AGA-:+ACI-	
+        +AH0-
+    +AH0-
++AH0-
+
+function GetLocalSiteCode() +AHs-
+    +AFs-CmdletBinding()+AF0-	
+    Param
+	(
+	    +AFs-Parameter()+AF0-
+	    +AFs-String+AF0AJA-SiteCode +AD0- +ACQ-null
+    )
+    Begin
+    +AHs-
+
+    +AH0-
+    Process +AHs-
+        if (+ACEAJA-SiteCode) +AHs-
+            +ACQ-SiteCode +AD0- (Get-ItemProperty -Path +ACI-hklm:+AFw-SOFTWARE+AFw-Microsoft+AFw-SMS+AFw-Identification+ACI- -Name +ACI-Site Code+ACI-).'Site Code'
+        +AH0-
+        return +ACQ-SiteCode
+    +AH0-
++AH0-
+
+function CreateCMPackage() +AHs-
+    +AFs-CmdletBinding()+AF0-	
+    Param
+	(
+		+AFs-Parameter()+AF0-
+		+AFs-String+AF0AJA-Name +AD0- +ACI-Office ProPlus Deployment+ACI-,
+		
+		+AFs-Parameter(Mandatory+AD0AJA-True)+AF0-
+		+AFs-String+AF0AJA-Path,
+
+		+AFs-Parameter()+AF0-
+		+AFs-String+AF0AJA-Version,
+
+		+AFs-Parameter()+AF0-
+		+AFs-String+AF0AJA-Channel,
+
+		+AFs-Parameter()+AF0-
+		+AFs-String+AF0AJA-CustomPackageShareName +AD0- +ACQ-null,
+
+		+AFs-Parameter()+AF0-	
+		+AFs-Bool+AF0AJA-UpdateOnlyChangedBits +AD0- +ACQ-true
+	) 
+
+    +ACQ-package +AD0- Get-CMPackage +AHw- Where +AHs- +ACQAXw-.Name -eq +ACQ-Name +AH0-
+    if(+ACQ-package -eq +ACQ-null -or +ACEAJA-package)
+    +AHs-
+        Write-Host +ACIAYA-tCreating Package: +ACQ-Name+ACI-
+        +ACQ-package +AD0- New-CMPackage -Name +ACQ-Name -Path +ACQ-path -Version +ACQ-Version
+    +AH0- else +AHs-
+        Write-Host +ACIAYA-t+AGA-tPackage Already Exists: +ACQ-Name+ACI-        
+    +AH0-
+		
+    Write-Host +ACIAYA-t+AGA-tSetting Package Properties+ACI-
+
+    +ACQ-VersionName +AD0- +ACIAJA-Channel - +ACQ-Version+ACI-
+
+    if (+ACQ-CustomPackageShareName) +AHs-
+	    Set-CMPackage -Id +ACQ-package.PackageId -Priority Normal -EnableBinaryDeltaReplication +ACQ-UpdateOnlyChangedBits +AGA-
+                      -CopyToPackageShareOnDistributionPoint +ACQ-True -Version +ACQ-Version -CustomPackageShareName +ACQ-CustomPackageShareName
+    +AH0- else +AHs-
+	    Set-CMPackage -Id +ACQ-package.PackageId -Priority Normal -EnableBinaryDeltaReplication +ACQ-UpdateOnlyChangedBits +AGA-
+                      -CopyToPackageShareOnDistributionPoint +ACQ-True -Version +ACQ-Version
+    +AH0-
+
+    +ACQ-package +AD0- Get-CMPackage +AHw- Where +AHs- +ACQAXw-.Name -eq +ACQ-Name -and +ACQAXw-.Version -eq +ACQ-Version +AH0-
+    return +ACQ-package
++AH0-
+
+function RemovePreviousCMPackages() +AHs-
+    +AFs-CmdletBinding()+AF0-	
+    Param
+	(
+		+AFs-Parameter()+AF0-
+		+AFs-String+AF0AJA-Name +AD0- +ACI-Office ProPlus Deployment+ACI-,
+		
+		+AFs-Parameter()+AF0-
+		+AFs-String+AF0AJA-Version
+	) 
+    
+    if (+ACQ-Version) +AHs-
+        +ACQ-packages +AD0- Get-CMPackage +AHw- Where +AHs- +ACQAXw-.Name -eq +ACQ-Name -and +ACQAXw-.Version -ne +ACQ-Version +AH0-
+        foreach (+ACQ-package in +ACQ-packages) +AHs-
+           +ACQ-packageName +AD0- +ACQ-package.Name
+           +ACQ-pkversion +AD0- +ACQ-package.Version
+
+           Write-Host +ACI-Removing previous version: +ACQ-packageName - +ACQ-pkversion+ACI-
+           Remove-CMPackage -Id +ACQ-package.PackageId -Force +AHw- Out-Null
+        +AH0-
+    +AH0-
++AH0-
+
+function CreateCMProgram() +AHs-
+    +AFs-CmdletBinding()+AF0-	
+    Param
+	(
+		+AFs-Parameter(Mandatory+AD0AJA-True)+AF0-
+		+AFs-String+AF0AJA-PackageID,
+		
+		+AFs-Parameter(Mandatory+AD0AJA-True)+AF0-
+		+AFs-String+AF0AJA-CommandLine, 
+
+		+AFs-Parameter(Mandatory+AD0AJA-True)+AF0-
+		+AFs-String+AF0AJA-Name,
+		
+		+AFs-Parameter(Mandatory+AD0AJA-True)+AF0-
+		+AFs-String+AF0AJA-Comment +AD0- +ACQ-null,
+
+		+AFs-Parameter()+AF0-
+		+AFs-String+AFsAXQBd- +ACQ-RequiredPlatformNames +AD0- +AEA-()
+
+	) 
+
+    +ACQ-program +AD0- Get-CMProgram +AHw- Where +AHs- +ACQAXw-.PackageID -eq +ACQ-PackageID -and +ACQAXw-.Comment -eq +ACQ-Comment -and +ACQAXw-.ProgramName -eq +ACQ-Name +AH0-
+
+    if(+ACQ-program -eq +ACQ-null -or +ACEAJA-program) +AHs-
+        Write-Host +ACIAYA-t+AGA-tCreating Program: +ACQ-Name ...+ACI-	        
+	    +ACQ-program +AD0- New-CMProgram -PackageId +ACQ-PackageID -StandardProgramName +ACQ-Name -DriveMode RenameWithUnc +AGA-
+                                 -CommandLine +ACQ-CommandLine -ProgramRunType OnlyWhenUserIsLoggedOn +AGA-
+                                 -RunMode RunWithAdministrativeRights -UserInteraction +ACQ-true -RunType Normal
+    +AH0- else +AHs-
+        Write-Host +ACIAYA-t+AGA-tProgram Already Exists: +ACQ-Name+ACI-
+    +AH0-
+
+    if (+ACQ-program) +AHs-
+        Set-CMProgram -InputObject +ACQ-program -Comment +ACQ-Comment -StandardProgramName +ACQ-Name -StandardProgram
+    +AH0-
++AH0-
+
+function CreateOfficeChannelShare() +AHs-
+    +AFs-CmdletBinding()+AF0-	
+    Param
+	(
+        +AFs-Parameter()+AF0-
+        +AFs-String+AF0AJA-Name +AD0- +ACI-OfficeDeployment+ACQAIg-,
+
+        +AFs-Parameter()+AF0-
+        +AFs-String+AF0AJA-Path +AD0- +ACIAJA-env:SystemDrive+AFw-OfficeDeployment+ACI-
+	) 
+    
+    if (+ACE-(Test-Path +ACQ-Path)) +AHs- 
+      +ACQ-addFolder +AD0- New-Item +ACQ-Path -type Directory 
+    +AH0-
+    
+    +ACQ-ACL +AD0- Get-ACL +ACQ-Path
+
+    +ACQ-identity +AD0- New-Object System.Security.Principal.NTAccount  -argumentlist (+ACIAJA-env:UserDomain+AFwAJA-env:UserName+ACI-) 
+    +ACQ-accessRule +AD0- New-Object System.Security.AccessControl.FileSystemAccessRule -argumentlist (+ACQ-identity,+ACI-FullControl+ACI-,+ACI-ContainerInherit, ObjectInherit+ACI-,+ACI-None+ACI-,+ACI-Allow+ACI-)
+
+    +ACQ-addAcl +AD0- +ACQ-ACL.AddAccessRule(+ACQ-accessRule) +AHw- Out-Null
+
+    +ACQ-identity +AD0- New-Object System.Security.Principal.NTAccount -argumentlist (+ACIAJA-env:UserDomain+AFw-Domain Admins+ACI-) 
+    +ACQ-accessRule +AD0- New-Object System.Security.AccessControl.FileSystemAccessRule -argumentlist (+ACQ-identity,+ACI-FullControl+ACI-,+ACI-ContainerInherit, ObjectInherit+ACI-,+ACI-None+ACI-,+ACI-Allow+ACI-)
+    +ACQ-addAcl +AD0- +ACQ-ACL.AddAccessRule(+ACQ-accessRule) +AHw- Out-Null
+
+    +ACQ-identity +AD0- +ACI-Everyone+ACI-
+    +ACQ-accessRule +AD0- New-Object System.Security.AccessControl.FileSystemAccessRule -argumentlist (+ACQ-identity,+ACI-Read+ACI-,+ACI-ContainerInherit, ObjectInherit+ACI-,+ACI-None+ACI-,+ACI-Allow+ACI-)
+    +ACQ-addAcl +AD0- +ACQ-ACL.AddAccessRule(+ACQ-accessRule) +AHw- Out-Null
+
+    Set-ACL -Path +ACQ-Path -ACLObject +ACQ-ACL +AHw- Out-Null
+    
+    +ACQ-share +AD0- Get-WmiObject -Class Win32+AF8-share +AHw- Where +AHsAJABf-.name -eq +ACIAJA-Name+ACIAfQ-
+    if (+ACEAJA-share) +AHs-
+       Create-FileShare -Name +ACQ-Name -Path +ACQ-Path +AHw- Out-Null
+    +AH0-
+
+    +ACQ-sharePath +AD0- +ACIAXABcACQ-env:COMPUTERNAME+AFwAJA-Name+ACI-
+    return +ACQ-sharePath
++AH0-
+
+function GetSupportedPlatforms(+AFs-String+AFsAXQBd- +ACQ-requiredPlatformNames)+AHs-
+    +ACQ-computerName +AD0- +ACQ-env:COMPUTERNAME
+    +ACMAJA-assignedSite +AD0- +ACQ-(+AFs-WmiClass+AF0AIgBcAFwAJA-computerName+AFw-ROOT+AFw-ccm:SMS+AF8-Client+ACI-).getassignedsite()
+    +ACQ-siteCode +AD0- Get-Site  
+    +ACQ-filteredPlatforms +AD0- Get-WmiObject -ComputerName +ACQ-computerName -Class SMS+AF8-SupportedPlatforms -Namespace +ACI-root+AFw-sms+AFw-site+AF8AJA-siteCode+ACI- +AHw- Where-Object +AHsAJABf-.IsSupported -eq +ACQ-true -and  +ACQAXw-.OSName -like 'Win NT' -and (+ACQAXw-.OSMinVersion -match +ACI-6+AFw-.+AFs-0-9+AF0Aew-1,2+AH0AXA-.+AFs-0-9+AF0Aew-1,4+AH0AXA-.+AFs-0-9+AF0Aew-1,4+AH0AIg- -or +ACQAXw-.OSMinVersion -match +ACI-10+AFw-.+AFs-0-9+AF0Aew-1,2+AH0AXA-.+AFs-0-9+AF0Aew-1,4+AH0AXA-.+AFs-0-9+AF0Aew-1,4+AH0AIg-) -and (+ACQAXw-.OSPlatform -like 'I386' -or +ACQAXw-.OSPlatform -like 'x64')+AH0-
+
+    +ACQ-requiredPlatforms +AD0- +ACQ-filteredPlatforms+AHw- Where-Object +AHsAJA-requiredPlatformNames.Contains(+ACQAXw-.DisplayText) +AH0- +ACMAfA- Select DisplayText, OSMaxVersion, OSMinVersion, OSName, OSPlatform +AHw- Out-GridView
+
+    +ACQ-supportedPlatforms +AD0- +AEA-()
+
+    foreach(+ACQ-p in +ACQ-requiredPlatforms)
+    +AHs-
+        +ACQ-osDetail +AD0- (+AFs-WmiClass+AF0-(+ACIAXABcACQ-computerName+AFw-root+AFw-sms+AFw-site+AF8AJA-siteCode+AGA-:SMS+AF8-OS+AF8-Details+ACI-)).CreateInstance()    
+        +ACQ-osDetail.MaxVersion +AD0- +ACQ-p.OSMaxVersion
+        +ACQ-osDetail.MinVersion +AD0- +ACQ-p.OSMinVersion
+        +ACQ-osDetail.Name +AD0- +ACQ-p.OSName
+        +ACQ-osDetail.Platform +AD0- +ACQ-p.OSPlatform
+
+        +ACQ-supportedPlatforms +-+AD0- +ACQ-osDetail
+    +AH0-
+
+    +ACQ-supportedPlatforms
++AH0-
+
+function CreateDownloadXmlFile(+AFs-string+AF0AJA-Path, +AFs-string+AF0AJA-ConfigFileName)+AHs-
+	+ACM-1 - Set the correct version number to update Source location
+	+ACQ-sourceFilePath +AD0- +ACIAJA-path+AFwAJA-configFileName+ACI-
+    +ACQ-localSourceFilePath +AD0- +ACI-.+AFwAJA-configFileName+ACI-
+
+    Set-Location +ACQ-PSScriptRoot
+
+    if (Test-Path -Path +ACQ-localSourceFilePath) +AHs-   
+	  +ACQ-doc +AD0- +AFs-Xml+AF0- (Get-Content +ACQ-localSourceFilePath)
+
+      +ACQ-addNode +AD0- +ACQ-doc.Configuration.Add
+	  +ACQ-addNode.OfficeClientEdition +AD0- +ACQ-bitness
+
+      +ACQ-doc.Save(+ACQ-sourceFilePath)
+    +AH0- else +AHs-
+      +ACQ-doc +AD0- New-Object System.XML.XMLDocument
+
+      +ACQ-configuration +AD0- +ACQ-doc.CreateElement(+ACI-Configuration+ACI-)+ADs-
+      +ACQ-a +AD0- +ACQ-doc.AppendChild(+ACQ-configuration)+ADs-
+
+      +ACQ-addNode +AD0- +ACQ-doc.CreateElement(+ACI-Add+ACI-)+ADs-
+      +ACQ-addNode.SetAttribute(+ACI-OfficeClientEdition+ACI-, +ACQ-bitness)
+      if (+ACQ-Version) +AHs-
+         if (+ACQ-Version.Length -gt 0) +AHs-
+             +ACQ-addNode.SetAttribute(+ACI-Version+ACI-, +ACQ-Version)
+         +AH0-
+      +AH0-
+      +ACQ-a +AD0- +ACQ-doc.DocumentElement.AppendChild(+ACQ-addNode)+ADs-
+
+      +ACQ-addProduct +AD0- +ACQ-doc.CreateElement(+ACI-Product+ACI-)+ADs-
+      +ACQ-addProduct.SetAttribute(+ACI-ID+ACI-, +ACI-O365ProPlusRetail+ACI-)
+      +ACQ-a +AD0- +ACQ-addNode.AppendChild(+ACQ-addProduct)+ADs-
+
+      +ACQ-addLanguage +AD0- +ACQ-doc.CreateElement(+ACI-Language+ACI-)+ADs-
+      +ACQ-addLanguage.SetAttribute(+ACI-ID+ACI-, +ACI-en-us+ACI-)
+      +ACQ-a +AD0- +ACQ-addProduct.AppendChild(+ACQ-addLanguage)+ADs-
+
+	  +ACQ-doc.Save(+ACQ-sourceFilePath)
+    +AH0-
++AH0-
+
+function CreateUpdateXmlFile(+AFs-string+AF0AJA-Path, +AFs-string+AF0AJA-ConfigFileName, +AFs-string+AF0AJA-Bitness, +AFs-string+AF0AJA-Version)+AHs-
+    +ACQ-newConfigFileName +AD0- +ACQ-ConfigFileName -replace '+AFw-.xml'
+    +ACQ-newConfigFileName +AD0- +ACQ-newConfigFileName +- +ACIAJA-Bitness+ACI- +- +ACI-.xml+ACI-
+
+    Copy-Item -Path +ACI-.+AFwAJA-ConfigFileName+ACI- -Destination +ACI-.+AFwAJA-newConfigFileName+ACI-
+    +ACQ-ConfigFileName +AD0- +ACQ-newConfigFileName
+
+    +ACQ-testGroupFilePath +AD0- +ACIAJA-path+AFwAJA-ConfigFileName+ACI-
+    +ACQ-localtestGroupFilePath +AD0- +ACI-.+AFwAJA-ConfigFileName+ACI-
+
+	+ACQ-testGroupConfigContent +AD0- +AFs-Xml+AF0- (Get-Content +ACQ-localtestGroupFilePath)
+
+	+ACQ-addNode +AD0- +ACQ-testGroupConfigContent.Configuration.Add
+	+ACQ-addNode.OfficeClientEdition +AD0- +ACQ-bitness
+    +ACQ-addNode.SourcePath +AD0- +ACQ-path	
+
+	+ACQ-updatesNode +AD0- +ACQ-testGroupConfigContent.Configuration.Updates
+	+ACQ-updatesNode.UpdatePath +AD0- +ACQ-path
+	+ACQ-updatesNode.TargetVersion +AD0- +ACQ-version
+
+	+ACQ-testGroupConfigContent.Save(+ACQ-testGroupFilePath)
+    return +ACQ-ConfigFileName
++AH0-
+ 
+function GetCMPSModulePath() +AHs-
+    +AFs-CmdletBinding()+AF0-	
+    Param
+	(
+		+AFs-Parameter()+AF0-
+		+AFs-String+AF0AJA-CMPSModulePath +AD0- +ACQ-NULL
+	)
+
+    +AFs-bool+AF0AJA-pathExists +AD0- +ACQ-false
+
+    if (+ACQ-CMPSModulePath) +AHs-
+       if (+ACQ-CMPSModulePath.ToLower().EndsWith(+ACI-.psd1+ACI-)) +AHs-
+         +ACQ-CMModulePath +AD0- +ACQ-CMPSModulePath
+         +ACQ-pathExists +AD0- Test-Path -Path +ACQ-CMModulePath
+       +AH0-
+    +AH0-
+
+    if (+ACEAJA-pathExists) +AHs-
+        +ACQ-uiInstallDir +AD0- (Get-ItemProperty -Path +ACI-hklm:+AFw-SOFTWARE+AFw-Microsoft+AFw-SMS+AFw-Setup+ACI- -Name +ACI-UI Installation Directory+ACI-).'UI Installation Directory'
+        +ACQ-CMModulePath +AD0- Join-Path +ACQ-uiInstallDir +ACI-bin+AFw-ConfigurationManager.psd1+ACI-
+
+        +ACQ-pathExists +AD0- Test-Path -Path +ACQ-CMModulePath
+        if (+ACEAJA-pathExists) +AHs-
+            +ACQ-CMModulePath +AD0- +ACIAJA-env:ProgramFiles+AFw-Microsoft Configuration Manager+AFw-AdminConsole+AFw-bin+AFw-ConfigurationManager.psd1+ACI-
+            +ACQ-pathExists +AD0- Test-Path -Path +ACQ-CMModulePath
+        +AH0-
+    +AH0-
+
+    if (+ACEAJA-pathExists) +AHs-
+       +ACQ-uiAdminPath +AD0- +ACQAew-env:SMS+AF8-ADMIN+AF8-UI+AF8-PATH+AH0-
+       if (+ACQ-uiAdminPath.ToLower().EndsWith(+ACIAXA-bin+ACI-)) +AHs-
+           +ACQ-dirInfo +AD0- +ACQ-uiAdminPath
+       +AH0- else +AHs-
+           +ACQ-dirInfo +AD0- (+AFs-System.IO.DirectoryInfo+AF0AJA-uiAdminPath).Parent.FullName
+       +AH0-
+      
+       +ACQ-CMModulePath +AD0- +ACQ-dirInfo +- +ACIAXA-ConfigurationManager.psd1+ACI-
+       +ACQ-pathExists +AD0- Test-Path -Path +ACQ-CMModulePath
+    +AH0-
+
+    if (+ACEAJA-pathExists) +AHs-
+       +ACQ-CMModulePath +AD0- +ACIAJAB7-env:ProgramFiles(x86)+AH0AXA-Microsoft Configuration Manager+AFw-AdminConsole+AFw-bin+AFw-ConfigurationManager.psd1+ACI-
+       +ACQ-pathExists +AD0- Test-Path -Path +ACQ-CMModulePath
+    +AH0-
+
+    if (+ACEAJA-pathExists) +AHs-
+       +ACQ-CMModulePath +AD0- +ACIAJAB7-env:ProgramFiles(x86)+AH0AXA-Microsoft Configuration Manager+AFw-AdminConsole+AFw-bin+AFw-ConfigurationManager.psd1+ACI-
+       +ACQ-pathExists +AD0- Test-Path -Path +ACQ-CMModulePath
+    +AH0-
+
+    if (+ACEAJA-pathExists) +AHs-
+       throw +ACI-Cannot find the ConfigurationManager.psd1 file. Please use the -CMPSModulePath parameter to specify the location of the PowerShell Module+ACI-
+    +AH0-
+
+    return +ACQ-CMModulePath
++AH0-
+
+function Get-Site(+AFs-string+AFsAXQBdACQ-computerName +AD0- +ACQ-env:COMPUTERNAME) +AHs-
+    Get-WmiObject -ComputerName +ACQ-ComputerName -Namespace +ACI-root+AFw-SMS+ACI- -Class +ACI-SMS+AF8-ProviderLocation+ACI- +AHw- foreach-object+AHs- 
+        if (+ACQAXw-.ProviderForLocalSite -eq +ACQ-true)+AHsAJA-SiteCode+AD0AJABf-.sitecode+AH0- 
+    +AH0- 
+    if (+ACQ-SiteCode -eq +ACIAIg-) +AHs- 
+        throw (+ACI-Sitecode of ConfigMgr Site at +ACI- +- +ACQ-ComputerName +- +ACI- could not be determined.+ACI-) 
+    +AH0- else +AHs- 
+        Return +ACQ-SiteCode 
+    +AH0- 
++AH0-
+
+function DownloadBits() +AHs-
+    +AFs-CmdletBinding()+AF0-	
+    Param
+	(
+	    +AFs-Parameter()+AF0-
+	    +AFs-OfficeBranch+AF0AJA-Branch +AD0- +ACQ-null
+	)
+
+    +ACQ-DownloadScript +AD0- +ACIAJA-PSScriptRoot+AFw-Download-OfficeProPlusBranch.ps1+ACI-
+    if (Test-Path -Path +ACQ-DownloadScript) +AHs-
+       
+
+
+
+    +AH0-
++AH0-
+
+Function GetScriptRoot() +AHs-
+ process +AHs-
+     +AFs-string+AF0AJA-scriptPath +AD0- +ACI-.+ACI-
+
+     if (+ACQ-PSScriptRoot) +AHs-
+       +ACQ-scriptPath +AD0- +ACQ-PSScriptRoot
+     +AH0- else +AHs-
+       +ACQ-scriptPath +AD0- split-path -parent +ACQ-MyInvocation.MyCommand.Definition
+     +AH0-
+
+     return +ACQ-scriptPath
+ +AH0-
++AH0-
+
+function GetQueryStatus()+AHs-
+Param(
+    +AFs-string+AF0AJA-SiteCode,
+    +AFs-string+AF0AJA-PkgID
+)
+
+    +ACQ-query +AD0- Get-WmiObject -NameSpace Root+AFw-SMS+AFw-Site+AF8AJA-SiteCode -Class SMS+AF8-DistributionDPStatus -Filter +ACI-PackageID+AD0-'+ACQ-PkgID'+ACI- +AHw- Select Name, MessageID, MessageState, LastUpdateDate
+
+    if (+ACQ-query -eq +ACQ-null)
+    +AHs-  
+        throw +ACI-PackageID not found+ACI-
+    +AH0-
+
+    foreach (+ACQ-objItem in +ACQ-query)+AHs-
+
+        +ACQ-DPName +AD0- +ACQ-objItem.Name
+        +ACQ-UpdDate +AD0- +AFs-System.Management.ManagementDateTimeconverter+AF0-::ToDateTime(+ACQ-objItem.LastUpdateDate)
+
+        switch (+ACQ-objItem.MessageState)
+        +AHs-
+            1         +AHsAJA-Status +AD0- +ACI-Success+ACIAfQ-
+            2         +AHsAJA-Status +AD0- +ACI-In Progress+ACIAfQ-
+            3         +AHsAJA-Status +AD0- +ACI-Failed+ACIAfQ-
+            4         +AHsAJA-Status +AD0- +ACI-Error+ACIAfQ-
+        +AH0-
+
+        switch (+ACQ-objItem.MessageID)
+        +AHs-
+            2300      +AHsAJA-Message +AD0- +ACI-Content is beginning to process+ACIAfQ-
+            2301      +AHsAJA-Message +AD0- +ACI-Content has been processed successfully+ACIAfQ-
+            2303      +AHsAJA-Message +AD0- +ACI-Failed to process package+ACIAfQ-
+            2311      +AHsAJA-Message +AD0- +ACI-Distribution Manager has successfully created or updated the package+ACIAfQ-
+            2303      +AHsAJA-Message +AD0- +ACI-Content was successfully refreshed+ACIAfQ-
+            2323      +AHsAJA-Message +AD0- +ACI-Failed to initialize NAL+ACIAfQ-
+            2324      +AHsAJA-Message +AD0- +ACI-Failed to access or create the content share+ACIAfQ-
+            2330      +AHsAJA-Message +AD0- +ACI-Content was distributed to distribution point+ACIAfQ-
+            2342      +AHsAJA-Message +AD0- +ACI-Content is beginning to distribute+ACIAfQ-
+            2354      +AHsAJA-Message +AD0- +ACI-Failed to validate content status file+ACIAfQ-
+            2357      +AHsAJA-Message +AD0- +ACI-Content transfer manager was instructed to send content to Distribution Point+ACIAfQ-
+            2360      +AHsAJA-Message +AD0- +ACI-Status message 2360 unknown+ACIAfQ-
+            2370      +AHsAJA-Message +AD0- +ACI-Failed to install distribution point+ACIAfQ-
+            2371      +AHsAJA-Message +AD0- +ACI-Waiting for prestaged content+ACIAfQ-
+            2372      +AHsAJA-Message +AD0- +ACI-Waiting for content+ACIAfQ-
+            2376      +AHsAJA-Message +AD0- +ACI-Distribution Manager created a snapshot for content+ACIAfQ-
+            2380      +AHsAJA-Message +AD0- +ACI-Content evaluation has started+ACIAfQ-
+            2381      +AHsAJA-Message +AD0- +ACI-An evaluation task is running. Content was added to Queue+ACIAfQ-
+            2382      +AHsAJA-Message +AD0- +ACI-Content hash is invalid+ACIAfQ-
+            2383      +AHsAJA-Message +AD0- +ACI-Failed to validate content hash+ACIAfQ-
+            2384      +AHsAJA-Message +AD0- +ACI-Content hash has been successfully verified+ACIAfQ-
+            2391      +AHsAJA-Message +AD0- +ACI-Failed to connect to remote distribution point+ACIAfQ-
+            2397      +AHsAJA-Message +AD0- +ACI-Detail will be available after the server finishes processing the messages+ACIAfQ-
+            2398      +AHsAJA-Message +AD0- +ACI-Content Status not found+ACIAfQ-
+            8203      +AHsAJA-Message +AD0- +ACI-Failed to update package+ACIAfQ-
+            8204      +AHsAJA-Message +AD0- +ACI-Content is being distributed to the distribution Point+ACIAfQ-
+            8211      +AHsAJA-Message +AD0- +ACI-Failed to update package+ACIAfQ-
+        +AH0-
+
+        +ACQ-Displayvalue +AD0- showTaskStatus -Operation +ACQ-Status -Status +ACQ-Message -DateTime +ACQ-UpdDate
+
+    +AH0-
+
+    return +ACQ-Displayvalue
++AH0-
+
+function showTaskStatus() +AHs-
+    +AFs-CmdletBinding()+AF0-
+    Param(
+        +AFs-Parameter()+AF0-
+        +AFs-string+AF0- +ACQ-Operation +AD0- +ACIAIg-,
+
+        +AFs-Parameter()+AF0-
+        +AFs-string+AF0- +ACQ-Status +AD0- +ACIAIg-,
+
+        +AFs-Parameter()+AF0-
+        +AFs-string+AF0- +ACQ-DateTime +AD0- +ACIAIg-
+    )
+
+    +ACQ-Result +AD0- New-Object -TypeName PSObject 
+    Add-Member -InputObject +ACQ-Result -MemberType NoteProperty -Name +ACI-Operation+ACI- -Value +ACQ-Operation
+    Add-Member -InputObject +ACQ-Result -MemberType NoteProperty -Name +ACI-Status+ACI- -Value +ACQ-Status
+    Add-Member -InputObject +ACQ-Result -MemberType NoteProperty -Name +ACI-DateTime+ACI- -Value +ACQ-DateTime
+    return +ACQ-Result
++AH0-
+
++ACQ-scriptPath +AD0- GetScriptRoot
+
++ACQ-shareFunctionsPath +AD0- +ACIAJA-scriptPath+AFw-SharedFunctions.ps1+ACI-
+if (+ACQ-scriptPath.StartsWith(+ACIAXABcACI-)) +AHs-
++AH0- else +AHs-
+    if (+ACE-(Test-Path -Path +ACQ-shareFunctionsPath)) +AHs-
+        throw +ACI-Missing Dependency File SharedFunctions.ps1+ACI-    
+    +AH0-
++AH0-
+. +ACQ-shareFunctionsPath
+
+
+
+
+
+
+

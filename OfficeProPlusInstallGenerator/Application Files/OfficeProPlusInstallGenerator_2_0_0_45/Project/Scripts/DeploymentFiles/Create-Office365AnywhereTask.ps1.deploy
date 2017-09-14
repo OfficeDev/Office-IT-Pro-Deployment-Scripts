@@ -1,0 +1,305 @@
+﻿+AFs-CmdletBinding(SupportsShouldProcess+AD0AJA-true)+AF0-
+Param
+(
+    +AFs-Parameter()+AF0-
+    +AFs-bool+AF0- +ACQ-WaitForUpdateToFinish +AD0- +ACQ-true,
+
+    +AFs-Parameter()+AF0-
+    +AFs-bool+AF0- +ACQ-EnableUpdateAnywhere +AD0- +ACQ-true,
+
+    +AFs-Parameter()+AF0-
+    +AFs-bool+AF0- +ACQ-ForceAppShutdown +AD0- +ACQ-true,
+
+    +AFs-Parameter()+AF0-
+    +AFs-bool+AF0- +ACQ-UpdatePromptUser +AD0- +ACQ-false,
+
+    +AFs-Parameter()+AF0-
+    +AFs-bool+AF0- +ACQ-DisplayLevel +AD0- +ACQ-false,
+
+    +AFs-Parameter()+AF0-
+    +AFs-string+AF0- +ACQ-UpdateToVersion +AD0- +ACQ-NULL,
+
+    +AFs-Parameter()+AF0-
+    +AFs-bool+AF0- +ACQ-UseRandomStartTime +AD0- +ACQ-true,
+
+    +AFs-Parameter()+AF0-
+    +AFs-string+AF0- +ACQ-RandomTimeStart +AD0- +ACI-08:00+ACI-,
+
+    +AFs-Parameter()+AF0-
+    +AFs-string+AF0- +ACQ-RandomTimeEnd +AD0- +ACI-17:00+ACI-,
+
+    +AFs-Parameter()+AF0-
+    +AFs-string+AF0- +ACQ-StartTime +AD0- +ACI-12:00+ACI-,
+
+    +AFs-Parameter()+AF0-
+    +AFs-string+AF0- +ACQ-LogPath +AD0- +ACQ-NULL,
+
+    +AFs-Parameter()+AF0-
+    +AFs-string+AF0- +ACQ-LogName +AD0- +ACQ-NULL,
+        
+    +AFs-Parameter()+AF0-
+    +AFs-bool+AF0- +ACQ-ValidateUpdateSourceFiles +AD0- +ACQ-true,
+
+    +AFs-Parameter()+AF0-
+    +AFs-bool+AF0- +ACQ-UseScriptLocationAsUpdateSource +AD0- +ACQ-false
+    
+)
+
+Function GetScriptRoot() +AHs-
+ process +AHs-
+     +AFs-string+AF0AJA-scriptPath +AD0- +ACI-.+ACI-
+
+     if (+ACQ-PSScriptRoot) +AHs-
+       +ACQ-scriptPath +AD0- +ACQ-PSScriptRoot
+     +AH0- else +AHs-
+       +ACQ-scriptPath +AD0- split-path -parent +ACQ-MyInvocation.MyCommand.Definition
+       +ACQ-scriptPath +AD0- (Get-Item -Path +ACI-.+AFwAIg-).FullName
+     +AH0-
+
+     return +ACQ-scriptPath
+ +AH0-
++AH0-
+
+Function Generate-StartTime() +AHs-
+    +AFs-CmdletBinding(SupportsShouldProcess+AD0AJA-true)+AF0-
+    Param
+    (
+        +AFs-Parameter()+AF0-
+        +AFs-string+AF0- +ACQ-RandomTimeStart +AD0- +ACI-08:00+ACI-,
+
+        +AFs-Parameter()+AF0-
+        +AFs-string+AF0- +ACQ-RandomTimeEnd +AD0- +ACI-17:00+ACI-
+    )
+
+    Process +AHs-
+
+        +AFs-DateTime+AF0AJA-theMin +AD0- +AFs-DateTime+AF0-::Now.Date
+        +AFs-DateTime+AF0AJA-theMax +AD0- +AFs-DateTime+AF0-::Now.Date.AddDays(1).AddSeconds(-1)
+
+        +ACQ-strTheMin +AD0- +ACQ-theMin.Date.ToShortDateString() +- +ACI- +ACI- +- +ACQ-RandomTimeStart
+        +ACQ-strTheMax +AD0- +ACQ-theMax.Date.ToShortDateString() +- +ACI- +ACI- +- +ACQ-RandomTimeEnd
+    
+        +ACQ-theMin +AD0- +AFs-DateTime+AF0AJA-strTheMin
+        +ACQ-theMax +AD0- +AFs-DateTime+AF0AJA-strTheMax
+
+        +ACQ-theRandomGen +AD0- New-Object random
+        +ACQ-theRandomTicks +AD0- +AFs-Convert+AF0-::ToInt64( (+ACQ-theMax.ticks +ACo- 1.0 - +ACQ-theMin.Ticks +ACo- 1.0 ) +ACo- +ACQ-theRandomGen.NextDouble() +- +ACQ-theMin.Ticks +ACo- 1.0 )
+        +AFs-DateTime+AF0AJA-startDate +AD0- new-object DateTime(+ACQ-theRandomTicks)
+
+        +ACQ-hour +AD0- +ACQ-startDate.Hour.ToString()
+        +ACQ-minute +AD0- +ACQ-startDate.Minute.ToString()
+
+        if (+ACQ-hour.Length -eq 1) +AHs- +ACQ-hour +AD0- +ACI-0+ACI- +- +ACQ-hour +AH0-
+        if (+ACQ-minute.Length -eq 1) +AHs- +ACQ-minute +AD0- +ACI-0+ACI- +- +ACQ-minute +AH0-
+
+        +ACQ-startTime +AD0- +ACQ-hour +- +ACI-:+ACI- +- +ACQ-minute
+        return +ACQ-startTime
+    +AH0-
++AH0-
+
+Function Convert-Bool() +AHs-
+    +AFs-CmdletBinding(SupportsShouldProcess+AD0AJA-true)+AF0-
+    Param
+    (
+        +AFs-Parameter(Mandatory+AD0AJA-true)+AF0-
+        +AFs-bool+AF0- +ACQ-value
+    )
+
+    +ACQ-newValue +AD0- +ACIAJAAi- +- +ACQ-value.ToString()
+    return +ACQ-newValue 
++AH0-
+
+Function Create-Office365AnywhereTask +AHs-
+    +AFs-CmdletBinding(SupportsShouldProcess+AD0AJA-true)+AF0-
+    Param
+    (
+        +AFs-Parameter()+AF0-
+        +AFs-bool+AF0- +ACQ-WaitForUpdateToFinish +AD0- +ACQ-true,
+
+        +AFs-Parameter()+AF0-
+        +AFs-bool+AF0- +ACQ-EnableUpdateAnywhere +AD0- +ACQ-true,
+
+        +AFs-Parameter()+AF0-
+        +AFs-bool+AF0- +ACQ-ForceAppShutdown +AD0- +ACQ-true,
+
+        +AFs-Parameter()+AF0-
+        +AFs-bool+AF0- +ACQ-UpdatePromptUser +AD0- +ACQ-false,
+
+        +AFs-Parameter()+AF0-
+        +AFs-bool+AF0- +ACQ-DisplayLevel +AD0- +ACQ-false,
+
+        +AFs-Parameter()+AF0-
+        +AFs-string+AF0- +ACQ-UpdateToVersion +AD0- +ACQ-NULL,
+
+        +AFs-Parameter()+AF0-
+        +AFs-bool+AF0- +ACQ-UseRandomStartTime +AD0- +ACQ-true,
+
+        +AFs-Parameter()+AF0-
+        +AFs-string+AF0- +ACQ-RandomTimeStart +AD0- +ACI-08:00+ACI-,
+
+        +AFs-Parameter()+AF0-
+        +AFs-string+AF0- +ACQ-RandomTimeEnd +AD0- +ACI-17:00+ACI-,
+
+        +AFs-Parameter()+AF0-
+        +AFs-string+AF0- +ACQ-StartTime +AD0- +ACI-12:00+ACI-,
+
+        +AFs-Parameter()+AF0-
+        +AFs-string+AF0- +ACQ-LogPath +AD0- +ACQ-NULL,
+
+        +AFs-Parameter()+AF0-
+        +AFs-string+AF0- +ACQ-LogName +AD0- +ACQ-NULL,
+        
+        +AFs-Parameter()+AF0-
+        +AFs-bool+AF0- +ACQ-ValidateUpdateSourceFiles +AD0- +ACQ-true
+    )
+
+    Begin +AHs-
+	    +ACQ-currentExecutionPolicy +AD0- Get-ExecutionPolicy
+	    Set-ExecutionPolicy Unrestricted -Scope Process -Force  
+        +ACQ-startLocation +AD0- Get-Location
+    +AH0-
+
+    Process +AHs-
+       +ACQ-TaskName +AD0- +ACI-Update Office 365 Anywhere+ACI-
+       +ACQ-scriptRoot +AD0- GetScriptRoot
+ 
+       if (+ACQ-UseRandomStartTime) +AHs-
+           +ACQ-taskStartTime +AD0- Generate-StartTime
+       +AH0- else +AHs-
+           +ACQ-taskStartTime +AD0- +ACQ-StartTime
+       +AH0-
+
+       +ACQ-outputPath +AD0- +ACIAJA-env:temp+AFw-updateAnywhereTask.xml+ACI-
+
+       if (Test-Path -Path +ACIAJA-scriptRoot+AFw-Update-Office365Anywhere.ps1+ACI-) +AHs-
+           Copy-Item -Path +ACIAJA-scriptRoot+AFw-Update-Office365Anywhere.ps1+ACI- -Destination +ACIAJA-env:Windir+AFw-Temp+AFw-Update-Office365Anywhere.ps1+ACI- -Force
+       +AH0-
+
+       if (Test-Path -Path +ACIAJA-scriptRoot+AFw-SharedFunctions.ps1+ACI-) +AHs-
+           Copy-Item -Path +ACIAJA-scriptRoot+AFw-SharedFunctions.ps1+ACI- -Destination +ACIAJA-env:Windir+AFw-Temp+AFw-SharedFunctions.ps1+ACI- -Force
+       +AH0-
+
+       if (Test-Path -Path +ACIAJA-scriptRoot+AFw-DeploymentFiles+AFw-Update-Office365Anywhere.ps1+ACI-) +AHs-
+           Copy-Item -Path +ACIAJA-scriptRoot+AFw-DeploymentFiles+AFw-Update-Office365Anywhere.ps1+ACI- -Destination +ACIAJA-env:Windir+AFw-Temp+AFw-Update-Office365Anywhere.ps1+ACI- -Force
+       +AH0-
+
+       if (Test-Path -Path +ACIAJA-scriptRoot+AFw-DeploymentFiles+AFw-SharedFunctions.ps1+ACI-) +AHs-
+           Copy-Item -Path +ACIAJA-scriptRoot+AFw-DeploymentFiles+AFw-SharedFunctions.ps1+ACI- -Destination +ACIAJA-env:Windir+AFw-Temp+AFw-SharedFunctions.ps1+ACI- -Force
+       +AH0-
+
+       +ACQ-exePath +AD0- +ACI-PowerShell -Command +ACQ-env:windir+AFw-Temp+AFw-Update-Office365Anywhere.ps1+ACI- +- +AGA-
+       +ACI- -WaitForUpdateToFinish +ACI- +- (Convert-Bool -value +ACQ-WaitForUpdateToFinish) +- +AGA-
+       +ACI- -EnableUpdateAnywhere +ACI- +- (Convert-Bool -value +ACQ-EnableUpdateAnywhere) +- +AGA-
+       +ACI- -ForceAppShutdown +ACI- +- (Convert-Bool -value +ACQ-ForceAppShutdown) +- +AGA-
+       +ACI- -UpdatePromptUser +ACI- +- (Convert-Bool -value +ACQ-UpdatePromptUser) +- +AGA-
+       +ACI- -DisplayLevel +ACI- +- (Convert-Bool -value +ACQ-DisplayLevel) +- +AGA-
+       +ACI- -ValidateUpdateSourceFiles +ACI- +- (Convert-Bool -value +ACQ-ValidateUpdateSourceFiles)
+
+       if (+ACQ-UpdateToVersion) +AHs-
+          +ACQ-exePath +-+AD0- +ACI- -UpdateToVersion +ACI- +- +ACQ-UpdateToVersion
+       +AH0-
+
+       if (+ACQ-LogPath) +AHs-
+          +ACQ-exePath +-+AD0- +ACI- -LogPath +ACI- +- +ACQ-LogPath
+       +AH0-
+
+       if (+ACQ-LogName) +AHs-
+          +ACQ-exePath +-+AD0- +ACI- -LogName +ACI- +- +ACQ-LogName
+       +AH0-
+
+       +ACQ-runAsUser +AD0- +ACI-NT AUTHORITY+AFw-SYSTEM+ACI-
+       if ((+ACQ-UpdatePromptUser) -or (+ACQ-DisplayLevel) -or (+ACE-(+ACQ-ForceAppShutdown))) +AHs-
+          +ACQ-runAsUser +AD0- +ACI-BUILTIN+AFw-Users+ACI-
+       +AH0-
+
+       schtasks /create /tn +ACQ-TaskName /tr +AGAAIgAk-exePath+AGAAIg- /sc WEEKLY /st +ACQ-taskStartTime /f /D TUE /RU +ACQ-runAsUser /RL Highest +AHw- Out-null
+       schtasks /query /tn +ACQ-TaskName /xml +AD4- +ACQ-outputPath  +AHw- Out-null
+
+       +AFs-xml+AF0AJA-xml +AD0- Get-Content -Path +ACQ-outputPath
+
+       +ACQ-xml.Task.RegistrationInfo.Author +AD0- +ACIAIg-
+
+       +ACQ-xml.Task.Settings.DisallowStartIfOnBatteries +AD0- +ACI-false+ACI-
+       +ACQ-xml.Task.Settings.StopIfGoingOnBatteries +AD0- +ACI-false+ACI-
+
+       if (+ACE-(+ACQ-xml.Task.Settings.Priority)) +AHs-
+          +ACQ-priority +AD0- +ACQ-xml.CreateElement(+ACI-Priority+ACI-, +ACI-http://schemas.microsoft.com/windows/2004/02/mit/task+ACI-)
+          +ACQ-xml.Task.Settings.AppendChild(+ACQ-priority) +AHw- Out-Null
+       +AH0-
+       +ACQ-xml.Task.Settings.Priority +AD0- +ACI-4+ACI-
+
+       if (+ACE-(+ACQ-xml.Task.Settings.WakeToRun)) +AHs-
+          +ACQ-wakeToRun +AD0- +ACQ-xml.CreateElement(+ACI-WakeToRun+ACI-, +ACI-http://schemas.microsoft.com/windows/2004/02/mit/task+ACI-)
+          +ACQ-xml.Task.Settings.AppendChild(+ACQ-wakeToRun) +AHw- Out-Null
+       +AH0-
+       +ACQ-xml.Task.Settings.WakeToRun +AD0- +ACI-true+ACI-
+
+       if (+ACE-(+ACQ-xml.Task.Settings.StartWhenAvailable)) +AHs-
+          +ACQ-startWhenAvailable +AD0- +ACQ-xml.CreateElement(+ACI-StartWhenAvailable+ACI-, +ACI-http://schemas.microsoft.com/windows/2004/02/mit/task+ACI-)
+          +ACQ-xml.Task.Settings.AppendChild(+ACQ-startWhenAvailable) +AHw- Out-Null
+       +AH0-
+       +ACQ-xml.Task.Settings.StartWhenAvailable +AD0- +ACI-true+ACI-
+
+       +ACQ-xml.Save(+ACQ-outputPath)
+  
+       schtasks /delete /tn +ACQ-TaskName /F +AHw- Out-null
+       schtasks /create /tn +ACQ-TaskName /xml +ACQ-outputPath /F
+    +AH0-
+
+    End +AHs-
+       +ACQ-setLocation +AD0- Set-Location +ACQ-startLocation
+    +AH0-
+
++AH0-
+
+Function GetScriptRoot() +AHs-
+ process +AHs-
+     +AFs-string+AF0AJA-scriptPath +AD0- +ACI-.+ACI-
+
+     if (+ACQ-PSScriptRoot) +AHs-
+       +ACQ-scriptPath +AD0- +ACQ-PSScriptRoot
+     +AH0- else +AHs-
+       +ACQ-scriptPath +AD0- split-path -parent +ACQ-MyInvocation.MyCommand.Definition
+     +AH0-
+
+     return +ACQ-scriptPath
+ +AH0-
++AH0-
+
+Create-Office365AnywhereTask +AGA-
+-WaitForUpdateToFinish +ACQ-WaitForUpdateToFinish +AGA-
+-EnableUpdateAnywhere +ACQ-EnableUpdateAnywhere +AGA-
+-ForceAppShutdown +ACQ-ForceAppShutdown +AGA-
+-UpdatePromptUser +ACQ-UpdatePromptUser +AGA-
+-DisplayLevel +ACQ-DisplayLevel +AGA-
+-UpdateToVersion +ACQ-UpdateToVersion +AGA-
+-UseRandomStartTime +ACQ-UseRandomStartTime +AGA-
+-RandomTimeStart +ACQ-RandomTimeStart +AGA-
+-RandomTimeEnd +ACQ-RandomTimeEnd +AGA-
+-StartTime +ACQ-StartTime +AGA-
+-LogPath +ACQ-LogPath +AGA-
+-LogName +ACQ-LogName +AGA-
+-ValidateUpdateSourceFiles +ACQ-ValidateUpdateSourceFiles
+
++ACQ-scriptRoot +AD0- GetScriptRoot
+
+if (Test-Path -Path +ACIAJA-scriptRoot+AFw-Update-Office365Anywhere.ps1+ACI-) +AHs-
+
++ACY- +ACQ-scriptRoot+AFw-Update-Office365Anywhere.ps1 -WaitForUpdateToFinish +ACQ-WaitForUpdateToFinish +AGA-
+    -EnableUpdateAnywhere +ACQ-EnableUpdateAnywhere +AGA-
+    -ForceAppShutdown +ACQ-ForceAppShutdown +AGA-
+    -UpdatePromptUser +ACQ-UpdatePromptUser +AGA-
+    -DisplayLevel +ACQ-DisplayLevel +AGA-
+    -UpdateToVersion +ACQ-UpdateToVersion +AGA-
+    -LogPath +ACQ-LogPath +AGA-
+    -LogName +ACQ-LogName +AGA-
+    -ValidateUpdateSourceFiles +ACQ-ValidateUpdateSourceFiles +AGA-
+    -UseScriptLocationAsUpdateSource +ACQ-UseScriptLocationAsUpdateSource
++AH0-
+
+
+
+
+
+
+

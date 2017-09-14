@@ -1,0 +1,131 @@
+﻿Function Check-UserInOUPath() +AHs-
+   param (
+      +AFs-parameter(Mandatory+AD0AJA-true)+AF0-
+      +AFs-string+AF0AJA-ContainerPath,
+
+      +AFs-parameter()+AF0-
+      +AFs-bool+AF0AJA-IncludeSubContainers+AD0AJA-true
+   )
+
+   +ACQ-adSysInfo +AD0- Get-AdSystemInfo
+   return checkInOUPath -DistinguishedName +ACQ-adSysInfo.UserDistinguishedName -IncludeSubContainers +ACQ-IncludeSubContainers -ContainerPath +ACQ-ContainerPath
++AH0-
+
+Function Check-ComputerInOUPath() +AHs-
+   param (
+      +AFs-parameter(Mandatory+AD0AJA-true)+AF0-
+      +AFs-string+AF0AJA-ContainerPath,
+
+      +AFs-parameter()+AF0-
+      +AFs-bool+AF0AJA-IncludeSubContainers+AD0AJA-true
+   )
+
+
+   +ACQ-adSysInfo +AD0- Get-AdSystemInfo
+   return checkInOUPath -DistinguishedName +ACQ-adSysInfo.ComputerDistinguishedName -IncludeSubContainers +ACQ-IncludeSubContainers -ContainerPath +ACQ-ContainerPath
++AH0-
+
+
+Function checkInOUPath() +AHs-
+   param (
+      +AFs-parameter(Mandatory+AD0AJA-true)+AF0-
+      +AFs-string+AF0AJA-DistinguishedName,
+
+      +AFs-parameter(Mandatory+AD0AJA-true)+AF0-
+      +AFs-string+AF0AJA-ContainerPath,
+
+      +AFs-parameter()+AF0-
+      +AFs-bool+AF0AJA-IncludeSubContainers+AD0AJA-true
+   )
+
+   +ACQ-OUPath +AD0- +ACQ-OUPath -replace +ACI-,+ACQAIg-, +ACIAIg-
+
+   +ACQ-pathParse +AD0- Parse-LDAPPath -DistinguishedName +ACQ-DistinguishedName
+   
+   if (+ACQ-ContainerPath.ToUpper().Contains(+ACI-DC+AD0AIg-)) +AHs-
+     +ACQ-chkPath +AD0- +ACQ-pathParse.ContainerPath.ToUpper() +- +ACI-,+ACI- +- +ACQ-pathParse.DomainPath
+
+     if (+ACQ-IncludeSubContainers) +AHs-
+         if (+ACQ-chkPath.ToUpper().EndsWith(+ACQ-ContainerPath.ToUpper())) +AHs-
+            return +ACQ-true
+         +AH0-
+     +AH0- else +AHs-
+         if (+ACQ-ContainerPath.ToUpper() -eq +ACQ-chkPath.ToUpper()) +AHs-
+            return +ACQ-true
+         +AH0-
+     +AH0-
+   +AH0- else +AHs-
+     if (+ACQ-IncludeSubContainers) +AHs-
+         if (+ACQ-pathParse.ContainerPath.ToUpper().Trim().EndsWith(+ACQ-ContainerPath.ToUpper().Trim())) +AHs-
+            return +ACQ-true
+         +AH0-
+     +AH0- else +AHs-
+         if (+ACQ-ContainerPath.ToUpper().Trim() -eq +ACQ-pathParse.ContainerPath.ToUpper().Trim()) +AHs-
+            return +ACQ-true
+         +AH0-
+     +AH0-
+   +AH0-
+   return +ACQ-false
++AH0-
+
+function Parse-LDAPPath() +AHs-
+   param(
+      +AFs-Parameter(mandatory+AD0AJA-true)+AF0-
+      +AFs-string+AF0AJA-DistinguishedName
+   )
+
+   +ACQ-userDN +AD0- +ACQ-DistinguishedName.Replace(+ACIAXA-,+ACI-, +ACI------+ACI-)
+
+   +ACQ-pathSplit +AD0- +ACQ-userDN.Split(',')
+   +ACQ-commonName +AD0- +ACQ-pathSplit+AFs-0+AF0-
+
+   +ACQ-contPath +AD0- +ACIAIgA7-
+   +ACQ-domainPath +AD0- +ACIAIgA7-
+   for (+ACQ-n+AD0-1+ADsAJA-n -lt +ACQ-pathSplit.Length+ADsAJA-n+-+-) +AHs-
+     +ACQ-pathItem +AD0- +ACQ-pathSplit+AFsAJA-n+AF0-
+      
+     if (+ACQ-pathItem.ToUpper().StartsWith(+ACI-OU+ACI-) -or +ACQ-pathItem.ToUpper().StartsWith(+ACI-CN+ACI-)) +AHs-
+        if (+ACQ-contPath.Length -gt 0) +AHs- +ACQ-contPath +-+AD0- +ACI-,+ACI- +AH0-
+        +ACQ-contPath +-+AD0- +ACQ-pathItem 
+     +AH0-
+
+     if (+ACQ-pathItem.ToUpper().StartsWith(+ACI-DC+ACI-)) +AHs-
+        if (+ACQ-domainPath.Length -gt 0) +AHs- +ACQ-domainPath +-+AD0- +ACI-,+ACI- +AH0-
+        +ACQ-domainPath +-+AD0- +ACQ-pathItem 
+     +AH0-
+   +AH0-
+
+    +ACQ-contPath +AD0- +ACQ-contPath -replace +ACI-,+ACQAIg-, +ACIAIg-
+
+    +ACQ-result +AD0- New-Object -TypeName PSObject -Property +AEAAew-
+        CommonName +AD0- +ACQ-commonName.Replace(+ACI------+ACI-, +ACIAXA-,+ACI-)
+        ContainerPath +AD0- +ACQ-contPath.Replace(+ACI------+ACI-, +ACIAXA-,+ACI-)
+        DomainPath +AD0- +ACQ-domainPath.Replace(+ACI------+ACI-, +ACIAXA-,+ACI-)
+    +AH0-  
+    return +ACQ-result
++AH0-
+
+function Get-AdSystemInfo +AHs-
+    +ACQ-ADSystemInfo +AD0- New-Object -ComObject ADSystemInfo
+    +ACQ-adSysInfoType +AD0- +ACQ-ADSystemInfo.GetType()
+
+    +ACQ-result +AD0- New-Object -TypeName PSObject -Property +AEAAew-
+        UserDistinguishedName +AD0- +ACQ-adSysInfoType.InvokeMember('UserName','GetProperty',+ACQ-null,+ACQ-ADSystemInfo,+ACQ-null)
+        ComputerDistinguishedName +AD0- +ACQ-adSysInfoType.InvokeMember('ComputerName','GetProperty',+ACQ-null,+ACQ-ADSystemInfo,+ACQ-null)
+        PDCRoleOwnerDistinguishedName +AD0- +ACQ-adSysInfoType.InvokeMember('PDCRoleOwner','GetProperty',+ACQ-null,+ACQ-ADSystemInfo,+ACQ-null)
+        SchemaRoleOwnerDistinguishedName +AD0- +ACQ-adSysInfoType.InvokeMember('SchemaRoleOwner','GetProperty',+ACQ-null,+ACQ-ADSystemInfo,+ACQ-null)
+        SiteName +AD0- +ACQ-adSysInfoType.InvokeMember('SiteName','GetProperty',+ACQ-null,+ACQ-ADSystemInfo,+ACQ-null)
+        DomainShortName +AD0- +ACQ-adSysInfoType.InvokeMember('DomainShortName','GetProperty',+ACQ-null,+ACQ-ADSystemInfo,+ACQ-null)
+        DomainDNSName +AD0- +ACQ-adSysInfoType.InvokeMember('DomainDNSName','GetProperty',+ACQ-null,+ACQ-ADSystemInfo,+ACQ-null)
+        ForestDNSName +AD0- +ACQ-adSysInfoType.InvokeMember('ForestDNSName','GetProperty',+ACQ-null,+ACQ-ADSystemInfo,+ACQ-null)
+        IsNativeModeDomain +AD0- +ACQ-adSysInfoType.InvokeMember('IsNativeMode','GetProperty',+ACQ-null,+ACQ-ADSystemInfo,+ACQ-null)
+    +AH0-  
+
+    return +ACQ-result
++AH0-
+
+
+
+
+
+
