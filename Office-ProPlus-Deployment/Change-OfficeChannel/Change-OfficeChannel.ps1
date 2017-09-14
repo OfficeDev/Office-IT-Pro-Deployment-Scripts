@@ -592,20 +592,20 @@ function Change-UpdatePathToChannel {
    if ($Channel.ToString().ToLower() -eq "deferred") {
       $branchShortName = "DC"
    }
-   if ($Channel.ToString().ToLower() -eq "insiders") {
+   if ($Channel.ToString().ToLower() -eq "monthlytargeted") {
       $branchShortName = "IC"
    }
    if ($Channel.ToString().ToLower() -eq "monthly") {
       $branchShortName = "MC"
    }
-   if ($Channel.ToString().ToLower() -eq "targeted") {
+   if ($Channel.ToString().ToLower() -eq "semiannualtargeted") {
       $branchShortName = "TC"
    }
-   if ($Channel.ToString().ToLower() -eq "broad") {
+   if ($Channel.ToString().ToLower() -eq "semiannual") {
       $branchShortName = "BC"
    }
 
-   $channelNames = @("FRCC", "CC", "FRDC", "DC", "IC", "MC", "TC", "BC")
+   $channelNames = @("FRCC", "CC", "FRDC", "DC", "MTC", "MC", "SATC", "SAC")
 
    $madeChange = $false
    foreach ($channelName in $channelNames) {
