@@ -23,10 +23,10 @@ using System;
           FirstReleaseBusiness = 2,
           Business = 3,
           CMValidation = 4,
-          Insiders=5,
+          MonthlyTargeted=5,
           Monthly=6,
-          Targeted=7,
-          Broad=8
+          SemiAnnualTargeted=7,
+          SemiAnnual=8
        }
 "
 Add-Type -TypeDefinition $enumDef -ErrorAction SilentlyContinue
@@ -42,10 +42,10 @@ using System;
           Current = 1,
           FirstReleaseDeferred = 2,
           Deferred = 3,
-          Insiders=4,
+          MonthlyTargeted=4,
           Monthly=5,
-          Targeted=6,
-          Broad=7
+          SemiAnnualTargeted=6,
+          SemiAnnual=7
        }
 "
 Add-Type -TypeDefinition $enumDef -ErrorAction SilentlyContinue
@@ -753,7 +753,7 @@ function GetVersionBasedOnThrottle {
 
         $versionToReturn
         $checkChannel = $Channel
-        if($checkChannel -like "FirstReleaseCurrent"){$checkChannel = "InsidersSlow"}
+        if($checkChannel -like "FirstReleaseCurrent"){$checkChannel = "MonthlyTargeted"}
 
         $historyOfVersionsLink = "http://officecdn.microsoft.com/pr/wsus/releasehistory.cab"
 
@@ -956,17 +956,17 @@ function ConvertChannelNameToShortName {
        if ($ChannelName.ToLower() -eq "FirstReleaseBusiness".ToLower()) {
          return "FRDC"
        }
-       if ($ChannelName.ToLower() -eq "Insiders".ToLower()) {
-         return "IC"
+       if ($ChannelName.ToLower() -eq "MonthlyTargeted".ToLower()) {
+         return "MTC"
        }
        if ($ChannelName.ToLower() -eq "Monthly".ToLower()) {
          return "MC"
        }
-       if ($ChannelName.ToLower() -eq "Targeted".ToLower()) {
-         return "TC"
+       if ($ChannelName.ToLower() -eq "SemiAnnualTargeted".ToLower()) {
+         return "SATC"
        }
-       if ($ChannelName.ToLower() -eq "Broad".ToLower()) {
-         return "BC"
+       if ($ChannelName.ToLower() -eq "SemiAnnual".ToLower()) {
+         return "SAC"
        }
     }
 }
@@ -995,17 +995,17 @@ function ConvertChannelNameToBranchName {
        if ($ChannelName.ToLower() -eq "FirstReleaseBusiness".ToLower()) {
          return "FirstReleaseBusiness"
        }
-       if ($ChannelName.ToLower() -eq "Insiders".ToLower()) {
-         return "Insiders"
+       if ($ChannelName.ToLower() -eq "MonthlyTargeted".ToLower()) {
+         return "MonthlyTargeted"
        }
        if ($ChannelName.ToLower() -eq "Monthly".ToLower()) {
          return "Monthly"
        }
-       if ($ChannelName.ToLower() -eq "Targeted".ToLower()) {
-         return "Targeted"
+       if ($ChannelName.ToLower() -eq "SemiAnnualTargeted".ToLower()) {
+         return "SemiAnnualTargeted"
        }
-       if ($ChannelName.ToLower() -eq "Broad".ToLower()) {
-         return "Broad"
+       if ($ChannelName.ToLower() -eq "SemiAnnual".ToLower()) {
+         return "SemiAnnual"
        }
     }
 }
@@ -1034,17 +1034,17 @@ function ConvertBranchNameToChannelName {
        if ($BranchName.ToLower() -eq "FirstReleaseBusiness".ToLower()) {
          return "FirstReleaseDeferred"
        }
-       if ($BranchName.ToLower() -eq "Insiders".ToLower()) {
-         return "Insiders"
+       if ($BranchName.ToLower() -eq "MonthlyTargeted".ToLower()) {
+         return "MonthlyTargeted"
        }
        if ($BranchName.ToLower() -eq "Monthly".ToLower()) {
          return "Monthly"
        }
-       if ($BranchName.ToLower() -eq "Targeted".ToLower()) {
-         return "Targeted"
+       if ($BranchName.ToLower() -eq "SemiAnnualTargeted".ToLower()) {
+         return "SemiAnnualTargeted"
        }
-       if ($BranchName.ToLower() -eq "Broad".ToLower()) {
-         return "Broad"
+       if ($BranchName.ToLower() -eq "SemiAnnual".ToLower()) {
+         return "SemiAnnual"
        }
     }
 }
