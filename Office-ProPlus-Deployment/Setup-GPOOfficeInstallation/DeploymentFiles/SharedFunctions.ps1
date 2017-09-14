@@ -8,10 +8,10 @@ using System;
           Current = 1,
           FirstReleaseDeferred = 2,
           Deferred = 3,
-          Insiders=4,
+          MonthlyTargeted=4,
           Monthly=5,
-          Targeted=6,
-          Broad=7
+          SemiAnnualTargeted=6,
+          SemiAnnual=7
        }
 "
 Add-Type -TypeDefinition $enumDef -ErrorAction SilentlyContinue
@@ -744,22 +744,22 @@ function Change-UpdatePathToChannel {
    if ($branchName.ToLower() -eq "deferred") {
       $branchShortName = "DC"
    }
-   if ($branchName.ToLower() -eq "insiders") {
-      $branchShortName = "IC"
+   if ($branchName.ToLower() -eq "monthlytargeted") {
+      $branchShortName = "MTC"
    }
    if ($branchName.ToLower() -eq "monthly") {
       $branchShortName = "MC"
    }
-   if ($branchName.ToLower() -eq "targeted") {
-      $branchShortName = "TC"
+   if ($branchName.ToLower() -eq "semiannualtargeted") {
+      $branchShortName = "SATC"
    }
-   if ($branchName.ToLower() -eq "broad") {
-      $branchShortName = "BC"
+   if ($branchName.ToLower() -eq "semiannual") {
+      $branchShortName = "SAC"
    }
 
-   $channelNames = @("FRCC", "CC", "FRDC", "DC", "IC", "MC", "TC", "BC")
+   $channelNames = @("FRCC", "CC", "FRDC", "DC", "MTC", "MC", "SATC", "SAC")
    $channelLongNames = @("FirstReleaseCurrent", "Current", "FirstReleaseDeferred", "Deferred", "Business", "FirstReleaseBusiness",
-                         "Insiders", "Monthly", "Targeted", "Broad")
+                         "MonthlyTargeted", "Monthly", "SemiAnnualTargeted", "SemiAnnual")
 
    $madeChange = $false
    foreach ($channelName in $channelNames) {
@@ -1748,17 +1748,17 @@ function ConvertChannelNameToShortName {
        if ($ChannelName.ToLower() -eq "FirstReleaseBusiness".ToLower()) {
          return "FRDC"
        }
-              if ($ChannelName.ToLower() -eq "Insiders".ToLower()) {
-         return "IC"
+       if ($ChannelName.ToLower() -eq "MonthlyTargeted".ToLower()) {
+         return "MTC"
        }
-              if ($ChannelName.ToLower() -eq "Monthly".ToLower()) {
+       if ($ChannelName.ToLower() -eq "Monthly".ToLower()) {
          return "MC"
        }
-              if ($ChannelName.ToLower() -eq "Targeted".ToLower()) {
-         return "TC"
+       if ($ChannelName.ToLower() -eq "SemiAnnualTargeted".ToLower()) {
+         return "SATC"
        }
-              if ($ChannelName.ToLower() -eq "Broad".ToLower()) {
-         return "BC"
+       if ($ChannelName.ToLower() -eq "SemiAnnual".ToLower()) {
+         return "SAC"
        }
     }
 }

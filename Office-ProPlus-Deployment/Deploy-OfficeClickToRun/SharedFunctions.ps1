@@ -7,7 +7,11 @@ using System;
           FirstReleaseCurrent = 0,
           Current = 1,
           FirstReleaseDeferred = 2,
-          Deferred = 3
+          Deferred = 3,
+          MonthlyTargeted=4,
+          Monthly=5,
+          SemiAnnualTargeted=6,
+          SemiAnnual=7
        }
 "
 Add-Type -TypeDefinition $enumDef -ErrorAction SilentlyContinue
@@ -235,32 +239,40 @@ function Get-XMLLanguages() {
 Function Get-OfficeVersion {
 <#
 .Synopsis
-Gets the Office Version installed on the computer
+    Gets the Office Version installed on the computer
+
 .DESCRIPTION
-This function will query the local or a remote computer and return the information about Office Products installed on the computer
+    This function will query the local or a remote computer and return the information about Office Products installed on the computer
+
 .NOTES   
-Name: Get-OfficeVersion
-Version: 1.0.5
-DateCreated: 2015-07-01
-DateUpdated: 2016-10-14
+    Name: Get-OfficeVersion
+    Version: 1.0.5
+    DateCreated: 2015-07-01
+    DateUpdated: 2016-10-14
+
 .LINK
-https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
+    https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
+
 .PARAMETER ComputerName
-The computer or list of computers from which to query 
+    The computer or list of computers from which to query 
+
 .PARAMETER ShowAllInstalledProducts
-Will expand the output to include all installed Office products
+    Will expand the output to include all installed Office products
+
 .EXAMPLE
-Get-OfficeVersion
-Description:
-Will return the locally installed Office product
+    Get-OfficeVersion
+    
+    Will return the locally installed Office product
+
 .EXAMPLE
-Get-OfficeVersion -ComputerName client01,client02
-Description:
-Will return the installed Office product on the remote computers
+    Get-OfficeVersion -ComputerName client01,client02
+    
+    Will return the installed Office product on the remote computers
+
 .EXAMPLE
-Get-OfficeVersion | select *
-Description:
-Will return the locally installed Office product with all of the available properties
+    Get-OfficeVersion | select *
+   
+    Will return the locally installed Office product with all of the available properties
 #>
 [CmdletBinding(SupportsShouldProcess=$true)]
 param(
@@ -413,8 +425,6 @@ process {
           }
        }
     }
-
-    
 
     foreach ($regKey in $installKeys) {
         $keyList = new-object System.Collections.ArrayList
@@ -717,7 +727,7 @@ function Change-UpdatePathToChannel {
       if ($Channel) {
          $branchName = $Channel
       } else {
-         $branchName = "Deferred"
+         $branchName = "Broad"
       }
    }
 
@@ -734,9 +744,22 @@ function Change-UpdatePathToChannel {
    if ($branchName.ToLower() -eq "deferred") {
       $branchShortName = "DC"
    }
+   if ($branchName.ToLower() -eq "monthlytargeted") {
+      $branchShortName = "MTC"
+   }
+   if ($branchName.ToLower() -eq "monthly") {
+      $branchShortName = "MC"
+   }
+   if ($branchName.ToLower() -eq "semiannualtargeted") {
+      $branchShortName = "SATC"
+   }
+   if ($branchName.ToLower() -eq "semiannual") {
+      $branchShortName = "SAC"
+   }
 
-   $channelNames = @("FRCC", "CC", "FRDC", "DC")
-   $channelLongNames = @("FirstReleaseCurrent", "Current", "FirstReleaseDeferred", "Deferred", "Business", "FirstReleaseBusiness")
+   $channelNames = @("FRCC", "CC", "FRDC", "DC", "MTC", "MC", "SATC", "SAC")
+   $channelLongNames = @("FirstReleaseCurrent", "Current", "FirstReleaseDeferred", "Deferred", "Business", "FirstReleaseBusiness",
+                         "MonthlyTargeted", "Monthly", "SemiAnnualTargeted", "SemiAnnual")
 
    $madeChange = $false
    foreach ($channelName in $channelNames) {
@@ -1083,10 +1106,14 @@ Function Copy-OfficeSourceFiles() {
 
 function Detect-Channel {
    param( 
-
+        [Parameter()]
+        [string]$LogFilePath
    )
 
-Process {      
+Process {
+   $currentFileName = Get-CurrentFileName
+   Set-Alias -name LINENUM -value Get-CurrentLineNumber 
+        
    $channelXml = Get-ChannelXml
 
    $UpdateChannel = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration -Name UpdateChannel -ErrorAction SilentlyContinue).UpdateChannel      
@@ -1116,6 +1143,14 @@ Process {
 
    if($UpdateChannel -ne $null -and $UpdateChannel -like '*officecdn.microsoft.com*'){
      $CurrentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $UpdateChannel -and $_.branch -notmatch 'Business' }  
+   }
+
+   if($CurrentChannel){
+      if($CurrentChannel.GetType().Name -eq "Object[]"){
+         $CurrentChannel = $CurrentChannel | ? {$_.branch -ne "FirstReleaseCurrent" -and $_.branch -ne "Current" `
+                                                                                    -and $_.branch -ne "FirstReleaseDeferred" `
+                                                                                    -and $_.branch -ne "Deferred"}
+      }
    }
 
    return $CurrentChannel
@@ -1712,6 +1747,18 @@ function ConvertChannelNameToShortName {
        }
        if ($ChannelName.ToLower() -eq "FirstReleaseBusiness".ToLower()) {
          return "FRDC"
+       }
+       if ($ChannelName.ToLower() -eq "MonthlyTargeted".ToLower()) {
+         return "MTC"
+       }
+       if ($ChannelName.ToLower() -eq "Monthly".ToLower()) {
+         return "MC"
+       }
+       if ($ChannelName.ToLower() -eq "SemiAnnualTargeted".ToLower()) {
+         return "SATC"
+       }
+       if ($ChannelName.ToLower() -eq "SemiAnnual".ToLower()) {
+         return "SAC"
        }
     }
 }
