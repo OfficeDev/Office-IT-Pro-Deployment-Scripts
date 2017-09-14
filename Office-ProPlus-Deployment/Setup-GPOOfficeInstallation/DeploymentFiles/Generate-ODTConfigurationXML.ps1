@@ -13,56 +13,68 @@ Add-Type -ErrorAction SilentlyContinue -TypeDefinition @"
 Function Generate-ODTConfigurationXml {
 <#
 .Synopsis
-Generates the Office Deployment Tool (ODT) Configuration XML from the current configuration of the target computer
+    Generates the Office Deployment Tool (ODT) Configuration XML from the current configuration of the target computer
+
 .DESCRIPTION
-This function will query the local or a remote computer and Generate the ODT configuration xml based on the local Office install
-and the local languages that are used on the local computer.  If Office isn't installed then it will utilize the configuration file
-specified in the 
+    This function will query the local or a remote computer and Generate the ODT configuration xml based on the local Office install
+    and the local languages that are used on the local computer.  If Office isn't installed then it will utilize a DefaultConfiguration file
+ 
 .NOTES   
-Name: Generate-ODTConfigurationXml
-Version: 1.0.3
-DateCreated: 2015-08-24
-DateUpdated: 2017-03-03
+    Name: Generate-ODTConfigurationXml
+    Version: 1.0.3
+    DateCreated: 2015-08-24
+    DateUpdated: 2017-03-03
+
 .LINK
-https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
+    https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
+
 .PARAMETER ComputerName
-The computer or list of computers from which to query 
+    The computer or list of computers from which to query
+
 .PARAMETER Languages
-Will expand the output to include all installed Office products
+    Will expand the output to include all installed Office products
+
 .PARAMETER TargetFilePath
-The path and file name of the file to save the Configuration xml
+    The path and file name of the file to save the Configuration xml
+
 .PARAMETER IncludeUpdatePathAsSourcePath
-If this parameter is set to $true then the SourcePath in the Configuration xml will be set to 
-the current UpdatePath on the local computer.  This assumes that the UpdatePath location has 
-the required files needed to run the installation 
+    If this parameter is set to $true then the SourcePath in the Configuration xml will be set to 
+    the current UpdatePath on the local computer.  This assumes that the UpdatePath location has 
+    the required files needed to run the installation.
+     
 .PARAMETER DefaultConfigurationXml
-This parameter sets the path to the Default Configuration XML file.  If Office is not installed on
-the computer that this script is run against it will default to this file in order to generate the 
-ODT Configuration XML.  The default file should have the products that you would want installed on 
-a workstation if Office isn't currently installed.  If this parameter is set to $NULL then it will
-not generate configuration XML if Office is not installed.  By default the script looks for a file
-called "DefaultConfiguration.xml" in the same directory as the script
+    This parameter sets the path to the Default Configuration XML file.  If Office is not installed on
+    the computer that this script is run against it will default to this file in order to generate the 
+    ODT Configuration XML.  The default file should have the products that you would want installed on 
+    a workstation if Office isn't currently installed.  If this parameter is set to $NULL then it will
+    not generate configuration XML if Office is not installed.  By default the script looks for a file
+    called "DefaultConfiguration.xml" in the same directory as the script.
+
 .EXAMPLE
-Generate-ODTConfigurationXml | fl
-Description:
-Will generate the Office Deployment Tool (ODT) configuration XML based on the local computer
+    Generate-ODTConfigurationXml | fl
+
+    Will generate the Office Deployment Tool (ODT) configuration XML based on the local computer
+
 .EXAMPLE
-Generate-ODTConfigurationXml  -ComputerName client01,client02 | fl
-Description:
-Will generate the Office Deployment Tool (ODT) configuration XML based on the configuration of the remote computers client01 and client02
+    Generate-ODTConfigurationXml  -ComputerName client01,client02 | fl
+
+    Will generate the Office Deployment Tool (ODT) configuration XML based on the configuration of the remote computers client01 and client02
+
 .EXAMPLE
-Generate-ODTConfigurationXml -Languages OSandUserLanguages
-Description:
-Will generate the Office Deployment Tool (ODT) configuration XML based on the local computer and add the languages that the Operating System and the local users
-are currently using.
+    Generate-ODTConfigurationXml -Languages OSandUserLanguages
+    
+    Will generate the Office Deployment Tool (ODT) configuration XML based on the local computer and add the languages that the Operating System and the local users
+    are currently using.
+
 .EXAMPLE
-Generate-ODTConfigurationXml -Languages OSLanguage
-Description:
-Will generate the Office Deployment Tool (ODT) configuration XML based on the local computer and add the Current UI Culture language of the Operating System
+    Generate-ODTConfigurationXml -Languages OSLanguage
+    
+    Will generate the Office Deployment Tool (ODT) configuration XML based on the local computer and add the Current UI Culture language of the Operating System
+
 .EXAMPLE
-Generate-ODTConfigurationXml -Languages CurrentOfficeLanguages
-Description:
-Will generate the Office Deployment Tool (ODT) configuration XML based on the local computer and add only add the Languages currently in use by the current Office installation
+    Generate-ODTConfigurationXml -Languages CurrentOfficeLanguages
+    
+    Will generate the Office Deployment Tool (ODT) configuration XML based on the local computer and add only add the Languages currently in use by the current Office installation
 #>
 
 [CmdletBinding(SupportsShouldProcess=$true)]
@@ -563,32 +575,40 @@ process {
 Function Get-OfficeVersion {
 <#
 .Synopsis
-Gets the Office Version installed on the computer
+    Gets the Office Version installed on the computer
+
 .DESCRIPTION
-This function will query the local or a remote computer and return the information about Office Products installed on the computer
+    This function will query the local or a remote computer and return the information about Office Products installed on the computer
+
 .NOTES   
-Name: Get-OfficeVersion
-Version: 1.0.5
-DateCreated: 2015-07-01
-DateUpdated: 2016-10-14
+    Name: Get-OfficeVersion
+    Version: 1.0.5
+    DateCreated: 2015-07-01
+    DateUpdated: 2016-10-14
+
 .LINK
-https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
+    https://github.com/OfficeDev/Office-IT-Pro-Deployment-Scripts
+
 .PARAMETER ComputerName
-The computer or list of computers from which to query 
+    The computer or list of computers from which to query 
+
 .PARAMETER ShowAllInstalledProducts
-Will expand the output to include all installed Office products
+    Will expand the output to include all installed Office products
+
 .EXAMPLE
-Get-OfficeVersion
-Description:
-Will return the locally installed Office product
+    Get-OfficeVersion
+
+    Will return the locally installed Office product
+
 .EXAMPLE
-Get-OfficeVersion -ComputerName client01,client02
-Description:
-Will return the installed Office product on the remote computers
+    Get-OfficeVersion -ComputerName client01,client02
+    
+    Will return the installed Office product on the remote computers
+
 .EXAMPLE
-Get-OfficeVersion | select *
-Description:
-Will return the locally installed Office product with all of the available properties
+    Get-OfficeVersion | select *
+   
+    Will return the locally installed Office product with all of the available properties
 #>
 [CmdletBinding(SupportsShouldProcess=$true)]
 param(
@@ -1868,46 +1888,57 @@ Function odtSetAdd{
 Function Set-ODTConfigProperties{
 <#
 .SYNOPSIS
-Modifies an existing configuration xml file to set property values
+    Modifies an existing configuration xml file to set property values
+
 .PARAMETER AutoActivate
-If AUTOACTIVATE is set to 1, the specified products will attempt to activate automatically. 
-If AUTOACTIVATE is not set, the user may see the Activation Wizard UI.
-You must not set AUTOACTIVATE for Office 365 Click-to-Run products. 
+    If AUTOACTIVATE is set to 1, the specified products will attempt to activate automatically. 
+    If AUTOACTIVATE is not set, the user may see the Activation Wizard UI.
+    You must not set AUTOACTIVATE for Office 365 Click-to-Run products. 
+
 .PARAMETER ForceAppShutDown
-An installation or removal action may be blocked if Office applications are running. 
-Normally, such cases would start a process killer UI. Administrators can set 
-FORCEAPPSHUTDOWN value to TRUE to prevent dependence on user interaction. When 
-FORCEAPPSHUTDOWN is set to TRUE, any applications that block the action will be shut 
-down. Data loss may occur. When FORCEAPPSHUTDOWN is set to FALSE (default), the 
-action may fail if Office applications are running.
+    An installation or removal action may be blocked if Office applications are running. 
+    Normally, such cases would start a process killer UI. Administrators can set 
+    FORCEAPPSHUTDOWN value to TRUE to prevent dependence on user interaction. When 
+    FORCEAPPSHUTDOWN is set to TRUE, any applications that block the action will be shut 
+    down. Data loss may occur. When FORCEAPPSHUTDOWN is set to FALSE (default), the 
+    action may fail if Office applications are running.
+
 .PARAMETER PackageGUID
-Optional. By default, all Office 2013 App-V packages created by using the Office 
-Deployment Tool share the same App-V Package ID. Administrators can use PACKAGEGUID 
-to specify a different Package ID. Also, PACKAGEGUID needs to be at least 25 
-characters in length and be separated into 5 sections, with each section separated by 
-a dash. The sections need to have the following number of characters: 8, 4, 4, 4, and 12. 
+    Optional. By default, all Office 2013 App-V packages created by using the Office 
+    Deployment Tool share the same App-V Package ID. Administrators can use PACKAGEGUID 
+    to specify a different Package ID. Also, PACKAGEGUID needs to be at least 25 
+    characters in length and be separated into 5 sections, with each section separated by 
+    a dash. The sections need to have the following number of characters: 8, 4, 4, 4, and 12. 
+
 .PARAMETER SharedComputerLicensing
-Optional. Set SharedComputerLicensing to 1 if you deploy Office 365 ProPlus to shared 
-computers by using Remote Desktop Services.
+    Optional. Set SharedComputerLicensing to 1 if you deploy Office 365 ProPlus to shared 
+    computers by using Remote Desktop Services.
+
 .PARAMETER TargetFilePath
-Full file path for the file to be modified and be output to.
+    Full file path for the file to be modified and be output to.
+
 .Example
-Set-ODTConfigProperties -AutoActivate "1" -TargetFilePath "$env:Public/Documents/config.xml"
-Sets config to automatically activate the products
+    Set-ODTConfigProperties -AutoActivate "1" -TargetFilePath "$env:Public/Documents/config.xml"
+    
+    Sets config to automatically activate the products
+
 .Example
-Set-ODTConfigProperties -ForceAppShutDown "True" -PackageGUID "12345678-ABCD-1234-ABCD-1234567890AB" -TargetFilePath "$env:Public/Documents/config.xml"
-Sets the config so that apps are forced to shutdown during install and the package guid
-to "12345678-ABCD-1234-ABCD-1234567890AB"
+    Set-ODTConfigProperties -ForceAppShutDown "True" -PackageGUID "12345678-ABCD-1234-ABCD-1234567890AB" -TargetFilePath "$env:Public/Documents/config.xml"
+    
+    Sets the config so that apps are forced to shutdown during install and the package guid
+    to "12345678-ABCD-1234-ABCD-1234567890AB"
+
 .Notes
-Here is what the portion of configuration file looks like when modified by this function:
-<Configuration>
-  ...
-  <Property Name="AUTOACTIVATE" Value="1" />
-  <Property Name="FORCEAPPSHUTDOWN" Value="TRUE" />
-  <Property Name="PACKAGEGUID" Value="12345678-ABCD-1234-ABCD-1234567890AB" />
-  <Property Name="SharedComputerLicensing" Value="0" />
-  ...
-</Configuration>
+    Here is what the portion of configuration file looks like when modified by this function:
+    
+    <Configuration>
+      ...
+      <Property Name="AUTOACTIVATE" Value="1" />
+      <Property Name="FORCEAPPSHUTDOWN" Value="TRUE" />
+      <Property Name="PACKAGEGUID" Value="12345678-ABCD-1234-ABCD-1234567890AB" />
+      <Property Name="SharedComputerLicensing" Value="0" />
+      ...
+    </Configuration>
 #>
     [CmdletBinding()]
     Param(
@@ -2050,57 +2081,49 @@ function Detect-Channel {
    )
 
 Process {
-    $currentFileName = Get-CurrentFileName
-    Set-Alias -name LINENUM -value Get-CurrentLineNumber 
+   $currentFileName = Get-CurrentFileName
+   Set-Alias -name LINENUM -value Get-CurrentLineNumber 
         
-    $channelXml = Get-ChannelXml
+   $channelXml = Get-ChannelXml
 
-    $UpdateChannel = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration -Name UpdateChannel -ErrorAction SilentlyContinue).UpdateChannel      
-    $GPOUpdatePath = (Get-ItemProperty HKLM:\SOFTWARE\Policies\Microsoft\office\16.0\common\officeupdate -Name updatepath -ErrorAction SilentlyContinue).updatepath
-    $GPOUpdateBranch = (Get-ItemProperty HKLM:\SOFTWARE\Policies\Microsoft\office\16.0\common\officeupdate -Name UpdateBranch -ErrorAction SilentlyContinue).UpdateBranch
-    $GPOUpdateChannel = (Get-ItemProperty HKLM:\SOFTWARE\Policies\Microsoft\office\16.0\common\officeupdate -Name UpdateChannel -ErrorAction SilentlyContinue).UpdateChannel      
-    $UpdateUrl = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration -Name UpdateUrl -ErrorAction SilentlyContinue).UpdateUrl
-    $currentBaseUrl = Get-OfficeCDNUrl
+   $UpdateChannel = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration -Name UpdateChannel -ErrorAction SilentlyContinue).UpdateChannel      
+   $GPOUpdatePath = (Get-ItemProperty HKLM:\SOFTWARE\Policies\Microsoft\office\16.0\common\officeupdate -Name updatepath -ErrorAction SilentlyContinue).updatepath
+   $GPOUpdateBranch = (Get-ItemProperty HKLM:\SOFTWARE\Policies\Microsoft\office\16.0\common\officeupdate -Name UpdateBranch -ErrorAction SilentlyContinue).UpdateBranch
+   $GPOUpdateChannel = (Get-ItemProperty HKLM:\SOFTWARE\Policies\Microsoft\office\16.0\common\officeupdate -Name UpdateChannel -ErrorAction SilentlyContinue).UpdateChannel      
+   $UpdateUrl = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration -Name UpdateUrl -ErrorAction SilentlyContinue).UpdateUrl
+   $currentBaseUrl = Get-OfficeCDNUrl
 
-    $CurrentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $currentBaseUrl -and $_.branch -notmatch 'Business' `
-                                                                                         -and $_.branch -notmatch 'Insiders' `
-                                                                                         -and $_.branch -notmatch 'Monthly' `
-                                                                                         -and $_.branch -notmatch 'Targeted' `
-                                                                                         -and $_.branch -notmatch 'Broad'}
+   $CurrentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $currentBaseUrl -and $_.branch -notmatch 'Business' }
       
-    if($UpdateUrl -ne $null -and $UpdateUrl -like '*officecdn.microsoft.com*'){
-        $CurrentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $UpdateUrl -and $_.branch -notmatch 'Business' `
-                                                                                        -and $_.branch -notmatch 'Insiders' `
-                                                                                        -and $_.branch -notmatch 'Monthly' `
-                                                                                        -and $_.branch -notmatch 'Targeted' `
-                                                                                        -and $_.branch -notmatch 'Broad'}  
-    }
+   if($UpdateUrl -ne $null -and $UpdateUrl -like '*officecdn.microsoft.com*'){
+       $CurrentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $UpdateUrl -and $_.branch -notmatch 'Business' }  
+   }
 
-    if($GPOUpdateChannel -ne $null){
-        $CurrentChannel = $channelXml.UpdateFiles.baseURL | ? {$_.branch.ToLower() -eq $GPOUpdateChannel.ToLower()}         
-    }
+   if($GPOUpdateChannel -ne $null){
+     $CurrentChannel = $channelXml.UpdateFiles.baseURL | ? {$_.branch.ToLower() -eq $GPOUpdateChannel.ToLower()}         
+   }
 
-    if($GPOUpdateBranch -ne $null){
-        $CurrentChannel = $channelXml.UpdateFiles.baseURL | ? {$_.branch.ToLower() -eq $GPOUpdateBranch.ToLower()}  
-    }
+   if($GPOUpdateBranch -ne $null){
+     $CurrentChannel = $channelXml.UpdateFiles.baseURL | ? {$_.branch.ToLower() -eq $GPOUpdateBranch.ToLower()}  
+   }
 
-    if($GPOUpdatePath -ne $null -and $GPOUpdatePath -like '*officecdn.microsoft.com*'){
-        $CurrentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $GPOUpdatePath -and $_.branch -notmatch 'Business' `
-                                                                                          -and $_.branch -notmatch 'Insiders' `
-                                                                                          -and $_.branch -notmatch 'Monthly' `
-                                                                                          -and $_.branch -notmatch 'Targeted' `
-                                                                                          -and $_.branch -notmatch 'Broad'}  
-    }
+   if($GPOUpdatePath -ne $null -and $GPOUpdatePath -like '*officecdn.microsoft.com*'){
+     $CurrentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $GPOUpdatePath -and $_.branch -notmatch 'Business' }  
+   }
 
-    if($UpdateChannel -ne $null -and $UpdateChannel -like '*officecdn.microsoft.com*'){
-        $CurrentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $UpdateChannel -and $_.branch -notmatch 'Business' `
-                                                                                          -and $_.branch -notmatch 'Insiders' `
-                                                                                          -and $_.branch -notmatch 'Monthly' `
-                                                                                          -and $_.branch -notmatch 'Targeted' `
-                                                                                          -and $_.branch -notmatch 'Broad'}  
-    }
+   if($UpdateChannel -ne $null -and $UpdateChannel -like '*officecdn.microsoft.com*'){
+     $CurrentChannel = $channelXml.UpdateFiles.baseURL | Where {$_.URL -eq $UpdateChannel -and $_.branch -notmatch 'Business' }  
+   }
 
-    return $CurrentChannel
+   if($CurrentChannel){
+      if($CurrentChannel.GetType().Name -eq "Object[]"){
+         $CurrentChannel = $CurrentChannel | ? {$_.branch -ne "FirstReleaseCurrent" -and $_.branch -ne "Current" `
+                                                                                    -and $_.branch -ne "FirstReleaseDeferred" `
+                                                                                    -and $_.branch -ne "Deferred"}
+      }
+   }
+
+   return $CurrentChannel
 }
 
 }

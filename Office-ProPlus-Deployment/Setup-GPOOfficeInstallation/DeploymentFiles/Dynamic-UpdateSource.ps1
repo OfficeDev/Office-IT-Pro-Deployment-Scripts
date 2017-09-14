@@ -10,7 +10,11 @@ namespace Microsoft.Office
         Business=1,
         Validation=2,
         FirstReleaseCurrent=3,
-        FirstReleaseBusiness=4
+        FirstReleaseBusiness=4,
+        Insiders=5,
+        Monthly=6,
+        Targeted=7,
+        Broad=8
     }
 }
 "
@@ -30,7 +34,11 @@ namespace Microsoft.Office
         Deferred=1,
         Validation=2,
         FirstReleaseCurrent=3,
-        FirstReleaseDeferred=4
+        FirstReleaseDeferred=4,
+        Insiders=5,
+        Monthly=6,
+        Targeted=7,
+        Broad=8
     }
 }
 "
@@ -41,19 +49,23 @@ try {
 Function Dynamic-UpdateSource {
 <#
 .Synopsis
-Dynamically updates the ODT Configuration Xml Update Source based on the location of the computer
+    Dynamically updates the ODT Configuration Xml Update Source based on the location of the computer
+
 .DESCRIPTION
-If Office Click-to-Run is installed the administrator will be prompted to confirm
-uninstallation. A configuration file will be generated and used to remove all Office CTR 
-products.
+    If Office Click-to-Run is installed the administrator will be prompted to confirm
+    uninstallation. A configuration file will be generated and used to remove all Office CTR 
+    products.
+
 .PARAMETER TargetFilePath
-Specifies file path and name for the resulting XML file, for example "\\comp1\folder\config.xml".  Is also the source of the XML that will be updated.
+    Specifies file path and name for the resulting XML file, for example "\\comp1\folder\config.xml".  Is also the source of the XML that will be updated.
+
 .PARAMETER LookupFilePath
-Specifies the source of the csv that contains ADSites with their corresponding SourcePath, for example "\\comp1\folder\sources.csv"
+    Specifies the source of the csv that contains ADSites with their corresponding SourcePath, for example "\\comp1\folder\sources.csv"
+
 .EXAMPLE
-Dynamic-UpdateSource -TargetFilePath "\\comp1\folder\config.xml" -LookupFilePath "\\comp1\folder\sources.csv"
-Description:
-Will Dynamically set the Update Source based a list Provided
+    Dynamic-UpdateSource -TargetFilePath "\\comp1\folder\config.xml" -LookupFilePath "\\comp1\folder\sources.csv"
+    
+    In this example, an Update Source is dynamically set based on a list provided.
 #>
     [CmdletBinding()]
     Param(
@@ -271,7 +283,7 @@ Function SetODTAdd{
             WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "The Office XML Configuration file has been saved to: $TargetFilePath" -LogFilePath $LogFilePath
         } else {
             $results = new-object PSObject[] 0;
-            $Result = New-Object -TypeName PSObject 
+            $Result = New-Object �TypeName PSObject 
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "SourcePath" -Value $SourcePath
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "Version" -Value $Version
@@ -362,7 +374,7 @@ Function SetODTUpdates{
             WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "The Office XML Configuration file has been saved to: $TargetFilePath" -LogFilePath $LogFilePath
         } else {
             $results = new-object PSObject[] 0;
-            $Result = New-Object -TypeName PSObject 
+            $Result = New-Object �TypeName PSObject 
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "Enabled" -Value $Enabled
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "UpdatePath" -Value $UpdatePath
             Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetVersion" -Value $TargetVersion
@@ -377,13 +389,15 @@ Function SetODTUpdates{
 Function Get-ODTAdd{
 <#
 .SYNOPSIS
-Gets the value of the Add section in the configuration file
+    Gets the value of the Add section in the configuration file
+
 .PARAMETER TargetFilePath
-Required. Full file path for the file.
+    Required. Full file path for the file.
+
 .Example
-Get-ODTAdd -TargetFilePath "$env:Public\Documents\config.xml"
-Returns the value of the Add section if it exists in the specified
-file. 
+    Get-ODTAdd -TargetFilePath "$env:Public\Documents\config.xml"
+    
+    Returns the value of the Add section if it exists in the specified file. 
 #>
     Param(
 
