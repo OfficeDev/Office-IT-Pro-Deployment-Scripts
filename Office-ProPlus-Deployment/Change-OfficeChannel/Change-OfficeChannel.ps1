@@ -1,7 +1,7 @@
 ﻿param(
     [Parameter()]
     [ValidateSet("FirstReleaseCurrent","Current","FirstReleaseDeferred","Deferred",
-    "Insiders","Monthly","Targeted","Broad")]
+                 "MonthlyTargeted","Monthly","SemiAnnualTargeted","SemiAnnual")]
     [string]$Channel,
 
     [Parameter()]
@@ -593,16 +593,16 @@ function Change-UpdatePathToChannel {
       $branchShortName = "DC"
    }
    if ($Channel.ToString().ToLower() -eq "monthlytargeted") {
-      $branchShortName = "IC"
+      $branchShortName = "MTC"
    }
    if ($Channel.ToString().ToLower() -eq "monthly") {
       $branchShortName = "MC"
    }
    if ($Channel.ToString().ToLower() -eq "semiannualtargeted") {
-      $branchShortName = "TC"
+      $branchShortName = "SATC"
    }
    if ($Channel.ToString().ToLower() -eq "semiannual") {
-      $branchShortName = "BC"
+      $branchShortName = "SAC"
    }
 
    $channelNames = @("FRCC", "CC", "FRDC", "DC", "MTC", "MC", "SATC", "SAC")
