@@ -287,7 +287,10 @@ For($i=1; $i -le $NumOfRetries; $i++){#loops through download process in the eve
                     "SemiAnnual"{
                         $selectedBranchName = $currentBranch
                         $currentBranch = "Broad"
+                    } Default {
+                        $selectedBranchName = $currentBranch
                     }
+                    
                 }
 
                 $b++
