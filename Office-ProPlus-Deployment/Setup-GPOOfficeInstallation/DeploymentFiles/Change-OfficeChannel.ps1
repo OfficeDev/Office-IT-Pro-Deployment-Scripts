@@ -1,7 +1,7 @@
 ﻿param(
     [Parameter()]
     [ValidateSet("FirstReleaseCurrent","Current","FirstReleaseDeferred","Deferred",
-    "Insiders","Monthly","Targeted","Broad")]
+                 "MonthlyTargeted","Monthly","SemiAnnualTargeted","SemiAnnual")]
     [string]$Channel,
 
     [Parameter()]
