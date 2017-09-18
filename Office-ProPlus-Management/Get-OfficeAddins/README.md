@@ -1,4 +1,4 @@
-# **Configuration Manager Office Add-in reporting**
+# **Configuration Manager Office Add-in Reporting**
 
 Use PowerShell scripts in this GitHub repository to create a hardware inventory in System Center Configuration Manager that will inventory installed Office add-ins. 
 A SQL table is created by importing a custom mof file. Several Office Add-in reports are already available to import.
