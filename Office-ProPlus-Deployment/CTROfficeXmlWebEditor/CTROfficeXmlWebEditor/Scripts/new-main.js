@@ -2417,7 +2417,7 @@ function odtToggleUpdate() {
 
 function odtSaveUpdates(xmlDoc) {
     var selectUpdatePath = $("#txtUpdatePath").val();
-    var selectTargetVersion = $("#txtTargetVersion").val();
+    var selectTargetVersion = $("#txtTargetVersion").val().trim();
     var autoUpdate = $("#autoUpgradeEnable").is(":checked");
     var date = $(".ms-DatePicker .ms-TextField input").val(); //deadline textbox
     var $UpdatesEnabled = $("#updatesEnabled")[0];
