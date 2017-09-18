@@ -1,0 +1,23 @@
+#pragma deleteclass ("Custom_OfficeAddins",NOFAIL)
+[ SMS_Report     (TRUE),
+  SMS_Group_Name ("Custom_OfficeAddins"),
+  SMS_Class_ID   ("Custom_OfficeAddins") ]
+class Custom_OfficeAddins : SMS_Class_Template
+{
+    [SMS_Report (TRUE), key ] string Name;
+    [SMS_Report (TRUE)      ] string ID;
+    [SMS_Report (TRUE)      ] string Application;
+    [SMS_Report (TRUE)      ] string ComputerName;
+    [SMS_Report (TRUE)      ] string Description;
+    [SMS_Report (TRUE)      ] string FriendlyName;
+    [SMS_Report (TRUE)      ] string FullPath;
+    [SMS_Report (TRUE)      ] string LoadBehavior;
+    [SMS_Report (TRUE)      ] string LoadBehaviorValue;
+    [SMS_Report (TRUE)      ] string LoadBehaviorStatus;
+    [SMS_Report (TRUE)      ] string LoadTime;
+    [SMS_Report (TRUE)      ] string OfficeVersion;
+    [SMS_Report (TRUE)      ] string RegistryPath;
+    [SMS_Report (TRUE)      ] string IsResilient;
+    [SMS_Report (TRUE)      ] string IsOutlookCrashingAddin;
+    [SMS_Report (TRUE)      ] string User;
+};
