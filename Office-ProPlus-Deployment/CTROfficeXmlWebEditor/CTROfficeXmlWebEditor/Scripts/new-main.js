@@ -2417,7 +2417,7 @@ function odtToggleUpdate() {
 
 function odtSaveUpdates(xmlDoc) {
     var selectUpdatePath = $("#txtUpdatePath").val();
-    var selectTargetVersion = $("#txtTargetVersion").val().trim();
+    var selectTargetVersion = $("#txtTargetVersion").val();
     var autoUpdate = $("#autoUpgradeEnable").is(":checked");
     var date = $(".ms-DatePicker .ms-TextField input").val(); //deadline textbox
     var $UpdatesEnabled = $("#updatesEnabled")[0];
@@ -2443,6 +2443,16 @@ function odtSaveUpdates(xmlDoc) {
 
         if ($("#office2016Select").hasClass("is-selected")) {
             var selectedBranch = $("#cbUpdateBranch").val();
+
+            if (selectedBranch === "SemiAnnualTargeted") {
+                selectedBranch = "Targeted";
+            }
+
+            if (selectedBranch === "SemiAnnual") {
+                selectedBranch = "Broad";
+            }
+
+
             updateNode.removeAttribute("Branch");
             updateNode.setAttribute("Channel", selectedBranch);
             updateNode.removeAttribute("AutoUpgrade");
