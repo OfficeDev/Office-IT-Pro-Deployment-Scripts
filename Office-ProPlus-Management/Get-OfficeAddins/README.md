@@ -34,14 +34,11 @@ A PowerShell script must run on a client device that will create a new WMI Class
 The process to create a package, program and deployment can be automated by using the Setup-CMOfficeAddinPackage.ps1 script. Example scripts have been created to show the scope of the entire process.
 
 1. Open a PowerShell console with elevated privileges.  
-2. Change the directory to the location of the downloaded files.  
-	For example,  
+2. Change the directory to the location of the downloaded files. For example,  
 	`cd C:\OfficeAddinScripts`
-3. Dot source the Setup-CMOfficeAddinPackage script.  
-	For example,  
+3. Dot source the Setup-CMOfficeAddinPackage script. For example,  
 	`. .\Setup-CMOfficeAddinPackage.ps1`
-4. Type the cmdlet to create and configure the new package.  
-	For example,   
+4. Type the cmdlet to create and configure the new package. For example,   
 	`Create-CMOfficeAddinPackage -PackageName "Update Office add-in repository" -ScriptFilesPath "C:\OfficeAddinScripts" -MoveScriptFiles $true`
 
 ### Step 4: Create a program to deploy the PowerShell scripts to the clients
@@ -50,21 +47,17 @@ There are two different functions that can be used to create the programs, Creat
 * **Create-CMOfficeAddinTaskProgram** is used to create a program that will create a scheduled task on the target device. The scheduled task will run the Get-OfficeAddins.ps1 script on the target device once a week.
 Use one of the following to create the program:
 
-1. Type the cmdlet to create a basic program.  
-	For example,  
+1. Type the cmdlet to create a basic program. For example,  
 	`Create-CMOfficeAddinProgram -PackageName "Update Office add-in repository" -ProgramName "OfficeAddinQuery"`
-2. Type the cmdlet to create a scheduled task program.  
-	For example,  
+2. Type the cmdlet to create a scheduled task program. For example,  
 	`Create-CMOfficeAddinTaskProgram -PackageName "Update Office add-in repository" -ProgramName "Update with Scheduled Task" -UseRandomStartTime $true -RandomTimeStart "06:00" -RandomTimeEnd "18:00"`
 
 ### Step 5: Distribute the package to a distribution point or distribution point group
 It's important to let the package finish distributing before moving on the creating the deployment. Use the -WaitForDistributionToFinish switch to show the distribution status.
 
-1. Type the cmdlet to distribute the package.  
-	For example,  
+1. Type the cmdlet to distribute the package. For example,  
 	`Distribute-CMOfficeAddinPackage -PackageName "Update Office add-in repository" -DistributionPoint CM01.CONTOSO.COM -WaitForDistributionToFinish $true`
 
 ### Step 6: Deploy the program to a device collection
-1. Type the cmdlet to create the deployment.  
-	For example,  
+1. Type the cmdlet to create the deployment. For example,  
 	`Deploy-CMOfficeAddinProgram -PackageName "Update Office add-in repository" -ProgramName "Update with Scheduled Task" -Collection "All Desktop and Server Clients" -DeploymentPurpose Required`
