@@ -66,7 +66,7 @@ $(document).ready(function () {
         resizeWindow();
     });
 
-    $('#autoActivate').change(function(e){
+    $('#autoActivate').change(function (e) {
         var isChecked = $("#autoActivate")[0].checked;
         var xmlDoc = getXmlDocument();
         var products = xmlDoc.documentElement.getElementsByTagName("Add")[0].children;
@@ -77,13 +77,13 @@ $(document).ready(function () {
             products = xmlDoc.documentElement.getElementsByTagName("Add")[0].childNodes
         }
 
-        for(var i= 0, len = products.length; i < len; i++){
+        for (var i = 0, len = products.length; i < len; i++) {
             var product = product = products[i];
-            
+
             if (products[i].nodeValue != null) {
-                continue; 
+                continue;
             }
-           
+
             var prodId = product.attributes[0].value;
 
             if (productSkusRequireKey.indexOf(prodId) != -1) {
@@ -101,13 +101,13 @@ $(document).ready(function () {
                             $("#txt" + prodId + "LicenseKey")[0].value = prodKey;
                         }
                     }
-                 }
+                }
                 else {
                     $("#" + sectionId).hide("slow");
                     $("#LicenseSection").hide("slow");
 
                     $('#LicenseSection').css('display', 'none');
-                }                
+                }
             }
         }
     });
@@ -257,7 +257,7 @@ $(document).ready(function () {
         if ($("#cbProduct").val() === "LanguagePack" && $("#btAddProduct").text() !== "Edit Product") {
             alert("If creating a language pack, please set the first language to the client computer's culture language.  If the first language set does not match the client's culture language then the chosen language will be installed as the Shell UI language.");
         }
-        
+
         var xmlDoc = getXmlDocument();
 
         odtAddProduct(xmlDoc);
@@ -313,7 +313,7 @@ $(document).ready(function () {
         odtRemoveProduct(xmlDoc);
         setExcludeAppState(xmlDoc);
         displayXml(xmlDoc);
-        
+
         return false;
     });
 
@@ -408,7 +408,7 @@ $(document).ready(function () {
 
     $("#cbLanguage").change(function () {
         var end = this.value;
-        changeSelectedLanguage();        
+        changeSelectedLanguage();
     });
 
     function UpdateBuild(givenVersion) {
@@ -446,7 +446,7 @@ $(document).ready(function () {
                     drpBuild.msdropdownvals(builds, builds);
                     UpdateLegacyVersion();
                 }
-               
+
             }
         }
     }
@@ -470,11 +470,13 @@ $(document).ready(function () {
                 if (flagMatch) {
                     for (var v = 0; v < versionData[i].Updates.length; v++) {
                         var update = versionData[i].Updates[v];
+                        var realBuild = $('#txtBuild').siblings()[1];
+                        var realLegacy = '16.0.' + $(realBuild).text().trim();
                         var Curvers = document.getElementById("txtVersion");
                         var Curbuild = document.getElementById("txtBuild");
                         if (Curvers.value === update.Version && Curbuild.value === update.Build) {
-                            console.trace('UpdateLegacyVersion', update.LegacyVersion)
-                            $('#txtLegacyVersion').val(update.LegacyVersion);
+                            console.trace('UpdateLegacyVersion', realLegacy)
+                            $('#txtLegacyVersion').val(realLegacy);
                             break;
                         }
                         else {
@@ -627,7 +629,7 @@ $(document).ready(function () {
     $("#btSaveProperties").on('click', function () {
         var xmlDoc = getXmlDocument();
         odtSaveProperties(xmlDoc);
-      
+
         var selectVisioKey = $("#txtVisioLicenseKey").val();
         var selectProjectKey = $("#txtProjectLicenseKey").val();
         var isChecked = $("#autoActivate")[0].checked;
@@ -644,8 +646,7 @@ $(document).ready(function () {
 
             var prodId = products[i].attributes[0].value;
 
-            if (productSkusRequireKey.indexOf(prodId) != -1)
-            {
+            if (productSkusRequireKey.indexOf(prodId) != -1) {
                 var key = $('#txt' + prodId + 'LicenseKey')[0].value;
                 var addNode = xmlDoc.documentElement.getElementsByTagName("Add")[0];
                 var node = getProductNode(addNode, prodId);
@@ -667,9 +668,9 @@ $(document).ready(function () {
                         xmlDoc.documentElement.removeChild(properties[i]);
                     }
                 }
-            }       
+            }
         }
-        
+
         displayXml(xmlDoc);
         return false;
     });
@@ -904,7 +905,7 @@ $(document).ready(function () {
 function AddActivationKeyBox(product) {
     var panel = $('#LicenseSection');
     var productName = productSkus2016Names[productSkus2016Values.indexOf(product)];
-    var textBoxId = 'txt'+product+'LicenseKey';
+    var textBoxId = 'txt' + product + 'LicenseKey';
     var textBox = "<div id='" + product + "LicenseSection' style='display:none'><table><tr><td><label class='ms-Label'>" + productName + " License Key</label></td><td><i id='PACKAGEGUIDInfoIcon' class='ms-Icon ms-Icon--circleInfo ms-fontColor-blue' style='width: 30px;text-align: center;cursor:pointer;' onclick='toggleInfo('PACKAGEGUIDInfo', this)'></i></td></tr></table><div><input id='" + textBoxId + "' type='text' pattern='^.{5}-.{5}-.{5}-.{5}-.{5}$'class='ms-TextField-field' placeholder='XXXXX-XXXX-XXXX-XXXX-XXXXX'data-error='This must be a valid license key' maxlength='26' onkeydown='validateActivationKey(this.id)'><span id='" + product + "LicenseSignal' class='glyphicon form-control-feedback' aria-hidden='true'></span></div></div>";
 
     if ($('#autoActivate')[0].checked) {
@@ -919,12 +920,12 @@ function GetVersionData() {
         url: "https://officeproplusinfo2.azurewebsites.net/api/Channel",
         type: "GET",
         crossDomain: true,
-        success: function(data) {
+        success: function (data) {
             versionData = data;
             changeVersions("2016");
         },
-        error: function() {
-             alert('error');
+        error: function () {
+            alert('error');
         }
     });
 }
@@ -1031,14 +1032,14 @@ function setPanel(panelId, buttonId) {
 function checkSelectedProducts() {
     var xmlDoc = getXmlDocument();
     var products = xmlDoc.getElementsByTagName("Product");
-    var containsNonO365 = false; 
+    var containsNonO365 = false;
 
-    for(var i =0;i < products.length; i++){
+    for (var i = 0; i < products.length; i++) {
         var productId = products[i].getAttribute('ID');
 
         if (productSkusRequireKey.indexOf(productId) > -1) {
             containsNonO365 = true;
-            break; 
+            break;
         }
     }
 
@@ -1076,7 +1077,7 @@ function setVersionPanel(buttonId) {
 
 function changeVersions(version) {
     if (version == "2013") {
-        $("#branchSection").hide("slow");        
+        $("#branchSection").hide("slow");
         $("#newVersionSection").hide("slow");
         $("#updateBranchSection").hide("slow");
         $("#mgtToggleGroup").hide("slow");
@@ -1114,7 +1115,7 @@ function changeVersions(version) {
             source: substringMatcher(versions)
         });
     }
-    if (version == "2016") {        
+    if (version == "2016") {
         $("#branchSection").show("slow");
         $("#newVersionSection").show("slow");
         $("#updateBranchSection").show("slow");
@@ -1133,7 +1134,7 @@ function changeVersions(version) {
         selectVersions.push('');
         var versionss = [];
         var selectedBranch = $("#cbBranch").val();
-   
+
 
 
 
@@ -1142,7 +1143,7 @@ function changeVersions(version) {
                 var flagMatch = false;
 
                 var branchName = versionData[i].NewName;
-                
+
                 if (branchName == selectedBranch.replace(" ", "")) {
                     flagMatch = true;
                 }
@@ -1168,7 +1169,7 @@ function changeVersions(version) {
                     txtVersion.msdropdownvals(versionss, versionss);
                     txtVersion.change();
                 }
-            
+
             }
         }
         $("#txtVersion").attr("placeholder", selectVersions[0]);
@@ -1198,7 +1199,7 @@ function changeVersions(version) {
             source: substringMatcher(selectVersions)
         });
 
-        
+
     }
 
     odtToggleUpdate();
@@ -1274,7 +1275,7 @@ function changeProducts(version) {
             $("#cbRemoveProduct").val(productSkus2016Values[0]);
             $("#cbRemoveProduct").attr("placeholder", productSkus2016Names[0]);
         }
-    }    
+    }
 
     mySelectAdd.trigger("chosen:updated");
     mySelectRemove.trigger("chosen:updated");
@@ -1706,7 +1707,7 @@ function validatePackageGuid(t) {
 }
 
 function validateActivationKey(id) {
-    var currentText = $('#'+id)[0].value;
+    var currentText = $('#' + id)[0].value;
     var textLength = currentText.length
     var keyCode = event.keyCode || event.charCode;
 
@@ -1715,7 +1716,7 @@ function validateActivationKey(id) {
             $('#' + id)[0].value += '-'
         }
     }
-    
+
 }
 
 
@@ -1875,7 +1876,7 @@ function odtAddProduct(xmlDoc) {
     var selectLanguage = $("#cbLanguage").val();
     var selectPidKey = $("#txtPidKey").val();
     var selectVisioKey = $("#txtVisioLicenseKey").val();
-    var selectProjectKey = $("#txtProjectLicenseKey").val();    
+    var selectProjectKey = $("#txtProjectLicenseKey").val();
     var mgtCOM = $('#mgtToggle')[0].checked;
 
 
@@ -1964,8 +1965,7 @@ function odtAddProduct(xmlDoc) {
         addNode.appendChild(productNode);
     }
 
-    if (selectedProduct.toLowerCase().indexOf("visio") !== -1 && selectedProduct.toLowerCase().indexOf("volume") !== -1 && $("#autoActivate")[0].checked)
-        {
+    if (selectedProduct.toLowerCase().indexOf("visio") !== -1 && selectedProduct.toLowerCase().indexOf("volume") !== -1 && $("#autoActivate")[0].checked) {
         $("#VisioLicenseSection").show("slow");
     }
 
@@ -2037,7 +2037,7 @@ function odtRemoveProduct(xmlDoc) {
 
     if (productSkusRequireKey.indexOf(selectedProduct) > -1) {
         var textBox = '#' + selectedProduct + 'LicenseSection';
-        $(textBox).remove(); 
+        $(textBox).remove();
     }
 
     var productCount = getAddProductCount(xmlDoc);
@@ -2290,7 +2290,7 @@ function odtDeleteRemoveApp(xmlDoc) {
         }
     }
 
-    
+
 }
 
 
@@ -2443,6 +2443,16 @@ function odtSaveUpdates(xmlDoc) {
 
         if ($("#office2016Select").hasClass("is-selected")) {
             var selectedBranch = $("#cbUpdateBranch").val();
+
+            if (selectedBranch === "SemiAnnualTargeted") {
+                selectedBranch = "Targeted";
+            }
+
+            if (selectedBranch === "SemiAnnual") {
+                selectedBranch = "Broad";
+            }
+
+
             updateNode.removeAttribute("Branch");
             updateNode.setAttribute("Channel", selectedBranch);
             updateNode.removeAttribute("AutoUpgrade");
@@ -2702,7 +2712,7 @@ function odtRemoveProperties(xmlDoc) {
 
     $("#btSharedComputerLicensingYes").removeClass('btn-primary');
     $("#btSharedComputerLicensingNo").removeClass('btn-primary');
-    $("#btSharedComputerLicensingYes").removeClass('active');    
+    $("#btSharedComputerLicensingYes").removeClass('active');
     $("#btSharedComputerLicensingNo").removeClass('active');
 }
 
@@ -2914,7 +2924,7 @@ function setExcludeAppState(inXmlDoc) {
 }
 
 function loadExcludedApps(inXmlDoc) {
-    
+
     var xmlDoc = inXmlDoc;
     if (!(xmlDoc)) {
         xmlDoc = getXmlDocument();
@@ -2934,7 +2944,7 @@ function loadExcludedApps(inXmlDoc) {
                 var productNode = products[0];
                 var tmpProductName = productNode.getAttribute("ID");
                 if (tmpProductName.toLowerCase() == selectedProduct.toLowerCase()) {
-                    
+
                     var exApps = productNode.getElementsByTagName("ExcludeApp");
 
                     for (var p = 0; p < officeExcludeProducts.length; p++) {
@@ -3666,7 +3676,7 @@ var productSkus2016Values = [
     'HomeStudentRetail',
     'InfoPathRetail',
     'O365HomePremRetail',
-    'O365SmallBusPremRetail', 
+    'O365SmallBusPremRetail',
     'OneNoteRetail',
     'OutlookRetail',
     'PowerPointRetail',
