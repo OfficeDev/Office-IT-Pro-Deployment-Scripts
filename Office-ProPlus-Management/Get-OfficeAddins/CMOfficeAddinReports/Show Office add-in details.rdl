@@ -78,14 +78,14 @@ SELECT 		DISTINCT([CM_S01].[dbo].[Custom_OfficeAddins_DATA].InstanceKey),
 		[CM_S01].[dbo].[Custom_OfficeAddins_DATA].OfficeVersion00,
 		[CM_S01].[dbo].[Custom_OfficeAddins_DATA].RegistryPath00
    From [CM_S01].[dbo].[Custom_OfficeAddins_DATA] 
- LEFT JOIN [CM_S01].[dbo].[CollectionMembers]  ON [CM_S01].[dbo].[Custom_OfficeAddins_DATA].MachineID = [CM_S01].[dbo].[CollectionMembers].MachineID
- LEFT JOIN [CM_S01].[dbo].[Collections_G] ON [CM_S01].[dbo].[Collections_G].SiteID = [CM_S01].[dbo].[CollectionMembers].SiteID
+-- LEFT JOIN [CM_S01].[dbo].[CollectionMembers]  ON [CM_S01].[dbo].[Custom_OfficeAddins_DATA].MachineID = [CM_S01].[dbo].[CollectionMembers].MachineID
+-- LEFT JOIN [CM_S01].[dbo].[Collections_G] ON [CM_S01].[dbo].[Collections_G].SiteID = [CM_S01].[dbo].[CollectionMembers].SiteID
  WHERE ComputerName00 LIKE @computer AND 
 (Name00 LIKE @solution OR
 FriendlyName00 LIKE @solution) AND 
-LoadBehaviorStatus00 LIKE @status AND 
-[CM_S01].[dbo].[Collections_G].CollectionName LIKE @site AND
-[CM_S01].[dbo].[Collections_G].CollectionType = 2</CommandText>
+LoadBehaviorStatus00 LIKE @status 
+--AND [CM_S01].[dbo].[Collections_G].CollectionName LIKE @site AND
+--[CM_S01].[dbo].[Collections_G].CollectionType = 2</CommandText>
         <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
       </Query>
       <Fields>
@@ -767,7 +767,6 @@ SELECT * FROM OfficeAddinStatus</CommandText>
                             <PaddingBottom>2pt</PaddingBottom>
                           </Style>
                         </Textbox>
-                        <rd:Selected>true</rd:Selected>
                       </CellContents>
                     </TablixCell>
                   </TablixCells>
@@ -902,7 +901,7 @@ SELECT * FROM OfficeAddinStatus</CommandText>
                                 <Paragraph>
                                   <TextRuns>
                                     <TextRun>
-                                      <Value>=SrsResources.Localization.GetString("Description", User!Language)</Value>
+                                      <Value>Description</Value>
                                       <Style>
                                         <FontFamily>Segoe UI</FontFamily>
                                         <FontSize>9pt</FontSize>
@@ -941,21 +940,38 @@ SELECT * FROM OfficeAddinStatus</CommandText>
                                   </TextRuns>
                                   <Style />
                                 </Paragraph>
+                                <Paragraph>
+                                  <TextRuns>
+                                    <TextRun>
+                                      <Value>For additional information on the readiness of specific Office add-ins visit </Value>
+                                      <Style>
+                                        <FontSize>9pt</FontSize>
+                                        <FontWeight>Normal</FontWeight>
+                                      </Style>
+                                    </TextRun>
+                                    <TextRun>
+                                      <Value>aka.ms/addinreadiness</Value>
+                                      <ActionInfo>
+                                        <Actions>
+                                          <Action>
+                                            <Hyperlink>http://aka.ms/addinreadiness</Hyperlink>
+                                          </Action>
+                                        </Actions>
+                                      </ActionInfo>
+                                      <Style>
+                                        <FontSize>9pt</FontSize>
+                                        <FontWeight>Normal</FontWeight>
+                                        <Color>Blue</Color>
+                                      </Style>
+                                    </TextRun>
+                                  </TextRuns>
+                                  <Style />
+                                </Paragraph>
                               </Paragraphs>
-                              <Visibility>
-                                <Hidden>true</Hidden>
-                                <ToggleItem>Expression1</ToggleItem>
-                              </Visibility>
                               <Style>
                                 <Border>
-                                  <Color>LightGrey</Color>
-                                  <Style>Solid</Style>
+                                  <Style>None</Style>
                                 </Border>
-                                <BottomBorder>
-                                  <Color>Black</Color>
-                                  <Style>Solid</Style>
-                                  <Width>1pt</Width>
-                                </BottomBorder>
                                 <PaddingLeft>2pt</PaddingLeft>
                                 <PaddingRight>2pt</PaddingRight>
                                 <PaddingTop>2pt</PaddingTop>
@@ -1048,7 +1064,8 @@ SELECT * FROM OfficeAddinStatus</CommandText>
           <Value>All</Value>
         </Values>
       </DefaultValue>
-      <Prompt>Device Collection</Prompt>
+      <Prompt>Collection</Prompt>
+      <Hidden>true</Hidden>
       <ValidValues>
         <DataSetReference>
           <DataSetName>Collections</DataSetName>
@@ -1129,6 +1146,6 @@ SELECT * FROM OfficeAddinStatus</CommandText>
     <CodeModule>SrsResources, culture=neutral</CodeModule>
   </CodeModules>
   <rd:ReportUnitType>Inch</rd:ReportUnitType>
-  <rd:ReportServerUrl>http://cm01/ReportServer</rd:ReportServerUrl>
+  <rd:ReportServerUrl>http://cm2016lab-cm16/ReportServer</rd:ReportServerUrl>
   <rd:ReportID>6fbd236a-d836-4950-8788-14b828deb616</rd:ReportID>
 </Report>

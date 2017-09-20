@@ -372,7 +372,7 @@ SELECT * FROM OfficeAddinOutlookCrashing</CommandText>
                                 <Paragraph>
                                   <TextRuns>
                                     <TextRun>
-                                      <Value>=SrsResources.Localization.GetString("Description", User!Language)</Value>
+                                      <Value>Description</Value>
                                       <Style>
                                         <FontFamily>Segoe UI</FontFamily>
                                         <FontSize>9pt</FontSize>
@@ -386,8 +386,7 @@ SELECT * FROM OfficeAddinOutlookCrashing</CommandText>
                               <rd:DefaultName>Textbox16</rd:DefaultName>
                               <Style>
                                 <Border>
-                                  <Color>LightGrey</Color>
-                                  <Style>Solid</Style>
+                                  <Style>None</Style>
                                 </Border>
                                 <BackgroundColor>Gainsboro</BackgroundColor>
                                 <PaddingLeft>2pt</PaddingLeft>
@@ -409,9 +408,32 @@ SELECT * FROM OfficeAddinOutlookCrashing</CommandText>
                                     <TextRun>
                                       <Value>Shows a list of the Outlook add-ins reporting crashes</Value>
                                       <Style>
-                                        <FontFamily>Segoe UI</FontFamily>
-                                        <FontSize>9pt</FontSize>
                                         <FontWeight>Normal</FontWeight>
+                                      </Style>
+                                    </TextRun>
+                                  </TextRuns>
+                                  <Style />
+                                </Paragraph>
+                                <Paragraph>
+                                  <TextRuns>
+                                    <TextRun>
+                                      <Value>For additional information on the readiness of specific Office add-ins visit </Value>
+                                      <Style>
+                                        <FontWeight>Normal</FontWeight>
+                                      </Style>
+                                    </TextRun>
+                                    <TextRun>
+                                      <Value>aka.ms/addinreadiness</Value>
+                                      <ActionInfo>
+                                        <Actions>
+                                          <Action>
+                                            <Hyperlink>http://aka.ms/addinreadiness</Hyperlink>
+                                          </Action>
+                                        </Actions>
+                                      </ActionInfo>
+                                      <Style>
+                                        <FontWeight>Normal</FontWeight>
+                                        <Color>Blue</Color>
                                       </Style>
                                     </TextRun>
                                   </TextRuns>
@@ -419,14 +441,9 @@ SELECT * FROM OfficeAddinOutlookCrashing</CommandText>
                                 </Paragraph>
                               </Paragraphs>
                               <rd:DefaultName>Textbox18</rd:DefaultName>
-                              <Visibility>
-                                <Hidden>true</Hidden>
-                                <ToggleItem>DescriptionLabelTextbox2</ToggleItem>
-                              </Visibility>
                               <Style>
                                 <Border>
-                                  <Color>LightGrey</Color>
-                                  <Style>Solid</Style>
+                                  <Style>None</Style>
                                 </Border>
                                 <BackgroundColor>Gainsboro</BackgroundColor>
                                 <PaddingLeft>5pt</PaddingLeft>
@@ -524,6 +541,6 @@ SELECT * FROM OfficeAddinOutlookCrashing</CommandText>
     <CodeModule>SrsResources, culture=neutral</CodeModule>
   </CodeModules>
   <rd:ReportUnitType>Inch</rd:ReportUnitType>
-  <rd:ReportServerUrl>http://cm01/ReportServer</rd:ReportServerUrl>
+  <rd:ReportServerUrl>http://cm2016lab-cm16/ReportServer</rd:ReportServerUrl>
   <rd:ReportID>6fbd236a-d836-4950-8788-14b828deb616</rd:ReportID>
 </Report>
