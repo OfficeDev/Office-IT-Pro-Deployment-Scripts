@@ -22,7 +22,7 @@ param(
 [bool]$Quiet = $true,
 
 [Parameter()]
-[ValidateSet("AllOfficeProducts","MainOfficeProduct","Visio","Project")]
+[ValidateSet("AllOfficeProducts","MainOfficeProduct","Visio","Project","Lync")]
 [string[]]$ProductsToRemove = "AllOfficeProducts",
 
 [Parameter()]
@@ -216,7 +216,7 @@ Function Remove-PreviousOfficeInstalls{
     [bool]$Quiet = $true,
 
     [Parameter(ValueFromPipelineByPropertyName=$true)]
-    [ValidateSet("AllOfficeProducts","MainOfficeProduct","Visio","Project")]
+    [ValidateSet("AllOfficeProducts","MainOfficeProduct","Visio","Project","Lync")]
     [string[]]$ProductsToRemove = "AllOfficeProducts",
 
     [Parameter()]
@@ -243,6 +243,7 @@ Function Remove-PreviousOfficeInstalls{
 
     [bool]$isVisioC2R = $false
     [bool]$isProjectC2R = $false
+    [bool]$isLyncC2R = $false
    
     if($ProductsToRemove -eq 'AllOfficeProducts'){
         $argListProducts += "CLIENTALL"
@@ -303,6 +304,28 @@ Function Remove-PreviousOfficeInstalls{
 
                     if($ProjectProdName.ClickToRun -eq $true){
                         $isProjectC2R = $true
+                    }
+                }
+                "Lync" {
+                    $LyncProduct = GetProductName -ProductName Lync
+                    $MainLyncProduct = $LyncProduct | ? {$_.DisplayName -notmatch "Language Pack"}
+                    $LyncLanguagePacks = $LyncProduct | ? {$_.DisplayName -match "Language Pack"}
+                    if($LyncLanguagePacks){
+                        foreach($LyncLang in $LyncLanguagePacks){
+                            $LyncArgListProducts += $LyncLang.Name
+                        }
+                    }
+                    $LyncArgListProducts += $MainLyncProduct.Name
+                    $LyncArgListProducts = $LyncArgListProducts -join ","
+
+                    foreach($product in $officeProducts){
+                        if($product.DisplayName.ToLower() -eq $LyncProduct.DisplayName.ToLower()){
+                            $LyncProdName = $product
+                        }
+                    }
+
+                    if($LyncProdName.ClickToRun -eq $true){
+                        $isLyncC2R = $true
                     }
                 }
             }
@@ -372,6 +395,7 @@ Function Remove-PreviousOfficeInstalls{
                         switch($MainOfficeProduct.Version){
                             "11" {
                                 $ActionFile = "$scriptPath\$03VBS"
+                                $MainOfficeProductName = '"' + $MainOfficeProductName + '"'
                             }
                             "12" {
                                 $ActionFile = "$scriptPath\$07VBS"
@@ -431,6 +455,7 @@ Function Remove-PreviousOfficeInstalls{
                         switch($VisioProduct.Version){
                             "11" {
                                 $ActionFile = "$scriptPath\$03VBS"
+                                $VisioArgListProducts = '"' + $VisioArgListProducts + '"'
                             }
                             "12" {
                                 $ActionFile = "$scriptPath\$07VBS"
@@ -484,6 +509,7 @@ Function Remove-PreviousOfficeInstalls{
                         switch($ProjectProduct.Version){
                             "11" {
                                 $ActionFile = "$scriptPath\$03VBS"
+                                $ProjectArgListProducts = '"' + $ProjectArgListProducts + '"'
                             }
                             "12" {
                                 $ActionFile = "$scriptPath\$07VBS"
@@ -522,7 +548,58 @@ Function Remove-PreviousOfficeInstalls{
                                 }
                             }
                         if($ActionFile -And (Test-Path -Path $ActionFile)){
-                            $cmdLine = """$ActionFile"" $ProjectProductName $argList"
+                            $cmdLine = """$ActionFile"" $ProjectArgListProducts $argList"
+                            $cmd = "cmd /c cscript //Nologo $cmdLine"
+                            Invoke-Expression $cmd
+                        }
+                    }
+                     "Lync" {
+                        Write-Host "`tRemoving Lync products..."
+                        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Removing Lync products..." -LogFilePath $LogFilePath
+                        $LyncProductName = $LyncProduct.Name
+
+                        switch($LyncProduct.Version){
+                            "11" {
+                                $ActionFile = "$scriptPath\$03VBS"
+                            }
+                            "12" {
+                                $ActionFile = "$scriptPath\$07VBS"
+                            }
+                            "14" {
+                                $ActionFile = "$scriptPath\$10VBS"
+                            }
+                           <# "15" {
+                                if(!$isLyncC2R){
+                                    $ActionFile = "$scriptPath\$15MSIVBS"
+                                } else {
+                                    if($RemoveClickToRunVersions){
+                                        Remove-OfficeClickToRun -C2RProductsToRemove "LyncEntryRetail", "LyncRetail"
+                                    } else {
+                                        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Lync cannot be removed. Use the -RemoveClickToRunVersions parameter to remove Click-To-Run 2016 installs." -LogFilePath $LogFilePath
+                                        throw "Lync cannot be removed. Use the -RemoveClickToRunVersions parameter to remove Click-To-Run 2016 installs."
+                                    }
+                                }
+                            } #>
+                            <#"16" {
+                                if($Remove2016Installs){
+                                    if(!$isLyncC2R){
+                                        $ActionFile = "$scriptPath\$16MSIVBS"
+                                    } else {
+                                        if($RemoveClickToRunVersions){
+                                            Remove-OfficeClickToRun -C2RProductsToRemove "LyncRetail", "LyncEntryRetail"
+                                        } else {
+                                            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Lync cannot be removed. Use the -RemoveClickToRunVersions parameter to remove Click-To-Run 2016 installs." -LogFilePath $LogFilePath
+                                            throw "Lync cannot be removed. Use the -RemoveClickToRunVersions parameter to remove Click-To-Run 2016 installs."
+                                        }
+                                        }
+                                    } else {
+                                        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Lync cannot be removed. Use the -RemoveClickToRunVersions and -Remove2016Installs parameters to remove Click-To-Run 2016 installs." -LogFilePath $LogFilePath
+                                        throw "Lync cannot be removed. Use the -RemoveClickToRunVersions and -Remove2016Installs parameters to remove Click-To-Run 2016 installs."
+                                    }
+                                } #>
+                            }
+                        if($ActionFile -And (Test-Path -Path $ActionFile)){
+                            $cmdLine = """$ActionFile"" $LyncProductName $argList"
                             $cmd = "cmd /c cscript //Nologo $cmdLine"
                             Invoke-Expression $cmd
                         }
