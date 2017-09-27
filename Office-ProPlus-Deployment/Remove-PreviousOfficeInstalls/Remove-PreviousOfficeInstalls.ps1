@@ -395,6 +395,7 @@ Function Remove-PreviousOfficeInstalls{
                         switch($MainOfficeProduct.Version){
                             "11" {
                                 $ActionFile = "$scriptPath\$03VBS"
+                                $MainOfficeProductName = '"' + $MainOfficeProductName + '"'
                             }
                             "12" {
                                 $ActionFile = "$scriptPath\$07VBS"
@@ -454,6 +455,7 @@ Function Remove-PreviousOfficeInstalls{
                         switch($VisioProduct.Version){
                             "11" {
                                 $ActionFile = "$scriptPath\$03VBS"
+                                $VisioArgListProducts = '"' + $VisioArgListProducts + '"'
                             }
                             "12" {
                                 $ActionFile = "$scriptPath\$07VBS"
@@ -507,6 +509,7 @@ Function Remove-PreviousOfficeInstalls{
                         switch($ProjectProduct.Version){
                             "11" {
                                 $ActionFile = "$scriptPath\$03VBS"
+                                $ProjectArgListProducts = '"' + $ProjectArgListProducts + '"'
                             }
                             "12" {
                                 $ActionFile = "$scriptPath\$07VBS"
@@ -545,7 +548,7 @@ Function Remove-PreviousOfficeInstalls{
                                 }
                             }
                         if($ActionFile -And (Test-Path -Path $ActionFile)){
-                            $cmdLine = """$ActionFile"" $ProjectProductName $argList"
+                            $cmdLine = """$ActionFile"" $ProjectArgListProducts $argList"
                             $cmd = "cmd /c cscript //Nologo $cmdLine"
                             Invoke-Expression $cmd
                         }
@@ -562,7 +565,7 @@ Function Remove-PreviousOfficeInstalls{
                             "12" {
                                 $ActionFile = "$scriptPath\$07VBS"
                             }
-                            "4" {
+                            "14" {
                                 $ActionFile = "$scriptPath\$10VBS"
                             }
                            <# "15" {
@@ -596,7 +599,7 @@ Function Remove-PreviousOfficeInstalls{
                                 } #>
                             }
                         if($ActionFile -And (Test-Path -Path $ActionFile)){
-                            $cmdLine = """$ActionFile"" $LynProductName $argList"
+                            $cmdLine = """$ActionFile"" $LyncProductName $argList"
                             $cmd = "cmd /c cscript //Nologo $cmdLine"
                             Invoke-Expression $cmd
                         }
