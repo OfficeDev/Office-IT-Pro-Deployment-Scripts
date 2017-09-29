@@ -24,7 +24,7 @@ Description:
 Will return the locally installed Office product
 
 .EXAMPLE
-Get-OfficeVersion
+Get-LocalOfficeVersion
 
 Description:
 Will return the locally installed Office product
