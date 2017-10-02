@@ -499,7 +499,7 @@ process {
                             $configPath = Join-Path $key "Configuration"
                             $sharedLicense = $regProv.GetStringValue($HKLM, $configPath, "SharedComputerLicensing").sValue
                             if($sharedLicense -eq '1'){
-                               Set-ODTConfigProperties -SharedComputerLicensing "1" -ConfigDoc $ConfigFile
+                               Set-ODTConfigProperties -SharedComputerLicensing $true -ConfigDoc $ConfigFile
                             }
                         }
                     }
@@ -1917,6 +1917,9 @@ Function Set-ODTConfigProperties{
 .PARAMETER TargetFilePath
     Full file path for the file to be modified and be output to.
 
+.PARAMETER PinIconsToTaskbar
+    Optional. Set PinIconsToTaskbar to $true to pin icons to taskbar and $false to not.  Does not apply to Windows 10
+
 .Example
     Set-ODTConfigProperties -AutoActivate "1" -TargetFilePath "$env:Public/Documents/config.xml"
     
@@ -1930,98 +1933,208 @@ Function Set-ODTConfigProperties{
 
 .Notes
     Here is what the portion of configuration file looks like when modified by this function:
-    
+
     <Configuration>
       ...
       <Property Name="AUTOACTIVATE" Value="1" />
       <Property Name="FORCEAPPSHUTDOWN" Value="TRUE" />
       <Property Name="PACKAGEGUID" Value="12345678-ABCD-1234-ABCD-1234567890AB" />
       <Property Name="SharedComputerLicensing" Value="0" />
+      <Property Name="PinIconsToTaskbar" Value="1" />
       ...
     </Configuration>
+
 #>
     [CmdletBinding()]
     Param(
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [System.XML.XMLDocument]$ConfigDoc = $NULL,
 
-       [Parameter(Mandatory=$true,ValueFromPipelineByPropertyName=$true)]
-       [System.XML.XMLDocument]$ConfigDoc = $NULL,
+        [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
+        [string] $ConfigurationXML = $NULL,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [string] $AutoActivate,
+        [System.Nullable[bool]] $AutoActivate,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [string] $ForceAppShutDown,
+        [System.Nullable[bool]] $ForceAppShutDown,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [string] $PackageGUID,
+        [string] $PackageGUID = $NULL,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [string] $SharedComputerLicensing,
+        [System.Nullable[bool]] $SharedComputerLicensing = $NULL,
 
         [Parameter(ValueFromPipelineByPropertyName=$true)]
-        [string] $TargetFilePath
+        [string] $TargetFilePath,
+
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [System.Nullable[bool]] $PinIconsToTaskbar = $NULL,
+
+        [Parameter()]
+        [string]$LogFilePath
     )
 
     Process{
+        Set-Alias -name LINENUM -value Get-CurrentLineNumber
+        $currentFileName = Get-CurrentFileName
+
         #Load file
-        [System.XML.XMLDocument]$ConfigFile = $ConfigDoc
+        if($ConfigDoc){
+            [System.XML.XMLDocument]$ConfigFile = $ConfigDoc
+        } else {
+            [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
+        }
+
+        if($TargetFilePath){
+            $ConfigFile.Load($TargetFilePath) | Out-Null
+        } else {
+            if($ConfigurationXml){
+                $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
+                $global:saveLastConfigFile = $NULL
+                $global:saveLastFilePath = $NULL
+            }
+        }
+
+        $global:saveLastConfigFile = $ConfigFile.OuterXml
 
         #Check for proper root element
         if($ConfigFile.Configuration -eq $null){
-            #write log
-            $lineNum = Get-CurrentLineNumber    
-            $filName = Get-CurrentFileName 
-            WriteToLogFile -LNumber $lineNum -FName $filName -ActionError "no configuration element"
             throw $NoConfigurationElement
         }
 
         #Set each property as desired
-        if(($AutoActivate)){
-            [System.XML.XMLElement]$AutoActivateElement = $ConfigFile.Configuration.Property | where { $_.Name -eq "AUTOACTIVATE" }
+        if($AutoActivate -ne $NULL){
+            [System.XML.XMLElement]$AutoActivateElement = $ConfigFile.Configuration.Property | Where { $_.Name -eq "AUTOACTIVATE" }
             if($AutoActivateElement -eq $null){
                 [System.XML.XMLElement]$AutoActivateElement=$ConfigFile.CreateElement("Property")
+                WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "The Property element has been created" -LogFilePath $LogFilePath
             }
                 
             $ConfigFile.Configuration.appendChild($AutoActivateElement) | Out-Null
             $AutoActivateElement.SetAttribute("Name", "AUTOACTIVATE") | Out-Null
-            $AutoActivateElement.SetAttribute("Value", $AutoActivate) | Out-Null
+            $AutoActivateElement.SetAttribute("Value", $AutoActivate.ToString().ToUpper()) | Out-Null
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Setting the AUTOACTIVATE element to $AutoActivate.ToString().ToUpper()" -LogFilePath $LogFilePath
+        } Else {
+            [System.XML.XMLElement]$AutoActivateElement = $ConfigFile.Configuration.Property | Where { $_.Name -eq "AUTOACTIVATE" }
+            if($AutoActivateElement -ne $null){
+               if ($PSBoundParameters.ContainsKey('AUTOACTIVATE')) {
+                   $ConfigFile.Configuration.removeChild($AutoActivateElement) | Out-Null
+                   WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Removed the AUTOACTIVATE element" -LogFilePath $LogFilePath
+               }
+            }
         }
 
-        if(($ForceAppShutDown)){
-            [System.XML.XMLElement]$ForceAppShutDownElement = $ConfigFile.Configuration.Property | where { $_.Name -eq "FORCEAPPSHUTDOWN" }
+        if($ForceAppShutDown -ne $NULL){
+            [System.XML.XMLElement]$ForceAppShutDownElement = $ConfigFile.Configuration.Property | Where { $_.Name -eq "FORCEAPPSHUTDOWN" }
             if($ForceAppShutDownElement -eq $null){
                 [System.XML.XMLElement]$ForceAppShutDownElement=$ConfigFile.CreateElement("Property")
+                WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "The Property element has been created" -LogFilePath $LogFilePath
             }
                 
             $ConfigFile.Configuration.appendChild($ForceAppShutDownElement) | Out-Null
             $ForceAppShutDownElement.SetAttribute("Name", "FORCEAPPSHUTDOWN") | Out-Null
-            $ForceAppShutDownElement.SetAttribute("Value", $ForceAppShutDown) | Out-Null
+            $ForceAppShutDownElement.SetAttribute("Value", $ForceAppShutDown.ToString().ToUpper()) | Out-Null
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Setting the FORCEAPPSHUTDOWN element to $ForceAppShutDown.ToString().ToUpper()" -LogFilePath $LogFilePath
+        } Else {
+            [System.XML.XMLElement]$ForceAppShutDownElement = $ConfigFile.Configuration.Property | Where { $_.Name -eq "FORCEAPPSHUTDOWN" }
+            if($ForceAppShutDownElement -ne $null){
+               if ($PSBoundParameters.ContainsKey('FORCEAPPSHUTDOWN')) {
+                   $ConfigFile.Configuration.removeChild($ForceAppShutDownElement) | Out-Null
+                   WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Removed the FORCEAPPSHUTDOWN element" -LogFilePath $LogFilePath
+               }
+            }
         }
 
-        if(($PackageGUID)){
-            [System.XML.XMLElement]$PackageGUIDElement = $ConfigFile.Configuration.Property | where { $_.Name -eq "PACKAGEGUID" }
+        if($PackageGUID){
+            [System.XML.XMLElement]$PackageGUIDElement = $ConfigFile.Configuration.Property | Where { $_.Name -eq "PACKAGEGUID" }
             if($PackageGUIDElement -eq $null){
                 [System.XML.XMLElement]$PackageGUIDElement=$ConfigFile.CreateElement("Property")
+                WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "The Property element has been created" -LogFilePath $LogFilePath
             }
                 
             $ConfigFile.Configuration.appendChild($PackageGUIDElement) | Out-Null
             $PackageGUIDElement.SetAttribute("Name", "PACKAGEGUID") | Out-Null
             $PackageGUIDElement.SetAttribute("Value", $PackageGUID) | Out-Null
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Setting the PACKAGEGUID element to $PackageGUID" -LogFilePath $LogFilePath
+        } Else {
+            [System.XML.XMLElement]$PackageGUIDElement = $ConfigFile.Configuration.Property | Where { $_.Name -eq "PACKAGEGUID" }
+            if($PackageGUIDElement -ne $null){
+               if ($PSBoundParameters.ContainsKey('PACKAGEGUID')) {
+                   $ConfigFile.Configuration.removeChild($PackageGUIDElement) | Out-Null
+                   WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Removed the PACKAGEGUID element" -LogFilePath $LogFilePath
+               }
+            }
         }
 
-        if(($SharedComputerLicensing)){
-            [System.XML.XMLElement]$SharedComputerLicensingElement = $ConfigFile.Configuration.Property | where { $_.Name -eq "SharedComputerLicensing" }
+        if($SharedComputerLicensing -eq $true){
+            [System.XML.XMLElement]$SharedComputerLicensingElement = $ConfigFile.Configuration.Property | Where { $_.Name -eq "SharedComputerLicensing" }
             if($SharedComputerLicensingElement -eq $null){
                 [System.XML.XMLElement]$SharedComputerLicensingElement=$ConfigFile.CreateElement("Property")
+                WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "The Property element has been created" -LogFilePath $LogFilePath
             }
                 
             $ConfigFile.Configuration.appendChild($SharedComputerLicensingElement) | Out-Null
             $SharedComputerLicensingElement.SetAttribute("Name", "SharedComputerLicensing") | Out-Null
-            $SharedComputerLicensingElement.SetAttribute("Value", $SharedComputerLicensing) | Out-Null
+            $SharedComputerLicensingElement.SetAttribute("Value", "1") | Out-Null
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Setting the SharedComputerLicensing element to $SharedComputerLicensing.ToString().ToUpper()" -LogFilePath $LogFilePath
+        } Else {
+            [System.XML.XMLElement]$SharedComputerLicensingElement = $ConfigFile.Configuration.Property | Where { $_.Name -eq "SharedComputerLicensing" }
+            if($SharedComputerLicensingElement -ne $null){
+               if ($PSBoundParameters.ContainsKey('SharedComputerLicensing')) {
+                   $ConfigFile.Configuration.removeChild($SharedComputerLicensingElement) | Out-Null
+                   WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Removed the SharedComputerLicensing element" -LogFilePath $LogFilePath
+               }
+            }
         }
 
+        if ($PinIconsToTaskbar -ne $NULL) {
+            [System.XML.XMLElement]$PinIconsToTaskbarElement = $ConfigFile.Configuration.Property | Where { $_.Name -eq "PinIconsToTaskbar" }
+            if($PinIconsToTaskbarElement -eq $null){
+                [System.XML.XMLElement]$PinIconsToTaskbarElement=$ConfigFile.CreateElement("Property")
+                WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "The Property element has been created" -LogFilePath $LogFilePath
+            }
+                
+            $ConfigFile.Configuration.appendChild($PinIconsToTaskbarElement) | Out-Null
+            $PinIconsToTaskbarElement.SetAttribute("Name", "PinIconsToTaskbar") | Out-Null
+            $PinIconsToTaskbarElement.SetAttribute("Value", $PinIconsToTaskbar.ToString().ToUpper()) | Out-Null
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Setting the PinIconsToTaskbar element to $PinIconsToTaskbar.ToString().ToUpper()" -LogFilePath $LogFilePath
+        } Else {
+            [System.XML.XMLElement]$PinIconsToTaskbarElement = $ConfigFile.Configuration.Property | Where { $_.Name -eq "PinIconsToTaskbar" }
+            if($PinIconsToTaskbarElement -ne $null){
+               if ($PSBoundParameters.ContainsKey('PinIconsToTaskbar')) {
+                   $ConfigFile.Configuration.removeChild($PinIconsToTaskbarElement) | Out-Null
+                   WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Removed the PinIconsToTaskbar element" -LogFilePath $LogFilePath
+               }
+            }
+        }
+
+        if($TargetFilePath){
+            $ConfigFile.Save($TargetFilePath) | Out-Null
+            $global:saveLastFilePath = $TargetFilePath
+        
+            if (($PSCmdlet.MyInvocation.PipelineLength -eq 1) -or `
+                ($PSCmdlet.MyInvocation.PipelineLength -eq $PSCmdlet.MyInvocation.PipelinePosition)) {
+                Write-Host
+
+                Format-XML ([xml](cat $TargetFilePath)) -indent 4
+
+                Write-Host
+                Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+                WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "The Office XML Configuration file has been saved to: $TargetFilePath" -LogFilePath $LogFilePath
+            } else {
+                $results = new-object PSObject[] 0;
+                $Result = New-Object –TypeName PSObject 
+                Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
+                Add-Member -InputObject $Result -MemberType NoteProperty -Name "SharedComputerLicensing" -Value $SharedComputerLicensing
+                Add-Member -InputObject $Result -MemberType NoteProperty -Name "PackageGUID" -Value $PackageGUID
+                Add-Member -InputObject $Result -MemberType NoteProperty -Name "ForceAppShutDown" -Value $ForceAppShutDown
+                Add-Member -InputObject $Result -MemberType NoteProperty -Name "AutoActivate" -Value $AutoActivate
+                $Result
+            }
+        }     
     }
-} 
+}
 
 Function GetFilePath() {
     Param(
