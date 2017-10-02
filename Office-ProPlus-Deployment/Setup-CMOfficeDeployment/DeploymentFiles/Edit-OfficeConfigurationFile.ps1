@@ -1981,6 +1981,8 @@ Function Set-ODTConfigProperties{
 #>
     [CmdletBinding()]
     Param(
+        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [System.XML.XMLDocument]$ConfigDoc = $NULL,
 
         [Parameter(ValueFromPipeline=$true,ValueFromPipelineByPropertyName=$true, Position=0)]
         [string] $ConfigurationXML = $NULL,
@@ -2011,19 +2013,20 @@ Function Set-ODTConfigProperties{
         Set-Alias -name LINENUM -value Get-CurrentLineNumber
         $currentFileName = Get-CurrentFileName
 
-        $TargetFilePath = GetFilePath -TargetFilePath $TargetFilePath
-
         #Load file
-        [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
-
-        if ($TargetFilePath) {
-           $ConfigFile.Load($TargetFilePath) | Out-Null
+        if($ConfigDoc){
+            [System.XML.XMLDocument]$ConfigFile = $ConfigDoc
         } else {
-            if ($ConfigurationXml) 
-            {
-              $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
-              $global:saveLastConfigFile = $NULL
-              $global:saveLastFilePath = $NULL
+            [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
+        }
+
+        if($TargetFilePath){
+            $ConfigFile.Load($TargetFilePath) | Out-Null
+        } else {
+            if($ConfigurationXml){
+                $ConfigFile.LoadXml($ConfigurationXml) | Out-Null
+                $global:saveLastConfigFile = $NULL
+                $global:saveLastFilePath = $NULL
             }
         }
 
@@ -2098,7 +2101,7 @@ Function Set-ODTConfigProperties{
             }
         }
 
-        if($SharedComputerLicensing -ne $NULL){
+        if($SharedComputerLicensing -eq $true){
             [System.XML.XMLElement]$SharedComputerLicensingElement = $ConfigFile.Configuration.Property | Where { $_.Name -eq "SharedComputerLicensing" }
             if($SharedComputerLicensingElement -eq $null){
                 [System.XML.XMLElement]$SharedComputerLicensingElement=$ConfigFile.CreateElement("Property")
@@ -2107,7 +2110,7 @@ Function Set-ODTConfigProperties{
                 
             $ConfigFile.Configuration.appendChild($SharedComputerLicensingElement) | Out-Null
             $SharedComputerLicensingElement.SetAttribute("Name", "SharedComputerLicensing") | Out-Null
-            $SharedComputerLicensingElement.SetAttribute("Value", $SharedComputerLicensing.ToString().ToUpper()) | Out-Null
+            $SharedComputerLicensingElement.SetAttribute("Value", "1") | Out-Null
             WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Setting the SharedComputerLicensing element to $SharedComputerLicensing.ToString().ToUpper()" -LogFilePath $LogFilePath
         } Else {
             [System.XML.XMLElement]$SharedComputerLicensingElement = $ConfigFile.Configuration.Property | Where { $_.Name -eq "SharedComputerLicensing" }
@@ -2140,29 +2143,30 @@ Function Set-ODTConfigProperties{
             }
         }
 
-        $ConfigFile.Save($TargetFilePath) | Out-Null
-        $global:saveLastFilePath = $TargetFilePath
-
-        if (($PSCmdlet.MyInvocation.PipelineLength -eq 1) -or `
-            ($PSCmdlet.MyInvocation.PipelineLength -eq $PSCmdlet.MyInvocation.PipelinePosition)) {
-            Write-Host
-
-            Format-XML ([xml](cat $TargetFilePath)) -indent 4
-
-            Write-Host
-            Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
-            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "The Office XML Configuration file has been saved to: $TargetFilePath" -LogFilePath $LogFilePath
-        } else {
-            $results = new-object PSObject[] 0;
-            $Result = New-Object –TypeName PSObject 
-            Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
-            Add-Member -InputObject $Result -MemberType NoteProperty -Name "SharedComputerLicensing" -Value $SharedComputerLicensing
-            Add-Member -InputObject $Result -MemberType NoteProperty -Name "PackageGUID" -Value $PackageGUID
-            Add-Member -InputObject $Result -MemberType NoteProperty -Name "ForceAppShutDown" -Value $ForceAppShutDown
-            Add-Member -InputObject $Result -MemberType NoteProperty -Name "AutoActivate" -Value $AutoActivate
-            $Result
-        }
+        if($TargetFilePath){
+            $ConfigFile.Save($TargetFilePath) | Out-Null
+            $global:saveLastFilePath = $TargetFilePath
         
+            if (($PSCmdlet.MyInvocation.PipelineLength -eq 1) -or `
+                ($PSCmdlet.MyInvocation.PipelineLength -eq $PSCmdlet.MyInvocation.PipelinePosition)) {
+                Write-Host
+
+                Format-XML ([xml](cat $TargetFilePath)) -indent 4
+
+                Write-Host
+                Write-Host "The Office XML Configuration file has been saved to: $TargetFilePath"
+                WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "The Office XML Configuration file has been saved to: $TargetFilePath" -LogFilePath $LogFilePath
+            } else {
+                $results = new-object PSObject[] 0;
+                $Result = New-Object –TypeName PSObject 
+                Add-Member -InputObject $Result -MemberType NoteProperty -Name "TargetFilePath" -Value $TargetFilePath
+                Add-Member -InputObject $Result -MemberType NoteProperty -Name "SharedComputerLicensing" -Value $SharedComputerLicensing
+                Add-Member -InputObject $Result -MemberType NoteProperty -Name "PackageGUID" -Value $PackageGUID
+                Add-Member -InputObject $Result -MemberType NoteProperty -Name "ForceAppShutDown" -Value $ForceAppShutDown
+                Add-Member -InputObject $Result -MemberType NoteProperty -Name "AutoActivate" -Value $AutoActivate
+                $Result
+            }
+        }     
     }
 }
 
