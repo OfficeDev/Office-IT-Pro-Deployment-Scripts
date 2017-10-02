@@ -2107,7 +2107,7 @@ Function Set-ODTConfigProperties{
                 
             $ConfigFile.Configuration.appendChild($SharedComputerLicensingElement) | Out-Null
             $SharedComputerLicensingElement.SetAttribute("Name", "SharedComputerLicensing") | Out-Null
-            $SharedComputerLicensingElement.SetAttribute("Value", $SharedComputerLicensing.ToString().ToUpper()) | Out-Null
+            $SharedComputerLicensingElement.SetAttribute("Value", [int]$SharedComputerLicensing) | Out-Null
             WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Setting the SharedComputerLicensing element to $SharedComputerLicensing.ToString().ToUpper()" -LogFilePath $LogFilePath
         } Else {
             [System.XML.XMLElement]$SharedComputerLicensingElement = $ConfigFile.Configuration.Property | Where { $_.Name -eq "SharedComputerLicensing" }
