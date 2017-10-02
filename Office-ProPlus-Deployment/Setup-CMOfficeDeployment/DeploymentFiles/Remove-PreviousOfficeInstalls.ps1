@@ -642,6 +642,10 @@ Function Remove-PreviousOfficeInstalls{
                         }
                         "15.*"{
                             if(!$office15Removed){
+                                if($product.ClickToRun -eq $true){
+                                    $c2r2013Installed = $true
+                                }
+
                                 if(!$c2r2013Installed){
                                     $ActionFile = "$scriptPath\$15MSIVBS"
                                 } else {
