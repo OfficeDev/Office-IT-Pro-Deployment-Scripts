@@ -503,6 +503,190 @@ Function newCTRRemoveXml {
 "@
 }
 
+function Get-ODTOfficeProductLanguages {
+    Param(
+        [Parameter()]
+        [string]$ComputerName = $env:COMPUTERNAME,
+
+        [Parameter()]
+        [string]$ProductId
+    )
+
+    Begin {
+        $defaultDisplaySet = 'DisplayName','Languages'
+        $defaultDisplayPropertySet = New-Object System.Management.Automation.PSPropertySet(‘DefaultDisplayPropertySet’,[string[]]$defaultDisplaySet)
+        $PSStandardMembers = [System.Management.Automation.PSMemberInfo[]]@($defaultDisplayPropertySet)
+        $results = New-Object PSObject[] 0
+    }
+
+    Process {
+        $regProv = Get-Wmiobject -list "StdRegProv" -namespace root\default -ComputerName $ComputerName -ErrorAction Stop
+        $officeConfig = getCTRConfig -regProv $regProv
+        [System.XML.XMLDocument]$ConfigFile = New-Object System.XML.XMLDocument
+
+        if(!$ProductId){
+            $productReleaseIds = $officeConfig.ProductReleaseIds
+            $splitProducts = $productReleaseIds.Split(',')
+        } else {
+            $splitProducts = $ProductId
+        }
+
+        foreach($product in $splitProducts){
+            $officeAddLangs = odtGetOfficeLanguages -ConfigDoc $ConfigFile -OfficeKeyPath $officeConfig.OfficeKeyPath -ProductId $product
+
+            $object = New-Object PSObject -Property @{DisplayName = $product; Languages = $officeAddLangs}
+            $object | Add-Member MemberSet PSStandardMembers $PSStandardMembers
+            $results += $object
+        }
+  
+        return $results
+    }
+}
+
+function getCTRConfig() {
+    param(
+       [Parameter(ValueFromPipelineByPropertyName=$true)]
+       $regProv = $NULL
+    )
+
+    $HKLM = [UInt32] "0x80000002"
+    $computerName = $env:COMPUTERNAME
+
+    if (!($regProv)) {
+        $regProv = Get-Wmiobject -list "StdRegProv" -namespace root\default -computername $computerName -ErrorAction Stop
+    }
+    
+    $officeCTRKeys = 'SOFTWARE\Microsoft\Office\15.0\ClickToRun',
+                     'SOFTWARE\Wow6432Node\Microsoft\Office\15.0\ClickToRun',
+                     'SOFTWARE\Microsoft\Office\ClickToRun',
+                     'SOFTWARE\Wow6432Node\Microsoft\Office\ClickToRun'
+
+    $Object = New-Object PSObject
+    $Object | Add-Member Noteproperty ClickToRunInstalled $false
+
+    [string]$officeKeyPath = "";
+    foreach ($regPath in $officeCTRKeys) {
+       [string]$installPath = $regProv.GetStringValue($HKLM, $regPath, "InstallPath").sValue
+       if ($installPath) {
+          if ($installPath.Length -gt 0) {
+              $officeKeyPath = $regPath;
+              break;
+          }
+       }
+    }
+
+    if ($officeKeyPath.Length -gt 0) {
+        $Object.ClickToRunInstalled = $true
+
+        $configurationPath = join-path $officeKeyPath "Configuration"
+
+        [string]$platform = $regProv.GetStringValue($HKLM, $configurationPath, "Platform").sValue
+        [string]$clientCulture = $regProv.GetStringValue($HKLM, $configurationPath, "ClientCulture").sValue
+        [string]$productIds = $regProv.GetStringValue($HKLM, $configurationPath, "ProductReleaseIds").sValue
+        [string]$versionToReport = $regProv.GetStringValue($HKLM, $configurationPath, "VersionToReport").sValue
+        [string]$updatesEnabled = $regProv.GetStringValue($HKLM, $configurationPath, "UpdatesEnabled").sValue
+        [string]$updateUrl = $regProv.GetStringValue($HKLM, $configurationPath, "UpdateUrl").sValue
+        [string]$updateDeadline = $regProv.GetStringValue($HKLM, $configurationPath, "UpdateDeadline").sValue
+
+        if (!($productIds)) {
+            $productIds = ""
+            $officeActivePath = Join-Path $officeKeyPath "ProductReleaseIDs\Active"
+            $officeProducts = $regProv.EnumKey($HKLM, $officeActivePath)
+
+            foreach ($productName in $officeProducts.sNames) {
+               if ($productName.ToLower() -eq "stream") { continue }
+               if ($productName.ToLower() -eq "culture") { continue }
+               if ($productIds.Length -gt 0) { $productIds += "," }
+               $productIds += "$productName"
+            }
+        }
+
+        $splitProducts = $productIds.Split(',');
+
+        if ($platform.ToLower() -eq "x86") {
+            $platform = "32"
+        } else {
+            $platform = "64"
+        }
+
+        $Object | add-member Noteproperty Platform $platform
+        $Object | add-member Noteproperty ClientCulture $clientCulture
+        $Object | add-member Noteproperty ProductReleaseIds $productIds
+        $Object | add-member Noteproperty Version $versionToReport
+        $Object | add-member Noteproperty UpdatesEnabled $updatesEnabled
+        $Object | add-member Noteproperty UpdateUrl $updateUrl
+        $Object | add-member Noteproperty UpdateDeadline $updateDeadline
+        $Object | add-member Noteproperty OfficeKeyPath $officeKeyPath
+        
+    } 
+
+    return $Object 
+
+}
+
+function odtGetOfficeLanguages() {
+    param(
+       [Parameter(ValueFromPipelineByPropertyName=$true)]
+       [System.XML.XMLDocument]$ConfigDoc = $NULL,
+              
+       [Parameter(Mandatory=$true,ValueFromPipelineByPropertyName=$true)]
+       [string]$OfficeKeyPath = $NULL,
+
+       [Parameter(Mandatory=$true,ValueFromPipelineByPropertyName=$true)]
+       [string]$ProductId = $NULL
+    )
+
+    begin {
+        $HKLM = [UInt32] "0x80000002"
+        $HKCR = [UInt32] "0x80000000"
+    }
+
+    process {
+        [System.Collections.ArrayList]$appLanguages1 = New-Object System.Collections.ArrayList
+
+        #SOFTWARE\Wow6432Node\Microsoft\Office\14.0\Common\LanguageResources\InstalledUIs
+
+        $productsPath = join-path $officeKeyPath "ProductReleaseIDs\Active\$ProductId"
+        $installedCultures = $regProv.EnumKey($HKLM, $productsPath)
+        
+        foreach ($installedCulture in $installedCultures.sNames) {
+        if($installedCulture){
+            if ($installedCulture.Contains("-") -and !($installedCulture.ToLower() -eq "x-none")) {
+                $addItem = $appLanguages1.Add($installedCulture) 
+            }
+            }
+        }
+
+        if ($appLanguages1.Count) {
+            $productsPath = join-path $officeKeyPath "ProductReleaseIDs\Active\$ProductId"
+        } else {
+            $productReleasePath = Join-Path $officeKeyPath "ProductReleaseIDs"
+            $guids= $regProv.EnumKey($HKLM, $productReleasePath)
+
+            foreach ($guid in $guids.sNames) {
+
+                $productsPath = Join-Path $officeKeyPath "ProductReleaseIDs\$guid\$ProductId.16"
+                $installedCultures = $regProv.EnumKey($HKLM, $productsPath)
+      
+                foreach ($installedCulture in $installedCultures.sNames) {
+                   if($installedCulture){
+                      if ($installedCulture.Contains("-") -and !($installedCulture.ToLower() -eq "x-none")) {
+                            $addItem = $appLanguages1.Add($installedCulture) 
+                      }
+                   }
+                }
+
+                if ($appLanguages1.Count) {
+                   $productsPath = Join-Path $officeKeyPath "ProductReleaseIDs\Culture\$ProductId"
+                }
+ 
+            }
+        }
+
+        return $appLanguages1;
+    }
+}
+
 Function GetScriptRoot() {
  process {
      [string]$scriptPath = "."
