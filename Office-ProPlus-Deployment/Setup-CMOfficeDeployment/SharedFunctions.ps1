@@ -53,6 +53,7 @@ namespace Microsoft.Office
          InfoPathRetail = 512,
          SkypeforBusinessEntryRetail = 1024,
          LyncEntryRetail = 2048,
+         AccessRuntimeRetail = 4096
      }
 }
 "
@@ -78,6 +79,10 @@ namespace Microsoft.Office
          VisioStdXVolume = 64,
          ProjectProXVolume = 128,
          ProjectStdXVolume = 256,
+         InfoPathRetail = 512,
+         SkypeforBusinessEntryRetail = 1024,
+         LyncEntryRetail = 2048,
+         AccessRuntimeRetail = 4096
      }
 }
 "
