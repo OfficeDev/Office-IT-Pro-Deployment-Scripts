@@ -2,7 +2,8 @@
 [String]$global:saveLastFilePath = $NULL
 
 $validProductIds = @("O365ProPlusRetail","O365BusinessRetail","VisioProRetail","ProjectProRetail", "SPDRetail", "VisioProXVolume", 
-                     "VisioStdXVolume", "ProjectProXVolume", "ProjectStdXVolume", "InfoPathRetail", "SkypeforBusinessEntryRetail", "LyncEntryRetail")
+                     "VisioStdXVolume", "ProjectProXVolume", "ProjectStdXVolume", "InfoPathRetail", "SkypeforBusinessEntryRetail", 
+                     "LyncEntryRetail", "AccessRuntimeRetail")
 
 try {
 $enum = "
@@ -26,6 +27,7 @@ namespace Microsoft.Office
          InfoPathRetail = 512,
          SkypeforBusinessEntryRetail = 1024,
          LyncEntryRetail = 2048,
+         AccessRuntimeRetail = 4096
      }
 }
 "
