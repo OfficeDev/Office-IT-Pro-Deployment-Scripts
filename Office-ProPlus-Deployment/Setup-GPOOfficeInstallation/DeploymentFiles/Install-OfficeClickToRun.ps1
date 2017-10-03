@@ -30,6 +30,7 @@ namespace Microsoft.Office
          InfoPathRetail = 512,
          SkypeforBusinessEntryRetail = 1024,
          LyncEntryRetail = 2048,
+         AccessRuntimeRetail = 4096
      }
 }
 "
