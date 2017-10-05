@@ -1890,17 +1890,27 @@ function Update-ConfigurationXml() {
  }
 
 function Exclude-Applications() {
-   [CmdletBinding()]
-   param(
+    [CmdletBinding()]
+    param(
       [Parameter(Mandatory=$true)]
       [string] $TargetFilePath,
 
       [Parameter(Mandatory=$true)]
       [string[]] $ExcludeApps
-   )
-   process {
-      if ((Get-ODTProductToAdd -TargetFilePath $targetFilePath -ProductId O365ProPlusRetail)) {           Set-ODTProductToAdd -ProductId "O365ProPlusRetail" -TargetFilePath $targetFilePath -ExcludeApps $ExcludeApps | Out-Null      }      if ((Get-ODTProductToAdd -TargetFilePath $targetFilePath -ProductId O365BusinessRetail)) {           Set-ODTProductToAdd -ProductId "O365BusinessRetail" -TargetFilePath $targetFilePath -ExcludeApps $ExcludeApps | Out-Null      }
-   }
+    )
+    process {
+
+        $officeproducts = @("O365ProPlusRetail","O365BusinessRetail","VisioProRetail","ProjectProRetail","SPDRetail",
+                            "VisioProXVolume","VisioStdXVolume","ProjectProXVolume","ProjectStdXVolume","InfoPathRetail",
+                            "SkypeforBusinessEntryRetail","LyncEntryRetail","AccessRuntimeRetail")
+
+        [bool]$excludedOneDrive = $false
+        [bool]$isOffice = $false
+
+        foreach($product in $officeproducts){
+            if ((Get-ODTProductToAdd -TargetFilePath $targetFilePath -ProductId $product)) {                if($product -eq "O365ProPlusRetail" -or $product -eq "O365BusinessRetail"){                    Set-ODTProductToAdd -ProductId $product -TargetFilePath $targetFilePath -ExcludeApps $ExcludeApps | Out-Null                }                                 foreach($app in $ExcludeApps){                    if($app -eq "OneDrive"){                          Set-ODTProductToAdd -ProductId $product -TargetFilePath $targetFilePath -ExcludeApps $app | Out-Null                      }                }             }
+        }
+    }
 }
 
 function Add-ProductSku() {
