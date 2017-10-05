@@ -309,7 +309,7 @@ Function Remove-PreviousOfficeInstalls{
                 "Lync" {
                     $LyncProduct = GetProductName -ProductName Lync
                     $MainLyncProduct = $LyncProduct | ? {$_.DisplayName -notmatch "Language Pack"}
-                    $LyncLanguagePacks = $LyncProduct | ? {$_.DisplayName -match "Language Pack"}
+                    $LyncLanguagePacks = $LyncProduct | ? {$_.DisplayName -match "Language Pack" -or $_.DisplayName -match "MUI"}
                     if($LyncLanguagePacks){
                         foreach($LyncLang in $LyncLanguagePacks){
                             $LyncArgListProducts += $LyncLang.Name
@@ -366,9 +366,11 @@ Function Remove-PreviousOfficeInstalls{
     
     $removeOffice = $true
     if (!( $officeVersions)) {
-       Write-Host "Microsoft Office is not installed"
-       WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Microsoft Office is not installed" -LogFilePath $LogFilePath
-       $removeOffice = $false
+        if(!($ProductsToRemove -contains "Lync")){
+            Write-Host "Microsoft Office is not installed"
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Microsoft Office is not installed" -LogFilePath $LogFilePath
+            $removeOffice = $false
+        }
     }
 
     if ($removeOffice) {
@@ -559,45 +561,17 @@ Function Remove-PreviousOfficeInstalls{
                         $LyncProductName = $LyncProduct.Name
 
                         switch($LyncProduct.Version){
-                            "11" {
+                            "1" {
                                 $ActionFile = "$scriptPath\$03VBS"
                             }
-                            "12" {
+                            "2" {
                                 $ActionFile = "$scriptPath\$07VBS"
                             }
-                            "14" {
+                            "4" {
                                 $ActionFile = "$scriptPath\$10VBS"
                             }
-                           <# "15" {
-                                if(!$isLyncC2R){
-                                    $ActionFile = "$scriptPath\$15MSIVBS"
-                                } else {
-                                    if($RemoveClickToRunVersions){
-                                        Remove-OfficeClickToRun -C2RProductsToRemove "LyncEntryRetail", "LyncRetail"
-                                    } else {
-                                        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Lync cannot be removed. Use the -RemoveClickToRunVersions parameter to remove Click-To-Run 2016 installs." -LogFilePath $LogFilePath
-                                        throw "Lync cannot be removed. Use the -RemoveClickToRunVersions parameter to remove Click-To-Run 2016 installs."
-                                    }
-                                }
-                            } #>
-                            <#"16" {
-                                if($Remove2016Installs){
-                                    if(!$isLyncC2R){
-                                        $ActionFile = "$scriptPath\$16MSIVBS"
-                                    } else {
-                                        if($RemoveClickToRunVersions){
-                                            Remove-OfficeClickToRun -C2RProductsToRemove "LyncRetail", "LyncEntryRetail"
-                                        } else {
-                                            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Lync cannot be removed. Use the -RemoveClickToRunVersions parameter to remove Click-To-Run 2016 installs." -LogFilePath $LogFilePath
-                                            throw "Lync cannot be removed. Use the -RemoveClickToRunVersions parameter to remove Click-To-Run 2016 installs."
-                                        }
-                                        }
-                                    } else {
-                                        WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Lync cannot be removed. Use the -RemoveClickToRunVersions and -Remove2016Installs parameters to remove Click-To-Run 2016 installs." -LogFilePath $LogFilePath
-                                        throw "Lync cannot be removed. Use the -RemoveClickToRunVersions and -Remove2016Installs parameters to remove Click-To-Run 2016 installs."
-                                    }
-                                } #>
-                            }
+                        }
+
                         if($ActionFile -And (Test-Path -Path $ActionFile)){
                             $cmdLine = """$ActionFile"" $LyncProductName $argList"
                             $cmd = "cmd /c cscript //Nologo $cmdLine"
