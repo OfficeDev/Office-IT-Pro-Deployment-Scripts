@@ -1341,12 +1341,14 @@ param(
         $MainOfficeProducts = @()
         #$Products = (Get-OfficeVersion).DisplayName | select -Unique
         $MainOfficeProducts = (Get-OfficeVersion)
-        if($MainOfficeProducts.GetType().Name -eq "Object[]"){
-            $primaryOfficeLanguage = GetClientCulture
-            $MainOfficeProduct = (Get-OfficeVersion) | ? {$_.DisplayName -match $primaryOfficeLanguage}
-            $ProductName = $MainOfficeProduct.DisplayName
-        } else {
-            $ProductName = $MainOfficeProducts.DisplayName
+        if($MainOfficeProducts){
+            if($MainOfficeProducts.GetType().Name -eq "Object[]"){
+                $primaryOfficeLanguage = GetClientCulture
+                $MainOfficeProduct = (Get-OfficeVersion) | ? {$_.DisplayName -match $primaryOfficeLanguage}
+                $ProductName = $MainOfficeProduct.DisplayName
+            } else {
+                $ProductName = $MainOfficeProducts.DisplayName
+            }
         }
     } 
         
