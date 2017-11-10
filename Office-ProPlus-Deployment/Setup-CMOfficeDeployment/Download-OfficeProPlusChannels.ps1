@@ -991,6 +991,12 @@ function ConvertChannelNameToShortName {
        if ($ChannelName.ToLower() -eq "SemiAnnual".ToLower()) {
          return "SAC"
        }
+       if ($ChannelName.ToLower() -eq "Broad".ToLower()) {
+         return "SAC"
+       }
+       if ($ChannelName.ToLower() -eq "Insiders".ToLower()) {
+         return "MTC"
+       }
     }
 }
 

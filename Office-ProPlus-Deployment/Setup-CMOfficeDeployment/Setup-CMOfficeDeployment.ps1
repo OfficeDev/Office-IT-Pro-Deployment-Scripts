@@ -128,7 +128,7 @@ Download-CMOfficeChannelFiles -OfficeFilesPath D:\OfficeChannelFiles -Bitness v3
     Param
     (
         [Parameter()]
-        [OfficeChannel[]] $Channels = @(0,1,2,3,4,5,6,7),
+        [OfficeChannel[]] $Channels = @(0,1,2,3,4,5,6,7,8,9),
 
         [Parameter(Mandatory=$true)]
 	    [String]$OfficeFilesPath = $NULL,
@@ -177,8 +177,35 @@ Download-CMOfficeChannelFiles -OfficeFilesPath D:\OfficeChannelFiles -Bitness v3
        foreach ($Channel in $ChannelList) {
          if ($Channels -contains $Channel) {
 
-            $selectChannel = $ChannelXml.UpdateFiles.baseURL | Where {$_.branch -eq $Channel.ToString() }
-            $latestVersion = Get-ChannelLatestVersion -ChannelUrl $selectChannel.URL -Channel $Channel
+            switch($Channel){
+                "FirstReleaseCurrent"{
+                    $cabChannelName = ""
+                }
+                "Current"{
+                    $cabChannelName = "Monthly"
+                }
+                "FirstReleaseDeferred"{
+                    $cabChannelName = "Targeted"
+                }
+                "Deferred"{
+                    $cabChannelName = "Broad"
+                }
+                "MonthlyTargeted"{
+                    $cabChannelName = "Insiders"
+                }
+                "Monthly"{
+                    $cabChannelName = "Monthly"
+                }
+                "SemiAnnualTargeted"{
+                    $cabChannelName = "Targeted"
+                }
+                "SemiAnnual"{
+                    $cabChannelName = "Broad"
+                }
+            }
+
+            $selectChannel = $ChannelXml.UpdateFiles.baseURL | Where {$_.branch -eq $cabChannelName.ToString() }
+            $latestVersion = Get-ChannelLatestVersion -ChannelUrl $selectChannel.URL -Channel $cabChannelName
             $ChannelShortName = ConvertChannelNameToShortName -ChannelName $Channel
 
             if ($Version) {
@@ -286,8 +313,36 @@ Create-CMOfficePackage -Channels Deferred -Bitness v32 -OfficeSourceFilesPath D:
 
        foreach ($Channel in $ChannelList) {
          if ($Channels -contains $Channel) {
-           $selectChannel = $ChannelXml.UpdateFiles.baseURL | Where {$_.branch -eq $Channel.ToString() }
-           $latestVersion = Get-ChannelLatestVersion -ChannelUrl $selectChannel.URL -Channel $Channel -FolderPath $OfficeFilesPath -OverWrite $false
+         
+           switch($Channel){
+               "FirstReleaseCurrent"{
+                   $cabChannelName = ""
+               }
+               "Current"{
+                   $cabChannelName = "Monthly"
+               }
+               "FirstReleaseDeferred"{
+                   $cabChannelName = "Targeted"
+               }
+               "Deferred"{
+                   $cabChannelName = "Broad"
+               }
+               "MonthlyTargeted"{
+                   $cabChannelName = "Insiders"
+               }
+               "Monthly"{
+                   $cabChannelName = "Monthly"
+               }
+               "SemiAnnualTargeted"{
+                   $cabChannelName = "Targeted"
+               }
+               "SemiAnnual"{
+                   $cabChannelName = "Broad"
+               }
+           }
+
+           $selectChannel = $ChannelXml.UpdateFiles.baseURL | Where {$_.branch -eq $cabChannelName.ToString() }
+           $latestVersion = Get-ChannelLatestVersion -ChannelUrl $selectChannel.URL -Channel $cabChannelName -FolderPath $OfficeFilesPath -OverWrite $false
 
            $ChannelShortName = ConvertChannelNameToShortName -ChannelName $Channel
            $existingPackage = CheckIfPackageExists
@@ -475,8 +530,35 @@ Update-CMOfficePackage -Channels Current -Bitness Both -OfficeSourceFilesPath D:
 
        foreach ($Channel in $ChannelList) {
          if ($Channels -contains $Channel) {
-           $selectChannel = $ChannelXml.UpdateFiles.baseURL | Where {$_.branch -eq $Channel.ToString() }
-           $latestVersion = Get-ChannelLatestVersion -ChannelUrl $selectChannel.URL -Channel $Channel -FolderPath $OfficeFilesPath -OverWrite $false
+           switch($Channel){
+               "FirstReleaseCurrent"{
+                   $cabChannelName = ""
+               }
+               "Current"{
+                   $cabChannelName = "Monthly"
+               }
+               "FirstReleaseDeferred"{
+                   $cabChannelName = "Targeted"
+               }
+               "Deferred"{
+                   $cabChannelName = "Broad"
+               }
+               "MonthlyTargeted"{
+                   $cabChannelName = "Insiders"
+               }
+               "Monthly"{
+                   $cabChannelName = "Monthly"
+               }
+               "SemiAnnualTargeted"{
+                   $cabChannelName = "Targeted"
+               }
+               "SemiAnnual"{
+                   $cabChannelName = "Broad"
+               }
+           }
+
+           $selectChannel = $ChannelXml.UpdateFiles.baseURL | Where {$_.branch -eq $cabChannelName.ToString() }
+           $latestVersion = Get-ChannelLatestVersion -ChannelUrl $selectChannel.URL -Channel $cabChannelName -FolderPath $OfficeFilesPath -OverWrite $false
 
            $ChannelShortName = ConvertChannelNameToShortName -ChannelName $Channel
            $existingPackage = CheckIfPackageExists
@@ -827,7 +909,7 @@ Create-CMOfficeDeploymentProgram -Channels Current -DeploymentType DeployWithCon
 
                      UpdateConfigurationXml -Path $configFilePath -Channel $channel -Bitness $platform -SourcePath $sourcePath -LogFilePath $LogFilePath
 
-                     $ProgramName = "Deploy $channelShortNameLabel Channel with Config File - $platform-Bit"
+                     $ProgramName = "Deploy $channelShortName with Config File - $platform-Bit"
 
                      if ($CustomName) {
                        $ProgramName = $tmpCustomName
@@ -1979,8 +2061,36 @@ clients in the target collection 'Office Update'.
 
         foreach ($ChannelName in $ChannelList) {
             if ($Channel.ToString().ToLower() -eq $ChannelName.ToLower()) {
-                $selectChannel = $ChannelXml.UpdateFiles.baseURL | Where {$_.branch -eq $ChannelName.ToString() }
-                $latestVersion = Get-ChannelLatestVersion -ChannelUrl $selectChannel.URL -Channel $ChannelName
+                switch($Channel){
+
+                    "FirstReleaseCurrent"{
+                        $cabChannelName = ""
+                    }
+                    "Current"{
+                        $cabChannelName = "Monthly"
+                    }
+                    "FirstReleaseDeferred"{
+                        $cabChannelName = "Targeted"
+                    }
+                    "Deferred"{
+                        $cabChannelName = "Broad"
+                    }
+                    "MonthlyTargeted"{
+                        $cabChannelName = "Insiders"
+                    }
+                    "Monthly"{
+                        $cabChannelName = "Monthly"
+                    }
+                    "SemiAnnualTargeted"{
+                        $cabChannelName = "Targeted"
+                    }
+                    "SemiAnnual"{
+                        $cabChannelName = "Broad"
+                    }
+                }
+
+                $selectChannel = $ChannelXml.UpdateFiles.baseURL | Where {$_.branch -eq $cabChannelName.ToString() }
+                $latestVersion = Get-ChannelLatestVersion -ChannelUrl $selectChannel.URL -Channel $cabChannelName
                 $ChannelShortName = ConvertChannelNameToShortName -ChannelName $ChannelName
                 $package = CheckIfPackageExists
 
@@ -2318,6 +2428,21 @@ function UpdateConfigurationXml() {
     Process {
       $currentFileName = Get-CurrentFileName
       Set-Alias -name LINENUM -value Get-CurrentLineNumber
+
+      switch($channel){
+        "MonthlyTargeted"{
+            $Channel = "Insiders"
+        }
+        "Monthly"{
+            $Channel = "Monthly"
+        }
+        "SemiAnnualTargeted"{
+            $Channel = "Targeted"
+        }
+        "SemiAnnual"{
+            $Channel = "Broad"
+        }
+      }
 
 	  $doc = [Xml] (Get-Content $Path)
 
