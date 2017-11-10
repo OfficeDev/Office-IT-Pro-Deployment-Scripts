@@ -3,7 +3,7 @@
 
 $validProductIds = @("O365ProPlusRetail","O365BusinessRetail","VisioProRetail","ProjectProRetail", "SPDRetail", "VisioProXVolume", 
                      "VisioStdXVolume", "ProjectProXVolume", "ProjectStdXVolume", "InfoPathRetail", "SkypeforBusinessEntryRetail", 
-                     "LyncEntryRetail", "AccessRuntimeRetail")
+                     "LyncEntryRetail","AccessRuntimeRetail")
 
 try {
 $enum = "
@@ -1694,6 +1694,8 @@ Function Set-ODTUpdates{
         }
 
         #Set the desired values
+        $channelXmlName = Get-ChannelXmlName -Channel $channel
+
         if($Branch -ne $null -and $Channel -eq $null){
             $Channel = ConvertBranchNameToChannelName -BranchName $Branch
         }
@@ -1705,8 +1707,8 @@ Function Set-ODTUpdates{
         }
 
         if($Channel -ne $null){
-             $UpdateElement.SetAttribute("Channel", $Channel);
-             WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Setting the Update Channel to $Channel" -LogFilePath $LogFilePath
+             $UpdateElement.SetAttribute("Channel", $channelXmlName);
+             WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Setting the Update Channel to $channelXmlName" -LogFilePath $LogFilePath
         }
 
         if($Enabled -ne $NULL){
@@ -2481,6 +2483,8 @@ Function Set-ODTAdd{
         }
 
         #Set values as desired
+        $channelXmlName = Get-ChannelXmlName -Channel $channel
+
         if($Branch -ne $null -and $Channel -eq $null){
             $Channel = ConvertBranchNameToChannelName -BranchName $Branch
         }
@@ -2492,8 +2496,8 @@ Function Set-ODTAdd{
         }
 
         if($Channel -ne $null){
-            $ConfigFile.Configuration.Add.SetAttribute("Channel", $Channel);
-            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Channel set to $Channel" -LogFilePath $LogFilePath
+            $ConfigFile.Configuration.Add.SetAttribute("Channel", $channelXmlName);
+            WriteToLogFile -LNumber $(LINENUM) -FName $currentFileName -ActionError "Channel set to $channelXmlName" -LogFilePath $LogFilePath
         }
 
         if($SourcePath){
@@ -4010,6 +4014,30 @@ function Get-ChannelXml() {
      
         return $channelXml
     }
+}
+
+function Get-ChannelXmlName {
+Param(
+    $Channel
+)
+
+    switch($Channel){
+        "MonthlyTargeted"{
+            $channelXmlName = "Insiders"
+        }
+        "Monthly"{
+            $channelXmlName = "Monthly"
+        }
+        "SemiAnnualTargeted"{
+            $channelXmlName = "Targeted"
+        }
+        "SemiAnnual"{
+            $channelXmlName = "Broad"
+        }
+    }
+
+    return $channelXmlName
+
 }
 
 
